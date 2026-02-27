@@ -1,9 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<!-- ═══════════════════════════════════════════════════════════════
+     sitemap.xml — NovaPharm Healthcare Ltd
+     https://www.novapharmhealthcare.com
+     Last updated: 2026-02-27
+     Declared in: robots.txt
+     Submitted to: Google Search Console, Bing Webmaster Tools
+     ═══════════════════════════════════════════════════════════════ -->
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- ── HOME ─────────────────────────────────────────────── -->
   <url>
     <loc>https://www.novapharmhealthcare.com/</loc>
-    <lastmod>2026-01-01</lastmod>
+    <lastmod>2026-02-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en-GB"
+      href="https://www.novapharmhealthcare.com/"/>
+    <image:image>
+      <image:loc>https://www.novapharmhealthcare.com/assets/Novapharm-logo.svg</image:loc>
+      <image:title>NovaPharm Healthcare Ltd — MHRA Regulated Pharmaceutical Wholesaler UK</image:title>
+    </image:image>
   </url>
+
+  <!-- ── SOLUTIONS ─────────────────────────────────────────── -->
+  <url>
+    <loc>https://www.novapharmhealthcare.com/solutions.html</loc>
+    <lastmod>2026-02-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en-GB"
+      href="https://www.novapharmhealthcare.com/solutions.html"/>
+    <image:image>
+      <image:loc>https://www.novapharmhealthcare.com/assets/Novapharm-logo.svg</image:loc>
+      <image:title>NovaPharm Healthcare Solutions — NHS, Pharmacy &amp; Wholesaler</image:title>
+    </image:image>
+  </url>
+
+  <!-- ── SUPPLY CHAIN ───────────────────────────────────────── -->
+  <url>
+    <loc>https://www.novapharmhealthcare.com/supply-chain.html</loc>
+    <lastmod>2026-02-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en-GB"
+      href="https://www.novapharmhealthcare.com/supply-chain.html"/>
+    <image:image>
+      <image:loc>https://www.novapharmhealthcare.com/assets/Novapharm-logo.svg</image:loc>
+      <image:title>NovaPharm Healthcare — GDP-Compliant Pharmaceutical Supply Chain UK</image:title>
+    </image:image>
+  </url>
+
+  <!-- ── TEAM ──────────────────────────────────────────────── -->
+  <url>
+    <loc>https://www.novapharmhealthcare.com/team.html</loc>
+    <lastmod>2026-02-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-GB"
+      href="https://www.novapharmhealthcare.com/team.html"/>
+    <image:image>
+      <image:loc>https://www.novapharmhealthcare.com/assets/vishalchakravarty.jpeg</image:loc>
+      <image:title>Vishal Chakravarty — Founder &amp; CEO, NovaPharm Healthcare Ltd</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.novapharmhealthcare.com/assets/prabhakarvitthallahare.jpeg</image:loc>
+      <image:title>Prabhakar Vitthal Lahare — Chief Operations Officer, NovaPharm Healthcare Ltd</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.novapharmhealthcare.com/assets/girishshantilalachliya.jpeg</image:loc>
+      <image:title>Dr. Girish Shantilal Achliya — Chief Scientific Officer, NovaPharm Healthcare Ltd</image:title>
+    </image:image>
+  </url>
+
+  <!-- ── CONTACT ───────────────────────────────────────────── -->
+  <url>
+    <loc>https://www.novapharmhealthcare.com/contact.html</loc>
+    <lastmod>2026-02-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-GB"
+      href="https://www.novapharmhealthcare.com/contact.html"/>
+    <image:image>
+      <image:loc>https://www.novapharmhealthcare.com/assets/Novapharm-logo.svg</image:loc>
+      <image:title>Contact NovaPharm Healthcare Ltd — Pharmaceutical Enquiries UK</image:title>
+    </image:image>
+  </url>
+
 </urlset>
