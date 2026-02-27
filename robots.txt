@@ -1,4 +1,90 @@
+# ═══════════════════════════════════════════════════════════════
+# robots.txt — NovaPharm Healthcare Ltd
+# https://www.novapharmhealthcare.com
+# Last updated: 2026-02-27
+# ═══════════════════════════════════════════════════════════════
+
+# ── ALLOW ALL CRAWLERS (full site is public) ──────────────────
 User-agent: *
 Allow: /
 
+# ── BLOCK NON-CONTENT & ASSET PATHS ──────────────────────────
+Disallow: /assets/
+Disallow: /admin/
+Disallow: /private/
+Disallow: /drafts/
+Disallow: /tmp/
+Disallow: /*.json$
+Disallow: /CHANGELOG.json
+
+# ── CRAWL RATE HINT (optional, respected by some bots) ────────
+Crawl-delay: 5
+
+# ── GOOGLEBOT ────────────────────────────────────────────────
+User-agent: Googlebot
+Allow: /
+Allow: /assets/Novapharm-logo.svg
+Disallow: /admin/
+Disallow: /private/
+Disallow: /drafts/
+Disallow: /tmp/
+Disallow: /CHANGELOG.json
+
+# ── GOOGLEBOT IMAGE ──────────────────────────────────────────
+User-agent: Googlebot-Image
+Allow: /assets/
+
+# ── BINGBOT ──────────────────────────────────────────────────
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+Disallow: /private/
+Disallow: /drafts/
+Disallow: /tmp/
+Disallow: /CHANGELOG.json
+
+# ── DUCKDUCKBOT ──────────────────────────────────────────────
+User-agent: DuckDuckBot
+Allow: /
+
+# ── APPLEBOT (Siri / Spotlight) ───────────────────────────────
+User-agent: Applebot
+Allow: /
+
+# ── PERPLEXITYBOT (AI search) ────────────────────────────────
+User-agent: PerplexityBot
+Allow: /
+
+# ── GPTBOT / OPENAI ──────────────────────────────────────────
+User-agent: GPTBot
+Allow: /
+
+# ── CLAUDE (Anthropic) ───────────────────────────────────────
+User-agent: ClaudeBot
+Allow: /
+
+# ── BLOCK SCRAPER / SPAM BOTS ─────────────────────────────────
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+# ── SITEMAPS ─────────────────────────────────────────────────
 Sitemap: https://www.novapharmhealthcare.com/sitemap.xml
+Sitemap: https://www.novapharmhealthcare.com/sitemap-images.xml
