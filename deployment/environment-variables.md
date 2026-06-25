@@ -1,0 +1,21 @@
+# Environment Variables
+
+## Required
+- `NODE_ENV=production`
+- `HOST=0.0.0.0`
+- `PORT=4173`
+- `SESSION_SECRET`
+- `PORTAL_USERNAME=Vishal`
+- `PORTAL_PASSWORD_HASH`
+- `PORTAL_PASSWORD_SALT`
+
+## Local Verification Only
+- `PORTAL_PASSWORD=Vish123`
+
+## SharePoint / Microsoft Graph
+- `MICROSOFT_TENANT_ID`
+- `MICROSOFT_CLIENT_ID`
+- `MICROSOFT_CLIENT_SECRET`
+- `SHAREPOINT_HOSTNAME`
+- `SHAREPOINT_SITE_PATH`
+- `SHAREPOINT_DRIVE_ID`

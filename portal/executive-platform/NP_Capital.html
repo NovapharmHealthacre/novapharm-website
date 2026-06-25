@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>NovaPharm — Capital & Investment</title>
+<script src="vendor/chart.umd.js"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#F7F8FA;--bg2:#EEF0F4;--card:#FFFFFF;--sb:#1C2235;
+  --t0:#0F1117;--t1:#374151;--t2:#6B7280;--t3:#9CA3AF;--t4:#D1D5DB;
+  --brand:#C1292E;--brand2:#E53935;--brl:rgba(193,41,46,.08);--brll:rgba(193,41,46,.04);
+  --gold:#B45309;--goldl:rgba(180,83,9,.08);
+  --c1:#1D4ED8;--c2:#B91C1C;--c3:#047857;--c4:#92400E;--c5:#5B21B6;--c6:#0E7490;
+  --border:#E5E7EB;--border2:#F3F4F6;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 6px -1px rgba(0,0,0,.07),0 2px 4px -1px rgba(0,0,0,.04);
+  --sw:242px;
+  --fd:'Playfair Display',Georgia,serif;
+  --fs:'Inter',-apple-system,sans-serif;
+  --fm:'JetBrains Mono','Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:var(--fs);font-size:13px;color:var(--t0);background:var(--bg);-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:#9CA3AF;}
+.layout{display:flex;height:100vh;overflow:hidden;}
+/* SIDEBAR */
+.sb{width:var(--sw);min-width:var(--sw);height:100vh;background:var(--sb);display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;flex-shrink:0;z-index:100;}
+.sb-hd{padding:16px 14px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;}
+.sb-brand{display:flex;align-items:center;gap:9px;}
+.sb-mark{width:26px;height:26px;background:var(--brand);border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:#fff;flex-shrink:0;}
+.sb-name{font-size:13px;font-weight:600;color:rgba(255,255,255,.9);line-height:1.1;}
+.sb-co{font-family:var(--fm);font-size:9px;color:rgba(255,255,255,.35);letter-spacing:.5px;margin-top:2px;}
+.sb-sec{padding:14px 14px 3px;font-family:var(--fm);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.28);font-weight:600;}
+.sb-lnk{display:flex;align-items:center;gap:8px;padding:8px 10px 8px 14px;cursor:pointer;border-left:2px solid transparent;transition:all .12s;font-size:12px;color:rgba(255,255,255,.6);text-decoration:none;font-weight:400;user-select:none;}
+.sb-lnk:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9);border-left-color:rgba(255,255,255,.2);}
+.sb-lnk.on{background:rgba(193,41,46,.15);border-left-color:var(--brand);color:rgba(255,255,255,.95);font-weight:500;}
+.sb-ic{font-size:13px;width:17px;text-align:center;flex-shrink:0;opacity:.8;}
+.sb-bx{margin-left:auto;font-family:var(--fm);font-size:9px;padding:1px 6px;border-radius:3px;background:rgba(193,41,46,.25);color:#FDA4AF;border:1px solid rgba(193,41,46,.3);}
+.sb-bx.live{background:rgba(5,150,105,.2);color:#6EE7B7;border-color:rgba(5,150,105,.3);}
+.sb-ft{padding:12px 14px;margin-top:auto;border-top:1px solid rgba(255,255,255,.06);font-family:var(--fm);font-size:9px;color:rgba(255,255,255,.3);line-height:1.8;flex-shrink:0;}
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;min-width:0;}
+/* TOPBAR */
+.topbar{background:#fff;border-bottom:2px solid var(--border);padding:0 26px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:relative;}
+.topbar::after{content:'';position:absolute;bottom:-2px;left:0;width:80px;height:2px;background:var(--brand);}
+.tb-l{display:flex;align-items:center;gap:10px;}
+.tb-bc{font-family:var(--fm);font-size:10px;color:var(--t3);display:flex;align-items:center;gap:5px;}
+.tb-title{font-size:14px;font-weight:600;color:var(--t0);}
+.tb-r{display:flex;align-items:center;gap:8px;}
+.chip{font-family:var(--fm);font-size:10px;padding:4px 10px;border-radius:4px;border:1px solid;white-space:nowrap;}
+.chip-g{color:#065F46;background:#D1FAE5;border-color:#A7F3D0;}
+.chip-a{color:#78350F;background:#FEF3C7;border-color:#FCD34D;}
+.chip-r{color:#7F1D1D;background:#FEE2E2;border-color:#FCA5A5;}
+.chip-b{color:#1E3A8A;background:#DBEAFE;border-color:#93C5FD;}
+.tb-time{font-family:var(--fm);font-size:10px;color:var(--t3);border-left:1px solid var(--border);padding-left:10px;}
+.tb-av{width:30px;height:30px;border-radius:6px;background:var(--brl);border:1px solid var(--brand);color:var(--brand);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:11px;font-weight:700;}
+/* CONTENT */
+.content{flex:1;overflow-y:auto;overflow-x:hidden;padding:22px 26px 36px;}
+/* PAGE HEADER */
+.ph{margin-bottom:20px;}
+.ph-eye{font-family:var(--fm);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--brand);margin-bottom:3px;}
+.ph-title{font-family:var(--fd);font-size:23px;font-weight:700;color:var(--t0);letter-spacing:-.3px;line-height:1.2;}
+.ph-sub{font-size:12px;color:var(--t2);margin-top:4px;line-height:1.6;max-width:720px;}
+.ph-rule{height:1px;background:linear-gradient(90deg,var(--brand) 0%,var(--border) 40%,transparent 80%);margin:10px 0 18px;}
+/* KPI GRIDS */
+.kg5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px;}
+.kg4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+.kg3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
+.kpi{background:#fff;border:1px solid var(--border);border-radius:8px;padding:15px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:box-shadow .15s;}
+.kpi:hover{box-shadow:var(--shadow-md);}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kc,var(--brand));border-radius:8px 8px 0 0;}
+.kpi.kb{--kc:var(--c1)}.kpi.kg{--kc:var(--c3)}.kpi.ka{--kc:var(--c4)}.kpi.kp{--kc:var(--c5)}.kpi.kt{--kc:var(--c6)}.kpi.kr{--kc:var(--brand)}
+.kl{font-family:var(--fm);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:6px;}
+.kv{font-family:var(--fm);font-size:24px;font-weight:600;color:var(--t0);letter-spacing:-1px;line-height:1;}
+.ks{font-size:10px;color:var(--t2);margin-top:4px;}
+.kd{display:inline-flex;align-items:center;gap:3px;font-family:var(--fm);font-size:10px;padding:2px 7px;border-radius:4px;margin-top:5px;}
+.kd-u{background:#D1FAE5;color:#065F46;}.kd-d{background:#FEE2E2;color:#7F1D1D;}.kd-n{background:#FEF3C7;color:#78350F;}
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px;}
+.g65{display:grid;grid-template-columns:1.65fr 1fr;gap:16px;margin-bottom:16px;}
+.g35{display:grid;grid-template-columns:1fr 1.65fr;gap:16px;margin-bottom:16px;}
+/* PANEL */
+.panel{background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 20px;box-shadow:var(--shadow);margin-bottom:16px;}
+.panel-h{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border2);}
+.pt{font-family:var(--fd);font-size:14px;font-weight:600;color:var(--t0);letter-spacing:-.2px;}
+.ps{font-size:11px;color:var(--t2);margin-top:2px;}
+.pbg{font-family:var(--fm);font-size:9px;padding:3px 9px;border-radius:4px;border:1px solid;}
+.pb-b{color:var(--c1);border-color:rgba(29,78,216,.3);background:rgba(29,78,216,.06);}
+.pb-g{color:var(--c3);border-color:rgba(4,120,87,.3);background:rgba(4,120,87,.06);}
+.pb-r{color:var(--brand);border-color:rgba(193,41,46,.3);background:var(--brll);}
+.pb-a{color:var(--c4);border-color:rgba(146,64,14,.3);background:rgba(146,64,14,.06);}
+.pb-t{color:var(--c6);border-color:rgba(14,116,144,.3);background:rgba(14,116,144,.06);}
+.pb-p{color:var(--c5);border-color:rgba(91,33,182,.3);background:rgba(91,33,182,.06);}
+.pb-n{color:var(--t2);border-color:var(--border);background:var(--bg2);}
+/* CHART */
+.cw{position:relative;width:100%;}
+.ch-src{font-family:var(--fm);font-size:9px;color:var(--t4);margin-top:6px;padding-top:5px;border-top:1px solid var(--border2);}
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.tbl thead th{padding:8px 12px;text-align:left;font-family:var(--fm);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);border-bottom:2px solid var(--border);font-weight:600;white-space:nowrap;}
+.tbl tbody tr{border-bottom:1px solid var(--border2);transition:background .1s;}
+.tbl tbody tr:hover{background:var(--bg);}
+.tbl tbody tr:last-child{border:none;}
+.tbl td{padding:9px 12px;color:var(--t1);vertical-align:middle;}
+.tbl td.mn{font-family:var(--fm);font-size:11px;}.tbl td:first-child{font-weight:500;color:var(--t0);}
+.tbl td.r,.tbl th.r{text-align:right;}.tbl td.c,.tbl th.c{text-align:center;}
+/* BADGES */
+.bdg{display:inline-block;padding:2px 8px;font-family:var(--fm);font-size:9px;border-radius:4px;border:1px solid;white-space:nowrap;}
+.bg{color:#065F46;background:#D1FAE5;border-color:#A7F3D0;}
+.br{color:#7F1D1D;background:#FEE2E2;border-color:#FCA5A5;}
+.ba{color:#78350F;background:#FEF3C7;border-color:#FCD34D;}
+.bb{color:#1E3A8A;background:#DBEAFE;border-color:#93C5FD;}
+.bt{color:#134E4A;background:#CCFBF1;border-color:#99F6E4;}
+.bp{color:#3B0764;background:#F3E8FF;border-color:#D8B4FE;}
+.bw{color:#374151;background:#F3F4F6;border-color:#E5E7EB;}
+/* PROGRESS */
+.pr-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border2);}
+.pr-row:last-child{border:none;}
+.pr-lbl{font-size:12px;color:var(--t1);width:160px;flex-shrink:0;}
+.pr-trk{flex:1;height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;}
+.pr-fill{height:100%;border-radius:3px;transition:width .8s ease;}
+.pr-val{font-family:var(--fm);font-size:11px;color:var(--t0);width:48px;text-align:right;font-weight:600;}
+.pr-tgt{font-family:var(--fm);font-size:9px;color:var(--t3);width:60px;text-align:right;}
+/* TIMELINE */
+.tl{padding-left:28px;}
+.tl-i{position:relative;padding-bottom:16px;}
+.tl-i:last-child{padding-bottom:0;}
+.tl-dot{position:absolute;left:-28px;width:12px;height:12px;border-radius:50%;top:3px;}
+.tl-line{position:absolute;left:-23px;top:15px;width:2px;height:calc(100% - 12px);background:var(--border);}
+.tl-i:last-child .tl-line{display:none;}
+.tl-t{font-size:12px;font-weight:600;color:var(--t0);}
+.tl-d{font-size:11px;color:var(--t2);margin-top:2px;line-height:1.5;}
+.tl-dt{font-family:var(--fm);font-size:10px;color:var(--t3);margin-top:2px;}
+/* ALERT */
+.alert{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:6px;margin-bottom:14px;border:1px solid;font-size:12px;line-height:1.5;}
+.alert-i{background:#EFF6FF;border-color:#BFDBFE;color:#1E40AF;}
+.alert-w{background:#FFFBEB;border-color:#FDE68A;color:#92400E;}
+.alert-e{background:#FEF2F2;border-color:#FECACA;color:#991B1B;}
+.alert-s{background:#ECFDF5;border-color:#A7F3D0;color:#065F46;}
+/* STAT STRIP */
+.sstrip{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:16px;background:#fff;box-shadow:var(--shadow);}
+.sc{flex:1;padding:14px 16px;border-right:1px solid var(--border);}
+.sc:last-child{border-right:none;}
+.sc-l{font-family:var(--fm);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:4px;}
+.sc-v{font-family:var(--fm);font-size:20px;font-weight:600;color:var(--t0);letter-spacing:-.5px;line-height:1;}
+.sc-s{font-size:10px;color:var(--t3);margin-top:3px;}
+/* TABS */
+.tab-nav{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:16px;}
+.tab-btn{padding:9px 16px;font-size:12px;font-weight:500;color:var(--t2);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .12s;font-family:var(--fs);white-space:nowrap;}
+.tab-btn:hover{color:var(--t0);}
+.tab-btn.on{color:var(--brand);border-bottom-color:var(--brand);}
+.tab-c{display:none;}.tab-c.on{display:block;}
+/* SEARCH */
+.srch{position:relative;}
+.srch-in{width:100%;padding:9px 12px 9px 36px;border:1px solid var(--border);border-radius:6px;font-size:13px;color:var(--t0);background:#fff;outline:none;transition:border-color .15s;font-family:var(--fs);}
+.srch-in:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(193,41,46,.08);}
+.srch-ic{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:14px;pointer-events:none;}
+/* SECTION TITLE */
+.sec-title{font-family:var(--fd);font-size:14px;font-weight:600;color:var(--t0);margin:20px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.sec-title::after{content:'';flex:1;height:0;}
+/* MISC */
+.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#10B981;animation:blink 1.5s ease-in-out infinite;vertical-align:middle;margin-right:4px;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--brand);border-radius:50%;animation:spinning .7s linear infinite;}
+@keyframes spinning{to{transform:rotate(360deg);}}
+.flex{display:flex;}.items-center{align-items:center;}.gap-8{gap:8px;}.gap-12{gap:12px;}.gap-16{gap:16px;}
+.ml-auto{margin-left:auto;}.mt-4{margin-top:4px;}.mt-8{margin-top:8px;}.mt-12{margin-top:12px;}.mt-16{margin-top:16px;}
+.mb-4{margin-bottom:4px;}.mb-8{margin-bottom:8px;}.mb-12{margin-bottom:12px;}.mb-16{margin-bottom:16px;}
+.fw6{font-weight:600;}.fw5{font-weight:500;}.mono{font-family:var(--fm);}
+.text-r{text-align:right;}.text-c{text-align:center;}.text-sm{font-size:11px;}.text-xs{font-size:10px;}.text-2{color:var(--t2);}.text-3{color:var(--t3);}.text-g{color:var(--c3);}.text-r2{color:var(--c2);}.text-b{color:var(--c1);}.text-brand{color:var(--brand);}
+/* FILTER STRIP */
+.fstrip{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.fbtn{font-family:var(--fm);font-size:10px;padding:5px 12px;border-radius:4px;border:1px solid var(--border);background:#fff;color:var(--t2);cursor:pointer;transition:all .12s;font-weight:500;}
+.fbtn:hover{border-color:var(--brand);color:var(--brand);}
+.fbtn.on{background:var(--brand);border-color:var(--brand);color:#fff;}
+/* KANBAN */
+.kanban{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;}
+.kb-col{min-width:200px;flex-shrink:0;}
+.kb-hd{padding:8px 10px;border-radius:6px 6px 0 0;font-family:var(--fm);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;justify-content:space-between;}
+.kb-body{background:var(--bg);border:1px solid var(--border);border-top:none;border-radius:0 0 6px 6px;padding:8px;display:flex;flex-direction:column;gap:6px;min-height:80px;}
+.kb-card{background:#fff;border:1px solid var(--border);border-radius:6px;padding:10px;box-shadow:var(--shadow);cursor:pointer;transition:box-shadow .15s;}
+.kb-card:hover{box-shadow:var(--shadow-md);}
+.kb-t{font-size:12px;font-weight:600;color:var(--t0);margin-bottom:3px;}
+.kb-m{font-family:var(--fm);font-size:9px;color:var(--t3);}
+/* FORM CONTROLS */
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px;}
+.form-group{display:flex;flex-direction:column;gap:4px;}
+.form-label{font-family:var(--fm);font-size:10px;letter-spacing:1px;color:var(--t2);font-weight:600;text-transform:uppercase;}
+.form-control{padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:var(--fs);color:var(--t0);outline:none;background:#fff;transition:border-color .15s;}
+.form-control:focus{border-color:var(--brand);box-shadow:0 0 0 2px rgba(193,41,46,.08);}
+/* GANTT */
+.gantt-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border2);}
+.gantt-row:last-child{border:none;}
+.gantt-label{width:160px;font-size:11px;color:var(--t1);flex-shrink:0;}
+.gantt-track{flex:1;height:18px;background:var(--bg2);border-radius:3px;position:relative;overflow:hidden;}
+.gantt-bar{position:absolute;height:100%;border-radius:3px;display:flex;align-items:center;padding:0 6px;font-family:var(--fm);font-size:9px;color:#fff;white-space:nowrap;overflow:hidden;}
+.gantt-meta{width:80px;text-align:right;font-family:var(--fm);font-size:10px;color:var(--t3);}
+/* TOOLTIP */
+.has-tt{position:relative;cursor:help;}
+.tt-txt{visibility:hidden;position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:#111827;color:#F9FAFB;font-size:11px;padding:6px 10px;border-radius:4px;white-space:nowrap;z-index:999;font-family:var(--fs);box-shadow:0 4px 12px rgba(0,0,0,.2);}
+.has-tt:hover .tt-txt{visibility:visible;}
+/* NHS SPECIFIC */
+.nhs-banner{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:6px;margin-bottom:14px;}
+.nhs-mark{font-weight:700;font-size:13px;color:#005EB8;background:#fff;padding:2px 8px;border-radius:3px;}
+.nhs-src{font-family:var(--fm);font-size:9px;color:var(--t3);}
+/* RESPONSIVE APP SHELL */
+@media(max-width:1180px){
+  .kg5,.kg4,.kg3,.g2,.g3,.g65,.g35{grid-template-columns:1fr 1fr!important;}
+  [style*="grid-template-columns:repeat(5,1fr)"]{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))!important;}
+  [style*="grid-template-columns:repeat(4,1fr)"]{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))!important;}
+  [style*="grid-template-columns:repeat(3,1fr)"]{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))!important;}
+}
+@media(max-width:760px){
+  html,body{height:auto;overflow:auto;}
+  .layout{display:block;height:auto;min-height:100vh;overflow:visible;}
+  .sb{width:100%;min-width:0;height:auto;max-height:42vh;}
+  .sb-ft{margin-top:10px;}
+  .main{height:auto;min-height:100vh;overflow:visible;}
+  .topbar{height:auto;min-height:52px;padding:12px 16px;align-items:flex-start;gap:10px;flex-direction:column;}
+  .tb-l,.tb-r{flex-wrap:wrap;}
+  .tb-time{border-left:0;padding-left:0;}
+  .content{padding:16px;overflow:visible;}
+  .ph-title{font-size:21px;}
+  .kg5,.kg4,.kg3,.g2,.g3,.g65,.g35{grid-template-columns:1fr!important;}
+  .sstrip{display:block;}
+  .sc{border-right:0;border-bottom:1px solid var(--border);}
+  .sc:last-child{border-bottom:0;}
+  .panel{padding:15px;}
+  .panel-h{gap:8px;flex-direction:column;}
+  .tab-nav,.fstrip,.kanban{overflow-x:auto;flex-wrap:nowrap;}
+  .tbl{font-size:11px;}
+  .tbl-wrap{overflow-x:auto;}
+  .pr-row,.gantt-row{align-items:flex-start;flex-direction:column;gap:6px;}
+  .pr-lbl,.gantt-label,.gantt-meta{width:auto;text-align:left;}
+  .pr-trk,.gantt-track{width:100%;}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sb">
+<div class="sb-hd">
+  <div class="sb-brand">
+    <div class="sb-mark">NP</div>
+    <div><div class="sb-name">NovaPharm</div><div class="sb-co">Healthcare Ltd &middot; EIP v2.0</div></div>
+  </div>
+</div>
+<div class="sb-sec">OVERVIEW</div>
+<a href="NP_Hub.html" class="sb-lnk"><span class="sb-ic">⊞</span>Command Centre</a>
+<a href="NP_CEO.html" class="sb-lnk"><span class="sb-ic">◈</span>CEO Dashboard</a>
+<a href="NP_Sales.html" class="sb-lnk"><span class="sb-ic">↗</span>Sales Intelligence</a>
+<a href="NP_Customers.html" class="sb-lnk"><span class="sb-ic">⊚</span>Customer Analytics</a>
+<a href="NP_Products.html" class="sb-lnk"><span class="sb-ic">⊟</span>Product Performance</a>
+<a href="NP_NHS_Data.html" class="sb-lnk"><span class="sb-ic">⊕</span>NHS Market Data<span class="sb-bx live">LIVE</span></a>
+<div class="sb-sec">REGULATORY</div>
+<a href="NP_PLPI.html" class="sb-lnk"><span class="sb-ic">⊡</span>PLPI Tracker<span class="sb-bx ">9 Filed</span></a>
+<a href="NP_Sourcing.html" class="sb-lnk"><span class="sb-ic">⊗</span>3-Pillar Sourcing</a>
+<a href="NP_SLA.html" class="sb-lnk"><span class="sb-ic">⊙</span>SLA & Logistics</a>
+<a href="NP_Warehouse.html" class="sb-lnk"><span class="sb-ic">▦</span>Warehouse (WMS)</a>
+<a href="NP_Tenders.html" class="sb-lnk"><span class="sb-ic">⊡</span>NHS Tenders Portal</a>
+<div class="sb-sec">COMPLIANCE</div>
+<a href="NP_PV.html" class="sb-lnk"><span class="sb-ic">⚕</span>Pharmacovigilance</a>
+<a href="NP_Blockchain.html" class="sb-lnk"><span class="sb-ic">⛓</span>Blockchain & Trace</a>
+<a href="NP_AI_Tech.html" class="sb-lnk"><span class="sb-ic">⊛</span>AI & Technology</a>
+<div class="sb-sec">FINANCE</div>
+<a href="NP_Finance.html" class="sb-lnk"><span class="sb-ic">£</span>Finance & Reports</a>
+<a href="NP_Capital.html" class="sb-lnk on"><span class="sb-ic">◎</span>Capital & Investment</a>
+<div class="sb-sec">INFRASTRUCTURE</div>
+<a href="NP_M365.html" class="sb-lnk"><span class="sb-ic">☁</span>SharePoint & M365</a>
+<a href="NP_Documents.html" class="sb-lnk"><span class="sb-ic">▣</span>Implementation Docs<span class="sb-bx">PDF</span></a>
+<div class="sb-ft"><span class="live-dot"></span>System Online<br>NovaPharm Healthcare Ltd<br>Co. 16716501 &middot; Feltham, UK<br><span style="opacity:.4">CEO: Vishal Chakravarty</span></div>
+</aside>
+
+<div class="main">
+<div class="topbar">
+  <div class="tb-l">
+    <div class="tb-bc"><span>NOVAPHARM</span><span style="color:#D1D5DB">/</span><span>Capital & Investment</span></div>
+    <span style="color:#D1D5DB;font-size:11px">|</span>
+    <div class="tb-title">Capital & Investment</div>
+  </div>
+  <div class="tb-r">
+    <span class="chip chip-b">£350K Seed</span><span class="chip chip-a">32% Deployed</span><span class="chip chip-g">Series A: Year 3</span>
+    <div class="tb-time" id="tb-time">—</div>
+    <div class="tb-av">VC</div>
+  </div>
+</div>
+<div class="content">
+
+<div class="ph">
+  <div class="ph-eye">Investment Intelligence · Funding Strategy</div>
+  <div class="ph-title">Capital &amp; Investment</div>
+  <div class="ph-sub">£350K initial investment from Sona Biosciences, Gujarat. Phased draw-down allocation. Series A target at £90–110M pre-money valuation Year 3. Distribution → Pharma Tech → Platform Company reframing drives multiple expansion from 4× to 12× revenue.</div>
+  <div class="ph-rule"></div>
+</div>
+
+<div class="sstrip">
+  <div class="sc"><div class="sc-l">Seed Investment</div><div class="sc-v">£350K</div><div class="sc-s">Sona Biosciences</div></div>
+  <div class="sc"><div class="sc-l">Deployed</div><div class="sc-v" style="color:var(--brand)">£112K</div><div class="sc-s">32% utilised</div></div>
+  <div class="sc"><div class="sc-l">Remaining</div><div class="sc-v" style="color:var(--c3)">£238K</div><div class="sc-s">~6 months pre-revenue</div></div>
+  <div class="sc"><div class="sc-l">Break-Even</div><div class="sc-v" style="color:var(--c6)">Month 18</div><div class="sc-s">Y2 positive EBITDA</div></div>
+  <div class="sc"><div class="sc-l">Series A Target</div><div class="sc-v">£5–10M</div><div class="sc-s">Year 3 target</div></div>
+</div>
+
+<div class="g2">
+  <div class="panel">
+    <div class="panel-h"><div><div class="pt">Capital Allocation — £350K Draw-Down Plan</div><div class="ps">Phased deployment by strategic priority</div></div></div>
+    <div class="cw" style="height:220px"><canvas id="c-alloc"></canvas></div>
+    <table class="tbl" style="margin-top:12px">
+      <thead><tr><th>Category</th><th class="r">Allocated</th><th class="r">Deployed M1–M2</th><th class="r">Remaining</th><th>Timeline</th></tr></thead>
+      <tbody>
+        <tr><td>IT Platform &amp; Technology</td><td class="mn r">£100,000</td><td class="mn r" style="color:var(--brand)">£42,000</td><td class="mn r" style="color:var(--c3)">£58,000</td><td>M1–M7</td></tr>
+        <tr><td>Working Capital (stock/operations)</td><td class="mn r">£120,000</td><td class="mn r" style="color:var(--brand)">£38,000</td><td class="mn r" style="color:var(--c3)">£82,000</td><td>M5–M12</td></tr>
+        <tr><td>Polar Speed Partnership</td><td class="mn r">£50,000</td><td class="mn r" style="color:var(--brand)">£20,000</td><td class="mn r" style="color:var(--c3)">£30,000</td><td>M1–M3</td></tr>
+        <tr><td>Regulatory &amp; MHRA</td><td class="mn r">£50,000</td><td class="mn r" style="color:var(--brand)">£12,000</td><td class="mn r" style="color:var(--c3)">£38,000</td><td>M1–M6</td></tr>
+        <tr><td>PLPI &amp; EU Sourcing</td><td class="mn r">£30,000</td><td class="mn r" style="color:var(--brand)">£0</td><td class="mn r" style="color:var(--c3)">£30,000</td><td>M3–M9</td></tr>
+        <tr style="border-top:2px solid var(--border)"><td><strong>Total</strong></td><td class="mn r"><strong>£350,000</strong></td><td class="mn r" style="color:var(--brand)"><strong>£112,000</strong></td><td class="mn r" style="color:var(--c3)"><strong>£238,000</strong></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><div><div class="pt">Unicorn Pathway — Valuation Trajectories</div><div class="ps">Three scenarios: Distribution (4×) · Pharma Tech (8×) · Platform Company (12×) revenue multiple</div></div></div>
+    <div class="cw" style="height:220px"><canvas id="c-unicorn"></canvas></div>
+    <div style="margin-top:12px;padding:10px;background:var(--bg);border-radius:6px;border-left:3px solid var(--c5)">
+      <div style="font-size:11px;font-weight:600">Platform Company Reframing</div>
+      <div style="font-size:11px;color:var(--t2);margin-top:4px;line-height:1.6">NovaPharm must be positioned as a <strong>pharmaceutical technology platform</strong> (12× revenue multiple), not a distributor (4×). The four components that justify this: (1) Proprietary AI demand forecasting; (2) Blockchain batch traceability; (3) PLPI regulatory IP portfolio (25–35 licences); (4) 50+ API integration network. This is what takes pre-money valuation from £73M to £218M at the same Year 3 revenue figure.</div>
+    </div>
+  </div>
+</div>
+
+<div class="g3">
+  <div class="panel">
+    <div class="panel-h"><div><div class="pt">Series A Strategy</div><div class="ps">Year 3 fundraising plan</div></div></div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+      <div style="padding:10px;background:var(--bg);border-radius:6px"><div style="font-size:11px;font-weight:600">Target Raise: £5–10M</div><div style="font-size:11px;color:var(--t2);margin-top:3px">Series A · Year 3 · pre-money £90–110M · 5–10% dilution</div></div>
+      <div style="padding:10px;background:var(--bg);border-radius:6px"><div style="font-size:11px;font-weight:600">Use of Funds</div><div style="font-size:11px;color:var(--t2);margin-top:3px">40% Working Capital · 30% Technology · 15% Team · 15% Regulatory Expansion</div></div>
+      <div style="padding:10px;background:var(--bg);border-radius:6px"><div style="font-size:11px;font-weight:600">Target Investors</div><div style="font-size:11px;color:var(--t2);margin-top:3px">Life science VCs (Syncona, Advent Life Sciences) · Impact investors · NHS-aligned funds · Strategic (pharma manufacturer)</div></div>
+      <div style="padding:10px;background:var(--bg);border-radius:6px"><div style="font-size:11px;font-weight:600">UKRI / Innovate UK Bridge</div><div style="font-size:11px;color:var(--t2);margin-top:3px">£100–500K Innovate UK grant application for AI + blockchain platform. Apply at Month 4. Non-dilutive capital bridge to Series A.</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><div><div class="pt">EBITDA to Positive</div><div class="ps">Monthly EBITDA trajectory</div></div></div>
+    <div class="cw" style="height:220px"><canvas id="c-ebitda-path"></canvas></div>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><div><div class="pt">Revenue Milestone to Series A</div><div class="ps">Key commercial gates for investor conversations</div></div></div>
+    <div class="tl" style="margin-top:4px">
+      <div class="tl-i"><div class="tl-dot" style="background:var(--c4)"></div><div class="tl-line"></div><div class="tl-t">Month 5: First Revenue</div><div class="tl-d">India GMP generics dispatched. First pharmacy invoices raised. Proof of WDL-to-revenue execution.</div></div>
+      <div class="tl-i"><div class="tl-dot" style="background:var(--c6)"></div><div class="tl-line"></div><div class="tl-t">Month 12: £500K Revenue Run Rate</div><div class="tl-d">10+ PLPI approvals active. First NHS trust contract. AI forecasting deployed. Demonstrable product-market fit.</div></div>
+      <div class="tl-i"><div class="tl-dot" style="background:var(--c3)"></div><div class="tl-line"></div><div class="tl-t">Month 18: EBITDA Break-Even</div><div class="tl-d">Revenue covers all costs. Blockchain pilot operational. Series A preparation begins.</div></div>
+      <div class="tl-i"><div class="tl-dot" style="background:#D1D5DB"></div><div class="tl-t">Year 3: Series A Raise</div><div class="tl-d">£18.2M revenue · £1.15M EBITDA · 25–35 PLPI licences · Series A at £90–110M pre-money.</div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+</div>
+<script>
+
+Chart.defaults.color='#6B7280';
+Chart.defaults.borderColor='#F3F4F6';
+Chart.defaults.font.family="'Inter',-apple-system,sans-serif";
+Chart.defaults.font.size=11;
+Chart.defaults.plugins.legend.position='top';
+Chart.defaults.plugins.legend.align='start';
+Chart.defaults.plugins.legend.labels.boxWidth=10;
+Chart.defaults.plugins.legend.labels.boxHeight=2;
+Chart.defaults.plugins.legend.labels.padding=14;
+Chart.defaults.plugins.tooltip.backgroundColor='#111827';
+Chart.defaults.plugins.tooltip.titleColor='#F9FAFB';
+Chart.defaults.plugins.tooltip.bodyColor='#D1D5DB';
+Chart.defaults.plugins.tooltip.borderColor='#374151';
+Chart.defaults.plugins.tooltip.borderWidth=1;
+Chart.defaults.plugins.tooltip.cornerRadius=4;
+Chart.defaults.plugins.tooltip.padding=10;
+const GRID={color:'#F3F4F6'};
+const NO_GRID={display:false};
+const T9={font:{size:9}};
+const T10={font:{size:10}};
+const T11={font:{size:11}};
+const C={
+  brand:'#C1292E',gold:'#B45309',
+  blue:'#1D4ED8',red:'#B91C1C',green:'#047857',
+  amber:'#92400E',purple:'#5B21B6',teal:'#0E7490',
+  gray:'#6B7280',dark:'#111827',orange:'#C2410C'
+};
+const A=(h,o)=>{const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return 'rgba('+r+','+g+','+b+','+o+')';};
+
+
+(function tick(){
+  const t=new Date();
+  const el=document.getElementById('tb-time');
+  if(el) el.textContent=t.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' GMT';
+  setTimeout(tick,1000);
+})();
+
+
+// Capital allocation grouped bar
+new Chart('c-alloc',{type:'bar',data:{
+  labels:['IT Platform','Working Capital','Polar Speed','Regulatory','PLPI/EU'],
+  datasets:[
+    {label:'Allocated £K',data:[100,120,50,50,30],backgroundColor:A(C.gray,.3),borderRadius:3},
+    {label:'Deployed M1–M2 £K',data:[42,38,20,12,0],backgroundColor:A(C.brand,.75),borderRadius:3}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},
+    scales:{y:{ticks:{callback:v=>'£'+v+'K',...T9},grid:GRID},x:{ticks:T9,grid:{display:false}}}}
+});
+
+// Unicorn pathway lines
+new Chart('c-unicorn',{type:'line',data:{
+  labels:['Y1','Y2','Y3','Y4','Y5','Y6/7'],
+  datasets:[
+    {label:'Base: Distribution (4×)',data:[11,34,73,120,200,250],borderColor:A(C.gray,.6),borderDash:[5,4],pointRadius:2,borderWidth:1.5,backgroundColor:'transparent'},
+    {label:'Growth: Pharma Tech (8×)',data:[14,42,146,240,400,500],borderColor:C.teal,pointRadius:3,borderWidth:2,backgroundColor:'transparent'},
+    {label:'Target: Platform (12×)',data:[17,51,218,360,600,1000],borderColor:C.gold,pointRadius:4,borderWidth:2.5,backgroundColor:'transparent',pointBackgroundColor:C.gold}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},
+    scales:{y:{ticks:{callback:v=>'£'+v+'M',...T9},grid:GRID},x:{ticks:T9,grid:{display:false}}}}
+});
+
+// EBITDA path
+const m18=[],ed18=[];
+for(let m=1;m<=18;m++){
+  m18.push('M'+m);
+  const rev=m<5?0:(m-4)*30;
+  const burn=37.5;
+  ed18.push(+(rev-burn).toFixed(1));
+}
+new Chart('c-ebitda-path',{type:'bar',data:{labels:m18,datasets:[{
+  label:'Monthly EBITDA £K',data:ed18,
+  backgroundColor:ed18.map(v=>v<0?A(C.brand,.7):A(C.green,.75)),borderRadius:3
+}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+  scales:{y:{ticks:{callback:v=>'£'+v+'K',...T9},grid:GRID},x:{ticks:{...T9,maxTicksLimit:9},grid:{display:false}}}}
+});
+
+
+
+function NP_refreshVisibleCharts(){
+  if(typeof Chart==='undefined' || !Chart.instances) return;
+  Object.values(Chart.instances).forEach(chart=>{
+    if(!chart || !chart.canvas) return;
+    const canvas=chart.canvas;
+    const visible=canvas.offsetParent!==null && canvas.clientWidth>0 && canvas.clientHeight>0;
+    if(visible){
+      chart.resize();
+      chart.update('none');
+    }
+  });
+}
+document.addEventListener('click',e=>{
+  if(e.target.closest && e.target.closest('.tab-btn')){
+    requestAnimationFrame(()=>requestAnimationFrame(NP_refreshVisibleCharts));
+  }
+});
+window.addEventListener('load',()=>requestAnimationFrame(NP_refreshVisibleCharts));
+
+</script>
+</body>
+</html>
