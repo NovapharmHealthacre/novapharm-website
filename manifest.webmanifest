@@ -1,0 +1,15 @@
+{
+  "name": "NovaPharm Healthcare",
+  "short_name": "NovaPharm",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f8fb",
+  "theme_color": "#c1121f",
+  "icons": [
+    {
+      "src": "/assets/Novapharm-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
