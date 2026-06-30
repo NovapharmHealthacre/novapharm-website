@@ -1,28 +1,57 @@
 # Deployment Guide
 
-## Recommended Production Hosting
-Use a Node-capable host such as Azure App Service, Azure Static Web Apps with API backend, Render, Railway or Vercel server runtime. GitHub Pages can serve public static pages but cannot securely protect the portal or use Microsoft Graph secrets.
+## Recommended Hosting
 
-## Run Locally
+Use a Node-capable production host. GitHub Pages alone is not sufficient because the portal, database, authentication, document uploads and integration workers require `server.mjs`.
+
+Recommended:
+
+- Azure App Service.
+- Azure Container Apps.
+- Render, Railway or Fly.io.
+- VPS with Node 24+, HTTPS, process manager, backups and monitoring.
+
+## Runtime
+
+Node 24+ is required.
 
 ```sh
-PORTAL_USERNAME=Vishal PORTAL_PASSWORD=***REMOVED*** SESSION_SECRET=local-dev-secret-at-least-24-chars node server.mjs
+node scripts/build-pages.mjs
+node scripts/validate-site.mjs
+node scripts/validate-app.mjs
+node scripts/validate-domain.mjs
+NODE_ENV=production node server.mjs
 ```
 
-Open:
+## Local Verification
 
-```text
-http://127.0.0.1:4173/
+```sh
+SESSION_SECRET=local-dev-session-secret-change-me PORTAL_USERNAME=Vishal PORTAL_PASSWORD=***REMOVED*** node server.mjs
 ```
+
+The current Codex sandbox blocks local port binding with `listen EPERM`; run this command in a normal terminal or production host.
 
 ## Production Checklist
+
+- Merge consolidated files into the GitHub website checkout.
+- Commit and push to `NovapharmHealthacre/novapharm-website`.
+- Configure Node 24+ on the host.
+- Set every variable from `deployment/environment-variables.md`.
 - Configure HTTPS.
-- Set `SESSION_SECRET`.
-- Set `PORTAL_USERNAME`.
-- Set `PORTAL_PASSWORD_HASH` and `PORTAL_PASSWORD_SALT`.
-- Configure Microsoft Graph variables.
-- Run validation.
-- Test portal login.
-- Test admin routes.
-- Test contact form.
-- Run Lighthouse.
+- Configure persistent database storage.
+- Configure Microsoft Graph and SharePoint permissions.
+- Configure Polar Speed/Marken API contract variables when supplied.
+- Configure backups and monitoring.
+- Confirm `/api/health`.
+- Confirm `/sitemap.xml` and `/robots.txt`.
+- Test `/portal/`, `/employee/dashboard/`, `/admin/dashboard/` and `/account-application/`.
+
+## Domain Go-Live
+
+To make `novapharmhealthcare.com` live:
+
+1. Add `novapharmhealthcare.com` and `www.novapharmhealthcare.com` to the hosting provider.
+2. Point DNS records from the domain registrar to the hosting provider.
+3. Enable HTTPS certificates.
+4. Set `SITE_URL=https://www.novapharmhealthcare.com`.
+5. Run post-deploy validation and Lighthouse.

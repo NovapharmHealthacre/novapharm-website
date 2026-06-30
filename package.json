@@ -5,11 +5,16 @@
   "type": "module",
   "description": "Enterprise-grade NovaPharm Healthcare website with secure portal, admin surfaces, SEO/GEO optimization, and SharePoint integration architecture.",
   "scripts": {
+    "build": "node scripts/build-pages.mjs",
     "start": "node server.mjs",
-    "validate": "node scripts/validate-site.mjs",
+    "validate": "node scripts/validate-site.mjs && node scripts/validate-app.mjs && node scripts/validate-domain.mjs",
+    "validate:site": "node scripts/validate-site.mjs",
+    "validate:app": "node scripts/validate-app.mjs",
+    "validate:domain": "node scripts/validate-domain.mjs",
+    "merge:website": "node scripts/merge-to-website-repo.mjs",
     "hash:password": "node scripts/generate-password-hash.mjs"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   }
 }
