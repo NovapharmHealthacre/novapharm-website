@@ -333,6 +333,25 @@ td { color: var(--text); }
 .faq p { margin: 10px 0 0; color: var(--muted); }
 
 .form-grid { display: grid; gap: 16px; }
+.form-shell { max-width: 920px; }
+.form-grid fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.form-grid legend { padding: 0 8px; color: var(--ink); font-weight: 850; }
+.compact-form {
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.checkbox { display: flex; gap: 10px; align-items: flex-start; color: var(--text); }
+.checkbox input { margin-top: 5px; }
 .form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .field label { display: block; color: var(--ink); font-weight: 750; margin-bottom: 6px; }
 .field input,
@@ -384,6 +403,10 @@ td { color: var(--text); }
   background: var(--navy);
   color: #dbe7f2;
   padding: 24px 18px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
 }
 .portal-sidebar a {
   display: flex;
@@ -397,6 +420,9 @@ td { color: var(--text); }
 .portal-sidebar a[aria-current="page"],
 .portal-sidebar a:hover { background: rgba(255,255,255,0.1); color: #fff; }
 .portal-main { padding: 28px; }
+.portal-main > .table-wrap,
+.portal-main > .alert,
+.portal-main > .field { margin-bottom: 20px; }
 .portal-topbar {
   display: flex;
   justify-content: space-between;
@@ -438,7 +464,9 @@ td { color: var(--text); }
   background: var(--surface-2);
   color: var(--text);
 }
-.alert-danger { border-color: color-mix(in srgb, var(--danger) 40%, var(--line)); color: var(--danger); }
+.alert-danger,
+.alert-error { border-color: color-mix(in srgb, var(--danger) 40%, var(--line)); color: var(--danger); }
+.data-freshness { color: var(--muted); font-size: 13px; }
 
 @media (max-width: 980px) {
   .nav-toggle {
@@ -470,7 +498,8 @@ td { color: var(--text); }
   .hero-proof, .metric-row, .grid-4 { grid-template-columns: repeat(2, 1fr); }
   .grid-3, .grid-2, .feature-split, .footer-grid { grid-template-columns: 1fr; }
   .portal-shell { grid-template-columns: 1fr; }
-  .portal-sidebar { position: static; }
+  .portal-sidebar { position: static; height: auto; overflow: visible; }
+  .portal-sidebar nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 8px; }
 }
 
 @media (max-width: 620px) {
@@ -488,6 +517,7 @@ td { color: var(--text); }
   .section-head h2, .page-section h2 { font-size: 30px; }
   .form-row { grid-template-columns: 1fr; }
   .portal-main { padding: 18px; }
+  .portal-sidebar nav { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
