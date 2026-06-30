@@ -446,9 +446,13 @@ new Chart('c-part',{type:'line',data:{
     scales:{y:{ticks:T9,grid:GRID},x:{ticks:T9,grid:{display:false}}}}
 });
 
-// Monthly revenue ramp — line area
-const mLabels=[],mData=[];
-for(let m=1;m<=12;m++){mLabels.push('M'+m);mData.push(m<5?0:+(((m-4)/8)*2.8/12*1.4*(0.9+Math.random()*.2)).toFixed(3));}
+// Monthly revenue ramp — deterministic planning curve
+const mLabels=[],mData=[],mVariance=[.92,.98,1.04,1.1,.96,1.03,1.07,.99];
+for(let m=1;m<=12;m++){
+  mLabels.push('M'+m);
+  const variance=mVariance[(m-5+mVariance.length)%mVariance.length];
+  mData.push(m<5?0:+(((m-4)/8)*2.8/12*1.4*variance).toFixed(3));
+}
 new Chart('c-mrev',{type:'line',data:{labels:mLabels,datasets:[{
   label:'Rev £M',data:mData,borderColor:C.brand,backgroundColor:A(C.brand,.06),fill:true,tension:.4,borderWidth:2,pointRadius:0
 }]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},

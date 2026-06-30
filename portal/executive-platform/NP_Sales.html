@@ -434,12 +434,12 @@ new Chart('c-patent',{type:'bubble',data:{datasets:[
 });
 
 // 36-month ramp line
-const m36=[],d36=[];
+const m36=[],d36=[],rampVariance=[.91,.96,1.02,1.08,1.04,.99];
 for(let m=1;m<=36;m++){
   m36.push(m<=12?'M'+m:m<=24?'Y2M'+(m-12):'Y3M'+(m-24));
   const yr=m<=12?1:m<=24?2:3;
   const base=yr===1?2.8/12:yr===2?8.5/12:18.2/12;
-  d36.push(+(m<5?0:base*(0.7+(m/36)*0.6)*(0.9+Math.random()*.2)).toFixed(3));
+  d36.push(+(m<5?0:base*(0.7+(m/36)*0.6)*rampVariance[(m-5+rampVariance.length)%rampVariance.length]).toFixed(3));
 }
 new Chart('c-mrev36',{type:'line',data:{labels:m36,datasets:[{
   label:'Monthly Revenue £M',data:d36,borderColor:C.brand,backgroundColor:A(C.brand,.05),
