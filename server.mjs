@@ -1,7 +1,31 @@
 import { createServer } from "node:http";
-import { createReadStream, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { createReadStream, existsSync, mkdirSync, statSync } from "node:fs";
 import { extname, join, normalize, resolve } from "node:path";
-import { createHash, pbkdf2Sync, randomBytes, timingSafeEqual } from "node:crypto";
+import { createHmac, pbkdf2Sync, randomBytes, timingSafeEqual } from "node:crypto";
+import {
+  activateCustomer,
+  applicationDocumentContext,
+  createLead,
+  createOrder,
+  createPurchaseOrder,
+  createProduct,
+  createSupplier,
+  listApplications,
+  listAudit,
+  listCustomers,
+  listLeads,
+  listOrders,
+  listProducts,
+  listPurchaseOrders,
+  listSuppliers,
+  operationalDashboard,
+  submitCustomerApplication,
+  syncStatus
+} from "./src/core/domain-service.mjs";
+import { storeDocument } from "./src/core/document-service.mjs";
+import { databaseReady } from "./src/data/database.mjs";
+import { processSharePointEvents, sharePointFolderPlan } from "./src/integrations/sharepoint/sync-engine.mjs";
+import { processPolarSpeedEvents } from "./src/integrations/polar-speed/sync-engine.mjs";
 
 const root = resolve(process.cwd());
 const dataDir = join(root, "data");
@@ -42,7 +66,7 @@ const sessions = new Map();
 const rateBuckets = new Map();
 
 function securityHeaders(extra = {}) {
-  return {
+  const headers = {
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "SAMEORIGIN",
     "Referrer-Policy": "strict-origin-when-cross-origin",
@@ -62,6 +86,8 @@ function securityHeaders(extra = {}) {
     ].join("; "),
     ...extra
   };
+  if (isProduction) headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains";
+  return headers;
 }
 
 function send(response, status, body, headers = {}) {
@@ -70,7 +96,7 @@ function send(response, status, body, headers = {}) {
 }
 
 function json(response, status, payload, headers = {}) {
-  send(response, status, JSON.stringify(payload), { "Content-Type": "application/json; charset=utf-8", ...headers });
+  send(response, status, JSON.stringify(payload), { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", ...headers });
 }
 
 function parseCookies(request) {
@@ -128,12 +154,22 @@ function verifyPassword(username, password) {
 }
 
 function signSession(sessionId) {
-  return createHash("sha256").update(`${sessionId}.${sessionSecret}`).digest("hex");
+  return createHmac("sha256", sessionSecret).update(sessionId).digest("hex");
+}
+
+function applicationUploadToken(applicationId) {
+  return createHmac("sha256", sessionSecret).update(`application-upload:${applicationId}`).digest("hex");
+}
+
+function validApplicationUploadToken(applicationId, token) {
+  const expected = Buffer.from(applicationUploadToken(applicationId));
+  const actual = Buffer.from(String(token || ""));
+  return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 
 function createSession(username) {
   const id = randomBytes(32).toString("hex");
-  sessions.set(id, { username, createdAt: Date.now(), role: username === portalUsername ? "admin" : "client" });
+  sessions.set(id, { username, createdAt: Date.now(), expiresAt: Date.now() + 8 * 60 * 60 * 1000, role: username === portalUsername ? "admin" : "client", customerId: null });
   return `${id}.${signSession(id)}`;
 }
 
@@ -144,24 +180,47 @@ function getSession(request) {
   if (!id || !signature || signature !== signSession(id)) return null;
   const session = sessions.get(id);
   if (!session) return null;
+  if (session.expiresAt <= Date.now()) {
+    sessions.delete(id);
+    return null;
+  }
   return { id, ...session };
 }
 
 function protectedPath(pathname) {
-  return pathname.startsWith("/portal/") && pathname !== "/portal/" || pathname.startsWith("/admin/");
+  return (pathname.startsWith("/portal/") && pathname !== "/portal/") ||
+    pathname.startsWith("/employee/") ||
+    pathname.startsWith("/admin/") ||
+    /^\/NP_[A-Za-z0-9_]+\.html$/.test(pathname) ||
+    pathname.startsWith("/docs/");
 }
 
 async function readBody(request) {
+  const raw = await readRawBody(request, 512 * 1024);
+  if (!raw.length) return {};
+  try {
+    return JSON.parse(raw.toString("utf8"));
+  } catch {
+    throw Object.assign(new Error("Request body must be valid JSON."), { statusCode: 400 });
+  }
+}
+
+async function readRawBody(request, maxBytes = 10 * 1024 * 1024) {
   const chunks = [];
-  for await (const chunk of request) chunks.push(chunk);
-  const raw = Buffer.concat(chunks).toString("utf8");
-  return raw ? JSON.parse(raw) : {};
+  let size = 0;
+  for await (const chunk of request) {
+    size += chunk.length;
+    if (size > maxBytes) throw Object.assign(new Error("Request body is too large."), { statusCode: 413 });
+    chunks.push(chunk);
+  }
+  return Buffer.concat(chunks);
 }
 
 function safeFilePath(urlPath) {
   const decoded = decodeURIComponent(urlPath.split("?")[0]);
   const normalized = normalize(decoded).replace(/^(\.\.[/\\])+/, "");
-  let clean = normalized === "/" ? "/index.html" : normalized;
+  const publicAsset = normalized.startsWith("/vendor/") || normalized.startsWith("/docs/");
+  let clean = normalized === "/" ? "/index.html" : publicAsset ? `/public${normalized}` : normalized;
   let filePath = resolve(join(root, clean));
   if (!filePath.startsWith(root)) return null;
   if (existsSync(filePath) && statSync(filePath).isDirectory()) {
@@ -174,43 +233,47 @@ function safeFilePath(urlPath) {
   return filePath;
 }
 
-function readJsonFile(name, fallback) {
-  const path = join(dataDir, name);
-  if (!existsSync(path)) return fallback;
-  return JSON.parse(readFileSync(path, "utf8"));
-}
-
-function writeJsonFile(name, payload) {
-  writeFileSync(join(dataDir, name), JSON.stringify(payload, null, 2));
-}
-
 function portalData() {
   return {
-    announcements: [
-      { category: "Regulatory", title: "MHRA readiness pack prepared", summary: "Core WDA(H), GDP, PV and supplier qualification documents are grouped for SharePoint synchronization." },
-      { category: "Executive Platform", title: "Command Centre integrated", summary: "The full NovaPharm Executive Platform is available from the client portal with finance, PV, sourcing, tenders and M365 modules." },
-      { category: "Investors", title: "Investor file room structure ready", summary: "Business plan, board pack, market data and implementation blueprint folders are prepared for secure document upload." }
-    ],
-    tasks: [
-      { title: "Upload WDA(H) application pack", owner: "Regulatory", due: "When SharePoint credentials are configured", status: "Ready" },
-      { title: "Review investor data room permissions", owner: "Admin", due: "Pre-launch", status: "Open" },
-      { title: "Confirm Microsoft Graph tenant permissions", owner: "IT", due: "Before SharePoint sync", status: "Blocked by credentials" }
-    ],
-    folders: ["Regulatory Documents", "Product Catalogues", "Company Documents", "Business Plans", "Investor Files", "Downloads", "Announcements", "Task Tracking", "Executive Platform"]
+    dashboard: operationalDashboard(),
+    integrations: syncStatus(),
+    sharePointFolders: sharePointFolderPlan(),
+    dataPolicy: "Operational values come from the canonical database. External source states are shown explicitly when credentials or contracts are not configured."
   };
 }
 
 function adminSummary() {
-  const leads = readJsonFile("contact-submissions.json", []);
+  const dashboard = operationalDashboard();
+  const leads = listLeads(20);
   return {
     metrics: {
       leads: leads.length,
       users: sessions.size,
-      seo: 100,
-      documents: 9
+      customers: dashboard.customers,
+      products: dashboard.products,
+      openOrders: dashboard.openOrders,
+      pendingSyncEvents: dashboard.pendingSyncEvents
     },
-    leads: leads.slice(-20).reverse()
+    leads,
+    applications: listApplications(20),
+    integrations: syncStatus(),
+    audit: listAudit(30),
+    sourceStatus: dashboard.sourceStatus,
+    dataFreshness: dashboard.dataFreshness
   };
+}
+
+function authenticated(request, response, roles = []) {
+  const session = getSession(request);
+  if (!session) {
+    json(response, 401, { error: "Authentication required." });
+    return null;
+  }
+  if (roles.length && !roles.includes(session.role)) {
+    json(response, 403, { error: "You do not have permission for this action." });
+    return null;
+  }
+  return session;
 }
 
 const server = createServer(async (request, response) => {
@@ -232,7 +295,7 @@ const server = createServer(async (request, response) => {
         return json(response, 401, { error: "Invalid username or password." });
       }
       const sessionCookie = createSession(String(body.username));
-      json(response, 200, { ok: true, redirectTo: "/portal/dashboard/" }, { "Set-Cookie": cookie("np_session", sessionCookie, { maxAge: 60 * 60 * 8 }) });
+      json(response, 200, { ok: true, redirectTo: "/employee/dashboard/" }, { "Set-Cookie": cookie("np_session", sessionCookie, { maxAge: 60 * 60 * 8 }) });
       return;
     }
 
@@ -248,20 +311,47 @@ const server = createServer(async (request, response) => {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
       if (!rateLimit(request, "contact", 12, 60 * 60 * 1000)) return json(response, 429, { error: "Too many submissions. Try again later." });
       const body = await readBody(request);
-      const required = ["name", "email", "company", "enquiryType", "message"];
-      if (required.some((key) => !String(body[key] || "").trim())) return json(response, 400, { error: "Please complete all required fields." });
-      const leads = readJsonFile("contact-submissions.json", []);
-      leads.push({
-        id: randomBytes(8).toString("hex"),
-        name: String(body.name).slice(0, 120),
-        email: String(body.email).slice(0, 160),
-        company: String(body.company).slice(0, 160),
-        enquiryType: String(body.enquiryType).slice(0, 80),
-        message: String(body.message).slice(0, 2000),
-        createdAt: new Date().toISOString()
+      const lead = createLead(body);
+      json(response, 201, { ok: true, lead });
+      return;
+    }
+
+    if (pathname === "/api/account-applications" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
+      if (!rateLimit(request, "account-application", 5, 60 * 60 * 1000)) return json(response, 429, { error: "Too many applications. Try again later." });
+      const application = submitCustomerApplication(await readBody(request));
+      json(response, 201, { ok: true, application: { ...application, uploadToken: applicationUploadToken(application.id) } });
+      return;
+    }
+
+    const applicationDocumentMatch = pathname.match(/^\/api\/account-applications\/([^/]+)\/documents$/);
+    if (applicationDocumentMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      if (!rateLimit(request, "application-document", 30, 60 * 60 * 1000)) return json(response, 429, { error: "Too many document uploads." });
+      if (!validApplicationUploadToken(applicationDocumentMatch[1], url.searchParams.get("uploadToken"))) return json(response, 403, { error: "Invalid application upload token." });
+      const context = applicationDocumentContext(applicationDocumentMatch[1]);
+      const document = storeDocument({
+        bytes: await readRawBody(request),
+        fileName: url.searchParams.get("fileName"),
+        contentType: String(request.headers["content-type"] || "application/octet-stream").split(";")[0],
+        documentClass: url.searchParams.get("documentClass") || "customer_onboarding",
+        entityType: "account_application",
+        entityId: context.id,
+        businessNumber: context.applicationNumber,
+        displayName: context.companyName,
+        actor: "public_applicant"
       });
-      writeJsonFile("contact-submissions.json", leads);
-      json(response, 200, { ok: true });
+      json(response, 201, { document });
+      return;
+    }
+
+    const activationMatch = pathname.match(/^\/api\/account-applications\/([^/]+)\/activate$/);
+    if (activationMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      const session = authenticated(request, response, ["admin"]);
+      if (!session) return;
+      const customer = activateCustomer(activationMatch[1], session.username);
+      json(response, 200, { ok: true, customer });
       return;
     }
 
@@ -278,9 +368,131 @@ const server = createServer(async (request, response) => {
       return;
     }
 
+    if (pathname === "/api/dashboard" && request.method === "GET") {
+      const session = authenticated(request, response);
+      if (!session) return;
+      const customerId = session.role === "client" ? session.customerId : null;
+      json(response, 200, operationalDashboard(customerId));
+      return;
+    }
+
+    if (pathname === "/api/catalog/products" && request.method === "GET") {
+      if (!authenticated(request, response)) return;
+      json(response, 200, { products: listProducts(url.searchParams.get("q") || ""), dataFreshness: new Date().toISOString() });
+      return;
+    }
+
+    if (pathname === "/api/customers" && request.method === "GET") {
+      if (!authenticated(request, response, ["admin"])) return;
+      json(response, 200, { customers: listCustomers(url.searchParams.get("q") || "") });
+      return;
+    }
+
+    if (pathname === "/api/suppliers" && request.method === "GET") {
+      if (!authenticated(request, response, ["admin"])) return;
+      json(response, 200, { suppliers: listSuppliers(url.searchParams.get("q") || "") });
+      return;
+    }
+
+    if (pathname === "/api/suppliers" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      const session = authenticated(request, response, ["admin"]);
+      if (!session) return;
+      json(response, 201, { supplier: createSupplier(await readBody(request), session.username) });
+      return;
+    }
+
+    if (pathname === "/api/products" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      const session = authenticated(request, response, ["admin"]);
+      if (!session) return;
+      json(response, 201, { product: createProduct(await readBody(request), session.username) });
+      return;
+    }
+
+    if (pathname === "/api/orders" && request.method === "GET") {
+      const session = authenticated(request, response);
+      if (!session) return;
+      json(response, 200, { orders: listOrders({ customerId: session.role === "client" ? session.customerId : null }) });
+      return;
+    }
+
+    if (pathname === "/api/orders" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      const session = authenticated(request, response);
+      if (!session) return;
+      const scopedCustomerId = session.role === "client" ? session.customerId : null;
+      json(response, 201, { order: createOrder(await readBody(request), session.username, scopedCustomerId) });
+      return;
+    }
+
+    if (pathname === "/api/purchase-orders" && request.method === "GET") {
+      if (!authenticated(request, response, ["admin"])) return;
+      json(response, 200, { purchaseOrders: listPurchaseOrders() });
+      return;
+    }
+
+    if (pathname === "/api/purchase-orders" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      const session = authenticated(request, response, ["admin"]);
+      if (!session) return;
+      json(response, 201, { purchaseOrder: createPurchaseOrder(await readBody(request), session.username) });
+      return;
+    }
+
+    if (pathname === "/api/documents/upload" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      const session = authenticated(request, response);
+      if (!session) return;
+      const bytes = await readRawBody(request);
+      const document = storeDocument({
+        bytes,
+        fileName: url.searchParams.get("fileName"),
+        contentType: String(request.headers["content-type"] || "application/octet-stream").split(";")[0],
+        documentClass: url.searchParams.get("documentClass") || "general",
+        entityType: url.searchParams.get("entityType"),
+        entityId: url.searchParams.get("entityId"),
+        businessNumber: url.searchParams.get("businessNumber"),
+        displayName: url.searchParams.get("displayName"),
+        actor: session.username
+      });
+      json(response, 201, { document });
+      return;
+    }
+
+    if (pathname === "/api/integrations/status" && request.method === "GET") {
+      if (!authenticated(request, response, ["admin"])) return;
+      json(response, 200, { integrations: syncStatus(), sharePointFolders: sharePointFolderPlan() });
+      return;
+    }
+
+    if (pathname === "/api/integrations/sharepoint/sync" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      if (!authenticated(request, response, ["admin"])) return;
+      json(response, 200, await processSharePointEvents({ limit: 50 }));
+      return;
+    }
+
+    if (pathname === "/api/integrations/polar-speed/sync" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      if (!authenticated(request, response, ["admin"])) return;
+      json(response, 200, await processPolarSpeedEvents({ limit: 50 }));
+      return;
+    }
+
+    if (pathname === "/api/health" && request.method === "GET") {
+      json(response, 200, {
+        status: "ok",
+        database: databaseReady() ? "ready" : "unavailable",
+        sharePoint: process.env.MICROSOFT_TENANT_ID ? "configured" : "credentials_required",
+        polarSpeed: process.env.POLAR_SPEED_API_BASE_URL ? "configured" : "api_contract_required"
+      });
+      return;
+    }
+
     if (pathname === "/api/admin/summary" && request.method === "GET") {
-      const session = getSession(request);
-      if (!session) return json(response, 401, { error: "Authentication required." });
+      const session = authenticated(request, response, ["admin"]);
+      if (!session) return;
       json(response, 200, adminSummary());
       return;
     }
@@ -302,8 +514,14 @@ const server = createServer(async (request, response) => {
     createReadStream(filePath).pipe(response);
   } catch (error) {
     console.error(error);
-    json(response, 500, { error: "Server error." });
+    const status = Number(error.statusCode || (String(error.code || "").startsWith("SQLITE_CONSTRAINT") ? 409 : 500));
+    json(response, status, { error: status >= 500 ? "Server error." : error.message });
   }
+});
+
+server.on("error", (error) => {
+  console.error(`NovaPharm Healthcare website failed to start on ${host}:${port}.`, error);
+  process.exitCode = 1;
 });
 
 server.listen(port, host, () => {

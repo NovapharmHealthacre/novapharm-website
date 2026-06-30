@@ -15,32 +15,6 @@ async function hydratePortal() {
     node.textContent = session.user?.username || "Portal user";
   });
 
-  const dataResponse = await portalRequest("/api/portal/data");
-  if (!dataResponse || !dataResponse.ok) return;
-  const data = await dataResponse.json();
-
-  const announcements = document.querySelector("[data-announcements]");
-  if (announcements) {
-    announcements.innerHTML = data.announcements.map((item) => `
-      <article class="card">
-        <span class="status-pill">${item.category}</span>
-        <h3>${item.title}</h3>
-        <p>${item.summary}</p>
-      </article>
-    `).join("");
-  }
-
-  const tasks = document.querySelector("[data-tasks]");
-  if (tasks) {
-    tasks.innerHTML = data.tasks.map((task) => `
-      <tr>
-        <td>${task.title}</td>
-        <td>${task.owner}</td>
-        <td>${task.due}</td>
-        <td><span class="status-pill">${task.status}</span></td>
-      </tr>
-    `).join("");
-  }
 }
 
 document.querySelectorAll("[data-logout]").forEach((button) => {
@@ -52,7 +26,7 @@ document.querySelectorAll("[data-logout]").forEach((button) => {
       credentials: "same-origin",
       headers: { "x-csrf-token": csrfToken }
     });
-    window.location.href = "/";
+    window.location.href = "/portal/";
   });
 });
 

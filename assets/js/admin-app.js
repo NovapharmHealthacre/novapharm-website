@@ -19,14 +19,16 @@ async function hydrateAdmin() {
 
   const leads = document.querySelector("[data-leads]");
   if (leads) {
-    leads.innerHTML = data.leads.map((lead) => `
-      <tr>
-        <td>${lead.name}</td>
-        <td>${lead.company}</td>
-        <td>${lead.enquiryType}</td>
-        <td>${lead.createdAt}</td>
-      </tr>
-    `).join("");
+    leads.replaceChildren();
+    data.leads.forEach((lead) => {
+      const row = document.createElement("tr");
+      [lead.name, lead.company, lead.enquiry_type, new Date(lead.created_at).toLocaleString("en-GB")].forEach((value) => {
+        const cell = document.createElement("td");
+        cell.textContent = value || "—";
+        row.append(cell);
+      });
+      leads.append(row);
+    });
   }
 }
 

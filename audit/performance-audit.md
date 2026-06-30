@@ -1,18 +1,22 @@
 # Performance Audit
 
 ## Issues Found
-- Large duplicated inline CSS on every page.
-- No shared cached CSS bundle.
-- No server cache policy.
-- No optimized corporate hero imagery.
-- No build or validation workflow.
+
+- Previous static pages duplicated styling and were not generated from one route system.
+- No canonical build/validation workflow.
+- No production cache policy for assets.
+- No clear distinction between public SEO pages and protected operating apps.
+- Local browser verification depends on server binding, which is blocked in this sandbox.
 
 ## Implemented
-- Shared CSS file at `/assets/css/novapharm.css`.
-- Shared JavaScript files with `defer`.
-- Optimized JPEG hero asset and 1200x630 Open Graph image.
-- Long-lived immutable caching for static assets in the Node runtime.
-- Lightweight static HTML pages without frontend framework overhead.
+
+- Generated public, customer, employee and admin routes from `scripts/build-pages.mjs`.
+- Shared CSS and JavaScript bundles.
+- Deferred JavaScript.
+- Static public pages with minimal runtime overhead.
+- Node cache headers for immutable assets.
+- Validation scripts for public site, Executive Platform and domain workflows.
 
 ## Expected Outcome
-The public site should be capable of Lighthouse 95+ with image compression, HTTPS hosting and production cache headers.
+
+The public site should be capable of 95+ Lighthouse performance when served over production HTTPS with compression enabled. Final Lighthouse scoring requires live hosting access.

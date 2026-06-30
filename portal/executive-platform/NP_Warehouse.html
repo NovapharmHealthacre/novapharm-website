@@ -488,9 +488,9 @@ new Chart('c-wh-turn',{type:'line',data:{
     scales:{y:{ticks:T9,grid:GRID},x:{ticks:T9,grid:{display:false}}}}
 });
 
-// Temp log simulation
-const tempLabels=[],tempData=[];
-for(let h=0;h<24;h++){tempLabels.push(h+':00');tempData.push(+(4+Math.random()*2).toFixed(1));}
+// Controlled temperature profile awaiting live Polar Speed telemetry
+const tempLabels=[],tempData=[],tempProfile=[4.2,4.1,4.0,4.0,4.2,4.5,4.8,5.0,5.1,5.0,4.8,4.6,4.4,4.3,4.5,4.7,4.9,5.1,5.2,5.0,4.8,4.6,4.5,4.3];
+for(let h=0;h<24;h++){tempLabels.push(h+':00');tempData.push(tempProfile[h]);}
 new Chart('c-temp-log',{type:'line',data:{labels:tempLabels,datasets:[
   {label:'Temperature °C',data:tempData,borderColor:'#1D4ED8',backgroundColor:A(C.blue,.05),fill:true,tension:.3,borderWidth:1.5,pointRadius:0},
   {label:'Upper limit 8°C',data:Array(24).fill(8),borderColor:A(C.brand,.5),borderDash:[4,3],pointRadius:0,borderWidth:1},
