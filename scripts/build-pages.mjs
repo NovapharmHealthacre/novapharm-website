@@ -489,7 +489,35 @@ function adminPage(kind, title, body) {
 }
 
 function loginPage() {
-  return `<!DOCTYPE html><html lang="en-GB"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Secure Portal Login | NovaPharm Healthcare</title><meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="/assets/css/novapharm.css"></head><body class="login-page"><main class="login-panel"><img src="/assets/Novapharm-logo.svg" alt="NovaPharm Healthcare logo"><h1 style="color:var(--ink);margin:0 0 10px">NovaPharm Secure Portal</h1><p>One authenticated entry point for customer services, employee operations, controlled documents and executive intelligence.</p><form class="form-grid" data-login-form><div class="field"><label for="username">Username</label><input id="username" name="username" autocomplete="username" required></div><div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required></div><button class="btn btn-primary" type="submit">Sign in</button><div class="alert" data-login-status>Credentials are verified server-side.</div></form></main><script src="/assets/js/portal-login.js" defer></script></body></html>`;
+  return `<!DOCTYPE html><html lang="en-GB"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Secure Portal Login | NovaPharm Healthcare</title><meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="/assets/css/novapharm.css"></head><body class="login-page"><main class="login-panel"><img src="/assets/Novapharm-logo.svg" alt="NovaPharm Healthcare logo"><h1 style="color:var(--ink);margin:0 0 10px">NovaPharm Secure Portal</h1><p>One authenticated entry point for customer services, employee operations, controlled documents and executive intelligence.</p><form class="form-grid" data-login-form><div class="field"><label for="username">Username</label><input id="username" name="username" autocomplete="username" required></div><div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required></div><button class="btn btn-primary" type="submit">Sign in</button><div class="alert" data-login-status>Credentials are verified server-side.</div></form><section class="portal-launch" aria-label="Executive platform quick launch"><h2>Executive Platform</h2><div class="grid grid-2"><a class="card" href="/portal/executive-platform/"><h3>Command Centre</h3><p>Open the NovaPharm Executive Platform hub.</p></a><a class="card" href="/portal/executive-platform/NP_CEO.html"><h3>CEO Dashboard</h3><p>Open the executive CEO dashboard.</p></a><a class="card" href="/employee/dashboard/"><h3>Operations Dashboard</h3><p>Open the employee operations dashboard.</p></a><a class="card" href="/admin/dashboard/"><h3>Admin Dashboard</h3><p>Open administration and monitoring.</p></a></div></section></main><script src="/assets/js/portal-login.js" defer></script></body></html>`;
+}
+
+function executivePlatformIndexPage() {
+  const modules = [
+    ["Command Centre", "NP_Hub.html", "Executive overview and navigation"],
+    ["CEO Dashboard", "NP_CEO.html", "Board-level performance and priorities"],
+    ["Sales Intelligence", "NP_Sales.html", "Sales, channel and revenue planning"],
+    ["Customer Analytics", "NP_Customers.html", "Customer and account intelligence"],
+    ["Product Performance", "NP_Products.html", "Portfolio, pricing and product metrics"],
+    ["NHS Market Data", "NP_NHS_Data.html", "NHSBSA market intelligence workspace"],
+    ["PLPI Tracker", "NP_PLPI.html", "Parallel import licence planning"],
+    ["Sourcing", "NP_Sourcing.html", "Three-pillar sourcing model"],
+    ["SLA & Logistics", "NP_SLA.html", "SLA and delivery operating model"],
+    ["Warehouse", "NP_Warehouse.html", "Warehouse and cold-chain workspace"],
+    ["Tenders", "NP_Tenders.html", "NHS tender planning"],
+    ["PV", "NP_PV.html", "Pharmacovigilance workspace"],
+    ["Blockchain", "NP_Blockchain.html", "Traceability architecture"],
+    ["AI & Technology", "NP_AI_Tech.html", "AI and automation plan"],
+    ["Finance", "NP_Finance.html", "Finance and reporting"],
+    ["Capital", "NP_Capital.html", "Capital and investment planning"],
+    ["M365", "NP_M365.html", "Microsoft 365 operating model"],
+    ["Documents", "NP_Documents.html", "Blueprint and flowchart documents"]
+  ];
+  return `<!DOCTYPE html><html lang="en-GB"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Executive Platform | NovaPharm Healthcare</title><meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="/assets/css/novapharm.css"></head><body><main class="portal-directory"><div class="container"><a class="brand" href="/portal/"><img src="/assets/Novapharm-logo.svg" alt="" width="42" height="42"><span><span class="brand-name">NovaPharm Healthcare</span><span class="brand-meta">Executive Platform</span></span></a><section class="page-hero" style="padding:42px 0 30px"><span class="eyebrow">NovaPharm Executive Platform</span><h1>Command centre, CEO dashboard and operating apps.</h1><p>Open the board and operating dashboards from one portal index.</p><div class="hero-actions"><a class="btn btn-primary" href="NP_Hub.html">Open Command Centre</a><a class="btn btn-outline" href="NP_CEO.html">Open CEO Dashboard</a></div></section><div class="grid grid-3">${modules.map(([title, href, text]) => `<a class="card" href="${href}"><h3>${title}</h3><p>${text}</p></a>`).join("")}</div></div></main></body></html>`;
+}
+
+function redirectPage(title, target) {
+  return `<!DOCTYPE html><html lang="en-GB"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=${target}"><meta name="robots" content="noindex,nofollow"><title>${title} | NovaPharm Healthcare</title></head><body><a href="${target}">${title}</a></body></html>`;
 }
 
 function accountApplicationPage() {
@@ -512,6 +540,8 @@ for (const page of pages) {
 
 writeFile("account-application/index.html", accountApplicationPage());
 writeFile("portal/index.html", loginPage());
+writeFile("portal/executive-platform/index.html", executivePlatformIndexPage());
+writeFile("portal/ceo-dashboard/index.html", redirectPage("CEO Dashboard", "/portal/executive-platform/NP_CEO.html"));
 writeFile("portal/dashboard/index.html", portalPage("dashboard", "Customer Dashboard", `<div class="metric-row"><div class="metric"><strong data-live-metric="accountNumber">—</strong><span>Account number</span></div><div class="metric"><strong data-live-metric="availableCredit">—</strong><span>Available credit</span></div><div class="metric"><strong data-live-metric="annualSpend">—</strong><span>Annual spend</span></div><div class="metric"><strong data-live-metric="invoicesDue">—</strong><span>Invoices due</span></div></div><section class="section-tight"><div class="section-head"><h2>Recent orders</h2><p>Updated from the canonical order service.</p></div><div class="table-wrap"><table><thead><tr><th>Order</th><th>Account</th><th>Status</th><th>Total</th><th>PO reference</th><th>Created</th></tr></thead><tbody data-order-rows></tbody></table></div></section><p class="data-freshness">Data refreshed <span data-freshness>—</span></p>`));
 
 const customerPages = {

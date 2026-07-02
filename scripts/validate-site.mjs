@@ -18,6 +18,8 @@ const required = [
   "careers/index.html",
   "account-application/index.html",
   "portal/index.html",
+  "portal/executive-platform/index.html",
+  "portal/ceo-dashboard/index.html",
   "portal/dashboard/index.html",
   "portal/account/index.html",
   "portal/orders/index.html",

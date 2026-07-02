@@ -449,7 +449,7 @@ td { color: var(--text); }
   background: var(--navy);
 }
 .login-panel {
-  width: min(100%, 440px);
+  width: min(100%, 780px);
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -457,6 +457,13 @@ td { color: var(--text); }
   box-shadow: var(--shadow);
 }
 .login-panel img { width: 52px; margin-bottom: 12px; }
+.portal-launch {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.portal-launch h2 { color: var(--ink); font-size: 20px; margin: 0 0 14px; }
+.portal-directory { padding: 30px 0 70px; background: var(--bg); min-height: 100vh; }
 .alert {
   padding: 12px 14px;
   border-radius: 7px;
