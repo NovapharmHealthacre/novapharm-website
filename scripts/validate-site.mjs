@@ -94,6 +94,7 @@ const required = [
   "assets/novapharm-og.jpg",
   "sitemap.xml",
   "robots.txt",
+  "CNAME",
   "server.mjs",
   "src/core/domain-service.mjs",
   "src/core/document-service.mjs",
@@ -179,6 +180,10 @@ for (const privatePrefix of ["/portal/", "/employee/", "/admin/", "/_secure/", "
   if (sitemap.includes(`${publicSiteUrl}${privatePrefix}`)) {
     fail(`sitemap exposes private route ${privatePrefix}`);
   }
+}
+
+if (readFileSync(join(root, "CNAME"), "utf8").trim() !== "novapharmhealthcare.com") {
+  fail("CNAME must preserve the production custom domain");
 }
 
 const serverSource = readFileSync(join(root, "server.mjs"), "utf8");
