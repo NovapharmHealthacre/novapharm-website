@@ -5,7 +5,7 @@
 - `NODE_ENV=production`
 - `HOST=0.0.0.0`
 - `PORT=4173`
-- `SITE_URL=https://www.novapharmhealthcare.com`
+- `SITE_URL=https://novapharmhealthcare.com`
 - `DATABASE_PATH=/var/lib/novapharm/novapharm.sqlite`
 - `SESSION_SECRET`
 - `SECURE_CONTENT_ROOT=/var/lib/novapharm/secure-content`
@@ -59,4 +59,4 @@ The initial Vishal user is an administrator with customer, employee, board and a
 
 - `ENTRA_CLIENT_ID`
 - `ENTRA_TENANT_ID`
-- `ENTRA_REDIRECT_URI=https://www.novapharmhealthcare.com/api/auth/entra/callback`
+- `ENTRA_REDIRECT_URI=https://novapharmhealthcare.com/api/auth/entra/callback`

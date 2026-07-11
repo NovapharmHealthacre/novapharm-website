@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { extname, join, resolve } from "node:path";
 
 const root = resolve(process.cwd());
-const publicSiteUrl = "https://www.novapharmhealthcare.com";
+const publicSiteUrl = "https://novapharmhealthcare.com";
 const required = [
   "index.html",
   "about/index.html",

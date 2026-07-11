@@ -6,4 +6,4 @@ Disallow: /admin/
 Disallow: /_secure/
 Disallow: /docs/
 Disallow: /NP_
-Sitemap: https://www.novapharmhealthcare.com/sitemap.xml
+Sitemap: https://novapharmhealthcare.com/sitemap.xml
