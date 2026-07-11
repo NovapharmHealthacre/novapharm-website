@@ -42,4 +42,4 @@ No anonymous sharing link was found. The folder inherits site Owners, Members an
 
 ## Release State
 
-The production candidate is prepared for `NovapharmHealthacre/novapharm-website` on `codex/ultra-premium-rebuild`. The authenticated site is not described as live until a Node host is connected, production secrets are entered, DNS is moved and post-deployment tests pass.
+The production candidate is published to `NovapharmHealthacre/novapharm-website` on `codex/ultra-premium-rebuild`. The implementation commit is `14b28a7cf56617766e7cc9e8047ececba3430dc0`; release verification is recorded separately. The authenticated site is not described as live until a Node host is connected, production secrets are entered, DNS is moved and post-deployment tests pass.
