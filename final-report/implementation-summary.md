@@ -22,6 +22,7 @@
 - Removed non-deterministic dashboard chart values from executive modules.
 - Added GitHub merge script and live deployment guide.
 - Preserved the GitHub Pages `CNAME` binding for `novapharmhealthcare.com` and added a regression validation for it.
+- Published the consolidated 125-file release to `NovapharmHealthacre/novapharm-website` `main` at commit `6fdcbcefd91adca6f99067136055c4ad948ee0a7`, followed by custom-domain and validation commits through `8729533268b5a53dc8e96c264ad7a2b450b86bbc`.
 
 ## Verification Passed
 
@@ -33,8 +34,7 @@
 
 ## Current Blocking Items
 
-- Direct merge into `/Users/vishalchakravarty/Documents/Novapharm InfoTech/novapharm-website` is blocked because that checkout is outside the current writable roots.
 - Local live preview is blocked by sandbox `listen EPERM`; the Browser local/data preview is also blocked by URL policy.
-- Production go-live on `novapharmhealthcare.com` requires hosting, DNS and GitHub/deployment credentials.
+- The public GitHub Pages release and custom-domain binding are published. The authenticated portal still requires a Node-capable production host, environment secrets and DNS/proxy routing; GitHub Pages cannot run the secure server.
 - The Nutraxin catalogue attachment has expired from Outlook temporary storage and must be reattached before verified product details and images can be published.
 - The live SharePoint folder foundation is provisioned, but automated runtime synchronization still requires a production Entra application registration, Graph permissions and webhook configuration.
