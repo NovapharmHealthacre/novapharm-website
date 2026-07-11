@@ -1,32 +1,23 @@
 # Security Audit
 
-## Issues Found
+## Findings Resolved
 
-- Original public site could not securely protect customer or employee portals.
-- No server-side sessions, CSRF checks, rate limits or security headers.
-- No environment validation for secrets.
-- No controlled document upload boundary.
-- No audit trail for customer onboarding, orders, documents or integration events.
-- No safe failure state for SharePoint or warehouse integrations when credentials are absent.
+- Replaced in-memory sessions and rate limits with persistent database records.
+- Added PBKDF2-SHA256 credential provisioning, constant-time password comparison, failed-attempt lockout and security events.
+- Removed plaintext portal credentials from tracked files; production rejects `PORTAL_PASSWORD`.
+- Enforced customer, employee, board and administrator scopes at API and static-file boundaries.
+- Added CSRF double-submit tokens, foreign-origin rejection, HMAC-signed session IDs and secure cookie settings.
+- Added CSP, HSTS in production, frame denial, MIME sniffing protection, referrer and permissions policies.
+- Denied source, database, audit, integration, deployment, dotfile and private-content paths from static serving.
+- Added request-size, upload-size, extension, MIME and file-signature controls.
+- Added expiring account-application upload tokens and private persistent document paths.
+- Added contact consent records, honeypot handling and safe visitor messages.
+- Added auditable notification and integration failure states without secret/provider leakage.
 
-## Implemented
+## Residual Controls Requiring External Services
 
-- Secure Node runtime with protected private routes.
-- HMAC-signed sessions and expiry.
-- CSRF validation for login, logout, contact, applications, uploads, orders, POs and sync actions.
-- Rate limits for login, contact, account application and application document upload.
-- Security headers and production HSTS.
-- Password hash generation script and environment-only credential model.
-- Document upload type/size controls.
-- Canonical audit log table and audit writes in domain/integration flows.
-- SharePoint and Polar Speed events move to `blocked` with explicit error codes when credentials/contracts are missing.
-
-## External Items Required
-
-- Production `SESSION_SECRET`.
-- Production `PORTAL_PASSWORD_HASH` and `PORTAL_PASSWORD_SALT`.
-- HTTPS-enabled hosting.
-- Microsoft Entra ID app registration for production SSO.
-- Microsoft Graph app registration and SharePoint permissions.
-- Polar Speed/Marken API contract and credentials.
-- Final legal/regulatory review of public claims and portal terms.
+- Microsoft Entra SSO and conditional access for real employee, board and customer identities.
+- Malware scanning before a draft upload can become an approved controlled document.
+- Approved privacy, retention, incident-response and portal terms.
+- Off-host encrypted backups and restore exercises.
+- Board-only SharePoint permissions: the Executive Platform currently inherits site Owners, Members and Visitors groups. There is no anonymous link, but a SharePoint administrator must break inheritance and assign the approved board group.

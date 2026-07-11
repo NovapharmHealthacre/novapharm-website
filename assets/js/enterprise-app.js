@@ -11,19 +11,19 @@ function enterpriseRow(values) {
 }
 
 async function enterpriseRequest(path, options = {}) {
-  const response = await fetch(path, { credentials: "same-origin", ...options });
-  if (response.status === 401) {
-    window.location.href = "/portal/";
-    return null;
+  try {
+    return await window.NovaPharmApi.request(path, options);
+  } catch (error) {
+    if (error.status === 401) {
+      window.location.href = "/portal/";
+      return null;
+    }
+    throw error;
   }
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload.error || "Request failed.");
-  return payload;
 }
 
 async function csrfHeaders() {
-  const response = await enterpriseRequest("/api/security/csrf");
-  return { "Content-Type": "application/json", "x-csrf-token": response.csrfToken };
+  return { "Content-Type": "application/json", "x-csrf-token": await window.NovaPharmApi.csrf() };
 }
 
 function money(minor, currency = "GBP") {
@@ -35,6 +35,10 @@ function setStatus(message, error = false) {
   if (!status) return;
   status.textContent = message;
   status.classList.toggle("alert-error", error);
+}
+
+function workflowError(error) {
+  return window.NovaPharmApi.friendlyError(error, "workflow");
 }
 
 async function loadDashboard() {
@@ -166,7 +170,7 @@ async function bindForms() {
       productForm.reset();
       setStatus("Product created and SharePoint folder synchronization queued.");
       await loadProducts();
-    } catch (error) { setStatus(error.message, true); }
+    } catch (error) { setStatus(workflowError(error), true); }
   });
 
   const supplierForm = document.querySelector("[data-supplier-form]");
@@ -177,7 +181,7 @@ async function bindForms() {
       supplierForm.reset();
       setStatus("Supplier created and SharePoint folder synchronization queued.");
       await loadSuppliers();
-    } catch (error) { setStatus(error.message, true); }
+    } catch (error) { setStatus(workflowError(error), true); }
   });
 
   const orderForm = document.querySelector("[data-order-form]");
@@ -190,7 +194,7 @@ async function bindForms() {
       orderForm.reset();
       setStatus(`Order ${result.order.orderNumber} created; warehouse reservation and SharePoint workflows queued.`);
       await loadOrders();
-    } catch (error) { setStatus(error.message, true); }
+    } catch (error) { setStatus(workflowError(error), true); }
   });
 
   const poForm = document.querySelector("[data-po-form]");
@@ -203,7 +207,7 @@ async function bindForms() {
       poForm.reset();
       setStatus(`Purchase order ${result.purchaseOrder.poNumber} submitted for approval.`);
       await loadPurchaseOrders();
-    } catch (error) { setStatus(error.message, true); }
+    } catch (error) { setStatus(workflowError(error), true); }
   });
 }
 
@@ -221,6 +225,6 @@ async function bootEnterprisePage() {
   if (page === "purchasing") { await populatePurchaseSelectors(); await loadPurchaseOrders(); }
 }
 
-document.querySelector("[data-product-search]")?.addEventListener("input", () => loadProducts().catch((error) => setStatus(error.message, true)));
+document.querySelector("[data-product-search]")?.addEventListener("input", () => loadProducts().catch((error) => setStatus(workflowError(error), true)));
 
-bootEnterprisePage().catch((error) => setStatus(error.message, true));
+bootEnterprisePage().catch((error) => setStatus(workflowError(error), true));

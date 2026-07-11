@@ -1,16 +1,17 @@
-# UI/UX Audit
+# UI and UX Audit
 
-## Issues Found
-- Existing site had strong content but repeated, heavy inline styling.
-- Navigation did not expose the full enterprise content structure.
-- No premium portal/admin experience.
-- No private dashboard integration for the Executive Platform.
-- Limited future scalability for services, products, partner and investor journeys.
+## Findings Resolved
 
-## Implemented
-- Premium mobile-first layout with a restrained corporate header, immersive pharmaceutical hero, evidence-led capability system, executive feature, insight rows and focused calls to action.
-- Homepage hero image with healthcare and pharmaceutical operations context.
-- Clean Apple-level spacing and restrained interaction design.
-- Dedicated user journeys for partners, distributors, investors, regulatory services, products and careers.
-- Dedicated Vishal Chakravarty leadership experience with full-bleed first-viewport identity and verified profile links.
-- Public portal routes now render polished locked states; authenticated screens resolve only from runtime-private storage.
+- Rebuilt the public experience around a first-viewport pharmaceutical operations image, restrained typography, clear status language and evidence-led navigation.
+- Removed decorative marketing patterns in favour of full-width editorial bands, structured operating models and dense but readable portal surfaces.
+- Added responsive navigation with escape, outside-click and focus behaviour.
+- Added complete leadership, governance, maturity, service, regulatory, portfolio and partnership journeys.
+- Added filterable insights and a four-stage account application.
+- Added accessible contact validation with error summary, field links, status regions and submission locking.
+- Added explicit Customer, Employee and Board login choices; administrator identities can enter all three.
+- Kept all public portal paths data-free and moved working dashboards behind server authentication.
+- Added mobile breakpoints, stable grids, text wrapping, reduced-motion support, focus indicators and dark-mode compatibility.
+
+## Remaining QA
+
+Run visual regression screenshots at 390, 768, 1,440 and 1,920 CSS pixels on the deployed origin. Local browser preview is blocked by browser URL policy in this environment, so no visual-perfect claim is made without that production pass.

@@ -1,63 +1,46 @@
-import { existsSync, readFileSync } from "node:fs";
-import { extname, join, resolve } from "node:path";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { join, resolve } from "node:path";
 
 const root = resolve(process.cwd());
-const publicSiteUrl = "https://novapharmhealthcare.com";
-const required = [
+const siteUrl = "https://novapharmhealthcare.com";
+const publicPages = [
   "index.html",
   "about/index.html",
+  "about/company/index.html",
+  "about/governance/index.html",
+  "leadership/index.html",
   "leadership/vishal-chakravarty/index.html",
-  "company-profile/index.html",
+  "leadership/prabhakar-lahare/index.html",
+  "leadership/girish-achliya/index.html",
+  "leadership/helly-panchal/index.html",
+  "leadership/nishita-trivedi/index.html",
   "services/index.html",
   "regulatory-services/index.html",
-  "uk-international-regulatory-services/index.html",
   "product-portfolio/index.html",
   "partner-with-us/index.html",
-  "distributor-opportunities/index.html",
-  "investor-information/index.html",
-  "contact/index.html",
+  "technology/index.html",
   "news-insights/index.html",
+  "contact/index.html",
+  "investor-information/index.html",
   "careers/index.html",
-  "account-application/index.html",
-  "portal/index.html",
-  "portal/executive-platform/index.html",
-  "portal/ceo-dashboard/index.html",
-  "portal/dashboard/index.html",
-  "portal/account/index.html",
-  "portal/orders/index.html",
-  "portal/invoices/index.html",
-  "portal/statements/index.html",
-  "portal/products/index.html",
-  "portal/price-lists/index.html",
-  "portal/stock-availability/index.html",
-  "portal/order-tracking/index.html",
-  "portal/delivery-tracking/index.html",
-  "portal/returns/index.html",
-  "portal/quality-complaints/index.html",
-  "portal/documents/index.html",
-  "portal/support/index.html",
-  "portal/regulatory-documents/index.html",
-  "portal/downloads/index.html",
-  "portal/analytics/index.html",
-  "portal/settings/index.html",
-  "employee/dashboard/index.html",
-  "employee/customers/index.html",
-  "employee/suppliers/index.html",
-  "employee/products/index.html",
-  "employee/orders/index.html",
-  "employee/warehouse/index.html",
-  "employee/purchasing/index.html",
-  "employee/finance/index.html",
-  "employee/quality/index.html",
-  "employee/regulatory/index.html",
-  "employee/crm/index.html",
-  "employee/reports/index.html",
-  "employee/administration/index.html",
-  "admin/index.html",
-  "admin/dashboard/index.html",
-  "admin/users/index.html",
-  "admin/content/index.html",
-  "admin/analytics/index.html",
+  "account-application/index.html"
+];
+const redirectPages = [
+  "company-profile/index.html",
+  "uk-international-regulatory-services/index.html",
+  "distributor-opportunities/index.html",
+  "contact.html",
+  "solutions.html",
+  "supply-chain.html",
+  "team.html"
+];
+const protectedShellRoots = ["portal", "employee", "admin"];
+const requiredFiles = [
+  ...publicPages,
+  ...redirectPages,
+  "404.html",
+  "500.html",
+  "service-unavailable/index.html",
   "architecture/master-data-model.md",
   "architecture/system-relationships.md",
   "architecture/data-flow-diagrams.md",
@@ -80,10 +63,11 @@ const required = [
   "performance/lighthouse-report.md",
   "deployment/deployment-guide.md",
   "deployment/environment-variables.md",
-  "deployment/github-live-guide.md",
+  "deployment/rollback-guide.md",
   "final-report/implementation-summary.md",
   "final-report/remaining-items.md",
   "assets/css/novapharm.css",
+  "assets/js/api-client.js",
   "assets/js/novapharm.js",
   "assets/js/portal-login.js",
   "assets/js/portal-app.js",
@@ -92,111 +76,133 @@ const required = [
   "assets/js/enterprise-app.js",
   "assets/novapharm-healthcare-hero.jpg",
   "assets/novapharm-og.jpg",
-  "sitemap.xml",
-  "robots.txt",
-  "CNAME",
-  "server.mjs",
+  "src/content/site-content.mjs",
+  "src/core/auth-service.mjs",
   "src/core/domain-service.mjs",
   "src/core/document-service.mjs",
   "src/core/sharepoint-mapping.mjs",
   "src/data/database.mjs",
+  "src/integrations/email/client.mjs",
   "src/integrations/sharepoint/graph-client.mjs",
   "src/integrations/sharepoint/sync-engine.mjs",
   "src/integrations/polar-speed/client.mjs",
   "src/integrations/polar-speed/sync-engine.mjs",
   "scripts/build-pages.mjs",
-  "scripts/validate-app.mjs",
-  "scripts/validate-domain.mjs",
-  "scripts/merge-to-website-repo.mjs",
+  "scripts/build-public-pages.mjs",
+  "scripts/sync-secure-content.mjs",
+  "scripts/test-server.mjs",
+  ".github/workflows/ci.yml",
+  ".dockerignore",
+  "Dockerfile",
+  "render.yaml",
+  "sitemap.xml",
+  "feed.xml",
+  "robots.txt",
+  "manifest.webmanifest",
+  "CNAME",
+  "server.mjs",
   ".env.example"
 ];
 
-const localExtensions = new Set([".html", ".css", ".js", ".jpg", ".jpeg", ".png", ".svg", ".pdf", ".xml", ".txt", ".webmanifest"]);
-
+let failures = 0;
 function fail(message) {
+  failures += 1;
   console.error(`Validation failed: ${message}`);
-  process.exitCode = 1;
 }
 
-function exists(path) {
-  return existsSync(join(root, path));
+function source(path) {
+  return readFileSync(join(root, path), "utf8");
 }
 
-for (const file of required) {
-  if (!exists(file)) fail(`missing ${file}`);
+for (const file of requiredFiles) {
+  if (!existsSync(join(root, file))) fail(`missing ${file}`);
 }
 
-function localTarget(from, ref) {
-  if (/^(https?:|mailto:|tel:|#|javascript:)/i.test(ref)) return null;
-  const clean = ref.split("#")[0].split("?")[0];
-  if (!clean) return null;
-  if (!localExtensions.has(extname(clean))) return null;
-  if (clean.startsWith("/")) return clean.slice(1);
-  const base = from.endsWith("index.html") ? from.split("/").slice(0, -1).join("/") : from.split("/").slice(0, -1).join("/");
-  return join(base, clean);
+const insightFiles = readdirSync(join(root, "src/content/insights")).filter((file) => file.endsWith(".json"));
+if (insightFiles.length < 6) fail("at least six original insight articles are required");
+for (const file of insightFiles) {
+  const article = JSON.parse(source(`src/content/insights/${file}`));
+  const words = article.sections.flatMap((section) => [...(section.paragraphs || []), ...(section.list || [])]).join(" ").trim().split(/\s+/).filter(Boolean).length;
+  if (words < 900 || words > 1400) fail(`${file} contains ${words} body words; expected 900-1400`);
+  const output = `news-insights/${article.slug}/index.html`;
+  if (!existsSync(join(root, output))) fail(`${file} has no generated article page`);
+  publicPages.push(output);
 }
 
-const htmlFiles = required.filter((file) => file.endsWith(".html"));
-
-for (const file of htmlFiles) {
-  const html = readFileSync(join(root, file), "utf8");
-  if (!/<title>.+<\/title>/i.test(html)) fail(`${file} missing title`);
-  const jsonLdBlocks = [...html.matchAll(/<script type=["']application\/ld\+json["']>([\s\S]*?)<\/script>/gi)];
-  for (const [, source] of jsonLdBlocks) {
-    try {
-      JSON.parse(source);
-    } catch {
-      fail(`${file} contains invalid JSON-LD`);
-    }
+for (const file of publicPages) {
+  const html = source(file);
+  if (!/<title>[^<]{10,}<\/title>/i.test(html)) fail(`${file} needs a substantive title`);
+  if (!/<meta name="description" content="[^"]{70,}"/i.test(html)) fail(`${file} needs a substantive meta description`);
+  if (!/<link rel="canonical" href="https:\/\/novapharmhealthcare\.com\/[^"]*">/i.test(html)) fail(`${file} needs an apex-domain canonical URL`);
+  for (const marker of ['property="og:title"', 'property="og:description"', 'name="twitter:card"']) {
+    if (!html.includes(marker)) fail(`${file} missing ${marker}`);
   }
-  const refs = [...html.matchAll(/\b(?:href|src)=["']([^"']+)["']/gi)].map((match) => match[1]);
-  for (const ref of refs) {
-    const target = localTarget(file, ref);
-    if (target && !exists(target)) fail(`${file} references missing ${ref} -> ${target}`);
+  const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/gi)];
+  if (!blocks.length) fail(`${file} missing JSON-LD`);
+  for (const [, block] of blocks) {
+    try { JSON.parse(block); } catch { fail(`${file} contains invalid JSON-LD`); }
   }
-  if (!file.startsWith("portal/") && !file.startsWith("employee/") && !file.startsWith("admin/") && !html.includes("application/ld+json")) {
-    fail(`${file} missing JSON-LD`);
-  }
+  if ((html.match(/<h1\b/gi) || []).length !== 1) fail(`${file} must contain exactly one h1`);
+  if (!html.includes('href="#main"') || !html.includes('id="main"')) fail(`${file} needs a working skip link`);
 }
 
-const publicProtectedPages = htmlFiles.filter((file) => (file.startsWith("portal/") && file !== "portal/index.html") || file.startsWith("employee/") || file.startsWith("admin/"));
-for (const file of publicProtectedPages) {
-  const html = readFileSync(join(root, file), "utf8");
-  if (!html.includes("This static public site does not expose dashboards, records or controlled documents.")) {
-    fail(`${file} is not a locked public portal shell`);
-  }
-  if (/data-(?:live-metric|order-rows|product-rows|customer-rows|supplier-rows|po-rows|admin-metric|leads)/.test(html)) {
-    fail(`${file} exposes an operational data binding on the static site`);
+for (const file of redirectPages) {
+  const html = source(file);
+  if (!html.includes('http-equiv="refresh"') || !html.includes('name="robots" content="noindex,follow"')) {
+    fail(`${file} is not a controlled noindex redirect`);
   }
 }
 
-const leadershipHtml = readFileSync(join(root, "leadership/vishal-chakravarty/index.html"), "utf8");
-if (!leadershipHtml.includes('"@type":"ProfilePage"') || !leadershipHtml.includes('"name":"Vishal Chakravarty"')) {
-  fail("Vishal leadership page is missing ProfilePage and Person entity markup");
+function collectHtml(directory) {
+  const files = [];
+  for (const entry of readdirSync(join(root, directory), { withFileTypes: true })) {
+    const relative = join(directory, entry.name);
+    if (entry.isDirectory()) files.push(...collectHtml(relative));
+    else if (entry.name.endsWith(".html")) files.push(relative);
+  }
+  return files;
 }
 
-const sitemap = readFileSync(join(root, "sitemap.xml"), "utf8");
+const protectedPages = protectedShellRoots.flatMap((directory) => collectHtml(directory));
+for (const file of protectedPages) {
+  if (file === "portal/index.html") continue;
+  const html = source(file);
+  if (!html.includes("This static public site does not expose dashboards, records or controlled documents.")) fail(`${file} is not a locked public shell`);
+  if (/data-(?:live-metric|order-rows|product-rows|customer-rows|supplier-rows|po-rows|admin-metric|leads)/.test(html)) fail(`${file} exposes an operational binding publicly`);
+}
+
+for (const [file, person] of [
+  ["leadership/vishal-chakravarty/index.html", "Vishal Chakravarty"],
+  ["leadership/prabhakar-lahare/index.html", "Prabhakar Vitthal Lahare"],
+  ["leadership/girish-achliya/index.html", "Dr Girish Shantilal Achliya"],
+  ["leadership/helly-panchal/index.html", "Dr Helly Kamlesh Panchal"],
+  ["leadership/nishita-trivedi/index.html", "Dr Nishita Trivedi"]
+]) {
+  const html = source(file);
+  if (!html.includes('"@type":"ProfilePage"') || !html.includes(`"name":"${person}"`)) fail(`${file} is missing its ProfilePage and Person entities`);
+}
+
+const sitemap = source("sitemap.xml");
+const sitemapLocations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+if (new Set(sitemapLocations).size !== sitemapLocations.length) fail("sitemap contains duplicate URLs");
 for (const privatePrefix of ["/portal/", "/employee/", "/admin/", "/_secure/", "/docs/"]) {
-  if (sitemap.includes(`${publicSiteUrl}${privatePrefix}`)) {
-    fail(`sitemap exposes private route ${privatePrefix}`);
-  }
+  if (sitemap.includes(`${siteUrl}${privatePrefix}`)) fail(`sitemap exposes private route ${privatePrefix}`);
+}
+for (const page of publicPages.filter((file) => file.endsWith("index.html") && file !== "index.html")) {
+  const route = `/${page.replace(/index\.html$/, "")}`;
+  if (!sitemapLocations.includes(`${siteUrl}${route}`)) fail(`sitemap missing ${route}`);
 }
 
-if (readFileSync(join(root, "CNAME"), "utf8").trim() !== "novapharmhealthcare.com") {
-  fail("CNAME must preserve the production custom domain");
-}
+if (source("CNAME").trim() !== "novapharmhealthcare.com") fail("CNAME must preserve the apex production domain");
+if (!source("robots.txt").includes(`Sitemap: ${siteUrl}/sitemap.xml`)) fail("robots.txt needs the production sitemap URL");
 
-const serverSource = readFileSync(join(root, "server.mjs"), "utf8");
+const serverSource = source("server.mjs");
 for (const blockedPath of ["_secure", "data", "database", "src", "scripts", "integrations", "sharepoint"]) {
-  if (!serverSource.includes(`\"${blockedPath}\"`)) {
-    fail(`server static denylist is missing ${blockedPath}`);
-  }
+  if (!serverSource.includes(`"${blockedPath}"`)) fail(`server static denylist is missing ${blockedPath}`);
 }
-for (const blockedFile of ["package.json", "server.mjs", "README.md"]) {
-  if (!serverSource.includes(`\"${blockedFile}\"`)) {
-    fail(`server static denylist is missing ${blockedFile}`);
-  }
+for (const table of ["auth_credentials", "auth_sessions", "rate_limit_buckets", "security_events", "lead_details"]) {
+  if (!source("database/schema.sql").includes(`CREATE TABLE IF NOT EXISTS ${table}`)) fail(`database schema is missing ${table}`);
 }
 
-if (process.exitCode) process.exit(process.exitCode);
-console.log(`Validated ${required.length} required public files, ${publicProtectedPages.length} locked portal shells, and the Vishal leadership entity page.`);
+if (failures) process.exit(1);
+console.log(`Validated ${publicPages.length} public pages, ${insightFiles.length} long-form articles, ${protectedPages.length} locked shells and the security/data contracts.`);

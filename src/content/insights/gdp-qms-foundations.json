@@ -1,0 +1,84 @@
+{
+  "title": "GDP, QMS and the Practical Foundations of Reliable Pharmaceutical Distribution",
+  "slug": "gdp-qms-pharmaceutical-distribution-foundations",
+  "summary": "How Good Distribution Practice and a proportionate Quality Management System turn pharmaceutical policies into controlled, reviewable daily operations.",
+  "heroImage": "/assets/novapharm-healthcare-hero.jpg",
+  "author": "NovaPharm Healthcare Editorial Team",
+  "published": "2026-07-11",
+  "updated": "2026-07-11",
+  "category": "Quality",
+  "tags": ["GDP", "QMS", "CAPA", "quality systems", "pharmaceutical distribution"],
+  "seoTitle": "GDP and QMS Foundations for Pharmaceutical Distribution",
+  "seoDescription": "Explore the practical foundations of GDP and pharmaceutical quality systems: people, procedures, suppliers, temperature, records, CAPA and management review.",
+  "disclaimer": "Educational corporate content only. GDP and quality-system requirements depend on an organisation's authorised activities, products, sites and outsourcing model. Use current official guidance and qualified advice.",
+  "related": ["compliance-first-pharmaceutical-distribution-uk", "batch-to-buyer-traceability", "plpi-pharmaceutical-supply-resilience"],
+  "internalLinks": [
+    { "label": "Quality and regulatory services", "href": "/services/#quality-pv" },
+    { "label": "Regulatory operating model", "href": "/regulatory-services/" },
+    { "label": "Technology and audit records", "href": "/technology/" }
+  ],
+  "references": [
+    { "label": "MHRA: good manufacturing and distribution practice", "href": "https://www.gov.uk/guidance/good-manufacturing-practice-and-good-distribution-practice" },
+    { "label": "MHRA medicines good-practice collection", "href": "https://www.gov.uk/government/collections/medicines-good-practice" }
+  ],
+  "sections": [
+    {
+      "heading": "GDP is a system of control",
+      "paragraphs": [
+        "Good Distribution Practice protects the identity, integrity and quality of medicines while they move through the supply chain. It covers more than the condition of a warehouse. People, suppliers, customers, transport, temperature, documentation, computerised systems, complaints, returns, recalls and outsourced activities all contribute to whether distribution remains controlled.",
+        "A Quality Management System provides the structure for that control. It sets responsibilities, turns requirements into procedures, records what happened and creates a mechanism for learning when expectations are not met. A strong system is proportionate: detailed enough to manage the authorised activity, but clear enough for people to use under ordinary and exceptional conditions."
+      ]
+    },
+    {
+      "heading": "Governance starts with named accountability",
+      "paragraphs": [
+        "Reliable distribution requires defined authority. The organisation should know who approves suppliers and customers, who controls documents, who releases changes, who evaluates deviations and who can initiate a recall. The Responsible Person role has specific regulatory significance, but quality responsibility cannot be isolated to one individual. Commercial, operations, technology and leadership teams all make decisions that can affect compliance.",
+        "Role descriptions, training and delegation need to match the actual organisation. During absence or an incident, deputies and escalation routes should be clear. Management should receive meaningful quality information: recurring deviations, supplier performance, training status, complaints, CAPA progress, temperature events, overdue reviews and changes that may affect the authorisation."
+      ],
+      "list": [
+        "Define accountable owners and trained deputies.",
+        "Link role permissions to system access.",
+        "Maintain current competency and training evidence.",
+        "Escalate quality risks independently of commercial pressure.",
+        "Review quality performance at management level."
+      ]
+    },
+    {
+      "heading": "Documents should guide work and prove control",
+      "paragraphs": [
+        "A controlled procedure has an owner, approval, effective date, version and review cycle. Superseded versions should not remain available as if current. Forms and records should capture enough information to reconstruct the decision without encouraging unnecessary personal or sensitive data collection.",
+        "Document control becomes more difficult when files are scattered across email, personal drives and local folders. A governed document platform can manage version history, metadata, permissions, retention and approval. The operational database should link the document to the relevant customer, supplier, product, order, quality event or regulatory record. The file and the business record should remain connected without duplicating uncontrolled copies."
+      ]
+    },
+    {
+      "heading": "Qualification is continuous",
+      "paragraphs": [
+        "Supplier and customer qualification is sometimes treated as a set of documents collected at onboarding. In practice, authorisations expire or change, sites are added, ownership moves, quality history develops and the commercial scope evolves. Qualification therefore needs an initial decision, risk-based monitoring and periodic review.",
+        "The evidence should be relevant to the activity. A logistics provider may require site authorisation, temperature capability, mapping evidence, security controls, subcontractor governance and business-continuity assessment. A product supplier may require licence verification, source and batch documentation, quality history and the ability to support complaints or recalls. An approved status should always have a scope and evidence date."
+      ]
+    },
+    {
+      "heading": "Temperature and batch control need usable data",
+      "paragraphs": [
+        "Storage conditions must be defined from authorised product information and maintained through receipt, storage and transport. Monitoring equipment, calibration, mapping, alarm handling and excursion assessment should form one controlled process. The system needs to distinguish a measured event from the quality decision about product impact.",
+        "Batch and expiry records support stock rotation, release status, customer tracing and recall. Interfaces should never hide quarantine, quality hold or short-expiry status behind a total stock number. Reconciliation between the warehouse, order and product master should identify unexplained differences promptly. Where data arrives from a third party, responsibilities for corrections and downtime must be agreed."
+      ]
+    },
+    {
+      "heading": "Deviations and CAPA should improve the system",
+      "paragraphs": [
+        "A deviation record is not complete because the immediate task was fixed. The organisation should understand what happened, assess product and patient risk, contain the issue, determine an appropriate root cause and decide whether corrective or preventive action is needed. The depth of investigation should reflect risk, recurrence and uncertainty.",
+        "CAPA needs ownership, due dates, evidence and effectiveness review. A procedure rewrite or retraining session is not automatically effective. The team should test whether the action changed the relevant outcome. Trends across complaints, temperature events, order errors and supplier issues can reveal system weaknesses that individual records do not show."
+      ]
+    },
+    {
+      "heading": "Outsourcing changes execution, not accountability",
+      "paragraphs": [
+        "A third-party logistics model can provide specialist infrastructure and scalable capacity. The pharmaceutical company still needs to select the provider, define responsibilities, approve relevant procedures or interfaces, monitor performance, manage change and retain access to records. A service-level agreement measures performance; a quality agreement describes the regulated relationship. Both are necessary, and neither should be assumed from the other.",
+        "NovaPharm's planned model uses outsourced pharmaceutical logistics and a Microsoft 365 document backbone. The quality objective is to make each relationship visible: the qualified organisation, approved scope, agreement, product, batch, event and audit record should use common identifiers. That architecture does not create compliance by itself, but it makes controlled work easier to perform and review.",
+        "The practical foundation of reliable distribution is therefore ordinary and demanding: accurate records, trained people, defined decisions, qualified partners and evidence that the system learns. Technology helps when it reinforces those habits. It becomes a risk when it presents confidence that the underlying controls have not earned.",
+        "Readiness can be tested through short operational simulations. Teams can trace a batch from receipt to customer, handle a temperature alarm, qualify a replacement carrier or run a mock recall. The objective is not a perfect rehearsal document; it is evidence that responsibilities, records, system access and escalation work together under time pressure. Findings should enter the same deviation and CAPA process as other quality issues. Repeating the exercise after improvement provides stronger assurance than a policy statement alone. The review should include remote and outsourced participants so the test reflects the real operating network."
+      ]
+    }
+  ]
+}
