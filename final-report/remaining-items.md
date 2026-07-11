@@ -1,8 +1,15 @@
 # Remaining Items
 
+## Required Before Merge Approval
+
+- Complete and record the rendered desktop, tablet and mobile audit in current Chromium and Safari against a deployable preview.
+- Generate a new administrator password that has never appeared in source control; never reuse the previously supplied password.
+- Decide whether to accept the historical deleted-password record after rotation or approve a coordinated full repository history rewrite and collaborator re-clone procedure.
+- Confirm the final `Production readiness` workflow is green on the latest pull-request head.
+
 ## Required To Go Live
 
-- Approve and merge pull request 2 from `codex/ultra-premium-rebuild`; GitHub CI is passing.
+- Approve and merge pull request 2 from `codex/ultra-premium-rebuild` only after the pre-merge items above are closed.
 - Connect the repository to the Render Blueprint or an equivalent Node 24 host with persistent private storage.
 - Enter production administrator hash/salt, session secret and allowed origin.
 - Add and verify `novapharmhealthcare.com` and `www.novapharmhealthcare.com`; use the exact host-provided DNS records.

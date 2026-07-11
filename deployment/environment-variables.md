@@ -11,6 +11,7 @@
 | `PUBLIC_ORIGIN` | `https://novapharmhealthcare.com` |
 | `PUBLIC_API_ORIGIN` | `https://novapharmhealthcare.com` |
 | `DATABASE_PATH` | Persistent private path, currently `/var/lib/novapharm/novapharm.sqlite` |
+| `DATABASE_BACKUP_ROOT` | Persistent backup path, currently `/var/lib/novapharm/backups` |
 | `SECURE_CONTENT_ROOT` | Persistent private path, currently `/var/lib/novapharm/secure-content` |
 | `DOCUMENT_STORAGE_ROOT` | Persistent private path, currently `/var/lib/novapharm/documents` |
 | `SESSION_SECRET` | At least 32 random characters |
@@ -24,7 +25,7 @@
 | `PORTAL_DISPLAY_NAME` | Public-safe display name |
 | `PORTAL_PASSWORD_HASH` | 64-character PBKDF2-SHA256 hash |
 | `PORTAL_PASSWORD_SALT` | Random hexadecimal salt |
-| `PORTAL_USERS_JSON` | Optional hashed customer, employee or board identities |
+| `PORTAL_USERS_JSON` | Optional hashed customer, employee or board identities; every client identity requires its canonical `customerId` |
 
 Generate a hash and salt in a controlled terminal:
 
@@ -32,7 +33,9 @@ Generate a hash and salt in a controlled terminal:
 PORTAL_PASSWORD='temporary value entered locally' npm run hash:password
 ```
 
-Set only the resulting hash and salt in production. `PORTAL_PASSWORD` is rejected when `NODE_ENV=production`. Vishal's administrator identity receives customer, employee, board and administrator scopes.
+Set only the resulting hash and salt in production. `PORTAL_PASSWORD` is rejected when `NODE_ENV=production`. The initial administrator identity receives customer, employee, board and administrator scopes.
+
+The production runtime fails closed when the administrator hash/salt, persistent paths, HTTPS origin or public host binding is missing or inconsistent.
 
 ## Contact Email
 
@@ -47,8 +50,8 @@ All three are required for live internal and acknowledgement emails. The enquiry
 - `MICROSOFT_TENANT_ID`
 - `MICROSOFT_CLIENT_ID`
 - `MICROSOFT_CLIENT_SECRET`
-- `SHAREPOINT_HOSTNAME=novapharmhealthcare.sharepoint.com`
-- `SHAREPOINT_SITE_PATH=/sites/NovapharmTier1`
+- `SHAREPOINT_HOSTNAME=your-tenant.sharepoint.com`
+- `SHAREPOINT_SITE_PATH=/sites/your-site`
 - `SHAREPOINT_DRIVE_ID` (optional when the site's default drive is correct)
 - `SHAREPOINT_EXECUTIVE_PLATFORM_PATH`
 - `SECURE_CONTENT_MAX_FILE_BYTES` (defaults to 25 MB)

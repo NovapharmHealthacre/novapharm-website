@@ -17,6 +17,8 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NODE_VERSION
+        value: "24"
       - key: HOST
         value: 0.0.0.0
       - key: SITE_URL
@@ -27,6 +29,8 @@ services:
         value: https://novapharmhealthcare.com
       - key: DATABASE_PATH
         value: /var/lib/novapharm/novapharm.sqlite
+      - key: DATABASE_BACKUP_ROOT
+        value: /var/lib/novapharm/backups
       - key: SECURE_CONTENT_ROOT
         value: /var/lib/novapharm/secure-content
       - key: DOCUMENT_STORAGE_ROOT
@@ -34,7 +38,7 @@ services:
       - key: SESSION_SECRET
         generateValue: true
       - key: PORTAL_USERNAME
-        value: Vishal
+        sync: false
       - key: PORTAL_PASSWORD_SALT
         sync: false
       - key: PORTAL_PASSWORD_HASH
@@ -54,8 +58,8 @@ services:
       - key: SHAREPOINT_HOSTNAME
         sync: false
       - key: SHAREPOINT_SITE_PATH
-        value: /sites/NovapharmTier1
+        sync: false
       - key: SHAREPOINT_DRIVE_ID
         sync: false
       - key: SHAREPOINT_EXECUTIVE_PLATFORM_PATH
-        value: NovaPharm Digital Ecosystem/16 Website and Portal/Executive Platform
+        sync: false

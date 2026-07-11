@@ -52,6 +52,7 @@ img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
 a:hover { color: var(--brand); }
 button, input, select, textarea { font: inherit; }
+h1, h2, h3, h4, p, a, td, th { overflow-wrap: break-word; }
 
 .skip-link {
   position: fixed;
@@ -75,6 +76,7 @@ button, input, select, textarea { font: inherit; }
   top: 0;
   z-index: 900;
   background: color-mix(in srgb, var(--surface) 88%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
   backdrop-filter: blur(22px) saturate(150%);
   border-bottom: 1px solid var(--line);
 }
@@ -88,12 +90,13 @@ button, input, select, textarea { font: inherit; }
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  min-width: 210px;
+  min-width: 268px;
+  padding: 8px 10px;
+  background: #fff;
 }
-.brand img { width: 40px; height: 40px; object-fit: contain; }
-.brand-name { display: block; color: var(--ink); font-weight: 760; font-size: 17px; }
-.brand-meta { display: block; color: var(--muted); font-size: 12px; }
+.brand-logo { display: block; line-height: 0; }
+.brand-logo img { display: block; width: 100%; height: auto; aspect-ratio: 3356 / 420; object-fit: contain; }
+.brand .brand-logo { width: 248px; }
 
 .nav-toggle { display: none; }
 .site-nav {
@@ -479,9 +482,18 @@ td { color: var(--text); }
 }
 .portal-sidebar a[aria-current="page"],
 .portal-sidebar a:hover { background: rgba(255,255,255,0.1); color: #fff; }
-.portal-sidebar .brand-name { color: #fff; }
-.portal-sidebar .brand-meta { color: #b8c8d5; }
-.portal-main { padding: 28px; }
+.portal-sidebar .portal-brand,
+.portal-sidebar .portal-brand:hover {
+  display: block;
+  width: 100%;
+  margin: 0 0 18px;
+  padding: 12px;
+  border-radius: 0;
+  background: #fff;
+  color: inherit;
+}
+.portal-sidebar .portal-brand .brand-logo { width: 100%; }
+.portal-main { min-width: 0; padding: 28px; }
 .portal-topbar h1 { margin: 8px 0 0; color: var(--ink); }
 .portal-main > .table-wrap,
 .portal-main > .alert,
@@ -503,6 +515,9 @@ td { color: var(--text); }
   font-size: 12px;
   font-weight: 800;
 }
+.executive-index { width: min(100%, 1440px); margin: 0 auto; }
+.executive-brand { display: block; width: min(100%, 348px); margin-bottom: 28px; padding: 13px 14px; background: #fff; }
+.executive-brand .brand-logo { width: 100%; }
 
 .login-page {
   min-height: 100vh;
@@ -519,7 +534,14 @@ td { color: var(--text); }
   padding: 38px;
   box-shadow: var(--shadow);
 }
-.login-panel img { width: 52px; margin-bottom: 12px; }
+.login-logo {
+  display: block;
+  width: min(100%, 348px);
+  margin: 0 0 22px;
+  padding: 13px 14px;
+  background: #fff;
+}
+.login-logo .brand-logo { width: 100%; }
 .login-panel h1 { margin: 8px 0 10px; color: var(--ink); font-size: 38px; line-height: 1.12; }
 .login-panel > p { margin-top: 0; color: var(--muted); font-size: 17px; }
 .portal-access { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
@@ -545,7 +567,7 @@ td { color: var(--text); }
 .alert-error { border-color: color-mix(in srgb, var(--danger) 40%, var(--line)); color: var(--danger); }
 .data-freshness { color: var(--muted); font-size: 13px; }
 
-@media (max-width: 980px) {
+@media (max-width: 1120px) {
   .nav-toggle {
     display: inline-flex;
     align-items: center;
@@ -592,9 +614,8 @@ td { color: var(--text); }
 @media (max-width: 620px) {
   .container { width: min(100% - 24px, var(--container)); }
   .header-inner { min-height: 64px; }
-  .brand { min-width: 0; }
-  .brand-name { font-size: 15px; }
-  .brand-meta { display: none; }
+  .brand { min-width: 0; max-width: 225px; flex: 1; }
+  .brand .brand-logo { width: min(205px, 100%); }
   .hero { min-height: 610px; }
   .hero::before { background: linear-gradient(90deg, rgba(5,16,27,0.96), rgba(5,16,27,0.76)); }
   .hero-media img { object-position: 67% center; }
@@ -1042,7 +1063,7 @@ td { color: var(--text); }
 .application-progress li::before { content: ""; position: absolute; left: 8px; width: 10px; height: 10px; border: 1px solid #98a5b2; border-radius: 50%; background: var(--surface); }
 .application-progress li[aria-current="step"] { color: var(--ink); }
 .application-progress li[aria-current="step"]::before { border: 3px solid var(--brand); }
-.application-progress li.complete::before { border-color: var(--success); background: var(--success); }
+.application-progress li.complete::before { border-color: var(--green); background: var(--green); }
 .onboarding-form-shell { min-width: 0; border-top: 3px solid var(--brand); padding-top: 30px; }
 .application-form fieldset { margin: 0; padding: 0; border: 0; }
 .application-form fieldset[hidden] { display: none; }
@@ -1052,18 +1073,34 @@ td { color: var(--text); }
 .application-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line); }
 .application-status { margin-top: 24px; }
 
-.footer-intro img { margin-bottom: 18px; filter: brightness(0) invert(1); }
+.footer-brand {
+  display: block;
+  width: min(100%, 308px);
+  margin-bottom: 20px;
+  padding: 13px 14px;
+  background: #fff;
+}
+.footer-brand .brand-logo { width: 100%; }
 .footer-notices { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; margin-top: 42px; padding: 26px 0; border-top: 1px solid rgba(255,255,255,0.13); border-bottom: 1px solid rgba(255,255,255,0.13); }
 .footer-notices p { margin: 0; color: #aebdca; font-size: 12px; }
 
 .error-page { background: var(--navy); color: #dbe5ec; }
 .error-shell { min-height: 100svh; width: min(100% - 32px, 760px); margin: 0 auto; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
+.error-brand {
+  display: block;
+  width: min(100%, 348px);
+  padding: 13px 14px;
+  background: #fff;
+}
+.error-brand .brand-logo { width: 100%; }
 .error-shell > span { margin-top: 36px; color: var(--brand); font-size: 13px; font-weight: 820; }
 .error-shell h1 { margin: 12px 0; color: #fff; font-size: 52px; }
 .error-shell p { max-width: 620px; font-size: 18px; }
 .error-shell .btn { margin-top: 20px; }
 
 @media (max-width: 1180px) {
+  .brand { min-width: 240px; }
+  .brand .brand-logo { width: 220px; }
   .site-nav { gap: 0; }
   .site-nav a { padding-inline: 6px; font-size: 13px; }
   .site-nav .nav-portal { padding-left: 12px; margin-left: 4px; }
@@ -1104,6 +1141,8 @@ td { color: var(--text); }
 }
 
 @media (max-width: 620px) {
+  .brand { min-width: 0; max-width: 225px; flex: 1; }
+  .brand .brand-logo { width: min(205px, 100%); }
   .hero-flagship { min-height: 640px; }
   .hero-flagship h1 { font-size: 40px; }
   .trust-strip-inner,

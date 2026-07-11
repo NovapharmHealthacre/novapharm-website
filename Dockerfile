@@ -4,6 +4,7 @@ ENV NODE_ENV=production \
     HOST=0.0.0.0 \
     PORT=4173 \
     DATABASE_PATH=/var/lib/novapharm/novapharm.sqlite \
+    DATABASE_BACKUP_ROOT=/var/lib/novapharm/backups \
     SECURE_CONTENT_ROOT=/var/lib/novapharm/secure-content \
     DOCUMENT_STORAGE_ROOT=/var/lib/novapharm/documents
 

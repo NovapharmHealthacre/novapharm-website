@@ -8,17 +8,24 @@
     "build": "node scripts/build-pages.mjs",
     "start": "node server.mjs",
     "start:production": "npm run build && node scripts/sync-secure-content.mjs && node server.mjs",
-    "validate": "node scripts/validate-site.mjs && node scripts/check-links.mjs && node scripts/validate-app.mjs && node scripts/validate-domain.mjs",
+    "validate": "node scripts/validate-site.mjs && node scripts/check-links.mjs && node scripts/validate-app.mjs && node scripts/validate-domain.mjs && node scripts/audit-public-claims.mjs",
     "validate:site": "node scripts/validate-site.mjs",
     "validate:app": "node scripts/validate-app.mjs",
     "validate:domain": "node scripts/validate-domain.mjs",
+    "audit:claims": "node scripts/audit-public-claims.mjs",
     "check:links": "node scripts/check-links.mjs",
-    "test": "node scripts/test-server.mjs",
-    "check": "npm run build && npm run validate && npm test",
-    "hash:password": "node scripts/generate-password-hash.mjs"
+    "syntax": "node scripts/check-syntax.mjs",
+    "security:scan": "node scripts/scan-secrets.mjs",
+    "test:integration": "node scripts/test-server.mjs",
+    "test:production-security": "node scripts/test-production-security.mjs",
+    "test": "npm run test:integration && npm run test:production-security",
+    "check": "npm run build && npm run validate && npm run syntax && npm run security:scan && npm test",
+    "hash:password": "node scripts/generate-password-hash.mjs",
+    "backup:database": "node scripts/backup-database.mjs",
+    "verify:backup": "node scripts/verify-database-backup.mjs"
   },
   "engines": {
-    "node": ">=24"
+    "node": "24.x"
   },
   "dependencies": {
     "dotenv": "^17.4.2"

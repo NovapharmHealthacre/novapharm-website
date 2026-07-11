@@ -23,9 +23,5 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci --ignore-scripts
+      - run: npm audit --omit=dev --audit-level=high
       - run: npm run check
-        env:
-          NODE_ENV: test
-          SESSION_SECRET: github-actions-test-session-secret-32-characters
-          PORTAL_USERNAME: IntegrationAdmin
-          PORTAL_PASSWORD: Test-Only-Strong-Password-9

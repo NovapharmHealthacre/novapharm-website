@@ -9,10 +9,10 @@
   "theme_color": "#b81220",
   "icons": [
     {
-      "src": "/assets/Novapharm-logo.svg",
+      "src": "/assets/brand/novapharm-healthcare-logo.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }

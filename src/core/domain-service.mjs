@@ -37,16 +37,17 @@ function entityFolderEvent(entityType, entityId, businessNumber, displayName, ac
   });
 }
 
-export function listProducts(query = "") {
+export function listProducts(query = "", { customerVisibleOnly = false } = {}) {
   const term = `%${String(query).trim()}%`;
   return all(`
     SELECT p.*,
       COALESCE((SELECT SUM(b.quantity_available) FROM batches b WHERE b.product_id = p.id AND b.release_status = 'released'), 0) AS stock_available,
       (SELECT MIN(b.expiry_date) FROM batches b WHERE b.product_id = p.id AND b.release_status = 'released' AND b.quantity_available > 0) AS next_expiry
     FROM products p
-    WHERE ? = '%%' OR p.product_name LIKE ? OR p.sku LIKE ? OR COALESCE(p.gtin, '') LIKE ?
+    WHERE (? = 0 OR (p.lifecycle_status = 'active' AND p.marketing_status = 'marketed' AND p.mhra_status IN ('approved', 'licensed')))
+      AND (? = '%%' OR p.product_name LIKE ? OR p.sku LIKE ? OR COALESCE(p.gtin, '') LIKE ?)
     ORDER BY p.product_name LIMIT 100
-  `, term, term, term, term);
+  `, customerVisibleOnly ? 1 : 0, term, term, term, term);
 }
 
 export function listCustomers(query = "") {
@@ -313,7 +314,7 @@ export function createOrder(input, actor, scopedCustomerId = null) {
   const lines = Array.isArray(input.lines) ? input.lines : [];
   if (!lines.length) throw Object.assign(new Error("At least one order line is required."), { statusCode: 400 });
   const priced = lines.map((line) => {
-    const product = one("SELECT * FROM products WHERE id = ? AND lifecycle_status IN ('approved', 'active')", required(line.productId, "Product"));
+    const product = one("SELECT * FROM products WHERE id = ? AND lifecycle_status = 'active' AND marketing_status = 'marketed' AND mhra_status IN ('approved', 'licensed')", required(line.productId, "Product"));
     if (!product) throw Object.assign(new Error("Product is unavailable for ordering."), { statusCode: 409 });
     const quantity = integer(line.quantity, "Quantity", 1);
     const unitPriceMinor = product.list_price_minor;

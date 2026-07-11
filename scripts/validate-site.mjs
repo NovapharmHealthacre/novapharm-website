@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { createHash } from "node:crypto";
 
 const root = resolve(process.cwd());
 const siteUrl = "https://novapharmhealthcare.com";
@@ -76,6 +77,8 @@ const requiredFiles = [
   "assets/js/enterprise-app.js",
   "assets/novapharm-healthcare-hero.jpg",
   "assets/novapharm-og.jpg",
+  "assets/brand/novapharm-healthcare-logo.svg",
+  "assets/brand/novapharm-healthcare-logo.png",
   "src/content/site-content.mjs",
   "src/core/auth-service.mjs",
   "src/core/domain-service.mjs",
@@ -84,6 +87,7 @@ const requiredFiles = [
   "src/data/database.mjs",
   "src/integrations/email/client.mjs",
   "src/integrations/sharepoint/graph-client.mjs",
+  "src/integrations/sharepoint/secure-content-branding.mjs",
   "src/integrations/sharepoint/sync-engine.mjs",
   "src/integrations/polar-speed/client.mjs",
   "src/integrations/polar-speed/sync-engine.mjs",
@@ -91,7 +95,14 @@ const requiredFiles = [
   "scripts/build-public-pages.mjs",
   "scripts/sync-secure-content.mjs",
   "scripts/test-server.mjs",
+  "scripts/test-production-security.mjs",
+  "scripts/check-syntax.mjs",
+  "scripts/scan-secrets.mjs",
+  "scripts/backup-database.mjs",
+  "scripts/verify-database-backup.mjs",
+  "scripts/audit-public-claims.mjs",
   ".github/workflows/ci.yml",
+  ".node-version",
   ".dockerignore",
   "Dockerfile",
   "render.yaml",
@@ -129,25 +140,85 @@ for (const file of insightFiles) {
   publicPages.push(output);
 }
 
+const titles = new Map();
+const descriptions = new Map();
+const canonicals = new Map();
+const observedSchemaTypes = new Set();
+
+function uniqueValue(map, value, file, label) {
+  if (!value) return;
+  if (map.has(value)) fail(`${file} duplicates ${label} from ${map.get(value)}`);
+  else map.set(value, file);
+}
+
+function validateDocumentBasics(file, html) {
+  if (!/<html\s+lang="en-GB"/i.test(html)) fail(`${file} must declare British English`);
+  if (!/<meta name="viewport" content="width=device-width,\s*initial-scale=1">/i.test(html)) fail(`${file} is missing the mobile viewport declaration`);
+  for (const match of html.matchAll(/<img\b[^>]*>/gi)) {
+    if (!/\balt="[^"]*"/i.test(match[0])) fail(`${file} contains an image without alternative text`);
+    if (!/\bwidth="\d+"/i.test(match[0]) || !/\bheight="\d+"/i.test(match[0])) fail(`${file} contains an image without intrinsic dimensions`);
+  }
+  const headingLevels = [...html.matchAll(/<h([1-6])\b/gi)].map((match) => Number(match[1]));
+  for (let index = 1; index < headingLevels.length; index += 1) {
+    if (headingLevels[index] > headingLevels[index - 1] + 1) fail(`${file} skips from h${headingLevels[index - 1]} to h${headingLevels[index]}`);
+  }
+}
+
 for (const file of publicPages) {
   const html = source(file);
+  validateDocumentBasics(file, html);
   if (!/<title>[^<]{10,}<\/title>/i.test(html)) fail(`${file} needs a substantive title`);
   if (!/<meta name="description" content="[^"]{70,}"/i.test(html)) fail(`${file} needs a substantive meta description`);
   if (!/<link rel="canonical" href="https:\/\/novapharmhealthcare\.com\/[^"]*">/i.test(html)) fail(`${file} needs an apex-domain canonical URL`);
   for (const marker of ['property="og:title"', 'property="og:description"', 'name="twitter:card"']) {
     if (!html.includes(marker)) fail(`${file} missing ${marker}`);
   }
+  const title = html.match(/<title>([^<]+)<\/title>/i)?.[1];
+  const description = html.match(/<meta name="description" content="([^"]+)"/i)?.[1];
+  const canonical = html.match(/<link rel="canonical" href="([^"]+)"/i)?.[1];
+  uniqueValue(titles, title, file, "title");
+  uniqueValue(descriptions, description, file, "meta description");
+  uniqueValue(canonicals, canonical, file, "canonical URL");
+  if (!html.includes('/assets/brand/novapharm-healthcare-logo.svg')) fail(`${file} does not reference the approved SVG logo`);
+  if (!html.includes('/assets/brand/novapharm-healthcare-logo.png')) fail(`${file} does not include the approved PNG fallback or social image`);
+  if (!html.includes('alt="NovaPharm Healthcare"')) fail(`${file} is missing the approved logo alternative text`);
+  if (html.includes('/assets/Novapharm-logo.svg')) fail(`${file} references the retired logo path`);
+  if (!html.includes(`property="og:image" content="${siteUrl}/assets/brand/novapharm-healthcare-logo.png"`)) fail(`${file} does not use the approved social identity image`);
+  if (!html.includes('property="og:image:width" content="3356"') || !html.includes('property="og:image:height" content="420"')) fail(`${file} has incorrect social identity dimensions`);
+  if (/\b(?:undefined|lorem ipsum|placeholder content)\b/i.test(html)) fail(`${file} contains unfinished content`);
+  if (/The string did not match the expected pattern|Secure portal backend is not active on this static host yet/i.test(html)) fail(`${file} contains a retired technical error message`);
   const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/gi)];
   if (!blocks.length) fail(`${file} missing JSON-LD`);
   for (const [, block] of blocks) {
-    try { JSON.parse(block); } catch { fail(`${file} contains invalid JSON-LD`); }
+    try {
+      const parsed = JSON.parse(block);
+      const types = Array.isArray(parsed["@type"]) ? parsed["@type"] : [parsed["@type"]];
+      types.filter(Boolean).forEach((type) => observedSchemaTypes.add(type));
+    } catch { fail(`${file} contains invalid JSON-LD`); }
   }
   if ((html.match(/<h1\b/gi) || []).length !== 1) fail(`${file} must contain exactly one h1`);
   if (!html.includes('href="#main"') || !html.includes('id="main"')) fail(`${file} needs a working skip link`);
 }
 
+if (publicPages.length !== 26) fail(`expected exactly 26 public pages; found ${publicPages.length}`);
+for (const type of ["Organization", "Person", "Article", "BlogPosting", "Service", "BreadcrumbList"]) {
+  if (!observedSchemaTypes.has(type)) fail(`structured data is missing ${type}`);
+}
+
+const logoHashes = new Map([
+  ["assets/brand/novapharm-healthcare-logo.svg", "0450a3a7957b5a0ce0bb2f1764bddc2c07711222cb5b787d23b77c85cfee0239"],
+  ["assets/brand/novapharm-healthcare-logo.png", "b381ee4929b4014a40c889d26941c994bcbe7bfc558cd81f0f47d2d1917d00ad"]
+]);
+for (const [file, expectedHash] of logoHashes) {
+  const hash = createHash("sha256").update(readFileSync(join(root, file))).digest("hex");
+  if (hash !== expectedHash) fail(`${file} no longer matches the supplied official master`);
+}
+const manifest = JSON.parse(source("manifest.webmanifest"));
+if (manifest.icons?.[0]?.src !== "/assets/brand/novapharm-healthcare-logo.svg" || manifest.icons?.[0]?.purpose !== "any") fail("web manifest must use the uncropped approved SVG identity");
+
 for (const file of redirectPages) {
   const html = source(file);
+  validateDocumentBasics(file, html);
   if (!html.includes('http-equiv="refresh"') || !html.includes('name="robots" content="noindex,follow"')) {
     fail(`${file} is not a controlled noindex redirect`);
   }
@@ -167,9 +238,12 @@ const protectedPages = protectedShellRoots.flatMap((directory) => collectHtml(di
 for (const file of protectedPages) {
   if (file === "portal/index.html") continue;
   const html = source(file);
-  if (!html.includes("This static public site does not expose dashboards, records or controlled documents.")) fail(`${file} is not a locked public shell`);
+  validateDocumentBasics(file, html);
+  if (!html.includes("This public shell does not expose dashboards, records or controlled documents.")) fail(`${file} is not a locked public shell`);
   if (/data-(?:live-metric|order-rows|product-rows|customer-rows|supplier-rows|po-rows|admin-metric|leads)/.test(html)) fail(`${file} exposes an operational binding publicly`);
 }
+validateDocumentBasics("portal/index.html", source("portal/index.html"));
+for (const file of ["404.html", "500.html", "service-unavailable/index.html"]) validateDocumentBasics(file, source(file));
 
 for (const [file, person] of [
   ["leadership/vishal-chakravarty/index.html", "Vishal Chakravarty"],
@@ -180,6 +254,14 @@ for (const [file, person] of [
 ]) {
   const html = source(file);
   if (!html.includes('"@type":"ProfilePage"') || !html.includes(`"name":"${person}"`)) fail(`${file} is missing its ProfilePage and Person entities`);
+}
+const nishitaProfile = source("leadership/nishita-trivedi/index.html");
+if (!/not a statutory director/i.test(nishitaProfile)) fail("Dr Nishita Trivedi must be identified as a non-director adviser");
+if (/Dr Nishita Trivedi[^<]{0,100}(?:statutory director|Director &|Director,)/i.test(nishitaProfile)) fail("Dr Nishita Trivedi is incorrectly presented as a director");
+
+const technologyPage = source("technology/index.html");
+for (const label of ["Live capabilities", "In development capabilities", "Planned capabilities"]) {
+  if (!technologyPage.includes(label)) fail(`technology page is missing ${label}`);
 }
 
 const sitemap = source("sitemap.xml");

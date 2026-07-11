@@ -26,6 +26,11 @@ const publicRoutes = Object.keys(pageMeta);
 const siteUrl = company.siteUrl;
 const organisationId = `${siteUrl}/#organisation`;
 const websiteId = `${siteUrl}/#website`;
+const brandLogoSvg = "/assets/brand/novapharm-healthcare-logo.svg";
+const brandLogoPng = "/assets/brand/novapharm-healthcare-logo.png";
+const brandLogoWidth = 3356;
+const brandLogoHeight = 420;
+const maturityLabels = Object.freeze({ live: "Live", development: "In development", planned: "Planned" });
 
 function esc(value) {
   return String(value ?? "").replace(/[&<>"']/g, (character) => ({
@@ -45,6 +50,10 @@ function write(path, content) {
   const target = join(root, path);
   mkdirSync(dirname(target), { recursive: true });
   writeFileSync(target, content);
+}
+
+function brandPicture({ className = "brand-logo", width = 280, height = 35, eager = false } = {}) {
+  return `<picture class="${className}"><source srcset="${brandLogoSvg}" type="image/svg+xml"><img src="${brandLogoPng}" alt="NovaPharm Healthcare" width="${width}" height="${height}"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async"></picture>`;
 }
 
 function articleWordCount(article) {
@@ -78,8 +87,7 @@ function header(slug = "") {
   <header class="site-header" data-site-header>
     <div class="container header-inner">
       <a class="brand" href="/" aria-label="NovaPharm Healthcare home">
-        <img src="/assets/Novapharm-logo.svg" alt="" width="42" height="42">
-        <span><span class="brand-name">NovaPharm Healthcare</span><span class="brand-meta">UK pharmaceutical company</span></span>
+        ${brandPicture({ eager: true })}
       </a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" data-nav-toggle>
         <span class="nav-toggle-lines" aria-hidden="true"><i></i><i></i></span><span class="sr-only">Open navigation</span>
@@ -98,8 +106,7 @@ function footer() {
     <div class="container">
       <div class="footer-grid">
         <div class="footer-intro">
-          <img src="/assets/Novapharm-logo.svg" alt="" width="44" height="44">
-          <h2>NovaPharm Healthcare</h2>
+          <a class="footer-brand" href="/" aria-label="NovaPharm Healthcare home">${brandPicture({ width: 280, height: 35 })}</a>
           <p>${esc(company.purpose)}</p>
           <a class="footer-registration" href="${company.companiesHouseUrl}">${company.legalName} · Company ${company.companyNumber}</a>
         </div>
@@ -120,11 +127,18 @@ function organisationSchema() {
   return {
     "@context": "https://schema.org",
     "@id": organisationId,
-    "@type": "Corporation",
+    "@type": ["Organization", "Corporation"],
     name: company.name,
     legalName: company.legalName,
     url: siteUrl,
-    logo: { "@type": "ImageObject", url: absoluteUrl("/assets/Novapharm-logo.svg") },
+    logo: {
+      "@type": "ImageObject",
+      url: absoluteUrl(brandLogoPng),
+      contentUrl: absoluteUrl(brandLogoPng),
+      width: brandLogoWidth,
+      height: brandLogoHeight,
+      caption: "NovaPharm Healthcare"
+    },
     identifier: { "@type": "PropertyValue", propertyID: "Companies House company number", value: company.companyNumber },
     foundingDate: company.incorporated,
     foundingLocation: { "@type": "Country", name: "United Kingdom" },
@@ -133,7 +147,6 @@ function organisationSchema() {
     description: company.summary,
     sameAs: [company.companiesHouseUrl, "https://www.wikidata.org/wiki/Q137660644"],
     founder: { "@id": `${siteUrl}/leadership/vishal-chakravarty/#person` },
-    employee: leadership.map((profile) => ({ "@id": `${siteUrl}/leadership/${profile.slug}/#person` })),
     knowsAbout: ["UK pharmaceutical distribution", "PLPI pharmaceutical sourcing", "Good Distribution Practice", "pharmaceutical quality systems", "oncology medicine supply"]
   };
 }
@@ -208,7 +221,13 @@ function pageSchemas(meta, slug, options = {}) {
 
 function head(meta, slug = "", options = {}) {
   const canonical = absoluteUrl(routePath(slug));
-  const image = options.image || absoluteUrl("/assets/novapharm-og.jpg");
+  const usesBrandImage = !options.image;
+  const image = options.image || absoluteUrl(brandLogoPng);
+  const imageWidth = options.imageWidth || (usesBrandImage ? brandLogoWidth : 1672);
+  const imageHeight = options.imageHeight || (usesBrandImage ? brandLogoHeight : 941);
+  const imageType = options.imageType || (usesBrandImage ? "image/png" : "image/jpeg");
+  const imageAlt = options.imageAlt || (usesBrandImage ? "NovaPharm Healthcare official logo" : "NovaPharm Healthcare pharmaceutical supply infrastructure");
+  const twitterCard = usesBrandImage ? "summary" : "summary_large_image";
   const type = options.ogType || "website";
   const schemas = options.schemas || pageSchemas(meta, slug, options);
   return `<!DOCTYPE html>
@@ -223,7 +242,7 @@ function head(meta, slug = "", options = {}) {
   <meta name="author" content="NovaPharm Healthcare Ltd">
   <link rel="canonical" href="${canonical}">
   <link rel="alternate" type="application/rss+xml" title="NovaPharm Healthcare Insights" href="${siteUrl}/feed.xml">
-  <link rel="icon" href="/assets/Novapharm-logo.svg" type="image/svg+xml">
+  <link rel="icon" href="${brandLogoSvg}" type="image/svg+xml">
   <link rel="manifest" href="/manifest.webmanifest">
   ${options.preloadHero ? '<link rel="preload" as="image" href="/assets/novapharm-healthcare-hero.jpg" fetchpriority="high">' : ""}
   <link rel="stylesheet" href="/assets/css/novapharm.css">
@@ -234,8 +253,11 @@ function head(meta, slug = "", options = {}) {
   <meta property="og:title" content="${esc(meta.title)}">
   <meta property="og:description" content="${esc(meta.description)}">
   <meta property="og:image" content="${image}">
-  <meta property="og:image:alt" content="NovaPharm Healthcare pharmaceutical supply infrastructure">
-  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:image:type" content="${imageType}">
+  <meta property="og:image:width" content="${imageWidth}">
+  <meta property="og:image:height" content="${imageHeight}">
+  <meta property="og:image:alt" content="${esc(imageAlt)}">
+  <meta name="twitter:card" content="${twitterCard}">
   <meta name="twitter:title" content="${esc(meta.title)}">
   <meta name="twitter:description" content="${esc(meta.description)}">
   <meta name="twitter:image" content="${image}">
@@ -286,7 +308,7 @@ function finalCta(title = "Build the next pharmaceutical partnership with NovaPh
 
 function leaderVisual(profile, eager = false) {
   return profile.image
-    ? `<img src="${profile.image}" alt="${esc(profile.imageAlt)}" width="1567" height="1567" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`
+    ? `<img src="${profile.image}" alt="${esc(profile.imageAlt)}" width="${profile.imageWidth}" height="${profile.imageHeight}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`
     : `<div class="leader-placeholder" role="img" aria-label="Portrait pending approval for ${esc(profile.displayName)}"><span>${profile.initials}</span><small>Portrait pending approval</small></div>`;
 }
 
@@ -334,7 +356,7 @@ function homePage() {
   <section class="section section-dark focus-section"><div class="container focus-grid"><div>${sectionHeading("Oncology & specialty focus", "Specialised categories require specialised operating discipline.", "NovaPharm's planned portfolio prioritises categories where sourcing, demand, storage, documentation and continuity need closer attention.")}<a class="text-link-light" href="/product-portfolio/">Explore the strategic portfolio</a></div><div class="focus-list">${["Oral oncology formulations", "Liquid oncology formulations", "Specialty and hard-to-source medicines", "Selected licensed generics", "Controlled-temperature capability where applicable"].map((item) => `<span>${item}</span>`).join("")}</div></div></section>
   <section class="section regulatory-foundation"><div class="container two-column-story"><div>${sectionHeading("Regulatory foundation", "No regulated supply before the required permissions.", "The roadmap connects authorisation, quality systems and product-specific responsibilities before commercial release.")} ${regulatoryNotice()}</div><ol class="numbered-principles">${["WDA(H) application readiness", "Product-specific PLPI assessment", "QMS and SOP governance", "GDP and vendor oversight", "Pharmacovigilance and recall readiness", "Batch and document integrity"].map((item, index) => `<li><span>${String(index + 1).padStart(2, "0")}</span>${item}</li>`).join("")}</ol></div></section>
   <section class="section logistics-story"><div class="container editorial-split"><div class="editorial-index">01 / Operations</div><div><span class="section-kicker">Logistics & distribution</span><h2>A capital-efficient third-party model, governed as an outsourced pharmaceutical activity.</h2><p>NovaPharm plans to integrate with Polar Speed/Marken for pharmaceutical storage, transport and delivery services. The relationship, scope, locations, performance commitments and system interfaces remain subject to final contract, authorisation and onboarding.</p><a class="btn btn-outline" href="/services/#logistics">Explore logistics operations</a></div></div></section>
-  <section class="section section-band"><div class="container">${sectionHeading("Technology maturity", "Tell people what is live, what is being built and what remains planned.", "NovaPharm's digital architecture separates working foundations from development and roadmap claims.")}<div class="maturity-preview">${Object.entries(technologyMaturity).map(([stage, items]) => `<div><span class="maturity-label maturity-${stage}">${stage === "inDevelopment" ? "In development" : stage}</span><h3>${items[0][0]}</h3><p>${items[0][1]}</p></div>`).join("")}</div><a class="text-link" href="/technology/">Review the full technology maturity model</a></div></section>
+  <section class="section section-band"><div class="container">${sectionHeading("Technology maturity", "Tell people what is live, what is being built and what remains planned.", "NovaPharm's digital architecture separates working foundations from development and roadmap claims.")}<div class="maturity-preview">${Object.entries(technologyMaturity).map(([stage, items]) => `<div><span class="maturity-label maturity-${stage}">${maturityLabels[stage]}</span><h3>${items[0][0]}</h3><p>${items[0][1]}</p></div>`).join("")}</div><a class="text-link" href="/technology/">Review the full technology maturity model</a></div></section>
   <section class="section"><div class="container">${sectionHeading("Partner ecosystem", "Designed for qualified pharmaceutical collaboration.", "NovaPharm is preparing a controlled pathway for product owners, manufacturers, authorised suppliers, buyers, logistics providers and technology partners.")}<div class="partner-type-grid">${partnerTypes.slice(0, 8).map((type) => `<span>${type}</span>`).join("")}</div><div class="hero-actions"><a class="btn btn-primary" href="/partner-with-us/">Explore partnerships</a><a class="btn btn-outline" href="/contact/">Submit an opportunity</a></div></div></section>
   <section class="section section-band"><div class="container">${sectionHeading("Featured insights", "Original analysis for regulated pharmaceutical operators.", "Educational perspectives on regulation, quality, supply and technology, written in British English and reviewed against NovaPharm's claims guardrails.")}<div class="article-grid">${articles.slice(0, 3).map((article, index) => articleCard(article, index === 0)).join("")}</div><a class="text-link" href="/news-insights/">View all insights</a></div></section>
   ${finalCta()}`;
@@ -376,7 +398,7 @@ function leadershipIndexPage() {
   const slug = "leadership";
   const meta = pageMeta[slug];
   const body = `${pageHero(meta, "Leadership for scientific, regulatory and operational scrutiny.", "NovaPharm's public profiles distinguish independently verified directorships from proposed executive and specialist advisory responsibilities.", slug, { parent: { name: "About", href: "/about/" } })}
-  <section class="section"><div class="container leadership-list">${leadership.map(leaderCard).join("")}</div></section>
+  <section class="section"><div class="container">${sectionHeading("Leadership profiles", "Directors and specialist advisory support.", "Public profiles distinguish verified statutory governance from executive and advisory responsibilities described in the company plan.")}<div class="leadership-list">${leadership.map(leaderCard).join("")}</div></div></section>
   ${finalCta("Discuss a partnership with NovaPharm leadership.")}`;
   return documentShell({ meta, slug, body });
 }
@@ -399,7 +421,7 @@ function profilePage(profile) {
     url: canonical,
     ...(profile.image ? { image: absoluteUrl(profile.image) } : {}),
     description: profile.summary,
-    worksFor: { "@id": organisationId },
+    ...(profile.slug === "nishita-trivedi" ? { affiliation: { "@id": organisationId } } : { worksFor: { "@id": organisationId } }),
     sameAs: profile.sameAs,
     knowsAbout: profile.expertise
   };
@@ -412,7 +434,7 @@ function profilePage(profile) {
   const body = `<section class="profile-hero profile-hero-v3"><div class="profile-hero-media">${leaderVisual(profile, true)}</div><div class="container profile-hero-content">${breadcrumb([{ name: "Home", href: "/" }, { name: "Leadership", href: "/leadership/" }, { name: profile.displayName }])}<span class="eyebrow">${esc(profile.title)}</span><h1>${esc(profile.displayName)}</h1><p>${esc(profile.summary)}</p><span class="governance-badge">${esc(profile.governance)}</span></div></section>
   <section class="section"><div class="container profile-content-grid"><article>${sectionHeading("Executive profile", "Responsibilities grounded in NovaPharm's operating plan.")} ${profile.biography.map((paragraph) => `<p>${esc(paragraph)}</p>`).join("")}${profile.companiesHouseUrl ? `<a class="text-link" href="${profile.companiesHouseUrl}">View Companies House appointment</a>` : ""}</article><aside class="profile-facts"><h2>Focus areas</h2><ul>${profile.expertise.map((item) => `<li>${esc(item)}</li>`).join("")}</ul><p>${esc(profile.governance)}</p></aside></div></section>
   ${finalCta("Discuss a qualified pharmaceutical partnership.")}`;
-  return documentShell({ meta, slug, body, options: { image: profile.image ? absoluteUrl(profile.image) : undefined, schemas } });
+  return documentShell({ meta, slug, body, options: { schemas } });
 }
 
 function servicesPage() {
@@ -463,9 +485,8 @@ function partnersPage() {
 function technologyPage() {
   const slug = "technology";
   const meta = pageMeta[slug];
-  const labels = { live: "Live", inDevelopment: "In development", planned: "Planned" };
   const body = `${pageHero(meta, "Useful infrastructure, with maturity stated plainly.", "NovaPharm's architecture is API-first, role-based and audit-aware. Public status labels distinguish deployed foundations from active development and longer-term plans.", slug)}
-  <section class="section"><div class="container maturity-model">${Object.entries(technologyMaturity).map(([stage, items]) => `<section><header><span class="maturity-label maturity-${stage}">${labels[stage]}</span><h2>${labels[stage]} capabilities</h2></header><div>${items.map(([title, text]) => `<article><h3>${esc(title)}</h3><p>${esc(text)}</p></article>`).join("")}</div></section>`).join("")}</div></section>
+  <section class="section"><div class="container maturity-model">${Object.entries(technologyMaturity).map(([stage, items]) => `<section><header><span class="maturity-label maturity-${stage}">${maturityLabels[stage]}</span><h2>${maturityLabels[stage]} capabilities</h2></header><div>${items.map(([title, text]) => `<article><h3>${esc(title)}</h3><p>${esc(text)}</p></article>`).join("")}</div></section>`).join("")}</div></section>
   <section class="section section-band"><div class="container two-column-story"><div>${sectionHeading("Security & continuity", "Identity, access and evidence are architectural requirements.")}<p>The production design uses server-side role scopes, HttpOnly secure cookies, CSRF protection, persistent session records, rate limits, audit events, private content storage and health checks. Microsoft Entra ID is the preferred production identity path.</p></div><ul class="list-check"><li>API-first integration boundaries</li><li>Customer, employee, board and admin scopes</li><li>SharePoint document metadata and version history</li><li>Source and data-freshness indicators</li><li>Business-continuity and rollback procedures</li><li>No secure documents in the public output</li></ul></div></section>
   ${finalCta("Discuss a pharmaceutical technology or integration partnership.")}`;
   return documentShell({ meta, slug, body });
@@ -475,7 +496,7 @@ function insightsPage() {
   const slug = "news-insights";
   const meta = pageMeta[slug];
   const body = `${pageHero(meta, "Evidence-led perspectives for regulated pharmaceutical work.", "Original NovaPharm articles distinguish established requirements, operating opinion, proposed capability and future roadmap.", slug)}
-  <section class="section"><div class="container"><div class="filter-bar" role="group" aria-label="Filter insights">${insightCategories.map((category) => `<button type="button" data-article-filter="${esc(category)}"${category === "All" ? ' aria-pressed="true"' : ' aria-pressed="false"'}>${esc(category)}</button>`).join("")}</div><p class="filter-status" data-filter-status role="status" aria-live="polite">Showing all ${articles.length} articles.</p><div class="article-grid article-grid-all">${articles.map((article, index) => articleCard(article, index === 0)).join("")}</div></div></section>`;
+  <section class="section"><div class="container">${sectionHeading("Latest analysis", "Regulatory, quality and supply-chain perspectives.", "Browse original NovaPharm analysis written for qualified pharmaceutical and healthcare audiences.")}<div class="filter-bar" role="group" aria-label="Filter insights">${insightCategories.map((category) => `<button type="button" data-article-filter="${esc(category)}"${category === "All" ? ' aria-pressed="true"' : ' aria-pressed="false"'}>${esc(category)}</button>`).join("")}</div><p class="filter-status" data-filter-status role="status" aria-live="polite">Showing all ${articles.length} articles.</p><div class="article-grid article-grid-all">${articles.map((article, index) => articleCard(article, index === 0)).join("")}</div></div></section>`;
   return documentShell({ meta, slug, body });
 }
 
@@ -506,7 +527,7 @@ function articlePage(article) {
   const body = `<article class="article-page"><header class="article-hero"><div class="article-hero-media"><img src="${article.heroImage}" alt="" width="1672" height="941" fetchpriority="high"></div><div class="container">${breadcrumb([{ name: "Home", href: "/" }, { name: "Insights", href: "/news-insights/" }, { name: article.title }])}<span class="eyebrow">${esc(article.category)}</span><h1>${esc(article.title)}</h1><p>${esc(article.summary)}</p><div class="article-byline"><span>${esc(article.author)}</span><time datetime="${article.published}">11 July 2026</time><span>${readingTime(article)} min read</span></div></div></header>
   <div class="container article-layout"><div class="article-body"><p class="article-disclaimer">${esc(article.disclaimer)}</p>${article.sections.map((section) => `<section><h2>${esc(section.heading)}</h2>${(section.paragraphs || []).map((paragraph) => `<p>${esc(paragraph)}</p>`).join("")}${section.list ? `<ul>${section.list.map((item) => `<li>${esc(item)}</li>`).join("")}</ul>` : ""}</section>`).join("")}<section class="article-sources"><h2>Sources and further reading</h2>${article.references.length ? `<ul>${article.references.map((source) => `<li><a href="${source.href}">${esc(source.label)}</a></li>`).join("")}</ul>` : "<p>This perspective is based on NovaPharm's operating analysis and does not rely on unsupported market statistics.</p>"}</section></div><aside class="article-aside"><h2>Related NovaPharm pages</h2>${article.internalLinks.map((link) => `<a href="${link.href}">${esc(link.label)}</a>`).join("")}<h2>Topics</h2><div class="tag-list">${article.tags.map((tag) => `<span>${esc(tag)}</span>`).join("")}</div></aside></div></article>
   <section class="section section-band"><div class="container">${sectionHeading("Related insights", "Continue reading.")}<div class="article-grid">${article.related.map((relatedSlug) => articles.find((candidate) => candidate.slug === relatedSlug)).filter(Boolean).slice(0, 3).map((related) => articleCard(related)).join("")}</div></div></section>`;
-  return documentShell({ meta, slug, body, options: { ogType: "article", image: absoluteUrl(article.heroImage), schemas } });
+  return documentShell({ meta, slug, body, options: { ogType: "article", schemas } });
 }
 
 function contactPage() {
@@ -525,7 +546,7 @@ function accountApplicationPage() {
     eyebrow: "Customer onboarding"
   };
   const body = `${pageHero(meta, "A controlled route into the future NovaPharm customer network.", "Submit company, responsible-person, address, quality, credit and licence information once. Applications are reviewed before any account, commercial terms or portal access is activated.", slug)}
-  <section class="section"><div class="container onboarding-layout"><aside class="onboarding-aside"><span class="section-kicker">Application stages</span><ol class="application-progress" data-application-progress><li aria-current="step">Company</li><li>Responsible people</li><li>Compliance</li><li>Documents</li></ol><div class="regulatory-notice"><strong>Account status</strong><p>Submitting this form does not create an approved trading account, confirm product availability or permit regulated supply. Due diligence, credit review and applicable regulatory checks are required.</p></div></aside><div class="onboarding-form-shell">
+  <section class="section"><h2 class="sr-only">Customer account application form</h2><div class="container onboarding-layout"><aside class="onboarding-aside"><span class="section-kicker">Application stages</span><ol class="application-progress" data-application-progress><li aria-current="step">Company</li><li>Responsible people</li><li>Compliance</li><li>Documents</li></ol><div class="regulatory-notice"><strong>Account status</strong><p>Submitting this form does not create an approved trading account, confirm product availability or permit regulated supply. Due diligence, credit review and applicable regulatory checks are required.</p></div></aside><div class="onboarding-form-shell">
     <form class="form-grid application-form" data-account-application novalidate>
       <fieldset data-application-step><legend><span>Step 1 of 4</span>Company details</legend><div class="form-row"><div class="field"><label for="legalName">Legal company name</label><input id="legalName" name="legalName" autocomplete="organization" maxlength="160" required></div><div class="field"><label for="tradingName">Trading name <span>(optional)</span></label><input id="tradingName" name="tradingName" maxlength="160"></div></div><div class="form-row"><div class="field"><label for="companyNumber">Company number</label><input id="companyNumber" name="companyNumber" maxlength="30" required></div><div class="field"><label for="vatNumber">VAT number <span>(optional)</span></label><input id="vatNumber" name="vatNumber" maxlength="30"></div></div><div class="field"><label for="customerType">Customer type</label><select id="customerType" name="customerType" required><option value="">Select</option><option value="pharmacy">Pharmacy</option><option value="hospital">Hospital</option><option value="wholesaler">Wholesaler</option><option value="clinic">Clinic</option><option value="other_healthcare">Other healthcare organisation</option></select></div><div class="application-actions"><button class="btn btn-primary" type="button" data-step-next>Continue</button></div></fieldset>
       <fieldset data-application-step hidden><legend><span>Step 2 of 4</span>Responsible person and addresses</legend><div class="form-row"><div class="field"><label for="responsiblePerson">Responsible person</label><input id="responsiblePerson" name="responsiblePerson" autocomplete="name" maxlength="120" required></div><div class="field"><label for="responsibleRole">Role</label><input id="responsibleRole" name="responsibleRole" maxlength="120" required></div></div><div class="field"><label for="responsibleEmail">Responsible person email</label><input id="responsibleEmail" name="responsibleEmail" type="email" autocomplete="email" maxlength="160" required></div><div class="field"><label for="registeredAddress">Registered address</label><textarea id="registeredAddress" name="registeredAddress" maxlength="500" required></textarea></div><div class="form-row"><div class="field"><label for="registeredPostcode">Registered postcode</label><input id="registeredPostcode" name="registeredPostcode" maxlength="20" required></div><div class="field"><label for="deliveryPostcode">Delivery postcode <span>(optional)</span></label><input id="deliveryPostcode" name="deliveryPostcode" maxlength="20"></div></div><div class="field"><label for="deliveryAddress">Delivery address <span>(if different)</span></label><textarea id="deliveryAddress" name="deliveryAddress" maxlength="500"></textarea></div><div class="application-actions"><button class="btn btn-outline" type="button" data-step-back>Back</button><button class="btn btn-primary" type="button" data-step-next>Continue</button></div></fieldset>
@@ -558,7 +579,7 @@ function careersPage() {
 
 function errorPage(code, title, message) {
   const meta = { title: `${code} ${title} | NovaPharm Healthcare`, description: message, eyebrow: `Error ${code}` };
-  return `${head(meta, code === "404" ? "404" : "service-unavailable", { robots: "noindex,nofollow", schemas: [] })}<body class="error-page"><main id="main" class="error-shell"><img src="/assets/Novapharm-logo.svg" alt="NovaPharm Healthcare" width="58" height="58"><span>${code}</span><h1>${esc(title)}</h1><p>${esc(message)}</p><a class="btn btn-primary" href="/">Return to NovaPharm</a></main></body></html>`;
+  return `${head(meta, code === "404" ? "404" : "service-unavailable", { robots: "noindex,nofollow", schemas: [] })}<body class="error-page"><main id="main" class="error-shell"><a class="error-brand" href="/" aria-label="NovaPharm Healthcare home">${brandPicture({ width: 320, height: 40, eager: true })}</a><span>${code}</span><h1>${esc(title)}</h1><p>${esc(message)}</p><a class="btn btn-primary" href="/">Return to NovaPharm</a></main></body></html>`;
 }
 
 function redirectPage(title, target) {
@@ -622,7 +643,7 @@ export function buildPublicPages() {
     display: "standalone",
     background_color: "#f6f7f8",
     theme_color: "#b81220",
-    icons: [{ src: "/assets/Novapharm-logo.svg", sizes: "any", type: "image/svg+xml", purpose: "any maskable" }]
+    icons: [{ src: brandLogoSvg, sizes: "any", type: "image/svg+xml", purpose: "any" }]
   }, null, 2));
   return { publicRoutes, articles, leadership };
 }
