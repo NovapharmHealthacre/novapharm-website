@@ -3,6 +3,9 @@ node_modules/
 *.log
 .env
 data/
+artifacts/
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal
+_secure/
+private-content/

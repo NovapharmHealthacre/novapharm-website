@@ -9,7 +9,7 @@ async function readJson(response) {
 async function csrf() {
   const response = await fetch("/api/security/csrf", { credentials: "same-origin" });
   if (response.status === 404) {
-    throw new Error("Secure portal backend is not active on this static host yet. Use the Executive Platform links below, or deploy the Node runtime for password login.");
+    throw new Error("Secure portal backend is not active on this static host yet. Customer, employee and board access requires the Node runtime deployment.");
   }
   if (!response.ok) throw new Error("Secure portal is temporarily unavailable.");
   const data = await readJson(response);
@@ -38,7 +38,7 @@ if (loginForm) {
         body: JSON.stringify(payload)
       });
       const data = await readJson(response);
-      if (response.status === 404) throw new Error("Secure portal backend is not active on this static host yet. Use the Executive Platform links below, or deploy the Node runtime for password login.");
+      if (response.status === 404) throw new Error("Secure portal backend is not active on this static host yet. Customer, employee and board access requires the Node runtime deployment.");
       if (!response.ok) throw new Error(data.error || "Login failed.");
       window.location.href = data.redirectTo || "/portal/dashboard/";
     } catch (error) {

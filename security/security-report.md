@@ -2,7 +2,11 @@
 
 ## Implemented Controls
 
-- Server-side protection for `/portal/*`, `/employee/*`, `/admin/*`, root Executive Platform pages and protected documents.
+- Server-side protection and role checks for `/portal/*`, `/employee/*`, `/admin/*`, root Executive Platform pages and protected documents.
+- GitHub Pages-safe public portal shells with no dashboard bindings, records or controlled files.
+- Runtime-only secure content root, excluded from the public Git repository and configured with `SECURE_CONTENT_ROOT`.
+- HTTP static fallback denylist for runtime data, source code, integration code, architecture/audit records, dotfiles and root configuration files.
+- Customer, employee, board and administrator access scopes. The initial Vishal account has all four scopes; additional users use hashed `PORTAL_USERS_JSON` records.
 - HMAC-signed session cookie with expiry.
 - HttpOnly session cookie and `SameSite=Lax`.
 - CSRF token endpoint and CSRF validation on state-changing routes.
@@ -20,7 +24,7 @@
 Run:
 
 ```sh
-PORTAL_PASSWORD=Vish123 node scripts/generate-password-hash.mjs
+PORTAL_PASSWORD='a temporary local password' node scripts/generate-password-hash.mjs
 ```
 
 Store the generated `PORTAL_PASSWORD_SALT` and `PORTAL_PASSWORD_HASH` as production environment variables. Do not deploy `PORTAL_PASSWORD` in production.
@@ -32,3 +36,4 @@ Store the generated `PORTAL_PASSWORD_SALT` and `PORTAL_PASSWORD_HASH` as product
 - Add malware scanning for uploaded documents before SharePoint synchronization.
 - Complete legal privacy/cookie review before enabling analytics tags.
 - Configure production backups, retention and disaster recovery.
+- Deploy the Node runtime and mount private content before inviting users; GitHub Pages is only the public website surface.

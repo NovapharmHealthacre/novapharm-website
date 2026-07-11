@@ -11,10 +11,13 @@
 ## Implemented
 - Clean canonical URLs for all required pages.
 - Metadata, Open Graph, Twitter Cards and canonical tags on every generated page.
-- JSON-LD Organization, WebPage, BreadcrumbList, Service and FAQ schema.
+- JSON-LD Corporation, WebSite, WebPage, BreadcrumbList, Service and FAQ schema.
+- Canonical Vishal Chakravarty leadership page with Person and ProfilePage schema, role, image, expertise, `worksFor` relationship and external identity references.
 - XML sitemap regenerated.
 - Robots rules updated to protect private portal/admin routes.
 - Internal linking expanded through global nav and footer.
+- Private/noindex portal routes removed from the sitemap.
+- Expert-led external publications linked from the homepage, Insights hub and Vishal profile.
 
 ## Priority Keywords Covered
 - UK pharmaceutical company

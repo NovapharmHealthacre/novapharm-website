@@ -11,6 +11,8 @@
 
 - Static HTML pages generated without a heavy frontend framework.
 - Shared cached CSS and deferred JavaScript.
+- System font stack with no render-blocking external font requests.
+- Preloaded LCP hero image with explicit dimensions and high fetch priority.
 - Optimized corporate hero and Open Graph image assets.
 - Semantic landmarks, headings and form labels.
 - JSON-LD on public pages.
@@ -21,6 +23,6 @@
 
 ## Verification Status
 
-Automated structure validation is passing. Lighthouse could not be run in this session because the sandbox blocks localhost binding with `listen EPERM`.
+Automated structure validation is passing. Lighthouse could not be run in this session because the sandbox blocks localhost binding with `listen EPERM` and browser policy blocks local file/data previews.
 
 Run Lighthouse against the deployed HTTPS domain after production deployment and DNS are complete.

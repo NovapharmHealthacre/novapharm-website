@@ -3,8 +3,9 @@ import { dirname, extname, join, resolve } from "node:path";
 
 const root = resolve(process.cwd());
 
-const pages = [
-  "index.html",
+const pages = ["index.html", "portal/index.html", "portal/executive-platform/index.html"];
+
+const executivePages = [
   "NP_Hub.html",
   "NP_CEO.html",
   "NP_Sales.html",
@@ -25,15 +26,7 @@ const pages = [
   "NP_Documents.html"
 ];
 
-const documents = [
-  "public/docs/NP_Implementation_Blueprint_v2.pdf",
-  "public/docs/NP_Flowcharts_v3.pdf",
-  "portal/executive-platform/docs/NP_Implementation_Blueprint_v2.pdf",
-  "portal/executive-platform/docs/NP_Flowcharts_v3.pdf"
-];
-
-const portalPages = pages.filter((name) => name.startsWith("NP_")).map((name) => `portal/executive-platform/${name}`);
-const pagesToValidate = pages.concat(portalPages);
+const pagesToValidate = pages;
 const localExtensions = new Set([".html", ".pdf", ".js", ".css", ".json", ".webmanifest", ".svg"]);
 
 function fail(message) {
@@ -52,12 +45,6 @@ function assetExists(path) {
 for (const page of pagesToValidate) {
   if (!fileExists(page)) {
     fail(`missing page ${page}`);
-  }
-}
-
-for (const doc of documents) {
-  if (!fileExists(doc)) {
-    fail(`missing document ${doc}`);
   }
 }
 
@@ -104,13 +91,15 @@ for (const page of pagesToValidate.filter((name) => name.endsWith(".html"))) {
     }
   }
 
-  const basename = page.split("/").pop();
-  if (basename.startsWith("NP_") && basename !== "NP_Documents.html") {
-    for (const linkedPage of pages.filter((name) => name.startsWith("NP_") && name.endsWith(".html"))) {
-      if (!html.includes(`href="${linkedPage}"`)) {
-        fail(`${page} sidebar is missing link to ${linkedPage}`);
-      }
-    }
+}
+
+const login = readFileSync(join(root, "portal/index.html"), "utf8");
+if (!login.includes("name=\"accessType\"")) fail("portal login is missing access-type selection");
+if (login.includes("href=\"/portal/executive-platform/NP_")) fail("portal login exposes executive launch links");
+
+for (const page of executivePages) {
+  if (fileExists(page) || fileExists(`portal/executive-platform/${page}`)) {
+    fail(`public Executive Platform page still exists: ${page}`);
   }
 }
 
@@ -118,4 +107,4 @@ if (process.exitCode) {
   process.exit(process.exitCode);
 }
 
-console.log(`Validated ${pagesToValidate.length} pages and ${documents.length} PDF documents.`);
+console.log(`Validated ${pagesToValidate.length} public entry pages and confirmed Executive Platform modules are not publicly published.`);
