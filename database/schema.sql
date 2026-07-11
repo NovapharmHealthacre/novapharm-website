@@ -187,6 +187,52 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS auth_credentials (
+  username TEXT PRIMARY KEY REFERENCES users(username) ON DELETE CASCADE,
+  password_hash TEXT NOT NULL,
+  password_salt TEXT NOT NULL,
+  password_algorithm TEXT NOT NULL DEFAULT 'pbkdf2-sha256',
+  password_iterations INTEGER NOT NULL DEFAULT 210000,
+  failed_attempts INTEGER NOT NULL DEFAULT 0,
+  locked_until TEXT,
+  password_changed_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS auth_user_scopes (
+  username TEXT NOT NULL REFERENCES users(username) ON DELETE CASCADE,
+  scope TEXT NOT NULL CHECK(scope IN ('customer', 'employee', 'board', 'admin')),
+  created_at TEXT NOT NULL,
+  PRIMARY KEY(username, scope)
+);
+
+CREATE TABLE IF NOT EXISTS auth_sessions (
+  id TEXT PRIMARY KEY,
+  username TEXT NOT NULL REFERENCES users(username) ON DELETE CASCADE,
+  access_type TEXT NOT NULL CHECK(access_type IN ('customer', 'employee', 'board')),
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  last_seen_at TEXT NOT NULL,
+  revoked_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS rate_limit_buckets (
+  bucket_key TEXT PRIMARY KEY,
+  request_count INTEGER NOT NULL,
+  reset_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS security_events (
+  id TEXT PRIMARY KEY,
+  event_type TEXT NOT NULL,
+  username TEXT,
+  network_fingerprint TEXT,
+  outcome TEXT NOT NULL,
+  details_json TEXT NOT NULL DEFAULT '{}',
+  occurred_at TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS employees (
   id TEXT PRIMARY KEY,
   user_id TEXT UNIQUE REFERENCES users(id),
@@ -337,6 +383,15 @@ CREATE TABLE IF NOT EXISTS leads (
   updated_at TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS lead_details (
+  lead_id TEXT PRIMARY KEY REFERENCES leads(id) ON DELETE CASCADE,
+  role_title TEXT NOT NULL,
+  country TEXT NOT NULL,
+  telephone TEXT,
+  consent_at TEXT NOT NULL,
+  source_page TEXT NOT NULL DEFAULT 'corporate_website'
+);
+
 CREATE TABLE IF NOT EXISTS support_tickets (
   id TEXT PRIMARY KEY,
   ticket_number TEXT NOT NULL UNIQUE,
@@ -436,3 +491,6 @@ CREATE INDEX IF NOT EXISTS idx_events_delivery ON integration_events(status, nex
 CREATE INDEX IF NOT EXISTS idx_audit_entity ON audit_logs(entity_type, entity_id, occurred_at);
 CREATE INDEX IF NOT EXISTS idx_products_search ON products(product_name, sku, gtin);
 CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status, created_at);
+CREATE INDEX IF NOT EXISTS idx_auth_sessions_expiry ON auth_sessions(expires_at, revoked_at);
+CREATE INDEX IF NOT EXISTS idx_security_events_username ON security_events(username, occurred_at);
+CREATE INDEX IF NOT EXISTS idx_security_events_network ON security_events(network_fingerprint, occurred_at);

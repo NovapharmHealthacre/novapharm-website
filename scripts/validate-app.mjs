@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, extname, join, resolve } from "node:path";
+import { applyExecutiveBranding } from "../src/integrations/sharepoint/secure-content-branding.mjs";
 
 const root = resolve(process.cwd());
 
@@ -27,7 +28,7 @@ const executivePages = [
 ];
 
 const pagesToValidate = pages;
-const localExtensions = new Set([".html", ".pdf", ".js", ".css", ".json", ".webmanifest", ".svg"]);
+const localExtensions = new Set([".html", ".pdf", ".js", ".css", ".json", ".webmanifest", ".svg", ".png"]);
 
 function fail(message) {
   console.error(`Validation failed: ${message}`);
@@ -96,6 +97,17 @@ for (const page of pagesToValidate.filter((name) => name.endsWith(".html"))) {
 const login = readFileSync(join(root, "portal/index.html"), "utf8");
 if (!login.includes("name=\"accessType\"")) fail("portal login is missing access-type selection");
 if (login.includes("href=\"/portal/executive-platform/NP_")) fail("portal login exposes executive launch links");
+if (!login.includes("/assets/brand/novapharm-healthcare-logo.svg") || !login.includes("/assets/brand/novapharm-healthcare-logo.png")) fail("portal login is missing the approved logo and fallback");
+if (login.includes("Vishal has customer")) fail("portal login exposes administrator access details");
+
+const executiveFixture = `<html><head><style></style></head><body><div class="sb-hd">
+  <div class="sb-brand">
+    <div class="sb-mark">NP</div>
+    <div><div class="sb-name">NovaPharm</div><div class="sb-co">Healthcare Ltd &middot; EIP v2.0</div></div>
+  </div>
+</div></body></html>`;
+const brandedFixture = applyExecutiveBranding(executiveFixture, "NP_Hub.html");
+if (!brandedFixture.includes("/assets/brand/novapharm-healthcare-logo.svg") || brandedFixture.includes("sb-mark")) fail("Executive Platform official-brand transformation failed");
 
 for (const page of executivePages) {
   if (fileExists(page) || fileExists(`portal/executive-platform/${page}`)) {

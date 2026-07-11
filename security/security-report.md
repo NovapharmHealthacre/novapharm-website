@@ -2,38 +2,36 @@
 
 ## Implemented Controls
 
-- Server-side protection and role checks for `/portal/*`, `/employee/*`, `/admin/*`, root Executive Platform pages and protected documents.
-- GitHub Pages-safe public portal shells with no dashboard bindings, records or controlled files.
-- Runtime-only secure content root, excluded from the public Git repository and configured with `SECURE_CONTENT_ROOT`.
-- HTTP static fallback denylist for runtime data, source code, integration code, architecture/audit records, dotfiles and root configuration files.
-- Customer, employee, board and administrator access scopes. The initial Vishal account has all four scopes; additional users use hashed `PORTAL_USERS_JSON` records.
-- HMAC-signed session cookie with expiry.
-- HttpOnly session cookie and `SameSite=Lax`.
-- CSRF token endpoint and CSRF validation on state-changing routes.
-- Login, contact, application and document-upload rate limits.
-- PBKDF2 password hash generation for the initial admin credential.
-- Production plaintext password fallback disabled.
-- Content Security Policy, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` and COOP headers.
-- API responses use `Cache-Control: no-store`.
-- Upload limits and content-type allow-list for controlled documents.
-- Integration events block safely when credentials are missing rather than faking success.
-- Audit logs for lead creation, application submission, customer activation, product/supplier/order/PO creation, documents and integration outcomes.
+- Persistent server-side identities, PBKDF2-SHA256 credentials, access scopes, sessions, lockouts, rate limits and security events.
+- HMAC-signed session IDs with expiry; `Secure`, `HttpOnly` and `SameSite=Lax` session cookie in production.
+- Customer, employee, board and administrator authorisation at route and API boundaries.
+- CSRF double-submit protection and production browser-origin validation for every state change.
+- Public static denylist for private content, source, database, architecture, audit, security, integration and deployment files.
+- Data-free public shells for every protected route.
+- Production HSTS, frame denial, MIME sniffing protection, COOP, CORP, referrer and permissions policies. Public CSP disallows inline code; authenticated legacy Executive Platform files receive a private-root-only inline allowance.
+- Controlled input lengths, enum validation, email validation, consent evidence and spam honeypot.
+- 512 KB JSON body limit and 10 MB document limit.
+- Expiring onboarding upload token; private persistent storage with restrictive file modes.
+- Extension, MIME and basic signature validation for PDF, JPEG, PNG, CSV, DOCX and XLSX.
+- Draft lifecycle status and audit/outbox records for uploaded evidence.
+- Safe blocked/retry states for Graph, warehouse and email integrations.
+- Health endpoint exposes service readiness and version, not secrets.
 
-## Production Requirements
+## Credential Procedure
 
-Run:
+Generate an administrator hash in a controlled terminal:
 
 ```sh
-PORTAL_PASSWORD='a temporary local password' node scripts/generate-password-hash.mjs
+PORTAL_PASSWORD='temporary value entered locally' npm run hash:password
 ```
 
-Store the generated `PORTAL_PASSWORD_SALT` and `PORTAL_PASSWORD_HASH` as production environment variables. Do not deploy `PORTAL_PASSWORD` in production.
+Store only `PORTAL_PASSWORD_SALT` and `PORTAL_PASSWORD_HASH` in production. The server refuses a plaintext `PORTAL_PASSWORD` when `NODE_ENV=production`.
 
-## Remaining Security Work
+## Required Before User Invitation
 
-- Connect Microsoft Entra ID for real employee and customer SSO.
-- Add persistent server-side session storage for multi-instance hosting.
-- Add malware scanning for uploaded documents before SharePoint synchronization.
-- Complete legal privacy/cookie review before enabling analytics tags.
-- Configure production backups, retention and disaster recovery.
-- Deploy the Node runtime and mount private content before inviting users; GitHub Pages is only the public website surface.
+- Enable Microsoft Entra ID SSO, MFA and conditional access.
+- Add malware scanning and quarantine release before approving uploaded evidence.
+- Configure encrypted off-host backups and complete a restore test.
+- Approve privacy notice, portal terms, retention schedule and incident process.
+- Break inherited SharePoint permissions on the Executive Platform and assign only board/administrator groups.
+- Complete an independent penetration test before storing real customer, employee or regulated records.

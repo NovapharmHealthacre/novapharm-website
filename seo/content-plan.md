@@ -1,19 +1,30 @@
-# Content Plan
+# Editorial Content Plan
 
-## Next Content Priorities
-- Vishal Chakravarty: UK-EU pharmaceutical market access decision framework.
-- Evidence-led MHRA regulatory readiness explainer.
-- Pharmaceutical imports UK due-diligence guide.
-- Pharmaceutical exports UK operating checklist.
-- Distributor qualification and GDP readiness checklist.
-- Verified Nutraxin product pages after catalogue extraction and regulatory review.
-- Medicine supply resilience analysis using named primary sources.
+## Published Foundation
 
-## Editorial Standards
-- Do not publish unverified clinical claims.
-- Separate regulatory information from legal advice.
-- Use entity-rich headings and direct answers.
-- Add FAQ sections where search intent contains comparison or decision questions.
-- Attribute expert commentary to a real author with a maintained profile page.
-- Cite current MHRA, GOV.UK, NHS or other primary sources for regulatory statements.
-- Prefer a smaller number of original, decision-useful pages over high-volume generic content.
+- Compliance-first pharmaceutical distribution.
+- PLPI and supply resilience.
+- Oncology demand forecasting.
+- GDP and QMS foundations.
+- NovaPharm's three-pillar sourcing strategy.
+- Batch-to-buyer traceability.
+
+Each article is original, 900-1,400 words, internally linked, source-aware and explicit about educational versus regulated advice.
+
+## Next Approved Themes
+
+- Vishal Chakravarty: a practical UK-EU pharmaceutical market-access decision framework.
+- Supplier qualification evidence for UK pharmaceutical buyers.
+- Product opportunity due diligence from dossier to distribution model.
+- Outsourced pharmaceutical logistics: SLA, quality agreement and data-interface responsibilities.
+- Designing customer onboarding without duplicated compliance entry.
+- Regulatory data governance for product, batch and document masters.
+
+## Editorial Standard
+
+- Use first-hand operating analysis and qualified expert review; avoid commodity summaries.
+- Cite current MHRA, GOV.UK, NHS, European Commission or other primary sources for regulatory facts.
+- Keep proposed capabilities, licences, products, partnerships and forecasts explicitly staged.
+- Do not publish medicine availability, clinical benefit, regulatory approval or NHS-supply claims without evidence and approval.
+- Maintain an identifiable author or accountable organisation, publication date, update date and related pages.
+- Review regulatory articles at least every six months and after material guidance changes.

@@ -1,8 +1,11 @@
 .DS_Store
+*.swp
+*.swo
+*~
 node_modules/
 *.log
 .env
-data/
+/data/
 artifacts/
 *.sqlite
 *.sqlite-shm

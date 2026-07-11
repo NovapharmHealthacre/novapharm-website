@@ -3,10 +3,22 @@ import { allocateNumber, audit, db, enqueue, nowIso, one, run, transaction, all 
 import { sharePointFolderPath } from "./sharepoint-mapping.mjs";
 
 function required(value, name) {
-  const clean = String(value ?? "").trim();
+  const clean = String(value ?? "").replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim();
   if (!clean) throw Object.assign(new Error(`${name} is required.`), { statusCode: 400 });
   return clean;
 }
+
+const enquiryTypes = new Set([
+  "Product opportunity",
+  "Distribution partnership",
+  "Pharmacy or wholesaler account",
+  "CMO/CDMO partnership",
+  "Regulatory services",
+  "Supplier enquiry",
+  "Media",
+  "Careers",
+  "General enquiry"
+]);
 
 function integer(value, name, minimum = 0) {
   const parsed = Number(value);
@@ -25,16 +37,17 @@ function entityFolderEvent(entityType, entityId, businessNumber, displayName, ac
   });
 }
 
-export function listProducts(query = "") {
+export function listProducts(query = "", { customerVisibleOnly = false } = {}) {
   const term = `%${String(query).trim()}%`;
   return all(`
     SELECT p.*,
       COALESCE((SELECT SUM(b.quantity_available) FROM batches b WHERE b.product_id = p.id AND b.release_status = 'released'), 0) AS stock_available,
       (SELECT MIN(b.expiry_date) FROM batches b WHERE b.product_id = p.id AND b.release_status = 'released' AND b.quantity_available > 0) AS next_expiry
     FROM products p
-    WHERE ? = '%%' OR p.product_name LIKE ? OR p.sku LIKE ? OR COALESCE(p.gtin, '') LIKE ?
+    WHERE (? = 0 OR (p.lifecycle_status = 'active' AND p.marketing_status = 'marketed' AND p.mhra_status IN ('approved', 'licensed')))
+      AND (? = '%%' OR p.product_name LIKE ? OR p.sku LIKE ? OR COALESCE(p.gtin, '') LIKE ?)
     ORDER BY p.product_name LIMIT 100
-  `, term, term, term, term);
+  `, customerVisibleOnly ? 1 : 0, term, term, term, term);
 }
 
 export function listCustomers(query = "") {
@@ -82,27 +95,45 @@ export function createSupplier(input, actor) {
 }
 
 export function createLead(input, actor = "public_website") {
+  if (String(input.website || "").trim()) return { id: null, status: "received" };
   const lead = {
     id: randomUUID(),
     name: required(input.name, "Name").slice(0, 120),
-    email: required(input.email, "Email").slice(0, 160),
+    email: required(input.email, "Email").toLowerCase().slice(0, 160),
     company: required(input.company, "Company").slice(0, 160),
     enquiryType: required(input.enquiryType, "Enquiry type").slice(0, 80),
     message: required(input.message, "Message").slice(0, 2000),
+    role: required(input.role, "Role or job title").slice(0, 120),
+    country: required(input.country, "Country").slice(0, 80),
+    telephone: String(input.telephone || "").replace(/[^0-9+().\-\s]/g, "").trim().slice(0, 40) || null,
     status: "new"
   };
   if (!/^\S+@\S+\.\S+$/.test(lead.email)) throw Object.assign(new Error("Enter a valid email address."), { statusCode: 400 });
+  if (!enquiryTypes.has(lead.enquiryType)) throw Object.assign(new Error("Select a valid enquiry type."), { statusCode: 400 });
+  if (lead.message.length < 20) throw Object.assign(new Error("Message must contain at least 20 characters."), { statusCode: 400 });
+  if (input.consent !== "yes") throw Object.assign(new Error("Consent is required before submitting an enquiry."), { statusCode: 400 });
   const now = nowIso();
   return transaction(() => {
     run("INSERT INTO leads(id, name, email, company, enquiry_type, message, status, created_at, updated_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", lead.id, lead.name, lead.email, lead.company, lead.enquiryType, lead.message, lead.status, now, now);
+    run(`INSERT INTO lead_details(lead_id, role_title, country, telephone, consent_at, source_page)
+      VALUES(?, ?, ?, ?, ?, ?)`, lead.id, lead.role, lead.country, lead.telephone, now, "corporate_website");
     audit({ actor, action: "lead.created", entityType: "lead", entityId: lead.id, after: { company: lead.company, enquiryType: lead.enquiryType } });
-    enqueue({ eventType: "lead.notification_requested", aggregateType: "lead", aggregateId: lead.id, destinationSystem: "microsoft365", idempotencyKey: `lead:${lead.id}:notify:sales`, payload: { operation: "notify_team", team: "sales", leadId: lead.id, company: lead.company, enquiryType: lead.enquiryType } });
+    enqueue({ eventType: "lead.notification_requested", aggregateType: "lead", aggregateId: lead.id, destinationSystem: "microsoft365", idempotencyKey: `lead:${lead.id}:notify:sales`, payload: { operation: "notify_team", team: "sales", leadId: lead.id, company: lead.company, enquiryType: lead.enquiryType, replyTo: lead.email } });
     return { id: lead.id, status: lead.status };
   });
 }
 
 export function listLeads(limit = 100) {
-  return all("SELECT id, name, email, company, enquiry_type, status, created_at FROM leads ORDER BY created_at DESC LIMIT ?", limit);
+  return all(`SELECT l.id, l.name, l.email, l.company, l.enquiry_type, l.status, l.created_at,
+      d.role_title, d.country, d.telephone, d.consent_at
+    FROM leads l LEFT JOIN lead_details d ON d.lead_id = l.id
+    ORDER BY l.created_at DESC LIMIT ?`, limit);
+}
+
+export function leadNotificationContext(leadId) {
+  return one(`SELECT l.id, l.name, l.email, l.company, l.enquiry_type, l.message,
+      d.role_title, d.country, d.telephone
+    FROM leads l JOIN lead_details d ON d.lead_id = l.id WHERE l.id = ?`, leadId);
 }
 
 export function createProduct(input, actor) {
@@ -141,6 +172,31 @@ export function createProduct(input, actor) {
 
 export function submitCustomerApplication(input, actor = "public_applicant") {
   const company = input.company || {};
+  const responsiblePeopleInput = Array.isArray(input.responsiblePeople) ? input.responsiblePeople.slice(0, 5) : [];
+  const addressesInput = Array.isArray(input.addresses) ? input.addresses.slice(0, 10) : [];
+  const complianceInput = input.compliance || {};
+  const customerTypes = new Set(["pharmacy", "hospital", "wholesaler", "clinic", "other_healthcare"]);
+  const gdpStatuses = new Set(["certified", "in_progress", "not_applicable"]);
+  if (!responsiblePeopleInput.length) throw Object.assign(new Error("At least one responsible person is required."), { statusCode: 400 });
+  if (!addressesInput.some((address) => address?.type === "registered")) throw Object.assign(new Error("A registered address is required."), { statusCode: 400 });
+  const customerType = required(company.customerType, "Customer type");
+  if (!customerTypes.has(customerType)) throw Object.assign(new Error("Customer type is invalid."), { statusCode: 400 });
+  const gdpStatus = required(complianceInput.gdpStatus, "GDP status");
+  if (!gdpStatuses.has(gdpStatus)) throw Object.assign(new Error("GDP status is invalid."), { statusCode: 400 });
+  const responsiblePeople = responsiblePeopleInput.map((person) => {
+    const email = required(person?.email, "Responsible person email").toLowerCase().slice(0, 160);
+    if (!/^\S+@\S+\.\S+$/.test(email)) throw Object.assign(new Error("Responsible person email is invalid."), { statusCode: 400 });
+    return { name: required(person?.name, "Responsible person name").slice(0, 120), role: required(person?.role, "Responsible person role").slice(0, 120), email };
+  });
+  const addresses = addressesInput.map((address) => ({
+    type: ["registered", "delivery", "invoice"].includes(address?.type) ? address.type : "delivery",
+    address: required(address?.address, "Address").slice(0, 500),
+    postcode: required(address?.postcode, "Postcode").slice(0, 20),
+    country: String(address?.country || "GB").trim().toUpperCase().slice(0, 2)
+  }));
+  const email = required(input.email, "Contact email").toLowerCase().slice(0, 160);
+  if (!/^\S+@\S+\.\S+$/.test(email)) throw Object.assign(new Error("Contact email is invalid."), { statusCode: 400 });
+  if (input.bank?.confirmationProvided !== true) throw Object.assign(new Error("Bank confirmation must be available for review."), { statusCode: 400 });
   const now = nowIso();
   const application = {
     id: randomUUID(),
@@ -150,13 +206,19 @@ export function submitCustomerApplication(input, actor = "public_applicant") {
       tradingName: String(company.tradingName || "").trim(),
       companyNumber: required(company.companyNumber, "Company number"),
       vatNumber: String(company.vatNumber || "").trim(),
-      customerType: required(company.customerType, "Customer type")
+      customerType
     },
-    responsiblePeople: Array.isArray(input.responsiblePeople) ? input.responsiblePeople : [],
-    addresses: Array.isArray(input.addresses) ? input.addresses : [],
-    compliance: input.compliance || {},
-    bank: input.bank || {},
-    email: required(input.email, "Contact email")
+    responsiblePeople,
+    addresses,
+    compliance: {
+      wdaNumber: String(complianceInput.wdaNumber || "").trim().slice(0, 50),
+      gdpStatus,
+      insuranceStatus: required(complianceInput.insuranceStatus, "Insurance status").slice(0, 200),
+      creditReferences: required(complianceInput.creditReferences, "Credit references").slice(0, 1000),
+      tradeReferences: required(complianceInput.tradeReferences, "Trade references").slice(0, 1000)
+    },
+    bank: { confirmationProvided: true },
+    email
   };
   return transaction(() => {
     run(`INSERT INTO account_applications(
@@ -252,7 +314,7 @@ export function createOrder(input, actor, scopedCustomerId = null) {
   const lines = Array.isArray(input.lines) ? input.lines : [];
   if (!lines.length) throw Object.assign(new Error("At least one order line is required."), { statusCode: 400 });
   const priced = lines.map((line) => {
-    const product = one("SELECT * FROM products WHERE id = ? AND lifecycle_status IN ('approved', 'active')", required(line.productId, "Product"));
+    const product = one("SELECT * FROM products WHERE id = ? AND lifecycle_status = 'active' AND marketing_status = 'marketed' AND mhra_status IN ('approved', 'licensed')", required(line.productId, "Product"));
     if (!product) throw Object.assign(new Error("Product is unavailable for ordering."), { statusCode: 409 });
     const quantity = integer(line.quantity, "Quantity", 1);
     const unitPriceMinor = product.list_price_minor;

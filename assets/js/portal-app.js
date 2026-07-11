@@ -1,33 +1,37 @@
 async function portalRequest(path, options = {}) {
-  const response = await fetch(path, { credentials: "same-origin", ...options });
-  if (response.status === 401) {
-    window.location.href = "/portal/";
-    return null;
+  try {
+    return await window.NovaPharmApi.request(path, options);
+  } catch (error) {
+    if (error.status === 401) {
+      window.location.href = "/portal/";
+      return null;
+    }
+    throw error;
   }
-  return response;
 }
 
 async function hydratePortal() {
-  const sessionResponse = await portalRequest("/api/portal/session");
-  if (!sessionResponse || !sessionResponse.ok) return;
-  const session = await sessionResponse.json();
+  const session = await portalRequest("/api/portal/session");
+  if (!session) return;
   document.querySelectorAll("[data-user-name]").forEach((node) => {
-    node.textContent = session.user?.username || "Portal user";
+    node.textContent = session.user?.displayName || session.user?.username || "Portal user";
   });
-
 }
 
 document.querySelectorAll("[data-logout]").forEach((button) => {
   button.addEventListener("click", async () => {
-    const csrfResponse = await fetch("/api/security/csrf", { credentials: "same-origin" });
-    const { csrfToken } = await csrfResponse.json();
-    await fetch("/api/auth/logout", {
-      method: "POST",
-      credentials: "same-origin",
-      headers: { "x-csrf-token": csrfToken }
-    });
-    window.location.href = "/portal/";
+    button.disabled = true;
+    try {
+      await window.NovaPharmApi.request("/api/auth/logout", {
+        method: "POST",
+        headers: { "x-csrf-token": await window.NovaPharmApi.csrf() }
+      });
+    } finally {
+      window.location.href = "/portal/";
+    }
   });
 });
 
-hydratePortal();
+hydratePortal().catch(() => {
+  window.location.href = "/portal/";
+});
