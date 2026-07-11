@@ -38,8 +38,9 @@ No anonymous sharing link was found. The folder inherits site Owners, Members an
 - 26 public pages, six long-form articles and 39 locked shells.
 - 1,227 internal references.
 - Domain workflow and HTTP integration suites.
+- GitHub `Production readiness` workflow on release head `95bc3e6d22b62fe96eb954b236e00935e3c6c040`.
 - Vishal's local hashed administrator identity verifies with customer, employee, board and administrator scopes.
 
 ## Release State
 
-The production candidate is published to `NovapharmHealthacre/novapharm-website` on `codex/ultra-premium-rebuild`. The implementation commit is `14b28a7cf56617766e7cc9e8047ececba3430dc0`; release verification is recorded separately. The authenticated site is not described as live until a Node host is connected, production secrets are entered, DNS is moved and post-deployment tests pass.
+The production candidate is published to `NovapharmHealthacre/novapharm-website` on `codex/ultra-premium-rebuild`. The implementation commit is `14b28a7cf56617766e7cc9e8047ececba3430dc0`; the CI-passing release head is `95bc3e6d22b62fe96eb954b236e00935e3c6c040`. The authenticated site is not described as live until the pull request is approved and merged, a Node host is connected, production secrets are entered, DNS is moved and post-deployment tests pass.

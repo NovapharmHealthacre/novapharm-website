@@ -2,7 +2,7 @@
 
 ## Required To Go Live
 
-- Approve and merge `codex/ultra-premium-rebuild` after GitHub CI passes.
+- Approve and merge pull request 2 from `codex/ultra-premium-rebuild`; GitHub CI is passing.
 - Connect the repository to the Render Blueprint or an equivalent Node 24 host with persistent private storage.
 - Enter production administrator hash/salt, session secret and allowed origin.
 - Add and verify `novapharmhealthcare.com` and `www.novapharmhealthcare.com`; use the exact host-provided DNS records.
