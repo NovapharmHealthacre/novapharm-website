@@ -66,7 +66,19 @@ if (!sessionSecret || sessionSecret.length < 24) {
   throw new Error("SESSION_SECRET must be set to at least 24 characters.");
 }
 
+if (isProduction) {
+  for (const variable of ["DATABASE_PATH", "SECURE_CONTENT_ROOT", "DOCUMENT_STORAGE_ROOT", "PUBLIC_ORIGIN", "PUBLIC_API_ORIGIN", "SITE_URL"]) {
+    if (!process.env[variable]) throw new Error(`${variable} is required in production.`);
+  }
+  if (host !== "0.0.0.0") throw new Error("HOST must be 0.0.0.0 in production.");
+  if (!publicOrigin.startsWith("https://")) throw new Error("PUBLIC_ORIGIN must use HTTPS in production.");
+  for (const variable of ["PUBLIC_API_ORIGIN", "SITE_URL"]) {
+    if (new URL(process.env[variable]).origin !== publicOrigin) throw new Error(`${variable} must match PUBLIC_ORIGIN.`);
+  }
+}
+
 if (!configuredPortalUsers.length) {
+  if (isProduction) throw new Error("At least one hashed portal administrator must be configured in production.");
   console.warn("Portal login is not configured. Set the initial admin variables or PORTAL_USERS_JSON with hashed credentials.");
 } else {
   provisionAuthUsers(configuredPortalUsers);
@@ -111,9 +123,11 @@ const blockedPublicTopLevel = new Set([
   "src"
 ]);
 const blockedPublicRootFiles = new Set([
+  "Dockerfile",
   "package.json",
   "package-lock.json",
   "README.md",
+  "render.yaml",
   "server.mjs"
 ]);
 
@@ -350,7 +364,13 @@ function safeFilePath(urlPath) {
   return isWithinDirectory(contentRoot, filePath) ? filePath : null;
 }
 
-function portalData() {
+function portalData(session) {
+  if (session.role === "client") {
+    return {
+      dashboard: operationalDashboard(session.customerId),
+      dataPolicy: "Customer values are restricted to the authenticated customer account and come from the canonical database."
+    };
+  }
   return {
     dashboard: operationalDashboard(),
     integrations: syncStatus(),
@@ -507,22 +527,26 @@ export async function handleRequest(request, response) {
     }
 
     if (pathname === "/api/portal/data" && request.method === "GET") {
-      if (!scopedAuthentication(request, response, ["customer", "employee", "board"])) return;
-      json(response, 200, portalData());
+      const session = scopedAuthentication(request, response, ["customer", "employee", "board"]);
+      if (!session) return;
+      json(response, 200, portalData(session));
       return;
     }
 
     if (pathname === "/api/dashboard" && request.method === "GET") {
       const session = scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
+      if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
       const customerId = session.role === "client" ? session.customerId : null;
       json(response, 200, operationalDashboard(customerId));
       return;
     }
 
     if (pathname === "/api/catalog/products" && request.method === "GET") {
-      if (!scopedAuthentication(request, response, ["customer", "employee"])) return;
-      json(response, 200, { products: listProducts(url.searchParams.get("q") || ""), dataFreshness: new Date().toISOString() });
+      const session = scopedAuthentication(request, response, ["customer", "employee"]);
+      if (!session) return;
+      if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
+      json(response, 200, { products: listProducts(url.searchParams.get("q") || "", { customerVisibleOnly: session.role === "client" }), dataFreshness: new Date().toISOString() });
       return;
     }
 
@@ -557,6 +581,7 @@ export async function handleRequest(request, response) {
     if (pathname === "/api/orders" && request.method === "GET") {
       const session = scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
+      if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
       json(response, 200, { orders: listOrders({ customerId: session.role === "client" ? session.customerId : null }) });
       return;
     }
@@ -565,6 +590,7 @@ export async function handleRequest(request, response) {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
       const session = scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
+      if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
       const scopedCustomerId = session.role === "client" ? session.customerId : null;
       json(response, 201, { order: createOrder(await readBody(request), session.username, scopedCustomerId) });
       return;
@@ -588,14 +614,19 @@ export async function handleRequest(request, response) {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
       const session = scopedAuthentication(request, response, ["customer", "employee", "board"]);
       if (!session) return;
+      const requestedEntityType = url.searchParams.get("entityType");
+      const requestedEntityId = url.searchParams.get("entityId");
+      if (session.role === "client" && (!session.customerId || requestedEntityType !== "customer" || requestedEntityId !== session.customerId)) {
+        return json(response, 403, { error: "Customer documents must be linked to the authenticated customer account." });
+      }
       const bytes = await readRawBody(request);
       const document = storeDocument({
         bytes,
         fileName: url.searchParams.get("fileName"),
         contentType: String(request.headers["content-type"] || "application/octet-stream").split(";")[0],
         documentClass: url.searchParams.get("documentClass") || "general",
-        entityType: url.searchParams.get("entityType"),
-        entityId: url.searchParams.get("entityId"),
+        entityType: requestedEntityType,
+        entityId: requestedEntityId,
         businessNumber: url.searchParams.get("businessNumber"),
         displayName: url.searchParams.get("displayName"),
         actor: session.username
@@ -689,8 +720,8 @@ export async function handleRequest(request, response) {
     else if (canCompress && acceptedEncoding.includes("gzip")) createReadStream(filePath).pipe(createGzip({ level: 6 })).pipe(response);
     else createReadStream(filePath).pipe(response);
   } catch (error) {
-    console.error(error);
     const status = Number(error.statusCode || (String(error.code || "").startsWith("SQLITE_CONSTRAINT") ? 409 : 500));
+    if (status >= 500) console.error(error);
     const acceptsHtml = String(request.headers.accept || "").includes("text/html");
     if (status >= 500 && acceptsHtml && !String(request.url || "").startsWith("/api/") && !response.headersSent) {
       const errorPage = join(root, "500.html");

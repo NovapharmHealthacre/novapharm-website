@@ -13,8 +13,8 @@ Microsoft Graph is the server-side boundary between the canonical operational da
 
 ## Confirmed Destination
 
-- Host: `novapharmhealthcare.sharepoint.com`
-- Site: `/sites/NovapharmTier1`
+- Host: supplied privately through `SHAREPOINT_HOSTNAME`
+- Site: supplied privately through `SHAREPOINT_SITE_PATH`
 - Library: `Documents`
 - Drive ID: `b!uEWPsekhUUSx7JVCwS8wfvjggLC-ZqBFl1Khkpc0DVKhy0Cv-Vh1SYg9j7mGijwl`
 - Ecosystem root: `NovaPharm Digital Ecosystem`

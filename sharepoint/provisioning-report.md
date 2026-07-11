@@ -2,11 +2,11 @@
 
 ## Connection
 
-- Delegated account: `vishal@novapharmhealthcare.com`
-- Tenant host: `novapharmhealthcare.sharepoint.com`
-- Site: `/sites/NovapharmTier1`
-- Site display name: `Novapharm Tier 1`
-- Document library: `Documents`
+- Delegated account: not recorded in the public repository
+- Tenant host: supplied privately through production configuration
+- Site: supplied privately through production configuration
+- Site display name: not recorded in the public repository
+- Document library: configured shared document library
 - Provisioned on: 11 July 2026
 
 ## Provisioned Root

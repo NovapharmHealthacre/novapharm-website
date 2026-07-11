@@ -71,6 +71,7 @@ const product = createProduct({
   manufacturer: "Validation Supplier Ltd",
   listPriceMinor: 1250,
   mhraStatus: "approved",
+  marketingStatus: "marketed",
   lifecycleStatus: "active"
 }, "validation_admin");
 const order = createOrder({

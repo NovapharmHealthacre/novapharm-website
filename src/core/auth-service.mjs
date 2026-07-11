@@ -34,6 +34,7 @@ function scopesFor(role, requested = []) {
 function validateProvisionedUser(user, index) {
   if (!user.username) throw new Error(`Portal user ${index + 1} requires a username.`);
   if (!roleScopes[user.role]) throw new Error(`Portal user ${index + 1} has an unsupported role.`);
+  if (user.role === "client" && !user.customerId) throw new Error(`Portal user ${index + 1} requires a customerId.`);
   if (!/^[a-f0-9]{64}$/i.test(user.passwordHash) || !/^[a-f0-9]{16,}$/i.test(user.passwordSalt)) {
     throw new Error(`Portal user ${index + 1} requires a PBKDF2 password hash and salt.`);
   }

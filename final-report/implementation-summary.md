@@ -8,6 +8,7 @@ Public copy consistently distinguishes verified company facts from proposed, pla
 
 ## Delivered
 
+- The supplied official NovaPharm Healthcare SVG and PNG are copied byte-for-byte into `assets/brand/`; their SHA-256 hashes are enforced during validation. The supplied PDF and EPS were reviewed as print masters and are not exposed as public web downloads.
 - Premium mobile-first corporate website with one structured content architecture.
 - Company, governance, five leadership profiles, eight service pillars, regulatory, portfolio, partnership, technology, investor, career and contact experiences.
 - Six original 900-1,400-word insight articles and RSS feed.
@@ -23,7 +24,7 @@ Public copy consistently distinguishes verified company facts from proposed, pla
 
 ## SharePoint Completed
 
-The live `Novapharm Tier 1` site and `Documents` library were confirmed. `NovaPharm Digital Ecosystem/16 Website and Portal/Executive Platform` now contains:
+The configured SharePoint site and document library were confirmed. The controlled Executive Platform folder now contains:
 
 - 18 Executive Platform HTML modules.
 - The controlled Executive Platform hub.
@@ -34,13 +35,24 @@ No anonymous sharing link was found. The folder inherits site Owners, Members an
 
 ## Verification Passed
 
-- `npm run check`.
+- `npm install`, `npm run build`, `npm run validate`, `npm run syntax`, `npm run security:scan`, integration tests and production-security tests.
 - 26 public pages, six long-form articles and 39 locked shells.
-- 1,227 internal references.
+- 1,333 internal references and assets.
+- A 75-document semantic sweep covering mobile viewport declarations, image alternatives, intrinsic image dimensions and heading order.
+- Public claims audit covering current licences, NHS supply, logistics contracts, financial performance, product availability, AI/blockchain status and private immigration-plan content.
 - Domain workflow and HTTP integration suites.
-- GitHub `Production readiness` workflow on release head `95bc3e6d22b62fe96eb954b236e00935e3c6c040`.
-- Vishal's local hashed administrator identity verifies with customer, employee, board and administrator scopes.
+- Current-schema SQLite backup creation and integrity verification.
+- The local hashed administrator identity verifies with customer, employee, board and administrator scopes.
+
+The local `npm audit` request could not reach the npm advisory endpoint in the restricted audit environment. The GitHub `Production readiness` workflow performs the authoritative package audit after each branch update.
+
+## Pre-Merge Findings
+
+- The current candidate tree contains placeholders only in `.env.example`; administrator and SharePoint operational identifiers have been removed from public configuration examples.
+- The historical patch for the first pull-request commit contains the deleted password string previously supplied for local use. It must be treated as compromised and must not be used for production. Removing it from Git history requires an owner-approved repository history rewrite; an ordinary commit cannot erase it.
+- Source-level responsive and semantic checks pass, but a rendered Safari and Chromium audit remains required because the local audit environment could not bind a preview server or navigate a local document.
+- The Executive Platform SharePoint folder has no anonymous link, but inherited Visitors read and Members write access must be narrowed before confidential board data is introduced.
 
 ## Release State
 
-The production candidate is published to `NovapharmHealthacre/novapharm-website` on `codex/ultra-premium-rebuild`. The implementation commit is `14b28a7cf56617766e7cc9e8047ececba3430dc0`; the CI-passing release head is `95bc3e6d22b62fe96eb954b236e00935e3c6c040`. The authenticated site is not described as live until the pull request is approved and merged, a Node host is connected, production secrets are entered, DNS is moved and post-deployment tests pass.
+The production candidate is prepared for `NovapharmHealthacre/novapharm-website` on `codex/ultra-premium-rebuild`. The authoritative release head and workflow status are recorded on pull request 2. The authenticated site is not described as live until the pre-merge blockers are resolved, the pull request is approved and merged, a Node host is connected, production secrets are entered, DNS is moved and post-deployment tests pass.

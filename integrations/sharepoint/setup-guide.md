@@ -6,17 +6,17 @@ Create `NovaPharm Website Portal` in Microsoft Entra ID. Prefer certificate auth
 
 ## 2. Grant Least Privilege
 
-Use Microsoft Graph application permission `Sites.Selected` where tenant policy permits. Grant the application read/write access only to `/sites/NovapharmTier1`. Use broader `Sites.ReadWrite.All` only after a documented security review.
+Use Microsoft Graph application permission `Sites.Selected` where tenant policy permits. Grant the application read/write access only to the approved production site. Use broader `Sites.ReadWrite.All` only after a documented security review.
 
 The browser must never receive Graph credentials or app-only tokens.
 
 ## 3. Configure The Host
 
 ```text
-SHAREPOINT_HOSTNAME=novapharmhealthcare.sharepoint.com
-SHAREPOINT_SITE_PATH=/sites/NovapharmTier1
+SHAREPOINT_HOSTNAME=your-tenant.sharepoint.com
+SHAREPOINT_SITE_PATH=/sites/your-site
 SHAREPOINT_DRIVE_ID=b!uEWPsekhUUSx7JVCwS8wfvjggLC-ZqBFl1Khkpc0DVKhy0Cv-Vh1SYg9j7mGijwl
-SHAREPOINT_EXECUTIVE_PLATFORM_PATH=NovaPharm Digital Ecosystem/16 Website and Portal/Executive Platform
+SHAREPOINT_EXECUTIVE_PLATFORM_PATH=your-controlled-library-folder
 ```
 
 Add tenant, client and secret/certificate values through the host's secret manager.

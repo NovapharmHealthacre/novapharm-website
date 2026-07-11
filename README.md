@@ -13,7 +13,7 @@ NovaPharm's single repository contains the premium public corporate website, sec
 
 ## Local Runtime
 
-Node 24 or later is required because the canonical database uses Node's built-in SQLite module.
+Node 24 is required because the canonical database uses Node's built-in SQLite module and the release is pinned to that major runtime.
 
 ```sh
 npm ci
@@ -36,4 +36,4 @@ See [deployment/deployment-guide.md](deployment/deployment-guide.md) and [deploy
 
 ## Quality Gate
 
-`npm run check` rebuilds the site, validates metadata and structured data, checks internal links, exercises domain workflows and runs the HTTP integration suite. The same command runs in `.github/workflows/ci.yml`.
+`npm run check` rebuilds the site, validates metadata, structured data, public claims and protected-shell contracts, checks internal links, scans for secrets and artefacts, exercises domain workflows and runs the HTTP and production-security integration suites. The same command runs in `.github/workflows/ci.yml` after the package advisory audit.
