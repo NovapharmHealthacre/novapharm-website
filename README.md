@@ -1,48 +1,39 @@
 # NovaPharm Healthcare Digital Ecosystem
 
-This repository contains the consolidated NovaPharm Healthcare website and operating platform:
+NovaPharm's single repository contains the premium public corporate website, secure customer/employee/board portal, canonical operational data model and governed integration boundaries for SharePoint, Microsoft 365, warehouse services and finance.
 
-- Premium public website for NovaPharm Healthcare.
-- Secure portal entry point.
-- Customer portal routes for accounts, orders, invoices, statements, documents and analytics.
-- Employee portal routes for customers, suppliers, products, orders, purchasing, finance, quality, regulatory, CRM and reports.
-- Admin dashboard for leads, users, content, analytics and integration monitoring.
-- Executive Platform integrated at `/portal/executive-platform/`.
-- Canonical SQLite data model, domain services and audit logs.
-- SharePoint/Microsoft Graph integration boundary.
-- Polar Speed/Marken warehouse and delivery integration boundary.
+## Applications
 
-## Runtime
+- Public pharmaceutical company, services, regulatory, portfolio, partnership, leadership and insight pages.
+- Controlled customer account application with document intake.
+- Customer workspace for account, catalogue, orders, finance, documents and support.
+- Employee workspace for customer, supplier, product, order, purchasing, quality and regulatory operations.
+- Board-only Executive Platform and CEO dashboard hydrated from SharePoint.
+- Administrator workspace for leads, users, content, analytics and integration status.
 
-Node 24+ is required because the backend uses Node's built-in SQLite module.
+## Local Runtime
 
-```sh
-node scripts/build-pages.mjs
-SESSION_SECRET=local-dev-session-secret-change-me PORTAL_USERNAME=Vishal PORTAL_PASSWORD=***REMOVED*** node server.mjs
-```
-
-The local URL is:
-
-```text
-http://127.0.0.1:4173/
-```
-
-## Validation
+Node 24 or later is required because the canonical database uses Node's built-in SQLite module.
 
 ```sh
-node scripts/validate-site.mjs
-node scripts/validate-app.mjs
-node scripts/validate-domain.mjs
+npm ci
+npm run build
+npm run check
+npm start
 ```
 
-`validate-domain` runs customer onboarding, document upload, customer activation, product creation, order creation, purchase order creation, audit logging and blocked integration events against a temporary database.
+Create a local `.env` from `.env.example`. A local plaintext password is accepted only when `NODE_ENV` is not `production`; hashed credentials are strongly preferred in every environment.
 
-## GitHub Merge
+The default local address is `http://127.0.0.1:4173/`.
 
-The consolidated tree can be copied into the website GitHub checkout with:
+## Production
 
-```sh
-node scripts/merge-to-website-repo.mjs "/Users/vishalchakravarty/Documents/Novapharm InfoTech/novapharm-website"
-```
+`render.yaml` defines the initial single-instance Node deployment with a persistent disk, application health check and secret prompts. `Dockerfile` provides a portable deployment path. The public site and API must share `https://novapharmhealthcare.com`; GitHub Pages is suitable only as a temporary static fallback because it cannot authenticate portal users or run workflows.
 
-This preserves the target `.git` folder and excludes runtime artifacts.
+Controlled Executive Platform files are never committed. `scripts/sync-secure-content.mjs` hydrates them from SharePoint into `SECURE_CONTENT_ROOT` at startup when Graph credentials are configured.
+
+See [deployment/deployment-guide.md](deployment/deployment-guide.md) and [deployment/environment-variables.md](deployment/environment-variables.md).
+
+## Quality Gate
+
+`npm run check` rebuilds the site, validates metadata and structured data, checks internal links, exercises domain workflows and runs the HTTP integration suite. The same command runs in `.github/workflows/ci.yml`.

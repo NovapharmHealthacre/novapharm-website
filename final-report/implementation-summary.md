@@ -1,40 +1,45 @@
 # Implementation Summary
 
-## Completed
+## Source of Truth
 
-- Audited previous website, Executive Platform files, PDFs, reports and deployment notes.
-- Created unified architecture documents under `/architecture`.
-- Created canonical database schema under `/database/schema.sql`.
-- Built domain services for customers, suppliers, products, account applications, documents, orders, purchase orders, leads, dashboards and audit logs.
-- Built secure Node runtime with CSRF, rate limits, HMAC sessions, customer/employee/board/admin scopes, protected routes and security headers.
-- Built SharePoint Graph client and document synchronization outbox.
-- Connected to Microsoft 365 as `vishal@novapharmhealthcare.com`, validated the `Novapharm Tier 1` SharePoint site and its shared `Documents` library.
-- Provisioned the governed `NovaPharm Digital Ecosystem` root with 18 functional folders for architecture, customers, suppliers, products, orders, invoices, purchase orders, quality, MHRA, contracts, regulatory, warehouse, HR, training, finance, investor/board, website/portal and audit trails.
-- Built Polar Speed/Marken integration adapter and event processor that blocks until API credentials/contracts are supplied.
-- Added automatic onboarding flow: application, account number, customer record, SharePoint folder event, team notifications, onboarding document carry-forward and portal access request.
-- Rebuilt the public website with a premium, mobile-first pharmaceutical design system, simplified navigation and system-font performance.
-- Added a dedicated Vishal Chakravarty leadership page with Person/ProfilePage schema, verified entity links and published perspectives.
-- Generated locked public portal routes and runtime-only customer, employee and admin application shells.
-- Moved the Executive Platform and controlled PDFs into `_secure/executive-platform/`, outside the publishable GitHub Pages tree.
-- Denied runtime data, source, integration, architecture, audit, dotfile and root configuration paths at the HTTP static boundary.
-- Added Corporation, WebSite, WebPage, Breadcrumb, Service, FAQ, Person and ProfilePage structured data.
-- Removed private and noindex routes from the XML sitemap and expanded SEO/GEO documentation to current Google guidance.
-- Removed non-deterministic dashboard chart values from executive modules.
-- Added GitHub merge script and live deployment guide.
-- Preserved the GitHub Pages `CNAME` binding for `novapharmhealthcare.com` and added a regression validation for it.
-- Published the consolidated 126-file production tree to `NovapharmHealthacre/novapharm-website` `main`; the canonical website release is commit `7d334e81ced63ac6857bcce2b4119ca600739f83`.
+The implementation brief and both retained business-plan editions were reviewed in full. The later plan controls current positioning; annex detail was used for product focus, sourcing, regulatory preparation, technology roadmap and leadership context. Current Companies House and official MHRA/GOV.UK pages were checked for claims that can change.
+
+Public copy consistently distinguishes verified company facts from proposed, planned, in-development and authorisation-dependent capabilities. NovaPharm is not represented as holding a WDA(H), PLPI licence, available medicine stock, NHS supply contract or deployed AI/blockchain capability without evidence.
+
+## Delivered
+
+- Premium mobile-first corporate website with one structured content architecture.
+- Company, governance, five leadership profiles, eight service pillars, regulatory, portfolio, partnership, technology, investor, career and contact experiences.
+- Six original 900-1,400-word insight articles and RSS feed.
+- Advanced metadata, canonical URLs, schema, sitemap, robots, breadcrumbs and internal linking.
+- Customer, employee, board and administrator portal choices with server-side scopes.
+- Persistent hashed authentication, lockout, sessions, rate limits and security events.
+- Accessible contact transaction with database storage, consent evidence and optional two-message email delivery.
+- Four-stage customer onboarding with server validation, document intake, expiring upload token, audit/outbox and activation workflow.
+- Canonical company data model and operational APIs for customers, suppliers, products, orders and purchase orders.
+- SharePoint Graph client, folder/outbox model and secure-content hydration.
+- Polar Speed/Marken integration boundary that remains blocked until an approved API contract is supplied.
+- Render Blueprint, Dockerfile, CI workflow, health check and rollback documentation.
+
+## SharePoint Completed
+
+The live `Novapharm Tier 1` site and `Documents` library were confirmed. `NovaPharm Digital Ecosystem/16 Website and Portal/Executive Platform` now contains:
+
+- 18 Executive Platform HTML modules.
+- The controlled Executive Platform hub.
+- `docs/NP_Flowcharts_v3.pdf` and `docs/NP_Implementation_Blueprint_v2.pdf`.
+- `vendor/chart.umd.js` for private chart rendering.
+
+No anonymous sharing link was found. The folder inherits site Owners, Members and Visitors groups; board-only permission narrowing remains an administrator action.
 
 ## Verification Passed
 
-- `node --check server.mjs`
-- JS/MJS syntax checks across `src`, `scripts` and `assets/js`
-- `node scripts/validate-site.mjs`
-- `node scripts/validate-app.mjs`
-- `node scripts/validate-domain.mjs`
+- `npm run check`.
+- 26 public pages, six long-form articles and 39 locked shells.
+- 1,227 internal references.
+- Domain workflow and HTTP integration suites.
+- Vishal's local hashed administrator identity verifies with customer, employee, board and administrator scopes.
 
-## Current Blocking Items
+## Release State
 
-- Local live preview is blocked by sandbox `listen EPERM`; the Browser local/data preview is also blocked by URL policy.
-- The public GitHub Pages release and custom-domain binding are published. The authenticated portal still requires a Node-capable production host, environment secrets and DNS/proxy routing; GitHub Pages cannot run the secure server.
-- The Nutraxin catalogue attachment has expired from Outlook temporary storage and must be reattached before verified product details and images can be published.
-- The live SharePoint folder foundation is provisioned, but automated runtime synchronization still requires a production Entra application registration, Graph permissions and webhook configuration.
+The production candidate is prepared for `NovapharmHealthacre/novapharm-website` on `codex/ultra-premium-rebuild`. The authenticated site is not described as live until a Node host is connected, production secrets are entered, DNS is moved and post-deployment tests pass.

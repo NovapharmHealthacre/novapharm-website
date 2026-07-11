@@ -1,16 +1,11 @@
-async function adminRequest(path) {
-  const response = await fetch(path, { credentials: "same-origin" });
-  if (response.status === 401) {
-    window.location.href = "/portal/";
-    return null;
-  }
-  return response;
-}
-
 async function hydrateAdmin() {
-  const response = await adminRequest("/api/admin/summary");
-  if (!response || !response.ok) return;
-  const data = await response.json();
+  let data;
+  try {
+    data = await window.NovaPharmApi.request("/api/admin/summary");
+  } catch (error) {
+    if (error.status === 401 || error.status === 403) window.location.href = "/portal/";
+    return;
+  }
 
   document.querySelectorAll("[data-admin-metric]").forEach((node) => {
     const key = node.getAttribute("data-admin-metric");

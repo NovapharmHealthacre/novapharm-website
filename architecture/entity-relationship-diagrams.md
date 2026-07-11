@@ -1,5 +1,7 @@
 # Entity Relationship Diagrams
 
+These diagrams describe the target logical domain. `database/schema.sql` is the implemented launch model; entities such as deliveries, returns, CAPA, recalls and dedicated document-version rows remain target-state extensions and must not be interpreted as deployed functionality.
+
 ## Operational Core
 
 ```mermaid
@@ -68,7 +70,7 @@ erDiagram
 
 ## Polymorphic Link Controls
 
-`document_links`, `approvals`, `audit_logs` and `notifications` use `(entity_type, entity_id)` only through an application-maintained entity registry and database trigger. Free-form entity types are forbidden. This permits cross-domain links without creating duplicate document or approval tables while preserving referential checks.
+`document_links`, upload operations and SharePoint mappings currently use application-maintained entity allowlists. The PostgreSQL migration should add an entity registry and database enforcement for polymorphic references. Free-form entity types must remain forbidden.
 
 ## Required Unique Constraints
 
@@ -83,7 +85,7 @@ erDiagram
 - `documents.document_number`
 - `users.entra_object_id`
 - `sharepoint_links(site_id, drive_id, item_id)`
-- `integration_events(source_system, idempotency_key)`
+- `integration_events(destination_system, idempotency_key)`
 
 ## Required Referential Behaviours
 

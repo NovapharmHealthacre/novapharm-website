@@ -48,14 +48,15 @@ export class GraphClient {
   }
 
   async request(path, options = {}) {
+    const { responseType = "json", ...fetchOptions } = options;
     const response = await fetch(`${GRAPH_ROOT}${path}`, {
-      ...options,
+      ...fetchOptions,
       headers: {
         Authorization: `Bearer ${await this.token()}`,
-        ...(options.body && !(options.body instanceof Uint8Array) ? { "Content-Type": "application/json" } : {}),
-        ...(options.headers || {})
+        ...(fetchOptions.body && !(fetchOptions.body instanceof Uint8Array) ? { "Content-Type": "application/json" } : {}),
+        ...(fetchOptions.headers || {})
       },
-      signal: options.signal || AbortSignal.timeout(30_000)
+      signal: fetchOptions.signal || AbortSignal.timeout(30_000)
     });
     if (!response.ok) {
       const body = await response.text();
@@ -65,6 +66,8 @@ export class GraphClient {
       throw error;
     }
     if (response.status === 204) return null;
+    if (responseType === "bytes") return new Uint8Array(await response.arrayBuffer());
+    if (responseType === "text") return response.text();
     return response.json();
   }
 
@@ -109,6 +112,21 @@ export class GraphClient {
     return this.request(`/drives/${driveId}/items/${itemId}/listItem/fields`, {
       method: "PATCH",
       body: JSON.stringify(fields)
+    });
+  }
+
+  async listFolderChildren(driveId, folderPath) {
+    const path = encodePath(folderPath);
+    const endpoint = path
+      ? `/drives/${driveId}/root:/${path}:/children?$select=id,name,size,file,folder,eTag,lastModifiedDateTime,webUrl`
+      : `/drives/${driveId}/root/children?$select=id,name,size,file,folder,eTag,lastModifiedDateTime,webUrl`;
+    return this.request(endpoint);
+  }
+
+  async downloadFile(driveId, itemId) {
+    return this.request(`/drives/${driveId}/items/${itemId}/content`, {
+      responseType: "bytes",
+      signal: AbortSignal.timeout(120_000)
     });
   }
 }

@@ -4,8 +4,8 @@
 
 | Capability | Authoritative system | NovaPharm responsibility |
 |---|---|---|
-| Identity | Microsoft Entra ID | role mapping, session enforcement, scoped access |
-| Operational master data | PostgreSQL | validation, workflow, canonical IDs, APIs |
+| Identity | NovaPharm local auth at launch; Microsoft Entra ID target | role mapping, persistent session enforcement, scoped access |
+| Operational master data | Persistent SQLite at launch; managed PostgreSQL target | validation, workflow, canonical IDs, APIs |
 | Controlled documents | SharePoint Online | metadata, lifecycle, version links, permissions |
 | Finance | approved finance platform | order-to-cash and procure-to-pay synchronization |
 | Physical inventory and dispatch | Polar Speed/WMS | inventory projection, reservation requests, status reconciliation |
@@ -20,8 +20,8 @@ flowchart LR
   Customer["Customer Portal"] --> API
   Employee["Employee Portal"] --> API
   Admin["Administration"] --> API
-  API --> IAM["Microsoft Entra ID"]
-  API --> DB["PostgreSQL Master Data"]
+  API --> IAM["Local Auth / Entra ID Target"]
+  API --> DB["SQLite Master Data / PostgreSQL Target"]
   API --> Outbox["Transactional Event Outbox"]
   Outbox --> Sync["Integration and Document Sync Workers"]
   Sync --> SP["SharePoint Online"]

@@ -13,6 +13,9 @@ Use Entra security groups, not direct user grants.
 | NP-Warehouse | warehouse and fulfilment folders |
 | NP-HR | restricted HR and training libraries |
 | NP-Executives | read governed cross-domain content |
+| NP-Board | read controlled Executive Platform and approved board files |
 | NP-Customer-{id} | customer-scoped approved documents only |
 
 Application-only Graph access should use `Sites.Selected` in production where tenant policy permits. Grant the app only to the NovaPharm site and audit all permission changes.
+
+The live Executive Platform folder currently inherits the site's Owners, Members and Visitors permissions and has no anonymous link. Before confidential board content is introduced, break inheritance, remove site-wide Members/Visitors access and grant only `NP-Board`, the minimum platform administrators and the application identity required for runtime hydration.

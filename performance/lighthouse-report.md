@@ -1,28 +1,32 @@
-# Lighthouse Report
+# Lighthouse Readiness Report
 
-## Target
+## Targets
 
 - Performance: 95+
 - Accessibility: 100
 - Best Practices: 100
 - SEO: 100
 
-## Implemented Optimizations
+## Implemented
 
-- Static HTML pages generated without a heavy frontend framework.
-- Shared cached CSS and deferred JavaScript.
-- System font stack with no render-blocking external font requests.
-- Preloaded LCP hero image with explicit dimensions and high fetch priority.
-- Optimized corporate hero and Open Graph image assets.
-- Semantic landmarks, headings and form labels.
-- JSON-LD on public pages.
-- XML sitemap and robots.txt.
-- Protected private routes excluded from search indexing.
-- Long-lived immutable cache headers for static assets through the Node runtime.
-- No simulated dashboard values in live operating dashboards.
+- Static semantic HTML without a frontend framework.
+- System font stack and no external font dependency.
+- Preloaded LCP hero with width, height and `fetchpriority="high"`.
+- Lazy loading and asynchronous decoding below the fold.
+- Deferred workflow-specific JavaScript.
+- Brotli/gzip compression, CDN-aware public caching and `no-store` responses where privacy requires it.
+- Responsive layouts, focus indicators, skip links, reduced motion and one-H1 page structure.
+- Unique metadata, structured data, sitemap, robots and RSS.
+- Private routes excluded from indexing and public data bindings.
 
-## Verification Status
+## Verified in Repository
 
-Automated structure validation is passing. Lighthouse could not be run in this session because the sandbox blocks localhost binding with `listen EPERM` and browser policy blocks local file/data previews.
+- 26 primary public pages.
+- Six 900-1,400-word original insight articles.
+- 1,227 valid internal links, local assets and anchors.
+- No missing required files or invalid JSON-LD.
+- Full build, domain and HTTP integration tests pass.
 
-Run Lighthouse against the deployed HTTPS domain after production deployment and DNS are complete.
+## Not Yet Measured
+
+Lighthouse was not run because this environment cannot bind localhost and browser policy blocks local file URLs. Run mobile and desktop Lighthouse against the final HTTPS domain after the Node deployment and DNS cutover. Record real scores, LCP, INP and CLS here; do not substitute estimated scores.

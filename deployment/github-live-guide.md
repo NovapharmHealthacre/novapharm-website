@@ -1,56 +1,28 @@
-# GitHub Merge and Live Deployment Guide
+# GitHub Release Guide
 
-## Current consolidation target
+## Canonical Repository
 
-The complete consolidated NovaPharm Healthcare platform now lives in:
+`NovapharmHealthacre/novapharm-website` is the single code repository for the corporate website, secure runtime, portal applications, architecture and deployment configuration. Controlled Executive Platform files remain in SharePoint and are intentionally excluded from Git.
 
-`/Users/vishalchakravarty/Documents/NovaPharm Executive Platform`
+## Release Branch
 
-The GitHub website checkout is:
+The production candidate is published from `codex/ultra-premium-rebuild` through a pull request to `main`.
 
-`/Users/vishalchakravarty/Documents/Novapharm InfoTech/novapharm-website`
-
-## Merge command
-
-Run this only when the website checkout is writable:
+Required pull-request checks:
 
 ```sh
-cd "/Users/vishalchakravarty/Documents/NovaPharm Executive Platform"
-node scripts/merge-to-website-repo.mjs "/Users/vishalchakravarty/Documents/Novapharm InfoTech/novapharm-website"
+npm ci --ignore-scripts
+npm run check
 ```
 
-The script preserves the target `.git` directory, removes obsolete public Executive Platform copies, and excludes secrets and runtime folders including `.env`, `_secure`, `private-content`, `data`, `artifacts`, `.git`, `node_modules`, `.DS_Store`, and swap files.
+Do not merge around a failed quality check. Review the claims guardrails, security changes, database/storage implications and deployment secrets before approval.
 
-## Commit and push
+## After Merge
 
-```sh
-cd "/Users/vishalchakravarty/Documents/Novapharm InfoTech/novapharm-website"
-node scripts/build-pages.mjs
-node scripts/validate-site.mjs
-node scripts/validate-app.mjs
-node scripts/validate-domain.mjs
-git status -sb
-git add -A
-git commit -m "Build unified NovaPharm digital ecosystem"
-git push -u origin codex/enterprise-redesign
-```
+1. Connect `main` to the Node hosting service defined in `render.yaml` or an approved equivalent.
+2. Enter production secrets in the host, not GitHub files.
+3. Verify the temporary hosting URL and `/api/health`.
+4. Add the apex and `www` custom domains using exact provider DNS instructions.
+5. Run the smoke, security, visual and Lighthouse checks in `deployment/deployment-guide.md`.
 
-## Make novapharmhealthcare.com live
-
-Deploy the Node runtime to a provider that supports persistent server execution, private storage and environment variables. GitHub Pages serves only the public corporate website and locked portal entry states.
-
-Recommended options:
-
-- Azure App Service with a custom domain.
-- Azure Container Apps.
-- Render, Railway or Fly.io for a managed Node deployment.
-- A VPS with Node 24+, HTTPS, process manager and backups.
-
-After deployment:
-
-1. Add `novapharmhealthcare.com` and `www.novapharmhealthcare.com` as custom domains in the hosting provider.
-2. Add the provider's DNS records at the domain registrar.
-3. Enable HTTPS certificates.
-4. Set every production environment variable in `deployment/environment-variables.md`, including a private `SECURE_CONTENT_ROOT` outside the repository.
-5. Confirm `/api/health` returns `status: ok`.
-6. Confirm `/sitemap.xml`, `/robots.txt`, `/portal/`, `/employee/dashboard/`, `/admin/dashboard/` and `/account-application/`.
+GitHub Pages may remain a temporary public-only fallback, but it cannot be the production portal host because it cannot execute `server.mjs` or protect runtime files.

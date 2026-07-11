@@ -6,14 +6,14 @@ This model is the contract for every NovaPharm website, portal, dashboard, workf
 
 ## Architecture Rules
 
-1. PostgreSQL is the operational system of record for structured business data.
+1. The launch implementation uses one persistent SQLite database as the operational system of record. Managed PostgreSQL is the target before multi-instance scaling.
 2. SharePoint is the system of record for controlled documents and binary files.
-3. Microsoft Entra ID is the identity source; application roles are mapped from Entra groups.
+3. Hashed local identities and database scopes are implemented for controlled launch access. Microsoft Entra ID and group mapping are the production identity target.
 4. Financial postings and payment state are mastered by the approved finance platform after integration.
 5. Warehouse stock movements are mastered by the approved WMS/Polar Speed feed after integration.
 6. The NovaPharm integration layer owns cross-system IDs, idempotency, audit events and synchronization state.
 7. Dashboards read governed views or APIs. They never invent operational values in browser code.
-8. Every record has `id`, `version`, `status`, `created_at`, `created_by`, `updated_at`, `updated_by` and `source_system`.
+8. New governed aggregates should carry `id`, lifecycle state, creation/update evidence and source-system context. Existing schema coverage is recorded below rather than implied.
 9. Business identifiers are unique but replaceable; internal UUIDs never change.
 10. Deletion of regulated or financial records is prohibited. Records are closed, superseded or anonymised under retention policy.
 
@@ -35,6 +35,8 @@ This model is the contract for every NovaPharm website, portal, dashboard, workf
 Identifiers are allocated transactionally. SharePoint paths use the human identifier; database links use the immutable UUID.
 
 ## Core Domains
+
+The tables in `database/schema.sql` are the implemented physical model. The broader entities below form the target logical model for later finance, warehouse, quality and PostgreSQL expansion; they are not all represented as deployed tables today.
 
 ### Party And Identity
 
@@ -131,6 +133,12 @@ All governed aggregates use explicit state machines. Invalid transitions are rej
 ## Analytics Contract
 
 Dashboards consume versioned metric definitions from governed views. Every metric records its owner, source tables, grain, filters, timezone, currency, refresh SLA and quality status. Projected values must carry `scenario` and `is_projection=true`; they cannot be rendered as actuals.
+
+## Implemented Physical Core
+
+The current schema includes organizations, customers, suppliers, products, batches, prices, orders/lines, invoices/lines, purchase orders/lines, users, employees, documents/links, SharePoint links, approvals, regulatory records, quality records, stock and warehouse transactions, CRM activities, leads/details, support tickets, notifications, account applications, training records, integration events, audit logs, authentication records and counters.
+
+SharePoint supplies file-version history. The local `documents.version` field tracks the canonical version pointer; a dedicated `document_versions` table belongs to the PostgreSQL migration when richer local version lineage is required.
 
 ## Anti-Silo Acceptance Criteria
 

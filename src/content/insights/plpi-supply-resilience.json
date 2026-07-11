@@ -1,0 +1,77 @@
+{
+  "title": "What PLPI Means for Pharmaceutical Supply Resilience and Cost-Optimised Access",
+  "slug": "plpi-pharmaceutical-supply-resilience",
+  "summary": "An evidence-led explanation of the UK parallel-import route, its operational requirements and the role it may play within a diversified pharmaceutical sourcing strategy.",
+  "heroImage": "/assets/novapharm-healthcare-hero.jpg",
+  "author": "NovaPharm Healthcare Editorial Team",
+  "published": "2026-07-11",
+  "updated": "2026-07-11",
+  "category": "Market access",
+  "tags": ["PLPI", "parallel imports", "MHRA", "pharmaceutical sourcing", "market access"],
+  "seoTitle": "PLPI Sourcing and UK Pharmaceutical Supply Resilience",
+  "seoDescription": "Understand the UK PLPI route, simple, standard and complex applications, supplier controls, post-authorisation duties and responsible commercial assessment.",
+  "disclaimer": "Educational corporate content only. PLPI eligibility, evidence, fees and obligations are product-specific and may change. Refer to current MHRA guidance and obtain qualified advice before acting.",
+  "related": ["compliance-first-pharmaceutical-distribution-uk", "three-pillar-sourcing", "gdp-qms-foundations"],
+  "internalLinks": [
+    { "label": "PLPI strategy services", "href": "/services/#plpi-strategy" },
+    { "label": "NovaPharm regulatory hub", "href": "/regulatory-services/" },
+    { "label": "Submit a product opportunity", "href": "/product-portfolio/#submit-opportunity" }
+  ],
+  "references": [
+    { "label": "MHRA: apply for a parallel import licence", "href": "https://www.gov.uk/guidance/medicines-apply-for-a-parallel-import-licence" },
+    { "label": "MHRA: sourcing medicines for the UK market", "href": "https://www.gov.uk/guidance/sourcing-medicines-for-the-great-britain-market-from-an-approved-country-for-import-or-northern-ireland" }
+  ],
+  "sections": [
+    {
+      "heading": "A regulated route, not a shortcut",
+      "paragraphs": [
+        "The UK parallel-import licensing scheme allows a medicine authorised in an EEA member state to be marketed in the United Kingdom when it has no therapeutic difference from the appropriate UK cross-referenced product and the MHRA grants the required product licence. This is a regulated product pathway. It is not permission to buy any lower-priced medicine in Europe and place it into UK distribution.",
+        "The licence holder must establish that the proposed product and supply chain meet the applicable requirements. The relevant company functions, authorised sites, product evidence, labelling, patient information, packaging, pharmacovigilance and recall arrangements form part of the operating picture. A wholesale distribution authorisation covering the relevant import, storage and sale activities is also required, and assembly or repackaging may engage additional manufacturing-authorisation requirements."
+      ]
+    },
+    {
+      "heading": "Simple, standard and complex categories",
+      "paragraphs": [
+        "Current MHRA guidance distinguishes simple, standard and complex parallel-import applications. A simple application may apply where the UK and source marketing authorisation holders have the required common origin through group ownership or a licensing agreement. A standard application applies where there is no common origin but the differences do not place the product within the complex criteria. A complex application can arise from specified differences such as a new excipient, a different active-ingredient manufacturing route, controlled release, certain sterile-product differences, an influenza vaccine or particular inhalation products.",
+        "These categories are more precise than treating familiar tablets as automatically simple and specialist medicines as automatically complex. Classification depends on the relationship between the imported and UK products and the evidence in the application. A responsible opportunity assessment therefore begins with regulatory facts, not a commercial category label or assumed approval timeline."
+      ],
+      "list": [
+        "Identify the appropriate UK cross-referenced product.",
+        "Verify the source product's authorisation and presentation.",
+        "Assess common origin and relevant product differences.",
+        "Confirm every company function and authorised site.",
+        "Define labelling, leaflet, packaging and assembly requirements."
+      ]
+    },
+    {
+      "heading": "Supply resilience comes from optionality",
+      "paragraphs": [
+        "A PLPI pathway may add an authorised sourcing option for an appropriate product. Within a wider portfolio, that can reduce dependence on a single commercial route and give procurement teams another way to evaluate availability. The resilience benefit is not automatic. It depends on qualified source wholesalers, reliable documentation, batch-level records, packaging capacity, transport controls and the continued commercial availability of the source product.",
+        "Parallel trade can also be affected by price movements, exchange rates, shortages in the source market, allocation decisions and changes to the UK or source authorisation. A product that appears attractive during an initial screen may not remain viable after regulatory fees, artwork, assembly, quality control, freight, working capital, returns and ongoing maintenance are included. Resilience therefore requires a portfolio process rather than a one-off buying decision."
+      ]
+    },
+    {
+      "heading": "Cost optimisation must remain evidence-led",
+      "paragraphs": [
+        "The possibility of a lower EEA source price is often the commercial reason to explore PLPI. Yet headline price comparisons can be misleading. The relevant question is the landed, compliant and risk-adjusted cost of a saleable UK pack over a realistic volume and time period. The model should include source price, currency exposure, transport, import checks, relabelling or repackaging, regulatory work, samples, inventory financing, quality events, destruction, returns and licence maintenance.",
+        "The analysis should also test downside cases. What happens if the source price changes, the supplier allocates stock, the application needs further evidence or the UK reference product changes? A useful commercial decision records the assumptions and the evidence date so the opportunity can be reassessed. This discipline protects both margin and regulatory judgement from an optimistic spreadsheet."
+      ]
+    },
+    {
+      "heading": "Supplier qualification is product-specific",
+      "paragraphs": [
+        "A supplier's wholesale authorisation is necessary evidence, but it is not the whole qualification. The licence scope, site, product route, transaction records, source authenticity and capacity to provide required batch details must be understood. The proposed licence holder should know how the supplier obtains stock, how authorisations are checked and how information will be available for complaints, defects, recalls and inspection.",
+        "Quality agreements should reflect the actual division of responsibilities. If a different company imports, stores, assembles, releases or transports the product, that role and its authorisation should be visible in the functions map. Changes to a supplier, site, manufacturer, marketing-authorisation holder or artwork may trigger a regulatory assessment or variation. The supplier network must therefore be maintained as controlled data, not a static contact list."
+      ]
+    },
+    {
+      "heading": "Approval begins the lifecycle",
+      "paragraphs": [
+        "A granted PLPI licence is the beginning of operational responsibility. The holder must manage current product information, variations, renewals, pharmacovigilance, defects and recalls. Records must support batch identification and affected-customer tracing. Where the cross-referred UK product changes, the parallel-import presentation may need corresponding review and variation.",
+        "Commercial teams need visibility of this lifecycle. A product should not appear as available merely because an application exists or a licence has been granted. Source qualification, approved artwork, effective agreements, released stock and customer scope must also be current. A governed product master can bring those conditions together and prevent a single status field from hiding material dependencies.",
+        "For NovaPharm, PLPI is a strategic pathway under preparation, not a claim of current licences or stock. Its potential role is to complement direct qualified manufacturing relationships and a European buying network. Used with disciplined assessment, it may contribute to resilience and cost-optimised access. Used as a promotional label, it creates the opposite: expectation without evidence.",
+        "The strongest product pipeline will therefore include explicit reasons for stopping opportunities as well as reasons for progressing them. A decision not to pursue a PLPI route may reflect weak source continuity, limited margin after compliant processing, unsuitable evidence or a better direct route. Recording that decision protects institutional knowledge and allows reassessment if the facts change. Good regulatory strategy is not measured by application volume; it is measured by the quality and sustainability of the authorised portfolio."
+      ]
+    }
+  ]
+}

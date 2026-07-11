@@ -7,7 +7,7 @@ sequenceDiagram
   actor User
   participant UI as Portal or Employee App
   participant API as Domain API
-  participant DB as PostgreSQL
+  participant DB as SQLite launch / PostgreSQL target
   participant Worker as Sync Worker
   participant SP as SharePoint
   participant Audit as Audit Log

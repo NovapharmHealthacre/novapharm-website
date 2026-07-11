@@ -1,50 +1,44 @@
 # Technical Audit
 
-## Current State Reviewed
+## Audited Baseline
 
-- Public website routes generated through `scripts/build-pages.mjs`.
-- Secure Node runtime in `server.mjs`.
-- Canonical data model in `database/schema.sql`.
-- Domain services in `src/core`.
-- SharePoint and Polar Speed integration boundaries in `src/integrations`.
-- Customer portal, employee portal, admin portal and protected Executive Platform modules.
-- Architecture documents under `/architecture`.
-- Deployment, security, SEO, GEO and final reports.
+The repository used static generated pages, a dependency-light Node HTTP server, Node's built-in SQLite module, one `dotenv` runtime dependency, canonical domain services, private portal shells and early SharePoint/warehouse integration adapters. Public and protected output were generated in one large file, browser requests assumed a same-origin API without a reliable URL contract, and authentication/rate-limit state lived in process memory.
 
-## Previous Issues Found
+## Issues Found
 
-- Public website and executive dashboards were not connected to a unified master data model.
-- Private portal, admin and operating apps were previously static or partially duplicated.
-- Customer, supplier, product, order, invoice, PO, document and workflow data did not share one canonical model.
-- SharePoint was described conceptually but did not have a working Graph client/outbox boundary.
-- Warehouse/Polar Speed integration had no clear contract boundary.
-- The Executive Platform used non-deterministic chart values in a few areas.
-- `/portal/settings` was promised but not consistently generated.
-- The website GitHub checkout exists separately and is not writable in the current sandbox session.
+- Duplicate public rendering logic and content embedded directly in the legacy generator.
+- Public deployment on GitHub Pages could not execute `/api`, causing portal and contact failures.
+- Sessions and rate limits disappeared on restart; login failures were not persistently auditable.
+- Contact and onboarding relied too heavily on browser validation and surfaced low-level errors.
+- Uploaded evidence used an ephemeral application path rather than the persistent private volume.
+- No deployed email transaction, production Blueprint, container definition or CI workflow.
+- Executive Platform source files were local only and could not hydrate a clean production host.
+- Test coverage did not exercise the HTTP request, cookie and authentication boundary.
 
-## Implemented
+## Implemented Architecture
 
-- Added master architecture docs: master data model, system relationships, data flows and ER diagrams.
-- Added canonical SQLite schema for customers, suppliers, products, orders, invoices, purchase orders, users, employees, documents, SharePoint links, audit logs, approvals, regulatory/quality records, stock/warehouse transactions, CRM, tickets and notifications.
-- Added domain services for account applications, activation, product master, supplier master, orders, purchase orders, leads, dashboards and audit reporting.
-- Added secure server APIs with CSRF, rate limiting, HMAC session signing, protected private routes and no-store API responses.
-- Added SharePoint document folder/upload outbox and Graph API client.
-- Added Polar Speed/Marken integration adapter and outbox processor that blocks safely until the API contract and credentials exist.
-- Linked onboarding documents forward from account applications to activated customer records.
-- Added generated customer, employee and admin portal routes.
-- Reintegrated all Executive Platform pages inside `/portal/executive-platform/` with portal-local assets.
-- Added merge script for copying this consolidated tree into the GitHub website checkout once writable.
+- One structured public source in `src/content` and one public renderer in `scripts/build-public-pages.mjs`.
+- One protected workspace renderer in `scripts/build-pages.mjs`; public routes receive data-free locked shells while working applications are written to `SECURE_CONTENT_ROOT`.
+- Canonical SQLite schema for customers, suppliers, products, batches, orders, invoices, purchase orders, users, documents, approvals, regulatory/quality records, warehouse events, CRM, support, notifications and audit logs.
+- Persistent credential, scope, session, lockout, rate-limit and security-event records connected to the canonical `users` table.
+- Shared browser API client for contact, onboarding, portal, employee and admin applications.
+- Controlled contact transaction with consent evidence and optional Resend delivery.
+- Server-validated staged account application and expiring evidence-upload token.
+- Private persistent document storage, type/extension/signature controls and SharePoint outbox.
+- Recursive SharePoint hydration for controlled Executive Platform files.
+- Render Blueprint, Dockerfile, health check, rollback guide and GitHub Actions quality gate.
 
 ## Verification
 
-- `node --check server.mjs`
-- JS/MJS syntax checks across `src`, `scripts` and `assets/js`
-- `node scripts/validate-site.mjs`
-- `node scripts/validate-app.mjs`
-- `node scripts/validate-domain.mjs`
+- `npm run check` passes.
+- 26 public pages and six 900-1,400-word insight articles validated.
+- 39 public protected shells contain no live bindings.
+- 1,227 local links, assets and anchors validated.
+- Domain workflow test covers onboarding, document storage, activation, supplier/product creation, sales order, purchase order, audit and blocked external integrations.
+- HTTP integration test covers CSRF, failed and successful login, persistent session, contact, onboarding upload, health and logout.
 
-## Open Technical Constraints
+## Production Constraints
 
-- Local server binding is blocked by the current sandbox with `listen EPERM`; this is an environment restriction, not a validation failure.
-- The actual website checkout at `/Users/vishalchakravarty/Documents/Novapharm InfoTech/novapharm-website` is read-only in this session, so direct merge, commit and push are blocked here.
-- Production live deployment to `novapharmhealthcare.com` needs hosting, DNS and GitHub write/deploy credentials.
+- The sandbox cannot bind a local TCP port, so the server is tested through its exported request handler.
+- Browser URL policy prevents a local file preview; production visual and Lighthouse QA must run after deployment.
+- SQLite launch topology is single-instance. Managed PostgreSQL is required before horizontal scaling.
