@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 
-const siteUrl = "https://www.novapharmhealthcare.com";
+const siteUrl = "https://novapharmhealthcare.com";
 const secureOutputRoot = process.env.SECURE_CONTENT_ROOT || "_secure";
 const organizationId = `${siteUrl}/#organization`;
 const websiteId = `${siteUrl}/#website`;

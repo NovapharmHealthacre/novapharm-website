@@ -57,5 +57,5 @@ To make `novapharmhealthcare.com` live:
 1. Add `novapharmhealthcare.com` and `www.novapharmhealthcare.com` to the hosting provider.
 2. Point DNS records from the domain registrar to the hosting provider.
 3. Enable HTTPS certificates.
-4. Set `SITE_URL=https://www.novapharmhealthcare.com`.
+4. Set `SITE_URL=https://novapharmhealthcare.com`.
 5. Run post-deploy validation and Lighthouse.
