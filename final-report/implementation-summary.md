@@ -21,6 +21,7 @@
 - Removed private and noindex routes from the XML sitemap and expanded SEO/GEO documentation to current Google guidance.
 - Removed non-deterministic dashboard chart values from executive modules.
 - Added GitHub merge script and live deployment guide.
+- Preserved the GitHub Pages `CNAME` binding for `novapharmhealthcare.com` and added a regression validation for it.
 
 ## Verification Passed
 
