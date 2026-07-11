@@ -2,7 +2,7 @@
 node_modules/
 *.log
 .env
-data/
+/data/
 artifacts/
 *.sqlite
 *.sqlite-shm
