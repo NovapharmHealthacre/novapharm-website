@@ -1,15 +1,18 @@
 {
   "name": "NovaPharm Healthcare",
   "short_name": "NovaPharm",
+  "description": "A UK-based, compliance-first and technology-enabled B2B pharmaceutical company preparing regulated trading, sourcing and wholesale distribution capabilities for oncology, specialty and licensed medicines.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#f6f8fb",
-  "theme_color": "#c1121f",
+  "background_color": "#f6f7f8",
+  "theme_color": "#b81220",
   "icons": [
     {
-      "src": "/assets/Novapharm-logo.svg",
+      "src": "/assets/brand/novapharm-healthcare-logo.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ]
 }

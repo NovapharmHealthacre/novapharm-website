@@ -1,0 +1,12 @@
+.git
+.github
+.env
+_secure
+data
+node_modules
+tmp
+artifacts
+private-content
+*.sqlite*
+*.log
+.DS_Store

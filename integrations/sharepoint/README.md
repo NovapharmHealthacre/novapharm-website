@@ -1,36 +1,29 @@
 # NovaPharm SharePoint Integration
 
-This folder contains the Microsoft 365 / SharePoint integration architecture for the NovaPharm Client Portal.
+Microsoft Graph is the server-side boundary between the canonical operational database and the controlled document backbone.
 
-## What It Provides
-- Microsoft Graph API client.
-- App-only authentication using tenant ID, client ID and client secret.
-- SharePoint site discovery.
-- Drive/folder operations.
-- Folder plan for portal document synchronization.
+## Implemented
 
-## Required Credentials
-No credentials are stored in this repository.
+- Application credential configuration and token caching.
+- Site and drive discovery.
+- Idempotent entity-folder creation and small-file upload.
+- Document metadata updates and canonical `sharepoint_links` records.
+- Transactional integration-event outbox with blocked and retry states.
+- Recursive download of the board-only Executive Platform into `SECURE_CONTENT_ROOT`.
 
-Set these environment variables in production:
+## Confirmed Destination
 
-- `MICROSOFT_TENANT_ID`
-- `MICROSOFT_CLIENT_ID`
-- `MICROSOFT_CLIENT_SECRET`
-- `SHAREPOINT_HOSTNAME`
-- `SHAREPOINT_SITE_PATH`
-- `SHAREPOINT_DRIVE_ID`
+- Host: supplied privately through `SHAREPOINT_HOSTNAME`
+- Site: supplied privately through `SHAREPOINT_SITE_PATH`
+- Library: `Documents`
+- Drive ID: `b!uEWPsekhUUSx7JVCwS8wfvjggLC-ZqBFl1Khkpc0DVKhy0Cv-Vh1SYg9j7mGijwl`
+- Ecosystem root: `NovaPharm Digital Ecosystem`
+- Controlled website source: `16 Website and Portal/Executive Platform`
 
-## Recommended Portal Folders
-- Regulatory Documents
-- Product Catalogues
-- Company Documents
-- Business Plans
-- Investor Files
-- Downloads
-- Announcements
-- Task Tracking
-- Executive Platform
+The Executive Platform source contains 18 modules, one hub, two PDFs and one local chart runtime. These files are excluded from Git and hydrated through `scripts/sync-secure-content.mjs`.
 
-## Important
-Folder creation cannot be performed until Microsoft Graph credentials and SharePoint site details are available.
+## Required Runtime Secrets
+
+`MICROSOFT_TENANT_ID`, `MICROSOFT_CLIENT_ID`, `MICROSOFT_CLIENT_SECRET`, `SHAREPOINT_HOSTNAME`, `SHAREPOINT_SITE_PATH` and, when needed, `SHAREPOINT_DRIVE_ID`.
+
+No credentials are stored in the repository or browser JavaScript.

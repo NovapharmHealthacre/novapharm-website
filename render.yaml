@@ -1,0 +1,65 @@
+services:
+  - type: web
+    name: novapharm-healthcare
+    runtime: node
+    region: frankfurt
+    plan: starter
+    branch: main
+    buildCommand: npm ci --omit=dev --ignore-scripts
+    startCommand: npm run start:production
+    healthCheckPath: /api/health
+    maxShutdownDelaySeconds: 30
+    autoDeployTrigger: checksPass
+    disk:
+      name: novapharm-runtime
+      mountPath: /var/lib/novapharm
+      sizeGB: 5
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "24"
+      - key: HOST
+        value: 0.0.0.0
+      - key: SITE_URL
+        value: https://novapharmhealthcare.com
+      - key: PUBLIC_ORIGIN
+        value: https://novapharmhealthcare.com
+      - key: PUBLIC_API_ORIGIN
+        value: https://novapharmhealthcare.com
+      - key: DATABASE_PATH
+        value: /var/lib/novapharm/novapharm.sqlite
+      - key: DATABASE_BACKUP_ROOT
+        value: /var/lib/novapharm/backups
+      - key: SECURE_CONTENT_ROOT
+        value: /var/lib/novapharm/secure-content
+      - key: DOCUMENT_STORAGE_ROOT
+        value: /var/lib/novapharm/documents
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: PORTAL_USERNAME
+        sync: false
+      - key: PORTAL_PASSWORD_SALT
+        sync: false
+      - key: PORTAL_PASSWORD_HASH
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: CONTACT_NOTIFICATION_TO
+        sync: false
+      - key: MICROSOFT_TENANT_ID
+        sync: false
+      - key: MICROSOFT_CLIENT_ID
+        sync: false
+      - key: MICROSOFT_CLIENT_SECRET
+        sync: false
+      - key: SHAREPOINT_HOSTNAME
+        sync: false
+      - key: SHAREPOINT_SITE_PATH
+        sync: false
+      - key: SHAREPOINT_DRIVE_ID
+        sync: false
+      - key: SHAREPOINT_EXECUTIVE_PLATFORM_PATH
+        sync: false

@@ -1,18 +1,3 @@
-let applicationCsrf = "";
-
-async function applicationRequest(path, options = {}) {
-  const response = await fetch(path, { credentials: "same-origin", ...options });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload.error || "Application request failed.");
-  return payload;
-}
-
-async function ensureApplicationCsrf() {
-  if (applicationCsrf) return applicationCsrf;
-  applicationCsrf = (await applicationRequest("/api/security/csrf")).csrfToken;
-  return applicationCsrf;
-}
-
 function applicationPayload(form) {
   const values = Object.fromEntries(new FormData(form));
   return {
@@ -36,44 +21,87 @@ function applicationPayload(form) {
       creditReferences: values.creditReferences,
       tradeReferences: values.tradeReferences
     },
-    bank: { confirmationProvided: Boolean(values.bankConfirmation) }
+    bank: { confirmationProvided: values.bankConfirmation === "yes" }
   };
 }
 
-async function uploadApplicationFiles(application, input) {
-  const results = [];
+async function uploadApplicationFiles(application, input, csrfToken) {
   for (const file of [...input.files]) {
-    const params = new URLSearchParams({ uploadToken: application.uploadToken, fileName: file.name, documentClass: input.dataset.documentClass || "customer_onboarding" });
-    results.push(await applicationRequest(`/api/account-applications/${application.id}/documents?${params}`, {
+    const params = new URLSearchParams({
+      uploadToken: application.uploadToken,
+      fileName: file.name,
+      documentClass: input.dataset.documentClass || "customer_onboarding"
+    });
+    await window.NovaPharmApi.request(`/api/account-applications/${application.id}/documents?${params}`, {
       method: "POST",
-      headers: { "Content-Type": file.type || "application/octet-stream", "x-csrf-token": await ensureApplicationCsrf() },
-      body: file
-    }));
+      headers: { "Content-Type": file.type || "application/octet-stream", "x-csrf-token": csrfToken },
+      body: file,
+      timeoutMs: 30000
+    });
   }
-  return results;
 }
 
-document.querySelector("[data-account-application]")?.addEventListener("submit", async (event) => {
+const applicationForm = document.querySelector("[data-account-application]");
+if (applicationForm) {
+  const steps = [...applicationForm.querySelectorAll("[data-application-step]")];
+  const progressItems = [...document.querySelectorAll("[data-application-progress] li")];
+  let activeStep = 0;
+
+  const showStep = (index) => {
+    activeStep = Math.max(0, Math.min(index, steps.length - 1));
+    steps.forEach((step, stepIndex) => { step.hidden = stepIndex !== activeStep; });
+    progressItems.forEach((item, itemIndex) => {
+      item.toggleAttribute("aria-current", itemIndex === activeStep);
+      item.classList.toggle("complete", itemIndex < activeStep);
+    });
+    steps[activeStep].querySelector("input, select, textarea")?.focus();
+  };
+
+  const stepIsValid = () => {
+    const controls = [...steps[activeStep].querySelectorAll("input, select, textarea")];
+    const invalid = controls.find((control) => control.willValidate && !control.checkValidity());
+    if (!invalid) return true;
+    invalid.reportValidity();
+    invalid.focus();
+    return false;
+  };
+
+  applicationForm.querySelectorAll("[data-step-next]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (stepIsValid()) showStep(activeStep + 1);
+    });
+  });
+  applicationForm.querySelectorAll("[data-step-back]").forEach((button) => {
+    button.addEventListener("click", () => showStep(activeStep - 1));
+  });
+}
+
+applicationForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const form = event.currentTarget;
+  if (!form.reportValidity()) return;
   const status = document.querySelector("[data-application-status]");
   const submit = form.querySelector("button[type=submit]");
+  if (submit.disabled) return;
   submit.disabled = true;
-  status.textContent = "Submitting application...";
+  status.textContent = "Submitting application and preparing the controlled document record...";
+  status.className = "alert";
   try {
-    const result = await applicationRequest("/api/account-applications", {
+    const csrfToken = await window.NovaPharmApi.csrf();
+    const result = await window.NovaPharmApi.request("/api/account-applications", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "x-csrf-token": await ensureApplicationCsrf() },
+      headers: { "Content-Type": "application/json", "x-csrf-token": csrfToken },
       body: JSON.stringify(applicationPayload(form))
     });
     const fileInputs = [...form.querySelectorAll("input[type=file]")];
-    for (const input of fileInputs) await uploadApplicationFiles(result.application, input);
+    for (const input of fileInputs) await uploadApplicationFiles(result.application, input, csrfToken);
     form.hidden = true;
-    status.textContent = `Application ${result.application.applicationNumber} was submitted. Compliance and Sales review workflows are queued.`;
+    status.textContent = `Application ${result.application.applicationNumber} was submitted. Compliance and sales review workflows have been queued.`;
+    status.className = "alert alert-success";
     status.setAttribute("role", "status");
   } catch (error) {
-    status.textContent = error.message;
-    status.classList.add("alert-error");
+    status.textContent = window.NovaPharmApi.friendlyError(error, "application");
+    status.className = "alert alert-danger";
     submit.disabled = false;
   }
 });

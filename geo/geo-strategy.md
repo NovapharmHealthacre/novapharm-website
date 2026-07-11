@@ -7,7 +7,7 @@ Generative Engine Optimization is implemented as high-quality technical SEO plus
 - WebSite and WebPage schema on every public page.
 - BreadcrumbList schema for route understanding.
 - Service schema for service and regulatory pages.
-- FAQ schema on pages with question-answer intent.
+- FAQ schema on pages with genuine question-answer intent. Google no longer displays FAQ rich results as of May 2026, so the markup is used only when it truthfully describes visible content and is not treated as a ranking feature.
 - A dedicated Vishal Chakravarty leadership page with `ProfilePage` and `Person` schema, verified external identity links, role, image, expertise and `worksFor` relationship.
 - Original executive perspective links on UK-EU pharmaceutical market access and regulatory operations.
 - Semantic HTML, crawlable text, responsive layouts and high-quality relevant imagery.

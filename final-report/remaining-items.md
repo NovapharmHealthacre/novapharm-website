@@ -1,27 +1,36 @@
 # Remaining Items
 
-## Requires External Credentials or Access
+## Required Before Merge Approval
 
-- Node-capable production hosting credentials for the authenticated portal and APIs.
-- DNS/proxy access to route `novapharmhealthcare.com` to the Node runtime when the secure portal host is ready.
-- Microsoft Graph production application registration, consented permissions, client secret/certificate and webhook endpoint. The tenant and `/sites/NovapharmTier1` site are already validated.
-- Polar Speed/Marken API contract and credentials.
-- Finance/accounting provider credentials.
-- Microsoft Entra ID SSO configuration.
-- Reattached Nutraxin catalogue PDF or a stable local copy.
+- Complete and record the rendered desktop, tablet and mobile audit in current Chromium and Safari against a deployable preview.
+- Generate a new administrator password that has never appeared in source control; never reuse the previously supplied password.
+- Decide whether to accept the historical deleted-password record after rotation or approve a coordinated full repository history rewrite and collaborator re-clone procedure.
 
-## Requires Business Approval
+## Required To Go Live
 
-- Final legal/regulatory review of MHRA-aware service claims.
-- Product portfolio wording before publishing any specific medicine claims.
-- Privacy policy, cookie policy and analytics consent approach.
-- Document retention policy approval.
-- Customer portal terms of use.
+- Approve and merge pull request 2 from `codex/ultra-premium-rebuild` only after the pre-merge items above are closed.
+- Connect the repository to the Render Blueprint or an equivalent Node 24 host with persistent private storage.
+- Enter production administrator hash/salt, session secret and allowed origin.
+- Add and verify `novapharmhealthcare.com` and `www.novapharmhealthcare.com`; use the exact host-provided DNS records.
+- Configure Resend sender-domain DNS and the controlled contact recipient mailbox.
+- Configure an Entra application with approved Microsoft Graph permissions for runtime SharePoint sync.
+- Run the production smoke test, mobile/desktop visual regression and Lighthouse.
 
-## Recommended Next Actions
+## Security And Governance Approval
 
-1. Reattach the Nutraxin catalogue for verified product extraction and image publishing.
-2. Deploy the Node runtime to a production host with private storage mounted at `SECURE_CONTENT_ROOT`.
-3. Point the secure portal routes on `novapharmhealthcare.com` to the Node production host.
-4. Configure the production Entra application, SharePoint metadata columns/retention labels, Polar Speed and finance credentials.
-5. Run Lighthouse, Rich Results Test, Search Console URL inspection and post-deployment smoke tests after Pages/CDN propagation.
+- Break SharePoint permission inheritance for the Executive Platform and grant only approved board/administrator groups.
+- Approve the privacy notice, cookie/analytics approach, portal terms, records retention and incident-response procedure.
+- Add malware scanning and complete an independent penetration test before inviting real users.
+- Configure encrypted off-host database backups and complete a restore exercise.
+
+## Provider Dependencies
+
+- Polar Speed/Marken API specification, credentials, service scope and data-processing terms.
+- Finance/accounting provider and API contract.
+- Microsoft Entra SSO configuration for customers, employees and board members.
+- Product-specific regulatory evidence before publishing named medicine availability, licence or clinical claims.
+- A stable Nutraxin catalogue source if the earlier nutraceutical product request is still in scope; the Outlook temporary attachment was unavailable during this implementation.
+
+## Scaling Threshold
+
+The launch deployment is intentionally single-instance because SQLite and an attached disk cannot provide multi-instance high availability. Migrate the canonical database to managed PostgreSQL before horizontal scaling, zero-downtime multi-instance deployment or high-volume transaction use.

@@ -1,8 +1,10 @@
 import "dotenv/config";
 import { createServer } from "node:http";
-import { createReadStream, existsSync, mkdirSync, statSync } from "node:fs";
+import { createReadStream, existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
 import { extname, isAbsolute, join, normalize, relative, resolve } from "node:path";
-import { createHmac, pbkdf2Sync, randomBytes, timingSafeEqual } from "node:crypto";
+import { fileURLToPath } from "node:url";
+import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { constants as zlibConstants, createBrotliCompress, createGzip } from "node:zlib";
 import {
   activateCustomer,
   applicationDocumentContext,
@@ -14,6 +16,7 @@ import {
   listApplications,
   listAudit,
   listCustomers,
+  leadNotificationContext,
   listLeads,
   listOrders,
   listProducts,
@@ -24,11 +27,24 @@ import {
   syncStatus
 } from "./src/core/domain-service.mjs";
 import { storeDocument } from "./src/core/document-service.mjs";
+import {
+  consumeRateLimit,
+  countActiveSessions,
+  createPersistentSession,
+  getPersistentSession,
+  portalUsersFromEnvironment,
+  provisionAuthUsers,
+  recordSecurityEvent,
+  revokePersistentSession,
+  verifyCredentials
+} from "./src/core/auth-service.mjs";
 import { databaseReady } from "./src/data/database.mjs";
 import { processSharePointEvents, sharePointFolderPlan } from "./src/integrations/sharepoint/sync-engine.mjs";
 import { processPolarSpeedEvents } from "./src/integrations/polar-speed/sync-engine.mjs";
+import { emailIntegrationStatus, sendLeadNotifications } from "./src/integrations/email/client.mjs";
 
 const root = resolve(process.cwd());
+const applicationVersion = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version;
 const secureContentRoot = resolve(process.env.SECURE_CONTENT_ROOT || join(root, "_secure"));
 const dataDir = join(root, "data");
 mkdirSync(dataDir, { recursive: true });
@@ -37,29 +53,35 @@ const isProduction = process.env.NODE_ENV === "production";
 const host = process.env.HOST || "127.0.0.1";
 const port = Number(process.env.PORT || 4173);
 const sessionSecret = process.env.SESSION_SECRET || (isProduction ? "" : "local-dev-session-secret-change-me");
-const portalUsername = process.env.PORTAL_USERNAME || "";
-const portalPassword = process.env.PORTAL_PASSWORD || "";
-const portalPasswordHash = process.env.PORTAL_PASSWORD_HASH || "";
-const portalPasswordSalt = process.env.PORTAL_PASSWORD_SALT || "";
+const sessionTtlMs = Number(process.env.SESSION_TTL_MS || 8 * 60 * 60 * 1000);
+const publicOrigin = new URL(process.env.PUBLIC_ORIGIN || process.env.SITE_URL || `http://${host}:${port}`).origin;
 const accessRedirects = {
   customer: "/portal/dashboard/",
   employee: "/employee/dashboard/",
   board: "/portal/executive-platform/"
 };
-const roleScopes = {
-  client: ["customer"],
-  employee: ["employee"],
-  board: ["board"],
-  admin: ["customer", "employee", "board", "admin"]
-};
-const configuredPortalUsers = parsePortalUsers(process.env.PORTAL_USERS_JSON || "");
+const configuredPortalUsers = portalUsersFromEnvironment(process.env, { isProduction });
 
 if (!sessionSecret || sessionSecret.length < 24) {
   throw new Error("SESSION_SECRET must be set to at least 24 characters.");
 }
 
-if ((!portalUsername || (!portalPassword && (!portalPasswordHash || !portalPasswordSalt))) && !configuredPortalUsers.length) {
+if (isProduction) {
+  for (const variable of ["DATABASE_PATH", "SECURE_CONTENT_ROOT", "DOCUMENT_STORAGE_ROOT", "PUBLIC_ORIGIN", "PUBLIC_API_ORIGIN", "SITE_URL"]) {
+    if (!process.env[variable]) throw new Error(`${variable} is required in production.`);
+  }
+  if (host !== "0.0.0.0") throw new Error("HOST must be 0.0.0.0 in production.");
+  if (!publicOrigin.startsWith("https://")) throw new Error("PUBLIC_ORIGIN must use HTTPS in production.");
+  for (const variable of ["PUBLIC_API_ORIGIN", "SITE_URL"]) {
+    if (new URL(process.env[variable]).origin !== publicOrigin) throw new Error(`${variable} must match PUBLIC_ORIGIN.`);
+  }
+}
+
+if (!configuredPortalUsers.length) {
+  if (isProduction) throw new Error("At least one hashed portal administrator must be configured in production.");
   console.warn("Portal login is not configured. Set the initial admin variables or PORTAL_USERS_JSON with hashed credentials.");
+} else {
+  provisionAuthUsers(configuredPortalUsers);
 }
 
 const mime = {
@@ -67,17 +89,19 @@ const mime = {
   ".css": "text/css; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
+  ".webmanifest": "application/manifest+json; charset=utf-8",
   ".xml": "application/xml; charset=utf-8",
   ".txt": "text/plain; charset=utf-8",
   ".svg": "image/svg+xml",
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
   ".png": "image/png",
+  ".webp": "image/webp",
+  ".ico": "image/x-icon",
+  ".woff2": "font/woff2",
   ".pdf": "application/pdf"
 };
 
-const sessions = new Map();
-const rateBuckets = new Map();
 const blockedPublicTopLevel = new Set([
   "_secure",
   "architecture",
@@ -99,30 +123,37 @@ const blockedPublicTopLevel = new Set([
   "src"
 ]);
 const blockedPublicRootFiles = new Set([
+  "Dockerfile",
   "package.json",
   "package-lock.json",
   "README.md",
+  "render.yaml",
   "server.mjs"
 ]);
 
-function securityHeaders(extra = {}) {
+function securityHeaders(extra = {}, { allowPrivateInline = false } = {}) {
+  const productionUpgrade = isProduction ? ["upgrade-insecure-requests"] : [];
   const headers = {
     "X-Content-Type-Options": "nosniff",
-    "X-Frame-Options": "SAMEORIGIN",
+    "X-Frame-Options": "DENY",
     "Referrer-Policy": "strict-origin-when-cross-origin",
     "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
     "Cross-Origin-Opener-Policy": "same-origin",
+    "Cross-Origin-Resource-Policy": "same-origin",
     "Content-Security-Policy": [
       "default-src 'self'",
-      "script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com 'unsafe-inline'",
-      "style-src 'self' https://fonts.googleapis.com 'unsafe-inline'",
-      "font-src 'self' https://fonts.gstatic.com",
+      `script-src 'self'${allowPrivateInline ? " 'unsafe-inline'" : ""} https://www.googletagmanager.com https://www.google-analytics.com`,
+      `style-src 'self'${allowPrivateInline ? " 'unsafe-inline'" : ""}`,
+      "font-src 'self'",
       "img-src 'self' data: https:",
       "connect-src 'self' https://www.google-analytics.com https://analytics.google.com",
-      "frame-src 'self'",
+      "frame-src 'none'",
+      "object-src 'none'",
+      "worker-src 'self'",
       "base-uri 'self'",
       "form-action 'self'",
-      "frame-ancestors 'self'"
+      "frame-ancestors 'none'",
+      ...productionUpgrade
     ].join("; "),
     ...extra
   };
@@ -165,77 +196,24 @@ function requireCsrf(request) {
   return Boolean(sent && stored && sent === stored);
 }
 
-function rateLimit(request, key, limit, windowMs) {
-  const ip = request.headers["x-forwarded-for"]?.split(",")[0]?.trim() || request.socket.remoteAddress || "local";
-  const bucketKey = `${key}:${ip}`;
-  const now = Date.now();
-  const bucket = rateBuckets.get(bucketKey) || { count: 0, resetAt: now + windowMs };
-  if (bucket.resetAt < now) {
-    bucket.count = 0;
-    bucket.resetAt = now + windowMs;
-  }
-  bucket.count += 1;
-  rateBuckets.set(bucketKey, bucket);
-  return bucket.count <= limit;
-}
-
-function hashPassword(password, salt) {
-  return pbkdf2Sync(password, salt, 210000, 32, "sha256").toString("hex");
-}
-
-function parsePortalUsers(raw) {
-  if (!raw) return [];
-  let users;
+function hasAllowedOrigin(request) {
+  if (!isProduction) return true;
+  const origin = request.headers.origin;
+  if (!origin) return true;
   try {
-    users = JSON.parse(raw);
+    return new URL(origin).origin === publicOrigin;
   } catch {
-    throw new Error("PORTAL_USERS_JSON must be valid JSON.");
+    return false;
   }
-  if (!Array.isArray(users)) throw new Error("PORTAL_USERS_JSON must be a JSON array.");
-
-  const usernames = new Set();
-  return users.map((entry, index) => {
-    const username = String(entry?.username || "").trim();
-    const roleValue = String(entry?.role || "client").toLowerCase();
-    const role = roleValue === "customer" ? "client" : roleValue;
-    const passwordHash = String(entry?.passwordHash || "").trim();
-    const passwordSalt = String(entry?.passwordSalt || "").trim();
-    if (!username || usernames.has(username)) throw new Error(`PORTAL_USERS_JSON entry ${index + 1} needs a unique username.`);
-    if (!roleScopes[role]) throw new Error(`PORTAL_USERS_JSON entry ${index + 1} has an unsupported role.`);
-    if (!/^[a-f0-9]{64}$/i.test(passwordHash) || !passwordSalt) throw new Error(`PORTAL_USERS_JSON entry ${index + 1} requires a PBKDF2 passwordHash and passwordSalt.`);
-    usernames.add(username);
-    const requestedScopes = Array.isArray(entry.accessScopes) ? entry.accessScopes.map((scope) => String(scope).toLowerCase()) : [];
-    const validScopes = requestedScopes.filter((scope) => roleScopes.admin.includes(scope));
-    const accessScopes = role === "admin" ? roleScopes.admin : (validScopes.length ? [...new Set(validScopes)] : roleScopes[role]);
-    return { username, role, passwordHash, passwordSalt, accessScopes, customerId: entry.customerId || null };
-  });
 }
 
-function portalUser(username) {
-  if (portalUsername && username === portalUsername) {
-    return {
-      username: portalUsername,
-      role: "admin",
-      passwordHash: portalPasswordHash,
-      passwordSalt: portalPasswordSalt,
-      localPassword: portalPassword,
-      accessScopes: roleScopes.admin,
-      customerId: null
-    };
-  }
-  return configuredPortalUsers.find((user) => user.username === username) || null;
+function networkFingerprint(request) {
+  const address = request.headers["x-forwarded-for"]?.split(",")[0]?.trim() || request.socket.remoteAddress || "local";
+  return createHmac("sha256", sessionSecret).update(address).digest("hex");
 }
 
-function verifyPassword(username, password) {
-  const user = portalUser(username);
-  if (!user) return null;
-  if (user.passwordHash && user.passwordSalt) {
-    const actual = Buffer.from(hashPassword(password, user.passwordSalt), "hex");
-    const expected = Buffer.from(user.passwordHash, "hex");
-    return actual.length === expected.length && timingSafeEqual(actual, expected) ? user : null;
-  }
-  if (!isProduction && user.localPassword && password === user.localPassword) return user;
-  return null;
+function rateLimit(request, key, limit, windowMs) {
+  return consumeRateLimit(`${key}:${networkFingerprint(request)}`, limit, windowMs).allowed;
 }
 
 function normalizeAccessType(value) {
@@ -246,27 +224,30 @@ function signSession(sessionId) {
   return createHmac("sha256", sessionSecret).update(sessionId).digest("hex");
 }
 
+function validSessionSignature(id, signature) {
+  if (!id || !signature) return false;
+  const expected = Buffer.from(signSession(id), "hex");
+  const actual = Buffer.from(String(signature), "hex");
+  return actual.length === expected.length && timingSafeEqual(actual, expected);
+}
+
 function applicationUploadToken(applicationId) {
-  return createHmac("sha256", sessionSecret).update(`application-upload:${applicationId}`).digest("hex");
+  const expiresAt = Date.now() + 30 * 60 * 1000;
+  const signature = createHmac("sha256", sessionSecret).update(`application-upload:${applicationId}:${expiresAt}`).digest("hex");
+  return `${expiresAt}.${signature}`;
 }
 
 function validApplicationUploadToken(applicationId, token) {
-  const expected = Buffer.from(applicationUploadToken(applicationId));
-  const actual = Buffer.from(String(token || ""));
+  const [expiresAtValue, signature] = String(token || "").split(".");
+  const expiresAt = Number(expiresAtValue);
+  if (!Number.isSafeInteger(expiresAt) || expiresAt <= Date.now() || expiresAt > Date.now() + 31 * 60 * 1000) return false;
+  const expected = Buffer.from(createHmac("sha256", sessionSecret).update(`application-upload:${applicationId}:${expiresAt}`).digest("hex"), "hex");
+  const actual = Buffer.from(String(signature || ""), "hex");
   return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 
 function createSession(user, accessType = "customer") {
-  const id = randomBytes(32).toString("hex");
-  sessions.set(id, {
-    username: user.username,
-    createdAt: Date.now(),
-    expiresAt: Date.now() + 8 * 60 * 60 * 1000,
-    role: user.role,
-    accessType,
-    accessScopes: user.accessScopes,
-    customerId: user.customerId
-  });
+  const { id } = createPersistentSession(user, accessType, sessionTtlMs);
   return `${id}.${signSession(id)}`;
 }
 
@@ -274,14 +255,8 @@ function getSession(request) {
   const value = parseCookies(request).np_session;
   if (!value) return null;
   const [id, signature] = value.split(".");
-  if (!id || !signature || signature !== signSession(id)) return null;
-  const session = sessions.get(id);
-  if (!session) return null;
-  if (session.expiresAt <= Date.now()) {
-    sessions.delete(id);
-    return null;
-  }
-  return { id, ...session };
+  if (!validSessionSignature(id, signature)) return null;
+  return getPersistentSession(id);
 }
 
 function protectedPath(pathname) {
@@ -389,7 +364,13 @@ function safeFilePath(urlPath) {
   return isWithinDirectory(contentRoot, filePath) ? filePath : null;
 }
 
-function portalData() {
+function portalData(session) {
+  if (session.role === "client") {
+    return {
+      dashboard: operationalDashboard(session.customerId),
+      dataPolicy: "Customer values are restricted to the authenticated customer account and come from the canonical database."
+    };
+  }
   return {
     dashboard: operationalDashboard(),
     integrations: syncStatus(),
@@ -404,7 +385,7 @@ function adminSummary() {
   return {
     metrics: {
       leads: leads.length,
-      users: sessions.size,
+      activeSessions: countActiveSessions(),
       customers: dashboard.customers,
       products: dashboard.products,
       openOrders: dashboard.openOrders,
@@ -442,10 +423,15 @@ function scopedAuthentication(request, response, scopes, roles = []) {
   return session;
 }
 
-const server = createServer(async (request, response) => {
+export async function handleRequest(request, response) {
   try {
     const url = new URL(request.url || "/", `http://${request.headers.host || "localhost"}`);
     const pathname = url.pathname;
+
+    if (pathname.startsWith("/api/") && !["GET", "HEAD", "OPTIONS"].includes(request.method || "GET") && !hasAllowedOrigin(request)) {
+      recordSecurityEvent({ eventType: "request.origin_rejected", networkFingerprint: networkFingerprint(request), outcome: "denied", details: { pathname } });
+      return json(response, 403, { error: "Request origin is not permitted.", code: "origin_rejected" });
+    }
 
     if (pathname === "/api/security/csrf" && request.method === "GET") {
       const token = csrfToken(request) || randomBytes(24).toString("hex");
@@ -457,7 +443,7 @@ const server = createServer(async (request, response) => {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
       if (!rateLimit(request, "login", 8, 15 * 60 * 1000)) return json(response, 429, { error: "Too many login attempts. Try again later." });
       const body = await readBody(request);
-      const user = verifyPassword(String(body.username || ""), String(body.password || ""));
+      const user = verifyCredentials(String(body.username || ""), String(body.password || ""), networkFingerprint(request));
       if (!user) {
         return json(response, 401, { error: "Invalid username or password." });
       }
@@ -466,14 +452,14 @@ const server = createServer(async (request, response) => {
         return json(response, 403, { error: "This account is not authorised for the selected portal area." });
       }
       const sessionCookie = createSession(user, accessType);
-      json(response, 200, { ok: true, accessType, redirectTo: accessRedirects[accessType] }, { "Set-Cookie": cookie("np_session", sessionCookie, { maxAge: 60 * 60 * 8 }) });
+      json(response, 200, { ok: true, accessType, redirectTo: accessRedirects[accessType] }, { "Set-Cookie": cookie("np_session", sessionCookie, { maxAge: Math.floor(sessionTtlMs / 1000) }) });
       return;
     }
 
     if (pathname === "/api/auth/logout" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
       const session = getSession(request);
-      if (session) sessions.delete(session.id);
+      if (session) revokePersistentSession(session.id);
       json(response, 200, { ok: true }, { "Set-Cookie": cookie("np_session", "", { maxAge: 0 }) });
       return;
     }
@@ -483,6 +469,13 @@ const server = createServer(async (request, response) => {
       if (!rateLimit(request, "contact", 12, 60 * 60 * 1000)) return json(response, 429, { error: "Too many submissions. Try again later." });
       const body = await readBody(request);
       const lead = createLead(body);
+      if (lead.id) {
+        try {
+          await sendLeadNotifications(leadNotificationContext(lead.id));
+        } catch (error) {
+          console.error("Contact notification delivery failed.", { status: error.providerStatus || "unavailable" });
+        }
+      }
       json(response, 201, { ok: true, lead });
       return;
     }
@@ -529,27 +522,31 @@ const server = createServer(async (request, response) => {
     if (pathname === "/api/portal/session" && request.method === "GET") {
       const session = getSession(request);
       if (!session) return json(response, 401, { error: "Authentication required." });
-      json(response, 200, { user: { username: session.username, role: session.role, accessType: session.accessType, accessScopes: session.accessScopes } });
+      json(response, 200, { user: { username: session.username, displayName: session.displayName, role: session.role, accessType: session.accessType, accessScopes: session.accessScopes } });
       return;
     }
 
     if (pathname === "/api/portal/data" && request.method === "GET") {
-      if (!scopedAuthentication(request, response, ["customer", "employee", "board"])) return;
-      json(response, 200, portalData());
+      const session = scopedAuthentication(request, response, ["customer", "employee", "board"]);
+      if (!session) return;
+      json(response, 200, portalData(session));
       return;
     }
 
     if (pathname === "/api/dashboard" && request.method === "GET") {
       const session = scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
+      if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
       const customerId = session.role === "client" ? session.customerId : null;
       json(response, 200, operationalDashboard(customerId));
       return;
     }
 
     if (pathname === "/api/catalog/products" && request.method === "GET") {
-      if (!scopedAuthentication(request, response, ["customer", "employee"])) return;
-      json(response, 200, { products: listProducts(url.searchParams.get("q") || ""), dataFreshness: new Date().toISOString() });
+      const session = scopedAuthentication(request, response, ["customer", "employee"]);
+      if (!session) return;
+      if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
+      json(response, 200, { products: listProducts(url.searchParams.get("q") || "", { customerVisibleOnly: session.role === "client" }), dataFreshness: new Date().toISOString() });
       return;
     }
 
@@ -584,6 +581,7 @@ const server = createServer(async (request, response) => {
     if (pathname === "/api/orders" && request.method === "GET") {
       const session = scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
+      if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
       json(response, 200, { orders: listOrders({ customerId: session.role === "client" ? session.customerId : null }) });
       return;
     }
@@ -592,6 +590,7 @@ const server = createServer(async (request, response) => {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
       const session = scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
+      if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
       const scopedCustomerId = session.role === "client" ? session.customerId : null;
       json(response, 201, { order: createOrder(await readBody(request), session.username, scopedCustomerId) });
       return;
@@ -615,14 +614,19 @@ const server = createServer(async (request, response) => {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
       const session = scopedAuthentication(request, response, ["customer", "employee", "board"]);
       if (!session) return;
+      const requestedEntityType = url.searchParams.get("entityType");
+      const requestedEntityId = url.searchParams.get("entityId");
+      if (session.role === "client" && (!session.customerId || requestedEntityType !== "customer" || requestedEntityId !== session.customerId)) {
+        return json(response, 403, { error: "Customer documents must be linked to the authenticated customer account." });
+      }
       const bytes = await readRawBody(request);
       const document = storeDocument({
         bytes,
         fileName: url.searchParams.get("fileName"),
         contentType: String(request.headers["content-type"] || "application/octet-stream").split(";")[0],
         documentClass: url.searchParams.get("documentClass") || "general",
-        entityType: url.searchParams.get("entityType"),
-        entityId: url.searchParams.get("entityId"),
+        entityType: requestedEntityType,
+        entityId: requestedEntityId,
         businessNumber: url.searchParams.get("businessNumber"),
         displayName: url.searchParams.get("displayName"),
         actor: session.username
@@ -652,9 +656,15 @@ const server = createServer(async (request, response) => {
     }
 
     if (pathname === "/api/health" && request.method === "GET") {
-      json(response, 200, {
-        status: "ok",
-        database: databaseReady() ? "ready" : "unavailable",
+      const ready = databaseReady();
+      json(response, ready ? 200 : 503, {
+        status: ready ? "ok" : "degraded",
+        service: "novapharm-web",
+        version: applicationVersion,
+        environment: isProduction ? "production" : "development",
+        timestamp: new Date().toISOString(),
+        database: ready ? "ready" : "unavailable",
+        email: emailIntegrationStatus(),
         sharePoint: process.env.MICROSOFT_TENANT_ID ? "configured" : "credentials_required",
         polarSpeed: process.env.POLAR_SPEED_API_BASE_URL ? "configured" : "api_contract_required"
       });
@@ -682,25 +692,76 @@ const server = createServer(async (request, response) => {
 
     const filePath = safeFilePath(pathname);
     if (!filePath || !existsSync(filePath) || !statSync(filePath).isFile()) {
-      send(response, 404, "Not found", { "Content-Type": "text/plain; charset=utf-8" });
+      const notFoundPage = join(root, "404.html");
+      const acceptsHtml = String(request.headers.accept || "").includes("text/html");
+      if (acceptsHtml && existsSync(notFoundPage)) {
+        response.writeHead(404, securityHeaders({ "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" }));
+        createReadStream(notFoundPage).pipe(response);
+      } else {
+        send(response, 404, "Not found", { "Content-Type": "text/plain; charset=utf-8" });
+      }
       return;
     }
 
     const type = mime[extname(filePath).toLowerCase()] || "application/octet-stream";
-    response.writeHead(200, securityHeaders({ "Content-Type": type, "Cache-Control": type.startsWith("text/html") ? "no-store" : "public, max-age=31536000, immutable" }));
-    createReadStream(filePath).pipe(response);
+    const privateContent = isWithinDirectory(secureContentRoot, filePath);
+    const cacheControl = privateContent
+      ? "no-store"
+      : type.startsWith("text/html")
+        ? "public, max-age=0, must-revalidate, s-maxage=300, stale-while-revalidate=86400"
+        : "public, max-age=3600, s-maxage=604800, stale-while-revalidate=2592000";
+    const staticHeaders = securityHeaders({ "Content-Type": type, "Cache-Control": cacheControl }, { allowPrivateInline: privateContent });
+    const acceptedEncoding = String(request.headers["accept-encoding"] || "");
+    const canCompress = /^(?:text\/|application\/(?:javascript|json|manifest\+json|xml))|image\/svg\+xml/.test(type);
+    if (canCompress && acceptedEncoding.includes("br")) Object.assign(staticHeaders, { "Content-Encoding": "br", Vary: "Accept-Encoding" });
+    else if (canCompress && acceptedEncoding.includes("gzip")) Object.assign(staticHeaders, { "Content-Encoding": "gzip", Vary: "Accept-Encoding" });
+    response.writeHead(200, staticHeaders);
+    if (canCompress && acceptedEncoding.includes("br")) createReadStream(filePath).pipe(createBrotliCompress({ params: { [zlibConstants.BROTLI_PARAM_QUALITY]: 5 } })).pipe(response);
+    else if (canCompress && acceptedEncoding.includes("gzip")) createReadStream(filePath).pipe(createGzip({ level: 6 })).pipe(response);
+    else createReadStream(filePath).pipe(response);
   } catch (error) {
-    console.error(error);
     const status = Number(error.statusCode || (String(error.code || "").startsWith("SQLITE_CONSTRAINT") ? 409 : 500));
+    if (status >= 500) console.error(error);
+    const acceptsHtml = String(request.headers.accept || "").includes("text/html");
+    if (status >= 500 && acceptsHtml && !String(request.url || "").startsWith("/api/") && !response.headersSent) {
+      const errorPage = join(root, "500.html");
+      if (existsSync(errorPage)) {
+        response.writeHead(status, securityHeaders({ "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" }));
+        createReadStream(errorPage).pipe(response);
+        return;
+      }
+    }
     json(response, status, { error: status >= 500 ? "Server error." : error.message });
   }
-});
+}
+
+export const server = createServer(handleRequest);
 
 server.on("error", (error) => {
   console.error(`NovaPharm Healthcare website failed to start on ${host}:${port}.`, error);
   process.exitCode = 1;
 });
 
-server.listen(port, host, () => {
-  console.log(`NovaPharm Healthcare website running at http://${host}:${port}/`);
-});
+const startedDirectly = process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (startedDirectly) {
+  server.listen(port, host, () => {
+    console.log(`NovaPharm Healthcare website running at http://${host}:${port}/`);
+  });
+  let shuttingDown = false;
+  const shutdown = (signal) => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    console.log(`Received ${signal}; completing active requests before shutdown.`);
+    const forceTimer = setTimeout(() => {
+      server.closeAllConnections();
+      process.exitCode = 1;
+    }, 25000);
+    forceTimer.unref();
+    server.close(() => {
+      clearTimeout(forceTimer);
+      console.log("NovaPharm Healthcare website stopped cleanly.");
+    });
+  };
+  process.once("SIGTERM", () => shutdown("SIGTERM"));
+  process.once("SIGINT", () => shutdown("SIGINT"));
+}
