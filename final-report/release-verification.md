@@ -25,7 +25,7 @@
 
 ## GitHub Quality Gate
 
-The `Production readiness` workflow must complete successfully against the final audit head before merge approval. Pull request metadata is the authoritative source for that SHA and status.
+GitHub `Production readiness` run 9 completed successfully for the audited implementation commit: Node 24 checkout, dependency installation, `npm audit` with zero vulnerabilities and the complete quality gate all passed. Pull request metadata remains the authoritative source for the latest head and workflow status.
 
 ## SharePoint Verification
 
