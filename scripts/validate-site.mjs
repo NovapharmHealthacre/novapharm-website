@@ -2,9 +2,11 @@ import { existsSync, readFileSync } from "node:fs";
 import { extname, join, resolve } from "node:path";
 
 const root = resolve(process.cwd());
+const publicSiteUrl = "https://www.novapharmhealthcare.com";
 const required = [
   "index.html",
   "about/index.html",
+  "leadership/vishal-chakravarty/index.html",
   "company-profile/index.html",
   "services/index.html",
   "regulatory-services/index.html",
@@ -123,35 +125,6 @@ for (const file of required) {
   if (!exists(file)) fail(`missing ${file}`);
 }
 
-const executivePages = [
-  "NP_Hub.html",
-  "NP_CEO.html",
-  "NP_Sales.html",
-  "NP_Customers.html",
-  "NP_Products.html",
-  "NP_NHS_Data.html",
-  "NP_PLPI.html",
-  "NP_Sourcing.html",
-  "NP_SLA.html",
-  "NP_Warehouse.html",
-  "NP_Tenders.html",
-  "NP_PV.html",
-  "NP_Blockchain.html",
-  "NP_AI_Tech.html",
-  "NP_Finance.html",
-  "NP_Capital.html",
-  "NP_M365.html",
-  "NP_Documents.html"
-];
-
-for (const page of executivePages) {
-  if (!exists(`portal/executive-platform/${page}`)) fail(`missing executive platform page ${page}`);
-}
-
-for (const doc of ["NP_Implementation_Blueprint_v2.pdf", "NP_Flowcharts_v3.pdf"]) {
-  if (!exists(`portal/executive-platform/docs/${doc}`)) fail(`missing executive platform document ${doc}`);
-}
-
 function localTarget(from, ref) {
   if (/^(https?:|mailto:|tel:|#|javascript:)/i.test(ref)) return null;
   const clean = ref.split("#")[0].split("?")[0];
@@ -162,11 +135,19 @@ function localTarget(from, ref) {
   return join(base, clean);
 }
 
-const htmlFiles = required.filter((file) => file.endsWith(".html")).concat(executivePages.map((page) => `portal/executive-platform/${page}`));
+const htmlFiles = required.filter((file) => file.endsWith(".html"));
 
 for (const file of htmlFiles) {
   const html = readFileSync(join(root, file), "utf8");
   if (!/<title>.+<\/title>/i.test(html)) fail(`${file} missing title`);
+  const jsonLdBlocks = [...html.matchAll(/<script type=["']application\/ld\+json["']>([\s\S]*?)<\/script>/gi)];
+  for (const [, source] of jsonLdBlocks) {
+    try {
+      JSON.parse(source);
+    } catch {
+      fail(`${file} contains invalid JSON-LD`);
+    }
+  }
   const refs = [...html.matchAll(/\b(?:href|src)=["']([^"']+)["']/gi)].map((match) => match[1]);
   for (const ref of refs) {
     const target = localTarget(file, ref);
@@ -177,5 +158,40 @@ for (const file of htmlFiles) {
   }
 }
 
+const publicProtectedPages = htmlFiles.filter((file) => (file.startsWith("portal/") && file !== "portal/index.html") || file.startsWith("employee/") || file.startsWith("admin/"));
+for (const file of publicProtectedPages) {
+  const html = readFileSync(join(root, file), "utf8");
+  if (!html.includes("This static public site does not expose dashboards, records or controlled documents.")) {
+    fail(`${file} is not a locked public portal shell`);
+  }
+  if (/data-(?:live-metric|order-rows|product-rows|customer-rows|supplier-rows|po-rows|admin-metric|leads)/.test(html)) {
+    fail(`${file} exposes an operational data binding on the static site`);
+  }
+}
+
+const leadershipHtml = readFileSync(join(root, "leadership/vishal-chakravarty/index.html"), "utf8");
+if (!leadershipHtml.includes('"@type":"ProfilePage"') || !leadershipHtml.includes('"name":"Vishal Chakravarty"')) {
+  fail("Vishal leadership page is missing ProfilePage and Person entity markup");
+}
+
+const sitemap = readFileSync(join(root, "sitemap.xml"), "utf8");
+for (const privatePrefix of ["/portal/", "/employee/", "/admin/", "/_secure/", "/docs/"]) {
+  if (sitemap.includes(`${publicSiteUrl}${privatePrefix}`)) {
+    fail(`sitemap exposes private route ${privatePrefix}`);
+  }
+}
+
+const serverSource = readFileSync(join(root, "server.mjs"), "utf8");
+for (const blockedPath of ["_secure", "data", "database", "src", "scripts", "integrations", "sharepoint"]) {
+  if (!serverSource.includes(`\"${blockedPath}\"`)) {
+    fail(`server static denylist is missing ${blockedPath}`);
+  }
+}
+for (const blockedFile of ["package.json", "server.mjs", "README.md"]) {
+  if (!serverSource.includes(`\"${blockedFile}\"`)) {
+    fail(`server static denylist is missing ${blockedFile}`);
+  }
+}
+
 if (process.exitCode) process.exit(process.exitCode);
-console.log(`Validated ${required.length} required files, ${htmlFiles.length} HTML pages, and ${executivePages.length} Executive Platform modules.`);
+console.log(`Validated ${required.length} required public files, ${publicProtectedPages.length} locked portal shells, and the Vishal leadership entity page.`);

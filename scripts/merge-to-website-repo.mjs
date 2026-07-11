@@ -8,9 +8,26 @@ const targetRoot = resolve(process.argv[2] || defaultTarget);
 const excluded = new Set([
   ".git",
   ".DS_Store",
+  ".env",
+  "_secure",
+  "private-content",
   "node_modules",
   "artifacts"
 ]);
+
+const executivePages = [
+  "NP_Hub.html", "NP_CEO.html", "NP_Sales.html", "NP_Customers.html", "NP_Products.html", "NP_NHS_Data.html",
+  "NP_PLPI.html", "NP_Sourcing.html", "NP_SLA.html", "NP_Warehouse.html", "NP_Tenders.html", "NP_PV.html",
+  "NP_Blockchain.html", "NP_AI_Tech.html", "NP_Finance.html", "NP_Capital.html", "NP_M365.html", "NP_Documents.html"
+];
+
+const obsoletePublicPaths = [
+  ...executivePages,
+  ...executivePages.map((page) => join("portal", "executive-platform", page)),
+  join("portal", "executive-platform", "docs"),
+  join("portal", "executive-platform", "vendor"),
+  join("public", "docs")
+];
 
 function shouldCopy(path) {
   const name = basename(path);
@@ -52,6 +69,10 @@ try {
   rmSync(writeTest, { force: true });
 } catch {
   throw new Error(`Target repository is not writable from this session: ${targetRoot}`);
+}
+
+for (const path of obsoletePublicPaths) {
+  rmSync(join(targetRoot, path), { recursive: true, force: true });
 }
 
 copyDirectory(sourceRoot, targetRoot);

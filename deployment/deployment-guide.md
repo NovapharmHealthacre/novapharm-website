@@ -4,6 +4,8 @@
 
 Use a Node-capable production host. GitHub Pages alone is not sufficient because the portal, database, authentication, document uploads and integration workers require `server.mjs`.
 
+GitHub Pages may serve the public corporate website, but protected URLs intentionally render locked, data-free pages there. The authenticated application requires the Node runtime.
+
 Recommended:
 
 - Azure App Service.
@@ -26,7 +28,7 @@ NODE_ENV=production node server.mjs
 ## Local Verification
 
 ```sh
-SESSION_SECRET=local-dev-session-secret-change-me PORTAL_USERNAME=Vishal PORTAL_PASSWORD=***REMOVED*** node server.mjs
+SESSION_SECRET=local-dev-session-secret-change-me PORTAL_USERNAME=Vishal PORTAL_PASSWORD='your temporary local password' node server.mjs
 ```
 
 The current Codex sandbox blocks local port binding with `listen EPERM`; run this command in a normal terminal or production host.
@@ -38,7 +40,9 @@ The current Codex sandbox blocks local port binding with `listen EPERM`; run thi
 - Configure Node 24+ on the host.
 - Set every variable from `deployment/environment-variables.md`.
 - Configure HTTPS.
-- Configure persistent database storage.
+- Configure persistent database storage and a private `SECURE_CONTENT_ROOT` outside the public repository.
+- Generate customer, employee and admin application shells into `SECURE_CONTENT_ROOT` during deployment.
+- Provision Executive Platform pages and controlled PDFs from SharePoint or another private deployment artifact. Never commit them to a public repository.
 - Configure Microsoft Graph and SharePoint permissions.
 - Configure Polar Speed/Marken API contract variables when supplied.
 - Configure backups and monitoring.

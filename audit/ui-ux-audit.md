@@ -8,8 +8,9 @@
 - Limited future scalability for services, products, partner and investor journeys.
 
 ## Implemented
-- Premium mobile-first layout with shared header, footer, cards, metrics, forms and portal/admin shell.
+- Premium mobile-first layout with a restrained corporate header, immersive pharmaceutical hero, evidence-led capability system, executive feature, insight rows and focused calls to action.
 - Homepage hero image with healthcare and pharmaceutical operations context.
 - Clean Apple-level spacing and restrained interaction design.
 - Dedicated user journeys for partners, distributors, investors, regulatory services, products and careers.
-- Integrated private client portal with documents, downloads, tasks, announcements and Executive Platform link.
+- Dedicated Vishal Chakravarty leadership experience with full-bleed first-viewport identity and verified profile links.
+- Public portal routes now render polished locked states; authenticated screens resolve only from runtime-private storage.

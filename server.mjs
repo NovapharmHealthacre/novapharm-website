@@ -1,6 +1,7 @@
+import "dotenv/config";
 import { createServer } from "node:http";
 import { createReadStream, existsSync, mkdirSync, statSync } from "node:fs";
-import { extname, join, normalize, resolve } from "node:path";
+import { extname, isAbsolute, join, normalize, relative, resolve } from "node:path";
 import { createHmac, pbkdf2Sync, randomBytes, timingSafeEqual } from "node:crypto";
 import {
   activateCustomer,
@@ -28,6 +29,7 @@ import { processSharePointEvents, sharePointFolderPlan } from "./src/integration
 import { processPolarSpeedEvents } from "./src/integrations/polar-speed/sync-engine.mjs";
 
 const root = resolve(process.cwd());
+const secureContentRoot = resolve(process.env.SECURE_CONTENT_ROOT || join(root, "_secure"));
 const dataDir = join(root, "data");
 mkdirSync(dataDir, { recursive: true });
 
@@ -39,13 +41,25 @@ const portalUsername = process.env.PORTAL_USERNAME || "";
 const portalPassword = process.env.PORTAL_PASSWORD || "";
 const portalPasswordHash = process.env.PORTAL_PASSWORD_HASH || "";
 const portalPasswordSalt = process.env.PORTAL_PASSWORD_SALT || "";
+const accessRedirects = {
+  customer: "/portal/dashboard/",
+  employee: "/employee/dashboard/",
+  board: "/portal/executive-platform/"
+};
+const roleScopes = {
+  client: ["customer"],
+  employee: ["employee"],
+  board: ["board"],
+  admin: ["customer", "employee", "board", "admin"]
+};
+const configuredPortalUsers = parsePortalUsers(process.env.PORTAL_USERS_JSON || "");
 
 if (!sessionSecret || sessionSecret.length < 24) {
   throw new Error("SESSION_SECRET must be set to at least 24 characters.");
 }
 
-if (!portalUsername || (!portalPassword && (!portalPasswordHash || !portalPasswordSalt))) {
-  console.warn("Portal login is not configured. Set PORTAL_USERNAME and either PORTAL_PASSWORD or PORTAL_PASSWORD_HASH/PORTAL_PASSWORD_SALT.");
+if ((!portalUsername || (!portalPassword && (!portalPasswordHash || !portalPasswordSalt))) && !configuredPortalUsers.length) {
+  console.warn("Portal login is not configured. Set the initial admin variables or PORTAL_USERS_JSON with hashed credentials.");
 }
 
 const mime = {
@@ -64,6 +78,32 @@ const mime = {
 
 const sessions = new Map();
 const rateBuckets = new Map();
+const blockedPublicTopLevel = new Set([
+  "_secure",
+  "architecture",
+  "audit",
+  "data",
+  "database",
+  "deployment",
+  "final-report",
+  "geo",
+  "integrations",
+  "node_modules",
+  "performance",
+  "private-content",
+  "public",
+  "scripts",
+  "security",
+  "seo",
+  "sharepoint",
+  "src"
+]);
+const blockedPublicRootFiles = new Set([
+  "package.json",
+  "package-lock.json",
+  "README.md",
+  "server.mjs"
+]);
 
 function securityHeaders(extra = {}) {
   const headers = {
@@ -143,14 +183,63 @@ function hashPassword(password, salt) {
   return pbkdf2Sync(password, salt, 210000, 32, "sha256").toString("hex");
 }
 
-function verifyPassword(username, password) {
-  if (!portalUsername || username !== portalUsername) return false;
-  if (portalPasswordHash && portalPasswordSalt) {
-    const actual = Buffer.from(hashPassword(password, portalPasswordSalt), "hex");
-    const expected = Buffer.from(portalPasswordHash, "hex");
-    return actual.length === expected.length && timingSafeEqual(actual, expected);
+function parsePortalUsers(raw) {
+  if (!raw) return [];
+  let users;
+  try {
+    users = JSON.parse(raw);
+  } catch {
+    throw new Error("PORTAL_USERS_JSON must be valid JSON.");
   }
-  return !isProduction && portalPassword && password === portalPassword;
+  if (!Array.isArray(users)) throw new Error("PORTAL_USERS_JSON must be a JSON array.");
+
+  const usernames = new Set();
+  return users.map((entry, index) => {
+    const username = String(entry?.username || "").trim();
+    const roleValue = String(entry?.role || "client").toLowerCase();
+    const role = roleValue === "customer" ? "client" : roleValue;
+    const passwordHash = String(entry?.passwordHash || "").trim();
+    const passwordSalt = String(entry?.passwordSalt || "").trim();
+    if (!username || usernames.has(username)) throw new Error(`PORTAL_USERS_JSON entry ${index + 1} needs a unique username.`);
+    if (!roleScopes[role]) throw new Error(`PORTAL_USERS_JSON entry ${index + 1} has an unsupported role.`);
+    if (!/^[a-f0-9]{64}$/i.test(passwordHash) || !passwordSalt) throw new Error(`PORTAL_USERS_JSON entry ${index + 1} requires a PBKDF2 passwordHash and passwordSalt.`);
+    usernames.add(username);
+    const requestedScopes = Array.isArray(entry.accessScopes) ? entry.accessScopes.map((scope) => String(scope).toLowerCase()) : [];
+    const validScopes = requestedScopes.filter((scope) => roleScopes.admin.includes(scope));
+    const accessScopes = role === "admin" ? roleScopes.admin : (validScopes.length ? [...new Set(validScopes)] : roleScopes[role]);
+    return { username, role, passwordHash, passwordSalt, accessScopes, customerId: entry.customerId || null };
+  });
+}
+
+function portalUser(username) {
+  if (portalUsername && username === portalUsername) {
+    return {
+      username: portalUsername,
+      role: "admin",
+      passwordHash: portalPasswordHash,
+      passwordSalt: portalPasswordSalt,
+      localPassword: portalPassword,
+      accessScopes: roleScopes.admin,
+      customerId: null
+    };
+  }
+  return configuredPortalUsers.find((user) => user.username === username) || null;
+}
+
+function verifyPassword(username, password) {
+  const user = portalUser(username);
+  if (!user) return null;
+  if (user.passwordHash && user.passwordSalt) {
+    const actual = Buffer.from(hashPassword(password, user.passwordSalt), "hex");
+    const expected = Buffer.from(user.passwordHash, "hex");
+    return actual.length === expected.length && timingSafeEqual(actual, expected) ? user : null;
+  }
+  if (!isProduction && user.localPassword && password === user.localPassword) return user;
+  return null;
+}
+
+function normalizeAccessType(value) {
+  return accessRedirects[String(value || "").toLowerCase()] ? String(value).toLowerCase() : "customer";
 }
 
 function signSession(sessionId) {
@@ -167,9 +256,17 @@ function validApplicationUploadToken(applicationId, token) {
   return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 
-function createSession(username) {
+function createSession(user, accessType = "customer") {
   const id = randomBytes(32).toString("hex");
-  sessions.set(id, { username, createdAt: Date.now(), expiresAt: Date.now() + 8 * 60 * 60 * 1000, role: username === portalUsername ? "admin" : "client", customerId: null });
+  sessions.set(id, {
+    username: user.username,
+    createdAt: Date.now(),
+    expiresAt: Date.now() + 8 * 60 * 60 * 1000,
+    role: user.role,
+    accessType,
+    accessScopes: user.accessScopes,
+    customerId: user.customerId
+  });
   return `${id}.${signSession(id)}`;
 }
 
@@ -190,9 +287,33 @@ function getSession(request) {
 function protectedPath(pathname) {
   return (pathname.startsWith("/portal/") && pathname !== "/portal/") ||
     pathname.startsWith("/employee/") ||
+    pathname.startsWith("/board/") ||
     pathname.startsWith("/admin/") ||
     /^\/NP_[A-Za-z0-9_]+\.html$/.test(pathname) ||
     pathname.startsWith("/docs/");
+}
+
+function requiredScope(pathname) {
+  if (pathname.startsWith("/admin/")) return "admin";
+  if (pathname.startsWith("/employee/")) return "employee";
+  if (pathname.startsWith("/board/") || pathname.startsWith("/portal/executive-platform/") || pathname.startsWith("/portal/ceo-dashboard/") || /^\/NP_[A-Za-z0-9_]+\.html$/.test(pathname) || pathname.startsWith("/docs/")) return "board";
+  if (pathname.startsWith("/portal/")) return "customer";
+  return null;
+}
+
+function canAccessPath(session, pathname) {
+  const scope = requiredScope(pathname);
+  if (!scope) return true;
+  return session?.accessScopes?.includes(scope) || session?.accessScopes?.includes("admin");
+}
+
+function hasScope(session, scopes) {
+  return Boolean(session && scopes.some((scope) => session.accessScopes?.includes(scope) || session.accessScopes?.includes("admin")));
+}
+
+function isWithinDirectory(directory, filePath) {
+  const pathFromDirectory = relative(directory, filePath);
+  return pathFromDirectory === "" || (!pathFromDirectory.startsWith("..") && !isAbsolute(pathFromDirectory));
 }
 
 async function readBody(request) {
@@ -219,18 +340,53 @@ async function readRawBody(request, maxBytes = 10 * 1024 * 1024) {
 function safeFilePath(urlPath) {
   const decoded = decodeURIComponent(urlPath.split("?")[0]);
   const normalized = normalize(decoded).replace(/^(\.\.[/\\])+/, "");
-  const publicAsset = normalized.startsWith("/vendor/") || normalized.startsWith("/docs/");
-  let clean = normalized === "/" ? "/index.html" : publicAsset ? `/public${normalized}` : normalized;
-  let filePath = resolve(join(root, clean));
-  if (!filePath.startsWith(root)) return null;
+  const pathSegments = normalized.split("/").filter(Boolean);
+  if (pathSegments.some((segment) => segment.startsWith("."))) return null;
+  if (blockedPublicTopLevel.has(pathSegments[0])) return null;
+  if (pathSegments.length === 1 && blockedPublicRootFiles.has(pathSegments[0])) return null;
+  const executivePrefix = "/portal/executive-platform";
+  const rootExecutiveMatch = normalized.match(/^\/(NP_[A-Za-z0-9_]+\.html)$/);
+  let filePath;
+
+  const secureFile = (path) => {
+    const candidate = resolve(secureContentRoot, path);
+    return isWithinDirectory(secureContentRoot, candidate) ? candidate : null;
+  };
+  const publicFile = (path) => {
+    const candidate = resolve(root, `.${path}`);
+    return isWithinDirectory(root, candidate) ? candidate : null;
+  };
+
+  if (normalized === "/") {
+    filePath = publicFile("/index.html");
+  } else if (normalized === "/portal/ceo-dashboard" || normalized === "/portal/ceo-dashboard/") {
+    filePath = secureFile("executive-platform/NP_CEO.html");
+  } else if (normalized === executivePrefix || normalized === `${executivePrefix}/`) {
+    filePath = secureFile("executive-platform/index.html");
+  } else if (normalized.startsWith(`${executivePrefix}/`)) {
+    filePath = secureFile(`executive-platform/${normalized.slice(`${executivePrefix}/`.length)}`);
+  } else if (rootExecutiveMatch) {
+    filePath = secureFile(`executive-platform/${rootExecutiveMatch[1]}`);
+  } else if (normalized.startsWith("/docs/")) {
+    filePath = secureFile(`executive-platform/docs/${normalized.slice("/docs/".length)}`);
+  } else if ((normalized.startsWith("/portal/") && normalized !== "/portal/") || normalized.startsWith("/employee/") || normalized.startsWith("/admin/") || normalized.startsWith("/board/")) {
+    filePath = secureFile(normalized.slice(1));
+  } else if (normalized.startsWith("/vendor/")) {
+    filePath = publicFile(`/public${normalized}`);
+  } else {
+    filePath = publicFile(normalized);
+  }
+  if (!filePath) return null;
+
+  const contentRoot = isWithinDirectory(secureContentRoot, filePath) ? secureContentRoot : root;
   if (existsSync(filePath) && statSync(filePath).isDirectory()) {
     filePath = resolve(join(filePath, "index.html"));
   }
   if (!existsSync(filePath) && !extname(filePath)) {
-    const withIndex = resolve(join(root, clean, "index.html"));
-    if (withIndex.startsWith(root)) filePath = withIndex;
+    const withIndex = resolve(join(filePath, "index.html"));
+    if (isWithinDirectory(contentRoot, withIndex)) filePath = withIndex;
   }
-  return filePath;
+  return isWithinDirectory(contentRoot, filePath) ? filePath : null;
 }
 
 function portalData() {
@@ -276,6 +432,16 @@ function authenticated(request, response, roles = []) {
   return session;
 }
 
+function scopedAuthentication(request, response, scopes, roles = []) {
+  const session = authenticated(request, response, roles);
+  if (!session) return null;
+  if (!hasScope(session, scopes)) {
+    json(response, 403, { error: "You do not have permission for this portal area." });
+    return null;
+  }
+  return session;
+}
+
 const server = createServer(async (request, response) => {
   try {
     const url = new URL(request.url || "/", `http://${request.headers.host || "localhost"}`);
@@ -291,11 +457,16 @@ const server = createServer(async (request, response) => {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
       if (!rateLimit(request, "login", 8, 15 * 60 * 1000)) return json(response, 429, { error: "Too many login attempts. Try again later." });
       const body = await readBody(request);
-      if (!verifyPassword(String(body.username || ""), String(body.password || ""))) {
+      const user = verifyPassword(String(body.username || ""), String(body.password || ""));
+      if (!user) {
         return json(response, 401, { error: "Invalid username or password." });
       }
-      const sessionCookie = createSession(String(body.username));
-      json(response, 200, { ok: true, redirectTo: "/employee/dashboard/" }, { "Set-Cookie": cookie("np_session", sessionCookie, { maxAge: 60 * 60 * 8 }) });
+      const accessType = normalizeAccessType(body.accessType);
+      if (!hasScope(user, [accessType])) {
+        return json(response, 403, { error: "This account is not authorised for the selected portal area." });
+      }
+      const sessionCookie = createSession(user, accessType);
+      json(response, 200, { ok: true, accessType, redirectTo: accessRedirects[accessType] }, { "Set-Cookie": cookie("np_session", sessionCookie, { maxAge: 60 * 60 * 8 }) });
       return;
     }
 
@@ -358,18 +529,18 @@ const server = createServer(async (request, response) => {
     if (pathname === "/api/portal/session" && request.method === "GET") {
       const session = getSession(request);
       if (!session) return json(response, 401, { error: "Authentication required." });
-      json(response, 200, { user: { username: session.username, role: session.role } });
+      json(response, 200, { user: { username: session.username, role: session.role, accessType: session.accessType, accessScopes: session.accessScopes } });
       return;
     }
 
     if (pathname === "/api/portal/data" && request.method === "GET") {
-      if (!getSession(request)) return json(response, 401, { error: "Authentication required." });
+      if (!scopedAuthentication(request, response, ["customer", "employee", "board"])) return;
       json(response, 200, portalData());
       return;
     }
 
     if (pathname === "/api/dashboard" && request.method === "GET") {
-      const session = authenticated(request, response);
+      const session = scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
       const customerId = session.role === "client" ? session.customerId : null;
       json(response, 200, operationalDashboard(customerId));
@@ -377,26 +548,26 @@ const server = createServer(async (request, response) => {
     }
 
     if (pathname === "/api/catalog/products" && request.method === "GET") {
-      if (!authenticated(request, response)) return;
+      if (!scopedAuthentication(request, response, ["customer", "employee"])) return;
       json(response, 200, { products: listProducts(url.searchParams.get("q") || ""), dataFreshness: new Date().toISOString() });
       return;
     }
 
     if (pathname === "/api/customers" && request.method === "GET") {
-      if (!authenticated(request, response, ["admin"])) return;
+      if (!scopedAuthentication(request, response, ["employee"])) return;
       json(response, 200, { customers: listCustomers(url.searchParams.get("q") || "") });
       return;
     }
 
     if (pathname === "/api/suppliers" && request.method === "GET") {
-      if (!authenticated(request, response, ["admin"])) return;
+      if (!scopedAuthentication(request, response, ["employee"])) return;
       json(response, 200, { suppliers: listSuppliers(url.searchParams.get("q") || "") });
       return;
     }
 
     if (pathname === "/api/suppliers" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
-      const session = authenticated(request, response, ["admin"]);
+      const session = scopedAuthentication(request, response, ["employee"]);
       if (!session) return;
       json(response, 201, { supplier: createSupplier(await readBody(request), session.username) });
       return;
@@ -404,14 +575,14 @@ const server = createServer(async (request, response) => {
 
     if (pathname === "/api/products" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
-      const session = authenticated(request, response, ["admin"]);
+      const session = scopedAuthentication(request, response, ["employee"]);
       if (!session) return;
       json(response, 201, { product: createProduct(await readBody(request), session.username) });
       return;
     }
 
     if (pathname === "/api/orders" && request.method === "GET") {
-      const session = authenticated(request, response);
+      const session = scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
       json(response, 200, { orders: listOrders({ customerId: session.role === "client" ? session.customerId : null }) });
       return;
@@ -419,7 +590,7 @@ const server = createServer(async (request, response) => {
 
     if (pathname === "/api/orders" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
-      const session = authenticated(request, response);
+      const session = scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
       const scopedCustomerId = session.role === "client" ? session.customerId : null;
       json(response, 201, { order: createOrder(await readBody(request), session.username, scopedCustomerId) });
@@ -427,14 +598,14 @@ const server = createServer(async (request, response) => {
     }
 
     if (pathname === "/api/purchase-orders" && request.method === "GET") {
-      if (!authenticated(request, response, ["admin"])) return;
+      if (!scopedAuthentication(request, response, ["employee"])) return;
       json(response, 200, { purchaseOrders: listPurchaseOrders() });
       return;
     }
 
     if (pathname === "/api/purchase-orders" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
-      const session = authenticated(request, response, ["admin"]);
+      const session = scopedAuthentication(request, response, ["employee"]);
       if (!session) return;
       json(response, 201, { purchaseOrder: createPurchaseOrder(await readBody(request), session.username) });
       return;
@@ -442,7 +613,7 @@ const server = createServer(async (request, response) => {
 
     if (pathname === "/api/documents/upload" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
-      const session = authenticated(request, response);
+      const session = scopedAuthentication(request, response, ["customer", "employee", "board"]);
       if (!session) return;
       const bytes = await readRawBody(request);
       const document = storeDocument({
@@ -498,6 +669,12 @@ const server = createServer(async (request, response) => {
     }
 
     if (protectedPath(pathname) && !getSession(request)) {
+      response.writeHead(302, securityHeaders({ Location: "/portal/" }));
+      response.end();
+      return;
+    }
+    const pathSession = getSession(request);
+    if (protectedPath(pathname) && !canAccessPath(pathSession, pathname)) {
       response.writeHead(302, securityHeaders({ Location: "/portal/" }));
       response.end();
       return;

@@ -8,6 +8,7 @@
 - `SITE_URL=https://www.novapharmhealthcare.com`
 - `DATABASE_PATH=/var/lib/novapharm/novapharm.sqlite`
 - `SESSION_SECRET`
+- `SECURE_CONTENT_ROOT=/var/lib/novapharm/secure-content`
 
 ## Initial Admin User
 
@@ -17,9 +18,17 @@
 
 Local verification only:
 
-- `PORTAL_PASSWORD=***REMOVED***`
+- `PORTAL_PASSWORD=<temporary local password>`
 
 Do not set `PORTAL_PASSWORD` in production.
+
+## Additional Portal Users
+
+- `PORTAL_USERS_JSON`
+
+Use a JSON array with PBKDF2 `passwordHash`, `passwordSalt`, `role`, optional `accessScopes`, and optional `customerId`. Roles are `client`, `employee`, `board`, and `admin`. Never include plaintext passwords.
+
+The initial Vishal user is an administrator with customer, employee, board and admin access when the hashed initial-admin variables are set.
 
 ## Microsoft Graph / SharePoint
 
