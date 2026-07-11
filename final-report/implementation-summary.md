@@ -22,7 +22,7 @@
 - Removed non-deterministic dashboard chart values from executive modules.
 - Added GitHub merge script and live deployment guide.
 - Preserved the GitHub Pages `CNAME` binding for `novapharmhealthcare.com` and added a regression validation for it.
-- Published the consolidated 125-file release to `NovapharmHealthacre/novapharm-website` `main` at commit `6fdcbcefd91adca6f99067136055c4ad948ee0a7`, followed by custom-domain and validation commits through `8729533268b5a53dc8e96c264ad7a2b450b86bbc`.
+- Published the consolidated 126-file production tree to `NovapharmHealthacre/novapharm-website` `main`; the canonical website release is commit `7d334e81ced63ac6857bcce2b4119ca600739f83`.
 
 ## Verification Passed
 
