@@ -14,15 +14,22 @@
     "validate:domain": "node scripts/validate-domain.mjs",
     "audit:claims": "node scripts/audit-public-claims.mjs",
     "check:links": "node scripts/check-links.mjs",
-    "syntax": "node scripts/check-syntax.mjs",
+    "syntax": "node scripts/check-syntax.mjs && node scripts/check-css.mjs",
     "security:scan": "node scripts/scan-secrets.mjs",
     "test:integration": "node scripts/test-server.mjs",
     "test:production-security": "node scripts/test-production-security.mjs",
-    "test": "npm run test:integration && npm run test:production-security",
-    "check": "npm run build && npm run validate && npm run syntax && npm run security:scan && npm test",
-    "hash:password": "node scripts/generate-password-hash.mjs",
+    "test:cookies": "node scripts/test-cookie-consent.mjs",
+    "test:backup-restore": "node scripts/test-backup-restore.mjs",
+    "test:preview-security": "node scripts/test-preview-security.mjs",
+    "test:session-restart": "node scripts/test-session-restart.mjs",
+    "test:database-migration": "node scripts/test-database-migration.mjs",
+    "test:visual-contracts": "node scripts/test-visual-contracts.mjs",
+    "test": "npm run test:integration && npm run test:production-security && npm run test:preview-security && npm run test:session-restart && npm run test:database-migration && npm run test:cookies && npm run test:backup-restore",
+    "check": "npm run build && npm run validate && npm run syntax && npm run security:scan && npm run test:visual-contracts && npm test",
     "backup:database": "node scripts/backup-database.mjs",
-    "verify:backup": "node scripts/verify-database-backup.mjs"
+    "verify:backup": "node scripts/verify-database-backup.mjs",
+    "restore:database": "node scripts/restore-database.mjs",
+    "optimise:images": "node scripts/optimise-images.mjs"
   },
   "engines": {
     "node": "24.x"

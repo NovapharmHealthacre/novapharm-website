@@ -27,12 +27,16 @@ import {
   syncStatus
 } from "./src/core/domain-service.mjs";
 import { storeDocument } from "./src/core/document-service.mjs";
+import { previewAccessAllowed } from "./src/core/preview-auth.mjs";
 import {
+  changePassword,
   consumeRateLimit,
   countActiveSessions,
   createPersistentSession,
   getPersistentSession,
+  hasPortalAdministrator,
   portalUsersFromEnvironment,
+  provisionBootstrapAdmin,
   provisionAuthUsers,
   recordSecurityEvent,
   revokePersistentSession,
@@ -50,6 +54,9 @@ const dataDir = join(root, "data");
 mkdirSync(dataDir, { recursive: true });
 
 const isProduction = process.env.NODE_ENV === "production";
+const isPreview = process.env.PREVIEW_MODE === "true";
+const previewUsername = String(process.env.PREVIEW_ACCESS_USERNAME || "");
+const previewPassword = String(process.env.PREVIEW_ACCESS_PASSWORD || "");
 const host = process.env.HOST || "127.0.0.1";
 const port = Number(process.env.PORT || 4173);
 const sessionSecret = process.env.SESSION_SECRET || (isProduction ? "" : "local-dev-session-secret-change-me");
@@ -58,13 +65,15 @@ const publicOrigin = new URL(process.env.PUBLIC_ORIGIN || process.env.SITE_URL |
 const accessRedirects = {
   customer: "/portal/dashboard/",
   employee: "/employee/dashboard/",
-  board: "/portal/executive-platform/"
+  board: "/portal/executive-platform/",
+  admin: "/admin/dashboard/"
 };
 const configuredPortalUsers = portalUsersFromEnvironment(process.env, { isProduction });
 
-if (!sessionSecret || sessionSecret.length < 24) {
-  throw new Error("SESSION_SECRET must be set to at least 24 characters.");
+if (!sessionSecret || Buffer.byteLength(sessionSecret, "utf8") < 32) {
+  throw new Error("SESSION_SECRET must contain at least 32 bytes.");
 }
+if (isPreview && (!previewUsername || !previewPassword)) throw new Error("PREVIEW_ACCESS_USERNAME and PREVIEW_ACCESS_PASSWORD are required when PREVIEW_MODE=true.");
 
 if (isProduction) {
   for (const variable of ["DATABASE_PATH", "SECURE_CONTENT_ROOT", "DOCUMENT_STORAGE_ROOT", "PUBLIC_ORIGIN", "PUBLIC_API_ORIGIN", "SITE_URL"]) {
@@ -77,11 +86,11 @@ if (isProduction) {
   }
 }
 
-if (!configuredPortalUsers.length) {
-  if (isProduction) throw new Error("At least one hashed portal administrator must be configured in production.");
+await provisionBootstrapAdmin(process.env, { requireCompromiseCheck: isProduction, fetchImplementation: isProduction ? globalThis.fetch : null });
+if (configuredPortalUsers.length) provisionAuthUsers(configuredPortalUsers);
+if (!hasPortalAdministrator()) {
+  if (isProduction) throw new Error("A persistent portal administrator must be configured in production.");
   console.warn("Portal login is not configured. Set the initial admin variables or PORTAL_USERS_JSON with hashed credentials.");
-} else {
-  provisionAuthUsers(configuredPortalUsers);
 }
 
 const mime = {
@@ -106,6 +115,7 @@ const blockedPublicTopLevel = new Set([
   "_secure",
   "architecture",
   "audit",
+  "compliance",
   "data",
   "database",
   "deployment",
@@ -142,11 +152,11 @@ function securityHeaders(extra = {}, { allowPrivateInline = false } = {}) {
     "Cross-Origin-Resource-Policy": "same-origin",
     "Content-Security-Policy": [
       "default-src 'self'",
-      `script-src 'self'${allowPrivateInline ? " 'unsafe-inline'" : ""} https://www.googletagmanager.com https://www.google-analytics.com`,
+      `script-src 'self'${allowPrivateInline ? " 'unsafe-inline'" : ""}`,
       `style-src 'self'${allowPrivateInline ? " 'unsafe-inline'" : ""}`,
       "font-src 'self'",
       "img-src 'self' data: https:",
-      "connect-src 'self' https://www.google-analytics.com https://analytics.google.com",
+      "connect-src 'self'",
       "frame-src 'none'",
       "object-src 'none'",
       "worker-src 'self'",
@@ -157,6 +167,7 @@ function securityHeaders(extra = {}, { allowPrivateInline = false } = {}) {
     ].join("; "),
     ...extra
   };
+  if (isPreview) headers["X-Robots-Tag"] = "noindex, nofollow, noarchive";
   if (isProduction) headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains";
   return headers;
 }
@@ -277,6 +288,7 @@ function requiredScope(pathname) {
 }
 
 function canAccessPath(session, pathname) {
+  if (pathname === "/portal/change-password" || pathname === "/portal/change-password/") return Boolean(session);
   const scope = requiredScope(pathname);
   if (!scope) return true;
   return session?.accessScopes?.includes(scope) || session?.accessScopes?.includes("admin");
@@ -410,6 +422,10 @@ function authenticated(request, response, roles = []) {
     json(response, 403, { error: "You do not have permission for this action." });
     return null;
   }
+  if (session.mustChangePassword) {
+    json(response, 403, { error: "A password change is required before this action.", code: "password_change_required", redirectTo: "/portal/change-password/" });
+    return null;
+  }
   return session;
 }
 
@@ -428,6 +444,14 @@ export async function handleRequest(request, response) {
     const url = new URL(request.url || "/", `http://${request.headers.host || "localhost"}`);
     const pathname = url.pathname;
 
+    if (isPreview && !["/api/health", "/robots.txt"].includes(pathname) && !previewAccessAllowed(request.headers.authorization, previewUsername, previewPassword)) {
+      return send(response, 401, "Preview authentication required.", {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "no-store",
+        "WWW-Authenticate": 'Basic realm="NovaPharm private preview", charset="UTF-8"'
+      });
+    }
+
     if (pathname.startsWith("/api/") && !["GET", "HEAD", "OPTIONS"].includes(request.method || "GET") && !hasAllowedOrigin(request)) {
       recordSecurityEvent({ eventType: "request.origin_rejected", networkFingerprint: networkFingerprint(request), outcome: "denied", details: { pathname } });
       return json(response, 403, { error: "Request origin is not permitted.", code: "origin_rejected" });
@@ -436,6 +460,11 @@ export async function handleRequest(request, response) {
     if (pathname === "/api/security/csrf" && request.method === "GET") {
       const token = csrfToken(request) || randomBytes(24).toString("hex");
       json(response, 200, { csrfToken: token }, { "Set-Cookie": cookie("np_csrf", token, { httpOnly: false, maxAge: 3600 }) });
+      return;
+    }
+
+    if (pathname === "/robots.txt" && request.method === "GET" && isPreview) {
+      send(response, 200, "User-agent: *\nDisallow: /\n", { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" });
       return;
     }
 
@@ -452,7 +481,28 @@ export async function handleRequest(request, response) {
         return json(response, 403, { error: "This account is not authorised for the selected portal area." });
       }
       const sessionCookie = createSession(user, accessType);
-      json(response, 200, { ok: true, accessType, redirectTo: accessRedirects[accessType] }, { "Set-Cookie": cookie("np_session", sessionCookie, { maxAge: Math.floor(sessionTtlMs / 1000) }) });
+      const redirectTo = user.mustChangePassword ? "/portal/change-password/" : accessRedirects[accessType];
+      json(response, 200, { ok: true, accessType, mustChangePassword: user.mustChangePassword, redirectTo }, { "Set-Cookie": cookie("np_session", sessionCookie, { maxAge: Math.floor(sessionTtlMs / 1000) }) });
+      return;
+    }
+
+    if (pathname === "/api/auth/change-password" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
+      if (!rateLimit(request, "password-change", 6, 15 * 60 * 1000)) return json(response, 429, { error: "Too many password-change attempts. Try again later." });
+      const existingSession = getSession(request);
+      if (!existingSession) return json(response, 401, { error: "Authentication required." });
+      const body = await readBody(request);
+      const user = await changePassword({
+        username: existingSession.username,
+        currentPassword: String(body.currentPassword || ""),
+        newPassword: String(body.newPassword || ""),
+        confirmation: String(body.confirmation || ""),
+        networkFingerprint: networkFingerprint(request),
+        requireCompromiseCheck: isProduction,
+        fetchImplementation: isProduction ? globalThis.fetch : null
+      });
+      const sessionCookie = createSession(user, existingSession.accessType);
+      json(response, 200, { ok: true, redirectTo: accessRedirects[existingSession.accessType] }, { "Set-Cookie": cookie("np_session", sessionCookie, { maxAge: Math.floor(sessionTtlMs / 1000) }) });
       return;
     }
 
@@ -522,7 +572,7 @@ export async function handleRequest(request, response) {
     if (pathname === "/api/portal/session" && request.method === "GET") {
       const session = getSession(request);
       if (!session) return json(response, 401, { error: "Authentication required." });
-      json(response, 200, { user: { username: session.username, displayName: session.displayName, role: session.role, accessType: session.accessType, accessScopes: session.accessScopes } });
+      json(response, 200, { user: { username: session.username, displayName: session.displayName, role: session.role, accessType: session.accessType, accessScopes: session.accessScopes, mustChangePassword: session.mustChangePassword } });
       return;
     }
 
@@ -678,12 +728,17 @@ export async function handleRequest(request, response) {
       return;
     }
 
-    if (protectedPath(pathname) && !getSession(request)) {
+    const pathSession = protectedPath(pathname) ? getSession(request) : null;
+    if (protectedPath(pathname) && !pathSession) {
       response.writeHead(302, securityHeaders({ Location: "/portal/" }));
       response.end();
       return;
     }
-    const pathSession = getSession(request);
+    if (pathSession?.mustChangePassword && pathname !== "/portal/change-password" && pathname !== "/portal/change-password/") {
+      response.writeHead(302, securityHeaders({ Location: "/portal/change-password/" }));
+      response.end();
+      return;
+    }
     if (protectedPath(pathname) && !canAccessPath(pathSession, pathname)) {
       response.writeHead(302, securityHeaders({ Location: "/portal/" }));
       response.end();
@@ -711,6 +766,9 @@ export async function handleRequest(request, response) {
         ? "public, max-age=0, must-revalidate, s-maxage=300, stale-while-revalidate=86400"
         : "public, max-age=3600, s-maxage=604800, stale-while-revalidate=2592000";
     const staticHeaders = securityHeaders({ "Content-Type": type, "Cache-Control": cacheControl }, { allowPrivateInline: privateContent });
+    if (privateContent || pathname === "/portal" || pathname.startsWith("/portal/") || pathname.startsWith("/employee/") || pathname.startsWith("/admin/") || pathname.startsWith("/board/") || pathname.startsWith("/docs/")) {
+      staticHeaders["X-Robots-Tag"] = "noindex, nofollow, noarchive";
+    }
     const acceptedEncoding = String(request.headers["accept-encoding"] || "");
     const canCompress = /^(?:text\/|application\/(?:javascript|json|manifest\+json|xml))|image\/svg\+xml/.test(type);
     if (canCompress && acceptedEncoding.includes("br")) Object.assign(staticHeaders, { "Content-Encoding": "br", Vary: "Accept-Encoding" });

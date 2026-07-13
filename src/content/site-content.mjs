@@ -5,6 +5,9 @@ export const company = Object.freeze({
   incorporated: "2025-09-15",
   status: "Active",
   location: "Feltham, England",
+  registeredAddress: "Flat 72 Archer Court, 21 High Street, Feltham, England, TW13 4AG",
+  registeredStreet: "Flat 72 Archer Court, 21 High Street",
+  registeredPostcode: "TW13 4AG",
   siteUrl: "https://novapharmhealthcare.com",
   companiesHouseUrl: "https://find-and-update.company-information.service.gov.uk/company/16716501",
   officersUrl: "https://find-and-update.company-information.service.gov.uk/company/16716501/officers",
@@ -42,8 +45,7 @@ export const leadership = Object.freeze([
     sameAs: [
       "https://vishal.novapharmhealthcare.com/",
       "https://uk.linkedin.com/in/vishal-chakravarty",
-      "https://find-and-update.company-information.service.gov.uk/officers/GCJvCvEf20rHFbzF_T9LKAGEJic/appointments",
-      "https://www.wikidata.org/wiki/Q137660690"
+      "https://find-and-update.company-information.service.gov.uk/officers/GCJvCvEf20rHFbzF_T9LKAGEJic/appointments"
     ],
     summary: "Vishal leads NovaPharm's strategic direction, UK market entry, supplier relationships, pharmaceutical sourcing, regulatory pathway coordination, PLPI strategy, partnerships and board governance.",
     biography: [
@@ -381,5 +383,40 @@ export const pageMeta = Object.freeze({
     title: "Careers | NovaPharm Healthcare",
     description: "Future opportunities at NovaPharm across pharmaceutical operations, quality, regulatory affairs, sourcing, partnerships, data and technology.",
     eyebrow: "Careers"
+  },
+  "legal": {
+    title: "Legal and Corporate Responsibility | NovaPharm Healthcare",
+    description: "NovaPharm Healthcare legal notices, privacy and cookie information, accessibility commitment, ethical sourcing and environmental responsibility statements.",
+    eyebrow: "Legal and responsibility"
+  },
+  "legal/privacy": {
+    title: "Privacy Notice | NovaPharm Healthcare",
+    description: "How NovaPharm Healthcare Ltd collects, uses, shares, protects and retains personal data under UK data-protection law, with rights and contact routes.",
+    eyebrow: "Privacy notice"
+  },
+  "legal/cookies": {
+    title: "Cookie and Storage Notice | NovaPharm Healthcare",
+    description: "The cookies and browser storage used by NovaPharm Healthcare, their purposes and durations, and how to accept, reject or change non-essential preferences.",
+    eyebrow: "Cookie notice"
+  },
+  "legal/terms": {
+    title: "Website Terms of Use | NovaPharm Healthcare",
+    description: "Terms governing use of the NovaPharm Healthcare corporate website and secure portal, including B2B, regulatory, confidentiality and acceptable-use boundaries.",
+    eyebrow: "Terms of use"
+  },
+  "legal/accessibility": {
+    title: "Accessibility Statement | NovaPharm Healthcare",
+    description: "NovaPharm Healthcare's WCAG 2.2 AA accessibility target, current testing approach, known limitations and routes for requesting accessible information.",
+    eyebrow: "Accessibility"
+  },
+  "legal/modern-slavery": {
+    title: "Modern Slavery and Human Rights Policy | NovaPharm Healthcare",
+    description: "NovaPharm Healthcare's voluntary ethical-sourcing and human-rights policy for pharmaceutical manufacturing, logistics, facilities and overseas supply chains.",
+    eyebrow: "Modern slavery"
+  },
+  "legal/environment-carbon": {
+    title: "Environmental and Carbon Responsibility | NovaPharm Healthcare",
+    description: "NovaPharm Healthcare's voluntary environmental responsibility statement and developing approach to operational, logistics, packaging and supply-chain emissions.",
+    eyebrow: "Environment and carbon"
   }
 });

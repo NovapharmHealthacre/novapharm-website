@@ -1,0 +1,38 @@
+:root {
+  color-scheme: only light;
+  --bg: #f3f5f4;
+  --surface: #ffffff;
+  --surface-2: #e9eeec;
+  --surface-3: #dce6e2;
+  --paper: #fbfcfb;
+  --ink: #111820;
+  --text: #354149;
+  --muted: #657078;
+  --line: #ccd5d2;
+  --line-strong: #aebbb7;
+  --brand: #c12f35;
+  --brand-2: #941f28;
+  --navy: #101c27;
+  --forest: #29584c;
+  --teal: #477a76;
+  --blue: #315793;
+  --gold: #8d6a24;
+  --green: #24734d;
+  --danger: #a8202a;
+  --shadow: 0 24px 64px rgba(17, 24, 32, 0.10);
+  --shadow-soft: 0 12px 34px rgba(17, 24, 32, 0.07);
+  --radius: 6px;
+  --font: "Avenir Next", Avenir, "Segoe UI", Helvetica, Arial, sans-serif;
+  --serif: Charter, "Iowan Old Style", Baskerville, Georgia, serif;
+  --container: 1320px;
+  --measure: 760px;
+  --space-1: 0.5rem;
+  --space-2: 0.75rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2rem;
+  --space-6: 3rem;
+  --space-7: 4.5rem;
+  --space-8: 6.5rem;
+  --header-height: 78px;
+}

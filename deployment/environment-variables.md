@@ -6,7 +6,7 @@
 | --- | --- |
 | `NODE_ENV` | `production` |
 | `HOST` | `0.0.0.0` |
-| `PORT` | Supplied by the host; defaults to `4173` |
+| `PORT` | Supplied by Render; do not create it manually |
 | `SITE_URL` | `https://novapharmhealthcare.com` |
 | `PUBLIC_ORIGIN` | `https://novapharmhealthcare.com` |
 | `PUBLIC_API_ORIGIN` | `https://novapharmhealthcare.com` |
@@ -14,28 +14,21 @@
 | `DATABASE_BACKUP_ROOT` | Persistent backup path, currently `/var/lib/novapharm/backups` |
 | `SECURE_CONTENT_ROOT` | Persistent private path, currently `/var/lib/novapharm/secure-content` |
 | `DOCUMENT_STORAGE_ROOT` | Persistent private path, currently `/var/lib/novapharm/documents` |
-| `SESSION_SECRET` | At least 32 random characters |
+| `SESSION_SECRET` | Protected value containing at least 32 random bytes |
 | `SESSION_TTL_MS` | Optional; defaults to eight hours |
 
 ## Administrator Identity
 
 | Variable | Requirement |
 | --- | --- |
-| `PORTAL_USERNAME` | Initial administrator username |
-| `PORTAL_DISPLAY_NAME` | Public-safe display name |
-| `PORTAL_PASSWORD_HASH` | 64-character PBKDF2-SHA256 hash |
-| `PORTAL_PASSWORD_SALT` | Random hexadecimal salt |
+| `PORTAL_USERNAME` | `Vishal` |
+| `PORTAL_DISPLAY_NAME` | `Vishal Chakravarty` |
+| `BOOTSTRAP_ADMIN_PASSWORD` | One-time protected Render secret; delete after the first password change |
 | `PORTAL_USERS_JSON` | Optional hashed customer, employee or board identities; every client identity requires its canonical `customerId` |
 
-Generate a hash and salt in a controlled terminal:
+The bootstrap value is entered only in Render's protected secret field. On first start, the service stores a unique salt and PBKDF2-SHA256 hash in the persistent identity store and marks the account for mandatory password change. Delete the Render bootstrap variable immediately after that change. `PORTAL_PASSWORD` is rejected in production. The administrator receives customer, employee, board and administrator scopes.
 
-```sh
-PORTAL_PASSWORD='temporary value entered locally' npm run hash:password
-```
-
-Set only the resulting hash and salt in production. `PORTAL_PASSWORD` is rejected when `NODE_ENV=production`. The initial administrator identity receives customer, employee, board and administrator scopes.
-
-The production runtime fails closed when the administrator hash/salt, persistent paths, HTTPS origin or public host binding is missing or inconsistent.
+The production runtime fails closed when no persistent administrator exists, when a completed bootstrap secret is still present after restart, or when persistent paths, HTTPS origin or public host binding are missing or inconsistent.
 
 ## Contact Email
 

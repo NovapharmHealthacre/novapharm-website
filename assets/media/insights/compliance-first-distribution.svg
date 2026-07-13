@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Compliance-first pharmaceutical distribution</title>
+  <desc id="desc">A controlled route through qualification, batch release, storage and delivery.</desc>
+  <rect width="1200" height="675" fill="#12212a"/>
+  <g fill="none" stroke="#d8e5e0" stroke-opacity=".22"><path d="M0 116h1200M0 224h1200M0 332h1200M0 440h1200M0 548h1200"/><path d="M148 0v675M356 0v675M564 0v675M772 0v675M980 0v675"/></g>
+  <path d="M122 494C278 494 298 198 496 198s188 284 382 284h208" fill="none" stroke="#c12f35" stroke-width="6"/>
+  <g fill="#f7faf8" stroke="#12212a" stroke-width="8"><circle cx="122" cy="494" r="26"/><circle cx="496" cy="198" r="26"/><circle cx="878" cy="482" r="26"/><circle cx="1086" cy="482" r="26"/></g>
+</svg>

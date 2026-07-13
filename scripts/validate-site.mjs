@@ -24,7 +24,14 @@ const publicPages = [
   "contact/index.html",
   "investor-information/index.html",
   "careers/index.html",
-  "account-application/index.html"
+  "account-application/index.html",
+  "legal/index.html",
+  "legal/privacy/index.html",
+  "legal/cookies/index.html",
+  "legal/terms/index.html",
+  "legal/accessibility/index.html",
+  "legal/modern-slavery/index.html",
+  "legal/environment-carbon/index.html"
 ];
 const redirectPages = [
   "company-profile/index.html",
@@ -58,27 +65,62 @@ const requiredFiles = [
   "sharepoint/workflows/README.md",
   "sharepoint/permissions/README.md",
   "audit/technical-audit.md",
+  "audit/visual-acceptance-report.md",
+  "audit/global-digital-benchmark.md",
+  "audit/current-experience-gap-analysis.md",
   "seo/keyword-strategy.md",
   "geo/geo-strategy.md",
   "security/security-report.md",
+  "security/git-history-sanitisation.md",
+  "compliance/privacy-data-map.md",
+  "compliance/retention-schedule.md",
+  "compliance/cookie-register.md",
+  "compliance/modern-slavery-applicability.md",
+  "compliance/environmental-reporting-applicability.md",
+  "compliance/legal-review-register.md",
   "performance/lighthouse-report.md",
   "deployment/deployment-guide.md",
+  "deployment/private-preview-guide.md",
   "deployment/environment-variables.md",
   "deployment/rollback-guide.md",
+  "deployment/history-rollback.md",
   "final-report/implementation-summary.md",
+  "final-report/official-logo-register.md",
   "final-report/remaining-items.md",
+  "creative-assets/image-generation-brief.md",
+  "creative-assets/asset-register.json",
+  "creative-assets/visual-provenance.md",
   "assets/css/novapharm.css",
+  "assets/css/base.css",
+  "assets/css/tokens.css",
+  "assets/css/foundations.css",
+  "assets/css/premium-experience.css",
+  "assets/css/motion.css",
+  "assets/css/portal.css",
+  "assets/css/responsive.css",
   "assets/js/api-client.js",
   "assets/js/novapharm.js",
   "assets/js/portal-login.js",
   "assets/js/portal-app.js",
+  "assets/js/password-change.js",
+  "assets/js/cookie-consent.js",
   "assets/js/admin-app.js",
   "assets/js/account-application.js",
   "assets/js/enterprise-app.js",
-  "assets/novapharm-healthcare-hero.jpg",
-  "assets/novapharm-og.jpg",
   "assets/brand/novapharm-healthcare-logo.svg",
   "assets/brand/novapharm-healthcare-logo.png",
+  "assets/media/home/supply-network-hero.jpg",
+  "assets/media/home/supply-network-hero-1200.jpg",
+  "assets/media/editorial/oncology-specialty.svg",
+  "assets/media/editorial/digital-traceability.svg",
+  "assets/media/editorial/quality-batch-integrity.svg",
+  "assets/media/editorial/partnership-pathway.svg",
+  "assets/media/insights/compliance-first-distribution.svg",
+  "assets/media/insights/gdp-qms-foundations.svg",
+  "assets/media/insights/oncology-demand-forecasting.svg",
+  "assets/media/insights/plpi-supply-resilience.svg",
+  "assets/media/insights/three-pillar-sourcing.svg",
+  "assets/media/insights/batch-to-buyer-traceability.svg",
   "src/content/site-content.mjs",
   "src/core/auth-service.mjs",
   "src/core/domain-service.mjs",
@@ -96,7 +138,11 @@ const requiredFiles = [
   "scripts/sync-secure-content.mjs",
   "scripts/test-server.mjs",
   "scripts/test-production-security.mjs",
+  "scripts/test-database-migration.mjs",
   "scripts/check-syntax.mjs",
+  "scripts/check-css.mjs",
+  "scripts/test-visual-contracts.mjs",
+  "scripts/optimise-images.mjs",
   "scripts/scan-secrets.mjs",
   "scripts/backup-database.mjs",
   "scripts/verify-database-backup.mjs",
@@ -128,15 +174,30 @@ function source(path) {
 for (const file of requiredFiles) {
   if (!existsSync(join(root, file))) fail(`missing ${file}`);
 }
+for (const file of ["assets/novapharm-healthcare-hero.jpg", "assets/novapharm-og.jpg"]) {
+  if (existsSync(join(root, file))) fail(`unused legacy stock asset must not ship: ${file}`);
+}
+
+const assetRegister = JSON.parse(source("creative-assets/asset-register.json"));
+for (const asset of assetRegister.assets || []) {
+  if (!asset.path || !existsSync(join(root, asset.path))) fail(`asset register references missing file ${asset.path || "(no path)"}`);
+  for (const field of ["source", "dimensions", "pageUsage", "altText", "technicalStatus", "ownerApproval"]) {
+    if (asset[field] === undefined) fail(`${asset.path || "asset"} is missing provenance field ${field}`);
+  }
+}
 
 const insightFiles = readdirSync(join(root, "src/content/insights")).filter((file) => file.endsWith(".json"));
 if (insightFiles.length < 6) fail("at least six original insight articles are required");
+const insightHeroImages = new Set();
 for (const file of insightFiles) {
   const article = JSON.parse(source(`src/content/insights/${file}`));
   const words = article.sections.flatMap((section) => [...(section.paragraphs || []), ...(section.list || [])]).join(" ").trim().split(/\s+/).filter(Boolean).length;
   if (words < 900 || words > 1400) fail(`${file} contains ${words} body words; expected 900-1400`);
   const output = `news-insights/${article.slug}/index.html`;
   if (!existsSync(join(root, output))) fail(`${file} has no generated article page`);
+  if (!article.heroImage || !existsSync(join(root, article.heroImage.replace(/^\//, "")))) fail(`${file} has no valid hero image`);
+  if (insightHeroImages.has(article.heroImage)) fail(`${file} reuses the hero image ${article.heroImage}`);
+  insightHeroImages.add(article.heroImage);
   publicPages.push(output);
 }
 
@@ -200,7 +261,7 @@ for (const file of publicPages) {
   if (!html.includes('href="#main"') || !html.includes('id="main"')) fail(`${file} needs a working skip link`);
 }
 
-if (publicPages.length !== 26) fail(`expected exactly 26 public pages; found ${publicPages.length}`);
+if (publicPages.length !== 33) fail(`expected exactly 33 public pages; found ${publicPages.length}`);
 for (const type of ["Organization", "Person", "Article", "BlogPosting", "Service", "BreadcrumbList"]) {
   if (!observedSchemaTypes.has(type)) fail(`structured data is missing ${type}`);
 }
@@ -279,7 +340,7 @@ if (source("CNAME").trim() !== "novapharmhealthcare.com") fail("CNAME must prese
 if (!source("robots.txt").includes(`Sitemap: ${siteUrl}/sitemap.xml`)) fail("robots.txt needs the production sitemap URL");
 
 const serverSource = source("server.mjs");
-for (const blockedPath of ["_secure", "data", "database", "src", "scripts", "integrations", "sharepoint"]) {
+for (const blockedPath of ["_secure", "compliance", "data", "database", "src", "scripts", "integrations", "sharepoint"]) {
   if (!serverSource.includes(`"${blockedPath}"`)) fail(`server static denylist is missing ${blockedPath}`);
 }
 for (const table of ["auth_credentials", "auth_sessions", "rate_limit_buckets", "security_events", "lead_details"]) {

@@ -12,3 +12,5 @@ artifacts/
 *.sqlite-wal
 _secure/
 private-content/
+tmp/
+assets/media/home/*-source.png

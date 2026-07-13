@@ -37,11 +37,13 @@ services:
         value: /var/lib/novapharm/documents
       - key: SESSION_SECRET
         generateValue: true
+      - key: SESSION_TTL_MS
+        value: "28800000"
       - key: PORTAL_USERNAME
-        sync: false
-      - key: PORTAL_PASSWORD_SALT
-        sync: false
-      - key: PORTAL_PASSWORD_HASH
+        value: Vishal
+      - key: PORTAL_DISPLAY_NAME
+        value: Vishal Chakravarty
+      - key: BOOTSTRAP_ADMIN_PASSWORD
         sync: false
       - key: RESEND_API_KEY
         sync: false

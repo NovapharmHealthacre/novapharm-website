@@ -1,58 +1,34 @@
 # Implementation Summary
 
-## Source of Truth
+## Post-launch candidate
 
-The implementation brief and both retained business-plan editions were reviewed in full. The later plan controls current positioning; annex detail was used for product focus, sourcing, regulatory preparation, technology roadmap and leadership context. Current Companies House and official MHRA/GOV.UK pages were checked for claims that can change.
+- Reconciled the merged public site with the later legal, privacy, persistence, bootstrap, SharePoint and deployment work in one repository candidate.
+- Replaced the generic visual layer with modular tokens, foundations, premium editorial layouts, responsive rules, portal styling and restrained motion.
+- Added an original flagship supply-network hero, four original information-design visuals and six distinct original Insights covers with provenance and optimisation records.
+- Rebuilt the homepage around the three-pillar sourcing model, explicit regulatory status, oncology/specialty focus, batch integrity and technology maturity.
+- Added visual storytelling to About, Services, Regulatory, Products, Partners and Technology without copying competitor code or assets.
+- Preserved 33 indexable public pages, six 900-1,400-word Insights articles, five leadership profiles, substantive SEO/GEO, legal pages and claims guardrails.
+- Added an explicit Administrator portal entry and direct admin redirect while preserving customer, employee and board boundaries.
+- Added a lossless database migration so existing persistent SQLite installations accept administrator sessions without losing legacy sessions.
+- Added CSS syntax and visual-contract tests for modular imports, responsive breakpoints, distinct media, motion preferences, portal modes and image budgets.
 
-Public copy consistently distinguishes verified company facts from proposed, planned, in-development and authorisation-dependent capabilities. NovaPharm is not represented as holding a WDA(H), PLPI licence, available medicine stock, NHS supply contract or deployed AI/blockchain capability without evidence.
+## Claims and identity
 
-## Delivered
+The public copy does not represent NovaPharm as holding a WDA(H), PLPI licence, NHS supply contract, medicine stock, achieved revenue or deployed AI/blockchain capability without evidence. Polar Speed/Marken and other provider relationships remain qualified as planned and subject to contract, authorisation and onboarding. Dr Nishita Trivedi is explicitly not presented as a statutory director.
 
-- The supplied official NovaPharm Healthcare SVG and PNG are copied byte-for-byte into `assets/brand/`; their SHA-256 hashes are enforced during validation. The supplied PDF and EPS were reviewed as print masters and are not exposed as public web downloads.
-- Premium mobile-first corporate website with one structured content architecture.
-- Company, governance, five leadership profiles, eight service pillars, regulatory, portfolio, partnership, technology, investor, career and contact experiences.
-- Six original 900-1,400-word insight articles and RSS feed.
-- Advanced metadata, canonical URLs, schema, sitemap, robots, breadcrumbs and internal linking.
-- Customer, employee, board and administrator portal choices with server-side scopes.
-- Persistent hashed authentication, lockout, sessions, rate limits and security events.
-- Accessible contact transaction with database storage, consent evidence and optional two-message email delivery.
-- Four-stage customer onboarding with server validation, document intake, expiring upload token, audit/outbox and activation workflow.
-- Canonical company data model and operational APIs for customers, suppliers, products, orders and purchase orders.
-- SharePoint Graph client, folder/outbox model and secure-content hydration.
-- Polar Speed/Marken integration boundary that remains blocked until an approved API contract is supplied.
-- Render Blueprint, Dockerfile, CI workflow, health check and rollback documentation.
+The approved SVG and PNG files remain byte-identical to the supplied masters and are enforced by SHA-256 validation. No competitor code, competitor creative asset, fake executive portrait or unauthorised logo variant was introduced.
 
-## SharePoint Completed
+## Verification on 13 July 2026
 
-The configured SharePoint site and document library were confirmed. The controlled Executive Platform folder now contains:
+- Node `v24.14.0` and `npm ci --ignore-scripts`: passed.
+- `npm run check`: passed.
+- Build, 33-page/40-shell validation, six-article word-count/content checks, 1,890 links, SEO/GEO/schema, domain workflow and public-claims audit: passed.
+- 48 JavaScript/MJS/TypeScript files and eight modular CSS files: passed.
+- Current-tree secret/artefact scan across 228 local files: passed. Ignored runtime, private and authoring-source paths were excluded from the release tree.
+- Contact controls, all portal roles, administrator bootstrap, forced password change, old-password rejection, session invalidation, route boundaries, private-file denial, expiry, lockout, rate limiting, preview noindex, persistent restart, legacy database migration, cookie consent and backup/restore: passed.
+- `npm audit --omit=dev --audit-level=high`: blocked by sandbox DNS locally, then passed in GitHub Actions with network access.
+- Real Chromium/WebKit, Lighthouse and browser accessibility evidence: blocked until a private preview is available; not reported as passed.
 
-- 18 Executive Platform HTML modules.
-- The controlled Executive Platform hub.
-- `docs/NP_Flowcharts_v3.pdf` and `docs/NP_Implementation_Blueprint_v2.pdf`.
-- `vendor/chart.umd.js` for private chart rendering.
+## Release state
 
-No anonymous sharing link was found. The folder inherits site Owners, Members and Visitors groups; board-only permission narrowing remains an administrator action.
-
-## Verification Passed
-
-- `npm install`, `npm run build`, `npm run validate`, `npm run syntax`, `npm run security:scan`, integration tests and production-security tests.
-- 26 public pages, six long-form articles and 39 locked shells.
-- 1,333 internal references and assets.
-- A 75-document semantic sweep covering mobile viewport declarations, image alternatives, intrinsic image dimensions and heading order.
-- Public claims audit covering current licences, NHS supply, logistics contracts, financial performance, product availability, AI/blockchain status and private immigration-plan content.
-- Domain workflow and HTTP integration suites.
-- Current-schema SQLite backup creation and integrity verification.
-- The local hashed administrator identity verifies with customer, employee, board and administrator scopes.
-
-The local `npm audit` request could not reach the npm advisory endpoint in the restricted audit environment. GitHub `Production readiness` run 9 completed on the audited implementation commit with zero vulnerabilities and the full quality gate passing; the latest pull-request workflow remains authoritative for any later documentation-only commit.
-
-## Pre-Merge Findings
-
-- The current candidate tree contains placeholders only in `.env.example`; administrator and SharePoint operational identifiers have been removed from public configuration examples.
-- The historical patch for the first pull-request commit contains the deleted password string previously supplied for local use. It must be treated as compromised and must not be used for production. Removing it from Git history requires an owner-approved repository history rewrite; an ordinary commit cannot erase it.
-- Source-level responsive and semantic checks pass, but a rendered Safari and Chromium audit remains required because the local audit environment could not bind a preview server or navigate a local document.
-- The Executive Platform SharePoint folder has no anonymous link, but inherited Visitors read and Members write access must be narrowed before confidential board data is introduced.
-
-## Release State
-
-The production candidate is prepared for `NovapharmHealthacre/novapharm-website` on `codex/ultra-premium-rebuild`. The authoritative release head and workflow status are recorded on pull request 2. The authenticated site is not described as live until the pre-merge blockers are resolved, the pull request is approved and merged, a Node host is connected, production secrets are entered, DNS is moved and post-deployment tests pass.
+Pull Request 2 is already merged at `189da77fdaff9ac5c79d39af60e93dbb06a48e58`. The post-launch candidate is published on `codex/post-launch-production-completion` in draft Pull Request 3 to `main`; its GitHub `Production readiness` workflow passed. It must not be merged, deployed to production, connected to production DNS or used to change SharePoint permissions without the required owner approvals.
