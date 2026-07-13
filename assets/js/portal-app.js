@@ -13,6 +13,10 @@ async function portalRequest(path, options = {}) {
 async function hydratePortal() {
   const session = await portalRequest("/api/portal/session");
   if (!session) return;
+  if (session.user?.mustChangePassword && window.location.pathname !== "/portal/change-password/") {
+    window.location.href = "/portal/change-password/";
+    return;
+  }
   document.querySelectorAll("[data-user-name]").forEach((node) => {
     node.textContent = session.user?.displayName || session.user?.username || "Portal user";
   });

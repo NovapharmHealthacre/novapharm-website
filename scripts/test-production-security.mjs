@@ -1,14 +1,14 @@
 import assert from "node:assert/strict";
-import { pbkdf2Sync, randomBytes } from "node:crypto";
+import { randomBytes } from "node:crypto";
 import { rmSync } from "node:fs";
 import { Readable, Writable } from "node:stream";
 
 const runId = `${process.pid}-${Date.now()}`;
 const databasePath = `/tmp/novapharm-production-security-${runId}.sqlite`;
 const documentStoragePath = `/tmp/novapharm-production-security-documents-${runId}`;
-const username = "ProductionSecurityTestAdmin";
-const password = randomBytes(24).toString("base64url");
-const passwordSalt = randomBytes(16).toString("hex");
+const username = "Vishal";
+const password = `Aa1!${randomBytes(24).toString("hex")}`;
+const permanentPassword = `Zz9!${randomBytes(24).toString("hex")}`;
 
 process.env.NODE_ENV = "production";
 process.env.DATABASE_PATH = databasePath;
@@ -20,12 +20,21 @@ process.env.PUBLIC_ORIGIN = "https://novapharmhealthcare.com";
 process.env.PUBLIC_API_ORIGIN = "https://novapharmhealthcare.com";
 process.env.SITE_URL = "https://novapharmhealthcare.com";
 process.env.PORTAL_USERNAME = username;
-process.env.PORTAL_PASSWORD_SALT = passwordSalt;
-process.env.PORTAL_PASSWORD_HASH = pbkdf2Sync(password, passwordSalt, 210000, 32, "sha256").toString("hex");
-delete process.env.PORTAL_PASSWORD;
-delete process.env.PORTAL_USERS_JSON;
+process.env.PORTAL_DISPLAY_NAME = "Vishal Chakravarty";
+process.env.BOOTSTRAP_ADMIN_PASSWORD = password;
+process.env.PORTAL_PASSWORD = "";
+process.env.PORTAL_PASSWORD_HASH = "";
+process.env.PORTAL_PASSWORD_SALT = "";
+process.env.PORTAL_USERS_JSON = "";
 
+const originalFetch = globalThis.fetch;
+const passwordRangeRequests = [];
+globalThis.fetch = async (url, options) => {
+  passwordRangeRequests.push({ url: String(url), padding: options?.headers?.["Add-Padding"] });
+  return new Response("00000000000000000000000000000000000:0", { status: 200 });
+};
 const { handleRequest } = await import("../server.mjs");
+assert.equal(process.env.BOOTSTRAP_ADMIN_PASSWORD, undefined);
 
 class TestRequest extends Readable {
   constructor({ method = "GET", url = "/", headers = {}, body = "" } = {}) {
@@ -88,6 +97,8 @@ const csrf = await request({ url: "/api/security/csrf" });
 assert.equal(csrf.statusCode, 200);
 assert.match(csrf.headers["Strict-Transport-Security"], /max-age=31536000/);
 assert.match(csrf.headers["Set-Cookie"], /Secure/);
+assert.match(csrf.headers["Content-Security-Policy"], /connect-src 'self'/);
+assert.doesNotMatch(csrf.headers["Content-Security-Policy"], /pwnedpasswords/);
 const csrfCookie = cookieValue(csrf.headers["Set-Cookie"], "np_csrf");
 
 const rejectedOrigin = await request({
@@ -115,10 +126,53 @@ const login = await request({
   body: JSON.stringify({ username, password, accessType: "board" })
 });
 assert.equal(login.statusCode, 200);
+assert.equal(login.payload.redirectTo, "/portal/change-password/");
+assert.equal(login.payload.mustChangePassword, true);
 assert.match(login.headers["Set-Cookie"], /HttpOnly/);
 assert.match(login.headers["Set-Cookie"], /Secure/);
 assert.match(login.headers["Set-Cookie"], /SameSite=Lax/);
 assert.doesNotMatch(login.headers["Set-Cookie"], new RegExp(password));
+const sessionCookie = cookieValue(login.headers["Set-Cookie"], "np_session");
+
+const blockedAdmin = await request({
+  url: "/api/admin/summary",
+  headers: { cookie: `np_session=${sessionCookie}` }
+});
+assert.equal(blockedAdmin.statusCode, 403);
+assert.equal(blockedAdmin.payload.code, "password_change_required");
+
+const changed = await request({
+  method: "POST",
+  url: "/api/auth/change-password",
+  headers: {
+    origin: "https://novapharmhealthcare.com",
+    cookie: `np_csrf=${csrfCookie}; np_session=${sessionCookie}`,
+    "x-csrf-token": csrfCookie,
+    "content-type": "application/json"
+  },
+  body: JSON.stringify({ currentPassword: password, newPassword: permanentPassword, confirmation: permanentPassword })
+});
+assert.equal(changed.statusCode, 200);
+assert.match(changed.headers["Set-Cookie"], /Secure/);
+assert.ok(passwordRangeRequests.length >= 2);
+assert.ok(passwordRangeRequests.every((entry) => /^https:\/\/api\.pwnedpasswords\.com\/range\/[A-F0-9]{5}$/.test(entry.url) && entry.padding === "true"));
+assert.ok(passwordRangeRequests.every((entry) => !entry.url.includes(password) && !entry.url.includes(permanentPassword)));
+
+const retiredLogin = await request({
+  method: "POST",
+  url: "/api/auth/login",
+  headers: { origin: "https://novapharmhealthcare.com", cookie: `np_csrf=${csrfCookie}`, "x-csrf-token": csrfCookie, "content-type": "application/json" },
+  body: JSON.stringify({ username, password, accessType: "board" })
+});
+assert.equal(retiredLogin.statusCode, 401);
+const permanentLogin = await request({
+  method: "POST",
+  url: "/api/auth/login",
+  headers: { origin: "https://novapharmhealthcare.com", cookie: `np_csrf=${csrfCookie}`, "x-csrf-token": csrfCookie, "content-type": "application/json" },
+  body: JSON.stringify({ username, password: permanentPassword, accessType: "board" })
+});
+assert.equal(permanentLogin.statusCode, 200);
+assert.equal(permanentLogin.payload.mustChangePassword, false);
 
 const health = await request({ url: "/api/health" });
 assert.equal(health.statusCode, 200);
@@ -127,4 +181,5 @@ assert.equal(health.payload.environment, "production");
 rmSync(databasePath, { force: true });
 rmSync(documentStoragePath, { force: true, recursive: true });
 rmSync(process.env.SECURE_CONTENT_ROOT, { force: true, recursive: true });
-console.log("Production security tests passed: HSTS, secure cookies, HttpOnly session, same-origin enforcement and production health.");
+globalThis.fetch = originalFetch;
+console.log("Production security tests passed: one-time bootstrap, breach-range checking, forced password change, old-password rejection, HSTS, secure cookies, same-origin enforcement and health.");

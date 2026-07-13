@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { allocateNumber, audit, db, enqueue, nowIso, one, run, transaction, all } from "../data/database.mjs";
+import { allocateNumber, audit, db, enqueue, nowIso, one, run, stableHash, transaction, all } from "../data/database.mjs";
 import { sharePointFolderPath } from "./sharepoint-mapping.mjs";
 
 function required(value, name) {
@@ -19,6 +19,7 @@ const enquiryTypes = new Set([
   "Careers",
   "General enquiry"
 ]);
+const privacyNoticeVersion = "2026-07-11-v1.0";
 
 function integer(value, name, minimum = 0) {
   const parsed = Number(value);
@@ -111,12 +112,23 @@ export function createLead(input, actor = "public_website") {
   if (!/^\S+@\S+\.\S+$/.test(lead.email)) throw Object.assign(new Error("Enter a valid email address."), { statusCode: 400 });
   if (!enquiryTypes.has(lead.enquiryType)) throw Object.assign(new Error("Select a valid enquiry type."), { statusCode: 400 });
   if (lead.message.length < 20) throw Object.assign(new Error("Message must contain at least 20 characters."), { statusCode: 400 });
-  if (input.consent !== "yes") throw Object.assign(new Error("Consent is required before submitting an enquiry."), { statusCode: 400 });
+  if (input.privacyAcknowledgement !== "yes" && input.consent !== "yes") throw Object.assign(new Error("Confirm that you have read the privacy notice before submitting an enquiry."), { statusCode: 400 });
+  if (input.safetyConfirmation !== "yes") throw Object.assign(new Error("Confirm that the enquiry does not contain patient-identifiable, adverse-event or urgent medical information."), { statusCode: 400 });
+  const submissionFingerprint = stableHash({
+    email: lead.email,
+    company: lead.company.toLowerCase(),
+    enquiryType: lead.enquiryType,
+    message: lead.message.toLowerCase()
+  });
   const now = nowIso();
+  const duplicateSince = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+  if (one("SELECT id FROM leads WHERE submission_fingerprint = ? AND created_at >= ? LIMIT 1", submissionFingerprint, duplicateSince)) {
+    return { id: null, status: "received", duplicate: true };
+  }
   return transaction(() => {
-    run("INSERT INTO leads(id, name, email, company, enquiry_type, message, status, created_at, updated_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", lead.id, lead.name, lead.email, lead.company, lead.enquiryType, lead.message, lead.status, now, now);
-    run(`INSERT INTO lead_details(lead_id, role_title, country, telephone, consent_at, source_page)
-      VALUES(?, ?, ?, ?, ?, ?)`, lead.id, lead.role, lead.country, lead.telephone, now, "corporate_website");
+    run("INSERT INTO leads(id, name, email, company, enquiry_type, message, submission_fingerprint, status, created_at, updated_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", lead.id, lead.name, lead.email, lead.company, lead.enquiryType, lead.message, submissionFingerprint, lead.status, now, now);
+    run(`INSERT INTO lead_details(lead_id, role_title, country, telephone, consent_at, privacy_notice_version, safety_confirmation_at, source_page)
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?)`, lead.id, lead.role, lead.country, lead.telephone, now, privacyNoticeVersion, now, "corporate_website");
     audit({ actor, action: "lead.created", entityType: "lead", entityId: lead.id, after: { company: lead.company, enquiryType: lead.enquiryType } });
     enqueue({ eventType: "lead.notification_requested", aggregateType: "lead", aggregateId: lead.id, destinationSystem: "microsoft365", idempotencyKey: `lead:${lead.id}:notify:sales`, payload: { operation: "notify_team", team: "sales", leadId: lead.id, company: lead.company, enquiryType: lead.enquiryType, replyTo: lead.email } });
     return { id: lead.id, status: lead.status };
@@ -197,6 +209,8 @@ export function submitCustomerApplication(input, actor = "public_applicant") {
   const email = required(input.email, "Contact email").toLowerCase().slice(0, 160);
   if (!/^\S+@\S+\.\S+$/.test(email)) throw Object.assign(new Error("Contact email is invalid."), { statusCode: 400 });
   if (input.bank?.confirmationProvided !== true) throw Object.assign(new Error("Bank confirmation must be available for review."), { statusCode: 400 });
+  if (input.privacyAcknowledgement !== "yes") throw Object.assign(new Error("Confirm that you have read the privacy notice before submitting the application."), { statusCode: 400 });
+  if (input.applicantDeclaration !== "yes") throw Object.assign(new Error("Confirm the application declaration before submitting."), { statusCode: 400 });
   const now = nowIso();
   const application = {
     id: randomUUID(),
@@ -223,10 +237,10 @@ export function submitCustomerApplication(input, actor = "public_applicant") {
   return transaction(() => {
     run(`INSERT INTO account_applications(
       id, application_number, status, company_json, responsible_people_json, addresses_json,
-      compliance_json, bank_json, submitted_by_email, created_at, updated_at
-    ) VALUES(?, ?, 'submitted', ?, ?, ?, ?, ?, ?, ?, ?)`, application.id, application.applicationNumber,
+      compliance_json, bank_json, submitted_by_email, privacy_notice_version, applicant_declaration_at, created_at, updated_at
+    ) VALUES(?, ?, 'submitted', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, application.id, application.applicationNumber,
     JSON.stringify(application.company), JSON.stringify(application.responsiblePeople), JSON.stringify(application.addresses),
-    JSON.stringify(application.compliance), JSON.stringify(application.bank), application.email, now, now);
+    JSON.stringify(application.compliance), JSON.stringify(application.bank), application.email, privacyNoticeVersion, now, now, now);
     audit({ actor, action: "customer_application.submitted", entityType: "account_application", entityId: application.id, after: application });
     enqueue({
       eventType: "customer_application.sharepoint_folder_requested",

@@ -2,7 +2,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, extname, join, normalize, resolve } from "node:path";
 
 const root = resolve(process.cwd());
-const ignoredDirectories = new Set([".git", "_secure", "data", "node_modules", "tmp"]);
+const ignoredDirectories = new Set([".git", "_secure", "data", "node_modules", "tmp", "vishal-portfolio-rebuild"]);
 let failures = 0;
 let checked = 0;
 

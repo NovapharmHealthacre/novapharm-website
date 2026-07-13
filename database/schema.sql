@@ -195,6 +195,9 @@ CREATE TABLE IF NOT EXISTS auth_credentials (
   password_iterations INTEGER NOT NULL DEFAULT 210000,
   failed_attempts INTEGER NOT NULL DEFAULT 0,
   locked_until TEXT,
+  must_change_password INTEGER NOT NULL DEFAULT 0 CHECK(must_change_password IN (0, 1)),
+  credential_version INTEGER NOT NULL DEFAULT 1 CHECK(credential_version >= 1),
+  credential_source TEXT NOT NULL DEFAULT 'environment',
   password_changed_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
@@ -209,7 +212,8 @@ CREATE TABLE IF NOT EXISTS auth_user_scopes (
 CREATE TABLE IF NOT EXISTS auth_sessions (
   id TEXT PRIMARY KEY,
   username TEXT NOT NULL REFERENCES users(username) ON DELETE CASCADE,
-  access_type TEXT NOT NULL CHECK(access_type IN ('customer', 'employee', 'board')),
+  access_type TEXT NOT NULL CHECK(access_type IN ('customer', 'employee', 'board', 'admin')),
+  credential_version INTEGER NOT NULL DEFAULT 1,
   created_at TEXT NOT NULL,
   expires_at TEXT NOT NULL,
   last_seen_at TEXT NOT NULL,
@@ -377,6 +381,7 @@ CREATE TABLE IF NOT EXISTS leads (
   company TEXT NOT NULL,
   enquiry_type TEXT NOT NULL,
   message TEXT NOT NULL,
+  submission_fingerprint TEXT,
   status TEXT NOT NULL DEFAULT 'new',
   owner_user_id TEXT REFERENCES users(id),
   created_at TEXT NOT NULL,
@@ -389,6 +394,8 @@ CREATE TABLE IF NOT EXISTS lead_details (
   country TEXT NOT NULL,
   telephone TEXT,
   consent_at TEXT NOT NULL,
+  privacy_notice_version TEXT NOT NULL DEFAULT '2026-07-11-v1.0',
+  safety_confirmation_at TEXT,
   source_page TEXT NOT NULL DEFAULT 'corporate_website'
 );
 
@@ -431,6 +438,8 @@ CREATE TABLE IF NOT EXISTS account_applications (
   compliance_json TEXT NOT NULL DEFAULT '{}',
   bank_json TEXT NOT NULL DEFAULT '{}',
   submitted_by_email TEXT NOT NULL,
+  privacy_notice_version TEXT NOT NULL DEFAULT '2026-07-11-v1.0',
+  applicant_declaration_at TEXT,
   customer_id TEXT REFERENCES customers(id),
   version INTEGER NOT NULL DEFAULT 1,
   created_at TEXT NOT NULL,

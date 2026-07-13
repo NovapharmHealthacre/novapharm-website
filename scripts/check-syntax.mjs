@@ -3,7 +3,7 @@ import { join, relative, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 
 const root = resolve(process.cwd());
-const ignoredDirectories = new Set([".git", "_secure", "artifacts", "data", "node_modules", "private-content", "tmp"]);
+const ignoredDirectories = new Set([".git", "_secure", "artifacts", "data", "node_modules", "private-content", "tmp", "vishal-portfolio-rebuild"]);
 
 function walk(directory = root) {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {

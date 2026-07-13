@@ -1,28 +1,36 @@
 # GitHub Release Guide
 
-## Canonical Repository
+## Canonical repository
 
-`NovapharmHealthacre/novapharm-website` is the single code repository for the corporate website, secure runtime, portal applications, architecture and deployment configuration. Controlled Executive Platform files remain in SharePoint and are intentionally excluded from Git.
+`NovapharmHealthacre/novapharm-website` is the single code repository for the public website, secure Node runtime, portal applications, architecture and deployment configuration. Controlled Executive Platform documents remain in SharePoint and are intentionally excluded from Git.
 
-## Release Branch
+## Verified post-merge state
 
-The production candidate is published from `codex/ultra-premium-rebuild` through a pull request to `main`.
+- Pull Request 2 is closed and merged.
+- Its squash merge is `189da77fdaff9ac5c79d39af60e93dbb06a48e58` on `main`.
+- The post-launch candidate branch is `codex/post-launch-production-completion`.
+- That branch was created from the verified merge commit and must be proposed to `main` through a new pull request.
+- Do not reuse `codex/ultra-premium-rebuild`.
 
-Required pull-request checks:
+Required candidate checks:
 
 ```sh
 npm ci --ignore-scripts
+npm audit --omit=dev --audit-level=high
 npm run check
 ```
 
-Do not merge around a failed quality check. Review the claims guardrails, security changes, database/storage implications and deployment secrets before approval.
+Do not merge around a failed check. Review pharmaceutical claims, authentication and database migrations, private-storage boundaries, generated media provenance and deployment secrets before approval.
 
-## After Merge
+## Release order
 
-1. Connect `main` to the Node hosting service defined in `render.yaml` or an approved equivalent.
-2. Enter production secrets in the host, not GitHub files.
-3. Verify the temporary hosting URL and `/api/health`.
-4. Add the apex and `www` custom domains using exact provider DNS instructions.
-5. Run the smoke, security, visual and Lighthouse checks in `deployment/deployment-guide.md`.
+1. Review and approve the new post-launch pull request after its connected checks pass.
+2. Squash-merge only with explicit owner approval; keep the source branch until production cutover is stable.
+3. Create the Render Node service from `main` using `render.yaml` and enter protected secrets in Render.
+4. Complete the private temporary-URL acceptance matrix, including real Chromium and WebKit evidence.
+5. Configure the one-time administrator bootstrap, force the password change and remove the bootstrap secret.
+6. Verify contact email, all portal roles, persistence, private documents and backup/restore.
+7. Change website DNS only after separate owner approval and temporary-URL acceptance.
+8. Retire GitHub Pages only after both production domains pass HTTPS and application acceptance.
 
-GitHub Pages may remain a temporary public-only fallback, but it cannot be the production portal host because it cannot execute `server.mjs` or protect runtime files.
+GitHub Pages remains a public-only continuity host during this process. It cannot run `server.mjs`, authenticate users or safely serve confidential portal data.

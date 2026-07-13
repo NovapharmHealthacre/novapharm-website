@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">Digital pharmaceutical traceability</title>
+  <desc id="desc">Connected batch, document, order and audit nodes in a governed data network.</desc>
+  <rect width="1200" height="900" fill="#111d25"/>
+  <g fill="none" stroke="#b9cbc4" stroke-opacity=".24" stroke-width="2">
+    <path d="M166 198 432 322 694 190 1006 338 818 604 514 700 210 534Z"/>
+    <path d="M432 322 514 700M694 190 818 604M210 534 694 190M1006 338 514 700"/>
+  </g>
+  <g fill="#f7faf8" stroke="#111d25" stroke-width="8">
+    <circle cx="166" cy="198" r="22"/><circle cx="432" cy="322" r="22"/><circle cx="694" cy="190" r="22"/>
+    <circle cx="1006" cy="338" r="22"/><circle cx="818" cy="604" r="22"/><circle cx="514" cy="700" r="22"/><circle cx="210" cy="534" r="22"/>
+  </g>
+  <circle cx="432" cy="322" r="11" fill="#c12f35"/><circle cx="818" cy="604" r="11" fill="#477a76"/>
+</svg>

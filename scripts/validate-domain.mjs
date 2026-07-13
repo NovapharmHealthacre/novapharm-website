@@ -40,6 +40,8 @@ const application = submitCustomerApplication({
   addresses: [{ type: "registered", address: "1 Validation Street", postcode: "N1 1AA", country: "GB" }],
   compliance: { wdaNumber: "WDA(H)-VALIDATION", gdpStatus: "certified", insuranceStatus: "validated", creditReferences: "Validation credit reference", tradeReferences: "Validation trade reference" },
   bank: { confirmationProvided: true },
+  applicantDeclaration: "yes",
+  privacyAcknowledgement: "yes",
   email: "validation.customer@example.com"
 });
 
