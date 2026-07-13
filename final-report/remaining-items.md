@@ -5,8 +5,8 @@
 1. Approve a private Render preview or equivalent browser-accessible candidate so the required Chromium, WebKit, Lighthouse and WCAG 2.2 AA acceptance evidence can be captured.
 2. Approve or replace the generated flagship supply-network image after reviewing it at all required viewports.
 3. Supply approved photographs for Dr Helly Panchal and Dr Nishita Trivedi; neutral placeholders must remain until approved files are available.
-4. Ensure the connected GitHub workflow completes `npm audit` and the full quality gate with network access.
-5. Explicitly authorise the coordinated Git-history rewrite if permanent removal of the retired credential from affected remote refs is to proceed.
+4. Explicitly authorise the coordinated Git-history rewrite if permanent removal of the retired credential from affected remote refs is to proceed.
+5. Move Pull Request 3 out of draft only after the hosted visual and security acceptance gates are recorded.
 
 ## Before production traffic
 
