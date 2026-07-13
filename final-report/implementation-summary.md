@@ -24,11 +24,11 @@ The approved SVG and PNG files remain byte-identical to the supplied masters and
 - `npm run check`: passed.
 - Build, 33-page/40-shell validation, six-article word-count/content checks, 1,890 links, SEO/GEO/schema, domain workflow and public-claims audit: passed.
 - 48 JavaScript/MJS/TypeScript files and eight modular CSS files: passed.
-- Current-tree secret/artefact scan across 230 files: passed.
+- Current-tree secret/artefact scan across 228 local files: passed. Ignored runtime, private and authoring-source paths were excluded from the release tree.
 - Contact controls, all portal roles, administrator bootstrap, forced password change, old-password rejection, session invalidation, route boundaries, private-file denial, expiry, lockout, rate limiting, preview noindex, persistent restart, legacy database migration, cookie consent and backup/restore: passed.
-- `npm audit --omit=dev --audit-level=high`: attempted and blocked by sandbox DNS; not reported as passed.
+- `npm audit --omit=dev --audit-level=high`: blocked by sandbox DNS locally, then passed in GitHub Actions with network access.
 - Real Chromium/WebKit, Lighthouse and browser accessibility evidence: blocked until a private preview is available; not reported as passed.
 
 ## Release state
 
-Pull Request 2 is already merged at `189da77fdaff9ac5c79d39af60e93dbb06a48e58`. This candidate belongs on `codex/post-launch-production-completion` in a new pull request to `main`. It must not be auto-merged, deployed to production, connected to production DNS or used to change SharePoint permissions without the required owner approvals.
+Pull Request 2 is already merged at `189da77fdaff9ac5c79d39af60e93dbb06a48e58`. The post-launch candidate is published on `codex/post-launch-production-completion` in draft Pull Request 3 to `main`; its GitHub `Production readiness` workflow passed. It must not be merged, deployed to production, connected to production DNS or used to change SharePoint permissions without the required owner approvals.
