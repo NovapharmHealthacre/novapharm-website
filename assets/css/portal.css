@@ -1,0 +1,76 @@
+.login-page {
+  background:
+    linear-gradient(90deg, rgba(17,29,37,0.98), rgba(17,29,37,0.9)),
+    url("/assets/media/editorial/digital-traceability.svg") right center / 58% auto no-repeat,
+    #111d25;
+}
+
+.login-panel {
+  width: min(100%, 900px);
+  padding: 46px;
+  border-color: rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.98);
+  box-shadow: 0 32px 90px rgba(0,0,0,0.28);
+}
+
+.login-logo,
+.portal-sidebar .portal-brand,
+.executive-brand,
+.error-brand { border: 1px solid #e0e5e3; }
+
+.login-panel h1 {
+  margin-top: 12px;
+  font-family: var(--serif);
+  font-size: 42px;
+  font-weight: 560;
+}
+
+.portal-access {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.portal-access label span {
+  min-height: 134px;
+  border-radius: 4px;
+  background: var(--paper);
+}
+
+.portal-access input:checked + span {
+  border-color: var(--brand);
+  background: color-mix(in srgb, var(--brand) 4%, #fff);
+}
+
+.portal-shell { background: var(--bg); }
+
+.portal-sidebar {
+  width: 280px;
+  padding: 24px 18px;
+  background: #111d25;
+}
+
+.portal-sidebar a { border-radius: 3px; font-size: 14px; }
+.portal-sidebar a[aria-current="page"] { background: #fff; color: #111d25; }
+.portal-sidebar a[aria-current="page"]:hover { color: #111d25; }
+
+.portal-main { padding: 34px 40px 60px; }
+.portal-topbar { margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+.portal-topbar h1 { font-family: var(--serif); font-size: 38px; font-weight: 560; }
+.portal-topbar .eyebrow { color: var(--brand); }
+
+.metric {
+  min-height: 142px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 22px;
+  border-color: var(--line-strong);
+  background: #fff;
+}
+
+.metric strong { font-family: var(--serif); font-size: 34px; font-weight: 560; }
+
+.executive-index .grid { border-top: 1px solid var(--line); border-left: 1px solid var(--line); gap: 0; }
+.executive-index .card { min-height: 180px; border-top: 0; border-left: 0; border-radius: 0; box-shadow: none; }
+.executive-index .card h2 { font-size: 22px; }
+
+.status-pill { border-radius: 3px; }

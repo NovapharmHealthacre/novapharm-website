@@ -1,0 +1,22 @@
+html[data-motion="ready"] [data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 650ms cubic-bezier(.2,.7,.2,1), transform 650ms cubic-bezier(.2,.7,.2,1);
+}
+
+html[data-motion="ready"] [data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.network-line-active { animation: network-flow 14s linear infinite; }
+
+@keyframes network-flow {
+  to { stroke-dashoffset: -120; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-motion="ready"] [data-reveal] { opacity: 1; transform: none; }
+  .network-line-active { animation: none; }
+  .hero-media img { transform: none; }
+}

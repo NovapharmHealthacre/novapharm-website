@@ -9,7 +9,7 @@ Use the repository Blueprint. It creates one paid **Node Web Service** named `no
 | Setting | Exact value |
 | --- | --- |
 | Repository | `NovapharmHealthacre/novapharm-website` |
-| Branch | `main`, after pull request 2 is approved and merged |
+| Branch | `main`, after the post-launch production-completion pull request is approved and merged |
 | Runtime | Node |
 | Node version | 24, enforced by `package.json`, `.node-version` and `NODE_VERSION` |
 | Region | Frankfurt |
@@ -69,14 +69,13 @@ Enter values in Render under **Environment**. Never place secret values in GitHu
 | `DATABASE_BACKUP_ROOT` | `/var/lib/novapharm/backups` |
 | `SECURE_CONTENT_ROOT` | `/var/lib/novapharm/secure-content` |
 | `DOCUMENT_STORAGE_ROOT` | `/var/lib/novapharm/documents` |
-| `SESSION_SECRET` | Generate a new random value of at least 32 characters in Render |
+| `SESSION_SECRET` | Use Render's protected generated value; it must contain at least 32 random bytes |
 | `SESSION_TTL_MS` | `28800000` for an eight-hour session |
-| `PORTAL_USERNAME` | Initial administrator username |
-| `PORTAL_DISPLAY_NAME` | Administrator display name |
-| `PORTAL_PASSWORD_SALT` | Generated locally as described below |
-| `PORTAL_PASSWORD_HASH` | Generated locally as described below |
+| `PORTAL_USERNAME` | `Vishal` |
+| `PORTAL_DISPLAY_NAME` | `Vishal Chakravarty` |
+| `BOOTSTRAP_ADMIN_PASSWORD` | One-time protected Render secret supplied privately by the owner; remove after the first password change |
 
-Production deliberately refuses to start if the persistent paths, HTTPS origins, `0.0.0.0` host or hashed administrator are missing or inconsistent. Never create `PORTAL_PASSWORD` in production.
+Production deliberately refuses to start if the persistent paths, HTTPS origins, `0.0.0.0` host or a persistent administrator are missing or inconsistent. Never create `PORTAL_PASSWORD` in production and never enter the bootstrap value in source, GitHub, a terminal command, documentation or a screenshot.
 
 ### Resend contact-email values
 
@@ -111,26 +110,26 @@ Do not use a personal delegated access token. The production service uses client
 
 Leave Polar Speed/Marken, finance-provider and Entra SSO variables unset until their approved API contracts and implementation are available. Empty values keep the interface in a truthful `credentials_required`, `api_contract_required` or `provider_required` state.
 
-## 5. Generate The Administrator Hash And Salt
+## 5. Complete The One-Time Administrator Bootstrap
 
-Use a trusted computer in the checked-out repository. The password is entered silently and is not written to the repository:
+1. In Render, open the service **Environment** page.
+2. Use the protected secret field for `BOOTSTRAP_ADMIN_PASSWORD`. Paste the separately supplied temporary value there; do not put it in any other field or document.
+3. Deploy once. The application creates a unique salt and PBKDF2 hash in the persistent identity store, assigns Vishal the customer, employee, board and administrator scopes, and removes the plaintext from its running process.
+4. On the temporary Render URL, open `/portal/`, select **Administrator**, and sign in as `Vishal`.
+5. The application must send you to `/portal/change-password/`. Choose a new permanent password. It is checked against strength rules and the k-anonymous Pwned Passwords range service; the complete password is never sent to that service.
+6. Confirm the old temporary value no longer signs in and the new value does.
+7. Return to Render and delete `BOOTSTRAP_ADMIN_PASSWORD` immediately. Do not replace it with the permanent password.
+8. Restart the service. It must start from the persistent administrator record and `/api/health` must remain HTTP 200.
 
-```sh
-read -s PORTAL_PASSWORD
-export PORTAL_PASSWORD
-npm run hash:password
-unset PORTAL_PASSWORD
-```
-
-The command prints two new values. Put only `PORTAL_PASSWORD_SALT` and `PORTAL_PASSWORD_HASH` into Render. Close the terminal after confirming the values are stored. Do not store the plaintext password in Render, GitHub or a document.
+The password change creates a new salt and hash, increments the credential version, invalidates every other session and records a security event. Environment provisioning cannot overwrite the changed credential on restart. MFA remains a production identity requirement once an approved provider is selected.
 
 ## 6. Create Initial Portal Users
 
-The two administrator variables create the first administrator. That account receives customer, employee, board and administrator scopes.
+The one-time bootstrap creates the first administrator. That account receives customer, employee, board and administrator scopes.
 
-Additional users are supplied through `PORTAL_USERS_JSON` as a JSON array containing a username, display name, role, generated hash and generated salt. Customer users must also contain the canonical `customerId`; the service rejects a customer identity without that link. Supported roles are `client`, `employee`, `board` and `admin`.
+Additional users may be supplied through `PORTAL_USERS_JSON` only through an approved identity-administration process. Each entry contains a username, display name, role, PBKDF2 hash and unique salt; customer users also require the canonical `customerId`. Supported roles are `client`, `employee`, `board` and `admin`. Do not ask a user to send a password by email or place it in a command.
 
-Environment-defined identities are safely provisioned into the persistent SQLite tables at startup. Sessions are stored in `auth_sessions` inside the same persistent database and survive ordinary service restarts until expiry or logout. Account-application activation creates an invited customer record, but credentials must still be issued through an approved identity process.
+Environment-defined identities are inserted only when no credential exists, so a later password change is not rolled back by a restart. Sessions are stored in `auth_sessions` inside the persistent database and survive ordinary service restarts until expiry, logout, credential change or revocation. Account-application activation creates an invited customer record, but credentials must still be issued through an approved identity process.
 
 ## 7. First Deployment At The Temporary Address
 
@@ -206,9 +205,10 @@ Render's disk snapshots are useful for files, but a consistent SQLite backup mus
 2. Create a final backup and retain the failed database for investigation.
 3. Verify the proposed restore file with `npm run verify:backup -- <backup-path>`.
 4. Stop the service before replacing `/var/lib/novapharm/novapharm.sqlite`.
-5. Replace the database with the verified backup; remove stale `-wal` and `-shm` files only while the service is stopped.
-6. Start the service and require `/api/health` to return 200.
-7. Test login, contact storage, customer-scoped orders and audit records before reopening traffic.
+5. With the service stopped, set `ALLOW_DATABASE_RESTORE_OVERWRITE=true` for this recovery only and run `npm run restore:database -- <backup-path> /var/lib/novapharm/novapharm.sqlite`. The command preserves the previous database beside the target and installs a verified copy atomically.
+6. Remove `ALLOW_DATABASE_RESTORE_OVERWRITE` before restarting. Remove stale `-wal` and `-shm` files only while the service is stopped and only when the recovery owner approves it.
+7. Start the service and require `/api/health` to return 200.
+8. Test login, contact storage, customer-scoped orders and audit records before reopening traffic.
 
 ## 12. Final Contact And Portal Tests
 

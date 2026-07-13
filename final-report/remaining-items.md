@@ -1,36 +1,26 @@
-# Remaining Items
+# Remaining Owner-Controlled Items
 
-## Required Before Merge Approval
+## Before merge approval
 
-- Complete and record the rendered desktop, tablet and mobile audit in current Chromium and Safari against a deployable preview.
-- Generate a new administrator password that has never appeared in source control; never reuse the previously supplied password.
-- Decide whether to accept the historical deleted-password record after rotation or approve a coordinated full repository history rewrite and collaborator re-clone procedure.
+1. Approve a private Render preview or equivalent browser-accessible candidate so the required Chromium, WebKit, Lighthouse and WCAG 2.2 AA acceptance evidence can be captured.
+2. Approve or replace the generated flagship supply-network image after reviewing it at all required viewports.
+3. Supply approved photographs for Dr Helly Panchal and Dr Nishita Trivedi; neutral placeholders must remain until approved files are available.
+4. Ensure the connected GitHub workflow completes `npm audit` and the full quality gate with network access.
+5. Explicitly authorise the coordinated Git-history rewrite if permanent removal of the retired credential from affected remote refs is to proceed.
 
-## Required To Go Live
+## Before production traffic
 
-- Approve and merge pull request 2 from `codex/ultra-premium-rebuild` only after the pre-merge items above are closed.
-- Connect the repository to the Render Blueprint or an equivalent Node 24 host with persistent private storage.
-- Enter production administrator hash/salt, session secret and allowed origin.
-- Add and verify `novapharmhealthcare.com` and `www.novapharmhealthcare.com`; use the exact host-provided DNS records.
-- Configure Resend sender-domain DNS and the controlled contact recipient mailbox.
-- Configure an Entra application with approved Microsoft Graph permissions for runtime SharePoint sync.
-- Run the production smoke test, mobile/desktop visual regression and Lighthouse.
+1. Complete UK solicitor/privacy review of the privacy notice, terms, retention and transfer wording; obtain accountant confirmation of Modern Slavery and SECR applicability.
+2. Approve and execute least-privilege SharePoint Executive Platform permissions, then test administrators, Board read access and unauthorised rejection.
+3. Approve Render billing, provision the 5 GB persistent disk and enter protected application secrets.
+4. Verify the Resend sending domain and enter its restricted key and controlled mailboxes.
+5. Enter approved Microsoft Entra/Graph credentials and SharePoint identifiers.
+6. Complete the one-time Vishal bootstrap, forced permanent password change and removal of `BOOTSTRAP_ADMIN_PASSWORD`.
+7. Verify live contact email, all four portal entry modes, persistence after restart, initial backup, isolated restore and private documents.
+8. Approve DNS cutover only after temporary-URL acceptance; preserve Microsoft 365 records and retire GitHub Pages only after both HTTPS domains pass.
 
-## Security And Governance Approval
+## Optional source still unavailable
 
-- Break SharePoint permission inheritance for the Executive Platform and grant only approved board/administrator groups.
-- Approve the privacy notice, cookie/analytics approach, portal terms, records retention and incident-response procedure.
-- Add malware scanning and complete an independent penetration test before inviting real users.
-- Configure encrypted off-host database backups and complete a restore exercise.
+The original temporary Nutraxin catalogue path no longer exists. An Outlook copy was identified, but the restricted environment could not materialise its PDF bytes into the repository. Do not publish detailed product claims or catalogue imagery until a stable approved source can be imported and partnership/availability wording is owner-verified.
 
-## Provider Dependencies
-
-- Polar Speed/Marken API specification, credentials, service scope and data-processing terms.
-- Finance/accounting provider and API contract.
-- Microsoft Entra SSO configuration for customers, employees and board members.
-- Product-specific regulatory evidence before publishing named medicine availability, licence or clinical claims.
-- A stable Nutraxin catalogue source if the earlier nutraceutical product request is still in scope; the Outlook temporary attachment was unavailable during this implementation.
-
-## Scaling Threshold
-
-The launch deployment is intentionally single-instance because SQLite and an attached disk cannot provide multi-instance high availability. Migrate the canonical database to managed PostgreSQL before horizontal scaling, zero-downtime multi-instance deployment or high-volume transaction use.
+SQLite with an attached disk is intentionally single-instance. Move the canonical database to managed PostgreSQL before horizontal scaling or high-availability multi-instance operation.

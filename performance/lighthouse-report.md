@@ -9,24 +9,23 @@
 
 ## Implemented
 
-- Static semantic HTML without a frontend framework.
-- System font stack and no external font dependency.
-- Preloaded LCP hero with width, height and `fetchpriority="high"`.
+- Static semantic HTML without a client framework or external font dependency.
+- Preloaded LCP media with intrinsic dimensions and `fetchpriority="high"`.
 - Lazy loading and asynchronous decoding below the fold.
-- Deferred workflow-specific JavaScript.
-- Brotli/gzip compression, CDN-aware public caching and `no-store` responses where privacy requires it.
+- Brotli/gzip compression, CDN-aware public caching and `no-store` on private or transactional responses.
 - Responsive layouts, focus indicators, skip links, reduced motion and one-H1 page structure.
 - Unique metadata, structured data, sitemap, robots and RSS.
-- Private routes excluded from indexing and public data bindings.
+- Private routes, previews and controlled files excluded from indexing.
 
-## Verified in Repository
+## Repository Verification
 
-- 26 primary public pages.
-- Six 900-1,400-word original insight articles.
-- 1,227 valid internal links, local assets and anchors.
-- No missing required files or invalid JSON-LD.
-- Full build, domain and HTTP integration tests pass.
+- 33 intended public pages: the 26 corporate/content pages plus seven legal and responsibility pages.
+- Six original 900-1,400-word Insight articles.
+- 40 data-free protected shells.
+- 1,890 valid local links, assets and anchors.
+- Valid JSON-LD and no missing required files.
+- Build, route, domain, claims, security, integration and persistence checks pass locally on Node 24.
 
-## Not Yet Measured
+## Measurement Status
 
-Lighthouse was not run because this environment cannot bind localhost and browser policy blocks local file URLs. Run mobile and desktop Lighthouse against the final HTTPS domain after the Node deployment and DNS cutover. Record real scores, LCP, INP and CLS here; do not substitute estimated scores.
+Lighthouse has not been run. The sandbox rejects a local server and the in-app browser's URL policy rejects local-file navigation, while no owner-approved private preview or WebKit runtime is available. Run mobile and desktop Lighthouse against the private Render preview, then against the final HTTPS domain. Record the real scores, LCP, INP and CLS here; do not substitute estimates.

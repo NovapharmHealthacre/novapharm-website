@@ -1,45 +1,32 @@
 # Release Verification
 
-## Candidate
+## Remote state
 
 - Repository: `NovapharmHealthacre/novapharm-website`
-- Branch: `codex/ultra-premium-rebuild`
-- Pull request: `2`
-- Release head: use the current head shown on pull request 2 after the final audit commit
-- Prepared: 11 July 2026
+- Pull Request 2: closed and merged
+- Current verified `main`: `189da77fdaff9ac5c79d39af60e93dbb06a48e58`
+- Post-launch branch: `codex/post-launch-production-completion`
+- Branch starting state: identical to the verified `main` merge commit before this candidate is published
+- Production DNS, GitHub Pages and SharePoint permissions: unchanged by this branch
 
-## Local Quality Gate
+## Local Node 24 gate
 
-`npm run check` passed after the final implementation changes:
+Execution on 13 July 2026 used Node `v24.14.0`:
 
-- Production page build.
-- 26 public page contracts.
-- Six 900-1,400-word article contracts.
-- 39 locked public workspace shells.
-- 1,333 local links, assets and anchors.
-- JavaScript/MJS syntax checks.
-- Secret, artefact and public-claims checks.
-- Canonical domain workflow validation.
-- HTTP CSRF, authentication, role-boundary, persistent-session, contact, onboarding-upload, health, lockout, rate-limit and logout integration tests.
-- Current-schema database backup and integrity verification.
+- `npm ci --ignore-scripts`: passed.
+- `npm run check`: passed.
+- 33 public pages, six long-form Insights articles and 40 data-free protected shells: passed.
+- 1,890 local links and asset references: passed.
+- 48 JavaScript/MJS/TypeScript files and eight modular stylesheets: passed syntax checks.
+- 230 current-tree files: passed secret and artefact scan.
+- Integration, production security, preview security, session restart, legacy database migration, cookie consent and backup/restore suites: passed.
+- `npm audit --omit=dev --audit-level=high`: executed but not completed because this sandbox could not resolve `registry.npmjs.org`; no pass is claimed.
 
-## GitHub Quality Gate
+## Evidence boundaries
 
-GitHub `Production readiness` run 9 completed successfully for the audited implementation commit: Node 24 checkout, dependency installation, `npm audit` with zero vulnerabilities and the complete quality gate all passed. Pull request metadata remains the authoritative source for the latest head and workflow status.
+- Real rendered Chromium/WebKit acceptance, Lighthouse and automated browser accessibility tests are not claimed. Local HTTP binding returned `EPERM`, and the supported in-app browser rejected local-file navigation. These checks require an owner-approved private Render preview.
+- Current-tree secret scanning passed; full-history and all-ref scanning did not. The retired credential remains in inherited remote history pending the owner-authorised sanitisation runbook.
+- Production administrator bootstrap, permanent password change, Resend delivery, Graph synchronisation, disk restart, live backup/restore and final-domain cookies remain deployment acceptance steps.
+- SharePoint Executive Platform permissions remain unchanged pending explicit owner approval; broad inherited Visitors read and Members write access must be removed before confidential board material is introduced.
 
-## SharePoint Verification
-
-The live Executive Platform folder contains 18 modules, the hub, two controlled PDFs and the local Chart.js runtime. No anonymous sharing link exists. Site Owners, Members and Visitors are inherited; board-only ACL narrowing is a required SharePoint administrator action before confidential data is introduced.
-
-## Deliberate External Gates
-
-- Rotation of the previously published password and an owner decision on repository-history remediation.
-- Rendered Safari and Chromium visual acceptance at desktop, tablet and mobile widths.
-- Passing final pull-request workflow, approval and merge to `main`.
-- Node hosting service and persistent disk.
-- Production secrets, email sender verification and Graph app credentials.
-- Custom-domain DNS and HTTPS cutover.
-- Deployed visual regression and Lighthouse measurements.
-- Privacy, retention, malware scanning, penetration test and board-folder permission approval.
-
-The candidate must not be called fully live until these gates are completed.
+The branch is technically prepared for a new pull request, but production completion cannot be claimed until the external gates above are closed.

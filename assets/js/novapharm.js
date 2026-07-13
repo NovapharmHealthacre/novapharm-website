@@ -22,6 +22,71 @@ if (navToggle && siteNav) {
   document.addEventListener("click", (event) => {
     if (!siteNav.contains(event.target) && !navToggle.contains(event.target)) setNavigation(false);
   });
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 1120) setNavigation(false);
+  });
+}
+
+const siteHeader = document.querySelector("[data-site-header]");
+if (siteHeader) {
+  const updateHeader = () => siteHeader.setAttribute("data-scrolled", String(window.scrollY > 12));
+  updateHeader();
+  window.addEventListener("scroll", updateHeader, { passive: true });
+}
+
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const saveData = navigator.connection?.saveData === true;
+
+if (!reducedMotion && !saveData) {
+  document.documentElement.dataset.motion = "ready";
+  const revealObserver = new IntersectionObserver((entries, observer) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      entry.target.classList.add("is-visible");
+      observer.unobserve(entry.target);
+    }
+  }, { rootMargin: "0px 0px -12%", threshold: 0.08 });
+  document.querySelectorAll("[data-reveal]").forEach((node) => revealObserver.observe(node));
+
+  const hero = document.querySelector(".hero-flagship");
+  if (hero) {
+    hero.addEventListener("pointermove", (event) => {
+      const bounds = hero.getBoundingClientRect();
+      const x = ((event.clientX - bounds.left) / bounds.width - 0.5) * -8;
+      const y = ((event.clientY - bounds.top) / bounds.height - 0.5) * -5;
+      hero.style.setProperty("--hero-shift-x", `${x}px`);
+      hero.style.setProperty("--hero-shift-y", `${y}px`);
+    }, { passive: true });
+    hero.addEventListener("pointerleave", () => {
+      hero.style.removeProperty("--hero-shift-x");
+      hero.style.removeProperty("--hero-shift-y");
+    });
+  }
+} else {
+  document.querySelectorAll("[data-reveal]").forEach((node) => node.classList.add("is-visible"));
+}
+
+const networkStory = document.querySelector("[data-network-story]");
+if (networkStory) {
+  const steps = [...networkStory.querySelectorAll("[data-network-step]")];
+  const visual = networkStory.querySelector("[data-network-visual]");
+  const caption = networkStory.querySelector("[data-network-caption]");
+  const activateStep = (step) => {
+    const index = Number(step.dataset.networkStep || 0);
+    steps.forEach((candidate) => {
+      if (candidate === step) candidate.setAttribute("aria-current", "step");
+      else candidate.removeAttribute("aria-current");
+    });
+    if (visual) visual.dataset.activeStep = String(index);
+    if (caption) caption.textContent = step.querySelector("h3")?.textContent || "Qualified sourcing route";
+  };
+  if ("IntersectionObserver" in window) {
+    const stepObserver = new IntersectionObserver((entries) => {
+      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (visible) activateStep(visible.target);
+    }, { rootMargin: "-35% 0px -45%", threshold: [0.1, 0.35, 0.65] });
+    steps.forEach((step) => stepObserver.observe(step));
+  }
 }
 
 document.querySelectorAll("[data-year]").forEach((node) => {
@@ -121,9 +186,6 @@ if (contactForm) {
       if (status) {
         status.textContent = "Thank you. Your enquiry has been securely recorded. The NovaPharm team will review it and respond through the contact details provided.";
         status.className = "alert form-status alert-success";
-      }
-      if (window.gtag) {
-        window.gtag("event", "generate_lead", { event_category: "contact", event_label: payload.enquiryType || "general" });
       }
     } catch (error) {
       if (status) {

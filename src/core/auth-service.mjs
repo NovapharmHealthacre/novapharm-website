@@ -1,4 +1,4 @@
-import { pbkdf2Sync, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
+import { createHash, pbkdf2Sync, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
 import { all, nowIso, one, run, transaction } from "../data/database.mjs";
 
 export const roleScopes = Object.freeze({
@@ -14,6 +14,7 @@ const lockoutThreshold = 8;
 const lockoutMs = 15 * 60 * 1000;
 const dummySalt = "d2762abec8f240cb5090e15ca8d75025";
 const dummyHash = hashPassword("invalid-password", dummySalt);
+const commonPasswordFragments = ["password", "passphrase", "qwerty", "letmein", "welcome", "administrator", "novapharm"];
 
 export function hashPassword(password, salt, iterations = passwordIterations) {
   return pbkdf2Sync(String(password), String(salt), iterations, 32, "sha256").toString("hex");
@@ -31,6 +32,11 @@ function scopesFor(role, requested = []) {
   return role === "admin" ? roleScopes.admin : (valid.length ? valid : roleScopes[role]);
 }
 
+function booleanValue(value, fallback = false) {
+  if (value === undefined || value === null || value === "") return fallback;
+  return [true, 1, "1", "true", "yes"].includes(typeof value === "string" ? value.toLowerCase() : value);
+}
+
 function validateProvisionedUser(user, index) {
   if (!user.username) throw new Error(`Portal user ${index + 1} requires a username.`);
   if (!roleScopes[user.role]) throw new Error(`Portal user ${index + 1} has an unsupported role.`);
@@ -43,6 +49,7 @@ function validateProvisionedUser(user, index) {
 
 export function portalUsersFromEnvironment(environment = process.env, { isProduction = false } = {}) {
   const users = [];
+  const bootstrapConfigured = Boolean(environment.BOOTSTRAP_ADMIN_PASSWORD);
   if (environment.PORTAL_USERS_JSON) {
     let parsed;
     try {
@@ -60,12 +67,13 @@ export function portalUsersFromEnvironment(environment = process.env, { isProduc
         passwordHash: String(entry?.passwordHash || "").trim(),
         passwordSalt: String(entry?.passwordSalt || "").trim(),
         accessScopes: scopesFor(role, entry?.accessScopes),
-        customerId: entry?.customerId || null
+        customerId: entry?.customerId || null,
+        mustChangePassword: booleanValue(entry?.mustChangePassword)
       });
     });
   }
 
-  if (environment.PORTAL_USERNAME) {
+  if (environment.PORTAL_USERNAME && !bootstrapConfigured) {
     let passwordHash = String(environment.PORTAL_PASSWORD_HASH || "").trim();
     let passwordSalt = String(environment.PORTAL_PASSWORD_SALT || "").trim();
     const localPassword = String(environment.PORTAL_PASSWORD || "");
@@ -81,7 +89,8 @@ export function portalUsersFromEnvironment(environment = process.env, { isProduc
       passwordHash,
       passwordSalt,
       accessScopes: roleScopes.admin,
-      customerId: null
+      customerId: null,
+      mustChangePassword: booleanValue(environment.PORTAL_MUST_CHANGE_PASSWORD)
     });
   }
 
@@ -95,39 +104,129 @@ export function portalUsersFromEnvironment(environment = process.env, { isProduc
   return [...unique.values()];
 }
 
+function upsertUserProfile(user, now) {
+  const existing = one("SELECT id, username FROM users WHERE lower(username) = lower(?)", user.username);
+  const userId = existing?.id || randomUUID();
+  const username = existing?.username || user.username;
+  run(`INSERT INTO users(id, username, display_name, role, customer_id, status, created_at, updated_at)
+    VALUES(?, ?, ?, ?, ?, 'active', ?, ?)
+    ON CONFLICT(username) DO UPDATE SET
+      display_name = excluded.display_name,
+      role = excluded.role,
+      customer_id = COALESCE(excluded.customer_id, users.customer_id),
+      status = 'active',
+      updated_at = excluded.updated_at`,
+  userId, username, user.displayName, user.role, user.customerId, now, now);
+  run("DELETE FROM auth_user_scopes WHERE username = ?", username);
+  for (const scope of user.accessScopes) {
+    run("INSERT INTO auth_user_scopes(username, scope, created_at) VALUES(?, ?, ?)", username, scope, now);
+  }
+  return username;
+}
+
 export function provisionAuthUsers(users) {
   const now = nowIso();
   for (const user of users) {
     transaction(() => {
-      const existing = one("SELECT id, username FROM users WHERE lower(username) = lower(?)", user.username);
-      const userId = existing?.id || randomUUID();
-      const username = existing?.username || user.username;
-      run(`INSERT INTO users(id, username, display_name, role, customer_id, status, created_at, updated_at)
-        VALUES(?, ?, ?, ?, ?, 'active', ?, ?)
-        ON CONFLICT(username) DO UPDATE SET
-          display_name = excluded.display_name,
-          role = excluded.role,
-          customer_id = COALESCE(excluded.customer_id, users.customer_id),
-          status = 'active',
-          updated_at = excluded.updated_at`,
-      userId, username, user.displayName, user.role, user.customerId, now, now);
-      run(`INSERT INTO auth_credentials(username, password_hash, password_salt, password_algorithm, password_iterations, failed_attempts, locked_until, password_changed_at, updated_at)
-        VALUES(?, ?, ?, 'pbkdf2-sha256', ?, 0, NULL, ?, ?)
-        ON CONFLICT(username) DO UPDATE SET
-          password_hash = excluded.password_hash,
-          password_salt = excluded.password_salt,
-          password_algorithm = excluded.password_algorithm,
-          password_iterations = excluded.password_iterations,
-          password_changed_at = CASE WHEN auth_credentials.password_hash <> excluded.password_hash THEN excluded.password_changed_at ELSE auth_credentials.password_changed_at END,
-          updated_at = excluded.updated_at`,
-      username, user.passwordHash, user.passwordSalt, passwordIterations, now, now);
-      run("DELETE FROM auth_user_scopes WHERE username = ?", username);
-      for (const scope of user.accessScopes) {
-        run("INSERT INTO auth_user_scopes(username, scope, created_at) VALUES(?, ?, ?)", username, scope, now);
-      }
+      const username = upsertUserProfile(user, now);
+      run(`INSERT INTO auth_credentials(
+          username, password_hash, password_salt, password_algorithm, password_iterations,
+          failed_attempts, locked_until, must_change_password, credential_version,
+          credential_source, password_changed_at, updated_at
+        ) VALUES(?, ?, ?, 'pbkdf2-sha256', ?, 0, NULL, ?, 1, 'environment', ?, ?)
+        ON CONFLICT(username) DO NOTHING`,
+      username, user.passwordHash, user.passwordSalt, passwordIterations, user.mustChangePassword ? 1 : 0, now, now);
     });
   }
   return users.length;
+}
+
+function basicPasswordPolicy(password, identity = {}) {
+  const value = String(password || "");
+  const lower = value.toLowerCase();
+  const classes = [/[a-z]/.test(value), /[A-Z]/.test(value), /[0-9]/.test(value), /[^A-Za-z0-9]/.test(value)].filter(Boolean).length;
+  const identityTerms = [identity.username, identity.displayName, "NovaPharm", "Healthcare"]
+    .flatMap((term) => String(term || "").toLowerCase().split(/[^a-z0-9]+/))
+    .filter((term) => term.length >= 4);
+  if (value.length < 14) return "Use at least 14 characters.";
+  if (classes < 3) return "Use at least three of uppercase, lowercase, numbers and symbols.";
+  if (commonPasswordFragments.some((fragment) => lower.includes(fragment))) return "Choose a less predictable password.";
+  if (identityTerms.some((term) => lower.includes(term))) return "Do not include your name, username or company name.";
+  if (/(.)\1{3,}/.test(value) || /(?:0123|1234|2345|3456|4567|5678|6789|abcd|bcde|cdef|qwer)/i.test(value)) return "Choose a less predictable password.";
+  return null;
+}
+
+export async function isKnownCompromisedPassword(password, { fetchImplementation = globalThis.fetch, required = true } = {}) {
+  if (typeof fetchImplementation !== "function") {
+    if (required) throw Object.assign(new Error("Password safety verification is temporarily unavailable."), { statusCode: 503 });
+    return false;
+  }
+  const digest = createHash("sha1").update(String(password), "utf8").digest("hex").toUpperCase();
+  const prefix = digest.slice(0, 5);
+  const suffix = digest.slice(5);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 5000);
+  try {
+    const response = await fetchImplementation(`https://api.pwnedpasswords.com/range/${prefix}`, {
+      headers: { "Add-Padding": "true", "User-Agent": "NovaPharm-Healthcare-Portal" },
+      signal: controller.signal
+    });
+    if (!response.ok) throw new Error("Password safety provider returned an error.");
+    const matches = (await response.text()).split(/\r?\n/).some((line) => {
+      const [candidate, count] = line.split(":");
+      return candidate === suffix && Number(count) > 0;
+    });
+    return matches;
+  } catch {
+    if (required) throw Object.assign(new Error("Password safety verification is temporarily unavailable."), { statusCode: 503 });
+    return false;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+export async function validateNewPassword(password, identity, options = {}) {
+  const policyError = basicPasswordPolicy(password, identity);
+  if (policyError) throw Object.assign(new Error(policyError), { statusCode: 400 });
+  if (await isKnownCompromisedPassword(password, options)) {
+    throw Object.assign(new Error("This password appears in known breach data. Choose a different password."), { statusCode: 400 });
+  }
+}
+
+export async function provisionBootstrapAdmin(environment = process.env, { requireCompromiseCheck = false, fetchImplementation = null } = {}) {
+  const bootstrapPassword = String(environment.BOOTSTRAP_ADMIN_PASSWORD || "");
+  if (!bootstrapPassword) return { status: "not_configured" };
+  if (environment.PORTAL_PASSWORD || environment.PORTAL_PASSWORD_HASH || environment.PORTAL_PASSWORD_SALT) {
+    throw new Error("Bootstrap and static administrator credential settings cannot be enabled together.");
+  }
+  const username = String(environment.PORTAL_USERNAME || "").trim();
+  const displayName = String(environment.PORTAL_DISPLAY_NAME || username).trim();
+  if (!username || !displayName) throw new Error("PORTAL_USERNAME and PORTAL_DISPLAY_NAME are required for administrator bootstrap.");
+  const existing = one("SELECT username FROM auth_credentials WHERE lower(username) = lower(?)", username);
+  if (existing) throw new Error("Administrator bootstrap has already been completed. Remove BOOTSTRAP_ADMIN_PASSWORD from the deployment environment.");
+  await validateNewPassword(bootstrapPassword, { username, displayName }, { fetchImplementation, required: requireCompromiseCheck });
+  const passwordSalt = randomBytes(16).toString("hex");
+  const passwordHash = hashPassword(bootstrapPassword, passwordSalt);
+  const now = nowIso();
+  transaction(() => {
+    const canonicalUsername = upsertUserProfile({ username, displayName, role: "admin", customerId: null, accessScopes: roleScopes.admin }, now);
+    run(`INSERT INTO auth_credentials(
+        username, password_hash, password_salt, password_algorithm, password_iterations,
+        failed_attempts, locked_until, must_change_password, credential_version,
+        credential_source, password_changed_at, updated_at
+      ) VALUES(?, ?, ?, 'pbkdf2-sha256', ?, 0, NULL, 1, 1, 'bootstrap', ?, ?)`,
+    canonicalUsername, passwordHash, passwordSalt, passwordIterations, now, now);
+    recordSecurityEvent({ eventType: "administrator.bootstrap_created", username: canonicalUsername, outcome: "allowed" });
+  });
+  delete environment.BOOTSTRAP_ADMIN_PASSWORD;
+  return { status: "created", username };
+}
+
+export function hasPortalAdministrator() {
+  return Boolean(one(`SELECT u.username FROM users u
+    JOIN auth_credentials c ON c.username = u.username
+    JOIN auth_user_scopes s ON s.username = u.username AND s.scope = 'admin'
+    WHERE u.status = 'active' AND u.role = 'admin' LIMIT 1`));
 }
 
 export function recordSecurityEvent({ eventType, username = null, networkFingerprint = null, outcome, details = {} }) {
@@ -135,18 +234,23 @@ export function recordSecurityEvent({ eventType, username = null, networkFingerp
     VALUES(?, ?, ?, ?, ?, ?, ?)`, randomUUID(), eventType, username, networkFingerprint, outcome, JSON.stringify(details), nowIso());
 }
 
+function credentialMatches(record, password) {
+  const iterations = Number(record?.password_iterations || passwordIterations);
+  const actual = Buffer.from(hashPassword(password, record?.password_salt || dummySalt, iterations), "hex");
+  const expected = Buffer.from(record?.password_hash || dummyHash, "hex");
+  return actual.length === expected.length && timingSafeEqual(actual, expected);
+}
+
 export function verifyCredentials(usernameInput, password, networkFingerprint = null) {
   const username = String(usernameInput || "").trim();
   const record = one(`SELECT u.username, u.display_name, u.role, u.customer_id, u.status,
-      c.password_hash, c.password_salt, c.password_iterations, c.failed_attempts, c.locked_until
+      c.password_hash, c.password_salt, c.password_iterations, c.failed_attempts, c.locked_until,
+      c.must_change_password, c.credential_version
     FROM users u JOIN auth_credentials c ON lower(c.username) = lower(u.username)
     WHERE lower(u.username) = lower(?)`, username);
   const now = Date.now();
   const locked = record?.locked_until && Date.parse(record.locked_until) > now;
-  const iterations = Number(record?.password_iterations || passwordIterations);
-  const actual = Buffer.from(hashPassword(password, record?.password_salt || dummySalt, iterations), "hex");
-  const expected = Buffer.from(record?.password_hash || dummyHash, "hex");
-  const matches = actual.length === expected.length && timingSafeEqual(actual, expected);
+  const matches = credentialMatches(record, password);
 
   if (!record || record.status !== "active" || locked || !matches) {
     if (record && !locked) {
@@ -171,7 +275,48 @@ export function verifyCredentials(usernameInput, password, networkFingerprint = 
     displayName: record.display_name,
     role: record.role,
     customerId: record.customer_id,
-    accessScopes
+    accessScopes,
+    mustChangePassword: Boolean(record.must_change_password),
+    credentialVersion: Number(record.credential_version)
+  };
+}
+
+export async function changePassword({ username, currentPassword, newPassword, confirmation, networkFingerprint = null, requireCompromiseCheck = false, fetchImplementation = null }) {
+  const record = one(`SELECT u.username, u.display_name, u.role, u.customer_id, u.status,
+      c.password_hash, c.password_salt, c.password_iterations, c.credential_version
+    FROM users u JOIN auth_credentials c ON c.username = u.username
+    WHERE lower(u.username) = lower(?)`, String(username || "").trim());
+  if (!record || record.status !== "active" || !credentialMatches(record, currentPassword)) {
+    recordSecurityEvent({ eventType: "password.change_failed", username: record?.username || username || null, networkFingerprint, outcome: "denied", details: { reason: "current_credential" } });
+    throw Object.assign(new Error("The current password is not correct."), { statusCode: 401 });
+  }
+  if (String(newPassword || "") !== String(confirmation || "")) {
+    throw Object.assign(new Error("The new password and confirmation do not match."), { statusCode: 400 });
+  }
+  if (credentialMatches(record, newPassword)) {
+    throw Object.assign(new Error("The new password must be different from the current password."), { statusCode: 400 });
+  }
+  await validateNewPassword(newPassword, record, { fetchImplementation, required: requireCompromiseCheck });
+  const passwordSalt = randomBytes(16).toString("hex");
+  const passwordHash = hashPassword(newPassword, passwordSalt);
+  const credentialVersion = Number(record.credential_version || 1) + 1;
+  const now = nowIso();
+  transaction(() => {
+    run(`UPDATE auth_credentials SET password_hash = ?, password_salt = ?, password_algorithm = 'pbkdf2-sha256',
+      password_iterations = ?, failed_attempts = 0, locked_until = NULL, must_change_password = 0,
+      credential_version = ?, credential_source = 'persistent_identity_store', password_changed_at = ?, updated_at = ?
+      WHERE username = ?`, passwordHash, passwordSalt, passwordIterations, credentialVersion, now, now, record.username);
+    run("UPDATE auth_sessions SET revoked_at = COALESCE(revoked_at, ?) WHERE username = ?", now, record.username);
+    recordSecurityEvent({ eventType: "password.changed", username: record.username, networkFingerprint, outcome: "allowed", details: { sessionsInvalidated: true, credentialVersion } });
+  });
+  return {
+    username: record.username,
+    displayName: record.display_name,
+    role: record.role,
+    customerId: record.customer_id,
+    accessScopes: all("SELECT scope FROM auth_user_scopes WHERE username = ? ORDER BY scope", record.username).map((row) => row.scope),
+    mustChangePassword: false,
+    credentialVersion
   };
 }
 
@@ -179,18 +324,24 @@ export function createPersistentSession(user, accessType, ttlMs) {
   const id = randomBytes(32).toString("hex");
   const createdAt = nowIso();
   const expiresAt = new Date(Date.now() + ttlMs).toISOString();
-  run(`INSERT INTO auth_sessions(id, username, access_type, created_at, expires_at, last_seen_at)
-    VALUES(?, ?, ?, ?, ?, ?)`, id, user.username, accessType, createdAt, expiresAt, createdAt);
+  const credentialVersion = Number(user.credentialVersion || one("SELECT credential_version FROM auth_credentials WHERE username = ?", user.username)?.credential_version || 1);
+  run(`INSERT INTO auth_sessions(id, username, access_type, credential_version, created_at, expires_at, last_seen_at)
+    VALUES(?, ?, ?, ?, ?, ?, ?)`, id, user.username, accessType, credentialVersion, createdAt, expiresAt, createdAt);
   return { id, expiresAt };
 }
 
 export function getPersistentSession(id) {
   if (!id) return null;
-  const session = one(`SELECT s.id, s.username, s.access_type, s.created_at, s.expires_at,
-      u.display_name, u.role, u.customer_id, u.status
-    FROM auth_sessions s JOIN users u ON u.username = s.username
+  const session = one(`SELECT s.id, s.username, s.access_type, s.credential_version AS session_credential_version,
+      s.created_at, s.expires_at, u.display_name, u.role, u.customer_id, u.status,
+      c.credential_version, c.must_change_password
+    FROM auth_sessions s
+    JOIN users u ON u.username = s.username
+    JOIN auth_credentials c ON c.username = s.username
     WHERE s.id = ? AND s.revoked_at IS NULL`, id);
-  if (!session || session.status !== "active" || Date.parse(session.expires_at) <= Date.now()) {
+  const invalid = !session || session.status !== "active" || Date.parse(session.expires_at) <= Date.now() ||
+    Number(session.session_credential_version) !== Number(session.credential_version);
+  if (invalid) {
     if (session) run("UPDATE auth_sessions SET revoked_at = COALESCE(revoked_at, ?) WHERE id = ?", nowIso(), id);
     return null;
   }
@@ -203,6 +354,8 @@ export function getPersistentSession(id) {
     customerId: session.customer_id,
     accessType: session.access_type,
     accessScopes: all("SELECT scope FROM auth_user_scopes WHERE username = ? ORDER BY scope", session.username).map((row) => row.scope),
+    mustChangePassword: Boolean(session.must_change_password),
+    credentialVersion: Number(session.credential_version),
     createdAt: session.created_at,
     expiresAt: session.expires_at
   };

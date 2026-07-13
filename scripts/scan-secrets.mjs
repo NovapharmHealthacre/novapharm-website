@@ -2,7 +2,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { basename, extname, join, relative, resolve } from "node:path";
 
 const root = resolve(process.cwd());
-const ignoredDirectories = new Set([".git", "_secure", "artifacts", "data", "node_modules", "private-content", "tmp"]);
+const ignoredDirectories = new Set([".git", "_secure", "artifacts", "data", "node_modules", "private-content", "tmp", "vishal-portfolio-rebuild"]);
 const ignoredLocalFiles = new Set([".env"]);
 const binaryExtensions = new Set([".eps", ".gif", ".ico", ".jpeg", ".jpg", ".pdf", ".png", ".sqlite", ".webp", ".woff2"]);
 const forbiddenNames = [/^\.DS_Store$/, /\.sw[op]$/, /~$/, /^\.env$/, /\.sqlite(?:-shm|-wal)?$/, /\.map$/];
@@ -11,9 +11,12 @@ const secretPatterns = [
   ["GitHub token", /\bgh[pousr]_[A-Za-z0-9]{20,}\b/],
   ["Resend API key", /\bre_[A-Za-z0-9_-]{20,}\b/],
   ["AWS access key", /\bAKIA[0-9A-Z]{16}\b/],
-  ["known portal password", new RegExp(`\\b${["Vish", "123"].join("")}\\b`)],
+  ["plaintext portal password configuration", /\bPORTAL_PASSWORD\s*=\s*["'][^"']{6,}["']/],
+  ["plaintext bootstrap password configuration", /\bBOOTSTRAP_ADMIN_PASSWORD\s*=\s*["'][^"']{6,}["']/],
   ["generic bearer token", /\bBearer\s+[A-Za-z0-9._~-]{32,}\b/],
-  ["private SharePoint token", /\b(?:access_token|refresh_token)\s*["':=]+\s*[A-Za-z0-9._~-]{32,}/i]
+  ["private SharePoint token", /\b(?:access_token|refresh_token)\s*["':=]+\s*[A-Za-z0-9._~-]{32,}/i],
+  ["private SharePoint drive identifier", /\bb![A-Za-z0-9_-]{40,}\b/],
+  ["personal SharePoint URL", /https:\/\/[^\s"']+-my\.sharepoint\.com\/personal\//i]
 ];
 
 function walk(directory = root) {
