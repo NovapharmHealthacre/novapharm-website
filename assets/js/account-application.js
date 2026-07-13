@@ -43,6 +43,51 @@ async function uploadApplicationFiles(application, input, csrfToken) {
   }
 }
 
+function applicationServiceUnavailable(error) {
+  return error?.status === 0 || error?.status === 404 || error?.status === 503 || error?.code === "csrf_unavailable" || error?.code === "network_unavailable";
+}
+
+function showAccountEmailFallback(status, payload) {
+  const person = payload.responsiblePeople?.[0] || {};
+  const registered = payload.addresses?.find((address) => address.type === "registered") || {};
+  const delivery = payload.addresses?.find((address) => address.type === "delivery") || {};
+  const subject = `NovaPharm business account request: ${payload.company?.legalName || "New applicant"}`;
+  const body = [
+    "NovaPharm business account request",
+    "",
+    `Legal company name: ${payload.company?.legalName || ""}`,
+    `Trading name: ${payload.company?.tradingName || ""}`,
+    `Company number: ${payload.company?.companyNumber || ""}`,
+    `VAT number: ${payload.company?.vatNumber || ""}`,
+    `Customer type: ${payload.company?.customerType || ""}`,
+    `Applicant email: ${payload.email || ""}`,
+    `Responsible person: ${person.name || ""}`,
+    `Responsible person role: ${person.role || ""}`,
+    `Responsible person email: ${person.email || ""}`,
+    `Registered address: ${registered.address || ""}, ${registered.postcode || ""}`,
+    `Delivery address: ${delivery.address || ""}, ${delivery.postcode || ""}`,
+    `WDA(H) number, if applicable: ${payload.compliance?.wdaNumber || ""}`,
+    `GDP status: ${payload.compliance?.gdpStatus || ""}`,
+    `Insurance status: ${payload.compliance?.insuranceStatus || ""}`,
+    "",
+    "Supporting documents are not attached to this email draft. NovaPharm will provide a controlled route for any documents required during review."
+  ].join("\n");
+
+  const link = document.createElement("a");
+  link.className = "btn btn-primary";
+  link.href = `mailto:vishal@novapharmhealthcare.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  link.textContent = "Send account request by email";
+
+  const strong = document.createElement("strong");
+  strong.textContent = "Your account request is ready.";
+  const text = document.createElement("span");
+  text.textContent = " The secure onboarding service is being activated. Send the business details by email and NovaPharm will provide the controlled document route separately.";
+  status.replaceChildren(strong, text, document.createElement("br"), link);
+  status.className = "alert static-service-notice";
+  status.setAttribute("role", "status");
+  link.focus();
+}
+
 const applicationForm = document.querySelector("[data-account-application]");
 if (applicationForm) {
   const steps = [...applicationForm.querySelectorAll("[data-application-step]")];
@@ -88,12 +133,13 @@ applicationForm?.addEventListener("submit", async (event) => {
   submit.disabled = true;
   status.textContent = "Submitting application and preparing the controlled document record...";
   status.className = "alert";
+  const payload = applicationPayload(form);
   try {
     const csrfToken = await window.NovaPharmApi.csrf();
     const result = await window.NovaPharmApi.request("/api/account-applications", {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-csrf-token": csrfToken },
-      body: JSON.stringify(applicationPayload(form))
+      body: JSON.stringify(payload)
     });
     const fileInputs = [...form.querySelectorAll("input[type=file]")];
     for (const input of fileInputs) await uploadApplicationFiles(result.application, input, csrfToken);
@@ -102,8 +148,12 @@ applicationForm?.addEventListener("submit", async (event) => {
     status.className = "alert alert-success";
     status.setAttribute("role", "status");
   } catch (error) {
-    status.textContent = window.NovaPharmApi.friendlyError(error, "application");
-    status.className = "alert alert-danger";
+    if (applicationServiceUnavailable(error)) {
+      showAccountEmailFallback(status, payload);
+    } else {
+      status.textContent = window.NovaPharmApi.friendlyError(error, "application");
+      status.className = "alert alert-danger";
+    }
     submit.disabled = false;
   }
 });
