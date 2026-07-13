@@ -1,10 +1,20 @@
-import { readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { join, relative, resolve } from "node:path";
 
-const files = [
-  "leadership/index.html",
-  "leadership/vishal-chakravarty/index.html"
-];
+const root = resolve(process.cwd());
+const excludedDirectories = new Set([".git", "node_modules", "runtime-data", "artifacts"]);
+
+function collectHtmlFiles(directory) {
+  const files = [];
+  for (const entry of readdirSync(directory)) {
+    if (excludedDirectories.has(entry)) continue;
+    const path = join(directory, entry);
+    const stat = statSync(path);
+    if (stat.isDirectory()) files.push(...collectHtmlFiles(path));
+    else if (entry.endsWith(".html")) files.push(path);
+  }
+  return files;
+}
 
 const replacements = [
   [/Founder &amp; Chief Executive Officer/g, "Chief Executive Officer"],
@@ -12,13 +22,17 @@ const replacements = [
   [/Founder and Chief Executive Officer/g, "Chief Executive Officer"]
 ];
 
-for (const relativePath of files) {
-  const path = resolve(process.cwd(), relativePath);
-  let content = readFileSync(path, "utf8");
+let changed = 0;
+for (const path of collectHtmlFiles(root)) {
+  const original = readFileSync(path, "utf8");
+  let content = original;
   for (const [pattern, replacement] of replacements) {
     content = content.replace(pattern, replacement);
   }
-  writeFileSync(path, content);
+  if (content !== original) {
+    writeFileSync(path, content);
+    changed += 1;
+  }
 }
 
-console.log("Applied approved executive-title overrides to generated leadership pages.");
+console.log(`Applied the approved Chief Executive Officer designation to ${changed} generated HTML file${changed === 1 ? "" : "s"}.`);
