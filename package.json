@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Enterprise-grade NovaPharm Healthcare website with secure portal, admin surfaces, SEO/GEO optimization, and SharePoint integration architecture.",
   "scripts": {
-    "build": "node scripts/build-pages.mjs",
+    "build": "node scripts/build-pages.mjs && node scripts/apply-generated-overrides.mjs",
     "start": "node server.mjs",
     "start:production": "npm run build && node scripts/sync-secure-content.mjs && node server.mjs",
     "validate": "node scripts/validate-site.mjs && node scripts/check-links.mjs && node scripts/validate-app.mjs && node scripts/validate-domain.mjs && node scripts/audit-public-claims.mjs",
