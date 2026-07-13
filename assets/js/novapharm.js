@@ -150,6 +150,41 @@ function validateForm(form) {
   return false;
 }
 
+const PUBLIC_CONTACT_EMAIL = "vishal@novapharmhealthcare.com";
+
+function serviceIsUnavailable(error) {
+  return error?.status === 0 || error?.status === 404 || error?.status === 503 || error?.code === "csrf_unavailable" || error?.code === "network_unavailable";
+}
+
+function addEmailFallback(status, payload) {
+  if (!status) return;
+  const subject = `NovaPharm website enquiry: ${payload.enquiryType || "General enquiry"}`;
+  const bodyLines = [
+    `Name: ${payload.name || ""}`,
+    `Company: ${payload.company || ""}`,
+    `Role: ${payload.role || ""}`,
+    `Business email: ${payload.email || ""}`,
+    `Telephone: ${payload.telephone || ""}`,
+    `Country: ${payload.country || ""}`,
+    `Enquiry type: ${payload.enquiryType || ""}`,
+    "",
+    "Message:",
+    payload.message || ""
+  ];
+  const link = document.createElement("a");
+  link.className = "btn btn-primary";
+  link.href = `mailto:${PUBLIC_CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines.join("\n"))}`;
+  link.textContent = "Open email draft";
+
+  const strong = document.createElement("strong");
+  strong.textContent = "Your enquiry is ready to send.";
+  const text = document.createElement("span");
+  text.textContent = " The secure web service is being activated. Use the email draft below to send the same information directly to NovaPharm.";
+  status.replaceChildren(strong, text, document.createElement("br"), link);
+  status.className = "alert form-status static-service-notice";
+  link.focus();
+}
+
 const contactForm = document.querySelector("[data-contact-form]");
 if (contactForm) {
   const status = contactForm.querySelector("[data-form-status]");
@@ -188,7 +223,9 @@ if (contactForm) {
         status.className = "alert form-status alert-success";
       }
     } catch (error) {
-      if (status) {
+      if (serviceIsUnavailable(error)) {
+        addEmailFallback(status, payload);
+      } else if (status) {
         status.textContent = window.NovaPharmApi.friendlyError(error, "contact");
         status.className = "alert form-status alert-danger";
       }
