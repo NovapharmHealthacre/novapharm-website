@@ -21,7 +21,9 @@ function applicationPayload(form) {
       creditReferences: values.creditReferences,
       tradeReferences: values.tradeReferences
     },
-    bank: { confirmationProvided: values.bankConfirmation === "yes" }
+    bank: { confirmationProvided: values.bankConfirmation === "yes" },
+    applicantDeclaration: values.applicantDeclaration,
+    privacyAcknowledgement: values.privacyAcknowledgement
   };
 }
 

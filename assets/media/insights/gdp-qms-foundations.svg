@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">GDP and QMS foundations</title>
+  <desc id="desc">Layered quality documents connected to accountable operational controls.</desc>
+  <rect width="1200" height="675" fill="#edf2f0"/>
+  <g fill="#fff" stroke="#9eaea8" stroke-width="2"><rect x="158" y="142" width="438" height="340"/><rect x="204" y="188" width="438" height="340"/><rect x="250" y="234" width="438" height="340"/></g>
+  <g fill="#29584c"><rect x="300" y="298" width="258" height="12"/><rect x="300" y="340" width="330" height="8" opacity=".45"/><rect x="300" y="376" width="292" height="8" opacity=".45"/><rect x="300" y="412" width="312" height="8" opacity=".45"/></g>
+  <g fill="none" stroke="#315793" stroke-width="3"><circle cx="880" cy="216" r="72"/><circle cx="976" cy="394" r="72"/><circle cx="790" cy="490" r="72"/><path d="m916 278 28 52M910 438l-56 28M820 424l38-140"/></g>
+  <circle cx="880" cy="216" r="15" fill="#c12f35"/>
+</svg>

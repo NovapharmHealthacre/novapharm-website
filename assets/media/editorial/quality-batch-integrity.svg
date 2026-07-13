@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Quality and batch integrity</title>
+  <desc id="desc">Controlled medicine packs linked to quality evidence and release checkpoints.</desc>
+  <rect width="1200" height="675" fill="#edf2f0"/>
+  <g fill="#fff" stroke="#95a8a1" stroke-width="2">
+    <rect x="92" y="356" width="252" height="132"/><rect x="306" y="304" width="252" height="132"/>
+    <rect x="520" y="252" width="252" height="132"/><rect x="734" y="200" width="252" height="132"/>
+  </g>
+  <g fill="#c12f35"><rect x="92" y="356" width="12" height="132"/><rect x="306" y="304" width="12" height="132"/><rect x="520" y="252" width="12" height="132"/><rect x="734" y="200" width="12" height="132"/></g>
+  <g fill="none" stroke="#29584c" stroke-width="3">
+    <path d="M344 422 520 358M558 370 734 306M772 318 950 254"/>
+    <circle cx="344" cy="422" r="13"/><circle cx="558" cy="370" r="13"/><circle cx="772" cy="318" r="13"/><circle cx="950" cy="254" r="13"/>
+  </g>
+  <g fill="#315793" opacity=".18"><rect x="880" y="410" width="238" height="112"/><rect x="830" y="452" width="238" height="112"/></g>
+</svg>

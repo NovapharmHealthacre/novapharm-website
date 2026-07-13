@@ -16,7 +16,7 @@ Microsoft Graph is the server-side boundary between the canonical operational da
 - Host: supplied privately through `SHAREPOINT_HOSTNAME`
 - Site: supplied privately through `SHAREPOINT_SITE_PATH`
 - Library: `Documents`
-- Drive ID: `b!uEWPsekhUUSx7JVCwS8wfvjggLC-ZqBFl1Khkpc0DVKhy0Cv-Vh1SYg9j7mGijwl`
+- Drive ID: supplied privately through `SHAREPOINT_DRIVE_ID`
 - Ecosystem root: `NovaPharm Digital Ecosystem`
 - Controlled website source: `16 Website and Portal/Executive Platform`
 

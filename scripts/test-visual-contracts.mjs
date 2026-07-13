@@ -1,0 +1,62 @@
+import assert from "node:assert/strict";
+import { existsSync, readFileSync, statSync } from "node:fs";
+import { join, resolve } from "node:path";
+
+const root = resolve(process.cwd());
+const text = (path) => readFileSync(join(root, path), "utf8");
+
+const cssEntrypoint = text("assets/css/novapharm.css");
+assert.match(cssEntrypoint, /@layer reset, tokens, foundations, layout, components, pages, utilities;/);
+for (const module of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive"]) {
+  assert.match(cssEntrypoint, new RegExp(`@import url\\(\"\\./${module}\\.css\"\\)`), `${module}.css must be part of the production CSS entrypoint`);
+}
+
+const home = text("index.html");
+assert.match(home, /Building a more resilient pharmaceutical supply network\./);
+assert.match(home, /<div class="hero-media"[^>]*><picture>/);
+assert.match(home, /supply-network-hero-1200\.jpg 1200w/);
+assert.match(home, /class="[^"]*\bsourcing-story\b[^"]*"/);
+assert.equal((home.match(/class="sourcing-step"/g) || []).length, 3);
+assert.match(home, /class="network-line network-line-active" data-route="0"/);
+assert.match(home, /quality-batch-integrity\.svg/);
+
+const technology = text("technology/index.html");
+for (const marker of ["architecture-map", "Live capabilities", "In development capabilities", "Planned capabilities"]) assert.match(technology, new RegExp(marker));
+
+const login = text("portal/index.html");
+for (const accessType of ["customer", "employee", "board", "admin"]) assert.match(login, new RegExp(`value="${accessType}"`));
+
+const insightFiles = [
+  "compliance-first-pharmaceutical-distribution-uk",
+  "gdp-qms-pharmaceutical-distribution-foundations",
+  "oncology-supply-chain-demand-forecasting",
+  "plpi-pharmaceutical-supply-resilience",
+  "three-pillar-pharmaceutical-sourcing-model",
+  "batch-to-buyer-pharmaceutical-traceability"
+];
+const articleImages = insightFiles.map((slug) => text(`news-insights/${slug}/index.html`).match(/<div class="article-hero-media"><img src="([^"]+)"/)?.[1]);
+assert.ok(articleImages.every(Boolean), "each insight article must have a cover image");
+assert.equal(new Set(articleImages).size, insightFiles.length, "insight articles must use distinct cover images");
+
+for (const path of [
+  "assets/media/home/supply-network-hero.jpg",
+  "assets/media/home/supply-network-hero-1200.jpg",
+  "assets/media/editorial/oncology-specialty.svg",
+  "assets/media/editorial/digital-traceability.svg",
+  "assets/media/editorial/quality-batch-integrity.svg",
+  "assets/media/editorial/partnership-pathway.svg"
+]) assert.ok(existsSync(join(root, path)), `${path} must exist`);
+
+assert.ok(statSync(join(root, "assets/media/home/supply-network-hero.jpg")).size < 350_000, "desktop hero must remain below 350 KB");
+assert.ok(statSync(join(root, "assets/media/home/supply-network-hero-1200.jpg")).size < 220_000, "responsive hero must remain below 220 KB");
+
+const responsive = text("assets/css/responsive.css");
+assert.match(responsive, /@media \(max-width: 980px\)/);
+assert.match(responsive, /@media \(max-width: 620px\)/);
+assert.match(responsive, /@media \(prefers-reduced-motion: reduce\)/);
+assert.match(text("assets/js/novapharm.js"), /saveData/);
+for (const stylesheet of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive"]) {
+  assert.doesNotMatch(text(`assets/css/${stylesheet}.css`), /prefers-color-scheme:\s*dark/, `${stylesheet}.css must not create an untested automatic dark theme`);
+}
+
+console.log("Visual contracts passed for responsive media, editorial storytelling, portal entry, motion preferences and asset budgets.");

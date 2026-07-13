@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Oncology supply-chain demand forecasting</title>
+  <desc id="desc">Demand signals moving across uncertain lead times and specialist supply nodes.</desc>
+  <rect width="1200" height="675" fill="#15242c"/>
+  <g fill="none" stroke="#cbdad5" stroke-opacity=".28" stroke-width="2"><circle cx="298" cy="350" r="170"/><circle cx="298" cy="350" r="102"/><circle cx="298" cy="350" r="38"/><path d="M468 350h590M604 198v304M786 148v404M968 228v244"/></g>
+  <path d="M486 442 604 382 692 408 786 266 880 318 968 218 1070 250" fill="none" stroke="#d34b51" stroke-width="7"/>
+  <g fill="#f6f9f8"><circle cx="604" cy="382" r="12"/><circle cx="786" cy="266" r="12"/><circle cx="968" cy="218" r="12"/></g>
+</svg>

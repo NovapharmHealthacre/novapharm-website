@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { randomBytes } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { rmSync } from "node:fs";
 import { Readable, Writable } from "node:stream";
 
@@ -26,7 +26,7 @@ delete process.env.CONTACT_NOTIFICATION_TO;
 
 const { handleRequest } = await import("../server.mjs");
 const { one, run } = await import("../src/data/database.mjs");
-const { hashPassword, provisionAuthUsers } = await import("../src/core/auth-service.mjs");
+const { hashPassword, isKnownCompromisedPassword, provisionAuthUsers, provisionBootstrapAdmin, verifyCredentials } = await import("../src/core/auth-service.mjs");
 const { activateCustomer, createProduct } = await import("../src/core/domain-service.mjs");
 
 class TestRequest extends Readable {
@@ -155,7 +155,8 @@ const validContact = {
   telephone: "+44 20 7000 0000",
   enquiryType: "Distribution partnership",
   message: "This is a controlled integration test for the corporate enquiry workflow.",
-  consent: "yes",
+  privacyAcknowledgement: "yes",
+  safetyConfirmation: "yes",
   website: ""
 };
 
@@ -163,7 +164,7 @@ const invalidContact = await request({
   method: "POST",
   url: "/api/contact",
   headers: authHeaders(csrfCookie),
-  body: JSON.stringify({ ...validContact, email: "invalid", consent: "" }),
+  body: JSON.stringify({ ...validContact, email: "invalid", privacyAcknowledgement: "" }),
   address: "127.0.0.4"
 });
 assert.equal(invalidContact.statusCode, 400);
@@ -177,9 +178,24 @@ const contact = await request({
 });
 assert.equal(contact.statusCode, 201);
 assert.ok(contact.payload.lead.id);
-const consentRecord = one("SELECT country, consent_at FROM lead_details WHERE lead_id = ?", contact.payload.lead.id);
+const consentRecord = one("SELECT country, consent_at, privacy_notice_version, safety_confirmation_at FROM lead_details WHERE lead_id = ?", contact.payload.lead.id);
 assert.equal(consentRecord.country, "United Kingdom");
 assert.ok(consentRecord.consent_at);
+assert.equal(consentRecord.privacy_notice_version, "2026-07-11-v1.0");
+assert.ok(consentRecord.safety_confirmation_at);
+
+const leadCountBeforeDuplicate = one("SELECT COUNT(*) AS value FROM leads").value;
+const duplicateContact = await request({
+  method: "POST",
+  url: "/api/contact",
+  headers: authHeaders(csrfCookie),
+  body: JSON.stringify(validContact),
+  address: "127.0.0.51"
+});
+assert.equal(duplicateContact.statusCode, 201);
+assert.equal(duplicateContact.payload.lead.id, null);
+assert.equal(duplicateContact.payload.lead.duplicate, true);
+assert.equal(one("SELECT COUNT(*) AS value FROM leads").value, leadCountBeforeDuplicate);
 
 const leadCountBeforeSpam = one("SELECT COUNT(*) AS value FROM leads").value;
 const spamContact = await request({
@@ -241,7 +257,9 @@ const application = await request({
     responsiblePeople: [{ name: "Responsible Person", role: "Superintendent Pharmacist", email: "rp@example.test" }],
     addresses: [{ type: "registered", address: "1 Test Road", postcode: "AB1 2CD", country: "GB" }],
     compliance: { gdpStatus: "certified", insuranceStatus: "active", creditReferences: "Test credit reference", tradeReferences: "Test trade reference" },
-    bank: { confirmationProvided: true }
+    bank: { confirmationProvided: true },
+    applicantDeclaration: "yes",
+    privacyAcknowledgement: "yes"
   }),
   address: "127.0.0.9"
 });
@@ -289,7 +307,7 @@ createProduct({
 const customerLogin = await login({ username: "CustomerUser", password: customerPassword, accessType: "customer", csrfCookie, address: "127.0.0.11" });
 const employeeLogin = await login({ username: "EmployeeUser", password: employeePassword, accessType: "employee", csrfCookie, address: "127.0.0.12" });
 const boardLogin = await login({ username: "BoardUser", password: boardPassword, accessType: "board", csrfCookie, address: "127.0.0.13" });
-const adminLogin = await login({ username: adminUsername, password: adminPassword, accessType: "board", csrfCookie, address: "127.0.0.14" });
+const adminLogin = await login({ username: adminUsername, password: adminPassword, accessType: "admin", csrfCookie, address: "127.0.0.14" });
 for (const result of [customerLogin, employeeLogin, boardLogin, adminLogin]) {
   assert.equal(result.statusCode, 200);
   assert.ok(result.sessionCookie.includes("."));
@@ -297,7 +315,7 @@ for (const result of [customerLogin, employeeLogin, boardLogin, adminLogin]) {
 assert.equal(customerLogin.payload.redirectTo, "/portal/dashboard/");
 assert.equal(employeeLogin.payload.redirectTo, "/employee/dashboard/");
 assert.equal(boardLogin.payload.redirectTo, "/portal/executive-platform/");
-assert.equal(adminLogin.payload.redirectTo, "/portal/executive-platform/");
+assert.equal(adminLogin.payload.redirectTo, "/admin/dashboard/");
 
 const wrongPortal = await login({ username: "CustomerUser", password: customerPassword, accessType: "employee", csrfCookie, address: "127.0.0.15" });
 assert.equal(wrongPortal.statusCode, 403);
@@ -318,6 +336,108 @@ const boardAdminApi = await request({ url: "/api/admin/summary", headers: { cook
 assert.equal(boardAdminApi.statusCode, 403);
 const adminSummary = await request({ url: "/api/admin/summary", headers: { cookie: `np_session=${adminLogin.sessionCookie}` }, address: "127.0.0.21" });
 assert.equal(adminSummary.statusCode, 200);
+
+const bootstrapPassword = `Aa1!${randomBytes(24).toString("hex")}`;
+const compromisedCandidate = `Cc3!${randomBytes(24).toString("hex")}`;
+const compromisedDigest = createHash("sha1").update(compromisedCandidate).digest("hex").toUpperCase();
+let paddingHeaderSeen = false;
+assert.equal(await isKnownCompromisedPassword(compromisedCandidate, {
+  required: true,
+  fetchImplementation: async (_url, options) => {
+    paddingHeaderSeen = options.headers["Add-Padding"] === "true";
+    return new Response(`${compromisedDigest.slice(5)}:27\n00000000000000000000000000000000000:0`, { status: 200 });
+  }
+}), true);
+assert.equal(paddingHeaderSeen, true);
+const bootstrapEnvironment = {
+  PORTAL_USERNAME: "Vishal",
+  PORTAL_DISPLAY_NAME: "Vishal Chakravarty",
+  BOOTSTRAP_ADMIN_PASSWORD: bootstrapPassword
+};
+const bootstrapResult = await provisionBootstrapAdmin(bootstrapEnvironment);
+assert.equal(bootstrapResult.status, "created");
+assert.equal(bootstrapEnvironment.BOOTSTRAP_ADMIN_PASSWORD, undefined);
+const bootstrapIdentity = one("SELECT role, display_name FROM users WHERE username = ?", "Vishal");
+assert.equal(bootstrapIdentity.role, "admin");
+assert.equal(bootstrapIdentity.display_name, "Vishal Chakravarty");
+assert.deepEqual(
+  one("SELECT group_concat(scope, ',') AS scopes FROM (SELECT scope FROM auth_user_scopes WHERE username = ? ORDER BY scope)", "Vishal").scopes.split(","),
+  ["admin", "board", "customer", "employee"]
+);
+
+const bootstrapLogin = await login({ username: "Vishal", password: bootstrapPassword, accessType: "admin", csrfCookie, address: "127.0.3.1" });
+const secondBootstrapLogin = await login({ username: "Vishal", password: bootstrapPassword, accessType: "customer", csrfCookie, address: "127.0.3.2" });
+assert.equal(bootstrapLogin.statusCode, 200);
+assert.equal(bootstrapLogin.payload.mustChangePassword, true);
+assert.equal(bootstrapLogin.payload.redirectTo, "/portal/change-password/");
+assert.equal(secondBootstrapLogin.statusCode, 200);
+
+const forcedPasswordPage = await request({ url: "/admin/dashboard/", headers: { cookie: `np_session=${bootstrapLogin.sessionCookie}`, accept: "text/html" }, address: "127.0.3.3" });
+assert.equal(forcedPasswordPage.statusCode, 302);
+assert.equal(forcedPasswordPage.headers.Location, "/portal/change-password/");
+const changePage = await request({ url: "/portal/change-password/", headers: { cookie: `np_session=${bootstrapLogin.sessionCookie}`, accept: "text/html" }, address: "127.0.3.4" });
+assert.equal(changePage.statusCode, 200);
+assert.match(changePage.body, /Create your permanent password/);
+
+const passwordChangeWithoutCsrf = await request({
+  method: "POST",
+  url: "/api/auth/change-password",
+  headers: { cookie: `np_session=${bootstrapLogin.sessionCookie}`, "content-type": "application/json" },
+  body: JSON.stringify({ currentPassword: bootstrapPassword, newPassword: "unused", confirmation: "unused" }),
+  address: "127.0.3.5"
+});
+assert.equal(passwordChangeWithoutCsrf.statusCode, 403);
+
+const weakPasswordChange = await request({
+  method: "POST",
+  url: "/api/auth/change-password",
+  headers: authHeaders(csrfCookie, bootstrapLogin.sessionCookie),
+  body: JSON.stringify({ currentPassword: bootstrapPassword, newPassword: "TooShort1!", confirmation: "TooShort1!" }),
+  address: "127.0.3.6"
+});
+assert.equal(weakPasswordChange.statusCode, 400);
+
+const wrongCurrentPassword = await request({
+  method: "POST",
+  url: "/api/auth/change-password",
+  headers: authHeaders(csrfCookie, bootstrapLogin.sessionCookie),
+  body: JSON.stringify({ currentPassword: `Wrong1!${randomBytes(16).toString("hex")}`, newPassword: `Bb2!${randomBytes(24).toString("hex")}`, confirmation: `Bb2!${randomBytes(24).toString("hex")}` }),
+  address: "127.0.3.7"
+});
+assert.equal(wrongCurrentPassword.statusCode, 401);
+
+const permanentPassword = `Zz9!${randomBytes(24).toString("hex")}`;
+const passwordChanged = await request({
+  method: "POST",
+  url: "/api/auth/change-password",
+  headers: authHeaders(csrfCookie, bootstrapLogin.sessionCookie),
+  body: JSON.stringify({ currentPassword: bootstrapPassword, newPassword: permanentPassword, confirmation: permanentPassword }),
+  address: "127.0.3.8"
+});
+assert.equal(passwordChanged.statusCode, 200);
+const replacementSessionCookie = cookieValue(passwordChanged.headers["Set-Cookie"], "np_session");
+assert.ok(replacementSessionCookie.includes("."));
+assert.equal((await request({ url: "/api/portal/session", headers: { cookie: `np_session=${bootstrapLogin.sessionCookie}` }, address: "127.0.3.9" })).statusCode, 401);
+assert.equal((await request({ url: "/api/portal/session", headers: { cookie: `np_session=${secondBootstrapLogin.sessionCookie}` }, address: "127.0.3.10" })).statusCode, 401);
+const replacementSession = await request({ url: "/api/portal/session", headers: { cookie: `np_session=${replacementSessionCookie}` }, address: "127.0.3.11" });
+assert.equal(replacementSession.statusCode, 200);
+assert.equal(replacementSession.payload.user.mustChangePassword, false);
+assert.equal((await login({ username: "Vishal", password: bootstrapPassword, accessType: "board", csrfCookie, address: "127.0.3.12" })).statusCode, 401);
+assert.equal((await login({ username: "Vishal", password: permanentPassword, accessType: "board", csrfCookie, address: "127.0.3.13" })).statusCode, 200);
+
+const staleSalt = randomBytes(16).toString("hex");
+provisionAuthUsers([{
+  username: "Vishal",
+  displayName: "Vishal Chakravarty",
+  role: "admin",
+  passwordHash: hashPassword(`Stale1!${randomBytes(24).toString("hex")}`, staleSalt),
+  passwordSalt: staleSalt,
+  accessScopes: ["customer", "employee", "board", "admin"],
+  customerId: null
+}]);
+assert.ok(verifyCredentials("Vishal", permanentPassword));
+assert.equal(one("SELECT must_change_password FROM auth_credentials WHERE username = ?", "Vishal").must_change_password, 0);
+assert.ok(one("SELECT id FROM security_events WHERE username = ? AND event_type = 'password.changed'", "Vishal"));
 
 const privateUploadRejected = await request({
   method: "POST",
@@ -407,4 +527,4 @@ assert.ok(one("SELECT COUNT(*) AS value FROM auth_sessions").value >= 5);
 
 rmSync(databasePath, { force: true });
 rmSync(documentStoragePath, { force: true, recursive: true });
-console.log("Server integration tests passed: CSRF, contact validation/consent/spam/rate limits/email failure, onboarding uploads, all portal roles, scope boundaries, protected files, expiry, lockout, health and logout.");
+console.log("Server integration tests passed: CSRF, contact controls, onboarding, all portal roles, bootstrap and forced password change, session invalidation, scope boundaries, protected files, expiry, lockout, health and logout.");

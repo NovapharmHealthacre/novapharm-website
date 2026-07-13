@@ -67,7 +67,7 @@
     if (error?.status === 429) return "Too many attempts were received. Please wait a few minutes before trying again.";
     if (error?.code === "request_timeout") return "The secure service took too long to respond. Please try again.";
     if (!navigator.onLine) return "You appear to be offline. Reconnect to the internet and try again.";
-    if (error?.status === 404 || error?.status === 0) return "The secure NovaPharm service is not active on this host. Please try again later or use the corporate contact route.";
+    if (error?.status === 404 || error?.status === 0) return "The secure NovaPharm service cannot be reached right now. Please try again later or use the corporate contact route.";
     return "The secure NovaPharm service is temporarily unavailable. Please try again later.";
   }
 

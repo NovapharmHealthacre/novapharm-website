@@ -15,7 +15,7 @@ The browser must never receive Graph credentials or app-only tokens.
 ```text
 SHAREPOINT_HOSTNAME=your-tenant.sharepoint.com
 SHAREPOINT_SITE_PATH=/sites/your-site
-SHAREPOINT_DRIVE_ID=b!uEWPsekhUUSx7JVCwS8wfvjggLC-ZqBFl1Khkpc0DVKhy0Cv-Vh1SYg9j7mGijwl
+SHAREPOINT_DRIVE_ID=your-approved-drive-id
 SHAREPOINT_EXECUTIVE_PLATFORM_PATH=your-controlled-library-folder
 ```
 

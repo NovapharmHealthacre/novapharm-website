@@ -22,7 +22,7 @@ npm run check
 npm start
 ```
 
-Create a local `.env` from `.env.example`. A local plaintext password is accepted only when `NODE_ENV` is not `production`; hashed credentials are strongly preferred in every environment.
+Create a local `.env` from `.env.example`. Production uses a protected one-time bootstrap or an existing persistent hashed identity. A plaintext `PORTAL_PASSWORD` is rejected in production.
 
 The default local address is `http://127.0.0.1:4173/`.
 
