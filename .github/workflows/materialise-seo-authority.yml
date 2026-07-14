@@ -12,6 +12,7 @@ on:
       - "scripts/reconcile-leadership-authority.mjs"
       - "scripts/reconcile-article-authority.mjs"
       - "scripts/reconcile-social-authority.mjs"
+      - "scripts/finalise-social-cards.mjs"
       - "scripts/generate-structured-data-register.mjs"
       - "scripts/validate-seo-authority.mjs"
       - "scripts/validate-social-authority.mjs"
