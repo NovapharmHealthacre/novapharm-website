@@ -18,7 +18,7 @@ function requireText(content, text, label) {
 }
 
 function forbidText(content, text, label) {
-  if (content.includes(text)) failures.push(`${label}: obsolete visual remains ${JSON.stringify(text)}`);
+  if (content.includes(text)) failures.push(`${label}: obsolete or invalid visual remains ${JSON.stringify(text)}`);
 }
 
 const index = read("index.html");
@@ -40,17 +40,22 @@ const build = read("scripts/build-site.mjs");
   [index, "regulatory-roadmap", "Homepage regulatory roadmap"],
   [index, "Commercial release only after applicable authorisation", "Roadmap seventh release gate"],
   [index, "batch-integrity-feature", "Homepage batch-integrity photo feature"],
+  [index, '<figure class="batch-integrity-media">', "Semantic batch-integrity figure"],
   [index, "/assets/media/products/hospital-supply-logistics.jpg", "Homepage batch-integrity photograph"],
   [index, "partner-ecosystem-grid", "Homepage partner ecosystem"],
   [index, "Photography is representative", "Homepage partnership disclosure"],
   [services, "service-visual-story", "Services visual introduction"],
+  [services, '<figure class="service-visual-media">', "Semantic Services visual figure"],
   [services, "services-media-gallery", "Services media gallery"],
   [services, "/assets/media/products/respiratory-manufacturing.jpg", "Services manufacturing photograph"],
   [regulatory, "regulatory-stage-grid", "Regulatory staged layout"],
+  [regulatory, '<figure class="service-visual-media">', "Semantic Regulatory visual figure"],
   [regulatory, "/assets/media/products/cardiovascular-quality-control.jpg", "Regulatory quality photograph"],
   [partners, "partner-ecosystem-grid", "Partners image-led ecosystem"],
+  [partners, '<figure class="service-visual-media">', "Semantic Partners visual figure"],
   [partners, "/assets/media/products/specialty-pharmacy-handling.jpg", "Partners qualification photograph"],
   [technology, "technology-visual-story", "Technology visual introduction"],
+  [technology, '<figure class="technology-visual-media">', "Semantic Technology visual figure"],
   [technology, "technology-architecture-story", "Technology architecture refinement"],
   [technology, "/assets/media/products/metabolic-laboratory-analysis.jpg", "Technology analysis photograph"],
   [leadership, "/assets/vishalchakravarty.jpeg", "Vishal approved portrait"],
@@ -62,13 +67,19 @@ const build = read("scripts/build-site.mjs");
   [css, "@media (prefers-reduced-motion: reduce)", "Reduced-motion support"],
   [javascript, "data-motion-toggle", "Accessible motion controller"],
   [javascript, "IntersectionObserver", "Progressive visual reveal"],
-  [build, 'import("./apply-visual-refinement.mjs")', "Deterministic visual build integration"]
+  [build, 'import("./apply-visual-refinement.mjs")', "Deterministic visual build integration"],
+  [build, 'import("./normalise-visual-semantics.mjs")', "Semantic visual build integration"]
 ].forEach(([content, text, label]) => requireText(content, text, label));
 
 forbidText(index, "/assets/media/editorial/quality-batch-integrity.svg", "Homepage");
 forbidText(services, "/assets/media/editorial/quality-batch-integrity.svg", "Services");
 forbidText(regulatory, "/assets/media/insights/gdp-qms-foundations.svg", "Regulatory");
 forbidText(partners, "/assets/media/editorial/partnership-pathway.svg", "Partners");
+forbidText(index, '<div class="batch-integrity-media">', "Homepage semantic markup");
+forbidText(services, '<div class="service-visual-media">', "Services semantic markup");
+forbidText(regulatory, '<div class="service-visual-media">', "Regulatory semantic markup");
+forbidText(partners, '<div class="service-visual-media">', "Partners semantic markup");
+forbidText(technology, '<div class="technology-visual-media">', "Technology semantic markup");
 
 const roadmapItems = (index.match(/class="roadmap-number"/g) || []).length;
 if (roadmapItems !== 7) failures.push(`Regulatory roadmap: expected 7 stages, found ${roadmapItems}.`);
@@ -101,4 +112,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Visual refinement validation passed: premium hero, seven-stage roadmap, image-led sections, leadership portraits, responsive and reduced-motion controls verified.");
+console.log("Visual refinement validation passed: premium hero, seven-stage roadmap, semantic image-led sections, leadership portraits, responsive and reduced-motion controls verified.");
