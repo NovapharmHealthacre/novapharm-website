@@ -1,5 +1,5 @@
 export const CONSENT_STORAGE_KEY = "np_cookie_consent";
-export const CONSENT_VERSION = "2026-07-11-v1.0";
+export const CONSENT_VERSION = "2026-07-14-v1.1";
 export const CONSENT_MAX_AGE_MS = 180 * 24 * 60 * 60 * 1000;
 export const DEFAULT_CATEGORIES = Object.freeze({ necessary: true, preferences: false, analytics: false, marketing: false });
 

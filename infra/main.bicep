@@ -16,8 +16,11 @@ param location string = resourceGroup().location
 @maxLength(12)
 param namePrefix string = 'novapharm'
 
-@description('Public origin for this environment. Staging must use its own restricted hostname.')
-param publicOrigin string
+@description('Public origin for this environment. Leave blank to use the generated Azure hostname for development or staging.')
+param publicOrigin string = ''
+
+@description('Optional single trusted IPv4 address or CIDR used only while an owner seeds Key Vault. Remove immediately afterwards.')
+param keyVaultBootstrapIpCidr string = ''
 
 @description('Object ID of the approved Microsoft Entra group that administers Azure SQL.')
 param sqlEntraAdminObjectId string
@@ -66,6 +69,21 @@ param entraClientId string = ''
 
 @description('Key Vault secret name containing the Entra relying-party client secret. The secret value is never accepted as a Bicep parameter.')
 param entraClientSecretName string = 'entra-client-secret'
+
+@description('Key Vault secret name containing the restricted preview username.')
+param previewUsernameSecretName string = 'preview-access-username'
+
+@description('Key Vault secret name containing the restricted preview password.')
+param previewPasswordSecretName string = 'preview-access-password'
+
+@description('Temporarily expose the protected one-time administrator bootstrap setting to the app. Disable immediately after the first password change.')
+param enableBootstrapAdmin bool = false
+
+@description('Key Vault secret name containing the one-time production bootstrap password.')
+param bootstrapAdminPasswordSecretName string = 'bootstrap-admin-password'
+
+@description('Key Vault secret name containing the isolated candidate bootstrap password.')
+param candidateBootstrapAdminPasswordSecretName string = 'candidate-bootstrap-admin-password'
 
 @description('Optional Microsoft Entra External ID tenant ID used to distinguish approved external customer identities.')
 param entraExternalTenantId string = ''
@@ -119,6 +137,7 @@ var uniqueSuffix = uniqueString(subscription().subscriptionId, resourceGroup().i
 var compactSuffix = take(uniqueSuffix, 6)
 var resourceStem = '${namePrefix}-${environmentCode}'
 var appName = take('${resourceStem}-web-${compactSuffix}', 60)
+var resolvedPublicOrigin = empty(publicOrigin) ? 'https://${appName}.azurewebsites.net' : publicOrigin
 var planName = '${resourceStem}-plan'
 var keyVaultName = take('${normalisedPrefix}${environmentCode}kv${compactSuffix}', 24)
 var storageName = take('${normalisedPrefix}${environmentCode}st${compactSuffix}', 24)
@@ -284,10 +303,15 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     enablePurgeProtection: true
     enableSoftDelete: true
     softDeleteRetentionInDays: 90
-    publicNetworkAccess: 'Disabled'
+    publicNetworkAccess: empty(keyVaultBootstrapIpCidr) ? 'Disabled' : 'Enabled'
     networkAcls: {
       bypass: 'AzureServices'
       defaultAction: 'Deny'
+      ipRules: empty(keyVaultBootstrapIpCidr) ? [] : [
+        {
+          value: keyVaultBootstrapIpCidr
+        }
+      ]
     }
   }
 }
@@ -668,6 +692,7 @@ resource app 'Microsoft.Web/sites@2023-12-01' = {
     serverFarmId: appServicePlan.id
     virtualNetworkSubnetId: appIntegrationSubnet.id
     siteConfig: {
+      appCommandLine: 'npm run start:production'
       alwaysOn: true
       ftpsState: 'Disabled'
       healthCheckPath: '/api/health'
@@ -703,6 +728,7 @@ resource candidateSlot 'Microsoft.Web/sites/slots@2023-12-01' = if (deployCandid
     serverFarmId: appServicePlan.id
     virtualNetworkSubnetId: appIntegrationSubnet.id
     siteConfig: {
+      appCommandLine: 'npm run start:production'
       alwaysOn: true
       ftpsState: 'Disabled'
       healthCheckPath: '/api/health'
@@ -721,9 +747,9 @@ resource candidateSlot 'Microsoft.Web/sites/slots@2023-12-01' = if (deployCandid
 var productionAppSettings = union({
   NODE_ENV: 'production'
   HOST: '0.0.0.0'
-  SITE_URL: publicOrigin
-  PUBLIC_ORIGIN: publicOrigin
-  PUBLIC_API_ORIGIN: publicOrigin
+  SITE_URL: resolvedPublicOrigin
+  PUBLIC_ORIGIN: resolvedPublicOrigin
+  PUBLIC_API_ORIGIN: resolvedPublicOrigin
   DATABASE_PROVIDER: 'azure-sql'
   AZURE_SQL_SERVER: '${sqlServer.name}.database.windows.net'
   AZURE_SQL_DATABASE: sqlDatabase.name
@@ -735,9 +761,13 @@ var productionAppSettings = union({
   AZURE_STORAGE_PRIVATE_CONTAINER: documentsPrivate.name
   APPLICATIONINSIGHTS_CONNECTION_STRING: appInsights.properties.ConnectionString
   SECURE_CONTENT_ROOT: '/home/site/wwwroot/_secure'
+  PREVIEW_MODE: string(environmentCode != 'prod')
+  PREVIEW_LABEL: environmentCode != 'prod' ? 'Non-production Azure staging' : ''
   EMAIL_FROM: emailFrom
   CONTACT_NOTIFICATION_TO: contactNotificationTo
   SESSION_SECRET: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=session-secret)'
+  SESSION_TTL_MS: '28800000'
+  SESSION_IDLE_TIMEOUT_MS: '1800000'
   RESEND_API_KEY: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=resend-api-key)'
   ENTRA_TENANT_ID: entraTenantId
   ENTRA_CLIENT_ID: entraClientId
@@ -755,8 +785,15 @@ var productionAppSettings = union({
   SCM_DO_BUILD_DURING_DEPLOYMENT: 'false'
   WEBSITE_NODE_DEFAULT_VERSION: '~24'
   WEBSITE_RUN_FROM_PACKAGE: '1'
-}, enableEntraAuthentication ? {
+}, environmentCode != 'prod' ? {
+  PREVIEW_ACCESS_USERNAME: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${previewUsernameSecretName})'
+  PREVIEW_ACCESS_PASSWORD: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${previewPasswordSecretName})'
+} : {}, enableEntraAuthentication ? {
   ENTRA_CLIENT_SECRET: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${entraClientSecretName})'
+} : {}, enableBootstrapAdmin ? {
+  PORTAL_USERNAME: 'Vishal'
+  PORTAL_DISPLAY_NAME: 'Vishal Chakravarty'
+  BOOTSTRAP_ADMIN_PASSWORD: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${bootstrapAdminPasswordSecretName})'
 } : {})
 
 resource appSettings 'Microsoft.Web/sites/config@2023-12-01' = {
@@ -778,8 +815,11 @@ resource candidateSlotSettings 'Microsoft.Web/sites/slots/config@2023-12-01' = i
     AZURE_STORAGE_PRIVATE_CONTAINER: candidateDocumentsPrivate.name
     PREVIEW_MODE: 'true'
     PREVIEW_LABEL: 'Non-production Azure candidate'
+    PREVIEW_ACCESS_USERNAME: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${previewUsernameSecretName})'
+    PREVIEW_ACCESS_PASSWORD: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${previewPasswordSecretName})'
     SESSION_SECRET: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=candidate-session-secret)'
     RESEND_API_KEY: ''
+    BOOTSTRAP_ADMIN_PASSWORD: enableBootstrapAdmin ? '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=${candidateBootstrapAdminPasswordSecretName})' : ''
   })
 }
 
@@ -796,73 +836,86 @@ resource stickySlotSettings 'Microsoft.Web/sites/config@2023-12-01' = if (deploy
       'AZURE_STORAGE_PRIVATE_CONTAINER'
       'PREVIEW_MODE'
       'PREVIEW_LABEL'
+      'PREVIEW_ACCESS_USERNAME'
+      'PREVIEW_ACCESS_PASSWORD'
       'SESSION_SECRET'
       'RESEND_API_KEY'
+      'PORTAL_USERNAME'
+      'PORTAL_DISPLAY_NAME'
+      'BOOTSTRAP_ADMIN_PASSWORD'
     ]
     azureStorageConfigNames: []
     connectionStringNames: []
   }
 }
 
+var authSettingsProperties = {
+  globalValidation: {
+    excludedPaths: [
+      '/api/health'
+      '/api/contact/*'
+      '/api/account-applications/*'
+    ]
+    redirectToProvider: 'azureactivedirectory'
+    requireAuthentication: false
+    unauthenticatedClientAction: 'AllowAnonymous'
+  }
+  httpSettings: {
+    forwardProxy: {
+      convention: 'Standard'
+    }
+    requireHttps: true
+    routes: {
+      apiPrefix: '/.auth'
+    }
+  }
+  identityProviders: {
+    azureActiveDirectory: {
+      enabled: true
+      registration: {
+        clientId: entraClientId
+        clientSecretSettingName: 'ENTRA_CLIENT_SECRET'
+        openIdIssuer: 'https://login.microsoftonline.com/${entraTenantId}/v2.0'
+      }
+      validation: {
+        allowedAudiences: [
+          entraClientId
+          'api://${entraClientId}'
+        ]
+      }
+    }
+  }
+  login: {
+    cookieExpiration: {
+      convention: 'FixedTime'
+      timeToExpiration: '08:00:00'
+    }
+    nonce: {
+      nonceExpirationInterval: '00:05:00'
+      validateNonce: true
+    }
+    preserveUrlFragmentsForLogins: false
+    routes: {}
+    tokenStore: {
+      enabled: false
+    }
+  }
+  platform: {
+    enabled: true
+    runtimeVersion: '~1'
+  }
+}
+
 resource appAuth 'Microsoft.Web/sites/config@2022-09-01' = if (enableEntraAuthentication) {
   parent: app
   name: 'authsettingsV2'
-  properties: {
-    globalValidation: {
-      excludedPaths: [
-        '/api/health'
-        '/api/contact/*'
-        '/api/account-applications/*'
-      ]
-      redirectToProvider: 'azureactivedirectory'
-      requireAuthentication: false
-      unauthenticatedClientAction: 'AllowAnonymous'
-    }
-    httpSettings: {
-      forwardProxy: {
-        convention: 'Standard'
-      }
-      requireHttps: true
-      routes: {
-        apiPrefix: '/.auth'
-      }
-    }
-    identityProviders: {
-      azureActiveDirectory: {
-        enabled: true
-        registration: {
-          clientId: entraClientId
-          clientSecretSettingName: 'ENTRA_CLIENT_SECRET'
-          openIdIssuer: 'https://login.microsoftonline.com/${entraTenantId}/v2.0'
-        }
-        validation: {
-          allowedAudiences: [
-            entraClientId
-            'api://${entraClientId}'
-          ]
-        }
-      }
-    }
-    login: {
-      cookieExpiration: {
-        convention: 'FixedTime'
-        timeToExpiration: '08:00:00'
-      }
-      nonce: {
-        nonceExpirationInterval: '00:05:00'
-        validateNonce: true
-      }
-      preserveUrlFragmentsForLogins: false
-      routes: {}
-      tokenStore: {
-        enabled: false
-      }
-    }
-    platform: {
-      enabled: true
-      runtimeVersion: '~1'
-    }
-  }
+  properties: authSettingsProperties
+}
+
+resource candidateAuth 'Microsoft.Web/sites/slots/config@2022-09-01' = if (deployCandidateSlot && enableEntraAuthentication) {
+  parent: candidateSlot
+  name: 'authsettingsV2'
+  properties: authSettingsProperties
 }
 
 resource appVaultRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {

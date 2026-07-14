@@ -19,7 +19,7 @@ const enquiryTypes = new Set([
   "Careers",
   "General enquiry"
 ]);
-const privacyNoticeVersion = "2026-07-11-v1.0";
+const privacyNoticeVersion = "2026-07-14-v1.1";
 
 function integer(value, name, minimum = 0) {
   const parsed = Number(value);
@@ -450,6 +450,19 @@ export async function applicationDocumentContext(applicationId) {
   if (!application) throw Object.assign(new Error("Application not found."), { statusCode: 404 });
   const company = JSON.parse(application.company_json);
   return { id: application.id, applicationNumber: application.application_number, companyName: company.legalName, status: application.status };
+}
+
+export async function applicationNotificationContext(applicationId) {
+  const application = await one("SELECT id, application_number, company_json, submitted_by_email FROM account_applications WHERE id = ?", applicationId);
+  if (!application) return null;
+  const company = JSON.parse(application.company_json);
+  return {
+    id: application.id,
+    application_number: application.application_number,
+    company_name: company.legalName,
+    customer_type: company.customerType,
+    submitted_by_email: application.submitted_by_email
+  };
 }
 
 export async function listAudit(limit = 100) {

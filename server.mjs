@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { observabilityStatus } from "./src/observability/azure-monitor.mjs";
 import { createServer } from "node:http";
-import { createReadStream, existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
+import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
 import { extname, isAbsolute, join, normalize, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
@@ -9,6 +9,7 @@ import { constants as zlibConstants, createBrotliCompress, createGzip } from "no
 import {
   activateCustomer,
   applicationDocumentContext,
+  applicationNotificationContext,
   createLead,
   createOrder,
   createPurchaseOrder,
@@ -47,17 +48,15 @@ import { databaseProvider, databaseReady } from "./src/data/database.mjs";
 import { processSharePointEvents, sharePointFolderPlan } from "./src/integrations/sharepoint/sync-engine.mjs";
 import { processPolarSpeedEvents } from "./src/integrations/polar-speed/sync-engine.mjs";
 import { processDocumentScanEvents } from "./src/integrations/azure-storage/scan-engine.mjs";
-import { emailIntegrationStatus, sendLeadNotifications } from "./src/integrations/email/client.mjs";
+import { emailIntegrationStatus, emailQueueStatus, processEmailRetries, sendApplicationNotifications, sendLeadNotifications } from "./src/integrations/email/client.mjs";
 import { documentStorageStatus } from "./src/storage/document-store.mjs";
 import { appServicePrincipalFromHeaders, provisionFederatedIdentity } from "./src/core/entra-identity.mjs";
-import { isResolvedSecret } from "./src/core/secret-value.mjs";
+import { isResolvedSecret, isUnresolvedSecretReference } from "./src/core/secret-value.mjs";
 import { hasSharePointCredentials } from "./src/integrations/sharepoint/graph-client.mjs";
 
 const root = resolve(process.cwd());
 const applicationVersion = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version;
 const secureContentRoot = resolve(process.env.SECURE_CONTENT_ROOT || join(root, "_secure"));
-const dataDir = join(root, "data");
-mkdirSync(dataDir, { recursive: true });
 
 const isProduction = process.env.NODE_ENV === "production";
 const isPreview = process.env.PREVIEW_MODE === "true";
@@ -67,6 +66,7 @@ const host = process.env.HOST || "127.0.0.1";
 const port = Number(process.env.PORT || 4173);
 const sessionSecret = process.env.SESSION_SECRET || (isProduction ? "" : "local-dev-session-secret-change-me");
 const sessionTtlMs = Number(process.env.SESSION_TTL_MS || 8 * 60 * 60 * 1000);
+const sessionIdleTimeoutMs = Number(process.env.SESSION_IDLE_TIMEOUT_MS || 30 * 60 * 1000);
 const publicOrigin = new URL(process.env.PUBLIC_ORIGIN || process.env.SITE_URL || `http://${host}:${port}`).origin;
 const accessRedirects = {
   customer: "/portal/dashboard/",
@@ -79,7 +79,12 @@ const configuredPortalUsers = portalUsersFromEnvironment(process.env, { isProduc
 if (!isResolvedSecret(sessionSecret, { minimumBytes: 32 })) {
   throw new Error("SESSION_SECRET must resolve to at least 32 bytes.");
 }
-if (isPreview && (!previewUsername || !previewPassword)) throw new Error("PREVIEW_ACCESS_USERNAME and PREVIEW_ACCESS_PASSWORD are required when PREVIEW_MODE=true.");
+if (!Number.isFinite(sessionTtlMs) || sessionTtlMs <= 0 || !Number.isFinite(sessionIdleTimeoutMs) || sessionIdleTimeoutMs <= 0 || sessionIdleTimeoutMs > sessionTtlMs) {
+  throw new Error("Session lifetimes must be positive and SESSION_IDLE_TIMEOUT_MS must not exceed SESSION_TTL_MS.");
+}
+if (isPreview && (!previewUsername || isUnresolvedSecretReference(previewUsername) || !isResolvedSecret(previewPassword, { minimumBytes: 16 }))) {
+  throw new Error("PREVIEW_ACCESS_USERNAME and a resolved PREVIEW_ACCESS_PASSWORD of at least 16 bytes are required when PREVIEW_MODE=true.");
+}
 
 if (isProduction) {
   for (const variable of ["SECURE_CONTENT_ROOT", "PUBLIC_ORIGIN", "PUBLIC_API_ORIGIN", "SITE_URL"]) {
@@ -228,8 +233,21 @@ function hasAllowedOrigin(request) {
   }
 }
 
+function hasAllowedHost(request) {
+  if (!isProduction) return true;
+  const received = String(request.headers.host || "").toLowerCase();
+  const allowed = new Set([
+    new URL(publicOrigin).host.toLowerCase(),
+    String(process.env.WEBSITE_HOSTNAME || "").toLowerCase()
+  ].filter(Boolean));
+  return allowed.has(received);
+}
+
 function networkFingerprint(request) {
-  const address = request.headers["x-forwarded-for"]?.split(",")[0]?.trim() || request.socket.remoteAddress || "local";
+  const forwardedAddress = process.env.WEBSITE_INSTANCE_ID
+    ? request.headers["x-forwarded-for"]?.split(",")[0]?.trim()
+    : "";
+  const address = forwardedAddress || request.socket.remoteAddress || "local";
   return createHmac("sha256", sessionSecret).update(address).digest("hex");
 }
 
@@ -277,7 +295,7 @@ function getSession(request) {
   if (!value) return null;
   const [id, signature] = value.split(".");
   if (!validSessionSignature(id, signature)) return null;
-  return getPersistentSession(id);
+  return getPersistentSession(id, { idleTimeoutMs: sessionIdleTimeoutMs });
 }
 
 function protectedPath(pathname) {
@@ -404,6 +422,7 @@ async function portalData(session) {
 async function adminSummary() {
   const dashboard = await operationalDashboard();
   const leads = await listLeads(20);
+  const emailQueue = await emailQueueStatus();
   return {
     metrics: {
       leads: leads.length,
@@ -411,11 +430,15 @@ async function adminSummary() {
       customers: dashboard.customers,
       products: dashboard.products,
       openOrders: dashboard.openOrders,
-      pendingSyncEvents: dashboard.pendingSyncEvents
+      pendingSyncEvents: dashboard.pendingSyncEvents,
+      emailDeliveryAttention: emailQueue.states
+        .filter((state) => state.status === "retrying" || state.status === "blocked")
+        .reduce((total, state) => total + Number(state.count || 0), 0)
     },
     leads,
     applications: await listApplications(20),
     integrations: await syncStatus(),
+    emailQueue,
     audit: await listAudit(30),
     sourceStatus: dashboard.sourceStatus,
     dataFreshness: dashboard.dataFreshness
@@ -451,6 +474,7 @@ async function scopedAuthentication(request, response, scopes, roles = []) {
 
 export async function handleRequest(request, response) {
   try {
+    if (!hasAllowedHost(request)) return json(response, 421, { error: "The requested host is not available." });
     const url = new URL(request.url || "/", `http://${request.headers.host || "localhost"}`);
     const pathname = url.pathname;
 
@@ -559,6 +583,11 @@ export async function handleRequest(request, response) {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
       if (!await rateLimit(request, "account-application", 5, 60 * 60 * 1000)) return json(response, 429, { error: "Too many applications. Try again later." });
       const application = await submitCustomerApplication(await readBody(request));
+      try {
+        await sendApplicationNotifications(await applicationNotificationContext(application.id));
+      } catch (error) {
+        console.error("Account application notification delivery failed.", { status: error.providerStatus || "unavailable" });
+      }
       json(response, 201, { ok: true, application: { ...application, uploadToken: applicationUploadToken(application.id) } });
       return;
     }
@@ -567,7 +596,7 @@ export async function handleRequest(request, response) {
     if (applicationDocumentMatch && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
       if (!await rateLimit(request, "application-document", 30, 60 * 60 * 1000)) return json(response, 429, { error: "Too many document uploads." });
-      if (!validApplicationUploadToken(applicationDocumentMatch[1], url.searchParams.get("uploadToken"))) return json(response, 403, { error: "Invalid application upload token." });
+      if (!validApplicationUploadToken(applicationDocumentMatch[1], request.headers["x-application-upload-token"])) return json(response, 403, { error: "Invalid application upload token." });
       const context = await applicationDocumentContext(applicationDocumentMatch[1]);
       const document = await storeDocument({
         bytes: await readRawBody(request),
@@ -712,7 +741,7 @@ export async function handleRequest(request, response) {
 
     if (pathname === "/api/integrations/status" && request.method === "GET") {
       if (!await authenticated(request, response, ["admin"])) return;
-      json(response, 200, { integrations: await syncStatus(), sharePointFolders: sharePointFolderPlan() });
+      json(response, 200, { integrations: await syncStatus(), emailQueue: await emailQueueStatus(), sharePointFolders: sharePointFolderPlan() });
       return;
     }
 
@@ -734,6 +763,13 @@ export async function handleRequest(request, response) {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
       if (!await authenticated(request, response, ["admin"])) return;
       json(response, 200, await processDocumentScanEvents({ limit: 50 }));
+      return;
+    }
+
+    if (pathname === "/api/integrations/email/retries" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      if (!await authenticated(request, response, ["admin"])) return;
+      json(response, 200, await processEmailRetries({ limit: 50 }));
       return;
     }
 
@@ -840,10 +876,21 @@ if (startedDirectly) {
   server.listen(port, host, () => {
     console.log(`NovaPharm Healthcare website running at http://${host}:${port}/`);
   });
+  const processQueuedEmails = async () => {
+    try {
+      await processEmailRetries({ limit: 20 });
+    } catch (error) {
+      console.error("Queued email processing failed.", { status: error.providerStatus || "unavailable" });
+    }
+  };
+  const emailRetryTimer = setInterval(processQueuedEmails, 60_000);
+  emailRetryTimer.unref();
+  void processQueuedEmails();
   let shuttingDown = false;
   const shutdown = (signal) => {
     if (shuttingDown) return;
     shuttingDown = true;
+    clearInterval(emailRetryTimer);
     console.log(`Received ${signal}; completing active requests before shutdown.`);
     const forceTimer = setTimeout(() => {
       server.closeAllConnections();

@@ -1,0 +1,57 @@
+name: Azure infrastructure validation
+
+on:
+  pull_request:
+    paths:
+      - "infra/**"
+      - ".github/workflows/azure-infrastructure.yml"
+      - ".github/workflows/azure-deploy.yml"
+  push:
+    branches: [main, "codex/**"]
+    paths:
+      - "infra/**"
+      - ".github/workflows/azure-infrastructure.yml"
+      - ".github/workflows/azure-deploy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: novapharm-iac-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      AZURE_LOCATION: uksouth
+      AZURE_TENANT_ID: 00000000-0000-0000-0000-000000000000
+      AZURE_SQL_ENTRA_ADMIN_OBJECT_ID: 00000000-0000-0000-0000-000000000000
+      AZURE_SQL_ENTRA_ADMIN_LOGIN: NovaPharm-SQL-Administrators
+      NOVAPHARM_DEV_ORIGIN: https://dev.example.invalid
+      NOVAPHARM_STAGING_ORIGIN: https://staging.example.invalid
+    steps:
+      - uses: actions/checkout@v4
+      - name: Report Bicep version
+        run: az bicep version
+      - name: Lint Bicep modules
+        run: |
+          set -euo pipefail
+          for file in infra/*.bicep; do
+            az bicep lint --file "$file"
+          done
+      - name: Compile Bicep modules and parameters
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/novapharm-bicep
+          for file in infra/*.bicep; do
+            az bicep build --file "$file" --outdir /tmp/novapharm-bicep
+          done
+          for file in infra/environments/*.bicepparam; do
+            output="/tmp/novapharm-bicep/$(basename "${file%.bicepparam}").parameters.json"
+            az bicep build-params --file "$file" --outfile "$output"
+          done
+      - name: Confirm templates contain no literal secrets
+        run: npm run security:scan

@@ -516,7 +516,7 @@ BEGIN
     country nvarchar(80) NOT NULL,
     telephone nvarchar(40) NULL,
     consent_at datetime2(3) NOT NULL,
-    privacy_notice_version nvarchar(64) NOT NULL CONSTRAINT DF_lead_details_privacy DEFAULT N'2026-07-11-v1.0',
+    privacy_notice_version nvarchar(64) NOT NULL CONSTRAINT DF_lead_details_privacy DEFAULT N'2026-07-14-v1.1',
     safety_confirmation_at datetime2(3) NULL,
     source_page nvarchar(120) NOT NULL CONSTRAINT DF_lead_details_source DEFAULT N'corporate_website'
   );
@@ -554,9 +554,15 @@ BEGIN
     entity_id nvarchar(128) NULL,
     status nvarchar(40) NOT NULL,
     payload_json nvarchar(max) NOT NULL CONSTRAINT DF_notifications_payload DEFAULT N'{}',
+    attempt_count int NOT NULL CONSTRAINT DF_notifications_attempts DEFAULT 0,
+    next_attempt_at datetime2(3) NULL,
+    last_attempt_at datetime2(3) NULL,
+    last_error_code nvarchar(100) NULL,
+    provider_message_id nvarchar(128) NULL,
     created_at datetime2(3) NOT NULL,
     sent_at datetime2(3) NULL
   );
+  CREATE INDEX IX_notifications_delivery_queue ON dbo.notifications(channel, status, next_attempt_at, created_at);
 END
 GO
 
@@ -572,7 +578,7 @@ BEGIN
     compliance_json nvarchar(max) NOT NULL CONSTRAINT DF_account_applications_compliance DEFAULT N'{}',
     bank_json nvarchar(max) NOT NULL CONSTRAINT DF_account_applications_bank DEFAULT N'{}',
     submitted_by_email nvarchar(160) NOT NULL,
-    privacy_notice_version nvarchar(64) NOT NULL CONSTRAINT DF_account_applications_privacy DEFAULT N'2026-07-11-v1.0',
+    privacy_notice_version nvarchar(64) NOT NULL CONSTRAINT DF_account_applications_privacy DEFAULT N'2026-07-14-v1.1',
     applicant_declaration_at datetime2(3) NULL,
     customer_id nvarchar(64) NULL CONSTRAINT FK_account_applications_customers REFERENCES dbo.customers(id),
     version int NOT NULL CONSTRAINT DF_account_applications_version DEFAULT 1,

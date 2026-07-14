@@ -1,31 +1,9 @@
-# Lighthouse Readiness Report
+# Lighthouse Report
 
-## Targets
+Status: NOT RUN against an Azure-hosted candidate  
+Last reviewed: 14 July 2026
 
-- Performance: 95+
-- Accessibility: 100
-- Best Practices: 100
-- SEO: 100
+No Lighthouse score is reported. The repository implements the performance controls listed in `performance/performance-report.md`, but the current environment has no browser-accessible Azure staging origin and no accepted Chromium/WebKit matrix.
 
-## Implemented
+Run mobile and desktop Lighthouse after licensed product media is materialised and the private Azure staging host is live. Record commit SHA, URL, viewport, network/CPU settings, cold/warm cache, Performance, Accessibility, Best Practices, SEO, LCP, CLS, total blocking time and any INP field data. Re-run on the final custom domain after cutover.
 
-- Static semantic HTML without a client framework or external font dependency.
-- Preloaded LCP media with intrinsic dimensions and `fetchpriority="high"`.
-- Lazy loading and asynchronous decoding below the fold.
-- Brotli/gzip compression, CDN-aware public caching and `no-store` on private or transactional responses.
-- Responsive layouts, focus indicators, skip links, reduced motion and one-H1 page structure.
-- Unique metadata, structured data, sitemap, robots and RSS.
-- Private routes, previews and controlled files excluded from indexing.
-
-## Repository Verification
-
-- 33 intended public pages: the 26 corporate/content pages plus seven legal and responsibility pages.
-- Six original 900-1,400-word Insight articles.
-- 40 data-free protected shells.
-- 1,890 valid local links, assets and anchors.
-- Valid JSON-LD and no missing required files.
-- Build, route, domain, claims, security, integration and persistence checks pass locally on Node 24.
-
-## Measurement Status
-
-Lighthouse has not been run. The sandbox rejects a local server and the in-app browser's URL policy rejects local-file navigation, while no owner-approved private preview or WebKit runtime is available. Run mobile and desktop Lighthouse against the private Render preview, then against the final HTTPS domain. Record the real scores, LCP, INP and CLS here; do not substitute estimates.

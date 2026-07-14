@@ -27,4 +27,24 @@ async function hydrateAdmin() {
   }
 }
 
+const retryButton = document.querySelector("[data-email-retry]");
+retryButton?.addEventListener("click", async () => {
+  const status = document.querySelector("[data-email-retry-status]");
+  retryButton.disabled = true;
+  if (status) status.textContent = "Processing due email deliveries...";
+  try {
+    const csrfToken = await window.NovaPharmApi.csrf();
+    const result = await window.NovaPharmApi.request("/api/integrations/email/retries", {
+      method: "POST",
+      headers: { "x-csrf-token": csrfToken }
+    });
+    if (status) status.textContent = `${result.sent || 0} email deliveries completed; ${result.retrying || 0} remain queued and ${result.blocked || 0} require review.`;
+    await hydrateAdmin();
+  } catch (error) {
+    if (status) status.textContent = window.NovaPharmApi.friendlyError(error);
+  } finally {
+    retryButton.disabled = false;
+  }
+});
+
 hydrateAdmin();

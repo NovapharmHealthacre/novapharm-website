@@ -59,6 +59,12 @@ The migration must preserve the generated public HTML and claims controls while 
 
 `PATH=<bundled-node-24>/bin:$PATH npm run check` completed with exit code 0 on 14 July 2026. This proves repository-level behaviour on the merged source. It does not prove the Azure, Entra, email, SharePoint, malware scan, browser, Lighthouse, DNS or production gates.
 
+## Candidate remediation after the audit
+
+The `codex/azure-production-platform` candidate retains this matrix as the pre-change baseline and implements the selected Path A migration layer: Azure SQL repositories and versioned schema, private Blob quarantine, Defender-result release gating, managed-identity Graph/SQL/Storage clients, Entra role mapping, App Service/Key Vault/Application Insights Bicep, OIDC deployment workflows, inactivity expiry, exact host enforcement, header-only application upload tokens, and a durable idempotent email retry queue for both contact and business-account acknowledgements.
+
+The candidate `npm run check` then passed with 33 public pages, six articles, 40 locked shells, 1,906 links and 281 files in the current-tree secret scanner. Azure deployment, licensed-image visual approval, real email delivery, live identity, SharePoint ACL changes, cloud restoration and browser acceptance remain external gates and are not reclassified as complete.
+
 ## Migration guardrails
 
 1. Keep GitHub Pages and the existing `CNAME` unchanged until Azure production acceptance.
@@ -68,4 +74,3 @@ The migration must preserve the generated public HTML and claims controls while 
 5. Do not place regulated/customer/board data in staging.
 6. Do not enable Graph, email, analytics or warehouse providers before their privacy, contract and least-privilege records are complete.
 7. Do not claim a visual, security, backup or production pass without executed evidence.
-

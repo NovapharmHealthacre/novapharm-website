@@ -1,0 +1,187 @@
+name: Controlled Azure deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Isolated Azure target
+        required: true
+        type: choice
+        options:
+          - staging
+          - production-candidate
+      action:
+        description: Validate, provision infrastructure, or deploy the application
+        required: true
+        type: choice
+        options:
+          - what-if
+          - provision
+          - deploy
+      run_schema_migrations:
+        description: Run schema migration through the temporarily authorised app identity
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: novapharm-azure-${{ inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: inputs.target == 'staging' || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: ${{ inputs.target == 'staging' && 'azure-staging' || 'azure-production' }}
+    env:
+      AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+      AZURE_RESOURCE_GROUP: ${{ inputs.target == 'staging' && vars.AZURE_STAGING_RESOURCE_GROUP || vars.AZURE_PRODUCTION_RESOURCE_GROUP }}
+      AZURE_SQL_ENTRA_ADMIN_OBJECT_ID: ${{ vars.AZURE_SQL_ENTRA_ADMIN_OBJECT_ID }}
+      AZURE_SQL_ENTRA_ADMIN_LOGIN: ${{ vars.AZURE_SQL_ENTRA_ADMIN_LOGIN }}
+      NOVAPHARM_STAGING_ORIGIN: ${{ vars.NOVAPHARM_STAGING_ORIGIN }}
+      AZURE_KEY_VAULT_BOOTSTRAP_IP_CIDR: ${{ vars.AZURE_KEY_VAULT_BOOTSTRAP_IP_CIDR }}
+      NOVAPHARM_ENABLE_BOOTSTRAP_ADMIN: ${{ vars.NOVAPHARM_ENABLE_BOOTSTRAP_ADMIN }}
+      NOVAPHARM_ENABLE_ENTRA_AUTH: ${{ vars.NOVAPHARM_ENABLE_ENTRA_AUTH }}
+      NOVAPHARM_ENTRA_CLIENT_ID: ${{ vars.NOVAPHARM_ENTRA_CLIENT_ID }}
+      NOVAPHARM_ENTRA_EXTERNAL_TENANT_ID: ${{ vars.NOVAPHARM_ENTRA_EXTERNAL_TENANT_ID }}
+      NOVAPHARM_ENTRA_ADMIN_GROUP_ID: ${{ vars.NOVAPHARM_ENTRA_ADMIN_GROUP_ID }}
+      NOVAPHARM_ENTRA_BOARD_GROUP_ID: ${{ vars.NOVAPHARM_ENTRA_BOARD_GROUP_ID }}
+      NOVAPHARM_ENTRA_EMPLOYEE_GROUP_ID: ${{ vars.NOVAPHARM_ENTRA_EMPLOYEE_GROUP_ID }}
+      NOVAPHARM_ENTRA_CUSTOMER_GROUP_ID: ${{ vars.NOVAPHARM_ENTRA_CUSTOMER_GROUP_ID }}
+      NOVAPHARM_ENABLE_DEFENDER_FOR_STORAGE: ${{ vars.NOVAPHARM_ENABLE_DEFENDER_FOR_STORAGE }}
+      NOVAPHARM_SHAREPOINT_HOSTNAME: ${{ vars.NOVAPHARM_SHAREPOINT_HOSTNAME }}
+      NOVAPHARM_SHAREPOINT_SITE_PATH: ${{ vars.NOVAPHARM_SHAREPOINT_SITE_PATH }}
+      NOVAPHARM_SHAREPOINT_DRIVE_ID: ${{ vars.NOVAPHARM_SHAREPOINT_DRIVE_ID }}
+      NOVAPHARM_SHAREPOINT_EXECUTIVE_PLATFORM_PATH: ${{ vars.NOVAPHARM_SHAREPOINT_EXECUTIVE_PLATFORM_PATH }}
+      NOVAPHARM_OPERATIONS_EMAIL: ${{ vars.NOVAPHARM_OPERATIONS_EMAIL }}
+      NOVAPHARM_EMAIL_FROM: ${{ vars.NOVAPHARM_EMAIL_FROM }}
+      NOVAPHARM_CONTACT_NOTIFICATION_TO: ${{ vars.NOVAPHARM_CONTACT_NOTIFICATION_TO }}
+      PARAMETER_FILE: ${{ inputs.target == 'staging' && 'infra/environments/staging.bicepparam' || 'infra/environments/production.bicepparam' }}
+      ENVIRONMENT_CODE: ${{ inputs.target == 'staging' && 'stg' || 'prod' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Verify owner-controlled Azure configuration
+        run: |
+          set -euo pipefail
+          required=(AZURE_LOCATION AZURE_RESOURCE_GROUP AZURE_SQL_ENTRA_ADMIN_OBJECT_ID AZURE_SQL_ENTRA_ADMIN_LOGIN)
+          for name in "${required[@]}"; do
+            test -n "${!name:-}" || { echo "Required GitHub Environment variable $name is missing." >&2; exit 1; }
+          done
+          if [ -n "${AZURE_KEY_VAULT_BOOTSTRAP_IP_CIDR:-}" ]; then
+            echo "Key Vault bootstrap network access is enabled for one reviewed address and must be removed after secret entry."
+          fi
+          if [ "${{ inputs.action }}" = deploy ] && [ "${NOVAPHARM_ENABLE_BOOTSTRAP_ADMIN:-false}" != true ] && [ "${NOVAPHARM_ENABLE_ENTRA_AUTH:-false}" != true ]; then
+            echo "Application deployment requires either the temporary bootstrap identity or approved Entra authentication." >&2
+            exit 1
+          fi
+          if [ "${NOVAPHARM_ENABLE_ENTRA_AUTH:-false}" = true ]; then
+            required_entra=(NOVAPHARM_ENTRA_CLIENT_ID NOVAPHARM_ENTRA_ADMIN_GROUP_ID NOVAPHARM_ENTRA_BOARD_GROUP_ID NOVAPHARM_ENTRA_EMPLOYEE_GROUP_ID)
+            for name in "${required_entra[@]}"; do
+              test -n "${!name:-}" || { echo "Required Entra configuration $name is missing." >&2; exit 1; }
+            done
+          fi
+      - name: Azure OIDC login
+        uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_OIDC_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Validate resource group
+        run: >-
+          az deployment sub validate
+          --location "$AZURE_LOCATION"
+          --template-file infra/resource-group.bicep
+          --parameters resourceGroupName="$AZURE_RESOURCE_GROUP" location="$AZURE_LOCATION" environmentCode="$ENVIRONMENT_CODE"
+      - name: Create resource group
+        if: inputs.action != 'what-if'
+        run: >-
+          az deployment sub create
+          --name "novapharm-${ENVIRONMENT_CODE}-resource-group"
+          --location "$AZURE_LOCATION"
+          --template-file infra/resource-group.bicep
+          --parameters resourceGroupName="$AZURE_RESOURCE_GROUP" location="$AZURE_LOCATION" environmentCode="$ENVIRONMENT_CODE"
+      - name: Azure deployment what-if
+        run: |
+          set -euo pipefail
+          if [ "$(az group exists --name "$AZURE_RESOURCE_GROUP")" = true ]; then
+            az deployment group what-if \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "novapharm-${ENVIRONMENT_CODE}-${GITHUB_RUN_ID}" \
+              --parameters "$PARAMETER_FILE"
+          else
+            echo "The resource group does not exist yet. The subscription deployment above validated its definition; the first owner-approved deploy will create it."
+          fi
+      - name: Deploy Azure resources
+        if: inputs.action != 'what-if'
+        id: infrastructure
+        run: |
+          set -euo pipefail
+          deployment="novapharm-${ENVIRONMENT_CODE}-${GITHUB_RUN_ID}"
+          az deployment group create --resource-group "$AZURE_RESOURCE_GROUP" --name "$deployment" --parameters "$PARAMETER_FILE"
+          app_name=$(az deployment group show --resource-group "$AZURE_RESOURCE_GROUP" --name "$deployment" --query properties.outputs.applicationName.value -o tsv)
+          if [ "$ENVIRONMENT_CODE" = prod ]; then
+            hostname=$(az deployment group show --resource-group "$AZURE_RESOURCE_GROUP" --name "$deployment" --query properties.outputs.candidateHostname.value -o tsv)
+          else
+            hostname=$(az deployment group show --resource-group "$AZURE_RESOURCE_GROUP" --name "$deployment" --query properties.outputs.applicationDefaultHostname.value -o tsv)
+          fi
+          test -n "$app_name" && test -n "$hostname"
+          echo "app_name=$app_name" >> "$GITHUB_OUTPUT"
+          echo "hostname=$hostname" >> "$GITHUB_OUTPUT"
+      - name: Build and test release
+        if: inputs.action == 'deploy'
+        run: |
+          npm ci --ignore-scripts
+          npm audit --omit=dev --audit-level=high
+          npm run check
+          npm prune --omit=dev
+          zip -qr /tmp/novapharm-release.zip . \
+            -x '.git/*' '.github/*' 'data/*' 'tmp/*' 'artifacts/*' 'vishal-portfolio-rebuild/*'
+      - name: Deploy staging application
+        if: inputs.action == 'deploy' && inputs.target == 'staging'
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ steps.infrastructure.outputs.app_name }}
+          package: /tmp/novapharm-release.zip
+      - name: Deploy production candidate slot
+        if: inputs.action == 'deploy' && inputs.target == 'production-candidate'
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ steps.infrastructure.outputs.app_name }}
+          slot-name: candidate
+          package: /tmp/novapharm-release.zip
+      - name: Run controlled schema migrations
+        if: inputs.action == 'deploy' && inputs.run_schema_migrations
+        run: |
+          set -euo pipefail
+          slot_args=()
+          if [ "$ENVIRONMENT_CODE" = prod ]; then slot_args=(--slot candidate); fi
+          az webapp config appsettings set --resource-group "$AZURE_RESOURCE_GROUP" --name "${{ steps.infrastructure.outputs.app_name }}" "${slot_args[@]}" --settings AZURE_SQL_RUN_MIGRATIONS=true >/dev/null
+          az webapp restart --resource-group "$AZURE_RESOURCE_GROUP" --name "${{ steps.infrastructure.outputs.app_name }}" "${slot_args[@]}"
+          for attempt in {1..30}; do
+            if curl --fail --silent --show-error "https://${{ steps.infrastructure.outputs.hostname }}/api/health" >/tmp/health.json; then break; fi
+            sleep 10
+          done
+          jq -e '.status == "ok" and .database == "ready"' /tmp/health.json
+          az webapp config appsettings set --resource-group "$AZURE_RESOURCE_GROUP" --name "${{ steps.infrastructure.outputs.app_name }}" "${slot_args[@]}" --settings AZURE_SQL_RUN_MIGRATIONS=false >/dev/null
+          az webapp restart --resource-group "$AZURE_RESOURCE_GROUP" --name "${{ steps.infrastructure.outputs.app_name }}" "${slot_args[@]}"
+      - name: Candidate health and indexing smoke test
+        if: inputs.action == 'deploy'
+        run: |
+          set -euo pipefail
+          origin="https://${{ steps.infrastructure.outputs.hostname }}"
+          for attempt in {1..30}; do
+            status=$(curl -sS -o /tmp/health.json -w '%{http_code}' "$origin/api/health" || true)
+            if [ "$status" = 200 ]; then break; fi
+            sleep 10
+          done
+          jq -e '.status == "ok" and .database == "ready"' /tmp/health.json
+          curl --fail --silent --show-error --head "$origin/" | tr -d '\r' | grep -qi '^x-robots-tag:.*noindex'

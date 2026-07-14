@@ -193,7 +193,7 @@ assert.ok(contact.payload.lead.id);
 const consentRecord = await one("SELECT country, consent_at, privacy_notice_version, safety_confirmation_at FROM lead_details WHERE lead_id = ?", contact.payload.lead.id);
 assert.equal(consentRecord.country, "United Kingdom");
 assert.ok(consentRecord.consent_at);
-assert.equal(consentRecord.privacy_notice_version, "2026-07-11-v1.0");
+assert.equal(consentRecord.privacy_notice_version, "2026-07-14-v1.1");
 assert.ok(consentRecord.safety_confirmation_at);
 
 const leadCountBeforeDuplicate = (await one("SELECT COUNT(*) AS value FROM leads")).value;
@@ -225,7 +225,11 @@ process.env.RESEND_API_KEY = randomBytes(24).toString("base64url");
 process.env.EMAIL_FROM = "NovaPharm Healthcare <website@example.test>";
 process.env.CONTACT_NOTIFICATION_TO = "team@example.test";
 const originalFetch = globalThis.fetch;
-globalThis.fetch = async () => new Response("Provider unavailable", { status: 503 });
+const failedEmailIdempotencyKeys = [];
+globalThis.fetch = async (_url, options) => {
+  failedEmailIdempotencyKeys.push(options.headers["Idempotency-Key"]);
+  return new Response("Provider unavailable", { status: 503 });
+};
 const emailFailureContact = await request({
   method: "POST",
   url: "/api/contact",
@@ -238,7 +242,9 @@ delete process.env.RESEND_API_KEY;
 delete process.env.EMAIL_FROM;
 delete process.env.CONTACT_NOTIFICATION_TO;
 assert.equal(emailFailureContact.statusCode, 201);
-assert.equal((await one("SELECT status FROM notifications WHERE entity_id = ? ORDER BY created_at DESC LIMIT 1", emailFailureContact.payload.lead.id)).status, "failed");
+const failedNotifications = await one("SELECT COUNT(*) AS value FROM notifications WHERE entity_id = ? AND status = 'retrying' AND attempt_count = 1", emailFailureContact.payload.lead.id);
+assert.equal(failedNotifications.value, 2);
+assert.equal(new Set(failedEmailIdempotencyKeys).size, 2);
 
 for (let index = 0; index < 12; index += 1) {
   const allowed = await request({
@@ -259,6 +265,14 @@ const contactRateLimited = await request({
 });
 assert.equal(contactRateLimited.statusCode, 429);
 
+process.env.RESEND_API_KEY = randomBytes(24).toString("base64url");
+process.env.EMAIL_FROM = "NovaPharm Healthcare <website@example.test>";
+process.env.CONTACT_NOTIFICATION_TO = "team@example.test";
+const applicationEmailRequests = [];
+globalThis.fetch = async (_url, options) => {
+  applicationEmailRequests.push(options);
+  return new Response(JSON.stringify({ id: `application-email-${applicationEmailRequests.length}` }), { status: 200, headers: { "content-type": "application/json" } });
+};
 const application = await request({
   method: "POST",
   url: "/api/account-applications",
@@ -275,23 +289,42 @@ const application = await request({
   }),
   address: "127.0.0.9"
 });
+globalThis.fetch = originalFetch;
+delete process.env.RESEND_API_KEY;
+delete process.env.EMAIL_FROM;
+delete process.env.CONTACT_NOTIFICATION_TO;
 assert.equal(application.statusCode, 201);
 assert.match(application.payload.application.applicationNumber, /^APP-\d{4}-\d{6}$/);
+assert.equal(applicationEmailRequests.length, 2);
+assert.equal((await one("SELECT COUNT(*) AS value FROM notifications WHERE entity_id = ? AND status = 'sent'", application.payload.application.id)).value, 2);
 
 const uploadParameters = new URLSearchParams({
-  uploadToken: application.payload.application.uploadToken,
   fileName: "test-evidence.pdf",
   documentClass: "company_due_diligence"
 });
 const uploadedDocument = await request({
   method: "POST",
   url: `/api/account-applications/${application.payload.application.id}/documents?${uploadParameters}`,
-  headers: { cookie: `np_csrf=${csrfCookie}`, "x-csrf-token": csrfCookie, "content-type": "application/pdf" },
+  headers: {
+    cookie: `np_csrf=${csrfCookie}`,
+    "x-application-upload-token": application.payload.application.uploadToken,
+    "x-csrf-token": csrfCookie,
+    "content-type": "application/pdf"
+  },
   body: Buffer.from("%PDF-1.4\nNovaPharm integration evidence\n"),
   address: "127.0.0.10"
 });
 assert.equal(uploadedDocument.statusCode, 201);
 assert.equal(uploadedDocument.payload.document.lifecycleStatus, "draft");
+
+const queryTokenRejected = await request({
+  method: "POST",
+  url: `/api/account-applications/${application.payload.application.id}/documents?${uploadParameters}&uploadToken=${encodeURIComponent(application.payload.application.uploadToken)}`,
+  headers: { cookie: `np_csrf=${csrfCookie}`, "x-csrf-token": csrfCookie, "content-type": "application/pdf" },
+  body: Buffer.from("%PDF-1.4\nQuery token rejection\n"),
+  address: "127.0.0.11"
+});
+assert.equal(queryTokenRejected.statusCode, 403);
 
 const customer = await activateCustomer(application.payload.application.id, adminUsername);
 const customerPassword = await provisionTestUser({ username: "CustomerUser", role: "client", customerId: customer.id });
@@ -348,6 +381,40 @@ const boardAdminApi = await request({ url: "/api/admin/summary", headers: { cook
 assert.equal(boardAdminApi.statusCode, 403);
 const adminSummary = await request({ url: "/api/admin/summary", headers: { cookie: `np_session=${adminLogin.sessionCookie}` }, address: "127.0.0.21" });
 assert.equal(adminSummary.statusCode, 200);
+assert.equal(adminSummary.payload.emailQueue.states.find((state) => state.status === "retrying").count, 2);
+assert.equal(adminSummary.payload.metrics.emailDeliveryAttention, 2);
+
+const retryWithoutCsrf = await request({
+  method: "POST",
+  url: "/api/integrations/email/retries",
+  headers: { cookie: `np_session=${adminLogin.sessionCookie}` },
+  address: "127.0.0.211"
+});
+assert.equal(retryWithoutCsrf.statusCode, 403);
+await run("UPDATE notifications SET next_attempt_at = ? WHERE entity_id = ? AND status = 'retrying'", new Date(Date.now() - 1000).toISOString(), emailFailureContact.payload.lead.id);
+process.env.RESEND_API_KEY = randomBytes(24).toString("base64url");
+process.env.EMAIL_FROM = "NovaPharm Healthcare <website@example.test>";
+process.env.CONTACT_NOTIFICATION_TO = "team@example.test";
+const retryIdempotencyKeys = [];
+globalThis.fetch = async (_url, options) => {
+  retryIdempotencyKeys.push(options.headers["Idempotency-Key"]);
+  return new Response(JSON.stringify({ id: `retry-email-${retryIdempotencyKeys.length}` }), { status: 200, headers: { "content-type": "application/json" } });
+};
+const retriedEmails = await request({
+  method: "POST",
+  url: "/api/integrations/email/retries",
+  headers: authHeaders(csrfCookie, adminLogin.sessionCookie),
+  address: "127.0.0.212"
+});
+globalThis.fetch = originalFetch;
+delete process.env.RESEND_API_KEY;
+delete process.env.EMAIL_FROM;
+delete process.env.CONTACT_NOTIFICATION_TO;
+assert.equal(retriedEmails.statusCode, 200);
+assert.equal(retriedEmails.payload.processed, 2);
+assert.equal(retriedEmails.payload.sent, 2);
+assert.deepEqual(retryIdempotencyKeys.sort(), failedEmailIdempotencyKeys.sort());
+assert.equal((await one("SELECT COUNT(*) AS value FROM notifications WHERE entity_id = ? AND status = 'sent' AND attempt_count = 2", emailFailureContact.payload.lead.id)).value, 2);
 
 const bootstrapPassword = randomStrongPassword("Aa1!");
 const compromisedCandidate = randomStrongPassword("Cc3!");
@@ -492,6 +559,12 @@ await run("UPDATE auth_sessions SET expires_at = ? WHERE id = ?", new Date(Date.
 const expiredSession = await request({ url: "/api/portal/session", headers: { cookie: `np_session=${expiringLogin.sessionCookie}` }, address: "127.0.0.27" });
 assert.equal(expiredSession.statusCode, 401);
 
+const idleLogin = await login({ username: "EmployeeUser", password: employeePassword, accessType: "employee", csrfCookie, address: "127.0.0.28" });
+const idleSessionId = idleLogin.sessionCookie.split(".")[0];
+await run("UPDATE auth_sessions SET last_seen_at = ? WHERE id = ?", new Date(Date.now() - 31 * 60 * 1000).toISOString(), idleSessionId);
+const idleSession = await request({ url: "/api/portal/session", headers: { cookie: `np_session=${idleLogin.sessionCookie}` }, address: "127.0.0.29" });
+assert.equal(idleSession.statusCode, 401);
+
 for (let index = 0; index < 8; index += 1) {
   const failed = await login({
     username: "LockoutUser",
@@ -539,4 +612,4 @@ assert.ok((await one("SELECT COUNT(*) AS value FROM auth_sessions")).value >= 5)
 
 rmSync(databasePath, { force: true });
 rmSync(documentStoragePath, { force: true, recursive: true });
-console.log("Server integration tests passed: CSRF, contact controls, onboarding, all portal roles, bootstrap and forced password change, session invalidation, scope boundaries, protected files, expiry, lockout, health and logout.");
+console.log("Server integration tests passed: CSRF, contact controls, idempotent email retry, account acknowledgement, onboarding, all portal roles, bootstrap and forced password change, session invalidation, scope boundaries, protected files, absolute and inactivity expiry, lockout, health and logout.");

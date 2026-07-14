@@ -16,8 +16,10 @@ These Bicep templates implement the approved **Path A** target: Azure App Servic
 - Azure subscription and target resource group
 - approved Azure region
 - Microsoft Entra object ID and display name of the Azure SQL administrators group
-- environment origin hostname
+- optional environment origin hostname; development and staging default to the generated Azure hostname
 - operations email, if alert email is approved
+
+`AZURE_KEY_VAULT_BOOTSTRAP_IP_CIDR` may be supplied temporarily as one approved `/32` while an owner enters secrets in the Azure portal. Remove it and redeploy immediately; the default state disables Key Vault public access.
 
 Values are read from deployment-time environment variables in the `.bicepparam` files. Do not put secret values in parameter files.
 

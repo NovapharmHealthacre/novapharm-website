@@ -63,15 +63,21 @@ export class SqliteProvider {
     }
 
     this.#ensureColumn("leads", "submission_fingerprint", "TEXT");
-    this.#ensureColumn("lead_details", "privacy_notice_version", "TEXT NOT NULL DEFAULT '2026-07-11-v1.0'");
+    this.#ensureColumn("lead_details", "privacy_notice_version", "TEXT NOT NULL DEFAULT '2026-07-14-v1.1'");
     this.#ensureColumn("lead_details", "safety_confirmation_at", "TEXT");
-    this.#ensureColumn("account_applications", "privacy_notice_version", "TEXT NOT NULL DEFAULT '2026-07-11-v1.0'");
+    this.#ensureColumn("account_applications", "privacy_notice_version", "TEXT NOT NULL DEFAULT '2026-07-14-v1.1'");
     this.#ensureColumn("account_applications", "applicant_declaration_at", "TEXT");
     this.#ensureColumn("documents", "security_status", "TEXT NOT NULL DEFAULT 'scan_not_configured'");
     this.#ensureColumn("documents", "malware_scan_result", "TEXT");
     this.#ensureColumn("documents", "malware_scanned_at", "TEXT");
+    this.#ensureColumn("notifications", "attempt_count", "INTEGER NOT NULL DEFAULT 0");
+    this.#ensureColumn("notifications", "next_attempt_at", "TEXT");
+    this.#ensureColumn("notifications", "last_attempt_at", "TEXT");
+    this.#ensureColumn("notifications", "last_error_code", "TEXT");
+    this.#ensureColumn("notifications", "provider_message_id", "TEXT");
     this.raw.exec("CREATE INDEX IF NOT EXISTS idx_leads_fingerprint ON leads(submission_fingerprint, created_at)");
     this.raw.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_federated_identity ON users(identity_issuer, external_subject) WHERE external_subject IS NOT NULL");
+    this.raw.exec("CREATE INDEX IF NOT EXISTS idx_notifications_delivery_queue ON notifications(channel, status, next_attempt_at, created_at)");
   }
 
   async all(sql, params = []) {

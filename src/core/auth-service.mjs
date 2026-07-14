@@ -343,18 +343,20 @@ export async function createPersistentSession(user, accessType, ttlMs) {
   return { id, expiresAt };
 }
 
-export async function getPersistentSession(id) {
+export async function getPersistentSession(id, { idleTimeoutMs = Number(process.env.SESSION_IDLE_TIMEOUT_MS || 30 * 60 * 1000) } = {}) {
   if (!id) return null;
   const session = await one(`SELECT s.id, s.username, s.access_type, s.credential_version AS session_credential_version,
-      s.created_at, s.expires_at, u.display_name, u.role, u.customer_id, u.status, u.identity_provider,
+      s.created_at, s.expires_at, s.last_seen_at, u.display_name, u.role, u.customer_id, u.status, u.identity_provider,
       c.credential_version, c.must_change_password
     FROM auth_sessions s
     JOIN users u ON u.username = s.username
     LEFT JOIN auth_credentials c ON c.username = s.username
     WHERE s.id = ? AND s.revoked_at IS NULL`, id);
   const currentCredentialVersion = Number(session?.credential_version || 1);
+  const idleExpired = Number.isFinite(idleTimeoutMs) && idleTimeoutMs > 0 &&
+    Date.parse(session?.last_seen_at || session?.created_at || 0) + idleTimeoutMs <= Date.now();
   const invalid = !session || session.status !== "active" || Date.parse(session.expires_at) <= Date.now() ||
-    Number(session.session_credential_version) !== currentCredentialVersion;
+    idleExpired || Number(session.session_credential_version) !== currentCredentialVersion;
   if (invalid) {
     if (session) await run("UPDATE auth_sessions SET revoked_at = COALESCE(revoked_at, ?) WHERE id = ?", nowIso(), id);
     return null;
