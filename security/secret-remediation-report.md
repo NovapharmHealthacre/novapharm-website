@@ -10,7 +10,7 @@ Last reviewed: 14 July 2026
 - one-time bootstrap input is accepted only as protected configuration and never returned;
 - unresolved Key Vault references fail closed instead of becoming predictable secret text;
 - application secrets are designed for Key Vault and GitHub Azure deployment uses OIDC, not a client secret;
-- current-tree scan passed for 281 repository files at the candidate state before this report update;
+- current-tree scan passed for 304 repository files at tested implementation commit `7d14d050eda5d5e8704e76ba1b9d398f2816ba22`;
 - no real secret value is present in `.env.example`.
 
 ## Not completed

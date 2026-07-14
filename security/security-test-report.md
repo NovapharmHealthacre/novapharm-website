@@ -23,9 +23,9 @@ Test date: 14 July 2026
 | Unresolved Key Vault references | Passed fail-closed test | secret-resolution test |
 | Backup and isolated restore | Passed for SQLite | backup-restore test |
 
-`npm run check` completed successfully on 14 July 2026: 33 public pages, six articles, 40 locked shells, 1,906 local links, 62 JavaScript/MJS/TypeScript syntax checks, nine stylesheets and 281 repository files in the current-tree scanner. The intentionally simulated Resend HTTP 503 is logged in the integration test and is expected evidence of the retry path.
+`npm run check` completed successfully on 14 July 2026: 33 public pages, six articles, 40 locked shells, 1,906 local links, 62 JavaScript/MJS/TypeScript syntax checks, nine stylesheets and 304 repository files in the final candidate current-tree scanner. The intentionally simulated Resend HTTP 503 is logged in the integration test and is expected evidence of the retry path.
 
-`npm audit --omit=dev --audit-level=high` was executed locally and returned exit code 1 because the sandbox could not resolve `registry.npmjs.org` (`ENOTFOUND`), so the local invocation produced no vulnerability result. GitHub Production readiness run 32 subsequently completed the locked install, this audit command and `npm run check` successfully.
+`npm audit --omit=dev --audit-level=high` was executed locally and returned exit code 1 because the sandbox could not resolve `registry.npmjs.org` (`ENOTFOUND`), so the local invocation produced no vulnerability result. GitHub Production readiness run 44 subsequently completed the locked install, reported zero vulnerabilities and passed `npm run check` at commit `7d14d050eda5d5e8704e76ba1b9d398f2816ba22`.
 
 ## Cloud tests still required
 
