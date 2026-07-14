@@ -11,7 +11,7 @@ Last reviewed: 14 July 2026
 - one-time bootstrap input is accepted only as protected configuration and never returned;
 - unresolved Key Vault references fail closed instead of becoming predictable secret text;
 - application secrets are designed for Key Vault and GitHub Azure deployment uses OIDC, not a client secret;
-- current-tree scan passed for 304 repository files at tested implementation commit `7d14d050eda5d5e8704e76ba1b9d398f2816ba22`;
+- current-tree scan passed for 318 repository files at tested candidate commit `53c90b137268c113502daed700386b1185d30fd7`;
 - no real secret value is present in `.env.example`.
 - the owner authorised the destructive history operation on 14 July 2026;
 - an encrypted, checksummed full mirror backup was created outside the repository and restored sufficiently to pass `git bundle verify`;
@@ -26,14 +26,14 @@ Last reviewed: 14 July 2026
 - rewritten `main` and PR 5 tip trees match the original tip trees exactly.
 - all six branch heads were atomically force-updated with lease protection;
 - remote branch SHAs match the verified rewritten reference map;
-- a fresh branch-only clone passes exact-value, `gitleaks` and `git fsck` checks across all active branch history;
+- a final fresh active-ref mirror checked 1,564 reachable objects and passes exact-value, `gitleaks` and `git fsck` checks across all active branch history;
 - GitHub secret scanning reports zero open alerts;
 - PR 5 remains open, draft and mergeable on the rewritten base and head.
 
 ## Not completed
 
-GitHub still advertises immutable historical pull-request refs for closed PRs 1 to 4. An all-advertised-ref mirror therefore still finds nine old blobs even though all active branch ancestry is clean. GitHub Support must purge the cached pull-request material before an all-ref exact scan can pass.
+GitHub still advertises immutable historical pull-request refs for closed PRs 1 to 4. The final all-advertised-ref mirror checked 1,648 reachable objects and still finds nine old objects even though all active branch ancestry is clean. GitHub Support must purge the cached pull-request material before an all-ref exact scan can pass.
 
-The final free-validation commit and CI run remain pending. GitHub pull-request refs and cached diffs cannot be force-pushed by a repository administrator, so Support removal is an external acceptance gate.
+The free-validation implementation is committed and pushed. Final CI and GitHub Support removal remain external acceptance gates. Pull-request refs and cached diffs cannot be force-pushed by a repository administrator.
 
 See `security/git-history-sanitisation.md`. Even a successful rewrite cannot delete downloaded, cached, forked or externally stored copies; credential retirement remains mandatory.

@@ -26,12 +26,12 @@ Assessment updated: 14 July 2026
 - Rewritten local `main`: `4ad7513eeda148f54d86403271b75c00e6da91e1`.
 - Rewritten local PR 5 head: `7fdceab4afe3e83e36bdfdb9817a19e2aaca6a40`.
 - All six branch heads were updated atomically on GitHub using explicit force-with-lease checks against the recorded pre-rewrite SHAs. No tag or unrelated ref was added, deleted or changed.
-- GitHub now reports remote `main` at `4ad7513eeda148f54d86403271b75c00e6da91e1` and PR 5 at `7fdceab4afe3e83e36bdfdb9817a19e2aaca6a40`; PR 5 remains open, draft and mergeable.
-- A fresh branch-only clone from GitHub passed the exact-value scan, `gitleaks` full-history scan and `git fsck --full` across all six active branches.
+- GitHub reports remote `main` at `4ad7513eeda148f54d86403271b75c00e6da91e1`; the rewritten PR 5 branch was advanced through the verified free-validation implementation without reintroducing the retired value. PR 5 remains open, draft and mergeable.
+- A final fresh active-ref mirror from GitHub checked 1,564 reachable objects across six branches and no tags: exact matches zero, Gitleaks findings zero and `git fsck --full` passed.
 - GitHub secret-scanning API reports zero open alerts. Dependabot alerts are disabled and CodeQL has no analysis, so those services provide no additional acceptance evidence.
-- A fresh all-advertised-ref mirror still finds the nine old blobs only through GitHub-managed historical `refs/pull/1` to `refs/pull/4`. Repository administrators cannot rewrite that namespace.
+- A final fresh all-advertised-ref mirror checked 1,648 reachable objects and still finds nine old objects only through GitHub-managed historical `refs/pull/1` to `refs/pull/4`. Repository administrators cannot rewrite that namespace.
 
-The protected exact-value and replacement files remain mode `0600` outside the repository only for post-push verification and will be deleted after the coordinated remote update. The retired value was not pasted into chat, a workflow input, command argument, shell history or this repository.
+The protected plaintext exact-value and replacement-input files were deleted after final remote verification. The encrypted pre-rewrite incident backup and its separately protected key remain under the restricted retention procedure. The retired value was not pasted into chat, a workflow input, command argument, shell history or this repository.
 
 ## Verified scope
 
@@ -47,7 +47,7 @@ Because an ancestor of `main` is affected, an ordinary deletion commit cannot re
 
 Do not declare remote history clean until all are true:
 
-1. Commit and push the free-validation implementation from the clean rewritten PR 5 branch, then rerun every workflow against that final head.
+1. Require the final PR 5 workflows to pass against the latest pushed head.
 2. Ask GitHub Support to purge inaccessible pull-request cached views and dereference the sensitive objects associated with the historical pull-request refs.
 3. Repeat the all-advertised-ref exact scan after GitHub confirms the purge and require zero matches.
 4. Require all prior local clones and deployment caches to be discarded and recreated from the rewritten remote.
