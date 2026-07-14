@@ -12,6 +12,7 @@ import {
 } from "../src/seo/authority-config.mjs";
 
 const root = resolve(process.cwd());
+const EDITORIAL_TEAM_ID = `${SITE_URL}/#editorial-team`;
 let failures = 0;
 const fail = (message) => { failures += 1; console.error(`SEO authority validation failed: ${message}`); };
 const source = (path) => readFileSync(join(root, path), "utf8");
@@ -110,16 +111,20 @@ for (const article of articles) {
   const file = `news-insights/${article.slug}/index.html`;
   const html = source(file);
   const schemas = parseSchemas(html, file);
-  const articleSchema = schemas.find((schema) => {
+  const articleSchemas = schemas.filter((schema) => {
     const types = Array.isArray(schema["@type"]) ? schema["@type"] : [schema["@type"]];
     return types.includes("Article") || types.includes("BlogPosting");
   });
-  if (!articleSchema) { fail(`${file} lacks Article structured data`); continue; }
+  if (articleSchemas.length !== 1) { fail(`${file} must contain one authoritative Article entity`); continue; }
+  const articleSchema = articleSchemas[0];
   if (articleSchema.publisher?.["@id"] !== ORGANIZATION_ID) fail(`${file} article publisher is not NovaPharm`);
-  if (!articleSchema.author?.["@id"]?.includes("/leadership/")) fail(`${file} article author is not a canonical leadership entity`);
+  const leader = leadership.find((person) => person.displayName === article.author || person.name === article.author);
+  const expectedAuthorId = leader ? `${SITE_URL}/leadership/${leader.slug}/#person` : EDITORIAL_TEAM_ID;
+  if (articleSchema.author?.["@id"] !== expectedAuthorId) fail(`${file} structured author does not match the visible byline`);
   if (!articleSchema.datePublished || !articleSchema.dateModified) fail(`${file} lacks accurate publication dates`);
   if (!articleSchema.wordCount || !articleSchema.timeRequired) fail(`${file} lacks article depth metadata`);
   if (!html.includes("data-editorial-trust")) fail(`${file} lacks the visible editorial trust statement`);
+  if (!html.includes(article.author || "NovaPharm Healthcare Editorial Team")) fail(`${file} does not display its declared author`);
 }
 
 const robots = source("robots.txt");
