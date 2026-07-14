@@ -36,7 +36,22 @@ jobs:
       - name: Build linked authority system
         run: npm run build
       - name: Validate SEO, GEO, entities and discovery
-        run: npm run seo:validate
+        id: seo_validation
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          npm run seo:validate 2>&1 | tee /tmp/seo-authority-validation.log
+      - name: Upload SEO validation diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-authority-validation
+          path: /tmp/seo-authority-validation.log
+          if-no-files-found: error
+          retention-days: 7
+      - name: Enforce SEO validation result
+        if: steps.seo_validation.outcome != 'success'
+        run: exit 1
       - name: Validate IndexNow without network submission
         run: npm run seo:indexnow:dry-run -- https://novapharmhealthcare.com/
       - name: Run existing public claims and security validation
