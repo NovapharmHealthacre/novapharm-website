@@ -233,13 +233,13 @@ resource privateEndpointSubnet 'Microsoft.Network/virtualNetworks/subnets@2024-0
 }
 
 resource blobPrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
-  name: 'privatelink.blob.core.windows.net'
+  name: 'privatelink.blob.${environment().suffixes.storage}'
   location: 'global'
   tags: tags
 }
 
 resource sqlPrivateDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' = {
-  name: 'privatelink.database.windows.net'
+  name: 'privatelink${environment().suffixes.sqlServerHostname}'
   location: 'global'
   tags: tags
 }
