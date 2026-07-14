@@ -12,62 +12,62 @@
   {
     "route": "/about/",
     "page": "https://novapharmhealthcare.com/about/",
-    "url": "/assets/media/editorial/partnership-pathway.svg",
-    "type": "image/svg+xml",
-    "width": 1200,
-    "height": 675,
-    "alt": "NovaPharm Healthcare corporate partnership and operating pathway",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/editorial/partnership-pathway.svg"
+    "url": "/assets/media/home/supply-network-hero.jpg",
+    "type": "image/jpeg",
+    "width": 1672,
+    "height": 941,
+    "alt": "Governed pharmaceutical supply network visual for NovaPharm Healthcare",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/home/supply-network-hero.jpg"
   },
   {
     "route": "/about/company/",
     "page": "https://novapharmhealthcare.com/about/company/",
-    "url": "/assets/media/editorial/partnership-pathway.svg",
-    "type": "image/svg+xml",
-    "width": 1200,
-    "height": 675,
-    "alt": "NovaPharm Healthcare company and operating pathway",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/editorial/partnership-pathway.svg"
+    "url": "/assets/media/home/supply-network-hero.jpg",
+    "type": "image/jpeg",
+    "width": 1672,
+    "height": 941,
+    "alt": "Governed pharmaceutical supply network visual for NovaPharm Healthcare",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/home/supply-network-hero.jpg"
   },
   {
     "route": "/about/governance/",
     "page": "https://novapharmhealthcare.com/about/governance/",
-    "url": "/assets/media/editorial/quality-batch-integrity.svg",
-    "type": "image/svg+xml",
-    "width": 1200,
-    "height": 675,
-    "alt": "NovaPharm Healthcare quality and governance framework",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/editorial/quality-batch-integrity.svg"
+    "url": "/assets/media/home/supply-network-hero.jpg",
+    "type": "image/jpeg",
+    "width": 1672,
+    "height": 941,
+    "alt": "Governed pharmaceutical supply network visual for NovaPharm Healthcare",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/home/supply-network-hero.jpg"
   },
   {
     "route": "/leadership/",
     "page": "https://novapharmhealthcare.com/leadership/",
-    "url": "/assets/media/editorial/partnership-pathway.svg",
-    "type": "image/svg+xml",
-    "width": 1200,
-    "height": 675,
-    "alt": "NovaPharm Healthcare leadership and governance",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/editorial/partnership-pathway.svg"
+    "url": "/assets/media/home/supply-network-hero.jpg",
+    "type": "image/jpeg",
+    "width": 1672,
+    "height": 941,
+    "alt": "Governed pharmaceutical supply network visual for NovaPharm Healthcare",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/home/supply-network-hero.jpg"
   },
   {
     "route": "/services/",
     "page": "https://novapharmhealthcare.com/services/",
-    "url": "/assets/media/editorial/partnership-pathway.svg",
-    "type": "image/svg+xml",
-    "width": 1200,
-    "height": 675,
-    "alt": "NovaPharm Healthcare pharmaceutical market-entry and partnership services",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/editorial/partnership-pathway.svg"
+    "url": "/assets/media/products/hospital-supply-logistics.jpg",
+    "type": "image/jpeg",
+    "width": 1600,
+    "height": 900,
+    "alt": "Controlled pharmaceutical logistics and supply-chain environment",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/hospital-supply-logistics.jpg"
   },
   {
     "route": "/regulatory-services/",
     "page": "https://novapharmhealthcare.com/regulatory-services/",
-    "url": "/assets/media/editorial/quality-batch-integrity.svg",
-    "type": "image/svg+xml",
-    "width": 1200,
-    "height": 675,
-    "alt": "NovaPharm Healthcare regulatory, quality and batch-integrity framework",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/editorial/quality-batch-integrity.svg"
+    "url": "/assets/media/products/cardiovascular-quality-control.jpg",
+    "type": "image/jpeg",
+    "width": 1600,
+    "height": 900,
+    "alt": "Pharmaceutical quality-control assessment in a laboratory setting",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/cardiovascular-quality-control.jpg"
   },
   {
     "route": "/product-portfolio/",
@@ -82,32 +82,32 @@
   {
     "route": "/partner-with-us/",
     "page": "https://novapharmhealthcare.com/partner-with-us/",
-    "url": "/assets/media/editorial/partnership-pathway.svg",
-    "type": "image/svg+xml",
-    "width": 1200,
-    "height": 675,
-    "alt": "Qualified pharmaceutical partnership pathway",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/editorial/partnership-pathway.svg"
+    "url": "/assets/media/products/hospital-supply-logistics.jpg",
+    "type": "image/jpeg",
+    "width": 1600,
+    "height": 900,
+    "alt": "Controlled pharmaceutical logistics and supply-chain environment",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/hospital-supply-logistics.jpg"
   },
   {
     "route": "/technology/",
     "page": "https://novapharmhealthcare.com/technology/",
-    "url": "/assets/media/editorial/digital-traceability.svg",
-    "type": "image/svg+xml",
-    "width": 1200,
-    "height": 675,
-    "alt": "Governed pharmaceutical data and traceability architecture",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/editorial/digital-traceability.svg"
+    "url": "/assets/media/products/specialty-pharmacy-handling.jpg",
+    "type": "image/jpeg",
+    "width": 1600,
+    "height": 900,
+    "alt": "Controlled sample handling supporting pharmaceutical traceability",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/specialty-pharmacy-handling.jpg"
   },
   {
     "route": "/news-insights/",
     "page": "https://novapharmhealthcare.com/news-insights/",
-    "url": "/assets/media/insights/three-pillar-sourcing.svg",
-    "type": "image/svg+xml",
-    "width": 1200,
-    "height": 675,
-    "alt": "NovaPharm Healthcare pharmaceutical sourcing and market-access insights",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/insights/three-pillar-sourcing.svg"
+    "url": "/assets/media/products/oncology-vial-handling.jpg",
+    "type": "image/jpeg",
+    "width": 1600,
+    "height": 900,
+    "alt": "Controlled laboratory handling supporting pharmaceutical assessment",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/oncology-vial-handling.jpg"
   },
   {
     "route": "/contact/",
@@ -122,12 +122,12 @@
   {
     "route": "/investor-information/",
     "page": "https://novapharmhealthcare.com/investor-information/",
-    "url": "/assets/media/editorial/partnership-pathway.svg",
-    "type": "image/svg+xml",
-    "width": 1200,
-    "height": 675,
-    "alt": "NovaPharm Healthcare governance and staged execution",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/editorial/partnership-pathway.svg"
+    "url": "/assets/media/home/supply-network-hero.jpg",
+    "type": "image/jpeg",
+    "width": 1672,
+    "height": 941,
+    "alt": "Governed pharmaceutical supply network visual for NovaPharm Healthcare",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/home/supply-network-hero.jpg"
   },
   {
     "route": "/careers/",
@@ -262,62 +262,62 @@
   {
     "route": "/news-insights/batch-to-buyer-pharmaceutical-traceability/",
     "page": "https://novapharmhealthcare.com/news-insights/batch-to-buyer-pharmaceutical-traceability/",
-    "url": "/assets/media/insights/batch-to-buyer-traceability.svg",
-    "type": "image/svg+xml",
-    "width": 1200,
-    "height": 675,
-    "alt": "From Batch to Buyer: Designing More Traceable Pharmaceutical Supply Chains",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/insights/batch-to-buyer-traceability.svg"
+    "url": "/assets/media/products/specialty-pharmacy-handling.jpg",
+    "type": "image/jpeg",
+    "width": 1600,
+    "height": 900,
+    "alt": "Controlled sample handling supporting pharmaceutical traceability",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/specialty-pharmacy-handling.jpg"
   },
   {
     "route": "/news-insights/compliance-first-pharmaceutical-distribution-uk/",
     "page": "https://novapharmhealthcare.com/news-insights/compliance-first-pharmaceutical-distribution-uk/",
-    "url": "/assets/media/insights/compliance-first-distribution.svg",
-    "type": "image/svg+xml",
-    "width": 1200,
-    "height": 675,
-    "alt": "Building a Compliance-First Pharmaceutical Distribution Model in the UK",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/insights/compliance-first-distribution.svg"
+    "url": "/assets/media/products/cardiovascular-quality-control.jpg",
+    "type": "image/jpeg",
+    "width": 1600,
+    "height": 900,
+    "alt": "Pharmaceutical quality-control assessment in a laboratory setting",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/cardiovascular-quality-control.jpg"
   },
   {
     "route": "/news-insights/gdp-qms-pharmaceutical-distribution-foundations/",
     "page": "https://novapharmhealthcare.com/news-insights/gdp-qms-pharmaceutical-distribution-foundations/",
-    "url": "/assets/media/insights/gdp-qms-foundations.svg",
-    "type": "image/svg+xml",
-    "width": 1200,
-    "height": 675,
-    "alt": "GDP, QMS and the Practical Foundations of Reliable Pharmaceutical Distribution",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/insights/gdp-qms-foundations.svg"
+    "url": "/assets/media/products/cardiovascular-quality-control.jpg",
+    "type": "image/jpeg",
+    "width": 1600,
+    "height": 900,
+    "alt": "Pharmaceutical quality-control assessment in a laboratory setting",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/cardiovascular-quality-control.jpg"
   },
   {
     "route": "/news-insights/oncology-supply-chain-demand-forecasting/",
     "page": "https://novapharmhealthcare.com/news-insights/oncology-supply-chain-demand-forecasting/",
-    "url": "/assets/media/insights/oncology-demand-forecasting.svg",
-    "type": "image/svg+xml",
-    "width": 1200,
-    "height": 675,
-    "alt": "Why Oncology Supply Chains Require Specialised Demand Forecasting",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/insights/oncology-demand-forecasting.svg"
+    "url": "/assets/media/products/oncology-vial-handling.jpg",
+    "type": "image/jpeg",
+    "width": 1600,
+    "height": 900,
+    "alt": "Controlled laboratory handling supporting pharmaceutical assessment",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/oncology-vial-handling.jpg"
   },
   {
     "route": "/news-insights/plpi-pharmaceutical-supply-resilience/",
     "page": "https://novapharmhealthcare.com/news-insights/plpi-pharmaceutical-supply-resilience/",
-    "url": "/assets/media/insights/plpi-supply-resilience.svg",
-    "type": "image/svg+xml",
-    "width": 1200,
-    "height": 675,
-    "alt": "What PLPI Means for Pharmaceutical Supply Resilience and Cost-Optimised Access",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/insights/plpi-supply-resilience.svg"
+    "url": "/assets/media/products/licensed-generics-packaging.jpg",
+    "type": "image/jpeg",
+    "width": 1600,
+    "height": 900,
+    "alt": "Unbranded pharmaceutical packaging used as representative market-access context",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/licensed-generics-packaging.jpg"
   },
   {
     "route": "/news-insights/three-pillar-pharmaceutical-sourcing-model/",
     "page": "https://novapharmhealthcare.com/news-insights/three-pillar-pharmaceutical-sourcing-model/",
-    "url": "/assets/media/insights/three-pillar-sourcing.svg",
-    "type": "image/svg+xml",
-    "width": 1200,
-    "height": 675,
-    "alt": "Three-Pillar Sourcing: Direct GMP Partnerships, PLPI and European Buying Networks",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/insights/three-pillar-sourcing.svg"
+    "url": "/assets/media/products/hospital-supply-logistics.jpg",
+    "type": "image/jpeg",
+    "width": 1600,
+    "height": 900,
+    "alt": "Controlled pharmaceutical logistics and supply-chain environment",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/hospital-supply-logistics.jpg"
   },
   {
     "route": "/account-application/",
