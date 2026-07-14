@@ -33,7 +33,7 @@ jobs:
       NOVAPHARM_DEV_ORIGIN: https://dev.example.invalid
       NOVAPHARM_STAGING_ORIGIN: https://staging.example.invalid
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Report Bicep version
         run: az bicep version
       - name: Lint Bicep modules

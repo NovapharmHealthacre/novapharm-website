@@ -64,8 +64,8 @@ jobs:
       PARAMETER_FILE: ${{ inputs.target == 'staging' && 'infra/environments/staging.bicepparam' || 'infra/environments/production.bicepparam' }}
       ENVIRONMENT_CODE: ${{ inputs.target == 'staging' && 'stg' || 'prod' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
