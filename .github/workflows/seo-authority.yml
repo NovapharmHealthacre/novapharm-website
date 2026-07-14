@@ -1,0 +1,68 @@
+name: SEO and digital authority validation
+
+on:
+  pull_request:
+    paths:
+      - "src/content/**"
+      - "src/seo/**"
+      - "scripts/build-site.mjs"
+      - "scripts/enhance-seo-authority.mjs"
+      - "scripts/reconcile-leadership-authority.mjs"
+      - "scripts/reconcile-article-authority.mjs"
+      - "scripts/reconcile-social-authority.mjs"
+      - "scripts/finalise-social-cards.mjs"
+      - "scripts/generate-structured-data-register.mjs"
+      - "scripts/validate-seo-authority.mjs"
+      - "scripts/validate-social-authority.mjs"
+      - "scripts/indexnow.mjs"
+      - "assets/js/marketing-attribution.js"
+      - "seo/**"
+      - "robots.txt"
+      - "sitemap*.xml"
+      - "*.txt"
+      - "package.json"
+      - ".github/workflows/seo-authority.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install exact dependencies
+        run: npm ci --ignore-scripts
+      - name: Build linked authority system
+        run: npm run build
+      - name: Validate SEO, GEO, entities and discovery
+        id: seo_validation
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          npm run seo:validate 2>&1 | tee /tmp/seo-authority-validation.log
+      - name: Upload SEO validation diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-authority-validation
+          path: /tmp/seo-authority-validation.log
+          if-no-files-found: error
+          retention-days: 7
+      - name: Enforce SEO validation result
+        if: steps.seo_validation.outcome != 'success'
+        run: exit 1
+      - name: Validate IndexNow without network submission
+        run: npm run seo:indexnow:dry-run -- https://novapharmhealthcare.com/
+      - name: Run existing public claims and security validation
+        run: |
+          npm run audit:claims
+          npm run security:scan
+      - name: Verify generated files are reproducible
+        run: git diff --exit-code

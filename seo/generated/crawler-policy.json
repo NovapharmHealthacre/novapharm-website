@@ -1,0 +1,32 @@
+[
+  {
+    "crawler": "Googlebot",
+    "purpose": "Google Search and Google AI features",
+    "publicAccess": true,
+    "trainingAccess": null
+  },
+  {
+    "crawler": "Bingbot",
+    "purpose": "Bing Search and Microsoft search experiences",
+    "publicAccess": true,
+    "trainingAccess": null
+  },
+  {
+    "crawler": "OAI-SearchBot",
+    "purpose": "ChatGPT Search discovery and citation",
+    "publicAccess": true,
+    "trainingAccess": false
+  },
+  {
+    "crawler": "GPTBot",
+    "purpose": "Potential OpenAI model improvement",
+    "publicAccess": false,
+    "trainingAccess": false
+  },
+  {
+    "crawler": "Google-Extended",
+    "purpose": "Google model training and grounding outside normal Search crawling",
+    "publicAccess": false,
+    "trainingAccess": false
+  }
+]

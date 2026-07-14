@@ -1,0 +1,74 @@
+[
+  {
+    "topic": "Google AI features and generative-search eligibility",
+    "url": "https://developers.google.com/search/docs/appearance/ai-features",
+    "reviewed": "2026-07-14",
+    "decision": "Use normal people-first SEO, indexable HTML, internal linking, matching structured data and high-quality media; no AI-only duplicate pages or special AI schema."
+  },
+  {
+    "topic": "Google Organization structured data",
+    "url": "https://developers.google.com/search/docs/appearance/structured-data/organization",
+    "reviewed": "2026-07-14",
+    "decision": "Publish one consistent Organization entity with a persistent @id, verified legal identity, official logo, founder relationship and conservative business description."
+  },
+  {
+    "topic": "Google ProfilePage structured data",
+    "url": "https://developers.google.com/search/docs/appearance/structured-data/profile-page",
+    "reviewed": "2026-07-14",
+    "decision": "Use ProfilePage only on visible canonical leadership biographies and connect mainEntity to the same Person @id used site-wide."
+  },
+  {
+    "topic": "Google Article structured data",
+    "url": "https://developers.google.com/search/docs/appearance/structured-data/article",
+    "reviewed": "2026-07-14",
+    "decision": "Connect each visible article to its canonical author and publisher, accurate dates, representative image and visible headline."
+  },
+  {
+    "topic": "Google sitemaps",
+    "url": "https://developers.google.com/search/docs/crawling-indexing/sitemaps/overview",
+    "reviewed": "2026-07-14",
+    "decision": "Generate canonical page, insight and image sitemaps from the repository source of truth; exclude redirects, noindex and protected routes."
+  },
+  {
+    "topic": "Google robots.txt",
+    "url": "https://developers.google.com/search/docs/crawling-indexing/robots/intro",
+    "reviewed": "2026-07-14",
+    "decision": "Allow public corporate content while keeping portals, private documents and validation environments outside discovery; never treat robots.txt as an access-control mechanism."
+  },
+  {
+    "topic": "Google site names",
+    "url": "https://developers.google.com/search/docs/appearance/site-names",
+    "reviewed": "2026-07-14",
+    "decision": "Use NovaPharm Healthcare consistently in visible branding, WebSite structured data and social metadata."
+  },
+  {
+    "topic": "Google Knowledge Panels",
+    "url": "https://support.google.com/knowledgepanel/answer/9163198",
+    "reviewed": "2026-07-14",
+    "decision": "Build verifiable entity consistency; never claim that schema or repository work guarantees a panel. Claim or suggest changes only through an owner-controlled Google flow if a panel exists."
+  },
+  {
+    "topic": "IndexNow protocol",
+    "url": "https://www.indexnow.org/documentation",
+    "reviewed": "2026-07-14",
+    "decision": "Host a root verification key and submit only canonical URLs that were created, materially updated, redirected or removed; support dry-run and explicit response handling."
+  },
+  {
+    "topic": "OpenAI search crawling",
+    "url": "https://help.openai.com/en/articles/12627856-publishers-and-developers-faq",
+    "reviewed": "2026-07-14",
+    "decision": "Allow OAI-SearchBot on public content, retain noindex and authentication on private areas, and recognise utm_source=chatgpt.com for attribution. GPTBot is governed separately."
+  },
+  {
+    "topic": "Core Web Vitals",
+    "url": "https://web.dev/articles/vitals",
+    "reviewed": "2026-07-14",
+    "decision": "Maintain LCP <= 2.5s, INP <= 200ms and CLS <= 0.1 at the 75th percentile where field data exists."
+  },
+  {
+    "topic": "WAI-ARIA authoring practices",
+    "url": "https://www.w3.org/WAI/ARIA/apg/",
+    "reviewed": "2026-07-14",
+    "decision": "Use semantic HTML first and accurate names, roles, states and keyboard behaviour for interactive controls and agent accessibility."
+  }
+]

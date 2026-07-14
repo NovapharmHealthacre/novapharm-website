@@ -1,0 +1,857 @@
+[
+  {
+    "route": "/",
+    "canonical": "https://novapharmhealthcare.com/",
+    "file": "index.html",
+    "title": "NovaPharm Healthcare | UK Pharmaceutical Distribution Strategy",
+    "description": "NovaPharm Healthcare is a UK-based, compliance-first B2B pharmaceutical company preparing oncology, specialty, PLPI sourcing and quality-led distribution capabilities.",
+    "h1": "Building a more resilient pharmaceutical supply network.",
+    "indexable": true,
+    "schemaTypes": [
+      "ImageObject",
+      "PropertyValue",
+      "Country",
+      "Country",
+      "AdministrativeArea",
+      "WebSite",
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "partner-with-us",
+      "explore-partnerships",
+      "submit-an-opportunity",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/about/",
+    "canonical": "https://novapharmhealthcare.com/about/",
+    "file": "about/index.html",
+    "title": "About NovaPharm Healthcare | Compliance-First UK Pharmaceutical Company",
+    "description": "Why NovaPharm exists, the UK pharmaceutical supply problem it is preparing to address, its mission, operating principles and international outlook.",
+    "h1": "A pharmaceutical company designed around evidence, optionality and accountable growth.",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/about/company/",
+    "canonical": "https://novapharmhealthcare.com/about/company/",
+    "file": "about/company/index.html",
+    "title": "Company | NovaPharm Healthcare Ltd",
+    "description": "NovaPharm Healthcare Ltd company facts, B2B pharmaceutical business model, three-pillar sourcing strategy and pre-operational regulatory status.",
+    "h1": "A UK B2B pharmaceutical business in regulated preparation.",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/about/governance/",
+    "canonical": "https://novapharmhealthcare.com/about/governance/",
+    "file": "about/governance/index.html",
+    "title": "Governance | NovaPharm Healthcare",
+    "description": "NovaPharm Healthcare governance, statutory directors, quality accountability and evidence-led approach to pharmaceutical claims and decisions.",
+    "h1": "Accountability for a company preparing to operate in a regulated market.",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/leadership/",
+    "canonical": "https://novapharmhealthcare.com/leadership/",
+    "file": "leadership/index.html",
+    "title": "Leadership | NovaPharm Healthcare",
+    "description": "Meet NovaPharm Healthcare&#39;s directors and specialist quality and regulatory adviser, with verified governance status and conservative professional profiles.",
+    "h1": "Leadership for scientific, regulatory and operational scrutiny.",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/services/",
+    "canonical": "https://novapharmhealthcare.com/services/",
+    "file": "services/index.html",
+    "title": "Pharmaceutical Services UK | Distribution, PLPI, Quality and Sourcing",
+    "description": "NovaPharm&#39;s planned pharmaceutical trading, PLPI strategy, European sourcing, GMP partnerships, QMS, GDP logistics and digital B2B services.",
+    "h1": "Substantive capabilities for regulated pharmaceutical growth.",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem",
+      "Service",
+      "Audience",
+      "Service",
+      "Audience",
+      "Service",
+      "Audience",
+      "Service",
+      "Audience",
+      "Service",
+      "Audience",
+      "Service",
+      "Audience",
+      "Service",
+      "Audience",
+      "Service",
+      "Audience"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/regulatory-services/",
+    "canonical": "https://novapharmhealthcare.com/regulatory-services/",
+    "file": "regulatory-services/index.html",
+    "title": "MHRA, WDA(H), PLPI and GDP Regulatory Strategy | NovaPharm",
+    "description": "NovaPharm&#39;s compliance-first regulatory roadmap covering WDA(H), product-specific PLPI pathways, QMS, GDP, pharmacovigilance and vendor qualification.",
+    "h1": "Regulatory readiness before regulated activity.",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem",
+      "FAQPage",
+      "Question",
+      "Answer",
+      "Question",
+      "Answer",
+      "Question",
+      "Answer"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/product-portfolio/",
+    "canonical": "https://novapharmhealthcare.com/product-portfolio/",
+    "file": "product-portfolio/index.html",
+    "title": "Strategic Pharmaceutical Portfolio | Oncology and Specialty Medicines",
+    "description": "NovaPharm&#39;s planned B2B portfolio focus across oncology, specialty, oral liquid and selected licensed medicines, subject to authorisation and availability.",
+    "h1": "A strategic B2B portfolio, not a public pharmacy catalogue.",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/partner-with-us/",
+    "canonical": "https://novapharmhealthcare.com/partner-with-us/",
+    "file": "partner-with-us/index.html",
+    "title": "Pharmaceutical Partnerships UK | Manufacturers, Dossier Owners and Buyers",
+    "description": "Partner with NovaPharm across GMP manufacturing, CMO/CDMO, product dossiers, European sourcing, UK distribution, logistics and technology.",
+    "h1": "Partnerships built through qualification, not logo walls.",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "customers-open-a-business-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/technology/",
+    "canonical": "https://novapharmhealthcare.com/technology/",
+    "file": "technology/index.html",
+    "title": "Pharmaceutical Technology Platform | NovaPharm Healthcare",
+    "description": "NovaPharm&#39;s API-first platform, portal, SharePoint, audit and integration architecture with clearly labelled live, in-development and planned capabilities.",
+    "h1": "Useful infrastructure, with maturity stated plainly.",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/news-insights/",
+    "canonical": "https://novapharmhealthcare.com/news-insights/",
+    "file": "news-insights/index.html",
+    "title": "Pharmaceutical Insights | Regulatory, Oncology, Quality and Supply Chain",
+    "description": "Original NovaPharm analysis on UK pharmaceutical regulation, PLPI, oncology supply, GDP, sourcing and traceability.",
+    "h1": "Evidence-led perspectives for regulated pharmaceutical work.",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/contact/",
+    "canonical": "https://novapharmhealthcare.com/contact/",
+    "file": "contact/index.html",
+    "title": "Contact NovaPharm Healthcare | B2B Pharmaceutical Enquiries",
+    "description": "Contact NovaPharm about product opportunities, distribution, pharmacy accounts, CMO/CDMO partnerships, regulatory services, suppliers, media or careers.",
+    "h1": "Start a qualified business conversation.",
+    "indexable": true,
+    "schemaTypes": [
+      "ContactPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/investor-information/",
+    "canonical": "https://novapharmhealthcare.com/investor-information/",
+    "file": "investor-information/index.html",
+    "title": "Investor Information | NovaPharm Healthcare Ltd",
+    "description": "Investor information on NovaPharm Healthcare&#39;s planned compliance-first pharmaceutical model, governance, capital-efficient logistics and technology roadmap.",
+    "h1": "An investable thesis governed as a development plan.",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/careers/",
+    "canonical": "https://novapharmhealthcare.com/careers/",
+    "file": "careers/index.html",
+    "title": "Careers | NovaPharm Healthcare",
+    "description": "Future opportunities at NovaPharm across pharmaceutical operations, quality, regulatory affairs, sourcing, partnerships, data and technology.",
+    "h1": "Build the operating discipline behind a new pharmaceutical company.",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/legal/",
+    "canonical": "https://novapharmhealthcare.com/legal/",
+    "file": "legal/index.html",
+    "title": "Legal and Corporate Responsibility | NovaPharm Healthcare",
+    "description": "NovaPharm Healthcare legal notices, privacy and cookie information, accessibility commitment, ethical sourcing and environmental responsibility statements.",
+    "h1": "Legal information, accountability and responsible business.",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "corporate-contact-route",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/legal/privacy/",
+    "canonical": "https://novapharmhealthcare.com/legal/privacy/",
+    "file": "legal/privacy/index.html",
+    "title": "Privacy Notice | NovaPharm Healthcare",
+    "description": "How NovaPharm Healthcare Ltd collects, uses, shares, protects and retains personal data under UK data-protection law, with rights and contact routes.",
+    "h1": "Privacy notice",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/legal/cookies/",
+    "canonical": "https://novapharmhealthcare.com/legal/cookies/",
+    "file": "legal/cookies/index.html",
+    "title": "Cookie and Storage Notice | NovaPharm Healthcare",
+    "description": "The cookies and browser storage used by NovaPharm Healthcare, their purposes and durations, and how to accept, reject or change non-essential preferences.",
+    "h1": "Cookie and storage notice",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/legal/terms/",
+    "canonical": "https://novapharmhealthcare.com/legal/terms/",
+    "file": "legal/terms/index.html",
+    "title": "Website Terms of Use | NovaPharm Healthcare",
+    "description": "Terms governing use of the NovaPharm Healthcare corporate website and secure portal, including B2B, regulatory, confidentiality and acceptable-use boundaries.",
+    "h1": "Website terms of use",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/legal/accessibility/",
+    "canonical": "https://novapharmhealthcare.com/legal/accessibility/",
+    "file": "legal/accessibility/index.html",
+    "title": "Accessibility Statement | NovaPharm Healthcare",
+    "description": "NovaPharm Healthcare&#39;s WCAG 2.2 AA accessibility target, current testing approach, known limitations and routes for requesting accessible information.",
+    "h1": "Accessibility statement",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/legal/modern-slavery/",
+    "canonical": "https://novapharmhealthcare.com/legal/modern-slavery/",
+    "file": "legal/modern-slavery/index.html",
+    "title": "Modern Slavery and Human Rights Policy | NovaPharm Healthcare",
+    "description": "NovaPharm Healthcare&#39;s voluntary ethical-sourcing and human-rights policy for pharmaceutical manufacturing, logistics, facilities and overseas supply chains.",
+    "h1": "Modern Slavery and Human Rights Policy",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/legal/environment-carbon/",
+    "canonical": "https://novapharmhealthcare.com/legal/environment-carbon/",
+    "file": "legal/environment-carbon/index.html",
+    "title": "Environmental and Carbon Responsibility | NovaPharm Healthcare",
+    "description": "NovaPharm Healthcare&#39;s voluntary environmental responsibility statement and developing approach to operational, logistics, packaging and supply-chain emissions.",
+    "h1": "Environmental and Carbon Responsibility Statement",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/leadership/vishal-chakravarty/",
+    "canonical": "https://novapharmhealthcare.com/leadership/vishal-chakravarty/",
+    "file": "leadership/vishal-chakravarty/index.html",
+    "title": "Vishal Chakravarty | Chief Executive Officer | NovaPharm Healthcare",
+    "description": "Vishal Chakravarty is Chief Executive Officer at NovaPharm Healthcare. Vishal leads NovaPharm&#39;s strategic direction, UK market entry, supplier relationships, pharmaceutical sourcing, regulatory pathway coordination, PLPI strategy, partnerships and board governance.",
+    "h1": "Vishal Chakravarty",
+    "indexable": true,
+    "schemaTypes": [
+      "ProfilePage",
+      "ImageObject",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem",
+      "ListItem",
+      "Person",
+      "ImageObject"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/leadership/prabhakar-lahare/",
+    "canonical": "https://novapharmhealthcare.com/leadership/prabhakar-lahare/",
+    "file": "leadership/prabhakar-lahare/index.html",
+    "title": "Prabhakar Vitthal Lahare | Managing Director & Chief Operating Officer | NovaPharm Healthcare",
+    "description": "Prabhakar Vitthal Lahare is Managing Director &amp; Chief Operating Officer at NovaPharm Healthcare. Prabhakar supports operating strategy, manufacturing partnerships, quality governance, supply continuity and scalable execution.",
+    "h1": "Prabhakar Vitthal Lahare",
+    "indexable": true,
+    "schemaTypes": [
+      "ProfilePage",
+      "ImageObject",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem",
+      "ListItem",
+      "Person",
+      "ImageObject"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/leadership/girish-achliya/",
+    "canonical": "https://novapharmhealthcare.com/leadership/girish-achliya/",
+    "file": "leadership/girish-achliya/index.html",
+    "title": "Dr Girish Shantilal Achliya | Director & Chief Scientific Officer | NovaPharm Healthcare",
+    "description": "Dr Girish Shantilal Achliya is Director &amp; Chief Scientific Officer at NovaPharm Healthcare. Dr Girish supports scientific strategy, product development, technical due diligence and the development of a differentiated oncology and specialty portfolio.",
+    "h1": "Dr Girish Shantilal Achliya",
+    "indexable": true,
+    "schemaTypes": [
+      "ProfilePage",
+      "ImageObject",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem",
+      "ListItem",
+      "Person",
+      "ImageObject"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/leadership/helly-panchal/",
+    "canonical": "https://novapharmhealthcare.com/leadership/helly-panchal/",
+    "file": "leadership/helly-panchal/index.html",
+    "title": "Dr Helly Panchal | Director, Technical & Formulation | NovaPharm Healthcare",
+    "description": "Dr Helly Panchal is Director, Technical &amp; Formulation at NovaPharm Healthcare. Dr Helly supports NovaPharm&#39;s technical and formulation strategy, with a focus on product assessment, scientific review and supply-chain innovation.",
+    "h1": "Dr Helly Panchal",
+    "indexable": true,
+    "schemaTypes": [
+      "ProfilePage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem",
+      "ListItem",
+      "Person"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/leadership/nishita-trivedi/",
+    "canonical": "https://novapharmhealthcare.com/leadership/nishita-trivedi/",
+    "file": "leadership/nishita-trivedi/index.html",
+    "title": "Dr Nishita Trivedi | Quality & Regulatory Adviser | NovaPharm Healthcare",
+    "description": "Dr Nishita Trivedi is Quality &amp; Regulatory Adviser at NovaPharm Healthcare. Dr Nishita supports the planned quality and regulatory framework, including QMS, GDP, PLPI activities, vendor oversight and MHRA liaison.",
+    "h1": "Dr Nishita Trivedi",
+    "indexable": true,
+    "schemaTypes": [
+      "ProfilePage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem",
+      "ListItem",
+      "Person"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/news-insights/batch-to-buyer-pharmaceutical-traceability/",
+    "canonical": "https://novapharmhealthcare.com/news-insights/batch-to-buyer-pharmaceutical-traceability/",
+    "file": "news-insights/batch-to-buyer-pharmaceutical-traceability/index.html",
+    "title": "Batch-to-Buyer Pharmaceutical Traceability | NovaPharm",
+    "description": "How to design pharmaceutical traceability across product, batch, temperature, custody, order, customer and quality records with governed data and audit trails.",
+    "h1": "From Batch to Buyer: Designing More Traceable Pharmaceutical Supply Chains",
+    "indexable": true,
+    "schemaTypes": [
+      "ImageObject",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem",
+      "ListItem",
+      "ImageObject"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/news-insights/compliance-first-pharmaceutical-distribution-uk/",
+    "canonical": "https://novapharmhealthcare.com/news-insights/compliance-first-pharmaceutical-distribution-uk/",
+    "file": "news-insights/compliance-first-pharmaceutical-distribution-uk/index.html",
+    "title": "Compliance-First UK Pharmaceutical Distribution | NovaPharm",
+    "description": "How to design a compliance-first UK pharmaceutical distribution model around authorisation, GDP, quality systems, supplier qualification and controlled growth.",
+    "h1": "Building a Compliance-First Pharmaceutical Distribution Model in the UK",
+    "indexable": true,
+    "schemaTypes": [
+      "ImageObject",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem",
+      "ListItem",
+      "ImageObject"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "partner-with-novapharm",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/news-insights/gdp-qms-pharmaceutical-distribution-foundations/",
+    "canonical": "https://novapharmhealthcare.com/news-insights/gdp-qms-pharmaceutical-distribution-foundations/",
+    "file": "news-insights/gdp-qms-pharmaceutical-distribution-foundations/index.html",
+    "title": "GDP and QMS Foundations for Pharmaceutical Distribution",
+    "description": "Explore the practical foundations of GDP and pharmaceutical quality systems: people, procedures, suppliers, temperature, records, CAPA and management review.",
+    "h1": "GDP, QMS and the Practical Foundations of Reliable Pharmaceutical Distribution",
+    "indexable": true,
+    "schemaTypes": [
+      "ImageObject",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem",
+      "ListItem",
+      "ImageObject"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/news-insights/oncology-supply-chain-demand-forecasting/",
+    "canonical": "https://novapharmhealthcare.com/news-insights/oncology-supply-chain-demand-forecasting/",
+    "file": "news-insights/oncology-supply-chain-demand-forecasting/index.html",
+    "title": "Oncology Medicine Supply and Demand Forecasting",
+    "description": "A practical guide to oncology demand forecasting, uncertainty, cold-chain constraints, data governance, human oversight and responsible AI development.",
+    "h1": "Why Oncology Supply Chains Require Specialised Demand Forecasting",
+    "indexable": true,
+    "schemaTypes": [
+      "ImageObject",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem",
+      "ListItem",
+      "ImageObject"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "discuss-an-oncology-opportunity",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/news-insights/plpi-pharmaceutical-supply-resilience/",
+    "canonical": "https://novapharmhealthcare.com/news-insights/plpi-pharmaceutical-supply-resilience/",
+    "file": "news-insights/plpi-pharmaceutical-supply-resilience/index.html",
+    "title": "PLPI Sourcing and UK Pharmaceutical Supply Resilience",
+    "description": "Understand the UK PLPI route, simple, standard and complex applications, supplier controls, post-authorisation duties and responsible commercial assessment.",
+    "h1": "What PLPI Means for Pharmaceutical Supply Resilience and Cost-Optimised Access",
+    "indexable": true,
+    "schemaTypes": [
+      "ImageObject",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem",
+      "ListItem",
+      "ImageObject"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/news-insights/three-pillar-pharmaceutical-sourcing-model/",
+    "canonical": "https://novapharmhealthcare.com/news-insights/three-pillar-pharmaceutical-sourcing-model/",
+    "file": "news-insights/three-pillar-pharmaceutical-sourcing-model/index.html",
+    "title": "Three-Pillar Pharmaceutical Sourcing Model | NovaPharm",
+    "description": "Explore a three-pillar pharmaceutical sourcing strategy combining qualified GMP manufacturers, product-specific PLPI routes and European buying networks.",
+    "h1": "Three-Pillar Sourcing: Direct GMP Partnerships, PLPI and European Buying Networks",
+    "indexable": true,
+    "schemaTypes": [
+      "ImageObject",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem",
+      "ListItem",
+      "ImageObject"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "partnership-ecosystem",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/account-application/",
+    "canonical": "https://novapharmhealthcare.com/account-application/",
+    "file": "account-application/index.html",
+    "title": "Open a Pharmaceutical Customer Account | NovaPharm Healthcare",
+    "description": "Apply for a future NovaPharm Healthcare B2B customer account through a controlled company, responsible-person, GDP, credit and document onboarding workflow.",
+    "h1": "A controlled route into the future NovaPharm customer network.",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  }
+]
