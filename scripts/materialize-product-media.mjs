@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 
 const root = resolve(process.cwd());
@@ -131,30 +131,56 @@ async function download(asset, format) {
 }
 
 const register = JSON.parse(readFileSync(registerPath, "utf8"));
-mkdirSync(outputRoot, { recursive: true });
 
-for (const asset of register.assets) {
-  const derivatives = {};
-  for (const format of Object.keys(formats)) {
-    const result = await download(asset, format);
-    const path = join(outputRoot, `${asset.id}.${format}`);
-    mkdirSync(dirname(path), { recursive: true });
-    writeFileSync(path, result.buffer);
-    derivatives[format] = {
-      path: `assets/media/products/${asset.id}.${format}`,
-      sourceUrl: result.sourceUrl,
-      contentType: result.contentType,
-      width: result.dimensions.width,
-      height: result.dimensions.height,
-      byteSize: result.buffer.length,
-      sha256: sha256(result.buffer)
-    };
+function existingDerivativesAreValid() {
+  if (!register.assets.length) return false;
+  try {
+    return register.assets.every((asset) => {
+      if (asset.reviewStatus !== "downloaded-and-technically-validated") return false;
+      return Object.keys(formats).every((format) => {
+        const derivative = asset.derivatives?.[format];
+        const path = derivative?.path ? resolve(root, derivative.path) : "";
+        if (!path || !existsSync(path)) return false;
+        const buffer = readFileSync(path);
+        const dimensions = dimensionsFor(format, buffer);
+        return derivative.contentType === formats[format] &&
+          derivative.width === expectedWidth && dimensions.width === expectedWidth &&
+          derivative.height === expectedHeight && dimensions.height === expectedHeight &&
+          derivative.byteSize === buffer.length && derivative.sha256 === sha256(buffer);
+      });
+    });
+  } catch {
+    return false;
   }
-  asset.derivatives = derivatives;
-  asset.reviewStatus = "downloaded-and-technically-validated";
 }
 
-register.materialisedAt = new Date().toISOString();
-register.reviewed = new Date().toISOString().slice(0, 10);
-writeFileSync(registerPath, `${JSON.stringify(register, null, 2)}\n`);
-console.log(`Materialised ${register.assets.length} licensed product photographs in ${Object.keys(formats).length} formats.`);
+if (existingDerivativesAreValid()) {
+  console.log(`Verified ${register.assets.length} existing licensed product photographs; no repository changes required.`);
+} else {
+  mkdirSync(outputRoot, { recursive: true });
+  for (const asset of register.assets) {
+    const derivatives = {};
+    for (const format of Object.keys(formats)) {
+      const result = await download(asset, format);
+      const path = join(outputRoot, `${asset.id}.${format}`);
+      mkdirSync(dirname(path), { recursive: true });
+      writeFileSync(path, result.buffer);
+      derivatives[format] = {
+        path: `assets/media/products/${asset.id}.${format}`,
+        sourceUrl: result.sourceUrl,
+        contentType: result.contentType,
+        width: result.dimensions.width,
+        height: result.dimensions.height,
+        byteSize: result.buffer.length,
+        sha256: sha256(result.buffer)
+      };
+    }
+    asset.derivatives = derivatives;
+    asset.reviewStatus = "downloaded-and-technically-validated";
+  }
+
+  register.materialisedAt = new Date().toISOString();
+  register.reviewed = new Date().toISOString().slice(0, 10);
+  writeFileSync(registerPath, `${JSON.stringify(register, null, 2)}\n`);
+  console.log(`Materialised ${register.assets.length} licensed product photographs in ${Object.keys(formats).length} formats.`);
+}
