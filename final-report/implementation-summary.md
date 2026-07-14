@@ -8,7 +8,7 @@ Last reviewed: 14 July 2026
 
 - current-state audit, Path A ADR, hosting/cost comparison;
 - generated public site preserved with 33 indexable pages, six articles and five leadership profiles;
-- responsive real-media product pipeline and provenance register, with controlled pending state until files are materialised;
+- eight provenance-registered product photographs materialised through a controlled workflow into 24 validated AVIF/WebP/JPEG derivatives; staging visual and owner crop/content approval remain pending;
 - portable async data layer and Azure SQL schema/migration guards;
 - managed-identity Azure SQL, private Blob and Microsoft Graph adapters;
 - quarantine/malware state machine that advances only clean documents;
@@ -21,7 +21,7 @@ Last reviewed: 14 July 2026
 
 ## Verified locally
 
-`npm run check` passed on 14 July 2026. It covered build, 33 public pages, six articles, 40 locked shells, 1,906 links, claims, syntax, 281 current-tree files, contact and account email failure/replay, onboarding, four portal scopes, bootstrap/change/invalidation, absolute/inactivity expiry, production headers/origin/host checks, preview controls, session restart, legacy database migration, Entra role mapping, unresolved secret rejection, malware state transitions, cookie choices and SQLite backup/restore. Final clean-checkout and GitHub workflow evidence is still required at the release head. Local `npm audit` had no result because DNS access to the npm advisory endpoint was unavailable.
+`npm run check` passed locally on 14 July 2026. It covered build, 33 public pages, six articles, 40 locked shells, 1,906 links, claims, syntax, 281 current-tree files, contact and account email failure/replay, onboarding, four portal scopes, bootstrap/change/invalidation, absolute/inactivity expiry, production headers/origin/host checks, preview controls, session restart, legacy database migration, Entra role mapping, unresolved secret rejection, malware state transitions, cookie choices and SQLite backup/restore. GitHub Production readiness run 32 then passed clean checkout, locked install, npm high-severity audit and the complete check; Azure infrastructure validation run 2 passed Bicep lint/compile/parameters and template secret scanning; the media workflow passed acquisition, rebuild and the full check before committing the derivatives.
 
 ## Not completed
 

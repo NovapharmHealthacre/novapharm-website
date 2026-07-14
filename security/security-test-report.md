@@ -25,7 +25,7 @@ Test date: 14 July 2026
 
 `npm run check` completed successfully on 14 July 2026: 33 public pages, six articles, 40 locked shells, 1,906 local links, 62 JavaScript/MJS/TypeScript syntax checks, nine stylesheets and 281 repository files in the current-tree scanner. The intentionally simulated Resend HTTP 503 is logged in the integration test and is expected evidence of the retry path.
 
-`npm audit --omit=dev --audit-level=high` was executed locally and returned exit code 1 because the sandbox could not resolve `registry.npmjs.org` (`ENOTFOUND`). It produced no vulnerability result. The GitHub-hosted workflow must run this command successfully before merge.
+`npm audit --omit=dev --audit-level=high` was executed locally and returned exit code 1 because the sandbox could not resolve `registry.npmjs.org` (`ENOTFOUND`), so the local invocation produced no vulnerability result. GitHub Production readiness run 32 subsequently completed the locked install, this audit command and `npm run check` successfully.
 
 ## Cloud tests still required
 

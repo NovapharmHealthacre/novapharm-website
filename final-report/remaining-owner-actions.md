@@ -11,9 +11,8 @@ Last reviewed: 14 July 2026
 6. Approve Microsoft Graph permissions and the separate SharePoint Executive Platform permission change; provide the approved site/drive/folder IDs.
 7. Provide Resend domain/key and controlled notification mailbox through Key Vault.
 8. Approve Defender for Storage usage charges and the safe malware-scanning acceptance procedure.
-9. Run/approve the licensed product-media materialisation workflow and visually approve every derivative; provide approved Dr Helly Panchal and Dr Nishita Trivedi portraits if desired.
+9. Visually approve every materialised product derivative at staging viewports; replace any unsuitable crop or visible third-party branding. Provide approved Dr Helly Panchal and Dr Nishita Trivedi portraits if desired.
 10. Obtain UK solicitor review of privacy, transfers, terms, liability/jurisdiction and portal wording; obtain accountant confirmation of Modern Slavery and SECR applicability.
 11. Approve private Azure staging acceptance, independent penetration testing and Azure SQL/Blob restoration drill.
 12. Approve the pull-request merge only after all repository blockers pass.
 13. Approve production candidate deployment, slot swap and then DNS changes separately. Preserve Microsoft 365 DNS and keep GitHub Pages live until final acceptance.
-

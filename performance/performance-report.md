@@ -26,5 +26,4 @@ Targets are not reported as achieved without measured hosted results.
 
 ## Pending evidence
 
-The licensed product assets are selected but not yet materialised in this environment. Lighthouse, WebPageTest/Core Web Vitals and Azure response-time evidence require the private staging origin. Record real mobile/desktop results, tested commit, region, cache state and trace before production approval.
-
+The licensed product assets were materialised by the controlled GitHub workflow as 24 responsive AVIF/WebP/JPEG derivatives at 1600x900, with checksums and byte sizes recorded in the asset register. Lighthouse, WebPageTest/Core Web Vitals and Azure response-time evidence still require the private staging origin. Record real mobile/desktop results, tested commit, region, cache state and trace before production approval.
