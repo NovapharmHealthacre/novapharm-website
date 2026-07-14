@@ -9,6 +9,7 @@ on:
       - "src/seo/**"
       - "scripts/build-site.mjs"
       - "scripts/enhance-seo-authority.mjs"
+      - "scripts/reconcile-article-authority.mjs"
       - "scripts/validate-seo-authority.mjs"
       - "assets/js/marketing-attribution.js"
       - "seo/**"
