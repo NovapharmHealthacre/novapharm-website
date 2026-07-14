@@ -1,0 +1,111 @@
+[
+  {
+    "type": "Organization",
+    "canonicalName": "NovaPharm Healthcare",
+    "legalName": "NOVAPHARM HEALTHCARE LTD",
+    "alternateNames": [
+      "NovaPharm Healthcare Ltd"
+    ],
+    "canonicalUrl": "https://novapharmhealthcare.com",
+    "id": "https://novapharmhealthcare.com/#organization",
+    "companyNumber": "16716501",
+    "description": "A UK-based, compliance-first and technology-enabled B2B pharmaceutical company preparing regulated trading, sourcing and wholesale distribution capabilities for oncology, specialty and licensed medicines.",
+    "image": "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png",
+    "role": "UK corporate entity preparing regulated B2B pharmaceutical market-entry, sourcing and distribution capabilities",
+    "verifiedSources": [
+      "https://find-and-update.company-information.service.gov.uk/company/16716501",
+      "https://novapharmhealthcare.com"
+    ],
+    "lastVerified": "2026-07-14"
+  },
+  {
+    "type": "Person",
+    "canonicalName": "Vishal Chakravarty",
+    "legalName": "Vishal Om Prakash Chakravarty",
+    "alternateNames": [
+      "Vishal Om Prakash Chakravarty"
+    ],
+    "canonicalUrl": "https://novapharmhealthcare.com/leadership/vishal-chakravarty/",
+    "id": "https://novapharmhealthcare.com/leadership/vishal-chakravarty/#person",
+    "description": "Vishal leads NovaPharm's strategic direction, UK market entry, supplier relationships, pharmaceutical sourcing, regulatory pathway coordination, PLPI strategy, partnerships and board governance.",
+    "image": "https://novapharmhealthcare.com/assets/vishalchakravarty.jpeg",
+    "role": "Chief Executive Officer",
+    "organizationRelationship": "https://novapharmhealthcare.com/#organization",
+    "verifiedSources": [
+      "https://vishal.novapharmhealthcare.com/",
+      "https://uk.linkedin.com/in/vishal-chakravarty",
+      "https://find-and-update.company-information.service.gov.uk/officers/GCJvCvEf20rHFbzF_T9LKAGEJic/appointments",
+      "https://novapharmhealthcare.com/leadership/vishal-chakravarty/"
+    ],
+    "lastVerified": "2026-07-14"
+  },
+  {
+    "type": "Person",
+    "canonicalName": "Prabhakar Vitthal Lahare",
+    "legalName": "Prabhakar Vitthal Lahare",
+    "alternateNames": [],
+    "canonicalUrl": "https://novapharmhealthcare.com/leadership/prabhakar-lahare/",
+    "id": "https://novapharmhealthcare.com/leadership/prabhakar-lahare/#person",
+    "description": "Prabhakar supports operating strategy, manufacturing partnerships, quality governance, supply continuity and scalable execution.",
+    "image": "https://novapharmhealthcare.com/assets/prabhakarvitthallahare.jpeg",
+    "role": "Managing Director and Chief Operating Officer",
+    "organizationRelationship": "https://novapharmhealthcare.com/#organization",
+    "verifiedSources": [
+      "https://find-and-update.company-information.service.gov.uk/officers/WbYqt5GNwcUztqJmSS1Q-zuIra4/appointments",
+      "https://novapharmhealthcare.com/leadership/prabhakar-lahare/"
+    ],
+    "lastVerified": "2026-07-14"
+  },
+  {
+    "type": "Person",
+    "canonicalName": "Dr Girish Shantilal Achliya",
+    "legalName": "Dr Girish Shantilal Achliya",
+    "alternateNames": [],
+    "canonicalUrl": "https://novapharmhealthcare.com/leadership/girish-achliya/",
+    "id": "https://novapharmhealthcare.com/leadership/girish-achliya/#person",
+    "description": "Dr Girish supports scientific strategy, product development, technical due diligence and the development of a differentiated oncology and specialty portfolio.",
+    "image": "https://novapharmhealthcare.com/assets/girishshantilalachliya.jpeg",
+    "role": "Director and Chief Scientific Officer",
+    "organizationRelationship": "https://novapharmhealthcare.com/#organization",
+    "verifiedSources": [
+      "https://find-and-update.company-information.service.gov.uk/officers/ySPfnJGidBuLkYcU7u9BKT9Iyew/appointments",
+      "https://novapharmhealthcare.com/leadership/girish-achliya/"
+    ],
+    "lastVerified": "2026-07-14"
+  },
+  {
+    "type": "Person",
+    "canonicalName": "Dr Helly Panchal",
+    "legalName": "Dr Helly Kamlesh Panchal",
+    "alternateNames": [
+      "Dr Helly Kamlesh Panchal"
+    ],
+    "canonicalUrl": "https://novapharmhealthcare.com/leadership/helly-panchal/",
+    "id": "https://novapharmhealthcare.com/leadership/helly-panchal/#person",
+    "description": "Dr Helly supports NovaPharm's technical and formulation strategy, with a focus on product assessment, scientific review and supply-chain innovation.",
+    "image": null,
+    "role": "Director, Technical and Formulation",
+    "organizationRelationship": "https://novapharmhealthcare.com/#organization",
+    "verifiedSources": [
+      "https://find-and-update.company-information.service.gov.uk/officers/bq-JYKh-sLwG0D5J5ooGbQb37xQ/appointments",
+      "https://novapharmhealthcare.com/leadership/helly-panchal/"
+    ],
+    "lastVerified": "2026-07-14"
+  },
+  {
+    "type": "Person",
+    "canonicalName": "Dr Nishita Trivedi",
+    "legalName": "Dr Nishita Trivedi",
+    "alternateNames": [],
+    "canonicalUrl": "https://novapharmhealthcare.com/leadership/nishita-trivedi/",
+    "id": "https://novapharmhealthcare.com/leadership/nishita-trivedi/#person",
+    "description": "Dr Nishita supports the planned quality and regulatory framework, including QMS, GDP, PLPI activities, vendor oversight and MHRA liaison.",
+    "image": null,
+    "role": "Quality and Regulatory Adviser",
+    "organizationRelationship": "https://novapharmhealthcare.com/#organization",
+    "verifiedSources": [
+      "https://novapharmhealthcare.com/leadership/nishita-trivedi/"
+    ],
+    "lastVerified": "2026-07-14"
+  }
+]

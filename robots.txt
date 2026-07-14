@@ -6,5 +6,49 @@ Disallow: /admin/
 Disallow: /entra-complete/
 Disallow: /_secure/
 Disallow: /docs/
+Disallow: /api/
 Disallow: /NP_
+
+User-agent: Googlebot
+Allow: /
+Disallow: /portal/
+Disallow: /employee/
+Disallow: /admin/
+Disallow: /entra-complete/
+Disallow: /_secure/
+Disallow: /docs/
+Disallow: /api/
+Disallow: /NP_
+
+User-agent: Bingbot
+Allow: /
+Disallow: /portal/
+Disallow: /employee/
+Disallow: /admin/
+Disallow: /entra-complete/
+Disallow: /_secure/
+Disallow: /docs/
+Disallow: /api/
+Disallow: /NP_
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /portal/
+Disallow: /employee/
+Disallow: /admin/
+Disallow: /entra-complete/
+Disallow: /_secure/
+Disallow: /docs/
+Disallow: /api/
+Disallow: /NP_
+
+# Search discovery and model-training access are separate decisions.
+User-agent: GPTBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
 Sitemap: https://novapharmhealthcare.com/sitemap.xml
+Sitemap: https://novapharmhealthcare.com/sitemap-insights.xml
+Sitemap: https://novapharmhealthcare.com/sitemap-images.xml
