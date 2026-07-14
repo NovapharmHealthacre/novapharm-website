@@ -101,6 +101,10 @@ assert.match(csrf.headers["Content-Security-Policy"], /connect-src 'self'/);
 assert.doesNotMatch(csrf.headers["Content-Security-Policy"], /pwnedpasswords/);
 const csrfCookie = cookieValue(csrf.headers["Set-Cookie"], "np_csrf");
 
+const rejectedHost = await request({ url: "/api/health", headers: { host: "attacker.example" } });
+assert.equal(rejectedHost.statusCode, 421);
+assert.equal(rejectedHost.payload.error, "The requested host is not available.");
+
 const rejectedOrigin = await request({
   method: "POST",
   url: "/api/auth/login",
@@ -182,4 +186,4 @@ rmSync(databasePath, { force: true });
 rmSync(documentStoragePath, { force: true, recursive: true });
 rmSync(process.env.SECURE_CONTENT_ROOT, { force: true, recursive: true });
 globalThis.fetch = originalFetch;
-console.log("Production security tests passed: one-time bootstrap, breach-range checking, forced password change, old-password rejection, HSTS, secure cookies, same-origin enforcement and health.");
+console.log("Production security tests passed: one-time bootstrap, breach-range checking, forced password change, old-password rejection, HSTS, secure cookies, same-origin and host enforcement, and health.");

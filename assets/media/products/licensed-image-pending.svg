@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title description">
+  <title id="title">Licensed category photography pending validation</title>
+  <desc id="description">A neutral NovaPharm media-review placeholder used until the approved stock photograph has passed technical validation.</desc>
+  <rect width="1600" height="900" fill="#edf1f2"/>
+  <rect x="72" y="72" width="1456" height="756" rx="8" fill="#f8faf9" stroke="#c7d0d4" stroke-width="4"/>
+  <path d="M112 692h1376M112 710h920" stroke="#d9e0e2" stroke-width="2"/>
+  <path d="M112 190h320M112 214h220" stroke="#c7d0d4" stroke-width="16" stroke-linecap="round"/>
+  <g transform="translate(630 280)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <rect width="340" height="240" rx="8" stroke="#50616b" stroke-width="10"/>
+    <path d="m28 202 92-92 62 62 42-42 88 72" stroke="#50616b" stroke-width="10"/>
+    <circle cx="252" cy="72" r="24" stroke="#bd3036" stroke-width="10"/>
+  </g>
+  <text x="800" y="610" fill="#253743" font-family="Arial, sans-serif" font-size="38" text-anchor="middle">Licensed scientific image under validation</text>
+  <text x="800" y="660" fill="#5d6c74" font-family="Arial, sans-serif" font-size="25" text-anchor="middle">No product, facility or availability claim</text>
+</svg>

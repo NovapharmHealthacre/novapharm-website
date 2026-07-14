@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "executedOn": "2026-07-14",
+  "environment": "local-production-mode-synthetic-data",
+  "baseCommit": "7fdceab4afe3e83e36bdfdb9817a19e2aaca6a40",
+  "engines": [
+    "Chromium 149",
+    "WebKit 26.5"
+  ],
+  "viewports": [
+    "1440x900",
+    "1920x1080",
+    "1024x1366",
+    "768x1024",
+    "390x844",
+    "430x932",
+    "375x667"
+  ],
+  "routes": 44,
+  "publicRoutes": 37,
+  "protectedStates": 7,
+  "renderedPageStates": 616,
+  "axeScans": 616,
+  "screenshots": 764,
+  "finalIssues": 0,
+  "rawEvidenceSha256": "fa206af910a1e02d8ad5d74e4b68071b1b6983d7516482ec4e5e6d41c45ad77c",
+  "azureHostedAcceptance": "pending-no-accessible-subscription",
+  "notes": "The successful run included the candidate working-tree fixes later committed to PR 5. Raw screenshots remain ignored test artifacts and are uploaded by the browser-acceptance workflow."
+}

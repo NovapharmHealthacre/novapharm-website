@@ -20,7 +20,7 @@ Application-only Graph access should use `Sites.Selected` in production where te
 
 ## Live Executive Platform snapshot
 
-Read-only verification on 11 July 2026 found the controlled `NovaPharm Digital Ecosystem/16 Website and Portal/Executive Platform` folder carrying the site-wide Owners (`owner`), Visitors (`read`) and Members (`write`) grants. No anonymous sharing-link permission was returned, but no board-specific grant was present. The permission change was not executed because it requires explicit owner approval and a tenant-capable administrator.
+Read-only verification was repeated on 14 July 2026 against the controlled `NovaPharm Digital Ecosystem/16 Website and Portal/Executive Platform` folder. The folder remains present with the expected Executive Platform modules and still carries the site-wide Owners (`owner`), Visitors (`read`) and Members (`write`) effective grants. No anonymous sharing-link permission was returned and no board-specific grant was present. The permission change was not executed because it requires explicit owner approval and a tenant-capable administrator.
 
 Before confidential board content is introduced:
 

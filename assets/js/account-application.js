@@ -30,13 +30,16 @@ function applicationPayload(form) {
 async function uploadApplicationFiles(application, input, csrfToken) {
   for (const file of [...input.files]) {
     const params = new URLSearchParams({
-      uploadToken: application.uploadToken,
       fileName: file.name,
       documentClass: input.dataset.documentClass || "customer_onboarding"
     });
     await window.NovaPharmApi.request(`/api/account-applications/${application.id}/documents?${params}`, {
       method: "POST",
-      headers: { "Content-Type": file.type || "application/octet-stream", "x-csrf-token": csrfToken },
+      headers: {
+        "Content-Type": file.type || "application/octet-stream",
+        "x-application-upload-token": application.uploadToken,
+        "x-csrf-token": csrfToken
+      },
       body: file,
       timeoutMs: 30000
     });

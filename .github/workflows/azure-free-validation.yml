@@ -1,0 +1,330 @@
+name: Controlled Azure free validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: Cost-gated validation action
+        required: true
+        type: choice
+        options:
+          - preflight
+          - data-what-if
+          - provision-data
+          - app-what-if
+          - provision-app
+          - deploy-app
+      confirm_zero_out_of_pocket:
+        description: Confirm that the current portal credit and spending-limit checks were completed
+        required: true
+        default: false
+        type: boolean
+      run_schema_migrations:
+        description: Run schema migrations through the temporarily authorised app identity
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: novapharm-azure-free-validation
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: azure-free-validation
+    env:
+      AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_FREE_VALIDATION_RESOURCE_GROUP }}
+      AZURE_SQL_ENTRA_ADMIN_OBJECT_ID: ${{ vars.AZURE_SQL_ENTRA_ADMIN_OBJECT_ID }}
+      AZURE_SQL_ENTRA_ADMIN_LOGIN: ${{ vars.AZURE_SQL_ENTRA_ADMIN_LOGIN }}
+      NOVAPHARM_OPERATIONS_EMAIL: ${{ vars.NOVAPHARM_OPERATIONS_EMAIL }}
+      NOVAPHARM_FREE_DEPLOY_KEY_VAULT: ${{ vars.NOVAPHARM_FREE_DEPLOY_KEY_VAULT }}
+      AZURE_SQL_FREE_OFFER_OWNER_VERIFIED: ${{ vars.AZURE_SQL_FREE_OFFER_OWNER_VERIFIED }}
+      AZURE_SQL_APP_IDENTITY_BOOTSTRAPPED: ${{ vars.AZURE_SQL_APP_IDENTITY_BOOTSTRAPPED }}
+      AZURE_CREDIT_CHECKED_ON: ${{ vars.AZURE_CREDIT_CHECKED_ON }}
+      AZURE_REMAINING_CREDIT_AMOUNT: ${{ vars.AZURE_REMAINING_CREDIT_AMOUNT }}
+      AZURE_REMAINING_CREDIT_CURRENCY: ${{ vars.AZURE_REMAINING_CREDIT_CURRENCY }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Verify protected environment configuration
+        env:
+          ACTION: ${{ inputs.action }}
+          CONFIRM_ZERO_OUT_OF_POCKET: ${{ inputs.confirm_zero_out_of_pocket }}
+        run: |
+          set -euo pipefail
+          required=(AZURE_LOCATION AZURE_RESOURCE_GROUP AZURE_SQL_ENTRA_ADMIN_OBJECT_ID AZURE_SQL_ENTRA_ADMIN_LOGIN NOVAPHARM_OPERATIONS_EMAIL)
+          for name in "${required[@]}"; do
+            test -n "${!name:-}" || { echo "Required azure-free-validation variable $name is missing." >&2; exit 1; }
+          done
+          test "$AZURE_RESOURCE_GROUP" = novapharm-free-validation-rg || {
+            echo "The validation workflow is restricted to novapharm-free-validation-rg." >&2
+            exit 1
+          }
+          if [ "$ACTION" != preflight ]; then
+            test "$CONFIRM_ZERO_OUT_OF_POCKET" = true || {
+              echo "The zero-out-of-pocket confirmation is required for any provisioning action." >&2
+              exit 1
+            }
+            test "${AZURE_SQL_FREE_OFFER_OWNER_VERIFIED:-}" = true || {
+              echo "The Azure SQL portal must show Free offer applied and estimated monthly database cost zero." >&2
+              exit 1
+            }
+            node --input-type=module <<'NODE'
+          const checked = process.env.AZURE_CREDIT_CHECKED_ON || "";
+          const amount = Number(process.env.AZURE_REMAINING_CREDIT_AMOUNT || "");
+          const age = Date.now() - Date.parse(`${checked}T00:00:00Z`);
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(checked) || !Number.isFinite(age) || age < 0 || age > 48 * 60 * 60 * 1000) {
+            throw new Error("Promotional credit must be rechecked in Cost Management within 48 hours of deployment.");
+          }
+          if (!Number.isFinite(amount) || amount <= 0 || !process.env.AZURE_REMAINING_CREDIT_CURRENCY) {
+            throw new Error("A positive current promotional-credit balance and currency must be recorded in protected Environment variables.");
+          }
+          NODE
+          fi
+      - name: Azure OIDC login
+        uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_OIDC_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Enforce subscription and spending-limit gates
+        env:
+          ACTION: ${{ inputs.action }}
+          EXPECTED_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        run: |
+          set -euo pipefail
+          actual_subscription=$(az account show --query id -o tsv)
+          test "$actual_subscription" = "$EXPECTED_SUBSCRIPTION_ID" || {
+            echo "OIDC selected a different Azure subscription." >&2
+            exit 1
+          }
+          subscription_json=$(az rest --method get --url "https://management.azure.com/subscriptions/${actual_subscription}?api-version=2022-12-01")
+          state=$(jq -r '.state // .properties.state // "Unknown"' <<<"$subscription_json")
+          spending_limit=$(jq -r '.subscriptionPolicies.spendingLimit // .properties.subscriptionPolicies.spendingLimit // "Unknown"' <<<"$subscription_json")
+          quota_id=$(jq -r '.subscriptionPolicies.quotaId // .properties.subscriptionPolicies.quotaId // "Unknown"' <<<"$subscription_json")
+          printf 'Subscription state: %s\nSpending limit: %s\nOffer quota: %s\n' "$state" "$spending_limit" "$quota_id"
+          if [ "$ACTION" != preflight ]; then
+            test "$state" = Enabled || { echo "The Azure subscription is not enabled." >&2; exit 1; }
+            test "$spending_limit" = On || {
+              echo "Deployment stopped because the Azure spending limit is not On." >&2
+              exit 1
+            }
+          fi
+      - name: Verify F1 and Node 24 availability
+        run: |
+          set -euo pipefail
+          az appservice list-locations --sku F1 --linux-workers-enabled -o json > /tmp/f1-locations.json
+          node --input-type=module <<'NODE'
+          import { readFileSync } from "node:fs";
+          const target = String(process.env.AZURE_LOCATION || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+          const locations = JSON.parse(readFileSync("/tmp/f1-locations.json", "utf8"));
+          const available = locations.some((entry) => [entry.name, entry.displayName]
+            .some((value) => String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "") === target));
+          if (!available) throw new Error(`Linux App Service F1 is not available in ${process.env.AZURE_LOCATION}.`);
+          NODE
+          az webapp list-runtimes --os linux --runtime node --support supported -o tsv > /tmp/node-runtimes.txt
+          grep -Eiq 'NODE[:|]24' /tmp/node-runtimes.txt || {
+            echo "A supported Node 24 Linux App Service runtime is not available." >&2
+            exit 1
+          }
+      - name: Validate Bicep and repository cost contracts
+        run: |
+          set -euo pipefail
+          export AZURE_FREE_SQL_SERVER_NAME=novapharm-poc-sql-validation
+          az bicep lint --file infra/free-validation-data.bicep
+          az bicep lint --file infra/free-validation-app.bicep
+          az bicep build --file infra/free-validation-data.bicep --outfile /tmp/free-validation-data.json
+          az bicep build --file infra/free-validation-app.bicep --outfile /tmp/free-validation-app.json
+          az bicep build-params --file infra/environments/free-validation-data.bicepparam --outfile /tmp/free-validation-data.parameters.json
+          az bicep build-params --file infra/environments/free-validation-app.bicepparam --outfile /tmp/free-validation-app.parameters.json
+          node scripts/validate-free-validation-infrastructure.mjs /tmp/free-validation-data.json /tmp/free-validation-app.json
+      - name: Inspect existing validation resources
+        run: |
+          set -euo pipefail
+          if [ "$(az group exists --name "$AZURE_RESOURCE_GROUP")" = true ]; then
+            az resource list --resource-group "$AZURE_RESOURCE_GROUP" --query '[].{name:name,type:type}' -o table
+            paid_plans=$(az appservice plan list --resource-group "$AZURE_RESOURCE_GROUP" --query "[?sku.name!='F1'] | length(@)" -o tsv)
+            test "$paid_plans" = 0 || { echo "A non-F1 App Service plan exists in the validation resource group." >&2; exit 1; }
+          else
+            echo "The isolated validation resource group does not exist."
+          fi
+      - name: Validate validation resource group
+        if: inputs.action != 'preflight'
+        run: >-
+          az deployment sub validate
+          --location "$AZURE_LOCATION"
+          --template-file infra/resource-group.bicep
+          --parameters resourceGroupName="$AZURE_RESOURCE_GROUP" location="$AZURE_LOCATION" environmentCode=poc
+      - name: Create isolated validation resource group
+        if: inputs.action == 'provision-data'
+        run: >-
+          az deployment sub create
+          --name "novapharm-poc-resource-group-${GITHUB_RUN_ID}"
+          --location "$AZURE_LOCATION"
+          --template-file infra/resource-group.bicep
+          --parameters resourceGroupName="$AZURE_RESOURCE_GROUP" location="$AZURE_LOCATION" environmentCode=poc
+      - name: Azure SQL free-offer what-if
+        if: inputs.action == 'data-what-if' || inputs.action == 'provision-data'
+        run: |
+          set -euo pipefail
+          if [ "$(az group exists --name "$AZURE_RESOURCE_GROUP")" != true ]; then
+            echo "Run provision-data to create the isolated resource group before the data what-if." >&2
+            exit 1
+          fi
+          az deployment group what-if \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "novapharm-poc-data-${GITHUB_RUN_ID}" \
+            --parameters infra/environments/free-validation-data.bicepparam
+      - name: Provision Azure SQL free-offer data layer
+        if: inputs.action == 'provision-data'
+        id: data
+        run: |
+          set -euo pipefail
+          deployment="novapharm-poc-data-${GITHUB_RUN_ID}"
+          az deployment group create --resource-group "$AZURE_RESOURCE_GROUP" --name "$deployment" --parameters infra/environments/free-validation-data.bicepparam
+          server=$(az deployment group show --resource-group "$AZURE_RESOURCE_GROUP" --name "$deployment" --query properties.outputs.sqlServerName.value -o tsv)
+          database=$(az deployment group show --resource-group "$AZURE_RESOURCE_GROUP" --name "$deployment" --query properties.outputs.sqlDatabaseName.value -o tsv)
+          test -n "$server" && test -n "$database"
+          echo "server=$server" >> "$GITHUB_OUTPUT"
+          echo "database=$database" >> "$GITHUB_OUTPUT"
+      - name: Verify Azure SQL free-offer hard stop
+        if: inputs.action == 'provision-data' || inputs.action == 'app-what-if' || inputs.action == 'provision-app' || inputs.action == 'deploy-app'
+        id: sql
+        run: |
+          set -euo pipefail
+          database_id=$(az resource list --resource-group "$AZURE_RESOURCE_GROUP" --resource-type Microsoft.Sql/servers/databases --query "[?contains(name, '/novapharm-poc')].id | [0]" -o tsv)
+          test -n "$database_id" || { echo "No validation Azure SQL database exists." >&2; exit 1; }
+          database_json=$(az resource show --ids "$database_id" --api-version 2025-01-01)
+          test "$(jq -r '.properties.useFreeLimit' <<<"$database_json")" = true
+          test "$(jq -r '.properties.freeLimitExhaustionBehavior' <<<"$database_json")" = AutoPause
+          test "$(jq -r '.properties.maxSizeBytes' <<<"$database_json")" -le 34359738368
+          test "$(jq -r '.sku.tier' <<<"$database_json")" = GeneralPurpose
+          server=$(cut -d/ -f9 <<<"$database_id")
+          database=$(cut -d/ -f11 <<<"$database_id")
+          echo "server=$server" >> "$GITHUB_OUTPUT"
+          echo "database=$database" >> "$GITHUB_OUTPUT"
+          echo "Azure SQL reports useFreeLimit=true and freeLimitExhaustionBehavior=AutoPause."
+      - name: App and private Blob what-if
+        if: inputs.action == 'app-what-if' || inputs.action == 'provision-app'
+        env:
+          AZURE_FREE_SQL_SERVER_NAME: ${{ steps.sql.outputs.server }}
+          AZURE_FREE_SQL_DATABASE_NAME: ${{ steps.sql.outputs.database }}
+        run: >-
+          az deployment group what-if
+          --resource-group "$AZURE_RESOURCE_GROUP"
+          --name "novapharm-poc-app-${GITHUB_RUN_ID}"
+          --parameters infra/environments/free-validation-app.bicepparam
+      - name: Provision F1 app and validation Blob storage
+        if: inputs.action == 'provision-app'
+        id: app
+        env:
+          AZURE_FREE_SQL_SERVER_NAME: ${{ steps.sql.outputs.server }}
+          AZURE_FREE_SQL_DATABASE_NAME: ${{ steps.sql.outputs.database }}
+        run: |
+          set -euo pipefail
+          deployment="novapharm-poc-app-${GITHUB_RUN_ID}"
+          az deployment group create --resource-group "$AZURE_RESOURCE_GROUP" --name "$deployment" --parameters infra/environments/free-validation-app.bicepparam
+          app=$(az deployment group show --resource-group "$AZURE_RESOURCE_GROUP" --name "$deployment" --query properties.outputs.applicationName.value -o tsv)
+          origin=$(az deployment group show --resource-group "$AZURE_RESOURCE_GROUP" --name "$deployment" --query properties.outputs.applicationOrigin.value -o tsv)
+          principal=$(az deployment group show --resource-group "$AZURE_RESOURCE_GROUP" --name "$deployment" --query properties.outputs.managedIdentityPrincipalId.value -o tsv)
+          plan_sku=$(az appservice plan list --resource-group "$AZURE_RESOURCE_GROUP" --query "[0].sku.name" -o tsv)
+          test "$plan_sku" = F1 || { echo "Provisioned App Service plan is not F1." >&2; exit 1; }
+          test -n "$app" && test -n "$origin" && test -n "$principal"
+          printf 'application=%s\nvalidation_origin=%s\nmanaged_identity_principal=%s\n' "$app" "$origin" "$principal" >> "$GITHUB_STEP_SUMMARY"
+          echo "app=$app" >> "$GITHUB_OUTPUT"
+          echo "origin=$origin" >> "$GITHUB_OUTPUT"
+      - name: Build clean validation release
+        if: inputs.action == 'deploy-app'
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts
+          npm audit --omit=dev --audit-level=high
+          npm run check
+          npm prune --omit=dev
+          zip -qr /tmp/novapharm-free-validation.zip . \
+            -x '.git/*' '.github/*' 'data/*' 'tmp/*' 'artifacts/*' 'vishal-portfolio-rebuild/*'
+      - name: Resolve validation app
+        if: inputs.action == 'deploy-app'
+        id: deployed_app
+        run: |
+          set -euo pipefail
+          app=$(az webapp list --resource-group "$AZURE_RESOURCE_GROUP" --query "[?kind=='app,linux'].name | [0]" -o tsv)
+          test -n "$app" || { echo "No Linux free-validation App Service exists." >&2; exit 1; }
+          plan_id=$(az webapp show --resource-group "$AZURE_RESOURCE_GROUP" --name "$app" --query serverFarmId -o tsv)
+          test "$(az appservice plan show --ids "$plan_id" --query sku.name -o tsv)" = F1
+          echo "app=$app" >> "$GITHUB_OUTPUT"
+          echo "origin=https://${app}.azurewebsites.net" >> "$GITHUB_OUTPUT"
+      - name: Configure protected validation secrets
+        if: inputs.action == 'deploy-app'
+        env:
+          APP_NAME: ${{ steps.deployed_app.outputs.app }}
+          SESSION_SECRET: ${{ secrets.FREE_VALIDATION_SESSION_SECRET }}
+          PREVIEW_USERNAME: ${{ secrets.FREE_VALIDATION_PREVIEW_USERNAME }}
+          PREVIEW_PASSWORD: ${{ secrets.FREE_VALIDATION_PREVIEW_PASSWORD }}
+          BOOTSTRAP_PASSWORD: ${{ secrets.FREE_VALIDATION_BOOTSTRAP_ADMIN_PASSWORD }}
+          RUN_SCHEMA_MIGRATIONS: ${{ inputs.run_schema_migrations }}
+        run: |
+          set -euo pipefail
+          test "${AZURE_SQL_APP_IDENTITY_BOOTSTRAPPED:-}" = true || {
+            echo "Create the contained Azure SQL app identity and temporary migration grant before deploying code." >&2
+            exit 1
+          }
+          node --input-type=module <<'NODE'
+          import { chmodSync, writeFileSync } from "node:fs";
+          for (const [name, minimum] of [["SESSION_SECRET", 32], ["PREVIEW_USERNAME", 1], ["PREVIEW_PASSWORD", 16], ["BOOTSTRAP_PASSWORD", 14]]) {
+            if (Buffer.byteLength(process.env[name] || "") < minimum) throw new Error(`${name} is missing or too short.`);
+          }
+          writeFileSync("/tmp/novapharm-protected-settings.json", JSON.stringify([
+            { name: "SESSION_SECRET", value: process.env.SESSION_SECRET, slotSetting: false },
+            { name: "PREVIEW_ACCESS_USERNAME", value: process.env.PREVIEW_USERNAME, slotSetting: false },
+            { name: "PREVIEW_ACCESS_PASSWORD", value: process.env.PREVIEW_PASSWORD, slotSetting: false },
+            { name: "BOOTSTRAP_ADMIN_PASSWORD", value: process.env.BOOTSTRAP_PASSWORD, slotSetting: false },
+            { name: "AZURE_SQL_RUN_MIGRATIONS", value: process.env.RUN_SCHEMA_MIGRATIONS, slotSetting: false }
+          ]), { mode: 0o600, flag: "wx" });
+          chmodSync("/tmp/novapharm-protected-settings.json", 0o600);
+          NODE
+          trap 'rm -f /tmp/novapharm-protected-settings.json' EXIT
+          az webapp config appsettings set \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$APP_NAME" \
+            --settings @/tmp/novapharm-protected-settings.json >/dev/null
+      - name: Deploy validation application
+        if: inputs.action == 'deploy-app'
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ steps.deployed_app.outputs.app }}
+          package: /tmp/novapharm-free-validation.zip
+      - name: Verify first start and remove bootstrap input
+        if: inputs.action == 'deploy-app'
+        env:
+          APP_NAME: ${{ steps.deployed_app.outputs.app }}
+          ORIGIN: ${{ steps.deployed_app.outputs.origin }}
+        run: |
+          set -euo pipefail
+          for _ in {1..30}; do
+            status=$(curl -sS -o /tmp/health.json -w '%{http_code}' "$ORIGIN/api/health" || true)
+            if [ "$status" = 200 ]; then break; fi
+            sleep 10
+          done
+          jq -e '.status == "ok" and .database == "ready"' /tmp/health.json
+          az webapp config appsettings delete --resource-group "$AZURE_RESOURCE_GROUP" --name "$APP_NAME" --setting-names BOOTSTRAP_ADMIN_PASSWORD >/dev/null
+          az webapp config appsettings set --resource-group "$AZURE_RESOURCE_GROUP" --name "$APP_NAME" --settings AZURE_SQL_RUN_MIGRATIONS=false >/dev/null
+          az webapp restart --resource-group "$AZURE_RESOURCE_GROUP" --name "$APP_NAME"
+          for _ in {1..30}; do
+            status=$(curl -sS -o /tmp/health-after-bootstrap.json -w '%{http_code}' "$ORIGIN/api/health" || true)
+            if [ "$status" = 200 ]; then break; fi
+            sleep 10
+          done
+          jq -e '.status == "ok" and .database == "ready"' /tmp/health-after-bootstrap.json
+          curl --fail --silent --show-error --head "$ORIGIN/" | tr -d '\r' | grep -qi '^x-robots-tag:.*noindex'
+          printf 'Validation URL: %s\nDatabase: free offer, AutoPause at limit\nCompute: App Service F1\n' "$ORIGIN" >> "$GITHUB_STEP_SUMMARY"

@@ -106,7 +106,7 @@ The tables in `database/schema.sql` are the implemented physical model. The broa
 | `sharepoint_links` | document/entity ID, site ID, drive ID, item ID, web URL, sync state | document and folder |
 | `integration_events` | event type, aggregate, payload, idempotency key, state | durable outbox for every connector |
 | `audit_logs` | actor, action, entity, before/after hashes, correlation ID, timestamp | immutable operational trail |
-| `notifications` | channel, recipient, template, state | event, approval, task or support ticket |
+| `notifications` | channel, recipient, template, state, bounded attempt count, next/last attempt, safe provider error code and provider message ID | lead, account application, approval, task or support ticket; stable entity/template identity prevents duplicate transactional sends |
 | `support_tickets` | requester, category, priority, SLA, status | customer, order, product, documents |
 
 ## Record Lifecycle

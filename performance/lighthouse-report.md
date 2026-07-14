@@ -1,31 +1,21 @@
-# Lighthouse Readiness Report
+# Lighthouse Report
 
-## Targets
+Status: local production-mode Lighthouse completed; Azure and field measurements pending
+Last reviewed: 14 July 2026
 
-- Performance: 95+
-- Accessibility: 100
-- Best Practices: 100
-- SEO: 100
+Lighthouse 13.4.0 was run against the production-mode Node application with local synthetic data. Lighthouse was removed after the run so its audit-only dependency chain is not shipped or retained in the development lockfile.
 
-## Implemented
+| Route | Mode | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| Homepage | Desktop | 100 | 100 | 100 | 100 | 0.6 s | 0 | 0 ms |
+| Homepage | Mobile | 98 | 100 | 100 | 100 | 2.3 s | 0 | 0 ms |
+| Products | Desktop | 100 | 100 | 100 | 100 | 0.3 s | 0 | 0 ms |
+| Products | Mobile | 100 | 100 | 100 | 100 | 1.4 s | 0 | 0 ms |
+| Contact | Desktop | 100 | 100 | 100 | 100 | 0.3 s | 0 | 0 ms |
+| Contact | Mobile | 100 | 100 | 100 | 100 | 1.4 s | 0 | 0 ms |
+| Portal login | Desktop | 100 | 100 | 100 | 58 | 0.3 s | 0 | 0 ms |
+| Portal login | Mobile | 100 | 100 | 100 | 58 | 1.4 s | 0 | 0 ms |
 
-- Static semantic HTML without a client framework or external font dependency.
-- Preloaded LCP media with intrinsic dimensions and `fetchpriority="high"`.
-- Lazy loading and asynchronous decoding below the fold.
-- Brotli/gzip compression, CDN-aware public caching and `no-store` on private or transactional responses.
-- Responsive layouts, focus indicators, skip links, reduced motion and one-H1 page structure.
-- Unique metadata, structured data, sitemap, robots and RSS.
-- Private routes, previews and controlled files excluded from indexing.
+The portal SEO score is intentionally lower because authenticated and confidential routes are deliberately `noindex`; it is not a public-search regression.
 
-## Repository Verification
-
-- 33 intended public pages: the 26 corporate/content pages plus seven legal and responsibility pages.
-- Six original 900-1,400-word Insight articles.
-- 40 data-free protected shells.
-- 1,890 valid local links, assets and anchors.
-- Valid JSON-LD and no missing required files.
-- Build, route, domain, claims, security, integration and persistence checks pass locally on Node 24.
-
-## Measurement Status
-
-Lighthouse has not been run. The sandbox rejects a local server and the in-app browser's URL policy rejects local-file navigation, while no owner-approved private preview or WebKit runtime is available. Run mobile and desktop Lighthouse against the private Render preview, then against the final HTTPS domain. Record the real scores, LCP, INP and CLS here; do not substitute estimates.
+These are genuine laboratory measurements, not estimates, but localhost removes internet, Azure F1 quota/cold-start, TLS edge and geographic latency. Re-run from the generated Azure validation hostname, then collect field Core Web Vitals on the later production domain before asserting production performance.

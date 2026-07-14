@@ -26,6 +26,31 @@ for (const marker of ["architecture-map", "Live capabilities", "In development c
 const login = text("portal/index.html");
 for (const accessType of ["customer", "employee", "board", "admin"]) assert.match(login, new RegExp(`value="${accessType}"`));
 
+const products = text("product-portfolio/index.html");
+assert.equal((products.match(/class="portfolio-media/g) || []).length, 8, "all product categories must have an explicit media element");
+assert.match(products, /Category photography is representative/);
+assert.doesNotMatch(text("assets/css/live-refinement.css"), /portfolio-table article[^\n{]*::before/);
+assert.doesNotMatch(text("assets/js/novapharm.js"), /pointermove|hero-shift/);
+const productMediaRoot = join(root, "assets", "media", "products");
+const productAssetIds = [
+  "oncology-vial-handling",
+  "specialty-pharmacy-handling",
+  "oral-liquid-formulation",
+  "licensed-generics-packaging",
+  "cardiovascular-quality-control",
+  "respiratory-manufacturing",
+  "metabolic-laboratory-analysis",
+  "hospital-supply-logistics"
+];
+const productMediaMaterialised = productAssetIds.every((id) => ["avif", "webp", "jpg"].every((extension) => existsSync(join(productMediaRoot, `${id}.${extension}`))));
+if (productMediaMaterialised) {
+  assert.equal((products.match(/type="image\/avif"/g) || []).length, 8);
+  assert.equal((products.match(/type="image\/webp"/g) || []).length, 8);
+  assert.doesNotMatch(products, /licensed-image-pending\.svg/);
+} else {
+  assert.match(products, /licensed-image-pending\.svg/);
+}
+
 const insightFiles = [
   "compliance-first-pharmaceutical-distribution-uk",
   "gdp-qms-pharmaceutical-distribution-foundations",

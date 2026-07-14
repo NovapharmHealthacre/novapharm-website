@@ -1,11 +1,11 @@
 # Legal and compliance review register
 
-Version: 1.0  
-Prepared: 11 July 2026
+Version: 1.1  
+Prepared: 14 July 2026
 
 | Item | Implementation status | Required approval before production claim |
 |---|---|---|
-| Privacy notice and data map | Implemented against current repository flows | Owner confirmation of controller contact, vendors and final transfer arrangements; UK privacy counsel review |
+| Privacy notice and data map | Updated for current GitHub Pages state and gated Azure/Entra/Blob/App Insights target | Owner confirmation of controller contact, Azure/Resend/Microsoft processor terms and final transfer arrangements; UK privacy counsel review |
 | Retention schedule | Purpose-based criteria implemented | Board/record-owner approval of fixed periods as each regulated activity or contract becomes live |
 | Cookie register and preference centre | Implemented; no analytics/marketing enabled | Owner approval before adding any optional provider |
 | Website terms | Implemented | UK solicitor review of liability, governing law, jurisdiction and portal contract interaction |

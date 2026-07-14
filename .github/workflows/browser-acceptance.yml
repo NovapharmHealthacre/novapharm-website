@@ -1,0 +1,66 @@
+name: Chromium and WebKit acceptance
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: novapharm-browser-acceptance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Install browser engines
+        run: npx playwright install --with-deps chromium webkit
+      - name: Build website
+        run: npm run build
+      - name: Create protected synthetic browser environment
+        run: node scripts/create-browser-validation-environment.mjs "$RUNNER_TEMP/novapharm-browser" 4178
+      - name: Start synthetic validation server
+        run: |
+          set -euo pipefail
+          set -a
+          source "$RUNNER_TEMP/novapharm-browser/server.env"
+          set +a
+          node server.mjs > "$RUNNER_TEMP/novapharm-browser/server.log" 2>&1 &
+          echo "$!" > "$RUNNER_TEMP/novapharm-browser/server.pid"
+          for _ in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4178/api/health > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/novapharm-browser/server.log" >&2
+          exit 1
+      - name: Run Chromium and WebKit matrix
+        env:
+          VISUAL_BASE_URL: http://127.0.0.1:4178
+          VISUAL_CREDENTIALS_PATH: ${{ runner.temp }}/novapharm-browser/credentials.json
+          VISUAL_OUTPUT_ROOT: artifacts/visual-acceptance
+        run: npm run test:browser-acceptance
+      - name: Upload rendered evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-acceptance-${{ github.sha }}
+          path: artifacts/visual-acceptance
+          if-no-files-found: error
+          retention-days: 7
+      - name: Stop and remove synthetic runtime
+        if: always()
+        run: |
+          if [ -f "$RUNNER_TEMP/novapharm-browser/server.pid" ]; then
+            kill "$(cat "$RUNNER_TEMP/novapharm-browser/server.pid")" 2>/dev/null || true
+          fi
+          rm -rf "$RUNNER_TEMP/novapharm-browser"

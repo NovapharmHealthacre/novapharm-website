@@ -33,14 +33,14 @@ export const leadership = Object.freeze([
     slug: "vishal-chakravarty",
     name: "Vishal Om Prakash Chakravarty",
     displayName: "Vishal Chakravarty",
-    title: "Founder & Chief Executive Officer",
-    schemaTitle: "Founder and Chief Executive Officer",
+    title: "Chief Executive Officer",
+    schemaTitle: "Chief Executive Officer",
     governance: "Founder and statutory director",
     initials: "VC",
     image: "/assets/vishalchakravarty.jpeg",
     imageWidth: 1796,
     imageHeight: 1749,
-    imageAlt: "Vishal Chakravarty, Founder and Chief Executive Officer of NovaPharm Healthcare",
+    imageAlt: "Vishal Chakravarty, Chief Executive Officer of NovaPharm Healthcare",
     companiesHouseUrl: "https://find-and-update.company-information.service.gov.uk/officers/GCJvCvEf20rHFbzF_T9LKAGEJic/appointments",
     sameAs: [
       "https://vishal.novapharmhealthcare.com/",
@@ -256,15 +256,62 @@ export const regulatorySections = Object.freeze([
 ]);
 
 export const productCategories = Object.freeze([
-  ["Oncology medicines", "Strategic focus", "Oral and liquid oncology opportunities evaluated with specialist quality, demand, storage and regulatory requirements."],
-  ["Specialty medicines", "Opportunity assessment", "Hard-to-source and clinically important categories considered through qualified B2B and regulatory pathways."],
-  ["Oral liquid formulations", "Partner sought", "Technically differentiated liquid formulations requiring robust development, manufacturing and stability evidence."],
-  ["Selected licensed generics", "Regulatory preparation", "Established therapeutic categories assessed for compliant sourcing, documentation and commercial viability."],
-  ["Cardiovascular medicines", "Strategic focus", "Selected opportunities within a diversified future portfolio, not a statement of current availability."],
-  ["Respiratory medicines", "Subject to approval", "Potential licensed products assessed against source, device, packaging and applicable PLPI complexity."],
-  ["Metabolic medicines", "Opportunity assessment", "Selected categories considered for manufacturer or authorised-distributor partnerships."],
-  ["Hospital & hard-to-source products", "Commercial enquiry", "Qualified B2B enquiries reviewed without implying stock, authorisation or NHS supply."
-  ]
+  {
+    title: "Oncology medicines",
+    status: "Strategic focus",
+    text: "Oral and liquid oncology opportunities evaluated with specialist quality, demand, storage and regulatory requirements.",
+    imageBase: "oncology-vial-handling",
+    imageAlt: "Gloved laboratory professional using a pipette to handle a vial in a controlled scientific setting"
+  },
+  {
+    title: "Specialty medicines",
+    status: "Opportunity assessment",
+    text: "Hard-to-source and clinically important categories considered through qualified B2B and regulatory pathways.",
+    imageBase: "specialty-pharmacy-handling",
+    imageAlt: "Gloved laboratory professional using a multichannel pipette during controlled sample analysis"
+  },
+  {
+    title: "Oral liquid formulations",
+    status: "Partner sought",
+    text: "Technically differentiated liquid formulations requiring robust development, manufacturing and stability evidence.",
+    imageBase: "oral-liquid-formulation",
+    imageAlt: "Gloved laboratory professional holding an amber glass bottle during liquid analysis"
+  },
+  {
+    title: "Selected licensed generics",
+    status: "Regulatory preparation",
+    text: "Established therapeutic categories assessed for compliant sourcing, documentation and commercial viability.",
+    imageBase: "licensed-generics-packaging",
+    imageAlt: "Hand holding unbranded medicine blister packs against a clean blue background"
+  },
+  {
+    title: "Cardiovascular medicines",
+    status: "Strategic focus",
+    text: "Selected opportunities within a diversified future portfolio, not a statement of current availability.",
+    imageBase: "cardiovascular-quality-control",
+    imageAlt: "Laboratory scientist examining samples and recording quality-control observations"
+  },
+  {
+    title: "Respiratory medicines",
+    status: "Subject to approval",
+    text: "Potential licensed products assessed against source, device, packaging and applicable PLPI complexity.",
+    imageBase: "respiratory-manufacturing",
+    imageAlt: "Protected workers monitoring medicine packaging on a controlled production line"
+  },
+  {
+    title: "Metabolic medicines",
+    status: "Opportunity assessment",
+    text: "Selected categories considered for manufacturer or authorised-distributor partnerships.",
+    imageBase: "metabolic-laboratory-analysis",
+    imageAlt: "Scientist wearing gloves and safety glasses holding laboratory flasks for analysis"
+  },
+  {
+    title: "Hospital & hard-to-source products",
+    status: "Commercial enquiry",
+    text: "Qualified B2B enquiries reviewed without implying stock, authorisation or NHS supply.",
+    imageBase: "hospital-supply-logistics",
+    imageAlt: "Sealed cartons arranged inside a delivery vehicle for controlled logistics handling"
+  }
 ]);
 
 export const partnerTypes = Object.freeze([

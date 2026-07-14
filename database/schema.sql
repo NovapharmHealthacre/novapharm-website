@@ -178,6 +178,10 @@ CREATE TABLE IF NOT EXISTS purchase_order_lines (
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
   entra_object_id TEXT UNIQUE,
+  identity_provider TEXT NOT NULL DEFAULT 'local',
+  identity_issuer TEXT,
+  external_subject TEXT,
+  email TEXT,
   username TEXT NOT NULL UNIQUE,
   display_name TEXT NOT NULL,
   role TEXT NOT NULL,
@@ -260,6 +264,9 @@ CREATE TABLE IF NOT EXISTS documents (
   document_class TEXT NOT NULL,
   lifecycle_status TEXT NOT NULL DEFAULT 'draft',
   retention_class TEXT NOT NULL DEFAULT 'business_7_years',
+  security_status TEXT NOT NULL DEFAULT 'scan_not_configured',
+  malware_scan_result TEXT,
+  malware_scanned_at TEXT,
   version INTEGER NOT NULL DEFAULT 1,
   created_at TEXT NOT NULL,
   created_by TEXT NOT NULL,
@@ -394,7 +401,7 @@ CREATE TABLE IF NOT EXISTS lead_details (
   country TEXT NOT NULL,
   telephone TEXT,
   consent_at TEXT NOT NULL,
-  privacy_notice_version TEXT NOT NULL DEFAULT '2026-07-11-v1.0',
+  privacy_notice_version TEXT NOT NULL DEFAULT '2026-07-14-v1.1',
   safety_confirmation_at TEXT,
   source_page TEXT NOT NULL DEFAULT 'corporate_website'
 );
@@ -424,9 +431,17 @@ CREATE TABLE IF NOT EXISTS notifications (
   entity_id TEXT,
   status TEXT NOT NULL,
   payload_json TEXT NOT NULL DEFAULT '{}',
+  attempt_count INTEGER NOT NULL DEFAULT 0,
+  next_attempt_at TEXT,
+  last_attempt_at TEXT,
+  last_error_code TEXT,
+  provider_message_id TEXT,
   created_at TEXT NOT NULL,
   sent_at TEXT
 );
+
+CREATE INDEX IF NOT EXISTS idx_notifications_delivery_queue
+  ON notifications(channel, status, next_attempt_at, created_at);
 
 CREATE TABLE IF NOT EXISTS account_applications (
   id TEXT PRIMARY KEY,
@@ -438,7 +453,7 @@ CREATE TABLE IF NOT EXISTS account_applications (
   compliance_json TEXT NOT NULL DEFAULT '{}',
   bank_json TEXT NOT NULL DEFAULT '{}',
   submitted_by_email TEXT NOT NULL,
-  privacy_notice_version TEXT NOT NULL DEFAULT '2026-07-11-v1.0',
+  privacy_notice_version TEXT NOT NULL DEFAULT '2026-07-14-v1.1',
   applicant_declaration_at TEXT,
   customer_id TEXT REFERENCES customers(id),
   version INTEGER NOT NULL DEFAULT 1,

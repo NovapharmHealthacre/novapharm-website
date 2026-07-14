@@ -28,7 +28,7 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
-const application = submitCustomerApplication({
+const application = await submitCustomerApplication({
   company: {
     legalName: "Validation Pharmacy Ltd",
     tradingName: "Validation Pharmacy",
@@ -45,7 +45,7 @@ const application = submitCustomerApplication({
   email: "validation.customer@example.com"
 });
 
-const document = storeDocument({
+const document = await storeDocument({
   bytes: Buffer.from("%PDF-1.4\n% NovaPharm validation evidence\n"),
   fileName: "validation-evidence.pdf",
   contentType: "application/pdf",
@@ -57,15 +57,15 @@ const document = storeDocument({
   actor: "validation"
 });
 
-const customer = activateCustomer(application.id, "validation_admin");
-const supplier = createSupplier({
+const customer = await activateCustomer(application.id, "validation_admin");
+const supplier = await createSupplier({
   legalName: "Validation Supplier Ltd",
   supplierType: "manufacturer",
   qualificationStatus: "approved",
   gdpStatus: "certified",
   gmpStatus: "certified"
 }, "validation_admin");
-const product = createProduct({
+const product = await createProduct({
   sku: "NPH-VALID-001",
   productName: "Validation Product",
   strength: "10mg",
@@ -76,20 +76,20 @@ const product = createProduct({
   marketingStatus: "marketed",
   lifecycleStatus: "active"
 }, "validation_admin");
-const order = createOrder({
+const order = await createOrder({
   customerId: customer.id,
   customerPoReference: "PO-VALIDATION",
   lines: [{ productId: product.id, quantity: 4 }]
 }, "validation_admin");
-const purchaseOrder = createPurchaseOrder({
+const purchaseOrder = await createPurchaseOrder({
   supplierId: supplier.id,
   lines: [{ productId: product.id, quantity: 20, unitCostMinor: 700 }]
 }, "validation_admin");
 
 const sharePointResult = await processSharePointEvents({ limit: 50 });
 const polarSpeedResult = await processPolarSpeedEvents({ limit: 50 });
-const dashboard = operationalDashboard();
-const sync = syncStatus();
+const dashboard = await operationalDashboard();
+const sync = await syncStatus();
 
 assert(application.applicationNumber.startsWith("APP-"), "application number was not allocated");
 assert(document.documentNumber.startsWith("DOC-CUSTOMER_ONBOARDING-"), "document number was not allocated");
@@ -98,17 +98,17 @@ assert(supplier.supplierNumber.startsWith("SUP-"), "supplier number was not allo
 assert(product.sku === "NPH-VALID-001", "product was not created");
 assert(order.orderNumber.startsWith("SO-"), "sales order was not created");
 assert(purchaseOrder.poNumber.startsWith("PO-"), "purchase order was not created");
-assert(listProducts().length === 1, "product list does not include validation product");
-assert(listSuppliers().length === 1, "supplier list does not include validation supplier");
-assert(listOrders().length === 1, "order list does not include validation order");
-assert(listPurchaseOrders().length === 1, "purchase order list does not include validation PO");
+assert((await listProducts()).length === 1, "product list does not include validation product");
+assert((await listSuppliers()).length === 1, "supplier list does not include validation supplier");
+assert((await listOrders()).length === 1, "order list does not include validation order");
+assert((await listPurchaseOrders()).length === 1, "purchase order list does not include validation PO");
 assert(dashboard.customers === 1, "dashboard customer count mismatch");
 assert(dashboard.products === 1, "dashboard product count mismatch");
 assert(sharePointResult.blocked > 0, "SharePoint events should block without external credentials");
 assert(polarSpeedResult.blocked > 0, "Polar Speed events should block without API contract");
 assert(sync.some((row) => row.destination_system === "sharepoint"), "SharePoint sync status missing");
 assert(sync.some((row) => row.destination_system === "polar_speed"), "Polar Speed sync status missing");
-assert(listAudit().length >= 6, "audit trail is incomplete");
+assert((await listAudit()).length >= 6, "audit trail is incomplete");
 
 writeFileSync(join(tempDir, "validation-summary.json"), JSON.stringify({
   application: application.applicationNumber,
