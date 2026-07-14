@@ -8,6 +8,10 @@ Prepared: 14 July 2026
 
 Azure prices vary by agreement, region, reservation, currency and consumption. This repository intentionally does not hardcode a monthly total. Before deployment, the owner must create and approve an Azure Pricing Calculator estimate from the selected parameter file.
 
+The owner has separately authorised only a zero-out-of-pocket `free-validation` environment under an active spending limit or protected promotional credit. On 14 July 2026 the authenticated NovaPharm tenant exposed no accessible Azure subscription, so no resource was created. The evidence and service-by-service decision are in `azure-free-tier-eligibility-matrix.md`.
+
+Free validation does not alter this paid-production cost model. It uses the split `infra/free-validation-*.bicep` templates and must pass every cost gate in `deployment/free-validation-runbook.md`.
+
 ## Required production meters
 
 | Service | Initial assumption | Main cost driver | Cost-control decision |
@@ -44,4 +48,3 @@ Azure prices vary by agreement, region, reservation, currency and consumption. T
 - [Azure SQL Database pricing](https://azure.microsoft.com/en-gb/pricing/details/azure-sql-database/single/)
 - [Azure Container Apps pricing](https://azure.microsoft.com/en-us/pricing/details/container-apps/)
 - [Microsoft Defender for Cloud pricing](https://azure.microsoft.com/en-us/pricing/details/defender-for-cloud/)
-

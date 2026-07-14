@@ -10,6 +10,7 @@ param location string
   'dev'
   'stg'
   'prod'
+  'poc'
 ])
 param environmentCode string
 

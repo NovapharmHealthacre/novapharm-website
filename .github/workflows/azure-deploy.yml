@@ -166,7 +166,7 @@ jobs:
           if [ "$ENVIRONMENT_CODE" = prod ]; then slot_args=(--slot candidate); fi
           az webapp config appsettings set --resource-group "$AZURE_RESOURCE_GROUP" --name "${{ steps.infrastructure.outputs.app_name }}" "${slot_args[@]}" --settings AZURE_SQL_RUN_MIGRATIONS=true >/dev/null
           az webapp restart --resource-group "$AZURE_RESOURCE_GROUP" --name "${{ steps.infrastructure.outputs.app_name }}" "${slot_args[@]}"
-          for attempt in {1..30}; do
+          for _ in {1..30}; do
             if curl --fail --silent --show-error "https://${{ steps.infrastructure.outputs.hostname }}/api/health" >/tmp/health.json; then break; fi
             sleep 10
           done
@@ -178,7 +178,7 @@ jobs:
         run: |
           set -euo pipefail
           origin="https://${{ steps.infrastructure.outputs.hostname }}"
-          for attempt in {1..30}; do
+          for _ in {1..30}; do
             status=$(curl -sS -o /tmp/health.json -w '%{http_code}' "$origin/api/health" || true)
             if [ "$status" = 200 ]; then break; fi
             sleep 10

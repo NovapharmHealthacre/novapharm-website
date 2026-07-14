@@ -1,11 +1,19 @@
 # SharePoint Executive Platform Permission Plan
 
-Status: plan complete; no permission change authorised or executed  
-Owner-controlled gate: Microsoft 365 administrator and NovaPharm owner approval
+Status: owner authorised; live inventory complete; permission write not executed
+Execution gate: Microsoft 365 administrative write surface with permission-management capability
 
 ## Recorded current concern
 
-The read-only inventory was revalidated on 14 July 2026. Effective permissions still include site Owners, Members and Visitors on the Executive Platform location. No anonymous grant was returned, but broad read/write access is not suitable for confidential Board content.
+The delegated Microsoft Graph inventory was revalidated on 14 July 2026 against the Executive Platform folder in the `Novapharm Tier 1` SharePoint site. The effective response returned:
+
+| Principal | Effective role | Source |
+|---|---|---|
+| `Novapharm Tier 1 Owners` | Owner | inherited site group |
+| `Novapharm Tier 1 Members` | Write | inherited site group |
+| `Novapharm Tier 1 Visitors` | Read | inherited site group |
+
+No anonymous link or `Everyone except external users` grant was returned. Broad inherited Member write and Visitor read remain unsuitable for confidential Board content. The connector could list effective permissions but provides no operation to stop inheritance, remove grants or create SharePoint security groups, so no mutation was attempted.
 
 ## Target groups
 
@@ -16,8 +24,8 @@ The App Service managed identity receives site-specific application access only 
 
 ## Change procedure
 
-1. Export parent/folder inheritance, direct grants, sharing links and group membership.
-2. Store the snapshot in a restricted administrative record.
+1. Preserve the 14 July 2026 effective-grant snapshot and export full site group membership from SharePoint administration immediately before change.
+2. Store that export in a restricted administrative record; do not commit identities or tenant identifiers to the public repository.
 3. Confirm approved administrator and Board membership with the owner.
 4. Create/validate the two named groups.
 5. Stop inheritance only on the controlled Executive Platform scope.
@@ -40,4 +48,8 @@ The App Service managed identity receives site-specific application access only 
 
 ## Rollback
 
-Use the restricted pre-change export to restore only the prior inheritance/grants under owner approval. Do not re-enable anonymous access. If rollback would expose confidential content, keep the location closed while the permission model is repaired.
+Use the restricted pre-change export to restore only the prior inheritance/grants under owner approval. The recorded baseline is Owners/owner, Members/write and Visitors/read inherited from the site. Do not re-enable anonymous access. If rollback would expose confidential content, keep the location closed while the permission model is repaired.
+
+## Remaining execution gate
+
+Complete the change in **SharePoint site > Settings > Site permissions > Advanced permissions settings** or through an approved Microsoft Graph/SharePoint administrative API that supports inheritance and role-assignment changes. The operator must first export group membership and sharing links, then apply the steps above and test one identity from each allowed and denied class. This is an administrative write action; the current delegated connector cannot perform or verify it.

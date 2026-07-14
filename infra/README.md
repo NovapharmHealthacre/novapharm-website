@@ -2,6 +2,8 @@
 
 These Bicep templates implement the approved **Path A** target: Azure App Service for Linux, Azure SQL Database, private Blob Storage, Azure Key Vault, managed identities, private service endpoints, Application Insights and Log Analytics.
 
+The paid production baseline remains in `main.bicep`. The separately cost-gated proof-of-concept is split into `free-validation-data.bicep` and `free-validation-app.bicep` so Azure SQL's free-offer hard stop can be verified before F1, Blob Storage or optional Key Vault is created. See `architecture/azure-free-tier-eligibility-matrix.md` and `deployment/free-validation-runbook.md`.
+
 ## Safety gates
 
 - Nothing in this folder deploys automatically from a developer computer.
@@ -10,6 +12,10 @@ These Bicep templates implement the approved **Path A** target: Azure App Servic
 - Custom-domain binding and managed-certificate activation are separate post-acceptance templates. Run `custom-domain.bicep` only after the DNS change is approved, then run `managed-certificate.bicep` after Azure verifies the hostname.
 - No DNS record, SharePoint permission, credential or production secret is created here.
 - Staging and production use separate resource groups and parameter files. The production candidate slot uses a separate database and private containers.
+- Free validation uses resource group `novapharm-free-validation-rg`, environment code `poc`, synthetic data, the generated Azure hostname and no production DNS.
+- The free-validation workflow fails unless Azure reports the subscription spending limit as `On`, the owner has recently verified positive promotional credit, and the SQL portal has shown the zero-cost free offer.
+- Free validation uses F1 with no Always On, slots, custom domain, VNet integration or paid backup. It is not the production baseline.
+- Application Insights, Log Analytics, Defender for Storage, private endpoints, Front Door, WAF, NAT Gateway and Azure Firewall are absent from the free-validation templates.
 
 ## Required non-secret inputs
 

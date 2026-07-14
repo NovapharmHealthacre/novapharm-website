@@ -3,6 +3,8 @@
 Assessment date: 14 July 2026  
 Decision: Azure App Service for Linux
 
+Free-validation decision: try Linux App Service F1 first; use Container Apps Consumption only if F1 fails a measured technical test and the subscription spending limit plus remaining credit are reverified. This does not change the paid production decision below.
+
 ## Comparison
 
 | Criterion | App Service for Linux | Container Apps Consumption | Container Apps Dedicated | Other managed options |
@@ -34,6 +36,15 @@ Decision: Azure App Service for Linux
 - Production capacity of two instances where owner-approved budget permits. One instance is allowed only as an explicitly accepted availability risk.
 - No App Service F1/Shared production use.
 
+## Free-validation profile
+
+- One Linux F1 worker, generated `azurewebsites.net` hostname, Node 24 where the live region capability API confirms it.
+- No Always On, slot, custom domain, VNet integration, private endpoint, autoscale or paid backup.
+- Expected cold stops and a 60 CPU-minute daily quota are accepted for synthetic proof-of-concept testing only.
+- Azure SQL free-offer data is deployed and verified before compute.
+- Container Apps Consumption remains a fallback because its monthly grant has no service-level billing hard stop after exhaustion.
+- The current live GitHub Pages site and production domains remain unchanged.
+
 The final SKU and instance count are deployment parameters because Azure retail rates, agreements and regional availability change. The owner must review the generated Azure Pricing Calculator estimate before deployment.
 
 ## Container Apps reconsideration triggers
@@ -47,4 +58,3 @@ Reassess Container Apps when NovaPharm has separately deployable stateless integ
 - [Azure Container Apps workload profiles](https://learn.microsoft.com/en-us/azure/container-apps/workload-profiles-overview)
 - [Azure Container Apps scaling](https://learn.microsoft.com/en-us/azure/container-apps/scale-app)
 - [Azure Container Apps pricing](https://azure.microsoft.com/en-us/pricing/details/container-apps/)
-
