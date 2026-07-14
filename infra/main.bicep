@@ -751,7 +751,7 @@ var productionAppSettings = union({
   PUBLIC_ORIGIN: resolvedPublicOrigin
   PUBLIC_API_ORIGIN: resolvedPublicOrigin
   DATABASE_PROVIDER: 'azure-sql'
-  AZURE_SQL_SERVER: '${sqlServer.name}.database.windows.net'
+  AZURE_SQL_SERVER: sqlServer.properties.fullyQualifiedDomainName
   AZURE_SQL_DATABASE: sqlDatabase.name
   AZURE_SQL_AUTHENTICATION: 'managed-identity'
   AZURE_SQL_RUN_MIGRATIONS: 'false'
@@ -875,7 +875,7 @@ var authSettingsProperties = {
       registration: {
         clientId: entraClientId
         clientSecretSettingName: 'ENTRA_CLIENT_SECRET'
-        openIdIssuer: 'https://login.microsoftonline.com/${entraTenantId}/v2.0'
+        openIdIssuer: '${environment().authentication.loginEndpoint}${entraTenantId}/v2.0'
       }
       validation: {
         allowedAudiences: [
@@ -942,7 +942,7 @@ resource slotVaultRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = if
   name: guid(keyVault.id, candidateSlot.id, keyVaultSecretsUserRoleId)
   scope: keyVault
   properties: {
-    principalId: candidateSlot.identity.principalId
+    principalId: candidateSlot!.identity.principalId
     principalType: 'ServicePrincipal'
     roleDefinitionId: keyVaultSecretsUserRoleId
   }
@@ -952,7 +952,7 @@ resource slotStorageRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = 
   name: guid(storage.id, candidateSlot.id, storageBlobDataContributorRoleId)
   scope: storage
   properties: {
-    principalId: candidateSlot.identity.principalId
+    principalId: candidateSlot!.identity.principalId
     principalType: 'ServicePrincipal'
     roleDefinitionId: storageBlobDataContributorRoleId
   }
@@ -1049,6 +1049,6 @@ output storageAccountName string = storage.name
 output sqlServerFullyQualifiedDomainName string = sqlServer.properties.fullyQualifiedDomainName
 output sqlDatabaseName string = sqlDatabase.name
 output appManagedIdentityPrincipalId string = app.identity.principalId
-output candidateManagedIdentityPrincipalId string = deployCandidateSlot ? candidateSlot.identity.principalId : ''
+output candidateManagedIdentityPrincipalId string = deployCandidateSlot ? candidateSlot!.identity.principalId : ''
 output appInsightsName string = appInsights.name
 output logAnalyticsWorkspaceName string = logWorkspace.name
