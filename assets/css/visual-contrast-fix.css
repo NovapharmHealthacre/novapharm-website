@@ -1,0 +1,13 @@
+/* Accessibility correction for the premium photographic sections.
+   These explicit colours exceed WCAG AA against the section backgrounds. */
+
+.batch-integrity-copy > .section-kicker,
+.service-visual-copy > .section-kicker,
+.technology-visual-copy > .section-kicker {
+  color: #ff9ca3;
+}
+
+.service-visual-copy > p,
+.technology-visual-copy > p {
+  color: #e8f1ee;
+}
