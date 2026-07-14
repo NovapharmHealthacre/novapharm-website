@@ -17,9 +17,8 @@ const images = {
 };
 
 function rasterFor(route) {
-  if (route === "/" || route.startsWith("/about/") || route === "/about/" || route === "/leadership/" || route === "/investor-information/") return images.hero;
-  if (route === "/services/" || route === "/partner-with-us/") return images.logistics;
   if (route === "/regulatory-services/" || route === "/about/governance/") return images.quality;
+  if (route === "/services/" || route === "/partner-with-us/") return images.logistics;
   if (route === "/technology/") return images.traceability;
   if (route === "/news-insights/") return images.science;
   if (route.includes("batch-to-buyer") || route.includes("traceability")) return images.traceability;
@@ -27,6 +26,7 @@ function rasterFor(route) {
   if (route.includes("oncology")) return images.science;
   if (route.includes("plpi")) return images.packaging;
   if (route.includes("three-pillar") || route.includes("sourcing")) return images.logistics;
+  if (route === "/" || route.startsWith("/about/") || route === "/about/" || route === "/leadership/" || route === "/investor-information/") return images.hero;
   return images.hero;
 }
 
