@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import {
   company,
@@ -54,6 +54,18 @@ function write(path, content) {
 
 function brandPicture({ className = "brand-logo", width = 280, height = 35, eager = false } = {}) {
   return `<picture class="${className}"><source srcset="${brandLogoSvg}" type="image/svg+xml"><img src="${brandLogoPng}" alt="NovaPharm Healthcare" width="${width}" height="${height}"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async"></picture>`;
+}
+
+function productCategoryMedia(category) {
+  const publicBase = `/assets/media/products/${category.imageBase}`;
+  const localBase = join(root, "assets", "media", "products", category.imageBase);
+  const hasLicensedMedia = ["avif", "webp", "jpg"].every((extension) => existsSync(`${localBase}.${extension}`));
+
+  if (!hasLicensedMedia) {
+    return `<figure class="portfolio-media portfolio-media-pending"><img src="/assets/media/products/licensed-image-pending.svg" alt="" width="1600" height="900" loading="lazy" decoding="async"><figcaption>Licensed category photography is undergoing final asset validation.</figcaption></figure>`;
+  }
+
+  return `<figure class="portfolio-media"><picture><source srcset="${publicBase}.avif" type="image/avif"><source srcset="${publicBase}.webp" type="image/webp"><img src="${publicBase}.jpg" alt="${esc(category.imageAlt)}" width="1600" height="900" loading="lazy" decoding="async"></picture><figcaption>Representative licensed stock image; not a NovaPharm-owned facility or product.</figcaption></figure>`;
 }
 
 function articleWordCount(article) {
@@ -489,7 +501,7 @@ function productsPage() {
   const meta = pageMeta[slug];
   const body = `${pageHero(meta, "A strategic B2B portfolio, not a public pharmacy catalogue.", "Product categories describe NovaPharm's focus and partnership pipeline. They do not indicate marketing-authorisation ownership, current stock, pricing or availability.", slug)}
   ${mediaStory({ src: "/assets/media/editorial/oncology-specialty.svg", alt: "Scientific network representing oncology and specialty portfolio discipline", kicker: "Portfolio focus", title: "Category focus is not a claim of availability.", text: "Oncology, specialty and hard-to-source categories remain strategic areas of assessment. Every product requires its own rights, regulatory, quality, source and commercial evidence before release." })}
-  <section class="section"><div class="container">${regulatoryNotice()}<div class="portfolio-table" role="list">${productCategories.map(([title, status, text]) => `<article role="listitem"><span class="status-label">${esc(status)}</span><h2>${esc(title)}</h2><p>${esc(text)}</p><a href="#submit-opportunity">Submit a relevant opportunity</a></article>`).join("")}</div></div></section>
+  <section class="section"><div class="container">${regulatoryNotice()}<p class="portfolio-image-disclosure">Category photography is representative and does not depict NovaPharm-owned premises, current stock or an authorised NovaPharm product.</p><div class="portfolio-table" role="list">${productCategories.map((category) => `<article role="listitem">${productCategoryMedia(category)}<div class="portfolio-card-body"><span class="status-label">${esc(category.status)}</span><h2>${esc(category.title)}</h2><p>${esc(category.text)}</p><a href="#submit-opportunity">Submit a relevant opportunity</a></div></article>`).join("")}</div></div></section>
   <section class="section section-dark" id="submit-opportunity"><div class="container form-feature"><div>${sectionHeading("Product opportunity", "Bring an evidence-backed B2B opportunity.", "Dossier owners, manufacturers and authorised wholesalers can submit an initial enquiry. Do not include patient information, confidential dossiers or adverse-event reports in this form.")}<ul class="list-check list-check-light"><li>Dossier-owner enquiry</li><li>Manufacturer partnership</li><li>Wholesaler sourcing opportunity</li><li>UK distribution discussion</li></ul></div>${contactForm({ formId: "product-opportunity", defaultType: "Product opportunity", compact: true })}</div></section>
   ${finalCta()}`;
   return documentShell({ meta, slug, body });
@@ -760,7 +772,7 @@ export function buildPublicPages() {
   write("feed.xml", buildFeed());
   write("news-insights/feed.xml", buildFeed());
   write("sitemap.xml", buildSitemap());
-  write("robots.txt", `User-agent: *\nAllow: /\nDisallow: /portal/\nDisallow: /employee/\nDisallow: /admin/\nDisallow: /_secure/\nDisallow: /docs/\nDisallow: /NP_\nSitemap: ${siteUrl}/sitemap.xml\n`);
+  write("robots.txt", `User-agent: *\nAllow: /\nDisallow: /portal/\nDisallow: /employee/\nDisallow: /admin/\nDisallow: /entra-complete/\nDisallow: /_secure/\nDisallow: /docs/\nDisallow: /NP_\nSitemap: ${siteUrl}/sitemap.xml\n`);
   write("manifest.webmanifest", JSON.stringify({
     name: "NovaPharm Healthcare",
     short_name: "NovaPharm",

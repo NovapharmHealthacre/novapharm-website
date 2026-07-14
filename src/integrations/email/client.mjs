@@ -1,8 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { nowIso, run } from "../../data/database.mjs";
+import { isResolvedSecret } from "../../core/secret-value.mjs";
 
 function configured() {
-  return Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM && process.env.CONTACT_NOTIFICATION_TO);
+  return Boolean(isResolvedSecret(process.env.RESEND_API_KEY) && process.env.EMAIL_FROM && process.env.CONTACT_NOTIFICATION_TO);
 }
 
 function cleanHeader(value) {
@@ -26,7 +27,7 @@ async function sendEmail({ to, subject, text, html, replyTo, templateCode, entit
   const notificationId = randomUUID();
   const recipient = cleanHeader(to);
   const createdAt = nowIso();
-  run(`INSERT INTO notifications(id, channel, recipient, template_code, entity_type, entity_id, status, payload_json, created_at)
+  await run(`INSERT INTO notifications(id, channel, recipient, template_code, entity_type, entity_id, status, payload_json, created_at)
     VALUES(?, 'email', ?, ?, 'lead', ?, 'sending', '{}', ?)`, notificationId, recipient, templateCode, entityId, createdAt);
   try {
     const response = await fetch("https://api.resend.com/emails", {
@@ -46,10 +47,10 @@ async function sendEmail({ to, subject, text, html, replyTo, templateCode, entit
       signal: AbortSignal.timeout(15000)
     });
     if (!response.ok) throw Object.assign(new Error("Email provider rejected the notification."), { providerStatus: response.status });
-    run("UPDATE notifications SET status = 'sent', sent_at = ? WHERE id = ?", nowIso(), notificationId);
+    await run("UPDATE notifications SET status = 'sent', sent_at = ? WHERE id = ?", nowIso(), notificationId);
     return { status: "sent" };
   } catch (error) {
-    run("UPDATE notifications SET status = 'failed', payload_json = ? WHERE id = ?", JSON.stringify({ providerStatus: error.providerStatus || null }), notificationId);
+    await run("UPDATE notifications SET status = 'failed', payload_json = ? WHERE id = ?", JSON.stringify({ providerStatus: error.providerStatus || null }), notificationId);
     throw error;
   }
 }

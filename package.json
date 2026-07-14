@@ -5,9 +5,10 @@
   "type": "module",
   "description": "Enterprise-grade NovaPharm Healthcare website with secure portal, admin surfaces, SEO/GEO optimization, and SharePoint integration architecture.",
   "scripts": {
-    "build": "node scripts/build-pages.mjs && node scripts/apply-generated-overrides.mjs",
+    "build": "node scripts/build-pages.mjs",
     "start": "node server.mjs",
-    "start:production": "npm run build && node scripts/sync-secure-content.mjs && node server.mjs",
+    "start:production": "node --import @azure/monitor-opentelemetry/loader server.mjs",
+    "prepare:release": "npm run build",
     "validate": "node scripts/validate-site.mjs && node scripts/check-links.mjs && node scripts/validate-app.mjs && node scripts/validate-domain.mjs && node scripts/audit-public-claims.mjs",
     "validate:site": "node scripts/validate-site.mjs",
     "validate:app": "node scripts/validate-app.mjs",
@@ -23,18 +24,27 @@
     "test:preview-security": "node scripts/test-preview-security.mjs",
     "test:session-restart": "node scripts/test-session-restart.mjs",
     "test:database-migration": "node scripts/test-database-migration.mjs",
+    "test:entra-identity": "node scripts/test-entra-identity.mjs",
+    "test:secret-resolution": "node scripts/test-secret-resolution.mjs",
+    "test:document-scans": "node scripts/test-document-scan-engine.mjs",
     "test:visual-contracts": "node scripts/test-visual-contracts.mjs",
-    "test": "npm run test:integration && npm run test:production-security && npm run test:preview-security && npm run test:session-restart && npm run test:database-migration && npm run test:cookies && npm run test:backup-restore",
+    "test": "npm run test:integration && npm run test:production-security && npm run test:preview-security && npm run test:session-restart && npm run test:database-migration && npm run test:entra-identity && npm run test:secret-resolution && npm run test:document-scans && npm run test:cookies && npm run test:backup-restore",
     "check": "npm run build && npm run validate && npm run syntax && npm run security:scan && npm run test:visual-contracts && npm test",
     "backup:database": "node scripts/backup-database.mjs",
     "verify:backup": "node scripts/verify-database-backup.mjs",
     "restore:database": "node scripts/restore-database.mjs",
+    "migrate:azure-sql": "node scripts/migrate-sqlite-to-azure-sql.mjs",
+    "migrate:azure-sql:schema": "node scripts/migrate-azure-sql-schema.mjs",
     "optimise:images": "node scripts/optimise-images.mjs"
   },
   "engines": {
     "node": "24.x"
   },
   "dependencies": {
-    "dotenv": "^17.4.2"
+    "@azure/identity": "4.13.1",
+    "@azure/monitor-opentelemetry": "1.18.2",
+    "@azure/storage-blob": "12.33.0",
+    "dotenv": "^17.4.2",
+    "mssql": "12.6.0"
   }
 }

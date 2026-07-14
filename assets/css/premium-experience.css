@@ -52,8 +52,7 @@
 
 .hero-media img {
   object-position: center;
-  transform: translate3d(var(--hero-shift-x, 0), var(--hero-shift-y, 0), 0) scale(1.015);
-  transition: transform 700ms cubic-bezier(.2,.7,.2,1);
+  transform: scale(1.015);
 }
 
 .hero-content {

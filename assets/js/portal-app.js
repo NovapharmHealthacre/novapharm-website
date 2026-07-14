@@ -25,14 +25,17 @@ async function hydratePortal() {
 document.querySelectorAll("[data-logout]").forEach((button) => {
   button.addEventListener("click", async () => {
     button.disabled = true;
+    let redirectTo = "/portal/";
     try {
-      await window.NovaPharmApi.request("/api/auth/logout", {
+      const result = await window.NovaPharmApi.request("/api/auth/logout", {
         method: "POST",
         headers: { "x-csrf-token": await window.NovaPharmApi.csrf() }
       });
-    } finally {
-      window.location.href = "/portal/";
+      redirectTo = result.logoutUrl || redirectTo;
+    } catch {
+      redirectTo = "/portal/";
     }
+    window.location.href = redirectTo;
   });
 });
 

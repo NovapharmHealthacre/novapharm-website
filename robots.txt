@@ -3,6 +3,7 @@ Allow: /
 Disallow: /portal/
 Disallow: /employee/
 Disallow: /admin/
+Disallow: /entra-complete/
 Disallow: /_secure/
 Disallow: /docs/
 Disallow: /NP_

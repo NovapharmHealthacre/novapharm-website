@@ -1,0 +1,63 @@
+name: Materialise licensed product media
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "creative-assets/image-asset-register.json"
+      - "scripts/materialize-product-media.mjs"
+      - ".github/workflows/materialize-product-media.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: product-media-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out candidate branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Use Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Acquire and validate licensed derivatives
+        env:
+          ALLOW_MEDIA_DOWNLOAD: "true"
+        run: node scripts/materialize-product-media.mjs
+
+      - name: Rebuild generated public files
+        run: npm run build
+
+      - name: Validate candidate after materialisation
+        run: npm run check
+
+      - name: Commit validated media to the candidate branch
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "Licensed media is already materialised and current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          git commit -m "Add validated licensed product photography"
+          git push origin HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}

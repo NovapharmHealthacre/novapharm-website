@@ -3,6 +3,14 @@ const loginForm = document.querySelector("[data-login-form]");
 if (loginForm) {
   const status = loginForm.querySelector("[data-login-status]");
   const submit = loginForm.querySelector("button[type=submit]");
+  const entraLogin = loginForm.querySelector("[data-entra-login]");
+
+  const updateEntraLink = () => {
+    if (!entraLogin) return;
+    const accessType = loginForm.querySelector('input[name="accessType"]:checked')?.value || "customer";
+    const completionPath = `/entra-complete/?accessType=${encodeURIComponent(accessType)}`;
+    entraLogin.href = `/.auth/login/aad?post_login_redirect_uri=${encodeURIComponent(completionPath)}`;
+  };
 
   const showRuntimeUnavailable = () => {
     if (!status) return;
@@ -18,7 +26,15 @@ if (loginForm) {
     status.className = "alert static-service-notice";
   };
 
-  window.NovaPharmApi.request("/api/health", { timeoutMs: 5000 }).catch(showRuntimeUnavailable);
+  window.NovaPharmApi.request("/api/health", { timeoutMs: 5000 }).then((health) => {
+    if (entraLogin && health.entra === "configured") {
+      updateEntraLink();
+      entraLogin.hidden = false;
+    }
+  }).catch(showRuntimeUnavailable);
+  loginForm.addEventListener("change", (event) => {
+    if (event.target?.name === "accessType") updateEntraLink();
+  });
 
   loginForm.addEventListener("submit", async (event) => {
     event.preventDefault();

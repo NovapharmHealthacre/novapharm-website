@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from "node:crypto";
-import { mkdirSync, rmSync, writeFileSync } from "node:fs";
-import { basename, dirname, extname, join, resolve } from "node:path";
+import { basename, extname } from "node:path";
 import { allocateNumber, audit, enqueue, nowIso, run, transaction } from "../data/database.mjs";
+import { documentStore } from "../storage/document-store.mjs";
 import { sharePointFolderPath } from "./sharepoint-mapping.mjs";
 
 const allowedEntityTypes = new Set(["customer", "supplier", "product", "order", "invoice", "purchase_order", "quality_record", "regulatory_record", "warehouse_transaction", "employee", "training_record", "account_application"]);
@@ -27,7 +27,7 @@ function signatureMatches(bytes, contentType) {
   return contentType === "text/csv" && !bytes.includes(0);
 }
 
-export function storeDocument({ bytes: inputBytes, fileName, contentType, documentClass, entityType, entityId, businessNumber, displayName, actor }) {
+export async function storeDocument({ bytes: inputBytes, fileName, contentType, documentClass, entityType, entityId, businessNumber, displayName, actor }) {
   if (!allowedEntityTypes.has(entityType)) throw Object.assign(new Error("Unsupported document entity type."), { statusCode: 400 });
   if (!/^[a-zA-Z0-9_-]{1,128}$/.test(String(entityId || ""))) throw Object.assign(new Error("Entity ID is invalid."), { statusCode: 400 });
   if (!allowedContentTypes.has(contentType)) throw Object.assign(new Error("Unsupported document type."), { statusCode: 415 });
@@ -40,34 +40,34 @@ export function storeDocument({ bytes: inputBytes, fileName, contentType, docume
   }
   const cleanClass = String(documentClass || "general").toLowerCase().replace(/[^a-z0-9_-]/g, "-").slice(0, 64) || "general";
   const id = randomUUID();
-  const documentNumber = allocateNumber(`document:${cleanClass.toUpperCase()}`, `DOC-${cleanClass.toUpperCase()}-`);
+  const documentNumber = await allocateNumber(`document:${cleanClass.toUpperCase()}`, `DOC-${cleanClass.toUpperCase()}-`);
   const checksum = createHash("sha256").update(bytes).digest("hex");
-  const defaultDataRoot = dirname(resolve(process.env.DATABASE_PATH || join(process.cwd(), "data", "novapharm.sqlite")));
-  const storageRoot = resolve(process.env.DOCUMENT_STORAGE_ROOT || join(defaultDataRoot, "documents"));
-  const folder = resolve(storageRoot, entityType, String(entityId));
-  mkdirSync(folder, { recursive: true, mode: 0o700 });
-  const storagePath = join(folder, `${id}-${cleanName}`);
   const now = nowIso();
-  let fileWritten = false;
+  let stored = null;
 
   try {
-    writeFileSync(storagePath, bytes, { flag: "wx", mode: 0o600 });
-    fileWritten = true;
-    return transaction(() => {
-      run(`INSERT INTO documents(
+    stored = await documentStore.putQuarantine({
+      bytes,
+      objectName: `${entityType}/${entityId}/${id}-${cleanName}`,
+      contentType,
+      metadata: { documentid: id, entitytype: entityType, entityid: entityId, checksum }
+    });
+    const lifecycleStatus = documentStore.requiresMalwareScan ? "quarantine" : "draft";
+    return transaction(async () => {
+      await run(`INSERT INTO documents(
         id, document_number, title, file_name, content_type, size_bytes, checksum_sha256,
-        storage_path, document_class, lifecycle_status, created_at, created_by, updated_at, updated_by
-      ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?)`, id, documentNumber, cleanName, cleanName, contentType, bytes.length, checksum, storagePath, cleanClass, now, actor, now, actor);
-      run("INSERT INTO document_links(id, document_id, entity_type, entity_id, relationship, created_at) VALUES(?, ?, ?, ?, 'supporting_document', ?)", randomUUID(), id, entityType, entityId, now);
-      audit({ actor, action: "document.created", entityType: "document", entityId: id, after: { documentNumber, entityType, entityId, checksum, size: bytes.length } });
-      enqueue({
-        eventType: "document.sharepoint_upload_requested",
+        storage_path, document_class, lifecycle_status, security_status, created_at, created_by, updated_at, updated_by
+      ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, id, documentNumber, cleanName, cleanName, contentType, bytes.length, checksum, stored.storagePath, cleanClass, lifecycleStatus, stored.securityStatus, now, actor, now, actor);
+      await run("INSERT INTO document_links(id, document_id, entity_type, entity_id, relationship, created_at) VALUES(?, ?, ?, ?, 'supporting_document', ?)", randomUUID(), id, entityType, entityId, now);
+      await audit({ actor, action: "document.created", entityType: "document", entityId: id, after: { documentNumber, entityType, entityId, checksum, size: bytes.length, securityStatus: stored.securityStatus } });
+      await enqueue({
+        eventType: documentStore.requiresMalwareScan ? "document.malware_scan_requested" : "document.sharepoint_upload_requested",
         aggregateType: "document",
         aggregateId: id,
-        destinationSystem: "sharepoint",
-        idempotencyKey: `document:${id}:upload:v1`,
+        destinationSystem: documentStore.requiresMalwareScan ? "azure_storage" : "sharepoint",
+        idempotencyKey: documentStore.requiresMalwareScan ? `document:${id}:malware-scan:v1` : `document:${id}:upload:v1`,
         payload: {
-          operation: "upload_document",
+          operation: documentStore.requiresMalwareScan ? "verify_malware_scan" : "upload_document",
           documentId: id,
           entityType,
           entityId,
@@ -75,10 +75,10 @@ export function storeDocument({ bytes: inputBytes, fileName, contentType, docume
           folderPath: sharePointFolderPath({ entityType, entityId, businessNumber, displayName })
         }
       });
-      return { id, documentNumber, fileName: cleanName, checksum, lifecycleStatus: "draft", syncStatus: "pending" };
+      return { id, documentNumber, fileName: cleanName, checksum, lifecycleStatus, securityStatus: stored.securityStatus, syncStatus: "pending" };
     });
   } catch (error) {
-    if (fileWritten) rmSync(storagePath, { force: true });
+    if (stored?.storagePath) await documentStore.remove(stored.storagePath);
     throw error;
   }
 }

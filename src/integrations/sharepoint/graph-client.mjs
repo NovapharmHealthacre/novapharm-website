@@ -1,4 +1,5 @@
 const GRAPH_ROOT = "https://graph.microsoft.com/v1.0";
+import { isResolvedSecret } from "../../core/secret-value.mjs";
 
 function encodePath(path) {
   return String(path).split("/").filter(Boolean).map(encodeURIComponent).join("/");
@@ -6,6 +7,7 @@ function encodePath(path) {
 
 export function sharePointConfigFromEnv() {
   return {
+    authMode: String(process.env.MICROSOFT_GRAPH_AUTH_MODE || (process.env.WEBSITE_INSTANCE_ID ? "managed-identity" : "client-secret")).toLowerCase(),
     tenantId: process.env.MICROSOFT_TENANT_ID || "",
     clientId: process.env.MICROSOFT_CLIENT_ID || "",
     clientSecret: process.env.MICROSOFT_CLIENT_SECRET || "",
@@ -16,7 +18,9 @@ export function sharePointConfigFromEnv() {
 }
 
 export function hasSharePointCredentials(config = sharePointConfigFromEnv()) {
-  return Boolean(config.tenantId && config.clientId && config.clientSecret && config.hostname && config.sitePath);
+  if (!config.hostname || !config.sitePath) return false;
+  if (config.authMode === "managed-identity") return Boolean(process.env.WEBSITE_INSTANCE_ID || process.env.AZURE_CLIENT_ID);
+  return Boolean(config.tenantId && config.clientId && isResolvedSecret(config.clientSecret));
 }
 
 export class GraphClient {
@@ -24,10 +28,23 @@ export class GraphClient {
     this.config = config;
     this.accessToken = "";
     this.expiresAt = 0;
+    this.credential = null;
   }
 
   async token() {
     if (this.accessToken && Date.now() < this.expiresAt - 60_000) return this.accessToken;
+    if (this.config.authMode === "managed-identity") {
+      if (!this.credential) {
+        const { DefaultAzureCredential } = await import("@azure/identity");
+        this.credential = new DefaultAzureCredential();
+      }
+      const token = await this.credential.getToken("https://graph.microsoft.com/.default");
+      if (!token?.token) throw Object.assign(new Error("Microsoft Graph managed identity did not return an access token."), { code: "graph_managed_identity_token" });
+      this.accessToken = token.token;
+      this.expiresAt = Number(token.expiresOnTimestamp || Date.now() + 30 * 60 * 1000);
+      return this.accessToken;
+    }
+    if (!hasSharePointCredentials(this.config)) throw Object.assign(new Error("Microsoft Graph client credentials are not configured."), { code: "graph_credentials_missing" });
     const body = new URLSearchParams({
       client_id: this.config.clientId,
       client_secret: this.config.clientSecret,

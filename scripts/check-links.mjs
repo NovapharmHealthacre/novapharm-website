@@ -32,7 +32,7 @@ for (const file of walk()) {
   const references = [...html.matchAll(/\b(?:href|src)=["']([^"']+)["']/gi)].map((match) => match[1]);
   for (const reference of references) {
     if (/^(?:https?:|mailto:|tel:|data:|javascript:)/i.test(reference)) continue;
-    if (reference.startsWith("/api/")) continue;
+    if (reference.startsWith("/api/") || reference.startsWith("/.auth/")) continue;
     const [pathPart, fragment = ""] = reference.split("#");
     const target = pathPart ? targetFile(file, pathPart) : file;
     checked += 1;

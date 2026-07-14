@@ -1,0 +1,143 @@
+{
+  "version": "1.0",
+  "reviewed": "2026-07-14",
+  "licence": {
+    "name": "Pexels licence",
+    "url": "https://www.pexels.com/license/",
+    "verifiedOn": "2026-07-14",
+    "websiteUsePermitted": true,
+    "modificationPermitted": true,
+    "attributionRequired": false,
+    "restrictions": [
+      "Do not imply endorsement by a depicted person or organisation.",
+      "Do not resell or redistribute an unaltered image as a standalone stock asset.",
+      "Do not use an image as part of the NovaPharm trade mark or identity."
+    ]
+  },
+  "delivery": {
+    "directory": "assets/media/products/",
+    "width": 1600,
+    "height": 900,
+    "formats": [
+      "avif",
+      "webp",
+      "jpg"
+    ],
+    "runtimeHotlinking": false,
+    "metadataPolicy": "Use transformed CDN derivatives and validate local output before publication."
+  },
+  "assets": [
+    {
+      "id": "oncology-vial-handling",
+      "category": "Oncology medicines",
+      "sourcePage": "https://www.pexels.com/photo/anonymous-lab-worker-using-pipette-for-injecting-sample-into-flask-4299424/",
+      "downloadBaseUrl": "https://images.pexels.com/photos/4299424/pexels-photo-4299424.jpeg",
+      "creator": "Jorge Sepulveda",
+      "acquisitionDate": "2026-07-14",
+      "permittedUse": "Commercial corporate website use and responsive crops under the Pexels licence.",
+      "requiredAttribution": null,
+      "cropNotes": "Landscape crop centred on gloved hands, pipette and vial; exclude unrelated background detail.",
+      "altText": "Gloved laboratory professional using a pipette to handle a vial in a controlled scientific setting",
+      "claimBoundary": "Representative stock image; not a NovaPharm product, facility or efficacy claim.",
+      "reviewStatus": "selected-pending-materialisation"
+    },
+    {
+      "id": "specialty-pharmacy-handling",
+      "category": "Specialty medicines",
+      "sourcePage": "https://www.pexels.com/photo/pharmacist-in-front-of-shelves-with-medicines-14797855/",
+      "downloadBaseUrl": "https://images.pexels.com/photos/14797855/pexels-photo-14797855.jpeg",
+      "creator": "World Sikh Organization of Canada",
+      "acquisitionDate": "2026-07-14",
+      "permittedUse": "Commercial corporate website use and responsive crops under the Pexels licence.",
+      "requiredAttribution": null,
+      "cropNotes": "Landscape crop showing natural pharmacy work; do not imply endorsement or NovaPharm employment.",
+      "altText": "Pharmacist organising medicine packs on pharmacy shelves",
+      "claimBoundary": "Representative stock image; the person does not endorse NovaPharm and is not a NovaPharm employee.",
+      "reviewStatus": "selected-pending-materialisation"
+    },
+    {
+      "id": "oral-liquid-formulation",
+      "category": "Oral liquid formulations",
+      "sourcePage": "https://www.pexels.com/photo/person-hands-holding-lab-9628804/",
+      "downloadBaseUrl": "https://images.pexels.com/photos/9628804/pexels-photo-9628804.jpeg",
+      "creator": "Ivan S",
+      "acquisitionDate": "2026-07-14",
+      "permittedUse": "Commercial corporate website use and responsive crops under the Pexels licence.",
+      "requiredAttribution": null,
+      "cropNotes": "Focus on gloved handling and amber bottle; retain sufficient laboratory context.",
+      "altText": "Gloved laboratory professional holding an amber glass bottle during liquid analysis",
+      "claimBoundary": "Representative formulation context; not a NovaPharm laboratory or marketed product.",
+      "reviewStatus": "selected-pending-materialisation"
+    },
+    {
+      "id": "licensed-generics-packaging",
+      "category": "Selected licensed generics",
+      "sourcePage": "https://www.pexels.com/photo/person-holding-blister-packs-5995060/",
+      "downloadBaseUrl": "https://images.pexels.com/photos/5995060/pexels-photo-5995060.jpeg",
+      "creator": "Maksim Goncharenok",
+      "acquisitionDate": "2026-07-14",
+      "permittedUse": "Commercial corporate website use and responsive crops under the Pexels licence.",
+      "requiredAttribution": null,
+      "cropNotes": "Use a disciplined landscape crop around unbranded blister packaging; avoid consumer-treatment framing.",
+      "altText": "Hand holding unbranded medicine blister packs against a clean blue background",
+      "claimBoundary": "Representative packaging image; no licence ownership, stock or availability is implied.",
+      "reviewStatus": "selected-pending-materialisation"
+    },
+    {
+      "id": "cardiovascular-quality-control",
+      "category": "Cardiovascular medicines",
+      "sourcePage": "https://www.pexels.com/photo/scientist-in-laboratory-3735716/",
+      "downloadBaseUrl": "https://images.pexels.com/photos/3735716/pexels-photo-3735716.jpeg",
+      "creator": "Polina Tankilevitch",
+      "acquisitionDate": "2026-07-14",
+      "permittedUse": "Commercial corporate website use and responsive crops under the Pexels licence.",
+      "requiredAttribution": null,
+      "cropNotes": "Retain laboratory sample handling and notes; avoid any visible unrelated labels.",
+      "altText": "Laboratory scientist examining samples and recording quality-control observations",
+      "claimBoundary": "Representative quality-control context; not a NovaPharm laboratory or current product programme.",
+      "reviewStatus": "selected-pending-materialisation"
+    },
+    {
+      "id": "respiratory-manufacturing",
+      "category": "Respiratory medicines",
+      "sourcePage": "https://www.pexels.com/photo/pharmaceutical-workers-in-a-production-line-37466061/",
+      "downloadBaseUrl": "https://images.pexels.com/photos/37466061/pexels-photo-37466061.jpeg",
+      "creator": "Elements Interactive",
+      "acquisitionDate": "2026-07-14",
+      "permittedUse": "Commercial corporate website use and responsive crops under the Pexels licence.",
+      "requiredAttribution": null,
+      "cropNotes": "Show controlled packaging work without identifying the third-party site or implying ownership.",
+      "altText": "Protected workers monitoring medicine packaging on a controlled production line",
+      "claimBoundary": "Representative third-party manufacturing context; NovaPharm does not claim to own the facility.",
+      "reviewStatus": "selected-pending-materialisation"
+    },
+    {
+      "id": "metabolic-laboratory-analysis",
+      "category": "Metabolic medicines",
+      "sourcePage": "https://www.pexels.com/photo/person-holding-glass-flasks-3082451/",
+      "downloadBaseUrl": "https://images.pexels.com/photos/3082451/pexels-photo-3082451.jpeg",
+      "creator": "Chokniti Khongchum",
+      "acquisitionDate": "2026-07-14",
+      "permittedUse": "Commercial corporate website use and responsive crops under the Pexels licence.",
+      "requiredAttribution": null,
+      "cropNotes": "Focus on protective equipment and controlled analysis; avoid exaggerated colour treatment.",
+      "altText": "Scientist wearing gloves and safety glasses holding laboratory flasks for analysis",
+      "claimBoundary": "Representative scientific analysis; not evidence of a NovaPharm product or facility.",
+      "reviewStatus": "selected-pending-materialisation"
+    },
+    {
+      "id": "hospital-supply-logistics",
+      "category": "Hospital and hard-to-source products",
+      "sourcePage": "https://www.pexels.com/photo/boxes-in-delivery-truck-in-warehouse-21838827/",
+      "downloadBaseUrl": "https://images.pexels.com/photos/21838827/pexels-photo-21838827.jpeg",
+      "creator": "Wojciech Kotlicki",
+      "acquisitionDate": "2026-07-14",
+      "permittedUse": "Commercial corporate website use and responsive crops under the Pexels licence.",
+      "requiredAttribution": null,
+      "cropNotes": "Show sealed cartons and logistics handling; do not imply pharmaceutical temperature control not visible in the image.",
+      "altText": "Sealed cartons arranged inside a delivery vehicle for controlled logistics handling",
+      "claimBoundary": "Representative general logistics image; not a NovaPharm vehicle, warehouse or validated cold-chain process.",
+      "reviewStatus": "selected-pending-materialisation"
+    }
+  ]
+}

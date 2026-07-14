@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { observabilityStatus } from "./src/observability/azure-monitor.mjs";
 import { createServer } from "node:http";
 import { createReadStream, existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
 import { extname, isAbsolute, join, normalize, relative, resolve } from "node:path";
@@ -42,10 +43,15 @@ import {
   revokePersistentSession,
   verifyCredentials
 } from "./src/core/auth-service.mjs";
-import { databaseReady } from "./src/data/database.mjs";
+import { databaseProvider, databaseReady } from "./src/data/database.mjs";
 import { processSharePointEvents, sharePointFolderPlan } from "./src/integrations/sharepoint/sync-engine.mjs";
 import { processPolarSpeedEvents } from "./src/integrations/polar-speed/sync-engine.mjs";
+import { processDocumentScanEvents } from "./src/integrations/azure-storage/scan-engine.mjs";
 import { emailIntegrationStatus, sendLeadNotifications } from "./src/integrations/email/client.mjs";
+import { documentStorageStatus } from "./src/storage/document-store.mjs";
+import { appServicePrincipalFromHeaders, provisionFederatedIdentity } from "./src/core/entra-identity.mjs";
+import { isResolvedSecret } from "./src/core/secret-value.mjs";
+import { hasSharePointCredentials } from "./src/integrations/sharepoint/graph-client.mjs";
 
 const root = resolve(process.cwd());
 const applicationVersion = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version;
@@ -70,14 +76,18 @@ const accessRedirects = {
 };
 const configuredPortalUsers = portalUsersFromEnvironment(process.env, { isProduction });
 
-if (!sessionSecret || Buffer.byteLength(sessionSecret, "utf8") < 32) {
-  throw new Error("SESSION_SECRET must contain at least 32 bytes.");
+if (!isResolvedSecret(sessionSecret, { minimumBytes: 32 })) {
+  throw new Error("SESSION_SECRET must resolve to at least 32 bytes.");
 }
 if (isPreview && (!previewUsername || !previewPassword)) throw new Error("PREVIEW_ACCESS_USERNAME and PREVIEW_ACCESS_PASSWORD are required when PREVIEW_MODE=true.");
 
 if (isProduction) {
-  for (const variable of ["DATABASE_PATH", "SECURE_CONTENT_ROOT", "DOCUMENT_STORAGE_ROOT", "PUBLIC_ORIGIN", "PUBLIC_API_ORIGIN", "SITE_URL"]) {
+  for (const variable of ["SECURE_CONTENT_ROOT", "PUBLIC_ORIGIN", "PUBLIC_API_ORIGIN", "SITE_URL"]) {
     if (!process.env[variable]) throw new Error(`${variable} is required in production.`);
+  }
+  if (databaseProvider === "sqlite" && !process.env.DATABASE_PATH) throw new Error("DATABASE_PATH is required for the SQLite production provider.");
+  if (databaseProvider === "azure-sql" && (!process.env.AZURE_SQL_SERVER || !process.env.AZURE_SQL_DATABASE)) {
+    throw new Error("AZURE_SQL_SERVER and AZURE_SQL_DATABASE are required for the Azure SQL production provider.");
   }
   if (host !== "0.0.0.0") throw new Error("HOST must be 0.0.0.0 in production.");
   if (!publicOrigin.startsWith("https://")) throw new Error("PUBLIC_ORIGIN must use HTTPS in production.");
@@ -87,8 +97,8 @@ if (isProduction) {
 }
 
 await provisionBootstrapAdmin(process.env, { requireCompromiseCheck: isProduction, fetchImplementation: isProduction ? globalThis.fetch : null });
-if (configuredPortalUsers.length) provisionAuthUsers(configuredPortalUsers);
-if (!hasPortalAdministrator()) {
+if (configuredPortalUsers.length) await provisionAuthUsers(configuredPortalUsers);
+if (!await hasPortalAdministrator() && process.env.ENTRA_AUTH_ENABLED !== "true") {
   if (isProduction) throw new Error("A persistent portal administrator must be configured in production.");
   console.warn("Portal login is not configured. Set the initial admin variables or PORTAL_USERS_JSON with hashed credentials.");
 }
@@ -223,8 +233,8 @@ function networkFingerprint(request) {
   return createHmac("sha256", sessionSecret).update(address).digest("hex");
 }
 
-function rateLimit(request, key, limit, windowMs) {
-  return consumeRateLimit(`${key}:${networkFingerprint(request)}`, limit, windowMs).allowed;
+async function rateLimit(request, key, limit, windowMs) {
+  return (await consumeRateLimit(`${key}:${networkFingerprint(request)}`, limit, windowMs)).allowed;
 }
 
 function normalizeAccessType(value) {
@@ -257,8 +267,8 @@ function validApplicationUploadToken(applicationId, token) {
   return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 
-function createSession(user, accessType = "customer") {
-  const { id } = createPersistentSession(user, accessType, sessionTtlMs);
+async function createSession(user, accessType = "customer") {
+  const { id } = await createPersistentSession(user, accessType, sessionTtlMs);
   return `${id}.${signSession(id)}`;
 }
 
@@ -376,44 +386,44 @@ function safeFilePath(urlPath) {
   return isWithinDirectory(contentRoot, filePath) ? filePath : null;
 }
 
-function portalData(session) {
+async function portalData(session) {
   if (session.role === "client") {
     return {
-      dashboard: operationalDashboard(session.customerId),
+      dashboard: await operationalDashboard(session.customerId),
       dataPolicy: "Customer values are restricted to the authenticated customer account and come from the canonical database."
     };
   }
   return {
-    dashboard: operationalDashboard(),
-    integrations: syncStatus(),
+    dashboard: await operationalDashboard(),
+    integrations: await syncStatus(),
     sharePointFolders: sharePointFolderPlan(),
     dataPolicy: "Operational values come from the canonical database. External source states are shown explicitly when credentials or contracts are not configured."
   };
 }
 
-function adminSummary() {
-  const dashboard = operationalDashboard();
-  const leads = listLeads(20);
+async function adminSummary() {
+  const dashboard = await operationalDashboard();
+  const leads = await listLeads(20);
   return {
     metrics: {
       leads: leads.length,
-      activeSessions: countActiveSessions(),
+      activeSessions: await countActiveSessions(),
       customers: dashboard.customers,
       products: dashboard.products,
       openOrders: dashboard.openOrders,
       pendingSyncEvents: dashboard.pendingSyncEvents
     },
     leads,
-    applications: listApplications(20),
-    integrations: syncStatus(),
-    audit: listAudit(30),
+    applications: await listApplications(20),
+    integrations: await syncStatus(),
+    audit: await listAudit(30),
     sourceStatus: dashboard.sourceStatus,
     dataFreshness: dashboard.dataFreshness
   };
 }
 
-function authenticated(request, response, roles = []) {
-  const session = getSession(request);
+async function authenticated(request, response, roles = []) {
+  const session = await getSession(request);
   if (!session) {
     json(response, 401, { error: "Authentication required." });
     return null;
@@ -429,8 +439,8 @@ function authenticated(request, response, roles = []) {
   return session;
 }
 
-function scopedAuthentication(request, response, scopes, roles = []) {
-  const session = authenticated(request, response, roles);
+async function scopedAuthentication(request, response, scopes, roles = []) {
+  const session = await authenticated(request, response, roles);
   if (!session) return null;
   if (!hasScope(session, scopes)) {
     json(response, 403, { error: "You do not have permission for this portal area." });
@@ -453,7 +463,7 @@ export async function handleRequest(request, response) {
     }
 
     if (pathname.startsWith("/api/") && !["GET", "HEAD", "OPTIONS"].includes(request.method || "GET") && !hasAllowedOrigin(request)) {
-      recordSecurityEvent({ eventType: "request.origin_rejected", networkFingerprint: networkFingerprint(request), outcome: "denied", details: { pathname } });
+      await recordSecurityEvent({ eventType: "request.origin_rejected", networkFingerprint: networkFingerprint(request), outcome: "denied", details: { pathname } });
       return json(response, 403, { error: "Request origin is not permitted.", code: "origin_rejected" });
     }
 
@@ -470,9 +480,9 @@ export async function handleRequest(request, response) {
 
     if (pathname === "/api/auth/login" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
-      if (!rateLimit(request, "login", 8, 15 * 60 * 1000)) return json(response, 429, { error: "Too many login attempts. Try again later." });
+      if (!await rateLimit(request, "login", 8, 15 * 60 * 1000)) return json(response, 429, { error: "Too many login attempts. Try again later." });
       const body = await readBody(request);
-      const user = verifyCredentials(String(body.username || ""), String(body.password || ""), networkFingerprint(request));
+      const user = await verifyCredentials(String(body.username || ""), String(body.password || ""), networkFingerprint(request));
       if (!user) {
         return json(response, 401, { error: "Invalid username or password." });
       }
@@ -480,16 +490,31 @@ export async function handleRequest(request, response) {
       if (!hasScope(user, [accessType])) {
         return json(response, 403, { error: "This account is not authorised for the selected portal area." });
       }
-      const sessionCookie = createSession(user, accessType);
+      const sessionCookie = await createSession(user, accessType);
       const redirectTo = user.mustChangePassword ? "/portal/change-password/" : accessRedirects[accessType];
       json(response, 200, { ok: true, accessType, mustChangePassword: user.mustChangePassword, redirectTo }, { "Set-Cookie": cookie("np_session", sessionCookie, { maxAge: Math.floor(sessionTtlMs / 1000) }) });
       return;
     }
 
+    if (pathname === "/api/auth/federated" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
+      if (!await rateLimit(request, "federated-login", 12, 15 * 60 * 1000)) return json(response, 429, { error: "Too many sign-in attempts. Try again later." });
+      const identity = appServicePrincipalFromHeaders(request.headers);
+      if (!identity) return json(response, 401, { error: "Microsoft sign-in could not be verified." });
+      const user = await provisionFederatedIdentity(identity);
+      if (!user) return json(response, 403, { error: "This Microsoft identity is not approved for a NovaPharm portal." });
+      const body = await readBody(request);
+      const accessType = normalizeAccessType(body.accessType);
+      if (!hasScope(user, [accessType])) return json(response, 403, { error: "This identity is not authorised for the selected portal area." });
+      const sessionCookie = await createSession(user, accessType);
+      json(response, 200, { ok: true, accessType, redirectTo: accessRedirects[accessType] }, { "Set-Cookie": cookie("np_session", sessionCookie, { maxAge: Math.floor(sessionTtlMs / 1000) }) });
+      return;
+    }
+
     if (pathname === "/api/auth/change-password" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
-      if (!rateLimit(request, "password-change", 6, 15 * 60 * 1000)) return json(response, 429, { error: "Too many password-change attempts. Try again later." });
-      const existingSession = getSession(request);
+      if (!await rateLimit(request, "password-change", 6, 15 * 60 * 1000)) return json(response, 429, { error: "Too many password-change attempts. Try again later." });
+      const existingSession = await getSession(request);
       if (!existingSession) return json(response, 401, { error: "Authentication required." });
       const body = await readBody(request);
       const user = await changePassword({
@@ -501,27 +526,27 @@ export async function handleRequest(request, response) {
         requireCompromiseCheck: isProduction,
         fetchImplementation: isProduction ? globalThis.fetch : null
       });
-      const sessionCookie = createSession(user, existingSession.accessType);
+      const sessionCookie = await createSession(user, existingSession.accessType);
       json(response, 200, { ok: true, redirectTo: accessRedirects[existingSession.accessType] }, { "Set-Cookie": cookie("np_session", sessionCookie, { maxAge: Math.floor(sessionTtlMs / 1000) }) });
       return;
     }
 
     if (pathname === "/api/auth/logout" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
-      const session = getSession(request);
-      if (session) revokePersistentSession(session.id);
-      json(response, 200, { ok: true }, { "Set-Cookie": cookie("np_session", "", { maxAge: 0 }) });
+      const session = await getSession(request);
+      if (session) await revokePersistentSession(session.id);
+      json(response, 200, { ok: true, logoutUrl: session?.identityProvider?.startsWith("entra-") ? "/.auth/logout?post_logout_redirect_uri=/portal/" : "/portal/" }, { "Set-Cookie": cookie("np_session", "", { maxAge: 0 }) });
       return;
     }
 
     if (pathname === "/api/contact" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
-      if (!rateLimit(request, "contact", 12, 60 * 60 * 1000)) return json(response, 429, { error: "Too many submissions. Try again later." });
+      if (!await rateLimit(request, "contact", 12, 60 * 60 * 1000)) return json(response, 429, { error: "Too many submissions. Try again later." });
       const body = await readBody(request);
-      const lead = createLead(body);
+      const lead = await createLead(body);
       if (lead.id) {
         try {
-          await sendLeadNotifications(leadNotificationContext(lead.id));
+          await sendLeadNotifications(await leadNotificationContext(lead.id));
         } catch (error) {
           console.error("Contact notification delivery failed.", { status: error.providerStatus || "unavailable" });
         }
@@ -532,8 +557,8 @@ export async function handleRequest(request, response) {
 
     if (pathname === "/api/account-applications" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
-      if (!rateLimit(request, "account-application", 5, 60 * 60 * 1000)) return json(response, 429, { error: "Too many applications. Try again later." });
-      const application = submitCustomerApplication(await readBody(request));
+      if (!await rateLimit(request, "account-application", 5, 60 * 60 * 1000)) return json(response, 429, { error: "Too many applications. Try again later." });
+      const application = await submitCustomerApplication(await readBody(request));
       json(response, 201, { ok: true, application: { ...application, uploadToken: applicationUploadToken(application.id) } });
       return;
     }
@@ -541,10 +566,10 @@ export async function handleRequest(request, response) {
     const applicationDocumentMatch = pathname.match(/^\/api\/account-applications\/([^/]+)\/documents$/);
     if (applicationDocumentMatch && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
-      if (!rateLimit(request, "application-document", 30, 60 * 60 * 1000)) return json(response, 429, { error: "Too many document uploads." });
+      if (!await rateLimit(request, "application-document", 30, 60 * 60 * 1000)) return json(response, 429, { error: "Too many document uploads." });
       if (!validApplicationUploadToken(applicationDocumentMatch[1], url.searchParams.get("uploadToken"))) return json(response, 403, { error: "Invalid application upload token." });
-      const context = applicationDocumentContext(applicationDocumentMatch[1]);
-      const document = storeDocument({
+      const context = await applicationDocumentContext(applicationDocumentMatch[1]);
+      const document = await storeDocument({
         bytes: await readRawBody(request),
         fileName: url.searchParams.get("fileName"),
         contentType: String(request.headers["content-type"] || "application/octet-stream").split(";")[0],
@@ -562,107 +587,107 @@ export async function handleRequest(request, response) {
     const activationMatch = pathname.match(/^\/api\/account-applications\/([^/]+)\/activate$/);
     if (activationMatch && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
-      const session = authenticated(request, response, ["admin"]);
+      const session = await authenticated(request, response, ["admin"]);
       if (!session) return;
-      const customer = activateCustomer(activationMatch[1], session.username);
+      const customer = await activateCustomer(activationMatch[1], session.username);
       json(response, 200, { ok: true, customer });
       return;
     }
 
     if (pathname === "/api/portal/session" && request.method === "GET") {
-      const session = getSession(request);
+      const session = await getSession(request);
       if (!session) return json(response, 401, { error: "Authentication required." });
       json(response, 200, { user: { username: session.username, displayName: session.displayName, role: session.role, accessType: session.accessType, accessScopes: session.accessScopes, mustChangePassword: session.mustChangePassword } });
       return;
     }
 
     if (pathname === "/api/portal/data" && request.method === "GET") {
-      const session = scopedAuthentication(request, response, ["customer", "employee", "board"]);
+      const session = await scopedAuthentication(request, response, ["customer", "employee", "board"]);
       if (!session) return;
-      json(response, 200, portalData(session));
+      json(response, 200, await portalData(session));
       return;
     }
 
     if (pathname === "/api/dashboard" && request.method === "GET") {
-      const session = scopedAuthentication(request, response, ["customer", "employee"]);
+      const session = await scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
       if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
       const customerId = session.role === "client" ? session.customerId : null;
-      json(response, 200, operationalDashboard(customerId));
+      json(response, 200, await operationalDashboard(customerId));
       return;
     }
 
     if (pathname === "/api/catalog/products" && request.method === "GET") {
-      const session = scopedAuthentication(request, response, ["customer", "employee"]);
+      const session = await scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
       if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
-      json(response, 200, { products: listProducts(url.searchParams.get("q") || "", { customerVisibleOnly: session.role === "client" }), dataFreshness: new Date().toISOString() });
+      json(response, 200, { products: await listProducts(url.searchParams.get("q") || "", { customerVisibleOnly: session.role === "client" }), dataFreshness: new Date().toISOString() });
       return;
     }
 
     if (pathname === "/api/customers" && request.method === "GET") {
-      if (!scopedAuthentication(request, response, ["employee"])) return;
-      json(response, 200, { customers: listCustomers(url.searchParams.get("q") || "") });
+      if (!await scopedAuthentication(request, response, ["employee"])) return;
+      json(response, 200, { customers: await listCustomers(url.searchParams.get("q") || "") });
       return;
     }
 
     if (pathname === "/api/suppliers" && request.method === "GET") {
-      if (!scopedAuthentication(request, response, ["employee"])) return;
-      json(response, 200, { suppliers: listSuppliers(url.searchParams.get("q") || "") });
+      if (!await scopedAuthentication(request, response, ["employee"])) return;
+      json(response, 200, { suppliers: await listSuppliers(url.searchParams.get("q") || "") });
       return;
     }
 
     if (pathname === "/api/suppliers" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
-      const session = scopedAuthentication(request, response, ["employee"]);
+      const session = await scopedAuthentication(request, response, ["employee"]);
       if (!session) return;
-      json(response, 201, { supplier: createSupplier(await readBody(request), session.username) });
+      json(response, 201, { supplier: await createSupplier(await readBody(request), session.username) });
       return;
     }
 
     if (pathname === "/api/products" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
-      const session = scopedAuthentication(request, response, ["employee"]);
+      const session = await scopedAuthentication(request, response, ["employee"]);
       if (!session) return;
-      json(response, 201, { product: createProduct(await readBody(request), session.username) });
+      json(response, 201, { product: await createProduct(await readBody(request), session.username) });
       return;
     }
 
     if (pathname === "/api/orders" && request.method === "GET") {
-      const session = scopedAuthentication(request, response, ["customer", "employee"]);
+      const session = await scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
       if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
-      json(response, 200, { orders: listOrders({ customerId: session.role === "client" ? session.customerId : null }) });
+      json(response, 200, { orders: await listOrders({ customerId: session.role === "client" ? session.customerId : null }) });
       return;
     }
 
     if (pathname === "/api/orders" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
-      const session = scopedAuthentication(request, response, ["customer", "employee"]);
+      const session = await scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
       if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
       const scopedCustomerId = session.role === "client" ? session.customerId : null;
-      json(response, 201, { order: createOrder(await readBody(request), session.username, scopedCustomerId) });
+      json(response, 201, { order: await createOrder(await readBody(request), session.username, scopedCustomerId) });
       return;
     }
 
     if (pathname === "/api/purchase-orders" && request.method === "GET") {
-      if (!scopedAuthentication(request, response, ["employee"])) return;
-      json(response, 200, { purchaseOrders: listPurchaseOrders() });
+      if (!await scopedAuthentication(request, response, ["employee"])) return;
+      json(response, 200, { purchaseOrders: await listPurchaseOrders() });
       return;
     }
 
     if (pathname === "/api/purchase-orders" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
-      const session = scopedAuthentication(request, response, ["employee"]);
+      const session = await scopedAuthentication(request, response, ["employee"]);
       if (!session) return;
-      json(response, 201, { purchaseOrder: createPurchaseOrder(await readBody(request), session.username) });
+      json(response, 201, { purchaseOrder: await createPurchaseOrder(await readBody(request), session.username) });
       return;
     }
 
     if (pathname === "/api/documents/upload" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
-      const session = scopedAuthentication(request, response, ["customer", "employee", "board"]);
+      const session = await scopedAuthentication(request, response, ["customer", "employee", "board"]);
       if (!session) return;
       const requestedEntityType = url.searchParams.get("entityType");
       const requestedEntityId = url.searchParams.get("entityId");
@@ -670,7 +695,7 @@ export async function handleRequest(request, response) {
         return json(response, 403, { error: "Customer documents must be linked to the authenticated customer account." });
       }
       const bytes = await readRawBody(request);
-      const document = storeDocument({
+      const document = await storeDocument({
         bytes,
         fileName: url.searchParams.get("fileName"),
         contentType: String(request.headers["content-type"] || "application/octet-stream").split(";")[0],
@@ -686,27 +711,34 @@ export async function handleRequest(request, response) {
     }
 
     if (pathname === "/api/integrations/status" && request.method === "GET") {
-      if (!authenticated(request, response, ["admin"])) return;
-      json(response, 200, { integrations: syncStatus(), sharePointFolders: sharePointFolderPlan() });
+      if (!await authenticated(request, response, ["admin"])) return;
+      json(response, 200, { integrations: await syncStatus(), sharePointFolders: sharePointFolderPlan() });
       return;
     }
 
     if (pathname === "/api/integrations/sharepoint/sync" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
-      if (!authenticated(request, response, ["admin"])) return;
+      if (!await authenticated(request, response, ["admin"])) return;
       json(response, 200, await processSharePointEvents({ limit: 50 }));
       return;
     }
 
     if (pathname === "/api/integrations/polar-speed/sync" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
-      if (!authenticated(request, response, ["admin"])) return;
+      if (!await authenticated(request, response, ["admin"])) return;
       json(response, 200, await processPolarSpeedEvents({ limit: 50 }));
       return;
     }
 
+    if (pathname === "/api/integrations/storage/scans" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      if (!await authenticated(request, response, ["admin"])) return;
+      json(response, 200, await processDocumentScanEvents({ limit: 50 }));
+      return;
+    }
+
     if (pathname === "/api/health" && request.method === "GET") {
-      const ready = databaseReady();
+      const ready = await databaseReady();
       json(response, ready ? 200 : 503, {
         status: ready ? "ok" : "degraded",
         service: "novapharm-web",
@@ -714,21 +746,24 @@ export async function handleRequest(request, response) {
         environment: isProduction ? "production" : "development",
         timestamp: new Date().toISOString(),
         database: ready ? "ready" : "unavailable",
+        documentStorage: documentStorageStatus(),
+        entra: process.env.ENTRA_AUTH_ENABLED === "true" ? "configured" : "owner_configuration_required",
+        observability: observabilityStatus,
         email: emailIntegrationStatus(),
-        sharePoint: process.env.MICROSOFT_TENANT_ID ? "configured" : "credentials_required",
+        sharePoint: hasSharePointCredentials() ? "configured" : "owner_configuration_required",
         polarSpeed: process.env.POLAR_SPEED_API_BASE_URL ? "configured" : "api_contract_required"
       });
       return;
     }
 
     if (pathname === "/api/admin/summary" && request.method === "GET") {
-      const session = authenticated(request, response, ["admin"]);
+      const session = await authenticated(request, response, ["admin"]);
       if (!session) return;
-      json(response, 200, adminSummary());
+      json(response, 200, await adminSummary());
       return;
     }
 
-    const pathSession = protectedPath(pathname) ? getSession(request) : null;
+    const pathSession = protectedPath(pathname) ? await getSession(request) : null;
     if (protectedPath(pathname) && !pathSession) {
       response.writeHead(302, securityHeaders({ Location: "/portal/" }));
       response.end();
