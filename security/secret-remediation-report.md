@@ -26,13 +26,13 @@ Last reviewed: 14 July 2026
 - rewritten `main` and PR 5 tip trees match the original tip trees exactly.
 - all six branch heads were atomically force-updated with lease protection;
 - remote branch SHAs match the verified rewritten reference map;
-- a final fresh active-ref mirror checked 1,564 reachable objects and passes exact-value, `gitleaks` and `git fsck` checks across all active branch history;
+- a fresh active-ref mirror at candidate `53c90b137268c113502daed700386b1185d30fd7` checked 1,564 reachable objects and passed exact-value, `gitleaks` and `git fsck` checks across all active branch history;
 - GitHub secret scanning reports zero open alerts;
 - PR 5 remains open, draft and mergeable on the rewritten base and head.
 
 ## Not completed
 
-GitHub still advertises immutable historical pull-request refs for closed PRs 1 to 4. The final all-advertised-ref mirror checked 1,648 reachable objects and still finds nine old objects even though all active branch ancestry is clean. GitHub Support must purge the cached pull-request material before an all-ref exact scan can pass.
+GitHub still advertises immutable historical pull-request refs for closed PRs 1 to 4. The corresponding all-advertised-ref mirror checked 1,648 reachable objects and found nine old objects even though all active branch ancestry is clean. GitHub Support must purge the cached pull-request material before an all-ref exact scan can pass.
 
 The free-validation implementation is committed and pushed. Final CI and GitHub Support removal remain external acceptance gates. Pull-request refs and cached diffs cannot be force-pushed by a repository administrator.
 
