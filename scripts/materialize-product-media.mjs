@@ -13,6 +13,10 @@ const formats = Object.freeze({
   webp: "image/webp",
   jpg: "image/jpeg"
 });
+const acceptedReviewStatuses = new Set([
+  "downloaded-and-technically-validated",
+  "rendered-and-brand-reviewed"
+]);
 
 if (process.env.ALLOW_MEDIA_DOWNLOAD !== "true") {
   throw new Error("External media acquisition is disabled. Set ALLOW_MEDIA_DOWNLOAD=true only in the controlled acquisition workflow.");
@@ -136,7 +140,7 @@ function existingDerivativesAreValid() {
   if (!register.assets.length) return false;
   try {
     return register.assets.every((asset) => {
-      if (asset.reviewStatus !== "downloaded-and-technically-validated") return false;
+      if (!acceptedReviewStatuses.has(asset.reviewStatus)) return false;
       return Object.keys(formats).every((format) => {
         const derivative = asset.derivatives?.[format];
         const path = derivative?.path ? resolve(root, derivative.path) : "";
