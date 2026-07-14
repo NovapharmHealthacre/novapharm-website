@@ -1,0 +1,1120 @@
+[
+  {
+    "route": "/",
+    "canonical": "https://novapharmhealthcare.com/",
+    "file": "index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/#organization",
+        "types": [
+          "Organization",
+          "Corporation"
+        ],
+        "name": "NovaPharm Healthcare",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/#website",
+        "types": [
+          "WebSite"
+        ],
+        "name": "NovaPharm Healthcare",
+        "mainEntity": null,
+        "publisher": "https://novapharmhealthcare.com/#organization",
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "NovaPharm Healthcare | UK Pharmaceutical Distribution Strategy",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/about/",
+    "canonical": "https://novapharmhealthcare.com/about/",
+    "file": "about/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/about/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "About NovaPharm Healthcare | Compliance-First UK Pharmaceutical Company",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/about/company/",
+    "canonical": "https://novapharmhealthcare.com/about/company/",
+    "file": "about/company/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/about/company/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Company | NovaPharm Healthcare Ltd",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/about/governance/",
+    "canonical": "https://novapharmhealthcare.com/about/governance/",
+    "file": "about/governance/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/about/governance/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Governance | NovaPharm Healthcare",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/leadership/",
+    "canonical": "https://novapharmhealthcare.com/leadership/",
+    "file": "leadership/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/leadership/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Leadership | NovaPharm Healthcare",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/services/",
+    "canonical": "https://novapharmhealthcare.com/services/",
+    "file": "services/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/services/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Pharmaceutical Services UK | Distribution, PLPI, Quality and Sourcing",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/services/#trading-distribution",
+        "types": [
+          "Service"
+        ],
+        "name": "Pharmaceutical trading & distribution",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/services/#plpi-strategy",
+        "types": [
+          "Service"
+        ],
+        "name": "PLPI regulatory & sourcing strategy",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/services/#european-sourcing",
+        "types": [
+          "Service"
+        ],
+        "name": "European buying & sourcing",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/services/#gmp-partnerships",
+        "types": [
+          "Service"
+        ],
+        "name": "GMP manufacturing partnerships",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/services/#quality-pv",
+        "types": [
+          "Service"
+        ],
+        "name": "Quality, QMS & pharmacovigilance",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/services/#logistics",
+        "types": [
+          "Service"
+        ],
+        "name": "Logistics & distribution operations",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/services/#digital-b2b",
+        "types": [
+          "Service"
+        ],
+        "name": "Digital B2B & data services",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/services/#market-access",
+        "types": [
+          "Service"
+        ],
+        "name": "UK market access & partnerships",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/regulatory-services/",
+    "canonical": "https://novapharmhealthcare.com/regulatory-services/",
+    "file": "regulatory-services/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/regulatory-services/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "MHRA, WDA(H), PLPI and GDP Regulatory Strategy | NovaPharm",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "FAQPage"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/product-portfolio/",
+    "canonical": "https://novapharmhealthcare.com/product-portfolio/",
+    "file": "product-portfolio/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/product-portfolio/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Strategic Pharmaceutical Portfolio | Oncology and Specialty Medicines",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/partner-with-us/",
+    "canonical": "https://novapharmhealthcare.com/partner-with-us/",
+    "file": "partner-with-us/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/partner-with-us/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Pharmaceutical Partnerships UK | Manufacturers, Dossier Owners and Buyers",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/technology/",
+    "canonical": "https://novapharmhealthcare.com/technology/",
+    "file": "technology/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/technology/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Pharmaceutical Technology Platform | NovaPharm Healthcare",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/news-insights/",
+    "canonical": "https://novapharmhealthcare.com/news-insights/",
+    "file": "news-insights/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/news-insights/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Pharmaceutical Insights | Regulatory, Oncology, Quality and Supply Chain",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/contact/",
+    "canonical": "https://novapharmhealthcare.com/contact/",
+    "file": "contact/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/contact/#webpage",
+        "types": [
+          "ContactPage"
+        ],
+        "name": "Contact NovaPharm Healthcare | B2B Pharmaceutical Enquiries",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/investor-information/",
+    "canonical": "https://novapharmhealthcare.com/investor-information/",
+    "file": "investor-information/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/investor-information/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Investor Information | NovaPharm Healthcare Ltd",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/careers/",
+    "canonical": "https://novapharmhealthcare.com/careers/",
+    "file": "careers/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/careers/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Careers | NovaPharm Healthcare",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/legal/",
+    "canonical": "https://novapharmhealthcare.com/legal/",
+    "file": "legal/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/legal/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Legal and Corporate Responsibility | NovaPharm Healthcare",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/legal/privacy/",
+    "canonical": "https://novapharmhealthcare.com/legal/privacy/",
+    "file": "legal/privacy/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/legal/privacy/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Privacy Notice | NovaPharm Healthcare",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/legal/cookies/",
+    "canonical": "https://novapharmhealthcare.com/legal/cookies/",
+    "file": "legal/cookies/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/legal/cookies/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Cookie and Storage Notice | NovaPharm Healthcare",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/legal/terms/",
+    "canonical": "https://novapharmhealthcare.com/legal/terms/",
+    "file": "legal/terms/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/legal/terms/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Website Terms of Use | NovaPharm Healthcare",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/legal/accessibility/",
+    "canonical": "https://novapharmhealthcare.com/legal/accessibility/",
+    "file": "legal/accessibility/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/legal/accessibility/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Accessibility Statement | NovaPharm Healthcare",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/legal/modern-slavery/",
+    "canonical": "https://novapharmhealthcare.com/legal/modern-slavery/",
+    "file": "legal/modern-slavery/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/legal/modern-slavery/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Modern Slavery and Human Rights Policy | NovaPharm Healthcare",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/legal/environment-carbon/",
+    "canonical": "https://novapharmhealthcare.com/legal/environment-carbon/",
+    "file": "legal/environment-carbon/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/legal/environment-carbon/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Environmental and Carbon Responsibility | NovaPharm Healthcare",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/leadership/vishal-chakravarty/",
+    "canonical": "https://novapharmhealthcare.com/leadership/vishal-chakravarty/",
+    "file": "leadership/vishal-chakravarty/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/leadership/vishal-chakravarty/#webpage",
+        "types": [
+          "ProfilePage"
+        ],
+        "name": "Vishal Om Prakash Chakravarty",
+        "mainEntity": "https://novapharmhealthcare.com/leadership/vishal-chakravarty/#person",
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/leadership/vishal-chakravarty/#person",
+        "types": [
+          "Person"
+        ],
+        "name": "Vishal Chakravarty",
+        "mainEntity": "https://novapharmhealthcare.com/leadership/vishal-chakravarty/#webpage",
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/leadership/prabhakar-lahare/",
+    "canonical": "https://novapharmhealthcare.com/leadership/prabhakar-lahare/",
+    "file": "leadership/prabhakar-lahare/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/leadership/prabhakar-lahare/#webpage",
+        "types": [
+          "ProfilePage"
+        ],
+        "name": "Prabhakar Vitthal Lahare",
+        "mainEntity": "https://novapharmhealthcare.com/leadership/prabhakar-lahare/#person",
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/leadership/prabhakar-lahare/#person",
+        "types": [
+          "Person"
+        ],
+        "name": "Prabhakar Vitthal Lahare",
+        "mainEntity": "https://novapharmhealthcare.com/leadership/prabhakar-lahare/#webpage",
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/leadership/girish-achliya/",
+    "canonical": "https://novapharmhealthcare.com/leadership/girish-achliya/",
+    "file": "leadership/girish-achliya/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/leadership/girish-achliya/#webpage",
+        "types": [
+          "ProfilePage"
+        ],
+        "name": "Dr Girish Shantilal Achliya",
+        "mainEntity": "https://novapharmhealthcare.com/leadership/girish-achliya/#person",
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/leadership/girish-achliya/#person",
+        "types": [
+          "Person"
+        ],
+        "name": "Dr Girish Shantilal Achliya",
+        "mainEntity": "https://novapharmhealthcare.com/leadership/girish-achliya/#webpage",
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/leadership/helly-panchal/",
+    "canonical": "https://novapharmhealthcare.com/leadership/helly-panchal/",
+    "file": "leadership/helly-panchal/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/leadership/helly-panchal/#webpage",
+        "types": [
+          "ProfilePage"
+        ],
+        "name": "Dr Helly Kamlesh Panchal",
+        "mainEntity": "https://novapharmhealthcare.com/leadership/helly-panchal/#person",
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/leadership/helly-panchal/#person",
+        "types": [
+          "Person"
+        ],
+        "name": "Dr Helly Panchal",
+        "mainEntity": "https://novapharmhealthcare.com/leadership/helly-panchal/#webpage",
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/leadership/nishita-trivedi/",
+    "canonical": "https://novapharmhealthcare.com/leadership/nishita-trivedi/",
+    "file": "leadership/nishita-trivedi/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/leadership/nishita-trivedi/#webpage",
+        "types": [
+          "ProfilePage"
+        ],
+        "name": "Dr Nishita Trivedi",
+        "mainEntity": "https://novapharmhealthcare.com/leadership/nishita-trivedi/#person",
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/leadership/nishita-trivedi/#person",
+        "types": [
+          "Person"
+        ],
+        "name": "Dr Nishita Trivedi",
+        "mainEntity": "https://novapharmhealthcare.com/leadership/nishita-trivedi/#webpage",
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/news-insights/batch-to-buyer-pharmaceutical-traceability/",
+    "canonical": "https://novapharmhealthcare.com/news-insights/batch-to-buyer-pharmaceutical-traceability/",
+    "file": "news-insights/batch-to-buyer-pharmaceutical-traceability/index.html",
+    "entities": [
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/news-insights/batch-to-buyer-pharmaceutical-traceability/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "From Batch to Buyer: Designing More Traceable Pharmaceutical Supply Chains",
+        "mainEntity": "https://novapharmhealthcare.com/news-insights/batch-to-buyer-pharmaceutical-traceability/#article",
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/news-insights/batch-to-buyer-pharmaceutical-traceability/#article",
+        "types": [
+          "Article",
+          "BlogPosting"
+        ],
+        "name": "Batch-to-Buyer Pharmaceutical Traceability | NovaPharm",
+        "mainEntity": "https://novapharmhealthcare.com/news-insights/batch-to-buyer-pharmaceutical-traceability/#webpage",
+        "publisher": "https://novapharmhealthcare.com/#organization",
+        "author": "https://novapharmhealthcare.com/#editorial-team"
+      }
+    ]
+  },
+  {
+    "route": "/news-insights/compliance-first-pharmaceutical-distribution-uk/",
+    "canonical": "https://novapharmhealthcare.com/news-insights/compliance-first-pharmaceutical-distribution-uk/",
+    "file": "news-insights/compliance-first-pharmaceutical-distribution-uk/index.html",
+    "entities": [
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/news-insights/compliance-first-pharmaceutical-distribution-uk/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Building a Compliance-First Pharmaceutical Distribution Model in the UK",
+        "mainEntity": "https://novapharmhealthcare.com/news-insights/compliance-first-pharmaceutical-distribution-uk/#article",
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/news-insights/compliance-first-pharmaceutical-distribution-uk/#article",
+        "types": [
+          "Article",
+          "BlogPosting"
+        ],
+        "name": "Compliance-First UK Pharmaceutical Distribution | NovaPharm",
+        "mainEntity": "https://novapharmhealthcare.com/news-insights/compliance-first-pharmaceutical-distribution-uk/#webpage",
+        "publisher": "https://novapharmhealthcare.com/#organization",
+        "author": "https://novapharmhealthcare.com/#editorial-team"
+      }
+    ]
+  },
+  {
+    "route": "/news-insights/gdp-qms-pharmaceutical-distribution-foundations/",
+    "canonical": "https://novapharmhealthcare.com/news-insights/gdp-qms-pharmaceutical-distribution-foundations/",
+    "file": "news-insights/gdp-qms-pharmaceutical-distribution-foundations/index.html",
+    "entities": [
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/news-insights/gdp-qms-pharmaceutical-distribution-foundations/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "GDP, QMS and the Practical Foundations of Reliable Pharmaceutical Distribution",
+        "mainEntity": "https://novapharmhealthcare.com/news-insights/gdp-qms-pharmaceutical-distribution-foundations/#article",
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/news-insights/gdp-qms-pharmaceutical-distribution-foundations/#article",
+        "types": [
+          "Article",
+          "BlogPosting"
+        ],
+        "name": "GDP and QMS Foundations for Pharmaceutical Distribution",
+        "mainEntity": "https://novapharmhealthcare.com/news-insights/gdp-qms-pharmaceutical-distribution-foundations/#webpage",
+        "publisher": "https://novapharmhealthcare.com/#organization",
+        "author": "https://novapharmhealthcare.com/#editorial-team"
+      }
+    ]
+  },
+  {
+    "route": "/news-insights/oncology-supply-chain-demand-forecasting/",
+    "canonical": "https://novapharmhealthcare.com/news-insights/oncology-supply-chain-demand-forecasting/",
+    "file": "news-insights/oncology-supply-chain-demand-forecasting/index.html",
+    "entities": [
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/news-insights/oncology-supply-chain-demand-forecasting/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Why Oncology Supply Chains Require Specialised Demand Forecasting",
+        "mainEntity": "https://novapharmhealthcare.com/news-insights/oncology-supply-chain-demand-forecasting/#article",
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/news-insights/oncology-supply-chain-demand-forecasting/#article",
+        "types": [
+          "Article",
+          "BlogPosting"
+        ],
+        "name": "Oncology Medicine Supply and Demand Forecasting",
+        "mainEntity": "https://novapharmhealthcare.com/news-insights/oncology-supply-chain-demand-forecasting/#webpage",
+        "publisher": "https://novapharmhealthcare.com/#organization",
+        "author": "https://novapharmhealthcare.com/#editorial-team"
+      }
+    ]
+  },
+  {
+    "route": "/news-insights/plpi-pharmaceutical-supply-resilience/",
+    "canonical": "https://novapharmhealthcare.com/news-insights/plpi-pharmaceutical-supply-resilience/",
+    "file": "news-insights/plpi-pharmaceutical-supply-resilience/index.html",
+    "entities": [
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/news-insights/plpi-pharmaceutical-supply-resilience/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "What PLPI Means for Pharmaceutical Supply Resilience and Cost-Optimised Access",
+        "mainEntity": "https://novapharmhealthcare.com/news-insights/plpi-pharmaceutical-supply-resilience/#article",
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/news-insights/plpi-pharmaceutical-supply-resilience/#article",
+        "types": [
+          "Article",
+          "BlogPosting"
+        ],
+        "name": "PLPI Sourcing and UK Pharmaceutical Supply Resilience",
+        "mainEntity": "https://novapharmhealthcare.com/news-insights/plpi-pharmaceutical-supply-resilience/#webpage",
+        "publisher": "https://novapharmhealthcare.com/#organization",
+        "author": "https://novapharmhealthcare.com/#editorial-team"
+      }
+    ]
+  },
+  {
+    "route": "/news-insights/three-pillar-pharmaceutical-sourcing-model/",
+    "canonical": "https://novapharmhealthcare.com/news-insights/three-pillar-pharmaceutical-sourcing-model/",
+    "file": "news-insights/three-pillar-pharmaceutical-sourcing-model/index.html",
+    "entities": [
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/news-insights/three-pillar-pharmaceutical-sourcing-model/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Three-Pillar Sourcing: Direct GMP Partnerships, PLPI and European Buying Networks",
+        "mainEntity": "https://novapharmhealthcare.com/news-insights/three-pillar-pharmaceutical-sourcing-model/#article",
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/news-insights/three-pillar-pharmaceutical-sourcing-model/#article",
+        "types": [
+          "Article",
+          "BlogPosting"
+        ],
+        "name": "Three-Pillar Pharmaceutical Sourcing Model | NovaPharm",
+        "mainEntity": "https://novapharmhealthcare.com/news-insights/three-pillar-pharmaceutical-sourcing-model/#webpage",
+        "publisher": "https://novapharmhealthcare.com/#organization",
+        "author": "https://novapharmhealthcare.com/#editorial-team"
+      }
+    ]
+  },
+  {
+    "route": "/account-application/",
+    "canonical": "https://novapharmhealthcare.com/account-application/",
+    "file": "account-application/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/account-application/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Open a Pharmaceutical Customer Account | NovaPharm Healthcare",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  }
+]

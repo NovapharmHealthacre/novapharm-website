@@ -1,0 +1,332 @@
+[
+  {
+    "route": "/",
+    "page": "https://novapharmhealthcare.com/",
+    "url": "/assets/media/home/supply-network-hero.jpg",
+    "type": "image/jpeg",
+    "width": 1672,
+    "height": 941,
+    "alt": "Governed pharmaceutical supply network visual for NovaPharm Healthcare",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/home/supply-network-hero.jpg"
+  },
+  {
+    "route": "/about/",
+    "page": "https://novapharmhealthcare.com/about/",
+    "url": "/assets/media/editorial/partnership-pathway.svg",
+    "type": "image/svg+xml",
+    "width": 1200,
+    "height": 675,
+    "alt": "NovaPharm Healthcare corporate partnership and operating pathway",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/editorial/partnership-pathway.svg"
+  },
+  {
+    "route": "/about/company/",
+    "page": "https://novapharmhealthcare.com/about/company/",
+    "url": "/assets/media/editorial/partnership-pathway.svg",
+    "type": "image/svg+xml",
+    "width": 1200,
+    "height": 675,
+    "alt": "NovaPharm Healthcare company and operating pathway",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/editorial/partnership-pathway.svg"
+  },
+  {
+    "route": "/about/governance/",
+    "page": "https://novapharmhealthcare.com/about/governance/",
+    "url": "/assets/media/editorial/quality-batch-integrity.svg",
+    "type": "image/svg+xml",
+    "width": 1200,
+    "height": 675,
+    "alt": "NovaPharm Healthcare quality and governance framework",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/editorial/quality-batch-integrity.svg"
+  },
+  {
+    "route": "/leadership/",
+    "page": "https://novapharmhealthcare.com/leadership/",
+    "url": "/assets/media/editorial/partnership-pathway.svg",
+    "type": "image/svg+xml",
+    "width": 1200,
+    "height": 675,
+    "alt": "NovaPharm Healthcare leadership and governance",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/editorial/partnership-pathway.svg"
+  },
+  {
+    "route": "/services/",
+    "page": "https://novapharmhealthcare.com/services/",
+    "url": "/assets/media/editorial/partnership-pathway.svg",
+    "type": "image/svg+xml",
+    "width": 1200,
+    "height": 675,
+    "alt": "NovaPharm Healthcare pharmaceutical market-entry and partnership services",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/editorial/partnership-pathway.svg"
+  },
+  {
+    "route": "/regulatory-services/",
+    "page": "https://novapharmhealthcare.com/regulatory-services/",
+    "url": "/assets/media/editorial/quality-batch-integrity.svg",
+    "type": "image/svg+xml",
+    "width": 1200,
+    "height": 675,
+    "alt": "NovaPharm Healthcare regulatory, quality and batch-integrity framework",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/editorial/quality-batch-integrity.svg"
+  },
+  {
+    "route": "/product-portfolio/",
+    "page": "https://novapharmhealthcare.com/product-portfolio/",
+    "url": "/assets/media/products/specialty-pharmacy-handling.jpg",
+    "type": "image/jpeg",
+    "width": 1600,
+    "height": 900,
+    "alt": "Specialty pharmaceutical handling and product-opportunity assessment",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/specialty-pharmacy-handling.jpg"
+  },
+  {
+    "route": "/partner-with-us/",
+    "page": "https://novapharmhealthcare.com/partner-with-us/",
+    "url": "/assets/media/editorial/partnership-pathway.svg",
+    "type": "image/svg+xml",
+    "width": 1200,
+    "height": 675,
+    "alt": "Qualified pharmaceutical partnership pathway",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/editorial/partnership-pathway.svg"
+  },
+  {
+    "route": "/technology/",
+    "page": "https://novapharmhealthcare.com/technology/",
+    "url": "/assets/media/editorial/digital-traceability.svg",
+    "type": "image/svg+xml",
+    "width": 1200,
+    "height": 675,
+    "alt": "Governed pharmaceutical data and traceability architecture",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/editorial/digital-traceability.svg"
+  },
+  {
+    "route": "/news-insights/",
+    "page": "https://novapharmhealthcare.com/news-insights/",
+    "url": "/assets/media/insights/three-pillar-sourcing.svg",
+    "type": "image/svg+xml",
+    "width": 1200,
+    "height": 675,
+    "alt": "NovaPharm Healthcare pharmaceutical sourcing and market-access insights",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/insights/three-pillar-sourcing.svg"
+  },
+  {
+    "route": "/contact/",
+    "page": "https://novapharmhealthcare.com/contact/",
+    "url": "/assets/brand/novapharm-healthcare-logo.png",
+    "type": "image/png",
+    "width": 3356,
+    "height": 420,
+    "alt": "NovaPharm Healthcare official logo",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png"
+  },
+  {
+    "route": "/investor-information/",
+    "page": "https://novapharmhealthcare.com/investor-information/",
+    "url": "/assets/media/editorial/partnership-pathway.svg",
+    "type": "image/svg+xml",
+    "width": 1200,
+    "height": 675,
+    "alt": "NovaPharm Healthcare governance and staged execution",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/editorial/partnership-pathway.svg"
+  },
+  {
+    "route": "/careers/",
+    "page": "https://novapharmhealthcare.com/careers/",
+    "url": "/assets/brand/novapharm-healthcare-logo.png",
+    "type": "image/png",
+    "width": 3356,
+    "height": 420,
+    "alt": "NovaPharm Healthcare official logo",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png"
+  },
+  {
+    "route": "/legal/",
+    "page": "https://novapharmhealthcare.com/legal/",
+    "url": "/assets/brand/novapharm-healthcare-logo.png",
+    "type": "image/png",
+    "width": 3356,
+    "height": 420,
+    "alt": "NovaPharm Healthcare official logo",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png"
+  },
+  {
+    "route": "/legal/privacy/",
+    "page": "https://novapharmhealthcare.com/legal/privacy/",
+    "url": "/assets/brand/novapharm-healthcare-logo.png",
+    "type": "image/png",
+    "width": 3356,
+    "height": 420,
+    "alt": "NovaPharm Healthcare official logo",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png"
+  },
+  {
+    "route": "/legal/cookies/",
+    "page": "https://novapharmhealthcare.com/legal/cookies/",
+    "url": "/assets/brand/novapharm-healthcare-logo.png",
+    "type": "image/png",
+    "width": 3356,
+    "height": 420,
+    "alt": "NovaPharm Healthcare official logo",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png"
+  },
+  {
+    "route": "/legal/terms/",
+    "page": "https://novapharmhealthcare.com/legal/terms/",
+    "url": "/assets/brand/novapharm-healthcare-logo.png",
+    "type": "image/png",
+    "width": 3356,
+    "height": 420,
+    "alt": "NovaPharm Healthcare official logo",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png"
+  },
+  {
+    "route": "/legal/accessibility/",
+    "page": "https://novapharmhealthcare.com/legal/accessibility/",
+    "url": "/assets/brand/novapharm-healthcare-logo.png",
+    "type": "image/png",
+    "width": 3356,
+    "height": 420,
+    "alt": "NovaPharm Healthcare official logo",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png"
+  },
+  {
+    "route": "/legal/modern-slavery/",
+    "page": "https://novapharmhealthcare.com/legal/modern-slavery/",
+    "url": "/assets/brand/novapharm-healthcare-logo.png",
+    "type": "image/png",
+    "width": 3356,
+    "height": 420,
+    "alt": "NovaPharm Healthcare official logo",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png"
+  },
+  {
+    "route": "/legal/environment-carbon/",
+    "page": "https://novapharmhealthcare.com/legal/environment-carbon/",
+    "url": "/assets/brand/novapharm-healthcare-logo.png",
+    "type": "image/png",
+    "width": 3356,
+    "height": 420,
+    "alt": "NovaPharm Healthcare official logo",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png"
+  },
+  {
+    "route": "/leadership/vishal-chakravarty/",
+    "page": "https://novapharmhealthcare.com/leadership/vishal-chakravarty/",
+    "url": "/assets/vishalchakravarty.jpeg",
+    "type": "image/jpeg",
+    "width": 1102,
+    "height": 1378,
+    "alt": "Vishal Chakravarty, Chief Executive Officer at NovaPharm Healthcare",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/vishalchakravarty.jpeg"
+  },
+  {
+    "route": "/leadership/prabhakar-lahare/",
+    "page": "https://novapharmhealthcare.com/leadership/prabhakar-lahare/",
+    "url": "/assets/prabhakarvitthallahare.jpeg",
+    "type": "image/jpeg",
+    "width": 1102,
+    "height": 1378,
+    "alt": "Prabhakar Vitthal Lahare, Managing Director and Chief Operating Officer at NovaPharm Healthcare",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/prabhakarvitthallahare.jpeg"
+  },
+  {
+    "route": "/leadership/girish-achliya/",
+    "page": "https://novapharmhealthcare.com/leadership/girish-achliya/",
+    "url": "/assets/girishshantilalachliya.jpeg",
+    "type": "image/jpeg",
+    "width": 1102,
+    "height": 1378,
+    "alt": "Dr Girish Shantilal Achliya, Director and Chief Scientific Officer at NovaPharm Healthcare",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/girishshantilalachliya.jpeg"
+  },
+  {
+    "route": "/leadership/helly-panchal/",
+    "page": "https://novapharmhealthcare.com/leadership/helly-panchal/",
+    "url": "/assets/brand/novapharm-healthcare-logo.png",
+    "type": "image/png",
+    "width": 3356,
+    "height": 420,
+    "alt": "NovaPharm Healthcare official logo",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png"
+  },
+  {
+    "route": "/leadership/nishita-trivedi/",
+    "page": "https://novapharmhealthcare.com/leadership/nishita-trivedi/",
+    "url": "/assets/brand/novapharm-healthcare-logo.png",
+    "type": "image/png",
+    "width": 3356,
+    "height": 420,
+    "alt": "NovaPharm Healthcare official logo",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png"
+  },
+  {
+    "route": "/news-insights/batch-to-buyer-pharmaceutical-traceability/",
+    "page": "https://novapharmhealthcare.com/news-insights/batch-to-buyer-pharmaceutical-traceability/",
+    "url": "/assets/media/insights/batch-to-buyer-traceability.svg",
+    "type": "image/svg+xml",
+    "width": 1200,
+    "height": 675,
+    "alt": "From Batch to Buyer: Designing More Traceable Pharmaceutical Supply Chains",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/insights/batch-to-buyer-traceability.svg"
+  },
+  {
+    "route": "/news-insights/compliance-first-pharmaceutical-distribution-uk/",
+    "page": "https://novapharmhealthcare.com/news-insights/compliance-first-pharmaceutical-distribution-uk/",
+    "url": "/assets/media/insights/compliance-first-distribution.svg",
+    "type": "image/svg+xml",
+    "width": 1200,
+    "height": 675,
+    "alt": "Building a Compliance-First Pharmaceutical Distribution Model in the UK",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/insights/compliance-first-distribution.svg"
+  },
+  {
+    "route": "/news-insights/gdp-qms-pharmaceutical-distribution-foundations/",
+    "page": "https://novapharmhealthcare.com/news-insights/gdp-qms-pharmaceutical-distribution-foundations/",
+    "url": "/assets/media/insights/gdp-qms-foundations.svg",
+    "type": "image/svg+xml",
+    "width": 1200,
+    "height": 675,
+    "alt": "GDP, QMS and the Practical Foundations of Reliable Pharmaceutical Distribution",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/insights/gdp-qms-foundations.svg"
+  },
+  {
+    "route": "/news-insights/oncology-supply-chain-demand-forecasting/",
+    "page": "https://novapharmhealthcare.com/news-insights/oncology-supply-chain-demand-forecasting/",
+    "url": "/assets/media/insights/oncology-demand-forecasting.svg",
+    "type": "image/svg+xml",
+    "width": 1200,
+    "height": 675,
+    "alt": "Why Oncology Supply Chains Require Specialised Demand Forecasting",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/insights/oncology-demand-forecasting.svg"
+  },
+  {
+    "route": "/news-insights/plpi-pharmaceutical-supply-resilience/",
+    "page": "https://novapharmhealthcare.com/news-insights/plpi-pharmaceutical-supply-resilience/",
+    "url": "/assets/media/insights/plpi-supply-resilience.svg",
+    "type": "image/svg+xml",
+    "width": 1200,
+    "height": 675,
+    "alt": "What PLPI Means for Pharmaceutical Supply Resilience and Cost-Optimised Access",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/insights/plpi-supply-resilience.svg"
+  },
+  {
+    "route": "/news-insights/three-pillar-pharmaceutical-sourcing-model/",
+    "page": "https://novapharmhealthcare.com/news-insights/three-pillar-pharmaceutical-sourcing-model/",
+    "url": "/assets/media/insights/three-pillar-sourcing.svg",
+    "type": "image/svg+xml",
+    "width": 1200,
+    "height": 675,
+    "alt": "Three-Pillar Sourcing: Direct GMP Partnerships, PLPI and European Buying Networks",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/insights/three-pillar-sourcing.svg"
+  },
+  {
+    "route": "/account-application/",
+    "page": "https://novapharmhealthcare.com/account-application/",
+    "url": "/assets/brand/novapharm-healthcare-logo.png",
+    "type": "image/png",
+    "width": 3356,
+    "height": 420,
+    "alt": "NovaPharm Healthcare official logo",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png"
+  }
+]
