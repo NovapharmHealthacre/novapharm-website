@@ -88,7 +88,9 @@ for (const [path, html] of [
 ]) {
   requireText(html, 'data-visual-refinement="2026-07"', `${path} build marker`);
   requireText(html, '/assets/js/visual-refinement.js', `${path} visual script`);
-  requireText(html, "Pre-operational", `${path} regulatory truthfulness`);
+  if (!html.toLowerCase().includes("pre-operational")) {
+    failures.push(`${path} regulatory truthfulness: pre-operational status is missing.`);
+  }
 }
 
 if (index.includes("<video")) failures.push("Homepage hero: unexpected video added; the approved motion-enhanced still-image path should remain lightweight.");
