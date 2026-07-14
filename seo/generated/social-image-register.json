@@ -32,12 +32,12 @@
   {
     "route": "/about/governance/",
     "page": "https://novapharmhealthcare.com/about/governance/",
-    "url": "/assets/media/home/supply-network-hero.jpg",
+    "url": "/assets/media/products/cardiovascular-quality-control.jpg",
     "type": "image/jpeg",
-    "width": 1672,
-    "height": 941,
-    "alt": "Governed pharmaceutical supply network visual for NovaPharm Healthcare",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/home/supply-network-hero.jpg"
+    "width": 1600,
+    "height": 900,
+    "alt": "Pharmaceutical quality-control assessment in a laboratory setting",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/cardiovascular-quality-control.jpg"
   },
   {
     "route": "/leadership/",
