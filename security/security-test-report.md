@@ -1,6 +1,6 @@
 # Security Test Report
 
-Status: repository tests passed locally; cloud and independent penetration testing pending  
+Status: repository and local runtime suites passed; cloud and independent penetration testing pending
 Test date: 14 July 2026
 
 ## Executed locally
@@ -10,32 +10,32 @@ Test date: 14 July 2026
 | Authentication and four scopes | Passed | integration and Entra identity tests |
 | Bootstrap and forced change | Passed | production-security and integration tests |
 | Old-session invalidation | Passed | password/session tests |
-| Customer isolation | Passed for implemented order/catalog/document boundaries | integration tests |
-| CSRF and exact origin | Passed | production-security/integration tests |
-| Host-header rejection | Passed | production-security test |
+| Customer isolation | Passed for implemented order, catalogue and document boundaries | integration tests |
+| CSRF, exact origin and host validation | Passed | production-security/integration tests |
 | Lockout and rate limiting | Passed | integration tests |
 | Private route/file denial | Passed | integration/preview tests |
-| Cookie flags and HSTS | Passed in production-mode test server | production-security test |
+| Cookie flags, HSTS and private caching | Passed in production-mode test server | production-security test |
 | Upload extension/MIME/signature limits | Passed for implemented fixtures | integration test |
-| Upload bearer tokens absent from URLs | Passed | integration test rejects query-token use |
-| Malware release state machine | Passed with deterministic clean/malicious stores | document-scan test |
-| Email failure queue and idempotent replay | Passed | two failed contact deliveries entered bounded retry state; administrator replay reused stable provider idempotency keys; account notification and acknowledgement both sent in the controlled mock |
+| Upload query-token rejection | Passed | integration test |
+| Malware release state machine | Passed with deterministic clean/malicious stores | document-scan test; live Defender not claimed |
+| Email failure queue and idempotent replay | Passed | controlled mock provider tests |
 | Unresolved Key Vault references | Passed fail-closed test | secret-resolution test |
 | Backup and isolated restore | Passed for SQLite | backup-restore test |
+| Cross-browser/axe acceptance | Passed | 616 page states and 616 axe scans in Chromium/WebKit |
 
-`npm run check` completed successfully on 14 July 2026: 33 public pages, six articles, 40 locked shells, 1,906 local links, 62 JavaScript/MJS/TypeScript syntax checks, nine stylesheets and 304 repository files in the final candidate current-tree scanner. The intentionally simulated Resend HTTP 503 is logged in the integration test and is expected evidence of the retry path.
+`npm run check` completed successfully on 14 July 2026: 33 public pages, six articles, 40 locked shells, 18 protected Executive modules, 1,906 local links, 68 JavaScript/MJS/TypeScript syntax checks, nine stylesheets and 318 repository files in the current-tree scanner. The intentionally simulated email-provider HTTP 503 is expected evidence of the bounded retry path.
 
-`npm audit --omit=dev --audit-level=high` was executed locally and returned exit code 1 because the sandbox could not resolve `registry.npmjs.org` (`ENOTFOUND`), so the local invocation produced no vulnerability result. GitHub Production readiness run 44 subsequently completed the locked install, reported zero vulnerabilities and passed `npm run check` at commit `7d14d050eda5d5e8704e76ba1b9d398f2816ba22`.
+`npm audit --omit=dev --audit-level=high` completed with exit code 0 and reported zero vulnerabilities after the temporary Lighthouse audit dependency was removed. Actionlint and the free-validation compiled-Bicep contract also passed.
+
+History sanitisation removed the retired value from all owner-writable active branches and tags, and Gitleaks reported zero findings. GitHub-managed read-only pull-request refs 1-4 still retain nine historical matches, so complete remote-object purge remains blocked on GitHub Support. Rotation remains mandatory because rewriting cannot erase external clones, forks or caches.
 
 ## Cloud tests still required
 
-- real Entra token/issuer/audience/MFA and Conditional Access;
-- real Azure SQL injection/least-privilege/connection-resilience validation;
-- real Defender for Storage tag handling and malicious test sample under an approved safe procedure;
+- real Entra token, issuer, audience, MFA and licensed-policy behaviour;
+- Azure SQL least privilege, injection resistance and connection-resilience validation;
 - Blob/SharePoint direct-access and IDOR tests;
-- Key Vault network/reference failure tests;
-- App Service forwarded-header, caching, CORS and custom-domain origin tests;
-- dynamic XSS, SQL injection, path traversal, MIME confusion, open redirect and session-fixation scans against staging;
+- App Service forwarded-header, caching, CORS and generated-host origin tests;
+- dynamic XSS, SQL injection, path traversal, MIME confusion, open redirect and session-fixation scans against Azure validation;
 - independent penetration test by an authorised specialist.
 
-No penetration test is claimed.
+No penetration test, live Defender scan, Azure deployment or production security acceptance is claimed.

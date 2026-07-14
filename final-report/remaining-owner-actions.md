@@ -3,16 +3,17 @@
 Status: owner-controlled gates only  
 Last reviewed: 14 July 2026
 
-1. Explicitly authorise and approve cost for the selected Azure subscription, UK region, App Service/SQL/Storage/Defender/monitoring estimate and budget alerts.
-2. Approve the coordinated destructive Git-history sanitisation window, repository-admin access, force-push/re-clone plan and protected exact-value scan input.
-3. Configure GitHub `azure-staging` and `azure-production` Environments plus Entra OIDC federation; do not share secret values in chat.
-4. Approve Entra workforce app roles, MFA/Conditional Access, External ID tenant/customer invitation policy and SQL administrator group.
-5. Enter Key Vault secrets through an approved protected path and approve temporary SQL schema-migration rights.
-6. Approve Microsoft Graph permissions and the separate SharePoint Executive Platform permission change; provide the approved site/drive/folder IDs.
-7. Provide Resend domain/key and controlled notification mailbox through Key Vault.
-8. Approve Defender for Storage usage charges and the safe malware-scanning acceptance procedure.
-9. Visually approve every materialised product derivative at staging viewports; replace any unsuitable crop or visible third-party branding. Provide approved Dr Helly Panchal and Dr Nishita Trivedi portraits if desired.
-10. Obtain UK solicitor review of privacy, transfers, terms, liability/jurisdiction and portal wording; obtain accountant confirmation of Modern Slavery and SECR applicability.
-11. Approve private Azure staging acceptance, independent penetration testing and Azure SQL/Blob restoration drill.
-12. Approve the pull-request merge only after all repository blockers pass.
-13. Approve production candidate deployment, slot swap and then DNS changes separately. Preserve Microsoft 365 DNS and keep GitHub Pages live until final acceptance.
+1. Select an Azure subscription accessible to the NovaPharm tenant with positive promotional credit and `spendingLimit=On`. The authenticated NovaPharm identity currently exposes no subscription. Verify the credit balance, expiry and SQL **Free offer applied** screen without sharing IDs or billing data in chat.
+2. Open a private GitHub Support security request asking GitHub to purge cached pull-request diffs and dereference retired-credential objects from historical pull-request refs 1-4. Use GitHub's protected secret-removal process; do not include the retired value in an ordinary message.
+3. Delete old local clones and deployment caches after the final clean branch is accepted, then clone the repository again. The encrypted incident backup is the only controlled exception.
+4. Configure the protected GitHub `azure-free-validation` Environment and Entra OIDC federation using `deployment/free-validation-runbook.md`; do not share secret values in chat.
+5. Approve Entra workforce app roles, free/already-licensed MFA controls, External ID invitation policy and the SQL administrator group.
+6. Enter temporary validation secrets through an approved protected path and approve temporary SQL schema-migration rights.
+7. Grant the minimum Microsoft Graph consent and complete the authorised SharePoint Executive Platform permission change after its live inventory is available.
+8. Provide a free/sandbox Resend key and validation mailboxes through protected configuration.
+9. Obtain UK solicitor review of privacy, transfers, terms, liability/jurisdiction and portal wording; obtain accountant confirmation of Modern Slavery and SECR applicability.
+10. Complete Azure free-validation acceptance, SQL/Blob restoration drills and an independent penetration test after an eligible subscription exists.
+11. Keep PR 5 in draft until the final head CI passes and GitHub confirms cached-ref removal; then approve the documented squash merge.
+12. Paid production, deployment slots, domains and DNS remain separately unapproved. Preserve Microsoft 365 DNS and keep GitHub Pages live.
+
+Product imagery is no longer an owner blocker: all eight registered product crops passed rendered Chromium/WebKit review. Approved portraits for Dr Helly Panchal and Dr Nishita Trivedi remain an optional content action; controlled no-image states are already in place.

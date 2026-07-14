@@ -1,39 +1,28 @@
 # Visual Acceptance Report
 
 Candidate date: 14 July 2026  
-Status: source-level acceptance passed; rendered browser acceptance blocked and not claimed
+Status: local rendered acceptance passed; Azure-hosted acceptance pending
 
-## Required matrix
+## Executed matrix
 
 | Engine | 1440x900 | 1920x1080 | 1024x1366 | 768x1024 | 390x844 | 430x932 | 375x667 |
 |---|---|---|---|---|---|---|---|
-| Chromium | Not run | Not run | Not run | Not run | Not run | Not run | Not run |
-| WebKit / Safari-compatible | Not run | Not run | Not run | Not run | Not run | Not run | Not run |
+| Chromium 149 | Passed | Passed | Passed | Passed | Passed | Passed | Passed |
+| WebKit 26.5 (Safari-compatible) | Passed | Passed | Passed | Passed | Passed | Passed | Passed |
 
-## Why this remains blocked
+The Playwright acceptance run rendered 44 routes in both engines at all seven viewports: 616 page states, 616 axe scans and 764 genuine screenshots. The final run completed with zero recorded layout, console, network, accessibility or responsive-contract issues. Its machine-readable evidence SHA-256 is `fa206af910a1e02d8ad5d74e4b68071b1b6983d7516482ec4e5e6d41c45ad77c`.
 
-- The sandbox rejects a local HTTP listener with `EPERM`.
-- The in-app browser connected successfully. A direct navigation attempt to `https://novapharmhealthcare.com/` was rejected by the browser safety policy, and the restriction was not bypassed.
-- The browser URL policy also rejects local `file://` navigation.
-- No standalone Chromium executable or bundled Playwright Chromium/WebKit browser is installed in the accessible runtime.
-- Safari is installed, but a supported automated browser session is not available.
-- No owner-approved private Azure staging URL exists.
+Coverage included 37 public routes and seven authenticated/protected states: the homepage; company, governance and leadership content; all five leadership profiles; Services; Regulatory; Products; Partners; Technology; Insights and all six articles; Contact; account application; all legal pages; portal login; Customer, Employee, Board, Executive and Administrator areas; password change; cookie preferences; and 404, 500 and service-unavailable states.
 
-No screenshots have been fabricated and Lighthouse or accessibility scores are not estimated. Repository-level responsive contracts are evidence of implementation, not a substitute for the required rendered matrix.
+## Defects resolved
 
-## Source-level evidence completed
+- The first rendered run found 70 repeated contrast failures. Product-panel supporting text, portal logout controls, status pills and the administrator eyebrow were corrected and re-tested.
+- The Specialty image contained visible branded medicines and the logistics image contained visible third-party branding. Both were replaced with documented Pexels-licensed, neutral pharmaceutical/logistics photography and re-rendered.
+- All eight product-card crops were captured separately in both engines and visually reviewed. Their register status is `rendered-and-brand-reviewed`.
+- Desktop and mobile navigation, logo rendering, cookie controls, form states, focus indicators, table overflow, reduced motion, long-page wrapping and protected-route states were inspected without a remaining material defect.
 
-- 33 intended public pages and 40 data-free locked portal shells have mobile viewport declarations.
-- Every image has alternative text and intrinsic dimensions; official logo files match approved master hashes.
-- Heading order, one-H1 structure, skip links, canonicals, JSON-LD and internal assets pass repository validation.
-- CSS includes tablet/mobile breakpoints, stable grid constraints, table overflow containment, mobile form stacking, reduced-motion handling, focus indicators and responsive portal navigation.
-- Public pages contain no placeholder content, retired raw browser errors or exposed operational bindings.
-- Contact and account forms include accessible summaries/status regions and safety/privacy notices.
+## Evidence boundary
 
-## Rendered pages still requiring evidence
+Raw screenshots and the full JSON result remain ignored build evidence under `artifacts/visual-acceptance-passed/`; the compact evidence record is committed at `audit/evidence/browser-acceptance-summary.json`. The run used the local production-mode Node application with synthetic users and records. It proves rendered application behaviour, not Azure F1, Azure SQL, Entra, Blob, network latency or the generated Azure hostname. Those hosted checks remain blocked until an eligible protected subscription is available.
 
-The private Azure staging pass must cover Homepage; About; Company; Governance; Leadership index and five profiles; Services; Regulatory; Products; Partners; Technology; Insights index and six articles; Contact; Account application; all six policy pages; portal login; Customer, Employee, Board, Executive and Administrator pages; password change; cookie banner and preference centre; 404; 500; and 503.
-
-Inspect logo sharpness and contrast, header and mobile menu, image quality, typography, wrapping, spacing, forms, tables, cookie controls, focus states, 200% zoom, reduced motion, horizontal overflow and engine-specific differences. Record screenshots and defect resolutions before merge approval.
-
-The controlled GitHub workflow materialised all eight registered Pexels selections at commit `9573972b1f89534006f05dd227c7ae3e6dc8cb88`: 24 AVIF/WebP/JPEG derivatives, each technically validated at 1600x900 with content type, byte size and SHA-256 recorded. Media run 8 revalidated those derivatives at tested implementation commit `7d14d050eda5d5e8704e76ba1b9d398f2816ba22` without changing the branch. The product page now emits responsive `<picture>` elements with those real images. This is technical acceptance only. Direct visual inspection of the repository image host was blocked by browser safety policy, so crop quality, visible third-party branding, contextual suitability and desktop/mobile rendering still require the private staging matrix and owner approval.
+No independent screen-reader audit, external accessibility certification or production visual acceptance is claimed.
