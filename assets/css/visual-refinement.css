@@ -124,7 +124,7 @@ body.visual-refinement-ready {
 
 .hero-flagship .hero-content { position: relative; z-index: 2; padding-block: 102px 94px; }
 .hero-flagship .hero-copy { max-width: 820px; }
-.hero-flagship h1 { max-width: 820px; font-size: clamp(50px, 5.4vw, 76px); letter-spacing: -.035em; }
+.hero-flagship h1 { max-width: 820px; font-size: clamp(50px, 5.4vw, 76px); letter-spacing: 0; }
 .hero-flagship .hero-lead { max-width: 690px; }
 
 .motion-toggle {
