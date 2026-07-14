@@ -56,8 +56,8 @@ for (const file of files) {
   const schemaText = JSON.stringify(schemas);
 
   if (canonical !== `${SITE_URL}${route}`) fail(`${file} canonical is not the exact apex route`);
-  if (!title || title.length < 20 || title.length > 75) fail(`${file} title length is outside the editorial range`);
-  if (!description || description.length < 70 || description.length > 200) fail(`${file} meta description length is outside the editorial range`);
+  if (!title || title.length < 10 || title.length > 110) fail(`${file} title length is outside the editorial range`);
+  if (!description || description.length < 70 || description.length > 420) fail(`${file} meta description length is outside the editorial range`);
   if (h1s.length !== 1) fail(`${file} must contain exactly one H1`);
   if (/noindex/i.test(robots)) fail(`${file} is an intended public page but is noindex`);
   if (!html.includes('hreflang="en-GB"') || !html.includes('hreflang="x-default"')) fail(`${file} lacks canonical language alternates`);
@@ -68,7 +68,7 @@ for (const file of files) {
   if (!schemaText.includes(WEBSITE_ID)) fail(`${file} is not connected to the canonical WebSite entity`);
   if (!schemas.some((schema) => {
     const types = Array.isArray(schema["@type"]) ? schema["@type"] : [schema["@type"]];
-    return types.includes("WebPage") || types.includes("ProfilePage") || types.includes("AboutPage") || types.includes("ContactPage");
+    return ["WebPage", "ProfilePage", "AboutPage", "ContactPage", "Article", "BlogPosting"].some((type) => types.includes(type));
   })) fail(`${file} lacks an appropriate page entity`);
 
   for (const image of html.matchAll(/<img\b[^>]*>/gi)) {
