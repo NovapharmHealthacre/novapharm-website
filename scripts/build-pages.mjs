@@ -77,27 +77,61 @@ function employeePage(page, title, body) {
 }
 
 function table(headers, bodyAttribute) {
-  return `<div class="table-wrap"><table><thead><tr>${headers.map((header) => `<th>${header}</th>`).join("")}</tr></thead><tbody ${bodyAttribute}></tbody></table></div>`;
+  return `<div class="table-wrap" role="region" aria-label="Portal data table" tabindex="0"><table><thead><tr>${headers.map((header) => `<th>${header}</th>`).join("")}</tr></thead><tbody ${bodyAttribute}></tbody></table></div>`;
 }
 
 const orderTable = table(["Order", "Account", "Status", "Total", "PO reference", "Created"], "data-order-rows");
 const productTable = table(["SKU", "Product", "Strength", "Pack", "Price", "Stock", "MHRA", "Status"], "data-product-rows");
 
+const executiveModules = [
+  { title: "Command Centre", file: "NP_Hub.html", summary: "Cross-functional operating status, source readiness and controlled integration events.", metrics: ["customers", "products", "openOrders", "pendingSyncEvents"] },
+  { title: "CEO Dashboard", file: "NP_CEO.html", summary: "A governed executive view of operational readiness without simulated commercial performance.", metrics: ["customers", "products", "openOrders", "pendingApplications", "pendingSyncEvents"] },
+  { title: "Sales Intelligence", file: "NP_Sales.html", summary: "Customer and order indicators from the canonical application database.", metrics: ["customers", "openOrders"] },
+  { title: "Customer Analytics", file: "NP_Customers.html", summary: "Account and application indicators subject to role and customer-isolation controls.", metrics: ["customers", "pendingApplications"] },
+  { title: "Product Master", file: "NP_Products.html", summary: "Product-master readiness and lifecycle records; availability is never inferred.", metrics: ["products"] },
+  { title: "NHS Data", file: "NP_NHS_Data.html", summary: "A controlled integration boundary for licensed data sources. No NHS supply relationship is implied.", maturity: "Planned" },
+  { title: "PLPI", file: "NP_PLPI.html", summary: "A governance workspace for future parallel-import licensing activity, subject to authorisation.", maturity: "Planned" },
+  { title: "Pharmacovigilance", file: "NP_PV.html", summary: "A controlled interface boundary for an approved safety system and qualified process.", maturity: "In development" },
+  { title: "Sourcing", file: "NP_Sourcing.html", summary: "Supplier qualification and sourcing evidence linked to canonical supplier records.", maturity: "In development" },
+  { title: "Tenders", file: "NP_Tenders.html", summary: "Tender tracking architecture for approved opportunities; no award or NHS supply is implied.", maturity: "Planned" },
+  { title: "Warehouse", file: "NP_Warehouse.html", summary: "Integration readiness for a qualified third-party warehouse; NovaPharm-owned warehousing is not claimed.", maturity: "Planned" },
+  { title: "Service Levels", file: "NP_SLA.html", summary: "Future service-level monitoring against approved operational source systems.", maturity: "Planned" },
+  { title: "Finance", file: "NP_Finance.html", summary: "A controlled boundary for future accounting integration and authorised financial records.", maturity: "Planned" },
+  { title: "Capital", file: "NP_Capital.html", summary: "Restricted governance for approved capital planning; no forecasts are published here.", maturity: "Planned" },
+  { title: "Microsoft 365", file: "NP_M365.html", summary: "Microsoft Graph and SharePoint integration health under least-privilege access.", maturity: "In development" },
+  { title: "Documents", file: "NP_Documents.html", summary: "Controlled document links, metadata and synchronisation status without public file exposure.", maturity: "In development" },
+  { title: "AI & Technology", file: "NP_AI_Tech.html", summary: "A governed technology roadmap. Automated decision-making is not presented as operational.", maturity: "Planned" },
+  { title: "Traceability", file: "NP_Blockchain.html", summary: "A future traceability architecture; blockchain capability is not presented as deployed.", maturity: "Planned" }
+];
+
+function executiveHref(module) {
+  return module.file === "NP_CEO.html" ? "/portal/ceo-dashboard/" : `/portal/executive-platform/${module.file}`;
+}
+
 function executiveIndex() {
-  const modules = [
-    ["Command Centre", "NP_Hub.html"], ["CEO Dashboard", "NP_CEO.html"], ["Sales Intelligence", "NP_Sales.html"], ["Customer Analytics", "NP_Customers.html"],
-    ["Product Master", "NP_Products.html"], ["NHS Data", "NP_NHS_Data.html"], ["PLPI", "NP_PLPI.html"], ["Pharmacovigilance", "NP_PV.html"],
-    ["Sourcing", "NP_Sourcing.html"], ["Tenders", "NP_Tenders.html"], ["Warehouse", "NP_Warehouse.html"], ["Service Levels", "NP_SLA.html"],
-    ["Finance", "NP_Finance.html"], ["Capital", "NP_Capital.html"], ["Microsoft 365", "NP_M365.html"], ["Documents", "NP_Documents.html"],
-    ["AI & Technology", "NP_AI_Tech.html"], ["Traceability", "NP_Blockchain.html"]
-  ];
-  return `<!DOCTYPE html><html lang="en-GB">${privateHead("Executive Platform | NovaPharm Healthcare")}<body><main class="portal-main executive-index"><a class="executive-brand" href="/portal/executive-platform/" aria-label="NovaPharm Healthcare Executive Platform">${brandPicture({ width: 320, height: 40, eager: true })}</a><div class="portal-topbar"><div><span class="eyebrow">Board workspace</span><h1>NovaPharm Executive Platform</h1></div><div><a class="btn btn-outline" href="/portal/" data-logout>Logout</a><button class="inline-link-button portal-cookie-settings" type="button" data-cookie-settings>Cookie settings</button></div></div><div class="grid grid-3">${modules.map(([label, href]) => `<a class="card" href="${href}"><h2>${label}</h2><p>Open the controlled ${label.toLowerCase()} module.</p></a>`).join("")}</div></main><script src="/assets/js/api-client.js" defer></script><script src="/assets/js/portal-app.js" defer></script></body></html>`;
+  return `<!DOCTYPE html><html lang="en-GB" data-api-base="${apiBase}">${privateHead("Executive Platform | NovaPharm Healthcare")}<body><main class="portal-main executive-index"><a class="executive-brand" href="/portal/executive-platform/" aria-label="NovaPharm Healthcare Executive Platform">${brandPicture({ width: 320, height: 40, eager: true })}</a><div class="portal-topbar"><div><span class="eyebrow">Board workspace</span><h1>NovaPharm Executive Platform</h1></div><div class="portal-actions"><span class="status-pill">Signed in as <span data-user-name></span></span><button class="btn btn-outline" type="button" data-logout>Logout</button><button class="inline-link-button portal-cookie-settings" type="button" data-cookie-settings>Cookie settings</button></div></div><p class="executive-intro">Controlled executive modules share one authenticated data boundary. Live values come from the canonical database; unavailable integrations are stated rather than simulated.</p><div class="grid grid-3">${executiveModules.map((module) => `<a class="card" href="${executiveHref(module)}"><span class="maturity-tag">${module.maturity || "Live foundation"}</span><h2>${module.title}</h2><p>${module.summary}</p></a>`).join("")}</div></main><script src="/assets/js/api-client.js" defer></script><script src="/assets/js/portal-app.js" defer></script></body></html>`;
+}
+
+function executiveModulePage(module) {
+  const metricLabels = {
+    customers: "Active customers",
+    products: "Active products",
+    openOrders: "Open orders",
+    pendingApplications: "Pending applications",
+    pendingSyncEvents: "Integration events"
+  };
+  const metrics = (module.metrics || []).map((key) => `<div class="metric"><strong data-executive-metric="${key}">-</strong><span>${metricLabels[key]}</span></div>`).join("");
+  const metricSection = metrics ? `<div class="metric-row">${metrics}</div>` : "";
+  return `<!DOCTYPE html><html lang="en-GB" data-api-base="${apiBase}">${privateHead(`${module.title} | NovaPharm Executive Platform`)}<body data-executive-module="${module.file}"><main class="portal-main executive-module"><a class="executive-brand" href="/portal/executive-platform/" aria-label="NovaPharm Healthcare Executive Platform home">${brandPicture({ width: 320, height: 40, eager: true })}</a><div class="portal-topbar"><div><span class="eyebrow">Board workspace</span><h1>${module.title}</h1></div><div class="portal-actions"><a class="btn btn-outline" href="/portal/executive-platform/">All modules</a><button class="btn btn-outline" type="button" data-logout>Logout</button></div></div><div class="executive-module-summary"><div><span class="maturity-tag">${module.maturity || "Live foundation"}</span><p>${module.summary}</p></div><span class="status-pill">Signed in as <span data-user-name></span></span></div>${metricSection}<section class="section-tight"><div class="section-heading-row"><div><span class="eyebrow">Controlled sources</span><h2>System readiness</h2></div><p class="data-freshness">Refreshed <span data-executive-freshness>-</span></p></div><div class="table-wrap" role="region" aria-label="Executive module source readiness" tabindex="0"><table><thead><tr><th>Source</th><th>State</th></tr></thead><tbody data-executive-source-status></tbody></table></div></section><section class="section-tight"><h2>Integration events</h2><div class="table-wrap" role="region" aria-label="Executive module integration events" tabindex="0"><table><thead><tr><th>Destination</th><th>State</th><th>Count</th><th>Latest event</th></tr></thead><tbody data-executive-sync-status></tbody></table></div><p class="alert" data-executive-policy role="status" aria-live="polite">Loading governed data status...</p></section><button class="inline-link-button portal-cookie-settings" type="button" data-cookie-settings>Cookie settings</button></main><script src="/assets/js/api-client.js" defer></script><script src="/assets/js/portal-app.js" defer></script><script src="/assets/js/executive-app.js" defer></script></body></html>`;
 }
 
 write("portal/index.html", loginPage());
 write("entra-complete/index.html", entraCompletePage());
 writeProtected("portal/change-password/index.html", passwordChangePage(), "customer");
 write(join(secureRoot, "executive-platform/index.html"), executiveIndex());
+for (const module of executiveModules) {
+  write(join(secureRoot, `executive-platform/${module.file}`), executiveModulePage(module));
+}
 write("portal/executive-platform/index.html", lockedPage("board"));
 write("portal/ceo-dashboard/index.html", lockedPage("board"));
 

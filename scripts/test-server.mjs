@@ -533,17 +533,20 @@ for (const [url, sessionCookie, expected] of [
   ["/employee/dashboard/", employeeLogin.sessionCookie, 200],
   ["/portal/dashboard/", employeeLogin.sessionCookie, 302],
   ["/portal/executive-platform/", boardLogin.sessionCookie, 200],
+  ["/portal/ceo-dashboard/", boardLogin.sessionCookie, 200],
+  ["/portal/executive-platform/NP_Hub.html", boardLogin.sessionCookie, 200],
   ["/admin/dashboard/", boardLogin.sessionCookie, 302],
   ["/portal/dashboard/", adminLogin.sessionCookie, 200],
   ["/employee/dashboard/", adminLogin.sessionCookie, 200],
   ["/portal/executive-platform/", adminLogin.sessionCookie, 200],
+  ["/portal/ceo-dashboard/", adminLogin.sessionCookie, 200],
   ["/admin/dashboard/", adminLogin.sessionCookie, 200]
 ]) {
   const protectedResponse = await request({ url, headers: { cookie: `np_session=${sessionCookie}`, accept: "text/html" }, address: "127.0.0.23" });
   assert.equal(protectedResponse.statusCode, expected, `${url} returned ${protectedResponse.statusCode}`);
 }
 
-for (const url of ["/portal/executive-platform/", "/docs/NP_Implementation_Blueprint_v2.pdf"]) {
+for (const url of ["/portal/executive-platform/", "/portal/ceo-dashboard/", "/portal/executive-platform/NP_Hub.html", "/docs/NP_Implementation_Blueprint_v2.pdf"]) {
   const unauthenticated = await request({ url, headers: { accept: "text/html" }, address: "127.0.0.24" });
   assert.equal(unauthenticated.statusCode, 302);
   assert.equal(unauthenticated.headers.Location, "/portal/");

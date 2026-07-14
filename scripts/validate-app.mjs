@@ -3,6 +3,7 @@ import { dirname, extname, join, resolve } from "node:path";
 import { applyExecutiveBranding } from "../src/integrations/sharepoint/secure-content-branding.mjs";
 
 const root = resolve(process.cwd());
+const secureRoot = resolve(process.env.SECURE_CONTENT_ROOT || join(root, "_secure"));
 
 const pages = ["index.html", "portal/index.html", "portal/executive-platform/index.html"];
 
@@ -113,10 +114,19 @@ for (const page of executivePages) {
   if (fileExists(page) || fileExists(`portal/executive-platform/${page}`)) {
     fail(`public Executive Platform page still exists: ${page}`);
   }
+  const securePage = join(secureRoot, "executive-platform", page);
+  if (!existsSync(securePage)) {
+    fail(`missing protected Executive Platform page: ${page}`);
+    continue;
+  }
+  const secureHtml = readFileSync(securePage, "utf8");
+  if (!secureHtml.includes("noindex,nofollow") || !secureHtml.includes("/assets/brand/novapharm-healthcare-logo.svg")) {
+    fail(`protected Executive Platform page is missing privacy or official-brand controls: ${page}`);
+  }
 }
 
 if (process.exitCode) {
   process.exit(process.exitCode);
 }
 
-console.log(`Validated ${pagesToValidate.length} public entry pages and confirmed Executive Platform modules are not publicly published.`);
+console.log(`Validated ${pagesToValidate.length} public entry pages and ${executivePages.length} protected Executive Platform modules.`);

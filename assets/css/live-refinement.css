@@ -11,6 +11,55 @@ body {
   background: #fbfcfb;
 }
 
+.site-nav a.nav-cta,
+.site-nav a.nav-cta:hover {
+  color: #ffffff;
+}
+
+.site-footer p,
+.site-footer li {
+  color: #c3ced6;
+}
+
+.site-footer .footer-grid h3 {
+  color: #ffffff;
+}
+
+.maturity-label.maturity-planned {
+  color: #61460d;
+  background: #f5ead0;
+}
+
+.section-dark .list-check-light li {
+  color: #e5ece9;
+}
+
+.section-dark .contact-form .field-help,
+.section-dark .contact-form .field-help a {
+  color: #42515a !important;
+}
+
+.portal-sidebar .btn.btn-outline {
+  border-color: #ffffff;
+  background: #ffffff;
+  color: #111d25;
+}
+
+.portal-sidebar .btn.btn-outline:hover {
+  border-color: #ffffff;
+  background: #edf2f3;
+  color: #111d25;
+}
+
+.portal-main .status-pill,
+.portal-main .status-pill span {
+  color: #185e3c;
+}
+
+.portal-main .section-heading-row .eyebrow {
+  color: #8b1d24;
+}
+
 p,
 li,
 td,

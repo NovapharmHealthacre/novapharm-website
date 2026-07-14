@@ -268,7 +268,7 @@ export const productCategories = Object.freeze([
     status: "Opportunity assessment",
     text: "Hard-to-source and clinically important categories considered through qualified B2B and regulatory pathways.",
     imageBase: "specialty-pharmacy-handling",
-    imageAlt: "Pharmacist organising medicine packs on pharmacy shelves"
+    imageAlt: "Gloved laboratory professional using a multichannel pipette during controlled sample analysis"
   },
   {
     title: "Oral liquid formulations",
