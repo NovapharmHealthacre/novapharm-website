@@ -39,7 +39,36 @@
       "cropNotes": "Landscape crop centred on gloved hands, pipette and vial; exclude unrelated background detail.",
       "altText": "Gloved laboratory professional using a pipette to handle a vial in a controlled scientific setting",
       "claimBoundary": "Representative stock image; not a NovaPharm product, facility or efficacy claim.",
-      "reviewStatus": "selected-pending-materialisation"
+      "reviewStatus": "downloaded-and-technically-validated",
+      "derivatives": {
+        "avif": {
+          "path": "assets/media/products/oncology-vial-handling.avif",
+          "sourceUrl": "https://images.pexels.com/photos/4299424/pexels-photo-4299424.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 93380,
+          "sha256": "1e523152d20860a6b4a83407fd487c55496ae2d8e6e807bcf96c69a61c44c35e"
+        },
+        "webp": {
+          "path": "assets/media/products/oncology-vial-handling.webp",
+          "sourceUrl": "https://images.pexels.com/photos/4299424/pexels-photo-4299424.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 76810,
+          "sha256": "993580914171166bd916690f6f7c3c85628f1baef91f852a95e4273a11e11a65"
+        },
+        "jpg": {
+          "path": "assets/media/products/oncology-vial-handling.jpg",
+          "sourceUrl": "https://images.pexels.com/photos/4299424/pexels-photo-4299424.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 155849,
+          "sha256": "bdc5692953a505bd0969407cdf7857c897abe7edc6428f25b85b7926f21ae2d0"
+        }
+      }
     },
     {
       "id": "specialty-pharmacy-handling",
@@ -53,7 +82,36 @@
       "cropNotes": "Landscape crop showing natural pharmacy work; do not imply endorsement or NovaPharm employment.",
       "altText": "Pharmacist organising medicine packs on pharmacy shelves",
       "claimBoundary": "Representative stock image; the person does not endorse NovaPharm and is not a NovaPharm employee.",
-      "reviewStatus": "selected-pending-materialisation"
+      "reviewStatus": "downloaded-and-technically-validated",
+      "derivatives": {
+        "avif": {
+          "path": "assets/media/products/specialty-pharmacy-handling.avif",
+          "sourceUrl": "https://images.pexels.com/photos/14797855/pexels-photo-14797855.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 97687,
+          "sha256": "83eb14208ac6af266dc217ca5e471c742c614ef2e094bc83f0dba585c00fbd43"
+        },
+        "webp": {
+          "path": "assets/media/products/specialty-pharmacy-handling.webp",
+          "sourceUrl": "https://images.pexels.com/photos/14797855/pexels-photo-14797855.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 91114,
+          "sha256": "5b01e20a18b25473913da07c81490f6f427265febc1119095f66db5325a3a306"
+        },
+        "jpg": {
+          "path": "assets/media/products/specialty-pharmacy-handling.jpg",
+          "sourceUrl": "https://images.pexels.com/photos/14797855/pexels-photo-14797855.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 158439,
+          "sha256": "7558ddae1c53f89b1378313ba1c357b01e0284526c8ac9b29452d94fa6b68a51"
+        }
+      }
     },
     {
       "id": "oral-liquid-formulation",
@@ -67,7 +125,36 @@
       "cropNotes": "Focus on gloved handling and amber bottle; retain sufficient laboratory context.",
       "altText": "Gloved laboratory professional holding an amber glass bottle during liquid analysis",
       "claimBoundary": "Representative formulation context; not a NovaPharm laboratory or marketed product.",
-      "reviewStatus": "selected-pending-materialisation"
+      "reviewStatus": "downloaded-and-technically-validated",
+      "derivatives": {
+        "avif": {
+          "path": "assets/media/products/oral-liquid-formulation.avif",
+          "sourceUrl": "https://images.pexels.com/photos/9628804/pexels-photo-9628804.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 56588,
+          "sha256": "14f61b89eb8be7dc9b941ca5b3ea3c6386dcf99726f468f0b949edf8f546c7c0"
+        },
+        "webp": {
+          "path": "assets/media/products/oral-liquid-formulation.webp",
+          "sourceUrl": "https://images.pexels.com/photos/9628804/pexels-photo-9628804.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 52206,
+          "sha256": "229a012fc65369f0f070715c47cc74a5b874f70f5a70c9e5dde4411c6ec64fa3"
+        },
+        "jpg": {
+          "path": "assets/media/products/oral-liquid-formulation.jpg",
+          "sourceUrl": "https://images.pexels.com/photos/9628804/pexels-photo-9628804.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 106793,
+          "sha256": "4f72c9b3260a4cdc366ec2bcef4bca20651adcbbd338f3cfd9c59aac0a8180f3"
+        }
+      }
     },
     {
       "id": "licensed-generics-packaging",
@@ -81,7 +168,36 @@
       "cropNotes": "Use a disciplined landscape crop around unbranded blister packaging; avoid consumer-treatment framing.",
       "altText": "Hand holding unbranded medicine blister packs against a clean blue background",
       "claimBoundary": "Representative packaging image; no licence ownership, stock or availability is implied.",
-      "reviewStatus": "selected-pending-materialisation"
+      "reviewStatus": "downloaded-and-technically-validated",
+      "derivatives": {
+        "avif": {
+          "path": "assets/media/products/licensed-generics-packaging.avif",
+          "sourceUrl": "https://images.pexels.com/photos/5995060/pexels-photo-5995060.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 69093,
+          "sha256": "2acfdb9fa28443ecec158a4f6a4b0d0a72a1ad1cf7229fc4a125317230ebb828"
+        },
+        "webp": {
+          "path": "assets/media/products/licensed-generics-packaging.webp",
+          "sourceUrl": "https://images.pexels.com/photos/5995060/pexels-photo-5995060.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 50242,
+          "sha256": "d07d8027dd4e048650df95977bdaa61ff5ad99a5dc2463961fc007cab73922fa"
+        },
+        "jpg": {
+          "path": "assets/media/products/licensed-generics-packaging.jpg",
+          "sourceUrl": "https://images.pexels.com/photos/5995060/pexels-photo-5995060.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 123356,
+          "sha256": "549a0edcb1077ca28150ffaf30f52ffdac1eeaa77f5225aae6b68f0a661f2660"
+        }
+      }
     },
     {
       "id": "cardiovascular-quality-control",
@@ -95,7 +211,36 @@
       "cropNotes": "Retain laboratory sample handling and notes; avoid any visible unrelated labels.",
       "altText": "Laboratory scientist examining samples and recording quality-control observations",
       "claimBoundary": "Representative quality-control context; not a NovaPharm laboratory or current product programme.",
-      "reviewStatus": "selected-pending-materialisation"
+      "reviewStatus": "downloaded-and-technically-validated",
+      "derivatives": {
+        "avif": {
+          "path": "assets/media/products/cardiovascular-quality-control.avif",
+          "sourceUrl": "https://images.pexels.com/photos/3735716/pexels-photo-3735716.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 36676,
+          "sha256": "db09b882655b5c5b8966fae5a75ce8f3386df686f9efbaccca393b5b44818094"
+        },
+        "webp": {
+          "path": "assets/media/products/cardiovascular-quality-control.webp",
+          "sourceUrl": "https://images.pexels.com/photos/3735716/pexels-photo-3735716.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 33744,
+          "sha256": "325ab60a81394390ae81fa72f15940670e4d4e63ecf47f65b6c0a74a64333db5"
+        },
+        "jpg": {
+          "path": "assets/media/products/cardiovascular-quality-control.jpg",
+          "sourceUrl": "https://images.pexels.com/photos/3735716/pexels-photo-3735716.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 73025,
+          "sha256": "c1a433588fe0ca6314e69387b84656c6385f2feb25d21d5d0817d90a89e863f6"
+        }
+      }
     },
     {
       "id": "respiratory-manufacturing",
@@ -109,7 +254,36 @@
       "cropNotes": "Show controlled packaging work without identifying the third-party site or implying ownership.",
       "altText": "Protected workers monitoring medicine packaging on a controlled production line",
       "claimBoundary": "Representative third-party manufacturing context; NovaPharm does not claim to own the facility.",
-      "reviewStatus": "selected-pending-materialisation"
+      "reviewStatus": "downloaded-and-technically-validated",
+      "derivatives": {
+        "avif": {
+          "path": "assets/media/products/respiratory-manufacturing.avif",
+          "sourceUrl": "https://images.pexels.com/photos/37466061/pexels-photo-37466061.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 52404,
+          "sha256": "cbc36d04943a197ffa04a2aea80b0a68993b0d81ca0588363729d77458f92783"
+        },
+        "webp": {
+          "path": "assets/media/products/respiratory-manufacturing.webp",
+          "sourceUrl": "https://images.pexels.com/photos/37466061/pexels-photo-37466061.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 50524,
+          "sha256": "9e72751313e362ee316102e6f0318cea200d218cde4b855aff796a0ab022b331"
+        },
+        "jpg": {
+          "path": "assets/media/products/respiratory-manufacturing.jpg",
+          "sourceUrl": "https://images.pexels.com/photos/37466061/pexels-photo-37466061.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 107964,
+          "sha256": "b4a11877f696da09266795b31be2c540dceea092428bb4df967910ca0e5f5af7"
+        }
+      }
     },
     {
       "id": "metabolic-laboratory-analysis",
@@ -123,7 +297,36 @@
       "cropNotes": "Focus on protective equipment and controlled analysis; avoid exaggerated colour treatment.",
       "altText": "Scientist wearing gloves and safety glasses holding laboratory flasks for analysis",
       "claimBoundary": "Representative scientific analysis; not evidence of a NovaPharm product or facility.",
-      "reviewStatus": "selected-pending-materialisation"
+      "reviewStatus": "downloaded-and-technically-validated",
+      "derivatives": {
+        "avif": {
+          "path": "assets/media/products/metabolic-laboratory-analysis.avif",
+          "sourceUrl": "https://images.pexels.com/photos/3082451/pexels-photo-3082451.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 34652,
+          "sha256": "420497e1ae9230cd296e5f6e93640d34ca953afb3fbad1243710f98755e3ea83"
+        },
+        "webp": {
+          "path": "assets/media/products/metabolic-laboratory-analysis.webp",
+          "sourceUrl": "https://images.pexels.com/photos/3082451/pexels-photo-3082451.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 30536,
+          "sha256": "7a70c8f2e075139f7e7fdf3f93e5e96a45048c01c0af8b41525d81066928b1a0"
+        },
+        "jpg": {
+          "path": "assets/media/products/metabolic-laboratory-analysis.jpg",
+          "sourceUrl": "https://images.pexels.com/photos/3082451/pexels-photo-3082451.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 67704,
+          "sha256": "ad9016283b85c21ae095cca55205cca78e5f1c1c918621fb7dba2a24b4a6580f"
+        }
+      }
     },
     {
       "id": "hospital-supply-logistics",
@@ -137,7 +340,37 @@
       "cropNotes": "Show sealed cartons and logistics handling; do not imply pharmaceutical temperature control not visible in the image.",
       "altText": "Sealed cartons arranged inside a delivery vehicle for controlled logistics handling",
       "claimBoundary": "Representative general logistics image; not a NovaPharm vehicle, warehouse or validated cold-chain process.",
-      "reviewStatus": "selected-pending-materialisation"
+      "reviewStatus": "downloaded-and-technically-validated",
+      "derivatives": {
+        "avif": {
+          "path": "assets/media/products/hospital-supply-logistics.avif",
+          "sourceUrl": "https://images.pexels.com/photos/21838827/pexels-photo-21838827.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 106169,
+          "sha256": "59399434effe654c196581b43241f70c604a114096d939ff86801a047cce1b48"
+        },
+        "webp": {
+          "path": "assets/media/products/hospital-supply-logistics.webp",
+          "sourceUrl": "https://images.pexels.com/photos/21838827/pexels-photo-21838827.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 99412,
+          "sha256": "af9f8e066e68fe87d2a4c5112347f10907bdcd8ad46a2fa33ee9472431555ee6"
+        },
+        "jpg": {
+          "path": "assets/media/products/hospital-supply-logistics.jpg",
+          "sourceUrl": "https://images.pexels.com/photos/21838827/pexels-photo-21838827.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600&fm=jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 176725,
+          "sha256": "6f0cab95b6ea624cf6d1e2a3ede5201788df6b7ea383fd76c590c6f88ddbc59c"
+        }
+      }
     }
-  ]
+  ],
+  "materialisedAt": "2026-07-14T06:32:11.076Z"
 }
