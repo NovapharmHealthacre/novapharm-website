@@ -1,0 +1,504 @@
+/* NovaPharm premium visual refinement — July 2026
+   Extends the existing design system without altering regulatory or SEO content. */
+
+:root {
+  --visual-ink: #0a1720;
+  --visual-slate: #182933;
+  --visual-mist: #e7eeec;
+  --visual-line: rgba(151, 172, 166, 0.42);
+  --visual-glass: rgba(15, 31, 40, 0.72);
+  --visual-ease: cubic-bezier(.2, .72, .2, 1);
+}
+
+body.visual-refinement-ready {
+  background: #f7f9f8;
+}
+
+/* Cinematic homepage hero */
+.hero-flagship {
+  min-height: clamp(680px, 86svh, 880px);
+  background: var(--visual-ink);
+}
+
+.hero-flagship::before {
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(5, 16, 23, .98) 0%, rgba(5, 16, 23, .91) 31%, rgba(5, 16, 23, .58) 56%, rgba(5, 16, 23, .2) 78%, rgba(5, 16, 23, .08) 100%),
+    linear-gradient(0deg, rgba(5, 16, 23, .68), transparent 48%);
+}
+
+.hero-flagship .hero-media img {
+  scale: 1.035;
+  transform: translate3d(var(--hero-x, 0), var(--hero-y, 0), 0);
+  filter: saturate(.82) contrast(1.05);
+  transition: transform 900ms var(--visual-ease);
+}
+
+.hero-cinematic-layer {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hero-cinematic-grid {
+  position: absolute;
+  inset: -15% -10%;
+  opacity: .23;
+  background:
+    linear-gradient(rgba(205, 227, 220, .16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(205, 227, 220, .16) 1px, transparent 1px);
+  background-size: 74px 74px;
+  mask-image: linear-gradient(90deg, transparent 12%, #000 48%, #000 100%);
+  animation: visual-grid-drift 24s linear infinite;
+}
+
+.hero-cinematic-orbit {
+  position: absolute;
+  right: -12vw;
+  top: 8%;
+  width: min(62vw, 880px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(217, 235, 230, .34);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 78px rgba(217, 235, 230, .035),
+    0 0 0 156px rgba(217, 235, 230, .025);
+  animation: visual-orbit 32s linear infinite;
+}
+
+.hero-cinematic-orbit::before,
+.hero-cinematic-orbit::after {
+  content: "";
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #e5f0ed;
+  box-shadow: 0 0 22px rgba(229, 240, 237, .72);
+}
+
+.hero-cinematic-orbit::before { top: 16%; left: 16%; }
+.hero-cinematic-orbit::after { right: 8%; bottom: 31%; background: #d2454f; }
+
+.hero-signal-stack {
+  position: absolute;
+  right: max(4vw, calc((100vw - var(--container)) / 2));
+  bottom: 8%;
+  display: grid;
+  width: min(340px, 31vw);
+  gap: 10px;
+}
+
+.hero-signal-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px 15px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid rgba(224, 237, 233, .24);
+  background: rgba(10, 27, 35, .58);
+  color: #e7f0ed;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, .16);
+  animation: visual-signal-rise 8s var(--visual-ease) infinite alternate;
+}
+
+.hero-signal-card:nth-child(2) { margin-left: 38px; animation-delay: -2.2s; }
+.hero-signal-card:nth-child(3) { margin-left: 14px; animation-delay: -4.6s; }
+.hero-signal-card span {
+  grid-row: 1 / 3;
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  border: 1px solid rgba(225, 240, 235, .32);
+  color: #ef6b72;
+  font-size: 11px;
+  font-weight: 850;
+}
+.hero-signal-card strong { color: #fff; font-size: 13px; }
+.hero-signal-card small { color: #b9c9c4; font-size: 11px; }
+
+.hero-flagship .hero-content { position: relative; z-index: 2; padding-block: 102px 94px; }
+.hero-flagship .hero-copy { max-width: 820px; }
+.hero-flagship h1 { max-width: 820px; font-size: clamp(50px, 5.4vw, 76px); letter-spacing: -.035em; }
+.hero-flagship .hero-lead { max-width: 690px; }
+
+.motion-toggle {
+  position: absolute;
+  right: max(24px, calc((100vw - var(--container)) / 2));
+  top: 28px;
+  z-index: 4;
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, .28);
+  background: rgba(7, 21, 28, .52);
+  color: #eef5f3;
+  font-size: 12px;
+  font-weight: 720;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.hero-flagship[data-motion-paused="true"] :is(.hero-cinematic-grid, .hero-cinematic-orbit, .hero-signal-card) {
+  animation-play-state: paused;
+}
+
+/* Regulatory roadmap */
+.regulatory-roadmap-section {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #f8faf9 0%, #edf3f1 100%);
+}
+
+.regulatory-roadmap-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 82% 14%, rgba(36, 87, 79, .1), transparent 34%);
+  pointer-events: none;
+}
+
+.regulatory-roadmap-shell {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(300px, .72fr) minmax(0, 1.28fr);
+  gap: clamp(48px, 6vw, 92px);
+  align-items: start;
+}
+
+.regulatory-roadmap-intro { position: sticky; top: calc(var(--header-height) + 28px); }
+.regulatory-roadmap-intro .regulatory-notice { margin-top: 30px; }
+
+.regulatory-roadmap {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: roadmap;
+}
+
+.regulatory-roadmap::before {
+  content: "";
+  position: absolute;
+  top: 52px;
+  bottom: 52px;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(38, 85, 76, .42) 8%, rgba(38, 85, 76, .42) 92%, transparent);
+}
+
+.regulatory-roadmap li {
+  position: relative;
+  min-height: 184px;
+  padding: 24px 24px 22px;
+  border: 1px solid var(--visual-line);
+  background: rgba(255, 255, 255, .9);
+  box-shadow: 0 20px 50px rgba(18, 40, 47, .055);
+  transition: transform 260ms var(--visual-ease), border-color 260ms ease, box-shadow 260ms ease;
+}
+
+.regulatory-roadmap li:nth-child(even) { margin-top: 54px; }
+.regulatory-roadmap li:hover {
+  transform: translateY(-4px);
+  border-color: rgba(184, 18, 32, .48);
+  box-shadow: 0 26px 60px rgba(18, 40, 47, .1);
+}
+
+.roadmap-number { color: var(--brand); font-size: 12px; font-weight: 850; }
+.roadmap-stage { display: block; margin-top: 24px; color: #6c7a78; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.regulatory-roadmap h3 { margin: 8px 0 0; font-family: var(--font); font-size: 19px; line-height: 1.3; }
+.regulatory-roadmap li:last-child {
+  grid-column: 1 / -1;
+  min-height: 148px;
+  margin-top: 0;
+  border-color: rgba(184, 18, 32, .4);
+  background: #13232c;
+}
+.regulatory-roadmap li:last-child :is(.roadmap-stage, h3) { color: #fff; }
+.regulatory-roadmap li:last-child .roadmap-number { color: #ef6b72; }
+
+/* Image-led batch integrity */
+.batch-integrity-feature {
+  position: relative;
+  display: grid;
+  min-height: 620px;
+  grid-template-columns: minmax(0, 1.25fr) minmax(360px, .75fr);
+  overflow: hidden;
+  background: #102029;
+}
+
+.batch-integrity-media { position: relative; min-height: 620px; margin: 0; overflow: hidden; }
+.batch-integrity-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 48%, rgba(16, 32, 41, .92) 100%), linear-gradient(0deg, rgba(16, 32, 41, .35), transparent 50%);
+}
+.batch-integrity-media picture,
+.batch-integrity-media img { width: 100%; height: 100%; }
+.batch-integrity-media img { object-fit: cover; object-position: center; scale: 1.02; }
+.batch-integrity-media figcaption {
+  position: absolute;
+  left: 24px;
+  bottom: 20px;
+  z-index: 2;
+  max-width: 520px;
+  color: rgba(255, 255, 255, .72);
+  font-size: 11px;
+}
+.batch-integrity-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(54px, 6vw, 96px) max(32px, calc((100vw - var(--container)) / 2));
+  padding-left: clamp(36px, 5vw, 78px);
+  color: #d9e5e1;
+}
+.batch-integrity-copy h2 { margin: 12px 0 18px; color: #fff; font-size: clamp(38px, 4vw, 58px); line-height: 1.06; }
+.batch-integrity-copy > p { max-width: 570px; color: #c7d5d1; font-size: 17px; }
+.batch-evidence-list { display: grid; gap: 0; margin-top: 30px; border-top: 1px solid rgba(255, 255, 255, .18); }
+.batch-evidence-list span { padding: 15px 0; border-bottom: 1px solid rgba(255, 255, 255, .18); color: #eef5f3; font-weight: 700; }
+.batch-evidence-list span::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 12px; border: 1px solid #f16b72; }
+
+/* Image-led partner ecosystem */
+.partner-ecosystem-section { background: #fff; }
+.partner-ecosystem-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+.partner-ecosystem-card {
+  position: relative;
+  min-height: 360px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #15252d;
+  color: #fff;
+  isolation: isolate;
+}
+.partner-ecosystem-card figure { position: absolute; inset: 0; margin: 0; z-index: -2; }
+.partner-ecosystem-card img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.72) contrast(1.05); transition: scale 700ms var(--visual-ease); }
+.partner-ecosystem-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(0deg, rgba(10, 24, 31, .96) 0%, rgba(10, 24, 31, .7) 46%, rgba(10, 24, 31, .12) 100%);
+}
+.partner-ecosystem-card:hover img { scale: 1.05; }
+.partner-ecosystem-copy { position: absolute; right: 0; bottom: 0; left: 0; padding: 25px; }
+.partner-ecosystem-index { color: #f16b72; font-size: 12px; font-weight: 850; }
+.partner-ecosystem-card h3 { margin: 28px 0 8px; color: #fff; font-family: var(--font); font-size: 20px; line-height: 1.25; }
+.partner-ecosystem-card p { margin: 0; color: #cbd8d4; font-size: 13px; line-height: 1.55; }
+.partner-ecosystem-disclosure { margin: 14px 0 0; color: var(--muted); font-size: 12px; }
+
+/* Services */
+.service-visual-story,
+.technology-visual-story {
+  padding: 0;
+  background: #102029;
+}
+.service-visual-grid,
+.technology-visual-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(360px, .88fr);
+  min-height: 600px;
+}
+.service-visual-media,
+.technology-visual-media { position: relative; min-height: 600px; margin: 0; overflow: hidden; }
+.service-visual-media img,
+.technology-visual-media img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.78); }
+.service-visual-media::after,
+.technology-visual-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 58%, rgba(16, 32, 41, .9)); }
+.service-visual-media figcaption,
+.technology-visual-media figcaption { position: absolute; left: 24px; bottom: 20px; z-index: 2; max-width: 560px; color: rgba(255,255,255,.72); font-size: 11px; }
+.service-visual-copy,
+.technology-visual-copy { display: flex; flex-direction: column; justify-content: center; padding: 62px clamp(36px, 6vw, 88px); color: #d7e3df; }
+.service-visual-copy h2,
+.technology-visual-copy h2 { margin: 12px 0 18px; color: #fff; font-size: clamp(38px, 4vw, 54px); line-height: 1.08; }
+.service-control-path,
+.technology-proof-grid { display: grid; gap: 12px; margin-top: 28px; }
+.service-control-path span,
+.technology-proof-grid span { padding: 13px 15px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.04); color: #eef5f3; font-size: 13px; font-weight: 700; }
+
+.services-media-gallery {
+  display: grid;
+  grid-template-columns: 1.25fr .75fr .75fr;
+  gap: 16px;
+  margin-bottom: 70px;
+}
+.services-media-gallery figure { position: relative; min-height: 320px; margin: 0; overflow: hidden; background: #13232c; }
+.services-media-gallery figure:first-child { min-height: 460px; }
+.services-media-gallery img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.82); transition: scale 700ms var(--visual-ease); }
+.services-media-gallery figure:hover img { scale: 1.035; }
+.services-media-gallery figcaption { position: absolute; right: 0; bottom: 0; left: 0; padding: 20px; background: linear-gradient(0deg, rgba(10,24,31,.92), transparent); color: #fff; font-size: 13px; font-weight: 700; }
+
+.service-detail.visual-service-card {
+  position: relative;
+  min-height: 410px;
+  padding-right: min(42%, 520px);
+  overflow: hidden;
+}
+.service-detail.visual-service-card::after {
+  content: "";
+  position: absolute;
+  top: 34px;
+  right: 0;
+  bottom: 34px;
+  width: min(38%, 470px);
+  background-image: linear-gradient(0deg, rgba(13, 28, 36, .26), transparent), var(--service-image);
+  background-position: center;
+  background-size: cover;
+  filter: saturate(.78);
+}
+
+/* Photo-led page heroes */
+body[data-page="services"] .page-hero,
+body[data-page="regulatory-services"] .page-hero,
+body[data-page="partner-with-us"] .page-hero,
+body[data-page="technology"] .page-hero { min-height: 590px; background: #eef3f1; }
+body[data-page="services"] .page-hero::after,
+body[data-page="regulatory-services"] .page-hero::after,
+body[data-page="partner-with-us"] .page-hero::after,
+body[data-page="technology"] .page-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 47%;
+  background-position: center;
+  background-size: cover;
+  filter: saturate(.72) contrast(1.04);
+}
+body[data-page="services"] .page-hero::after { background-image: linear-gradient(90deg, #eef3f1 0%, transparent 44%), url("/assets/media/products/respiratory-manufacturing.jpg"); }
+body[data-page="regulatory-services"] .page-hero::after { background-image: linear-gradient(90deg, #eef3f1 0%, transparent 44%), url("/assets/media/products/cardiovascular-quality-control.jpg"); }
+body[data-page="partner-with-us"] .page-hero::after { background-image: linear-gradient(90deg, #eef3f1 0%, transparent 44%), url("/assets/media/products/specialty-pharmacy-handling.jpg"); }
+body[data-page="technology"] .page-hero::after { background-image: linear-gradient(90deg, #eef3f1 0%, transparent 44%), url("/assets/media/products/metabolic-laboratory-analysis.jpg"); }
+body[data-page="services"] .page-hero .container,
+body[data-page="regulatory-services"] .page-hero .container,
+body[data-page="partner-with-us"] .page-hero .container,
+body[data-page="technology"] .page-hero .container { max-width: var(--container); }
+body[data-page="services"] .page-hero :is(h1, p),
+body[data-page="regulatory-services"] .page-hero :is(h1, p),
+body[data-page="partner-with-us"] .page-hero :is(h1, p),
+body[data-page="technology"] .page-hero :is(h1, p) { max-width: 690px; }
+body[data-page="services"] .page-hero-signal,
+body[data-page="regulatory-services"] .page-hero-signal,
+body[data-page="partner-with-us"] .page-hero-signal,
+body[data-page="technology"] .page-hero-signal { display: none; }
+
+/* Regulatory page */
+.regulatory-stage { background: #f8faf9; }
+.regulatory-stage-grid { display: grid; grid-template-columns: minmax(260px, .56fr) minmax(0, 1.44fr); gap: 50px; align-items: start; }
+.regulatory-stage-media { position: sticky; top: calc(var(--header-height) + 28px); min-height: 590px; margin: 0; overflow: hidden; background: #12222a; }
+.regulatory-stage-media img { width: 100%; height: 590px; object-fit: cover; filter: saturate(.74); }
+.regulatory-stage-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(10,24,31,.78), transparent 62%); }
+.regulatory-stage-media figcaption { position: absolute; right: 22px; bottom: 20px; left: 22px; z-index: 2; color: rgba(255,255,255,.78); font-size: 11px; }
+.regulatory-stage .regulatory-layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 36px; }
+.regulatory-stage .regulatory-content article { position: relative; padding: 38px 0 42px 26px; border-left: 1px solid rgba(46, 89, 80, .28); }
+.regulatory-stage .regulatory-content article::before { content: ""; position: absolute; left: -5px; top: 48px; width: 9px; height: 9px; border: 1px solid var(--brand); background: #f8faf9; }
+
+/* Partner page */
+.partner-type-grid.partner-ecosystem-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.partner-journey { counter-reset: partner-stage; }
+.partner-journey li { position: relative; overflow: hidden; transition: transform 220ms ease, border-color 220ms ease; }
+.partner-journey li::after { content: ""; position: absolute; right: -26px; bottom: -26px; width: 76px; height: 76px; border: 1px solid rgba(184,18,32,.16); border-radius: 50%; }
+.partner-journey li:hover { transform: translateY(-3px); border-color: rgba(184,18,32,.42); }
+
+/* Technology */
+.technology-visual-story { background: #0e2029; }
+.technology-visual-media::after { background: linear-gradient(90deg, transparent 52%, rgba(14,32,41,.92)); }
+.technology-architecture-story .architecture-map { overflow: hidden; background: linear-gradient(145deg, #fff, #edf3f1); box-shadow: 0 28px 70px rgba(16, 38, 46, .1); }
+.technology-architecture-story .architecture-map::after { content: ""; position: absolute; width: 260px; height: 260px; right: -90px; bottom: -110px; border: 1px solid rgba(36,87,79,.22); border-radius: 50%; box-shadow: 0 0 0 46px rgba(36,87,79,.035), 0 0 0 92px rgba(36,87,79,.025); }
+.technology-architecture-story .architecture-node { -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); transition: transform 220ms ease, box-shadow 220ms ease; }
+.technology-architecture-story .architecture-node:hover { transform: translateY(-3px); box-shadow: 0 18px 32px rgba(16,38,46,.08); }
+
+/* Leadership portraits */
+.leadership-list .leader-card { background: #fff; }
+.leader-card-media { overflow: hidden; background: #dfe6e4; }
+.leader-card-media img { width: 100%; height: 100%; min-height: 480px; object-fit: cover; object-position: center 24%; filter: saturate(.9) contrast(1.02); transition: scale 700ms var(--visual-ease), filter 300ms ease; }
+.leader-card:hover .leader-card-media img { scale: 1.025; filter: saturate(1) contrast(1.03); }
+body[data-page="leadership/vishal-chakravarty"] .profile-hero-media img { object-position: center 18%; }
+body[data-page="leadership/prabhakar-lahare"] .profile-hero-media img { object-position: center 22%; }
+body[data-page="leadership/girish-achliya"] .profile-hero-media img { object-position: center 28%; }
+
+/* Global refinement */
+[data-visual-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 700ms var(--visual-ease), transform 700ms var(--visual-ease); }
+[data-visual-reveal].is-visible { opacity: 1; transform: none; }
+.section + .section { position: relative; }
+.final-cta { background: linear-gradient(135deg, #fff 0%, #edf3f1 100%); }
+
+@keyframes visual-grid-drift { to { transform: translate3d(74px, 74px, 0); } }
+@keyframes visual-orbit { to { rotate: 360deg; } }
+@keyframes visual-signal-rise { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+
+@media (max-width: 1100px) {
+  .hero-signal-stack { display: none; }
+  .regulatory-roadmap-shell { grid-template-columns: 1fr; }
+  .regulatory-roadmap-intro { position: static; }
+  .partner-ecosystem-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .service-visual-grid,
+  .technology-visual-grid { grid-template-columns: 1fr; }
+  .service-visual-media,
+  .technology-visual-media { min-height: 460px; }
+  .service-visual-media::after,
+  .technology-visual-media::after { background: linear-gradient(0deg, rgba(16,32,41,.88), transparent 55%); }
+  .services-media-gallery { grid-template-columns: 1fr 1fr; }
+  .services-media-gallery figure:first-child { grid-column: 1 / -1; }
+  .regulatory-stage-grid { grid-template-columns: 1fr; }
+  .regulatory-stage-media { position: relative; top: auto; min-height: 440px; }
+  .regulatory-stage-media img { height: 440px; }
+  .partner-type-grid.partner-ecosystem-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 760px) {
+  .hero-flagship { min-height: 720px; }
+  .hero-flagship .hero-content { padding-block: 86px 76px; }
+  .hero-flagship h1 { font-size: clamp(42px, 12vw, 58px); }
+  .motion-toggle { top: 18px; right: 18px; }
+  .hero-cinematic-orbit { right: -45vw; top: 18%; width: 105vw; opacity: .65; }
+  .regulatory-roadmap { grid-template-columns: 1fr; }
+  .regulatory-roadmap::before { left: 19px; top: 32px; bottom: 32px; }
+  .regulatory-roadmap li,
+  .regulatory-roadmap li:nth-child(even),
+  .regulatory-roadmap li:last-child { grid-column: auto; min-height: 0; margin-top: 0; padding-left: 48px; }
+  .regulatory-roadmap li::before { content: ""; position: absolute; left: 14px; top: 30px; width: 10px; height: 10px; border: 2px solid var(--brand); background: #fff; border-radius: 50%; }
+  .batch-integrity-feature { grid-template-columns: 1fr; }
+  .batch-integrity-media { min-height: 420px; }
+  .batch-integrity-media::after { background: linear-gradient(0deg, rgba(16,32,41,.78), transparent 60%); }
+  .batch-integrity-copy { padding: 50px 24px 62px; }
+  .partner-ecosystem-grid,
+  .partner-type-grid.partner-ecosystem-grid { grid-template-columns: 1fr; }
+  .partner-ecosystem-card { min-height: 330px; }
+  .services-media-gallery { grid-template-columns: 1fr; }
+  .services-media-gallery figure:first-child { grid-column: auto; min-height: 360px; }
+  .service-detail.visual-service-card { padding-right: 0; padding-top: 300px; }
+  .service-detail.visual-service-card::after { top: 24px; right: 0; left: 0; width: auto; height: 244px; }
+  body[data-page="services"] .page-hero::after,
+  body[data-page="regulatory-services"] .page-hero::after,
+  body[data-page="partner-with-us"] .page-hero::after,
+  body[data-page="technology"] .page-hero::after { width: 100%; opacity: .18; }
+  .regulatory-stage .regulatory-layout { grid-template-columns: 1fr; }
+  .regulatory-stage .regulatory-index { position: static; display: flex; overflow-x: auto; gap: 10px; padding-bottom: 12px; }
+  .regulatory-stage .regulatory-index a { flex: 0 0 auto; }
+  .leader-card-media img { min-height: 400px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-cinematic-grid,
+  .hero-cinematic-orbit,
+  .hero-signal-card { animation: none !important; }
+  .hero-flagship .hero-media img,
+  [data-visual-reveal],
+  .partner-ecosystem-card img,
+  .leader-card-media img { transition: none !important; transform: none !important; }
+  [data-visual-reveal] { opacity: 1; }
+  .motion-toggle { display: none; }
+}
