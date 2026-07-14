@@ -1,0 +1,127 @@
+name: Publish and verify GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  statuses: write
+
+concurrency:
+  group: novapharm-github-pages-live
+  cancel-in-progress: false
+
+jobs:
+  publish-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      LIVE_ORIGIN: https://novapharmhealthcare.com
+      EXPECTED_MARKER: Building a more resilient pharmaceutical supply network.
+      STATUS_CONTEXT: pages-live-publish
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Verify the approved release payload
+        run: |
+          set -euo pipefail
+          grep -F "$EXPECTED_MARKER" index.html
+          test "$(tr -d '\r\n' < CNAME)" = "novapharmhealthcare.com"
+          test -s robots.txt
+          test -s sitemap.xml
+          test -s sitemap-insights.xml
+          test -s sitemap-images.xml
+
+      - name: Mark publication pending
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            -f state=pending \
+            -f context="$STATUS_CONTEXT" \
+            -f description="Publishing the approved GitHub Pages release" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >/dev/null
+
+      - name: Inspect GitHub Pages configuration
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/pages" > /tmp/pages-site.json
+          jq '{html_url, cname, status, source, build_type}' /tmp/pages-site.json
+          jq -e '.cname == "novapharmhealthcare.com"' /tmp/pages-site.json >/dev/null
+
+      - name: Request a fresh branch-based Pages build
+        run: |
+          set -euo pipefail
+          gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds" > /tmp/pages-build-request.json
+          cat /tmp/pages-build-request.json
+
+      - name: Wait for GitHub Pages to build the merged commit
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 60); do
+            gh api "repos/$GITHUB_REPOSITORY/pages/builds/latest" > /tmp/pages-build-latest.json
+            status=$(jq -r '.status // "unknown"' /tmp/pages-build-latest.json)
+            commit=$(jq -r '.commit // ""' /tmp/pages-build-latest.json)
+            echo "Pages build attempt $attempt: status=$status commit=$commit"
+            if [ "$status" = "built" ]; then
+              test "$commit" = "$GITHUB_SHA"
+              exit 0
+            fi
+            if [ "$status" = "errored" ]; then
+              jq . /tmp/pages-build-latest.json
+              exit 1
+            fi
+            sleep 10
+          done
+          echo "GitHub Pages did not finish within the publication window." >&2
+          exit 1
+
+      - name: Verify the public domain is serving the approved release
+        run: |
+          set -euo pipefail
+          release_url="$LIVE_ORIGIN/?release=$GITHUB_SHA"
+          for attempt in $(seq 1 60); do
+            echo "Live verification attempt $attempt"
+            if curl --fail --silent --show-error --location \
+              -H 'Cache-Control: no-cache, no-store, max-age=0' \
+              -H 'Pragma: no-cache' \
+              "$release_url" > /tmp/live-home.html; then
+              if grep -Fq "$EXPECTED_MARKER" /tmp/live-home.html; then
+                curl --fail --silent --show-error --location \
+                  -H 'Cache-Control: no-cache, no-store, max-age=0' \
+                  "$LIVE_ORIGIN/robots.txt?release=$GITHUB_SHA" > /tmp/live-robots.txt
+                curl --fail --silent --show-error --location \
+                  -H 'Cache-Control: no-cache, no-store, max-age=0' \
+                  "$LIVE_ORIGIN/sitemap-insights.xml?release=$GITHUB_SHA" > /tmp/live-sitemap-insights.xml
+                grep -Fq 'User-agent: OAI-SearchBot' /tmp/live-robots.txt
+                grep -Fq 'sitemap-images.xml' /tmp/live-robots.txt
+                grep -Fq '/news-insights/' /tmp/live-sitemap-insights.xml
+                echo "The approved release is live at $LIVE_ORIGIN."
+                exit 0
+              fi
+            fi
+            sleep 10
+          done
+          echo "The custom domain did not serve the approved release within the verification window." >&2
+          head -n 40 /tmp/live-home.html 2>/dev/null || true
+          exit 1
+
+      - name: Mark publication successful
+        if: success()
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            -f state=success \
+            -f context="$STATUS_CONTEXT" \
+            -f description="Approved NovaPharm release is live and verified" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >/dev/null
+
+      - name: Mark publication failed
+        if: failure()
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            -f state=failure \
+            -f context="$STATUS_CONTEXT" \
+            -f description="GitHub Pages publication or live verification failed" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >/dev/null
