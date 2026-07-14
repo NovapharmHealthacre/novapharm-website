@@ -1,5 +1,6 @@
 await import("./build-pages.mjs");
 await import("./apply-visual-refinement.mjs");
+await import("./normalise-visual-css.mjs");
 await import("./normalise-visual-semantics.mjs");
 await import("./enhance-seo-authority.mjs");
 await import("./reconcile-leadership-authority.mjs");
