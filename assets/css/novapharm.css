@@ -8,3 +8,5 @@
 @import url("./portal.css") layer(pages);
 @import url("./responsive.css") layer(utilities);
 @import url("./live-refinement.css");
+@import url("./visual-refinement.css");
+@import url("./visual-contrast-fix.css");
