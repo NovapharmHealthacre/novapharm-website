@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { company, leadership } from "../src/content/site-content.mjs";
+import { leadership } from "../src/content/site-content.mjs";
 import { ORGANIZATION_ID, SITE_URL, WEBSITE_ID } from "../src/seo/authority-config.mjs";
 
 const root = resolve(process.cwd());
@@ -27,7 +27,8 @@ function editorialAuthor(article) {
     return {
       schema: { "@id": `${SITE_URL}/leadership/${leader.slug}/#person` },
       visibleName: leader.displayName,
-      visibleUrl: `/leadership/${leader.slug}/`
+      visibleUrl: `/leadership/${leader.slug}/`,
+      canonicalUrl: `${SITE_URL}/leadership/${leader.slug}/`
     };
   }
   return {
@@ -39,7 +40,8 @@ function editorialAuthor(article) {
       parentOrganization: { "@id": ORGANIZATION_ID }
     },
     visibleName: article.author || "NovaPharm Healthcare Editorial Team",
-    visibleUrl: "/legal/#editorial-standards"
+    visibleUrl: "/legal/#editorial-standards",
+    canonicalUrl: `${SITE_URL}/legal/#editorial-standards`
   };
 }
 
@@ -48,7 +50,8 @@ function articleTrustBlock(article, author) {
   return `<section class="section" data-editorial-trust><div class="container"><aside class="regulatory-notice" aria-label="Editorial standards"><strong>Editorial standards</strong><p>Written by <a href="${author.visibleUrl}">${author.visibleName}</a>.${reviewer} This corporate B2B analysis distinguishes verified facts, professional interpretation and future NovaPharm intentions. It is not medical advice. <a href="/legal/#editorial-standards">Read the editorial, sourcing and corrections standards</a>.</p></aside></div></section>`;
 }
 
-for (const file of readdirSync(articleDirectory).filter((name) => name.endsWith(".json"))) {
+const articleFiles = readdirSync(articleDirectory).filter((name) => name.endsWith(".json"));
+for (const file of articleFiles) {
   const article = JSON.parse(readFileSync(join(articleDirectory, file), "utf8"));
   const output = join(root, `news-insights/${article.slug}/index.html`);
   let html = readFileSync(output, "utf8");
@@ -98,8 +101,9 @@ for (const file of readdirSync(articleDirectory).filter((name) => name.endsWith(
   const allSchemas = [...nonArticleSchemas, pageSchema, articleSchema];
   const serialized = allSchemas.map((schema) => `  <script type="application/ld+json">${JSON.stringify(schema)}</script>`).join("\n");
   html = html.replace("</head>", `${serialized}\n</head>`);
+  html = html.replace(/<link rel="author" href="[^"]+">/i, `<link rel="author" href="${author.canonicalUrl}">`);
   html = html.replace(/<section class="section" data-editorial-trust>[\s\S]*?<\/section>(?=<\/main>)/, articleTrustBlock(article, author));
   writeFileSync(output, html);
 }
 
-console.log(`Reconciled visible and structured authorship for ${readdirSync(articleDirectory).filter((name) => name.endsWith(".json")).length} Insights articles.`);
+console.log(`Reconciled visible and structured authorship for ${articleFiles.length} Insights articles.`);
