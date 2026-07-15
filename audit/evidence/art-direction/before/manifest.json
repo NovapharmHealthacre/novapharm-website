@@ -1,0 +1,271 @@
+{
+  "generatedAt": "2026-07-15T04:13:28.641Z",
+  "baseUrl": "http://127.0.0.1:4180",
+  "label": "before",
+  "captures": [
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "desktop-1440x900",
+      "captureId": "homepage-hero",
+      "route": "/",
+      "selector": ".hero-flagship",
+      "path": "audit/evidence/art-direction/before/chromium/desktop-1440x900/homepage-hero.jpg",
+      "byteSize": 114085,
+      "sha256": "006bdd7bfcaba0751fea724e623886cec34d0eb8c7be9c58ecbc06bbe342b3d9"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "desktop-1440x900",
+      "captureId": "three-pillar-sourcing",
+      "route": "/",
+      "selector": ".sourcing-story",
+      "path": "audit/evidence/art-direction/before/chromium/desktop-1440x900/three-pillar-sourcing.jpg",
+      "byteSize": 110840,
+      "sha256": "c4588082cbe4409da92628aded4d70b7bd59ec17c32f2402d6ce6eda21dba4a1"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "desktop-1440x900",
+      "captureId": "partner-ecosystem",
+      "route": "/",
+      "selector": ".partner-ecosystem-section",
+      "path": "audit/evidence/art-direction/before/chromium/desktop-1440x900/partner-ecosystem.jpg",
+      "byteSize": 129591,
+      "sha256": "4b3f3a4deca0bdde45b5a4e9c5ce498880c97b331f811da6ee5ebf94968ecfac"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "desktop-1440x900",
+      "captureId": "about",
+      "route": "/about/",
+      "selector": ".page-hero",
+      "path": "audit/evidence/art-direction/before/chromium/desktop-1440x900/about.jpg",
+      "byteSize": 110883,
+      "sha256": "7551d22920082bbe9e9fc0c6fead281d7e6af0d82abb21cd0937bc384378c59e"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "desktop-1440x900",
+      "captureId": "services",
+      "route": "/services/",
+      "selector": ".page-hero",
+      "path": "audit/evidence/art-direction/before/chromium/desktop-1440x900/services.jpg",
+      "byteSize": 103837,
+      "sha256": "b43eaddae99e9ad6abe254a73924399723318e36329f5a17afeef9c5c7dbdfba"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "desktop-1440x900",
+      "captureId": "regulatory",
+      "route": "/regulatory-services/",
+      "selector": ".page-hero",
+      "path": "audit/evidence/art-direction/before/chromium/desktop-1440x900/regulatory.jpg",
+      "byteSize": 77343,
+      "sha256": "ea51069d4ca93aa22c80d379206f9d50d50b1f18b819130577e76882144fee38"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "desktop-1440x900",
+      "captureId": "products",
+      "route": "/product-portfolio/",
+      "selector": ".page-hero",
+      "path": "audit/evidence/art-direction/before/chromium/desktop-1440x900/products.jpg",
+      "byteSize": 77989,
+      "sha256": "eceb55032db701665b920c897898864ec4613af0ab4dfb19eb5c72b25f4d4bf8"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "desktop-1440x900",
+      "captureId": "partners",
+      "route": "/partner-with-us/",
+      "selector": ".page-hero",
+      "path": "audit/evidence/art-direction/before/chromium/desktop-1440x900/partners.jpg",
+      "byteSize": 99698,
+      "sha256": "7637f382f541783146efad49c18f84db75d5791dd31efc44c37fb3b98b2e5c33"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "desktop-1440x900",
+      "captureId": "technology",
+      "route": "/technology/",
+      "selector": ".page-hero",
+      "path": "audit/evidence/art-direction/before/chromium/desktop-1440x900/technology.jpg",
+      "byteSize": 76487,
+      "sha256": "77c3c614f923c9c1c8d99af4ab7a2d1788c8c79c8904d2c797971a9cfb802365"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "desktop-1440x900",
+      "captureId": "technology-architecture",
+      "route": "/technology/",
+      "selector": ".technology-architecture-story",
+      "path": "audit/evidence/art-direction/before/chromium/desktop-1440x900/technology-architecture.jpg",
+      "byteSize": 66826,
+      "sha256": "b2e549e91dc6d0960695fa861f4c707a25d4a1bce067af867d0fed22370651fc"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "desktop-1440x900",
+      "captureId": "insights",
+      "route": "/news-insights/",
+      "selector": ".page-hero",
+      "path": "audit/evidence/art-direction/before/chromium/desktop-1440x900/insights.jpg",
+      "byteSize": 74981,
+      "sha256": "f94d48bead09c503f2cde4f86c1493be91247f004f95a2d45e2f44f3965006d4"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "desktop-1440x900",
+      "captureId": "contact",
+      "route": "/contact/",
+      "selector": ".page-hero",
+      "path": "audit/evidence/art-direction/before/chromium/desktop-1440x900/contact.jpg",
+      "byteSize": 54150,
+      "sha256": "5d2dc41ba4b1ab6989a909be0fa233e58c2b69a71a3c3abf1e7e648728bd2008"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "mobile-390x844",
+      "captureId": "homepage-hero",
+      "route": "/",
+      "selector": ".hero-flagship",
+      "path": "audit/evidence/art-direction/before/chromium/mobile-390x844/homepage-hero.jpg",
+      "byteSize": 41077,
+      "sha256": "9b8422fa186f6123a3b7edfe3a3070078e30a91f7cd1051633b70e6b1a89c85f"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "mobile-390x844",
+      "captureId": "three-pillar-sourcing",
+      "route": "/",
+      "selector": ".sourcing-story",
+      "path": "audit/evidence/art-direction/before/chromium/mobile-390x844/three-pillar-sourcing.jpg",
+      "byteSize": 83603,
+      "sha256": "04a24757d4a3f81a07a1484293938d651faed090baf4af41f39dcb5358f36732"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "mobile-390x844",
+      "captureId": "partner-ecosystem",
+      "route": "/",
+      "selector": ".partner-ecosystem-section",
+      "path": "audit/evidence/art-direction/before/chromium/mobile-390x844/partner-ecosystem.jpg",
+      "byteSize": 83386,
+      "sha256": "472bc5ce72bcad4c60564dae8a687bb95bfa1773b2597a6d3ce248e88388c42a"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "mobile-390x844",
+      "captureId": "about",
+      "route": "/about/",
+      "selector": ".page-hero",
+      "path": "audit/evidence/art-direction/before/chromium/mobile-390x844/about.jpg",
+      "byteSize": 38328,
+      "sha256": "255e47d9fdbfc05407127caac14566ef7f1f8c535387ff25a2a13f37ecba0006"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "mobile-390x844",
+      "captureId": "services",
+      "route": "/services/",
+      "selector": ".page-hero",
+      "path": "audit/evidence/art-direction/before/chromium/mobile-390x844/services.jpg",
+      "byteSize": 40254,
+      "sha256": "57b730129c91ac160b1e68cefe5e4541dbfe638d308480d669b78e13568d6a53"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "mobile-390x844",
+      "captureId": "regulatory",
+      "route": "/regulatory-services/",
+      "selector": ".page-hero",
+      "path": "audit/evidence/art-direction/before/chromium/mobile-390x844/regulatory.jpg",
+      "byteSize": 29268,
+      "sha256": "6dac2621a2890904dddf7d108531cbf7f31c95e2f83cb5adf88b0a7d9f1532eb"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "mobile-390x844",
+      "captureId": "products",
+      "route": "/product-portfolio/",
+      "selector": ".page-hero",
+      "path": "audit/evidence/art-direction/before/chromium/mobile-390x844/products.jpg",
+      "byteSize": 30817,
+      "sha256": "cfbc1779d9d1c9e8f27d7f89be90c98bde440883073255ec821b23f586ca36bb"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "mobile-390x844",
+      "captureId": "partners",
+      "route": "/partner-with-us/",
+      "selector": ".page-hero",
+      "path": "audit/evidence/art-direction/before/chromium/mobile-390x844/partners.jpg",
+      "byteSize": 38451,
+      "sha256": "2710e1ce6a10ecf8ba1d6d0cc62840e6dbe9666b122b7e5c95ddb9f027b1d10f"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "mobile-390x844",
+      "captureId": "technology",
+      "route": "/technology/",
+      "selector": ".page-hero",
+      "path": "audit/evidence/art-direction/before/chromium/mobile-390x844/technology.jpg",
+      "byteSize": 33287,
+      "sha256": "06e9364df5f7d63669567758378a6f2a6229515c24401cfc8cbf683b8879a561"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "mobile-390x844",
+      "captureId": "technology-architecture",
+      "route": "/technology/",
+      "selector": ".technology-architecture-story",
+      "path": "audit/evidence/art-direction/before/chromium/mobile-390x844/technology-architecture.jpg",
+      "byteSize": 60651,
+      "sha256": "ec99d1607e31cc2a8a3849da5c51305a72c0f226f14b5a4c09d6447d89725c85"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "mobile-390x844",
+      "captureId": "insights",
+      "route": "/news-insights/",
+      "selector": ".page-hero",
+      "path": "audit/evidence/art-direction/before/chromium/mobile-390x844/insights.jpg",
+      "byteSize": 30129,
+      "sha256": "5cf7a7a553eb7ee74e37da29c19d70c57ea2eb4ff5ab6c4f7550e4aabe7eecc4"
+    },
+    {
+      "label": "before",
+      "engine": "chromium",
+      "viewport": "mobile-390x844",
+      "captureId": "contact",
+      "route": "/contact/",
+      "selector": ".page-hero",
+      "path": "audit/evidence/art-direction/before/chromium/mobile-390x844/contact.jpg",
+      "byteSize": 22232,
+      "sha256": "1c43f6f5ed8e33354ed4c35afc1be295cbd1d427345176adcb3b9b0f830d3663"
+    }
+  ]
+}

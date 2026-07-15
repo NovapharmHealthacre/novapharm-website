@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "executedOn": "2026-07-14",
+  "executedOn": "2026-07-15",
   "environment": "local-production-mode-synthetic-data",
-  "baseCommit": "7fdceab4afe3e83e36bdfdb9817a19e2aaca6a40",
+  "baseCommit": "a1473d7cbf2b789da5e015f8bf9c1fe0cfcd977b",
   "engines": [
     "Chromium 149",
     "WebKit 26.5"
@@ -23,7 +23,7 @@
   "axeScans": 616,
   "screenshots": 764,
   "finalIssues": 0,
-  "rawEvidenceSha256": "fa206af910a1e02d8ad5d74e4b68071b1b6983d7516482ec4e5e6d41c45ad77c",
+  "rawEvidenceSha256": "fd52b861ae247a67a2043313a147465ea77f5e88ea0ca3eb383cdefea5c295c1",
   "azureHostedAcceptance": "pending-no-accessible-subscription",
-  "notes": "The successful run included the candidate working-tree fixes later committed to PR 5. Raw screenshots remain ignored test artifacts and are uploaded by the browser-acceptance workflow."
+  "notes": "The successful run targeted the committed unique-module art-direction implementation. Raw full-matrix screenshots remain ignored test artifacts; 72 compact before-and-after review screenshots and their SHA-256 manifests are committed separately."
 }
