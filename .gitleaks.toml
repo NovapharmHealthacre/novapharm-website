@@ -1,0 +1,12 @@
+title = "NovaPharm secret scanning policy"
+
+[[allowlists]]
+description = "Public IndexNow verification key in its two generated/configuration declarations"
+regexTarget = "match"
+regexes = [
+  '''da125cec(?:a8032e01)fc98782c388f894f'''
+]
+paths = [
+  '''^src/seo/authority-config\.mjs$''',
+  '''^seo/generated/indexnow-config\.json$'''
+]

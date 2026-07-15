@@ -1,0 +1,1791 @@
+{
+  "version": "2.0",
+  "reviewed": "2026-07-15",
+  "generation": {
+    "provider": "OpenAI ImageGen",
+    "session": "019e9fe2-e77a-7d51-9389-fe937fa3c4f2",
+    "ownerAuthorisation": "Owner-supplied unique module art-direction brief dated 2026-07-15",
+    "useStatus": "Owner-authorised project media for NovaPharm-owned digital channels",
+    "reviewRule": "Human visual, regulatory-claims and accessibility review required before publication"
+  },
+  "delivery": {
+    "width": 1600,
+    "height": 900,
+    "responsiveWidth": 960,
+    "responsiveHeight": 540,
+    "formats": [
+      "avif",
+      "webp",
+      "jpg"
+    ]
+  },
+  "policy": {
+    "principalHeroMaximumUses": 1,
+    "generalMaximumUses": 2,
+    "productPhotographyScope": "product-content-only",
+    "sameImageHeroAndSecondaryAllowed": false,
+    "perceptualDuplicateThreshold": 8,
+    "representativeImageryDisclosure": "Photography and generated editorial imagery are representative. They do not identify a NovaPharm-owned facility, current partner, authorised product or active regulated supply operation unless explicitly stated."
+  },
+  "assets": [
+    {
+      "id": "about-operating-model",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-94d7b682-1b62-4bc8-8a3e-3f97a18ce8a7",
+      "subject": "Executive and quality review of operating-model evidence",
+      "alt": "Executive and quality professionals reviewing pharmaceutical operating-model records and neutral product samples",
+      "caption": "Representative operating-model review",
+      "allowedRoutes": [
+        "/about/"
+      ],
+      "maxReuse": 1,
+      "focalPoint": {
+        "desktop": "66% 50%",
+        "mobile": "72% 50%"
+      },
+      "structuredDataRelationship": "primaryImageOfPage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/modules/about-operating-model.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 81550,
+          "sha256": "3162859f962fcfabc6063a3b6c2bb2f8b4241357fa1881c4fbea3131ef26f100"
+        },
+        "1600-webp": {
+          "path": "assets/media/modules/about-operating-model.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 44588,
+          "sha256": "43e85ac506136f7ecc92d9deb8cc66054a260872995195b9219a21cc8b236177"
+        },
+        "1600-avif": {
+          "path": "assets/media/modules/about-operating-model.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 23271,
+          "sha256": "2c867cfc3ea0d3865fd7ff29794e1a71e3530f7c3f25f5eeb43575dbdc442136"
+        },
+        "960-jpg": {
+          "path": "assets/media/modules/about-operating-model-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 35060,
+          "sha256": "48e463654679766a1850954e45f99050c07add44b45f06d3fc20e1f7921794d2"
+        },
+        "960-webp": {
+          "path": "assets/media/modules/about-operating-model-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 20902,
+          "sha256": "6b7b4b4b4c646d269967d337cbe4ff2ab0a2b70a0b90657b0b78970da42fb117"
+        },
+        "960-avif": {
+          "path": "assets/media/modules/about-operating-model-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 12092,
+          "sha256": "e7d14bad21d73be78565993c69af72b5d037332a01a39606c74affe101e9fd32"
+        }
+      }
+    },
+    {
+      "id": "company-corporate-structure",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-7efe28cb-3014-4616-8e78-c4a955c5134f",
+      "subject": "Corporate structure and controlled legal records",
+      "alt": "Corporate professionals arranging an organisation structure beside controlled records and neutral pharmaceutical packaging",
+      "caption": "Representative corporate-structure review",
+      "allowedRoutes": [
+        "/about/company/"
+      ],
+      "maxReuse": 1,
+      "focalPoint": {
+        "desktop": "69% 52%",
+        "mobile": "73% 50%"
+      },
+      "structuredDataRelationship": "primaryImageOfPage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/modules/company-corporate-structure.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 85806,
+          "sha256": "9f25a62254cdf81421010ed6aa74c86196fcffe060822d4a7b899a863d78859e"
+        },
+        "1600-webp": {
+          "path": "assets/media/modules/company-corporate-structure.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 42228,
+          "sha256": "60e65ecddd4215eada79bb870685e186d8565b04a8f148071487b236a6e551ed"
+        },
+        "1600-avif": {
+          "path": "assets/media/modules/company-corporate-structure.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 21526,
+          "sha256": "3a9e01d990376bf1eab78176ca21700e94e9461ccd8f9c2e7d7e13758e24e078"
+        },
+        "960-jpg": {
+          "path": "assets/media/modules/company-corporate-structure-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 36286,
+          "sha256": "010635e47fc6531b4ef75aad80d739d682633ccbbdf4f277bba470e4fc9f1b0a"
+        },
+        "960-webp": {
+          "path": "assets/media/modules/company-corporate-structure-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 20374,
+          "sha256": "6302f3ba322d6e9186df026ef72e52a4e5db4a0e1ec1ccdc3e85fdd28e7f1915"
+        },
+        "960-avif": {
+          "path": "assets/media/modules/company-corporate-structure-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 11305,
+          "sha256": "e83e572c7f2fdd69d150ab25353512ab89df8db7764ef3d79343696cd1039d5d"
+        }
+      }
+    },
+    {
+      "id": "governance-quality-oversight",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-61f90706-4ca5-43e3-871a-5fb3526fe20d",
+      "subject": "Board and quality oversight of risk and evidence",
+      "alt": "Senior professionals reviewing a pharmaceutical risk matrix, audit records and neutral sample packaging",
+      "caption": "Representative governance and quality oversight",
+      "allowedRoutes": [
+        "/about/governance/"
+      ],
+      "maxReuse": 1,
+      "focalPoint": {
+        "desktop": "70% 48%",
+        "mobile": "72% 48%"
+      },
+      "structuredDataRelationship": "primaryImageOfPage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/modules/governance-quality-oversight.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 77115,
+          "sha256": "14031220fe87a9d0f6d33fc76a409e5a4d1e4b0a38cc425c1ba1ffa7cc4a4de6"
+        },
+        "1600-webp": {
+          "path": "assets/media/modules/governance-quality-oversight.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 39176,
+          "sha256": "3be3ff1931b2f5be446ed282377c8cfc9c6039b5721f51bff1e20218d90ea4bf"
+        },
+        "1600-avif": {
+          "path": "assets/media/modules/governance-quality-oversight.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 21640,
+          "sha256": "1191be638214b3fd9d8edf0788452f09d35aa334a5e8c9f884d31d97cf6b4a16"
+        },
+        "960-jpg": {
+          "path": "assets/media/modules/governance-quality-oversight-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 33201,
+          "sha256": "eee5890e5fdadfd7e4b0cf39e3486adc68d6166088a1a69cd5907e2153e60099"
+        },
+        "960-webp": {
+          "path": "assets/media/modules/governance-quality-oversight-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 19834,
+          "sha256": "8b08f556100680c296e3e1d705fc8819e7a8408dbf0a0ba6ee3f7f441a77b54e"
+        },
+        "960-avif": {
+          "path": "assets/media/modules/governance-quality-oversight-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 11812,
+          "sha256": "28c20aa71f5c7a52224306266141552b1a7998f22335825cee7b8721cfaab711"
+        }
+      }
+    },
+    {
+      "id": "services-connected-execution",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-3d6361f8-5e9f-417d-96bc-e93148afed44",
+      "subject": "Cross-functional pharmaceutical launch-readiness review",
+      "alt": "Scientific, quality and commercial professionals reviewing a pharmaceutical launch-readiness workflow",
+      "caption": "Representative cross-functional service delivery",
+      "allowedRoutes": [
+        "/services/",
+        "/#partner-ecosystem"
+      ],
+      "maxReuse": 2,
+      "focalPoint": {
+        "desktop": "72% 48%",
+        "mobile": "73% 50%"
+      },
+      "structuredDataRelationship": "primaryImageOfPage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/modules/services-connected-execution.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 81356,
+          "sha256": "3c9bfc5ee8d2c0a153d268dc5266bdccb0e767e877149ef63cb7e1c849d69b78"
+        },
+        "1600-webp": {
+          "path": "assets/media/modules/services-connected-execution.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 43430,
+          "sha256": "b8e0b93acf82c31625b7ae88714a135aa137d3031122ca6d75e320f0d602d86b"
+        },
+        "1600-avif": {
+          "path": "assets/media/modules/services-connected-execution.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 24553,
+          "sha256": "9d065b0f822872079c55446f5e400da72a196bfa920b334a44a01d090f890e39"
+        },
+        "960-jpg": {
+          "path": "assets/media/modules/services-connected-execution-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 35428,
+          "sha256": "239eccdf4da2880cf904790e2467bfe1a84ba7abe87ca660ded671b380aa0a78"
+        },
+        "960-webp": {
+          "path": "assets/media/modules/services-connected-execution-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 21952,
+          "sha256": "a72eb039199e56ace8862021743a63e6c1364594271fee16bc5d5717d02a8614"
+        },
+        "960-avif": {
+          "path": "assets/media/modules/services-connected-execution-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 13019,
+          "sha256": "58ff57c9256178d1410fa2a4535d66e0878a70a5ab869816b82370de9ac4d97b"
+        }
+      }
+    },
+    {
+      "id": "regulatory-dossier-control",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-2f51f4ad-1423-4297-9398-a0745a2b18df",
+      "subject": "Regulatory dossier and controlled review sequence",
+      "alt": "Regulatory professionals reviewing a version-controlled dossier and neutral pharmaceutical packaging",
+      "caption": "Representative regulatory-readiness review; no approval is implied",
+      "allowedRoutes": [
+        "/regulatory-services/"
+      ],
+      "maxReuse": 1,
+      "focalPoint": {
+        "desktop": "70% 50%",
+        "mobile": "73% 50%"
+      },
+      "structuredDataRelationship": "primaryImageOfPage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/modules/regulatory-dossier-control.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 86724,
+          "sha256": "166081538d2fbd012064ea153f3baaa03a6cef14da05400839c48be5e10d266d"
+        },
+        "1600-webp": {
+          "path": "assets/media/modules/regulatory-dossier-control.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 45786,
+          "sha256": "cbca03a36343c2b716953d597e7fbeaf53208f0428d2639406f7937a2cc46e4d"
+        },
+        "1600-avif": {
+          "path": "assets/media/modules/regulatory-dossier-control.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 26216,
+          "sha256": "8633eefc1efe0dd4316f412b1a7838cb541b057c4bad52b07c51e2f54a90e21c"
+        },
+        "960-jpg": {
+          "path": "assets/media/modules/regulatory-dossier-control-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 36608,
+          "sha256": "738ae037f78ef8e7f91e6237f5f3d64008e083ae9cd95b8f4411fb456b8990a4"
+        },
+        "960-webp": {
+          "path": "assets/media/modules/regulatory-dossier-control-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 22094,
+          "sha256": "cf4494e81242fcfef787f743fce65a277bc16cea9df4ff99064c2d805a68addf"
+        },
+        "960-avif": {
+          "path": "assets/media/modules/regulatory-dossier-control-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 13211,
+          "sha256": "7bea38ae2cb541a7ebbaf2922980f9c12008ad4e1b93c0086fc7506cea8be4f9"
+        }
+      }
+    },
+    {
+      "id": "partners-qualification",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-939149cf-1b0b-4b4e-b70d-d7b95a0481c4",
+      "subject": "Supplier and product-partner qualification meeting",
+      "alt": "Pharmaceutical quality, technical and commercial professionals reviewing a partner capability dossier",
+      "caption": "Representative qualification discussion; no current partnership is implied",
+      "allowedRoutes": [
+        "/partner-with-us/",
+        "/#partner-ecosystem"
+      ],
+      "maxReuse": 2,
+      "focalPoint": {
+        "desktop": "72% 48%",
+        "mobile": "74% 50%"
+      },
+      "structuredDataRelationship": "primaryImageOfPage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/modules/partners-qualification.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 72618,
+          "sha256": "c1ad1f6335aa127e1dea906a8c97a1178e988ffe057cdc9729a329b5eacae367"
+        },
+        "1600-webp": {
+          "path": "assets/media/modules/partners-qualification.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 38206,
+          "sha256": "e10a8a84fe30e4353b19337d16affc91433ab08d6d954774cfa7500e1a82f2bd"
+        },
+        "1600-avif": {
+          "path": "assets/media/modules/partners-qualification.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 21991,
+          "sha256": "cf36d80a618f2a5cf962aa219694550fc94ef59626fbf3887600c441a6f08a0e"
+        },
+        "960-jpg": {
+          "path": "assets/media/modules/partners-qualification-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 32551,
+          "sha256": "f4adec23c8034dfd3da88e664efd8d9124043def33f40ac6960ce12f98228547"
+        },
+        "960-webp": {
+          "path": "assets/media/modules/partners-qualification-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 19330,
+          "sha256": "1160d1dcfae78be0e957525b15d7e3d1cd09dbb447b588039537a7d1cdfa2a6f"
+        },
+        "960-avif": {
+          "path": "assets/media/modules/partners-qualification-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 12214,
+          "sha256": "495ee4d85e5f0cfc73c662532fb59ff48d7255c393b48e29cc60c2e12d41d902"
+        }
+      }
+    },
+    {
+      "id": "technology-traceability",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-cf625daa-9c6e-4258-9fb4-27fc9eb6e6f6",
+      "subject": "Secure batch identity, scanning and temperature evidence",
+      "alt": "Unbranded medicine carton, barcode scanner, temperature logger and secure transport case in a controlled digital workflow",
+      "caption": "Representative traceability architecture; external integrations remain subject to implementation",
+      "allowedRoutes": [
+        "/technology/",
+        "/#partner-ecosystem"
+      ],
+      "maxReuse": 2,
+      "focalPoint": {
+        "desktop": "72% 54%",
+        "mobile": "74% 55%"
+      },
+      "structuredDataRelationship": "primaryImageOfPage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/modules/technology-traceability.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 74219,
+          "sha256": "ba8589006d5b5a76c919f4d6fed734765e6f61dce972dac2cd448eefbc1ab447"
+        },
+        "1600-webp": {
+          "path": "assets/media/modules/technology-traceability.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 40106,
+          "sha256": "f121024281e3a97c235def1636d520b23516779f635a098bcd24def82f107cfd"
+        },
+        "1600-avif": {
+          "path": "assets/media/modules/technology-traceability.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 19568,
+          "sha256": "df3147adf2e8fc50e66bb92dbc52f5fcb9287ff4756539efb91f35be852b3e75"
+        },
+        "960-jpg": {
+          "path": "assets/media/modules/technology-traceability-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 28620,
+          "sha256": "ed0f2c2f07c45ea095a95ffd75aee31ff40ca080e79c726e1a127a7b99b989a9"
+        },
+        "960-webp": {
+          "path": "assets/media/modules/technology-traceability-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 16566,
+          "sha256": "7a361ac6a4c9e3ff0c69235a24e8964c8245d3a36e5ffc1c1246b54713c13511"
+        },
+        "960-avif": {
+          "path": "assets/media/modules/technology-traceability-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 8161,
+          "sha256": "18946769fa6fc35807fff351edc9e583cb8638fee9974d28622112d363cbea13"
+        }
+      }
+    },
+    {
+      "id": "insights-evidence-editorial",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-7c771b71-da19-443a-baa0-8bdb0baafbc8",
+      "subject": "Primary-source pharmaceutical research and editorial review",
+      "alt": "Researcher reviewing primary sources and evidence for a pharmaceutical insight article",
+      "caption": "Evidence-led editorial research",
+      "allowedRoutes": [
+        "/news-insights/"
+      ],
+      "maxReuse": 1,
+      "focalPoint": {
+        "desktop": "72% 50%",
+        "mobile": "74% 52%"
+      },
+      "structuredDataRelationship": "primaryImageOfPage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/modules/insights-evidence-editorial.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 74490,
+          "sha256": "ab3a5403690dc78deb436d4765c01f08eec3508c309da76cd4330c31aafc0409"
+        },
+        "1600-webp": {
+          "path": "assets/media/modules/insights-evidence-editorial.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 38274,
+          "sha256": "4e28626076f1096d22a15e43d30cec57e236c1b9ae5572fed92fa5d2e7146541"
+        },
+        "1600-avif": {
+          "path": "assets/media/modules/insights-evidence-editorial.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 19962,
+          "sha256": "3b17bb955ad333b579bc479788f48a88a883802a2a56f5d36fa113d7aadec46b"
+        },
+        "960-jpg": {
+          "path": "assets/media/modules/insights-evidence-editorial-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 33105,
+          "sha256": "b61a4e75c67e93aa086f461751d434e616629102b939db6bd286209b228e03f2"
+        },
+        "960-webp": {
+          "path": "assets/media/modules/insights-evidence-editorial-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 19576,
+          "sha256": "b375e729ba0ef6c2dfb4c1cff5cadb9faf7d8f0fe1f4922ac3d5ac2b37352b6c"
+        },
+        "960-avif": {
+          "path": "assets/media/modules/insights-evidence-editorial-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 11002,
+          "sha256": "5bcc559b5b3fa45a709dc6d91d8a0f6634bbea4ed2bc2fcacba351a7924a0d2c"
+        }
+      }
+    },
+    {
+      "id": "contact-qualified-enquiry",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-441a6015-ed82-45b9-b480-2b6e40e61c84",
+      "subject": "Focused pharmaceutical business consultation",
+      "alt": "Two professionals discussing a pharmaceutical business opportunity in a private meeting",
+      "caption": "Representative qualified business enquiry",
+      "allowedRoutes": [
+        "/contact/",
+        "/#partner-ecosystem"
+      ],
+      "maxReuse": 2,
+      "focalPoint": {
+        "desktop": "72% 48%",
+        "mobile": "74% 50%"
+      },
+      "structuredDataRelationship": "primaryImageOfPage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/modules/contact-qualified-enquiry.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 82371,
+          "sha256": "72e0f9360382bc55e391aa2ca877d8a878d9739f94d1efa405e226304746a026"
+        },
+        "1600-webp": {
+          "path": "assets/media/modules/contact-qualified-enquiry.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 42716,
+          "sha256": "c9e5e8a5d8188550df77eedc8a4755d9143fd6a41023f57d08e28d3286637b64"
+        },
+        "1600-avif": {
+          "path": "assets/media/modules/contact-qualified-enquiry.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 23848,
+          "sha256": "9dee12c8b12ab5d61a596137d83d88f2b160ffd08515638e605cc6c78fb2bcf8"
+        },
+        "960-jpg": {
+          "path": "assets/media/modules/contact-qualified-enquiry-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 35755,
+          "sha256": "61a4725f43878b8d054774e4073b5134cbd361c9390c58a2c7c57e6fac42b196"
+        },
+        "960-webp": {
+          "path": "assets/media/modules/contact-qualified-enquiry-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 21394,
+          "sha256": "155c3de6b483c7bd5118befd318effe6cd03f77d0fd8656a02bb912acea3da75"
+        },
+        "960-avif": {
+          "path": "assets/media/modules/contact-qualified-enquiry-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 12326,
+          "sha256": "69ac23094f696d422b34356ce67f19d55002c0b8f7a5ccbd0501bc150e821f93"
+        }
+      }
+    },
+    {
+      "id": "investors-capital-readiness",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-3991535b-1f65-48fb-9310-88a8cebff9db",
+      "subject": "Strategy, governance and capital-readiness review",
+      "alt": "Senior professionals reviewing pharmaceutical strategy, risks and staged milestones",
+      "caption": "Representative strategy and capital-readiness review; no financial achievement is implied",
+      "allowedRoutes": [
+        "/investor-information/"
+      ],
+      "maxReuse": 1,
+      "focalPoint": {
+        "desktop": "73% 50%",
+        "mobile": "75% 50%"
+      },
+      "structuredDataRelationship": "primaryImageOfPage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/modules/investors-capital-readiness.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 71304,
+          "sha256": "3218686c8cee3422eae57a139189d69adb18db46bfe2062f23a33b92d6fdaca1"
+        },
+        "1600-webp": {
+          "path": "assets/media/modules/investors-capital-readiness.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 38552,
+          "sha256": "8d124e5c380d69eb37c5f7e7201d1dd89a2c4b64408035d3422d4f61d600a44f"
+        },
+        "1600-avif": {
+          "path": "assets/media/modules/investors-capital-readiness.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 21718,
+          "sha256": "4097e6f9d298a1a11508280be2b1b0d079e6b112911642a9369294c547321f75"
+        },
+        "960-jpg": {
+          "path": "assets/media/modules/investors-capital-readiness-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 31463,
+          "sha256": "b7b9678a619add6b170955e21f8b923956735b4a30e63a0565ee5fe5f16afe9c"
+        },
+        "960-webp": {
+          "path": "assets/media/modules/investors-capital-readiness-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 19172,
+          "sha256": "3af689f9a5469d0ff9090fbcd1cf62f77b6c9a24bc80e6101860dea66934c1b9"
+        },
+        "960-avif": {
+          "path": "assets/media/modules/investors-capital-readiness-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 11727,
+          "sha256": "2731be1aad27f3ae0d5532813cb865dc1d987b2875c8f1f1f849bf23b59c6ecc"
+        }
+      }
+    },
+    {
+      "id": "careers-specialist-team",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-b4d307a1-92a1-44d0-acb4-eefa0113b2a0",
+      "subject": "Multidisciplinary pharmaceutical capability team",
+      "alt": "Scientific, quality, operations and commercial professionals collaborating around a controlled work plan",
+      "caption": "Representative multidisciplinary pharmaceutical work",
+      "allowedRoutes": [
+        "/careers/"
+      ],
+      "maxReuse": 1,
+      "focalPoint": {
+        "desktop": "72% 49%",
+        "mobile": "73% 50%"
+      },
+      "structuredDataRelationship": "primaryImageOfPage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/modules/careers-specialist-team.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 92341,
+          "sha256": "6a905fdc1253ee447f0b643a04f9e999eff185177f923baa3e650117ffda83e6"
+        },
+        "1600-webp": {
+          "path": "assets/media/modules/careers-specialist-team.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 47888,
+          "sha256": "5fae70b262fb10dd06b0df5c83d81bae5019ea6cf3bfc35ee0b37f4c3725dff6"
+        },
+        "1600-avif": {
+          "path": "assets/media/modules/careers-specialist-team.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 28010,
+          "sha256": "2cd9fafdbc40c46b1c5144705ea5e202661774a55cf1749d5b06b534917547a2"
+        },
+        "960-jpg": {
+          "path": "assets/media/modules/careers-specialist-team-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 41078,
+          "sha256": "a47161b8f93faf620bb4e46e9a1ce6d9419d28bfbbdc5a7abfb3cb80a7680eae"
+        },
+        "960-webp": {
+          "path": "assets/media/modules/careers-specialist-team-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 24952,
+          "sha256": "8ee37fd7e31dbaf6097e9a4f95534cdda58b232a18c1e9590a7202a23618cdd4"
+        },
+        "960-avif": {
+          "path": "assets/media/modules/careers-specialist-team-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 15442,
+          "sha256": "801c1961460761ef19746d24e579823729a04c6b47482a9f5e30ad98c5418855"
+        }
+      }
+    },
+    {
+      "id": "account-controlled-onboarding",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-e1322902-72c8-44c5-97d2-1f99d8dfc28f",
+      "subject": "Company account due diligence and controlled onboarding",
+      "alt": "Compliance professional and applicant reviewing company, responsible-person and document requirements",
+      "caption": "Representative business-account review; submission does not create or approve an account",
+      "allowedRoutes": [
+        "/account-application/",
+        "/#partner-ecosystem"
+      ],
+      "maxReuse": 2,
+      "focalPoint": {
+        "desktop": "73% 50%",
+        "mobile": "75% 52%"
+      },
+      "structuredDataRelationship": "primaryImageOfPage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/modules/account-controlled-onboarding.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 68172,
+          "sha256": "089fb7d68af77281d443aad52a9e9300dfdb4378b6d9098112021cc39ed570fe"
+        },
+        "1600-webp": {
+          "path": "assets/media/modules/account-controlled-onboarding.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 36692,
+          "sha256": "7666e96fdc5e5a514836a9d67dafface6dcdead2fc3f0baa24774e324a89856c"
+        },
+        "1600-avif": {
+          "path": "assets/media/modules/account-controlled-onboarding.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 19198,
+          "sha256": "407d54867ae0dbbc41d7a41b639a4ffb94d3ac2d4ea9942922b570134e008a01"
+        },
+        "960-jpg": {
+          "path": "assets/media/modules/account-controlled-onboarding-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 28808,
+          "sha256": "93d23d7869f46ae2e62ab8c0811fede2e4e84cf43f90c45a452b74785b3f5e09"
+        },
+        "960-webp": {
+          "path": "assets/media/modules/account-controlled-onboarding-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 17328,
+          "sha256": "027997968e0927497f4f504ffff0f003273c431cf26cbb179cea13070c920f2e"
+        },
+        "960-avif": {
+          "path": "assets/media/modules/account-controlled-onboarding-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 10204,
+          "sha256": "b9f703b34c7a13bd0243aaabaa6fc0f75e70d241fd19fa7b71750cf105510ded"
+        }
+      }
+    },
+    {
+      "id": "legal-policy-governance",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-af5b51cd-a034-473c-846b-fdce08b90279",
+      "subject": "Version-controlled privacy, accessibility and policy records",
+      "alt": "Version-controlled policy binders, privacy document wallet and accessibility review cards",
+      "caption": "Representative policy governance; legal approval is not implied",
+      "allowedRoutes": [
+        "/legal/"
+      ],
+      "maxReuse": 1,
+      "focalPoint": {
+        "desktop": "72% 52%",
+        "mobile": "74% 52%"
+      },
+      "structuredDataRelationship": "primaryImageOfPage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/modules/legal-policy-governance.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 81134,
+          "sha256": "9c745da8604ec8e540e036afcd77b7c70ed1be0d5ce90c5a5ed6bf2060005a74"
+        },
+        "1600-webp": {
+          "path": "assets/media/modules/legal-policy-governance.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 41104,
+          "sha256": "df67ef9b578262a7422eca24a0539296ccc50459965f8cb952e5f54c02a7b52e"
+        },
+        "1600-avif": {
+          "path": "assets/media/modules/legal-policy-governance.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 18121,
+          "sha256": "2dae0ba1ae586eb525df9d70b9e7e3c7bec8352d963d25e44f399dbea39c644f"
+        },
+        "960-jpg": {
+          "path": "assets/media/modules/legal-policy-governance-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 27661,
+          "sha256": "33db6b8c14d9d3c3a6d34b00d83882ae84230d7221c11ab43e9fa1ba603dadd0"
+        },
+        "960-webp": {
+          "path": "assets/media/modules/legal-policy-governance-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 14340,
+          "sha256": "f95ac2151bbd66899285eaac86ed47f52ac688b9128928730770e5feb984aa0e"
+        },
+        "960-avif": {
+          "path": "assets/media/modules/legal-policy-governance-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 7171,
+          "sha256": "641a2700cdadd4b97ddbd51cb712f47ae0c990b9dea432fd94e9846d323ab267"
+        }
+      }
+    },
+    {
+      "id": "services-launch-readiness",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-13b857b1-8de2-419a-8649-a0ad460603e5",
+      "subject": "Controlled assessment-to-fulfilment evidence",
+      "alt": "Gloved specialists checking neutral packaging, temperature evidence, route planning and launch-readiness records",
+      "caption": "Representative service workflow",
+      "allowedRoutes": [
+        "/services/"
+      ],
+      "maxReuse": 1,
+      "focalPoint": {
+        "desktop": "58% 50%",
+        "mobile": "66% 50%"
+      },
+      "structuredDataRelationship": "contentImage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/stories/services-launch-readiness.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 128369,
+          "sha256": "22bba2858cfbc584e06ae7d20b4752cb7ca1ec414973a3caf85a35ef6be69d8b"
+        },
+        "1600-webp": {
+          "path": "assets/media/stories/services-launch-readiness.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 77932,
+          "sha256": "4075b498fb8576f3013fc34ab0f3b9d26d081118d996a35e856d39b6601f7169"
+        },
+        "1600-avif": {
+          "path": "assets/media/stories/services-launch-readiness.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 41586,
+          "sha256": "77b773ddbbe565347dd813fa3de237a77a4821be51991e23bc76796a7ca7c296"
+        },
+        "960-jpg": {
+          "path": "assets/media/stories/services-launch-readiness-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 54440,
+          "sha256": "1a55038f7dca9d4d9652af1185f338fd40c7119e4b854b5068003d184a1c8777"
+        },
+        "960-webp": {
+          "path": "assets/media/stories/services-launch-readiness-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 36968,
+          "sha256": "5f8e0c688c4b6f32972cf0ce97a5081e307cc89c8641eaef54a9e2f0ee186d1c"
+        },
+        "960-avif": {
+          "path": "assets/media/stories/services-launch-readiness-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 20823,
+          "sha256": "af35f8ce6e7f2f5ffd2e9badf74adb99b5db93ce92c68df3c2dcd48ddea8fbb3"
+        }
+      }
+    },
+    {
+      "id": "regulatory-batch-integrity",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-ed8399d7-58e0-4d11-bb23-107d2a0422cc",
+      "subject": "Batch identity, tamper evidence and document continuity",
+      "alt": "Quality specialist scanning neutral batch packaging beside temperature, sample and document records",
+      "caption": "Representative batch-integrity controls; no product approval or availability is implied",
+      "allowedRoutes": [
+        "/regulatory-services/",
+        "/#batch-integrity"
+      ],
+      "maxReuse": 2,
+      "focalPoint": {
+        "desktop": "54% 48%",
+        "mobile": "52% 48%"
+      },
+      "structuredDataRelationship": "contentImage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/stories/regulatory-batch-integrity.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 129621,
+          "sha256": "28ac3cee3c8c0f0a6b57b96aab6da7aaa376f4095575ab1d1dbd51d2d7d3664c"
+        },
+        "1600-webp": {
+          "path": "assets/media/stories/regulatory-batch-integrity.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 73370,
+          "sha256": "b3f33fcc4dba988232013f5a7c0538ed1331eb96d3fda42f7a71da785e88535b"
+        },
+        "1600-avif": {
+          "path": "assets/media/stories/regulatory-batch-integrity.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 42314,
+          "sha256": "55e7f3203da1119ec0d9fb18b54b7c0c365d631b7ea82d23bfb50e2c138d11de"
+        },
+        "960-jpg": {
+          "path": "assets/media/stories/regulatory-batch-integrity-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 57342,
+          "sha256": "037e68b4dc12133ae37ea72e7b2bf7ebd66547d821f197a00cc63e7cc53e7e61"
+        },
+        "960-webp": {
+          "path": "assets/media/stories/regulatory-batch-integrity-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 37436,
+          "sha256": "93dabe10cf3f37d8706b0c4737a5d078134092c060622e6f42ea4e3a8c8581a2"
+        },
+        "960-avif": {
+          "path": "assets/media/stories/regulatory-batch-integrity-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 23250,
+          "sha256": "4373a769c13e5a967e8855a231c7518fa3fe14ccb3b95a088d40ceb60531749e"
+        }
+      }
+    },
+    {
+      "id": "partners-due-diligence",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-2c66c1e3-5d33-4607-8efa-0b1c439dfee0",
+      "subject": "Supplier due diligence, capability and route evidence",
+      "alt": "Professionals comparing a supplier dossier, neutral packaging, risk cards and route evidence",
+      "caption": "Representative due diligence; no current partner relationship is implied",
+      "allowedRoutes": [
+        "/about/",
+        "/partner-with-us/"
+      ],
+      "maxReuse": 2,
+      "focalPoint": {
+        "desktop": "52% 50%",
+        "mobile": "55% 50%"
+      },
+      "structuredDataRelationship": "contentImage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/stories/partners-due-diligence.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 136101,
+          "sha256": "aabc83ffc20015e58269c13978a64457ed1d1fda2bef41051e830a1ca36543a9"
+        },
+        "1600-webp": {
+          "path": "assets/media/stories/partners-due-diligence.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 80806,
+          "sha256": "ad228c43593e9f8685deb0eb8672bd87242174917fbfec6f99d731424b329439"
+        },
+        "1600-avif": {
+          "path": "assets/media/stories/partners-due-diligence.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 43121,
+          "sha256": "ef77d575f2432c5aed7e99912ac49e5a0c7e2925893e8a5827749ee6b457f365"
+        },
+        "960-jpg": {
+          "path": "assets/media/stories/partners-due-diligence-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 57291,
+          "sha256": "5be12d45298ea69b6042cac58fce8bb9c5f18e27d9fd3285112a677be8c4d824"
+        },
+        "960-webp": {
+          "path": "assets/media/stories/partners-due-diligence-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 40088,
+          "sha256": "7f52e502111a1cea3248176c7f2171591832347007d1c5d3c7859dcee61879c4"
+        },
+        "960-avif": {
+          "path": "assets/media/stories/partners-due-diligence-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 22656,
+          "sha256": "222e077a87f6ea52fb11866aebd52b37df0848072905c430b2ea924f78833c82"
+        }
+      }
+    },
+    {
+      "id": "technology-control-architecture",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-e25ce132-5c46-4e38-8a20-c786fe591e00",
+      "subject": "Role-bound architecture, secure records and document controls",
+      "alt": "Secure operations workstation with layered system diagrams, identity reader and protected package",
+      "caption": "Representative platform architecture; capability status is stated in the adjacent content",
+      "allowedRoutes": [
+        "/partner-with-us/",
+        "/technology/"
+      ],
+      "maxReuse": 2,
+      "focalPoint": {
+        "desktop": "58% 48%",
+        "mobile": "60% 48%"
+      },
+      "structuredDataRelationship": "contentImage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/stories/technology-control-architecture.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 108818,
+          "sha256": "b37b8990396350b7a16321109d9f2cdfe0ff59200a561dd2005cd04d82209cf1"
+        },
+        "1600-webp": {
+          "path": "assets/media/stories/technology-control-architecture.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 53212,
+          "sha256": "0e808512bbac096e1fefd344a7c1b2a23155f0415570ec386129a77b97e9d385"
+        },
+        "1600-avif": {
+          "path": "assets/media/stories/technology-control-architecture.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 28588,
+          "sha256": "549be36f9875985f24424807f6091dd1d6a0d08eb79b001aedb9d4781d25e7be"
+        },
+        "960-jpg": {
+          "path": "assets/media/stories/technology-control-architecture-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 46592,
+          "sha256": "5fafe40c2f28da984fb91f3bad28b6fa9ea993371aeedbe0e8bd573bd887b7ff"
+        },
+        "960-webp": {
+          "path": "assets/media/stories/technology-control-architecture-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 27164,
+          "sha256": "99921a2f68e5952b72576f9210b8470c2179fe5de3a3a0b08dfb47c485115d64"
+        },
+        "960-avif": {
+          "path": "assets/media/stories/technology-control-architecture-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 16039,
+          "sha256": "f99bf7f96f814243fda64e4fec5613e3225d30782312d5ec947ddcf95338760c"
+        }
+      }
+    },
+    {
+      "id": "sourcing-direct-gmp",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-520f4495-d048-4834-abdd-2e36825569a6",
+      "subject": "Technical qualification of a representative manufacturing partner",
+      "alt": "Quality and manufacturing specialists reviewing a pharmaceutical filling line and process dossier",
+      "caption": "Representative third-party manufacturing context; no facility ownership or current partnership is implied",
+      "allowedRoutes": [
+        "/#three-pillar-sourcing",
+        "/partner-with-us/"
+      ],
+      "maxReuse": 2,
+      "focalPoint": {
+        "desktop": "58% 50%",
+        "mobile": "54% 50%"
+      },
+      "structuredDataRelationship": "contentImage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/stories/sourcing-direct-gmp.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 158340,
+          "sha256": "217c12a0381e39b740f0374d0291bc33d2a50da64264a7a906f91dca9a977017"
+        },
+        "1600-webp": {
+          "path": "assets/media/stories/sourcing-direct-gmp.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 88196,
+          "sha256": "5f039fa159ff7871c20f1ddf59e60439467545b7f86ce6b9d4c72d6bb6cf49dd"
+        },
+        "1600-avif": {
+          "path": "assets/media/stories/sourcing-direct-gmp.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 56585,
+          "sha256": "0e7f6799846df35000b5173c42259ea7b026a870f3f87a9c22ec43ecde79231e"
+        },
+        "960-jpg": {
+          "path": "assets/media/stories/sourcing-direct-gmp-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 69234,
+          "sha256": "36f22a0b966a48260a2779519b891bbb96515b150eab3110a3751c8282d98063"
+        },
+        "960-webp": {
+          "path": "assets/media/stories/sourcing-direct-gmp-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 47722,
+          "sha256": "5651f7eb7de47f135229d693702c191697194960cfc069804c9f40d40d2d190e"
+        },
+        "960-avif": {
+          "path": "assets/media/stories/sourcing-direct-gmp-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 31999,
+          "sha256": "44db45b7aec46fb3a4320171dfc9a02e8d5a1deb3737f9c0ae409dc6c686679b"
+        }
+      }
+    },
+    {
+      "id": "sourcing-plpi-assessment",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-2a1184b6-d8b8-4ada-a79f-2ff9159ca409",
+      "subject": "Product-specific pack and dossier assessment before a PLPI application",
+      "alt": "Regulatory specialist comparing neutral European and UK packaging mock-ups with a product dossier",
+      "caption": "Representative assessment; no PLPI application or licence grant is implied",
+      "allowedRoutes": [
+        "/#three-pillar-sourcing",
+        "/partner-with-us/"
+      ],
+      "maxReuse": 2,
+      "focalPoint": {
+        "desktop": "52% 50%",
+        "mobile": "52% 50%"
+      },
+      "structuredDataRelationship": "contentImage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/stories/sourcing-plpi-assessment.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 104698,
+          "sha256": "22971b8b54a2076b50869204a2e4018f479419e61e464acac6403a5488fd0c99"
+        },
+        "1600-webp": {
+          "path": "assets/media/stories/sourcing-plpi-assessment.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 57728,
+          "sha256": "f1554683af49d6a9fbf07344454e355520de82155269e66d055f82de03cfac70"
+        },
+        "1600-avif": {
+          "path": "assets/media/stories/sourcing-plpi-assessment.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 28842,
+          "sha256": "4c667e7b3a8eab177cc5b98ac15d73b6833a598cbfa8e06022a28f71117e448d"
+        },
+        "960-jpg": {
+          "path": "assets/media/stories/sourcing-plpi-assessment-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 47077,
+          "sha256": "564c4c3cc61c011c7240013c8665ae251a3620b84403a3f5b4da45be5566091a"
+        },
+        "960-webp": {
+          "path": "assets/media/stories/sourcing-plpi-assessment-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 29476,
+          "sha256": "a467e7ba8ee3569d8a03e1c87a712a8621c4b50c9dfa3b673effbbe7382a7cc0"
+        },
+        "960-avif": {
+          "path": "assets/media/stories/sourcing-plpi-assessment-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 16150,
+          "sha256": "1796b5fc9d34577ba9fcdf000805e3a77c2ce548afea0812bb27699ba757be9b"
+        }
+      }
+    },
+    {
+      "id": "sourcing-european-network",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-017e6359-72c4-4a2f-afca-7b56f9abb899",
+      "subject": "Temperature-aware European sourcing-route planning",
+      "alt": "Logistics and quality professionals reviewing a European route beside insulated transport packaging",
+      "caption": "Representative network planning; no current warehouse, route or supply operation is implied",
+      "allowedRoutes": [
+        "/#three-pillar-sourcing",
+        "/partner-with-us/"
+      ],
+      "maxReuse": 2,
+      "focalPoint": {
+        "desktop": "58% 50%",
+        "mobile": "62% 50%"
+      },
+      "structuredDataRelationship": "contentImage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/stories/sourcing-european-network.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 138870,
+          "sha256": "46a19e8ffc89f87f7d9e764f8e39d9a0831002bcd5f8a07ddc83fff0e997f45b"
+        },
+        "1600-webp": {
+          "path": "assets/media/stories/sourcing-european-network.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 79980,
+          "sha256": "18cee47212429f45342d487dfeef583d96b9bca40dcfe5326cff35fff4e56df0"
+        },
+        "1600-avif": {
+          "path": "assets/media/stories/sourcing-european-network.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 46632,
+          "sha256": "2c0b27d35d65d1f639895970213c94aebd83989d40b07d3b81615be90a0837b7"
+        },
+        "960-jpg": {
+          "path": "assets/media/stories/sourcing-european-network-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 58823,
+          "sha256": "ec7de5f5bc6a52a6fbdd1835067928da786ffad49b281186e9530c2ed3a5c797"
+        },
+        "960-webp": {
+          "path": "assets/media/stories/sourcing-european-network-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 39610,
+          "sha256": "656acb8cf931b52d8595c37ae8705457e9e6567889df6c31b7d7efef45a63773"
+        },
+        "960-avif": {
+          "path": "assets/media/stories/sourcing-european-network-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 23892,
+          "sha256": "633f3fc7818e4d0c41a6e405facebcc22fa8275e68061a73c6f6adf839cb5cec"
+        }
+      }
+    },
+    {
+      "id": "insight-batch-to-buyer",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-63785ca1-9b09-4ea9-a90e-1961a7844d8f",
+      "subject": "Batch-to-buyer evidence continuity",
+      "alt": "Serial scan, batch record, temperature logger and receiving checks aligned around a sealed transport tote",
+      "caption": "Evidence continuity from batch record to controlled receipt",
+      "allowedRoutes": [
+        "/news-insights/",
+        "/news-insights/batch-to-buyer-pharmaceutical-traceability/"
+      ],
+      "maxReuse": 2,
+      "focalPoint": {
+        "desktop": "52% 50%",
+        "mobile": "55% 50%"
+      },
+      "structuredDataRelationship": "articleImage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/insights/batch-to-buyer-traceability.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 111493,
+          "sha256": "f6b273d4bd8db21ff1bd4bb49c75b3f2063aefd2ccb15037c2bd5865b76ea6c4"
+        },
+        "1600-webp": {
+          "path": "assets/media/insights/batch-to-buyer-traceability.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 60800,
+          "sha256": "6228e300499ede4d9b4ced5b2ff78c6ae0a60e82ad409be04bf33372e22b221e"
+        },
+        "1600-avif": {
+          "path": "assets/media/insights/batch-to-buyer-traceability.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 31964,
+          "sha256": "c59234e13ad5c74ceaddd40a13c8389979dfec4c5868302e2af7fdfcba57929f"
+        },
+        "960-jpg": {
+          "path": "assets/media/insights/batch-to-buyer-traceability-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 49792,
+          "sha256": "e69f0ee422600bf649008ff87551f11d4593a3110b380f82f83dd77a7a1cf9c4"
+        },
+        "960-webp": {
+          "path": "assets/media/insights/batch-to-buyer-traceability-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 31440,
+          "sha256": "42fdb1f0101a49517d18564330d7cacdeca78a754a198f2ef804727126ae23f2"
+        },
+        "960-avif": {
+          "path": "assets/media/insights/batch-to-buyer-traceability-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 18232,
+          "sha256": "1a39633a2f0d81f431e9508e9a76af7b18d592a2ccababfb98b13c7ab04ec032"
+        }
+      }
+    },
+    {
+      "id": "insight-compliance-first",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-bece4169-2e5d-408f-a41a-7bba3851a763",
+      "subject": "Quality release gate before distribution",
+      "alt": "Quality professional reviewing evidence while neutral cartons remain behind a controlled release gate",
+      "caption": "Representative release control; NovaPharm regulated wholesale supply remains pre-operational",
+      "allowedRoutes": [
+        "/news-insights/",
+        "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
+      ],
+      "maxReuse": 2,
+      "focalPoint": {
+        "desktop": "54% 50%",
+        "mobile": "58% 50%"
+      },
+      "structuredDataRelationship": "articleImage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/insights/compliance-first-distribution.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 160766,
+          "sha256": "d56b6b3f554e319c93749acd6c82528a802f998c9ef5a842bd5f3f3cc49cc8d5"
+        },
+        "1600-webp": {
+          "path": "assets/media/insights/compliance-first-distribution.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 90846,
+          "sha256": "4adc573c7c4c9e6c3b79ca3a7bb8d1e96af4eae12f7a85e4b4b7b4e00c2bea73"
+        },
+        "1600-avif": {
+          "path": "assets/media/insights/compliance-first-distribution.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 55595,
+          "sha256": "47c1f9ed13388d6aa7b48fcae4c272ccc50c2dd950f31f891e4adbe0ed00d707"
+        },
+        "960-jpg": {
+          "path": "assets/media/insights/compliance-first-distribution-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 69434,
+          "sha256": "8150a7ab6a65b8d14a1bada2382e2dd5339d8f97df4e4d3d3a6cb2141724169d"
+        },
+        "960-webp": {
+          "path": "assets/media/insights/compliance-first-distribution-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 45666,
+          "sha256": "a527fc10b42351a593a3b76e3b74036001852192f54997cc541d7a2620460018"
+        },
+        "960-avif": {
+          "path": "assets/media/insights/compliance-first-distribution-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 29638,
+          "sha256": "3d777e21b11f4e04ba260d658988426764f2bc3d465673aba7f33b6a48f6497f"
+        }
+      }
+    },
+    {
+      "id": "insight-gdp-qms",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-f373e356-4f6f-4f2e-8279-88d9ab1ef4cd",
+      "subject": "Quality-system foundations and evidence architecture",
+      "alt": "Quality professionals arranging training, supplier, deviation, temperature, recall and document-control records",
+      "caption": "Representative QMS architecture; certification or operational compliance is not implied",
+      "allowedRoutes": [
+        "/news-insights/",
+        "/news-insights/gdp-qms-pharmaceutical-distribution-foundations/"
+      ],
+      "maxReuse": 2,
+      "focalPoint": {
+        "desktop": "52% 50%",
+        "mobile": "54% 50%"
+      },
+      "structuredDataRelationship": "articleImage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/insights/gdp-qms-foundations.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 121363,
+          "sha256": "d8c66d6f08f978a3c73ad40ab8e7f3e0e20a829e6c288b51f364755d2002387f"
+        },
+        "1600-webp": {
+          "path": "assets/media/insights/gdp-qms-foundations.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 64668,
+          "sha256": "27bf62b443ce6809c7400f2ea3756963beb3eb467cd8840551b5c559fd82583c"
+        },
+        "1600-avif": {
+          "path": "assets/media/insights/gdp-qms-foundations.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 36475,
+          "sha256": "2800901e9fde27d977134039f1339a2953b8bf4e6efc84a85db9c9b8ae70162c"
+        },
+        "960-jpg": {
+          "path": "assets/media/insights/gdp-qms-foundations-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 54163,
+          "sha256": "19b18b30b11bb35605c1ce70d85d0d1214e81cd2ba135d3529a0b34fc386adbc"
+        },
+        "960-webp": {
+          "path": "assets/media/insights/gdp-qms-foundations-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 33998,
+          "sha256": "018e76fb5d3fdffc84bfc63ce4d7f29891c3586af7788f0b593d3923c1a8ebf9"
+        },
+        "960-avif": {
+          "path": "assets/media/insights/gdp-qms-foundations-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 20802,
+          "sha256": "0dc48e1e958c53526d56b4a03ee8ad3a7a6f437202a332dd9088906c2b44a37c"
+        }
+      }
+    },
+    {
+      "id": "insight-oncology-forecasting",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-3a833621-727b-4074-b588-657b3efa7f5b",
+      "subject": "Oncology supply uncertainty, lead time and expiry planning",
+      "alt": "Supply specialists reviewing demand scenarios, lead times, expiry windows and neutral vial trays",
+      "caption": "Representative oncology supply planning; no NovaPharm product availability is implied",
+      "allowedRoutes": [
+        "/news-insights/",
+        "/news-insights/oncology-supply-chain-demand-forecasting/"
+      ],
+      "maxReuse": 2,
+      "focalPoint": {
+        "desktop": "54% 50%",
+        "mobile": "58% 50%"
+      },
+      "structuredDataRelationship": "articleImage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/insights/oncology-demand-forecasting.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 126719,
+          "sha256": "e76977620ca303654b54ed37749fc07559da150382e5468cdd251ea70c683ee5"
+        },
+        "1600-webp": {
+          "path": "assets/media/insights/oncology-demand-forecasting.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 69700,
+          "sha256": "d524a8820cd8fdd5d0f2d840d5d7bd2b4afe044da301bc7b26bad96e23bce157"
+        },
+        "1600-avif": {
+          "path": "assets/media/insights/oncology-demand-forecasting.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 40010,
+          "sha256": "dd30260c31f5a3364e8f505d6fb6fddfa5817cb763cfac7b56dbda1918186b2c"
+        },
+        "960-jpg": {
+          "path": "assets/media/insights/oncology-demand-forecasting-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 56565,
+          "sha256": "041878587bc81673c88a573a83b5c6d544b22cc93da3ce883feb189f1fd719a8"
+        },
+        "960-webp": {
+          "path": "assets/media/insights/oncology-demand-forecasting-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 37026,
+          "sha256": "fa79fcc2f3ba679d60482765dd4272e75bf177b9113c1c58a6f28e48e17ee75a"
+        },
+        "960-avif": {
+          "path": "assets/media/insights/oncology-demand-forecasting-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 22735,
+          "sha256": "57d4e6549033b89a4fbff6f3724d93218bb376cfb2f0a7c3173765fc833b9666"
+        }
+      }
+    },
+    {
+      "id": "insight-plpi-resilience",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-edfa06a8-d865-4fd7-a1a8-24b64699b99a",
+      "subject": "Unresolved product-specific route and evidence assessment",
+      "alt": "Specialist comparing two neutral packaging mock-ups beside blank evidence and pathway cards",
+      "caption": "Representative opportunity assessment; no PLPI application, licence or supply is implied",
+      "allowedRoutes": [
+        "/news-insights/",
+        "/news-insights/plpi-pharmaceutical-supply-resilience/"
+      ],
+      "maxReuse": 2,
+      "focalPoint": {
+        "desktop": "54% 50%",
+        "mobile": "58% 50%"
+      },
+      "structuredDataRelationship": "articleImage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/insights/plpi-supply-resilience.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 90445,
+          "sha256": "f0605eed7d5b6c4870b65df9d8b7d45da5602c01d09781f0619f301762c1bcba"
+        },
+        "1600-webp": {
+          "path": "assets/media/insights/plpi-supply-resilience.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 49038,
+          "sha256": "0910a75ee00aeb075729e72ad4400bcbd948c652259f24f0cbd6689dd50e9897"
+        },
+        "1600-avif": {
+          "path": "assets/media/insights/plpi-supply-resilience.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 22971,
+          "sha256": "a06ef7f3b712beb841d7ffc0fbc928f94feaaea370acf428a2e4a10692e28f43"
+        },
+        "960-jpg": {
+          "path": "assets/media/insights/plpi-supply-resilience-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 39906,
+          "sha256": "9f4cf382491e32418d8c0e9959355e0e7581ee7ed22484aa192e5e75636ade72"
+        },
+        "960-webp": {
+          "path": "assets/media/insights/plpi-supply-resilience-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 24306,
+          "sha256": "9ac261569178079c9f5d5850a8401d6309ed7fae2784bc8c7e005e92a8b64987"
+        },
+        "960-avif": {
+          "path": "assets/media/insights/plpi-supply-resilience-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 13012,
+          "sha256": "8d9dc54d30e40261a8965849e146fdee485dd44a93098701443e5dac06a03664"
+        }
+      }
+    },
+    {
+      "id": "insight-three-pillar",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-b5e6f3da-657b-4187-a0d2-bf19d2817d1d",
+      "subject": "Three sourcing evidence routes converging on one decision",
+      "alt": "Three specialists bringing manufacturing, dossier and European-route evidence toward one governed decision point",
+      "caption": "Representative sourcing-model analysis; no current supply route or partnership is implied",
+      "allowedRoutes": [
+        "/news-insights/",
+        "/news-insights/three-pillar-pharmaceutical-sourcing-model/"
+      ],
+      "maxReuse": 2,
+      "focalPoint": {
+        "desktop": "52% 50%",
+        "mobile": "54% 50%"
+      },
+      "structuredDataRelationship": "articleImage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/insights/three-pillar-sourcing.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 101471,
+          "sha256": "2a298185b07d17686fb9f18ffd612be9d0f5395ec90918e88d1d3246612a2675"
+        },
+        "1600-webp": {
+          "path": "assets/media/insights/three-pillar-sourcing.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 54154,
+          "sha256": "5baa6f328d59c6f549be310feb4f4968a4e6a2a2f975dd5dec6185f426263af9"
+        },
+        "1600-avif": {
+          "path": "assets/media/insights/three-pillar-sourcing.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 31365,
+          "sha256": "9d550f04034868ce224d306b2e288b9008da7bb38dc7e78fcbb59b5df865bc1e"
+        },
+        "960-jpg": {
+          "path": "assets/media/insights/three-pillar-sourcing-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 43156,
+          "sha256": "44803dcc06b195cb21f731eff45aed8e55e06a153880d5517988c8a1af06adf1"
+        },
+        "960-webp": {
+          "path": "assets/media/insights/three-pillar-sourcing-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 26742,
+          "sha256": "de74f06e39e1d1d11613a011b6adedbb25a5f79bcc106d00812ef7d43baf99dd"
+        },
+        "960-avif": {
+          "path": "assets/media/insights/three-pillar-sourcing-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 16698,
+          "sha256": "282e41ac4d8d077acdb74d336302ffcb1ebf82a516a5d634d7caf10fa6a05fdf"
+        }
+      }
+    }
+  ]
+}

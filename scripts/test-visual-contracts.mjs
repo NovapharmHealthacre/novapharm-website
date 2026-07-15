@@ -17,43 +17,47 @@ assert.match(home, /<div class="hero-media"[^>]*><picture>/);
 assert.match(home, /supply-network-hero-1200\.jpg 1200w/);
 assert.match(home, /class="hero-cinematic-layer"/);
 assert.match(home, /data-motion-toggle/);
-assert.match(home, /class="[^\"]*\bsourcing-story\b[^\"]*"/);
-assert.equal((home.match(/class="sourcing-step"/g) || []).length, 3);
-assert.match(home, /class="network-line network-line-active" data-route="0"/);
+assert.match(home, /class="[^\"]*\bsourcing-portfolio\b[^\"]*"/);
+assert.equal((home.match(/class="sourcing-route-card"/g) || []).length, 3);
+assert.match(home, /class="governed-convergence"/);
 assert.equal((home.match(/class="roadmap-number"/g) || []).length, 7, "the regulatory roadmap must contain seven controlled stages");
 assert.match(home, /Commercial release only after applicable authorisation/);
-assert.match(home, /hospital-supply-logistics\.jpg/);
+assert.match(home, /regulatory-batch-integrity\.jpg/);
 assert.match(home, /<figure class="batch-integrity-media">/);
 assert.doesNotMatch(home, /quality-batch-integrity\.svg/);
-assert.match(home, /partner-ecosystem-cinematic/);
-assert.match(home, /partner-cinematic-grid/);
-assert.equal((home.match(/<div class="partner-pathways">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) || []).length, 4, "the homepage must present four distinct partnership pathways");
+assert.match(home, /partner-ecosystem-directed/);
+assert.match(home, /partner-pathway-grid/);
+assert.equal((home.match(/<div class="partner-pathway-grid">[\s\S]*?<\/div><p class="partner-ecosystem-disclosure">/)?.[0].match(/class="partner-pathway-card"/g) || []).length, 4, "the homepage must present four distinct partnership pathways");
 assert.equal((home.match(/class="partner-ecosystem-card"/g) || []).length, 0, "the homepage must not repeat the product-style partner grid");
 
 const services = text("services/index.html");
 assert.match(services, /class="service-visual-story"/);
-assert.match(services, /class="services-media-gallery"/);
-assert.match(services, /respiratory-manufacturing\.jpg/);
+assert.match(services, /class="service-evidence-grid"/);
+assert.match(services, /services-launch-readiness\.jpg/);
 assert.match(services, /module-signal-services/);
 assert.doesNotMatch(services, /quality-batch-integrity\.svg/);
+assert.doesNotMatch(services, /assets\/media\/products\//);
 
 const regulatory = text("regulatory-services/index.html");
 assert.match(regulatory, /class="container regulatory-stage-grid"/);
-assert.match(regulatory, /cardiovascular-quality-control\.jpg/);
+assert.match(regulatory, /regulatory-batch-integrity\.jpg/);
 assert.match(regulatory, /regulatory-control-stage/);
 assert.doesNotMatch(regulatory, /gdp-qms-foundations\.svg/);
 assert.doesNotMatch(regulatory, /class="regulatory-stage-media"/);
+assert.doesNotMatch(regulatory, /assets\/media\/products\//);
 
 const partners = text("partner-with-us/index.html");
-assert.equal((partners.match(/class="partner-ecosystem-card"/g) || []).length, 10, "the Partners page must present ten qualified image-led segments");
-assert.match(partners, /specialty-pharmacy-handling\.jpg/);
+assert.equal((partners.match(/<div class="partner-pathway-grid partner-module-pathway-grid">[\s\S]*?<\/div><\/div><\/section>/)?.[0].match(/class="partner-pathway-card"/g) || []).length, 4, "the Partners page must present four qualified image-led pathways");
+assert.match(partners, /sourcing-european-network\.jpg/);
 assert.match(partners, /module-signal-partners/);
 assert.doesNotMatch(partners, /partnership-pathway\.svg/);
+assert.doesNotMatch(partners, /assets\/media\/products\//);
 
 const technology = text("technology/index.html");
-for (const marker of ["technology-visual-story", "architecture-map", "Live capabilities", "In development capabilities", "Planned capabilities"]) assert.match(technology, new RegExp(marker));
-assert.match(technology, /metabolic-laboratory-analysis\.jpg/);
+for (const marker of ["technology-evidence-grid", "architecture-map-photographic", "Live capabilities", "In development capabilities", "Planned capabilities"]) assert.match(technology, new RegExp(marker));
+assert.match(technology, /technology-control-architecture\.jpg/);
 assert.match(technology, /module-signal-technology/);
+assert.doesNotMatch(technology, /assets\/media\/products\//);
 
 const leadership = text("leadership/index.html");
 assert.match(leadership, /module-portrait-composition/);
@@ -101,16 +105,16 @@ const insightFiles = [
   "three-pillar-pharmaceutical-sourcing-model",
   "batch-to-buyer-pharmaceutical-traceability"
 ];
-const articleImages = insightFiles.map((slug) => text(`news-insights/${slug}/index.html`).match(/<div class="article-hero-media"><img src="([^\"]+)"/)?.[1]);
+const articleImages = insightFiles.map((slug) => text(`news-insights/${slug}/index.html`).match(/<div class="article-hero-media">[\s\S]*?<img src="([^\"]+)"/)?.[1]);
 assert.ok(articleImages.every(Boolean), "each insight article must have a cover image");
 assert.equal(new Set(articleImages).size, insightFiles.length, "insight articles must use distinct cover images");
 
 for (const path of [
   "assets/media/home/supply-network-hero.jpg",
   "assets/media/home/supply-network-hero-1200.jpg",
-  "assets/media/products/hospital-supply-logistics.jpg",
-  "assets/media/products/cardiovascular-quality-control.jpg",
-  "assets/media/products/respiratory-manufacturing.jpg"
+  "assets/media/stories/regulatory-batch-integrity.jpg",
+  "assets/media/stories/services-launch-readiness.jpg",
+  "assets/media/stories/technology-control-architecture.jpg"
 ]) assert.ok(existsSync(join(root, path)), `${path} must exist`);
 
 assert.ok(statSync(join(root, "assets/media/home/supply-network-hero.jpg")).size < 350_000, "desktop hero must remain below 350 KB");

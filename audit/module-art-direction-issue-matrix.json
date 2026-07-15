@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "reviewed": "2026-07-15",
+  "baseline": {
+    "commit": "4a4dd56d730b4956f4d21ed5561dcf92222a71ca",
+    "principalModules": 16,
+    "exactDuplicateHeroGroups": 5,
+    "excessHeroAssignments": 6,
+    "routesInDuplicateHeroGroups": 11,
+    "nonProductModulesUsingProductPhotoFallbacks": 11,
+    "duplicateGroups": [
+      {
+        "asset": "/assets/media/home/supply-network-hero",
+        "routes": ["/", "/about/", "/investor-information/"],
+        "uses": 3,
+        "excessAssignments": 2
+      },
+      {
+        "asset": "/assets/media/products/licensed-generics-packaging",
+        "routes": ["/about/company/", "/legal/"],
+        "uses": 2,
+        "excessAssignments": 1
+      },
+      {
+        "asset": "/assets/media/products/cardiovascular-quality-control",
+        "routes": ["/about/governance/", "/regulatory-services/"],
+        "uses": 2,
+        "excessAssignments": 1
+      },
+      {
+        "asset": "/assets/media/products/oncology-vial-handling",
+        "routes": ["/product-portfolio/", "/news-insights/"],
+        "uses": 2,
+        "excessAssignments": 1
+      },
+      {
+        "asset": "/assets/media/products/hospital-supply-logistics",
+        "routes": ["/contact/", "/account-application/"],
+        "uses": 2,
+        "excessAssignments": 1
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "AD-01",
+      "area": "Principal module heroes",
+      "before": "Five exact duplicate groups and six excess hero assignments made unrelated modules visually interchangeable.",
+      "after": "Fifteen unique registered hero assets plus one approved leadership portrait composition; zero duplicated principal heroes."
+    },
+    {
+      "id": "AD-02",
+      "area": "Product media isolation",
+      "before": "Eleven non-product modules used Product Portfolio photography as a generic corporate fallback.",
+      "after": "Product photography is limited to product-led placements; legacy CSS fallbacks were removed and are regression-tested."
+    },
+    {
+      "id": "AD-03",
+      "area": "Three-Pillar Sourcing",
+      "before": "Generic illustration-led flow with weak route differentiation.",
+      "after": "Three distinct photographic pathways, explicit status labels, regulatory disclosures and one governed convergence."
+    },
+    {
+      "id": "AD-04",
+      "area": "Partner Ecosystem",
+      "before": "One repeated image, flat cards, empty space and weak hierarchy.",
+      "after": "Four image-led qualification pathways with unique numbering, evidence boundaries and representative-media disclosure."
+    },
+    {
+      "id": "AD-05",
+      "area": "Regulatory and technology stories",
+      "before": "Decorative or generic visual treatments did not communicate controlled process or system maturity.",
+      "after": "A staged regulatory control track and photographic technology architecture show sequence, status and accountability."
+    },
+    {
+      "id": "AD-06",
+      "area": "Insights",
+      "before": "Editorial SVGs and a Product Portfolio hero weakened article differentiation.",
+      "after": "Six article-specific responsive image sets and a unique evidence-led Insights hero are connected to social and image metadata."
+    }
+  ],
+  "candidate": {
+    "implementationCommit": "a1473d7cbf2b789da5e015f8bf9c1fe0cfcd977b",
+    "registeredAssets": 29,
+    "generatedAssets": 26,
+    "licensedStockAssets": 2,
+    "approvedExistingAssets": 1,
+    "exactDuplicateHeroGroups": 0,
+    "excessHeroAssignments": 0,
+    "exactDuplicateAssetPairs": 0,
+    "perceptualDuplicatePairsAtOrBelowThreshold": 0,
+    "perceptualHammingThreshold": 8,
+    "unregisteredProductionMedia": 0,
+    "unverifiedProvenanceRecords": 0,
+    "productPhotoFallbackViolations": 0,
+    "maximumPublicRoutesPerPhoto": 2
+  },
+  "evidence": {
+    "beforeManifest": "audit/evidence/art-direction/before/manifest.json",
+    "beforeManifestSha256": "a5000a29204bdd92b847e1a737b830f576a0b6b744adf1294108d53f06842a36",
+    "afterManifest": "audit/evidence/art-direction/after/manifest.json",
+    "afterManifestSha256": "132f8d52b538857a356e97921358e351282b3f92be695524154c7b457fc88e08"
+  }
+}

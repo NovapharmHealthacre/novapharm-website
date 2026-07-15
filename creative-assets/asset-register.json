@@ -1,6 +1,7 @@
 {
-  "version": "1.1",
-  "reviewed": "2026-07-13",
+  "version": "1.2",
+  "reviewed": "2026-07-15",
+  "legacyVisualStatus": "Editorial SVG records are retained for provenance only. They are retired from public production; creative-assets/module-media-asset-register.json is the current module and Insights media register.",
   "competitorCodeOrAssetsUsed": false,
   "authoringMaster": {
     "name": "supply-network-hero-source.png",
@@ -74,11 +75,11 @@
       "modified": false,
       "dimensions": "viewBox 0 0 1200 900",
       "optimisedVariants": [],
-      "pageUsage": ["product portfolio", "services"],
+      "pageUsage": [],
       "altText": "Scientific network representing oncology and specialty portfolio discipline",
       "caption": "Strategic category visual; not a product or efficacy claim.",
-      "technicalStatus": "XML and visual-contract validation passed",
-      "ownerApproval": "pending visual acceptance"
+      "technicalStatus": "retired from public production; retained for provenance",
+      "ownerApproval": "superseded"
     },
     {
       "path": "assets/media/editorial/digital-traceability.svg",
@@ -88,11 +89,11 @@
       "modified": false,
       "dimensions": "viewBox 0 0 1200 900",
       "optimisedVariants": [],
-      "pageUsage": ["technology", "portal login background"],
+      "pageUsage": [],
       "altText": "Connected batch, document, order and audit records in a governed traceability architecture",
       "caption": "Architecture concept with live, in-development and planned states stated separately.",
-      "technicalStatus": "XML and visual-contract validation passed",
-      "ownerApproval": "pending visual acceptance"
+      "technicalStatus": "retired from public production; retained for provenance",
+      "ownerApproval": "superseded"
     },
     {
       "path": "assets/media/editorial/quality-batch-integrity.svg",
@@ -102,11 +103,11 @@
       "modified": false,
       "dimensions": "viewBox 0 0 1200 675",
       "optimisedVariants": [],
-      "pageUsage": ["homepage", "regulatory services"],
+      "pageUsage": [],
       "altText": "Controlled packs linked through quality evidence and release checkpoints",
       "caption": "Information design for batch and document integrity.",
-      "technicalStatus": "XML and visual-contract validation passed",
-      "ownerApproval": "pending visual acceptance"
+      "technicalStatus": "retired from public production; retained for provenance",
+      "ownerApproval": "superseded"
     },
     {
       "path": "assets/media/editorial/partnership-pathway.svg",
@@ -116,11 +117,11 @@
       "modified": false,
       "dimensions": "viewBox 0 0 1200 675",
       "optimisedVariants": [],
-      "pageUsage": ["partner with us"],
+      "pageUsage": [],
       "altText": "Pharmaceutical partnership pathway from initial fit through qualification and governed onboarding",
       "caption": "Qualification pathway; no commercial partnership is implied.",
-      "technicalStatus": "XML and visual-contract validation passed",
-      "ownerApproval": "pending visual acceptance"
+      "technicalStatus": "retired from public production; retained for provenance",
+      "ownerApproval": "superseded"
     },
     {
       "path": "assets/media/insights/compliance-first-distribution.svg",
@@ -129,11 +130,11 @@
       "generated": false,
       "dimensions": "viewBox 0 0 1200 675",
       "optimisedVariants": [],
-      "pageUsage": ["Insights index", "compliance-first distribution article"],
+      "pageUsage": [],
       "altText": "Editorial visual for Building a Compliance-First Pharmaceutical Distribution Model in the UK",
       "caption": null,
-      "technicalStatus": "XML and distinct-cover validation passed",
-      "ownerApproval": "pending visual acceptance"
+      "technicalStatus": "retired from public production; retained for provenance",
+      "ownerApproval": "superseded"
     },
     {
       "path": "assets/media/insights/gdp-qms-foundations.svg",
@@ -142,11 +143,11 @@
       "generated": false,
       "dimensions": "viewBox 0 0 1200 675",
       "optimisedVariants": [],
-      "pageUsage": ["Insights index", "GDP and QMS foundations article"],
+      "pageUsage": [],
       "altText": "Editorial visual for GDP and QMS Foundations for Pharmaceutical Distribution",
       "caption": null,
-      "technicalStatus": "XML and distinct-cover validation passed",
-      "ownerApproval": "pending visual acceptance"
+      "technicalStatus": "retired from public production; retained for provenance",
+      "ownerApproval": "superseded"
     },
     {
       "path": "assets/media/insights/oncology-demand-forecasting.svg",
@@ -155,11 +156,11 @@
       "generated": false,
       "dimensions": "viewBox 0 0 1200 675",
       "optimisedVariants": [],
-      "pageUsage": ["Insights index", "oncology demand forecasting article"],
+      "pageUsage": [],
       "altText": "Editorial visual for Demand Forecasting in the Oncology Supply Chain",
       "caption": null,
-      "technicalStatus": "XML and distinct-cover validation passed",
-      "ownerApproval": "pending visual acceptance"
+      "technicalStatus": "retired from public production; retained for provenance",
+      "ownerApproval": "superseded"
     },
     {
       "path": "assets/media/insights/plpi-supply-resilience.svg",
@@ -168,11 +169,11 @@
       "generated": false,
       "dimensions": "viewBox 0 0 1200 675",
       "optimisedVariants": [],
-      "pageUsage": ["Insights index", "PLPI supply resilience article"],
+      "pageUsage": [],
       "altText": "Editorial visual for PLPI Pathways and Pharmaceutical Supply Resilience",
       "caption": null,
-      "technicalStatus": "XML and distinct-cover validation passed",
-      "ownerApproval": "pending visual acceptance"
+      "technicalStatus": "retired from public production; retained for provenance",
+      "ownerApproval": "superseded"
     },
     {
       "path": "assets/media/insights/three-pillar-sourcing.svg",
@@ -181,11 +182,11 @@
       "generated": false,
       "dimensions": "viewBox 0 0 1200 675",
       "optimisedVariants": [],
-      "pageUsage": ["Insights index", "three-pillar sourcing article"],
+      "pageUsage": [],
       "altText": "Editorial visual for A Three-Pillar Pharmaceutical Sourcing Model",
       "caption": null,
-      "technicalStatus": "XML and distinct-cover validation passed",
-      "ownerApproval": "pending visual acceptance"
+      "technicalStatus": "retired from public production; retained for provenance",
+      "ownerApproval": "superseded"
     },
     {
       "path": "assets/media/insights/batch-to-buyer-traceability.svg",
@@ -194,11 +195,11 @@
       "generated": false,
       "dimensions": "viewBox 0 0 1200 675",
       "optimisedVariants": [],
-      "pageUsage": ["Insights index", "batch-to-buyer traceability article"],
+      "pageUsage": [],
       "altText": "Editorial visual for Batch-to-Buyer Traceability in Pharmaceutical Distribution",
       "caption": null,
-      "technicalStatus": "XML and distinct-cover validation passed",
-      "ownerApproval": "pending visual acceptance"
+      "technicalStatus": "retired from public production; retained for provenance",
+      "ownerApproval": "superseded"
     },
     {
       "path": "assets/vishalchakravarty.jpeg",

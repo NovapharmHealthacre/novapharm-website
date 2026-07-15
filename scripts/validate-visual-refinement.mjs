@@ -42,21 +42,21 @@ const build = read("scripts/build-site.mjs");
   [index, "Commercial release only after applicable authorisation", "Roadmap seventh release gate"],
   [index, "batch-integrity-feature", "Homepage batch-integrity photo feature"],
   [index, '<figure class="batch-integrity-media">', "Semantic batch-integrity figure"],
-  [index, "/assets/media/products/hospital-supply-logistics.jpg", "Homepage batch-integrity photograph"],
-  [index, "partner-ecosystem-cinematic", "Homepage tailored partner ecosystem"],
-  [index, "partner-cinematic-grid", "Homepage partner pathway composition"],
+  [index, "/assets/media/stories/regulatory-batch-integrity.jpg", "Homepage batch-integrity photograph"],
+  [index, "partner-ecosystem-directed", "Homepage tailored partner ecosystem"],
+  [index, "partner-pathway-grid", "Homepage partner pathway composition"],
   [index, "Photography is representative", "Homepage partnership disclosure"],
   [services, "service-visual-story", "Services visual introduction"],
   [services, '<figure class="service-visual-media">', "Semantic Services visual figure"],
-  [services, "services-media-gallery", "Services media gallery"],
-  [services, "/assets/media/products/respiratory-manufacturing.jpg", "Services manufacturing photograph"],
+  [services, "service-evidence-grid", "Services evidence architecture"],
+  [services, "/assets/media/stories/services-launch-readiness.jpg", "Services launch-readiness photograph"],
   [regulatory, "regulatory-stage-grid", "Regulatory staged layout"],
   [regulatory, "regulatory-control-stage", "Regulatory tailored control sequence"],
   [regulatory, '<figure class="service-visual-media">', "Semantic Regulatory visual figure"],
-  [partners, "partner-ecosystem-grid", "Partners image-led ecosystem"],
+  [partners, "partner-module-pathway-grid", "Partners image-led ecosystem"],
   [partners, '<figure class="service-visual-media">', "Semantic Partners visual figure"],
-  [technology, "technology-visual-story", "Technology visual introduction"],
-  [technology, '<figure class="technology-visual-media">', "Semantic Technology visual figure"],
+  [technology, "technology-evidence-grid", "Technology evidence introduction"],
+  [technology, "architecture-map-photographic", "Semantic Technology architecture figure"],
   [technology, "technology-architecture-story", "Technology architecture refinement"],
   [leadership, "/assets/vishalchakravarty.jpeg", "Vishal approved portrait"],
   [leadership, "/assets/prabhakarvitthallahare.jpeg", "Prabhakar approved portrait"],
@@ -81,15 +81,19 @@ forbidText(regulatory, "/assets/media/insights/gdp-qms-foundations.svg", "Regula
 forbidText(partners, "/assets/media/editorial/partnership-pathway.svg", "Partners");
 forbidText(index, "partner-ecosystem-grid", "Homepage repeated product-style ecosystem");
 forbidText(regulatory, 'class="regulatory-stage-media"', "Regulatory repeated laboratory visual");
+forbidText(services, "/assets/media/products/", "Services product-category photography leak");
+forbidText(regulatory, "/assets/media/products/", "Regulatory product-category photography leak");
+forbidText(partners, "/assets/media/products/", "Partners product-category photography leak");
+forbidText(technology, "/assets/media/products/", "Technology product-category photography leak");
 
 const roadmapItems = (index.match(/class="roadmap-number"/g) || []).length;
 if (roadmapItems !== 7) failures.push(`Regulatory roadmap: expected 7 stages, found ${roadmapItems}.`);
 
-const pathwayCards = (index.match(/<div class="partner-pathways">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) || []).length;
+const pathwayCards = (index.match(/<div class="partner-pathway-grid">[\s\S]*?<\/div><p class="partner-ecosystem-disclosure">/)?.[0].match(/class="partner-pathway-card"/g) || []).length;
 if (pathwayCards !== 4) failures.push(`Homepage partner pathways: expected 4 tailored pathways, found ${pathwayCards}.`);
 
-const fullPartnerCards = (partners.match(/class="partner-ecosystem-card"/g) || []).length;
-if (fullPartnerCards !== 10) failures.push(`Partner page ecosystem: expected 10 image-led cards, found ${fullPartnerCards}.`);
+const fullPartnerCards = (partners.match(/<div class="partner-pathway-grid partner-module-pathway-grid">[\s\S]*?<\/div><\/div><\/section>/)?.[0].match(/class="partner-pathway-card"/g) || []).length;
+if (fullPartnerCards !== 4) failures.push(`Partner page ecosystem: expected 4 distinct image-led pathways, found ${fullPartnerCards}.`);
 
 for (const [path, html] of [
   ["index.html", index],

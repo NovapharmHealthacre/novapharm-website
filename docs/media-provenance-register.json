@@ -1,0 +1,581 @@
+{
+  "version": "2.0",
+  "reviewed": "2026-07-15",
+  "policy": {
+    "noUnverifiedMedia": true,
+    "noGoogleImagesScraping": true,
+    "generatedMediaIsRepresentative": true,
+    "noFacilityOwnershipImplied": true,
+    "noCurrentPartnerOrAuthorisationImplied": true
+  },
+  "sourceRegisters": [
+    "creative-assets/module-media-asset-register.json",
+    "creative-assets/image-asset-register.json",
+    "creative-assets/asset-register.json"
+  ],
+  "assets": [
+    {
+      "id": "home-supply-network",
+      "sourceType": "approved-existing",
+      "source": "Owner-approved generated authoring master",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-14",
+      "modificationPermitted": true,
+      "modifications": "Loss-controlled responsive crop and compression",
+      "generatedPrompt": "Protected authoring record; not published in the public repository",
+      "publicBase": "/assets/media/home/supply-network-hero",
+      "pagesUsingIt": [
+        "/"
+      ],
+      "reviewStatus": "approved-existing-production-asset",
+      "detailedRegister": "creative-assets/asset-register.json#assets/media/home/supply-network-hero.jpg"
+    },
+    {
+      "id": "about-operating-model",
+      "sourceType": "generated",
+      "source": "imagegen:exec-94d7b682-1b62-4bc8-8a3e-3f97a18ce8a7",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/modules/about-operating-model",
+      "pagesUsingIt": [
+        "/about/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#about-operating-model"
+    },
+    {
+      "id": "company-corporate-structure",
+      "sourceType": "generated",
+      "source": "imagegen:exec-7efe28cb-3014-4616-8e78-c4a955c5134f",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/modules/company-corporate-structure",
+      "pagesUsingIt": [
+        "/about/company/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#company-corporate-structure"
+    },
+    {
+      "id": "governance-quality-oversight",
+      "sourceType": "generated",
+      "source": "imagegen:exec-61f90706-4ca5-43e3-871a-5fb3526fe20d",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/modules/governance-quality-oversight",
+      "pagesUsingIt": [
+        "/about/governance/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#governance-quality-oversight"
+    },
+    {
+      "id": "services-connected-execution",
+      "sourceType": "generated",
+      "source": "imagegen:exec-3d6361f8-5e9f-417d-96bc-e93148afed44",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/modules/services-connected-execution",
+      "pagesUsingIt": [
+        "/services/",
+        "/#partner-ecosystem"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#services-connected-execution"
+    },
+    {
+      "id": "regulatory-dossier-control",
+      "sourceType": "generated",
+      "source": "imagegen:exec-2f51f4ad-1423-4297-9398-a0745a2b18df",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/modules/regulatory-dossier-control",
+      "pagesUsingIt": [
+        "/regulatory-services/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#regulatory-dossier-control"
+    },
+    {
+      "id": "product-oncology-vial",
+      "sourceType": "licensed-stock",
+      "source": "https://www.pexels.com/photo/anonymous-lab-worker-using-pipette-for-injecting-sample-into-flask-4299424/",
+      "creator": "Jorge Sepulveda",
+      "originalUrl": "https://images.pexels.com/photos/4299424/pexels-photo-4299424.jpeg",
+      "licence": {
+        "name": "Pexels licence",
+        "url": "https://www.pexels.com/license/",
+        "verifiedOn": "2026-07-14",
+        "websiteUsePermitted": true,
+        "modificationPermitted": true,
+        "attributionRequired": false,
+        "restrictions": [
+          "Do not imply endorsement by a depicted person or organisation.",
+          "Do not resell or redistribute an unaltered image as a standalone stock asset.",
+          "Do not use an image as part of the NovaPharm trade mark or identity."
+        ]
+      },
+      "acquisitionDate": "2026-07-14",
+      "modificationPermitted": true,
+      "modifications": "Landscape crop centred on gloved hands, pipette and vial; exclude unrelated background detail.",
+      "generatedPrompt": null,
+      "publicBase": "/assets/media/products/oncology-vial-handling",
+      "pagesUsingIt": [
+        "/product-portfolio/"
+      ],
+      "reviewStatus": "rendered-and-brand-reviewed",
+      "detailedRegister": "creative-assets/image-asset-register.json#oncology-vial-handling"
+    },
+    {
+      "id": "product-licensed-generics",
+      "sourceType": "licensed-stock",
+      "source": "https://www.pexels.com/photo/person-holding-blister-packs-5995060/",
+      "creator": "Maksim Goncharenok",
+      "originalUrl": "https://images.pexels.com/photos/5995060/pexels-photo-5995060.jpeg",
+      "licence": {
+        "name": "Pexels licence",
+        "url": "https://www.pexels.com/license/",
+        "verifiedOn": "2026-07-14",
+        "websiteUsePermitted": true,
+        "modificationPermitted": true,
+        "attributionRequired": false,
+        "restrictions": [
+          "Do not imply endorsement by a depicted person or organisation.",
+          "Do not resell or redistribute an unaltered image as a standalone stock asset.",
+          "Do not use an image as part of the NovaPharm trade mark or identity."
+        ]
+      },
+      "acquisitionDate": "2026-07-14",
+      "modificationPermitted": true,
+      "modifications": "Use a disciplined landscape crop around unbranded blister packaging; avoid consumer-treatment framing.",
+      "generatedPrompt": null,
+      "publicBase": "/assets/media/products/licensed-generics-packaging",
+      "pagesUsingIt": [
+        "/product-portfolio/"
+      ],
+      "reviewStatus": "rendered-and-brand-reviewed",
+      "detailedRegister": "creative-assets/image-asset-register.json#licensed-generics-packaging"
+    },
+    {
+      "id": "partners-qualification",
+      "sourceType": "generated",
+      "source": "imagegen:exec-939149cf-1b0b-4b4e-b70d-d7b95a0481c4",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/modules/partners-qualification",
+      "pagesUsingIt": [
+        "/partner-with-us/",
+        "/#partner-ecosystem"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#partners-qualification"
+    },
+    {
+      "id": "technology-traceability",
+      "sourceType": "generated",
+      "source": "imagegen:exec-cf625daa-9c6e-4258-9fb4-27fc9eb6e6f6",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/modules/technology-traceability",
+      "pagesUsingIt": [
+        "/technology/",
+        "/#partner-ecosystem"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#technology-traceability"
+    },
+    {
+      "id": "insights-evidence-editorial",
+      "sourceType": "generated",
+      "source": "imagegen:exec-7c771b71-da19-443a-baa0-8bdb0baafbc8",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/modules/insights-evidence-editorial",
+      "pagesUsingIt": [
+        "/news-insights/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#insights-evidence-editorial"
+    },
+    {
+      "id": "contact-qualified-enquiry",
+      "sourceType": "generated",
+      "source": "imagegen:exec-441a6015-ed82-45b9-b480-2b6e40e61c84",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/modules/contact-qualified-enquiry",
+      "pagesUsingIt": [
+        "/contact/",
+        "/#partner-ecosystem"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#contact-qualified-enquiry"
+    },
+    {
+      "id": "investors-capital-readiness",
+      "sourceType": "generated",
+      "source": "imagegen:exec-3991535b-1f65-48fb-9310-88a8cebff9db",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/modules/investors-capital-readiness",
+      "pagesUsingIt": [
+        "/investor-information/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#investors-capital-readiness"
+    },
+    {
+      "id": "careers-specialist-team",
+      "sourceType": "generated",
+      "source": "imagegen:exec-b4d307a1-92a1-44d0-acb4-eefa0113b2a0",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/modules/careers-specialist-team",
+      "pagesUsingIt": [
+        "/careers/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#careers-specialist-team"
+    },
+    {
+      "id": "account-controlled-onboarding",
+      "sourceType": "generated",
+      "source": "imagegen:exec-e1322902-72c8-44c5-97d2-1f99d8dfc28f",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/modules/account-controlled-onboarding",
+      "pagesUsingIt": [
+        "/account-application/",
+        "/#partner-ecosystem"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#account-controlled-onboarding"
+    },
+    {
+      "id": "legal-policy-governance",
+      "sourceType": "generated",
+      "source": "imagegen:exec-af5b51cd-a034-473c-846b-fdce08b90279",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/modules/legal-policy-governance",
+      "pagesUsingIt": [
+        "/legal/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#legal-policy-governance"
+    },
+    {
+      "id": "services-launch-readiness",
+      "sourceType": "generated",
+      "source": "imagegen:exec-13b857b1-8de2-419a-8649-a0ad460603e5",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/stories/services-launch-readiness",
+      "pagesUsingIt": [
+        "/services/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#services-launch-readiness"
+    },
+    {
+      "id": "regulatory-batch-integrity",
+      "sourceType": "generated",
+      "source": "imagegen:exec-ed8399d7-58e0-4d11-bb23-107d2a0422cc",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/stories/regulatory-batch-integrity",
+      "pagesUsingIt": [
+        "/regulatory-services/",
+        "/#batch-integrity"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#regulatory-batch-integrity"
+    },
+    {
+      "id": "partners-due-diligence",
+      "sourceType": "generated",
+      "source": "imagegen:exec-2c66c1e3-5d33-4607-8efa-0b1c439dfee0",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/stories/partners-due-diligence",
+      "pagesUsingIt": [
+        "/about/",
+        "/partner-with-us/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#partners-due-diligence"
+    },
+    {
+      "id": "technology-control-architecture",
+      "sourceType": "generated",
+      "source": "imagegen:exec-e25ce132-5c46-4e38-8a20-c786fe591e00",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/stories/technology-control-architecture",
+      "pagesUsingIt": [
+        "/partner-with-us/",
+        "/technology/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#technology-control-architecture"
+    },
+    {
+      "id": "sourcing-direct-gmp",
+      "sourceType": "generated",
+      "source": "imagegen:exec-520f4495-d048-4834-abdd-2e36825569a6",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/stories/sourcing-direct-gmp",
+      "pagesUsingIt": [
+        "/#three-pillar-sourcing",
+        "/partner-with-us/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#sourcing-direct-gmp"
+    },
+    {
+      "id": "sourcing-plpi-assessment",
+      "sourceType": "generated",
+      "source": "imagegen:exec-2a1184b6-d8b8-4ada-a79f-2ff9159ca409",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/stories/sourcing-plpi-assessment",
+      "pagesUsingIt": [
+        "/#three-pillar-sourcing",
+        "/partner-with-us/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#sourcing-plpi-assessment"
+    },
+    {
+      "id": "sourcing-european-network",
+      "sourceType": "generated",
+      "source": "imagegen:exec-017e6359-72c4-4a2f-afca-7b56f9abb899",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/stories/sourcing-european-network",
+      "pagesUsingIt": [
+        "/#three-pillar-sourcing",
+        "/partner-with-us/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#sourcing-european-network"
+    },
+    {
+      "id": "insight-batch-to-buyer",
+      "sourceType": "generated",
+      "source": "imagegen:exec-63785ca1-9b09-4ea9-a90e-1961a7844d8f",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/insights/batch-to-buyer-traceability",
+      "pagesUsingIt": [
+        "/news-insights/",
+        "/news-insights/batch-to-buyer-pharmaceutical-traceability/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#insight-batch-to-buyer"
+    },
+    {
+      "id": "insight-compliance-first",
+      "sourceType": "generated",
+      "source": "imagegen:exec-bece4169-2e5d-408f-a41a-7bba3851a763",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/insights/compliance-first-distribution",
+      "pagesUsingIt": [
+        "/news-insights/",
+        "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#insight-compliance-first"
+    },
+    {
+      "id": "insight-gdp-qms",
+      "sourceType": "generated",
+      "source": "imagegen:exec-f373e356-4f6f-4f2e-8279-88d9ab1ef4cd",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/insights/gdp-qms-foundations",
+      "pagesUsingIt": [
+        "/news-insights/",
+        "/news-insights/gdp-qms-pharmaceutical-distribution-foundations/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#insight-gdp-qms"
+    },
+    {
+      "id": "insight-oncology-forecasting",
+      "sourceType": "generated",
+      "source": "imagegen:exec-3a833621-727b-4074-b588-657b3efa7f5b",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/insights/oncology-demand-forecasting",
+      "pagesUsingIt": [
+        "/news-insights/",
+        "/news-insights/oncology-supply-chain-demand-forecasting/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#insight-oncology-forecasting"
+    },
+    {
+      "id": "insight-plpi-resilience",
+      "sourceType": "generated",
+      "source": "imagegen:exec-edfa06a8-d865-4fd7-a1a8-24b64699b99a",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/insights/plpi-supply-resilience",
+      "pagesUsingIt": [
+        "/news-insights/",
+        "/news-insights/plpi-pharmaceutical-supply-resilience/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#insight-plpi-resilience"
+    },
+    {
+      "id": "insight-three-pillar",
+      "sourceType": "generated",
+      "source": "imagegen:exec-b5e6f3da-657b-4187-a0d2-bf19d2817d1d",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/insights/three-pillar-sourcing",
+      "pagesUsingIt": [
+        "/news-insights/",
+        "/news-insights/three-pillar-pharmaceutical-sourcing-model/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#insight-three-pillar"
+    }
+  ]
+}

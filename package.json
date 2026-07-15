@@ -34,6 +34,7 @@
     "test:secret-resolution": "node scripts/test-secret-resolution.mjs",
     "test:document-scans": "node scripts/test-document-scan-engine.mjs",
     "test:visual-contracts": "node scripts/test-visual-contracts.mjs",
+    "evidence:art-direction": "node scripts/capture-art-direction-evidence.mjs",
     "test:browser-acceptance": "node scripts/run-browser-acceptance.mjs",
     "test": "npm run test:integration && npm run test:production-security && npm run test:preview-security && npm run test:session-restart && npm run test:database-migration && npm run test:entra-identity && npm run test:secret-resolution && npm run test:document-scans && npm run test:cookies && npm run test:backup-restore",
     "check": "npm run build && npm run visual:validate && npm run visual:modules && npm run validate && npm run syntax && npm run security:scan && npm run test:visual-contracts && npm run seo:indexnow:dry-run && npm test",
@@ -42,7 +43,8 @@
     "restore:database": "node scripts/restore-database.mjs",
     "migrate:azure-sql": "node scripts/migrate-sqlite-to-azure-sql.mjs",
     "migrate:azure-sql:schema": "node scripts/migrate-azure-sql-schema.mjs",
-    "optimise:images": "node scripts/optimise-images.mjs"
+    "optimise:images": "node scripts/optimise-images.mjs",
+    "optimise:modules": "node scripts/materialize-module-media.mjs"
   },
   "engines": {
     "node": "24.x"
@@ -56,6 +58,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",
-    "playwright": "1.61.1"
+    "playwright": "1.61.1",
+    "sharp": "^0.34.5"
   }
 }
