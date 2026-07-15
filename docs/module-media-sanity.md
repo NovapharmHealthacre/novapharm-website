@@ -11,6 +11,7 @@ This refinement responds to the owner review after PR 7.
 - Replace the second repeated regulatory laboratory photograph with a purpose-built animated regulatory control sequence.
 - Preserve product-category photography on the Product Portfolio page.
 - Preserve regulatory-status, SEO/GEO, structured-data, performance and reduced-motion controls.
+- Apply the module-specific media system across all 16 registered public modules.
 
 ## Motion language
 
@@ -20,3 +21,7 @@ This refinement responds to the owner review after PR 7.
 - Technology: identity, traceability, workflow and forecasting.
 
 The overlays are decorative and hidden from assistive technology. Essential content remains visible in HTML.
+
+## Release checkpoint
+
+The generated output is materialised on the branch. This human-authored checkpoint exists so the complete production, SEO, visual and Chromium/WebKit gates can execute against the final review head before merge.
