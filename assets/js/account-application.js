@@ -1,7 +1,26 @@
-function applicationPayload(form) {
+function applicationSubmissionKey() {
+  if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+  const bytes = new Uint8Array(24);
+  globalThis.crypto?.getRandomValues?.(bytes);
+  return [...bytes].map((value) => value.toString(16).padStart(2, "0")).join("") || `${Date.now()}-${Math.random()}`;
+}
+
+function applicationFiles(form) {
+  return [...form.querySelectorAll("input[type=file]")].flatMap((input) => [...input.files].map((file) => ({
+    file,
+    documentClass: input.dataset.documentClass || "customer_onboarding"
+  })));
+}
+
+function applicationPayload(form, files, submissionKey) {
   const values = Object.fromEntries(new FormData(form));
   return {
     email: values.email,
+    submissionKey,
+    expectedDocumentCount: files.length,
+    sourcePage: values.sourcePage,
+    sourceCta: values.sourceCta,
+    attributionPayload: values.attributionPayload,
     company: {
       legalName: values.legalName,
       tradingName: values.tradingName,
@@ -27,23 +46,67 @@ function applicationPayload(form) {
   };
 }
 
-async function uploadApplicationFiles(application, input, csrfToken) {
-  for (const file of [...input.files]) {
-    const params = new URLSearchParams({
-      fileName: file.name,
-      documentClass: input.dataset.documentClass || "customer_onboarding"
-    });
-    await window.NovaPharmApi.request(`/api/account-applications/${application.id}/documents?${params}`, {
+async function refreshUploadAuthorisation(application, csrfToken) {
+  const result = await window.NovaPharmApi.request(`/api/account-applications/${application.id}/upload-authorisation`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-csrf-token": csrfToken },
+    body: JSON.stringify({ resumeToken: application.resumeToken })
+  });
+  Object.assign(application, result.authorisations);
+}
+
+async function uploadApplicationFile(application, entry, csrfToken, allowRefresh = true) {
+  const params = new URLSearchParams({ fileName: entry.file.name, documentClass: entry.documentClass });
+  try {
+    return await window.NovaPharmApi.request(`/api/account-applications/${application.id}/documents?${params}`, {
       method: "POST",
       headers: {
-        "Content-Type": file.type || "application/octet-stream",
+        "Content-Type": entry.file.type || "application/octet-stream",
         "x-application-upload-token": application.uploadToken,
         "x-csrf-token": csrfToken
       },
-      body: file,
+      body: entry.file,
       timeoutMs: 30000
     });
+  } catch (error) {
+    if (allowRefresh && error.status === 403 && application.resumeToken) {
+      await refreshUploadAuthorisation(application, csrfToken);
+      return uploadApplicationFile(application, entry, csrfToken, false);
+    }
+    throw error;
   }
+}
+
+async function completeApplicationUploads(application, csrfToken) {
+  try {
+    return await window.NovaPharmApi.request(`/api/account-applications/${application.id}/documents/complete`, {
+      method: "POST",
+      headers: { "x-application-upload-token": application.uploadToken, "x-csrf-token": csrfToken }
+    });
+  } catch (error) {
+    if (error.status === 403 && application.resumeToken) {
+      await refreshUploadAuthorisation(application, csrfToken);
+      return window.NovaPharmApi.request(`/api/account-applications/${application.id}/documents/complete`, {
+        method: "POST",
+        headers: { "x-application-upload-token": application.uploadToken, "x-csrf-token": csrfToken }
+      });
+    }
+    throw error;
+  }
+}
+
+async function uploadEntries(application, entries, csrfToken) {
+  const successful = [];
+  const failed = [];
+  for (const entry of entries) {
+    try {
+      const result = await uploadApplicationFile(application, entry, csrfToken);
+      successful.push({ ...entry, result });
+    } catch (error) {
+      failed.push({ ...entry, error });
+    }
+  }
+  return { successful, failed };
 }
 
 function applicationServiceUnavailable(error) {
@@ -75,28 +138,80 @@ function showAccountEmailFallback(status, payload) {
     "",
     "Supporting documents are not attached to this email draft. NovaPharm will provide a controlled route for any documents required during review."
   ].join("\n");
-
   const link = document.createElement("a");
   link.className = "btn btn-primary";
   link.href = `mailto:vishal@novapharmhealthcare.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   link.textContent = "Send account request by email";
-
   const strong = document.createElement("strong");
-  strong.textContent = "Your account request is ready.";
+  strong.textContent = "The secure application service is unavailable.";
   const text = document.createElement("span");
-  text.textContent = " The secure onboarding service is being activated. Send the business details by email and NovaPharm will provide the controlled document route separately.";
+  text.textContent = " No application record was created. Send the business details by email and NovaPharm will provide a controlled document route separately.";
   status.replaceChildren(strong, text, document.createElement("br"), link);
   status.className = "alert static-service-notice";
   status.setAttribute("role", "status");
   link.focus();
 }
 
+function showApplicationSuccess(form, status, application) {
+  form.hidden = true;
+  status.textContent = `Application ${application.applicationNumber} was securely recorded. Compliance and sales review notifications have been queued.`;
+  status.className = "alert alert-success";
+  status.setAttribute("role", "status");
+  status.setAttribute("tabindex", "-1");
+  status.focus();
+}
+
+function showPartialUpload({ form, status, application, successful, failed, csrfToken }) {
+  form.hidden = true;
+  const heading = document.createElement("strong");
+  heading.textContent = `Application ${application.applicationNumber} is safely recorded.`;
+  const explanation = document.createElement("p");
+  explanation.textContent = `${successful.length} file${successful.length === 1 ? "" : "s"} uploaded; ${failed.length} require retry. The application has not been duplicated or lost.`;
+  const list = document.createElement("ul");
+  for (const entry of successful) {
+    const item = document.createElement("li");
+    item.textContent = `${entry.file.name}: uploaded`;
+    list.append(item);
+  }
+  for (const entry of failed) {
+    const item = document.createElement("li");
+    item.textContent = `${entry.file.name}: ${window.NovaPharmApi.friendlyError(entry.error, "application")}`;
+    list.append(item);
+  }
+  const retry = document.createElement("button");
+  retry.type = "button";
+  retry.className = "btn btn-primary";
+  retry.textContent = "Retry failed files";
+  retry.addEventListener("click", async () => {
+    retry.disabled = true;
+    explanation.textContent = "Retrying only the files that did not upload...";
+    const result = await uploadEntries(application, failed, csrfToken);
+    successful.push(...result.successful);
+    if (result.failed.length) {
+      showPartialUpload({ form, status, application, successful, failed: result.failed, csrfToken });
+      return;
+    }
+    try {
+      await completeApplicationUploads(application, csrfToken);
+      showApplicationSuccess(form, status, application);
+    } catch (error) {
+      explanation.textContent = window.NovaPharmApi.friendlyError(error, "application");
+      retry.disabled = false;
+    }
+  });
+  status.replaceChildren(heading, explanation, list, retry);
+  status.className = "alert application-upload-recovery";
+  status.setAttribute("role", "status");
+  retry.focus();
+}
+
 const applicationForm = document.querySelector("[data-account-application]");
+const submissionKey = applicationSubmissionKey();
+
 if (applicationForm) {
   const steps = [...applicationForm.querySelectorAll("[data-application-step]")];
   const progressItems = [...document.querySelectorAll("[data-application-progress] li")];
   let activeStep = 0;
-
   const showStep = (index) => {
     activeStep = Math.max(0, Math.min(index, steps.length - 1));
     steps.forEach((step, stepIndex) => { step.hidden = stepIndex !== activeStep; });
@@ -106,7 +221,6 @@ if (applicationForm) {
     });
     steps[activeStep].querySelector("input, select, textarea")?.focus();
   };
-
   const stepIsValid = () => {
     const controls = [...steps[activeStep].querySelectorAll("input, select, textarea")];
     const invalid = controls.find((control) => control.willValidate && !control.checkValidity());
@@ -115,11 +229,8 @@ if (applicationForm) {
     invalid.focus();
     return false;
   };
-
   applicationForm.querySelectorAll("[data-step-next]").forEach((button) => {
-    button.addEventListener("click", () => {
-      if (stepIsValid()) showStep(activeStep + 1);
-    });
+    button.addEventListener("click", () => { if (stepIsValid()) showStep(activeStep + 1); });
   });
   applicationForm.querySelectorAll("[data-step-back]").forEach((button) => {
     button.addEventListener("click", () => showStep(activeStep - 1));
@@ -136,23 +247,29 @@ applicationForm?.addEventListener("submit", async (event) => {
   submit.disabled = true;
   status.textContent = "Submitting application and preparing the controlled document record...";
   status.className = "alert";
-  const payload = applicationPayload(form);
+  const files = applicationFiles(form);
+  const payload = applicationPayload(form, files, submissionKey);
+  let application = null;
+  let csrfToken = "";
   try {
-    const csrfToken = await window.NovaPharmApi.csrf();
+    csrfToken = await window.NovaPharmApi.csrf();
     const result = await window.NovaPharmApi.request("/api/account-applications", {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-csrf-token": csrfToken },
       body: JSON.stringify(payload)
     });
-    const fileInputs = [...form.querySelectorAll("input[type=file]")];
-    for (const input of fileInputs) await uploadApplicationFiles(result.application, input, csrfToken);
-    form.hidden = true;
-    status.textContent = `Application ${result.application.applicationNumber} was submitted. Compliance and sales review workflows have been queued.`;
-    status.className = "alert alert-success";
-    status.setAttribute("role", "status");
+    application = result.application;
+    const uploads = await uploadEntries(application, files, csrfToken);
+    if (uploads.failed.length) {
+      showPartialUpload({ form, status, application, successful: uploads.successful, failed: uploads.failed, csrfToken });
+      return;
+    }
+    await completeApplicationUploads(application, csrfToken);
+    showApplicationSuccess(form, status, application);
   } catch (error) {
-    if (applicationServiceUnavailable(error)) {
-      showAccountEmailFallback(status, payload);
+    if (!application && applicationServiceUnavailable(error)) showAccountEmailFallback(status, payload);
+    else if (application) {
+      showPartialUpload({ form, status, application, successful: [], failed: files.map((entry) => ({ ...entry, error })), csrfToken });
     } else {
       status.textContent = window.NovaPharmApi.friendlyError(error, "application");
       status.className = "alert alert-danger";

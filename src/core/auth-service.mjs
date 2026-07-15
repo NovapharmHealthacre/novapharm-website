@@ -382,6 +382,16 @@ export async function revokePersistentSession(id) {
   if (id) await run("UPDATE auth_sessions SET revoked_at = COALESCE(revoked_at, ?) WHERE id = ?", nowIso(), id);
 }
 
+export async function revokeUserSessions(username, actor = "system") {
+  const canonicalUsername = String(username || "").trim();
+  const user = await one("SELECT username FROM users WHERE username = ?", canonicalUsername);
+  if (!user) throw Object.assign(new Error("Portal user not found."), { statusCode: 404 });
+  const revokedAt = nowIso();
+  const result = await run("UPDATE auth_sessions SET revoked_at = COALESCE(revoked_at, ?) WHERE username = ? AND revoked_at IS NULL", revokedAt, user.username);
+  await recordSecurityEvent({ eventType: "administrator.sessions_revoked", username: user.username, outcome: "allowed", details: { actor, count: Number(result.changes || 0) } });
+  return { username: user.username, revokedSessions: Number(result.changes || 0) };
+}
+
 export async function countActiveSessions() {
   return Number((await one("SELECT COUNT(*) AS value FROM auth_sessions WHERE revoked_at IS NULL AND expires_at > ?", nowIso()))?.value || 0);
 }

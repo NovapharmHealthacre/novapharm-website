@@ -194,7 +194,7 @@ if (contactForm) {
     const payload = Object.fromEntries(new FormData(contactForm).entries());
     try {
       const csrfToken = await window.NovaPharmApi.csrf();
-      await window.NovaPharmApi.request("/api/contact", {
+      const result = await window.NovaPharmApi.request("/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -205,7 +205,8 @@ if (contactForm) {
       contactForm.reset();
       clearErrors(contactForm);
       if (status) {
-        status.textContent = "Thank you. Your enquiry has been securely recorded. The NovaPharm team will review it and respond through the contact details provided.";
+        const reference = result.lead?.leadNumber ? ` ${result.lead.leadNumber}` : "";
+        status.textContent = `Thank you. Your enquiry${reference} has been securely recorded. The NovaPharm team will review it and respond through the contact details provided.`;
         status.className = "alert form-status alert-success";
       }
     } catch (error) {

@@ -19,6 +19,10 @@ export function sharePointConfigFromEnv() {
 
 export function hasSharePointCredentials(config = sharePointConfigFromEnv()) {
   if (!config.hostname || !config.sitePath) return false;
+  return hasGraphCredentials(config);
+}
+
+export function hasGraphCredentials(config = sharePointConfigFromEnv()) {
   if (config.authMode === "managed-identity") return Boolean(process.env.WEBSITE_INSTANCE_ID || process.env.AZURE_CLIENT_ID);
   return Boolean(config.tenantId && config.clientId && isResolvedSecret(config.clientSecret));
 }
@@ -44,7 +48,7 @@ export class GraphClient {
       this.expiresAt = Number(token.expiresOnTimestamp || Date.now() + 30 * 60 * 1000);
       return this.accessToken;
     }
-    if (!hasSharePointCredentials(this.config)) throw Object.assign(new Error("Microsoft Graph client credentials are not configured."), { code: "graph_credentials_missing" });
+    if (!hasGraphCredentials(this.config)) throw Object.assign(new Error("Microsoft Graph client credentials are not configured."), { code: "graph_credentials_missing" });
     const body = new URLSearchParams({
       client_id: this.config.clientId,
       client_secret: this.config.clientSecret,
@@ -66,26 +70,44 @@ export class GraphClient {
 
   async request(path, options = {}) {
     const { responseType = "json", ...fetchOptions } = options;
-    const response = await fetch(`${GRAPH_ROOT}${path}`, {
-      ...fetchOptions,
-      headers: {
-        Authorization: `Bearer ${await this.token()}`,
-        ...(fetchOptions.body && !(fetchOptions.body instanceof Uint8Array) ? { "Content-Type": "application/json" } : {}),
-        ...(fetchOptions.headers || {})
-      },
-      signal: fetchOptions.signal || AbortSignal.timeout(30_000)
-    });
-    if (!response.ok) {
-      const body = await response.text();
-      const error = new Error(`Microsoft Graph request failed with ${response.status}.`);
-      error.code = `graph_${response.status}`;
-      error.details = body.slice(0, 500);
-      throw error;
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      const response = await fetch(`${GRAPH_ROOT}${path}`, {
+        ...fetchOptions,
+        headers: {
+          Authorization: `Bearer ${await this.token()}`,
+          ...(fetchOptions.body && !(fetchOptions.body instanceof Uint8Array) ? { "Content-Type": "application/json" } : {}),
+          ...(fetchOptions.headers || {})
+        },
+        signal: fetchOptions.signal || AbortSignal.timeout(30_000)
+      });
+      if (response.status === 401 && attempt === 0) {
+        this.accessToken = "";
+        this.expiresAt = 0;
+        continue;
+      }
+      if ((response.status === 429 || response.status >= 500) && attempt < 3) {
+        const retryAfter = response.headers.get("retry-after");
+        const retrySeconds = Number(retryAfter);
+        const delayMs = Number.isFinite(retrySeconds)
+          ? Math.min(30_000, Math.max(0, retrySeconds * 1000))
+          : Math.min(8_000, 250 * (2 ** attempt));
+        if (response.body) await response.body.cancel().catch(() => {});
+        await new Promise((resolveDelay) => setTimeout(resolveDelay, delayMs));
+        continue;
+      }
+      if (!response.ok) {
+        const body = await response.text();
+        const error = new Error(`Microsoft Graph request failed with ${response.status}.`);
+        error.code = `graph_${response.status}`;
+        error.details = body.slice(0, 500);
+        throw error;
+      }
+      if (response.status === 202 || response.status === 204 || responseType === "none") return null;
+      if (responseType === "bytes") return new Uint8Array(await response.arrayBuffer());
+      if (responseType === "text") return response.text();
+      return response.json();
     }
-    if (response.status === 204) return null;
-    if (responseType === "bytes") return new Uint8Array(await response.arrayBuffer());
-    if (responseType === "text") return response.text();
-    return response.json();
+    throw Object.assign(new Error("Microsoft Graph retry limit reached."), { code: "graph_retry_exhausted" });
   }
 
   async site() {

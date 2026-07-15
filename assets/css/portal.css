@@ -111,6 +111,38 @@
 
 .status-pill { border-radius: 3px; }
 
+.admin-table-action {
+  min-height: 34px;
+  padding: 7px 11px;
+  font-size: 13px;
+}
+
+.admin-review-panel {
+  border-block: 1px solid var(--line-strong);
+  padding-block: 28px;
+}
+
+.admin-detail-list {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.35fr) minmax(0, 1fr);
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+
+.admin-detail-list dt,
+.admin-detail-list dd {
+  margin: 0;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  overflow-wrap: anywhere;
+}
+
+.admin-detail-list dt { color: var(--muted); font-weight: 700; }
+.admin-submitted-message { white-space: pre-wrap; overflow-wrap: anywhere; }
+.admin-detail-section { margin-block: 24px; }
+.admin-detail-section h3 { margin-bottom: 12px; font-size: 20px; }
+.application-upload-recovery ul { margin-block: 14px; }
+
 @media (max-width: 720px) {
   .section-heading-row { align-items: stretch; flex-direction: column; }
   .section-heading-row .btn { width: 100%; }
@@ -118,4 +150,7 @@
   .portal-topbar, .executive-module-summary { align-items: stretch; flex-direction: column; }
   .portal-actions { align-items: stretch; justify-content: flex-start; }
   .portal-actions .btn { width: 100%; }
+  .admin-detail-list { grid-template-columns: 1fr; }
+  .admin-detail-list dt { padding-bottom: 2px; border-bottom: 0; }
+  .admin-detail-list dd { padding-top: 2px; }
 }

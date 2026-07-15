@@ -34,9 +34,10 @@ if (verifiedBackup.prepare("PRAGMA integrity_check").get()?.integrity_check !== 
 
 const tables = [
   "organizations", "customers", "suppliers", "products", "batches", "orders", "order_lines", "invoices", "invoice_lines",
-  "purchase_orders", "purchase_order_lines", "users", "auth_user_scopes", "employees", "documents", "document_links",
+  "purchase_orders", "purchase_order_lines", "users", "auth_user_scopes", "customer_contacts", "employees", "documents", "document_links",
   "sharepoint_links", "approvals", "regulatory_records", "quality_records", "stock_transactions", "warehouse_transactions",
-  "crm_activities", "leads", "lead_details", "support_tickets", "notifications", "account_applications", "training_records",
+  "crm_activities", "leads", "lead_details", "support_tickets", "notifications", "account_applications",
+  "application_status_history", "application_upload_grants", "training_records",
   "integration_events", "audit_logs", "security_events", "counters"
 ];
 const conflictColumns = {

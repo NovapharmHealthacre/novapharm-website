@@ -39,7 +39,7 @@ delete process.env.CONTACT_NOTIFICATION_TO;
 const { handleRequest } = await import("../server.mjs");
 const { one, run } = await import("../src/data/database.mjs");
 const { hashPassword, isKnownCompromisedPassword, provisionAuthUsers, provisionBootstrapAdmin, verifyCredentials } = await import("../src/core/auth-service.mjs");
-const { activateCustomer, createProduct } = await import("../src/core/domain-service.mjs");
+const { activateCustomer, createProduct, setApplicationStatus } = await import("../src/core/domain-service.mjs");
 
 class TestRequest extends Readable {
   constructor({ method = "GET", url = "/", headers = {}, body = "", address = "127.0.0.1" } = {}) {
@@ -169,6 +169,9 @@ const validContact = {
   message: "This is a controlled integration test for the corporate enquiry workflow.",
   privacyAcknowledgement: "yes",
   safetyConfirmation: "yes",
+  sourcePage: "/contact/",
+  sourceCta: "distribution-partnership",
+  attributionPayload: JSON.stringify({ campaign: { utm_source: "integration", utm_medium: "test", utm_campaign: "backend-activation" }, referringHost: "partner.example.test" }),
   website: ""
 };
 
@@ -190,11 +193,30 @@ const contact = await request({
 });
 assert.equal(contact.statusCode, 201);
 assert.ok(contact.payload.lead.id);
-const consentRecord = await one("SELECT country, consent_at, privacy_notice_version, safety_confirmation_at FROM lead_details WHERE lead_id = ?", contact.payload.lead.id);
+assert.match(contact.payload.lead.leadNumber, /^NP-LEAD-\d{4}-\d{6}$/);
+const consentRecord = await one(`SELECT country, consent_at, privacy_notice_version, safety_confirmation_at,
+  source_page, source_cta, utm_source, utm_medium, utm_campaign, network_fingerprint
+  FROM lead_details WHERE lead_id = ?`, contact.payload.lead.id);
 assert.equal(consentRecord.country, "United Kingdom");
 assert.ok(consentRecord.consent_at);
 assert.equal(consentRecord.privacy_notice_version, "2026-07-14-v1.1");
 assert.ok(consentRecord.safety_confirmation_at);
+assert.equal(consentRecord.source_page, "/contact/");
+assert.equal(consentRecord.source_cta, "distribution-partnership");
+assert.equal(consentRecord.utm_source, "integration");
+assert.equal(consentRecord.utm_medium, "test");
+assert.equal(consentRecord.utm_campaign, "backend-activation");
+assert.match(consentRecord.network_fingerprint, /^[a-f0-9]{64}$/);
+
+const restrictedSafetyContact = await request({
+  method: "POST",
+  url: "/api/contact",
+  headers: authHeaders(csrfCookie),
+  body: JSON.stringify({ ...validContact, email: "safety@example.test", message: "I experienced a serious reaction after I took this medicine and need help." }),
+  address: "127.0.0.50"
+});
+assert.equal(restrictedSafetyContact.statusCode, 400);
+assert.equal(restrictedSafetyContact.payload.error.includes("Yellow Card"), true);
 
 const leadCountBeforeDuplicate = (await one("SELECT COUNT(*) AS value FROM leads")).value;
 const duplicateContact = await request({
@@ -205,7 +227,8 @@ const duplicateContact = await request({
   address: "127.0.0.51"
 });
 assert.equal(duplicateContact.statusCode, 201);
-assert.equal(duplicateContact.payload.lead.id, null);
+assert.equal(duplicateContact.payload.lead.id, contact.payload.lead.id);
+assert.equal(duplicateContact.payload.lead.leadNumber, contact.payload.lead.leadNumber);
 assert.equal(duplicateContact.payload.lead.duplicate, true);
 assert.equal((await one("SELECT COUNT(*) AS value FROM leads")).value, leadCountBeforeDuplicate);
 
@@ -228,6 +251,9 @@ const originalFetch = globalThis.fetch;
 const failedEmailIdempotencyKeys = [];
 globalThis.fetch = async (_url, options) => {
   failedEmailIdempotencyKeys.push(options.headers["Idempotency-Key"]);
+  const message = JSON.parse(options.body);
+  if (message.text.startsWith("New ")) assert.equal(message.text.includes(validContact.message), true);
+  assert.equal(message.text.includes("NP-LEAD-"), true);
   return new Response("Provider unavailable", { status: 503 });
 };
 const emailFailureContact = await request({
@@ -279,6 +305,8 @@ const application = await request({
   headers: authHeaders(csrfCookie),
   body: JSON.stringify({
     email: "rp@example.test",
+    submissionKey: "integration-account-submission-000001",
+    expectedDocumentCount: 1,
     company: { legalName: "Example Pharmacy Ltd", companyNumber: "12345678", customerType: "pharmacy" },
     responsiblePeople: [{ name: "Responsible Person", role: "Superintendent Pharmacist", email: "rp@example.test" }],
     addresses: [{ type: "registered", address: "1 Test Road", postcode: "AB1 2CD", country: "GB" }],
@@ -295,6 +323,9 @@ delete process.env.EMAIL_FROM;
 delete process.env.CONTACT_NOTIFICATION_TO;
 assert.equal(application.statusCode, 201);
 assert.match(application.payload.application.applicationNumber, /^APP-\d{4}-\d{6}$/);
+assert.equal(application.payload.application.status, "documents_pending");
+assert.match(application.payload.application.uploadToken, /^[0-9a-f-]{36}\.[A-Za-z0-9_-]+$/i);
+assert.match(application.payload.application.resumeToken, /^[0-9a-f-]{36}\.[A-Za-z0-9_-]+$/i);
 assert.equal(applicationEmailRequests.length, 2);
 assert.equal((await one("SELECT COUNT(*) AS value FROM notifications WHERE entity_id = ? AND status = 'sent'", application.payload.application.id)).value, 2);
 
@@ -317,6 +348,49 @@ const uploadedDocument = await request({
 assert.equal(uploadedDocument.statusCode, 201);
 assert.equal(uploadedDocument.payload.document.lifecycleStatus, "draft");
 
+const duplicateDocument = await request({
+  method: "POST",
+  url: `/api/account-applications/${application.payload.application.id}/documents?${uploadParameters}`,
+  headers: {
+    cookie: `np_csrf=${csrfCookie}`,
+    "x-application-upload-token": application.payload.application.uploadToken,
+    "x-csrf-token": csrfCookie,
+    "content-type": "application/pdf"
+  },
+  body: Buffer.from("%PDF-1.4\nNovaPharm integration evidence\n"),
+  address: "127.0.0.101"
+});
+assert.equal(duplicateDocument.statusCode, 200);
+assert.equal(duplicateDocument.payload.document.duplicate, true);
+assert.equal((await one(`SELECT COUNT(*) AS value FROM document_links WHERE entity_type = 'account_application' AND entity_id = ?`, application.payload.application.id)).value, 1);
+
+const completedUploads = await request({
+  method: "POST",
+  url: `/api/account-applications/${application.payload.application.id}/documents/complete`,
+  headers: {
+    cookie: `np_csrf=${csrfCookie}`,
+    "x-application-upload-token": application.payload.application.uploadToken,
+    "x-csrf-token": csrfCookie
+  },
+  address: "127.0.0.102"
+});
+assert.equal(completedUploads.statusCode, 200);
+assert.equal(completedUploads.payload.application.status, "submitted");
+
+const reusedCompletedToken = await request({
+  method: "POST",
+  url: `/api/account-applications/${application.payload.application.id}/documents?${uploadParameters}`,
+  headers: {
+    cookie: `np_csrf=${csrfCookie}`,
+    "x-application-upload-token": application.payload.application.uploadToken,
+    "x-csrf-token": csrfCookie,
+    "content-type": "application/pdf"
+  },
+  body: Buffer.from("%PDF-1.4\nReused token\n"),
+  address: "127.0.0.103"
+});
+assert.equal(reusedCompletedToken.statusCode, 403);
+
 const queryTokenRejected = await request({
   method: "POST",
   url: `/api/account-applications/${application.payload.application.id}/documents?${uploadParameters}&uploadToken=${encodeURIComponent(application.payload.application.uploadToken)}`,
@@ -326,7 +400,14 @@ const queryTokenRejected = await request({
 });
 assert.equal(queryTokenRejected.statusCode, 403);
 
+await assert.rejects(() => activateCustomer(application.payload.application.id, adminUsername), /Only an approved application/);
+for (const status of ["under_initial_review", "compliance_review", "credit_review", "approved"]) {
+  await setApplicationStatus(application.payload.application.id, status, adminUsername, `Integration transition to ${status}`);
+}
 const customer = await activateCustomer(application.payload.application.id, adminUsername);
+assert.equal((await one("SELECT status FROM account_applications WHERE id = ?", application.payload.application.id)).status, "activated");
+assert.equal((await one("SELECT COUNT(*) AS value FROM application_status_history WHERE application_id = ?", application.payload.application.id)).value, 7);
+assert.equal((await one("SELECT COUNT(*) AS value FROM customer_contacts WHERE customer_id = ?", customer.id)).value, 1);
 const customerPassword = await provisionTestUser({ username: "CustomerUser", role: "client", customerId: customer.id });
 const employeePassword = await provisionTestUser({ username: "EmployeeUser", role: "employee" });
 const boardPassword = await provisionTestUser({ username: "BoardUser", role: "board" });

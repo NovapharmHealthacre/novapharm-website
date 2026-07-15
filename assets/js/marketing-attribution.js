@@ -57,7 +57,7 @@ function decorateForms(attribution) {
   for (const form of document.querySelectorAll("form[data-contact-form], form[data-account-application]")) {
     const values = {
       sourcePage: location.pathname,
-      sourceCta: form.dataset.sourceCta || document.activeElement?.closest?.("[data-cta-id]")?.dataset.ctaId || "",
+      sourceCta: form.dataset.sourceCta || attribution.sourceCta || "",
       referralSource: attribution.sourceClass || "",
       attributionPayload: JSON.stringify(attribution)
     };
@@ -77,6 +77,7 @@ function decorateForms(attribution) {
 function emitCtaEvent(event) {
   const link = event.target.closest?.("[data-cta-id]");
   if (!link || !analyticsAllowed()) return;
+  saveAttribution({ ...(readAttribution() || { firstLandingPath: location.pathname, capturedAt: new Date().toISOString() }), sourceCta: link.dataset.ctaId });
   window.dispatchEvent(new CustomEvent("novapharm:marketing-event", {
     detail: {
       event: "cta_click",

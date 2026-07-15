@@ -8,6 +8,7 @@ import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { constants as zlibConstants, createBrotliCompress, createGzip } from "node:zlib";
 import {
   activateCustomer,
+  applicationDetail,
   applicationDocumentContext,
   applicationNotificationContext,
   createLead,
@@ -18,6 +19,7 @@ import {
   listApplications,
   listAudit,
   listCustomers,
+  leadDetail,
   leadNotificationContext,
   listLeads,
   listOrders,
@@ -25,10 +27,20 @@ import {
   listPurchaseOrders,
   listSuppliers,
   operationalDashboard,
+  markApplicationDocumentsSubmitted,
+  setApplicationStatus,
   submitCustomerApplication,
   syncStatus
 } from "./src/core/domain-service.mjs";
 import { storeDocument } from "./src/core/document-service.mjs";
+import {
+  applicationUploadState,
+  completeApplicationUploads,
+  createApplicationUploadAuthorisations,
+  refreshApplicationUploadAuthorisations,
+  releaseApplicationUploadReservation,
+  reserveApplicationUpload
+} from "./src/core/application-upload-service.mjs";
 import { previewAccessAllowed } from "./src/core/preview-auth.mjs";
 import {
   changePassword,
@@ -42,13 +54,14 @@ import {
   provisionAuthUsers,
   recordSecurityEvent,
   revokePersistentSession,
+  revokeUserSessions,
   verifyCredentials
 } from "./src/core/auth-service.mjs";
 import { databaseProvider, databaseReady } from "./src/data/database.mjs";
 import { processSharePointEvents, sharePointFolderPlan } from "./src/integrations/sharepoint/sync-engine.mjs";
 import { processPolarSpeedEvents } from "./src/integrations/polar-speed/sync-engine.mjs";
 import { processDocumentScanEvents } from "./src/integrations/azure-storage/scan-engine.mjs";
-import { emailIntegrationStatus, emailQueueStatus, processEmailRetries, sendApplicationNotifications, sendLeadNotifications } from "./src/integrations/email/client.mjs";
+import { emailIntegrationStatus, emailQueueStatus, processEmailRetries, replayEmailNotification, sendApplicationNotifications, sendLeadNotifications } from "./src/integrations/email/client.mjs";
 import { documentStorageStatus } from "./src/storage/document-store.mjs";
 import { appServicePrincipalFromHeaders, provisionFederatedIdentity } from "./src/core/entra-identity.mjs";
 import { isResolvedSecret, isUnresolvedSecretReference } from "./src/core/secret-value.mjs";
@@ -270,24 +283,14 @@ function validSessionSignature(id, signature) {
   return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 
-function applicationUploadToken(applicationId) {
-  const expiresAt = Date.now() + 30 * 60 * 1000;
-  const signature = createHmac("sha256", sessionSecret).update(`application-upload:${applicationId}:${expiresAt}`).digest("hex");
-  return `${expiresAt}.${signature}`;
-}
-
-function validApplicationUploadToken(applicationId, token) {
-  const [expiresAtValue, signature] = String(token || "").split(".");
-  const expiresAt = Number(expiresAtValue);
-  if (!Number.isSafeInteger(expiresAt) || expiresAt <= Date.now() || expiresAt > Date.now() + 31 * 60 * 1000) return false;
-  const expected = Buffer.from(createHmac("sha256", sessionSecret).update(`application-upload:${applicationId}:${expiresAt}`).digest("hex"), "hex");
-  const actual = Buffer.from(String(signature || ""), "hex");
-  return actual.length === expected.length && timingSafeEqual(actual, expected);
-}
-
 async function createSession(user, accessType = "customer") {
   const { id } = await createPersistentSession(user, accessType, sessionTtlMs);
   return `${id}.${signSession(id)}`;
+}
+
+function referrerDomain(request) {
+  try { return request.headers.referer ? new URL(request.headers.referer).hostname : ""; }
+  catch { return ""; }
 }
 
 function getSession(request) {
@@ -445,6 +448,33 @@ async function adminSummary() {
   };
 }
 
+async function healthSnapshot() {
+  const databaseIsReady = await databaseReady();
+  const identity = process.env.ENTRA_AUTH_ENABLED === "true"
+    ? "entra_configured"
+    : await hasPortalAdministrator() ? "local_validation_identity_configured" : "unavailable";
+  const email = emailIntegrationStatus();
+  const storage = documentStorageStatus();
+  const ready = databaseIsReady && identity !== "unavailable" && email.startsWith("configured:") && Boolean(storage);
+  return {
+    status: ready ? "ready" : databaseIsReady ? "degraded" : "unavailable",
+    service: "novapharm-web",
+    version: applicationVersion,
+    environment: isPreview ? "validation" : isProduction ? "production" : "development",
+    timestamp: new Date().toISOString(),
+    application: "live",
+    database: databaseIsReady ? "ready" : "unavailable",
+    migration: databaseIsReady ? "current" : "unavailable",
+    email,
+    documentStorage: storage,
+    identity,
+    entra: process.env.ENTRA_AUTH_ENABLED === "true" ? "configured" : "owner_configuration_required",
+    sharePoint: hasSharePointCredentials() ? "configured" : "owner_configuration_required",
+    observability: observabilityStatus,
+    ready
+  };
+}
+
 async function authenticated(request, response, roles = []) {
   const session = await getSession(request);
   if (!session) {
@@ -478,7 +508,7 @@ export async function handleRequest(request, response) {
     const url = new URL(request.url || "/", `http://${request.headers.host || "localhost"}`);
     const pathname = url.pathname;
 
-    if (isPreview && !["/api/health", "/robots.txt"].includes(pathname) && !previewAccessAllowed(request.headers.authorization, previewUsername, previewPassword)) {
+    if (isPreview && !["/api/health", "/api/health/live", "/api/health/ready", "/robots.txt"].includes(pathname) && !previewAccessAllowed(request.headers.authorization, previewUsername, previewPassword)) {
       return send(response, 401, "Preview authentication required.", {
         "Content-Type": "text/plain; charset=utf-8",
         "Cache-Control": "no-store",
@@ -567,7 +597,7 @@ export async function handleRequest(request, response) {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
       if (!await rateLimit(request, "contact", 12, 60 * 60 * 1000)) return json(response, 429, { error: "Too many submissions. Try again later." });
       const body = await readBody(request);
-      const lead = await createLead(body);
+      const lead = await createLead({ ...body, referrerDomain: referrerDomain(request) }, "public_website", { networkFingerprint: networkFingerprint(request) });
       if (lead.id) {
         try {
           await sendLeadNotifications(await leadNotificationContext(lead.id));
@@ -583,12 +613,13 @@ export async function handleRequest(request, response) {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
       if (!await rateLimit(request, "account-application", 5, 60 * 60 * 1000)) return json(response, 429, { error: "Too many applications. Try again later." });
       const application = await submitCustomerApplication(await readBody(request));
+      const uploadAuthorisations = await createApplicationUploadAuthorisations(application.id, application.expectedDocumentCount);
       try {
         await sendApplicationNotifications(await applicationNotificationContext(application.id));
       } catch (error) {
         console.error("Account application notification delivery failed.", { status: error.providerStatus || "unavailable" });
       }
-      json(response, 201, { ok: true, application: { ...application, uploadToken: applicationUploadToken(application.id) } });
+      json(response, application.duplicate ? 200 : 201, { ok: true, application: { ...application, ...uploadAuthorisations } });
       return;
     }
 
@@ -596,20 +627,57 @@ export async function handleRequest(request, response) {
     if (applicationDocumentMatch && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
       if (!await rateLimit(request, "application-document", 30, 60 * 60 * 1000)) return json(response, 429, { error: "Too many document uploads." });
-      if (!validApplicationUploadToken(applicationDocumentMatch[1], request.headers["x-application-upload-token"])) return json(response, 403, { error: "Invalid application upload token." });
       const context = await applicationDocumentContext(applicationDocumentMatch[1]);
-      const document = await storeDocument({
-        bytes: await readRawBody(request),
-        fileName: url.searchParams.get("fileName"),
-        contentType: String(request.headers["content-type"] || "application/octet-stream").split(";")[0],
-        documentClass: url.searchParams.get("documentClass") || "customer_onboarding",
-        entityType: "account_application",
-        entityId: context.id,
-        businessNumber: context.applicationNumber,
-        displayName: context.companyName,
-        actor: "public_applicant"
-      });
-      json(response, 201, { document });
+      if (!["documents_pending", "submitted", "information_requested"].includes(context.status)) {
+        return json(response, 409, { error: "This application is not accepting supporting documents." });
+      }
+      const documentClass = url.searchParams.get("documentClass") || "customer_onboarding";
+      if (!["licence", "company_due_diligence", "agreement"].includes(documentClass)) {
+        return json(response, 400, { error: "Unsupported application document class." });
+      }
+      const reservation = await reserveApplicationUpload(context.id, request.headers["x-application-upload-token"]);
+      try {
+        const document = await storeDocument({
+          bytes: await readRawBody(request),
+          fileName: url.searchParams.get("fileName"),
+          contentType: String(request.headers["content-type"] || "application/octet-stream").split(";")[0],
+          documentClass,
+          entityType: "account_application",
+          entityId: context.id,
+          businessNumber: context.applicationNumber,
+          displayName: context.companyName,
+          actor: "public_applicant"
+        });
+        if (document.duplicate) await releaseApplicationUploadReservation(reservation.grantId);
+        json(response, document.duplicate ? 200 : 201, { document });
+      } catch (error) {
+        await releaseApplicationUploadReservation(reservation.grantId);
+        throw error;
+      }
+      return;
+    }
+
+    const uploadRefreshMatch = pathname.match(/^\/api\/account-applications\/([^/]+)\/upload-authorisation$/);
+    if (uploadRefreshMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      if (!await rateLimit(request, "application-upload-refresh", 6, 60 * 60 * 1000)) return json(response, 429, { error: "Too many upload recovery requests." });
+      const body = await readBody(request);
+      const authorisations = await refreshApplicationUploadAuthorisations(uploadRefreshMatch[1], body.resumeToken);
+      json(response, 200, { ok: true, authorisations });
+      return;
+    }
+
+    const uploadCompleteMatch = pathname.match(/^\/api\/account-applications\/([^/]+)\/documents\/complete$/);
+    if (uploadCompleteMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      const completion = await completeApplicationUploads(uploadCompleteMatch[1], request.headers["x-application-upload-token"]);
+      const application = await markApplicationDocumentsSubmitted(uploadCompleteMatch[1]);
+      try {
+        await sendApplicationNotifications(await applicationNotificationContext(uploadCompleteMatch[1]));
+      } catch (error) {
+        console.error("Completed application notification delivery failed.", { status: error.providerStatus || "unavailable" });
+      }
+      json(response, 200, { ok: true, application, completion, uploadState: await applicationUploadState(uploadCompleteMatch[1]) });
       return;
     }
 
@@ -773,20 +841,23 @@ export async function handleRequest(request, response) {
       return;
     }
 
+    if (pathname === "/api/health/live" && request.method === "GET") {
+      json(response, 200, { status: "live", service: "novapharm-web", version: applicationVersion, timestamp: new Date().toISOString() });
+      return;
+    }
+
+    if (pathname === "/api/health/ready" && request.method === "GET") {
+      const health = await healthSnapshot();
+      json(response, health.ready ? 200 : 503, health);
+      return;
+    }
+
     if (pathname === "/api/health" && request.method === "GET") {
-      const ready = await databaseReady();
-      json(response, ready ? 200 : 503, {
-        status: ready ? "ok" : "degraded",
-        service: "novapharm-web",
-        version: applicationVersion,
-        environment: isProduction ? "production" : "development",
-        timestamp: new Date().toISOString(),
-        database: ready ? "ready" : "unavailable",
-        documentStorage: documentStorageStatus(),
-        entra: process.env.ENTRA_AUTH_ENABLED === "true" ? "configured" : "owner_configuration_required",
-        observability: observabilityStatus,
-        email: emailIntegrationStatus(),
-        sharePoint: hasSharePointCredentials() ? "configured" : "owner_configuration_required",
+      const health = await healthSnapshot();
+      json(response, health.database === "ready" ? 200 : 503, {
+        ...health,
+        status: health.database === "ready" ? "ok" : "degraded",
+        readinessStatus: health.status,
         polarSpeed: process.env.POLAR_SPEED_API_BASE_URL ? "configured" : "api_contract_required"
       });
       return;
@@ -796,6 +867,57 @@ export async function handleRequest(request, response) {
       const session = await authenticated(request, response, ["admin"]);
       if (!session) return;
       json(response, 200, await adminSummary());
+      return;
+    }
+
+    const adminLeadMatch = pathname.match(/^\/api\/admin\/leads\/([^/]+)$/);
+    if (adminLeadMatch && request.method === "GET") {
+      if (!await authenticated(request, response, ["admin"])) return;
+      json(response, 200, { lead: await leadDetail(adminLeadMatch[1]) });
+      return;
+    }
+
+    const adminApplicationMatch = pathname.match(/^\/api\/admin\/applications\/([^/]+)$/);
+    if (adminApplicationMatch && request.method === "GET") {
+      if (!await authenticated(request, response, ["admin"])) return;
+      json(response, 200, { application: await applicationDetail(adminApplicationMatch[1]) });
+      return;
+    }
+
+    const adminApplicationStatusMatch = pathname.match(/^\/api\/admin\/applications\/([^/]+)\/status$/);
+    if (adminApplicationStatusMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      const session = await authenticated(request, response, ["admin"]);
+      if (!session) return;
+      const body = await readBody(request);
+      json(response, 200, { ok: true, application: await setApplicationStatus(adminApplicationStatusMatch[1], body.status, session.username, body.reason) });
+      return;
+    }
+
+    const adminActivationMatch = pathname.match(/^\/api\/admin\/applications\/([^/]+)\/activate$/);
+    if (adminActivationMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      const session = await authenticated(request, response, ["admin"]);
+      if (!session) return;
+      json(response, 200, { ok: true, customer: await activateCustomer(adminActivationMatch[1], session.username) });
+      return;
+    }
+
+    const adminEmailReplayMatch = pathname.match(/^\/api\/admin\/notifications\/([^/]+)\/replay$/);
+    if (adminEmailReplayMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      const session = await authenticated(request, response, ["admin"]);
+      if (!session) return;
+      json(response, 200, { ok: true, delivery: await replayEmailNotification(adminEmailReplayMatch[1], session.username) });
+      return;
+    }
+
+    const adminSessionRevokeMatch = pathname.match(/^\/api\/admin\/users\/([^/]+)\/sessions\/revoke$/);
+    if (adminSessionRevokeMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      const session = await authenticated(request, response, ["admin"]);
+      if (!session) return;
+      json(response, 200, { ok: true, result: await revokeUserSessions(decodeURIComponent(adminSessionRevokeMatch[1]), session.username) });
       return;
     }
 

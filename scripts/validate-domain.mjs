@@ -16,7 +16,9 @@ const {
   listProducts,
   listPurchaseOrders,
   listSuppliers,
+  markApplicationDocumentsSubmitted,
   operationalDashboard,
+  setApplicationStatus,
   submitCustomerApplication,
   syncStatus
 } = await import("../src/core/domain-service.mjs");
@@ -42,6 +44,8 @@ const application = await submitCustomerApplication({
   bank: { confirmationProvided: true },
   applicantDeclaration: "yes",
   privacyAcknowledgement: "yes",
+  expectedDocumentCount: 1,
+  submissionKey: "domain-validation-application-000001",
   email: "validation.customer@example.com"
 });
 
@@ -57,6 +61,10 @@ const document = await storeDocument({
   actor: "validation"
 });
 
+await markApplicationDocumentsSubmitted(application.id, "validation_applicant");
+for (const status of ["under_initial_review", "compliance_review", "credit_review", "approved"]) {
+  await setApplicationStatus(application.id, status, "validation_admin", `Validation transition: ${status}`);
+}
 const customer = await activateCustomer(application.id, "validation_admin");
 const supplier = await createSupplier({
   legalName: "Validation Supplier Ltd",
