@@ -57,9 +57,16 @@ No database password or Storage account key is configured.
 
 ## Email
 
-- `RESEND_API_KEY`: Key Vault `resend-api-key`;
-- `EMAIL_FROM`: verified Resend sender;
-- `CONTACT_NOTIFICATION_TO`: controlled NovaPharm mailbox.
+- `EMAIL_PROVIDER`: `auto`, `resend` or `microsoft-graph`; production selection is recorded in `architecture/email-provider-decision.md`;
+- `RESEND_API_KEY`: Key Vault `resend-api-key` when Resend is selected;
+- `EMAIL_FROM`: verified NovaPharm sender identity;
+- `CONTACT_NOTIFICATION_TO`: controlled NovaPharm mailbox;
+- `MICROSOFT_EMAIL_SENDER`: approved mailbox when Microsoft Graph is selected.
+
+`APPLICATION_UPLOAD_TOKEN_TTL_MS` defaults to 30 minutes and
+`APPLICATION_RESUME_TOKEN_TTL_MS` defaults to 24 hours. Upload and resume token
+secrets are never environment variables; only their SHA-256 hashes are stored in
+SQL.
 
 ## Preview only
 

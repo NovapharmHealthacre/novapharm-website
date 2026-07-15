@@ -116,6 +116,17 @@ param emailFrom string = ''
 @description('Internal destination for contact notifications. This is configuration, not an API credential.')
 param contactNotificationTo string = ''
 
+@allowed([
+  'auto'
+  'resend'
+  'microsoft-graph'
+])
+@description('Transactional email adapter. Resend provides provider-side idempotency; Microsoft Graph requires an approved narrow sender permission.')
+param emailProvider string = 'auto'
+
+@description('Approved Microsoft 365 sender mailbox when the Microsoft Graph email adapter is selected.')
+param microsoftEmailSender string = ''
+
 @description('SharePoint tenant hostname, for example contoso.sharepoint.com. Leave blank until the approved site is known.')
 param sharePointHostname string = ''
 
@@ -765,6 +776,10 @@ var productionAppSettings = union({
   PREVIEW_LABEL: environmentCode != 'prod' ? 'Non-production Azure staging' : ''
   EMAIL_FROM: emailFrom
   CONTACT_NOTIFICATION_TO: contactNotificationTo
+  EMAIL_PROVIDER: emailProvider
+  MICROSOFT_EMAIL_SENDER: microsoftEmailSender
+  APPLICATION_UPLOAD_TOKEN_TTL_MS: '1800000'
+  APPLICATION_RESUME_TOKEN_TTL_MS: '86400000'
   SESSION_SECRET: '@Microsoft.KeyVault(VaultName=${keyVault.name};SecretName=session-secret)'
   SESSION_TTL_MS: '28800000'
   SESSION_IDLE_TIMEOUT_MS: '1800000'
@@ -853,6 +868,8 @@ var authSettingsProperties = {
   globalValidation: {
     excludedPaths: [
       '/api/health'
+      '/api/health/live'
+      '/api/health/ready'
       '/api/contact/*'
       '/api/account-applications/*'
     ]

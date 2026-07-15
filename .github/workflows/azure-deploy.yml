@@ -61,6 +61,8 @@ jobs:
       NOVAPHARM_OPERATIONS_EMAIL: ${{ vars.NOVAPHARM_OPERATIONS_EMAIL }}
       NOVAPHARM_EMAIL_FROM: ${{ vars.NOVAPHARM_EMAIL_FROM }}
       NOVAPHARM_CONTACT_NOTIFICATION_TO: ${{ vars.NOVAPHARM_CONTACT_NOTIFICATION_TO }}
+      NOVAPHARM_EMAIL_PROVIDER: ${{ vars.NOVAPHARM_EMAIL_PROVIDER }}
+      NOVAPHARM_MICROSOFT_EMAIL_SENDER: ${{ vars.NOVAPHARM_MICROSOFT_EMAIL_SENDER }}
       PARAMETER_FILE: ${{ inputs.target == 'staging' && 'infra/environments/staging.bicepparam' || 'infra/environments/production.bicepparam' }}
       ENVIRONMENT_CODE: ${{ inputs.target == 'staging' && 'stg' || 'prod' }}
     steps:

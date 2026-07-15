@@ -1,7 +1,7 @@
 # Security Test Report
 
 Status: repository and local runtime suites passed; cloud and independent penetration testing pending
-Test date: 14 July 2026
+Test date: 15 July 2026
 
 ## Executed locally
 
@@ -22,10 +22,13 @@ Test date: 14 July 2026
 | Unresolved Key Vault references | Passed fail-closed test | secret-resolution test |
 | Backup and isolated restore | Passed for SQLite | backup-restore test |
 | Cross-browser/axe acceptance | Passed | 616 page states and 616 axe scans in Chromium/WebKit |
+| Browser contact/application/admin workflow | Passed | Chromium and WebKit synthetic workflow test |
+| Current-tree and reachable-history secret scan | Passed | Gitleaks directory and Git-history scans with redaction |
+| Production dependency audit | Passed | `npm audit --omit=dev --audit-level=high`, zero vulnerabilities |
 
-`npm run check` completed successfully on 14 July 2026: 33 public pages, six articles, 40 locked shells, 18 protected Executive modules, 1,906 local links, 68 JavaScript/MJS/TypeScript syntax checks, nine stylesheets and 318 repository files in the current-tree scanner. The intentionally simulated email-provider HTTP 503 is expected evidence of the bounded retry path.
+`npm run check` completed successfully on 15 July 2026 after the backend activation implementation. It covered 33 public pages, six articles, five leadership entities, protected Executive modules, contact and account workflows, role boundaries, session controls, Azure SQL migration structure, document quarantine, cookie consent and SQLite backup/restore. The intentionally simulated email-provider HTTP 503 is expected evidence of the bounded retry path.
 
-`npm audit --omit=dev --audit-level=high` completed with exit code 0 and reported zero vulnerabilities after the temporary Lighthouse audit dependency was removed. Actionlint and the free-validation compiled-Bicep contract also passed.
+`npm audit --omit=dev --audit-level=high` completed with exit code 0 and reported zero vulnerabilities. Gitleaks scanned the current directory and 179 reachable commits with redaction and reported no leaks. The repository scanner and Azure SQL migration validator also passed.
 
 History sanitisation removed the retired value from all owner-writable active branches and tags, and Gitleaks reported zero findings. GitHub-managed read-only pull-request refs 1-4 still retain nine historical matches, so complete remote-object purge remains blocked on GitHub Support. Rotation remains mandatory because rewriting cannot erase external clones, forks or caches.
 

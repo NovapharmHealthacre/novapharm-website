@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "executedOn": "2026-07-15",
+  "environment": "local-node-runtime-synthetic-data",
+  "workingTreeBaseCommit": "e6ece8954f57aa9d6d05216e821bde9ecff3d377",
+  "engines": [
+    "Chromium 149",
+    "WebKit 26.5"
+  ],
+  "viewports": [
+    "1440x900",
+    "1920x1080",
+    "1024x1366",
+    "768x1024",
+    "390x844",
+    "430x932",
+    "375x667"
+  ],
+  "renderedPageStates": 616,
+  "axeScans": 616,
+  "screenshots": 764,
+  "finalIssues": 0,
+  "browserWorkflow": {
+    "contactSubmission": "passed-both-engines",
+    "accountApplication": "passed-both-engines",
+    "documentUpload": "passed-both-engines",
+    "administratorReview": "passed-both-engines"
+  },
+  "rawRenderedEvidenceSha256": "3d41e4d6662b6bba0e4d4bc099e4c4e7ee9b2974c04dfa15bf24d6bd475e7e87",
+  "azureHostedAcceptance": "blocked-owner-interactive-subscription-gate",
+  "notes": "Raw screenshots and synthetic credentials remain ignored temporary evidence. Pull-request CI reruns this matrix and binds the artifact to the final Git commit."
+}
