@@ -1,11 +1,22 @@
 {
   "generatedAt": "2026-07-15",
+  "version": "2.0",
+  "policy": {
+    "principalHeroMaximumUses": 1,
+    "generalMaximumUses": 2,
+    "productPhotographyScope": "product-content-only",
+    "sameImageHeroAndSecondaryAllowed": false,
+    "perceptualDuplicateThreshold": 8,
+    "representativeImageryDisclosure": "Photography and generated editorial imagery are representative. They do not identify a NovaPharm-owned facility, current partner, authorised product or active regulated supply operation unless explicitly stated."
+  },
   "modules": [
     {
       "id": "home",
       "path": "index.html",
-      "label": "Corporate network",
-      "media": "/assets/media/home/supply-network-hero",
+      "route": "/",
+      "purpose": "Corporate positioning and governed supply-network overview",
+      "heroAsset": "home-supply-network",
+      "secondaryAsset": null,
       "signals": [
         "Regulatory sequence",
         "Qualified sourcing",
@@ -16,8 +27,10 @@
     {
       "id": "about",
       "path": "about/index.html",
-      "label": "Operating model",
-      "media": "/assets/media/home/supply-network-hero",
+      "route": "/about/",
+      "purpose": "Operating model and company positioning",
+      "heroAsset": "about-operating-model",
+      "secondaryAsset": "partners-due-diligence",
       "signals": [
         "Evidence",
         "Optionality",
@@ -28,8 +41,10 @@
     {
       "id": "company",
       "path": "about/company/index.html",
-      "label": "Corporate structure",
-      "media": "/assets/media/products/licensed-generics-packaging",
+      "route": "/about/company/",
+      "purpose": "Legal identity, structure and operating status",
+      "heroAsset": "company-corporate-structure",
+      "secondaryAsset": null,
       "signals": [
         "Legal identity",
         "Business model",
@@ -40,8 +55,10 @@
     {
       "id": "governance",
       "path": "about/governance/index.html",
-      "label": "Governance control",
-      "media": "/assets/media/products/cardiovascular-quality-control",
+      "route": "/about/governance/",
+      "purpose": "Governance, claims and accountability",
+      "heroAsset": "governance-quality-oversight",
+      "secondaryAsset": null,
       "signals": [
         "Board",
         "Quality",
@@ -52,12 +69,10 @@
     {
       "id": "leadership",
       "path": "leadership/index.html",
-      "label": "Leadership accountability",
-      "media": [
-        "/assets/vishalchakravarty.jpeg",
-        "/assets/prabhakarvitthallahare.jpeg",
-        "/assets/girishshantilalachliya.jpeg"
-      ],
+      "route": "/leadership/",
+      "purpose": "Leadership accountability",
+      "heroAsset": "approved-portraits",
+      "secondaryAsset": null,
       "signals": [
         "Strategy",
         "Operations",
@@ -68,8 +83,10 @@
     {
       "id": "services",
       "path": "services/index.html",
-      "label": "Connected execution",
-      "media": "/assets/media/products/respiratory-manufacturing",
+      "route": "/services/",
+      "purpose": "Connected pharmaceutical service delivery",
+      "heroAsset": "services-connected-execution",
+      "secondaryAsset": "services-launch-readiness",
       "signals": [
         "Assess",
         "Qualify",
@@ -80,8 +97,10 @@
     {
       "id": "regulatory",
       "path": "regulatory-services/index.html",
-      "label": "Regulatory control",
-      "media": "/assets/media/products/cardiovascular-quality-control",
+      "route": "/regulatory-services/",
+      "purpose": "Regulatory readiness and release controls",
+      "heroAsset": "regulatory-dossier-control",
+      "secondaryAsset": "regulatory-batch-integrity",
       "signals": [
         "Authorisation",
         "QMS",
@@ -92,8 +111,10 @@
     {
       "id": "products",
       "path": "product-portfolio/index.html",
-      "label": "Portfolio architecture",
-      "media": "/assets/media/products/oncology-vial-handling",
+      "route": "/product-portfolio/",
+      "purpose": "Product-category and opportunity architecture",
+      "heroAsset": "product-oncology-vial",
+      "secondaryAsset": "product-licensed-generics",
       "signals": [
         "Oncology",
         "Specialty",
@@ -104,8 +125,10 @@
     {
       "id": "partners",
       "path": "partner-with-us/index.html",
-      "label": "Partner qualification",
-      "media": "/assets/media/products/specialty-pharmacy-handling",
+      "route": "/partner-with-us/",
+      "purpose": "Partner qualification and collaboration routes",
+      "heroAsset": "partners-qualification",
+      "secondaryAsset": "partners-due-diligence",
       "signals": [
         "Capability",
         "Licence",
@@ -116,20 +139,24 @@
     {
       "id": "technology",
       "path": "technology/index.html",
-      "label": "Digital control plane",
-      "media": "/assets/media/products/metabolic-laboratory-analysis",
+      "route": "/technology/",
+      "purpose": "Controlled data, traceability and workflow architecture",
+      "heroAsset": "technology-traceability",
+      "secondaryAsset": "technology-control-architecture",
       "signals": [
         "Identity",
         "Traceability",
         "Workflow",
-        "Forecasting"
+        "Auditability"
       ]
     },
     {
       "id": "insights",
       "path": "news-insights/index.html",
-      "label": "Evidence-led insight",
-      "media": "/assets/media/products/oncology-vial-handling",
+      "route": "/news-insights/",
+      "purpose": "Evidence-led pharmaceutical editorial authority",
+      "heroAsset": "insights-evidence-editorial",
+      "secondaryAsset": null,
       "signals": [
         "Primary sources",
         "Expert review",
@@ -140,8 +167,10 @@
     {
       "id": "contact",
       "path": "contact/index.html",
-      "label": "Qualified enquiry",
-      "media": "/assets/media/products/hospital-supply-logistics",
+      "route": "/contact/",
+      "purpose": "Qualified B2B enquiry",
+      "heroAsset": "contact-qualified-enquiry",
+      "secondaryAsset": null,
       "signals": [
         "Context",
         "Capability",
@@ -152,8 +181,10 @@
     {
       "id": "investors",
       "path": "investor-information/index.html",
-      "label": "Investment readiness",
-      "media": "/assets/media/home/supply-network-hero",
+      "route": "/investor-information/",
+      "purpose": "Strategy, governance and investment readiness",
+      "heroAsset": "investors-capital-readiness",
+      "secondaryAsset": null,
       "signals": [
         "Strategy",
         "Governance",
@@ -164,8 +195,10 @@
     {
       "id": "careers",
       "path": "careers/index.html",
-      "label": "Specialist capability",
-      "media": "/assets/media/products/oral-liquid-formulation",
+      "route": "/careers/",
+      "purpose": "Specialist capability and future team development",
+      "heroAsset": "careers-specialist-team",
+      "secondaryAsset": null,
       "signals": [
         "Scientific",
         "Regulatory",
@@ -176,8 +209,10 @@
     {
       "id": "account",
       "path": "account-application/index.html",
-      "label": "Controlled onboarding",
-      "media": "/assets/media/products/hospital-supply-logistics",
+      "route": "/account-application/",
+      "purpose": "Controlled business-account onboarding",
+      "heroAsset": "account-controlled-onboarding",
+      "secondaryAsset": null,
       "signals": [
         "Company",
         "Responsible person",
@@ -188,8 +223,10 @@
     {
       "id": "legal",
       "path": "legal/index.html",
-      "label": "Policy architecture",
-      "media": "/assets/media/products/licensed-generics-packaging",
+      "route": "/legal/",
+      "purpose": "Legal, privacy and policy architecture",
+      "heroAsset": "legal-policy-governance",
+      "secondaryAsset": null,
       "signals": [
         "Privacy",
         "Terms",
@@ -197,5 +234,83 @@
         "Corrections"
       ]
     }
-  ]
+  ],
+  "homepageStories": {
+    "sourcing": [
+      {
+        "asset": "sourcing-direct-gmp",
+        "number": "01",
+        "status": "Partner development",
+        "title": "Direct GMP partnerships",
+        "text": "Direct relationships with qualified pharmaceutical manufacturers, supported by technical assessment, vendor qualification and quality agreements."
+      },
+      {
+        "asset": "sourcing-plpi-assessment",
+        "number": "02",
+        "status": "Regulatory preparation",
+        "title": "Product-specific PLPI pathways",
+        "text": "Assessment of appropriate EEA-authorised medicines for UK parallel-import pathways, subject to product-specific applications and MHRA approval."
+      },
+      {
+        "asset": "sourcing-european-network",
+        "number": "03",
+        "status": "Network development",
+        "title": "European buying network",
+        "text": "A proposed network of qualified manufacturers, authorised distributors and licensed wholesalers across selected European markets."
+      }
+    ],
+    "partnerPathways": [
+      {
+        "asset": "services-connected-execution",
+        "number": "01",
+        "title": "Manufacturing and development",
+        "text": "GMP manufacturers, CMO and CDMO organisations, product owners and dossier holders."
+      },
+      {
+        "asset": "partners-qualification",
+        "number": "02",
+        "title": "Authorised sourcing",
+        "text": "European and UK licensed wholesalers assessed through defined qualification controls."
+      },
+      {
+        "asset": "account-controlled-onboarding",
+        "number": "03",
+        "title": "Market access",
+        "text": "Pharmacy groups, hospital procurement and qualified account pathways, subject to applicable authorisation."
+      },
+      {
+        "asset": "technology-traceability",
+        "number": "04",
+        "title": "Enabling infrastructure",
+        "text": "Logistics, quality, regulatory, data and technology specialists."
+      }
+    ]
+  },
+  "insights": [
+    {
+      "slug": "batch-to-buyer-pharmaceutical-traceability",
+      "asset": "insight-batch-to-buyer"
+    },
+    {
+      "slug": "compliance-first-pharmaceutical-distribution-uk",
+      "asset": "insight-compliance-first"
+    },
+    {
+      "slug": "gdp-qms-pharmaceutical-distribution-foundations",
+      "asset": "insight-gdp-qms"
+    },
+    {
+      "slug": "oncology-supply-chain-demand-forecasting",
+      "asset": "insight-oncology-forecasting"
+    },
+    {
+      "slug": "plpi-pharmaceutical-supply-resilience",
+      "asset": "insight-plpi-resilience"
+    },
+    {
+      "slug": "three-pillar-pharmaceutical-sourcing-model",
+      "asset": "insight-three-pillar"
+    }
+  ],
+  "assetRegister": "creative-assets/module-media-asset-register.json"
 }

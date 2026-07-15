@@ -15,11 +15,11 @@ if ((statSync(credentialsPath).mode & 0o077) !== 0) throw new Error("Visual cred
 const credentials = JSON.parse(readFileSync(credentialsPath, "utf8"));
 if (!credentials.username || !credentials.password) throw new Error("Synthetic visual credentials are incomplete.");
 
-const engines = [
+let engines = [
   ["chromium", chromium],
   ["webkit", webkit]
 ];
-const viewports = [
+let viewports = [
   ["desktop-1440x900", { width: 1440, height: 900 }],
   ["desktop-1920x1080", { width: 1920, height: 1080 }],
   ["tablet-1024x1366", { width: 1024, height: 1366 }],
@@ -29,7 +29,7 @@ const viewports = [
   ["mobile-375x667", { width: 375, height: 667 }]
 ];
 
-const publicRoutes = [
+let publicRoutes = [
   ["home", "/"],
   ["about", "/about/"],
   ["company", "/about/company/"],
@@ -69,7 +69,7 @@ const publicRoutes = [
   ["service-unavailable", "/service-unavailable/"]
 ];
 
-const protectedRoutes = [
+let protectedRoutes = [
   ["customer-dashboard", "/portal/dashboard/"],
   ["employee-dashboard", "/employee/dashboard/"],
   ["board-ceo-dashboard", "/portal/ceo-dashboard/"],
@@ -78,6 +78,27 @@ const protectedRoutes = [
   ["password-change", "/portal/change-password/"],
   ["portal-settings", "/portal/settings/"]
 ];
+
+function filterNamed(collection, environmentName) {
+  const requested = (process.env[environmentName] || "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+  if (!requested.length) return collection;
+  const selected = collection.filter(([name]) => requested.includes(name));
+  if (selected.length !== requested.length) {
+    const available = collection.map(([name]) => name).join(", ");
+    throw new Error(`${environmentName} contains an unknown value. Available values: ${available}`);
+  }
+  return selected;
+}
+
+engines = filterNamed(engines, "VISUAL_ENGINES");
+viewports = filterNamed(viewports, "VISUAL_VIEWPORTS");
+publicRoutes = filterNamed(publicRoutes, "VISUAL_PUBLIC_ROUTES");
+protectedRoutes = process.env.VISUAL_INCLUDE_PROTECTED === "false"
+  ? []
+  : filterNamed(protectedRoutes, "VISUAL_PROTECTED_ROUTES");
 
 mkdirSync(outputRoot, { recursive: true });
 
@@ -339,8 +360,18 @@ const report = {
   issues
 };
 
+const issueSummary = Object.fromEntries(
+  [...issues.reduce((counts, issue) => counts.set(issue.type, (counts.get(issue.type) || 0) + 1), new Map())]
+    .sort((left, right) => right[1] - left[1])
+);
+report.issueSummary = issueSummary;
+
 writeFileSync(resolve(outputRoot, "visual-acceptance.json"), `${JSON.stringify(report, null, 2)}\n`);
 writeFileSync(resolve(outputRoot, "visual-acceptance.md"), `# Browser Acceptance Evidence\n\n- Status: **${report.status.toUpperCase()}**\n- Commit: \`${commit}\`\n- Chromium and WebKit pages inspected: ${pagesInspected}\n- Axe scans: ${axeScans}\n- Screenshots: ${screenshots.length}\n- Issues: ${issues.length}\n- Started: ${startedAt}\n- Finished: ${finishedAt}\n\nSynthetic credentials are not included in this report.\n`);
 
 console.log(`Browser acceptance ${report.status}: ${pagesInspected} pages, ${axeScans} axe scans, ${screenshots.length} screenshots, ${issues.length} issues.`);
+if (issues.length) {
+  console.log(`Issue summary: ${JSON.stringify(issueSummary)}`);
+  console.log(`First issues: ${JSON.stringify(issues.slice(0, 12))}`);
+}
 if (issues.length) process.exitCode = 1;

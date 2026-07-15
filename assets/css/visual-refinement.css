@@ -377,10 +377,6 @@ body[data-page="technology"] .page-hero::after {
   background-size: cover;
   filter: saturate(.72) contrast(1.04);
 }
-body[data-page="services"] .page-hero::after { background-image: linear-gradient(90deg, #eef3f1 0%, transparent 44%), url("/assets/media/products/respiratory-manufacturing.jpg"); }
-body[data-page="regulatory-services"] .page-hero::after { background-image: linear-gradient(90deg, #eef3f1 0%, transparent 44%), url("/assets/media/products/cardiovascular-quality-control.jpg"); }
-body[data-page="partner-with-us"] .page-hero::after { background-image: linear-gradient(90deg, #eef3f1 0%, transparent 44%), url("/assets/media/products/specialty-pharmacy-handling.jpg"); }
-body[data-page="technology"] .page-hero::after { background-image: linear-gradient(90deg, #eef3f1 0%, transparent 44%), url("/assets/media/products/metabolic-laboratory-analysis.jpg"); }
 body[data-page="services"] .page-hero .container,
 body[data-page="regulatory-services"] .page-hero .container,
 body[data-page="partner-with-us"] .page-hero .container,

@@ -8,6 +8,8 @@ const articleDirectory = join(root, "src/content/insights");
 const articles = readdirSync(articleDirectory)
   .filter((file) => file.endsWith(".json"))
   .map((file) => JSON.parse(readFileSync(join(articleDirectory, file), "utf8")));
+const artDirection = JSON.parse(readFileSync(join(root, "config/module-art-direction.json"), "utf8"));
+const artAssets = new Map(artDirection.assets.map((asset) => [asset.id, asset]));
 
 const fallback = {
   url: "/assets/brand/novapharm-healthcare-logo.png",
@@ -17,35 +19,33 @@ const fallback = {
   alt: "NovaPharm Healthcare official logo"
 };
 
-const editorial = (name, alt) => ({
-  url: `/assets/media/editorial/${name}.svg`,
-  type: "image/svg+xml",
-  width: 1200,
-  height: 675,
-  alt
+const routeImages = new Map();
+for (const module of artDirection.modules) {
+  if (!module.heroAsset) continue;
+  const asset = artAssets.get(module.heroAsset);
+  if (!asset) throw new Error(`Missing art-direction asset ${module.heroAsset} for ${module.route}`);
+  routeImages.set(module.route, {
+    url: `${asset.base}.jpg`,
+    type: "image/jpeg",
+    width: module.id === "home" ? 1672 : 1600,
+    height: module.id === "home" ? 941 : 900,
+    alt: asset.caption || asset.alt
+  });
+}
+routeImages.set("/leadership/", {
+  url: "/assets/vishalchakravarty.jpeg",
+  type: "image/jpeg",
+  width: 1796,
+  height: 1749,
+  alt: "Vishal Chakravarty, Chief Executive Officer of NovaPharm Healthcare"
 });
-
-const routeImages = new Map([
-  ["/", { url: "/assets/media/home/supply-network-hero.jpg", type: "image/jpeg", width: 1672, height: 941, alt: "Governed pharmaceutical supply network visual for NovaPharm Healthcare" }],
-  ["/about/", editorial("partnership-pathway", "NovaPharm Healthcare corporate partnership and operating pathway")],
-  ["/about/company/", editorial("partnership-pathway", "NovaPharm Healthcare company and operating pathway")],
-  ["/about/governance/", editorial("quality-batch-integrity", "NovaPharm Healthcare quality and governance framework")],
-  ["/services/", editorial("partnership-pathway", "NovaPharm Healthcare pharmaceutical market-entry and partnership services")],
-  ["/regulatory-services/", editorial("quality-batch-integrity", "NovaPharm Healthcare regulatory, quality and batch-integrity framework")],
-  ["/product-portfolio/", { url: "/assets/media/products/specialty-pharmacy-handling.jpg", type: "image/jpeg", width: 1600, height: 900, alt: "Specialty pharmaceutical handling and product-opportunity assessment" }],
-  ["/partner-with-us/", editorial("partnership-pathway", "Qualified pharmaceutical partnership pathway")],
-  ["/technology/", editorial("digital-traceability", "Governed pharmaceutical data and traceability architecture")],
-  ["/news-insights/", { url: "/assets/media/insights/three-pillar-sourcing.svg", type: "image/svg+xml", width: 1200, height: 675, alt: "NovaPharm Healthcare pharmaceutical sourcing and market-access insights" }],
-  ["/leadership/", editorial("partnership-pathway", "NovaPharm Healthcare leadership and governance")],
-  ["/investor-information/", editorial("partnership-pathway", "NovaPharm Healthcare governance and staged execution")]
-]);
 
 for (const article of articles) {
   routeImages.set(`/news-insights/${article.slug}/`, {
     url: article.heroImage,
     type: article.heroImage.endsWith(".svg") ? "image/svg+xml" : article.heroImage.endsWith(".png") ? "image/png" : "image/jpeg",
-    width: 1200,
-    height: 675,
+    width: 1600,
+    height: 900,
     alt: article.title
   });
 }

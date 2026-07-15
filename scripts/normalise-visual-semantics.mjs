@@ -7,6 +7,7 @@ function update(path, transformations) {
   const target = join(root, path);
   let html = readFileSync(target, "utf8");
   for (const [search, replacement, label] of transformations) {
+    if (typeof search === "string" && html.includes(replacement)) continue;
     const next = html.replace(search, replacement);
     if (next === html) throw new Error(`Could not normalise ${label} in ${path}.`);
     html = next;
@@ -25,10 +26,5 @@ for (const path of ["services/index.html", "regulatory-services/index.html", "pa
     ['</figcaption></div><div class="service-visual-copy">', '</figcaption></figure><div class="service-visual-copy">', "service visual figure end"]
   ]);
 }
-
-update("technology/index.html", [
-  ['<div class="technology-visual-media">', '<figure class="technology-visual-media">', "technology visual figure start"],
-  ['</figcaption></div><div class="technology-visual-copy">', '</figcaption></figure><div class="technology-visual-copy">', "technology visual figure end"]
-]);
 
 console.log("Visual media panels normalised to semantic figure and figcaption markup.");
