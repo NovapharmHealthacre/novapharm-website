@@ -11,7 +11,7 @@
   content: "";
   position: absolute;
   inset: -18px;
-  background: linear-gradient(180deg, transparent, rgba(5, 17, 24, .88));
+  background: linear-gradient(180deg, transparent, rgba(5, 17, 24, .9));
   z-index: -1;
 }
 .module-signal-eyebrow {
@@ -27,7 +27,7 @@
   min-height: 56px;
   padding: 10px;
   border: 1px solid rgba(255,255,255,.24);
-  background: rgba(9, 27, 35, .7);
+  background: rgba(9, 27, 35, .74);
   color: #f7fbfa;
   font-size: 12px;
   font-style: normal;
@@ -36,6 +36,81 @@
   animation-delay: calc(var(--signal-index) * 180ms);
 }
 .module-signal i b { display: block; color: #ff9ca3; font-size: 10px; margin-bottom: 5px; }
+
+.page-hero-cinematic {
+  position: relative;
+  min-height: clamp(500px, 66svh, 680px);
+  display: grid;
+  align-items: end;
+  overflow: hidden;
+  isolation: isolate;
+  background: #07151d;
+  color: #fff;
+}
+.page-hero-cinematic::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, rgba(4,15,22,.97) 0%, rgba(4,15,22,.86) 42%, rgba(4,15,22,.3) 75%, rgba(4,15,22,.2) 100%);
+}
+.page-hero-cinematic > .container { position: relative; z-index: 4; padding-top: clamp(140px, 19vw, 220px); padding-bottom: clamp(56px, 8vw, 92px); }
+.page-hero-cinematic h1 { color: #fff; max-width: 840px; }
+.page-hero-cinematic p { color: #e6efed; max-width: 720px; }
+.page-hero-cinematic .breadcrumb,
+.page-hero-cinematic .breadcrumb a { color: #d7e2df; }
+.page-hero-cinematic .eyebrow { color: #ff9ca3; }
+.page-hero-cinematic .page-hero-signal { display: none; }
+.module-hero-media {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  background: #0a1720;
+}
+.module-hero-media picture,
+.module-hero-media picture img { width: 100%; height: 100%; display: block; }
+.module-hero-media picture img {
+  object-fit: cover;
+  object-position: var(--module-focus, center);
+  filter: saturate(.7) contrast(1.08) brightness(.78);
+  scale: 1.025;
+  animation: modulePhotoDrift 18s ease-in-out infinite alternate;
+}
+.module-photo-about { --module-focus: 70% center; }
+.module-photo-company { --module-focus: center 45%; }
+.module-photo-governance { --module-focus: 58% center; }
+.module-photo-services { --module-focus: 64% center; }
+.module-photo-regulatory { --module-focus: 56% center; }
+.module-photo-products { --module-focus: 63% center; }
+.module-photo-partners { --module-focus: 55% center; }
+.module-photo-technology { --module-focus: 58% center; }
+.module-photo-insights { --module-focus: 62% center; }
+.module-photo-contact,
+.module-photo-account { --module-focus: 60% center; }
+.module-photo-careers { --module-focus: 58% center; }
+.module-photo-legal { --module-focus: center; }
+
+.module-portrait-composition { display: flex; align-items: end; justify-content: end; gap: 0; padding: 40px 5vw 0 45%; }
+.module-portrait-composition::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 74% 32%, rgba(184,18,32,.18), transparent 33%); }
+.module-portrait-composition img {
+  position: relative;
+  width: min(22vw, 300px);
+  height: min(46vw, 520px);
+  object-fit: cover;
+  object-position: top center;
+  filter: saturate(.72) contrast(1.08);
+  border-left: 1px solid rgba(255,255,255,.24);
+  translate: calc(var(--portrait-index) * -22px) calc(var(--portrait-index) * 10px);
+}
+
+.module-story-figure { position: relative; min-height: 440px; overflow: hidden; background: #0a1720; }
+.module-story-media { position: absolute; inset: 0; }
+.module-story-media picture,
+.module-story-media img { width: 100%; height: 100%; display: block; }
+.module-story-media img { object-fit: cover; filter: saturate(.72) contrast(1.08) brightness(.78); }
+.module-story-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 28%, rgba(6,18,25,.88)); }
+
 .service-visual-media,
 .technology-visual-media,
 .partner-cinematic-primary { position: relative; overflow: hidden; }
@@ -64,9 +139,7 @@
   position: sticky;
   top: calc(var(--header-height) + 24px);
   min-height: 560px;
-  background:
-    radial-gradient(circle at 65% 20%, rgba(184,18,32,.24), transparent 28%),
-    linear-gradient(145deg, #0a1720, #213945);
+  background: radial-gradient(circle at 65% 20%, rgba(184,18,32,.24), transparent 28%), linear-gradient(145deg, #0a1720, #213945);
   overflow: hidden;
 }
 .regulatory-control-stage::before,
@@ -81,18 +154,28 @@
 .regulatory-control-stage::after { width: 280px; height: 280px; right: -90px; bottom: -30px; animation-direction: reverse; }
 .regulatory-control-stage .module-signal { grid-template-columns: 1fr; inset: 28px; }
 .regulatory-control-stage .module-signal i { min-height: 64px; }
+
 @keyframes moduleSignal { 0%, 100% { transform: translateY(0); opacity: .9; } 50% { transform: translateY(-5px); opacity: 1; } }
+@keyframes modulePhotoDrift { from { transform: translate3d(-.5%,0,0) scale(1.025); } to { transform: translate3d(.7%,-.5%,0) scale(1.06); } }
 @keyframes regulatoryOrbit { to { transform: rotate(360deg); } }
 @media (max-width: 980px) {
   .partner-cinematic-grid { grid-template-columns: 1fr; }
   .regulatory-control-stage { position: relative; top: auto; min-height: 460px; }
+  .page-hero-cinematic::after { background: linear-gradient(90deg, rgba(4,15,22,.97), rgba(4,15,22,.68)); }
+  .module-portrait-composition { padding-left: 34%; }
 }
 @media (max-width: 620px) {
   .module-signal { grid-template-columns: repeat(2, minmax(0,1fr)); inset: auto 12px 12px; }
   .partner-cinematic-primary { min-height: 460px; }
+  .page-hero-cinematic { min-height: 600px; }
+  .page-hero-cinematic > .container { padding-top: 190px; padding-bottom: 170px; }
+  .module-hero-media picture img { object-position: center; }
+  .module-portrait-composition { padding: 80px 0 0 28%; align-items: center; }
+  .module-portrait-composition img { width: 34vw; height: 330px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .module-signal i,
+  .module-hero-media picture img,
   .regulatory-control-stage::before,
   .regulatory-control-stage::after { animation: none; }
   .partner-cinematic-primary img { transition: none; }
