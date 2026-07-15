@@ -39,7 +39,9 @@ function picture(module, alt, className = "module-hero-media") {
   if (module.portraits) {
     return `<div class="${className} module-portrait-composition" aria-label="Approved NovaPharm leadership portraits">${module.portraits.map((src, index) => `<img src="${src}" alt="" width="900" height="900" loading="lazy" decoding="async" style="--portrait-index:${index}">`).join("")}${moduleOverlay(module.id, module.label, module.signals)}</div>`;
   }
-  return `<div class="${className} module-photo-${module.id}"><picture><source srcset="${module.image}.avif" type="image/avif"><source srcset="${module.image}.webp" type="image/webp"><img src="${module.image}.jpg" alt="${alt}" width="1600" height="900" loading="lazy" decoding="async"></picture>${moduleOverlay(module.id, module.label, module.signals)}</div>`;
+  const productMedia = module.image.startsWith("/assets/media/products/");
+  const sources = productMedia ? `<source srcset="${module.image}.avif" type="image/avif"><source srcset="${module.image}.webp" type="image/webp">` : "";
+  return `<div class="${className} module-photo-${module.id}"><picture>${sources}<img src="${module.image}.jpg" alt="${alt}" width="1600" height="900" loading="lazy" decoding="async"></picture>${moduleOverlay(module.id, module.label, module.signals)}</div>`;
 }
 
 function injectPageHero(module) {
