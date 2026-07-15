@@ -1,0 +1,201 @@
+{
+  "generatedAt": "2026-07-15",
+  "modules": [
+    {
+      "id": "home",
+      "path": "index.html",
+      "label": "Corporate network",
+      "media": "/assets/media/home/supply-network-hero",
+      "signals": [
+        "Regulatory sequence",
+        "Qualified sourcing",
+        "Evidence continuity",
+        "Controlled access"
+      ]
+    },
+    {
+      "id": "about",
+      "path": "about/index.html",
+      "label": "Operating model",
+      "media": "/assets/media/home/supply-network-hero",
+      "signals": [
+        "Evidence",
+        "Optionality",
+        "Accountability",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "company",
+      "path": "about/company/index.html",
+      "label": "Corporate structure",
+      "media": "/assets/media/products/licensed-generics-packaging",
+      "signals": [
+        "Legal identity",
+        "Business model",
+        "Operating status",
+        "Governance"
+      ]
+    },
+    {
+      "id": "governance",
+      "path": "about/governance/index.html",
+      "label": "Governance control",
+      "media": "/assets/media/products/cardiovascular-quality-control",
+      "signals": [
+        "Board",
+        "Quality",
+        "Claims",
+        "Audit trail"
+      ]
+    },
+    {
+      "id": "leadership",
+      "path": "leadership/index.html",
+      "label": "Leadership accountability",
+      "media": [
+        "/assets/vishalchakravarty.jpeg",
+        "/assets/prabhakarvitthallahare.jpeg",
+        "/assets/girishshantilalachliya.jpeg"
+      ],
+      "signals": [
+        "Strategy",
+        "Operations",
+        "Science",
+        "Quality"
+      ]
+    },
+    {
+      "id": "services",
+      "path": "services/index.html",
+      "label": "Connected execution",
+      "media": "/assets/media/products/respiratory-manufacturing",
+      "signals": [
+        "Assess",
+        "Qualify",
+        "Control",
+        "Fulfil"
+      ]
+    },
+    {
+      "id": "regulatory",
+      "path": "regulatory-services/index.html",
+      "label": "Regulatory control",
+      "media": "/assets/media/products/cardiovascular-quality-control",
+      "signals": [
+        "Authorisation",
+        "QMS",
+        "GDP",
+        "Release gate"
+      ]
+    },
+    {
+      "id": "products",
+      "path": "product-portfolio/index.html",
+      "label": "Portfolio architecture",
+      "media": "/assets/media/products/oncology-vial-handling",
+      "signals": [
+        "Oncology",
+        "Specialty",
+        "Licensed",
+        "Opportunity review"
+      ]
+    },
+    {
+      "id": "partners",
+      "path": "partner-with-us/index.html",
+      "label": "Partner qualification",
+      "media": "/assets/media/products/specialty-pharmacy-handling",
+      "signals": [
+        "Capability",
+        "Licence",
+        "Evidence",
+        "Governance"
+      ]
+    },
+    {
+      "id": "technology",
+      "path": "technology/index.html",
+      "label": "Digital control plane",
+      "media": "/assets/media/products/metabolic-laboratory-analysis",
+      "signals": [
+        "Identity",
+        "Traceability",
+        "Workflow",
+        "Forecasting"
+      ]
+    },
+    {
+      "id": "insights",
+      "path": "news-insights/index.html",
+      "label": "Evidence-led insight",
+      "media": "/assets/media/products/oncology-vial-handling",
+      "signals": [
+        "Primary sources",
+        "Expert review",
+        "Material updates",
+        "Clear scope"
+      ]
+    },
+    {
+      "id": "contact",
+      "path": "contact/index.html",
+      "label": "Qualified enquiry",
+      "media": "/assets/media/products/hospital-supply-logistics",
+      "signals": [
+        "Context",
+        "Capability",
+        "Evidence",
+        "Next step"
+      ]
+    },
+    {
+      "id": "investors",
+      "path": "investor-information/index.html",
+      "label": "Investment readiness",
+      "media": "/assets/media/home/supply-network-hero",
+      "signals": [
+        "Strategy",
+        "Governance",
+        "Capital discipline",
+        "Milestones"
+      ]
+    },
+    {
+      "id": "careers",
+      "path": "careers/index.html",
+      "label": "Specialist capability",
+      "media": "/assets/media/products/oral-liquid-formulation",
+      "signals": [
+        "Scientific",
+        "Regulatory",
+        "Operational",
+        "Digital"
+      ]
+    },
+    {
+      "id": "account",
+      "path": "account-application/index.html",
+      "label": "Controlled onboarding",
+      "media": "/assets/media/products/hospital-supply-logistics",
+      "signals": [
+        "Company",
+        "Responsible person",
+        "GDP evidence",
+        "Approval"
+      ]
+    },
+    {
+      "id": "legal",
+      "path": "legal/index.html",
+      "label": "Policy architecture",
+      "media": "/assets/media/products/licensed-generics-packaging",
+      "signals": [
+        "Privacy",
+        "Terms",
+        "Accessibility",
+        "Corrections"
+      ]
+    }
+  ]
+}
