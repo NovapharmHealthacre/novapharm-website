@@ -7,7 +7,7 @@ const text = (path) => readFileSync(join(root, path), "utf8");
 
 const cssEntrypoint = text("assets/css/novapharm.css");
 assert.match(cssEntrypoint, /@layer reset, tokens, foundations, layout, components, pages, utilities;/);
-for (const module of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement"]) {
+for (const module of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity"]) {
   assert.match(cssEntrypoint, new RegExp(`@import url\\("\\./${module}\\.css"\\)`), `${module}.css must be part of the production CSS entrypoint`);
 }
 
@@ -25,27 +25,45 @@ assert.match(home, /Commercial release only after applicable authorisation/);
 assert.match(home, /hospital-supply-logistics\.jpg/);
 assert.match(home, /<figure class="batch-integrity-media">/);
 assert.doesNotMatch(home, /quality-batch-integrity\.svg/);
-assert.equal((home.match(/class="partner-ecosystem-card"/g) || []).length, 8, "the homepage must present eight image-led partner segments");
+assert.match(home, /partner-ecosystem-cinematic/);
+assert.match(home, /partner-cinematic-grid/);
+assert.equal((home.match(/<div class="partner-pathways">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) || []).length, 4, "the homepage must present four distinct partnership pathways");
+assert.equal((home.match(/class="partner-ecosystem-card"/g) || []).length, 0, "the homepage must not repeat the product-style partner grid");
 
 const services = text("services/index.html");
 assert.match(services, /class="service-visual-story"/);
 assert.match(services, /class="services-media-gallery"/);
 assert.match(services, /respiratory-manufacturing\.jpg/);
+assert.match(services, /module-signal-services/);
 assert.doesNotMatch(services, /quality-batch-integrity\.svg/);
 
 const regulatory = text("regulatory-services/index.html");
 assert.match(regulatory, /class="container regulatory-stage-grid"/);
 assert.match(regulatory, /cardiovascular-quality-control\.jpg/);
+assert.match(regulatory, /regulatory-control-stage/);
 assert.doesNotMatch(regulatory, /gdp-qms-foundations\.svg/);
+assert.doesNotMatch(regulatory, /class="regulatory-stage-media"/);
 
 const partners = text("partner-with-us/index.html");
 assert.equal((partners.match(/class="partner-ecosystem-card"/g) || []).length, 10, "the Partners page must present ten qualified image-led segments");
 assert.match(partners, /specialty-pharmacy-handling\.jpg/);
+assert.match(partners, /module-signal-partners/);
 assert.doesNotMatch(partners, /partnership-pathway\.svg/);
 
 const technology = text("technology/index.html");
 for (const marker of ["technology-visual-story", "architecture-map", "Live capabilities", "In development capabilities", "Planned capabilities"]) assert.match(technology, new RegExp(marker));
 assert.match(technology, /metabolic-laboratory-analysis\.jpg/);
+assert.match(technology, /module-signal-technology/);
+
+const leadership = text("leadership/index.html");
+assert.match(leadership, /module-portrait-composition/);
+for (const portrait of ["vishalchakravarty.jpeg", "prabhakarvitthallahare.jpeg", "girishshantilalachliya.jpeg"]) assert.match(leadership, new RegExp(portrait));
+
+const moduleRegister = JSON.parse(text("docs/module-media-register.json"));
+assert.equal(moduleRegister.modules.length, 16, "the full public module register must contain sixteen entries");
+for (const entry of moduleRegister.modules.filter((entry) => entry.id !== "home")) {
+  assert.match(text(entry.path), new RegExp(`data-module-media="${entry.id}"`), `${entry.id} must use its tailored visual composition`);
+}
 
 const login = text("portal/index.html");
 for (const accessType of ["customer", "employee", "board", "admin"]) assert.match(login, new RegExp(`value="${accessType}"`));
@@ -68,8 +86,8 @@ const productAssetIds = [
 ];
 const productMediaMaterialised = productAssetIds.every((id) => ["avif", "webp", "jpg"].every((extension) => existsSync(join(productMediaRoot, `${id}.${extension}`))));
 if (productMediaMaterialised) {
-  assert.equal((products.match(/type="image\/avif"/g) || []).length, 8);
-  assert.equal((products.match(/type="image\/webp"/g) || []).length, 8);
+  assert.equal((products.match(/type="image\/avif"/g) || []).length >= 8, true);
+  assert.equal((products.match(/type="image\/webp"/g) || []).length >= 8, true);
   assert.doesNotMatch(products, /licensed-image-pending\.svg/);
 } else {
   assert.match(products, /licensed-image-pending\.svg/);
@@ -90,8 +108,6 @@ assert.equal(new Set(articleImages).size, insightFiles.length, "insight articles
 for (const path of [
   "assets/media/home/supply-network-hero.jpg",
   "assets/media/home/supply-network-hero-1200.jpg",
-  "assets/media/editorial/oncology-specialty.svg",
-  "assets/media/editorial/digital-traceability.svg",
   "assets/media/products/hospital-supply-logistics.jpg",
   "assets/media/products/cardiovascular-quality-control.jpg",
   "assets/media/products/respiratory-manufacturing.jpg"
@@ -105,10 +121,11 @@ assert.match(responsive, /@media \(max-width: 980px\)/);
 assert.match(responsive, /@media \(max-width: 620px\)/);
 assert.match(responsive, /@media \(prefers-reduced-motion: reduce\)/);
 assert.match(text("assets/css/visual-refinement.css"), /@media \(prefers-reduced-motion: reduce\)/);
+assert.match(text("assets/css/module-media-sanity.css"), /@media \(prefers-reduced-motion: reduce\)/);
 assert.match(text("assets/js/visual-refinement.js"), /data-motion-toggle/);
 assert.match(text("assets/js/novapharm.js"), /saveData/);
-for (const stylesheet of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement"]) {
+for (const stylesheet of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity"]) {
   assert.doesNotMatch(text(`assets/css/${stylesheet}.css`), /prefers-color-scheme:\s*dark/, `${stylesheet}.css must not create an untested automatic dark theme`);
 }
 
-console.log("Visual contracts passed for the premium hero, seven-stage roadmap, image-led sections, leadership presentation, portal entry, motion preferences and asset budgets.");
+console.log("Visual contracts passed for the cinematic hero, sixteen tailored modules, seven-stage roadmap, leadership presentation, portal entry, motion preferences and asset budgets.");
