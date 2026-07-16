@@ -50,21 +50,31 @@ export async function processDocumentScanEvents({ limit = 20, store = documentSt
             entityId: document.id,
             details: { eventId: event.id, providerResult: scan.result }
           });
-          await enqueue({
-            eventType: "document.sharepoint_upload_requested",
-            aggregateType: "document",
-            aggregateId: document.id,
-            destinationSystem: "sharepoint",
-            idempotencyKey: `document:${document.id}:upload:v1`,
-            payload: {
-              operation: "upload_document",
-              documentId: document.id,
-              entityType: payload.entityType,
-              entityId: payload.entityId,
-              checksum: payload.checksum,
-              folderPath: payload.folderPath
-            }
-          });
+          if (process.env.LOCAL_PORTAL_MODE === "true") {
+            await audit({
+              actor: "local_validation_scan",
+              action: "document.external_sync_suppressed",
+              entityType: "document",
+              entityId: document.id,
+              details: { eventId: event.id, reason: "local_validation_environment" }
+            });
+          } else {
+            await enqueue({
+              eventType: "document.sharepoint_upload_requested",
+              aggregateType: "document",
+              aggregateId: document.id,
+              destinationSystem: "sharepoint",
+              idempotencyKey: `document:${document.id}:upload:v1`,
+              payload: {
+                operation: "upload_document",
+                documentId: document.id,
+                entityType: payload.entityType,
+                entityId: payload.entityId,
+                checksum: payload.checksum,
+                folderPath: payload.folderPath
+              }
+            });
+          }
         });
         try {
           await store.remove(quarantineStoragePath);

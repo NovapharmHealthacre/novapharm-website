@@ -23,6 +23,7 @@ const credentialsPath = resolve(outputRoot, "credentials.json");
 
 const serverEnvironment = {
   NODE_ENV: "test",
+  BROWSER_VALIDATION_MODE: "true",
   HOST: "127.0.0.1",
   PORT: String(port),
   PUBLIC_ORIGIN: origin,
@@ -31,6 +32,9 @@ const serverEnvironment = {
   DATABASE_PATH: resolve(outputRoot, "visual-validation.sqlite"),
   DOCUMENT_STORAGE_ROOT: resolve(outputRoot, "documents"),
   SECURE_CONTENT_ROOT: resolve(process.cwd(), "_secure"),
+  EMAIL_PROVIDER: "local-capture",
+  EMAIL_FROM: "NovaPharm Validation <no-reply@example.invalid>",
+  CONTACT_NOTIFICATION_TO: "owner-validation@example.invalid",
   SESSION_SECRET: randomBytes(48).toString("base64url"),
   PORTAL_USERNAME: username,
   PORTAL_DISPLAY_NAME: "Vishal Chakravarty",

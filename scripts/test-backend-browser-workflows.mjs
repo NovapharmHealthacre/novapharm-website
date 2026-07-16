@@ -118,6 +118,15 @@ async function verifyAdministratorReview(page, marker, fileName, applicationNumb
   const detail = page.locator("[data-admin-detail-body]");
   await detail.waitFor({ state: "visible" });
   assert((await detail.textContent())?.includes(fileName), "Administrator application review did not show the uploaded document record.");
+
+  const previewButton = page.locator("[data-email-deliveries] [data-admin-action='preview-email']").first();
+  await previewButton.waitFor({ state: "visible" });
+  await previewButton.click();
+  const previewDialog = page.locator("[data-email-preview]");
+  await previewDialog.waitFor({ state: "visible" });
+  assert((await previewDialog.locator("[data-email-preview-html]").textContent())?.trim().length > 0, "Rendered email preview was empty.");
+  assert((await previewDialog.locator("[data-email-preview-text]").textContent())?.trim().length > 0, "Plain-text email preview was empty.");
+  await page.locator("[data-email-preview-close]").click();
 }
 
 for (const [engineName, engine] of [["chromium", chromium], ["webkit", webkit]]) {
@@ -130,7 +139,7 @@ for (const [engineName, engine] of [["chromium", chromium], ["webkit", webkit]])
     const { fileName, applicationNumber } = await submitAccountApplication(page, marker);
     await verifyAdministratorReview(page, marker, fileName, applicationNumber);
     await context.close();
-    console.log(`${engineName} contact, account application, upload and administrator review passed.`);
+    console.log(`${engineName} contact, account application, upload, email preview and administrator review passed.`);
   } finally {
     await browser.close();
   }

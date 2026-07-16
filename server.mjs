@@ -2,7 +2,7 @@ import "dotenv/config";
 import { observabilityStatus } from "./src/observability/azure-monitor.mjs";
 import { createServer } from "node:http";
 import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
-import { extname, isAbsolute, join, normalize, relative, resolve } from "node:path";
+import { dirname, extname, isAbsolute, join, normalize, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { constants as zlibConstants, createBrotliCompress, createGzip } from "node:zlib";
@@ -61,7 +61,7 @@ import { databaseProvider, databaseReady } from "./src/data/database.mjs";
 import { processSharePointEvents, sharePointFolderPlan } from "./src/integrations/sharepoint/sync-engine.mjs";
 import { processPolarSpeedEvents } from "./src/integrations/polar-speed/sync-engine.mjs";
 import { processDocumentScanEvents } from "./src/integrations/azure-storage/scan-engine.mjs";
-import { emailIntegrationStatus, emailQueueStatus, processEmailRetries, replayEmailNotification, sendApplicationNotifications, sendLeadNotifications } from "./src/integrations/email/client.mjs";
+import { emailIntegrationStatus, emailNotificationPreview, emailQueueStatus, processEmailRetries, replayEmailNotification, sendApplicationNotifications, sendLeadNotifications } from "./src/integrations/email/client.mjs";
 import { documentStorageStatus } from "./src/storage/document-store.mjs";
 import { appServicePrincipalFromHeaders, provisionFederatedIdentity } from "./src/core/entra-identity.mjs";
 import { isResolvedSecret, isUnresolvedSecretReference } from "./src/core/secret-value.mjs";
@@ -73,6 +73,7 @@ const secureContentRoot = resolve(process.env.SECURE_CONTENT_ROOT || join(root, 
 
 const isProduction = process.env.NODE_ENV === "production";
 const isPreview = process.env.PREVIEW_MODE === "true";
+const isLocalPortal = process.env.LOCAL_PORTAL_MODE === "true";
 const previewUsername = String(process.env.PREVIEW_ACCESS_USERNAME || "");
 const previewPassword = String(process.env.PREVIEW_ACCESS_PASSWORD || "");
 const host = process.env.HOST || "127.0.0.1";
@@ -97,6 +98,21 @@ if (!Number.isFinite(sessionTtlMs) || sessionTtlMs <= 0 || !Number.isFinite(sess
 }
 if (isPreview && (!previewUsername || isUnresolvedSecretReference(previewUsername) || !isResolvedSecret(previewPassword, { minimumBytes: 16 }))) {
   throw new Error("PREVIEW_ACCESS_USERNAME and a resolved PREVIEW_ACCESS_PASSWORD of at least 16 bytes are required when PREVIEW_MODE=true.");
+}
+if (isLocalPortal) {
+  const localRuntimeRoot = resolve(dirname(process.env.DATABASE_PATH || ""));
+  if (isProduction || isPreview || host !== "127.0.0.1" || port !== 4173 || publicOrigin !== "http://127.0.0.1:4173") {
+    throw new Error("LOCAL_PORTAL_MODE must run only at http://127.0.0.1:4173 in a non-production, non-preview process.");
+  }
+  if (databaseProvider !== "sqlite" || process.env.DOCUMENT_STORAGE_PROVIDER !== "local-validation" || process.env.EMAIL_PROVIDER !== "local-capture") {
+    throw new Error("The local owner portal requires SQLite, local-validation document storage and local-capture email.");
+  }
+  for (const path of [process.env.DATABASE_PATH, process.env.DOCUMENT_STORAGE_ROOT]) {
+    if (!path || !isWithinDirectory(localRuntimeRoot, resolve(path))) throw new Error("Local portal data must remain inside its protected runtime root.");
+  }
+  for (const variable of ["RESEND_API_KEY", "MICROSOFT_CLIENT_SECRET", "MICROSOFT_CERTIFICATE_PRIVATE_KEY", "AZURE_STORAGE_CONNECTION_STRING", "SHAREPOINT_DRIVE_ID"]) {
+    if (process.env[variable]) throw new Error(`${variable} must not be supplied to the local owner portal.`);
+  }
 }
 
 if (isProduction) {
@@ -195,7 +211,7 @@ function securityHeaders(extra = {}, { allowPrivateInline = false } = {}) {
     ].join("; "),
     ...extra
   };
-  if (isPreview) headers["X-Robots-Tag"] = "noindex, nofollow, noarchive";
+  if (isPreview || isLocalPortal) headers["X-Robots-Tag"] = "noindex, nofollow, noarchive";
   if (isProduction) headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains";
   return headers;
 }
@@ -236,7 +252,7 @@ function requireCsrf(request) {
 }
 
 function hasAllowedOrigin(request) {
-  if (!isProduction) return true;
+  if (!isProduction && !isLocalPortal) return true;
   const origin = request.headers.origin;
   if (!origin) return true;
   try {
@@ -247,7 +263,7 @@ function hasAllowedOrigin(request) {
 }
 
 function hasAllowedHost(request) {
-  if (!isProduction) return true;
+  if (!isProduction && !isLocalPortal) return true;
   const received = String(request.headers.host || "").toLowerCase();
   const allowed = new Set([
     new URL(publicOrigin).host.toLowerCase(),
@@ -460,17 +476,17 @@ async function healthSnapshot() {
     status: ready ? "ready" : databaseIsReady ? "degraded" : "unavailable",
     service: "novapharm-web",
     version: applicationVersion,
-    environment: isPreview ? "validation" : isProduction ? "production" : "development",
+    environment: isLocalPortal ? "local_validation" : isPreview ? "validation" : isProduction ? "production" : "development",
     timestamp: new Date().toISOString(),
     application: "live",
     database: databaseIsReady ? "ready" : "unavailable",
     migration: databaseIsReady ? "current" : "unavailable",
     email,
     documentStorage: storage,
-    identity,
-    entra: process.env.ENTRA_AUTH_ENABLED === "true" ? "configured" : "owner_configuration_required",
-    sharePoint: hasSharePointCredentials() ? "configured" : "owner_configuration_required",
-    observability: observabilityStatus,
+    identity: isLocalPortal && identity !== "unavailable" ? "local_owner_validation_identity_configured" : identity,
+    entra: isLocalPortal ? "disabled_local_validation" : process.env.ENTRA_AUTH_ENABLED === "true" ? "configured" : "owner_configuration_required",
+    sharePoint: isLocalPortal ? "disabled_local_validation" : hasSharePointCredentials() ? "configured" : "owner_configuration_required",
+    observability: isLocalPortal ? "disabled_local_validation" : observabilityStatus,
     ready
   };
 }
@@ -508,7 +524,7 @@ export async function handleRequest(request, response) {
     const url = new URL(request.url || "/", `http://${request.headers.host || "localhost"}`);
     const pathname = url.pathname;
 
-    if (isPreview && !["/api/health", "/api/health/live", "/api/health/ready", "/robots.txt"].includes(pathname) && !previewAccessAllowed(request.headers.authorization, previewUsername, previewPassword)) {
+    if (isPreview && !["/api/health", "/api/health/live", "/api/health/ready", "/api/live", "/api/ready", "/robots.txt"].includes(pathname) && !previewAccessAllowed(request.headers.authorization, previewUsername, previewPassword)) {
       return send(response, 401, "Preview authentication required.", {
         "Content-Type": "text/plain; charset=utf-8",
         "Cache-Control": "no-store",
@@ -527,7 +543,7 @@ export async function handleRequest(request, response) {
       return;
     }
 
-    if (pathname === "/robots.txt" && request.method === "GET" && isPreview) {
+    if (pathname === "/robots.txt" && request.method === "GET" && (isPreview || isLocalPortal)) {
       send(response, 200, "User-agent: *\nDisallow: /\n", { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" });
       return;
     }
@@ -841,12 +857,12 @@ export async function handleRequest(request, response) {
       return;
     }
 
-    if (pathname === "/api/health/live" && request.method === "GET") {
+    if (["/api/health/live", "/api/live"].includes(pathname) && request.method === "GET") {
       json(response, 200, { status: "live", service: "novapharm-web", version: applicationVersion, timestamp: new Date().toISOString() });
       return;
     }
 
-    if (pathname === "/api/health/ready" && request.method === "GET") {
+    if (["/api/health/ready", "/api/ready"].includes(pathname) && request.method === "GET") {
       const health = await healthSnapshot();
       json(response, health.ready ? 200 : 503, health);
       return;
@@ -909,6 +925,13 @@ export async function handleRequest(request, response) {
       const session = await authenticated(request, response, ["admin"]);
       if (!session) return;
       json(response, 200, { ok: true, delivery: await replayEmailNotification(adminEmailReplayMatch[1], session.username) });
+      return;
+    }
+
+    const adminEmailPreviewMatch = pathname.match(/^\/api\/admin\/notifications\/([^/]+)\/preview$/);
+    if (adminEmailPreviewMatch && request.method === "GET") {
+      if (!await authenticated(request, response, ["admin"])) return;
+      json(response, 200, { preview: await emailNotificationPreview(adminEmailPreviewMatch[1]) });
       return;
     }
 
@@ -1005,14 +1028,14 @@ if (startedDirectly) {
       console.error("Queued email processing failed.", { status: error.providerStatus || "unavailable" });
     }
   };
-  const emailRetryTimer = setInterval(processQueuedEmails, 60_000);
-  emailRetryTimer.unref();
-  void processQueuedEmails();
+  const emailRetryTimer = isLocalPortal ? null : setInterval(processQueuedEmails, 60_000);
+  emailRetryTimer?.unref();
+  if (!isLocalPortal) void processQueuedEmails();
   let shuttingDown = false;
   const shutdown = (signal) => {
     if (shuttingDown) return;
     shuttingDown = true;
-    clearInterval(emailRetryTimer);
+    if (emailRetryTimer) clearInterval(emailRetryTimer);
     console.log(`Received ${signal}; completing active requests before shutdown.`);
     const forceTimer = setTimeout(() => {
       server.closeAllConnections();

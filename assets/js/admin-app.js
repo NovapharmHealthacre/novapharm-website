@@ -164,10 +164,45 @@ function renderEmailRows(deliveries) {
     const row = document.createElement("tr");
     row.append(adminCell(delivery.template_code), adminCell(delivery.entity_type), adminCell(delivery.status), adminCell(delivery.attempt_count), adminCell(new Date(delivery.created_at).toLocaleString("en-GB")));
     const action = document.createElement("td");
+    action.append(adminButton("Preview", "preview-email", delivery.id));
     action.append(adminButton("Replay", "replay-email", delivery.id, delivery.status === "sent"));
     row.append(action);
     body.append(row);
   }
+}
+
+function safeEmailFragment(html) {
+  const parsed = new DOMParser().parseFromString(String(html || ""), "text/html");
+  parsed.querySelectorAll("script,style,iframe,object,embed,link,meta,form,input,button").forEach((node) => node.remove());
+  parsed.querySelectorAll("*").forEach((node) => {
+    for (const attribute of [...node.attributes]) {
+      if (attribute.name.toLowerCase().startsWith("on") || !["alt", "width", "height", "src"].includes(attribute.name.toLowerCase())) {
+        node.removeAttribute(attribute.name);
+      }
+    }
+    if (node.tagName === "IMG") {
+      const source = node.getAttribute("src") || "";
+      if (source.includes("/assets/brand/novapharm-healthcare-logo.png")) node.setAttribute("src", "/assets/brand/novapharm-healthcare-logo.png");
+      else node.remove();
+    }
+  });
+  const fragment = document.createDocumentFragment();
+  while (parsed.body.firstChild) fragment.append(parsed.body.firstChild);
+  return fragment;
+}
+
+async function previewEmail(id) {
+  const { preview } = await window.NovaPharmApi.request(`/api/admin/notifications/${encodeURIComponent(id)}/preview`);
+  const dialog = document.querySelector("[data-email-preview]");
+  if (!dialog) return;
+  dialog.querySelector("[data-email-preview-title]").textContent = preview.message.subject || "Email preview";
+  dialog.querySelector("[data-email-preview-meta]").replaceChildren(detailList([
+    ["To", preview.message.to], ["Reply to", preview.message.replyTo], ["Template", preview.templateCode],
+    ["State", preview.status], ["Local capture", preview.localCapture ? "Yes — no external delivery" : "No"]
+  ]));
+  dialog.querySelector("[data-email-preview-html]").replaceChildren(safeEmailFragment(preview.message.html));
+  dialog.querySelector("[data-email-preview-text]").textContent = preview.message.text;
+  dialog.showModal();
 }
 
 async function hydrateAdmin() {
@@ -193,6 +228,7 @@ document.addEventListener("click", async (event) => {
   try {
     if (button.dataset.adminAction === "lead") await reviewLead(button.dataset.recordId);
     if (button.dataset.adminAction === "application") await reviewApplication(button.dataset.recordId);
+    if (button.dataset.adminAction === "preview-email") await previewEmail(button.dataset.recordId);
     if (button.dataset.adminAction === "replay-email") {
       await csrfPost(`/api/admin/notifications/${encodeURIComponent(button.dataset.recordId)}/replay`);
       await hydrateAdmin();
@@ -207,6 +243,10 @@ document.addEventListener("click", async (event) => {
 
 document.querySelector("[data-admin-detail-close]")?.addEventListener("click", () => {
   document.querySelector("[data-admin-detail]").hidden = true;
+});
+
+document.querySelector("[data-email-preview-close]")?.addEventListener("click", () => {
+  document.querySelector("[data-email-preview]")?.close();
 });
 
 document.querySelector("[data-application-status-form]")?.addEventListener("submit", async (event) => {

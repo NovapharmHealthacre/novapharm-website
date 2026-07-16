@@ -8,6 +8,13 @@ const staleDeliveryMs = 5 * 60 * 1000;
 
 function selectedProvider() {
   const requested = String(process.env.EMAIL_PROVIDER || "auto").trim().toLowerCase();
+  if (requested === "local-capture") {
+    const explicitlyLocal = process.env.LOCAL_PORTAL_MODE === "true" || process.env.BROWSER_VALIDATION_MODE === "true";
+    if (!explicitlyLocal || process.env.NODE_ENV === "production") {
+      throw new Error("The local email-capture provider is restricted to an explicit non-production validation environment.");
+    }
+    return requested;
+  }
   if (["resend", "microsoft-graph"].includes(requested)) return requested;
   if (isResolvedSecret(process.env.RESEND_API_KEY)) return "resend";
   if (process.env.MICROSOFT_EMAIL_SENDER && hasGraphCredentials()) return "microsoft-graph";
@@ -73,7 +80,8 @@ function retryable(error) {
 
 function providerErrorCode(error) {
   const status = Number(error?.providerStatus || 0);
-  const prefix = selectedProvider() === "microsoft-graph" ? "GRAPH" : "RESEND";
+  const provider = selectedProvider();
+  const prefix = provider === "microsoft-graph" ? "GRAPH" : provider === "local-capture" ? "LOCAL_CAPTURE" : "RESEND";
   if (status) return `${prefix}_HTTP_${status}`;
   if (error?.name === "TimeoutError") return `${prefix}_TIMEOUT`;
   return `${prefix}_UNAVAILABLE`;
@@ -92,9 +100,12 @@ async function deliverNotification(notification, message) {
   if (!claim.changes) return { status: "skipped" };
   const attemptCount = Number(notification.attempt_count || 0) + 1;
   try {
-    const providerPayload = selectedProvider() === "microsoft-graph"
+    const provider = selectedProvider();
+    const providerPayload = provider === "microsoft-graph"
       ? await deliverWithMicrosoftGraph(notification, message)
-      : await deliverWithResend(notification, message);
+      : provider === "local-capture"
+        ? await deliverWithLocalCapture(notification)
+        : await deliverWithResend(notification, message);
     await run(`UPDATE notifications SET status = 'sent', attempt_count = ?, sent_at = ?, next_attempt_at = NULL,
       last_error_code = NULL, provider_message_id = ? WHERE id = ?`, attemptCount, nowIso(), cleanHeader(providerPayload.id || "").slice(0, 128) || null, notification.id);
     return { status: "sent" };
@@ -103,9 +114,15 @@ async function deliverNotification(notification, message) {
     await run(`UPDATE notifications SET status = ?, attempt_count = ?, next_attempt_at = ?, last_error_code = ?,
       payload_json = ? WHERE id = ?`, shouldRetry ? "retrying" : "blocked", attemptCount,
     shouldRetry ? retryAt(attemptCount) : null, providerErrorCode(error),
-    JSON.stringify({ providerStatus: Number(error.providerStatus || 0) || null }), notification.id);
+    JSON.stringify(selectedProvider() === "local-capture"
+      ? { message, providerStatus: Number(error.providerStatus || 0) || null, localCapture: { synthetic: true } }
+      : { providerStatus: Number(error.providerStatus || 0) || null }), notification.id);
     throw error;
   }
+}
+
+async function deliverWithLocalCapture(notification) {
+  return { id: `local-capture/${notification.id}` };
 }
 
 async function deliverWithResend(notification, message) {
@@ -157,7 +174,9 @@ async function queueEmail({ to, subject, text, html, replyTo, templateCode, enti
     entity_type: entityType,
     entity_id: entityId,
     status: "pending",
-    payload_json: "{}",
+    payload_json: selectedProvider() === "local-capture"
+      ? JSON.stringify({ message: { to: recipient, subject, text, html, replyTo: replyTo || null }, localCapture: { synthetic: true } })
+      : "{}",
     attempt_count: 0,
     next_attempt_at: createdAt,
     created_at: createdAt
@@ -268,6 +287,36 @@ export async function emailQueueStatus() {
     deliveries: await all(`SELECT id, template_code, entity_type, entity_id, status, attempt_count,
       last_error_code, created_at, sent_at FROM notifications WHERE channel = 'email'
       ORDER BY created_at DESC LIMIT 50`)
+  };
+}
+
+export async function emailNotificationPreview(notificationId) {
+  const notification = await one(`SELECT id, recipient, template_code, entity_type, entity_id, status,
+    payload_json, attempt_count, last_error_code, created_at, sent_at
+    FROM notifications WHERE id = ? AND channel = 'email'`, notificationId);
+  if (!notification) throw Object.assign(new Error("Email notification not found."), { statusCode: 404 });
+  let payload = {};
+  try { payload = JSON.parse(notification.payload_json || "{}"); } catch { payload = {}; }
+  const message = payload.message || await retryMessage(notification);
+  if (!message) throw Object.assign(new Error("Email notification preview is unavailable."), { statusCode: 409 });
+  return {
+    id: notification.id,
+    templateCode: notification.template_code,
+    entityType: notification.entity_type,
+    entityId: notification.entity_id,
+    status: notification.status,
+    attemptCount: Number(notification.attempt_count || 0),
+    lastErrorCode: notification.last_error_code,
+    createdAt: notification.created_at,
+    sentAt: notification.sent_at,
+    localCapture: selectedProvider() === "local-capture",
+    message: {
+      to: cleanHeader(message.to || notification.recipient),
+      subject: cleanHeader(message.subject),
+      text: String(message.text || ""),
+      html: String(message.html || ""),
+      replyTo: cleanHeader(message.replyTo || "") || null
+    }
   };
 }
 

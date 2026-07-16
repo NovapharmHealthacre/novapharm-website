@@ -1,9 +1,10 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { basename, extname, join, relative, resolve } from "node:path";
+import { execFileSync } from "node:child_process";
 
 const root = resolve(process.cwd());
 const ignoredDirectories = new Set([".git", "_secure", "artifacts", "data", "node_modules", "private-content", "tmp", "vishal-portfolio-rebuild"]);
-const ignoredLocalFiles = new Set([".env"]);
+const ignoredLocalFiles = new Set([".env", ".DS_Store"]);
 const binaryExtensions = new Set([".eps", ".gif", ".ico", ".jpeg", ".jpg", ".pdf", ".png", ".sqlite", ".webp", ".woff2"]);
 const forbiddenNames = [/^\.DS_Store$/, /\.sw[op]$/, /~$/, /^\.env$/, /\.sqlite(?:-shm|-wal)?$/, /\.map$/];
 const secretPatterns = [
@@ -29,6 +30,11 @@ function walk(directory = root) {
 
 const files = walk();
 const failures = [];
+const trackedFiles = execFileSync("git", ["ls-files", "-z"], { cwd: root, encoding: "utf8" }).split("\0").filter(Boolean);
+for (const path of trackedFiles) {
+  const name = basename(path);
+  if (forbiddenNames.some((pattern) => pattern.test(name))) failures.push(`${path}: tracked forbidden development or secret-bearing artefact`);
+}
 for (const file of files) {
   const name = basename(file);
   if (ignoredLocalFiles.has(name)) continue;

@@ -1,5 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 
 function identifier(value) {
@@ -21,6 +21,13 @@ export class SqliteProvider {
     this.raw.exec(readFileSync(resolve(process.cwd(), "database", "schema.sql"), "utf8"));
     this.#runAdditiveMigrations();
     this.raw.exec(readFileSync(resolve(process.cwd(), "database", "sqlite", "reporting-views.sql"), "utf8"));
+    this.#protectRuntimeFiles();
+  }
+
+  #protectRuntimeFiles() {
+    for (const path of [this.path, `${this.path}-wal`, `${this.path}-shm`]) {
+      if (existsSync(path)) chmodSync(path, 0o600);
+    }
   }
 
   #ensureColumn(table, column, definition) {
@@ -117,7 +124,9 @@ export class SqliteProvider {
   }
 
   async run(sql, params = []) {
-    return this.raw.prepare(sql).run(...params);
+    const result = this.raw.prepare(sql).run(...params);
+    this.#protectRuntimeFiles();
+    return result;
   }
 
   async transaction(work) {
