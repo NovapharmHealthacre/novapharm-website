@@ -18,6 +18,7 @@ const publicPages = [
   "services/index.html",
   "regulatory-services/index.html",
   "product-portfolio/index.html",
+  "product-portfolio/nutraxin/index.html",
   "partner-with-us/index.html",
   "technology/index.html",
   "news-insights/index.html",
@@ -53,7 +54,12 @@ const requiredFiles = [
   "architecture/system-relationships.md",
   "architecture/data-flow-diagrams.md",
   "architecture/entity-relationship-diagrams.md",
+  "architecture/portal-domain-map.md",
+  "architecture/portal-module-contracts.md",
+  "architecture/portal-event-catalogue.md",
   "database/schema.sql",
+  "database/portal-data-dictionary.md",
+  "database/portal-erd.md",
   "integrations/sharepoint/README.md",
   "integrations/sharepoint/setup-guide.md",
   "integrations/sharepoint/graph-client.ts",
@@ -65,6 +71,11 @@ const requiredFiles = [
   "sharepoint/workflows/README.md",
   "sharepoint/permissions/README.md",
   "audit/technical-audit.md",
+  "audit/portal-module-audit.md",
+  "audit/portal-integration-report.md",
+  "audit/portal-security-report.md",
+  "audit/portal-accessibility-report.md",
+  "audit/portal-browser-report.md",
   "audit/visual-acceptance-report.md",
   "audit/global-digital-benchmark.md",
   "audit/current-experience-gap-analysis.md",
@@ -85,6 +96,7 @@ const requiredFiles = [
   "deployment/rollback-guide.md",
   "deployment/history-rollback.md",
   "final-report/implementation-summary.md",
+  "final-report/enterprise-portal-owner-handoff.md",
   "final-report/official-logo-register.md",
   "final-report/remaining-items.md",
   "creative-assets/image-generation-brief.md",
@@ -97,6 +109,7 @@ const requiredFiles = [
   "assets/css/premium-experience.css",
   "assets/css/motion.css",
   "assets/css/portal.css",
+  "assets/css/nutraxin-catalogue.css",
   "assets/css/responsive.css",
   "assets/js/api-client.js",
   "assets/js/novapharm.js",
@@ -124,6 +137,9 @@ const requiredFiles = [
   "src/content/site-content.mjs",
   "src/core/auth-service.mjs",
   "src/core/domain-service.mjs",
+  "src/core/enterprise-domain-service.mjs",
+  "src/core/nutraxin-catalogue.mjs",
+  "src/core/portal-module-catalog.mjs",
   "src/core/document-service.mjs",
   "src/core/sharepoint-mapping.mjs",
   "src/data/database.mjs",
@@ -137,6 +153,10 @@ const requiredFiles = [
   "scripts/build-public-pages.mjs",
   "scripts/sync-secure-content.mjs",
   "scripts/test-server.mjs",
+  "scripts/test-enterprise-migrations.mjs",
+  "scripts/test-enterprise-portal.mjs",
+  "scripts/import-nutraxin-catalogue.mjs",
+  "scripts/generate-enterprise-portal-docs.mjs",
   "scripts/test-production-security.mjs",
   "scripts/test-database-migration.mjs",
   "scripts/check-syntax.mjs",
@@ -261,7 +281,7 @@ for (const file of publicPages) {
   if (!html.includes('href="#main"') || !html.includes('id="main"')) fail(`${file} needs a working skip link`);
 }
 
-if (publicPages.length !== 33) fail(`expected exactly 33 public pages; found ${publicPages.length}`);
+if (publicPages.length !== 34) fail(`expected exactly 34 public pages; found ${publicPages.length}`);
 for (const type of ["Organization", "Person", "Article", "BlogPosting", "Service", "BreadcrumbList"]) {
   if (!observedSchemaTypes.has(type)) fail(`structured data is missing ${type}`);
 }
