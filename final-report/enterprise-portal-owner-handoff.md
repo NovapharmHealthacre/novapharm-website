@@ -42,7 +42,7 @@ Recommended review sequence:
 
 1. Run the current Chromium/WebKit matrix and inspect the new screenshots.
 2. Run the official npm production advisory query when network permission is available.
-3. Apply migration 004/import/seed to the protected owner database only after a fresh verified backup.
+3. Start the protected owner runtime; startup now creates and verifies a fresh database backup before migration 004, import or synthetic seeding.
 4. Verify the owner identity hash, salt, credential version, scopes and session continuity are unchanged.
 5. Start the protected localhost portal and complete owner review.
 6. Commit and push the verified candidate, then wait for PR 10 workflows.

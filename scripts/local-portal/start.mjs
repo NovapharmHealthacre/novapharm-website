@@ -43,8 +43,8 @@ function isolatedEnvironment(environment, additions = {}) {
   return isolated;
 }
 
-function runNode(script, environment, label) {
-  const result = spawnSync(process.execPath, [script], {
+function runNode(script, environment, label, args = []) {
+  const result = spawnSync(process.execPath, [script, ...args], {
     cwd: repositoryRoot,
     env: environment,
     encoding: "utf8",
@@ -147,6 +147,8 @@ export async function startLocalPortal() {
       BOOTSTRAP_ADMIN_PASSWORD: temporaryPassword
     }), "Local portal initialisation");
   } else {
+    const backup = JSON.parse(runNode(join(repositoryRoot, "scripts", "backup-database.mjs"), baseEnvironment, "Pre-migration database backup"));
+    runNode(join(repositoryRoot, "scripts", "verify-database-backup.mjs"), baseEnvironment, "Pre-migration backup verification", [backup.backupPath]);
     runNode(join(repositoryRoot, "scripts", "local-portal", "seed.mjs"), baseEnvironment, "Synthetic local data refresh");
   }
   runNode(join(repositoryRoot, "scripts", "import-nutraxin-catalogue.mjs"), baseEnvironment, "Nutraxin catalogue import");
