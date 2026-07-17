@@ -43,6 +43,15 @@ import {
 } from "./src/core/application-upload-service.mjs";
 import { previewAccessAllowed } from "./src/core/preview-auth.mjs";
 import {
+  advanceWorkflow,
+  authorisedEnterpriseSearch,
+  createCustomerQualityComplaint,
+  createCustomerReturn,
+  createCustomerSupport,
+  enterpriseModuleSnapshot,
+  transitionProductLifecycle
+} from "./src/core/enterprise-domain-service.mjs";
+import {
   changePassword,
   consumeRateLimit,
   countActiveSessions,
@@ -345,6 +354,21 @@ function hasScope(session, scopes) {
   return Boolean(session && scopes.some((scope) => session.accessScopes?.includes(scope) || session.accessScopes?.includes("admin")));
 }
 
+function enterpriseContext(session) {
+  const localOwnerCustomer = isLocalPortal && session.accessType === "customer" && hasScope(session, ["admin"])
+    ? "demo-customer-001"
+    : null;
+  return {
+    username: session.username,
+    displayName: session.displayName,
+    role: session.role,
+    accessType: session.accessType,
+    accessScopes: session.accessScopes,
+    customerId: session.customerId || localOwnerCustomer,
+    userId: session.userId || null
+  };
+}
+
 function isWithinDirectory(directory, filePath) {
   const pathFromDirectory = relative(directory, filePath);
   return pathFromDirectory === "" || (!pathFromDirectory.startsWith("..") && !isAbsolute(pathFromDirectory));
@@ -424,9 +448,11 @@ function safeFilePath(urlPath) {
 }
 
 async function portalData(session) {
-  if (session.role === "client") {
+  if (session.accessType === "customer") {
+    const context = enterpriseContext(session);
+    if (!context.customerId) throw Object.assign(new Error("A customer account is not linked to this identity."), { statusCode: 403 });
     return {
-      dashboard: await operationalDashboard(session.customerId),
+      dashboard: await operationalDashboard(context.customerId),
       dataPolicy: "Customer values are restricted to the authenticated customer account and come from the canonical database."
     };
   }
@@ -724,8 +750,9 @@ export async function handleRequest(request, response) {
     if (pathname === "/api/dashboard" && request.method === "GET") {
       const session = await scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
-      if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
-      const customerId = session.role === "client" ? session.customerId : null;
+      const context = enterpriseContext(session);
+      if (session.accessType === "customer" && !context.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
+      const customerId = session.accessType === "customer" ? context.customerId : null;
       json(response, 200, await operationalDashboard(customerId));
       return;
     }
@@ -733,8 +760,9 @@ export async function handleRequest(request, response) {
     if (pathname === "/api/catalog/products" && request.method === "GET") {
       const session = await scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
-      if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
-      json(response, 200, { products: await listProducts(url.searchParams.get("q") || "", { customerVisibleOnly: session.role === "client" }), dataFreshness: new Date().toISOString() });
+      const context = enterpriseContext(session);
+      if (session.accessType === "customer" && !context.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
+      json(response, 200, { products: await listProducts(url.searchParams.get("q") || "", { customerVisibleOnly: session.accessType === "customer" }), dataFreshness: new Date().toISOString() });
       return;
     }
 
@@ -769,8 +797,9 @@ export async function handleRequest(request, response) {
     if (pathname === "/api/orders" && request.method === "GET") {
       const session = await scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
-      if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
-      json(response, 200, { orders: await listOrders({ customerId: session.role === "client" ? session.customerId : null }) });
+      const context = enterpriseContext(session);
+      if (session.accessType === "customer" && !context.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
+      json(response, 200, { orders: await listOrders({ customerId: session.accessType === "customer" ? context.customerId : null }) });
       return;
     }
 
@@ -778,8 +807,9 @@ export async function handleRequest(request, response) {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
       const session = await scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
-      if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
-      const scopedCustomerId = session.role === "client" ? session.customerId : null;
+      const context = enterpriseContext(session);
+      if (session.accessType === "customer" && !context.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
+      const scopedCustomerId = session.accessType === "customer" ? context.customerId : null;
       json(response, 201, { order: await createOrder(await readBody(request), session.username, scopedCustomerId) });
       return;
     }
@@ -804,7 +834,8 @@ export async function handleRequest(request, response) {
       if (!session) return;
       const requestedEntityType = url.searchParams.get("entityType");
       const requestedEntityId = url.searchParams.get("entityId");
-      if (session.role === "client" && (!session.customerId || requestedEntityType !== "customer" || requestedEntityId !== session.customerId)) {
+      const context = enterpriseContext(session);
+      if (session.accessType === "customer" && (!context.customerId || requestedEntityType !== "customer" || requestedEntityId !== context.customerId)) {
         return json(response, 403, { error: "Customer documents must be linked to the authenticated customer account." });
       }
       const bytes = await readRawBody(request);
@@ -820,6 +851,67 @@ export async function handleRequest(request, response) {
         actor: session.username
       });
       json(response, 201, { document });
+      return;
+    }
+
+    const enterpriseModuleMatch = pathname.match(/^\/api\/enterprise\/modules\/([a-z0-9.-]+)$/);
+    if (enterpriseModuleMatch && request.method === "GET") {
+      const session = await authenticated(request, response);
+      if (!session) return;
+      json(response, 200, await enterpriseModuleSnapshot(enterpriseModuleMatch[1], enterpriseContext(session)));
+      return;
+    }
+
+    if (pathname === "/api/enterprise/search" && request.method === "GET") {
+      const session = await authenticated(request, response);
+      if (!session) return;
+      json(response, 200, await authorisedEnterpriseSearch(url.searchParams.get("q") || "", enterpriseContext(session)));
+      return;
+    }
+
+    if (pathname === "/api/enterprise/customer/support" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
+      if (!await rateLimit(request, "customer-support", 20, 60 * 60 * 1000)) return json(response, 429, { error: "Too many support requests. Try again later." });
+      const session = await scopedAuthentication(request, response, ["customer"]);
+      if (!session) return;
+      json(response, 201, { ticket: await createCustomerSupport(await readBody(request), enterpriseContext(session)) });
+      return;
+    }
+
+    if (pathname === "/api/enterprise/customer/returns" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
+      if (!await rateLimit(request, "customer-return", 12, 60 * 60 * 1000)) return json(response, 429, { error: "Too many return requests. Try again later." });
+      const session = await scopedAuthentication(request, response, ["customer"]);
+      if (!session) return;
+      json(response, 201, { returnRequest: await createCustomerReturn(await readBody(request), enterpriseContext(session)) });
+      return;
+    }
+
+    if (pathname === "/api/enterprise/customer/quality-complaints" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
+      if (!await rateLimit(request, "customer-quality", 12, 60 * 60 * 1000)) return json(response, 429, { error: "Too many quality requests. Try again later." });
+      const session = await scopedAuthentication(request, response, ["customer"]);
+      if (!session) return;
+      json(response, 201, { complaint: await createCustomerQualityComplaint(await readBody(request), enterpriseContext(session)) });
+      return;
+    }
+
+    const workflowAdvanceMatch = pathname.match(/^\/api\/enterprise\/workflows\/([^/]+)\/advance$/);
+    if (workflowAdvanceMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
+      const session = await scopedAuthentication(request, response, ["employee"]);
+      if (!session) return;
+      json(response, 200, { workflow: await advanceWorkflow(workflowAdvanceMatch[1], session.username) });
+      return;
+    }
+
+    const productTransitionMatch = pathname.match(/^\/api\/enterprise\/products\/([^/]+)\/status$/);
+    if (productTransitionMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
+      const session = await scopedAuthentication(request, response, ["employee"]);
+      if (!session) return;
+      const body = await readBody(request);
+      json(response, 200, { product: await transitionProductLifecycle(productTransitionMatch[1], body.status, session.username) });
       return;
     }
 

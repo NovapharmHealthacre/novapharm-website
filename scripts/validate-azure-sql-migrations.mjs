@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 
 const migrationRoot = resolve(process.cwd(), "database", "azure");
 const files = readdirSync(migrationRoot).filter((file) => /^\d{3}_[a-z0-9_]+\.sql$/i.test(file)).sort();
-assert.deepEqual(files, ["001_initial.sql", "002_notification_delivery_queue.sql", "003_backend_activation.sql"]);
+assert.deepEqual(files, ["001_initial.sql", "002_notification_delivery_queue.sql", "003_backend_activation.sql", "004_integrated_enterprise_portal.sql"]);
 
 const sources = Object.fromEntries(files.map((file) => [file, readFileSync(resolve(migrationRoot, file), "utf8")]));
 for (const [file, source] of Object.entries(sources)) {
@@ -37,4 +37,24 @@ assert.match(activation, /TR_application_status_history_immutable/i);
 assert.match(activation, /CREATE ROLE novapharm_reporting_reader/i);
 assert.match(activation, /SYSUTCDATETIME\(\)/i);
 
-console.log(`Azure SQL migration structure validated: ${files.length} ordered migrations, activation tables, immutable history, 9 reporting views and least-privilege reporting grants.`);
+const enterprise = sources["004_integrated_enterprise_portal.sql"];
+for (const table of [
+  "product_families", "product_variants", "product_media", "product_claims", "product_composition_items", "product_certifications", "supplier_contacts", "price_lists",
+  "inventory_balances", "inventory_reservations", "shipments", "customer_statements", "goods_receipts",
+  "supplier_invoices", "credit_notes", "journal_entries", "quality_complaints", "quality_deviations", "change_controls", "capa_records", "regulatory_cases",
+  "crm_opportunities", "document_versions", "workflow_instances", "domain_events", "outbox_messages",
+  "catalogue_imports", "catalogue_import_items", "role_permissions"
+]) {
+  assert.match(enterprise, new RegExp(`dbo\\.${table}`, "i"), `Enterprise migration is missing ${table}.`);
+}
+for (const requiredControl of [
+  /REFERENCES\s+dbo\./i,
+  /UNIQUE/i,
+  /CHECK\s*\(/i,
+  /CREATE INDEX/i,
+  /version int NOT NULL/i
+]) {
+  assert.match(enterprise, requiredControl, `Enterprise migration is missing required control ${requiredControl}.`);
+}
+
+console.log(`Azure SQL migration structure validated: ${files.length} ordered migrations, enterprise domain tables, activation controls, 9 reporting views and least-privilege reporting grants.`);

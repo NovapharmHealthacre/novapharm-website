@@ -25,6 +25,7 @@ const {
 const { storeDocument } = await import("../src/core/document-service.mjs");
 const { processSharePointEvents } = await import("../src/integrations/sharepoint/sync-engine.mjs");
 const { processPolarSpeedEvents } = await import("../src/integrations/polar-speed/sync-engine.mjs");
+const { run } = await import("../src/data/database.mjs");
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -84,6 +85,19 @@ const product = await createProduct({
   marketingStatus: "marketed",
   lifecycleStatus: "active"
 }, "validation_admin");
+assert(supplier.qualificationStatus === "prospect", "supplier creation must ignore browser-supplied approval state");
+assert(product.lifecycleStatus === "draft" && product.marketingStatus === "not_marketed" && product.mhraStatus === "not_assessed", "product creation must begin in controlled draft state");
+let unapprovedOrderBlocked = false;
+try {
+  await createOrder({ customerId: customer.id, lines: [{ productId: product.id, quantity: 1 }] }, "validation_admin");
+} catch (error) {
+  unapprovedOrderBlocked = error?.statusCode === 409;
+}
+assert(unapprovedOrderBlocked, "draft product must not be orderable");
+
+// This isolated validation step represents approved qualification evidence; public inputs cannot set these states.
+await run("UPDATE suppliers SET qualification_status = 'approved', gdp_status = 'certified', gmp_status = 'certified' WHERE id = ?", supplier.id);
+await run("UPDATE products SET regulatory_status = 'approved', marketing_status = 'marketed', mhra_status = 'approved', lifecycle_status = 'active' WHERE id = ?", product.id);
 const order = await createOrder({
   customerId: customer.id,
   customerPoReference: "PO-VALIDATION",

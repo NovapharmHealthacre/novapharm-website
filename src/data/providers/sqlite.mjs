@@ -1,5 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
-import { chmodSync, existsSync, mkdirSync, readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { chmodSync, existsSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 
 function identifier(value) {
@@ -20,6 +21,7 @@ export class SqliteProvider {
     this.raw = new DatabaseSync(this.path);
     this.raw.exec(readFileSync(resolve(process.cwd(), "database", "schema.sql"), "utf8"));
     this.#runAdditiveMigrations();
+    this.#runVersionedMigrations();
     this.raw.exec(readFileSync(resolve(process.cwd(), "database", "sqlite", "reporting-views.sql"), "utf8"));
     this.#protectRuntimeFiles();
   }
@@ -113,6 +115,35 @@ export class SqliteProvider {
     this.raw.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_documents_idempotency ON documents(idempotency_key) WHERE idempotency_key IS NOT NULL");
     this.raw.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_federated_identity ON users(identity_issuer, external_subject) WHERE external_subject IS NOT NULL");
     this.raw.exec("CREATE INDEX IF NOT EXISTS idx_notifications_delivery_queue ON notifications(channel, status, next_attempt_at, created_at)");
+  }
+
+  #runVersionedMigrations() {
+    this.raw.exec(`CREATE TABLE IF NOT EXISTS schema_migrations (
+      version TEXT PRIMARY KEY,
+      checksum_sha256 TEXT NOT NULL,
+      applied_at TEXT NOT NULL
+    )`);
+    const directory = resolve(process.cwd(), "database", "sqlite");
+    const files = readdirSync(directory).filter((file) => /^\d{3}_[a-z0-9_]+\.sql$/i.test(file)).sort();
+    for (const file of files) {
+      const source = readFileSync(resolve(directory, file), "utf8");
+      const checksum = createHash("sha256").update(source).digest("hex");
+      const applied = this.raw.prepare("SELECT checksum_sha256 FROM schema_migrations WHERE version = ?").get(file);
+      if (applied) {
+        if (applied.checksum_sha256 !== checksum) throw new Error(`Applied SQLite migration checksum changed: ${file}`);
+        continue;
+      }
+      this.raw.exec("BEGIN IMMEDIATE");
+      try {
+        this.raw.exec(source);
+        this.raw.prepare("INSERT INTO schema_migrations(version, checksum_sha256, applied_at) VALUES(?, ?, ?)")
+          .run(file, checksum, new Date().toISOString());
+        this.raw.exec("COMMIT");
+      } catch (error) {
+        this.raw.exec("ROLLBACK");
+        throw error;
+      }
+    }
   }
 
   async all(sql, params = []) {

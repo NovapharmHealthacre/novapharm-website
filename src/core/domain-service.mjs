@@ -120,9 +120,9 @@ export async function createSupplier(input, actor) {
     companyNumber: String(input.companyNumber || "").trim() || null,
     vatNumber: String(input.vatNumber || "").trim() || null,
     supplierType: required(input.supplierType, "Supplier type"),
-    qualificationStatus: String(input.qualificationStatus || "prospect"),
-    gdpStatus: String(input.gdpStatus || "not_assessed"),
-    gmpStatus: String(input.gmpStatus || "not_assessed")
+    qualificationStatus: "prospect",
+    gdpStatus: "not_assessed",
+    gmpStatus: "not_assessed"
   };
   return transaction(async () => {
     await run(`INSERT INTO organizations(id, legal_name, trading_name, company_number, vat_number, created_at, created_by, updated_at, updated_by)
@@ -229,10 +229,10 @@ export async function createProduct(input, actor) {
     manufacturer: String(input.manufacturer || "").trim() || null,
     countryOfOrigin: String(input.countryOfOrigin || "").trim() || null,
     listPriceMinor: integer(input.listPriceMinor || 0, "List price"),
-    regulatoryStatus: String(input.regulatoryStatus || "draft"),
-    marketingStatus: String(input.marketingStatus || "not_marketed"),
-    mhraStatus: String(input.mhraStatus || "not_assessed"),
-    lifecycleStatus: String(input.lifecycleStatus || "draft")
+    regulatoryStatus: "draft",
+    marketingStatus: "not_marketed",
+    mhraStatus: "not_assessed",
+    lifecycleStatus: "draft"
   };
   return transaction(async () => {
     await run(`INSERT INTO products(

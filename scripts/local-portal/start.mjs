@@ -149,6 +149,8 @@ export async function startLocalPortal() {
   } else {
     runNode(join(repositoryRoot, "scripts", "local-portal", "seed.mjs"), baseEnvironment, "Synthetic local data refresh");
   }
+  runNode(join(repositoryRoot, "scripts", "import-nutraxin-catalogue.mjs"), baseEnvironment, "Nutraxin catalogue import");
+  runNode(join(repositoryRoot, "scripts", "local-portal", "seed-enterprise-scenarios.mjs"), baseEnvironment, "Enterprise synthetic scenario refresh");
 
   const logDescriptor = openSync(runtimePaths.log, "a", 0o600);
   chmodSync(runtimePaths.log, 0o600);

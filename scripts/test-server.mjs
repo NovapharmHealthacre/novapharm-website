@@ -413,7 +413,7 @@ const employeePassword = await provisionTestUser({ username: "EmployeeUser", rol
 const boardPassword = await provisionTestUser({ username: "BoardUser", role: "board" });
 const lockoutPassword = await provisionTestUser({ username: "LockoutUser", role: "employee" });
 
-await createProduct({
+const controlledProduct = await createProduct({
   sku: "NPH-CUSTOMER-001",
   productName: "Customer-visible test product",
   listPriceMinor: 1000,
@@ -429,6 +429,20 @@ await createProduct({
   marketingStatus: "not_marketed",
   lifecycleStatus: "draft"
 }, adminUsername);
+assert.deepEqual(
+  {
+    regulatoryStatus: controlledProduct.regulatoryStatus,
+    marketingStatus: controlledProduct.marketingStatus,
+    mhraStatus: controlledProduct.mhraStatus,
+    lifecycleStatus: controlledProduct.lifecycleStatus
+  },
+  {
+    regulatoryStatus: "draft",
+    marketingStatus: "not_marketed",
+    mhraStatus: "not_assessed",
+    lifecycleStatus: "draft"
+  }
+);
 
 const customerLogin = await login({ username: "CustomerUser", password: customerPassword, accessType: "customer", csrfCookie, address: "127.0.0.11" });
 const employeeLogin = await login({ username: "EmployeeUser", password: employeePassword, accessType: "employee", csrfCookie, address: "127.0.0.12" });
@@ -452,7 +466,15 @@ assert.equal(customerPortalData.payload.dashboard.account.id, customer.id);
 assert.equal(customerPortalData.payload.integrations, undefined);
 const customerProducts = await request({ url: "/api/catalog/products", headers: { cookie: `np_session=${customerLogin.sessionCookie}` }, address: "127.0.0.17" });
 assert.equal(customerProducts.statusCode, 200);
-assert.deepEqual(customerProducts.payload.products.map((product) => product.sku), ["NPH-CUSTOMER-001"]);
+assert.deepEqual(customerProducts.payload.products, []);
+
+await run(`UPDATE products
+  SET regulatory_status = 'approved', marketing_status = 'marketed', mhra_status = 'approved',
+      lifecycle_status = 'active', updated_at = ?, updated_by = ?
+  WHERE id = ?`, new Date().toISOString(), adminUsername, controlledProduct.id);
+const approvedCustomerProducts = await request({ url: "/api/catalog/products", headers: { cookie: `np_session=${customerLogin.sessionCookie}` }, address: "127.0.0.171" });
+assert.equal(approvedCustomerProducts.statusCode, 200);
+assert.deepEqual(approvedCustomerProducts.payload.products.map((product) => product.sku), ["NPH-CUSTOMER-001"]);
 
 const customerEmployeeApi = await request({ url: "/api/customers", headers: { cookie: `np_session=${customerLogin.sessionCookie}` }, address: "127.0.0.18" });
 assert.equal(customerEmployeeApi.statusCode, 403);
