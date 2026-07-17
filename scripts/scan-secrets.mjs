@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { lstatSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { basename, extname, join, relative, resolve } from "node:path";
 import { execFileSync } from "node:child_process";
 
@@ -23,6 +23,7 @@ const secretPatterns = [
 function walk(directory = root) {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     if (entry.isDirectory() && ignoredDirectories.has(entry.name)) return [];
+    if (entry.isSymbolicLink()) return [];
     const path = join(directory, entry.name);
     return entry.isDirectory() ? walk(path) : [path];
   });
@@ -34,6 +35,7 @@ const trackedFiles = execFileSync("git", ["ls-files", "-z"], { cwd: root, encodi
 for (const path of trackedFiles) {
   const name = basename(path);
   if (forbiddenNames.some((pattern) => pattern.test(name))) failures.push(`${path}: tracked forbidden development or secret-bearing artefact`);
+  if (lstatSync(join(root, path)).isSymbolicLink()) failures.push(`${path}: tracked symbolic links are not permitted`);
 }
 for (const file of files) {
   const name = basename(file);
