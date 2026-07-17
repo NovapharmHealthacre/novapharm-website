@@ -8,7 +8,8 @@ const validated = validateNutraxinRegister();
 
 function assertLocalExecution() {
   if (process.env.NODE_ENV === "production") throw new Error("Nutraxin catalogue import is disabled in production.");
-  if (process.env.LOCAL_PORTAL_MODE !== "true" || process.env.DATABASE_PROVIDER !== "sqlite" || process.env.HOST !== "127.0.0.1") {
+  const protectedValidationMode = process.env.LOCAL_PORTAL_MODE === "true" || process.env.BROWSER_VALIDATION_MODE === "true";
+  if (!protectedValidationMode || process.env.DATABASE_PROVIDER !== "sqlite" || process.env.HOST !== "127.0.0.1") {
     throw new Error("Nutraxin catalogue import requires the protected localhost SQLite portal environment.");
   }
 }

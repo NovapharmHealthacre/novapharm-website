@@ -38,10 +38,12 @@ async function seedWorkflow({ code, businessKey, entityType, entityId, complete 
 }
 
 export async function seedEnterpriseScenarios() {
-  if (process.env.LOCAL_PORTAL_MODE !== "true" || process.env.DATABASE_PROVIDER !== "sqlite" || process.env.HOST !== "127.0.0.1") {
+  const browserValidation = process.env.BROWSER_VALIDATION_MODE === "true";
+  if ((process.env.LOCAL_PORTAL_MODE !== "true" && !browserValidation) || process.env.DATABASE_PROVIDER !== "sqlite" || process.env.HOST !== "127.0.0.1") {
     throw new Error("Enterprise synthetic scenarios may only run in the protected localhost SQLite portal.");
   }
-  const owner = await one("SELECT id, username FROM users WHERE lower(username) = lower(?)", ownerUsername);
+  const validationUsername = browserValidation ? process.env.PORTAL_USERNAME : ownerUsername;
+  const owner = await one("SELECT id, username FROM users WHERE lower(username) = lower(?)", validationUsername);
   if (!owner) throw new Error("The protected local owner identity must exist before enterprise scenarios are seeded.");
   const nutraxinProducts = await all(`SELECT p.id, p.sku, p.product_name, pv.catalogue_order
     FROM products p JOIN product_variants pv ON pv.product_id = p.id

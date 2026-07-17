@@ -32,10 +32,12 @@ It checks response status, unexpected redirects, one-H1 structure, horizontal ov
 
 An isolated runtime with synthetic credentials and data paths was generated without printing its credential. Opening its localhost server was denied by the desktop execution environment, so no current screenshots or Axe results were produced.
 
+The non-listening preparation phase passed under Node.js 24: protected synthetic credentials, an isolated SQLite database, all four scopes, 19 Nutraxin products, seven workflow instances, zero enabled public claims, database integrity and foreign keys. No live service credential was inherited and no listening process was created by that test.
+
 ## Historical Evidence
 
 The repository retains a previous Chromium/WebKit run covering 616 rendered page states, 616 Axe scans and 764 screenshots with zero final issues. That run targeted commit `a1473d7cbf2b789da5e015f8bf9c1fe0cfcd977b`; it predates the enterprise modules and Nutraxin catalogue and therefore does not satisfy the current gate by itself.
 
 ## Required Completion
 
-Run `npm run test:browser-workflows` and `npm run test:browser-acceptance` against the protected synthetic localhost runtime. Inspect representative screenshots for the Nutraxin page, customer orders/returns/quality, employee products/purchasing/quality, the Executive Platform and administrator review. Update this report only from the resulting machine-readable evidence.
+Start the isolated runtime with `npm run browser:validation:start`, then run `npm run browser:validation:test`. Inspect representative screenshots for the Nutraxin page, customer orders/returns/quality, employee products/purchasing/quality, the Executive Platform and administrator review. Update this report only from the resulting machine-readable evidence.

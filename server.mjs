@@ -83,6 +83,7 @@ const secureContentRoot = resolve(process.env.SECURE_CONTENT_ROOT || join(root, 
 const isProduction = process.env.NODE_ENV === "production";
 const isPreview = process.env.PREVIEW_MODE === "true";
 const isLocalPortal = process.env.LOCAL_PORTAL_MODE === "true";
+const isBrowserValidation = process.env.BROWSER_VALIDATION_MODE === "true";
 const previewUsername = String(process.env.PREVIEW_ACCESS_USERNAME || "");
 const previewPassword = String(process.env.PREVIEW_ACCESS_PASSWORD || "");
 const host = process.env.HOST || "127.0.0.1";
@@ -121,6 +122,17 @@ if (isLocalPortal) {
   }
   for (const variable of ["RESEND_API_KEY", "MICROSOFT_CLIENT_SECRET", "MICROSOFT_CERTIFICATE_PRIVATE_KEY", "AZURE_STORAGE_CONNECTION_STRING", "SHAREPOINT_DRIVE_ID"]) {
     if (process.env[variable]) throw new Error(`${variable} must not be supplied to the local owner portal.`);
+  }
+}
+if (isBrowserValidation) {
+  if (isProduction || isPreview || host !== "127.0.0.1" || publicOrigin !== "http://127.0.0.1:4178") {
+    throw new Error("BROWSER_VALIDATION_MODE must run only at http://127.0.0.1:4178 in a non-production process.");
+  }
+  if (databaseProvider !== "sqlite" || process.env.DOCUMENT_STORAGE_PROVIDER !== "local-validation" || process.env.EMAIL_PROVIDER !== "local-capture") {
+    throw new Error("Browser validation requires SQLite, local-validation document storage and local-capture email.");
+  }
+  for (const variable of ["RESEND_API_KEY", "MICROSOFT_CLIENT_SECRET", "MICROSOFT_CERTIFICATE_PRIVATE_KEY", "AZURE_STORAGE_CONNECTION_STRING", "SHAREPOINT_DRIVE_ID"]) {
+    if (process.env[variable]) throw new Error(`${variable} must not be supplied to browser validation.`);
   }
 }
 
@@ -220,7 +232,7 @@ function securityHeaders(extra = {}, { allowPrivateInline = false } = {}) {
     ].join("; "),
     ...extra
   };
-  if (isPreview || isLocalPortal) headers["X-Robots-Tag"] = "noindex, nofollow, noarchive";
+  if (isPreview || isLocalPortal || isBrowserValidation) headers["X-Robots-Tag"] = "noindex, nofollow, noarchive";
   if (isProduction) headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains";
   return headers;
 }
@@ -261,7 +273,7 @@ function requireCsrf(request) {
 }
 
 function hasAllowedOrigin(request) {
-  if (!isProduction && !isLocalPortal) return true;
+  if (!isProduction && !isLocalPortal && !isBrowserValidation) return true;
   const origin = request.headers.origin;
   if (!origin) return true;
   try {
@@ -272,7 +284,7 @@ function hasAllowedOrigin(request) {
 }
 
 function hasAllowedHost(request) {
-  if (!isProduction && !isLocalPortal) return true;
+  if (!isProduction && !isLocalPortal && !isBrowserValidation) return true;
   const received = String(request.headers.host || "").toLowerCase();
   const allowed = new Set([
     new URL(publicOrigin).host.toLowerCase(),
@@ -355,7 +367,7 @@ function hasScope(session, scopes) {
 }
 
 function enterpriseContext(session) {
-  const localOwnerCustomer = isLocalPortal && session.accessType === "customer" && hasScope(session, ["admin"])
+  const localOwnerCustomer = (isLocalPortal || isBrowserValidation) && session.accessType === "customer" && hasScope(session, ["admin"])
     ? "demo-customer-001"
     : null;
   return {
@@ -502,7 +514,7 @@ async function healthSnapshot() {
     status: ready ? "ready" : databaseIsReady ? "degraded" : "unavailable",
     service: "novapharm-web",
     version: applicationVersion,
-    environment: isLocalPortal ? "local_validation" : isPreview ? "validation" : isProduction ? "production" : "development",
+    environment: isLocalPortal ? "local_validation" : isBrowserValidation ? "browser_validation" : isPreview ? "validation" : isProduction ? "production" : "development",
     timestamp: new Date().toISOString(),
     application: "live",
     database: databaseIsReady ? "ready" : "unavailable",

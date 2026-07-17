@@ -40,7 +40,7 @@ Recommended review sequence:
 
 ## Remaining Acceptance Gates
 
-1. Run the current Chromium/WebKit matrix and inspect the new screenshots.
+1. Start the isolated synthetic runtime with `npm run browser:validation:start`, run `npm run browser:validation:test`, and inspect the new screenshots.
 2. Run the official npm production advisory query when network permission is available.
 3. Start the protected owner runtime; startup now creates and verifies a fresh database backup before migration 004, import or synthetic seeding.
 4. Verify the owner identity hash, salt, credential version, scopes and session continuity are unchanged.

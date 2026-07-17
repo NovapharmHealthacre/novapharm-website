@@ -8,8 +8,9 @@ function within(root, path) {
 
 export class LocalValidationDocumentStore {
   constructor(environment = process.env) {
-    if (environment.LOCAL_PORTAL_MODE !== "true" || environment.NODE_ENV === "production") {
-      throw new Error("The local validation document store is restricted to the non-production owner portal.");
+    const protectedValidationMode = environment.LOCAL_PORTAL_MODE === "true" || environment.BROWSER_VALIDATION_MODE === "true";
+    if (!protectedValidationMode || environment.NODE_ENV === "production") {
+      throw new Error("The local validation document store is restricted to a protected non-production validation environment.");
     }
     this.root = resolve(environment.DOCUMENT_STORAGE_ROOT || "");
     if (!environment.DOCUMENT_STORAGE_ROOT) throw new Error("DOCUMENT_STORAGE_ROOT is required for local validation documents.");

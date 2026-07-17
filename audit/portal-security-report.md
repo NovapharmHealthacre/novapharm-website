@@ -25,7 +25,7 @@
 
 | Scan | Result | Evidence |
 | --- | --- | --- |
-| Repository policy scanner | Passed | 759 repository files |
+| Repository policy scanner | Passed | Current candidate tree; zero policy findings |
 | Gitleaks current working tree | Passed | Approximately 1.04 GB scanned; zero findings |
 | Gitleaks all reachable branches and tags | Passed | All reachable candidate history; zero findings |
 
@@ -33,7 +33,7 @@ Gitleaks was run with full redaction. No credential value was printed or added t
 
 ## Security Test Results
 
-Passed suites covered authentication, authorisation, customer isolation, CSRF, forced password change, old-password rejection, session restart, session expiry, lockout, rate limiting, secure headers, host/origin enforcement, protected files, database migration, Key Vault reference failure, document quarantine and backup restoration.
+Passed suites covered authentication, authorisation, customer isolation, CSRF, forced password change, old-password rejection, session restart, session expiry, lockout, rate limiting, secure headers, host/origin enforcement, protected files, database migration, Key Vault reference failure, document quarantine, browser-validation isolation and backup restoration.
 
 The complete `npm run check` workflow also passed from a detached clean checkout under Node.js 24.14.0. Regeneration caused no tracked-file drift.
 

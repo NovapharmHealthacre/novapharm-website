@@ -35,8 +35,9 @@ function ensureSyntheticDocument(fileName, body) {
 }
 
 export async function seedLocalPortalData() {
-  if (process.env.LOCAL_PORTAL_MODE !== "true" || process.env.DATABASE_PROVIDER !== "sqlite") {
-    throw new Error("Synthetic local data may only be seeded in LOCAL_PORTAL_MODE with SQLite.");
+  const protectedValidationMode = process.env.LOCAL_PORTAL_MODE === "true" || process.env.BROWSER_VALIDATION_MODE === "true";
+  if (!protectedValidationMode || process.env.DATABASE_PROVIDER !== "sqlite" || process.env.HOST !== "127.0.0.1") {
+    throw new Error("Synthetic local data may only be seeded in a protected localhost validation mode with SQLite.");
   }
 
   const now = nowIso();
