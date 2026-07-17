@@ -14,8 +14,10 @@ import {
   sourcingPillars,
   technologyMaturity
 } from "../src/content/site-content.mjs";
+import { nutraxinExpectedRangeCounts, validateNutraxinRegister } from "../src/core/nutraxin-catalogue.mjs";
 
 const root = resolve(process.cwd());
+const nutraxinCatalogue = validateNutraxinRegister({ repositoryRoot: root }).register;
 const articlesDirectory = join(root, "src", "content", "insights");
 const articles = readdirSync(articlesDirectory)
   .filter((name) => name.endsWith(".json"))
@@ -66,6 +68,25 @@ function productCategoryMedia(category) {
   }
 
   return `<figure class="portfolio-media"><picture><source srcset="${publicBase}.avif" type="image/avif"><source srcset="${publicBase}.webp" type="image/webp"><img src="${publicBase}.jpg" alt="${esc(category.imageAlt)}" width="1600" height="900" loading="lazy" decoding="async"></picture><figcaption>Representative licensed stock image; not a NovaPharm-owned facility or product.</figcaption></figure>`;
+}
+
+function nutraxinProductMedia(product, eager = false) {
+  const base = `/assets/media/products/nutraxin/${product.imageBase}`;
+  return `<picture class="nutraxin-product-picture"><source srcset="${base}-480.avif 480w, ${base}-800.avif 800w" sizes="(max-width: 640px) 86vw, (max-width: 1040px) 44vw, 28vw" type="image/avif"><source srcset="${base}-480.webp 480w, ${base}-800.webp 800w" sizes="(max-width: 640px) 86vw, (max-width: 1040px) 44vw, 28vw" type="image/webp"><img src="${base}.png" alt="${esc(product.altText)}" width="700" height="700" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
+}
+
+function nutraxinProductCard(product, eager = false) {
+  const evidenceStatus = product.notes?.length ? "Composition review required" : "Catalogue transcription reviewed";
+  return `<article class="nutraxin-card" id="${esc(product.slug)}">
+    <figure class="nutraxin-card-media">${nutraxinProductMedia(product, eager)}<figcaption>Owner-supplied catalogue pack image; availability is not asserted.</figcaption></figure>
+    <div class="nutraxin-card-copy">
+      <div class="nutraxin-card-meta"><span>${esc(product.range)}</span><span>${esc(product.packSize)}</span></div>
+      <h3>${esc(product.name)}</h3>
+      <p class="nutraxin-form">${esc(product.dosageForm)} · ${esc(product.servingText)}</p>
+      <details class="nutraxin-composition"><summary>Catalogue composition</summary><dl>${product.formulation.map((item) => `<div><dt>${esc(item.name)}</dt><dd>${esc(item.amount)}</dd></div>`).join("")}</dl></details>
+      <p class="nutraxin-evidence${product.notes?.length ? " nutraxin-evidence-review" : ""}">${esc(evidenceStatus)}</p>
+    </div>
+  </article>`;
 }
 
 function articleWordCount(article) {
@@ -509,9 +530,53 @@ function productsPage() {
   const body = `${pageHero(meta, "A strategic B2B portfolio, not a public pharmacy catalogue.", "Product categories describe NovaPharm's focus and partnership pipeline. They do not indicate marketing-authorisation ownership, current stock, pricing or availability.", slug)}
   ${mediaStory({ src: "/assets/media/editorial/oncology-specialty.svg", alt: "Scientific network representing oncology and specialty portfolio discipline", kicker: "Portfolio focus", title: "Category focus is not a claim of availability.", text: "Oncology, specialty and hard-to-source categories remain strategic areas of assessment. Every product requires its own rights, regulatory, quality, source and commercial evidence before release." })}
   <section class="section"><div class="container">${regulatoryNotice()}<p class="portfolio-image-disclosure">Category photography is representative and does not depict NovaPharm-owned premises, current stock or an authorised NovaPharm product.</p><div class="portfolio-table" role="list">${productCategories.map((category) => `<article role="listitem">${productCategoryMedia(category)}<div class="portfolio-card-body"><span class="status-label">${esc(category.status)}</span><h2>${esc(category.title)}</h2><p>${esc(category.text)}</p><a href="#submit-opportunity">Submit a relevant opportunity</a></div></article>`).join("")}</div></div></section>
+  <section class="section section-band"><div class="container nutraxin-feature"><div class="nutraxin-feature-copy"><span class="section-kicker">Food supplement portfolio review</span><h2>Nutraxin UK catalogue reference.</h2><p>Review 19 owner-supplied catalogue records with pack imagery and source-transcribed composition information. The catalogue is presented for qualified B2B evaluation and does not state current availability, price, stock, approved claims or medicinal status.</p><a class="btn btn-outline" href="/product-portfolio/nutraxin/">Review the catalogue</a></div>${nutraxinProductMedia(nutraxinCatalogue.products[0])}</div></section>
   <section class="section section-dark" id="submit-opportunity"><div class="container form-feature"><div>${sectionHeading("Product opportunity", "Bring an evidence-backed B2B opportunity.", "Dossier owners, manufacturers and authorised wholesalers can submit an initial enquiry. Do not include patient information, confidential dossiers or adverse-event reports in this form.")}<ul class="list-check list-check-light"><li>Dossier-owner enquiry</li><li>Manufacturer partnership</li><li>Wholesaler sourcing opportunity</li><li>UK distribution discussion</li></ul></div>${contactForm({ formId: "product-opportunity", defaultType: "Product opportunity", compact: true })}</div></section>
   ${finalCta()}`;
   return documentShell({ meta, slug, body });
+}
+
+function nutraxinPage() {
+  const slug = "product-portfolio/nutraxin";
+  const meta = pageMeta[slug];
+  const ranges = Object.keys(nutraxinExpectedRangeCounts);
+  const products = [...nutraxinCatalogue.products].sort((a, b) => a.catalogueOrder - b.catalogueOrder);
+  const itemList = {
+    "@context": "https://schema.org",
+    "@id": `${absoluteUrl(routePath(slug))}#catalogue`,
+    "@type": "ItemList",
+    name: "Nutraxin UK catalogue references",
+    numberOfItems: products.length,
+    itemListOrder: "https://schema.org/ItemListOrderAscending",
+    itemListElement: products.map((product, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: `${absoluteUrl(routePath(slug))}#${product.slug}`,
+      item: {
+        "@type": "Thing",
+        name: product.name,
+        description: `${product.packSize}; ${product.dosageForm}. Owner-supplied catalogue reference for B2B evaluation; availability and regulatory status are not asserted.`,
+        image: absoluteUrl(`/assets/media/products/nutraxin/${product.imageBase}.png`)
+      }
+    }))
+  };
+  const schemas = [...pageSchemas(meta, slug, {
+    breadcrumbs: [
+      { name: "Home", href: "/" },
+      { name: "Products", href: "/product-portfolio/" },
+      { name: "Nutraxin catalogue", href: routePath(slug) }
+    ]
+  }), itemList];
+  const body = `${pageHero(meta, "Nutraxin food supplement catalogue references.", "Nineteen owner-supplied catalogue records are presented for qualified B2B portfolio evaluation. This is not a consumer shop, product-availability statement or authorised-claims library.", slug, { parent: { name: "Products", href: "/product-portfolio/" } })}
+  <section class="section nutraxin-introduction"><div class="container nutraxin-introduction-grid"><div>${sectionHeading("Catalogue scope", "Pack imagery and source-transcribed composition, under evidence control.", "The products below are grouped as they appear in the supplied UK catalogue. Product identity, pack presentation and composition remain subject to approved-label, legal, regulatory, claims and commercial review before any market use.")}<div class="nutraxin-facts" role="list"><span role="listitem"><strong>19</strong> catalogue references</span><span role="listitem"><strong>6</strong> product ranges</span><span role="listitem"><strong>0</strong> availability claims</span></div></div><aside class="nutraxin-disclosure" aria-label="Important catalogue status"><strong>Important status</strong><p>${esc(nutraxinCatalogue.controls.warning)}</p><ul><li>No price or stock is published.</li><li>No health or medicinal claim is authorised by this page.</li><li>Some source values require approved-label confirmation.</li><li>Images reproduce the owner-supplied catalogue artwork.</li></ul></aside></div></section>
+  <nav class="nutraxin-range-nav" aria-label="Nutraxin catalogue ranges"><div class="container">${ranges.map((range) => `<a href="#range-${range.toLowerCase().replace(/[^a-z0-9]+/g, "-")}">${esc(range)} <span>${nutraxinExpectedRangeCounts[range]}</span></a>`).join("")}</div></nav>
+  ${ranges.map((range, rangeIndex) => {
+    const rangeProducts = products.filter((product) => product.range === range);
+    const anchor = range.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    return `<section class="section nutraxin-range" id="range-${anchor}"><div class="container"><header class="nutraxin-range-head"><div><span class="section-kicker">Range ${String(rangeIndex + 1).padStart(2, "0")}</span><h2>${esc(range)}</h2></div><p>${rangeProducts.length} catalogue ${rangeProducts.length === 1 ? "reference" : "references"}</p></header><div class="nutraxin-grid">${rangeProducts.map((product, index) => nutraxinProductCard(product, rangeIndex === 0 && index === 0)).join("")}</div></div></section>`;
+  }).join("")}
+  <section class="section section-dark"><div class="container two-column-story"><div>${sectionHeading("Governed next step", "A catalogue entry is the start of review, not a release decision.", "Qualified organisations can discuss portfolio fit, approved labelling, evidence, rights, regulatory scope and supply arrangements through NovaPharm's controlled product-opportunity route.")}<div class="hero-actions"><a class="btn btn-primary" href="/contact/?enquiry=Product%20opportunity">Discuss a product opportunity</a><a class="btn btn-ghost" href="/product-portfolio/">Return to portfolio</a></div></div><ul class="list-check list-check-light"><li>Approved artwork and composition verification</li><li>UK nutrition and health-claims review</li><li>Rights, source and supplier qualification</li><li>Commercial and availability assessment</li><li>Release only after applicable approvals</li></ul></div></section>`;
+  return documentShell({ meta, slug, body, options: { schemas } });
 }
 
 function partnersPage() {
@@ -751,6 +816,7 @@ export function buildPublicPages() {
   write("services/index.html", servicesPage());
   write("regulatory-services/index.html", regulatoryPage());
   write("product-portfolio/index.html", productsPage());
+  write("product-portfolio/nutraxin/index.html", nutraxinPage());
   write("partner-with-us/index.html", partnersPage());
   write("technology/index.html", technologyPage());
   write("news-insights/index.html", insightsPage());

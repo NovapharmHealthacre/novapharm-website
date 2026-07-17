@@ -401,6 +401,11 @@ export const pageMeta = Object.freeze({
     description: "NovaPharm's planned B2B portfolio focus across oncology, specialty, oral liquid and selected licensed medicines, subject to authorisation and availability.",
     eyebrow: "Products"
   },
+  "product-portfolio/nutraxin": {
+    title: "Nutraxin UK Food Supplement Catalogue | NovaPharm Healthcare",
+    description: "Review 19 Nutraxin food supplement catalogue references with pack imagery and source-transcribed composition details for qualified B2B evaluation; availability, claims and regulatory status are not asserted.",
+    eyebrow: "Nutraxin catalogue"
+  },
   "partner-with-us": {
     title: "Pharmaceutical Partnerships UK | Manufacturers, Dossier Owners and Buyers",
     description: "Partner with NovaPharm across GMP manufacturing, CMO/CDMO, product dossiers, European sourcing, UK distribution, logistics and technology.",

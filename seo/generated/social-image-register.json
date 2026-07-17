@@ -80,6 +80,16 @@
     "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/oncology-vial-handling.jpg"
   },
   {
+    "route": "/product-portfolio/nutraxin/",
+    "page": "https://novapharmhealthcare.com/product-portfolio/nutraxin/",
+    "url": "/assets/media/products/nutraxin/vitamin-d3-120-tablets.png",
+    "type": "image/png",
+    "width": 700,
+    "height": 700,
+    "alt": "Nutraxin Vitamin D3 catalogue pack reference",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-d3-120-tablets.png"
+  },
+  {
     "route": "/partner-with-us/",
     "page": "https://novapharmhealthcare.com/partner-with-us/",
     "url": "/assets/media/modules/partners-qualification.jpg",

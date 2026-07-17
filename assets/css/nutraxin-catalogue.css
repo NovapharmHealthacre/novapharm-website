@@ -1,0 +1,393 @@
+@layer pages {
+  body[data-page="product-portfolio/nutraxin"] {
+    background: #f7f9fb;
+  }
+
+  .nutraxin-feature {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.65fr);
+    align-items: center;
+    gap: clamp(32px, 6vw, 88px);
+  }
+
+  .nutraxin-feature-copy {
+    max-width: 720px;
+  }
+
+  .nutraxin-feature-copy h2 {
+    margin: 12px 0 18px;
+    color: var(--ink);
+    font-size: clamp(32px, 4vw, 54px);
+    line-height: 1.05;
+  }
+
+  .nutraxin-feature-copy p {
+    margin: 0 0 26px;
+    color: var(--muted);
+    font-size: 18px;
+    line-height: 1.65;
+  }
+
+  .nutraxin-feature > .nutraxin-product-picture {
+    display: block;
+    aspect-ratio: 1;
+    min-width: 0;
+  }
+
+  .nutraxin-feature > .nutraxin-product-picture img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 24px 34px rgb(13 31 48 / 12%));
+  }
+
+  .nutraxin-introduction {
+    background: #fff;
+  }
+
+  .nutraxin-introduction-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(300px, 0.7fr);
+    gap: clamp(32px, 6vw, 84px);
+    align-items: start;
+  }
+
+  .nutraxin-facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 36px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nutraxin-facts span {
+    min-width: 0;
+    padding: 22px 20px 22px 0;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .nutraxin-facts span + span {
+    padding-left: 20px;
+    border-left: 1px solid var(--line);
+  }
+
+  .nutraxin-facts strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--ink);
+    font-size: 30px;
+    line-height: 1;
+  }
+
+  .nutraxin-disclosure {
+    padding: clamp(24px, 4vw, 36px);
+    border-left: 4px solid var(--brand);
+    background: #edf3f7;
+    color: #263b4d;
+  }
+
+  .nutraxin-disclosure strong {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--ink);
+    font-size: 18px;
+  }
+
+  .nutraxin-disclosure p,
+  .nutraxin-disclosure li {
+    line-height: 1.6;
+  }
+
+  .nutraxin-disclosure ul {
+    margin: 18px 0 0;
+    padding-left: 20px;
+  }
+
+  .nutraxin-range-nav {
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: #fff;
+  }
+
+  .nutraxin-range-nav .container {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    scrollbar-width: thin;
+  }
+
+  .nutraxin-range-nav a {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 9px;
+    min-height: 44px;
+    padding: 9px 13px;
+    border: 1px solid #cbd7e0;
+    border-radius: 4px;
+    color: #183348;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .nutraxin-range-nav a:hover,
+  .nutraxin-range-nav a:focus-visible {
+    border-color: var(--brand);
+    color: var(--brand);
+  }
+
+  .nutraxin-range-nav a span {
+    display: grid;
+    width: 24px;
+    height: 24px;
+    place-items: center;
+    border-radius: 50%;
+    color: #fff;
+    background: #173246;
+    font-size: 12px;
+  }
+
+  .nutraxin-range {
+    scroll-margin-top: 24px;
+  }
+
+  .nutraxin-range:nth-of-type(even) {
+    background: #fff;
+  }
+
+  .nutraxin-range-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 32px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nutraxin-range-head h2 {
+    margin: 8px 0 0;
+    color: var(--ink);
+    font-size: clamp(30px, 4vw, 48px);
+    line-height: 1.08;
+  }
+
+  .nutraxin-range-head p {
+    margin: 0;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .nutraxin-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .nutraxin-card {
+    min-width: 0;
+    overflow: clip;
+    border: 1px solid #d7e0e7;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 10px 34px rgb(16 40 58 / 7%);
+  }
+
+  .nutraxin-card-media {
+    margin: 0;
+    padding: 18px 18px 12px;
+    border-bottom: 1px solid #e1e8ed;
+    background: #f5f8fa;
+  }
+
+  .nutraxin-product-picture {
+    display: block;
+    aspect-ratio: 1;
+  }
+
+  .nutraxin-card-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 220ms ease;
+  }
+
+  .nutraxin-card:hover .nutraxin-card-media img {
+    transform: scale(1.025);
+  }
+
+  .nutraxin-card-media figcaption {
+    margin-top: 8px;
+    color: #667988;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .nutraxin-card-copy {
+    padding: 24px;
+  }
+
+  .nutraxin-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .nutraxin-card-meta span {
+    padding: 5px 8px;
+    border: 1px solid #cfdae2;
+    border-radius: 3px;
+    color: #365064;
+    background: #f8fafb;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .nutraxin-card h3 {
+    margin: 0;
+    color: var(--ink);
+    font-size: 23px;
+    line-height: 1.2;
+  }
+
+  .nutraxin-form {
+    min-height: 46px;
+    margin: 10px 0 18px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .nutraxin-composition {
+    border-top: 1px solid #e0e7ec;
+    border-bottom: 1px solid #e0e7ec;
+  }
+
+  .nutraxin-composition summary {
+    min-height: 46px;
+    padding: 13px 0;
+    color: #173246;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 750;
+  }
+
+  .nutraxin-composition dl {
+    margin: 0 0 14px;
+  }
+
+  .nutraxin-composition dl div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    padding: 8px 0;
+    border-top: 1px solid #edf1f4;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .nutraxin-composition dt {
+    color: #354c5e;
+  }
+
+  .nutraxin-composition dd {
+    margin: 0;
+    color: var(--ink);
+    font-weight: 700;
+    text-align: right;
+  }
+
+  .nutraxin-evidence {
+    margin: 16px 0 0;
+    padding-left: 18px;
+    color: #2a6248;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.45;
+    position: relative;
+  }
+
+  .nutraxin-evidence::before {
+    position: absolute;
+    top: 4px;
+    left: 0;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #2f7b59;
+    content: "";
+  }
+
+  .nutraxin-evidence-review {
+    color: #865513;
+  }
+
+  .nutraxin-evidence-review::before {
+    background: #b77818;
+  }
+
+  @media (max-width: 1040px) {
+    .nutraxin-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .nutraxin-introduction-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .nutraxin-feature,
+    .nutraxin-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .nutraxin-feature > .nutraxin-product-picture {
+      width: min(100%, 420px);
+      margin-inline: auto;
+    }
+
+    .nutraxin-facts {
+      grid-template-columns: 1fr;
+    }
+
+    .nutraxin-facts span,
+    .nutraxin-facts span + span {
+      padding: 16px 0;
+      border-left: 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .nutraxin-facts span:first-child {
+      border-top: 0;
+    }
+
+    .nutraxin-range-head {
+      align-items: start;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nutraxin-card-copy {
+      padding: 20px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nutraxin-card-media img {
+      transition: none;
+    }
+
+    .nutraxin-card:hover .nutraxin-card-media img {
+      transform: none;
+    }
+  }
+}
