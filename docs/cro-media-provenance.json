@@ -1,0 +1,44 @@
+{
+  "version": "1.0.0",
+  "reviewed": "2026-07-18",
+  "policy": {
+    "representativeOnly": true,
+    "noFacilityOwnershipImplied": true,
+    "noNovaPharmPersonnelImplied": true,
+    "noLiveProgrammeImplied": true,
+    "noPatientImagery": true,
+    "thirdPartyRuntimeRequests": 0
+  },
+  "assets": [
+    {
+      "id": "cro-evidence-architecture",
+      "source": "OpenAI ImageGen authoring master",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "creator": "OpenAI ImageGen",
+      "downloadDate": "2026-07-18",
+      "modification": "Human-reviewed concept; metadata removed; responsive AVIF, WebP and JPEG derivatives at 640, 960 and 1600 pixels",
+      "publicUsage": ["/cro/ hero", "/cro/ Open Graph image"],
+      "altText": "Clinical-development team reviewing programme evidence, responsibilities and milestones",
+      "caption": "Conceptual programme-governance visual; not NovaPharm personnel, premises or a live clinical programme.",
+      "dimensions": { "width": 1600, "height": 900 },
+      "fallbackChecksumSha256": "7c94aef26a1d69cb8d9cf2d6d4ff90020124edfe4de6121eeb98d94e5e54db86",
+      "reviewStatus": "human-reviewed-approved-for-candidate"
+    },
+    {
+      "id": "cro-delivery-architecture",
+      "source": "OpenAI ImageGen authoring master",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "creator": "OpenAI ImageGen",
+      "downloadDate": "2026-07-18",
+      "modification": "Removed all readable labels, dates and programme claims; metadata removed; responsive AVIF, WebP and JPEG derivatives at 640, 960 and 1600 pixels",
+      "publicUsage": ["/cro/ delivery architecture"],
+      "altText": "Programme records, risk indicators and milestones reviewed across controlled documents and a dashboard",
+      "caption": "Conceptual delivery-architecture visual; no live sponsor, study or operational data is shown.",
+      "dimensions": { "width": 1600, "height": 900 },
+      "fallbackChecksumSha256": "fdc2f825872e0de7feb2137cd3d1475cb7b9bde5ad2831af9f7622d1556d5b9d",
+      "reviewStatus": "human-reviewed-approved-for-candidate"
+    }
+  ]
+}
