@@ -27,6 +27,8 @@ Coverage included 37 public routes and seven authenticated/protected states: the
 - All eight product-card crops were captured separately in both engines and visually reviewed. Their register status is `rendered-and-brand-reviewed`.
 - Desktop and mobile navigation, logo rendering, cookie controls, form states, focus indicators, table overflow, reduced motion, long-page wrapping and protected-route states were inspected without a remaining material defect.
 
+The backend-activation rerun on 15 July 2026 repeated all 616 rendered page states and 616 Axe scans with zero issues. A separate Chromium/WebKit interaction test submitted synthetic contact and account records, uploaded a synthetic PDF, authenticated as the synthetic administrator and opened both review records successfully. The first interaction run exposed a `document` variable shadowing defect in the administrator application renderer; the defect was corrected and the interaction suite then passed in both engines.
+
 ## Evidence boundary
 
 Raw full-matrix screenshots remain ignored build evidence; the compact result is committed at `audit/evidence/browser-acceptance-summary.json`. Targeted before-and-after review screenshots are committed under `audit/evidence/art-direction/`. The run used the local production-mode Node application with synthetic users and records. It proves rendered application behaviour, not Azure F1, Azure SQL, Entra, Blob, network latency or the generated Azure hostname. Those hosted checks remain blocked until an eligible protected subscription is available.

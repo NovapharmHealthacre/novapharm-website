@@ -1,0 +1,369 @@
+{
+  "version": "1.0.0",
+  "reviewedAt": "2026-07-16",
+  "scope": "Nutraxin owner-supplied catalogue references",
+  "control": "No health, nutrition, medicinal, efficacy, clinical, certification or regulatory claim is approved by catalogue import.",
+  "products": [
+    {
+      "productId": "nutraxin-vitamin-d3-120-tablets",
+      "sku": "NUT-UK-VD3-T120",
+      "productName": "Nutraxin Vitamin D3",
+      "publicClaims": [],
+      "evidence": [],
+      "claimsReviewStatus": "blocked_pending_evidence_and_market_review",
+      "certificationStatus": "not_verified",
+      "regulatoryClassification": "not_assessed",
+      "saleStatus": "not_offered",
+      "requiredBeforeApproval": [
+        "Approved market label and complete composition",
+        "Applicable UK legal and regulatory classification review",
+        "Permitted nutrition and health-claims evidence review",
+        "Supplier, rights and artwork authorisation evidence",
+        "Named reviewer decision and audit record"
+      ],
+      "discrepancyCount": 0
+    },
+    {
+      "productId": "nutraxin-vitamin-d3-spray-30ml",
+      "sku": "NUT-UK-VD3-S30",
+      "productName": "Nutraxin Vitamin D3 Spray",
+      "publicClaims": [],
+      "evidence": [],
+      "claimsReviewStatus": "blocked_pending_evidence_and_market_review",
+      "certificationStatus": "not_verified",
+      "regulatoryClassification": "not_assessed",
+      "saleStatus": "not_offered",
+      "requiredBeforeApproval": [
+        "Approved market label and complete composition",
+        "Applicable UK legal and regulatory classification review",
+        "Permitted nutrition and health-claims evidence review",
+        "Supplier, rights and artwork authorisation evidence",
+        "Named reviewer decision and audit record"
+      ],
+      "discrepancyCount": 1
+    },
+    {
+      "productId": "nutraxin-vitamin-d3-k2-120-tablets",
+      "sku": "NUT-UK-VD3K2-T120",
+      "productName": "Nutraxin Vitamin D3 + K2",
+      "publicClaims": [],
+      "evidence": [],
+      "claimsReviewStatus": "blocked_pending_evidence_and_market_review",
+      "certificationStatus": "not_verified",
+      "regulatoryClassification": "not_assessed",
+      "saleStatus": "not_offered",
+      "requiredBeforeApproval": [
+        "Approved market label and complete composition",
+        "Applicable UK legal and regulatory classification review",
+        "Permitted nutrition and health-claims evidence review",
+        "Supplier, rights and artwork authorisation evidence",
+        "Named reviewer decision and audit record"
+      ],
+      "discrepancyCount": 0
+    },
+    {
+      "productId": "nutraxin-vitamin-d3-k2-spray-30ml",
+      "sku": "NUT-UK-VD3K2-S30",
+      "productName": "Nutraxin Vitamin D3 + K2 Spray",
+      "publicClaims": [],
+      "evidence": [],
+      "claimsReviewStatus": "blocked_pending_evidence_and_market_review",
+      "certificationStatus": "not_verified",
+      "regulatoryClassification": "not_assessed",
+      "saleStatus": "not_offered",
+      "requiredBeforeApproval": [
+        "Approved market label and complete composition",
+        "Applicable UK legal and regulatory classification review",
+        "Permitted nutrition and health-claims evidence review",
+        "Supplier, rights and artwork authorisation evidence",
+        "Named reviewer decision and audit record"
+      ],
+      "discrepancyCount": 1
+    },
+    {
+      "productId": "nutraxin-vitamin-c-1000mg-30-tablets",
+      "sku": "NUT-UK-VC1000-T30",
+      "productName": "Nutraxin Vitamin C 1000 mg",
+      "publicClaims": [],
+      "evidence": [],
+      "claimsReviewStatus": "blocked_pending_evidence_and_market_review",
+      "certificationStatus": "not_verified",
+      "regulatoryClassification": "not_assessed",
+      "saleStatus": "not_offered",
+      "requiredBeforeApproval": [
+        "Approved market label and complete composition",
+        "Applicable UK legal and regulatory classification review",
+        "Permitted nutrition and health-claims evidence review",
+        "Supplier, rights and artwork authorisation evidence",
+        "Named reviewer decision and audit record"
+      ],
+      "discrepancyCount": 0
+    },
+    {
+      "productId": "nutraxin-vitamin-c-500mg-chewable-30-tablets",
+      "sku": "NUT-UK-VC500-C30",
+      "productName": "Nutraxin Vitamin C 500 mg Chewable",
+      "publicClaims": [],
+      "evidence": [],
+      "claimsReviewStatus": "blocked_pending_evidence_and_market_review",
+      "certificationStatus": "not_verified",
+      "regulatoryClassification": "not_assessed",
+      "saleStatus": "not_offered",
+      "requiredBeforeApproval": [
+        "Approved market label and complete composition",
+        "Applicable UK legal and regulatory classification review",
+        "Permitted nutrition and health-claims evidence review",
+        "Supplier, rights and artwork authorisation evidence",
+        "Named reviewer decision and audit record"
+      ],
+      "discrepancyCount": 1
+    },
+    {
+      "productId": "nutraxin-vitamin-max-60-tablets",
+      "sku": "NUT-UK-VMAX-T60",
+      "productName": "Nutraxin Vitamin MAX C + D + Zinc",
+      "publicClaims": [],
+      "evidence": [],
+      "claimsReviewStatus": "blocked_pending_evidence_and_market_review",
+      "certificationStatus": "not_verified",
+      "regulatoryClassification": "not_assessed",
+      "saleStatus": "not_offered",
+      "requiredBeforeApproval": [
+        "Approved market label and complete composition",
+        "Applicable UK legal and regulatory classification review",
+        "Permitted nutrition and health-claims evidence review",
+        "Supplier, rights and artwork authorisation evidence",
+        "Named reviewer decision and audit record"
+      ],
+      "discrepancyCount": 0
+    },
+    {
+      "productId": "nutraxin-vitamin-max-15-effervescent-tablets",
+      "sku": "NUT-UK-VMAX-E15",
+      "productName": "Nutraxin Vitamin MAX C + D + Zinc Effervescent",
+      "publicClaims": [],
+      "evidence": [],
+      "claimsReviewStatus": "blocked_pending_evidence_and_market_review",
+      "certificationStatus": "not_verified",
+      "regulatoryClassification": "not_assessed",
+      "saleStatus": "not_offered",
+      "requiredBeforeApproval": [
+        "Approved market label and complete composition",
+        "Applicable UK legal and regulatory classification review",
+        "Permitted nutrition and health-claims evidence review",
+        "Supplier, rights and artwork authorisation evidence",
+        "Named reviewer decision and audit record"
+      ],
+      "discrepancyCount": 1
+    },
+    {
+      "productId": "nutraxin-magnesium-complex-60-tablets",
+      "sku": "NUT-UK-MGCX-T60",
+      "productName": "Nutraxin Magnesium Complex + Vitamin B6",
+      "publicClaims": [],
+      "evidence": [],
+      "claimsReviewStatus": "blocked_pending_evidence_and_market_review",
+      "certificationStatus": "not_verified",
+      "regulatoryClassification": "not_assessed",
+      "saleStatus": "not_offered",
+      "requiredBeforeApproval": [
+        "Approved market label and complete composition",
+        "Applicable UK legal and regulatory classification review",
+        "Permitted nutrition and health-claims evidence review",
+        "Supplier, rights and artwork authorisation evidence",
+        "Named reviewer decision and audit record"
+      ],
+      "discrepancyCount": 1
+    },
+    {
+      "productId": "nutraxin-magnesium-daily-60-tablets",
+      "sku": "NUT-UK-MGDL-T60",
+      "productName": "Nutraxin Magnesium Daily",
+      "publicClaims": [],
+      "evidence": [],
+      "claimsReviewStatus": "blocked_pending_evidence_and_market_review",
+      "certificationStatus": "not_verified",
+      "regulatoryClassification": "not_assessed",
+      "saleStatus": "not_offered",
+      "requiredBeforeApproval": [
+        "Approved market label and complete composition",
+        "Applicable UK legal and regulatory classification review",
+        "Permitted nutrition and health-claims evidence review",
+        "Supplier, rights and artwork authorisation evidence",
+        "Named reviewer decision and audit record"
+      ],
+      "discrepancyCount": 0
+    },
+    {
+      "productId": "nutraxin-multivitamin-mineral-energy-60-tablets",
+      "sku": "NUT-UK-MVE-T60",
+      "productName": "Nutraxin Multivitamin Mineral Energy",
+      "publicClaims": [],
+      "evidence": [],
+      "claimsReviewStatus": "blocked_pending_evidence_and_market_review",
+      "certificationStatus": "not_verified",
+      "regulatoryClassification": "not_assessed",
+      "saleStatus": "not_offered",
+      "requiredBeforeApproval": [
+        "Approved market label and complete composition",
+        "Applicable UK legal and regulatory classification review",
+        "Permitted nutrition and health-claims evidence review",
+        "Supplier, rights and artwork authorisation evidence",
+        "Named reviewer decision and audit record"
+      ],
+      "discrepancyCount": 1
+    },
+    {
+      "productId": "nutraxin-womens-multivitamin-complex-60-tablets",
+      "sku": "NUT-UK-MVW-T60",
+      "productName": "Nutraxin Women's Multivitamin Complex",
+      "publicClaims": [],
+      "evidence": [],
+      "claimsReviewStatus": "blocked_pending_evidence_and_market_review",
+      "certificationStatus": "not_verified",
+      "regulatoryClassification": "not_assessed",
+      "saleStatus": "not_offered",
+      "requiredBeforeApproval": [
+        "Approved market label and complete composition",
+        "Applicable UK legal and regulatory classification review",
+        "Permitted nutrition and health-claims evidence review",
+        "Supplier, rights and artwork authorisation evidence",
+        "Named reviewer decision and audit record"
+      ],
+      "discrepancyCount": 1
+    },
+    {
+      "productId": "nutraxin-mens-multivitamin-complex-60-tablets",
+      "sku": "NUT-UK-MVM-T60",
+      "productName": "Nutraxin Men's Multivitamin Complex",
+      "publicClaims": [],
+      "evidence": [],
+      "claimsReviewStatus": "blocked_pending_evidence_and_market_review",
+      "certificationStatus": "not_verified",
+      "regulatoryClassification": "not_assessed",
+      "saleStatus": "not_offered",
+      "requiredBeforeApproval": [
+        "Approved market label and complete composition",
+        "Applicable UK legal and regulatory classification review",
+        "Permitted nutrition and health-claims evidence review",
+        "Supplier, rights and artwork authorisation evidence",
+        "Named reviewer decision and audit record"
+      ],
+      "discrepancyCount": 1
+    },
+    {
+      "productId": "nutraxin-collagen-gold-30-tablets",
+      "sku": "NUT-UK-CG-T30",
+      "productName": "Nutraxin Gold Quality Collagen",
+      "publicClaims": [],
+      "evidence": [],
+      "claimsReviewStatus": "blocked_pending_evidence_and_market_review",
+      "certificationStatus": "not_verified",
+      "regulatoryClassification": "not_assessed",
+      "saleStatus": "not_offered",
+      "requiredBeforeApproval": [
+        "Approved market label and complete composition",
+        "Applicable UK legal and regulatory classification review",
+        "Permitted nutrition and health-claims evidence review",
+        "Supplier, rights and artwork authorisation evidence",
+        "Named reviewer decision and audit record"
+      ],
+      "discrepancyCount": 1
+    },
+    {
+      "productId": "nutraxin-collagen-gold-30-sachets",
+      "sku": "NUT-UK-CG-S30",
+      "productName": "Nutraxin Gold Quality Collagen Sachets",
+      "publicClaims": [],
+      "evidence": [],
+      "claimsReviewStatus": "blocked_pending_evidence_and_market_review",
+      "certificationStatus": "not_verified",
+      "regulatoryClassification": "not_assessed",
+      "saleStatus": "not_offered",
+      "requiredBeforeApproval": [
+        "Approved market label and complete composition",
+        "Applicable UK legal and regulatory classification review",
+        "Permitted nutrition and health-claims evidence review",
+        "Supplier, rights and artwork authorisation evidence",
+        "Named reviewer decision and audit record"
+      ],
+      "discrepancyCount": 1
+    },
+    {
+      "productId": "nutraxin-collagen-complex-90-tablets",
+      "sku": "NUT-UK-CCX-T90",
+      "productName": "Nutraxin Collagen Complex",
+      "publicClaims": [],
+      "evidence": [],
+      "claimsReviewStatus": "blocked_pending_evidence_and_market_review",
+      "certificationStatus": "not_verified",
+      "regulatoryClassification": "not_assessed",
+      "saleStatus": "not_offered",
+      "requiredBeforeApproval": [
+        "Approved market label and complete composition",
+        "Applicable UK legal and regulatory classification review",
+        "Permitted nutrition and health-claims evidence review",
+        "Supplier, rights and artwork authorisation evidence",
+        "Named reviewer decision and audit record"
+      ],
+      "discrepancyCount": 0
+    },
+    {
+      "productId": "nutraxin-artoflex-90-tablets",
+      "sku": "NUT-UK-ART-T90",
+      "productName": "Nutraxin Artoflex",
+      "publicClaims": [],
+      "evidence": [],
+      "claimsReviewStatus": "blocked_pending_evidence_and_market_review",
+      "certificationStatus": "not_verified",
+      "regulatoryClassification": "not_assessed",
+      "saleStatus": "not_offered",
+      "requiredBeforeApproval": [
+        "Approved market label and complete composition",
+        "Applicable UK legal and regulatory classification review",
+        "Permitted nutrition and health-claims evidence review",
+        "Supplier, rights and artwork authorisation evidence",
+        "Named reviewer decision and audit record"
+      ],
+      "discrepancyCount": 1
+    },
+    {
+      "productId": "nutraxin-l-carnitine-60-tablets",
+      "sku": "NUT-UK-LCAR-T60",
+      "productName": "Nutraxin L-Carnitine 700 mg",
+      "publicClaims": [],
+      "evidence": [],
+      "claimsReviewStatus": "blocked_pending_evidence_and_market_review",
+      "certificationStatus": "not_verified",
+      "regulatoryClassification": "not_assessed",
+      "saleStatus": "not_offered",
+      "requiredBeforeApproval": [
+        "Approved market label and complete composition",
+        "Applicable UK legal and regulatory classification review",
+        "Permitted nutrition and health-claims evidence review",
+        "Supplier, rights and artwork authorisation evidence",
+        "Named reviewer decision and audit record"
+      ],
+      "discrepancyCount": 1
+    },
+    {
+      "productId": "nutraxin-vitamin-b12-60-sublingual-tablets",
+      "sku": "NUT-UK-B12-SL60",
+      "productName": "Nutraxin Vitamin B12 Methylcobalamin",
+      "publicClaims": [],
+      "evidence": [],
+      "claimsReviewStatus": "blocked_pending_evidence_and_market_review",
+      "certificationStatus": "not_verified",
+      "regulatoryClassification": "not_assessed",
+      "saleStatus": "not_offered",
+      "requiredBeforeApproval": [
+        "Approved market label and complete composition",
+        "Applicable UK legal and regulatory classification review",
+        "Permitted nutrition and health-claims evidence review",
+        "Supplier, rights and artwork authorisation evidence",
+        "Named reviewer decision and audit record"
+      ],
+      "discrepancyCount": 0
+    }
+  ]
+}

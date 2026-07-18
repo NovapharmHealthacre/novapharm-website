@@ -1,4 +1,6 @@
 import { createHash, pbkdf2Sync, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
+import { existsSync, rmSync } from "node:fs";
+import { dirname, isAbsolute, relative, resolve } from "node:path";
 import { all, insertIgnore, nowIso, one, run, transaction, upsert } from "../data/database.mjs";
 import { isResolvedSecret, isUnresolvedSecretReference } from "./secret-value.mjs";
 
@@ -16,6 +18,20 @@ const lockoutMs = 15 * 60 * 1000;
 const dummySalt = "d2762abec8f240cb5090e15ca8d75025";
 const dummyHash = hashPassword("invalid-password", dummySalt);
 const commonPasswordFragments = ["password", "passphrase", "qwerty", "letmein", "welcome", "administrator", "novapharm"];
+
+function retireLocalBootstrapArtifacts(environment = process.env) {
+  if (environment.LOCAL_PORTAL_MODE !== "true" || environment.NODE_ENV === "production" || !environment.DATABASE_PATH) return false;
+  const protectedRoot = resolve(dirname(environment.DATABASE_PATH), "..");
+  const targets = [environment.LOCAL_BOOTSTRAP_CREDENTIAL_FILE, environment.LOCAL_BOOTSTRAP_DISPLAY_SCRIPT].filter(Boolean);
+  for (const target of targets) {
+    const resolvedTarget = resolve(target);
+    const fromRoot = relative(protectedRoot, resolvedTarget);
+    if (fromRoot.startsWith("..") || isAbsolute(fromRoot)) throw new Error("Local bootstrap artifact path is outside the protected runtime root.");
+    rmSync(resolvedTarget, { force: true });
+    if (existsSync(resolvedTarget)) throw new Error("A local bootstrap artifact could not be retired.");
+  }
+  return targets.length > 0;
+}
 
 export function hashPassword(password, salt, iterations = passwordIterations) {
   return pbkdf2Sync(String(password), String(salt), iterations, 32, "sha256").toString("hex");
@@ -321,6 +337,9 @@ export async function changePassword({ username, currentPassword, newPassword, c
     await run("UPDATE auth_sessions SET revoked_at = COALESCE(revoked_at, ?) WHERE username = ?", now, record.username);
     await recordSecurityEvent({ eventType: "password.changed", username: record.username, networkFingerprint, outcome: "allowed", details: { sessionsInvalidated: true, credentialVersion } });
   });
+  if (retireLocalBootstrapArtifacts()) {
+    await recordSecurityEvent({ eventType: "administrator.bootstrap_artifacts_retired", username: record.username, networkFingerprint, outcome: "allowed" });
+  }
   return {
     username: record.username,
     displayName: record.display_name,
@@ -380,6 +399,16 @@ export async function getPersistentSession(id, { idleTimeoutMs = Number(process.
 
 export async function revokePersistentSession(id) {
   if (id) await run("UPDATE auth_sessions SET revoked_at = COALESCE(revoked_at, ?) WHERE id = ?", nowIso(), id);
+}
+
+export async function revokeUserSessions(username, actor = "system") {
+  const canonicalUsername = String(username || "").trim();
+  const user = await one("SELECT username FROM users WHERE username = ?", canonicalUsername);
+  if (!user) throw Object.assign(new Error("Portal user not found."), { statusCode: 404 });
+  const revokedAt = nowIso();
+  const result = await run("UPDATE auth_sessions SET revoked_at = COALESCE(revoked_at, ?) WHERE username = ? AND revoked_at IS NULL", revokedAt, user.username);
+  await recordSecurityEvent({ eventType: "administrator.sessions_revoked", username: user.username, outcome: "allowed", details: { actor, count: Number(result.changes || 0) } });
+  return { username: user.username, revokedSessions: Number(result.changes || 0) };
 }
 
 export async function countActiveSessions() {

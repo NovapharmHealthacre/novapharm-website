@@ -327,6 +327,43 @@
     ]
   },
   {
+    "route": "/product-portfolio/nutraxin/",
+    "canonical": "https://novapharmhealthcare.com/product-portfolio/nutraxin/",
+    "file": "product-portfolio/nutraxin/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/product-portfolio/nutraxin/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Nutraxin UK Food Supplement Catalogue | NovaPharm Healthcare",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/product-portfolio/nutraxin/#catalogue",
+        "types": [
+          "ItemList"
+        ],
+        "name": "Nutraxin UK catalogue references",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
     "route": "/partner-with-us/",
     "canonical": "https://novapharmhealthcare.com/partner-with-us/",
     "file": "partner-with-us/index.html",

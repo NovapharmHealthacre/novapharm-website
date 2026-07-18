@@ -5,3 +5,7 @@ param namePrefix = 'novapharm'
 param sqlServerName = readEnvironmentVariable('AZURE_FREE_SQL_SERVER_NAME')
 param sqlDatabaseName = readEnvironmentVariable('AZURE_FREE_SQL_DATABASE_NAME', 'novapharm-poc')
 param deployKeyVault = bool(readEnvironmentVariable('NOVAPHARM_FREE_DEPLOY_KEY_VAULT', 'false'))
+param emailProvider = readEnvironmentVariable('NOVAPHARM_EMAIL_PROVIDER', 'none')
+param emailFrom = readEnvironmentVariable('NOVAPHARM_EMAIL_FROM', '')
+param contactNotificationTo = readEnvironmentVariable('NOVAPHARM_CONTACT_NOTIFICATION_TO', '')
+param microsoftEmailSender = readEnvironmentVariable('NOVAPHARM_MICROSOFT_EMAIL_SENDER', '')

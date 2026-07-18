@@ -1,5 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { chmodSync, existsSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 
 function identifier(value) {
@@ -20,6 +21,15 @@ export class SqliteProvider {
     this.raw = new DatabaseSync(this.path);
     this.raw.exec(readFileSync(resolve(process.cwd(), "database", "schema.sql"), "utf8"));
     this.#runAdditiveMigrations();
+    this.#runVersionedMigrations();
+    this.raw.exec(readFileSync(resolve(process.cwd(), "database", "sqlite", "reporting-views.sql"), "utf8"));
+    this.#protectRuntimeFiles();
+  }
+
+  #protectRuntimeFiles() {
+    for (const path of [this.path, `${this.path}-wal`, `${this.path}-shm`]) {
+      if (existsSync(path)) chmodSync(path, 0o600);
+    }
   }
 
   #ensureColumn(table, column, definition) {
@@ -30,6 +40,17 @@ export class SqliteProvider {
   }
 
   #runAdditiveMigrations() {
+    this.raw.exec(`
+      DROP VIEW IF EXISTS reporting_current_leads;
+      DROP VIEW IF EXISTS reporting_application_pipeline;
+      DROP VIEW IF EXISTS reporting_notification_delivery;
+      DROP VIEW IF EXISTS reporting_daily_form_activity;
+      DROP VIEW IF EXISTS reporting_utm_attribution;
+      DROP VIEW IF EXISTS reporting_active_portal_users;
+      DROP VIEW IF EXISTS reporting_security_events;
+      DROP VIEW IF EXISTS reporting_document_quarantine;
+      DROP VIEW IF EXISTS reporting_account_activation;
+    `);
     this.#ensureColumn("auth_credentials", "must_change_password", "INTEGER NOT NULL DEFAULT 0 CHECK(must_change_password IN (0, 1))");
     this.#ensureColumn("auth_credentials", "credential_version", "INTEGER NOT NULL DEFAULT 1 CHECK(credential_version >= 1)");
     this.#ensureColumn("auth_credentials", "credential_source", "TEXT NOT NULL DEFAULT 'environment'");
@@ -63,21 +84,66 @@ export class SqliteProvider {
     }
 
     this.#ensureColumn("leads", "submission_fingerprint", "TEXT");
+    this.#ensureColumn("leads", "lead_number", "TEXT");
+    this.#ensureColumn("leads", "delivery_state", "TEXT NOT NULL DEFAULT 'queued'");
     this.#ensureColumn("lead_details", "privacy_notice_version", "TEXT NOT NULL DEFAULT '2026-07-14-v1.1'");
     this.#ensureColumn("lead_details", "safety_confirmation_at", "TEXT");
+    this.#ensureColumn("lead_details", "source_cta", "TEXT");
+    this.#ensureColumn("lead_details", "utm_source", "TEXT");
+    this.#ensureColumn("lead_details", "utm_medium", "TEXT");
+    this.#ensureColumn("lead_details", "utm_campaign", "TEXT");
+    this.#ensureColumn("lead_details", "referrer_domain", "TEXT");
+    this.#ensureColumn("lead_details", "network_fingerprint", "TEXT");
     this.#ensureColumn("account_applications", "privacy_notice_version", "TEXT NOT NULL DEFAULT '2026-07-14-v1.1'");
     this.#ensureColumn("account_applications", "applicant_declaration_at", "TEXT");
+    this.#ensureColumn("account_applications", "submission_key", "TEXT");
+    this.#ensureColumn("account_applications", "expected_document_count", "INTEGER NOT NULL DEFAULT 0");
     this.#ensureColumn("documents", "security_status", "TEXT NOT NULL DEFAULT 'scan_not_configured'");
     this.#ensureColumn("documents", "malware_scan_result", "TEXT");
     this.#ensureColumn("documents", "malware_scanned_at", "TEXT");
+    this.#ensureColumn("documents", "idempotency_key", "TEXT");
     this.#ensureColumn("notifications", "attempt_count", "INTEGER NOT NULL DEFAULT 0");
     this.#ensureColumn("notifications", "next_attempt_at", "TEXT");
     this.#ensureColumn("notifications", "last_attempt_at", "TEXT");
     this.#ensureColumn("notifications", "last_error_code", "TEXT");
     this.#ensureColumn("notifications", "provider_message_id", "TEXT");
+    this.raw.exec(`UPDATE leads SET lead_number = 'NP-LEAD-LEGACY-' || substr(replace(id, '-', ''), 1, 12)
+      WHERE lead_number IS NULL OR lead_number = ''`);
     this.raw.exec("CREATE INDEX IF NOT EXISTS idx_leads_fingerprint ON leads(submission_fingerprint, created_at)");
+    this.raw.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_leads_number ON leads(lead_number)");
+    this.raw.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_account_applications_submission_key ON account_applications(submission_key) WHERE submission_key IS NOT NULL");
+    this.raw.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_documents_idempotency ON documents(idempotency_key) WHERE idempotency_key IS NOT NULL");
     this.raw.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_federated_identity ON users(identity_issuer, external_subject) WHERE external_subject IS NOT NULL");
     this.raw.exec("CREATE INDEX IF NOT EXISTS idx_notifications_delivery_queue ON notifications(channel, status, next_attempt_at, created_at)");
+  }
+
+  #runVersionedMigrations() {
+    this.raw.exec(`CREATE TABLE IF NOT EXISTS schema_migrations (
+      version TEXT PRIMARY KEY,
+      checksum_sha256 TEXT NOT NULL,
+      applied_at TEXT NOT NULL
+    )`);
+    const directory = resolve(process.cwd(), "database", "sqlite");
+    const files = readdirSync(directory).filter((file) => /^\d{3}_[a-z0-9_]+\.sql$/i.test(file)).sort();
+    for (const file of files) {
+      const source = readFileSync(resolve(directory, file), "utf8");
+      const checksum = createHash("sha256").update(source).digest("hex");
+      const applied = this.raw.prepare("SELECT checksum_sha256 FROM schema_migrations WHERE version = ?").get(file);
+      if (applied) {
+        if (applied.checksum_sha256 !== checksum) throw new Error(`Applied SQLite migration checksum changed: ${file}`);
+        continue;
+      }
+      this.raw.exec("BEGIN IMMEDIATE");
+      try {
+        this.raw.exec(source);
+        this.raw.prepare("INSERT INTO schema_migrations(version, checksum_sha256, applied_at) VALUES(?, ?, ?)")
+          .run(file, checksum, new Date().toISOString());
+        this.raw.exec("COMMIT");
+      } catch (error) {
+        this.raw.exec("ROLLBACK");
+        throw error;
+      }
+    }
   }
 
   async all(sql, params = []) {
@@ -89,7 +155,9 @@ export class SqliteProvider {
   }
 
   async run(sql, params = []) {
-    return this.raw.prepare(sql).run(...params);
+    const result = this.raw.prepare(sql).run(...params);
+    this.#protectRuntimeFiles();
+    return result;
   }
 
   async transaction(work) {

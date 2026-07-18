@@ -4,6 +4,7 @@ import { mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { chromium, webkit } from "playwright";
+import { adminModules, customerModules, employeeModules } from "../src/core/portal-module-catalog.mjs";
 
 const baseUrl = new URL(process.env.VISUAL_BASE_URL || "http://127.0.0.1:4178").origin;
 const credentialsPath = resolve(process.env.VISUAL_CREDENTIALS_PATH || "");
@@ -43,6 +44,7 @@ let publicRoutes = [
   ["services", "/services/"],
   ["regulatory", "/regulatory-services/"],
   ["products", "/product-portfolio/"],
+  ["nutraxin-catalogue", "/product-portfolio/nutraxin/"],
   ["partners", "/partner-with-us/"],
   ["technology", "/technology/"],
   ["insights", "/news-insights/"],
@@ -69,14 +71,34 @@ let publicRoutes = [
   ["service-unavailable", "/service-unavailable/"]
 ];
 
+const executiveRoutes = [
+  ["command-centre", "NP_Hub.html"],
+  ["ceo-dashboard", "NP_CEO.html"],
+  ["sales-intelligence", "NP_Sales.html"],
+  ["customer-analytics", "NP_Customers.html"],
+  ["product-master", "NP_Products.html"],
+  ["nhs-data", "NP_NHS_Data.html"],
+  ["plpi", "NP_PLPI.html"],
+  ["pharmacovigilance", "NP_PV.html"],
+  ["sourcing", "NP_Sourcing.html"],
+  ["tenders", "NP_Tenders.html"],
+  ["warehouse", "NP_Warehouse.html"],
+  ["service-levels", "NP_SLA.html"],
+  ["finance", "NP_Finance.html"],
+  ["capital", "NP_Capital.html"],
+  ["microsoft-365", "NP_M365.html"],
+  ["documents", "NP_Documents.html"],
+  ["ai-technology", "NP_AI_Tech.html"],
+  ["traceability", "NP_Blockchain.html"]
+];
+
 let protectedRoutes = [
-  ["customer-dashboard", "/portal/dashboard/"],
-  ["employee-dashboard", "/employee/dashboard/"],
-  ["board-ceo-dashboard", "/portal/ceo-dashboard/"],
-  ["executive-platform", "/portal/executive-platform/"],
-  ["administrator-dashboard", "/admin/dashboard/"],
-  ["password-change", "/portal/change-password/"],
-  ["portal-settings", "/portal/settings/"]
+  ...customerModules.map((module) => [`customer-${module.slug}`, module.route, "customer"]),
+  ["customer-password-change", "/portal/change-password/", "customer"],
+  ...employeeModules.map((module) => [`employee-${module.slug}`, module.route, "employee"]),
+  ["board-executive-platform", "/portal/executive-platform/", "board"],
+  ...executiveRoutes.map(([slug, file]) => [`board-${slug}`, `/portal/executive-platform/${file}`, "board"]),
+  ...adminModules.map((module) => [`admin-${module.slug}`, module.route, "admin"])
 ];
 
 function filterNamed(collection, environmentName) {
@@ -265,25 +287,34 @@ for (const [engineName, engine] of engines) {
   console.log(`Starting ${engineName} browser acceptance.`);
   const browser = await engine.launch({ headless: true });
   try {
-    const authenticationContext = await browser.newContext({
-      baseURL: baseUrl,
-      viewport: viewports[0][1],
-      locale: "en-GB",
-      reducedMotion: "reduce"
-    });
-    const authenticationPage = await authenticationContext.newPage();
-    await authenticationPage.goto(`${baseUrl}/portal/`, { waitUntil: "domcontentloaded" });
-    await waitForStablePage(authenticationPage);
-    await dismissCookieBanner(authenticationPage);
-    await authenticationPage.locator("input[name='accessType'][value='admin']").check();
-    await authenticationPage.locator("#username").fill(credentials.username);
-    await authenticationPage.locator("#password").fill(credentials.password);
-    await Promise.all([
-      authenticationPage.waitForURL((url) => url.pathname === "/admin/dashboard/", { timeout: 15000 }),
-      authenticationPage.locator("button[type='submit']").click()
-    ]);
-    const storageState = await authenticationContext.storageState();
-    await authenticationContext.close();
+    const storageStates = new Map();
+    const redirectByAccessType = {
+      customer: "/portal/dashboard/",
+      employee: "/employee/dashboard/",
+      board: "/portal/executive-platform/",
+      admin: "/admin/dashboard/"
+    };
+    for (const accessType of new Set(protectedRoutes.map(([, , routeAccessType]) => routeAccessType))) {
+      const authenticationContext = await browser.newContext({
+        baseURL: baseUrl,
+        viewport: viewports[0][1],
+        locale: "en-GB",
+        reducedMotion: "reduce"
+      });
+      const authenticationPage = await authenticationContext.newPage();
+      await authenticationPage.goto(`${baseUrl}/portal/`, { waitUntil: "domcontentloaded" });
+      await waitForStablePage(authenticationPage);
+      await dismissCookieBanner(authenticationPage);
+      await authenticationPage.locator(`input[name='accessType'][value='${accessType}']`).check();
+      await authenticationPage.locator("#username").fill(credentials.username);
+      await authenticationPage.locator("#password").fill(credentials.password);
+      await Promise.all([
+        authenticationPage.waitForURL((url) => url.pathname === redirectByAccessType[accessType], { timeout: 15000 }),
+        authenticationPage.locator("button[type='submit']").click()
+      ]);
+      storageStates.set(accessType, await authenticationContext.storageState());
+      await authenticationContext.close();
+    }
 
     for (const [viewportName, viewport] of viewports) {
       const publicContext = await browser.newContext({
@@ -323,18 +354,20 @@ for (const [engineName, engine] of engines) {
       }
       await publicContext.close();
 
-      const protectedContext = await browser.newContext({
-        baseURL: baseUrl,
-        viewport,
-        locale: "en-GB",
-        reducedMotion: "reduce",
-        storageState
-      });
-      const protectedPage = await protectedContext.newPage();
-      for (const [routeName, routePath] of protectedRoutes) {
-        await inspectPage({ page: protectedPage, engineName, viewportName, routeName, expectedPath: routePath, area: "protected" });
+      for (const accessType of storageStates.keys()) {
+        const protectedContext = await browser.newContext({
+          baseURL: baseUrl,
+          viewport,
+          locale: "en-GB",
+          reducedMotion: "reduce",
+          storageState: storageStates.get(accessType)
+        });
+        const protectedPage = await protectedContext.newPage();
+        for (const [routeName, routePath, routeAccessType] of protectedRoutes.filter(([, , value]) => value === accessType)) {
+          await inspectPage({ page: protectedPage, engineName, viewportName, routeName, expectedPath: routePath, area: `protected-${routeAccessType}` });
+        }
+        await protectedContext.close();
       }
-      await protectedContext.close();
       console.log(`Completed ${engineName} ${viewportName}.`);
     }
   } finally {

@@ -17,6 +17,22 @@ param sqlDatabaseName string = 'novapharm-poc'
 @description('Enable Key Vault Standard only after current credit and spending-limit protection are verified. Default remains off.')
 param deployKeyVault bool = false
 
+@allowed([
+  'none'
+  'microsoft-graph'
+])
+@description('Validation email adapter. Keep none until a synthetic mailbox and narrow Graph permission are approved.')
+param emailProvider string = 'none'
+
+@description('Validation-only sender identity; no production recipient list may be used.')
+param emailFrom string = ''
+
+@description('Validation-only internal recipient.')
+param contactNotificationTo string = ''
+
+@description('Approved validation Microsoft 365 sender mailbox.')
+param microsoftEmailSender string = ''
+
 var environmentCode = 'poc'
 var normalisedPrefix = toLower(replace(namePrefix, '-', ''))
 var uniqueSuffix = uniqueString(subscription().subscriptionId, resourceGroup().id, environmentCode)
@@ -248,6 +264,12 @@ var baseAppSettings = {
   PORTAL_DISPLAY_NAME: 'Vishal Chakravarty'
   ENTRA_AUTH_ENABLED: 'false'
   MICROSOFT_GRAPH_AUTH_MODE: 'managed-identity'
+  EMAIL_PROVIDER: emailProvider
+  EMAIL_FROM: emailFrom
+  CONTACT_NOTIFICATION_TO: contactNotificationTo
+  MICROSOFT_EMAIL_SENDER: microsoftEmailSender
+  APPLICATION_UPLOAD_TOKEN_TTL_MS: '1800000'
+  APPLICATION_RESUME_TOKEN_TTL_MS: '86400000'
   SCM_DO_BUILD_DURING_DEPLOYMENT: 'false'
   WEBSITE_NODE_DEFAULT_VERSION: '~24'
   WEBSITE_RUN_FROM_PACKAGE: '1'

@@ -6,7 +6,7 @@ Last reviewed: 14 July 2026
 
 ## Existing implementation
 
-The legacy provider uses SQLite with 36 related tables, foreign keys, persistent sessions, contacts, account applications, customers, suppliers, products, orders, documents, consent evidence, security events, audit records and integration outbox events. `database/azure/001_initial.sql` provides the Azure SQL baseline and `database/azure/002_notification_delivery_queue.sql` adds the versioned transactional-email delivery queue. `src/data/database.mjs` exposes one async repository contract across both providers.
+The legacy provider uses SQLite with 39 related tables, foreign keys, persistent sessions, contacts, account applications, customers, suppliers, products, orders, documents, consent evidence, security events, audit records and integration outbox events. `database/azure/001_initial.sql` provides the Azure SQL baseline, `002_notification_delivery_queue.sql` adds the transactional-email queue, and `003_backend_activation.sql` adds durable application upload grants, immutable status history, customer contacts and least-privilege reporting views. `src/data/database.mjs` exposes one async repository contract across both providers.
 
 ## Migration controls
 

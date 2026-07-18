@@ -27,22 +27,13 @@ jobs:
         run: npx playwright install --with-deps chromium webkit
       - name: Build website
         run: npm run build
-      - name: Create protected synthetic browser environment
-        run: node scripts/create-browser-validation-environment.mjs "$RUNNER_TEMP/novapharm-browser" 4178
-      - name: Start synthetic validation server
-        run: |
-          set -euo pipefail
-          set -a
-          source "$RUNNER_TEMP/novapharm-browser/server.env"
-          set +a
-          node server.mjs > "$RUNNER_TEMP/novapharm-browser/server.log" 2>&1 &
-          echo "$!" > "$RUNNER_TEMP/novapharm-browser/server.pid"
-          for _ in {1..30}; do
-            if curl --fail --silent http://127.0.0.1:4178/api/health > /dev/null; then exit 0; fi
-            sleep 1
-          done
-          cat "$RUNNER_TEMP/novapharm-browser/server.log" >&2
-          exit 1
+      - name: Prepare and start protected synthetic validation server
+        run: node scripts/start-browser-validation.mjs "$RUNNER_TEMP/novapharm-browser"
+      - name: Run backend browser workflows
+        env:
+          VISUAL_BASE_URL: http://127.0.0.1:4178
+          VISUAL_CREDENTIALS_PATH: ${{ runner.temp }}/novapharm-browser/credentials.json
+        run: npm run test:browser-workflows
       - name: Run Chromium and WebKit matrix
         env:
           VISUAL_BASE_URL: http://127.0.0.1:4178
@@ -60,7 +51,5 @@ jobs:
       - name: Stop and remove synthetic runtime
         if: always()
         run: |
-          if [ -f "$RUNNER_TEMP/novapharm-browser/server.pid" ]; then
-            kill "$(cat "$RUNNER_TEMP/novapharm-browser/server.pid")" 2>/dev/null || true
-          fi
+          node scripts/stop-browser-validation.mjs "$RUNNER_TEMP/novapharm-browser" || true
           rm -rf "$RUNNER_TEMP/novapharm-browser"

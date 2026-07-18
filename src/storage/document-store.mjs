@@ -4,6 +4,10 @@ const configuredProvider = String(process.env.DOCUMENT_STORAGE_PROVIDER || (proc
 
 async function createStore() {
   if (configuredProvider === "local") return new LocalDocumentStore(process.env);
+  if (configuredProvider === "local-validation") {
+    const { LocalValidationDocumentStore } = await import("./providers/local-validation-document-store.mjs");
+    return new LocalValidationDocumentStore(process.env);
+  }
   if (configuredProvider === "azure-blob") {
     const { AzureBlobDocumentStore } = await import("./providers/azure-blob-document-store.mjs");
     return new AzureBlobDocumentStore(process.env);

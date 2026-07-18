@@ -39,6 +39,13 @@ routeImages.set("/leadership/", {
   height: 1749,
   alt: "Vishal Chakravarty, Chief Executive Officer of NovaPharm Healthcare"
 });
+routeImages.set("/product-portfolio/nutraxin/", {
+  url: "/assets/media/products/nutraxin/vitamin-d3-120-tablets.png",
+  type: "image/png",
+  width: 700,
+  height: 700,
+  alt: "Nutraxin Vitamin D3 catalogue pack reference"
+});
 
 for (const article of articles) {
   routeImages.set(`/news-insights/${article.slug}/`, {

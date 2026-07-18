@@ -260,6 +260,7 @@ CREATE TABLE IF NOT EXISTS documents (
   content_type TEXT NOT NULL,
   size_bytes INTEGER NOT NULL,
   checksum_sha256 TEXT NOT NULL,
+  idempotency_key TEXT UNIQUE,
   storage_path TEXT NOT NULL,
   document_class TEXT NOT NULL,
   lifecycle_status TEXT NOT NULL DEFAULT 'draft',
@@ -383,6 +384,7 @@ CREATE TABLE IF NOT EXISTS crm_activities (
 
 CREATE TABLE IF NOT EXISTS leads (
   id TEXT PRIMARY KEY,
+  lead_number TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL,
   email TEXT NOT NULL,
   company TEXT NOT NULL,
@@ -390,6 +392,7 @@ CREATE TABLE IF NOT EXISTS leads (
   message TEXT NOT NULL,
   submission_fingerprint TEXT,
   status TEXT NOT NULL DEFAULT 'new',
+  delivery_state TEXT NOT NULL DEFAULT 'queued',
   owner_user_id TEXT REFERENCES users(id),
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
@@ -403,7 +406,13 @@ CREATE TABLE IF NOT EXISTS lead_details (
   consent_at TEXT NOT NULL,
   privacy_notice_version TEXT NOT NULL DEFAULT '2026-07-14-v1.1',
   safety_confirmation_at TEXT,
-  source_page TEXT NOT NULL DEFAULT 'corporate_website'
+  source_page TEXT NOT NULL DEFAULT '/contact/',
+  source_cta TEXT,
+  utm_source TEXT,
+  utm_medium TEXT,
+  utm_campaign TEXT,
+  referrer_domain TEXT,
+  network_fingerprint TEXT
 );
 
 CREATE TABLE IF NOT EXISTS support_tickets (
@@ -446,7 +455,9 @@ CREATE INDEX IF NOT EXISTS idx_notifications_delivery_queue
 CREATE TABLE IF NOT EXISTS account_applications (
   id TEXT PRIMARY KEY,
   application_number TEXT NOT NULL UNIQUE,
+  submission_key TEXT UNIQUE,
   status TEXT NOT NULL,
+  expected_document_count INTEGER NOT NULL DEFAULT 0 CHECK(expected_document_count >= 0 AND expected_document_count <= 10),
   company_json TEXT NOT NULL,
   responsible_people_json TEXT NOT NULL DEFAULT '[]',
   addresses_json TEXT NOT NULL DEFAULT '[]',
@@ -459,6 +470,54 @@ CREATE TABLE IF NOT EXISTS account_applications (
   version INTEGER NOT NULL DEFAULT 1,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS application_status_history (
+  id TEXT PRIMARY KEY,
+  application_id TEXT NOT NULL REFERENCES account_applications(id) ON DELETE CASCADE,
+  from_status TEXT,
+  to_status TEXT NOT NULL,
+  actor TEXT NOT NULL,
+  reason TEXT,
+  occurred_at TEXT NOT NULL
+);
+
+CREATE TRIGGER IF NOT EXISTS application_status_history_no_update
+BEFORE UPDATE ON application_status_history
+BEGIN
+  SELECT RAISE(ABORT, 'Application status history is immutable.');
+END;
+
+CREATE TRIGGER IF NOT EXISTS application_status_history_no_delete
+BEFORE DELETE ON application_status_history
+BEGIN
+  SELECT RAISE(ABORT, 'Application status history is immutable.');
+END;
+
+CREATE TABLE IF NOT EXISTS application_upload_grants (
+  id TEXT PRIMARY KEY,
+  application_id TEXT NOT NULL REFERENCES account_applications(id) ON DELETE CASCADE,
+  purpose TEXT NOT NULL CHECK(purpose IN ('upload', 'resume')),
+  token_hash TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  max_files INTEGER NOT NULL DEFAULT 0 CHECK(max_files >= 0 AND max_files <= 10),
+  uploaded_count INTEGER NOT NULL DEFAULT 0 CHECK(uploaded_count >= 0),
+  last_used_at TEXT,
+  revoked_at TEXT,
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS customer_contacts (
+  id TEXT PRIMARY KEY,
+  customer_id TEXT NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  role_title TEXT NOT NULL,
+  email TEXT NOT NULL,
+  is_primary INTEGER NOT NULL DEFAULT 0 CHECK(is_primary IN (0, 1)),
+  status TEXT NOT NULL DEFAULT 'invited',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  UNIQUE(customer_id, email)
 );
 
 CREATE TABLE IF NOT EXISTS training_records (
@@ -518,3 +577,6 @@ CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status, created_at);
 CREATE INDEX IF NOT EXISTS idx_auth_sessions_expiry ON auth_sessions(expires_at, revoked_at);
 CREATE INDEX IF NOT EXISTS idx_security_events_username ON security_events(username, occurred_at);
 CREATE INDEX IF NOT EXISTS idx_security_events_network ON security_events(network_fingerprint, occurred_at);
+CREATE INDEX IF NOT EXISTS idx_application_status_history ON application_status_history(application_id, occurred_at);
+CREATE INDEX IF NOT EXISTS idx_application_upload_grants ON application_upload_grants(application_id, purpose, expires_at, revoked_at);
+CREATE INDEX IF NOT EXISTS idx_account_applications_status ON account_applications(status, created_at);

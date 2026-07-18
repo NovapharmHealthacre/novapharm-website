@@ -2,12 +2,13 @@ import "dotenv/config";
 import { observabilityStatus } from "./src/observability/azure-monitor.mjs";
 import { createServer } from "node:http";
 import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
-import { extname, isAbsolute, join, normalize, relative, resolve } from "node:path";
+import { dirname, extname, isAbsolute, join, normalize, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { constants as zlibConstants, createBrotliCompress, createGzip } from "node:zlib";
 import {
   activateCustomer,
+  applicationDetail,
   applicationDocumentContext,
   applicationNotificationContext,
   createLead,
@@ -18,6 +19,7 @@ import {
   listApplications,
   listAudit,
   listCustomers,
+  leadDetail,
   leadNotificationContext,
   listLeads,
   listOrders,
@@ -25,11 +27,30 @@ import {
   listPurchaseOrders,
   listSuppliers,
   operationalDashboard,
+  markApplicationDocumentsSubmitted,
+  setApplicationStatus,
   submitCustomerApplication,
   syncStatus
 } from "./src/core/domain-service.mjs";
 import { storeDocument } from "./src/core/document-service.mjs";
+import {
+  applicationUploadState,
+  completeApplicationUploads,
+  createApplicationUploadAuthorisations,
+  refreshApplicationUploadAuthorisations,
+  releaseApplicationUploadReservation,
+  reserveApplicationUpload
+} from "./src/core/application-upload-service.mjs";
 import { previewAccessAllowed } from "./src/core/preview-auth.mjs";
+import {
+  advanceWorkflow,
+  authorisedEnterpriseSearch,
+  createCustomerQualityComplaint,
+  createCustomerReturn,
+  createCustomerSupport,
+  enterpriseModuleSnapshot,
+  transitionProductLifecycle
+} from "./src/core/enterprise-domain-service.mjs";
 import {
   changePassword,
   consumeRateLimit,
@@ -42,13 +63,14 @@ import {
   provisionAuthUsers,
   recordSecurityEvent,
   revokePersistentSession,
+  revokeUserSessions,
   verifyCredentials
 } from "./src/core/auth-service.mjs";
 import { databaseProvider, databaseReady } from "./src/data/database.mjs";
 import { processSharePointEvents, sharePointFolderPlan } from "./src/integrations/sharepoint/sync-engine.mjs";
 import { processPolarSpeedEvents } from "./src/integrations/polar-speed/sync-engine.mjs";
 import { processDocumentScanEvents } from "./src/integrations/azure-storage/scan-engine.mjs";
-import { emailIntegrationStatus, emailQueueStatus, processEmailRetries, sendApplicationNotifications, sendLeadNotifications } from "./src/integrations/email/client.mjs";
+import { emailIntegrationStatus, emailNotificationPreview, emailQueueStatus, processEmailRetries, replayEmailNotification, sendApplicationNotifications, sendLeadNotifications } from "./src/integrations/email/client.mjs";
 import { documentStorageStatus } from "./src/storage/document-store.mjs";
 import { appServicePrincipalFromHeaders, provisionFederatedIdentity } from "./src/core/entra-identity.mjs";
 import { isResolvedSecret, isUnresolvedSecretReference } from "./src/core/secret-value.mjs";
@@ -60,6 +82,9 @@ const secureContentRoot = resolve(process.env.SECURE_CONTENT_ROOT || join(root, 
 
 const isProduction = process.env.NODE_ENV === "production";
 const isPreview = process.env.PREVIEW_MODE === "true";
+const isLocalPortal = process.env.LOCAL_PORTAL_MODE === "true";
+const isBrowserValidation = process.env.BROWSER_VALIDATION_MODE === "true";
+const loginRateLimit = isBrowserValidation ? 16 : 8;
 const previewUsername = String(process.env.PREVIEW_ACCESS_USERNAME || "");
 const previewPassword = String(process.env.PREVIEW_ACCESS_PASSWORD || "");
 const host = process.env.HOST || "127.0.0.1";
@@ -84,6 +109,32 @@ if (!Number.isFinite(sessionTtlMs) || sessionTtlMs <= 0 || !Number.isFinite(sess
 }
 if (isPreview && (!previewUsername || isUnresolvedSecretReference(previewUsername) || !isResolvedSecret(previewPassword, { minimumBytes: 16 }))) {
   throw new Error("PREVIEW_ACCESS_USERNAME and a resolved PREVIEW_ACCESS_PASSWORD of at least 16 bytes are required when PREVIEW_MODE=true.");
+}
+if (isLocalPortal) {
+  const localRuntimeRoot = resolve(dirname(process.env.DATABASE_PATH || ""));
+  if (isProduction || isPreview || host !== "127.0.0.1" || port !== 4173 || publicOrigin !== "http://127.0.0.1:4173") {
+    throw new Error("LOCAL_PORTAL_MODE must run only at http://127.0.0.1:4173 in a non-production, non-preview process.");
+  }
+  if (databaseProvider !== "sqlite" || process.env.DOCUMENT_STORAGE_PROVIDER !== "local-validation" || process.env.EMAIL_PROVIDER !== "local-capture") {
+    throw new Error("The local owner portal requires SQLite, local-validation document storage and local-capture email.");
+  }
+  for (const path of [process.env.DATABASE_PATH, process.env.DOCUMENT_STORAGE_ROOT]) {
+    if (!path || !isWithinDirectory(localRuntimeRoot, resolve(path))) throw new Error("Local portal data must remain inside its protected runtime root.");
+  }
+  for (const variable of ["RESEND_API_KEY", "MICROSOFT_CLIENT_SECRET", "MICROSOFT_CERTIFICATE_PRIVATE_KEY", "AZURE_STORAGE_CONNECTION_STRING", "SHAREPOINT_DRIVE_ID"]) {
+    if (process.env[variable]) throw new Error(`${variable} must not be supplied to the local owner portal.`);
+  }
+}
+if (isBrowserValidation) {
+  if (isProduction || isPreview || host !== "127.0.0.1" || publicOrigin !== "http://127.0.0.1:4178") {
+    throw new Error("BROWSER_VALIDATION_MODE must run only at http://127.0.0.1:4178 in a non-production process.");
+  }
+  if (databaseProvider !== "sqlite" || process.env.DOCUMENT_STORAGE_PROVIDER !== "local-validation" || process.env.EMAIL_PROVIDER !== "local-capture") {
+    throw new Error("Browser validation requires SQLite, local-validation document storage and local-capture email.");
+  }
+  for (const variable of ["RESEND_API_KEY", "MICROSOFT_CLIENT_SECRET", "MICROSOFT_CERTIFICATE_PRIVATE_KEY", "AZURE_STORAGE_CONNECTION_STRING", "SHAREPOINT_DRIVE_ID"]) {
+    if (process.env[variable]) throw new Error(`${variable} must not be supplied to browser validation.`);
+  }
 }
 
 if (isProduction) {
@@ -182,7 +233,7 @@ function securityHeaders(extra = {}, { allowPrivateInline = false } = {}) {
     ].join("; "),
     ...extra
   };
-  if (isPreview) headers["X-Robots-Tag"] = "noindex, nofollow, noarchive";
+  if (isPreview || isLocalPortal || isBrowserValidation) headers["X-Robots-Tag"] = "noindex, nofollow, noarchive";
   if (isProduction) headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains";
   return headers;
 }
@@ -223,7 +274,7 @@ function requireCsrf(request) {
 }
 
 function hasAllowedOrigin(request) {
-  if (!isProduction) return true;
+  if (!isProduction && !isLocalPortal && !isBrowserValidation) return true;
   const origin = request.headers.origin;
   if (!origin) return true;
   try {
@@ -234,7 +285,7 @@ function hasAllowedOrigin(request) {
 }
 
 function hasAllowedHost(request) {
-  if (!isProduction) return true;
+  if (!isProduction && !isLocalPortal && !isBrowserValidation) return true;
   const received = String(request.headers.host || "").toLowerCase();
   const allowed = new Set([
     new URL(publicOrigin).host.toLowerCase(),
@@ -270,24 +321,14 @@ function validSessionSignature(id, signature) {
   return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 
-function applicationUploadToken(applicationId) {
-  const expiresAt = Date.now() + 30 * 60 * 1000;
-  const signature = createHmac("sha256", sessionSecret).update(`application-upload:${applicationId}:${expiresAt}`).digest("hex");
-  return `${expiresAt}.${signature}`;
-}
-
-function validApplicationUploadToken(applicationId, token) {
-  const [expiresAtValue, signature] = String(token || "").split(".");
-  const expiresAt = Number(expiresAtValue);
-  if (!Number.isSafeInteger(expiresAt) || expiresAt <= Date.now() || expiresAt > Date.now() + 31 * 60 * 1000) return false;
-  const expected = Buffer.from(createHmac("sha256", sessionSecret).update(`application-upload:${applicationId}:${expiresAt}`).digest("hex"), "hex");
-  const actual = Buffer.from(String(signature || ""), "hex");
-  return actual.length === expected.length && timingSafeEqual(actual, expected);
-}
-
 async function createSession(user, accessType = "customer") {
   const { id } = await createPersistentSession(user, accessType, sessionTtlMs);
   return `${id}.${signSession(id)}`;
+}
+
+function referrerDomain(request) {
+  try { return request.headers.referer ? new URL(request.headers.referer).hostname : ""; }
+  catch { return ""; }
 }
 
 function getSession(request) {
@@ -324,6 +365,21 @@ function canAccessPath(session, pathname) {
 
 function hasScope(session, scopes) {
   return Boolean(session && scopes.some((scope) => session.accessScopes?.includes(scope) || session.accessScopes?.includes("admin")));
+}
+
+function enterpriseContext(session) {
+  const localOwnerCustomer = (isLocalPortal || isBrowserValidation) && session.accessType === "customer" && hasScope(session, ["admin"])
+    ? "demo-customer-001"
+    : null;
+  return {
+    username: session.username,
+    displayName: session.displayName,
+    role: session.role,
+    accessType: session.accessType,
+    accessScopes: session.accessScopes,
+    customerId: session.customerId || localOwnerCustomer,
+    userId: session.userId || null
+  };
 }
 
 function isWithinDirectory(directory, filePath) {
@@ -405,9 +461,11 @@ function safeFilePath(urlPath) {
 }
 
 async function portalData(session) {
-  if (session.role === "client") {
+  if (session.accessType === "customer") {
+    const context = enterpriseContext(session);
+    if (!context.customerId) throw Object.assign(new Error("A customer account is not linked to this identity."), { statusCode: 403 });
     return {
-      dashboard: await operationalDashboard(session.customerId),
+      dashboard: await operationalDashboard(context.customerId),
       dataPolicy: "Customer values are restricted to the authenticated customer account and come from the canonical database."
     };
   }
@@ -445,6 +503,33 @@ async function adminSummary() {
   };
 }
 
+async function healthSnapshot() {
+  const databaseIsReady = await databaseReady();
+  const identity = process.env.ENTRA_AUTH_ENABLED === "true"
+    ? "entra_configured"
+    : await hasPortalAdministrator() ? "local_validation_identity_configured" : "unavailable";
+  const email = emailIntegrationStatus();
+  const storage = documentStorageStatus();
+  const ready = databaseIsReady && identity !== "unavailable" && email.startsWith("configured:") && Boolean(storage);
+  return {
+    status: ready ? "ready" : databaseIsReady ? "degraded" : "unavailable",
+    service: "novapharm-web",
+    version: applicationVersion,
+    environment: isLocalPortal ? "local_validation" : isBrowserValidation ? "browser_validation" : isPreview ? "validation" : isProduction ? "production" : "development",
+    timestamp: new Date().toISOString(),
+    application: "live",
+    database: databaseIsReady ? "ready" : "unavailable",
+    migration: databaseIsReady ? "current" : "unavailable",
+    email,
+    documentStorage: storage,
+    identity: isLocalPortal && identity !== "unavailable" ? "local_owner_validation_identity_configured" : identity,
+    entra: isLocalPortal ? "disabled_local_validation" : process.env.ENTRA_AUTH_ENABLED === "true" ? "configured" : "owner_configuration_required",
+    sharePoint: isLocalPortal ? "disabled_local_validation" : hasSharePointCredentials() ? "configured" : "owner_configuration_required",
+    observability: isLocalPortal ? "disabled_local_validation" : observabilityStatus,
+    ready
+  };
+}
+
 async function authenticated(request, response, roles = []) {
   const session = await getSession(request);
   if (!session) {
@@ -478,7 +563,7 @@ export async function handleRequest(request, response) {
     const url = new URL(request.url || "/", `http://${request.headers.host || "localhost"}`);
     const pathname = url.pathname;
 
-    if (isPreview && !["/api/health", "/robots.txt"].includes(pathname) && !previewAccessAllowed(request.headers.authorization, previewUsername, previewPassword)) {
+    if (isPreview && !["/api/health", "/api/health/live", "/api/health/ready", "/api/live", "/api/ready", "/robots.txt"].includes(pathname) && !previewAccessAllowed(request.headers.authorization, previewUsername, previewPassword)) {
       return send(response, 401, "Preview authentication required.", {
         "Content-Type": "text/plain; charset=utf-8",
         "Cache-Control": "no-store",
@@ -497,14 +582,14 @@ export async function handleRequest(request, response) {
       return;
     }
 
-    if (pathname === "/robots.txt" && request.method === "GET" && isPreview) {
+    if (pathname === "/robots.txt" && request.method === "GET" && (isPreview || isLocalPortal)) {
       send(response, 200, "User-agent: *\nDisallow: /\n", { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" });
       return;
     }
 
     if (pathname === "/api/auth/login" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
-      if (!await rateLimit(request, "login", 8, 15 * 60 * 1000)) return json(response, 429, { error: "Too many login attempts. Try again later." });
+      if (!await rateLimit(request, "login", loginRateLimit, 15 * 60 * 1000)) return json(response, 429, { error: "Too many login attempts. Try again later." });
       const body = await readBody(request);
       const user = await verifyCredentials(String(body.username || ""), String(body.password || ""), networkFingerprint(request));
       if (!user) {
@@ -567,7 +652,7 @@ export async function handleRequest(request, response) {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
       if (!await rateLimit(request, "contact", 12, 60 * 60 * 1000)) return json(response, 429, { error: "Too many submissions. Try again later." });
       const body = await readBody(request);
-      const lead = await createLead(body);
+      const lead = await createLead({ ...body, referrerDomain: referrerDomain(request) }, "public_website", { networkFingerprint: networkFingerprint(request) });
       if (lead.id) {
         try {
           await sendLeadNotifications(await leadNotificationContext(lead.id));
@@ -583,12 +668,13 @@ export async function handleRequest(request, response) {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
       if (!await rateLimit(request, "account-application", 5, 60 * 60 * 1000)) return json(response, 429, { error: "Too many applications. Try again later." });
       const application = await submitCustomerApplication(await readBody(request));
+      const uploadAuthorisations = await createApplicationUploadAuthorisations(application.id, application.expectedDocumentCount);
       try {
         await sendApplicationNotifications(await applicationNotificationContext(application.id));
       } catch (error) {
         console.error("Account application notification delivery failed.", { status: error.providerStatus || "unavailable" });
       }
-      json(response, 201, { ok: true, application: { ...application, uploadToken: applicationUploadToken(application.id) } });
+      json(response, application.duplicate ? 200 : 201, { ok: true, application: { ...application, ...uploadAuthorisations } });
       return;
     }
 
@@ -596,20 +682,57 @@ export async function handleRequest(request, response) {
     if (applicationDocumentMatch && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
       if (!await rateLimit(request, "application-document", 30, 60 * 60 * 1000)) return json(response, 429, { error: "Too many document uploads." });
-      if (!validApplicationUploadToken(applicationDocumentMatch[1], request.headers["x-application-upload-token"])) return json(response, 403, { error: "Invalid application upload token." });
       const context = await applicationDocumentContext(applicationDocumentMatch[1]);
-      const document = await storeDocument({
-        bytes: await readRawBody(request),
-        fileName: url.searchParams.get("fileName"),
-        contentType: String(request.headers["content-type"] || "application/octet-stream").split(";")[0],
-        documentClass: url.searchParams.get("documentClass") || "customer_onboarding",
-        entityType: "account_application",
-        entityId: context.id,
-        businessNumber: context.applicationNumber,
-        displayName: context.companyName,
-        actor: "public_applicant"
-      });
-      json(response, 201, { document });
+      if (!["documents_pending", "submitted", "information_requested"].includes(context.status)) {
+        return json(response, 409, { error: "This application is not accepting supporting documents." });
+      }
+      const documentClass = url.searchParams.get("documentClass") || "customer_onboarding";
+      if (!["licence", "company_due_diligence", "agreement"].includes(documentClass)) {
+        return json(response, 400, { error: "Unsupported application document class." });
+      }
+      const reservation = await reserveApplicationUpload(context.id, request.headers["x-application-upload-token"]);
+      try {
+        const document = await storeDocument({
+          bytes: await readRawBody(request),
+          fileName: url.searchParams.get("fileName"),
+          contentType: String(request.headers["content-type"] || "application/octet-stream").split(";")[0],
+          documentClass,
+          entityType: "account_application",
+          entityId: context.id,
+          businessNumber: context.applicationNumber,
+          displayName: context.companyName,
+          actor: "public_applicant"
+        });
+        if (document.duplicate) await releaseApplicationUploadReservation(reservation.grantId);
+        json(response, document.duplicate ? 200 : 201, { document });
+      } catch (error) {
+        await releaseApplicationUploadReservation(reservation.grantId);
+        throw error;
+      }
+      return;
+    }
+
+    const uploadRefreshMatch = pathname.match(/^\/api\/account-applications\/([^/]+)\/upload-authorisation$/);
+    if (uploadRefreshMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      if (!await rateLimit(request, "application-upload-refresh", 6, 60 * 60 * 1000)) return json(response, 429, { error: "Too many upload recovery requests." });
+      const body = await readBody(request);
+      const authorisations = await refreshApplicationUploadAuthorisations(uploadRefreshMatch[1], body.resumeToken);
+      json(response, 200, { ok: true, authorisations });
+      return;
+    }
+
+    const uploadCompleteMatch = pathname.match(/^\/api\/account-applications\/([^/]+)\/documents\/complete$/);
+    if (uploadCompleteMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      const completion = await completeApplicationUploads(uploadCompleteMatch[1], request.headers["x-application-upload-token"]);
+      const application = await markApplicationDocumentsSubmitted(uploadCompleteMatch[1]);
+      try {
+        await sendApplicationNotifications(await applicationNotificationContext(uploadCompleteMatch[1]));
+      } catch (error) {
+        console.error("Completed application notification delivery failed.", { status: error.providerStatus || "unavailable" });
+      }
+      json(response, 200, { ok: true, application, completion, uploadState: await applicationUploadState(uploadCompleteMatch[1]) });
       return;
     }
 
@@ -640,8 +763,9 @@ export async function handleRequest(request, response) {
     if (pathname === "/api/dashboard" && request.method === "GET") {
       const session = await scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
-      if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
-      const customerId = session.role === "client" ? session.customerId : null;
+      const context = enterpriseContext(session);
+      if (session.accessType === "customer" && !context.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
+      const customerId = session.accessType === "customer" ? context.customerId : null;
       json(response, 200, await operationalDashboard(customerId));
       return;
     }
@@ -649,8 +773,9 @@ export async function handleRequest(request, response) {
     if (pathname === "/api/catalog/products" && request.method === "GET") {
       const session = await scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
-      if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
-      json(response, 200, { products: await listProducts(url.searchParams.get("q") || "", { customerVisibleOnly: session.role === "client" }), dataFreshness: new Date().toISOString() });
+      const context = enterpriseContext(session);
+      if (session.accessType === "customer" && !context.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
+      json(response, 200, { products: await listProducts(url.searchParams.get("q") || "", { customerVisibleOnly: session.accessType === "customer" }), dataFreshness: new Date().toISOString() });
       return;
     }
 
@@ -685,8 +810,9 @@ export async function handleRequest(request, response) {
     if (pathname === "/api/orders" && request.method === "GET") {
       const session = await scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
-      if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
-      json(response, 200, { orders: await listOrders({ customerId: session.role === "client" ? session.customerId : null }) });
+      const context = enterpriseContext(session);
+      if (session.accessType === "customer" && !context.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
+      json(response, 200, { orders: await listOrders({ customerId: session.accessType === "customer" ? context.customerId : null }) });
       return;
     }
 
@@ -694,8 +820,9 @@ export async function handleRequest(request, response) {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
       const session = await scopedAuthentication(request, response, ["customer", "employee"]);
       if (!session) return;
-      if (session.role === "client" && !session.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
-      const scopedCustomerId = session.role === "client" ? session.customerId : null;
+      const context = enterpriseContext(session);
+      if (session.accessType === "customer" && !context.customerId) return json(response, 403, { error: "A customer account is not linked to this identity." });
+      const scopedCustomerId = session.accessType === "customer" ? context.customerId : null;
       json(response, 201, { order: await createOrder(await readBody(request), session.username, scopedCustomerId) });
       return;
     }
@@ -720,7 +847,8 @@ export async function handleRequest(request, response) {
       if (!session) return;
       const requestedEntityType = url.searchParams.get("entityType");
       const requestedEntityId = url.searchParams.get("entityId");
-      if (session.role === "client" && (!session.customerId || requestedEntityType !== "customer" || requestedEntityId !== session.customerId)) {
+      const context = enterpriseContext(session);
+      if (session.accessType === "customer" && (!context.customerId || requestedEntityType !== "customer" || requestedEntityId !== context.customerId)) {
         return json(response, 403, { error: "Customer documents must be linked to the authenticated customer account." });
       }
       const bytes = await readRawBody(request);
@@ -736,6 +864,67 @@ export async function handleRequest(request, response) {
         actor: session.username
       });
       json(response, 201, { document });
+      return;
+    }
+
+    const enterpriseModuleMatch = pathname.match(/^\/api\/enterprise\/modules\/([a-z0-9.-]+)$/);
+    if (enterpriseModuleMatch && request.method === "GET") {
+      const session = await authenticated(request, response);
+      if (!session) return;
+      json(response, 200, await enterpriseModuleSnapshot(enterpriseModuleMatch[1], enterpriseContext(session)));
+      return;
+    }
+
+    if (pathname === "/api/enterprise/search" && request.method === "GET") {
+      const session = await authenticated(request, response);
+      if (!session) return;
+      json(response, 200, await authorisedEnterpriseSearch(url.searchParams.get("q") || "", enterpriseContext(session)));
+      return;
+    }
+
+    if (pathname === "/api/enterprise/customer/support" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
+      if (!await rateLimit(request, "customer-support", 20, 60 * 60 * 1000)) return json(response, 429, { error: "Too many support requests. Try again later." });
+      const session = await scopedAuthentication(request, response, ["customer"]);
+      if (!session) return;
+      json(response, 201, { ticket: await createCustomerSupport(await readBody(request), enterpriseContext(session)) });
+      return;
+    }
+
+    if (pathname === "/api/enterprise/customer/returns" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
+      if (!await rateLimit(request, "customer-return", 12, 60 * 60 * 1000)) return json(response, 429, { error: "Too many return requests. Try again later." });
+      const session = await scopedAuthentication(request, response, ["customer"]);
+      if (!session) return;
+      json(response, 201, { returnRequest: await createCustomerReturn(await readBody(request), enterpriseContext(session)) });
+      return;
+    }
+
+    if (pathname === "/api/enterprise/customer/quality-complaints" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
+      if (!await rateLimit(request, "customer-quality", 12, 60 * 60 * 1000)) return json(response, 429, { error: "Too many quality requests. Try again later." });
+      const session = await scopedAuthentication(request, response, ["customer"]);
+      if (!session) return;
+      json(response, 201, { complaint: await createCustomerQualityComplaint(await readBody(request), enterpriseContext(session)) });
+      return;
+    }
+
+    const workflowAdvanceMatch = pathname.match(/^\/api\/enterprise\/workflows\/([^/]+)\/advance$/);
+    if (workflowAdvanceMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
+      const session = await scopedAuthentication(request, response, ["employee"]);
+      if (!session) return;
+      json(response, 200, { workflow: await advanceWorkflow(workflowAdvanceMatch[1], session.username) });
+      return;
+    }
+
+    const productTransitionMatch = pathname.match(/^\/api\/enterprise\/products\/([^/]+)\/status$/);
+    if (productTransitionMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
+      const session = await scopedAuthentication(request, response, ["employee"]);
+      if (!session) return;
+      const body = await readBody(request);
+      json(response, 200, { product: await transitionProductLifecycle(productTransitionMatch[1], body.status, session.username) });
       return;
     }
 
@@ -773,20 +962,23 @@ export async function handleRequest(request, response) {
       return;
     }
 
+    if (["/api/health/live", "/api/live"].includes(pathname) && request.method === "GET") {
+      json(response, 200, { status: "live", service: "novapharm-web", version: applicationVersion, timestamp: new Date().toISOString() });
+      return;
+    }
+
+    if (["/api/health/ready", "/api/ready"].includes(pathname) && request.method === "GET") {
+      const health = await healthSnapshot();
+      json(response, health.ready ? 200 : 503, health);
+      return;
+    }
+
     if (pathname === "/api/health" && request.method === "GET") {
-      const ready = await databaseReady();
-      json(response, ready ? 200 : 503, {
-        status: ready ? "ok" : "degraded",
-        service: "novapharm-web",
-        version: applicationVersion,
-        environment: isProduction ? "production" : "development",
-        timestamp: new Date().toISOString(),
-        database: ready ? "ready" : "unavailable",
-        documentStorage: documentStorageStatus(),
-        entra: process.env.ENTRA_AUTH_ENABLED === "true" ? "configured" : "owner_configuration_required",
-        observability: observabilityStatus,
-        email: emailIntegrationStatus(),
-        sharePoint: hasSharePointCredentials() ? "configured" : "owner_configuration_required",
+      const health = await healthSnapshot();
+      json(response, health.database === "ready" ? 200 : 503, {
+        ...health,
+        status: health.database === "ready" ? "ok" : "degraded",
+        readinessStatus: health.status,
         polarSpeed: process.env.POLAR_SPEED_API_BASE_URL ? "configured" : "api_contract_required"
       });
       return;
@@ -796,6 +988,64 @@ export async function handleRequest(request, response) {
       const session = await authenticated(request, response, ["admin"]);
       if (!session) return;
       json(response, 200, await adminSummary());
+      return;
+    }
+
+    const adminLeadMatch = pathname.match(/^\/api\/admin\/leads\/([^/]+)$/);
+    if (adminLeadMatch && request.method === "GET") {
+      if (!await authenticated(request, response, ["admin"])) return;
+      json(response, 200, { lead: await leadDetail(adminLeadMatch[1]) });
+      return;
+    }
+
+    const adminApplicationMatch = pathname.match(/^\/api\/admin\/applications\/([^/]+)$/);
+    if (adminApplicationMatch && request.method === "GET") {
+      if (!await authenticated(request, response, ["admin"])) return;
+      json(response, 200, { application: await applicationDetail(adminApplicationMatch[1]) });
+      return;
+    }
+
+    const adminApplicationStatusMatch = pathname.match(/^\/api\/admin\/applications\/([^/]+)\/status$/);
+    if (adminApplicationStatusMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      const session = await authenticated(request, response, ["admin"]);
+      if (!session) return;
+      const body = await readBody(request);
+      json(response, 200, { ok: true, application: await setApplicationStatus(adminApplicationStatusMatch[1], body.status, session.username, body.reason) });
+      return;
+    }
+
+    const adminActivationMatch = pathname.match(/^\/api\/admin\/applications\/([^/]+)\/activate$/);
+    if (adminActivationMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      const session = await authenticated(request, response, ["admin"]);
+      if (!session) return;
+      json(response, 200, { ok: true, customer: await activateCustomer(adminActivationMatch[1], session.username) });
+      return;
+    }
+
+    const adminEmailReplayMatch = pathname.match(/^\/api\/admin\/notifications\/([^/]+)\/replay$/);
+    if (adminEmailReplayMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      const session = await authenticated(request, response, ["admin"]);
+      if (!session) return;
+      json(response, 200, { ok: true, delivery: await replayEmailNotification(adminEmailReplayMatch[1], session.username) });
+      return;
+    }
+
+    const adminEmailPreviewMatch = pathname.match(/^\/api\/admin\/notifications\/([^/]+)\/preview$/);
+    if (adminEmailPreviewMatch && request.method === "GET") {
+      if (!await authenticated(request, response, ["admin"])) return;
+      json(response, 200, { preview: await emailNotificationPreview(adminEmailPreviewMatch[1]) });
+      return;
+    }
+
+    const adminSessionRevokeMatch = pathname.match(/^\/api\/admin\/users\/([^/]+)\/sessions\/revoke$/);
+    if (adminSessionRevokeMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      const session = await authenticated(request, response, ["admin"]);
+      if (!session) return;
+      json(response, 200, { ok: true, result: await revokeUserSessions(decodeURIComponent(adminSessionRevokeMatch[1]), session.username) });
       return;
     }
 
@@ -883,14 +1133,14 @@ if (startedDirectly) {
       console.error("Queued email processing failed.", { status: error.providerStatus || "unavailable" });
     }
   };
-  const emailRetryTimer = setInterval(processQueuedEmails, 60_000);
-  emailRetryTimer.unref();
-  void processQueuedEmails();
+  const emailRetryTimer = isLocalPortal ? null : setInterval(processQueuedEmails, 60_000);
+  emailRetryTimer?.unref();
+  if (!isLocalPortal) void processQueuedEmails();
   let shuttingDown = false;
   const shutdown = (signal) => {
     if (shuttingDown) return;
     shuttingDown = true;
-    clearInterval(emailRetryTimer);
+    if (emailRetryTimer) clearInterval(emailRetryTimer);
     console.log(`Received ${signal}; completing active requests before shutdown.`);
     const forceTimer = setTimeout(() => {
       server.closeAllConnections();

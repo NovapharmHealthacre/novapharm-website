@@ -26,3 +26,5 @@ param sharePointExecutivePlatformPath = readEnvironmentVariable('NOVAPHARM_SHARE
 param operationsEmail = readEnvironmentVariable('NOVAPHARM_OPERATIONS_EMAIL', '')
 param emailFrom = readEnvironmentVariable('NOVAPHARM_EMAIL_FROM', '')
 param contactNotificationTo = readEnvironmentVariable('NOVAPHARM_CONTACT_NOTIFICATION_TO', '')
+param emailProvider = readEnvironmentVariable('NOVAPHARM_EMAIL_PROVIDER', 'auto')
+param microsoftEmailSender = readEnvironmentVariable('NOVAPHARM_MICROSOFT_EMAIL_SENDER', '')

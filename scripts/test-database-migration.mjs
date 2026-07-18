@@ -39,6 +39,9 @@ try {
   db.prepare("INSERT INTO auth_sessions(id, username, access_type, credential_version, created_at, expires_at, last_seen_at) VALUES(?, ?, 'admin', 1, ?, ?, ?)")
     .run("admin-session", "LegacyBoard", "2026-01-01T00:00:00.000Z", "2099-01-01T00:00:00.000Z", "2026-01-01T00:00:00.000Z");
   assert.equal(db.prepare("SELECT COUNT(*) AS count FROM auth_sessions").get().count, 2);
+  assert.equal(db.prepare("SELECT COUNT(*) AS count FROM reporting_active_portal_users").get().count, 2);
+  assert.ok(db.prepare("PRAGMA table_info(account_applications)").all().some((column) => column.name === "submission_key"));
+  assert.ok(db.prepare("PRAGMA table_info(documents)").all().some((column) => column.name === "idempotency_key"));
   db.close();
   console.log("Database migration preserved legacy sessions and enabled administrator access sessions.");
 } finally {

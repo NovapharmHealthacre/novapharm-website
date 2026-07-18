@@ -19,6 +19,8 @@ Last reviewed: 14 July 2026
 
 Playwright 1.61.1 and `@axe-core/playwright` 4.12.1 tested 44 routes in Chromium 149 and WebKit 26.5 at seven desktop, tablet and mobile viewports. All 616 final axe scans completed with zero violations. The first run identified 70 repeated contrast failures; all were corrected and the complete matrix was rerun successfully.
 
+Backend activation was then exercised through the rendered Contact form, all four account-application stages, controlled document upload and administrator review in both engines. Required-field errors, live success messages and protected review content completed without a raw technical browser error. A real administrator-detail renderer defect found by this workflow was fixed and the workflow was rerun successfully.
+
 Repository validation also passed semantic heading, image alternative, intrinsic-size, skip-link, form-label, cookie-dialog, focus, reduced-motion and responsive-overflow contracts. Human screenshot review covered representative public, legal, product, login and authenticated portal states in both engines.
 
 ## Remaining assurance
