@@ -34,6 +34,15 @@ const prohibitedClaims = [
   ["private immigration-plan content", /\bInnovator Founder Visa\b/i]
 ];
 
+const croProhibitedClaims = [
+  ["unsupported full-service CRO status", /\bNovaPharm\s+(?:is|operates as|has become)\s+(?:a\s+)?(?:global\s+)?full-service CRO\b/i],
+  ["unsupported owned clinical infrastructure", /\bNovaPharm\s+(?:owns|operates)\s+(?:clinical (?:sites|units)|central laboratories|an investigator network|a patient recruitment network|an IMP depot)\b/i],
+  ["unsupported in-house clinical function", /\bNovaPharm(?:'s)?\s+in-house\s+(?:biostatistics|data management|medical monitoring|pharmacovigilance)\b/i],
+  ["unsupported trial metric", /\b(?:patients enrolled|completed trials|successful submissions|approval rate|trial sites|countries served)\s*:?\s*\d+/i],
+  ["unsupported outcome guarantee", /\b(?:guaranteed recruitment|guaranteed timelines?|guaranteed approval|accelerated approval)\b/i],
+  ["unsupported authority endorsement", /\bMHRA-approved CRO\b|\bGCP-certified CRO\b/i]
+];
+
 const failures = [];
 for (const route of routes) {
   const text = visibleText(readFileSync(pagePath(route), "utf8"));
@@ -45,6 +54,22 @@ for (const route of routes) {
       failures.push(`${route}: ${label}: ${match[0]}`);
     }
   }
+  if (route === "/cro/") {
+    for (const [label, pattern] of croProhibitedClaims) {
+      const match = text.match(pattern);
+      if (match) failures.push(`${route}: ${label}: ${match[0]}`);
+    }
+  }
+}
+
+const croText = visibleText(readFileSync(pagePath("/cro/"), "utf8"));
+for (const requiredCroBoundary of [
+  "does not present itself as a global full-service CRO",
+  "Sponsor-retained",
+  "qualified specialists",
+  "Do not submit patient data"
+]) {
+  if (!croText.includes(requiredCroBoundary)) failures.push(`missing CRO responsibility boundary: ${requiredCroBoundary}`);
 }
 
 const allPublicText = routes.map((route) => visibleText(readFileSync(pagePath(route), "utf8"))).join(" ");

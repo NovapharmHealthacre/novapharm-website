@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { createHash } from "node:crypto";
+import { leadership, pageMeta } from "../src/content/site-content.mjs";
 
 const root = resolve(process.cwd());
 const siteUrl = "https://novapharmhealthcare.com";
@@ -17,6 +18,7 @@ const publicPages = [
   "leadership/nishita-trivedi/index.html",
   "services/index.html",
   "regulatory-services/index.html",
+  "cro/index.html",
   "product-portfolio/index.html",
   "product-portfolio/nutraxin/index.html",
   "partner-with-us/index.html",
@@ -103,6 +105,7 @@ const requiredFiles = [
   "creative-assets/asset-register.json",
   "creative-assets/visual-provenance.md",
   "assets/css/novapharm.css",
+  "assets/css/novapharm.bundle.css",
   "assets/css/base.css",
   "assets/css/tokens.css",
   "assets/css/foundations.css",
@@ -110,6 +113,7 @@ const requiredFiles = [
   "assets/css/motion.css",
   "assets/css/portal.css",
   "assets/css/nutraxin-catalogue.css",
+  "assets/css/cro.css",
   "assets/css/responsive.css",
   "assets/js/api-client.js",
   "assets/js/novapharm.js",
@@ -119,6 +123,7 @@ const requiredFiles = [
   "assets/js/cookie-consent.js",
   "assets/js/admin-app.js",
   "assets/js/account-application.js",
+  "assets/js/cro.js",
   "assets/js/enterprise-app.js",
   "assets/brand/novapharm-healthcare-logo.svg",
   "assets/brand/novapharm-healthcare-logo.png",
@@ -135,6 +140,7 @@ const requiredFiles = [
   "assets/media/insights/three-pillar-sourcing.svg",
   "assets/media/insights/batch-to-buyer-traceability.svg",
   "src/content/site-content.mjs",
+  "src/content/cro-content.mjs",
   "src/core/auth-service.mjs",
   "src/core/domain-service.mjs",
   "src/core/enterprise-domain-service.mjs",
@@ -285,7 +291,8 @@ for (const file of publicPages) {
   if (!html.includes('href="#main"') || !html.includes('id="main"')) fail(`${file} needs a working skip link`);
 }
 
-if (publicPages.length !== 34) fail(`expected exactly 34 public pages; found ${publicPages.length}`);
+const expectedPublicPageCount = Object.keys(pageMeta).length + leadership.length + insightFiles.length + 1;
+if (publicPages.length !== expectedPublicPageCount) fail(`expected ${expectedPublicPageCount} source-defined public pages; found ${publicPages.length}`);
 for (const type of ["Organization", "Person", "Article", "BlogPosting", "Service", "BreadcrumbList"]) {
   if (!observedSchemaTypes.has(type)) fail(`structured data is missing ${type}`);
 }

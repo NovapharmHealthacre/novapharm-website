@@ -17,6 +17,7 @@ const images = {
 };
 
 function rasterFor(route) {
+  if (route === "/cro/") return ["/assets/media/cro/cro-evidence-architecture-1600.jpg", "Clinical-development team reviewing programme evidence, responsibilities and milestones", 1600, 900];
   if (route === "/regulatory-services/" || route === "/about/governance/") return images.quality;
   if (route === "/services/" || route === "/partner-with-us/") return images.logistics;
   if (route === "/technology/") return images.traceability;

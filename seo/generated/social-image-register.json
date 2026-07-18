@@ -70,6 +70,16 @@
     "absoluteUrl": "https://novapharmhealthcare.com/assets/media/modules/regulatory-dossier-control.jpg"
   },
   {
+    "route": "/cro/",
+    "page": "https://novapharmhealthcare.com/cro/",
+    "url": "/assets/media/cro/cro-evidence-architecture-1600.jpg",
+    "type": "image/jpeg",
+    "width": 1600,
+    "height": 900,
+    "alt": "Clinical-development team reviewing programme evidence, responsibilities and milestones",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/cro/cro-evidence-architecture-1600.jpg"
+  },
+  {
     "route": "/product-portfolio/",
     "page": "https://novapharmhealthcare.com/product-portfolio/",
     "url": "/assets/media/products/oncology-vial-handling.jpg",

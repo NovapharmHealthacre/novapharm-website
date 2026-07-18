@@ -23,11 +23,16 @@ let engines = [
 let viewports = [
   ["desktop-1440x900", { width: 1440, height: 900 }],
   ["desktop-1920x1080", { width: 1920, height: 1080 }],
+  ["desktop-1366x768", { width: 1366, height: 768 }],
+  ["desktop-1280x800", { width: 1280, height: 800 }],
+  ["desktop-1280x720", { width: 1280, height: 720 }],
   ["tablet-1024x1366", { width: 1024, height: 1366 }],
   ["tablet-768x1024", { width: 768, height: 1024 }],
   ["mobile-390x844", { width: 390, height: 844 }],
   ["mobile-430x932", { width: 430, height: 932 }],
-  ["mobile-375x667", { width: 375, height: 667 }]
+  ["mobile-375x667", { width: 375, height: 667 }],
+  ["mobile-360x800", { width: 360, height: 800 }],
+  ["mobile-320x568", { width: 320, height: 568 }]
 ];
 
 let publicRoutes = [
@@ -43,6 +48,7 @@ let publicRoutes = [
   ["leadership-nishita-trivedi", "/leadership/nishita-trivedi/"],
   ["services", "/services/"],
   ["regulatory", "/regulatory-services/"],
+  ["cro", "/cro/"],
   ["products", "/product-portfolio/"],
   ["nutraxin-catalogue", "/product-portfolio/nutraxin/"],
   ["partners", "/partner-with-us/"],
