@@ -2,6 +2,7 @@ await import("./build-pages.mjs");
 await import("./apply-visual-refinement.mjs");
 await import("./apply-module-media-sanity.mjs");
 await import("./normalise-visual-css.mjs");
+await import("./build-css-bundle.mjs");
 await import("./normalise-visual-semantics.mjs");
 await import("./enhance-seo-authority.mjs");
 await import("./reconcile-leadership-authority.mjs");

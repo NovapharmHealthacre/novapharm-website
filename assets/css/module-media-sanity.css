@@ -510,6 +510,12 @@ body[data-page="technology"] .page-hero-cinematic::after {
   to { transform: translate3d(.5%, -.35%, 0) scale(1.04); }
 }
 
+@media (max-width: 1320px) and (min-width: 1101px) {
+  .architecture-status-grid { grid-template-columns: repeat(3, 1fr); }
+  .architecture-status-grid > div:nth-child(3) { border-right: 0; }
+  .architecture-status-grid > div:nth-child(n + 4) { border-top: 1px solid rgba(222, 235, 231, .18); }
+}
+
 @media (max-width: 1100px) {
   .governed-convergence { grid-template-columns: auto 1fr auto repeat(2, 1fr); }
   .governed-convergence b:nth-last-child(-n + 2) { display: none; }

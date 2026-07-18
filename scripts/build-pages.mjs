@@ -13,7 +13,7 @@ function brandPicture({ className = "brand-logo", width = 280, height = 35, eage
 }
 
 function privateHead(title) {
-  return `<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>${title}</title><link rel="icon" href="${brandLogoSvg}" type="image/svg+xml"><link rel="stylesheet" href="/assets/css/novapharm.css"><script type="module" src="/assets/js/cookie-consent.js"></script><script src="/assets/js/local-validation-banner.js" defer></script></head>`;
+  return `<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>${title}</title><link rel="icon" href="${brandLogoSvg}" type="image/svg+xml"><link rel="stylesheet" href="/assets/css/novapharm.bundle.css"><script type="module" src="/assets/js/cookie-consent.js"></script><script src="/assets/js/local-validation-banner.js" defer></script></head>`;
 }
 
 function write(path, content) {

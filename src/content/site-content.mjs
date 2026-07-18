@@ -21,6 +21,7 @@ export const navigation = Object.freeze([
   ["About", "/about/"],
   ["Services", "/services/"],
   ["Regulatory", "/regulatory-services/"],
+  ["CRO", "/cro/"],
   ["Products", "/product-portfolio/"],
   ["Partners", "/partner-with-us/"],
   ["Technology", "/technology/"],
@@ -395,6 +396,11 @@ export const pageMeta = Object.freeze({
     title: "MHRA, WDA(H), PLPI and GDP Regulatory Strategy | NovaPharm",
     description: "NovaPharm's compliance-first regulatory roadmap covering WDA(H), product-specific PLPI pathways, QMS, GDP, pharmacovigilance and vendor qualification.",
     eyebrow: "Regulatory"
+  },
+  "cro": {
+    title: "Clinical Research & CRO Support UK | NovaPharm Healthcare",
+    description: "Evidence-led clinical-development programme coordination, UK pathway integration, specialist-provider orchestration and sponsor-visible governance from NovaPharm.",
+    eyebrow: "Clinical Research & CRO Support"
   },
   "product-portfolio": {
     title: "Strategic Pharmaceutical Portfolio | Oncology and Specialty Medicines",
