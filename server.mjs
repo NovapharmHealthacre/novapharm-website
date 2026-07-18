@@ -84,6 +84,7 @@ const isProduction = process.env.NODE_ENV === "production";
 const isPreview = process.env.PREVIEW_MODE === "true";
 const isLocalPortal = process.env.LOCAL_PORTAL_MODE === "true";
 const isBrowserValidation = process.env.BROWSER_VALIDATION_MODE === "true";
+const loginRateLimit = isBrowserValidation ? 16 : 8;
 const previewUsername = String(process.env.PREVIEW_ACCESS_USERNAME || "");
 const previewPassword = String(process.env.PREVIEW_ACCESS_PASSWORD || "");
 const host = process.env.HOST || "127.0.0.1";
@@ -588,7 +589,7 @@ export async function handleRequest(request, response) {
 
     if (pathname === "/api/auth/login" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
-      if (!await rateLimit(request, "login", 8, 15 * 60 * 1000)) return json(response, 429, { error: "Too many login attempts. Try again later." });
+      if (!await rateLimit(request, "login", loginRateLimit, 15 * 60 * 1000)) return json(response, 429, { error: "Too many login attempts. Try again later." });
       const body = await readBody(request);
       const user = await verifyCredentials(String(body.username || ""), String(body.password || ""), networkFingerprint(request));
       if (!user) {

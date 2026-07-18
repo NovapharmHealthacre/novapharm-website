@@ -1,7 +1,7 @@
 # Enterprise Portal Browser Acceptance Report
 
-**Review date:** 17 July 2026  
-**Current candidate status:** Pending execution
+**Review date:** 18 July 2026
+**Current candidate status:** Passed locally; exact pushed SHA requires the normal PR workflow rerun
 
 ## Acceptance Matrix Prepared
 
@@ -28,16 +28,27 @@ The matrix runs in Chromium and WebKit at:
 
 It checks response status, unexpected redirects, one-H1 structure, horizontal overflow, text overflow, incomplete/broken images, official-logo presence, console errors, prohibited raw messages, cookie controls, mobile navigation and Axe violations. Customer, employee, board and administrator storage states are authenticated separately.
 
-## Attempted Run
+## Current Candidate Run
 
-An isolated runtime with synthetic credentials and data paths was generated without printing its credential. Opening its localhost server was denied by the desktop execution environment, so no current screenshots or Axe results were produced.
+The isolated runtime was created with synthetic credentials, local-only email capture, private local document storage and a seeded SQLite database. No credential value was printed or placed in an artefact. Contact submission, the four-stage account application, controlled PDF upload, local email previews and administrator review passed in both Chromium and WebKit before the route matrix ran.
 
-The non-listening preparation phase passed under Node.js 24: protected synthetic credentials, an isolated SQLite database, all four scopes, 19 Nutraxin products, seven workflow instances, zero enabled public claims, database integrity and foreign keys. No live service credential was inherited and no listening process was created by that test.
+The final matrix completed on 18 July 2026 with:
 
-## Historical Evidence
+- 1,316 rendered page states;
+- 1,316 Axe WCAG scans;
+- 1,464 screenshots;
+- 38 public/legal/error routes and 56 protected routes;
+- Chromium and WebKit at all seven required viewports;
+- zero accessibility, overflow, image, heading, redirect, console, logo or prohibited-message findings.
 
-The repository retains a previous Chromium/WebKit run covering 616 rendered page states, 616 Axe scans and 764 screenshots with zero final issues. That run targeted commit `a1473d7cbf2b789da5e015f8bf9c1fe0cfcd977b`; it predates the enterprise modules and Nutraxin catalogue and therefore does not satisfy the current gate by itself.
+The first expanded run identified an unseeded CI runtime, Nutraxin caption contrast, one narrow composition row, mobile metric wrapping and owner-review label contrast. The runtime and styles were corrected. A focused 56-page regression then passed with zero issues, followed by the complete zero-issue rerun above.
 
-## Required Completion
+The machine-readable local report is intentionally ignored with the screenshot set because it contains local validation state. A compact credential-free summary is committed at `audit/evidence/enterprise-portal-browser-summary.json`. GitHub regenerates short-retention evidence for the pushed SHA.
 
-Start the isolated runtime with `npm run browser:validation:start`, then run `npm run browser:validation:test`. Inspect representative screenshots for the Nutraxin page, customer orders/returns/quality, employee products/purchasing/quality, the Executive Platform and administrator review. Update this report only from the resulting machine-readable evidence.
+## Visual Review
+
+Representative homepage, Nutraxin, customer account/dashboard, employee CRM/product master, CEO dashboard and administrator owner-review screenshots were inspected after the automated run. The official logo, responsive hierarchy, one-column mobile metrics, catalogue disclosures, controlled status language and table containment were coherent in the reviewed Chromium and WebKit captures.
+
+## Remaining Boundary
+
+This evidence proves the local synthetic candidate, not Azure hosting, production identity, Microsoft Graph, SharePoint permissions, real email delivery, production malware scanning or live pharmaceutical operations. The PR browser workflow must pass again against the exact pushed commit.

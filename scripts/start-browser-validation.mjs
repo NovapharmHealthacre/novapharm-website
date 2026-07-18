@@ -1,19 +1,20 @@
 import { chmodSync, closeSync, existsSync, mkdirSync, openSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { spawn, spawnSync } from "node:child_process";
+import { assertBrowserValidationRoot, defaultBrowserValidationRoot } from "./browser-validation-runtime.mjs";
 
 const repositoryRoot = resolve(process.cwd());
 const argumentsList = process.argv.slice(2);
 const prepareOnly = argumentsList.includes("--prepare-only");
-const runtimeRoot = resolve(argumentsList.find((value) => !value.startsWith("--")) || "/private/tmp/novapharm-pr10-browser-runtime");
+const runtimeRoot = assertBrowserValidationRoot(argumentsList.find((value) => !value.startsWith("--")) || defaultBrowserValidationRoot);
 const environmentPath = join(runtimeRoot, "server.env");
 const credentialsPath = join(runtimeRoot, "credentials.json");
 const pidPath = join(runtimeRoot, "server.pid");
 const logPath = join(runtimeRoot, "server.log");
 
 if (Number(process.versions.node.split(".")[0]) !== 24) throw new Error(`Node.js 24 is required. Current runtime: ${process.version}.`);
-if (!runtimeRoot.startsWith("/private/tmp/")) throw new Error("Browser validation runtime must remain under /private/tmp.");
 mkdirSync(runtimeRoot, { recursive: true, mode: 0o700 });
+assertBrowserValidationRoot(runtimeRoot);
 chmodSync(runtimeRoot, 0o700);
 
 function run(script, label, additions = {}) {

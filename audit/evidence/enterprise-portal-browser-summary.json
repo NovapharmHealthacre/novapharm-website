@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-07-18T04:56:36.732Z",
+  "candidateBaseCommit": "d5057b1d849466bd9e0b42a1cd8b80ac4162c8e9",
+  "sourceState": "candidate working tree after deterministic browser-runtime and responsive-style remediation",
+  "environment": "isolated synthetic localhost validation",
+  "externalServices": false,
+  "engines": [
+    "Chromium",
+    "WebKit"
+  ],
+  "viewports": [
+    "1440x900",
+    "1920x1080",
+    "1024x1366",
+    "768x1024",
+    "390x844",
+    "430x932",
+    "375x667"
+  ],
+  "routes": {
+    "publicLegalAndError": 38,
+    "protected": 56,
+    "perEngineViewport": 94
+  },
+  "results": {
+    "renderedPages": 1316,
+    "axeScans": 1316,
+    "screenshots": 1464,
+    "issues": 0
+  },
+  "browserWorkflows": {
+    "contact": "passed",
+    "accountApplication": "passed",
+    "documentUpload": "passed",
+    "localEmailPreview": "passed",
+    "administratorReview": "passed"
+  },
+  "credentialDisclosure": false,
+  "rawEvidencePolicy": "Ignored local artefacts; GitHub regenerates short-retention evidence for the exact pushed SHA."
+}

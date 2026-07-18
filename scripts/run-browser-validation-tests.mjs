@@ -1,10 +1,11 @@
 import { existsSync, statSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { join } from "node:path";
 import { spawnSync } from "node:child_process";
+import { assertBrowserValidationRoot, defaultBrowserValidationRoot } from "./browser-validation-runtime.mjs";
 
-const runtimeRoot = resolve(process.argv[2] || "/private/tmp/novapharm-pr10-browser-runtime");
+const runtimeRoot = assertBrowserValidationRoot(process.argv[2] || defaultBrowserValidationRoot);
 const credentialsPath = join(runtimeRoot, "credentials.json");
-if (!runtimeRoot.startsWith("/private/tmp/") || !existsSync(credentialsPath)) {
+if (!existsSync(credentialsPath)) {
   throw new Error("Start the protected browser validation runtime before running browser acceptance.");
 }
 if ((statSync(credentialsPath).mode & 0o077) !== 0) throw new Error("Browser validation credentials must remain owner-only.");

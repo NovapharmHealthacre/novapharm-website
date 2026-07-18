@@ -1,6 +1,6 @@
 # Local Owner Portal Implementation
 
-Date: 16 July 2026
+Date: 18 July 2026
 Branch: `backend/activate-forms-portal-sql`
 Pull request: PR 10
 Environment: zero-cost local validation only
@@ -43,25 +43,25 @@ The local portal proves the application workflows and access boundaries using sy
 
 ## Executed Validation
 
-All results below were genuinely executed on 16 July 2026 using Node.js 24.14.0.
+All results below were genuinely executed again on 18 July 2026 using Node.js 24.14.0.
 
 | Validation | Result |
 |---|---|
 | Locked dependency install | Passed; 265 packages installed from the lockfile |
 | Full `npm run check` workflow | Passed |
-| Build and generated pages | Passed; 33 public pages, 6 Insights articles and 5 leadership entities |
-| Link validation | Passed; 2,069 local links and assets |
-| Public claims audit | Passed for 33 indexable pages |
+| Build and generated pages | Passed; 34 public pages, 6 Insights articles and 5 leadership entities |
+| Link validation | Passed; 2,145 local links and assets |
+| Public claims audit | Passed for 34 indexable pages |
 | Local owner acceptance | Passed; 18 customer, 13 employee, 19 board/executive and 5 admin routes |
 | Contact workflow | Passed with local capture and no external request |
 | Account application | Passed for submit, duplicate protection, upload recovery and controlled upload |
 | Password and session controls | Passed for forced change, old-password rejection, revocation, expiry, logout, lockout and rate limiting |
 | Document controls | Passed for quarantine, synthetic clean-test promotion and suppression of local SharePoint delivery |
 | Browser workflows | Passed in Chromium and WebKit for contact, account application, upload, local email preview and administrator review |
-| Full rendered acceptance | Passed; 616 page renders, 616 axe scans, 764 screenshots and 0 issues across 7 viewports in both engines |
+| Full rendered acceptance | Passed; 1,316 page renders, 1,316 Axe scans, 1,464 screenshots and 0 issues across 7 viewports in both engines |
 | Dependency audit | Passed; 0 known vulnerabilities reported by npm |
-| Current-tree secret scan | Passed |
-| Git-history secret scan | Passed; 40 reachable commits scanned with no leak finding |
+| Current-tree secret scan | Passed; 3.48 GB scanned with no leak finding |
+| Git-history secret scan | Passed across all pre-final reachable commits with no leak finding |
 | Local lifecycle | Passed; launcher reached both live and ready health gates on `127.0.0.1:4173` |
 | Persistent file permissions | Passed; environment, SQLite, WAL, SHM and credential handoff use owner-only permissions |
 | Backup and isolated restore | Passed with checksum, integrity, foreign-key and record-count reconciliation |
@@ -70,4 +70,4 @@ The generated browser evidence is kept under the ignored local `artifacts/visual
 
 ## Owner Acceptance Gate
 
-The local service is technically ready. The remaining owner step is to use the protected temporary handoff, sign in, and complete the mandatory password change. Until that owner-only step occurs, the temporary handoff remains on the Mac with mode `0600`. The application deletes it automatically when the change succeeds.
+The existing owner identity is active with customer, employee, board and administrator scopes. Its credential fingerprint, credential version 2, permanent-password state and active-session set remained unchanged across the verified startup; no bootstrap handoff was created or required. The service is available only on `127.0.0.1:4173` for owner review and remains unsuitable for live records or regulated operations.

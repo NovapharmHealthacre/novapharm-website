@@ -154,7 +154,12 @@
   background: #fff;
 }
 
-.metric strong { font-family: var(--serif); font-size: 34px; font-weight: 560; }
+.metric strong {
+  font-family: var(--serif);
+  font-size: 34px;
+  font-weight: 560;
+  overflow-wrap: anywhere;
+}
 
 .executive-index .grid { border-top: 1px solid var(--line); border-left: 1px solid var(--line); gap: 0; }
 .executive-index .card { min-height: 180px; border-top: 0; border-left: 0; border-radius: 0; box-shadow: none; }
@@ -227,6 +232,8 @@
   border-top: 1px solid var(--line-strong);
 }
 
+.owner-review-group > .eyebrow { color: #8b1d24; }
+
 .owner-review-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -265,6 +272,7 @@
   .section-heading-row { align-items: stretch; flex-direction: column; }
   .section-heading-row .btn { width: 100%; }
   .portal-main { padding: 24px 18px 44px; }
+  .portal-main .metric-row { grid-template-columns: 1fr; }
   .portal-topbar { display: flex; align-items: stretch; flex-direction: column; }
   .portal-search { width: 100%; }
   .enterprise-intro { align-items: stretch; flex-direction: column; }

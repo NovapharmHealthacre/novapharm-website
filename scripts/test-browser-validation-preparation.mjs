@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, rmSync, statSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 
@@ -9,7 +10,7 @@ const externalValues = {
   MICROSOFT_CLIENT_SECRET: "synthetic-value-that-must-be-removed",
   SHAREPOINT_DRIVE_ID: "synthetic-value-that-must-be-removed"
 };
-const runtimeRoot = mkdtempSync("/private/tmp/novapharm-browser-preparation-");
+const runtimeRoot = mkdtempSync(join(tmpdir(), "novapharm-browser-preparation-"));
 try {
   const result = spawnSync(process.execPath, ["scripts/start-browser-validation.mjs", "--prepare-only", runtimeRoot], {
     cwd: process.cwd(),

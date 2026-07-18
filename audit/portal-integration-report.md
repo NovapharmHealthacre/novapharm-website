@@ -1,8 +1,8 @@
 # Enterprise Portal Integration Report
 
-**Review date:** 17 July 2026  
-**Branch:** `backend/activate-forms-portal-sql`  
-**Status:** Repository implementation complete; rendered acceptance pending
+**Review date:** 18 July 2026
+**Branch:** `backend/activate-forms-portal-sql`
+**Status:** Repository implementation and local rendered acceptance complete; external production integrations remain gated
 
 ## Scope
 
@@ -46,7 +46,7 @@ The synthetic validation dataset exercises:
 
 ## Actual Verification
 
-The following commands completed successfully on 17 July 2026:
+The following commands completed successfully on 18 July 2026:
 
 - `npm run check`
 - `npm run test:integration`
@@ -63,6 +63,10 @@ The following commands completed successfully on 17 July 2026:
 - `npm run test:document-scans`
 - `npm run test:cookies`
 - `npm run test:backup-restore`
+- `npm run browser:validation:test`
+- `npm run portal:local:test`
+- `npm run portal:local:backup-test`
+- `npm audit --omit=dev --audit-level=high`
 
 The test run confirmed 34 public pages, six Insights articles, five leadership entities, 41 locked public shells, 54 enterprise module contracts, 94 documented tables and 2,145 valid local links/assets.
 
@@ -70,6 +74,10 @@ The test run confirmed 34 public pages, six Insights articles, five leadership e
 
 NHS data, PLPI, pharmacovigilance, tenders, Microsoft 365, AI and capital-planning modules use explicit planned or external-dependency states. No live NHS supply, granted licence, operational safety system, deployed AI, SharePoint connection or commercial performance is invented.
 
-## Remaining Gate
+## Rendered and Persistence Evidence
 
-The current candidate has not yet completed the expanded Chromium/WebKit matrix after the enterprise and Nutraxin changes because the desktop environment did not permit opening the isolated localhost validation port. The prior committed browser evidence relates to an earlier commit and is not treated as current evidence.
+The expanded Chromium/WebKit matrix passed 1,316 page states, 1,316 Axe scans and 1,464 screenshots with zero final issues across all required viewports. The end-to-end browser workflow passed contact, account application, upload, local email preview and administrator review in both engines.
+
+The protected owner-local runtime reached its live and ready health gates. Startup backed up and verified the existing database before migration/import/seed activity. A subsequent backup was checksum-verified, restored in isolation, reconciled across identity, customer, product, order, lead, application, document, audit and security records, then removed without changing the source database.
+
+The remaining gates are the exact pushed-SHA GitHub workflows and owner-controlled production integrations. No external service is represented as active by this report.

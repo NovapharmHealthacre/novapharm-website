@@ -1,9 +1,9 @@
 import { existsSync, readFileSync, rmSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { join } from "node:path";
+import { assertBrowserValidationRoot, defaultBrowserValidationRoot } from "./browser-validation-runtime.mjs";
 
-const runtimeRoot = resolve(process.argv[2] || "/private/tmp/novapharm-pr10-browser-runtime");
+const runtimeRoot = assertBrowserValidationRoot(process.argv[2] || defaultBrowserValidationRoot);
 const pidPath = join(runtimeRoot, "server.pid");
-if (!runtimeRoot.startsWith("/private/tmp/")) throw new Error("Browser validation runtime must remain under /private/tmp.");
 if (!existsSync(pidPath)) {
   console.log(JSON.stringify({ status: "not_running" }));
   process.exit(0);

@@ -1,8 +1,8 @@
 # Enterprise Portal Owner Handoff
 
-**Candidate:** PR 10, `backend/activate-forms-portal-sql`  
-**Review date:** 17 July 2026  
-**Status:** Implementation complete; final rendered and external advisory gates pending
+**Candidate:** PR 10, `backend/activate-forms-portal-sql`
+**Review date:** 18 July 2026
+**Status:** Local enterprise candidate validated; exact pushed-SHA CI and owner review pending
 
 ## What Is Ready
 
@@ -38,13 +38,21 @@ Recommended review sequence:
 - No production customer, supplier, board or pharmaceutical trading data should be entered.
 - PR 10 remains unmerged until the owner separately approves it.
 
+## Validation Completed
+
+1. Chromium and WebKit completed 1,316 rendered page states, 1,316 Axe scans and 1,464 screenshots with zero final issues.
+2. Contact, account application, upload, local email preview and administrator review passed in both engines.
+3. The official npm production advisory query reported zero vulnerabilities.
+4. Repository and Gitleaks scans passed the 3.48 GB current tree and all pre-final reachable commits with zero findings.
+5. The owner runtime created and verified a fresh pre-migration backup, reached live/ready, and retained the existing credential fingerprint, credential version, permanent-password state, four scopes and session set unchanged.
+6. The owner-local suite passed every protected route and the authentication, session, form, document and isolation controls.
+7. A fresh database backup was verified, restored in isolation and reconciled without changing the source database.
+
 ## Remaining Acceptance Gates
 
-1. Start the isolated synthetic runtime with `npm run browser:validation:start`, run `npm run browser:validation:test`, and inspect the new screenshots.
-2. Run the official npm production advisory query when network permission is available.
-3. Start the protected owner runtime; startup now creates and verifies a fresh database backup before migration 004, import or synthetic seeding.
-4. Verify the owner identity hash, salt, credential version, scopes and session continuity are unchanged.
-5. Start the protected localhost portal and complete owner review.
-6. Commit and push the verified candidate, then wait for PR 10 workflows.
+1. Commit and push this verified candidate.
+2. Require all PR 10 workflows to pass against the exact pushed SHA.
+3. Complete the owner's visual/content review through the protected localhost portal.
+4. Keep PR 10 open and unmerged until separate owner approval.
 
-The candidate must not be labelled ready for owner review until these gates are recorded as genuine passes.
+No Azure deployment, DNS change, GitHub Pages change, SharePoint permission change or production integration is authorised by this local handoff.

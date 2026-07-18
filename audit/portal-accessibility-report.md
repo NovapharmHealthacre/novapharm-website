@@ -1,8 +1,8 @@
 # Enterprise Portal Accessibility Report
 
-**Target:** WCAG 2.2 AA  
-**Review date:** 17 July 2026  
-**Status:** Structural checks passed; current rendered matrix pending
+**Target:** WCAG 2.2 AA
+**Review date:** 18 July 2026
+**Status:** Structural and automated rendered checks passed; independent/manual conformance review remains pending
 
 ## Implemented Controls
 
@@ -31,8 +31,10 @@
 - seven desktop, tablet and mobile viewports;
 - Axe WCAG 2 A/AA, 2.1 A/AA and 2.2 AA rules.
 
-## Current Evidence Limitation
+## Rendered Results
 
-The expanded browser/Axe matrix has not yet run against this working tree because the isolated localhost validation port was denied by the desktop environment. The earlier 616-page-state, zero-issue report was produced for commit `a1473d7cbf2b789da5e015f8bf9c1fe0cfcd977b` and is retained as historical evidence only.
+The current candidate completed 1,316 Axe scans across Chromium and WebKit, 94 routes and seven viewports with zero final violations. The first run exposed repeated caption/owner-label contrast and mobile text-width issues; each was corrected and re-rendered. A focused 56-page regression passed with zero findings, followed by the complete 1,316-page zero-issue run.
 
-No full WCAG conformance claim is made. Manual keyboard, screen-reader and zoom review remains part of owner acceptance after the current rendered matrix succeeds.
+Contact and account-application interactions were also completed in both engines with accessible validation summaries, success messages, controlled upload status and administrator review. No raw technical browser error appeared.
+
+No full WCAG conformance claim is made. Manual screen-reader sampling, 200%/400% zoom review and an independent accessibility assessment remain appropriate before a formal conformance statement.

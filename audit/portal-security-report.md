@@ -1,7 +1,7 @@
 # Enterprise Portal Security Report
 
-**Review date:** 17 July 2026  
-**Assessment:** Automated application controls passed; two external checks pending
+**Review date:** 18 July 2026
+**Assessment:** Repository, browser, advisory and local-runtime controls passed; production external controls remain owner-gated
 
 ## Controls Verified
 
@@ -25,9 +25,9 @@
 
 | Scan | Result | Evidence |
 | --- | --- | --- |
-| Repository policy scanner | Passed | Current candidate tree; zero policy findings |
-| Gitleaks current working tree | Passed | Approximately 1.04 GB scanned; zero findings |
-| Gitleaks all reachable branches and tags | Passed | All reachable candidate history; zero findings |
+| Repository policy scanner | Passed | 771 repository files; zero policy findings |
+| Gitleaks current working tree | Passed | 3.48 GB scanned with full redaction; zero findings |
+| Gitleaks all reachable branches and tags | Passed | All pre-final reachable commits and refs scanned; zero findings |
 
 Gitleaks was run with full redaction. No credential value was printed or added to this report.
 
@@ -35,12 +35,15 @@ Gitleaks was run with full redaction. No credential value was printed or added t
 
 Passed suites covered authentication, authorisation, customer isolation, CSRF, forced password change, old-password rejection, session restart, session expiry, lockout, rate limiting, secure headers, host/origin enforcement, protected files, database migration, Key Vault reference failure, document quarantine, browser-validation isolation and backup restoration.
 
-The complete `npm run check` workflow also passed from a detached clean checkout under Node.js 24.14.0. Regeneration caused no tracked-file drift.
+The complete `npm run check` workflow passed under Node.js 24.14.0 after the browser remediation. The production dependency advisory query completed against npm and reported zero vulnerabilities. The local browser matrix completed 1,316 page renders and Axe scans with zero findings after remediation.
 
-## Pending Checks
+The owner-local acceptance suite passed 18 customer, 13 employee, 19 board/executive and five administrator routes. It also passed forced password change, old-password rejection, revocation, expiry, logout, lockout, rate limiting, customer isolation, document quarantine and zero-external-request assertions. Existing owner credential material, credential version, password-change state, scopes and active-session set were unchanged across startup.
 
-1. `npm audit --omit=dev --audit-level=high` could not contact the official npm advisory service because external network permission was unavailable. It is **not reported as passed**.
-2. The current Chromium/WebKit acceptance run could not start its isolated localhost server because the desktop environment denied the port-opening action. It is **not reported as passed**.
+## Remaining Checks
+
+1. GitHub Actions must repeat the production-readiness and browser workflows against the exact pushed commit.
+2. An independent penetration test remains a production requirement; none is claimed here.
+3. Azure, Entra, Microsoft Graph, SharePoint ACL, production email, production malware scanning and hosted network controls remain external deployment gates.
 
 ## Production Boundary
 
