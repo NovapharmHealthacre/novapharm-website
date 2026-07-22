@@ -79,5 +79,9 @@
     "@axe-core/playwright": "4.12.1",
     "playwright": "1.61.1",
     "sharp": "^0.34.5"
+  },
+  "overrides": {
+    "@opentelemetry/propagator-jaeger": "2.9.0",
+    "fast-xml-parser": "5.10.1"
   }
 }

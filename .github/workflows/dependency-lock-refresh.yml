@@ -1,0 +1,33 @@
+name: Dependency lock refresh evidence
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  refresh-lock:
+    if: github.event.pull_request.number == 11
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Refresh lockfile from reviewed overrides
+        run: npm install --package-lock-only --ignore-scripts
+      - name: Verify production dependency advisories
+        run: npm audit --omit=dev --audit-level=high
+      - name: Upload reviewed lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: reviewed-dependency-lock-${{ github.event.pull_request.head.sha }}
+          path: package-lock.json
+          if-no-files-found: error
+          retention-days: 1
