@@ -44,15 +44,14 @@ jobs:
           rm -rf "$RUNNER_TEMP/novapharm-browser-backend"
           test ! -e "$RUNNER_TEMP/novapharm-browser-backend"
 
-  oncology-ai-acceptance:
-    name: Oncology and trusted AI browser gate
+  oncology-cro-acceptance:
+    name: Oncology and CRO corrective browser gate
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: 0
       - uses: actions/setup-node@v6
         with:
           node-version: 24
@@ -63,23 +62,13 @@ jobs:
         run: npx playwright install --with-deps chromium webkit
       - name: Build canonical public website
         run: npm run build
-      - name: Prepare pull-request base for before-and-after evidence
-        if: github.event_name == 'pull_request'
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: |
-          git worktree add --detach "$RUNNER_TEMP/oncology-ai-before" "$BASE_SHA"
-          echo "ONCOLOGY_AI_BEFORE_ROOT=$RUNNER_TEMP/oncology-ai-before" >> "$GITHUB_ENV"
-      - name: Run Oncology and AI matrix
+      - name: Run Oncology, CRO and removed-search matrix
         run: npm run test:oncology-browser
-      - name: Remove comparison worktree
-        if: always() && github.event_name == 'pull_request'
-        run: git worktree remove --force "$RUNNER_TEMP/oncology-ai-before" || true
-      - name: Upload Oncology and AI evidence
+      - name: Upload corrective browser evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: oncology-ai-browser-${{ github.event.pull_request.head.sha || github.sha }}
+          name: oncology-cro-browser-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
             audit/evidence/oncology-ai-browser
             audit/oncology-ai-browser-report.md
@@ -184,7 +173,7 @@ jobs:
     needs:
       - backend-browser-workflows
       - browser-acceptance
-      - oncology-ai-acceptance
+      - oncology-cro-acceptance
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -207,7 +196,7 @@ jobs:
           BACKEND_WORKFLOWS_RESULT: ${{ needs.backend-browser-workflows.result }}
           SHARD_JOBS_RESULT: ${{ needs.browser-acceptance.result }}
         run: |
-          test "${{ needs.oncology-ai-acceptance.result }}" = "success"
+          test "${{ needs.oncology-cro-acceptance.result }}" = "success"
           node scripts/reconcile-browser-acceptance.mjs
       - name: Upload aggregate gate evidence
         if: always()

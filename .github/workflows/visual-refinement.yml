@@ -5,28 +5,43 @@ on:
     paths:
       - "assets/css/**"
       - "assets/js/**"
-      - "scripts/build-site.mjs"
-      - "scripts/apply-visual-refinement.mjs"
-      - "scripts/validate-visual-refinement.mjs"
+      - "scripts/**"
       - "services/**"
       - "regulatory-services/**"
+      - "cro/**"
+      - "oncology/**"
       - "partner-with-us/**"
       - "technology/**"
       - "leadership/**"
+      - "legal/**"
+      - "contact/**"
+      - "account-application/**"
+      - "portal/**"
       - "index.html"
+      - "sitemap*.xml"
+      - "robots.txt"
       - "package.json"
       - ".github/workflows/visual-refinement.yml"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: novapharm-generated-output-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   visual-acceptance:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      TARGET_BRANCH: ${{ github.head_ref || github.ref_name }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
       - uses: actions/setup-node@v6
         with:
           node-version: 24
@@ -35,7 +50,22 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Build the deterministic visual release
         run: npm run build
-      - name: Validate the sixteen-module implementation
-        run: npm run visual:validate
+      - name: Validate the public implementation
+        run: |
+          npm run visual:validate
+          npm run visual:modules
+          npm run test:owner-corrections
+      - name: Synchronise deterministic generated output
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Generated output is already synchronised."
+          else
+            git commit -m "Synchronise owner corrective generated output"
+            git push origin "HEAD:${TARGET_BRANCH}"
+          fi
       - name: Confirm generated output is committed
         run: git diff --exit-code

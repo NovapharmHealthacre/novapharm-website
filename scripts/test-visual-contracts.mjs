@@ -7,9 +7,10 @@ const text = (path) => readFileSync(join(root, path), "utf8");
 
 const cssEntrypoint = text("assets/css/novapharm.css");
 assert.match(cssEntrypoint, /@layer reset, tokens, foundations, layout, components, pages, utilities;/);
-for (const module of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity", "cro", "oncology", "ai-search"]) {
+for (const module of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity", "cro", "oncology", "owner-corrections"]) {
   assert.match(cssEntrypoint, new RegExp(`@import url\\("\\./${module}\\.css"\\)`), `${module}.css must be part of the production CSS entrypoint`);
 }
+assert.doesNotMatch(cssEntrypoint, /ai-search\.css/, "the retired public AI stylesheet must not be imported");
 
 const home = text("index.html");
 assert.match(home, /Building a more resilient pharmaceutical supply network\./);
@@ -29,6 +30,7 @@ assert.match(home, /partner-ecosystem-directed/);
 assert.match(home, /partner-pathway-grid/);
 assert.equal((home.match(/<div class="partner-pathway-grid">[\s\S]*?<\/div><p class="partner-ecosystem-disclosure">/)?.[0].match(/class="partner-pathway-card"/g) || []).length, 4, "the homepage must present four distinct partnership pathways");
 assert.equal((home.match(/class="partner-ecosystem-card"/g) || []).length, 0, "the homepage must not repeat the product-style partner grid");
+assert.doesNotMatch(home, /data-ai-search-open|nav-search|ai-search-dialog/);
 
 const services = text("services/index.html");
 assert.match(services, /class="service-visual-story"/);
@@ -58,6 +60,7 @@ for (const marker of ["technology-evidence-grid", "architecture-map-photographic
 assert.match(technology, /technology-control-architecture\.jpg/);
 assert.match(technology, /module-signal-technology/);
 assert.doesNotMatch(technology, /assets\/media\/products\//);
+assert.doesNotMatch(technology, /Responsible AI at NovaPharm|technology\/ai-governance/);
 
 const cro = text("cro/index.html");
 for (const marker of ["cro-hero", "Transparent delivery architecture", "Clinical Development Navigator", "Sponsor Decision Framework", "Development-to-Market Continuity", "cro-final-cta"]) assert.match(cro, new RegExp(marker, "i"));
@@ -67,6 +70,9 @@ assert.match(cro, /cro-evidence-architecture-640\.avif 640w/);
 assert.match(cro, /cro-delivery-architecture-640\.webp 640w/);
 assert.match(cro, /vishal-chakravarty-480\.avif 480w/);
 assert.match(cro, /girish-achliya-800\.webp 800w/);
+assert.match(cro, /prabhakarvitthallahare\.jpeg/);
+assert.equal((cro.match(/class="cro-leader"/g) || []).length, 3, "CRO Senior judgement must show three leaders");
+assert.match(cro, /href="\/leadership\/prabhakar-lahare\/"/);
 assert.match(cro, /class="cro-governance-map"/);
 assert.match(cro, /class="cro-continuity-path"/);
 assert.doesNotMatch(cro, /"@type":"(?:ClinicalTrial|MedicalStudy)"/);
@@ -74,21 +80,20 @@ assert.match(text("assets/css/cro.css"), /@media \(prefers-reduced-motion: reduc
 assert.match(text("assets/js/cro.js"), /IntersectionObserver/);
 
 const oncology = text("oncology/index.html");
-for (const marker of ["oncology-hero", "Oncology Supply Continuity Architecture", "Formulation and Complexity Navigator", "Oncology Product-Readiness Matrix", "Development-to-Access Continuity"]) assert.match(oncology, new RegExp(marker, "i"));
+for (const marker of ["oncology-hero", "Oncology Supply Continuity Architecture", "Formulation and Complexity Navigator", "Oncology Product-Readiness Matrix", "Development-to-Access Continuity", "oncology-editorial-gallery"]) assert.match(oncology, new RegExp(marker, "i"));
 assert.equal((oncology.match(/data-axis="\d"/g) || []).length, 6, "oncology continuity architecture must expose six evidence axes without CSP-blocked inline styles");
 assert.match(oncology, /class="development-continuity" tabindex="0"/, "scrollable oncology continuity must be keyboard focusable");
 assert.doesNotMatch(oncology, /style="--axis:/, "oncology continuity must not require inline styles");
 assert.equal((oncology.match(/data-formulation-panel=/g) || []).length, 4, "formulation navigator must preserve four no-JavaScript panels");
+for (const asset of ["oncology-formulation-pathways.svg", "oncology-evidence-continuity.svg", "oncology-condition-control.svg"]) assert.match(oncology, new RegExp(asset.replace(".", "\\.")));
+assert.equal((oncology.match(/class="oncology-editorial-grid"[\s\S]*?<\/div><\/div><\/section>/)?.[0].match(/<figure>/g) || []).length, 3, "Oncology editorial gallery must show three distinct visuals");
+assert.doesNotMatch(oncology, /data-ai-search-open|ai-search-dialog|oncology-ai-roadmap/);
 assert.match(text("assets/css/oncology.css"), /@media \(prefers-reduced-motion: reduce\)/);
 assert.match(text("assets/js/oncology.js"), /data-formulation-panel/);
 
-const aiGovernance = text("technology/ai-governance/index.html");
-for (const marker of ["ai-maturity-grid", "ai-citation-flow", "ai-privacy-list", "provider `none`", "Private on-device semantic retrieval"]) assert.match(aiGovernance, new RegExp(marker));
-const searchDirectory = text("search/index.html");
-assert.match(searchDirectory, /name="robots" content="noindex,follow"/);
-assert.match(searchDirectory, /class="search-directory"/);
-assert.match(text("assets/js/ai-search.js"), /import\("\/assets\/ai\/runtime\/search-controller\.mjs"\)/, "AI runtime must lazy-load only after activation");
-assert.match(text("assets/css/ai-search.css"), /@media \(prefers-reduced-motion: reduce\)/);
+for (const retired of ["technology/ai-governance/index.html", "search/index.html", "assets/js/ai-search.js", "assets/css/ai-search.css", "assets/ai"]) {
+  assert.equal(existsSync(join(root, retired)), false, `${retired} must not ship in the corrected public release`);
+}
 
 const leadership = text("leadership/index.html");
 assert.match(leadership, /module-portrait-composition/);
@@ -145,7 +150,10 @@ for (const path of [
   "assets/media/home/supply-network-hero-1200.jpg",
   "assets/media/stories/regulatory-batch-integrity.jpg",
   "assets/media/stories/services-launch-readiness.jpg",
-  "assets/media/stories/technology-control-architecture.jpg"
+  "assets/media/stories/technology-control-architecture.jpg",
+  "assets/media/oncology/oncology-formulation-pathways.svg",
+  "assets/media/oncology/oncology-evidence-continuity.svg",
+  "assets/media/oncology/oncology-condition-control.svg"
 ]) assert.ok(existsSync(join(root, path)), `${path} must exist`);
 
 assert.ok(statSync(join(root, "assets/media/home/supply-network-hero.jpg")).size < 350_000, "desktop hero must remain below 350 KB");
@@ -157,10 +165,11 @@ assert.match(responsive, /@media \(max-width: 620px\)/);
 assert.match(responsive, /@media \(prefers-reduced-motion: reduce\)/);
 assert.match(text("assets/css/visual-refinement.css"), /@media \(prefers-reduced-motion: reduce\)/);
 assert.match(text("assets/css/module-media-sanity.css"), /@media \(prefers-reduced-motion: reduce\)/);
+assert.match(text("assets/css/owner-corrections.css"), /@media \(prefers-reduced-motion: reduce\)/);
 assert.match(text("assets/js/visual-refinement.js"), /data-motion-toggle/);
 assert.match(text("assets/js/novapharm.js"), /saveData/);
-for (const stylesheet of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity", "cro", "oncology", "ai-search"]) {
+for (const stylesheet of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity", "cro", "oncology", "owner-corrections"]) {
   assert.doesNotMatch(text(`assets/css/${stylesheet}.css`), /prefers-color-scheme:\s*dark/, `${stylesheet}.css must not create an untested automatic dark theme`);
 }
 
-console.log("Visual contracts passed for the cinematic hero, sixteen tailored modules, seven-stage roadmap, leadership presentation, portal entry, motion preferences and asset budgets.");
+console.log("Visual contracts passed for the corrected public release, Oncology gallery, three CRO leaders, sixteen tailored modules, portal entry, motion preferences and asset budgets.");

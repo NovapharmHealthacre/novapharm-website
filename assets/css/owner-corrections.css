@@ -1,0 +1,128 @@
+/* Owner-directed corrections: completed CRO leadership and expanded Oncology imagery. */
+
+body[data-page="cro"] .cro-leadership-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+body[data-page="cro"] .cro-leader {
+  min-width: 0;
+  height: 100%;
+}
+
+body[data-page="cro"] .cro-leader-media {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #e7ecea;
+}
+
+body[data-page="cro"] .cro-leader-media picture,
+body[data-page="cro"] .cro-leader-media img {
+  width: 100%;
+  height: 100%;
+}
+
+body[data-page="cro"] .cro-leader-media img {
+  object-fit: cover;
+  object-position: center 24%;
+}
+
+body[data-page="cro"] .cro-leadership-proof {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(180px, .65fr) repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: 1px;
+}
+
+.formulation-panels > [role="tabpanel"] {
+  padding: 48px 52px;
+}
+
+.formulation-panels > [role="tabpanel"][hidden] {
+  display: none;
+}
+
+.oncology-editorial-gallery {
+  background: #f1f4f2;
+}
+
+.oncology-editorial-gallery .section-head {
+  max-width: 900px;
+}
+
+.oncology-editorial-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.oncology-editorial-grid figure {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.oncology-editorial-grid picture,
+.oncology-editorial-grid img {
+  display: block;
+  width: 100%;
+}
+
+.oncology-editorial-grid img {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  transition: transform 420ms cubic-bezier(.2,.72,.22,1);
+}
+
+.oncology-editorial-grid figure:hover img {
+  transform: scale(1.025);
+}
+
+.oncology-editorial-grid figcaption {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 720;
+}
+
+@media (max-width: 1080px) {
+  body[data-page="cro"] .cro-leadership-grid,
+  .oncology-editorial-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-page="cro"] .cro-leadership-proof {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body[data-page="cro"] .cro-leadership-proof > .section-kicker {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 700px) {
+  body[data-page="cro"] .cro-leadership-grid,
+  body[data-page="cro"] .cro-leadership-proof,
+  .oncology-editorial-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body[data-page="cro"] .cro-leadership-proof > .section-kicker {
+    grid-column: auto;
+  }
+
+  .formulation-panels > [role="tabpanel"] {
+    padding: 30px 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oncology-editorial-grid img {
+    transition: none;
+  }
+}

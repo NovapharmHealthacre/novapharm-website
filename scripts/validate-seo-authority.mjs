@@ -13,6 +13,7 @@ import {
 
 const root = resolve(process.cwd());
 const EDITORIAL_TEAM_ID = `${SITE_URL}/#editorial-team`;
+const retiredPublicFiles = new Set(["technology/ai-governance/index.html"]);
 let failures = 0;
 const fail = (message) => { failures += 1; console.error(`SEO authority validation failed: ${message}`); };
 const source = (path) => readFileSync(join(root, path), "utf8");
@@ -26,7 +27,7 @@ const publicFiles = [
   ...leadership.map((person) => `leadership/${person.slug}/index.html`),
   ...articles.map((article) => `news-insights/${article.slug}/index.html`),
   "account-application/index.html"
-];
+].filter((file) => !retiredPublicFiles.has(file));
 const files = [...new Set(publicFiles)];
 const records = [];
 const linkedRoutes = new Set(["/"]);
@@ -140,6 +141,9 @@ for (const sitemap of ["sitemap.xml", "sitemap-insights.xml", "sitemap-images.xm
 
 const sitemap = source("sitemap.xml");
 for (const record of records) if (!sitemap.includes(`<loc>${record.canonical}</loc>`)) fail(`sitemap.xml omits ${record.route}`);
+for (const retiredRoute of ["/search/", "/technology/ai-governance/"]) {
+  if (sitemap.includes(`${SITE_URL}${retiredRoute}`)) fail(`sitemap.xml includes retired route ${retiredRoute}`);
+}
 for (const privatePath of ["/portal/", "/employee/", "/admin/", "/_secure/", "/docs/", "/api/"]) {
   if (sitemap.includes(`${SITE_URL}${privatePath}`)) fail(`sitemap.xml exposes ${privatePath}`);
 }

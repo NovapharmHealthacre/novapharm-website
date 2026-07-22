@@ -445,29 +445,6 @@
     ]
   },
   {
-    "route": "/technology/ai-governance/",
-    "canonical": "https://novapharmhealthcare.com/technology/ai-governance/",
-    "file": "technology/ai-governance/index.html",
-    "title": "Responsible AI at NovaPharm | Evidence, Privacy and Human Oversight",
-    "description": "How NovaPharm governs public evidence search, optional private on-device semantic retrieval, internal AI development, citations, abstention, privacy and prohibited uses.",
-    "h1": "Responsible AI starts with evidence, privacy and a clear right to abstain.",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "BreadcrumbList",
-      "ListItem",
-      "ListItem"
-    ],
-    "intendedCta": [
-      "partners",
-      "contact",
-      "open-an-account",
-      "partners",
-      "contact",
-      "open-an-account"
-    ]
-  },
-  {
     "route": "/news-insights/",
     "canonical": "https://novapharmhealthcare.com/news-insights/",
     "file": "news-insights/index.html",
