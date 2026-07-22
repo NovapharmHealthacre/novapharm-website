@@ -3,6 +3,11 @@ name: Build, deploy and verify GitHub Pages
 on:
   push:
     branches: [main]
+  pull_request:
+    paths:
+      - .github/workflows/pages-live-publish.yml
+      - scripts/stage-pages-artifact.mjs
+      - package.json
   workflow_dispatch:
 
 permissions:
@@ -12,7 +17,7 @@ permissions:
   statuses: write
 
 concurrency:
-  group: novapharm-github-pages-live
+  group: novapharm-github-pages-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: false
 
 env:
@@ -20,9 +25,36 @@ env:
   STATUS_CONTEXT: pages-live-publish
 
 jobs:
+  validate-release:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out proposed release
+        uses: actions/checkout@v6
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build and validate the public artifact
+        run: |
+          npm run build
+          npm run test:owner-corrections
+          npm run validate:domain
+          node scripts/stage-pages-artifact.mjs _site
+
   build:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      PAGES_ADMIN_TOKEN: ${{ secrets.PAGES_ADMIN_TOKEN }}
     steps:
       - name: Check out approved source
         uses: actions/checkout@v6
@@ -60,9 +92,9 @@ jobs:
         run: node scripts/stage-pages-artifact.mjs _site
 
       - name: Configure Pages with an administration token when available
-        if: ${{ secrets.PAGES_ADMIN_TOKEN != '' }}
+        if: env.PAGES_ADMIN_TOKEN != ''
         env:
-          GH_TOKEN: ${{ secrets.PAGES_ADMIN_TOKEN }}
+          GH_TOKEN: ${{ env.PAGES_ADMIN_TOKEN }}
         run: |
           set -euo pipefail
           if gh api "repos/$GITHUB_REPOSITORY/pages" >/dev/null 2>&1; then
@@ -91,8 +123,8 @@ jobs:
       - name: Configure GitHub Pages metadata
         uses: actions/configure-pages@v5
         with:
-          token: ${{ secrets.PAGES_ADMIN_TOKEN || github.token }}
-          enablement: ${{ secrets.PAGES_ADMIN_TOKEN != '' }}
+          token: ${{ env.PAGES_ADMIN_TOKEN != '' && env.PAGES_ADMIN_TOKEN || github.token }}
+          enablement: ${{ env.PAGES_ADMIN_TOKEN != '' }}
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -101,6 +133,7 @@ jobs:
           retention-days: 1
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 20
