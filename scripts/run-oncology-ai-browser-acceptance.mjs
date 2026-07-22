@@ -485,4 +485,8 @@ writeFileSync(resolve("audit/oncology-ai-browser-report.md"), `# Oncology and AI
 writeFileSync(resolve("audit/oncology-ai-accessibility-report.md"), `# Oncology and AI Accessibility Report\n\n- Generated: ${evidence.generatedAt}\n- Automated WCAG tags: WCAG 2 A/AA, WCAG 2.1 A/AA and WCAG 2.2 AA\n- Axe scans: ${axeScans.length}\n- Automated violations: ${axeScans.reduce((count, result) => count + result.axeViolations.length, 0)}\n- Reduced motion: tested at all ${viewports.length} viewports in both engines\n- JavaScript-off core access: tested\n- AI dialog live regions, labels and visible boundaries: tested\n- Status: **${issues.some((issue) => issue.type.includes("axe")) ? "FAIL" : "PASS"}**\n\nAutomated checks do not constitute a complete WCAG conformance audit. Keyboard and screen-reader behavior remains subject to human assistive-technology review before any claim of full conformance.\n`);
 console.log(`Oncology and AI browser evidence written to ${relative(process.cwd(), evidencePath)}.`);
 console.log(`${results.length} rendered cases, ${axeScans.length} axe scans, ${screenshots.length} evidence images and ${issues.length} issue(s).`);
-if (issues.length) process.exit(1);
+if (issues.length) {
+  console.error("Oncology and AI acceptance issues:");
+  console.error(JSON.stringify(issues, null, 2));
+  process.exit(1);
+}
