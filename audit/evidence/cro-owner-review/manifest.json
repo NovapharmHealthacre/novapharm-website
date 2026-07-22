@@ -1,0 +1,199 @@
+{
+  "generatedAt": "2026-07-18T12:12:10.067Z",
+  "baseUrl": "http://127.0.0.1:4178",
+  "publicDataOnly": true,
+  "browserChromeIncluded": false,
+  "credentialsIncluded": false,
+  "files": [
+    {
+      "path": "desktop-1920x1080.jpg",
+      "kind": "clean-full-page",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "bytes": 1558311,
+      "sha256": "8f8a7fea18fbf5ae34a2c7cb1229aeb1edd37d3c1398279d305dde38d376c5ea"
+    },
+    {
+      "path": "desktop-1440x900.jpg",
+      "kind": "clean-full-page",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "bytes": 1490211,
+      "sha256": "cc33babc8a88e0f1fbf5217d7df783f44d02d89e2a83c066965ac04e87c9e291"
+    },
+    {
+      "path": "desktop-1280x800-header.jpg",
+      "kind": "clean-viewport",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "bytes": 127734,
+      "sha256": "c99d82a23bed808d10a4fb5d13897a73e07312b33826b50f4891bbc3d7f3abe3"
+    },
+    {
+      "path": "tablet-768x1024.jpg",
+      "kind": "clean-full-page",
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "bytes": 1424239,
+      "sha256": "d0af2afc36429444aa9b5072b472fadb42593a76c005740615d58cd4bda16e62"
+    },
+    {
+      "path": "mobile-430x932.jpg",
+      "kind": "clean-full-page",
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "bytes": 1188212,
+      "sha256": "2517d21976ecae96623b68be713cdb4ec73d3b60909776253a97cbee5cca466d"
+    },
+    {
+      "path": "mobile-390x844.jpg",
+      "kind": "clean-full-page",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "bytes": 1180386,
+      "sha256": "43dc8fa1cbccdfd67b1cd11b93578d50a8178c65055df0de3b41f3c92a90c03c"
+    },
+    {
+      "path": "mobile-375x667.jpg",
+      "kind": "clean-full-page",
+      "viewport": {
+        "width": 375,
+        "height": 667
+      },
+      "bytes": 1175636,
+      "sha256": "a75e9c19c52badc5bb6230eaf9da6029b6a264523fd98ee34830d6a4847e4970"
+    },
+    {
+      "path": "mobile-320x568.jpg",
+      "kind": "clean-full-page",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "bytes": 1140559,
+      "sha256": "63c0bfb98dd2f946c1f361e82b89f9ce2ae5b576e3ee2ca6d55566f91467a1fc"
+    },
+    {
+      "path": "section-hero.jpg",
+      "kind": "clean-section",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "bytes": 143444,
+      "sha256": "13b7f87786298ccb477beb7046ee6e363748f07eae42425ed17d4ab2fa78ecf2"
+    },
+    {
+      "path": "section-responsibility-architecture.jpg",
+      "kind": "clean-section",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "bytes": 120499,
+      "sha256": "92b10852fe50f07e0b0adaae43e9ed1c649a9889b787b8c9a14cc898a0da0bb6"
+    },
+    {
+      "path": "section-development-navigator.jpg",
+      "kind": "clean-section",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "bytes": 157228,
+      "sha256": "60c4a951c3f27102c752d706dd157267641308cdfd99c1f9d1533358b005c842"
+    },
+    {
+      "path": "section-service-architecture.jpg",
+      "kind": "clean-section",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "bytes": 140550,
+      "sha256": "c583d5bd7031b4621a408701a9500b5748d8614951db10a2561f65a651748618"
+    },
+    {
+      "path": "section-quality-governance.jpg",
+      "kind": "clean-section",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "bytes": 165053,
+      "sha256": "96d0c09c39b68dd46210a5ab9779ac8262ab80c586b0bbbed803b5cee55cb645"
+    },
+    {
+      "path": "section-technology-oversight.jpg",
+      "kind": "clean-section",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "bytes": 151439,
+      "sha256": "130e1cc13ee87aabec13791ac0115f2166454032ff6b1e972b60808a3baaa90d"
+    },
+    {
+      "path": "section-development-continuity.jpg",
+      "kind": "clean-section",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "bytes": 73313,
+      "sha256": "6464910d012ee560dea10db57919be2818627024e29910f7982e0c902bf2fde6"
+    },
+    {
+      "path": "section-final-cta.jpg",
+      "kind": "clean-section",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "bytes": 61694,
+      "sha256": "b53789b88d93d4fd309f341a8236a8f89d9f98787492664962e5d8d60c871b9e"
+    },
+    {
+      "path": "media-contact-sheet.jpg",
+      "kind": "media-contact-sheet",
+      "viewport": {
+        "width": 1800,
+        "height": 1320
+      },
+      "bytes": 294409,
+      "sha256": "8285f561849b0d9f7b3932e94a2ebdd970f7a8c4c99b77d0ade48f0ed6c70209"
+    },
+    {
+      "path": "before-desktop-1440x900.jpg",
+      "kind": "clean-before-full-page",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "bytes": 1947160,
+      "sha256": "601f907a54efcf58ae2d2dddb4f4f959e28a1978a0011ce0ec3b6e8eb817d10c"
+    },
+    {
+      "path": "before-after-comparison.jpg",
+      "kind": "before-after-comparison",
+      "viewport": {
+        "width": 1800,
+        "height": 1200
+      },
+      "bytes": 213416,
+      "sha256": "1d2f83ad9ff747a3e3eb9b923af459483ce97101bc8fa8ef54eabacf82b21093"
+    }
+  ]
+}

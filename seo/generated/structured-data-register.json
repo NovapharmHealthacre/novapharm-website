@@ -300,6 +300,53 @@
     ]
   },
   {
+    "route": "/cro/",
+    "canonical": "https://novapharmhealthcare.com/cro/",
+    "file": "cro/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/cro/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Clinical Research & CRO Support UK | NovaPharm Healthcare",
+        "mainEntity": "https://novapharmhealthcare.com/cro/#service",
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "FAQPage"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/cro/#service",
+        "types": [
+          "Service"
+        ],
+        "name": "Clinical Research & CRO Support",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
     "route": "/product-portfolio/",
     "canonical": "https://novapharmhealthcare.com/product-portfolio/",
     "file": "product-portfolio/index.html",

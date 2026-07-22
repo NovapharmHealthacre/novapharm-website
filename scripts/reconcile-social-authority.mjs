@@ -46,6 +46,13 @@ routeImages.set("/product-portfolio/nutraxin/", {
   height: 700,
   alt: "Nutraxin Vitamin D3 catalogue pack reference"
 });
+routeImages.set("/cro/", {
+  url: "/assets/media/cro/cro-evidence-architecture-1600.jpg",
+  type: "image/jpeg",
+  width: 1600,
+  height: 900,
+  alt: "Clinical-development team reviewing programme evidence, responsibilities and milestones"
+});
 
 for (const article of articles) {
   routeImages.set(`/news-insights/${article.slug}/`, {

@@ -619,7 +619,7 @@ td { color: var(--text); }
 .cookie-preferences input { width: 22px; height: 22px; flex: 0 0 22px; }
 .cookie-dialog-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 
-@media (max-width: 1120px) {
+@media (max-width: 1300px) {
   .nav-toggle {
     display: inline-flex;
     align-items: center;
@@ -885,6 +885,7 @@ td { color: var(--text); }
 .regulatory-notice p { margin: 6px 0 0; color: var(--text); }
 .logistics-story { background: color-mix(in srgb, var(--surface) 88%, #b8d9dc); }
 .editorial-index { color: var(--brand); font-size: 13px; font-weight: 820; text-transform: uppercase; }
+.section-dark .editorial-index { color: #ffd3d4; }
 .editorial-split h2 { margin-top: 0; color: var(--ink); font-size: 43px; line-height: 1.12; }
 .editorial-split p { max-width: 780px; font-size: 18px; }
 

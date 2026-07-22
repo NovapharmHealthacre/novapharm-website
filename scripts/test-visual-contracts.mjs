@@ -7,7 +7,7 @@ const text = (path) => readFileSync(join(root, path), "utf8");
 
 const cssEntrypoint = text("assets/css/novapharm.css");
 assert.match(cssEntrypoint, /@layer reset, tokens, foundations, layout, components, pages, utilities;/);
-for (const module of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity"]) {
+for (const module of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity", "cro"]) {
   assert.match(cssEntrypoint, new RegExp(`@import url\\("\\./${module}\\.css"\\)`), `${module}.css must be part of the production CSS entrypoint`);
 }
 
@@ -58,6 +58,20 @@ for (const marker of ["technology-evidence-grid", "architecture-map-photographic
 assert.match(technology, /technology-control-architecture\.jpg/);
 assert.match(technology, /module-signal-technology/);
 assert.doesNotMatch(technology, /assets\/media\/products\//);
+
+const cro = text("cro/index.html");
+for (const marker of ["cro-hero", "Transparent delivery architecture", "Clinical Development Navigator", "Sponsor Decision Framework", "Development-to-Market Continuity", "cro-final-cta"]) assert.match(cro, new RegExp(marker, "i"));
+assert.equal((cro.match(/data-cro-stage="\d+"/g) || []).length, 8, "CRO navigator must expose eight stages without JavaScript");
+assert.equal((cro.match(/class="cro-lane cro-lane-/g) || []).length, 3, "CRO delivery architecture must expose three responsibility lanes");
+assert.match(cro, /cro-evidence-architecture-640\.avif 640w/);
+assert.match(cro, /cro-delivery-architecture-640\.webp 640w/);
+assert.match(cro, /vishal-chakravarty-480\.avif 480w/);
+assert.match(cro, /girish-achliya-800\.webp 800w/);
+assert.match(cro, /class="cro-governance-map"/);
+assert.match(cro, /class="cro-continuity-path"/);
+assert.doesNotMatch(cro, /"@type":"(?:ClinicalTrial|MedicalStudy)"/);
+assert.match(text("assets/css/cro.css"), /@media \(prefers-reduced-motion: reduce\)/);
+assert.match(text("assets/js/cro.js"), /IntersectionObserver/);
 
 const leadership = text("leadership/index.html");
 assert.match(leadership, /module-portrait-composition/);
@@ -128,7 +142,7 @@ assert.match(text("assets/css/visual-refinement.css"), /@media \(prefers-reduced
 assert.match(text("assets/css/module-media-sanity.css"), /@media \(prefers-reduced-motion: reduce\)/);
 assert.match(text("assets/js/visual-refinement.js"), /data-motion-toggle/);
 assert.match(text("assets/js/novapharm.js"), /saveData/);
-for (const stylesheet of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity"]) {
+for (const stylesheet of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity", "cro"]) {
   assert.doesNotMatch(text(`assets/css/${stylesheet}.css`), /prefers-color-scheme:\s*dark/, `${stylesheet}.css must not create an untested automatic dark theme`);
 }
 

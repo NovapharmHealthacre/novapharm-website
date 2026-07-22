@@ -14,6 +14,7 @@ import {
   sourcingPillars,
   technologyMaturity
 } from "../src/content/site-content.mjs";
+import { croContent } from "../src/content/cro-content.mjs";
 import { nutraxinExpectedRangeCounts, validateNutraxinRegister } from "../src/core/nutraxin-catalogue.mjs";
 
 const root = resolve(process.cwd());
@@ -148,7 +149,7 @@ function footer() {
           <a class="footer-registration" href="${company.companiesHouseUrl}">${company.legalName} · Company ${company.companyNumber}</a>
         </div>
         <div><h3>Company</h3><a href="/about/company/">Company</a><a href="/leadership/">Leadership</a><a href="/about/governance/">Governance</a><a href="/investor-information/">Investors</a><a href="/careers/">Careers</a></div>
-        <div><h3>Capabilities</h3><a href="/services/">Services</a><a href="/regulatory-services/">Regulatory</a><a href="/product-portfolio/">Products</a><a href="/partner-with-us/">Partners</a><a href="/technology/">Technology</a></div>
+        <div><h3>Capabilities</h3><a href="/services/">Services</a><a href="/regulatory-services/">Regulatory</a><a href="/cro/">Clinical Research & CRO</a><a href="/product-portfolio/">Products</a><a href="/partner-with-us/">Partners</a><a href="/technology/">Technology</a></div>
         <div><h3>Connect</h3><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">Open an account</a><a href="/portal/">Secure portal</a><a href="/feed.xml">Insights feed</a></div>
         <div><h3>Legal</h3><a href="/legal/privacy/">Privacy</a><a href="/legal/cookies/">Cookies</a><a href="/legal/terms/">Terms</a><a href="/legal/accessibility/">Accessibility</a><a href="/legal/modern-slavery/">Modern slavery</a><a href="/legal/environment-carbon/">Environment and carbon</a><button class="footer-link-button" type="button" data-cookie-settings>Cookie settings</button></div>
       </div>
@@ -192,7 +193,7 @@ function organisationSchema() {
     description: company.summary,
     sameAs: [company.companiesHouseUrl],
     founder: { "@id": `${siteUrl}/leadership/vishal-chakravarty/#person` },
-    knowsAbout: ["UK pharmaceutical distribution", "PLPI pharmaceutical sourcing", "Good Distribution Practice", "pharmaceutical quality systems", "oncology medicine supply"]
+    knowsAbout: ["UK pharmaceutical distribution", "PLPI pharmaceutical sourcing", "Good Distribution Practice", "pharmaceutical quality systems", "oncology medicine supply", "clinical-development programme coordination"]
   };
 }
 
@@ -275,6 +276,15 @@ function head(meta, slug = "", options = {}) {
   const twitterCard = usesBrandImage ? "summary" : "summary_large_image";
   const type = options.ogType || "website";
   const schemas = options.schemas || pageSchemas(meta, slug, options);
+  const preloads = [
+    options.preloadHero
+      ? '<link rel="preload" as="image" href="/assets/media/home/supply-network-hero.jpg" imagesrcset="/assets/media/home/supply-network-hero-1200.jpg 1200w, /assets/media/home/supply-network-hero.jpg 1672w" imagesizes="100vw" fetchpriority="high">'
+      : "",
+    options.preloadCroHero
+      ? '<link rel="preload" as="image" href="/assets/media/cro/cro-evidence-architecture-1600.avif" imagesrcset="/assets/media/cro/cro-evidence-architecture-640.avif 640w, /assets/media/cro/cro-evidence-architecture-960.avif 960w, /assets/media/cro/cro-evidence-architecture-1600.avif 1600w" imagesizes="100vw" type="image/avif" fetchpriority="high">'
+      : ""
+  ].filter(Boolean);
+  const preloadMarkup = preloads.length ? `  ${preloads.join("\n  ")}\n` : "";
   return `<!DOCTYPE html>
 <html lang="en-GB" data-api-base="${esc(process.env.PUBLIC_API_ORIGIN || "")}">
 <head>
@@ -289,8 +299,7 @@ function head(meta, slug = "", options = {}) {
   <link rel="alternate" type="application/rss+xml" title="NovaPharm Healthcare Insights" href="${siteUrl}/feed.xml">
   <link rel="icon" href="${brandLogoSvg}" type="image/svg+xml">
   <link rel="manifest" href="/manifest.webmanifest">
-  ${options.preloadHero ? '<link rel="preload" as="image" href="/assets/media/home/supply-network-hero.jpg" imagesrcset="/assets/media/home/supply-network-hero-1200.jpg 1200w, /assets/media/home/supply-network-hero.jpg 1672w" imagesizes="100vw" fetchpriority="high">' : ""}
-  <link rel="stylesheet" href="/assets/css/novapharm.css">
+${preloadMarkup}  <link rel="stylesheet" href="/assets/css/novapharm.bundle.css">
   <meta property="og:type" content="${type}">
   <meta property="og:site_name" content="NovaPharm Healthcare">
   <meta property="og:locale" content="en_GB">
@@ -374,6 +383,22 @@ function responsiveEditorialImage(src, alt, { eager = false, sizes = "100vw" } =
   return `<picture><source srcset="${base}-960.avif 960w, ${base}.avif 1600w" sizes="${sizes}" type="image/avif"><source srcset="${base}-960.webp 960w, ${base}.webp 1600w" sizes="${sizes}" type="image/webp"><img src="${src}" srcset="${base}-960.jpg 960w, ${src} 1600w" sizes="${sizes}" alt="${esc(alt)}" width="1600" height="900" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="${eager ? "sync" : "async"}"></picture>`;
 }
 
+function responsiveCroImage(base, alt, { eager = false, sizes = "100vw", className = "" } = {}) {
+  const loading = eager ? 'fetchpriority="high"' : 'loading="lazy"';
+  return `<picture${className ? ` class="${className}"` : ""}><source srcset="${base}-640.avif 640w, ${base}-960.avif 960w, ${base}-1600.avif 1600w" sizes="${sizes}" type="image/avif"><source srcset="${base}-640.webp 640w, ${base}-960.webp 960w, ${base}-1600.webp 1600w" sizes="${sizes}" type="image/webp"><img src="${base}-1600.jpg" srcset="${base}-640.jpg 640w, ${base}-960.jpg 960w, ${base}-1600.jpg 1600w" sizes="${sizes}" alt="${esc(alt)}" width="1600" height="900" ${loading} decoding="${eager ? "sync" : "async"}"></picture>`;
+}
+
+function responsiveCroPortrait(profile) {
+  const portraitBaseBySlug = {
+    "vishal-chakravarty": "/assets/media/cro/leadership/vishal-chakravarty",
+    "girish-achliya": "/assets/media/cro/leadership/girish-achliya"
+  };
+  const base = portraitBaseBySlug[profile.slug];
+  if (!base) return leaderVisual(profile);
+  const sizes = "(max-width: 720px) 92vw, (max-width: 1080px) 44vw, 390px";
+  return `<picture><source srcset="${base}-480.avif 480w, ${base}-800.avif 800w" sizes="${sizes}" type="image/avif"><source srcset="${base}-480.webp 480w, ${base}-800.webp 800w" sizes="${sizes}" type="image/webp"><img src="${base}-800.jpg" srcset="${base}-480.jpg 480w, ${base}-800.jpg 800w" sizes="${sizes}" alt="${esc(profile.imageAlt)}" width="800" height="600" loading="lazy" decoding="async"></picture>`;
+}
+
 function articleCard(article, featured = false, withMedia = true) {
   const media = withMedia ? `<a class="article-card-media" href="/news-insights/${article.slug}/" aria-label="Read ${esc(article.title)}">${responsiveEditorialImage(article.heroImage, "", { sizes: "(max-width: 760px) 100vw, 33vw" })}</a>` : "";
   return `<article class="article-card${featured ? " article-card-featured" : ""}" data-article-card data-category="${esc(article.category)}">${media}<div class="article-card-copy"><span class="article-category">${esc(article.category)}</span><h3><a href="/news-insights/${article.slug}/">${esc(article.title)}</a></h3><p>${esc(article.summary)}</p><div class="article-meta"><span>${esc(article.author)}</span><span>${readingTime(article)} min read</span></div></div>
@@ -387,7 +412,7 @@ function mediaStory({ src, alt, kicker, title, text, reverse = false }) {
 function contactForm({ formId = "contact-form", defaultType = "", compact = false } = {}) {
   const enquiryTypes = [
     "Product opportunity", "Distribution partnership", "Pharmacy or wholesaler account", "CMO/CDMO partnership",
-    "Regulatory services", "Supplier enquiry", "Media", "Careers", "General enquiry"
+    "Regulatory services", "Clinical development & CRO support", "Supplier enquiry", "Media", "Careers", "General enquiry"
   ];
   return `<form class="form-grid contact-form${compact ? " contact-form-compact" : ""}" data-contact-form novalidate>
     <div class="form-error-summary" data-error-summary tabindex="-1" hidden><h2>Check the information below</h2><ul></ul></div>
@@ -416,6 +441,7 @@ function homePage() {
   <section class="section regulatory-foundation" data-reveal><div class="container two-column-story"><div>${sectionHeading("Regulatory foundation", "No regulated supply before the required permissions.", "The roadmap connects authorisation, quality systems and product-specific responsibilities before commercial release.")} ${regulatoryNotice()}</div><ol class="numbered-principles">${["WDA(H) application readiness", "Product-specific PLPI assessment", "QMS and SOP governance", "GDP and vendor oversight", "Pharmacovigilance and recall readiness", "Batch and document integrity"].map((item, index) => `<li><span>${String(index + 1).padStart(2, "0")}</span>${item}</li>`).join("")}</ol></div></section>
   <section class="visual-band" data-reveal><img src="/assets/media/editorial/quality-batch-integrity.svg" alt="Controlled packs linked through quality evidence and release checkpoints" width="1200" height="675" loading="lazy" decoding="async"><div class="visual-band-copy"><div class="container"><span class="section-kicker">Batch integrity</span><h2>Evidence should travel with every governed product and transaction.</h2></div></div></section>
   <section class="section logistics-story" data-reveal><div class="container editorial-split"><div class="editorial-index">01 / Operations</div><div><span class="section-kicker">Logistics & distribution</span><h2>A capital-efficient third-party model, governed as an outsourced pharmaceutical activity.</h2><p>NovaPharm plans to integrate with Polar Speed/Marken for pharmaceutical storage, transport and delivery services. The relationship, scope, locations, performance commitments and system interfaces remain subject to final contract, authorisation and onboarding.</p><a class="btn btn-outline" href="/services/#logistics">Explore logistics operations</a></div></div></section>
+  <section class="section home-cro-bridge" data-reveal><div class="container home-cro-bridge-grid"><div><span class="section-kicker">Clinical Research & CRO Support</span><h2>Connect clinical-development decisions to the evidence and UK pathway that follow.</h2><p>NovaPharm's evidence-led model combines programme framing, responsibility mapping, UK pathway coordination and qualified specialist orchestration. It is not presented as a global full-service CRO.</p><div class="hero-actions"><a class="btn btn-primary" href="/cro/">Explore clinical-development support</a><a class="btn btn-outline" href="/contact/?enquiry=Clinical%20development%20%26%20CRO%20support">Discuss a programme</a></div></div><ol aria-label="Clinical-development evidence architecture"><li><span>01</span>Programme question</li><li><span>02</span>Responsibility map</li><li><span>03</span>Controlled evidence</li><li><span>04</span>UK pathway</li><li><span>05</span>Market continuity</li></ol></div></section>
   <section class="section section-band" data-reveal><div class="container">${sectionHeading("Technology maturity", "Tell people what is live, what is being built and what remains planned.", "NovaPharm's digital architecture separates working foundations from development and roadmap claims.")}<div class="maturity-preview">${Object.entries(technologyMaturity).map(([stage, items]) => `<div><span class="maturity-label maturity-${stage}">${maturityLabels[stage]}</span><h3>${items[0][0]}</h3><p>${items[0][1]}</p></div>`).join("")}</div><a class="text-link" href="/technology/">Review the full technology maturity model</a></div></section>
   <section class="section" data-reveal><div class="container">${sectionHeading("Partner ecosystem", "Designed for qualified pharmaceutical collaboration.", "NovaPharm is preparing a controlled pathway for product owners, manufacturers, authorised suppliers, buyers, logistics providers and technology partners.")}<div class="partner-type-grid">${partnerTypes.slice(0, 8).map((type) => `<span>${type}</span>`).join("")}</div><div class="hero-actions"><a class="btn btn-primary" href="/partner-with-us/">Explore partnerships</a><a class="btn btn-outline" href="/contact/">Submit an opportunity</a></div></div></section>
   <section class="section section-band" data-reveal><div class="container">${sectionHeading("Featured insights", "Original analysis for regulated pharmaceutical operators.", "Educational perspectives on regulation, quality, supply and technology, written in British English and reviewed against NovaPharm's claims guardrails.")}<div class="article-grid article-grid-editorial-links">${articles.slice(0, 3).map((article, index) => articleCard(article, index === 0, false)).join("")}</div><a class="text-link" href="/news-insights/">View all insights</a></div></section>
@@ -504,6 +530,7 @@ function servicesPage() {
   const body = `${pageHero(meta, "Substantive capabilities for regulated pharmaceutical growth.", "Eight connected service pillars support manufacturers, product owners, authorised suppliers, buyers and operational partners from opportunity review through launch readiness.", slug)}
   ${mediaStory({ src: "/assets/media/editorial/quality-batch-integrity.svg", alt: "Product packs connected through quality and release controls", kicker: "Connected services", title: "Commercial progress should follow an unbroken line of evidence.", text: "Each service pillar is designed to connect opportunity review, regulatory scope, partner qualification, quality controls, fulfilment and account-level evidence." })}
   <section class="section"><div class="container service-stack">${servicePillars.map((service, index) => `<article class="service-detail" id="${service.slug}"><div class="service-number">${String(index + 1).padStart(2, "0")}</div><div><span class="section-kicker">Who it is for</span><p>${esc(service.audience)}</p><h2>${esc(service.title)}</h2><div class="service-detail-grid"><div><h3>Problem</h3><p>${esc(service.problem)}</p></div><div><h3>NovaPharm approach</h3><p>${esc(service.approach)}</p></div><div><h3>Operational value</h3><p>${esc(service.value)}</p></div></div><p class="service-caveat"><strong>Regulatory boundary:</strong> ${esc(service.caveat)}</p><a class="text-link" href="/contact/?enquiry=${encodeURIComponent(service.cta)}">${esc(service.cta)}</a></div></article>`).join("")}</div></section>
+  <section class="section section-dark related-capability"><div class="container editorial-split"><div class="editorial-index">Clinical development</div><div><span class="section-kicker">Connected capability</span><h2>Evidence-led CRO support for focused programmes.</h2><p>Programme framing, UK pathway coordination, specialist-provider architecture and document governance are presented with direct, partner-led and sponsor-retained responsibilities visible.</p><a class="btn btn-primary" href="/cro/">Explore Clinical Research & CRO Support</a></div></div></section>
   ${finalCta()}`;
   return documentShell({ meta, slug, body, options: { services: true } });
 }
@@ -520,8 +547,91 @@ function regulatoryPage() {
   ${mediaStory({ src: "/assets/media/insights/gdp-qms-foundations.svg", alt: "Layered quality documents connected to operational controls", kicker: "Regulatory architecture", title: "Permissions, procedures and evidence must agree.", text: "NovaPharm's preparation model treats authorisation, product status, quality responsibilities and outsourced activities as connected controls, not independent workstreams.", reverse: true })}
   <section class="section"><div class="container regulatory-layout"><aside class="regulatory-index"><span>Regulatory framework</span>${regulatorySections.map(([title], index) => `<a href="#reg-${index + 1}">${String(index + 1).padStart(2, "0")} ${esc(title)}</a>`).join("")}</aside><div class="regulatory-content">${regulatoryNotice()}${regulatorySections.map(([title, text], index) => `<article id="reg-${index + 1}"><span>${String(index + 1).padStart(2, "0")}</span><h2>${esc(title)}</h2><p>${esc(text)}</p></article>`).join("")}</div></div></section>
   <section class="section section-band"><div class="container"><div class="faq">${faqs.map(([question, answer]) => `<details><summary>${esc(question)}</summary><p>${esc(answer)}</p></details>`).join("")}</div></div></section>
+  <section class="section related-capability"><div class="container editorial-split"><div class="editorial-index">Clinical development</div><div><span class="section-kicker">Connected UK pathway</span><h2>Coordinate regulatory preparation with programme and specialist-provider decisions.</h2><p>The CRO support model preserves sponsor responsibility while connecting UK pathway planning, controlled evidence and qualified specialist delivery.</p><a class="btn btn-outline" href="/cro/#quality-governance">Review CRO quality and governance</a></div></div></section>
   ${finalCta("Speak to NovaPharm about a regulatory or quality opportunity.")}`;
   return documentShell({ meta, slug, body, options: { faqs } });
+}
+
+function croPage() {
+  const slug = "cro";
+  const meta = pageMeta[slug];
+  const enquiry = "/contact/?enquiry=Clinical%20development%20%26%20CRO%20support";
+  const canonical = absoluteUrl(routePath(slug));
+  const schemas = pageSchemas(meta, slug, {
+    faqs: croContent.faqs,
+    breadcrumbs: [{ name: "Home", href: "/" }, { name: "Clinical Research & CRO Support", href: "/cro/" }]
+  });
+  const serviceId = `${canonical}#service`;
+  schemas[2].mainEntity = { "@id": serviceId };
+  schemas.push({
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": serviceId,
+    name: croContent.title,
+    serviceType: "Clinical-development programme coordination and CRO support",
+    description: croContent.introduction,
+    provider: { "@id": organisationId },
+    areaServed: [{ "@type": "Country", name: "United Kingdom" }],
+    audience: croContent.audiences.map(([name]) => ({ "@type": "Audience", audienceType: name })),
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Evidence-controlled clinical-development support modules",
+      itemListElement: croContent.services.map((service, index) => ({
+        "@type": "Offer",
+        position: index + 1,
+        itemOffered: { "@type": "Service", name: service.title, description: service.approach }
+      }))
+    }
+  });
+
+  const chiefExecutive = leadership.find((profile) => profile.slug === "vishal-chakravarty");
+  const chiefScientificOfficer = leadership.find((profile) => profile.slug === "girish-achliya");
+  const croLeadershipSummary = new Map([
+    ["vishal-chakravarty", "Leads strategic direction, UK market entry, regulatory pathway coordination and board governance."],
+    ["girish-achliya", "Supports scientific strategy, product development and technical due diligence."]
+  ]);
+
+  const body = `<section class="cro-hero" data-cro-hero>
+    <div class="cro-hero-media">${responsiveCroImage("/assets/media/cro/cro-evidence-architecture", "Clinical-development team reviewing programme evidence, responsibilities and milestones", { eager: true, sizes: "100vw" })}<div class="cro-hero-scrim" aria-hidden="true"></div></div>
+    <div class="container cro-hero-inner">${breadcrumb([{ name: "Home", href: "/" }, { name: "Clinical Research & CRO Support" }])}<div class="cro-hero-copy"><span class="eyebrow">Clinical Research &amp; CRO Support</span><h1>${esc(croContent.proposition)}</h1><p>${esc(croContent.introduction)}</p><div class="hero-actions"><a class="btn btn-primary" href="${enquiry}">Discuss a development programme</a><a class="btn btn-ghost" href="#delivery-model">Explore our delivery model</a></div><p class="cro-hero-caption">Conceptual programme-governance visual; not NovaPharm personnel, premises or a live clinical programme.</p></div></div>
+    <div class="cro-answer-band"><div class="container"><div><span>Supports</span><strong>Emerging, specialty and international developers</strong></div><div><span>Coordinates</span><strong>UK pathway, quality and specialist interfaces</strong></div><div><span>Separates</span><strong>NovaPharm, specialist and sponsor duties</strong></div><div><span>Connects</span><strong>Development evidence to later market decisions</strong></div></div></div>
+  </section>
+  <section class="cro-boundary" aria-label="Clinical research service boundary"><div class="container"><strong>Scope stated plainly</strong><p>${esc(croContent.status)}</p></div></section>
+
+  <section class="section cro-context" id="sponsor-context" data-reveal><div class="container"><div class="cro-context-grid"><div>${sectionHeading("Sponsor context", "Complexity grows at the interfaces.", "NovaPharm makes the programme question, responsibility boundaries and evidence route visible before specialist work is commissioned.")}<div class="cro-audience-list">${croContent.audiences.map(([title, text]) => `<article><h3>${esc(title)}</h3><p>${esc(text)}</p></article>`).join("")}</div></div><aside class="cro-challenge-panel"><span class="section-kicker">Where programmes fracture</span><ol>${croContent.challenges.map((item, index) => `<li><span>${String(index + 1).padStart(2, "0")}</span>${esc(item)}</li>`).join("")}</ol><a class="text-link" href="${enquiry}&amp;topic=responsibility-map">Map programme responsibilities</a></aside></div></div></section>
+
+  <section class="section section-dark cro-delivery" id="delivery-model" data-reveal><div class="container"><div class="cro-delivery-head">${sectionHeading("Transparent Delivery Architecture", "Three responsibility lanes. One visible programme.", "Delivery starts with clarity about who coordinates, who performs specialist work and what the sponsor retains.")}<p class="cro-delivery-principle">Delegation allocates activities. It does not erase sponsor oversight or applicable legal and regulatory duties.</p></div><div class="cro-responsibility-map" role="list" aria-label="Clinical-development responsibility architecture"><div class="cro-evidence-spine" aria-hidden="true"><span>Controlled programme evidence</span></div><div class="cro-lanes">${croContent.deliveryLanes.map((lane, index) => `<article role="listitem" class="cro-lane cro-lane-${lane.key}"><header><span>0${index + 1}</span><h3>${esc(lane.label)}</h3></header><p>${esc(lane.summary)}</p><ul>${lane.items.map((item) => `<li>${esc(item)}</li>`).join("")}</ul></article>`).join("")}</div><div class="cro-shared-output"><span>Shared line of sight</span><strong>Scope</strong><strong>Decision</strong><strong>Evidence</strong><strong>Escalation</strong></div></div><a class="btn btn-primary" href="${enquiry}&amp;topic=delivery-architecture">Review the delivery architecture</a></div></section>
+
+  <section class="section cro-navigator" id="development-lifecycle" data-cro-navigator><div class="container"><div class="cro-navigator-head">${sectionHeading("Clinical Development Navigator", "Eight stages. Responsibilities and evidence visible at every gate.", "Select a stage to orient the programme. Every stage remains available without JavaScript.")}<span class="cro-navigator-status" data-cro-stage-status aria-live="polite">Stage 1 of 8: Development strategy</span></div><nav class="cro-stage-nav" aria-label="Clinical development stages">${croContent.lifecycle.map((stage, index) => `<a href="#cro-stage-${index + 1}" data-cro-stage-link="${index + 1}"${index === 0 ? ' aria-current="step"' : ""}><span>${stage.number}</span><strong>${esc(stage.title)}</strong></a>`).join("")}</nav><ol class="cro-stage-list">${croContent.lifecycle.map((stage, index) => `<li id="cro-stage-${index + 1}" data-cro-stage="${index + 1}"><span class="cro-stage-number">${stage.number}</span><div><span class="cro-stage-mode">${esc(stage.mode)}</span><h3>${esc(stage.title)}</h3><p>${esc(stage.text)}</p></div></li>`).join("")}</ol></div></section>
+
+  <section class="section section-band cro-services" id="service-modules" data-reveal><div class="container">${sectionHeading("Service architecture", "Commission the right work, with the right boundary.", "Eight modules connect programme need to an explicit evidence output. Expand a module for the full scope.")}<div class="cro-service-grid">${croContent.services.map((service, index) => `<details class="cro-service" id="${service.id}"><summary><span>${String(index + 1).padStart(2, "0")}</span><small>${esc(service.status)}</small><h3>${esc(service.title)}</h3></summary><div class="cro-service-detail"><p><b>Programme need</b>${esc(service.problem)}</p><p><b>NovaPharm approach</b>${esc(service.approach)}</p><p><b>Defined output</b>${esc(service.outcome)}</p><a class="text-link" href="${enquiry}&amp;topic=${encodeURIComponent(service.id)}">${esc(service.cta)}</a></div></details>`).join("")}</div></div></section>
+
+  <section class="section cro-decision" id="decision-framework" data-reveal><div class="container cro-decision-grid"><div>${sectionHeading("Sponsor Decision Framework", "Choose the right delivery architecture.", "Some programmes need a conventional global CRO. Others benefit from focused coordination, transparent specialist delivery and direct senior oversight.")}<div class="cro-decision-questions" data-cro-decision>${croContent.decisionOptions.map((item, index) => `<button type="button" data-cro-decision-item data-cro-output-title="${esc(item.title)}" data-cro-output-copy="${esc(item.output)}" aria-pressed="${index === 0 ? "true" : "false"}"><span>${String(index + 1).padStart(2, "0")}</span><strong>${esc(item.question)}</strong><small>${esc(item.signal)}</small></button>`).join("")}</div></div><aside class="cro-decision-output" aria-live="polite"><span class="section-kicker">Framework output</span><h3 data-cro-decision-title>${esc(croContent.decisionOptions[0].title)}</h3><p data-cro-decision-copy>${esc(croContent.decisionOptions[0].output)}</p><ul><li>Accountable sponsor decision</li><li>Required specialist input</li><li>Evidence output</li><li>Next controlled gate</li></ul></aside></div></section>
+
+  <section class="section cro-governance" id="quality-governance" data-reveal><div class="container"><div class="cro-governance-grid"><div>${sectionHeading("Quality and governance", "Evidence should move with every accountable decision.", "The model connects responsibility, records, risk and escalation. It does not replace programme-specific legal, medical or regulatory advice.")}<div class="cro-governance-map" role="img" aria-label="Governance dependencies connected to a controlled programme record"><div class="cro-governance-core"><span>Controlled programme record</span><strong>Decision context preserved</strong></div><div class="cro-governance-node cro-node-responsibility"><span>01</span><strong>Responsibility</strong><small>Accountable owner</small></div><div class="cro-governance-node cro-node-evidence"><span>02</span><strong>Evidence</strong><small>Version and source</small></div><div class="cro-governance-node cro-node-risk"><span>03</span><strong>Risk</strong><small>Material signal</small></div><div class="cro-governance-node cro-node-escalation"><span>04</span><strong>Escalation</strong><small>Decision and action</small></div></div></div><div class="cro-quality-principles">${croContent.qualityPrinciples.map(([title, text], index) => `<article><span>${String(index + 1).padStart(2, "0")}</span><h3>${esc(title)}</h3><p>${esc(text)}</p></article>`).join("")}<p class="cro-regulatory-caveat">Applicable UK approvals and sponsor responsibilities must be established for the actual programme. NovaPharm does not guarantee authorisation, ethics opinion, recruitment, timing or outcome.</p><a class="text-link" href="/regulatory-services/">Explore UK pathway support</a></div></div><div class="cro-engagement" id="operating-model"><div><span class="section-kicker">Engagement path</span><h3>From discussion to a defined route.</h3></div><ol>${croContent.operatingSteps.map(([number, title, text]) => `<li><span>${number}</span><div><h4>${esc(title)}</h4><p>${esc(text)}</p></div></li>`).join("")}</ol></div></div></section>
+
+  <section class="section section-band cro-focus-tech" data-reveal><div class="container"><div class="cro-intelligence-grid"><figure class="cro-delivery-figure">${responsiveCroImage("/assets/media/cro/cro-delivery-architecture", "Programme records, risk indicators and milestones reviewed across controlled documents and a dashboard", { sizes: "(max-width: 900px) 100vw, 48vw" })}<figcaption>Conceptual oversight architecture; no live sponsor, study or operational data is shown.</figcaption></figure><div>${sectionHeading("Scientific and digital continuity", "Judgement stays human. Programme evidence stays connected.", "Strategic focus areas and the technology architecture inform scoped conversations; neither is presented as completed NovaPharm trial delivery or a live sponsor workspace.")}<div class="cro-focus-list">${croContent.focusAreas.map(([title, text]) => `<article><h3>${esc(title)}</h3><p>${esc(text)}</p></article>`).join("")}</div><div class="cro-tech-list">${croContent.technology.map(([title, text]) => `<article><h3>${esc(title)}</h3><p>${esc(text)}</p></article>`).join("")}</div><a class="text-link" href="/technology/">Explore the technology maturity model</a></div></div></div></section>
+
+  <section class="section cro-leadership" data-reveal><div class="container">${sectionHeading("Senior judgement", "Scientific scrutiny and accountable programme framing.", "Verified NovaPharm leadership connects corporate direction, scientific review and controlled UK pathway decisions without inventing trial history.")}<div class="cro-leadership-grid">${[chiefExecutive, chiefScientificOfficer].map((profile) => `<a class="cro-leader" href="/leadership/${profile.slug}/"><div class="cro-leader-media">${responsiveCroPortrait(profile)}</div><div><span>${esc(profile.title)}</span><h3>${esc(profile.displayName)}</h3><p>${esc(croLeadershipSummary.get(profile.slug))}</p><strong>View verified profile</strong></div></a>`).join("")}<aside class="cro-leadership-proof"><span class="section-kicker">What this adds</span>${croContent.differentiators.map(([title, text]) => `<div><h3>${esc(title)}</h3><p>${esc(text)}</p></div>`).join("")}</aside></div></div></section>
+
+  <section class="section cro-continuity" id="market-continuity" data-reveal><div class="container"><div class="cro-continuity-head">${sectionHeading("Development-to-Market Continuity", "Carry the evidence forward instead of rebuilding the story.", "Development outputs remain connected to the regulatory, product, quality, supply and market decisions that follow.")}<p>Every transition remains conditional on verified evidence and applicable permission.</p></div><div class="cro-continuity-path" role="list"><article role="listitem"><span>01</span><h3>Development question</h3><p>What must be decided?</p></article><i aria-hidden="true"></i><article role="listitem"><span>02</span><h3>Controlled evidence</h3><p>Which records support it?</p></article><i aria-hidden="true"></i><article role="listitem"><span>03</span><h3>Regulatory decision</h3><p>Which pathway applies?</p></article><i aria-hidden="true"></i><article role="listitem"><span>04</span><h3>Product and supply design</h3><p>Can continuity be governed?</p></article><i aria-hidden="true"></i><article role="listitem"><span>05</span><h3>Market readiness</h3><p>Proceed only when authorised.</p></article></div></div></section>
+
+  <section class="section cro-insights" data-reveal><div class="container">${sectionHeading("Related evidence", "Quality, traceability and regulated-operation perspectives.", "Adjacent context, not clinical-trial case studies or regulatory advice.")}<div class="cro-insight-grid">${croContent.insightLinks.map(([title, href, category]) => `<a href="${href}"><span>${esc(category)}</span><h3>${esc(title)}</h3><strong>Read the insight</strong></a>`).join("")}</div></div></section>
+
+  <section class="section section-band cro-faq" id="cro-faq"><div class="container">${sectionHeading("Clinical-development FAQs", "Six clear answers before a programme conversation.")}<div class="faq">${croContent.faqs.map(([question, answer]) => `<details><summary>${esc(question)}</summary><p>${esc(answer)}</p></details>`).join("")}</div><details class="cro-sources"><summary>Official sources used for the UK responsibility and governance framework</summary><ul>${croContent.officialSources.map(([label, href]) => `<li><a href="${href}">${esc(label)}</a></li>`).join("")}</ul><p>Reviewed 18 July 2026. Programme-specific requirements must be confirmed against current official guidance and professional advice.</p></details></div></section>
+
+  <section class="section final-cta cro-final-cta"><div class="container final-cta-inner"><div><span class="section-kicker">Clinical-development enquiry</span><h2>Bring the programme question. Start with the responsibility map.</h2><p>A web enquiry does not confirm acceptance, scope, confidentiality arrangements, timing or a proposal. Share only high-level, non-confidential business information. Do not submit patient data, adverse-event information or urgent medical information.</p></div><div class="hero-actions"><a class="btn btn-primary" href="${enquiry}">Discuss a development programme</a><a class="btn btn-outline" href="#operating-model">Review the engagement path</a></div></div></section>`;
+
+  return documentShell({
+    meta,
+    slug,
+    body,
+    options: {
+      schemas,
+      preloadCroHero: true,
+      scripts: ["/assets/js/cro.js"]
+    }
+  });
 }
 
 function productsPage() {
@@ -586,7 +696,7 @@ function partnersPage() {
   ${mediaStory({ src: "/assets/media/editorial/partnership-pathway.svg", alt: "Five controlled stages in a pharmaceutical partnership pathway", kicker: "Qualified collaboration", title: "The route from introduction to launch should be visible.", text: "Strategic fit, evidence, due diligence, agreement, implementation and review are treated as explicit stages. No organisation is presented as a partner until permission and scope are confirmed.", reverse: true })}
   <section class="section"><div class="container">${sectionHeading("Partner ecosystem", "Who NovaPharm is designed to work with.")}<div class="partner-type-grid partner-type-grid-large">${partnerTypes.map((type) => `<span>${esc(type)}</span>`).join("")}</div></div></section>
   <section class="section section-band"><div class="container">${sectionHeading("Partner journey", "Ten controlled stages from first conversation to ongoing review.")}<ol class="partner-journey">${partnerJourney.map((step, index) => `<li><span>${String(index + 1).padStart(2, "0")}</span><strong>${esc(step)}</strong></li>`).join("")}</ol></div></section>
-  <section class="section"><div class="container cta-grid"><a href="/contact/?enquiry=Product%20opportunity"><span>Product owners</span><strong>Submit a product opportunity</strong></a><a href="/contact/?enquiry=Supplier%20enquiry"><span>Suppliers</span><strong>Become a supply partner</strong></a><a href="/contact/?enquiry=Distribution%20partnership"><span>Distribution</span><strong>Discuss UK distribution</strong></a><a href="/contact/?enquiry=CMO%2FCDMO%20partnership"><span>Manufacturing</span><strong>Discuss CMO/CDMO collaboration</strong></a><a href="/account-application/"><span>Customers</span><strong>Open a business account</strong></a></div></section>
+  <section class="section"><div class="container cta-grid"><a href="/contact/?enquiry=Product%20opportunity"><span>Product owners</span><strong>Submit a product opportunity</strong></a><a href="/contact/?enquiry=Supplier%20enquiry"><span>Suppliers</span><strong>Become a supply partner</strong></a><a href="/contact/?enquiry=Distribution%20partnership"><span>Distribution</span><strong>Discuss UK distribution</strong></a><a href="/contact/?enquiry=CMO%2FCDMO%20partnership"><span>Manufacturing</span><strong>Discuss CMO/CDMO collaboration</strong></a><a href="/cro/"><span>Clinical development</span><strong>Map a specialist delivery model</strong></a><a href="/account-application/"><span>Customers</span><strong>Open a business account</strong></a></div></section>
   ${finalCta()}`;
   return documentShell({ meta, slug, body });
 }
@@ -598,6 +708,7 @@ function technologyPage() {
   <section class="section" data-reveal><div class="container architecture-story"><div>${sectionHeading("Connected architecture", "One record. Controlled documents. Explicit maturity.", "The platform is organised around a canonical operational record, secure role boundaries and SharePoint document relationships. Status labels prevent roadmap ideas from appearing live.")}<p>Technology supports accountable pharmaceutical work; it does not replace qualified judgement, regulatory responsibility or source verification.</p><a class="text-link" href="/about/governance/">Review claims and governance controls</a></div><figure class="architecture-map" aria-label="NovaPharm platform architecture from public and portal experiences through shared APIs to data and document systems"><div class="architecture-layer"><div class="architecture-node" data-stage="live"><strong>Public website</strong><span>Live foundation</span></div><div class="architecture-node" data-stage="development"><strong>Customer portal</strong><span>In development</span></div><div class="architecture-node" data-stage="development"><strong>Enterprise workspaces</strong><span>In development</span></div></div><div class="architecture-layer"><div class="architecture-node" data-stage="live"><strong>Role and session controls</strong><span>Live foundation</span></div><div class="architecture-node" data-stage="live"><strong>Canonical domain APIs</strong><span>Live foundation</span></div><div class="architecture-node" data-stage="live"><strong>Audit and outbox</strong><span>Live foundation</span></div></div><div class="architecture-layer"><div class="architecture-node" data-stage="live"><strong>Persistent data model</strong><span>Live foundation</span></div><div class="architecture-node" data-stage="development"><strong>SharePoint document backbone</strong><span>In development</span></div><div class="architecture-node" data-stage="planned"><strong>External operational feeds</strong><span>Planned</span></div></div></figure></div></section>
   <section class="section"><div class="container maturity-model">${Object.entries(technologyMaturity).map(([stage, items]) => `<section><header><span class="maturity-label maturity-${stage}">${maturityLabels[stage]}</span><h2>${maturityLabels[stage]} capabilities</h2></header><div>${items.map(([title, text]) => `<article><h3>${esc(title)}</h3><p>${esc(text)}</p></article>`).join("")}</div></section>`).join("")}</div></section>
   <section class="section section-band"><div class="container two-column-story"><div>${sectionHeading("Security & continuity", "Identity, access and evidence are architectural requirements.")}<p>The production design uses server-side role scopes, HttpOnly secure cookies, CSRF protection, persistent session records, rate limits, audit events, private content storage and health checks. Microsoft Entra ID is the preferred production identity path.</p></div><ul class="list-check"><li>API-first integration boundaries</li><li>Customer, employee, board and admin scopes</li><li>SharePoint document metadata and version history</li><li>Source and data-freshness indicators</li><li>Business-continuity and rollback procedures</li><li>No secure documents in the public output</li></ul></div></section>
+  <section class="section related-capability"><div class="container editorial-split"><div class="editorial-index">Programme oversight</div><div><span class="section-kicker">Clinical-development architecture</span><h2>Technology should preserve responsibility, evidence and sponsor visibility.</h2><p>The CRO page shows how structured records, controlled documents, actions and milestones can support an engagement without presenting synthetic dashboards as a live sponsor service.</p><a class="btn btn-outline" href="/cro/#decision-framework">Explore the Sponsor Decision Framework</a></div></div></section>
   ${finalCta("Discuss a pharmaceutical technology or integration partnership.")}`;
   return documentShell({ meta, slug, body });
 }
@@ -614,6 +725,7 @@ function articlePage(article) {
   const slug = `news-insights/${article.slug}`;
   const meta = { title: article.seoTitle, description: article.seoDescription, eyebrow: article.category };
   const canonical = absoluteUrl(routePath(slug));
+  const croRelevant = ["Regulatory", "Quality", "Technology", "Supply chain"].includes(article.category);
   const schemas = pageSchemas(meta, slug, {
     breadcrumbs: [{ name: "Home", href: "/" }, { name: "Insights", href: "/news-insights/" }, { name: article.title, href: routePath(slug) }]
   });
@@ -635,7 +747,7 @@ function articlePage(article) {
     inLanguage: "en-GB"
   });
   const body = `<article class="article-page"><header class="article-hero"><div class="article-hero-media">${responsiveEditorialImage(article.heroImage, `Editorial visual for ${article.title}`, { eager: true })}</div><div class="container">${breadcrumb([{ name: "Home", href: "/" }, { name: "Insights", href: "/news-insights/" }, { name: article.title }])}<span class="eyebrow">${esc(article.category)}</span><h1>${esc(article.title)}</h1><p>${esc(article.summary)}</p><div class="article-byline"><span>${esc(article.author)}</span><time datetime="${article.published}">${formatDate(article.published)}</time><span>${readingTime(article)} min read</span></div></div></header>
-  <div class="container article-layout"><div class="article-body"><p class="article-disclaimer">${esc(article.disclaimer)}</p>${article.sections.map((section) => `<section><h2>${esc(section.heading)}</h2>${(section.paragraphs || []).map((paragraph) => `<p>${esc(paragraph)}</p>`).join("")}${section.list ? `<ul>${section.list.map((item) => `<li>${esc(item)}</li>`).join("")}</ul>` : ""}</section>`).join("")}<section class="article-sources"><h2>Sources and further reading</h2>${article.references.length ? `<ul>${article.references.map((source) => `<li><a href="${source.href}">${esc(source.label)}</a></li>`).join("")}</ul>` : "<p>This perspective is based on NovaPharm's operating analysis and does not rely on unsupported market statistics.</p>"}</section></div><aside class="article-aside"><h2>Related NovaPharm pages</h2>${article.internalLinks.map((link) => `<a href="${link.href}">${esc(link.label)}</a>`).join("")}<h2>Topics</h2><div class="tag-list">${article.tags.map((tag) => `<span>${esc(tag)}</span>`).join("")}</div></aside></div></article>
+  <div class="container article-layout"><div class="article-body"><p class="article-disclaimer">${esc(article.disclaimer)}</p>${article.sections.map((section) => `<section><h2>${esc(section.heading)}</h2>${(section.paragraphs || []).map((paragraph) => `<p>${esc(paragraph)}</p>`).join("")}${section.list ? `<ul>${section.list.map((item) => `<li>${esc(item)}</li>`).join("")}</ul>` : ""}</section>`).join("")}<section class="article-sources"><h2>Sources and further reading</h2>${article.references.length ? `<ul>${article.references.map((source) => `<li><a href="${source.href}">${esc(source.label)}</a></li>`).join("")}</ul>` : "<p>This perspective is based on NovaPharm's operating analysis and does not rely on unsupported market statistics.</p>"}</section></div><aside class="article-aside"><h2>Related NovaPharm pages</h2>${article.internalLinks.map((link) => `<a href="${link.href}">${esc(link.label)}</a>`).join("")}${croRelevant ? '<a href="/cro/">Clinical Research &amp; CRO Support</a>' : ""}<h2>Topics</h2><div class="tag-list">${article.tags.map((tag) => `<span>${esc(tag)}</span>`).join("")}</div></aside></div></article>
   <section class="section section-band"><div class="container">${sectionHeading("Related insights", "Continue reading.")}<div class="article-grid article-grid-editorial-links">${article.related.map((relatedSlug) => articles.find((candidate) => candidate.slug === relatedSlug)).filter(Boolean).slice(0, 3).map((related) => articleCard(related, false, false)).join("")}</div></div></section>`;
   return documentShell({ meta, slug, body, options: { ogType: "article", schemas } });
 }
@@ -643,8 +755,8 @@ function articlePage(article) {
 function contactPage() {
   const slug = "contact";
   const meta = pageMeta[slug];
-  const body = `${pageHero(meta, "Start a qualified business conversation.", "Use the secure enquiry form for product, distribution, customer account, manufacturing, regulatory, supplier, media or career discussions.", slug)}
-  <section class="section"><div class="container form-feature"><div><span class="section-kicker">Corporate enquiries</span><h2>Tell us what you are working on.</h2><p>NovaPharm reviews B2B enquiries against strategic fit, regulatory status, evidence quality and next-step requirements. The form is not a patient or adverse-event reporting channel.</p><div class="contact-route-list"><span>Product and dossier opportunities</span><span>UK distribution partnerships</span><span>Pharmacy and wholesaler accounts</span><span>CMO/CDMO collaboration</span><span>Regulatory and quality services</span><span>Supplier, media and career enquiries</span></div></div>${contactForm({ formId: "contact" })}</div></section>`;
+  const body = `${pageHero(meta, "Start a qualified business conversation.", "Use the secure enquiry form for product, distribution, clinical development, customer account, manufacturing, regulatory, supplier, media or career discussions.", slug)}
+  <section class="section"><div class="container form-feature"><div><span class="section-kicker">Corporate enquiries</span><h2>Tell us what you are working on.</h2><p>NovaPharm reviews B2B enquiries against strategic fit, regulatory status, evidence quality and next-step requirements. The form is not a patient or adverse-event reporting channel.</p><div class="contact-route-list"><span>Product and dossier opportunities</span><span>UK distribution partnerships</span><span>Clinical development & CRO support</span><span>Pharmacy and wholesaler accounts</span><span>CMO/CDMO collaboration</span><span>Regulatory and quality services</span><span>Supplier, media and career enquiries</span></div></div>${contactForm({ formId: "contact" })}</div></section>`;
   return documentShell({ meta, slug, body, options: { pageType: "ContactPage" } });
 }
 
@@ -815,6 +927,7 @@ export function buildPublicPages() {
   for (const profile of leadership) write(`leadership/${profile.slug}/index.html`, profilePage(profile));
   write("services/index.html", servicesPage());
   write("regulatory-services/index.html", regulatoryPage());
+  write("cro/index.html", croPage());
   write("product-portfolio/index.html", productsPage());
   write("product-portfolio/nutraxin/index.html", nutraxinPage());
   write("partner-with-us/index.html", partnersPage());

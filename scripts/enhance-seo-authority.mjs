@@ -14,7 +14,7 @@ import {
 } from "../src/seo/authority-config.mjs";
 
 const root = resolve(process.cwd());
-const releaseDate = process.env.SEO_LASTMOD || "2026-07-14";
+const releaseDate = process.env.SEO_LASTMOD || "2026-07-18";
 const logoUrl = `${SITE_URL}/assets/brand/novapharm-healthcare-logo.png`;
 const leaderBySlug = new Map(leadership.map((person) => [person.slug, person]));
 const articleDirectory = join(root, "src", "content", "insights");
@@ -93,7 +93,8 @@ function canonicalOrganization() {
       "Good Distribution Practice",
       "pharmaceutical quality systems",
       "CMO and CDMO partnerships",
-      "pharmaceutical supply-chain integrity"
+      "pharmaceutical supply-chain integrity",
+      "clinical-development programme coordination"
     ],
     ethicsPolicy: `${SITE_URL}/legal/#editorial-standards`
   };

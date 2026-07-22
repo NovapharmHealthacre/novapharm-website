@@ -78,6 +78,30 @@ export const officialSourceRegister = Object.freeze([
     url: "https://www.w3.org/WAI/ARIA/apg/",
     reviewed: "2026-07-14",
     decision: "Use semantic HTML first and accurate names, roles, states and keyboard behaviour for interactive controls and agent accessibility."
+  },
+  {
+    topic: "UK clinical-trial applications and joint approval",
+    url: "https://www.gov.uk/guidance/clinical-trials-for-medicines-apply-for-approval-in-the-uk",
+    reviewed: "2026-07-18",
+    decision: "Describe MHRA authorisation and favourable Research Ethics Committee opinion as authority decisions; never imply NovaPharm approval or guarantee an outcome."
+  },
+  {
+    topic: "UK clinical-trial roles and sponsor responsibility",
+    url: "https://www.gov.uk/government/publications/clinical-trials-for-medicines-roles-and-responsibilities/clinical-trials-for-medicines-roles-and-responsibilities",
+    reviewed: "2026-07-18",
+    decision: "Keep sponsor-retained duties visible when NovaPharm coordinates or specialist providers deliver an activity."
+  },
+  {
+    topic: "Clinical-trial quality and risk proportionality",
+    url: "https://www.gov.uk/guidance/clinical-trials-for-medicines-guidance-on-quality-and-risk-proportionality",
+    reviewed: "2026-07-18",
+    decision: "Use quality-by-design and risk-proportionate language as an operating principle, not a claim of regulatory advice or a completed inspection record."
+  },
+  {
+    topic: "Health Research Authority Combined Review",
+    url: "https://www.hra.nhs.uk/planning-and-improving-research/policies-standards-legislation/clinical-trials-investigational-medicinal-products-ctimps/combined-ways-working-pilot/",
+    reviewed: "2026-07-18",
+    decision: "Connect regulatory and ethics preparation in the UK pathway while preserving the separate authority decisions and programme-specific requirements."
   }
 ]);
 
@@ -149,7 +173,8 @@ export const topicPillars = Object.freeze([
   "Regulatory-commercial launch sequencing",
   "Quality systems, CAPA, complaints and recall readiness",
   "Data and technology in regulated pharmaceutical operations",
-  "Nutraceutical and medical-device market-entry considerations"
+  "Nutraceutical and medical-device market-entry considerations",
+  "Clinical-development programme coordination and sponsor oversight"
 ]);
 
 export const audienceStrategy = Object.freeze([
@@ -161,6 +186,7 @@ export const audienceStrategy = Object.freeze([
   ["Hospital procurement stakeholders", "Review future B2B supply and governance capability without unsupported availability claims", "/contact/", "Discuss a qualified requirement"],
   ["Logistics providers", "Integrate controlled storage, transport and evidence flows", "/technology/", "Discuss logistics integration"],
   ["Regulatory and quality professionals", "Evaluate governance, QMS, GDP and product-readiness thinking", "/regulatory-services/", "Discuss quality readiness"],
+  ["Emerging pharmaceutical developers", "Map UK clinical-development responsibilities, evidence and qualified specialist functions", "/cro/", "Discuss a clinical development programme"],
   ["Technology providers", "Connect data, document and controlled workflow capabilities", "/technology/", "Explore a technology partnership"],
   ["Strategic partners and investors", "Understand governance, operating model and staged execution", "/investor-information/", "Start a strategic conversation"]
 ]);
@@ -171,6 +197,7 @@ export const conversionJourneys = Object.freeze([
   { id: "supply-partner", landing: "/partner-with-us/", cta: "Become a supply partner", enquiryType: "Supplier enquiry" },
   { id: "cmo-cdmo", landing: "/services/", cta: "Discuss CMO/CDMO collaboration", enquiryType: "CMO/CDMO partnership" },
   { id: "regulatory-quality", landing: "/regulatory-services/", cta: "Speak with our regulatory team", enquiryType: "Regulatory services" },
+  { id: "clinical-development", landing: "/cro/", cta: "Discuss a clinical development programme", enquiryType: "Clinical development & CRO support" },
   { id: "technology-partnership", landing: "/technology/", cta: "Explore a technology partnership", enquiryType: "General enquiry" },
   { id: "business-account", landing: "/account-application/", cta: "Open a business account", enquiryType: "Pharmacy or wholesaler account" },
   { id: "media", landing: "/contact/", cta: "Contact the company", enquiryType: "Media" }

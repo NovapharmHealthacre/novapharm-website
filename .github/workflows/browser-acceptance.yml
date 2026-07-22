@@ -12,44 +12,162 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  browser-acceptance:
+  backend-browser-workflows:
+    name: Backend browser workflows
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
       - name: Install dependencies
         run: npm ci --ignore-scripts
-      - name: Install browser engines
+      - name: Install backend workflow browsers
         run: npx playwright install --with-deps chromium webkit
       - name: Build website
         run: npm run build
-      - name: Prepare and start protected synthetic validation server
-        run: node scripts/start-browser-validation.mjs "$RUNNER_TEMP/novapharm-browser"
-      - name: Run backend browser workflows
+      - name: Start isolated synthetic runtime
+        run: node scripts/start-browser-validation.mjs "$RUNNER_TEMP/novapharm-browser-backend"
+      - name: Test backend browser workflows
         env:
           VISUAL_BASE_URL: http://127.0.0.1:4178
-          VISUAL_CREDENTIALS_PATH: ${{ runner.temp }}/novapharm-browser/credentials.json
+          VISUAL_CREDENTIALS_PATH: ${{ runner.temp }}/novapharm-browser-backend/credentials.json
         run: npm run test:browser-workflows
-      - name: Run Chromium and WebKit matrix
-        env:
-          VISUAL_BASE_URL: http://127.0.0.1:4178
-          VISUAL_CREDENTIALS_PATH: ${{ runner.temp }}/novapharm-browser/credentials.json
-          VISUAL_OUTPUT_ROOT: artifacts/visual-acceptance
-        run: npm run test:browser-acceptance
-      - name: Upload rendered evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: browser-acceptance-${{ github.sha }}
-          path: artifacts/visual-acceptance
-          if-no-files-found: error
-          retention-days: 7
       - name: Stop and remove synthetic runtime
         if: always()
         run: |
-          node scripts/stop-browser-validation.mjs "$RUNNER_TEMP/novapharm-browser" || true
-          rm -rf "$RUNNER_TEMP/novapharm-browser"
+          node scripts/stop-browser-validation.mjs "$RUNNER_TEMP/novapharm-browser-backend" || true
+          rm -rf "$RUNNER_TEMP/novapharm-browser-backend"
+          test ! -e "$RUNNER_TEMP/novapharm-browser-backend"
+
+  browser-acceptance:
+    name: ${{ matrix.label }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: chromium-desktop
+            label: Chromium desktop
+            engine: chromium
+            group: desktop
+            viewports: desktop-1440x900,desktop-1920x1080,desktop-1366x768,desktop-1280x800,desktop-1280x720
+          - id: chromium-tablet
+            label: Chromium tablet
+            engine: chromium
+            group: tablet
+            viewports: tablet-1024x1366,tablet-768x1024
+          - id: chromium-mobile
+            label: Chromium mobile
+            engine: chromium
+            group: mobile
+            viewports: mobile-390x844,mobile-430x932,mobile-375x667,mobile-360x800,mobile-320x568
+          - id: webkit-desktop
+            label: WebKit desktop
+            engine: webkit
+            group: desktop
+            viewports: desktop-1440x900,desktop-1920x1080,desktop-1366x768,desktop-1280x800,desktop-1280x720
+          - id: webkit-tablet
+            label: WebKit tablet
+            engine: webkit
+            group: tablet
+            viewports: tablet-1024x1366,tablet-768x1024
+          - id: webkit-mobile
+            label: WebKit mobile
+            engine: webkit
+            group: mobile
+            viewports: mobile-390x844,mobile-430x932,mobile-375x667,mobile-360x800,mobile-320x568
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Install ${{ matrix.engine }}
+        run: npx playwright install --with-deps "${{ matrix.engine }}"
+      - name: Build website
+        run: npm run build
+      - name: Start isolated synthetic runtime
+        run: node scripts/start-browser-validation.mjs "$RUNNER_TEMP/novapharm-browser-${{ matrix.id }}"
+      - name: Run complete route and Axe shard
+        env:
+          VISUAL_BASE_URL: http://127.0.0.1:4178
+          VISUAL_CREDENTIALS_PATH: ${{ runner.temp }}/novapharm-browser-${{ matrix.id }}/credentials.json
+          VISUAL_OUTPUT_ROOT: artifacts/visual-acceptance/${{ matrix.id }}
+          VISUAL_SHARD_ID: ${{ matrix.id }}
+          VISUAL_VIEWPORT_GROUP: ${{ matrix.group }}
+          VISUAL_ENGINES: ${{ matrix.engine }}
+          VISUAL_VIEWPORTS: ${{ matrix.viewports }}
+        run: npm run test:browser-acceptance
+      - name: Stop and remove synthetic runtime
+        if: always()
+        run: |
+          node scripts/stop-browser-validation.mjs "$RUNNER_TEMP/novapharm-browser-${{ matrix.id }}" || true
+          rm -rf "$RUNNER_TEMP/novapharm-browser-${{ matrix.id }}"
+          test ! -e "$RUNNER_TEMP/novapharm-browser-${{ matrix.id }}"
+          printf '%s\n' '{"status":"passed","credentialsRemoved":true,"runtimeRemoved":true}' > "artifacts/visual-acceptance/${{ matrix.id }}/runtime-cleanup.json"
+      - name: Upload compact shard results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-results-${{ matrix.id }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            artifacts/visual-acceptance/${{ matrix.id }}/visual-acceptance.json
+            artifacts/visual-acceptance/${{ matrix.id }}/visual-acceptance.md
+            artifacts/visual-acceptance/${{ matrix.id }}/runtime-cleanup.json
+          if-no-files-found: error
+          retention-days: 7
+      - name: Upload curated screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-screenshots-${{ matrix.id }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/visual-acceptance/${{ matrix.id }}/screenshots
+          if-no-files-found: error
+          retention-days: 7
+
+  browser-acceptance-gate:
+    name: Browser acceptance aggregate gate
+    if: always()
+    needs:
+      - backend-browser-workflows
+      - browser-acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Download six compact result artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: browser-results-*-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/shards
+      - name: Reconcile coverage, issues and cleanup
+        env:
+          VISUAL_SHARD_ROOT: artifacts/shards
+          VISUAL_GATE_OUTPUT: artifacts/visual-acceptance-gate
+          VISUAL_EXPECTED_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+          BACKEND_WORKFLOWS_RESULT: ${{ needs.backend-browser-workflows.result }}
+          SHARD_JOBS_RESULT: ${{ needs.browser-acceptance.result }}
+        run: node scripts/reconcile-browser-acceptance.mjs
+      - name: Upload aggregate gate evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-acceptance-gate-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/visual-acceptance-gate
+          if-no-files-found: error
+          retention-days: 7
