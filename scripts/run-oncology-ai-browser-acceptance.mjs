@@ -318,9 +318,15 @@ async function inspectMatrixPage(browser, engineName, viewportName, viewport, ro
 }
 
 async function openAssistant(page) {
-  const trigger = page.locator("[data-ai-search-open]");
-  if (!(await trigger.count())) throw new Error("AI search trigger is missing.");
-  await trigger.first().click();
+  let trigger = page.locator("[data-ai-search-open]:visible");
+  if (!(await trigger.count())) {
+    const navToggle = page.locator("[data-nav-toggle]");
+    if (await navToggle.isVisible()) await navToggle.click();
+    trigger = page.locator("[data-ai-search-open]:visible");
+  }
+  const triggerCount = await trigger.count();
+  if (triggerCount !== 1) throw new Error(`Expected one visible AI search trigger, found ${triggerCount}.`);
+  await trigger.click();
   await page.locator("[data-ai-search-dialog]").waitFor({ state: "visible", timeout: 10000 });
 }
 
