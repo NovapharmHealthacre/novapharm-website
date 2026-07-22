@@ -35,6 +35,16 @@ function removePublicAi(html) {
     .replace(/\s*<a\b[^>]*href="\/search\/"[^>]*>[\s\S]*?<\/a>/g, "");
 }
 
+function correctAccessibleRoles(html, relativePath) {
+  if (relativePath === "cro/index.html") {
+    return html.replace(/ role="list"/g, "").replace(/ role="listitem"/g, "");
+  }
+  if (relativePath === "oncology/index.html") {
+    return html.replace(/<article role="tabpanel"([^>]*)>([\s\S]*?)<\/article>/g, '<div role="tabpanel"$1>$2</div>');
+  }
+  return html;
+}
+
 function removeRetiredSitemapBlocks(xml) {
   const blockIsRetired = (block) => retiredPublicRoutes.some((route) => block.includes(`https://novapharmhealthcare.com${route}`));
   return xml
@@ -81,6 +91,7 @@ for (const file of walkHtml(root)) {
     html = `${html.slice(0, index)}${oncologyGallery}${html.slice(index)}`;
   }
 
+  html = correctAccessibleRoles(html, file.relative);
   writeFileSync(file.absolute, html);
 }
 
@@ -109,4 +120,4 @@ if (existsSync(robotsPath)) {
   writeFileSync(robotsPath, robots.endsWith("\n") ? robots : `${robots}\n`);
 }
 
-console.log("Applied owner corrections: public AI/search removed, CRO leadership completed, Oncology imagery expanded.");
+console.log("Applied owner corrections: public AI/search removed, CRO leadership completed, Oncology imagery expanded and ARIA semantics corrected.");
