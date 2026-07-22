@@ -1,0 +1,132 @@
+name: Verify live forms, portal and Microsoft activation
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  statuses: write
+
+concurrency:
+  group: novapharm-live-backend-verification
+  cancel-in-progress: true
+
+jobs:
+  verify-live-backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      LIVE_ORIGIN: https://novapharmhealthcare.com
+      GH_TOKEN: ${{ github.token }}
+      STATUS_CONTEXT: backend-live-activation
+    steps:
+      - name: Mark backend verification pending
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            -f state=pending \
+            -f context="$STATUS_CONTEXT" \
+            -f description="Checking live forms, portal API and Microsoft identity" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >/dev/null
+
+      - name: Verify application runtime and CSRF service
+        id: runtime
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location \
+            -H 'Accept: application/json' \
+            -H 'Cache-Control: no-cache' \
+            "$LIVE_ORIGIN/api/health?release=$GITHUB_SHA" \
+            --output /tmp/health.json \
+            --dump-header /tmp/health.headers
+          grep -Eiq '^content-type: application/json' /tmp/health.headers
+          jq -e '.service == "novapharm-web"' /tmp/health.json >/dev/null
+          jq -e '.application == "live"' /tmp/health.json >/dev/null
+          jq -e '.database == "ready"' /tmp/health.json >/dev/null
+          jq -e '.identity != "unavailable"' /tmp/health.json >/dev/null
+          jq -e '.ready == true' /tmp/health.json >/dev/null
+
+          curl --fail --silent --show-error --location \
+            -H 'Accept: application/json' \
+            -H 'Cache-Control: no-cache' \
+            -c /tmp/cookies.txt \
+            "$LIVE_ORIGIN/api/security/csrf?release=$GITHUB_SHA" \
+            --output /tmp/csrf.json
+          jq -e '.csrfToken | type == "string" and length >= 32' /tmp/csrf.json >/dev/null
+          grep -q 'np_csrf' /tmp/cookies.txt
+
+      - name: Verify live form and portal entry points
+        id: entrypoints
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          cache="release=$GITHUB_SHA-$(date +%s)"
+          curl --fail --silent --show-error --location "$LIVE_ORIGIN/contact/?$cache" > /tmp/contact.html
+          curl --fail --silent --show-error --location "$LIVE_ORIGIN/account-application/?$cache" > /tmp/account.html
+          curl --fail --silent --show-error --location "$LIVE_ORIGIN/portal/?$cache" > /tmp/portal.html
+          grep -Fq 'data-contact-form' /tmp/contact.html
+          grep -Fq 'data-account-application' /tmp/account.html
+          grep -Fq 'data-login-form' /tmp/portal.html
+          grep -Fq 'data-entra-login' /tmp/portal.html
+
+      - name: Verify Microsoft identity activation when configured
+        id: entra
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          entra=$(jq -r '.entra // "unavailable"' /tmp/health.json 2>/dev/null || echo unavailable)
+          echo "Live Entra state: $entra"
+          test "$entra" = "configured"
+          status=$(curl --silent --show-error --output /tmp/entra-response.html --write-out '%{http_code}' \
+            "$LIVE_ORIGIN/.auth/login/aad?post_login_redirect_uri=%2Fentra-complete%2F%3FaccessType%3Dcustomer")
+          case "$status" in
+            200|302|303|307|308) ;;
+            *) echo "Unexpected Microsoft login status: $status" >&2; exit 1 ;;
+          esac
+
+      - name: Write activation report
+        if: always()
+        run: |
+          {
+            echo '# NovaPharm live backend activation'
+            echo
+            echo "- Commit: $GITHUB_SHA"
+            echo "- Runtime and CSRF: ${{ steps.runtime.outcome }}"
+            echo "- Form and portal entry points: ${{ steps.entrypoints.outcome }}"
+            echo "- Microsoft identity: ${{ steps.entra.outcome }}"
+            echo
+            if test -s /tmp/health.json; then
+              echo '## Health response'
+              echo '```json'
+              jq . /tmp/health.json
+              echo '```'
+            fi
+          } > backend-live-activation.md
+
+      - name: Upload activation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-live-activation
+          path: backend-live-activation.md
+
+      - name: Mark backend activation successful
+        if: steps.runtime.outcome == 'success' && steps.entrypoints.outcome == 'success' && steps.entra.outcome == 'success'
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            -f state=success \
+            -f context="$STATUS_CONTEXT" \
+            -f description="Forms, portal API and Microsoft identity are active on the live domain" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >/dev/null
+
+      - name: Mark backend activation incomplete
+        if: steps.runtime.outcome != 'success' || steps.entrypoints.outcome != 'success' || steps.entra.outcome != 'success'
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            -f state=failure \
+            -f context="$STATUS_CONTEXT" \
+            -f description="Live Node API, portal or Microsoft identity is not fully activated" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >/dev/null
+          exit 1
