@@ -14,6 +14,11 @@ const expectedShards = new Map([
   ["webkit-tablet", ["webkit", ["tablet-1024x1366", "tablet-768x1024"]]],
   ["webkit-mobile", ["webkit", ["mobile-390x844", "mobile-430x932", "mobile-375x667", "mobile-360x800", "mobile-320x568"]]]
 ]);
+const expectedPublicRouteCount = 42;
+const expectedProtectedRouteCount = 56;
+const expectedRoutesPerViewport = expectedPublicRouteCount + expectedProtectedRouteCount;
+const expectedViewportExecutions = [...expectedShards.values()].reduce((total, [, viewports]) => total + viewports.length, 0);
+const expectedPageInspections = expectedViewportExecutions * expectedRoutesPerViewport;
 
 function walk(directory, filename, matches = []) {
   for (const entry of readdirSync(directory, { withFileTypes: true })) {
@@ -46,8 +51,8 @@ for (const [shardId, [engine, viewportNames]] of expectedShards) {
   assert.equal(report.worktreeDirty, false, `${shardId} did not test a clean checkout`);
   assert.deepEqual(report.engines, [engine], `${shardId} engine mismatch`);
   assert.deepEqual(report.viewports.map(({ name }) => name), viewportNames, `${shardId} viewport mismatch`);
-  assert.equal(report.publicRouteCount, 39, `${shardId} public route count changed`);
-  assert.equal(report.protectedRouteCount, 56, `${shardId} protected route count changed`);
+  assert.equal(report.publicRouteCount, expectedPublicRouteCount, `${shardId} public route count changed`);
+  assert.equal(report.protectedRouteCount, expectedProtectedRouteCount, `${shardId} protected route count changed`);
   const expectedPages = viewportNames.length * (report.publicRouteCount + report.protectedRouteCount);
   assert.equal(report.expectedPages, expectedPages, `${shardId} expected-page calculation mismatch`);
   assert.equal(report.pagesInspected, expectedPages, `${shardId} inspection count mismatch`);
@@ -67,8 +72,8 @@ for (const [shardId, [engine, viewportNames]] of expectedShards) {
 assert.equal(commits.size, 1, "All shards must test the same commit");
 const [commit] = commits;
 if (expectedCommit) assert.equal(commit, expectedCommit, "Shards did not test the expected pull-request head");
-assert.equal(totalPages, 2280, "The complete six-shard matrix must reconcile 2,280 page inspections");
-assert.equal(totalAxeScans, 2280, "Every inspected page must receive an Axe scan");
+assert.equal(totalPages, expectedPageInspections, `The complete six-shard matrix must reconcile ${expectedPageInspections.toLocaleString("en-GB")} page inspections`);
+assert.equal(totalAxeScans, expectedPageInspections, "Every inspected page must receive an Axe scan");
 assert.equal(process.env.BACKEND_WORKFLOWS_RESULT || "success", "success", "Backend browser workflows did not pass");
 assert.equal(process.env.SHARD_JOBS_RESULT || "success", "success", "One or more browser shards did not pass");
 
@@ -78,7 +83,7 @@ const aggregate = {
   shards: [...expectedShards.keys()],
   engines: ["chromium", "webkit"],
   viewportCount: 12,
-  routesPerViewport: 95,
+  routesPerViewport: expectedRoutesPerViewport,
   pagesInspected: totalPages,
   axeScans: totalAxeScans,
   screenshots: totalScreenshots,
@@ -89,7 +94,7 @@ const aggregate = {
 
 mkdirSync(outputRoot, { recursive: true });
 writeFileSync(join(outputRoot, "browser-acceptance-gate.json"), `${JSON.stringify(aggregate, null, 2)}\n`);
-writeFileSync(join(outputRoot, "browser-acceptance-gate.md"), `# Browser Acceptance Aggregate Gate\n\n- Status: **PASSED**\n- Commit: \`${commit}\`\n- Shards: 6\n- Engines: Chromium and WebKit\n- Viewports: 12\n- Public and protected routes per viewport: 95\n- Pages inspected: ${totalPages}\n- Axe scans: ${totalAxeScans}\n- Curated screenshots: ${totalScreenshots}\n- Issues: 0\n- Synthetic runtime cleanup: passed for all shards\n- Credential material in reports: none\n`);
+writeFileSync(join(outputRoot, "browser-acceptance-gate.md"), `# Browser Acceptance Aggregate Gate\n\n- Status: **PASSED**\n- Commit: \`${commit}\`\n- Shards: 6\n- Engines: Chromium and WebKit\n- Viewports: 12\n- Public and protected routes per viewport: ${expectedRoutesPerViewport}\n- Pages inspected: ${totalPages}\n- Axe scans: ${totalAxeScans}\n- Curated screenshots: ${totalScreenshots}\n- Issues: 0\n- Synthetic runtime cleanup: passed for all shards\n- Credential material in reports: none\n`);
 
 console.log(`Browser acceptance aggregate passed: ${totalPages} pages, ${totalAxeScans} Axe scans, ${totalScreenshots} curated screenshots.`);
 console.log(`Aggregate evidence written to ${relative(process.cwd(), outputRoot)}.`);

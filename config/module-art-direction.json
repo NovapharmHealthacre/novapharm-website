@@ -110,9 +110,48 @@
       "alt": "Gloved laboratory professional using a pipette to handle a vial in a controlled scientific setting",
       "caption": "Representative product-assessment context; not a NovaPharm product or facility",
       "focalPoint": { "desktop": "52% 48%", "mobile": "58% 50%" },
+      "maxReuse": 2,
+      "structuredDataRelationship": "primaryImageOfPage",
+      "allowedRoutes": ["/product-portfolio/", "/oncology/"]
+    },
+    {
+      "id": "product-portfolio-evidence",
+      "base": "/assets/media/modules/product-portfolio-evidence",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-db99867e-d022-443b-bdad-ef415d7d758b",
+      "subject": "Evidence-led review of representative pharmaceutical dosage formats",
+      "alt": "Unbranded vials, oral-liquid bottle, blister packs, neutral cartons, labels and a quality dossier arranged for portfolio review",
+      "caption": "Representative portfolio evidence; no marketed NovaPharm product, stock or facility is implied",
+      "focalPoint": { "desktop": "70% 50%", "mobile": "74% 50%" },
       "maxReuse": 1,
       "structuredDataRelationship": "primaryImageOfPage",
       "allowedRoutes": ["/product-portfolio/"]
+    },
+    {
+      "id": "product-oral-liquid-formulation",
+      "base": "/assets/media/products/oral-liquid-formulation",
+      "sourceType": "licensed-stock",
+      "sourceReference": "creative-assets/image-asset-register.json#oral-liquid-formulation",
+      "subject": "Controlled oral-liquid formulation analysis",
+      "alt": "Gloved laboratory professional holding an amber glass bottle during liquid analysis",
+      "caption": "Representative formulation context; not a NovaPharm laboratory or marketed product",
+      "focalPoint": { "desktop": "52% 48%", "mobile": "56% 50%" },
+      "maxReuse": 2,
+      "structuredDataRelationship": "contentImage",
+      "allowedRoutes": ["/product-portfolio/", "/oncology/"]
+    },
+    {
+      "id": "product-specialty-handling",
+      "base": "/assets/media/products/specialty-pharmacy-handling",
+      "sourceType": "licensed-stock",
+      "sourceReference": "creative-assets/image-asset-register.json#specialty-pharmacy-handling",
+      "subject": "Condition-sensitive specialist product analysis",
+      "alt": "Gloved laboratory professional using a multichannel pipette during controlled sample analysis",
+      "caption": "Representative controlled scientific handling; no facility ownership or active service is implied",
+      "focalPoint": { "desktop": "50% 48%", "mobile": "55% 50%" },
+      "maxReuse": 2,
+      "structuredDataRelationship": "contentImage",
+      "allowedRoutes": ["/product-portfolio/", "/oncology/"]
     },
     {
       "id": "product-licensed-generics",
@@ -162,9 +201,9 @@
       "alt": "Researcher reviewing primary sources and evidence for a pharmaceutical insight article",
       "caption": "Evidence-led editorial research",
       "focalPoint": { "desktop": "72% 50%", "mobile": "74% 52%" },
-      "maxReuse": 1,
+      "maxReuse": 2,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/news-insights/"]
+      "allowedRoutes": ["/news-insights/", "/technology/ai-governance/"]
     },
     {
       "id": "contact-qualified-enquiry",
@@ -409,7 +448,7 @@
     { "id": "leadership", "path": "leadership/index.html", "route": "/leadership/", "purpose": "Leadership accountability", "label": "Leadership accountability", "heroType": "approved-portraits", "signals": ["Strategy", "Operations", "Science", "Quality"] },
     { "id": "services", "path": "services/index.html", "route": "/services/", "purpose": "Connected pharmaceutical service delivery", "label": "Connected execution", "heroAsset": "services-connected-execution", "secondaryAsset": "services-launch-readiness", "signals": ["Assess", "Qualify", "Control", "Fulfil"] },
     { "id": "regulatory", "path": "regulatory-services/index.html", "route": "/regulatory-services/", "purpose": "Regulatory readiness and release controls", "label": "Regulatory control", "heroAsset": "regulatory-dossier-control", "secondaryAsset": "regulatory-batch-integrity", "signals": ["Authorisation", "QMS", "GDP", "Release gate"] },
-    { "id": "products", "path": "product-portfolio/index.html", "route": "/product-portfolio/", "purpose": "Product-category and opportunity architecture", "label": "Portfolio architecture", "heroAsset": "product-oncology-vial", "secondaryAsset": "product-licensed-generics", "signals": ["Oncology", "Specialty", "Licensed", "Opportunity review"] },
+    { "id": "products", "path": "product-portfolio/index.html", "route": "/product-portfolio/", "purpose": "Product-category and opportunity architecture", "label": "Portfolio architecture", "heroAsset": "product-portfolio-evidence", "secondaryAsset": "product-licensed-generics", "signals": ["Oncology", "Specialty", "Licensed", "Opportunity review"] },
     { "id": "partners", "path": "partner-with-us/index.html", "route": "/partner-with-us/", "purpose": "Partner qualification and collaboration routes", "label": "Partner qualification", "heroAsset": "partners-qualification", "secondaryAsset": "partners-due-diligence", "signals": ["Capability", "Licence", "Evidence", "Governance"] },
     { "id": "technology", "path": "technology/index.html", "route": "/technology/", "purpose": "Controlled data, traceability and workflow architecture", "label": "Digital control plane", "heroAsset": "technology-traceability", "secondaryAsset": "technology-control-architecture", "signals": ["Identity", "Traceability", "Workflow", "Auditability"] },
     { "id": "insights", "path": "news-insights/index.html", "route": "/news-insights/", "purpose": "Evidence-led pharmaceutical editorial authority", "label": "Evidence-led insight", "heroAsset": "insights-evidence-editorial", "signals": ["Primary sources", "Expert review", "Material updates", "Clear scope"] },

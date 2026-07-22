@@ -7,7 +7,7 @@ const text = (path) => readFileSync(join(root, path), "utf8");
 
 const cssEntrypoint = text("assets/css/novapharm.css");
 assert.match(cssEntrypoint, /@layer reset, tokens, foundations, layout, components, pages, utilities;/);
-for (const module of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity", "cro"]) {
+for (const module of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity", "cro", "oncology", "ai-search"]) {
   assert.match(cssEntrypoint, new RegExp(`@import url\\("\\./${module}\\.css"\\)`), `${module}.css must be part of the production CSS entrypoint`);
 }
 
@@ -72,6 +72,23 @@ assert.match(cro, /class="cro-continuity-path"/);
 assert.doesNotMatch(cro, /"@type":"(?:ClinicalTrial|MedicalStudy)"/);
 assert.match(text("assets/css/cro.css"), /@media \(prefers-reduced-motion: reduce\)/);
 assert.match(text("assets/js/cro.js"), /IntersectionObserver/);
+
+const oncology = text("oncology/index.html");
+for (const marker of ["oncology-hero", "Oncology Supply Continuity Architecture", "Formulation and Complexity Navigator", "Oncology Product-Readiness Matrix", "Development-to-Access Continuity"]) assert.match(oncology, new RegExp(marker, "i"));
+assert.equal((oncology.match(/data-axis="\d"/g) || []).length, 6, "oncology continuity architecture must expose six evidence axes without CSP-blocked inline styles");
+assert.match(oncology, /class="development-continuity" tabindex="0"/, "scrollable oncology continuity must be keyboard focusable");
+assert.doesNotMatch(oncology, /style="--axis:/, "oncology continuity must not require inline styles");
+assert.equal((oncology.match(/data-formulation-panel=/g) || []).length, 4, "formulation navigator must preserve four no-JavaScript panels");
+assert.match(text("assets/css/oncology.css"), /@media \(prefers-reduced-motion: reduce\)/);
+assert.match(text("assets/js/oncology.js"), /data-formulation-panel/);
+
+const aiGovernance = text("technology/ai-governance/index.html");
+for (const marker of ["ai-maturity-grid", "ai-citation-flow", "ai-privacy-list", "provider `none`", "Private on-device semantic retrieval"]) assert.match(aiGovernance, new RegExp(marker));
+const searchDirectory = text("search/index.html");
+assert.match(searchDirectory, /name="robots" content="noindex,follow"/);
+assert.match(searchDirectory, /class="search-directory"/);
+assert.match(text("assets/js/ai-search.js"), /import\("\/assets\/ai\/runtime\/search-controller\.mjs"\)/, "AI runtime must lazy-load only after activation");
+assert.match(text("assets/css/ai-search.css"), /@media \(prefers-reduced-motion: reduce\)/);
 
 const leadership = text("leadership/index.html");
 assert.match(leadership, /module-portrait-composition/);
@@ -142,7 +159,7 @@ assert.match(text("assets/css/visual-refinement.css"), /@media \(prefers-reduced
 assert.match(text("assets/css/module-media-sanity.css"), /@media \(prefers-reduced-motion: reduce\)/);
 assert.match(text("assets/js/visual-refinement.js"), /data-motion-toggle/);
 assert.match(text("assets/js/novapharm.js"), /saveData/);
-for (const stylesheet of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity", "cro"]) {
+for (const stylesheet of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity", "cro", "oncology", "ai-search"]) {
   assert.doesNotMatch(text(`assets/css/${stylesheet}.css`), /prefers-color-scheme:\s*dark/, `${stylesheet}.css must not create an untested automatic dark theme`);
 }
 

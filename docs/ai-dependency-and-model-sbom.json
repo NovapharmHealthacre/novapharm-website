@@ -1,0 +1,65 @@
+{
+  "bomFormat": "CycloneDX-inspired repository register",
+  "specVersion": "1.0",
+  "generatedAt": "2026-07-22",
+  "scope": "NovaPharm public evidence retrieval and protected internal AI gateway",
+  "components": [
+    {
+      "type": "application",
+      "name": "NovaPharm public evidence search",
+      "version": "1.0.0",
+      "licence": "NovaPharm-owned",
+      "paths": ["assets/js/ai-search.js", "src/ai/search-controller.mjs", "src/ai/policy-engine.mjs", "src/ai/citation-resolver.mjs"]
+    },
+    {
+      "type": "model",
+      "name": "NovaPharm Evidence Vector",
+      "version": "1.0.0",
+      "licence": "NovaPharm-owned; no third-party weights",
+      "sha256": "38aa5a233307d0a5975d8423080e51cf25edaae1ec0f38853590e72118c59e54",
+      "path": "assets/ai/novapharm-evidence-vector-v1.json"
+    },
+    {
+      "type": "data",
+      "name": "Approved public-content embeddings",
+      "version": "corpus-405a20bf5689996315b828c4d2bff924ada56db829536af87db2ff038f3f0ce9",
+      "licence": "Derived from NovaPharm-owned approved public content",
+      "sha256": "c6c5e92377b5b0fa2e4d961bcbe301d6b0ca02f806cecd0dff93055fd7fc64ef",
+      "path": "assets/ai/company-embeddings.json"
+    },
+    {
+      "type": "framework-api",
+      "name": "Web Worker",
+      "version": "browser-native",
+      "licence": "Web platform",
+      "path": "src/ai/semantic-worker.mjs"
+    },
+    {
+      "type": "framework-api",
+      "name": "IndexedDB",
+      "version": "browser-native",
+      "licence": "Web platform",
+      "purpose": "Optional user-controlled cache for semantic assets"
+    },
+    {
+      "type": "application",
+      "name": "NovaPharm protected AI gateway",
+      "version": "1.0.0",
+      "licence": "NovaPharm-owned",
+      "paths": ["src/core/ai/ai-gateway.mjs", "src/core/ai/use-case-registry.mjs", "src/core/ai/policy-service.mjs"]
+    },
+    {
+      "type": "optional-development-integration",
+      "name": "Ollama loopback adapter",
+      "version": "adapter-1.0.0",
+      "licence": "Adapter is NovaPharm-owned; Ollama/model licences not approved by this record",
+      "path": "src/core/ai/provider-ollama.mjs",
+      "bundledModel": false,
+      "productionEnabled": false
+    }
+  ],
+  "thirdPartyRuntimeAiLibraries": [],
+  "bundledThirdPartyModels": [],
+  "externalInferenceProviders": [],
+  "publicApiKeys": []
+}

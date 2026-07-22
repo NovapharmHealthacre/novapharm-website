@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://novapharmhealthcare.com/schemas/private-oncology-opportunity-register.schema.json",
+  "title": "Private Oncology Opportunity Register",
+  "description": "Schema only. No private opportunity, product, pricing, patient or business-plan data are stored in the public repository.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["opportunityId", "status", "productClass", "intendedMarket", "evidenceState", "ownerId", "createdAt", "updatedAt"],
+  "properties": {
+    "opportunityId": {"type":"string","pattern":"^ONC-[A-Z0-9-]{6,40}$"},
+    "status": {"enum":["intake","evidence-review","hold","qualified-discussion","declined","closed"]},
+    "productClass": {"type":"string","maxLength":120},
+    "intendedMarket": {"type":"string","maxLength":120},
+    "rightsStatus": {"enum":["unknown","asserted-unverified","evidence-received","verified-by-authorised-reviewer"]},
+    "regulatoryStatus": {"enum":["unknown","pre-application","application-planned","external-authorisation-claimed-unverified","verified-by-authorised-reviewer"]},
+    "evidenceState": {"enum":["not-received","partial","review-pending","gaps-recorded","complete-for-current-gate"]},
+    "ownerId": {"type":"string","maxLength":160},
+    "sourceOrganisationId": {"type":["string","null"],"maxLength":160},
+    "documentRegisterId": {"type":["string","null"],"maxLength":160},
+    "containsPatientData": {"const":false},
+    "containsPricing": {"type":"boolean"},
+    "createdAt": {"type":"string","format":"date-time"},
+    "updatedAt": {"type":"string","format":"date-time"},
+    "reviewDueAt": {"type":["string","null"],"format":"date-time"}
+  }
+}

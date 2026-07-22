@@ -207,8 +207,10 @@ for (const [base, routes] of productionImageUsage) {
     assert.ok(configuredBases.has(base), `${base} is production media without a canonical registry entry`);
   }
   if (base.startsWith("/assets/media/products/")) {
+    const registeredAsset = config.assets.find((asset) => asset.base === base);
+    const explicitRoutes = new Set((registeredAsset?.allowedRoutes || []).map(publicRoute));
     for (const route of routes) {
-      assert.ok(route === "/" || route === "/product-portfolio/", `${base} leaks product photography into unrelated route ${route}`);
+      assert.ok(route === "/" || route === "/product-portfolio/" || explicitRoutes.has(route), `${base} leaks product photography into unrelated route ${route}`);
     }
   }
 }

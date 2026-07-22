@@ -52,10 +52,13 @@ let publicRoutes = [
   ["services", "/services/"],
   ["regulatory", "/regulatory-services/"],
   ["cro", "/cro/"],
+  ["oncology", "/oncology/"],
   ["products", "/product-portfolio/"],
   ["nutraxin-catalogue", "/product-portfolio/nutraxin/"],
   ["partners", "/partner-with-us/"],
   ["technology", "/technology/"],
+  ["ai-governance", "/technology/ai-governance/"],
+  ["search-directory", "/search/"],
   ["insights", "/news-insights/"],
   ["insight-traceability", "/news-insights/batch-to-buyer-pharmaceutical-traceability/"],
   ["insight-compliance-distribution", "/news-insights/compliance-first-pharmaceutical-distribution-uk/"],
@@ -134,11 +137,13 @@ protectedRoutes = process.env.VISUAL_INCLUDE_PROTECTED === "false"
 const screenshotPublicRoutes = new Set([
   "home",
   "cro",
+  "oncology",
   "services",
   "regulatory",
   "products",
   "partners",
   "technology",
+  "ai-governance",
   "contact"
 ]);
 const screenshotProtectedRoutes = new Set([

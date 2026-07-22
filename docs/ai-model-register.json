@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "1.0.0",
+  "reviewedAt": "2026-07-22",
+  "models": [
+    {
+      "id": "novapharm-evidence-vector-v1",
+      "name": "NovaPharm Evidence Vector",
+      "revision": "1.0.0",
+      "task": "Deterministic sparse lexical-semantic embedding for approved public evidence retrieval",
+      "implementation": "Repository-controlled JavaScript; no neural weights",
+      "softwareLicence": "NovaPharm-owned implementation",
+      "modelLicence": "No third-party model licence applies",
+      "commercialUseStatus": "Permitted for NovaPharm-owned public and internal applications",
+      "source": "src/ai/model-registry.mjs",
+      "asset": "assets/ai/novapharm-evidence-vector-v1.json",
+      "assetSha256": "38aa5a233307d0a5975d8423080e51cf25edaae1ec0f38853590e72118c59e54",
+      "assetBytes": 3259,
+      "dimensions": 384,
+      "quantisation": "Sparse normalised decimal vectors; no neural weights or WASM",
+      "language": ["en-GB"],
+      "remoteModelLoading": false,
+      "runtime": "Browser Web Worker",
+      "redistributionRight": "Repository and generated asset may be distributed as part of NovaPharm's website",
+      "modificationRight": "NovaPharm may modify and version its own implementation",
+      "attributionRequirement": "None",
+      "restrictions": [
+        "Retrieval only",
+        "No medical, patient, safety or autonomous regulated decision use",
+        "Similarity does not establish factual truth or regulatory status"
+      ],
+      "securityStatus": "No executable model weights; deterministic source-reviewed code; public corpus only",
+      "updatePolicy": "Any vocabulary, algorithm or dimension change requires a revision, rebuilt corpus, benchmark and licence review"
+    },
+    {
+      "id": "internal-provider-none",
+      "name": "Internal AI provider disabled",
+      "revision": "1.0.0",
+      "task": "Production-safe default that prevents a generative provider invocation",
+      "implementation": "src/core/ai/provider-none.mjs",
+      "softwareLicence": "NovaPharm-owned implementation",
+      "modelLicence": "Not applicable",
+      "commercialUseStatus": "Permitted",
+      "runtime": "Secured Node application",
+      "securityStatus": "Production default",
+      "updatePolicy": "Must remain the default until an approved provider, model and use case are configured"
+    },
+    {
+      "id": "ollama-loopback-adapter",
+      "name": "Ollama loopback development adapter",
+      "revision": "1.0.0",
+      "task": "Optional local draft generation after deterministic retrieval",
+      "implementation": "src/core/ai/provider-ollama.mjs",
+      "softwareLicence": "Adapter is NovaPharm-owned; Ollama and each selected model require separate licence review",
+      "modelLicence": "No model approved or bundled",
+      "commercialUseStatus": "Not approved for production",
+      "source": "http://127.0.0.1:11434 only",
+      "runtime": "Local development",
+      "redistributionRight": "No model redistribution is authorised",
+      "modificationRight": "Adapter may be modified; model rights are model-specific",
+      "attributionRequirement": "Model-specific",
+      "restrictions": ["Loopback HTTP only", "Disabled in NODE_ENV=production", "No committed model files", "No prompt-body logs"],
+      "securityStatus": "Development adapter implemented; activation requires owner decision and model review",
+      "updatePolicy": "Pin and review any future local model before use"
+    }
+  ]
+}

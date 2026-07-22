@@ -365,6 +365,73 @@
       }
     },
     {
+      "id": "product-portfolio-evidence",
+      "sourceType": "generated",
+      "sourceReference": "imagegen:exec-db99867e-d022-443b-bdad-ef415d7d758b",
+      "subject": "Evidence-led review of representative pharmaceutical dosage formats",
+      "alt": "Unbranded vials, oral-liquid bottle, blister packs, neutral cartons, labels and a quality dossier arranged for portfolio review",
+      "caption": "Representative portfolio evidence; no marketed NovaPharm product, stock or facility is implied",
+      "allowedRoutes": [
+        "/product-portfolio/"
+      ],
+      "maxReuse": 1,
+      "focalPoint": {
+        "desktop": "70% 50%",
+        "mobile": "74% 50%"
+      },
+      "structuredDataRelationship": "primaryImageOfPage",
+      "derivatives": {
+        "1600-jpg": {
+          "path": "assets/media/modules/product-portfolio-evidence.jpg",
+          "contentType": "image/jpeg",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 85582,
+          "sha256": "e9f8595a1f28f138093f5f25836b427d538724c4d1d97385322fcfc8008dc528"
+        },
+        "1600-webp": {
+          "path": "assets/media/modules/product-portfolio-evidence.webp",
+          "contentType": "image/webp",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 45312,
+          "sha256": "226dd3aaf6380de4c91f021f38c246cc5a43ef6df3be51b8f8d8ac33f22acd3c"
+        },
+        "1600-avif": {
+          "path": "assets/media/modules/product-portfolio-evidence.avif",
+          "contentType": "image/avif",
+          "width": 1600,
+          "height": 900,
+          "byteSize": 25031,
+          "sha256": "a52b145f6b29beeaf4f7023e3c8e0220043c84f8f63d760f0729734811f692ef"
+        },
+        "960-jpg": {
+          "path": "assets/media/modules/product-portfolio-evidence-960.jpg",
+          "contentType": "image/jpeg",
+          "width": 960,
+          "height": 540,
+          "byteSize": 36602,
+          "sha256": "73f652d571e8015ecdd7f1b1b7b9cf58a717771255b51a37a544909a2ea28b12"
+        },
+        "960-webp": {
+          "path": "assets/media/modules/product-portfolio-evidence-960.webp",
+          "contentType": "image/webp",
+          "width": 960,
+          "height": 540,
+          "byteSize": 21486,
+          "sha256": "b5866985e57e2695888a8a3b8cbad98689a27bb0e6328a69249e5beaa39337f8"
+        },
+        "960-avif": {
+          "path": "assets/media/modules/product-portfolio-evidence-960.avif",
+          "contentType": "image/avif",
+          "width": 960,
+          "height": 540,
+          "byteSize": 12777,
+          "sha256": "fd0a25eca82d0cf1fe2df94868da65f52132d00db16c414ce7cf4ac0047c1a62"
+        }
+      }
+    },
+    {
       "id": "partners-qualification",
       "sourceType": "generated",
       "sourceReference": "imagegen:exec-939149cf-1b0b-4b4e-b70d-d7b95a0481c4",
@@ -508,9 +575,10 @@
       "alt": "Researcher reviewing primary sources and evidence for a pharmaceutical insight article",
       "caption": "Evidence-led editorial research",
       "allowedRoutes": [
-        "/news-insights/"
+        "/news-insights/",
+        "/technology/ai-governance/"
       ],
-      "maxReuse": 1,
+      "maxReuse": 2,
       "focalPoint": {
         "desktop": "72% 50%",
         "mobile": "74% 52%"

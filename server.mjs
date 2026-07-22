@@ -75,6 +75,7 @@ import { documentStorageStatus } from "./src/storage/document-store.mjs";
 import { appServicePrincipalFromHeaders, provisionFederatedIdentity } from "./src/core/entra-identity.mjs";
 import { isResolvedSecret, isUnresolvedSecretReference } from "./src/core/secret-value.mjs";
 import { hasSharePointCredentials } from "./src/integrations/sharepoint/graph-client.mjs";
+import { executeInternalAiReview, internalAiGatewayStatus } from "./src/core/ai/ai-gateway.mjs";
 
 const root = resolve(process.cwd());
 const applicationVersion = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version;
@@ -757,6 +758,35 @@ export async function handleRequest(request, response) {
       const session = await scopedAuthentication(request, response, ["customer", "employee", "board"]);
       if (!session) return;
       json(response, 200, await portalData(session));
+      return;
+    }
+
+    if (pathname === "/api/ai/internal/status" && request.method === "GET") {
+      const session = await scopedAuthentication(request, response, ["employee", "board"]);
+      if (!session) return;
+      json(response, 200, internalAiGatewayStatus());
+      return;
+    }
+
+    if (pathname === "/api/ai/internal/query" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      if (!await rateLimit(request, "internal-ai", 20, 15 * 60 * 1000)) return json(response, 429, { error: "Too many AI review requests. Try again later." });
+      const session = await scopedAuthentication(request, response, ["employee", "board"]);
+      if (!session) return;
+      const body = await readBody(request);
+      try {
+        const review = await executeInternalAiReview({
+          useCaseId: body.useCaseId,
+          input: body.input,
+          records: body.records,
+          options: body.options,
+          actor: session.username,
+          scopes: session.accessScopes
+        });
+        json(response, 200, review);
+      } catch (error) {
+        json(response, Number(error.statusCode || 400), { error: error.message || "The controlled AI review could not be completed.", code: error.code || "ai_review_failed" });
+      }
       return;
     }
 

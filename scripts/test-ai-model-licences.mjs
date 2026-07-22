@@ -1,0 +1,21 @@
+import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+
+const register = JSON.parse(readFileSync(resolve("docs/ai-model-register.json"), "utf8"));
+const sbom = JSON.parse(readFileSync(resolve("docs/ai-dependency-and-model-sbom.json"), "utf8"));
+const publicModel = register.models.find((model) => model.id === "novapharm-evidence-vector-v1");
+assert.ok(publicModel);
+assert.equal(publicModel.remoteModelLoading, false);
+assert.match(publicModel.commercialUseStatus, /Permitted/);
+assert.doesNotMatch(publicModel.modelLicence, /unknown|unclear|non-commercial/i);
+const modelBytes = readFileSync(resolve(publicModel.asset));
+assert.equal(createHash("sha256").update(modelBytes).digest("hex"), publicModel.assetSha256);
+assert.equal(modelBytes.length, publicModel.assetBytes);
+assert.equal(sbom.thirdPartyRuntimeAiLibraries.length, 0);
+assert.equal(sbom.bundledThirdPartyModels.length, 0);
+assert.equal(sbom.externalInferenceProviders.length, 0);
+assert.equal(sbom.publicApiKeys.length, 0);
+for (const model of register.models) assert.ok(model.softwareLicence && model.commercialUseStatus);
+console.log(`AI model-licence review passed for ${register.models.length} registered model/provider entries and zero third-party public AI dependencies.`);

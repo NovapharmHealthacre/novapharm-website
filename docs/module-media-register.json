@@ -113,7 +113,7 @@
       "path": "product-portfolio/index.html",
       "route": "/product-portfolio/",
       "purpose": "Product-category and opportunity architecture",
-      "heroAsset": "product-oncology-vial",
+      "heroAsset": "product-portfolio-evidence",
       "secondaryAsset": "product-licensed-generics",
       "signals": [
         "Oncology",

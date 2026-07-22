@@ -1,0 +1,11 @@
+{
+  "reviewedAt": "2026-07-22",
+  "sources": [
+    {"title":"ICO guidance on AI and data protection","url":"https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/artificial-intelligence/guidance-on-ai-and-data-protection/about-this-guidance/","publisher":"Information Commissioner's Office","use":"Privacy, accountability, fairness and data-protection control design","primary":true},
+    {"title":"AI Risk Management Framework","url":"https://www.nist.gov/itl/ai-risk-management-framework","publisher":"US National Institute of Standards and Technology","use":"Govern, map, measure and manage framing","primary":true},
+    {"title":"Artificial Intelligence Playbook for the UK Government","url":"https://www.gov.uk/government/publications/ai-playbook-for-the-uk-government/artificial-intelligence-playbook-for-the-uk-government-html","publisher":"UK Government","use":"Human oversight, proportionate technology and responsible delivery","primary":true},
+    {"title":"Transformers.js custom usage","url":"https://huggingface.co/docs/transformers.js/main/en/custom_usage","publisher":"Hugging Face","use":"Future locally hosted model configuration and remote-loading controls","primary":true},
+    {"title":"ONNX Runtime Web","url":"https://onnxruntime.ai/docs/get-started/with-javascript/web.html","publisher":"Microsoft","use":"Future browser inference assessment","primary":true}
+  ],
+  "implementationDecision": "Use no third-party browser model or inference runtime in the initial candidate; retain official-source records for future review."
+}

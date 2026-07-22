@@ -347,6 +347,53 @@
     ]
   },
   {
+    "route": "/oncology/",
+    "canonical": "https://novapharmhealthcare.com/oncology/",
+    "file": "oncology/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/oncology/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Oncology Supply Continuity and Readiness | NovaPharm Healthcare",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "FAQPage"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/oncology/#service",
+        "types": [
+          "Service"
+        ],
+        "name": "Oncology supply continuity and readiness",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
     "route": "/product-portfolio/",
     "canonical": "https://novapharmhealthcare.com/product-portfolio/",
     "file": "product-portfolio/index.html",
@@ -448,6 +495,33 @@
           "WebPage"
         ],
         "name": "Pharmaceutical Technology Platform | NovaPharm Healthcare",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/technology/ai-governance/",
+    "canonical": "https://novapharmhealthcare.com/technology/ai-governance/",
+    "file": "technology/ai-governance/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/technology/ai-governance/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Responsible AI at NovaPharm | Evidence, Privacy and Human Oversight",
         "mainEntity": null,
         "publisher": null,
         "author": null

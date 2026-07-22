@@ -12,6 +12,7 @@ const images = {
   logistics: ["/assets/media/products/hospital-supply-logistics.jpg", "Controlled pharmaceutical logistics and supply-chain environment", 1600, 900],
   science: ["/assets/media/products/oncology-vial-handling.jpg", "Controlled laboratory handling supporting pharmaceutical assessment", 1600, 900],
   traceability: ["/assets/media/products/specialty-pharmacy-handling.jpg", "Controlled sample handling supporting pharmaceutical traceability", 1600, 900],
+  evidence: ["/assets/media/modules/insights-evidence-editorial.jpg", "Researcher reviewing approved evidence for responsible pharmaceutical technology", 1600, 900],
   packaging: ["/assets/media/products/licensed-generics-packaging.jpg", "Unbranded pharmaceutical packaging used as representative market-access context", 1600, 900],
   liquids: ["/assets/media/products/oral-liquid-formulation.jpg", "Controlled oral-liquid formulation analysis", 1600, 900]
 };
@@ -20,6 +21,7 @@ function rasterFor(route) {
   if (route === "/cro/") return ["/assets/media/cro/cro-evidence-architecture-1600.jpg", "Clinical-development team reviewing programme evidence, responsibilities and milestones", 1600, 900];
   if (route === "/regulatory-services/" || route === "/about/governance/") return images.quality;
   if (route === "/services/" || route === "/partner-with-us/") return images.logistics;
+  if (route === "/technology/ai-governance/") return images.evidence;
   if (route === "/technology/") return images.traceability;
   if (route === "/news-insights/") return images.science;
   if (route.includes("batch-to-buyer") || route.includes("traceability")) return images.traceability;
@@ -79,6 +81,7 @@ for (const item of register) {
   html = html.replace(/\s*<script type="application\/ld\+json">[\s\S]*?<\/script>/gi, "");
   const serialized = schemas.map((schema) => `  <script type="application/ld+json">${JSON.stringify(schema)}</script>`).join("\n");
   html = html.replace("</head>", `${serialized}\n</head>`);
+  html = html.replace(/[ \t]+$/gm, "");
   writeFileSync(pagePath, html);
   Object.assign(item, next);
 }

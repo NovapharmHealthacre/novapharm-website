@@ -80,14 +80,24 @@
     "absoluteUrl": "https://novapharmhealthcare.com/assets/media/cro/cro-evidence-architecture-1600.jpg"
   },
   {
-    "route": "/product-portfolio/",
-    "page": "https://novapharmhealthcare.com/product-portfolio/",
+    "route": "/oncology/",
+    "page": "https://novapharmhealthcare.com/oncology/",
     "url": "/assets/media/products/oncology-vial-handling.jpg",
     "type": "image/jpeg",
     "width": 1600,
     "height": 900,
-    "alt": "Representative product-assessment context; not a NovaPharm product or facility",
+    "alt": "Controlled oncology vial handling in a laboratory setting",
     "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/oncology-vial-handling.jpg"
+  },
+  {
+    "route": "/product-portfolio/",
+    "page": "https://novapharmhealthcare.com/product-portfolio/",
+    "url": "/assets/media/modules/product-portfolio-evidence.jpg",
+    "type": "image/jpeg",
+    "width": 1600,
+    "height": 900,
+    "alt": "Representative portfolio evidence; no marketed NovaPharm product, stock or facility is implied",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/modules/product-portfolio-evidence.jpg"
   },
   {
     "route": "/product-portfolio/nutraxin/",
@@ -118,6 +128,16 @@
     "height": 900,
     "alt": "Representative traceability architecture; external integrations remain subject to implementation",
     "absoluteUrl": "https://novapharmhealthcare.com/assets/media/modules/technology-traceability.jpg"
+  },
+  {
+    "route": "/technology/ai-governance/",
+    "page": "https://novapharmhealthcare.com/technology/ai-governance/",
+    "url": "/assets/media/modules/insights-evidence-editorial.jpg",
+    "type": "image/jpeg",
+    "width": 1600,
+    "height": 900,
+    "alt": "Researcher reviewing approved evidence for responsible pharmaceutical technology",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/modules/insights-evidence-editorial.jpg"
   },
   {
     "route": "/news-insights/",

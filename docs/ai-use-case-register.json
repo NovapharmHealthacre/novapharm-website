@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0.0",
+  "reviewedAt": "2026-07-22",
+  "implementedFoundations": [
+    {
+      "id": "public-keyword-search",
+      "maturity": "live-candidate",
+      "intendedDecision": "Find approved public information",
+      "data": "Approved public canonical corpus",
+      "humanOwner": "Corporate Communications",
+      "prohibitedUse": "Medical advice, private-data access or proof of regulatory status",
+      "modelRisk": "None; conventional retrieval",
+      "monitoring": "Broken-source, citation and latency tests",
+      "rollback": "Search directory and normal navigation"
+    },
+    {
+      "id": "public-semantic-retrieval",
+      "maturity": "experimental-opt-in-candidate",
+      "intendedDecision": "Find semantically related approved passages",
+      "data": "Approved public canonical corpus",
+      "lawfulBasis": "No personal data is required; query remains on device",
+      "validationPlan": "150+ question benchmark, citation tests, Chromium and WebKit acceptance",
+      "humanOwner": "Technology and Information Security",
+      "prohibitedUse": "Generation, diagnosis, availability confirmation or regulated decision",
+      "modelRisk": "Vocabulary coverage and false similarity",
+      "monitoring": "Abstention, source correctness and performance",
+      "rollback": "Disable semantic activation; conventional search remains"
+    },
+    {
+      "id": "protected-bounded-reviews",
+      "maturity": "internal-development",
+      "intendedDecision": "Prepare evidence and exception views for human review",
+      "data": "Authorised source classes only",
+      "lawfulBasis": "Must be established per operational source and purpose before real data",
+      "validationPlan": "Role, CSRF, injection, citation, customer-isolation and audit tests",
+      "humanOwner": "Use-case owner plus Information Security",
+      "prohibitedUse": "Automatic writes, approvals, release or publication",
+      "modelRisk": "Incorrect classification or omitted evidence",
+      "monitoring": "Audit metadata without prompt bodies",
+      "rollback": "Provider none and endpoint disablement"
+    }
+  ],
+  "roadmapOnly": [
+    {"id":"demand-forecasting","requiredData":"Sufficient governed historical demand, lead-time, shortage and product data","lawfulBasis":"To be assessed","validationPlan":"Baseline comparison, time-based backtesting, error by segment, drift and override review","humanOwner":"Supply and Commercial leadership","prohibitedUse":"Automatic replenishment or availability guarantee","modelRisk":"Sparse history, leakage, drift and false certainty","monitoring":"Accuracy, bias, drift, override and stockout outcomes","rollback":"Return to approved human planning baseline","maturity":"planned"},
+    {"id":"batch-traceability-analytics","requiredData":"Canonical product, batch, supplier, quality, order, temperature, custody and document events","lawfulBasis":"Contract, legal obligation and legitimate interests as applicable","validationPlan":"Event completeness and reconciliation against source systems","humanOwner":"Quality and Operations","prohibitedUse":"Treating blockchain or immutability as proof that source data are correct","modelRisk":"Incomplete lineage and false confidence","monitoring":"Missing events, reconciliation failures and access anomalies","rollback":"Canonical audit records and controlled documents","maturity":"planned"},
+    {"id":"stockout-prediction","requiredData":"Validated demand and inventory history","lawfulBasis":"To be assessed","validationPlan":"Backtesting and conservative decision thresholds","humanOwner":"Supply leadership","prohibitedUse":"Guaranteed availability","modelRisk":"Rare-event error and demand shocks","monitoring":"False negatives and overrides","rollback":"Human planning","maturity":"planned"},
+    {"id":"supplier-risk-scoring","requiredData":"Approved qualification and performance evidence","lawfulBasis":"To be assessed","validationPlan":"Fairness, explainability and outcome review","humanOwner":"Quality","prohibitedUse":"Automatic supplier rejection","modelRisk":"Proxy bias and missing evidence","monitoring":"Appeals and disagreement","rollback":"Human qualification","maturity":"planned"},
+    {"id":"plpi-approval-probability","requiredData":"Not approved","lawfulBasis":"Not established","validationPlan":"None","humanOwner":"Regulatory","prohibitedUse":"Predicting authority decisions","modelRisk":"Unacceptable regulatory implication","monitoring":"Not applicable","rollback":"Not implemented","maturity":"prohibited"},
+    {"id":"clinical-trial-matching","requiredData":"Not approved","lawfulBasis":"Not established","validationPlan":"None","humanOwner":"Clinical and privacy leadership","prohibitedUse":"Patient or treatment recommendation","modelRisk":"Health harm and sensitive-data processing","monitoring":"Not applicable","rollback":"Not implemented","maturity":"prohibited"},
+    {"id":"pharmacovigilance-signal-detection","requiredData":"Controlled safety system and qualified oversight","lawfulBasis":"Would require formal assessment","validationPlan":"Regulated validation not defined","humanOwner":"Qualified pharmacovigilance function","prohibitedUse":"General portal automation","modelRisk":"Missed or false safety signal","monitoring":"Not defined","rollback":"Qualified controlled process","maturity":"planned-not-implemented"},
+    {"id":"credit-scoring","requiredData":"Not approved","lawfulBasis":"Not established","validationPlan":"None","humanOwner":"Finance and Privacy","prohibitedUse":"Automated significant decision","modelRisk":"Fairness and legal risk","monitoring":"Not applicable","rollback":"Not implemented","maturity":"prohibited"},
+    {"id":"ocr-assistance","requiredData":"Authorised image-only document","lawfulBasis":"Same as source document","validationPlan":"Human comparison against source image","humanOwner":"Document owner","prohibitedUse":"Treating machine extraction as verified text","modelRisk":"Recognition errors","monitoring":"Correction rate","rollback":"Manual transcription or source review","maturity":"roadmap"},
+    {"id":"voice-search","requiredData":"Explicitly activated audio","lawfulBasis":"Privacy review required","validationPlan":"Browser, accessibility and no-retention tests","humanOwner":"Technology and Privacy","prohibitedUse":"Background microphone access or transcript retention","modelRisk":"Privacy and transcription error","monitoring":"Not defined","rollback":"Text search","maturity":"disabled-roadmap"},
+    {"id":"webllm-generation","requiredData":"Approved public corpus only","lawfulBasis":"No personal data intended","validationPlan":"Device, model, licence, grounding and safety benchmark","humanOwner":"Technology and Information Security","prohibitedUse":"Primary search, medical content or unsupported claims","modelRisk":"Hallucination, download size and device exclusion","monitoring":"Citation support and refusals","rollback":"Extractive search","maturity":"disabled-roadmap"}
+  ]
+}
