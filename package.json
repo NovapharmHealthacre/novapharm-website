@@ -56,7 +56,7 @@
     "evidence:art-direction": "node scripts/capture-art-direction-evidence.mjs",
     "evidence:cro-owner-review": "node scripts/capture-cro-owner-review.mjs",
     "test:browser-workflows": "node scripts/test-backend-browser-workflows.mjs",
-    "test:browser-acceptance": "node scripts/run-browser-acceptance.mjs",
+    "test:browser-acceptance": "node scripts/run-owner-browser-acceptance.mjs",
     "browser:validation:start": "node scripts/start-browser-validation.mjs",
     "browser:validation:test": "node scripts/run-browser-validation-tests.mjs",
     "browser:validation:stop": "node scripts/stop-browser-validation.mjs",
