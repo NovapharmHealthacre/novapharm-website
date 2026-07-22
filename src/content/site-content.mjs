@@ -22,6 +22,7 @@ export const navigation = Object.freeze([
   ["Services", "/services/"],
   ["Regulatory", "/regulatory-services/"],
   ["CRO", "/cro/"],
+  ["Oncology", "/oncology/"],
   ["Products", "/product-portfolio/"],
   ["Partners", "/partner-with-us/"],
   ["Technology", "/technology/"],
@@ -402,6 +403,11 @@ export const pageMeta = Object.freeze({
     description: "Evidence-led clinical-development programme coordination, UK pathway integration, specialist-provider orchestration and sponsor-visible governance from NovaPharm.",
     eyebrow: "Clinical Research & CRO Support"
   },
+  "oncology": {
+    title: "Oncology Supply Continuity and Readiness | NovaPharm Healthcare",
+    description: "Explore NovaPharm's evidence-led B2B oncology continuity model across formulation, sourcing, quality, temperature governance, regulatory readiness and controlled market access.",
+    eyebrow: "Oncology continuity"
+  },
   "product-portfolio": {
     title: "Strategic Pharmaceutical Portfolio | Oncology and Specialty Medicines",
     description: "NovaPharm's planned B2B portfolio focus across oncology, specialty, oral liquid and selected licensed medicines, subject to authorisation and availability.",
@@ -421,6 +427,11 @@ export const pageMeta = Object.freeze({
     title: "Pharmaceutical Technology Platform | NovaPharm Healthcare",
     description: "NovaPharm's API-first platform, portal, SharePoint, audit and integration architecture with clearly labelled live, in-development and planned capabilities.",
     eyebrow: "Technology"
+  },
+  "technology/ai-governance": {
+    title: "Responsible AI at NovaPharm | Evidence, Privacy and Human Oversight",
+    description: "How NovaPharm governs public evidence search, optional private on-device semantic retrieval, internal AI development, citations, abstention, privacy and prohibited uses.",
+    eyebrow: "Responsible AI"
   },
   "news-insights": {
     title: "Pharmaceutical Insights | Regulatory, Oncology, Quality and Supply Chain",

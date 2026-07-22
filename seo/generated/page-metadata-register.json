@@ -265,6 +265,47 @@
     ]
   },
   {
+    "route": "/oncology/",
+    "canonical": "https://novapharmhealthcare.com/oncology/",
+    "file": "oncology/index.html",
+    "title": "Oncology Supply Continuity and Readiness | NovaPharm Healthcare",
+    "description": "Explore NovaPharm&#39;s evidence-led B2B oncology continuity model across formulation, sourcing, quality, temperature governance, regulatory readiness and controlled market access.",
+    "h1": "Oncology continuity starts before supply.",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem",
+      "FAQPage",
+      "Question",
+      "Answer",
+      "Question",
+      "Answer",
+      "Question",
+      "Answer",
+      "Question",
+      "Answer",
+      "Question",
+      "Answer",
+      "Question",
+      "Answer",
+      "Service",
+      "Audience",
+      "Country"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
     "route": "/product-portfolio/",
     "canonical": "https://novapharmhealthcare.com/product-portfolio/",
     "file": "product-portfolio/index.html",
@@ -397,6 +438,29 @@
       "contact",
       "open-an-account",
       "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/technology/ai-governance/",
+    "canonical": "https://novapharmhealthcare.com/technology/ai-governance/",
+    "file": "technology/ai-governance/index.html",
+    "title": "Responsible AI at NovaPharm | Evidence, Privacy and Human Oversight",
+    "description": "How NovaPharm governs public evidence search, optional private on-device semantic retrieval, internal AI development, citations, abstention, privacy and prohibited uses.",
+    "h1": "Responsible AI starts with evidence, privacy and a clear right to abstain.",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
       "open-an-account",
       "partners",
       "contact",

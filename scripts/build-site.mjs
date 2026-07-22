@@ -10,3 +10,4 @@ await import("./reconcile-article-authority.mjs");
 await import("./reconcile-social-authority.mjs");
 await import("./finalise-social-cards.mjs");
 await import("./generate-structured-data-register.mjs");
+await import("./build-ai-knowledge-index.mjs");

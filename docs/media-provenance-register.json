@@ -148,10 +148,91 @@
       "generatedPrompt": null,
       "publicBase": "/assets/media/products/oncology-vial-handling",
       "pagesUsingIt": [
-        "/product-portfolio/"
+        "/product-portfolio/",
+        "/oncology/"
       ],
       "reviewStatus": "rendered-and-brand-reviewed",
       "detailedRegister": "creative-assets/image-asset-register.json#oncology-vial-handling"
+    },
+    {
+      "id": "product-portfolio-evidence",
+      "sourceType": "generated",
+      "source": "imagegen:exec-db99867e-d022-443b-bdad-ef415d7d758b",
+      "creator": "OpenAI ImageGen",
+      "originalUrl": null,
+      "licence": "Owner-authorised NovaPharm project media under the applicable OpenAI generated-media terms",
+      "acquisitionDate": "2026-07-15",
+      "modificationPermitted": true,
+      "modifications": "Human-reviewed crop, focal point, colour grade and AVIF/WebP/JPEG compression",
+      "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
+      "publicBase": "/assets/media/modules/product-portfolio-evidence",
+      "pagesUsingIt": [
+        "/product-portfolio/"
+      ],
+      "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
+      "detailedRegister": "creative-assets/module-media-asset-register.json#product-portfolio-evidence"
+    },
+    {
+      "id": "product-oral-liquid-formulation",
+      "sourceType": "licensed-stock",
+      "source": "https://www.pexels.com/photo/person-hands-holding-lab-9628804/",
+      "creator": "Ivan S",
+      "originalUrl": "https://images.pexels.com/photos/9628804/pexels-photo-9628804.jpeg",
+      "licence": {
+        "name": "Pexels licence",
+        "url": "https://www.pexels.com/license/",
+        "verifiedOn": "2026-07-14",
+        "websiteUsePermitted": true,
+        "modificationPermitted": true,
+        "attributionRequired": false,
+        "restrictions": [
+          "Do not imply endorsement by a depicted person or organisation.",
+          "Do not resell or redistribute an unaltered image as a standalone stock asset.",
+          "Do not use an image as part of the NovaPharm trade mark or identity."
+        ]
+      },
+      "acquisitionDate": "2026-07-14",
+      "modificationPermitted": true,
+      "modifications": "Focus on gloved handling and amber bottle; retain sufficient laboratory context.",
+      "generatedPrompt": null,
+      "publicBase": "/assets/media/products/oral-liquid-formulation",
+      "pagesUsingIt": [
+        "/product-portfolio/",
+        "/oncology/"
+      ],
+      "reviewStatus": "rendered-and-brand-reviewed",
+      "detailedRegister": "creative-assets/image-asset-register.json#oral-liquid-formulation"
+    },
+    {
+      "id": "product-specialty-handling",
+      "sourceType": "licensed-stock",
+      "source": "https://www.pexels.com/photo/close-up-of-a-lab-worker-distributing-medication-into-capsules-8940469/",
+      "creator": "Thirdman",
+      "originalUrl": "https://images.pexels.com/photos/8940469/pexels-photo-8940469.jpeg",
+      "licence": {
+        "name": "Pexels licence",
+        "url": "https://www.pexels.com/license/",
+        "verifiedOn": "2026-07-14",
+        "websiteUsePermitted": true,
+        "modificationPermitted": true,
+        "attributionRequired": false,
+        "restrictions": [
+          "Do not imply endorsement by a depicted person or organisation.",
+          "Do not resell or redistribute an unaltered image as a standalone stock asset.",
+          "Do not use an image as part of the NovaPharm trade mark or identity."
+        ]
+      },
+      "acquisitionDate": "2026-07-14",
+      "modificationPermitted": true,
+      "modifications": "Landscape crop focused on gloved precision handling and laboratory equipment; no commercial brand is visible.",
+      "generatedPrompt": null,
+      "publicBase": "/assets/media/products/specialty-pharmacy-handling",
+      "pagesUsingIt": [
+        "/product-portfolio/",
+        "/oncology/"
+      ],
+      "reviewStatus": "rendered-and-brand-reviewed",
+      "detailedRegister": "creative-assets/image-asset-register.json#specialty-pharmacy-handling"
     },
     {
       "id": "product-licensed-generics",
@@ -234,7 +315,8 @@
       "generatedPrompt": "Recorded in the protected generation session; not exposed in production markup",
       "publicBase": "/assets/media/modules/insights-evidence-editorial",
       "pagesUsingIt": [
-        "/news-insights/"
+        "/news-insights/",
+        "/technology/ai-governance/"
       ],
       "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
       "detailedRegister": "creative-assets/module-media-asset-register.json#insights-evidence-editorial"

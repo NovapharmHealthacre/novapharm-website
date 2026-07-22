@@ -1,0 +1,364 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-07-22T00:00:00.000Z",
+  "corpusHash": "89a7ce76e4022ae8879c8249c159c4f6ef599275b4a9c7d46a3dfc62a0df6965",
+  "approvedSourceCount": 30,
+  "chunkCount": 361,
+  "excludedContent": [
+    "portal and private routes",
+    "customer and supplier records",
+    "uploaded documents",
+    "business-plan forecasts and private annexes",
+    "supplier pricing and unpublished product lists",
+    "contact and account-form submissions"
+  ],
+  "sources": [
+    {
+      "id": "page-home",
+      "file": "index.html",
+      "url": "https://novapharmhealthcare.com/",
+      "title": "NovaPharm Healthcare | UK Pharmaceutical Distribution Strategy",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public canonical page",
+      "capabilityBoundary": "Corporate B2B information; capability maturity and regulatory status remain as labelled on the source page.",
+      "sourceHash": "3de8af34e0c14247bdbb3b32182698970b53e1f479e2f03c236c58281a7423c3",
+      "blockCount": 64
+    },
+    {
+      "id": "page-about",
+      "file": "about/index.html",
+      "url": "https://novapharmhealthcare.com/about/",
+      "title": "About NovaPharm Healthcare | Compliance-First UK Pharmaceutical Company",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public canonical page",
+      "capabilityBoundary": "Corporate B2B information; capability maturity and regulatory status remain as labelled on the source page.",
+      "sourceHash": "d0611bdc7e63e1755973a39dc69445e96e30610d18d47d61851d761864dd5e19",
+      "blockCount": 16
+    },
+    {
+      "id": "page-about-company",
+      "file": "about/company/index.html",
+      "url": "https://novapharmhealthcare.com/about/company/",
+      "title": "Company | NovaPharm Healthcare Ltd",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public canonical page",
+      "capabilityBoundary": "Corporate B2B information; capability maturity and regulatory status remain as labelled on the source page.",
+      "sourceHash": "96ee20727454a574ae62833e7919949d555005c8c688aa781cca6609034dec95",
+      "blockCount": 13
+    },
+    {
+      "id": "page-about-governance",
+      "file": "about/governance/index.html",
+      "url": "https://novapharmhealthcare.com/about/governance/",
+      "title": "Governance | NovaPharm Healthcare",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public canonical page",
+      "capabilityBoundary": "Corporate B2B information; capability maturity and regulatory status remain as labelled on the source page.",
+      "sourceHash": "faff0d0f197c9fe6c51c8dbf2db923b1d1812e825d987b8034e78f29e41b1915",
+      "blockCount": 13
+    },
+    {
+      "id": "page-leadership",
+      "file": "leadership/index.html",
+      "url": "https://novapharmhealthcare.com/leadership/",
+      "title": "Leadership | NovaPharm Healthcare",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public canonical page",
+      "capabilityBoundary": "Corporate B2B information; capability maturity and regulatory status remain as labelled on the source page.",
+      "sourceHash": "f46cc165865136ecc1a080fbc44b92ef3adbb3dff99c320b97c8653e49a3498c",
+      "blockCount": 20
+    },
+    {
+      "id": "page-services",
+      "file": "services/index.html",
+      "url": "https://novapharmhealthcare.com/services/",
+      "title": "Pharmaceutical Services UK | Distribution, PLPI, Quality and Sourcing",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public canonical page",
+      "capabilityBoundary": "Corporate B2B information; capability maturity and regulatory status remain as labelled on the source page.",
+      "sourceHash": "564e4c4967b38a796f6cc9f73b0c0a1287552965537277f9cca7ca9e97dff692",
+      "blockCount": 91
+    },
+    {
+      "id": "page-regulatory-services",
+      "file": "regulatory-services/index.html",
+      "url": "https://novapharmhealthcare.com/regulatory-services/",
+      "title": "MHRA, WDA(H), PLPI and GDP Regulatory Strategy | NovaPharm",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public canonical page",
+      "capabilityBoundary": "Corporate B2B information; capability maturity and regulatory status remain as labelled on the source page.",
+      "sourceHash": "1e1e53fa4856ced1301386c2a90e8cc33f1d84538641002e66b01fcea79cc6e4",
+      "blockCount": 34
+    },
+    {
+      "id": "page-cro",
+      "file": "cro/index.html",
+      "url": "https://novapharmhealthcare.com/cro/",
+      "title": "Clinical Research & CRO Support UK | NovaPharm Healthcare",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public canonical page",
+      "capabilityBoundary": "Corporate B2B information; capability maturity and regulatory status remain as labelled on the source page.",
+      "sourceHash": "0c3fb80b487c3d8f0b80d6962741b0ee638b42744d48e55c09c51def208cc2b0",
+      "blockCount": 183
+    },
+    {
+      "id": "page-oncology",
+      "file": "oncology/index.html",
+      "url": "https://novapharmhealthcare.com/oncology/",
+      "title": "Oncology Supply Continuity and Readiness | NovaPharm Healthcare",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public canonical page",
+      "capabilityBoundary": "Strategic B2B oncology focus; no product approval, stock, availability, treatment or authorisation claim.",
+      "sourceHash": "e6b1dde6dbb1e6b9721e595fac2f32f17b2a999f089a6ab5e1c105564742339b",
+      "blockCount": 169
+    },
+    {
+      "id": "page-product-portfolio",
+      "file": "product-portfolio/index.html",
+      "url": "https://novapharmhealthcare.com/product-portfolio/",
+      "title": "Strategic Pharmaceutical Portfolio | Oncology and Specialty Medicines",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public canonical page",
+      "capabilityBoundary": "Corporate B2B information; capability maturity and regulatory status remain as labelled on the source page.",
+      "sourceHash": "9af6aa6f88683c10a95d89818f738f33079160b3604b23c2a25a6f817aa6130e",
+      "blockCount": 31
+    },
+    {
+      "id": "page-product-portfolio-nutraxin",
+      "file": "product-portfolio/nutraxin/index.html",
+      "url": "https://novapharmhealthcare.com/product-portfolio/nutraxin/",
+      "title": "Nutraxin UK Food Supplement Catalogue | NovaPharm Healthcare",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public canonical page",
+      "capabilityBoundary": "Corporate B2B information; capability maturity and regulatory status remain as labelled on the source page.",
+      "sourceHash": "16e34c5022c10daa8997480b4f3695c9c26ce307450abf3f50551e608255a62e",
+      "blockCount": 104
+    },
+    {
+      "id": "page-partner-with-us",
+      "file": "partner-with-us/index.html",
+      "url": "https://novapharmhealthcare.com/partner-with-us/",
+      "title": "Pharmaceutical Partnerships UK | Manufacturers, Dossier Owners and Buyers",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public canonical page",
+      "capabilityBoundary": "Corporate B2B information; capability maturity and regulatory status remain as labelled on the source page.",
+      "sourceHash": "ed320bf71658c9d5ce8d78eb9f8d8baf4f1dde0d9790a170e78d7de12d643735",
+      "blockCount": 27
+    },
+    {
+      "id": "page-technology",
+      "file": "technology/index.html",
+      "url": "https://novapharmhealthcare.com/technology/",
+      "title": "Pharmaceutical Technology Platform | NovaPharm Healthcare",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public canonical page",
+      "capabilityBoundary": "Corporate B2B information; capability maturity and regulatory status remain as labelled on the source page.",
+      "sourceHash": "b7be6af4d9fffd663885d12c65d6ffcda512958ee0786eb8d4546f919ec58d89",
+      "blockCount": 49
+    },
+    {
+      "id": "page-technology-ai-governance",
+      "file": "technology/ai-governance/index.html",
+      "url": "https://novapharmhealthcare.com/technology/ai-governance/",
+      "title": "Responsible AI at NovaPharm | Evidence, Privacy and Human Oversight",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public canonical page",
+      "capabilityBoundary": "Corporate B2B information; capability maturity and regulatory status remain as labelled on the source page.",
+      "sourceHash": "05d6eb25804a95b3c192d9bf8eb6d15622de16caff111ae21795c33dcbceafbf",
+      "blockCount": 36
+    },
+    {
+      "id": "page-news-insights",
+      "file": "news-insights/index.html",
+      "url": "https://novapharmhealthcare.com/news-insights/",
+      "title": "Pharmaceutical Insights | Regulatory, Oncology, Quality and Supply Chain",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public canonical page",
+      "capabilityBoundary": "Corporate B2B information; capability maturity and regulatory status remain as labelled on the source page.",
+      "sourceHash": "7b4389ba842da46cd1c1a9f19eb39cb9cf4b4d8685736669bd66e2d23def22c9",
+      "blockCount": 17
+    },
+    {
+      "id": "page-legal",
+      "file": "legal/index.html",
+      "url": "https://novapharmhealthcare.com/legal/",
+      "title": "Legal and Corporate Responsibility | NovaPharm Healthcare",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public canonical page",
+      "capabilityBoundary": "Corporate B2B information; capability maturity and regulatory status remain as labelled on the source page.",
+      "sourceHash": "1d4178ee3c37cda49d34f7616a3116fdd683e5ba884cb54b268745bab5aef1ba",
+      "blockCount": 23
+    },
+    {
+      "id": "page-legal-accessibility",
+      "file": "legal/accessibility/index.html",
+      "url": "https://novapharmhealthcare.com/legal/accessibility/",
+      "title": "Accessibility Statement | NovaPharm Healthcare",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public canonical page",
+      "capabilityBoundary": "Corporate B2B information; capability maturity and regulatory status remain as labelled on the source page.",
+      "sourceHash": "b446f015970f15baa715d21bffa23dbb7c75e32540fc27806a8c86b1aa52cef4",
+      "blockCount": 10
+    },
+    {
+      "id": "page-legal-modern-slavery",
+      "file": "legal/modern-slavery/index.html",
+      "url": "https://novapharmhealthcare.com/legal/modern-slavery/",
+      "title": "Modern Slavery and Human Rights Policy | NovaPharm Healthcare",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public canonical page",
+      "capabilityBoundary": "Corporate B2B information; capability maturity and regulatory status remain as labelled on the source page.",
+      "sourceHash": "070c50e257addfb2eca139bd8edfaea31bd5f7793271595d87a5acd4002f2845",
+      "blockCount": 13
+    },
+    {
+      "id": "page-legal-environment-carbon",
+      "file": "legal/environment-carbon/index.html",
+      "url": "https://novapharmhealthcare.com/legal/environment-carbon/",
+      "title": "Environmental and Carbon Responsibility | NovaPharm Healthcare",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public canonical page",
+      "capabilityBoundary": "Corporate B2B information; capability maturity and regulatory status remain as labelled on the source page.",
+      "sourceHash": "c2911cf8ee997fd2ec1180f79dfe2c7898edfedf3ba1342935e0fc0cf490d482",
+      "blockCount": 11
+    },
+    {
+      "id": "leader-vishal-chakravarty",
+      "file": "leadership/vishal-chakravarty/index.html",
+      "url": "https://novapharmhealthcare.com/leadership/vishal-chakravarty/",
+      "title": "Vishal Chakravarty | NovaPharm Healthcare leadership",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public leadership profile",
+      "capabilityBoundary": "Public professional and governance information only; private CV, contact and personal information are excluded.",
+      "sourceHash": "72bcf1e95508390735fdec1c79679bd65057a2adcb302d0c6905d70e154b7f42",
+      "blockCount": 15
+    },
+    {
+      "id": "leader-prabhakar-lahare",
+      "file": "leadership/prabhakar-lahare/index.html",
+      "url": "https://novapharmhealthcare.com/leadership/prabhakar-lahare/",
+      "title": "Prabhakar Vitthal Lahare | NovaPharm Healthcare leadership",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public leadership profile",
+      "capabilityBoundary": "Public professional and governance information only; private CV, contact and personal information are excluded.",
+      "sourceHash": "0786120e7f3191be129c67b7626dff0a6eb76a577cbbdb2895b743facac9d2e0",
+      "blockCount": 15
+    },
+    {
+      "id": "leader-girish-achliya",
+      "file": "leadership/girish-achliya/index.html",
+      "url": "https://novapharmhealthcare.com/leadership/girish-achliya/",
+      "title": "Dr Girish Shantilal Achliya | NovaPharm Healthcare leadership",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public leadership profile",
+      "capabilityBoundary": "Public professional and governance information only; private CV, contact and personal information are excluded.",
+      "sourceHash": "f596652fa1eebcff76045322c4f0a724d0259282aa7a6364b8cc9250ac494575",
+      "blockCount": 15
+    },
+    {
+      "id": "leader-helly-panchal",
+      "file": "leadership/helly-panchal/index.html",
+      "url": "https://novapharmhealthcare.com/leadership/helly-panchal/",
+      "title": "Dr Helly Panchal | NovaPharm Healthcare leadership",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public leadership profile",
+      "capabilityBoundary": "Public professional and governance information only; private CV, contact and personal information are excluded.",
+      "sourceHash": "07c2748c92b4215de536d18c8e909393aa145a59a2b8c1003dcb06965f48c343",
+      "blockCount": 14
+    },
+    {
+      "id": "leader-nishita-trivedi",
+      "file": "leadership/nishita-trivedi/index.html",
+      "url": "https://novapharmhealthcare.com/leadership/nishita-trivedi/",
+      "title": "Dr Nishita Trivedi | NovaPharm Healthcare leadership",
+      "date": "2026-07-22",
+      "evidenceStatus": "approved public leadership profile",
+      "capabilityBoundary": "Public professional and governance information only; private CV, contact and personal information are excluded.",
+      "sourceHash": "f79948e722a5903901fb517d79bb28e3e55f0d0fdff470653415c13a63febf68",
+      "blockCount": 15
+    },
+    {
+      "id": "article-batch-to-buyer-pharmaceutical-traceability",
+      "file": "news-insights/batch-to-buyer-pharmaceutical-traceability/index.html",
+      "url": "https://novapharmhealthcare.com/news-insights/batch-to-buyer-pharmaceutical-traceability/",
+      "title": "From Batch to Buyer: Designing More Traceable Pharmaceutical Supply Chains",
+      "date": "2026-07-11",
+      "evidenceStatus": "approved published NovaPharm Insight",
+      "capabilityBoundary": "Educational corporate content only. This article describes design principles and NovaPharm's traceability roadmap. It does not claim a deployed blockchain system or replace applicable legal, GDP, safety-feature or recall requirements.",
+      "sourceHash": "dc5c8fed4b1eafd5de51ebcdf0fed222e06a129cd87c146873af1abe32e0420a",
+      "blockCount": 39
+    },
+    {
+      "id": "article-compliance-first-pharmaceutical-distribution-uk",
+      "file": "news-insights/compliance-first-pharmaceutical-distribution-uk/index.html",
+      "url": "https://novapharmhealthcare.com/news-insights/compliance-first-pharmaceutical-distribution-uk/",
+      "title": "Building a Compliance-First Pharmaceutical Distribution Model in the UK",
+      "date": "2026-07-11",
+      "evidenceStatus": "approved published NovaPharm Insight",
+      "capabilityBoundary": "Educational corporate content only. This article is not legal, regulatory, clinical or licensing advice. Organisations should obtain advice appropriate to their products, activities and authorisations.",
+      "sourceHash": "12660df35b9e5e884cc19eed05671f897d7d6f8714c375c8dfc4040e120948b9",
+      "blockCount": 35
+    },
+    {
+      "id": "article-gdp-qms-pharmaceutical-distribution-foundations",
+      "file": "news-insights/gdp-qms-pharmaceutical-distribution-foundations/index.html",
+      "url": "https://novapharmhealthcare.com/news-insights/gdp-qms-pharmaceutical-distribution-foundations/",
+      "title": "GDP, QMS and the Practical Foundations of Reliable Pharmaceutical Distribution",
+      "date": "2026-07-11",
+      "evidenceStatus": "approved published NovaPharm Insight",
+      "capabilityBoundary": "Educational corporate content only. GDP and quality-system requirements depend on an organisation's authorised activities, products, sites and outsourcing model. Use current official guidance and qualified advice.",
+      "sourceHash": "2fd48cfe99c890b7798ef7e4c7960937f78c68c4e885bc2e1a64750c0b7ad3d6",
+      "blockCount": 42
+    },
+    {
+      "id": "article-oncology-supply-chain-demand-forecasting",
+      "file": "news-insights/oncology-supply-chain-demand-forecasting/index.html",
+      "url": "https://novapharmhealthcare.com/news-insights/oncology-supply-chain-demand-forecasting/",
+      "title": "Why Oncology Supply Chains Require Specialised Demand Forecasting",
+      "date": "2026-07-11",
+      "evidenceStatus": "approved published NovaPharm Insight",
+      "capabilityBoundary": "Educational corporate content only. This article does not provide clinical advice and does not describe a deployed NovaPharm forecasting service. Any future model will require validated data, governance and expert oversight.",
+      "sourceHash": "7648f3a59a715b3f2ab36c475ea810bc8b2efc990e4da8846ba2a09259613b65",
+      "blockCount": 36
+    },
+    {
+      "id": "article-plpi-pharmaceutical-supply-resilience",
+      "file": "news-insights/plpi-pharmaceutical-supply-resilience/index.html",
+      "url": "https://novapharmhealthcare.com/news-insights/plpi-pharmaceutical-supply-resilience/",
+      "title": "What PLPI Means for Pharmaceutical Supply Resilience and Cost-Optimised Access",
+      "date": "2026-07-11",
+      "evidenceStatus": "approved published NovaPharm Insight",
+      "capabilityBoundary": "Educational corporate content only. PLPI eligibility, evidence, fees and obligations are product-specific and may change. Refer to current MHRA guidance and obtain qualified advice before acting.",
+      "sourceHash": "9608016524882ce4f4fffacfd940d9ee4e130dd849c333b81977c6738f599e2a",
+      "blockCount": 37
+    },
+    {
+      "id": "article-three-pillar-pharmaceutical-sourcing-model",
+      "file": "news-insights/three-pillar-pharmaceutical-sourcing-model/index.html",
+      "url": "https://novapharmhealthcare.com/news-insights/three-pillar-pharmaceutical-sourcing-model/",
+      "title": "Three-Pillar Sourcing: Direct GMP Partnerships, PLPI and European Buying Networks",
+      "date": "2026-07-11",
+      "evidenceStatus": "approved published NovaPharm Insight",
+      "capabilityBoundary": "Educational corporate content only. The three-pillar model describes NovaPharm's strategy and development roadmap. It does not confirm a supplier, product licence, inventory position or medicine availability.",
+      "sourceHash": "5bf7bdeeaf8f965f1a296dd12d74ad1fd7d66fe0e3dc2b1de61531bf3e5178a9",
+      "blockCount": 43
+    }
+  ],
+  "assets": {
+    "knowledgeIndex": {
+      "path": "/assets/ai/company-knowledge-index.json",
+      "bytes": 925548,
+      "sha256": "54a3fb924b821744da24db60614bcfe8a0f5b7b76b106dfd0d7a2adc5a75641f"
+    },
+    "semanticModel": {
+      "path": "/assets/ai/novapharm-evidence-vector-v1.json",
+      "bytes": 3259,
+      "sha256": "38aa5a233307d0a5975d8423080e51cf25edaae1ec0f38853590e72118c59e54"
+    },
+    "embeddings": {
+      "path": "/assets/ai/company-embeddings.json",
+      "bytes": 219704,
+      "sha256": "df76a68df84f03dde81fc08a971f3a053273fdd06ba461e24b48ff457a495de2"
+    }
+  }
+}

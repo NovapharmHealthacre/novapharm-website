@@ -1,0 +1,161 @@
+{
+  "id": "novapharm-evidence-vector-v1",
+  "name": "NovaPharm Evidence Vector",
+  "revision": "1.0.0",
+  "task": "deterministic sparse lexical-semantic embedding for public evidence retrieval",
+  "licence": "NovaPharm repository implementation; no third-party model weights",
+  "commercialUse": "Permitted for NovaPharm-owned public and internal applications",
+  "source": "Repository-controlled rules and approved public vocabulary",
+  "language": [
+    "en-GB"
+  ],
+  "dimensions": 384,
+  "quantisation": "Sparse integer term-frequency vectors; no neural weights",
+  "remoteModelLoading": false,
+  "generation": false,
+  "limitations": [
+    "Retrieval only; it does not reason about clinical care or generate medical content.",
+    "Semantic coverage is limited to the registered vocabulary and approved public corpus.",
+    "A high similarity score does not establish regulatory approval, product availability or factual truth outside the cited source."
+  ],
+  "semanticGroups": {
+    "authorisation": [
+      "authorisation",
+      "authorization",
+      "licence",
+      "license",
+      "permission",
+      "approval",
+      "approved",
+      "mhra"
+    ],
+    "wholesale": [
+      "wholesale",
+      "wholesaler",
+      "distribution",
+      "distributor",
+      "wda",
+      "wda(h)"
+    ],
+    "quality": [
+      "quality",
+      "qms",
+      "gdp",
+      "gmp",
+      "capa",
+      "deviation",
+      "audit",
+      "vendor"
+    ],
+    "oncology": [
+      "oncology",
+      "cancer",
+      "specialist",
+      "specialty",
+      "tumour",
+      "tumor"
+    ],
+    "clinical": [
+      "clinical",
+      "trial",
+      "cro",
+      "sponsor",
+      "protocol",
+      "iras",
+      "research"
+    ],
+    "continuity": [
+      "continuity",
+      "resilience",
+      "shortage",
+      "availability",
+      "supply",
+      "source",
+      "sourcing"
+    ],
+    "formulation": [
+      "formulation",
+      "liquid",
+      "tablet",
+      "capsule",
+      "sterile",
+      "injectable",
+      "technology",
+      "transfer"
+    ],
+    "temperature": [
+      "temperature",
+      "cold",
+      "storage",
+      "transport",
+      "lane",
+      "excursion",
+      "monitoring"
+    ],
+    "evidence": [
+      "evidence",
+      "document",
+      "record",
+      "citation",
+      "source",
+      "traceability",
+      "batch"
+    ],
+    "partnership": [
+      "partner",
+      "partnership",
+      "manufacturer",
+      "supplier",
+      "cmo",
+      "cdmo",
+      "dossier"
+    ],
+    "technology": [
+      "technology",
+      "digital",
+      "platform",
+      "api",
+      "sharepoint",
+      "portal",
+      "integration"
+    ],
+    "ai": [
+      "ai",
+      "artificial",
+      "intelligence",
+      "semantic",
+      "search",
+      "forecast",
+      "model",
+      "algorithm"
+    ],
+    "leadership": [
+      "leadership",
+      "director",
+      "chief",
+      "executive",
+      "ceo",
+      "founder",
+      "governance"
+    ],
+    "market": [
+      "market",
+      "access",
+      "commercial",
+      "launch",
+      "uk",
+      "united",
+      "kingdom",
+      "nice"
+    ],
+    "plpi": [
+      "plpi",
+      "parallel",
+      "import",
+      "product",
+      "licence",
+      "license"
+    ]
+  },
+  "generatedAt": "2026-07-22T00:00:00.000Z"
+}

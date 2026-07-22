@@ -198,6 +198,7 @@ export const conversionJourneys = Object.freeze([
   { id: "cmo-cdmo", landing: "/services/", cta: "Discuss CMO/CDMO collaboration", enquiryType: "CMO/CDMO partnership" },
   { id: "regulatory-quality", landing: "/regulatory-services/", cta: "Speak with our regulatory team", enquiryType: "Regulatory services" },
   { id: "clinical-development", landing: "/cro/", cta: "Discuss a clinical development programme", enquiryType: "Clinical development & CRO support" },
+  { id: "oncology-continuity", landing: "/oncology/", cta: "Discuss an oncology continuity pathway", enquiryType: "Oncology & specialist medicines" },
   { id: "technology-partnership", landing: "/technology/", cta: "Explore a technology partnership", enquiryType: "General enquiry" },
   { id: "business-account", landing: "/account-application/", cta: "Open a business account", enquiryType: "Pharmacy or wholesaler account" },
   { id: "media", landing: "/contact/", cta: "Contact the company", enquiryType: "Media" }

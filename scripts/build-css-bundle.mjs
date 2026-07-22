@@ -16,7 +16,9 @@ const sources = [
   ["module-media-sanity.css", null],
   ["module-art-direction.generated.css", null],
   ["nutraxin-catalogue.css", null],
-  ["cro.css", null]
+  ["cro.css", null],
+  ["oncology.css", null],
+  ["ai-search.css", null]
 ];
 
 const sections = sources.map(([filename, layer]) => {

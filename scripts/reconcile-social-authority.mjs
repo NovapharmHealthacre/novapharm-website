@@ -53,6 +53,20 @@ routeImages.set("/cro/", {
   height: 900,
   alt: "Clinical-development team reviewing programme evidence, responsibilities and milestones"
 });
+routeImages.set("/oncology/", {
+  url: "/assets/media/products/oncology-vial-handling.jpg",
+  type: "image/jpeg",
+  width: 1600,
+  height: 900,
+  alt: "Controlled oncology vial handling in a laboratory setting"
+});
+routeImages.set("/technology/ai-governance/", {
+  url: "/assets/media/modules/insights-evidence-editorial.jpg",
+  type: "image/jpeg",
+  width: 1600,
+  height: 900,
+  alt: "Researcher reviewing approved evidence for responsible pharmaceutical technology"
+});
 
 for (const article of articles) {
   routeImages.set(`/news-insights/${article.slug}/`, {
