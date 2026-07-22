@@ -35,6 +35,14 @@ body[data-page="cro"] .cro-leadership-proof {
   margin-top: 1px;
 }
 
+.formulation-panels > [role="tabpanel"] {
+  padding: 48px 52px;
+}
+
+.formulation-panels > [role="tabpanel"][hidden] {
+  display: none;
+}
+
 .oncology-editorial-gallery {
   background: #f1f4f2;
 }
@@ -106,6 +114,10 @@ body[data-page="cro"] .cro-leadership-proof {
 
   body[data-page="cro"] .cro-leadership-proof > .section-kicker {
     grid-column: auto;
+  }
+
+  .formulation-panels > [role="tabpanel"] {
+    padding: 30px 24px;
   }
 }
 
