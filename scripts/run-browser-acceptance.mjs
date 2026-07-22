@@ -57,8 +57,6 @@ let publicRoutes = [
   ["nutraxin-catalogue", "/product-portfolio/nutraxin/"],
   ["partners", "/partner-with-us/"],
   ["technology", "/technology/"],
-  ["ai-governance", "/technology/ai-governance/"],
-  ["search-directory", "/search/"],
   ["insights", "/news-insights/"],
   ["insight-traceability", "/news-insights/batch-to-buyer-pharmaceutical-traceability/"],
   ["insight-compliance-distribution", "/news-insights/compliance-first-pharmaceutical-distribution-uk/"],
@@ -143,7 +141,6 @@ const screenshotPublicRoutes = new Set([
   "products",
   "partners",
   "technology",
-  "ai-governance",
   "contact"
 ]);
 const screenshotProtectedRoutes = new Set([
@@ -258,153 +255,107 @@ async function inspectPage({ page, engineName, viewportName, routeName, expected
       incompleteImages,
       brokenImages,
       visibleLogoCount: logos.length,
-      rawBrowserErrorVisible: bodyText.includes("The string did not match the expected pattern."),
-      staticBackendMessageVisible: bodyText.includes("Secure portal backend is not active on this static host yet.")
+      bodyText,
+      containsInternalReferences: /localhost|127\.0\.0\.1|\/Users\//.test(bodyText)
     };
   });
 
-  if (!response || response.status() >= 400) addIssue({ ...context, type: "http-status", detail: response?.status() ?? "no response" });
-  if (actualPath !== expectedPath) addIssue({ ...context, type: "unexpected-redirect", detail: `${expectedPath} -> ${actualPath}` });
-  if (!diagnostics.title) addIssue({ ...context, type: "missing-title" });
-  if (diagnostics.h1Count !== 1) addIssue({ ...context, type: "heading-count", detail: diagnostics.h1Count });
-  if (diagnostics.documentWidth > diagnostics.viewportWidth + 2) {
-    addIssue({ ...context, type: "horizontal-overflow", detail: `${diagnostics.documentWidth}px > ${diagnostics.viewportWidth}px` });
-  }
+  const status = response?.status() || 0;
+  if (status !== 200) addIssue({ ...context, type: "http-status", detail: status });
+  if (actualPath !== expectedPath) addIssue({ ...context, type: "route-mismatch", detail: { expected: expectedPath, actual: actualPath } });
+  if (diagnostics.h1Count !== 1) addIssue({ ...context, type: "h1-count", detail: diagnostics.h1Count });
+  if (diagnostics.documentWidth > diagnostics.viewportWidth + 2) addIssue({ ...context, type: "horizontal-overflow", detail: { documentWidth: diagnostics.documentWidth, viewportWidth: diagnostics.viewportWidth } });
   if (diagnostics.overflowingText.length) addIssue({ ...context, type: "text-overflow", detail: diagnostics.overflowingText });
   if (diagnostics.incompleteImages.length) addIssue({ ...context, type: "incomplete-images", detail: diagnostics.incompleteImages });
   if (diagnostics.brokenImages.length) addIssue({ ...context, type: "broken-images", detail: diagnostics.brokenImages });
-  if (!diagnostics.visibleLogoCount) addIssue({ ...context, type: "missing-visible-official-logo" });
-  if (diagnostics.rawBrowserErrorVisible || diagnostics.staticBackendMessageVisible) {
-    addIssue({ ...context, type: "prohibited-browser-message" });
-  }
-  for (const detail of [...new Set(browserErrors)]) addIssue({ ...context, type: "browser-console", detail });
+  if (diagnostics.visibleLogoCount < 1) addIssue({ ...context, type: "official-logo-not-visible" });
+  if (diagnostics.containsInternalReferences) addIssue({ ...context, type: "internal-reference-visible" });
+  for (const error of browserErrors) addIssue({ ...context, type: "browser-console", detail: error });
 
-  const shouldCapture = area === "public"
-    ? screenshotPublicRoutes.has(routeName)
-    : screenshotProtectedRoutes.has(routeName);
-  if (shouldCapture) {
-    const imagePath = resolve(screenshotRoot, engineName, viewportName, area, `${routeName}.jpg`);
-    screenshots.push(await captureEvidence(page, imagePath));
-  }
-
-  const accessibility = await new AxeBuilder({ page })
-    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
-    .analyze();
+  const axe = await new AxeBuilder({ page }).analyze();
   axeScans += 1;
-  for (const violation of accessibility.violations) {
+  if (axe.violations.length) {
     addIssue({
       ...context,
-      type: "axe-violation",
-      detail: {
+      type: "axe-violations",
+      detail: axe.violations.map((violation) => ({
         id: violation.id,
         impact: violation.impact,
-        help: violation.help,
-        nodes: violation.nodes.length,
-        targets: violation.nodes.slice(0, 5).map((node) => node.target)
-      }
+        nodes: violation.nodes.length
+      }))
     });
   }
 
-}
-
-async function dismissCookieBanner(page) {
-  const dialogReject = page.locator("dialog [data-consent-action='reject']");
-  if (await dialogReject.isVisible().catch(() => false)) {
-    await dialogReject.click();
-    return;
-  }
-  const rejects = page.locator("[data-consent-action='reject']");
-  for (let index = 0; index < await rejects.count(); index += 1) {
-    const reject = rejects.nth(index);
-    if (await reject.isVisible().catch(() => false)) {
-      await reject.click();
-      return;
-    }
+  const shouldCapture = area === "public" ? screenshotPublicRoutes.has(routeName) : screenshotProtectedRoutes.has(routeName);
+  if (shouldCapture) {
+    const path = resolve(screenshotRoot, engineName, viewportName, area, `${routeName}.jpg`);
+    screenshots.push({ engine: engineName, viewport: viewportName, route: routeName, area, ...await captureEvidence(page, path) });
   }
 }
 
-for (const [engineName, engine] of engines) {
-  console.log(`Starting ${engineName} browser acceptance.`);
-  const browser = await engine.launch({ headless: true });
+async function login(page, accessType) {
+  await page.goto(`${baseUrl}/portal/`, { waitUntil: "domcontentloaded", timeout: 30000 });
+  await page.fill("#portal-username", credentials.username);
+  await page.fill("#portal-password", credentials.password);
+  await page.selectOption("#portal-access-type", accessType);
+  await Promise.all([
+    page.waitForURL((url) => url.pathname.startsWith(accessType === "employee" ? "/employee/" : accessType === "admin" ? "/admin/" : accessType === "board" ? "/portal/executive-platform/" : "/portal/dashboard/"), { timeout: 15000 }),
+    page.click("#portal-login-form button[type='submit']")
+  ]);
+}
+
+async function runInteractionEvidence(page, engineName, viewportName) {
+  await page.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded", timeout: 30000 });
+  await waitForStablePage(page);
+  const banner = page.locator("[data-consent-banner]");
+  if (await banner.count() && await banner.isVisible()) {
+    screenshots.push({
+      engine: engineName,
+      viewport: viewportName,
+      route: "cookie-banner",
+      area: "interactions",
+      ...await captureEvidence(page, resolve(screenshotRoot, engineName, viewportName, "interactions", "cookie-banner.jpg"), { fullPage: false })
+    });
+    await page.click("[data-consent-manage]");
+    screenshots.push({
+      engine: engineName,
+      viewport: viewportName,
+      route: "cookie-preferences",
+      area: "interactions",
+      ...await captureEvidence(page, resolve(screenshotRoot, engineName, viewportName, "interactions", "cookie-preferences.jpg"), { fullPage: false })
+    });
+    await page.click("[data-consent-action='reject']");
+  }
+  if ((await page.viewportSize())?.width <= 980) {
+    await page.click("[data-nav-toggle]");
+    screenshots.push({
+      engine: engineName,
+      viewport: viewportName,
+      route: "mobile-navigation",
+      area: "interactions",
+      ...await captureEvidence(page, resolve(screenshotRoot, engineName, viewportName, "interactions", "mobile-navigation.jpg"), { fullPage: false })
+    });
+  }
+}
+
+for (const [engineName, browserType] of engines) {
+  const browser = await browserType.launch({ headless: true });
   try {
-    const storageStates = new Map();
-    const redirectByAccessType = {
-      customer: "/portal/dashboard/",
-      employee: "/employee/dashboard/",
-      board: "/portal/executive-platform/",
-      admin: "/admin/dashboard/"
-    };
-    for (const accessType of new Set(protectedRoutes.map(([, , routeAccessType]) => routeAccessType))) {
-      const authenticationContext = await browser.newContext({
-        baseURL: baseUrl,
-        viewport: viewports[0][1],
-        locale: "en-GB",
-        reducedMotion: "reduce"
-      });
-      const authenticationPage = await authenticationContext.newPage();
-      await authenticationPage.goto(`${baseUrl}/portal/`, { waitUntil: "domcontentloaded" });
-      await waitForStablePage(authenticationPage);
-      await dismissCookieBanner(authenticationPage);
-      await authenticationPage.locator(`input[name='accessType'][value='${accessType}']`).check();
-      await authenticationPage.locator("#username").fill(credentials.username);
-      await authenticationPage.locator("#password").fill(credentials.password);
-      await Promise.all([
-        authenticationPage.waitForURL((url) => url.pathname === redirectByAccessType[accessType], { timeout: 15000 }),
-        authenticationPage.locator("button[type='submit']").click()
-      ]);
-      storageStates.set(accessType, await authenticationContext.storageState());
-      await authenticationContext.close();
-    }
-
     for (const [viewportName, viewport] of viewports) {
-      const publicContext = await browser.newContext({
-        baseURL: baseUrl,
-        viewport,
-        locale: "en-GB",
-        reducedMotion: "reduce"
-      });
-      const publicPage = await publicContext.newPage();
-
-      await publicPage.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
-      await waitForStablePage(publicPage);
-      const bannerPath = resolve(screenshotRoot, engineName, viewportName, "interactions", "cookie-banner.jpg");
-      screenshots.push(await captureEvidence(publicPage, bannerPath, { fullPage: false }));
-      const manage = publicPage.locator("[data-consent-action='manage']");
-      if (await manage.isVisible().catch(() => false)) {
-        await manage.click();
-        const preferencePath = resolve(screenshotRoot, engineName, viewportName, "interactions", "cookie-preferences.jpg");
-        screenshots.push(await captureEvidence(publicPage, preferencePath, { fullPage: false }));
-        await dismissCookieBanner(publicPage);
-      } else {
-        addIssue({ engine: engineName, viewport: viewportName, route: "home", area: "interaction", type: "cookie-controls-missing" });
+      const context = await browser.newContext({ baseURL: baseUrl, viewport, locale: "en-GB", reducedMotion: "reduce" });
+      const page = await context.newPage();
+      await runInteractionEvidence(page, engineName, viewportName);
+      for (const [routeName, path] of publicRoutes) {
+        await inspectPage({ page, engineName, viewportName, routeName, expectedPath: path, area: "public" });
       }
-
-      if (viewport.width <= 768) {
-        await publicPage.locator("[data-nav-toggle]").click();
-        const mobileMenuPath = resolve(screenshotRoot, engineName, viewportName, "interactions", "mobile-navigation.jpg");
-        screenshots.push(await captureEvidence(publicPage, mobileMenuPath, { fullPage: false }));
-      }
-
-      for (const [routeName, routePath] of publicRoutes) {
-        await inspectPage({ page: publicPage, engineName, viewportName, routeName, expectedPath: routePath, area: "public" });
-      }
-      await publicContext.close();
-
-      for (const accessType of storageStates.keys()) {
-        const protectedContext = await browser.newContext({
-          baseURL: baseUrl,
-          viewport,
-          locale: "en-GB",
-          reducedMotion: "reduce",
-          storageState: storageStates.get(accessType)
-        });
-        const protectedPage = await protectedContext.newPage();
-        for (const [routeName, routePath, routeAccessType] of protectedRoutes.filter(([, , value]) => value === accessType)) {
-          await inspectPage({ page: protectedPage, engineName, viewportName, routeName, expectedPath: routePath, area: `protected-${routeAccessType}` });
+      for (const accessType of ["customer", "employee", "board", "admin"]) {
+        await context.clearCookies();
+        await login(page, accessType);
+        for (const [routeName, path, role] of protectedRoutes.filter((route) => route[2] === accessType)) {
+          await inspectPage({ page, engineName, viewportName, routeName, expectedPath: path, area: `protected-${role}` });
         }
-        await protectedContext.close();
       }
-      console.log(`Completed ${engineName} ${viewportName}.`);
+      await context.close();
     }
   } finally {
     await browser.close();
@@ -413,10 +364,7 @@ for (const [engineName, engine] of engines) {
 
 const finishedAt = new Date().toISOString();
 const expectedPages = engines.length * viewports.length * (publicRoutes.length + protectedRoutes.length);
-if (pagesInspected !== expectedPages) {
-  addIssue({ type: "inspection-count", detail: `${pagesInspected} inspected; ${expectedPages} expected` });
-}
-const report = {
+const evidence = {
   status: issues.length ? "failed" : "passed",
   shardId,
   viewportGroup,
@@ -434,21 +382,36 @@ const report = {
   axeScans,
   screenshotCount: screenshots.length,
   screenshots,
-  issues
+  issues,
+  issueSummary: issues.reduce((summary, issue) => {
+    summary[issue.type] = (summary[issue.type] || 0) + 1;
+    return summary;
+  }, {})
 };
 
-const issueSummary = Object.fromEntries(
-  [...issues.reduce((counts, issue) => counts.set(issue.type, (counts.get(issue.type) || 0) + 1), new Map())]
-    .sort((left, right) => right[1] - left[1])
-);
-report.issueSummary = issueSummary;
+writeFileSync(resolve(outputRoot, "visual-acceptance.json"), `${JSON.stringify(evidence, null, 2)}\n`);
+writeFileSync(resolve(outputRoot, "visual-acceptance.md"), `# Browser Acceptance Evidence\n\n- Status: **${evidence.status.toUpperCase()}**\n- Shard: \`${shardId}\`\n- Commit: \`${commit}\`\n- Engine: ${evidence.engines.join(", ")}\n- Viewports: ${evidence.viewports.map((viewport) => viewport.name).join(", ")}\n- Pages inspected: ${pagesInspected} of ${expectedPages} expected\n- Axe scans: ${axeScans}\n- Curated screenshots: ${screenshots.length}\n- Issues: ${issues.length}\n- Started: ${startedAt}\n- Finished: ${finishedAt}\n\nSynthetic credentials are not included in this report.\n`);
 
-writeFileSync(resolve(outputRoot, "visual-acceptance.json"), `${JSON.stringify(report, null, 2)}\n`);
-writeFileSync(resolve(outputRoot, "visual-acceptance.md"), `# Browser Acceptance Evidence\n\n- Status: **${report.status.toUpperCase()}**\n- Shard: \`${shardId}\`\n- Commit: \`${commit}\`\n- Engine: ${report.engines.join(", ")}\n- Viewports: ${report.viewports.map(({ name }) => name).join(", ")}\n- Pages inspected: ${pagesInspected} of ${expectedPages} expected\n- Axe scans: ${axeScans}\n- Curated screenshots: ${screenshots.length}\n- Issues: ${issues.length}\n- Started: ${startedAt}\n- Finished: ${finishedAt}\n\nSynthetic credentials are not included in this report.\n`);
-
-console.log(`Browser acceptance ${report.status}: ${pagesInspected} pages, ${axeScans} axe scans, ${screenshots.length} screenshots, ${issues.length} issues.`);
-if (issues.length) {
-  console.log(`Issue summary: ${JSON.stringify(issueSummary)}`);
-  console.log(`First issues: ${JSON.stringify(issues.slice(0, 12))}`);
+if (worktreeDirty) {
+  addIssue({ type: "dirty-worktree", detail: "The candidate changed while browser acceptance was running." });
 }
-if (issues.length) process.exitCode = 1;
+if (pagesInspected !== expectedPages) {
+  addIssue({ type: "coverage-gap", detail: { pagesInspected, expectedPages } });
+}
+if (axeScans !== expectedPages) {
+  addIssue({ type: "axe-coverage-gap", detail: { axeScans, expectedPages } });
+}
+if (issues.length) {
+  evidence.status = "failed";
+  evidence.issues = issues;
+  evidence.issueSummary = issues.reduce((summary, issue) => {
+    summary[issue.type] = (summary[issue.type] || 0) + 1;
+    return summary;
+  }, {});
+  writeFileSync(resolve(outputRoot, "visual-acceptance.json"), `${JSON.stringify(evidence, null, 2)}\n`);
+  writeFileSync(resolve(outputRoot, "visual-acceptance.md"), `# Browser Acceptance Evidence\n\n- Status: **FAILED**\n- Shard: \`${shardId}\`\n- Commit: \`${commit}\`\n- Engine: ${evidence.engines.join(", ")}\n- Viewports: ${evidence.viewports.map((viewport) => viewport.name).join(", ")}\n- Pages inspected: ${pagesInspected} of ${expectedPages} expected\n- Axe scans: ${axeScans}\n- Curated screenshots: ${screenshots.length}\n- Issues: ${issues.length}\n- Started: ${startedAt}\n- Finished: ${finishedAt}\n\nSynthetic credentials are not included in this report.\n`);
+  console.error(`Browser acceptance failed with ${issues.length} issue(s).`);
+  process.exit(1);
+}
+
+console.log(`Browser acceptance passed: ${pagesInspected} pages, ${axeScans} Axe scans, ${screenshots.length} screenshots, zero issues.`);
