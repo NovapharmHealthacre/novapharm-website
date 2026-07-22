@@ -1,4 +1,4 @@
-name: Build, publish and verify GitHub Pages
+name: Build, deploy and verify GitHub Pages
 
 on:
   push:
@@ -6,27 +6,26 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
+  id-token: write
   statuses: write
 
 concurrency:
   group: novapharm-github-pages-live
   cancel-in-progress: false
 
+env:
+  LIVE_ORIGIN: https://novapharmhealthcare.com
+  STATUS_CONTEXT: pages-live-publish
+
 jobs:
-  build-publish-verify:
+  build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    env:
-      GH_TOKEN: ${{ github.token }}
-      LIVE_ORIGIN: https://novapharmhealthcare.com
-      STATUS_CONTEXT: pages-live-publish
+    timeout-minutes: 25
     steps:
       - name: Check out approved source
         uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
 
       - name: Use Node.js 24
         uses: actions/setup-node@v6
@@ -35,6 +34,8 @@ jobs:
           cache: npm
 
       - name: Mark publication pending
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
             -f state=pending \
@@ -48,74 +49,96 @@ jobs:
       - name: Build corrected public output
         run: npm run build
 
-      - name: Validate owner corrections
-        run: npm run test:owner-corrections
-
-      - name: Validate domain and public routes
+      - name: Validate owner corrections and public routes
         run: |
+          npm run test:owner-corrections
           npm run validate:domain
           npm run check:links
           test "$(tr -d '\r\n' < CNAME)" = "novapharmhealthcare.com"
 
-      - name: Synchronise generated public output to main
-        id: sync
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "No generated-output changes require synchronisation."
-          else
-            git commit -m "Synchronise owner-approved public release [skip ci]"
-            git push origin HEAD:main
-          fi
-          echo "publish_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Stage a public-only Pages artifact
+        run: node scripts/stage-pages-artifact.mjs _site
 
-      - name: Inspect GitHub Pages configuration and DNS health
-        run: |
-          set -euo pipefail
-          gh api "repos/$GITHUB_REPOSITORY/pages" > /tmp/pages-site.json
-          jq '{html_url, cname, status, source, build_type, https_enforced, protected_domain_state, https_certificate}' /tmp/pages-site.json
-          jq -e '.cname == "novapharmhealthcare.com"' /tmp/pages-site.json >/dev/null
-          gh api "repos/$GITHUB_REPOSITORY/pages/health" > /tmp/pages-dns-health.json
-          jq . /tmp/pages-dns-health.json
-
-      - name: Request a fresh branch-based Pages build
-        run: |
-          gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds" > /tmp/pages-build-request.json
-          cat /tmp/pages-build-request.json
-
-      - name: Wait for Pages to build the synchronised commit
+      - name: Configure Pages with an administration token when available
+        if: ${{ secrets.PAGES_ADMIN_TOKEN != '' }}
         env:
-          PUBLISH_SHA: ${{ steps.sync.outputs.publish_sha }}
+          GH_TOKEN: ${{ secrets.PAGES_ADMIN_TOKEN }}
         run: |
           set -euo pipefail
-          for attempt in $(seq 1 72); do
-            gh api "repos/$GITHUB_REPOSITORY/pages/builds/latest" > /tmp/pages-build-latest.json
-            status=$(jq -r '.status // "unknown"' /tmp/pages-build-latest.json)
-            commit=$(jq -r '.commit // ""' /tmp/pages-build-latest.json)
-            echo "Pages build attempt $attempt: status=$status commit=$commit expected=$PUBLISH_SHA"
-            if [ "$status" = "built" ] && [ "$commit" = "$PUBLISH_SHA" ]; then
+          if gh api "repos/$GITHUB_REPOSITORY/pages" >/dev/null 2>&1; then
+            gh api --method PUT "repos/$GITHUB_REPOSITORY/pages" --input - <<'JSON'
+          {
+            "build_type": "workflow",
+            "cname": "novapharmhealthcare.com",
+            "https_enforced": true
+          }
+          JSON
+          else
+            gh api --method POST "repos/$GITHUB_REPOSITORY/pages" --input - <<'JSON'
+          {
+            "build_type": "workflow"
+          }
+          JSON
+            gh api --method PUT "repos/$GITHUB_REPOSITORY/pages" --input - <<'JSON'
+          {
+            "build_type": "workflow",
+            "cname": "novapharmhealthcare.com",
+            "https_enforced": true
+          }
+          JSON
+          fi
+
+      - name: Configure GitHub Pages metadata
+        uses: actions/configure-pages@v5
+        with:
+          token: ${{ secrets.PAGES_ADMIN_TOKEN || github.token }}
+          enablement: ${{ secrets.PAGES_ADMIN_TOKEN != '' }}
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+          retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy the public artifact
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Verify the deployed Pages URL
+        env:
+          DEPLOYED_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          cache_key="release-${GITHUB_SHA}-$(date +%s)"
+          for attempt in $(seq 1 36); do
+            curl --fail --silent --show-error --location \
+              -H 'Cache-Control: no-cache, no-store, max-age=0' \
+              "${DEPLOYED_URL}?${cache_key}-${attempt}" > /tmp/deployed-home.html || true
+            if grep -Fq 'Building a more resilient pharmaceutical supply network.' /tmp/deployed-home.html \
+              && ! grep -Fq 'data-ai-search-open' /tmp/deployed-home.html \
+              && ! grep -Fq 'Search &amp; Ask NovaPharm' /tmp/deployed-home.html; then
+              echo "GitHub Pages artifact is deployed at ${DEPLOYED_URL}."
               exit 0
-            fi
-            if [ "$status" = "errored" ]; then
-              jq . /tmp/pages-build-latest.json
-              exit 1
             fi
             sleep 10
           done
-          echo "Pages did not build the synchronised commit within 12 minutes." >&2
+          echo "The Pages deployment URL did not serve the corrected release within six minutes." >&2
           exit 1
 
-      - name: Verify corrected release on the public domain
-        env:
-          PUBLISH_SHA: ${{ steps.sync.outputs.publish_sha }}
+      - name: Verify the corrected release on the custom domain
         run: |
           set -euo pipefail
-          cache_key="release-${PUBLISH_SHA}-$(date +%s)"
+          cache_key="release-${GITHUB_SHA}-$(date +%s)"
           for attempt in $(seq 1 72); do
-            echo "Live verification attempt $attempt"
+            echo "Custom-domain verification attempt $attempt"
             curl --fail --silent --show-error --location \
               -H 'Cache-Control: no-cache, no-store, max-age=0' \
               -H 'Pragma: no-cache' \
@@ -141,11 +164,13 @@ jobs:
             fi
             sleep 10
           done
-          echo "The public domain did not serve the complete corrected release within 12 minutes." >&2
+          echo "The custom domain did not serve the complete corrected release within 12 minutes." >&2
           exit 1
 
       - name: Mark publication successful
         if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
             -f state=success \
@@ -155,9 +180,11 @@ jobs:
 
       - name: Mark publication failed
         if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
             -f state=failure \
             -f context="$STATUS_CONTEXT" \
-            -f description="Public build, Pages publication or live verification failed" \
+            -f description="Pages artifact deployment or custom-domain verification failed" \
             -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >/dev/null
