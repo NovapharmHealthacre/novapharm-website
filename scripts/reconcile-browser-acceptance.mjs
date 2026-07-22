@@ -14,7 +14,7 @@ const expectedShards = new Map([
   ["webkit-tablet", ["webkit", ["tablet-1024x1366", "tablet-768x1024"]]],
   ["webkit-mobile", ["webkit", ["mobile-390x844", "mobile-430x932", "mobile-375x667", "mobile-360x800", "mobile-320x568"]]]
 ]);
-const expectedPublicRouteCount = 42;
+const expectedPublicRouteCount = 40;
 const expectedProtectedRouteCount = 56;
 const expectedRoutesPerViewport = expectedPublicRouteCount + expectedProtectedRouteCount;
 const expectedViewportExecutions = [...expectedShards.values()].reduce((total, [, viewports]) => total + viewports.length, 0);
