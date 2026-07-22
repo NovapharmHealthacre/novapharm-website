@@ -75,7 +75,9 @@ assert.match(text("assets/js/cro.js"), /IntersectionObserver/);
 
 const oncology = text("oncology/index.html");
 for (const marker of ["oncology-hero", "Oncology Supply Continuity Architecture", "Formulation and Complexity Navigator", "Oncology Product-Readiness Matrix", "Development-to-Access Continuity"]) assert.match(oncology, new RegExp(marker, "i"));
-assert.equal((oncology.match(/style="--axis:\d"/g) || []).length, 6, "oncology continuity architecture must expose six evidence axes");
+assert.equal((oncology.match(/data-axis="\d"/g) || []).length, 6, "oncology continuity architecture must expose six evidence axes without CSP-blocked inline styles");
+assert.match(oncology, /class="development-continuity" tabindex="0"/, "scrollable oncology continuity must be keyboard focusable");
+assert.doesNotMatch(oncology, /style="--axis:/, "oncology continuity must not require inline styles");
 assert.equal((oncology.match(/data-formulation-panel=/g) || []).length, 4, "formulation navigator must preserve four no-JavaScript panels");
 assert.match(text("assets/css/oncology.css"), /@media \(prefers-reduced-motion: reduce\)/);
 assert.match(text("assets/js/oncology.js"), /data-formulation-panel/);
