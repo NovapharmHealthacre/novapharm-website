@@ -77,9 +77,10 @@ An Ollama loopback adapter exists only for approved local development. It is dis
 | Prompt injection | Twelve focused attacks passed with zero source-bypass, system-override or exfiltration successes. |
 | Performance unit gate | Initial model/index transfer is zero; the deterministic Node gate enforces p95 below 50 ms and prints the observed timing in every run. |
 | Current-tree secret scan | Repository scanner passed during `npm run check`; exact-head CI repeats the scan. |
-| Dependency audit | Local `npm audit --omit=dev --audit-level=high` could not reach the npm registry because DNS was unavailable. It is not reported as passed; CI must supply the exact-head result. |
-| Chromium and WebKit | Exact 12-viewport, JavaScript on/off, reduced-motion, AI-state and Axe workflow is configured. Native browser launch is restricted in this workspace, so rendered evidence remains pending exact-head CI. |
-| Lighthouse | No new exact-head oncology/AI median is claimed until the GitHub browser workflow completes. |
+| Dependency audit | Exact-head Production readiness run 152 completed `npm audit --omit=dev --audit-level=high` with zero vulnerabilities. |
+| Chromium and WebKit | Exact-head browser run 90 passed the dedicated Oncology/AI gate: 150 rendered cases, 74 Axe scans, 41 evidence images and zero issues across 12 viewports per engine. |
+| Whole-site browser matrix | All six Chromium/WebKit desktop, tablet and mobile shards passed. The aggregate gate exposed a stale 39-route expectation after the inventory expanded to 42; the candidate now derives 2,352 page and Axe inspections from the route matrix and must repeat this gate on the final head. |
+| Lighthouse | No Oncology-specific Lighthouse score is claimed. Performance is bounded by zero initial model/index transfer, the 993-byte entry script and exact rendered browser checks. |
 
 ## Pull Requests And Release State
 
@@ -89,10 +90,11 @@ An Ollama loopback adapter exists only for approved local development. It is dis
 | Company Oncology and trusted AI | `feature/cro-services` at `9b4edef895bcfddcd415a0fce43ee5c4e2ca47b3` | `feature/oncology-ai-platform` | [PR 12](https://github.com/NovapharmHealthacre/novapharm-website/pull/12), open and draft |
 | Personal semantic AI | Personal-site `main` | `feature/semantic-ai-experience` | Separate repository and separate draft PR; not represented by this company candidate |
 
-The two implementation commits published before this handoff update are:
+Principal implementation and release-gate commits published before this handoff update include:
 
 1. `312304a5005e70cd05225bb95350a54a81379899` — Add evidence-led oncology and trusted AI experience.
 2. `b43ac8bfb054dbdeba93dad10aafc8ac0632810a` — Add oncology AI evidence and exact-head release gates.
+3. `0d3b7c035ea8a0e584fdde649807581740cc7cfe` — Make the browser-storage denial gate deterministic.
 
 The documentation update containing this live PR reference is the current PR head and is identified by PR 12 metadata. Exact-head workflow conclusions, browser totals, Axe totals and Lighthouse medians are appended only after GitHub has generated that evidence. No check is described as passed before it runs against the final head.
 
