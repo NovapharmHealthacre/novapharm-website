@@ -417,7 +417,14 @@ async function inspectAiStates(browser, engineName) {
   const storageRecord = { engine: engineName, viewport: "mobile-390x844", route: "ai-storage-denied" };
   try {
     await storagePage.route("**/assets/ai/runtime/semantic-worker.mjs", async (route) => {
-      await route.fulfill({ status: 200, contentType: "text/javascript", body: `try { delete self.indexedDB; } catch {}\n${workerSource}` });
+      const storageDeniedWorker = workerSource
+        .replace(
+          'if (!("indexedDB" in self)) return reject(new Error("storage_unavailable"));',
+          'return reject(new Error("storage_unavailable"));'
+        )
+        .replace('if (!("indexedDB" in self)) return;', 'return;');
+      if (storageDeniedWorker === workerSource) throw new Error("Storage-denial simulation did not patch the worker.");
+      await route.fulfill({ status: 200, contentType: "text/javascript", body: storageDeniedWorker });
     });
     await storagePage.goto("/", { waitUntil: "domcontentloaded" });
     await dismissConsent(storagePage);
