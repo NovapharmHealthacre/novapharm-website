@@ -66,15 +66,15 @@ The final page contains 1,478 visible words. That is 25.9% fewer than the previo
 | --- | --- |
 | Lockfile install | `npm ci --ignore-scripts` completed; 266 packages audited, 0 vulnerabilities. |
 | Node 24 readiness | `npm run check` passed on Node 24.14.0. |
-| Public build and validation | 35 public pages, 6 Insights articles, 5 leadership entities and 2,300 local links passed. |
+| Public build and validation | 35 public pages, 6 Insights articles, 5 leadership entities and 2,306 local links passed. |
 | CRO contracts and claims | Passed structural, evidence-boundary, schema, contact-routing and public-claims tests. |
 | Application integration | Contact, account, all portal roles, password change, sessions, customer isolation, Entra mapping, uploads and backup/restore passed synthetic tests. |
 | Focused CRO browser acceptance | 170 Chromium/WebKit rendered cases and 168 Axe scans across 12 viewports plus no-JavaScript states; 0 issues. |
-| Complete route-matrix acceptance | Six isolated Chromium/WebKit shards inspect 39 public and 56 protected routes at every assigned viewport. The aggregate gate requires 2,280 page inspections, 2,280 Axe scans, exact final-head identity, clean checkouts and successful synthetic-runtime cleanup. |
+| Complete route-matrix acceptance | A local rehearsal of the six isolated Chromium/WebKit shards completed 2,280 page inspections, 2,280 Axe scans and 348 curated screenshots with 0 issues. The GitHub aggregate gate independently requires the same coverage, exact final-head identity, clean checkouts and successful synthetic-runtime cleanup. |
 | Lighthouse | Three mobile and three desktop runs scored 100/100/100/100; median mobile LCP 1.504 s and desktop LCP 0.404 s. |
 | Dependency audit | `npm audit --omit=dev --audit-level=high` found 0 vulnerabilities. |
-| Current-tree secret scan | Repository scanner passed 863 files; repository-only Gitleaks scanned 864 tracked and intended untracked files (59.67 MB) with 0 findings. Ignored dependencies, Git objects and external caches were excluded. |
-| Reachable-history secret scan | Gitleaks scanned all 55 reachable commits (13.15 MB) with 0 findings. |
+| Current-tree secret scan | Repository scanner passed 862 repository files; repository-only Gitleaks scanned the exact committed tree (59.67 MB) with 0 findings. Ignored dependencies, Git objects and external caches were excluded. |
+| Reachable-history secret scan | Gitleaks scanned the complete reachable history through the candidate revision with 0 findings; the exact remote head is scanned again by the pull-request workflow. |
 | Clean-checkout reproduction | Fresh detached worktree, Node 24 lockfile install and full `npm run check` passed; regeneration produced no diff and the CSS bundle hash remained identical. |
 
 These are repository and local-runtime results. Exact final-head GitHub workflow results are added to Pull Request 11 after the candidate commit is pushed.
