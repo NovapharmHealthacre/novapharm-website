@@ -8,6 +8,7 @@ Updated: 22 July 2026
 - Search control removed from desktop and mobile navigation.
 - Prabhakar Vitthal Lahare added to the CRO Senior judgement section alongside Vishal Chakravarty and Dr Girish Shantilal Achliya.
 - Three original Oncology-specific editorial visuals added for formulation pathways, evidence continuity and condition control.
+- CRO list semantics and Oncology tab-panel markup corrected for Chromium, WebKit and Axe accessibility validation.
 - Contact, account-application, secure-portal and Microsoft identity entry points retained and covered by repository activation tests.
 - Public Pages publication and live Node-backend activation reported through separate release statuses.
 - Generated public output synchronized with the source build before final exact-head validation.
