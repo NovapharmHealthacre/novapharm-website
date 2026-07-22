@@ -3,6 +3,7 @@
 - Candidate date: 22 July 2026
 - Company candidate: `feature/oncology-ai-platform`, stacked on `feature/cro-services`
 - Existing CRO review: [Pull Request 11](https://github.com/NovapharmHealthacre/novapharm-website/pull/11)
+- Oncology and trusted AI review: [Pull Request 12](https://github.com/NovapharmHealthacre/novapharm-website/pull/12)
 - Release state: draft candidate; not merged or deployed
 - Production state: unchanged
 
@@ -85,10 +86,15 @@ An Ollama loopback adapter exists only for approved local development. It is dis
 | Workstream | Base | Head | Status |
 | --- | --- | --- | --- |
 | Existing CRO refinement | `main` at `b43dade65e85dfc37e8d30c7989668260f255199` | `feature/cro-services` at `9b4edef895bcfddcd415a0fce43ee5c4e2ca47b3` | [PR 11](https://github.com/NovapharmHealthacre/novapharm-website/pull/11), open, draft and mergeable |
-| Company Oncology and trusted AI | `feature/cro-services` | `feature/oncology-ai-platform` | Draft PR is opened after the candidate commits are published |
+| Company Oncology and trusted AI | `feature/cro-services` at `9b4edef895bcfddcd415a0fce43ee5c4e2ca47b3` | `feature/oncology-ai-platform` | [PR 12](https://github.com/NovapharmHealthacre/novapharm-website/pull/12), open and draft |
 | Personal semantic AI | Personal-site `main` | `feature/semantic-ai-experience` | Separate repository and separate draft PR; not represented by this company candidate |
 
-The final company PR URL, head SHA, complete commit list, exact-head workflow conclusions, browser totals, Axe totals and Lighthouse medians are appended only after GitHub has generated that evidence. No check is described as passed before it runs against the final head.
+The two implementation commits published before this handoff update are:
+
+1. `312304a5005e70cd05225bb95350a54a81379899` — Add evidence-led oncology and trusted AI experience.
+2. `b43ac8bfb054dbdeba93dad10aafc8ac0632810a` — Add oncology AI evidence and exact-head release gates.
+
+The documentation update containing this live PR reference is the current PR head and is identified by PR 12 metadata. Exact-head workflow conclusions, browser totals, Axe totals and Lighthouse medians are appended only after GitHub has generated that evidence. No check is described as passed before it runs against the final head.
 
 ## Owner Review Path
 
