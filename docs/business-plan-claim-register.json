@@ -1,0 +1,163 @@
+{
+  "schemaVersion": "1.0.0",
+  "reviewedAt": "2026-07-22",
+  "source": {
+    "name": "Owner-supplied March 2026 NovaPharm business plan",
+    "pageCount": 59,
+    "sha256": "6ab32585f9028a770a78c8963d1bece6ae22a3ee56e5ea651d8e99c20a30da88",
+    "publiclyAvailable": false
+  },
+  "evidenceClasses": {
+    "A": "independently verifiable public fact",
+    "B": "board strategy or intention",
+    "C": "requires third-party evidence or written approval",
+    "D": "confidential or commercially sensitive",
+    "E": "prohibited or misleading for the current public release"
+  },
+  "claims": [
+    {
+      "id": "BP-001",
+      "topic": "legal entity",
+      "pages": [3, 5],
+      "class": "A",
+      "publicStatus": "approved_with_external_source",
+      "publicExpression": "NovaPharm Healthcare Ltd is registered in England and Wales under company number 16716501.",
+      "requiredEvidence": ["current Companies House company record"]
+    },
+    {
+      "id": "BP-002",
+      "topic": "regulatory status",
+      "pages": [4, 5, 31, 51],
+      "class": "E",
+      "publicStatus": "boundary_only",
+      "publicExpression": "Regulated wholesale supply will commence only after the required authorisations are granted.",
+      "prohibitedExpressions": ["MHRA approved", "MHRA-authorised wholesaler", "WDA(H) holder"]
+    },
+    {
+      "id": "BP-003",
+      "topic": "oncology strategic focus",
+      "pages": [3, 5, 32, 33, 34, 35, 36, 37, 38],
+      "class": "B",
+      "publicStatus": "approved_as_strategy",
+      "publicExpression": "Oncology and specialist medicines are strategic areas for governed opportunity assessment.",
+      "prohibitedExpressions": ["oncology products available", "leading oncology distributor", "guaranteed oncology supply"]
+    },
+    {
+      "id": "BP-004",
+      "topic": "three-pillar sourcing",
+      "pages": [3, 7, 8, 9, 10],
+      "class": "B",
+      "publicStatus": "approved_as_planned_model",
+      "publicExpression": "The planned model evaluates qualified manufacturing partners, product-specific PLPI pathways and selected European supply routes."
+    },
+    {
+      "id": "BP-005",
+      "topic": "PLPI portfolio",
+      "pages": [4, 8, 9, 46, 47],
+      "class": "E",
+      "publicStatus": "excluded",
+      "requiredEvidence": ["product-specific MHRA licence", "approved product copy", "availability evidence"]
+    },
+    {
+      "id": "BP-006",
+      "topic": "NHS and hospital supply",
+      "pages": [3, 4, 5, 54],
+      "class": "E",
+      "publicStatus": "excluded",
+      "requiredEvidence": ["executed agreement", "permission to disclose", "claims approval"]
+    },
+    {
+      "id": "BP-007",
+      "topic": "Polar Speed or Marken relationship",
+      "pages": [3, 4, 5, 6, 18, 19, 20, 21],
+      "class": "C",
+      "publicStatus": "planned_only",
+      "requiredEvidence": ["executed agreement", "written naming permission", "verified service scope"]
+    },
+    {
+      "id": "BP-008",
+      "topic": "AI demand forecasting",
+      "pages": [3, 4, 12, 13, 14, 15, 16, 17, 49],
+      "class": "E",
+      "publicStatus": "roadmap_only",
+      "prohibitedExpressions": ["AI-powered forecasting", "40% stockout reduction", "proven algorithm"]
+    },
+    {
+      "id": "BP-009",
+      "topic": "blockchain traceability",
+      "pages": [3, 4, 12, 13, 14, 15, 16, 17, 40, 41, 42],
+      "class": "E",
+      "publicStatus": "roadmap_only",
+      "prohibitedExpressions": ["operational blockchain", "immutable proof", "blockchain prevents counterfeits"]
+    },
+    {
+      "id": "BP-010",
+      "topic": "financial forecasts",
+      "pages": [3, 4, 28, 29, 47, 58, 59],
+      "class": "D",
+      "publicStatus": "excluded"
+    },
+    {
+      "id": "BP-011",
+      "topic": "performance percentages and savings",
+      "pages": [3, 4, 7, 8, 9, 11, 12, 37, 38, 47],
+      "class": "E",
+      "publicStatus": "excluded",
+      "prohibitedExpressions": ["25-35% savings", "40% reduction", "98% delivery", "99% accuracy"]
+    },
+    {
+      "id": "BP-012",
+      "topic": "patents and intellectual property",
+      "pages": [49, 50],
+      "class": "E",
+      "publicStatus": "excluded",
+      "requiredEvidence": ["published patent-office record", "legal approval"]
+    },
+    {
+      "id": "BP-013",
+      "topic": "owned infrastructure",
+      "pages": [5, 6, 18, 19, 20, 21],
+      "class": "E",
+      "publicStatus": "explicitly_disclaimed",
+      "prohibitedExpressions": ["our warehouse", "our laboratory", "our manufacturing site", "our trial sites"]
+    },
+    {
+      "id": "BP-014",
+      "topic": "leadership governance",
+      "pages": [56, 57],
+      "class": "C",
+      "publicStatus": "verify_per_person",
+      "requiredEvidence": ["Companies House appointment", "board-approved executive title"]
+    },
+    {
+      "id": "BP-015",
+      "topic": "immigration and visa material",
+      "pages": [2, 25, 26, 27, 56],
+      "class": "D",
+      "publicStatus": "excluded"
+    },
+    {
+      "id": "BP-016",
+      "topic": "clinical-development continuity",
+      "pages": [32, 33, 34, 35, 36, 37, 38, 51, 52],
+      "class": "B",
+      "publicStatus": "approved_with_scope_boundary",
+      "publicExpression": "NovaPharm can describe evidence and responsibility architecture without claiming sponsor, site, laboratory, depot or full-service CRO status."
+    },
+    {
+      "id": "BP-017",
+      "topic": "CMO and CDMO partner model",
+      "pages": [7, 32, 33, 34, 35, 36, 37, 38],
+      "class": "B",
+      "publicStatus": "approved_as_partner_type",
+      "requiredEvidence": ["written permission before any partner is named"]
+    },
+    {
+      "id": "BP-018",
+      "topic": "product and supplier details",
+      "pages": [7, 8, 9, 10, 43, 44, 45, 46, 47],
+      "class": "D",
+      "publicStatus": "excluded_from_public_ai"
+    }
+  ]
+}

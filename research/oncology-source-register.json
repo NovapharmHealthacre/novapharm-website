@@ -1,0 +1,143 @@
+{
+  "schemaVersion": "1.0.0",
+  "reviewedAt": "2026-07-22",
+  "sources": [
+    {
+      "id": "SRC-MHRA-TRIALS-2026",
+      "publisher": "Medicines and Healthcare products Regulatory Agency",
+      "title": "Clinical trials for medicines: apply for approval in the UK",
+      "url": "https://www.gov.uk/guidance/clinical-trials-for-medicines-apply-for-approval-in-the-uk",
+      "type": "official_guidance",
+      "lastUpdated": "2026-04-28",
+      "supports": ["joint clinical trial approval", "sponsor accountability", "application and evidence boundaries"]
+    },
+    {
+      "id": "SRC-HRA-COMBINED-REVIEW",
+      "publisher": "Health Research Authority",
+      "title": "Combined Review",
+      "url": "https://www.hra.nhs.uk/planning-and-improving-research/policies-standards-legislation/clinical-trials-investigational-medicinal-products-ctimps/combined-review/",
+      "type": "official_guidance",
+      "supports": ["coordinated MHRA and ethics review", "UK pathway planning"]
+    },
+    {
+      "id": "SRC-NICE-TA",
+      "publisher": "National Institute for Health and Care Excellence",
+      "title": "About technology appraisal guidance",
+      "url": "https://www.nice.org.uk/what-nice-does/our-guidance/about-technology-appraisal-guidance",
+      "type": "official_guidance",
+      "supports": ["market-access context", "separation between authorisation and reimbursement guidance"]
+    },
+    {
+      "id": "SRC-NHS-NDRS",
+      "publisher": "NHS England Digital",
+      "title": "National Disease Registration Service",
+      "url": "https://digital.nhs.uk/services/national-disease-registration-service",
+      "type": "official_service",
+      "supports": ["existence of controlled cancer and rare-disease registration data", "future forecasting lawful-access caveat"]
+    },
+    {
+      "id": "SRC-CRUK-STATS",
+      "publisher": "Cancer Research UK",
+      "title": "Cancer statistics for the UK",
+      "url": "https://www.cancerresearchuk.org/health-professional/cancer-statistics",
+      "type": "authoritative_reference",
+      "supports": ["oncology context", "source-led insight planning"]
+    },
+    {
+      "id": "SRC-MHRA-WHOLESALE",
+      "publisher": "Medicines and Healthcare products Regulatory Agency",
+      "title": "Apply for manufacturer or wholesaler of medicines licences",
+      "url": "https://www.gov.uk/guidance/apply-for-manufacturer-or-wholesaler-of-medicines-licences",
+      "type": "official_guidance",
+      "supports": ["wholesale-authorisation boundary", "no supply before required permissions"]
+    },
+    {
+      "id": "SRC-MHRA-GDP",
+      "publisher": "Medicines and Healthcare products Regulatory Agency",
+      "title": "Medicines: good manufacturing practice and good distribution practice",
+      "url": "https://www.gov.uk/guidance/good-manufacturing-practice-and-good-distribution-practice",
+      "type": "official_guidance",
+      "supports": ["GDP and GMP governance", "outsourced activity oversight", "batch and document integrity"]
+    },
+    {
+      "id": "SRC-AZ-ONCOLOGY",
+      "publisher": "AstraZeneca",
+      "title": "Oncology",
+      "url": "https://www.astrazeneca.com/our-therapy-areas/oncology.html",
+      "type": "category_benchmark",
+      "supports": ["category navigation benchmark", "scientific content architecture", "prescription-medicine information boundary"]
+    },
+    {
+      "id": "SRC-ROCHE-ONCOLOGY",
+      "publisher": "Roche",
+      "title": "Oncology",
+      "url": "https://www.roche.com/solutions/focus-areas/oncology",
+      "type": "category_benchmark",
+      "supports": ["challenge-focus-case architecture", "diagnostics and partnering pathways"]
+    },
+    {
+      "id": "SRC-NOVARTIS-ONCOLOGY",
+      "publisher": "Novartis",
+      "title": "Oncology research at Novartis",
+      "url": "https://www.novartis.com/research-and-development/research-disease-areas/oncology-research-novartis",
+      "type": "category_benchmark",
+      "supports": ["research-area storytelling", "science and programme segmentation"]
+    },
+    {
+      "id": "SRC-MSD-ONCOLOGY",
+      "publisher": "MSD",
+      "title": "Oncology",
+      "url": "https://www.msd.com/research/oncology/",
+      "type": "category_benchmark",
+      "supports": ["oncology research narrative", "responsible public category content"]
+    },
+    {
+      "id": "SRC-WC-CLINICAL-LOGISTICS",
+      "publisher": "World Courier",
+      "title": "Clinical trial logistics and services",
+      "url": "https://www.worldcourier.com/solutions/clinical-trial-logistics",
+      "type": "operations_benchmark",
+      "supports": ["specialist logistics decision architecture", "programme-level custody and visibility"]
+    },
+    {
+      "id": "SRC-WC-TEMPERATURE",
+      "publisher": "World Courier",
+      "title": "Temperature-controlled logistics solutions",
+      "url": "https://www.worldcourier.com/expertise/temperature-control-solutions",
+      "type": "operations_benchmark",
+      "supports": ["temperature-lane planning", "packaging and monitoring considerations"]
+    },
+    {
+      "id": "SRC-PCI-SUPPLY",
+      "publisher": "PCI Pharma Services",
+      "title": "Building robust clinical supply chains to support global trials",
+      "url": "https://pci.com/resources/clinical-supply-chains-support-global-trials/",
+      "type": "operations_benchmark",
+      "supports": ["clinical supply coordination", "risk and continuity planning"]
+    },
+    {
+      "id": "SRC-ICO-AI",
+      "publisher": "Information Commissioner's Office",
+      "title": "Guidance on AI and data protection",
+      "url": "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/artificial-intelligence/guidance-on-ai-and-data-protection/about-this-guidance/",
+      "type": "official_guidance",
+      "supports": ["AI data protection", "risk assessment", "accountability and transparency"]
+    },
+    {
+      "id": "SRC-NIST-AIRMF",
+      "publisher": "National Institute of Standards and Technology",
+      "title": "AI Risk Management Framework",
+      "url": "https://www.nist.gov/itl/ai-risk-management-framework",
+      "type": "official_framework",
+      "supports": ["govern-map-measure-manage lifecycle", "AI risk register structure"]
+    },
+    {
+      "id": "SRC-UK-AI-PLAYBOOK",
+      "publisher": "UK Government",
+      "title": "Artificial Intelligence Playbook for the UK Government",
+      "url": "https://www.gov.uk/government/publications/ai-playbook-for-the-uk-government/artificial-intelligence-playbook-for-the-uk-government-html",
+      "type": "official_guidance",
+      "supports": ["human oversight", "secure and responsible AI delivery", "evaluation and transparency"]
+    }
+  ]
+}

@@ -8,7 +8,7 @@ const root = resolve(process.cwd());
 const read = (path) => readFileSync(join(root, path), "utf8");
 const cro = read("cro/index.html");
 
-assert.deepEqual(navigation.map(([label]) => label), ["About", "Services", "Regulatory", "CRO", "Products", "Partners", "Technology", "Insights", "Contact"]);
+assert.deepEqual(navigation.map(([label]) => label), ["About", "Services", "Regulatory", "CRO", "Oncology", "Products", "Partners", "Technology", "Insights", "Contact"]);
 assert.equal((cro.match(/<h1\b/g) || []).length, 1, "CRO page must contain exactly one H1");
 assert.match(cro, /<link rel="canonical" href="https:\/\/novapharmhealthcare\.com\/cro\/">/);
 assert.match(cro, /<meta name="robots" content="index, follow/);
