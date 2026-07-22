@@ -42,6 +42,21 @@ function removeRetiredSitemapBlocks(xml) {
     .replace(/<sitemap>[\s\S]*?<\/sitemap>/g, (block) => blockIsRetired(block) ? "" : block);
 }
 
+function filterGeneratedRouteRegisters() {
+  const directory = join(root, "seo", "generated");
+  if (!existsSync(directory)) return;
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    if (!entry.isFile() || !entry.name.endsWith(".json")) continue;
+    const target = join(directory, entry.name);
+    let parsed;
+    try { parsed = JSON.parse(readFileSync(target, "utf8")); }
+    catch { continue; }
+    if (!Array.isArray(parsed)) continue;
+    const filtered = parsed.filter((item) => !retiredPublicRoutes.includes(item?.route));
+    if (filtered.length !== parsed.length) writeFileSync(target, `${JSON.stringify(filtered, null, 2)}\n`);
+  }
+}
+
 const prabhakarCard = `<a class="cro-leader" href="/leadership/prabhakar-lahare/"><div class="cro-leader-media"><img src="/assets/prabhakarvitthallahare.jpeg" alt="Prabhakar Vitthal Lahare, Managing Director and Chief Operating Officer of NovaPharm Healthcare" width="1121" height="1280" loading="lazy" decoding="async"></div><div><span>Managing Director &amp; Chief Operating Officer</span><h3>Prabhakar Vitthal Lahare</h3><p>Connects operating strategy, manufacturing partnerships, quality governance and supply continuity to controlled programme execution.</p><strong>View verified profile</strong></div></a>`;
 
 const oncologyGallery = `<section class="section oncology-editorial-gallery" data-reveal><div class="container"><div class="section-head"><span class="section-kicker">Oncology operating contexts</span><h2>Product, formulation and controlled handling must be read together.</h2><p>Original Oncology-specific editorial visuals connect product pathways, accountable evidence handovers and condition-sensitive custody.</p></div><div class="oncology-editorial-grid"><figure><img src="/assets/media/oncology/oncology-formulation-pathways.svg" alt="Abstract oncology formulation pathways connecting vial, liquid and specialist presentations" width="1600" height="900" loading="lazy" decoding="async"><figcaption>Formulation and presentation pathways</figcaption></figure><figure><img src="/assets/media/oncology/oncology-evidence-continuity.svg" alt="Abstract controlled records and decision gates across an oncology programme" width="1600" height="900" loading="lazy" decoding="async"><figcaption>Programme evidence continuity</figcaption></figure><figure><img src="/assets/media/oncology/oncology-condition-control.svg" alt="Abstract specialist packaging, temperature evidence and custody checkpoints" width="1600" height="900" loading="lazy" decoding="async"><figcaption>Condition and custody control</figcaption></figure></div></div></section>`;
@@ -83,6 +98,7 @@ for (const sitemapName of ["sitemap.xml", "sitemap-images.xml", "sitemap-insight
   if (!existsSync(target)) continue;
   writeFileSync(target, removeRetiredSitemapBlocks(readFileSync(target, "utf8")));
 }
+filterGeneratedRouteRegisters();
 
 const robotsPath = join(root, "robots.txt");
 if (existsSync(robotsPath)) {
