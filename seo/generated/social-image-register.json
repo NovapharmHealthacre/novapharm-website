@@ -130,16 +130,6 @@
     "absoluteUrl": "https://novapharmhealthcare.com/assets/media/modules/technology-traceability.jpg"
   },
   {
-    "route": "/technology/ai-governance/",
-    "page": "https://novapharmhealthcare.com/technology/ai-governance/",
-    "url": "/assets/media/modules/insights-evidence-editorial.jpg",
-    "type": "image/jpeg",
-    "width": 1600,
-    "height": 900,
-    "alt": "Researcher reviewing approved evidence for responsible pharmaceutical technology",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/modules/insights-evidence-editorial.jpg"
-  },
-  {
     "route": "/news-insights/",
     "page": "https://novapharmhealthcare.com/news-insights/",
     "url": "/assets/media/modules/insights-evidence-editorial.jpg",
