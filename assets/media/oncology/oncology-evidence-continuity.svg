@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Oncology evidence continuity</title>
+  <desc id="desc">Abstract editorial composition showing controlled records, decision gates and accountable evidence handovers across an oncology programme.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#091725"/>
+      <stop offset="1" stop-color="#17364f"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".96"/>
+      <stop offset="1" stop-color="#dbe5e8" stop-opacity=".9"/>
+    </linearGradient>
+    <filter id="shadow" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="24" stdDeviation="30" flood-color="#000" flood-opacity=".28"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="1240" cy="200" r="360" fill="#b81220" opacity=".14"/>
+  <circle cx="190" cy="810" r="430" fill="#5c7f91" opacity=".14"/>
+  <g stroke="#fff" stroke-opacity=".12" fill="none">
+    <circle cx="800" cy="450" r="310"/>
+    <circle cx="800" cy="450" r="220"/>
+    <circle cx="800" cy="450" r="130"/>
+  </g>
+  <path d="M155 690C300 690 330 214 515 214s220 476 405 476 218-476 403-476h122" fill="none" stroke="#ef4554" stroke-width="9" stroke-linecap="round"/>
+  <path d="M155 690C300 690 330 214 515 214s220 476 405 476 218-476 403-476h122" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="2" stroke-dasharray="10 18"/>
+  <g filter="url(#shadow)">
+    <g transform="translate(120 520) rotate(-5 150 100)">
+      <rect width="300" height="215" rx="22" fill="url(#card)"/>
+      <rect x="28" y="28" width="82" height="16" rx="8" fill="#b81220"/>
+      <rect x="28" y="72" width="228" height="12" rx="6" fill="#17364f" opacity=".8"/>
+      <rect x="28" y="102" width="180" height="10" rx="5" fill="#17364f" opacity=".38"/>
+      <rect x="28" y="132" width="214" height="10" rx="5" fill="#17364f" opacity=".38"/>
+      <circle cx="254" cy="170" r="22" fill="#b81220"/>
+      <path d="m244 170 7 7 14-18" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <g transform="translate(470 92)">
+      <rect width="330" height="235" rx="22" fill="url(#card)"/>
+      <rect x="30" y="30" width="104" height="18" rx="9" fill="#17364f"/>
+      <rect x="30" y="82" width="260" height="14" rx="7" fill="#b81220" opacity=".82"/>
+      <rect x="30" y="118" width="220" height="11" rx="5.5" fill="#17364f" opacity=".36"/>
+      <rect x="30" y="148" width="248" height="11" rx="5.5" fill="#17364f" opacity=".36"/>
+      <rect x="30" y="178" width="152" height="11" rx="5.5" fill="#17364f" opacity=".36"/>
+    </g>
+    <g transform="translate(770 520) rotate(4 165 110)">
+      <rect width="330" height="235" rx="22" fill="url(#card)"/>
+      <rect x="30" y="28" width="92" height="18" rx="9" fill="#b81220"/>
+      <g fill="#17364f">
+        <circle cx="52" cy="92" r="13"/>
+        <circle cx="52" cy="134" r="13"/>
+        <circle cx="52" cy="176" r="13"/>
+      </g>
+      <g fill="#17364f" opacity=".42">
+        <rect x="82" y="86" width="202" height="12" rx="6"/>
+        <rect x="82" y="128" width="176" height="12" rx="6"/>
+        <rect x="82" y="170" width="218" height="12" rx="6"/>
+      </g>
+    </g>
+    <g transform="translate(1190 90) rotate(5 145 105)">
+      <rect width="290" height="210" rx="22" fill="#b81220"/>
+      <rect x="28" y="28" width="120" height="16" rx="8" fill="#fff"/>
+      <rect x="28" y="76" width="230" height="12" rx="6" fill="#fff" opacity=".72"/>
+      <rect x="28" y="108" width="180" height="10" rx="5" fill="#fff" opacity=".42"/>
+      <rect x="28" y="138" width="212" height="10" rx="5" fill="#fff" opacity=".42"/>
+      <path d="M224 167h32M240 151v32" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+    </g>
+  </g>
+  <g fill="#fff" stroke="#ef4554" stroke-width="7">
+    <circle cx="155" cy="690" r="18"/>
+    <circle cx="515" cy="214" r="18"/>
+    <circle cx="920" cy="690" r="18"/>
+    <circle cx="1323" cy="214" r="18"/>
+    <circle cx="1445" cy="214" r="18"/>
+  </g>
+</svg>
