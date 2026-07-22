@@ -512,33 +512,6 @@
     ]
   },
   {
-    "route": "/technology/ai-governance/",
-    "canonical": "https://novapharmhealthcare.com/technology/ai-governance/",
-    "file": "technology/ai-governance/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/technology/ai-governance/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Responsible AI at NovaPharm | Evidence, Privacy and Human Oversight",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": null,
-        "types": [
-          "BreadcrumbList"
-        ],
-        "name": null,
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
     "route": "/news-insights/",
     "canonical": "https://novapharmhealthcare.com/news-insights/",
     "file": "news-insights/index.html",
