@@ -1,52 +1,50 @@
 export const croContent = Object.freeze({
   route: "/cro/",
   title: "Clinical Research & CRO Support",
-  proposition: "Connect clinical-development decisions to the evidence, responsibilities and UK pathway that must carry them forward.",
-  introduction: "NovaPharm helps emerging and international pharmaceutical developers frame programmes, coordinate specialist contributors and maintain a controlled line from development planning to UK regulatory and market-access readiness.",
-  status: "NovaPharm is not presented as a full-service CRO, clinical-trial sponsor, investigator-site network or in-house biometrics provider. Engagement scope is defined case by case, with specialist functions delivered only through appropriately qualified organisations and people.",
+  proposition: "Clinical development, connected to evidence and accountability.",
+  introduction: "NovaPharm coordinates UK-focused development programmes by aligning regulatory pathways, quality governance and qualified specialist delivery, with responsibilities visible from the start.",
+  status: "NovaPharm provides scoped programme coordination. It is not represented as a sponsor or full-service CRO. Specialist functions require appropriately qualified providers; sponsor duties and authority decisions remain with their accountable owners.",
   audiences: Object.freeze([
-    ["Emerging biotechnology and pharmaceutical developers", "Programmes that need a clear UK route, proportionate governance and senior coordination before functions are commissioned."],
-    ["Specialty-pharma and product owners", "Assets requiring connected scientific, regulatory, quality, supply and eventual market-access decisions."],
-    ["International development organisations", "Teams planning a UK programme that need local pathway context and a transparent responsibility model."],
-    ["Sponsors using multiple specialist vendors", "Programmes where documents, dependencies, decisions and escalation routes must remain coherent across providers."]
+    ["Emerging biotechnology and pharmaceutical developers", "Programmes that need a clear UK route before specialist work is commissioned."],
+    ["Specialty-pharma and product owners", "Assets with connected scientific, quality, supply and market decisions."],
+    ["International development organisations", "Teams seeking UK pathway context and an explicit responsibility model."],
+    ["Sponsors using specialist providers", "Programmes that need coherent evidence, decisions and escalation across vendors."]
   ]),
   challenges: Object.freeze([
     "Fragmented specialist vendors",
-    "Unclear responsibilities and escalation routes",
+    "Unclear responsibilities and escalation",
     "Regulatory and operational disconnects",
-    "Inconsistent programme evidence",
-    "Weak document and decision governance",
-    "Clinical-supply and market-entry dependencies addressed too late"
+    "Supply dependencies addressed too late"
   ]),
   deliveryLanes: Object.freeze([
     {
       key: "novapharm",
       label: "NovaPharm-led",
-      summary: "Programme architecture, UK pathway integration and governed coordination within an agreed scope.",
-      items: ["Needs and evidence assessment", "Responsibility and dependency mapping", "UK regulatory-pathway coordination", "Document and decision architecture", "Specialist-vendor coordination", "Clinical-supply planning", "Development-to-market continuity"]
+      summary: "Programme architecture and governed coordination within an agreed scope.",
+      items: ["Evidence assessment", "Responsibility mapping", "UK pathway coordination", "Development continuity"]
     },
     {
       key: "specialist",
       label: "Qualified specialist delivery",
-      summary: "Functions requiring specific infrastructure, professional accountability or proven operational capacity.",
-      items: ["Site feasibility and clinical operations", "Monitoring and site management", "Biostatistics and data management", "Medical monitoring", "Specialist medical writing", "Central laboratories and imaging", "Qualified pharmacovigilance activities"]
+      summary: "Functions requiring proven infrastructure or professional accountability.",
+      items: ["Clinical operations", "Data and biometrics", "Medical and safety oversight", "Laboratories and specialist writing"]
     },
     {
       key: "sponsor",
       label: "Sponsor-retained",
-      summary: "Responsibilities that remain with the sponsor even when activities are delegated.",
-      items: ["Sponsor designation and legal duties", "Provider selection and oversight", "Final protocol and risk decisions", "Safety and medical accountability", "Regulatory and ethics approvals", "Funding and programme authorisation", "Inspection and compliance accountability"]
+      summary: "Duties that remain with the sponsor when activities are delegated.",
+      items: ["Sponsor designation and duties", "Provider oversight", "Protocol and risk decisions", "Safety and compliance accountability"]
     }
   ]),
   lifecycle: Object.freeze([
-    { number: "01", title: "Development strategy", text: "Clarify the asset, indication, evidence gap, target market and decisions the programme must enable.", mode: "NovaPharm-led framing" },
-    { number: "02", title: "Feasibility and planning", text: "Map assumptions, countries, specialist functions, supply dependencies, timelines and decision gates.", mode: "Coordinated specialist input" },
-    { number: "03", title: "Regulatory and ethics preparation", text: "Coordinate the UK submission pathway and evidence package with appropriately qualified regulatory specialists.", mode: "NovaPharm-led coordination" },
-    { number: "04", title: "Study start-up", text: "Define provider interfaces, controlled records, escalation routes and start-up readiness before activation.", mode: "Specialist delivery" },
-    { number: "05", title: "Study conduct and oversight", text: "Maintain milestone, issue, action and vendor visibility while operational functions remain with appointed providers.", mode: "Sponsor oversight supported" },
-    { number: "06", title: "Data, safety and documentation", text: "Connect specialist data and safety work to controlled, attributable and inspection-ready records.", mode: "Qualified specialist delivery" },
-    { number: "07", title: "Close-out and reporting", text: "Reconcile decisions, essential records, outstanding actions and reporting dependencies at programme close.", mode: "Coordinated close-out" },
-    { number: "08", title: "Regulatory and market continuity", text: "Carry verified evidence, product responsibilities and supply considerations into the next regulatory or commercial decision.", mode: "NovaPharm-led continuity" }
+    { number: "01", title: "Development strategy", text: "Define the asset question, evidence gap and decision the programme must enable.", mode: "NovaPharm-led framing" },
+    { number: "02", title: "Feasibility and planning", text: "Map specialist functions, supply dependencies, assumptions and decision gates.", mode: "Coordinated input" },
+    { number: "03", title: "Regulatory and ethics preparation", text: "Coordinate the UK pathway and evidence package with qualified specialists.", mode: "NovaPharm-led coordination" },
+    { number: "04", title: "Study start-up", text: "Set provider interfaces, records, escalation and readiness before activation.", mode: "Specialist delivery" },
+    { number: "05", title: "Study conduct and oversight", text: "Keep milestones, issues and provider decisions visible to the sponsor.", mode: "Sponsor oversight supported" },
+    { number: "06", title: "Data, safety and documentation", text: "Connect specialist work to controlled, attributable records.", mode: "Qualified specialist delivery" },
+    { number: "07", title: "Close-out and reporting", text: "Reconcile decisions, essential records and unresolved actions.", mode: "Coordinated close-out" },
+    { number: "08", title: "Regulatory and market continuity", text: "Carry verified evidence into the next regulatory or market decision.", mode: "NovaPharm-led continuity" }
   ]),
   services: Object.freeze([
     {
@@ -155,29 +153,22 @@ export const croContent = Object.freeze({
     },
     {
       question: "Does delivery require owned global sites, laboratories or a recruitment network?",
-      signal: "Full-service CRO route",
-      title: "NovaPharm may not be the appropriate model",
+      signal: "Conventional CRO fit",
+      title: "A conventional full-service CRO may be the better fit",
       output: "A conventional global full-service CRO should be assessed where the programme depends on owned international infrastructure, established site or patient networks, or integrated operational capacity outside NovaPharm's evidenced scope."
     }
   ]),
   operatingSteps: Object.freeze([
     ["01", "Initial discussion", "Define the programme question, stage and intended decision without requesting patient-identifiable information."],
-    ["02", "Needs and evidence assessment", "Review available non-confidential evidence, assumptions, constraints and gaps."],
+    ["02", "Evidence and need assessment", "Review non-confidential evidence, assumptions, dependencies and gaps."],
     ["03", "Responsibility mapping", "Separate sponsor, NovaPharm and specialist-provider duties before scope is agreed."],
-    ["04", "Delivery-plan development", "Set work packages, evidence outputs, milestones, interfaces and governance cadence."],
-    ["05", "Specialist qualification", "Assess required provider capability and due-diligence evidence for each delegated function."],
-    ["06", "Governed execution", "Track decisions, issues, actions, records and provider dependencies against the agreed plan."],
-    ["07", "Review and escalation", "Surface exceptions early and preserve accountable sponsor decisions."],
-    ["08", "Close-out and continuity", "Reconcile records and carry verified outputs into the next development or market decision."]
+    ["04", "Proposed engagement route", "Set the suitable work packages, evidence outputs and governance route without guaranteeing acceptance or timing."]
   ]),
   qualityPrinciples: Object.freeze([
     ["Defined responsibility", "Every material activity has an accountable owner and visible interface."],
-    ["Documented delegation", "Delegation is explicit; sponsor oversight and applicable duties remain."],
     ["Quality by design", "Critical-to-quality factors are considered before avoidable complexity is embedded."],
     ["Risk-proportionate oversight", "Attention and evidence are directed to material programme and participant risks."],
     ["Controlled records", "Decisions, versions, issues and actions remain attributable and reviewable."],
-    ["Escalation and CAPA awareness", "Exceptions have defined routes, owners, timeframes and follow-through."],
-    ["Data integrity", "Records should remain complete, consistent, accurate and protected throughout their lifecycle."],
     ["Patient-safety boundary", "Medical and safety decisions remain with appropriately qualified and authorised people."]
   ]),
   focusAreas: Object.freeze([
@@ -190,17 +181,13 @@ export const croContent = Object.freeze({
     ["Programme record", "A structured view of scope, responsibilities, milestones and verified status."],
     ["Controlled documents", "Document relationships, versions, review states and access boundaries."],
     ["Decision and issue trail", "Attributable decisions, actions, exceptions and escalation history."],
-    ["Sponsor-ready reporting", "Focused reporting designed around material programme questions rather than decorative dashboards."],
-    ["Integration-ready architecture", "Defined interfaces for approved providers and systems, subject to engagement-specific validation."],
-    ["Role-based access", "Access architecture is implemented in NovaPharm's platform; sponsor workspaces are not represented as a live public service."]
+    ["Role-based visibility", "Access architecture is implemented in NovaPharm's platform; a live sponsor workspace is not claimed."]
   ]),
   differentiators: Object.freeze([
     ["UK pathway context", "Development planning connected to current MHRA, ethics and regulated-market considerations."],
     ["Senior, focused attention", "A deliberately scoped engagement model rather than an unsupported claim of global scale."],
     ["Transparent responsibilities", "Direct, specialist-partner and sponsor-retained activities remain visible."],
-    ["Evidence discipline", "Claims, decisions and status are separated from future intention."],
-    ["Flexible specialist orchestration", "Functions are qualified around the programme rather than implied as an internal department."],
-    ["Development-to-market continuity", "Scientific, regulatory, quality, supply and eventual market decisions are considered as one evidence chain."]
+    ["Development continuity", "Scientific, regulatory, quality and supply decisions remain connected."]
   ]),
   insightLinks: Object.freeze([
     ["GDP, QMS and the Practical Foundations of Reliable Pharmaceutical Distribution", "/news-insights/gdp-qms-pharmaceutical-distribution-foundations/", "Quality"],
@@ -214,15 +201,11 @@ export const croContent = Object.freeze({
     "Sponsor oversight when using multiple specialist vendors"
   ]),
   faqs: Object.freeze([
-    ["What is a CRO?", "A contract research organisation provides defined services that support research and clinical-development programmes. The sponsor remains responsible for its applicable legal and regulatory duties even when activities are delegated."],
     ["What clinical-development support does NovaPharm provide?", "NovaPharm's current public offer is centred on programme framing, UK pathway coordination, responsibility mapping, document and decision governance, specialist-vendor coordination, clinical-supply planning and development-to-market continuity."],
     ["Is NovaPharm a full-service CRO?", "No. NovaPharm does not present itself as a global full-service CRO, investigator-site network, clinical-trial sponsor or in-house biometrics organisation. Functions outside its evidenced scope require appropriately qualified specialists."],
-    ["Does NovaPharm act as the clinical-trial sponsor?", "Not through this public offer. Sponsor designation, applicable duties, provider oversight and final programme decisions remain with the sponsor named for the study."],
     ["Can NovaPharm coordinate specialist CRO functions?", "Potentially, following programme assessment and capability mapping. Any specialist provider must be appropriately qualified, contracted and governed for the agreed function."],
     ["Does NovaPharm support UK regulatory and ethics preparation?", "NovaPharm can coordinate pathway planning and evidence responsibilities with qualified regulatory contributors. MHRA authorisation and a favourable Research Ethics Committee opinion are decisions of the relevant authorities."],
     ["Can NovaPharm support clinical-supply coordination?", "NovaPharm can help map clinical-supply responsibilities and coordinate qualified parties. It does not claim owned manufacturing, clinical depots or an operational IMP distribution network."],
-    ["Which therapeutic areas does NovaPharm focus on?", "Oncology, specialty medicines, oral-liquid formulations and selected complex products are strategic scientific or portfolio focus areas. They are not presented as completed NovaPharm trial experience."],
-    ["How does NovaPharm manage quality and documentation?", "The proposed model defines responsibilities, controlled records, review states, issue escalation and risk-proportionate oversight around the agreed engagement. Sponsor accountability is not transferred by delegation."],
     ["How do we begin a discussion?", "Use the clinical-development enquiry route to share high-level, non-confidential programme context. Do not submit patient-identifiable data, adverse-event information or urgent medical information through the form."]
   ]),
   officialSources: Object.freeze([

@@ -49,6 +49,7 @@
     "test:cro": "node scripts/test-cro-section.mjs",
     "test:cro:browser": "node scripts/run-cro-browser-acceptance.mjs",
     "evidence:art-direction": "node scripts/capture-art-direction-evidence.mjs",
+    "evidence:cro-owner-review": "node scripts/capture-cro-owner-review.mjs",
     "test:browser-workflows": "node scripts/test-backend-browser-workflows.mjs",
     "test:browser-acceptance": "node scripts/run-browser-acceptance.mjs",
     "browser:validation:start": "node scripts/start-browser-validation.mjs",

@@ -9,6 +9,9 @@ import { adminModules, customerModules, employeeModules } from "../src/core/port
 const baseUrl = new URL(process.env.VISUAL_BASE_URL || "http://127.0.0.1:4178").origin;
 const credentialsPath = resolve(process.env.VISUAL_CREDENTIALS_PATH || "");
 const outputRoot = resolve(process.env.VISUAL_OUTPUT_ROOT || `artifacts/visual-acceptance/${new Date().toISOString().replace(/[:.]/g, "-")}`);
+const screenshotRoot = resolve(outputRoot, "screenshots");
+const shardId = process.env.VISUAL_SHARD_ID || "local-full-matrix";
+const viewportGroup = process.env.VISUAL_VIEWPORT_GROUP || "all";
 
 if (!process.env.VISUAL_CREDENTIALS_PATH) throw new Error("VISUAL_CREDENTIALS_PATH is required.");
 if ((statSync(credentialsPath).mode & 0o077) !== 0) throw new Error("Visual credentials must not be readable by group or other users.");
@@ -128,10 +131,28 @@ protectedRoutes = process.env.VISUAL_INCLUDE_PROTECTED === "false"
   ? []
   : filterNamed(protectedRoutes, "VISUAL_PROTECTED_ROUTES");
 
+const screenshotPublicRoutes = new Set([
+  "home",
+  "cro",
+  "services",
+  "regulatory",
+  "products",
+  "partners",
+  "technology",
+  "contact"
+]);
+const screenshotProtectedRoutes = new Set([
+  "customer-dashboard",
+  "employee-dashboard",
+  "board-executive-platform",
+  "admin-dashboard"
+]);
+
 mkdirSync(outputRoot, { recursive: true });
 
 const startedAt = new Date().toISOString();
 const commit = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+const worktreeDirty = Boolean(execFileSync("git", ["status", "--porcelain"], { encoding: "utf8" }).trim());
 const issues = [];
 const screenshots = [];
 let pagesInspected = 0;
@@ -148,6 +169,24 @@ function screenshotMetadata(path) {
     bytes: bytes.length,
     sha256: createHash("sha256").update(bytes).digest("hex")
   };
+}
+
+async function captureEvidence(page, path, { fullPage = true } = {}) {
+  mkdirSync(dirname(path), { recursive: true });
+  const dimensions = await page.evaluate(() => ({
+    width: document.documentElement.scrollWidth,
+    height: document.documentElement.scrollHeight
+  }));
+  const canCaptureFullPage = fullPage && dimensions.width <= 32_000 && dimensions.height <= 32_000;
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.screenshot({
+    path,
+    type: "jpeg",
+    quality: 82,
+    fullPage: canCaptureFullPage,
+    animations: "disabled"
+  });
+  return { ...screenshotMetadata(path), capture: canCaptureFullPage ? "full-page" : "viewport", document: dimensions };
 }
 
 async function waitForStablePage(page) {
@@ -235,22 +274,12 @@ async function inspectPage({ page, engineName, viewportName, routeName, expected
   }
   for (const detail of [...new Set(browserErrors)]) addIssue({ ...context, type: "browser-console", detail });
 
-  const imagePath = resolve(outputRoot, engineName, viewportName, area, `${routeName}.png`);
-  mkdirSync(dirname(imagePath), { recursive: true });
-  await page.screenshot({ path: imagePath, fullPage: true, animations: "disabled" });
-  screenshots.push(screenshotMetadata(imagePath));
-
-  if (routeName === "products") {
-    const productCards = page.locator(".portfolio-table article");
-    for (let index = 0; index < await productCards.count(); index += 1) {
-      const productCard = productCards.nth(index);
-      await productCard.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(50);
-      const productImagePath = resolve(outputRoot, engineName, viewportName, area, `products-card-${index + 1}.png`);
-      await productCard.screenshot({ path: productImagePath, animations: "disabled" });
-      screenshots.push(screenshotMetadata(productImagePath));
-    }
-    await page.evaluate(() => window.scrollTo(0, 0));
+  const shouldCapture = area === "public"
+    ? screenshotPublicRoutes.has(routeName)
+    : screenshotProtectedRoutes.has(routeName);
+  if (shouldCapture) {
+    const imagePath = resolve(screenshotRoot, engineName, viewportName, area, `${routeName}.jpg`);
+    screenshots.push(await captureEvidence(page, imagePath));
   }
 
   const accessibility = await new AxeBuilder({ page })
@@ -333,16 +362,13 @@ for (const [engineName, engine] of engines) {
 
       await publicPage.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
       await waitForStablePage(publicPage);
-      const bannerPath = resolve(outputRoot, engineName, viewportName, "interactions", "cookie-banner.png");
-      mkdirSync(dirname(bannerPath), { recursive: true });
-      await publicPage.screenshot({ path: bannerPath, fullPage: true, animations: "disabled" });
-      screenshots.push(screenshotMetadata(bannerPath));
+      const bannerPath = resolve(screenshotRoot, engineName, viewportName, "interactions", "cookie-banner.jpg");
+      screenshots.push(await captureEvidence(publicPage, bannerPath, { fullPage: false }));
       const manage = publicPage.locator("[data-consent-action='manage']");
       if (await manage.isVisible().catch(() => false)) {
         await manage.click();
-        const preferencePath = resolve(outputRoot, engineName, viewportName, "interactions", "cookie-preferences.png");
-        await publicPage.screenshot({ path: preferencePath, fullPage: true, animations: "disabled" });
-        screenshots.push(screenshotMetadata(preferencePath));
+        const preferencePath = resolve(screenshotRoot, engineName, viewportName, "interactions", "cookie-preferences.jpg");
+        screenshots.push(await captureEvidence(publicPage, preferencePath, { fullPage: false }));
         await dismissCookieBanner(publicPage);
       } else {
         addIssue({ engine: engineName, viewport: viewportName, route: "home", area: "interaction", type: "cookie-controls-missing" });
@@ -350,9 +376,8 @@ for (const [engineName, engine] of engines) {
 
       if (viewport.width <= 768) {
         await publicPage.locator("[data-nav-toggle]").click();
-        const mobileMenuPath = resolve(outputRoot, engineName, viewportName, "interactions", "mobile-navigation.png");
-        await publicPage.screenshot({ path: mobileMenuPath, fullPage: false, animations: "disabled" });
-        screenshots.push(screenshotMetadata(mobileMenuPath));
+        const mobileMenuPath = resolve(screenshotRoot, engineName, viewportName, "interactions", "mobile-navigation.jpg");
+        screenshots.push(await captureEvidence(publicPage, mobileMenuPath, { fullPage: false }));
       }
 
       for (const [routeName, routePath] of publicRoutes) {
@@ -382,9 +407,16 @@ for (const [engineName, engine] of engines) {
 }
 
 const finishedAt = new Date().toISOString();
+const expectedPages = engines.length * viewports.length * (publicRoutes.length + protectedRoutes.length);
+if (pagesInspected !== expectedPages) {
+  addIssue({ type: "inspection-count", detail: `${pagesInspected} inspected; ${expectedPages} expected` });
+}
 const report = {
   status: issues.length ? "failed" : "passed",
+  shardId,
+  viewportGroup,
   commit,
+  worktreeDirty,
   baseUrl,
   startedAt,
   finishedAt,
@@ -392,6 +424,7 @@ const report = {
   viewports: viewports.map(([name, viewport]) => ({ name, ...viewport })),
   publicRouteCount: publicRoutes.length,
   protectedRouteCount: protectedRoutes.length,
+  expectedPages,
   pagesInspected,
   axeScans,
   screenshotCount: screenshots.length,
@@ -406,7 +439,7 @@ const issueSummary = Object.fromEntries(
 report.issueSummary = issueSummary;
 
 writeFileSync(resolve(outputRoot, "visual-acceptance.json"), `${JSON.stringify(report, null, 2)}\n`);
-writeFileSync(resolve(outputRoot, "visual-acceptance.md"), `# Browser Acceptance Evidence\n\n- Status: **${report.status.toUpperCase()}**\n- Commit: \`${commit}\`\n- Chromium and WebKit pages inspected: ${pagesInspected}\n- Axe scans: ${axeScans}\n- Screenshots: ${screenshots.length}\n- Issues: ${issues.length}\n- Started: ${startedAt}\n- Finished: ${finishedAt}\n\nSynthetic credentials are not included in this report.\n`);
+writeFileSync(resolve(outputRoot, "visual-acceptance.md"), `# Browser Acceptance Evidence\n\n- Status: **${report.status.toUpperCase()}**\n- Shard: \`${shardId}\`\n- Commit: \`${commit}\`\n- Engine: ${report.engines.join(", ")}\n- Viewports: ${report.viewports.map(({ name }) => name).join(", ")}\n- Pages inspected: ${pagesInspected} of ${expectedPages} expected\n- Axe scans: ${axeScans}\n- Curated screenshots: ${screenshots.length}\n- Issues: ${issues.length}\n- Started: ${startedAt}\n- Finished: ${finishedAt}\n\nSynthetic credentials are not included in this report.\n`);
 
 console.log(`Browser acceptance ${report.status}: ${pagesInspected} pages, ${axeScans} axe scans, ${screenshots.length} screenshots, ${issues.length} issues.`);
 if (issues.length) {

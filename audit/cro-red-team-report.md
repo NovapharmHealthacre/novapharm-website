@@ -1,46 +1,63 @@
-# CRO Red-Team Report
+# CRO Category-Leader Red-Team Report
 
-Candidate date: 18 July 2026
+- Candidate date: 18 July 2026
+- Scope: final PR 11 visual and content refinement
+- Status: local red-team controls passed; legal, insurance and commercial approvals remain external gates
 
-Status: repository candidate passed the implemented red-team controls; commercial and legal owner gates remain
+## Emerging-Biotech Chief Development Officer
 
-## Adversarial question
-
-Could a reasonable sponsor, regulator, search engine or commercial counterparty read the new section as evidence that NovaPharm is an operational full-service CRO, a clinical-trial sponsor, an investigator-site network, an in-house biometrics provider or an owner of clinical infrastructure?
-
-The final candidate answers **no**. The first viewport, delivery model, service modules, decision framework, FAQs, structured data, image captions and contact route all preserve the narrower evidenced proposition: programme framing, UK pathway coordination, responsibility mapping, controlled evidence, specialist-provider orchestration and development-to-market continuity.
-
-## Attacks applied
-
-| Attack | Candidate control | Result |
+| Question | Final observation | Result |
 | --- | --- | --- |
-| Read only the hero and CTA. | Hero says NovaPharm coordinates specialist contributors; an immediate scope boundary rejects full-service CRO, sponsor, site-network and in-house biometrics interpretations. | Passed |
-| Read only headings and cards. | Three responsibility lanes distinguish NovaPharm-led, qualified specialist and sponsor-retained work. | Passed |
-| Treat strategic therapeutic interest as trial history. | Focus-area copy explicitly says it is strategic interest, not completed NovaPharm trial experience. | Passed |
-| Treat a conceptual image as a real NovaPharm study, team or facility. | Both images have visible representative-use captions, accurate alt text and provenance controls. | Passed |
-| Assume delegation transfers sponsor duties. | Sponsor-retained lane, quality section, FAQ and MHRA/HRA sources preserve sponsor accountability. | Passed |
-| Assume a decision-framework option is a delivered internal service. | Every option identifies direct, specialist or no-fit routing; full-service execution routes away from NovaPharm. | Passed |
-| Submit patient or safety information through the CTA. | Page and contact route warn against patient-identifiable, adverse-event and urgent medical information. | Passed |
-| Disable JavaScript. | Lifecycle, services, decision options, FAQs, links and status boundaries remain visible and usable. | Passed in Chromium and WebKit |
-| Use a narrow or short viewport. | The 320 px through 1920 px acceptance matrix detected no clipping, overflow or text collision. | Passed |
-| Inspect private or runtime surfaces for accidental CRO promotion. | CRO is linked only as a public capability; protected pages retain noindex and role enforcement. | Passed |
+| Is the proposition immediate? | The hero states “Clinical development, connected to evidence and accountability” and identifies UK-focused developers, pathway coordination and divided responsibilities in the first viewport. | Passed |
+| Is NovaPharm's work clear? | Programme coordination is separated from specialist execution and sponsor-retained duties. | Passed |
+| Is no-fit guidance credible? | The decision framework can state that a conventional full-service CRO may be the better fit. | Passed |
+| Is the next step clear? | Two above-fold actions and five contextual routes lead to a high-level, non-confidential enquiry. | Passed |
 
-## Defects found and corrected
+## Leading-CRO Digital Director
 
-1. The initial challenge-panel kicker did not meet the contrast threshold. A higher-specificity colour rule now passes Axe.
-2. The Services dark related-capability label inherited a low-contrast editorial colour. The dark-section semantic override now passes.
-3. A Technology status label overflowed at 1280 px. The grid and wrapping constraints were corrected.
-4. WebKit's no-JavaScript test initially inspected styles before page load. The acceptance harness now waits for the document load event before measuring.
-5. The mobile lifecycle control used horizontal scrolling, hiding stage context. It now uses a stable two-column grid.
-6. The first decision framework did not provide an explicit no-fit route. Full-service trial execution now directs the sponsor to an established full-service CRO.
-7. Generated HTML contained trailing whitespace. The generator was corrected and the outputs rebuilt.
-8. The uncompressed local static server delayed first paint. A deterministic CSS bundle and the production Node runtime's Brotli/Gzip delivery reduced median mobile LCP to 1.50 seconds.
+| Question | Final observation | Result |
+| --- | --- | --- |
+| Premium or template-driven? | A cinematic evidence hero, dark responsibility architecture, original stage navigator, governance map, continuity path and verified leadership photography create a specific editorial system. | Passed |
+| Too much text? | Visible copy reduced from 1,996 to 1,478 words (25.9%); service detail moved into accessible disclosure and FAQs reduced from ten to six. | Passed |
+| Mobile intentional? | At 320 × 568 both hero actions are above the fold, the eight stages form a two-column grid, and no core content scrolls horizontally. | Passed |
+| Repetition controlled? | Quality and operating model are consolidated; scientific focus and technology oversight share one mixed-media section. | Passed |
 
-## Residual gates
+## UK Regulatory and Claims Reviewer
 
-- Owner approval of the public label **Clinical Research & CRO Support**.
-- UK legal review of engagement terms, responsibility wording, insurance and clinical-research liability before paid work is accepted.
-- Evidence review and written permission before publishing any named provider, client, testimonial, case study, metric or logo.
-- Programme-specific regulatory advice must come from appropriately qualified professionals and current official guidance.
+| Attack | Control | Result |
+| --- | --- | --- |
+| Infer that NovaPharm is a sponsor or full-service CRO. | The hero boundary and FAQ explicitly reject both interpretations. | Passed |
+| Infer owned sites, laboratories, depots or a live sponsor platform. | Captions, alt text and copy label conceptual media and deny those operational implications. | Passed |
+| Treat specialist delivery as internal delivery. | The three responsibility lanes and each service module identify qualification-dependent specialist functions. | Passed |
+| Treat delegation as transfer of sponsor duties. | Sponsor-retained lane, delivery principle and governance caveat preserve accountability. | Passed |
+| Infer approval, recruitment, timing or outcome. | Explicitly not guaranteed; regulatory and ethics decisions remain with the authorities. | Passed |
+| Submit patient or safety information. | Final CTA and contact route prohibit patient data, adverse-event information and urgent medical information. | Passed |
 
-No full-service CRO, trial delivery, site-network, laboratory, biometrics, sponsor, approval, trial-volume or success-rate claim has been approved by this report.
+## Accessibility and Performance Reviewer
+
+| Control | Actual result | Result |
+| --- | --- | --- |
+| Chromium/WebKit focused matrix | 170 rendered cases, 168 Axe scans, zero issues | Passed |
+| JavaScript disabled | Eight stages, eight services and six FAQs remain available in both engines | Passed |
+| Reduced motion | Hero and portrait transforms are disabled without hiding content | Passed |
+| Keyboard semantics | Stage links, disclosure controls, decision buttons and mobile navigation retain native focus and state | Passed |
+| Responsive images | AVIF/WebP/JPEG, intrinsic dimensions, `srcset`, `sizes`, lazy loading below fold | Passed |
+| Lighthouse | Three mobile and three desktop runs: 100/100/100/100 medians, mobile LCP 1.504 s, desktop LCP 0.404 s, CLS 0 | Passed |
+
+## Material Findings Resolved
+
+1. The old page was too report-like. Visible copy and page height were reduced by 25.9% and 23.6% respectively without removing core scope boundaries.
+2. The second CTA fell below the 320-pixel fold. The compact mobile hero now presents both decisions before 529 px.
+3. The no-fit output sounded apologetic. It now frames a conventional full-service CRO as the right architecture for programmes that require owned global infrastructure.
+4. Two conceptual images were not a complete visual system. The final candidate adds two verified leadership portraits and five original code-native information graphics.
+5. The monolithic CI job crashed on a 33,362-pixel WebKit PNG. The final harness uses six shards, curated JPEG evidence and an exact aggregate gate without reducing route or Axe coverage.
+
+## Residual Gates
+
+- Owner approval of the final public presentation and the label **Clinical Research & CRO Support**.
+- UK legal review of engagement language, sponsor interfaces, contracting and limitations.
+- Insurance review before paid clinical-research coordination is accepted.
+- Capability-owner approval and documented provider qualification before any engagement.
+- Written permission and evidence before any client, provider, testimonial, case study, metric or logo is published.
+
+No trial history, patient count, site count, country coverage, success rate, approval record or owned clinical infrastructure is approved by this report.

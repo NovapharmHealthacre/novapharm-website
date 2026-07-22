@@ -1,48 +1,58 @@
 # CRO Public Claims Report
 
-Candidate date: 18 July 2026
+- Candidate date: 18 July 2026
+- Status: final public candidate passes implemented claims controls
 
-Status: public candidate passes the implemented claims gate
+## Approved Proposition
 
-## Approved proposition
+The final hero may state:
 
-NovaPharm may describe an evidence-led support model built around:
+> Clinical development, connected to evidence and accountability.
 
-- clinical-development programme framing;
-- UK regulatory and ethics pathway coordination;
-- responsibility and dependency mapping;
-- controlled document and decision architecture;
-- qualification-dependent specialist-provider orchestration;
-- clinical-supply responsibility planning; and
-- development-to-market continuity.
+The evidence-controlled offer is limited to programme framing, UK pathway coordination, responsibility mapping, document and decision governance, specialist-provider coordination, clinical-supply responsibility planning and development-to-market continuity.
 
-This wording is supported by the reviewed business plan, current repository architecture and official MHRA, HRA and ICH guidance. It does not establish an operational full-service CRO.
+NovaPharm is not represented as a clinical-trial sponsor, full-service CRO, investigator-site network or in-house biometrics provider.
 
-## Required qualifiers
+## Responsibility Model
 
-| Area | Required public boundary |
+| Lane | Permitted public interpretation |
 | --- | --- |
-| Specialist clinical operations | Delivered only by appropriately qualified and contracted organisations or people. |
-| Sponsor duties | Remain with the named sponsor notwithstanding delegation. |
-| Regulatory and ethics outcomes | Determined by the relevant authorities; never guaranteed by NovaPharm. |
-| Clinical supply | Planning and coordination only; no owned manufacturing, depot, release or IMP distribution claim. |
-| Therapeutic areas | Strategic focus, not completed NovaPharm trial history. |
-| Technology | Architecture and maturity model, not a validated live sponsor platform claim. |
-| Market continuity | Conditional on verified evidence and applicable authorisation. |
+| NovaPharm-led | Scoped programme architecture, evidence assessment, responsibility mapping, UK pathway coordination and development continuity |
+| Qualified specialist delivery | Clinical operations, data/biometrics, medical/safety oversight, laboratories and specialist writing by appropriately qualified providers |
+| Sponsor-retained | Sponsor designation and duties, provider oversight, protocol/risk decisions and safety/compliance accountability |
 
-## Prohibited or removed claims
+## Required Boundaries
 
-- Full-service, global or end-to-end operational CRO
-- Clinical-trial sponsor or sponsor representative
-- Owned investigator-site network, laboratory, depot, manufacturing or logistics operation
-- In-house clinical monitoring, data management, biostatistics, medical monitoring or safety database
-- Patient recruitment, trial participation or patient-facing treatment access
-- Completed NovaPharm trials, inspections, submissions, approvals or clinical outcomes
-- Quantified sites, countries, patients, trial speed, enrolment or success rate
+- Regulatory authorisation and ethics opinions are decisions of the relevant authorities.
+- Delegation does not erase sponsor oversight or applicable duties.
+- Clinical-supply support is coordination only; no owned manufacturing, depot, release or IMP distribution is asserted.
+- Oncology, specialty medicines, oral liquids and selected complex products are strategic focus areas, not NovaPharm trial history.
+- Technology is an architecture and maturity model, not a validated live sponsor workspace.
+- Market continuity remains conditional on verified evidence and applicable permission.
+- A web enquiry does not confirm acceptance, scope, confidentiality, timing or a proposal.
+
+## Prohibited Claims Confirmed Absent
+
+- Global, end-to-end or full-service CRO delivery by NovaPharm
+- Sponsor designation or transfer of sponsor accountability
+- Owned clinical sites, laboratories, depots, manufacturing or investigator networks
+- In-house monitoring, biometrics, medical monitoring or safety database
+- Patient recruitment, treatment access or patient ordering
+- Completed trials, submissions, inspections, approvals or outcomes
+- Trial, site, country, participant, speed, enrolment or success-rate metrics
 - Unverified clients, partners, testimonials, awards, case studies or logos
 
-## Automated controls
+## Media and Human Evidence
 
-`scripts/audit-public-claims.mjs` now checks the CRO route and all sitemap public routes for prohibited full-service, sponsor, owned-infrastructure and unsupported trial-history patterns. `scripts/test-cro-section.mjs` requires the scope boundary, sponsor-retained model, no-fit decision route, safety warning and evidenced content counts.
+The hero and oversight media are visibly described as conceptual. The CRO page uses approved repository portraits only for Vishal Chakravarty and Dr Girish Shantilal Achliya, linked to their verified public profiles. No generated human is represented as NovaPharm personnel, sponsor staff, investigator or patient.
 
-The capability-level evidence is recorded in `docs/cro-capability-evidence-register.md`. Any future expansion requires source evidence, capability-owner approval, legal review where relevant and a regenerated claims audit.
+`docs/cro-media-provenance.json` records four media assets and five code-native graphics. Every raster asset is local, transformed into responsive formats and covered by the stated owner-authorised use boundary.
+
+## Automated Controls
+
+- `scripts/audit-public-claims.mjs` scans public routes for prohibited operational and regulatory patterns.
+- `scripts/test-cro-section.mjs` requires three lanes, eight stages, eight service modules, six decision routes, six FAQs, the no-fit route, safety warning, local media and provenance.
+- `scripts/test-visual-contracts.mjs` requires the final hero, leadership derivatives, governance map and continuity path.
+- Browser acceptance rejects broken media, raw browser errors, third-party requests, unexpected redirects and missing official logos.
+
+Any future expansion requires source evidence, capability-owner approval, legal review where relevant and regenerated claims evidence.

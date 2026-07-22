@@ -27,7 +27,7 @@ assert.equal(croContent.lifecycle.length, 8);
 assert.equal(croContent.services.length, 8);
 assert.equal(croContent.deliveryLanes.length, 3);
 assert.equal(croContent.decisionOptions.length, 6);
-assert.equal(croContent.faqs.length, 10);
+assert.equal(croContent.faqs.length, 6);
 assert.equal((cro.match(/data-cro-stage="\d+"/g) || []).length, 8);
 assert.equal((cro.match(/class="cro-lane cro-lane-/g) || []).length, 3);
 assert.ok((cro.match(/<details/g) || []).length >= 15, "service details, FAQs and sources must remain accessible without JavaScript");
@@ -54,14 +54,25 @@ assert.doesNotMatch(cro, /NovaPharm (?:owns|operates) (?:clinical sites|laborato
 assert.doesNotMatch(cro, /(?:patients enrolled|completed trials|successful submissions|approval rate|countries served):?\s*\d+/i);
 assert.match(cro, /Sponsor-retained/);
 assert.match(cro, /does not present itself as a global full-service CRO/);
-assert.match(cro, /NovaPharm may not be the appropriate model/);
+assert.match(cro, /A conventional full-service CRO may be the better fit/);
 assert.match(cro, /Do not submit patient data/);
 
+for (const portrait of ["vishal-chakravarty", "girish-achliya"]) {
+  for (const width of [480, 800]) {
+    for (const extension of ["avif", "webp", "jpg"]) {
+      const path = `assets/media/cro/leadership/${portrait}-${width}.${extension}`;
+      assert.ok(existsSync(join(root, path)), `${path} is required`);
+      assert.ok(statSync(join(root, path)).size < 90_000, `${path} must remain below 90 KB`);
+    }
+  }
+}
+
 const provenance = JSON.parse(read("docs/cro-media-provenance.json"));
-assert.equal(provenance.assets.length, 2);
+assert.equal(provenance.assets.length, 4);
 for (const asset of provenance.assets) {
   assert.equal(asset.reviewStatus, "human-reviewed-approved-for-candidate");
   assert.match(asset.fallbackChecksumSha256, /^[a-f0-9]{64}$/);
 }
+assert.ok(provenance.graphics.length >= 5, "five code-native signature graphics must be registered");
 
 console.log("CRO contracts passed for evidence boundaries, navigation, signatures, schema, responsive media, cross-site links and public claims.");

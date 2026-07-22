@@ -65,6 +65,10 @@ assert.equal((cro.match(/data-cro-stage="\d+"/g) || []).length, 8, "CRO navigato
 assert.equal((cro.match(/class="cro-lane cro-lane-/g) || []).length, 3, "CRO delivery architecture must expose three responsibility lanes");
 assert.match(cro, /cro-evidence-architecture-640\.avif 640w/);
 assert.match(cro, /cro-delivery-architecture-640\.webp 640w/);
+assert.match(cro, /vishal-chakravarty-480\.avif 480w/);
+assert.match(cro, /girish-achliya-800\.webp 800w/);
+assert.match(cro, /class="cro-governance-map"/);
+assert.match(cro, /class="cro-continuity-path"/);
 assert.doesNotMatch(cro, /"@type":"(?:ClinicalTrial|MedicalStudy)"/);
 assert.match(text("assets/css/cro.css"), /@media \(prefers-reduced-motion: reduce\)/);
 assert.match(text("assets/js/cro.js"), /IntersectionObserver/);

@@ -19,7 +19,7 @@ Status: repository implementation passed; indexing and ranking remain search-eng
 
 ## Search and answer-engine substance
 
-The page directly answers what the offer is, who it is for, where NovaPharm leads, where qualified specialists are needed, what the sponsor retains, how the UK pathway is framed and when NovaPharm is not the right provider. Ten visible FAQs mirror the structured data. Seven current official MHRA, HRA and ICH sources support the responsibility and governance language.
+The page directly answers what the offer is, who it is for, where NovaPharm leads, where qualified specialists are needed, what the sponsor retains, how the UK pathway is framed and when NovaPharm is not the right provider. Six visible commercial FAQs mirror the structured data. Seven current official MHRA, HRA and ICH sources support the responsibility and governance language.
 
 Natural search intent includes UK CRO support, clinical-development support, clinical-trial regulatory coordination and emerging-company programme governance. The implementation does not create keyword-variant doorway pages or imply unsupported operational breadth.
 

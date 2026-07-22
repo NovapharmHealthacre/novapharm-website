@@ -25,7 +25,7 @@ Status: repository integration passed
 
 The implementation remains inside the existing Node/static-generation architecture. It adds no framework, client router, external widget, analytics dependency, database migration or authentication path. `assets/js/cro.js` only enhances visible server-generated content; disabling it does not remove information or actions.
 
-Media is local, responsive and recorded in `docs/cro-media-provenance.json`. The public page makes no live portal, sponsor workspace, validated system or external-provider integration claim.
+Media is local, responsive and recorded in `docs/cro-media-provenance.json`: two conceptual evidence compositions, two approved leadership portraits and five code-native information graphics. The public page makes no live portal, sponsor workspace, validated system or external-provider integration claim.
 
 ## Regeneration contract
 

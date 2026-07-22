@@ -146,7 +146,7 @@ async function inspect({ browser, engineName, viewportName, viewport, routeName,
           serviceModules: document.querySelectorAll(".cro-service, .cro-service-disclosures details").length,
           responsibilityLanes: document.querySelectorAll(".cro-lane").length,
           decisionOptions: document.querySelectorAll("[data-cro-decision-item]").length,
-          faqs: document.querySelectorAll("#cro-faq details").length,
+          faqs: document.querySelectorAll("#cro-faq .faq > details").length,
           heroAnimation: heroCopy ? getComputedStyle(heroCopy).animationName : "missing",
           heroImageWidth: hero.querySelector("img")?.naturalWidth || 0
         } : null
@@ -174,7 +174,7 @@ async function inspect({ browser, engineName, viewportName, viewport, routeName,
     if (diagnostics.navToggleVisible !== narrow) addIssue(record, "navigation-breakpoint", { expectedToggle: narrow, actualToggle: diagnostics.navToggleVisible });
 
     if (routeName === "cro") {
-      const expected = { stages: 8, stageLinks: 8, serviceModules: 8, responsibilityLanes: 3, decisionOptions: 6, faqs: 10 };
+      const expected = { stages: 8, stageLinks: 8, serviceModules: 8, responsibilityLanes: 3, decisionOptions: 6, faqs: 6 };
       for (const [key, value] of Object.entries(expected)) {
         if (diagnostics.cro?.[key] !== value) addIssue(record, `cro-${key}`, diagnostics.cro?.[key]);
       }
@@ -188,12 +188,12 @@ async function inspect({ browser, engineName, viewportName, viewport, routeName,
         await toggle.click();
       }
 
-      const noFitButton = page.locator("[data-cro-decision-item]").filter({ hasText: "Full-service CRO route" });
+      const noFitButton = page.locator("[data-cro-decision-item]").filter({ hasText: "Conventional CRO fit" });
       if (await noFitButton.count() !== 1) addIssue(record, "decision-no-fit-option");
       else {
         await noFitButton.click();
         const output = await page.locator("[data-cro-decision-title]").textContent();
-        if (!output?.includes("may not be the appropriate model")) addIssue(record, "decision-no-fit-output", output);
+        if (!output?.includes("may be the better fit")) addIssue(record, "decision-no-fit-output", output);
       }
     }
 
@@ -252,12 +252,12 @@ for (const [engineName, engine] of engines) {
       h1Count: document.querySelectorAll("h1").length,
       stages: document.querySelectorAll("[data-cro-stage]").length,
       services: document.querySelectorAll(".cro-service, .cro-service-disclosures details").length,
-      faqs: document.querySelectorAll("#cro-faq details").length,
+      faqs: document.querySelectorAll("#cro-faq .faq > details").length,
       bodyWidth: document.body.scrollWidth,
       viewportWidth: document.documentElement.clientWidth
     }));
     results.push({ engine: engineName, viewport: "mobile-390x844", route: "cro-no-javascript", httpStatus: noJavaScriptResponse?.status(), diagnostics: noJavaScriptResult });
-    if (noJavaScriptResponse?.status() !== 200 || noJavaScriptResult.h1Count !== 1 || noJavaScriptResult.stages !== 8 || noJavaScriptResult.services !== 8 || noJavaScriptResult.faqs !== 10 || noJavaScriptResult.bodyWidth > noJavaScriptResult.viewportWidth + 2) {
+    if (noJavaScriptResponse?.status() !== 200 || noJavaScriptResult.h1Count !== 1 || noJavaScriptResult.stages !== 8 || noJavaScriptResult.services !== 8 || noJavaScriptResult.faqs !== 6 || noJavaScriptResult.bodyWidth > noJavaScriptResult.viewportWidth + 2) {
       addIssue({ engine: engineName, viewport: "mobile-390x844", route: "cro-no-javascript" }, "progressive-enhancement", noJavaScriptResult);
     }
     await noJavaScript.close();
