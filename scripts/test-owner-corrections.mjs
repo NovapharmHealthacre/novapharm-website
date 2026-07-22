@@ -67,9 +67,9 @@ if (croLeaderCount !== 3) fail(`CRO Senior judgement must contain exactly 3 lead
 const oncology = text("oncology/index.html");
 if (!oncology.includes("oncology-editorial-gallery")) fail("Oncology editorial image gallery is missing");
 for (const asset of [
-  "/assets/media/products/oral-liquid-formulation.jpg",
-  "/assets/media/products/specialty-pharmacy-handling.jpg",
-  "/assets/media/cro/cro-evidence-architecture-1600.jpg"
+  "/assets/media/oncology/oncology-formulation-pathways.svg",
+  "/assets/media/oncology/oncology-evidence-continuity.svg",
+  "/assets/media/oncology/oncology-condition-control.svg"
 ]) {
   if (!oncology.includes(asset)) fail(`Oncology gallery does not reference ${asset}`);
   if (!existsSync(join(root, asset.slice(1))) || !statSync(join(root, asset.slice(1))).isFile()) fail(`Oncology gallery asset is missing: ${asset}`);
