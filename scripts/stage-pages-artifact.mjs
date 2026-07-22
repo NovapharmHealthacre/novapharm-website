@@ -13,31 +13,26 @@ import { basename, join, relative, resolve } from "node:path";
 const root = resolve(process.cwd());
 const output = resolve(process.argv[2] || "_site");
 
-const excludedTopLevelDirectories = new Set([
-  ".git",
-  ".github",
-  "_secure",
-  "architecture",
-  "audit",
-  "compliance",
-  "data",
-  "database",
-  "deployment",
-  "docs",
-  "final-report",
-  "geo",
-  "integrations",
-  "node_modules",
-  "performance",
-  "private-content",
-  "public",
-  "research",
-  "scripts",
-  "security",
-  "seo",
-  "sharepoint",
-  "src",
-  "tests"
+const allowedTopLevelDirectories = new Set([
+  ".well-known",
+  "about",
+  "account-application",
+  "assets",
+  "careers",
+  "contact",
+  "cro",
+  "investor-information",
+  "leadership",
+  "legal",
+  "news-insights",
+  "oncology",
+  "partner-with-us",
+  "portal",
+  "product-portfolio",
+  "regulatory-services",
+  "service-unavailable",
+  "services",
+  "technology"
 ]);
 
 const allowedRootFiles = new Set([
@@ -109,14 +104,10 @@ mkdirSync(output, { recursive: true });
 
 for (const entry of readdirSync(root, { withFileTypes: true })) {
   const source = join(root, entry.name);
-  const destination = join(output, entry.name);
+  if (source === output) continue;
 
-  if (entry.isDirectory()) {
-    if (entry.name === ".well-known") {
-      copyDirectory(source, destination);
-      continue;
-    }
-    if (entry.name.startsWith(".") || excludedTopLevelDirectories.has(entry.name)) continue;
+  const destination = join(output, entry.name);
+  if (entry.isDirectory() && allowedTopLevelDirectories.has(entry.name)) {
     copyDirectory(source, destination);
     continue;
   }
@@ -144,11 +135,13 @@ if (!stagedFiles.length) throw new Error("Pages artifact contains no files.");
 for (const file of stagedFiles) {
   const stagedPath = relative(output, file).replaceAll("\\", "/");
   const topLevel = stagedPath.split("/")[0];
-  if (excludedTopLevelDirectories.has(topLevel)) {
-    throw new Error(`Internal directory leaked into Pages artifact: ${stagedPath}`);
+  const isAllowedRootFile = !stagedPath.includes("/") && allowedRootFiles.has(stagedPath);
+  const isAllowedDirectory = allowedTopLevelDirectories.has(topLevel);
+  if (!isAllowedRootFile && !isAllowedDirectory && stagedPath !== ".nojekyll") {
+    throw new Error(`Unexpected path entered the Pages artifact: ${stagedPath}`);
   }
   if (/\.(?:env|pem|key|sqlite|db|bak)$/i.test(stagedPath)) {
-    throw new Error(`Sensitive file type leaked into Pages artifact: ${stagedPath}`);
+    throw new Error(`Sensitive file type entered the Pages artifact: ${stagedPath}`);
   }
 }
 
