@@ -3,7 +3,18 @@ import { basename, extname, join, relative, resolve } from "node:path";
 import { execFileSync } from "node:child_process";
 
 const root = resolve(process.cwd());
-const ignoredDirectories = new Set([".git", "_secure", "artifacts", "data", "node_modules", "private-content", "tmp", "vishal-portfolio-rebuild"]);
+const ignoredDirectories = new Set([
+  ".git",
+  ".next",
+  ".turbo",
+  "_secure",
+  "artifacts",
+  "data",
+  "node_modules",
+  "private-content",
+  "tmp",
+  "vishal-portfolio-rebuild"
+]);
 const ignoredLocalFiles = new Set([".env", ".DS_Store"]);
 const binaryExtensions = new Set([".eps", ".gif", ".ico", ".jpeg", ".jpg", ".pdf", ".png", ".sqlite", ".webp", ".woff2"]);
 const forbiddenNames = [/^\.DS_Store$/, /\.sw[op]$/, /~$/, /^\.env$/, /\.sqlite(?:-shm|-wal)?$/, /\.map$/];

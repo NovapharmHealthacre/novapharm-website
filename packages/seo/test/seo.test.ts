@@ -8,12 +8,14 @@ test("organisation graph uses the official public identity", () => {
   assert.equal(node["@id"], "https://novapharmhealthcare.com/#organization");
   assert.equal(node["name"], "NovaPharm Healthcare");
   assert.match(JSON.stringify(node["logo"]), /novapharm-healthcare-logo\.png/);
+  assert.deepEqual(node["founder"], { "@id": "https://vishal.novapharmhealthcare.com/#person" });
 });
 
 test("Vishal entity has one canonical title and identifier", () => {
   const node = personNode(personBySlug("vishal-chakravarty"));
   assert.equal(node["jobTitle"], "Chief Executive Officer");
-  assert.equal(node["@id"], "https://novapharmhealthcare.com/leadership/vishal-chakravarty/#person");
+  assert.equal(node["@id"], "https://vishal.novapharmhealthcare.com/#person");
+  assert.equal(node["url"], "https://vishal.novapharmhealthcare.com/about/");
 });
 
 test("entity graph contains one node for each person", () => {

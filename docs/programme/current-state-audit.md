@@ -61,6 +61,16 @@ The repository checks were run against clean source trees. Browser evidence was 
 | Full WebKit route matrix | Pending implementation candidate |
 | Production portal, database, email, SharePoint and Azure acceptance | Not deployed and not tested |
 
+## Programme progress after the baseline
+
+The audit table above records the state observed before migration work began. The following repository-controlled corrections have since been completed without changing production DNS or deployments:
+
+- The static corporate Pages artifact now enforces an honest `PUBLIC_ONLY` capability boundary and does not publish server-dependent login, confidential portal, account-application upload or secure form controls.
+- The NIT candidate branch is on Next.js `16.2.12` and React `19.2.8`, has zero reported production dependency vulnerabilities, excludes generated output from linting, corrects mobile clipping and passes its 182-view browser matrix. Integration into this orchestration workspace remains in progress.
+- The founder property has been migrated into the TypeScript/React/Next.js application at `apps/founder`, with canonical cross-estate entity identifiers and its approved content corpus. Its repository acceptance is documented in `docs/programme/founder-migration-acceptance.md`.
+- The founder candidate passes 294 Chromium/WebKit screenshots, 84 Axe runs, a 28-route production build and Lighthouse scores of 100/100/100/100 on desktop and 98/100/100/100 on mobile. These are local candidate measurements, not live field data.
+- The npm and pnpm dependency graphs now pin patched PostCSS and Sharp releases while retaining the latest stable Next.js release; a clean Node 24 npm installation reports zero vulnerabilities.
+
 ## Immediate release blockers
 
 1. Static production exposes server-dependent portal and application interfaces.

@@ -26,6 +26,7 @@ export interface OrganisationEntity {
 export interface PersonEntity {
   readonly id: string;
   readonly slug: string;
+  readonly canonicalUrl: string;
   readonly canonicalName: string;
   readonly displayName: string;
   readonly publicTitle: string;
@@ -40,6 +41,7 @@ export interface PersonEntity {
     readonly publicationDecision: PublicationDecision;
   };
   readonly imagePath?: string;
+  readonly canonicalImageUrl?: string;
   readonly sameAs: readonly string[];
 }
 
@@ -67,8 +69,9 @@ export const novapharmOrganisation: OrganisationEntity = Object.freeze({
 
 export const people: readonly PersonEntity[] = Object.freeze([
   Object.freeze({
-    id: "https://novapharmhealthcare.com/leadership/vishal-chakravarty/#person",
+    id: "https://vishal.novapharmhealthcare.com/#person",
     slug: "vishal-chakravarty",
+    canonicalUrl: "https://vishal.novapharmhealthcare.com/about/",
     canonicalName: "Vishal Om Prakash Chakravarty",
     displayName: "Vishal Chakravarty",
     publicTitle: "Chief Executive Officer",
@@ -77,8 +80,8 @@ export const people: readonly PersonEntity[] = Object.freeze([
     governanceFacts: Object.freeze(["Founder", "Statutory director"]),
     statutoryDirector: true,
     imagePath: "/assets/vishalchakravarty.jpeg",
+    canonicalImageUrl: "https://vishal.novapharmhealthcare.com/images/portrait/vishal-chakravarty-1440.jpg",
     sameAs: Object.freeze([
-      "https://vishal.novapharmhealthcare.com/",
       "https://uk.linkedin.com/in/vishal-chakravarty",
       "https://find-and-update.company-information.service.gov.uk/officers/GCJvCvEf20rHFbzF_T9LKAGEJic/appointments"
     ])
@@ -86,6 +89,7 @@ export const people: readonly PersonEntity[] = Object.freeze([
   Object.freeze({
     id: "https://novapharmhealthcare.com/leadership/prabhakar-lahare/#person",
     slug: "prabhakar-lahare",
+    canonicalUrl: "https://novapharmhealthcare.com/leadership/prabhakar-lahare/",
     canonicalName: "Prabhakar Vitthal Lahare",
     displayName: "Prabhakar Vitthal Lahare",
     publicTitle: "Founder and Director",
@@ -100,6 +104,7 @@ export const people: readonly PersonEntity[] = Object.freeze([
   Object.freeze({
     id: "https://novapharmhealthcare.com/leadership/girish-achliya/#person",
     slug: "girish-achliya",
+    canonicalUrl: "https://novapharmhealthcare.com/leadership/girish-achliya/",
     canonicalName: "Dr Girish Shantilal Achliya",
     displayName: "Dr Girish Shantilal Achliya",
     publicTitle: "Chief Technical Director",
@@ -114,6 +119,7 @@ export const people: readonly PersonEntity[] = Object.freeze([
   Object.freeze({
     id: "https://novapharmhealthcare.com/leadership/helly-panchal/#person",
     slug: "helly-panchal",
+    canonicalUrl: "https://novapharmhealthcare.com/leadership/helly-panchal/",
     canonicalName: "Dr Helly Kamlesh Panchal",
     displayName: "Dr Helly Panchal",
     publicTitle: "Chief Medical Director",
@@ -127,6 +133,7 @@ export const people: readonly PersonEntity[] = Object.freeze([
   Object.freeze({
     id: "https://novapharmhealthcare.com/leadership/nishita-trivedi/#person",
     slug: "nishita-trivedi",
+    canonicalUrl: "https://novapharmhealthcare.com/leadership/nishita-trivedi/",
     canonicalName: "Dr Nishita Trivedi",
     displayName: "Dr Nishita Trivedi",
     publicTitle: "Quality and Regulatory Adviser",

@@ -3,6 +3,9 @@
 *.swo
 *~
 node_modules/
+**/.next/
+**/*.tsbuildinfo
+**/coverage/
 *.log
 .env
 /data/

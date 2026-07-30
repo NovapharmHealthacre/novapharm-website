@@ -12,7 +12,10 @@ test("organisation identifiers are canonical and stable", () => {
 test("people have unique persistent identities", () => {
   assert.equal(new Set(people.map((person) => person.id)).size, people.length);
   assert.equal(new Set(people.map((person) => person.slug)).size, people.length);
-  assert.equal(personBySlug("vishal-chakravarty").publicTitle, "Chief Executive Officer");
+  const vishal = personBySlug("vishal-chakravarty");
+  assert.equal(vishal.publicTitle, "Chief Executive Officer");
+  assert.equal(vishal.id, "https://vishal.novapharmhealthcare.com/#person");
+  assert.equal(vishal.canonicalUrl, "https://vishal.novapharmhealthcare.com/about/");
 });
 
 test("regulated appointment and statutory governance remain separate", () => {

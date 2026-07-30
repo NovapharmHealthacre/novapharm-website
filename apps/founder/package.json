@@ -1,0 +1,43 @@
+{
+  "name": "@novapharm/founder",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build && tsx scripts/prepare-standalone.ts",
+    "start": "node .next/standalone/apps/founder/server.js",
+    "lint": "biome check app components lib scripts test next.config.ts proxy.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/*.test.ts",
+    "test:browser": "tsx test/browser-acceptance.ts",
+    "validate": "tsx scripts/validate-content.ts",
+    "check": "npm run lint && npm run typecheck && npm run validate && npm test && npm run build"
+  },
+  "dependencies": {
+    "@novapharm/accessibility": "0.1.0",
+    "@novapharm/content": "0.1.0",
+    "@novapharm/design-system": "0.1.0",
+    "@novapharm/seo": "0.1.0",
+    "gray-matter": "4.0.3",
+    "marked": "18.0.7",
+    "next": "16.2.12",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-markdown": "10.1.0",
+    "remark-gfm": "4.0.1",
+    "sharp": "0.35.3"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.12.1",
+    "@biomejs/biome": "2.5.6",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "playwright": "1.61.1",
+    "tsx": "4.23.1",
+    "typescript": "7.0.2"
+  },
+  "engines": {
+    "node": "24.x"
+  }
+}

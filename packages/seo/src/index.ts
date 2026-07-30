@@ -1,10 +1,11 @@
-import { novapharmOrganisation, type PersonEntity } from "../../content/src/index.ts";
+import { novapharmOrganisation, personBySlug, type PersonEntity } from "@novapharm/content";
 
 export interface JsonLdNode {
   readonly [key: string]: unknown;
 }
 
 export function organisationNode(): JsonLdNode {
+  const founder = personBySlug("vishal-chakravarty");
   return Object.freeze({
     "@type": "Organization",
     "@id": novapharmOrganisation.id,
@@ -21,7 +22,8 @@ export function organisationNode(): JsonLdNode {
       caption: "NovaPharm Healthcare"
     }),
     identifier: Object.freeze({ "@type": "PropertyValue", propertyID: "Companies House", value: novapharmOrganisation.companyNumber }),
-    foundingDate: novapharmOrganisation.incorporatedOn
+    foundingDate: novapharmOrganisation.incorporatedOn,
+    founder: Object.freeze({ "@id": founder.id })
   });
 }
 
@@ -42,10 +44,14 @@ export function personNode(person: PersonEntity): JsonLdNode {
     "@type": "Person",
     "@id": person.id,
     name: person.displayName,
-    url: `${novapharmOrganisation.website}/leadership/${person.slug}/`,
+    url: person.canonicalUrl,
     jobTitle: person.publicTitle,
     worksFor: Object.freeze({ "@id": novapharmOrganisation.id }),
-    ...(person.imagePath ? { image: new URL(person.imagePath, `${novapharmOrganisation.website}/`).toString() } : {}),
+    ...(person.canonicalImageUrl
+      ? { image: person.canonicalImageUrl }
+      : person.imagePath
+        ? { image: new URL(person.imagePath, `${novapharmOrganisation.website}/`).toString() }
+        : {}),
     ...(person.sameAs.length ? { sameAs: [...person.sameAs] } : {})
   });
 }
