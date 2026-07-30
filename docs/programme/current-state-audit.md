@@ -66,18 +66,19 @@ The repository checks were run against clean source trees. Browser evidence was 
 The audit table above records the state observed before migration work began. The following repository-controlled corrections have since been completed without changing production DNS or deployments:
 
 - The static corporate Pages artifact now enforces an honest `PUBLIC_ONLY` capability boundary and does not publish server-dependent login, confidential portal, account-application upload or secure form controls.
-- The NIT candidate branch is on Next.js `16.2.12` and React `19.2.8`, has zero reported production dependency vulnerabilities, excludes generated output from linting, corrects mobile clipping and passes its 182-view browser matrix. Integration into this orchestration workspace remains in progress.
+- The NIT property has been migrated into the TypeScript/React/Next.js application at `apps/technology`. It uses shared security and entity controls, retains its distinct advisory identity and is documented in `docs/programme/technology-migration-acceptance.md`.
+- The technology candidate passes 182 Chromium/WebKit screenshots, 52 Axe runs, a 17-route production build and production-mode Lighthouse scores of 78/100/100/100 on desktop and 95/100/100/100 on mobile. Desktop canvas performance remains a documented optimisation target; these are local measurements rather than field data.
 - The founder property has been migrated into the TypeScript/React/Next.js application at `apps/founder`, with canonical cross-estate entity identifiers and its approved content corpus. Its repository acceptance is documented in `docs/programme/founder-migration-acceptance.md`.
 - The founder candidate passes 294 Chromium/WebKit screenshots, 84 Axe runs, a 28-route production build and Lighthouse scores of 100/100/100/100 on desktop and 98/100/100/100 on mobile. These are local candidate measurements, not live field data.
 - The npm and pnpm dependency graphs now pin patched PostCSS and Sharp releases while retaining the latest stable Next.js release; a clean Node 24 npm installation reports zero vulnerabilities.
 
 ## Immediate release blockers
 
-1. Static production exposes server-dependent portal and application interfaces.
-2. No production API, managed database or secure portal origin exists.
-3. NIT has high dependency advisories and a material mobile clipping defect.
-4. Leadership roles and entity facts are inconsistent and some require evidence.
-5. Historical retired-credential cleanup is not closed for GitHub-managed pull refs.
+1. No production API, managed database or isolated secure portal origin exists.
+2. The corporate public property and secure application surfaces have not yet completed the component-architecture migration.
+3. Leadership roles, the NIT relationship and some location/entity facts still require owner evidence or approval.
+4. Historical retired-credential cleanup is not closed for GitHub-managed pull refs.
+5. NIT's project brief remains an explicit email handoff until the shared API is deployed.
 6. Required Azure, Entra, Graph, SharePoint, email, legal and DNS gates remain owner-controlled.
 
 The current public sites remain available during migration. This programme must not be labelled production complete until the managed runtime, identities, data, private documents, monitoring, backup restoration, domains and live acceptance are genuinely verified.

@@ -1,4 +1,4 @@
-import { lstatSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, lstatSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { basename, extname, join, relative, resolve } from "node:path";
 import { execFileSync } from "node:child_process";
 
@@ -44,9 +44,10 @@ const files = walk();
 const failures = [];
 const trackedFiles = execFileSync("git", ["ls-files", "-z"], { cwd: root, encoding: "utf8" }).split("\0").filter(Boolean);
 for (const path of trackedFiles) {
+  const absolutePath = join(root, path);
   const name = basename(path);
   if (forbiddenNames.some((pattern) => pattern.test(name))) failures.push(`${path}: tracked forbidden development or secret-bearing artefact`);
-  if (lstatSync(join(root, path)).isSymbolicLink()) failures.push(`${path}: tracked symbolic links are not permitted`);
+  if (existsSync(absolutePath) && lstatSync(absolutePath).isSymbolicLink()) failures.push(`${path}: tracked symbolic links are not permitted`);
 }
 for (const file of files) {
   const name = basename(file);

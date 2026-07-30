@@ -1,0 +1,56 @@
+@layer base {
+:root {
+    --ink: #0b0d10;
+    --ink-soft: #171a1f;
+    --paper: #f4f1ea;
+    --paper-bright: #fbfaf7;
+    --mist: #e8e7e3;
+    --line: rgba(11, 13, 16, 0.17);
+    --line-light: rgba(255, 255, 255, 0.2);
+    --red: #b5212d;
+    --red-deep: #8f1721;
+    --red-bright: #ef4a52;
+    --white: #ffffff;
+    --muted: #61656b;
+    --muted-light: #b8bbc0;
+    --sans: "Avenir Next", Avenir, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Baskerville, Georgia, serif;
+    --shell: min(1480px, calc(100vw - 72px));
+    --header: 88px;
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --shadow: 0 24px 80px rgba(11, 13, 16, 0.12);
+  }
+
+  html { background: var(--ink); color: var(--ink); }
+  body {
+    min-height: 100vh;
+    background: var(--paper);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.55;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+  ::selection { background: var(--red); color: var(--white); }
+  :focus-visible { outline: 2px solid var(--red-bright); outline-offset: 4px; }
+  em { font-family: var(--serif); font-weight: 400; }
+  h1, h2, h3, h4 { font-weight: 500; line-height: 0.98; letter-spacing: 0; overflow-wrap: anywhere; }
+  p { text-wrap: pretty; }
+  main { min-height: 60vh; }
+  .shell { width: var(--shell); margin-inline: auto; }
+  .menu-open { overflow: hidden; }
+  .skip-link {
+    position: fixed;
+    z-index: 999;
+    left: 1rem;
+    top: 1rem;
+    transform: translateY(-160%);
+    background: var(--white);
+    color: var(--ink);
+    padding: .75rem 1rem;
+    border: 1px solid var(--ink);
+    transition: transform .2s ease;
+  }
+  .skip-link:focus { transform: translateY(0); }
+}

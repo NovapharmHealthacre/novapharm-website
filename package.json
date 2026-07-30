@@ -83,7 +83,9 @@
     "workspace:check": "npm run workspace:typecheck && npm run workspace:test",
     "founder:check": "npm run check --workspace=@novapharm/founder",
     "founder:test:browser": "npm run test:browser --workspace=@novapharm/founder",
-    "apps:check": "npm run founder:check"
+    "technology:check": "npm run check --workspace=@novapharm/technology",
+    "technology:test:browser": "npm run test:browser --workspace=@novapharm/technology",
+    "apps:check": "npm run founder:check && npm run technology:check"
   },
   "engines": {
     "node": "24.x",

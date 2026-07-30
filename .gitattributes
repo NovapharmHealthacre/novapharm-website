@@ -1,0 +1,2 @@
+# Preserve the byte-identical approved CorelDRAW master without line-ending normalisation.
+apps/technology/public/assets/NIT-logo.svg -text -diff
