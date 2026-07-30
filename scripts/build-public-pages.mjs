@@ -17,8 +17,11 @@ import {
 import { croContent } from "../src/content/cro-content.mjs";
 import { oncologyContent } from "../src/content/oncology-content.mjs";
 import { nutraxinExpectedRangeCounts, validateNutraxinRegister } from "../src/core/nutraxin-catalogue.mjs";
+import { getPlatformCapabilities, resolvePlatformMode } from "../src/core/platform-mode.mjs";
 
 const root = resolve(process.cwd());
+const platformMode = resolvePlatformMode();
+const platformCapabilities = getPlatformCapabilities(platformMode);
 const nutraxinCatalogue = validateNutraxinRegister({ repositoryRoot: root }).register;
 const articlesDirectory = join(root, "src", "content", "insights");
 const articles = readdirSync(articlesDirectory)
@@ -349,7 +352,7 @@ ${header(slug)}
 <main id="main">${body}</main>
 ${footer()}
 ${aiSearchDialog()}
-<script src="/assets/js/api-client.js" defer></script>
+${platformCapabilities.secureApi ? '<script src="/assets/js/api-client.js" defer></script>' : ""}
 <script src="/assets/js/novapharm.js" defer></script>
 <script type="module" src="/assets/js/ai-search.js"></script>
 <script type="module" src="/assets/js/cookie-consent.js"></script>
@@ -440,6 +443,9 @@ function mediaStory({ src, alt, kicker, title, text, reverse = false }) {
 }
 
 function contactForm({ formId = "contact-form", defaultType = "", compact = false } = {}) {
+  if (!platformCapabilities.publicForms) {
+    return `<aside class="regulatory-notice" aria-label="Secure enquiry status"><strong>Managed enquiry required</strong><p>This public information release does not collect or transmit enquiry details. Use only a verified NovaPharm business contact and do not send patient information, adverse-event reports, urgent medical information or confidential documents through an unverified address.</p></aside>`;
+  }
   const enquiryTypes = [
     "Product opportunity", "Distribution partnership", "Pharmacy or wholesaler account", "CMO/CDMO partnership",
     "Regulatory services", "Clinical development & CRO support", "Oncology & specialist medicines", "Supplier enquiry", "Media", "Careers", "General enquiry"
@@ -900,8 +906,11 @@ function articlePage(article) {
 function contactPage() {
   const slug = "contact";
   const meta = pageMeta[slug];
-  const body = `${pageHero(meta, "Start a qualified business conversation.", "Use the secure enquiry form for product, distribution, clinical development, customer account, manufacturing, regulatory, supplier, media or career discussions.", slug)}
-  <section class="section"><div class="container form-feature"><div><span class="section-kicker">Corporate enquiries</span><h2>Tell us what you are working on.</h2><p>NovaPharm reviews B2B enquiries against strategic fit, regulatory status, evidence quality and next-step requirements. The form is not a patient or adverse-event reporting channel.</p><div class="contact-route-list"><span>Product and dossier opportunities</span><span>Oncology & specialist medicines</span><span>UK distribution partnerships</span><span>Clinical development & CRO support</span><span>Pharmacy and wholesaler accounts</span><span>CMO/CDMO collaboration</span><span>Regulatory and quality services</span><span>Supplier, media and career enquiries</span></div></div>${contactForm({ formId: "contact" })}</div></section>`;
+  const contactControl = platformCapabilities.publicForms
+    ? contactForm({ formId: "contact" })
+    : `<aside class="regulatory-notice" aria-labelledby="public-contact-status"><strong id="public-contact-status">Secure enquiry collection</strong><p>This public information release does not collect or transmit enquiry details. Use an established, verified NovaPharm business contact while the managed enquiry service is being commissioned. Do not send patient information, adverse-event reports, urgent medical information or confidential documents through an unverified address.</p><p>Suspected medicine side effects can be reported through the <a href="https://yellowcard.mhra.gov.uk/">MHRA Yellow Card service</a>. For emergencies call 999; for urgent NHS advice use 111.</p></aside>`;
+  const body = `${pageHero(meta, "Start a qualified business conversation.", platformCapabilities.publicForms ? "Use the secure enquiry form for product, distribution, clinical development, customer account, manufacturing, regulatory, supplier, media or career discussions." : "Review the appropriate business-enquiry route and the information that should never be submitted through an unverified channel.", slug)}
+  <section class="section"><div class="container form-feature"><div><span class="section-kicker">Corporate enquiries</span><h2>Tell us what you are working on.</h2><p>NovaPharm reviews B2B enquiries against strategic fit, regulatory status, evidence quality and next-step requirements. The contact route is not a patient or adverse-event reporting channel.</p><div class="contact-route-list"><span>Product and dossier opportunities</span><span>Oncology & specialist medicines</span><span>UK distribution partnerships</span><span>Clinical development & CRO support</span><span>Pharmacy and wholesaler accounts</span><span>CMO/CDMO collaboration</span><span>Regulatory and quality services</span><span>Supplier, media and career enquiries</span></div></div>${contactControl}</div></section>`;
   return documentShell({ meta, slug, body, options: { pageType: "ContactPage" } });
 }
 
@@ -912,6 +921,11 @@ function accountApplicationPage() {
     description: "Apply for a future NovaPharm Healthcare B2B customer account through a controlled company, responsible-person, GDP, credit and document onboarding workflow.",
     eyebrow: "Customer onboarding"
   };
+  if (!platformCapabilities.accountApplication) {
+    const body = `${pageHero(meta, "Business account onboarding is controlled.", "This public information release does not accept account applications or business documents.", slug)}
+    <section class="section"><div class="container editorial-split"><div class="editorial-index">Public-only mode</div><div><h2>No application data is collected here.</h2><p>NovaPharm account onboarding requires an approved managed application environment, due-diligence review and controlled document handling. Do not enter company, licence, bank, credit or responsible-person information on a static or unverified form.</p><div class="regulatory-notice"><strong>Account status</strong><p>Submitting an enquiry or preparing documents does not create an approved trading account, confirm product availability or permit regulated supply. Due diligence, credit review and applicable regulatory checks remain required.</p></div><a class="btn btn-outline" href="/legal/privacy/#account-applications">Review account-application privacy information</a></div></div></section>`;
+    return documentShell({ meta, slug, body, options: { robots: "noindex,follow", schemas: [] } });
+  }
   const body = `${pageHero(meta, "A controlled route into the future NovaPharm customer network.", "Submit company, responsible-person, address, quality, credit and licence information once. Applications are reviewed before any account, commercial terms or portal access is activated.", slug)}
   <section class="section"><h2 class="sr-only">Customer account application form</h2><div class="container onboarding-layout"><aside class="onboarding-aside"><span class="section-kicker">Application stages</span><ol class="application-progress" data-application-progress><li aria-current="step">Company</li><li>Responsible people</li><li>Compliance</li><li>Documents</li></ol><div class="regulatory-notice"><strong>Account status</strong><p>Submitting this form does not create an approved trading account, confirm product availability or permit regulated supply. Due diligence, credit review and applicable regulatory checks are required.</p></div></aside><div class="onboarding-form-shell">
     <form class="form-grid application-form" data-account-application novalidate>
@@ -1057,7 +1071,7 @@ function buildSitemap() {
     ...publicRoutes.map(routePath),
     ...leadership.map((profile) => `/leadership/${profile.slug}/`),
     ...articles.map((article) => `/news-insights/${article.slug}/`),
-    "/account-application/"
+    ...(platformCapabilities.accountApplication ? ["/account-application/"] : [])
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map((path) => `<url><loc>${absoluteUrl(path)}</loc><lastmod>2026-07-11</lastmod><changefreq>${path.startsWith("/news-insights/") ? "monthly" : "weekly"}</changefreq><priority>${path === "/" ? "1.0" : ["/services/", "/regulatory-services/", "/product-portfolio/", "/partner-with-us/"].includes(path) ? "0.9" : "0.8"}</priority></url>`).join("")}</urlset>`;

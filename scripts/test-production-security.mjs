@@ -7,8 +7,18 @@ const runId = `${process.pid}-${Date.now()}`;
 const databasePath = `/tmp/novapharm-production-security-${runId}.sqlite`;
 const documentStoragePath = `/tmp/novapharm-production-security-documents-${runId}`;
 const username = "Vishal";
-const password = `Aa1!${randomBytes(24).toString("hex")}`;
-const permanentPassword = `Zz9!${randomBytes(24).toString("hex")}`;
+
+function randomPolicySafePassword(prefix) {
+  while (true) {
+    const candidate = `${prefix}${randomBytes(32).toString("base64url")}`;
+    if (/(.)\1{3,}/.test(candidate)) continue;
+    if (/(?:0123|1234|2345|3456|4567|5678|6789|abcd|bcde|cdef|qwer)/i.test(candidate)) continue;
+    return candidate;
+  }
+}
+
+const password = randomPolicySafePassword("Aa1!");
+const permanentPassword = randomPolicySafePassword("Zz9!");
 
 process.env.NODE_ENV = "production";
 process.env.DATABASE_PATH = databasePath;

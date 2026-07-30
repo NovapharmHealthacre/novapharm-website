@@ -90,7 +90,7 @@ if (existingPid && await ready()) {
 }
 rmSync(pidPath, { force: true });
 
-run("build-site.mjs", "Validation build", { PUBLIC_API_ORIGIN: "" });
+run("build-site.mjs", "Validation build", { PLATFORM_MODE: "FULL_PLATFORM", PUBLIC_API_ORIGIN: "" });
 run("initialise-browser-validation.mjs", "Validation database initialisation");
 run(join("local-portal", "seed.mjs"), "Base synthetic scenario seed");
 run("import-nutraxin-catalogue.mjs", "Nutraxin validation import");

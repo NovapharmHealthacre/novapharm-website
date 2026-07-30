@@ -132,7 +132,7 @@ export async function startLocalPortal() {
   assertProtectedFile(runtimePaths.environment, 0o600);
 
   const baseEnvironment = isolatedEnvironment(environment);
-  runNode(join(repositoryRoot, "scripts", "build-site.mjs"), { ...baseEnvironment, PUBLIC_API_ORIGIN: "" }, "Local portal build");
+  runNode(join(repositoryRoot, "scripts", "build-site.mjs"), { ...baseEnvironment, PLATFORM_MODE: "FULL_PLATFORM", PUBLIC_API_ORIGIN: "" }, "Local portal build");
 
   let firstBootstrap = false;
   if (!existsSync(runtimePaths.database)) {

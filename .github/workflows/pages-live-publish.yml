@@ -44,8 +44,8 @@ jobs:
 
       - name: Build and validate the public artifact
         run: |
-          npm run build
-          npm run test:owner-corrections
+          npm run build:public-only
+          npm run test:owner-corrections:public-only
           npm run validate:domain
           node scripts/stage-pages-artifact.mjs _site
 
@@ -79,11 +79,11 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Build corrected public output
-        run: npm run build
+        run: npm run build:public-only
 
       - name: Validate owner corrections and public routes
         run: |
-          npm run test:owner-corrections
+          npm run test:owner-corrections:public-only
           npm run validate:domain
           npm run check:links
           test "$(tr -d '\r\n' < CNAME)" = "novapharmhealthcare.com"
@@ -155,9 +155,15 @@ jobs:
             curl --fail --silent --show-error --location \
               -H 'Cache-Control: no-cache, no-store, max-age=0' \
               "${DEPLOYED_URL}?${cache_key}-${attempt}" > /tmp/deployed-home.html || true
+            curl --fail --silent --show-error --location \
+              -H 'Cache-Control: no-cache, no-store, max-age=0' \
+              "${DEPLOYED_URL%/}/portal/?${cache_key}-${attempt}" > /tmp/deployed-portal.html || true
             if grep -Fq 'Building a more resilient pharmaceutical supply network.' /tmp/deployed-home.html \
               && ! grep -Fq 'data-ai-search-open' /tmp/deployed-home.html \
-              && ! grep -Fq 'Search &amp; Ask NovaPharm' /tmp/deployed-home.html; then
+              && ! grep -Fq 'Search &amp; Ask NovaPharm' /tmp/deployed-home.html \
+              && grep -Fq 'This public website never asks for a portal username, password or confidential company record' /tmp/deployed-portal.html \
+              && ! grep -Fq 'data-login-form' /tmp/deployed-portal.html \
+              && ! grep -Fq 'type="password"' /tmp/deployed-portal.html; then
               echo "GitHub Pages artifact is deployed at ${DEPLOYED_URL}."
               exit 0
             fi
@@ -182,6 +188,15 @@ jobs:
             curl --fail --silent --show-error --location \
               -H 'Cache-Control: no-cache, no-store, max-age=0' \
               "$LIVE_ORIGIN/oncology/?${cache_key}-${attempt}" > /tmp/live-oncology.html || true
+            curl --fail --silent --show-error --location \
+              -H 'Cache-Control: no-cache, no-store, max-age=0' \
+              "$LIVE_ORIGIN/contact/?${cache_key}-${attempt}" > /tmp/live-contact.html || true
+            curl --fail --silent --show-error --location \
+              -H 'Cache-Control: no-cache, no-store, max-age=0' \
+              "$LIVE_ORIGIN/account-application/?${cache_key}-${attempt}" > /tmp/live-account.html || true
+            curl --fail --silent --show-error --location \
+              -H 'Cache-Control: no-cache, no-store, max-age=0' \
+              "$LIVE_ORIGIN/portal/?${cache_key}-${attempt}" > /tmp/live-portal.html || true
             search_status=$(curl --silent --output /dev/null --write-out '%{http_code}' --location "$LIVE_ORIGIN/search/?${cache_key}-${attempt}" || true)
             ai_status=$(curl --silent --output /dev/null --write-out '%{http_code}' --location "$LIVE_ORIGIN/technology/ai-governance/?${cache_key}-${attempt}" || true)
 
@@ -190,6 +205,12 @@ jobs:
               && ! grep -Fq 'Search &amp; Ask NovaPharm' /tmp/live-home.html \
               && grep -Fq 'Prabhakar Vitthal Lahare' /tmp/live-cro.html \
               && grep -Fq 'oncology-editorial-gallery' /tmp/live-oncology.html \
+              && grep -Fq 'does not collect or transmit enquiry details' /tmp/live-contact.html \
+              && ! grep -Fq 'data-contact-form' /tmp/live-contact.html \
+              && grep -Fq 'does not accept account applications or business documents' /tmp/live-account.html \
+              && ! grep -Fq 'data-account-application' /tmp/live-account.html \
+              && grep -Fq 'This public website never asks for a portal username, password or confidential company record' /tmp/live-portal.html \
+              && ! grep -Fq 'data-login-form' /tmp/live-portal.html \
               && [ "$search_status" = "404" ] \
               && [ "$ai_status" = "404" ]; then
               echo "The owner-corrected public release is live at $LIVE_ORIGIN."
