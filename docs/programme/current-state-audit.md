@@ -70,12 +70,14 @@ The audit table above records the state observed before migration work began. Th
 - The technology candidate passes 182 Chromium/WebKit screenshots, 52 Axe runs, a 17-route production build and production-mode Lighthouse scores of 78/100/100/100 on desktop and 95/100/100/100 on mobile. Desktop canvas performance remains a documented optimisation target; these are local measurements rather than field data.
 - The founder property has been migrated into the TypeScript/React/Next.js application at `apps/founder`, with canonical cross-estate entity identifiers and its approved content corpus. Its repository acceptance is documented in `docs/programme/founder-migration-acceptance.md`.
 - The founder candidate passes 294 Chromium/WebKit screenshots, 84 Axe runs, a 28-route production build and Lighthouse scores of 100/100/100/100 on desktop and 98/100/100/100 on mobile. These are local candidate measurements, not live field data.
+- The corporate public property has been migrated into the TypeScript/React/Next.js application at `apps/corporate`. It contains 37 canonical routes, uses the official logo and governed media, emits a connected entity graph and preserves the approved pre-authorisation claims boundary. Its repository acceptance is documented in `docs/programme/corporate-migration-acceptance.md`.
+- The corporate candidate passes 532 Chromium/WebKit screenshots, 152 Axe runs with zero serious or critical findings, a 44-route production build and Lighthouse scores of 100/100/100/100 on desktop and 97/100/100/100 on mobile. Mobile lab LCP is 2.7 seconds and remains an explicit optimisation and field-monitoring item.
 - The npm and pnpm dependency graphs now pin patched PostCSS and Sharp releases while retaining the latest stable Next.js release; a clean Node 24 npm installation reports zero vulnerabilities.
 
 ## Immediate release blockers
 
 1. No production API, managed database or isolated secure portal origin exists.
-2. The corporate public property and secure application surfaces have not yet completed the component-architecture migration.
+2. The isolated secure portal and shared API have not yet completed the component-architecture migration or managed-runtime acceptance.
 3. Leadership roles, the NIT relationship and some location/entity facts still require owner evidence or approval.
 4. Historical retired-credential cleanup is not closed for GitHub-managed pull refs.
 5. NIT's project brief remains an explicit email handoff until the shared API is deployed.

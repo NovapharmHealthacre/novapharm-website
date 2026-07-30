@@ -1,6 +1,6 @@
 {
   "version": "1.2",
-  "reviewed": "2026-07-15",
+  "reviewed": "2026-07-30",
   "legacyVisualStatus": "Editorial SVG records are retained for provenance only. They are retired from public production; creative-assets/module-media-asset-register.json is the current module and Insights media register.",
   "competitorCodeOrAssetsUsed": false,
   "authoringMaster": {
@@ -8,7 +8,7 @@
     "storage": "protected off-repository creative archive",
     "source": "OpenAI built-in image generation using creative-assets/image-generation-brief.md",
     "dimensions": "1672x941",
-    "productionDerivatives": ["assets/media/home/supply-network-hero.jpg", "assets/media/home/supply-network-hero-1200.jpg"]
+    "productionDerivatives": ["assets/media/home/supply-network-hero.jpg", "assets/media/home/supply-network-hero-1200.jpg", "assets/media/home/supply-network-hero.avif"]
   },
   "assets": [
     {
@@ -46,7 +46,7 @@
       "generated": true,
       "modified": true,
       "dimensions": "1672x941",
-      "optimisedVariants": ["assets/media/home/supply-network-hero-1200.jpg"],
+      "optimisedVariants": ["assets/media/home/supply-network-hero-1200.jpg", "assets/media/home/supply-network-hero.avif"],
       "pageUsage": ["homepage flagship hero"],
       "altText": "",
       "caption": "Editorial representation of regulated medicine movement, batch integrity and connected sourcing.",
@@ -66,6 +66,20 @@
       "caption": "Editorial representation of regulated medicine movement, batch integrity and connected sourcing.",
       "technicalStatus": "optimised; below 220 KB budget",
       "ownerApproval": "pending"
+    },
+    {
+      "path": "assets/media/home/supply-network-hero.avif",
+      "type": "responsive-hero-modern-format",
+      "source": "loss-controlled AVIF derivative of the registered homepage hero",
+      "generated": true,
+      "modified": true,
+      "dimensions": "1672x941",
+      "optimisedVariants": [],
+      "pageUsage": ["homepage flagship hero in AVIF-capable browsers"],
+      "altText": "",
+      "caption": "Editorial representation of regulated medicine movement, batch integrity and connected sourcing.",
+      "technicalStatus": "metadata stripped; 55 KB; Lighthouse-validated LCP asset",
+      "ownerApproval": "derived from approved existing production asset"
     },
     {
       "path": "assets/media/editorial/oncology-specialty.svg",

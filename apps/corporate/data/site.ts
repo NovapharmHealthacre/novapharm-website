@@ -28,7 +28,7 @@ export const navigation = Object.freeze([
   ["Technology", "/technology/"],
   ["Insights", "/news-insights/"],
   ["Contact", "/contact/"]
-]);
+] as const);
 
 export const leadership = Object.freeze([
   {

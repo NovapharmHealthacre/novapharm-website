@@ -23,7 +23,7 @@ for (const entry of retiredRequiredEntries) {
 }
 
 const previousCount = "const expectedPublicPageCount = Object.keys(pageMeta).length + leadership.length + insightFiles.length + 1;";
-const correctedCount = "const expectedPublicPageCount = Object.keys(pageMeta).length + leadership.length + insightFiles.length;";
+const correctedCount = "const expectedPublicPageCount = Object.keys(pageMeta).length + leadership.length + insightFiles.length - 1;";
 if (!source.includes(previousCount)) throw new Error("The public-page count expression changed; review the corrective validator.");
 source = source.replace(previousCount, correctedCount);
 

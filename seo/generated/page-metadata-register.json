@@ -491,6 +491,29 @@
     ]
   },
   {
+    "route": "/account-application/",
+    "canonical": "https://novapharmhealthcare.com/account-application/",
+    "file": "account-application/index.html",
+    "title": "Open a Pharmaceutical Customer Account | NovaPharm Healthcare",
+    "description": "Apply for a future NovaPharm Healthcare B2B customer account through a controlled company, responsible-person, GDP, credit and document onboarding workflow.",
+    "h1": "A controlled route into the future NovaPharm customer network.",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
     "route": "/investor-information/",
     "canonical": "https://novapharmhealthcare.com/investor-information/",
     "file": "investor-information/index.html",
@@ -989,29 +1012,6 @@
       "contact",
       "open-an-account",
       "partnership-ecosystem",
-      "partners",
-      "contact",
-      "open-an-account"
-    ]
-  },
-  {
-    "route": "/account-application/",
-    "canonical": "https://novapharmhealthcare.com/account-application/",
-    "file": "account-application/index.html",
-    "title": "Open a Pharmaceutical Customer Account | NovaPharm Healthcare",
-    "description": "Apply for a future NovaPharm Healthcare B2B customer account through a controlled company, responsible-person, GDP, credit and document onboarding workflow.",
-    "h1": "A controlled route into the future NovaPharm customer network.",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "BreadcrumbList",
-      "ListItem",
-      "ListItem"
-    ],
-    "intendedCta": [
-      "partners",
-      "contact",
-      "open-an-account",
       "partners",
       "contact",
       "open-an-account"

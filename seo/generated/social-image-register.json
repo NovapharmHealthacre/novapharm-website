@@ -150,6 +150,16 @@
     "absoluteUrl": "https://novapharmhealthcare.com/assets/media/modules/contact-qualified-enquiry.jpg"
   },
   {
+    "route": "/account-application/",
+    "page": "https://novapharmhealthcare.com/account-application/",
+    "url": "/assets/media/modules/account-controlled-onboarding.jpg",
+    "type": "image/jpeg",
+    "width": 1600,
+    "height": 900,
+    "alt": "Representative business-account review; submission does not create or approve an account",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/modules/account-controlled-onboarding.jpg"
+  },
+  {
     "route": "/investor-information/",
     "page": "https://novapharmhealthcare.com/investor-information/",
     "url": "/assets/media/modules/investors-capital-readiness.jpg",
@@ -348,15 +358,5 @@
     "height": 900,
     "alt": "Three-Pillar Sourcing: Direct GMP Partnerships, PLPI and European Buying Networks",
     "absoluteUrl": "https://novapharmhealthcare.com/assets/media/insights/three-pillar-sourcing.jpg"
-  },
-  {
-    "route": "/account-application/",
-    "page": "https://novapharmhealthcare.com/account-application/",
-    "url": "/assets/media/modules/account-controlled-onboarding.jpg",
-    "type": "image/jpeg",
-    "width": 1600,
-    "height": 900,
-    "alt": "Representative business-account review; submission does not create or approve an account",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/modules/account-controlled-onboarding.jpg"
   }
 ]

@@ -566,6 +566,33 @@
     ]
   },
   {
+    "route": "/account-application/",
+    "canonical": "https://novapharmhealthcare.com/account-application/",
+    "file": "account-application/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/account-application/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Open a Pharmaceutical Customer Account | NovaPharm Healthcare",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
     "route": "/investor-information/",
     "canonical": "https://novapharmhealthcare.com/investor-information/",
     "file": "investor-information/index.html",
@@ -1218,33 +1245,6 @@
         "mainEntity": "https://novapharmhealthcare.com/news-insights/three-pillar-pharmaceutical-sourcing-model/#webpage",
         "publisher": "https://novapharmhealthcare.com/#organization",
         "author": "https://novapharmhealthcare.com/#editorial-team"
-      }
-    ]
-  },
-  {
-    "route": "/account-application/",
-    "canonical": "https://novapharmhealthcare.com/account-application/",
-    "file": "account-application/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/account-application/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Open a Pharmaceutical Customer Account | NovaPharm Healthcare",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": null,
-        "types": [
-          "BreadcrumbList"
-        ],
-        "name": null,
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
       }
     ]
   }
