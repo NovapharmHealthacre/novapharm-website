@@ -1,0 +1,542 @@
+[
+  {
+    "code": "customer.dashboard",
+    "area": "customer",
+    "slug": "dashboard",
+    "title": "Customer Dashboard",
+    "route": "/portal/dashboard/",
+    "purpose": "Account position, current actions and recent customer-scoped activity.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "customer.account",
+    "area": "customer",
+    "slug": "account",
+    "title": "My Account",
+    "route": "/portal/account/",
+    "purpose": "Controlled legal entity, contacts, addresses, terms and change-request status.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "customer.orders",
+    "area": "customer",
+    "slug": "orders",
+    "title": "My Orders",
+    "route": "/portal/orders/",
+    "purpose": "Customer-scoped orders, lines, status histories and linked fulfilment records.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "customer.invoices",
+    "area": "customer",
+    "slug": "invoices",
+    "title": "My Invoices",
+    "route": "/portal/invoices/",
+    "purpose": "Customer invoices, outstanding balances, payments and credit notes.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "customer.statements",
+    "area": "customer",
+    "slug": "statements",
+    "title": "My Statements",
+    "route": "/portal/statements/",
+    "purpose": "Period statements reconciled from invoices, credits and payments.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "customer.products",
+    "area": "customer",
+    "slug": "products",
+    "title": "My Products",
+    "route": "/portal/products/",
+    "purpose": "Account-authorised catalogue products with controlled pricing and availability state.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "customer.price-lists",
+    "area": "customer",
+    "slug": "price-lists",
+    "title": "Price Lists",
+    "route": "/portal/price-lists/",
+    "purpose": "Effective customer-specific price lists without supplier cost or other-account pricing.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "customer.stock-availability",
+    "area": "customer",
+    "slug": "stock-availability",
+    "title": "Stock Availability",
+    "route": "/portal/stock-availability/",
+    "purpose": "Released available-to-promise quantities and explicit quarantine separation.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "customer.order-tracking",
+    "area": "customer",
+    "slug": "order-tracking",
+    "title": "Order Tracking",
+    "route": "/portal/order-tracking/",
+    "purpose": "Order status, allocation and linked shipment progress.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "customer.delivery-tracking",
+    "area": "customer",
+    "slug": "delivery-tracking",
+    "title": "Delivery Tracking",
+    "route": "/portal/delivery-tracking/",
+    "purpose": "Carrier and delivery events from approved source records.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "customer.returns",
+    "area": "customer",
+    "slug": "returns",
+    "title": "Returns",
+    "route": "/portal/returns/",
+    "purpose": "Controlled return requests, inspection disposition and credit-note status.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "customer.quality-complaints",
+    "area": "customer",
+    "slug": "quality-complaints",
+    "title": "Quality Complaints",
+    "route": "/portal/quality-complaints/",
+    "purpose": "Customer quality cases without processing adverse-event information.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "customer.documents",
+    "area": "customer",
+    "slug": "documents",
+    "title": "Documents",
+    "route": "/portal/documents/",
+    "purpose": "Authorised customer and order documents only.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "customer.support",
+    "area": "customer",
+    "slug": "support",
+    "title": "Support Tickets",
+    "route": "/portal/support/",
+    "purpose": "Customer-scoped service requests and linked order or product context.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "customer.regulatory-documents",
+    "area": "customer",
+    "slug": "regulatory-documents",
+    "title": "Regulatory Documents",
+    "route": "/portal/regulatory-documents/",
+    "purpose": "Approved effective regulatory documents authorised for the account.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "customer.downloads",
+    "area": "customer",
+    "slug": "downloads",
+    "title": "Downloads",
+    "route": "/portal/downloads/",
+    "purpose": "Permission-controlled downloadable records with no direct storage disclosure.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "customer.analytics",
+    "area": "customer",
+    "slug": "analytics",
+    "title": "Customer Analytics",
+    "route": "/portal/analytics/",
+    "purpose": "Customer-only order, spend, service and complaint indicators.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "customer.settings",
+    "area": "customer",
+    "slug": "settings",
+    "title": "Settings",
+    "route": "/portal/settings/",
+    "purpose": "Identity, notification and controlled account-change preferences.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "employee.dashboard",
+    "area": "employee",
+    "slug": "dashboard",
+    "title": "Operations Dashboard",
+    "route": "/employee/dashboard/",
+    "purpose": "Cross-functional tasks, exceptions and data-source readiness.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "employee.customers",
+    "area": "employee",
+    "slug": "customers",
+    "title": "Customers",
+    "route": "/employee/customers/",
+    "purpose": "Canonical customer accounts, contacts, credit and connected records.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "employee.suppliers",
+    "area": "employee",
+    "slug": "suppliers",
+    "title": "Suppliers",
+    "route": "/employee/suppliers/",
+    "purpose": "Qualification, contacts, products, purchasing and evidence.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "employee.products",
+    "area": "employee",
+    "slug": "products",
+    "title": "Product Master",
+    "route": "/employee/products/",
+    "purpose": "Product lifecycle, variants, composition, claims, media and linked records.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "employee.orders",
+    "area": "employee",
+    "slug": "orders",
+    "title": "Telesales Orders",
+    "route": "/employee/orders/",
+    "purpose": "Validated order creation and governed order lifecycle.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "employee.warehouse",
+    "area": "employee",
+    "slug": "warehouse",
+    "title": "Warehouse & Inventory",
+    "route": "/employee/warehouse/",
+    "purpose": "Third-party warehouse validation foundation and canonical inventory ledger.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "employee.purchasing",
+    "area": "employee",
+    "slug": "purchasing",
+    "title": "Purchasing",
+    "route": "/employee/purchasing/",
+    "purpose": "Purchase orders, receipts, supplier invoices and three-way matching.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "employee.finance",
+    "area": "employee",
+    "slug": "finance",
+    "title": "Finance",
+    "route": "/employee/finance/",
+    "purpose": "Synthetic double-entry, receivables, payables and control exceptions.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "employee.quality",
+    "area": "employee",
+    "slug": "quality",
+    "title": "Quality",
+    "route": "/employee/quality/",
+    "purpose": "Complaints, deviations, CAPA and batch-quality controls.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "employee.regulatory",
+    "area": "employee",
+    "slug": "regulatory",
+    "title": "Regulatory",
+    "route": "/employee/regulatory/",
+    "purpose": "Classification and milestone records without asserting unverified authorisation.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "employee.crm",
+    "area": "employee",
+    "slug": "crm",
+    "title": "CRM",
+    "route": "/employee/crm/",
+    "purpose": "Leads, opportunities, attribution and account-conversion context.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "employee.reports",
+    "area": "employee",
+    "slug": "reports",
+    "title": "Reports",
+    "route": "/employee/reports/",
+    "purpose": "Governed read-only operational reporting with stated scope and freshness.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "employee.administration",
+    "area": "employee",
+    "slug": "administration",
+    "title": "Operational Administration",
+    "route": "/employee/administration/",
+    "purpose": "Tasks, permissions and workflow state without security-admin duplication.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "executive.command-centre",
+    "area": "executive",
+    "slug": "command-centre",
+    "title": "Command Centre",
+    "route": "/portal/executive-platform/command-centre/",
+    "purpose": "Cross-functional operating position, exceptions and decisions required.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "executive.ceo-dashboard",
+    "area": "executive",
+    "slug": "ceo-dashboard",
+    "title": "CEO Dashboard",
+    "route": "/portal/executive-platform/ceo-dashboard/",
+    "purpose": "Synthetic financial and operational indicators linked to canonical records.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "executive.sales-intelligence",
+    "area": "executive",
+    "slug": "sales-intelligence",
+    "title": "Sales Intelligence",
+    "route": "/portal/executive-platform/sales-intelligence/",
+    "purpose": "Pipeline, product interest, conversion and order indicators.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "executive.customer-analytics",
+    "area": "executive",
+    "slug": "customer-analytics",
+    "title": "Customer Analytics",
+    "route": "/portal/executive-platform/customer-analytics/",
+    "purpose": "Customer, application, credit, service and complaint indicators.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "executive.product-master",
+    "area": "executive",
+    "slug": "product-master",
+    "title": "Product Master",
+    "route": "/portal/executive-platform/product-master/",
+    "purpose": "Read-only strategic view of product readiness and claim controls.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "executive.nhs-data",
+    "area": "executive",
+    "slug": "nhs-data",
+    "title": "NHS Data",
+    "route": "/portal/executive-platform/nhs-data/",
+    "purpose": "Licensed-data integration contract and honest no-data state.",
+    "maturity": "blocked_external_integration",
+    "externalDependency": "Licensed NHS data source and approved purpose"
+  },
+  {
+    "code": "executive.plpi",
+    "area": "executive",
+    "slug": "plpi",
+    "title": "PLPI",
+    "route": "/portal/executive-platform/plpi/",
+    "purpose": "Internal project governance only; no granted licence is implied.",
+    "maturity": "planned",
+    "externalDependency": "Verified project records and regulatory approval"
+  },
+  {
+    "code": "executive.pharmacovigilance",
+    "area": "executive",
+    "slug": "pharmacovigilance",
+    "title": "Pharmacovigilance",
+    "route": "/portal/executive-platform/pharmacovigilance/",
+    "purpose": "Qualified safety-system boundary; general portal safety intake remains prohibited.",
+    "maturity": "blocked_external_integration",
+    "externalDependency": "Approved qualified safety system and process"
+  },
+  {
+    "code": "executive.sourcing",
+    "area": "executive",
+    "slug": "sourcing",
+    "title": "Sourcing",
+    "route": "/portal/executive-platform/sourcing/",
+    "purpose": "Supplier qualification, product relationships and evidence status.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "executive.tenders",
+    "area": "executive",
+    "slug": "tenders",
+    "title": "Tenders",
+    "route": "/portal/executive-platform/tenders/",
+    "purpose": "Controlled opportunity tracking without implying award.",
+    "maturity": "planned",
+    "externalDependency": "Approved tender source and records"
+  },
+  {
+    "code": "executive.warehouse",
+    "area": "executive",
+    "slug": "warehouse",
+    "title": "Warehouse",
+    "route": "/portal/executive-platform/warehouse/",
+    "purpose": "Third-party integration readiness and canonical stock indicators.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "executive.service-levels",
+    "area": "executive",
+    "slug": "service-levels",
+    "title": "Service Levels",
+    "route": "/portal/executive-platform/service-levels/",
+    "purpose": "Measured delivery indicators from approved synthetic source records.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "executive.finance",
+    "area": "executive",
+    "slug": "finance",
+    "title": "Finance",
+    "route": "/portal/executive-platform/finance/",
+    "purpose": "Read-only synthetic finance controls and reconciled indicators.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "executive.capital",
+    "area": "executive",
+    "slug": "capital",
+    "title": "Capital",
+    "route": "/portal/executive-platform/capital/",
+    "purpose": "Controlled budget and capital-planning boundary without published forecasts.",
+    "maturity": "planned",
+    "externalDependency": "Board-approved planning records"
+  },
+  {
+    "code": "executive.microsoft-365",
+    "area": "executive",
+    "slug": "microsoft-365",
+    "title": "Microsoft 365",
+    "route": "/portal/executive-platform/microsoft-365/",
+    "purpose": "Graph and SharePoint integration health and least-privilege state.",
+    "maturity": "blocked_external_integration",
+    "externalDependency": "Microsoft tenant credentials and permission approval"
+  },
+  {
+    "code": "executive.documents",
+    "area": "executive",
+    "slug": "documents",
+    "title": "Documents",
+    "route": "/portal/executive-platform/documents/",
+    "purpose": "Controlled metadata and links without public file exposure.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "executive.ai-technology",
+    "area": "executive",
+    "slug": "ai-technology",
+    "title": "AI & Technology",
+    "route": "/portal/executive-platform/ai-technology/",
+    "purpose": "Governed use-case register; no autonomous decisions are presented as live.",
+    "maturity": "planned",
+    "externalDependency": "Approved use cases, models and risk review"
+  },
+  {
+    "code": "executive.traceability",
+    "area": "executive",
+    "slug": "traceability",
+    "title": "Traceability",
+    "route": "/portal/executive-platform/traceability/",
+    "purpose": "Canonical product, batch, order and inventory lineage; blockchain is not claimed.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "admin.dashboard",
+    "area": "admin",
+    "slug": "dashboard",
+    "title": "Admin Dashboard",
+    "route": "/admin/dashboard/",
+    "purpose": "Controlled platform, lead, application and integration overview.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "admin.local-review",
+    "area": "admin",
+    "slug": "local-review",
+    "title": "Owner Review",
+    "route": "/admin/local-review/",
+    "purpose": "Synthetic local acceptance index and module maturity.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "admin.users",
+    "area": "admin",
+    "slug": "users",
+    "title": "Users & Sessions",
+    "route": "/admin/users/",
+    "purpose": "Identity scopes, sessions and revocation controls.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "admin.content",
+    "area": "admin",
+    "slug": "content",
+    "title": "Content Governance",
+    "route": "/admin/content/",
+    "purpose": "Product content, claims, imagery and publication control.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  },
+  {
+    "code": "admin.analytics",
+    "area": "admin",
+    "slug": "analytics",
+    "title": "Platform Analytics",
+    "route": "/admin/analytics/",
+    "purpose": "Audit, security, migration, backup and data-quality indicators.",
+    "maturity": "operational_foundation",
+    "externalDependency": null
+  }
+]

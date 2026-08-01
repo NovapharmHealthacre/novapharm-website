@@ -38,10 +38,11 @@ function canUseModule(module, context) {
 }
 
 function baseSnapshot(module, extras = {}) {
+  const validationEnvironment = process.env.LOCAL_PORTAL_MODE === "true" || process.env.BROWSER_VALIDATION_MODE === "true";
   return {
     module,
-    environment: process.env.LOCAL_PORTAL_MODE === "true" ? "local_validation" : process.env.NODE_ENV === "production" ? "production" : "development",
-    dataState: process.env.LOCAL_PORTAL_MODE === "true" ? "synthetic" : "canonical",
+    environment: process.env.BROWSER_VALIDATION_MODE === "true" ? "browser_validation" : process.env.LOCAL_PORTAL_MODE === "true" ? "local_validation" : process.env.NODE_ENV === "production" ? "production" : "development",
+    dataState: validationEnvironment ? "synthetic" : "canonical",
     dataFreshness: nowIso(),
     readOnly: module.area === "executive",
     metrics: [],

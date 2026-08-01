@@ -72,15 +72,19 @@ The audit table above records the state observed before migration work began. Th
 - The founder candidate passes 294 Chromium/WebKit screenshots, 84 Axe runs, a 28-route production build and Lighthouse scores of 100/100/100/100 on desktop and 98/100/100/100 on mobile. These are local candidate measurements, not live field data.
 - The corporate public property has been migrated into the TypeScript/React/Next.js application at `apps/corporate`. It contains 37 canonical routes, uses the official logo and governed media, emits a connected entity graph and preserves the approved pre-authorisation claims boundary. Its repository acceptance is documented in `docs/programme/corporate-migration-acceptance.md`.
 - The corporate candidate passes 532 Chromium/WebKit screenshots, 152 Axe runs with zero serious or critical findings, a 44-route production build and Lighthouse scores of 100/100/100/100 on desktop and 97/100/100/100 on mobile. Mobile lab LCP is 2.7 seconds and remains an explicit optimisation and field-monitoring item.
+- The secure portal has been migrated into `apps/portal`, and the governed API boundary into `apps/api`. One typed catalogue covers 54 customer, employee, board and administrator modules. The API cannot serve public pages, and the portal accesses only an allowlisted same-origin gateway.
+- Portal/API repository acceptance is documented in `docs/programme/portal-api-migration-acceptance.md`. The production standalone candidate passes four API boundary tests, six portal route/security tests, 798 Chromium/WebKit screenshots and 228 Axe runs with zero serious or critical findings.
+- Portal Lighthouse results are 100/100/100 and 98/100/100 for desktop/mobile sign-in, and 100/100/96 and 96/100/96 for the desktop/mobile authenticated customer dashboard. SEO is intentionally excluded for the private, noindex application. Mobile dashboard LCP is 2.7 seconds and remains a staging optimisation item.
+- Browser and performance acceptance use generated synthetic credentials and an isolated database in an operating-system temporary directory. The runner stops both services and removes the protected runtime after every run.
 - The npm and pnpm dependency graphs now pin patched PostCSS and Sharp releases while retaining the latest stable Next.js release; a clean Node 24 npm installation reports zero vulnerabilities.
 
 ## Immediate release blockers
 
-1. No production API, managed database or isolated secure portal origin exists.
-2. The isolated secure portal and shared API have not yet completed the component-architecture migration or managed-runtime acceptance.
+1. The repository candidate has no deployed Azure API, portal, managed database or private document service; all current production origins remain static.
+2. Entra workforce/External ID, MFA, managed identities, Azure SQL, private Blob storage, email and live monitoring require owner-controlled staging configuration and acceptance.
 3. Leadership roles, the NIT relationship and some location/entity facts still require owner evidence or approval.
 4. Historical retired-credential cleanup is not closed for GitHub-managed pull refs.
 5. NIT's project brief remains an explicit email handoff until the shared API is deployed.
-6. Required Azure, Entra, Graph, SharePoint, email, legal and DNS gates remain owner-controlled.
+6. SharePoint inventory and least-privilege changes, UK legal review, Azure deployment, production DNS and cutover remain owner-controlled.
 
 The current public sites remain available during migration. This programme must not be labelled production complete until the managed runtime, identities, data, private documents, monitoring, backup restoration, domains and live acceptance are genuinely verified.

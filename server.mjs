@@ -85,6 +85,9 @@ const isProduction = process.env.NODE_ENV === "production";
 const isPreview = process.env.PREVIEW_MODE === "true";
 const isLocalPortal = process.env.LOCAL_PORTAL_MODE === "true";
 const isBrowserValidation = process.env.BROWSER_VALIDATION_MODE === "true";
+const serverMode = String(process.env.NOVAPHARM_SERVER_MODE || "unified").toLowerCase();
+if (!["unified", "api-only"].includes(serverMode)) throw new Error("NOVAPHARM_SERVER_MODE must be unified or api-only.");
+const isApiOnly = serverMode === "api-only";
 const loginRateLimit = isBrowserValidation ? 16 : 8;
 const previewUsername = String(process.env.PREVIEW_ACCESS_USERNAME || "");
 const previewPassword = String(process.env.PREVIEW_ACCESS_PASSWORD || "");
@@ -94,6 +97,17 @@ const sessionSecret = process.env.SESSION_SECRET || (isProduction ? "" : "local-
 const sessionTtlMs = Number(process.env.SESSION_TTL_MS || 8 * 60 * 60 * 1000);
 const sessionIdleTimeoutMs = Number(process.env.SESSION_IDLE_TIMEOUT_MS || 30 * 60 * 1000);
 const publicOrigin = new URL(process.env.PUBLIC_ORIGIN || process.env.SITE_URL || `http://${host}:${port}`).origin;
+const apiOrigin = new URL(process.env.PUBLIC_API_ORIGIN || publicOrigin).origin;
+const portalOrigin = new URL(process.env.PORTAL_ORIGIN || publicOrigin).origin;
+const allowedOrigins = new Set([
+  publicOrigin,
+  portalOrigin,
+  ...String(process.env.ALLOWED_ORIGINS || "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .map((value) => new URL(value).origin),
+]);
 const accessRedirects = {
   customer: "/portal/dashboard/",
   employee: "/employee/dashboard/",
@@ -139,7 +153,9 @@ if (isBrowserValidation) {
 }
 
 if (isProduction) {
-  for (const variable of ["SECURE_CONTENT_ROOT", "PUBLIC_ORIGIN", "PUBLIC_API_ORIGIN", "SITE_URL"]) {
+  const requiredProductionVariables = ["SECURE_CONTENT_ROOT", "PUBLIC_ORIGIN", "PUBLIC_API_ORIGIN", "SITE_URL"];
+  if (isApiOnly) requiredProductionVariables.push("PORTAL_ORIGIN");
+  for (const variable of requiredProductionVariables) {
     if (!process.env[variable]) throw new Error(`${variable} is required in production.`);
   }
   if (databaseProvider === "sqlite" && !process.env.DATABASE_PATH) throw new Error("DATABASE_PATH is required for the SQLite production provider.");
@@ -147,10 +163,10 @@ if (isProduction) {
     throw new Error("AZURE_SQL_SERVER and AZURE_SQL_DATABASE are required for the Azure SQL production provider.");
   }
   if (host !== "0.0.0.0") throw new Error("HOST must be 0.0.0.0 in production.");
-  if (!publicOrigin.startsWith("https://")) throw new Error("PUBLIC_ORIGIN must use HTTPS in production.");
-  for (const variable of ["PUBLIC_API_ORIGIN", "SITE_URL"]) {
-    if (new URL(process.env[variable]).origin !== publicOrigin) throw new Error(`${variable} must match PUBLIC_ORIGIN.`);
+  for (const [variable, value] of [["PUBLIC_ORIGIN", publicOrigin], ["PUBLIC_API_ORIGIN", apiOrigin], ["PORTAL_ORIGIN", portalOrigin]]) {
+    if (!value.startsWith("https://")) throw new Error(`${variable} must use HTTPS in production.`);
   }
+  if (new URL(process.env.SITE_URL).origin !== publicOrigin) throw new Error("SITE_URL must match PUBLIC_ORIGIN.");
 }
 
 await provisionBootstrapAdmin(process.env, { requireCompromiseCheck: isProduction, fetchImplementation: isProduction ? globalThis.fetch : null });
@@ -234,13 +250,21 @@ function securityHeaders(extra = {}, { allowPrivateInline = false } = {}) {
     ].join("; "),
     ...extra
   };
-  if (isPreview || isLocalPortal || isBrowserValidation) headers["X-Robots-Tag"] = "noindex, nofollow, noarchive";
+  if (isPreview || isLocalPortal || isBrowserValidation || isApiOnly) headers["X-Robots-Tag"] = "noindex, nofollow, noarchive";
   if (isProduction) headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains";
   return headers;
 }
 
+const corsHeadersByResponse = new WeakMap();
+
+function responseSecurityHeaders(response, extra = {}, options = {}) {
+  const corsHeaders = corsHeadersByResponse.get(response) || {};
+  corsHeadersByResponse.delete(response);
+  return securityHeaders({ ...corsHeaders, ...extra }, options);
+}
+
 function send(response, status, body, headers = {}) {
-  response.writeHead(status, securityHeaders(headers));
+  response.writeHead(status, responseSecurityHeaders(response, headers));
   response.end(body);
 }
 
@@ -275,21 +299,37 @@ function requireCsrf(request) {
 }
 
 function hasAllowedOrigin(request) {
-  if (!isProduction && !isLocalPortal && !isBrowserValidation) return true;
+  if (!isProduction && !isLocalPortal && !isBrowserValidation && !isApiOnly) return true;
   const origin = request.headers.origin;
   if (!origin) return true;
   try {
-    return new URL(origin).origin === publicOrigin;
+    return allowedOrigins.has(new URL(origin).origin);
   } catch {
     return false;
   }
 }
 
+function applyCorsHeaders(request, response) {
+  const origin = request.headers.origin;
+  if (!origin || !hasAllowedOrigin(request)) return;
+  const normalisedOrigin = new URL(origin).origin;
+  corsHeadersByResponse.set(response, {
+    "Access-Control-Allow-Origin": normalisedOrigin,
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Methods": "GET, HEAD, POST, PATCH, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, X-CSRF-Token, X-Application-Upload-Token",
+    "Access-Control-Max-Age": "600",
+    "Vary": "Origin"
+  });
+}
+
 function hasAllowedHost(request) {
-  if (!isProduction && !isLocalPortal && !isBrowserValidation) return true;
+  if (!isProduction && !isLocalPortal && !isBrowserValidation && !isApiOnly) return true;
   const received = String(request.headers.host || "").toLowerCase();
   const allowed = new Set([
     new URL(publicOrigin).host.toLowerCase(),
+    new URL(apiOrigin).host.toLowerCase(),
+    new URL(portalOrigin).host.toLowerCase(),
     String(process.env.WEBSITE_HOSTNAME || "").toLowerCase()
   ].filter(Boolean));
   return allowed.has(received);
@@ -514,7 +554,7 @@ async function healthSnapshot() {
   const ready = databaseIsReady && identity !== "unavailable" && email.startsWith("configured:") && Boolean(storage);
   return {
     status: ready ? "ready" : databaseIsReady ? "degraded" : "unavailable",
-    service: "novapharm-web",
+    service: isApiOnly ? "novapharm-api" : "novapharm-web",
     version: applicationVersion,
     environment: isLocalPortal ? "local_validation" : isBrowserValidation ? "browser_validation" : isPreview ? "validation" : isProduction ? "production" : "development",
     timestamp: new Date().toISOString(),
@@ -564,17 +604,32 @@ export async function handleRequest(request, response) {
     const url = new URL(request.url || "/", `http://${request.headers.host || "localhost"}`);
     const pathname = url.pathname;
 
+    if (isApiOnly && pathname === "/robots.txt" && request.method === "GET") {
+      return send(response, 200, "User-agent: *\nDisallow: /\n", { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" });
+    }
+    if (isApiOnly && !pathname.startsWith("/api/")) {
+      return json(response, 404, { error: "Not found." });
+    }
+
+    if (pathname.startsWith("/api/")) {
+      if (!hasAllowedOrigin(request)) {
+        await recordSecurityEvent({ eventType: "request.origin_rejected", networkFingerprint: networkFingerprint(request), outcome: "denied", details: { pathname } });
+        return json(response, 403, { error: "Request origin is not permitted.", code: "origin_rejected" });
+      }
+      applyCorsHeaders(request, response);
+      if (request.method === "OPTIONS") {
+        response.writeHead(204, responseSecurityHeaders(response, { "Cache-Control": "no-store" }));
+        response.end();
+        return;
+      }
+    }
+
     if (isPreview && !["/api/health", "/api/health/live", "/api/health/ready", "/api/live", "/api/ready", "/robots.txt"].includes(pathname) && !previewAccessAllowed(request.headers.authorization, previewUsername, previewPassword)) {
       return send(response, 401, "Preview authentication required.", {
         "Content-Type": "text/plain; charset=utf-8",
         "Cache-Control": "no-store",
         "WWW-Authenticate": 'Basic realm="NovaPharm private preview", charset="UTF-8"'
       });
-    }
-
-    if (pathname.startsWith("/api/") && !["GET", "HEAD", "OPTIONS"].includes(request.method || "GET") && !hasAllowedOrigin(request)) {
-      await recordSecurityEvent({ eventType: "request.origin_rejected", networkFingerprint: networkFingerprint(request), outcome: "denied", details: { pathname } });
-      return json(response, 403, { error: "Request origin is not permitted.", code: "origin_rejected" });
     }
 
     if (pathname === "/api/security/csrf" && request.method === "GET") {
@@ -993,7 +1048,7 @@ export async function handleRequest(request, response) {
     }
 
     if (["/api/health/live", "/api/live"].includes(pathname) && request.method === "GET") {
-      json(response, 200, { status: "live", service: "novapharm-web", version: applicationVersion, timestamp: new Date().toISOString() });
+      json(response, 200, { status: "live", service: isApiOnly ? "novapharm-api" : "novapharm-web", version: applicationVersion, timestamp: new Date().toISOString() });
       return;
     }
 
@@ -1152,9 +1207,10 @@ server.on("error", (error) => {
 });
 
 const startedDirectly = process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (startedDirectly) {
+export function startNovaPharmServer() {
+  if (server.listening) return server;
   server.listen(port, host, () => {
-    console.log(`NovaPharm Healthcare website running at http://${host}:${port}/`);
+    console.log(`NovaPharm Healthcare ${isApiOnly ? "API" : "website"} running at http://${host}:${port}/`);
   });
   const processQueuedEmails = async () => {
     try {
@@ -1184,4 +1240,7 @@ if (startedDirectly) {
   };
   process.once("SIGTERM", () => shutdown("SIGTERM"));
   process.once("SIGINT", () => shutdown("SIGINT"));
+  return server;
 }
+
+if (startedDirectly) startNovaPharmServer();

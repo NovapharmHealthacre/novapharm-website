@@ -87,7 +87,11 @@
     "technology:test:browser": "npm run test:browser --workspace=@novapharm/technology",
     "corporate:check": "npm run check --workspace=@novapharm/corporate",
     "corporate:test:browser": "npm run test:browser --workspace=@novapharm/corporate",
-    "apps:check": "npm run founder:check && npm run technology:check && npm run corporate:check"
+    "api:check": "npm run check --workspace=@novapharm/api",
+    "portal:check": "npm run check --workspace=@novapharm/portal",
+    "portal:test:browser": "node scripts/run-portal-browser-acceptance.mjs",
+    "portal:test:lighthouse": "node scripts/run-portal-lighthouse.mjs",
+    "apps:check": "npm run founder:check && npm run technology:check && npm run corporate:check && npm run api:check && npm run portal:check"
   },
   "engines": {
     "node": "24.x",
@@ -103,6 +107,8 @@
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",
     "@types/node": "24.13.3",
+    "chrome-launcher": "1.2.1",
+    "lighthouse": "13.4.1",
     "playwright": "1.61.1",
     "postcss": "8.5.25",
     "sharp": "0.35.3",

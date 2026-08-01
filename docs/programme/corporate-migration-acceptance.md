@@ -1,6 +1,6 @@
 # Corporate Application Migration Acceptance
 
-Status: repository candidate accepted; shared API, secure portal and managed deployment pending
+Status: repository candidate accepted; portal/API repository migration complete, managed deployment pending
 
 Candidate branch: `codex/unified-digital-estate-foundation`
 
@@ -76,8 +76,8 @@ Evidence is stored in `artifacts/corporate-browser` and `artifacts/corporate-lig
 
 ## Remaining gates
 
-1. Extract and accept the shared typed API and isolated secure portal applications.
-2. Deploy managed identity, Azure SQL, private document storage, email delivery and audit persistence in an approved staging environment.
+1. Deploy the accepted shared API and isolated secure portal applications in an approved managed staging environment.
+2. Deploy managed identity, Azure SQL, private document storage, email delivery and audit persistence in that environment.
 3. Verify contact and account workflows end to end against the deployed runtime, including queue/provider failure and persistence.
 4. Complete customer, employee, board and administrator role-boundary, session, MFA and customer-isolation acceptance.
 5. Complete SharePoint inventory and approved least-privilege changes before exposing Executive Platform documents.
