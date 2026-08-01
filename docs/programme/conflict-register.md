@@ -1,6 +1,6 @@
 # Master Specification Conflict Register
 
-Status: active  
+Status: active
 Last reviewed: 30 July 2026
 
 This register resolves duplicated, conflicting or unsafe requirements in favour of security, regulatory accuracy, accessibility, performance and maintainability. A resolution does not convert an external or evidential dependency into a completed feature.

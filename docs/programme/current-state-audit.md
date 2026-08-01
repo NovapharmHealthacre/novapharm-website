@@ -1,8 +1,8 @@
 # NovaPharm Unified Digital Estate - Current-State Audit
 
-Status: evidence baseline complete  
-Audit date: 30 July 2026  
-Master specification SHA-256: `e541b85b0a03ef9b54e8aa96b5380f49fe232774a3d531abcaad880071c60c32`  
+Status: evidence baseline complete
+Audit date: 30 July 2026
+Master specification SHA-256: `e541b85b0a03ef9b54e8aa96b5380f49fe232774a3d531abcaad880071c60c32`
 Traceability records: 5,900
 
 ## Scope and evidence

@@ -1,9 +1,9 @@
 # Master Requirements Traceability Matrix
 
-Status: baseline established; implementation open  
-Generated: 2026-07-30T07:03:37.829Z  
-Source SHA-256: `e541b85b0a03ef9b54e8aa96b5380f49fe232774a3d531abcaad880071c60c32`  
-Normalised source lines: 5902  
+Status: baseline established; implementation open
+Generated: 2026-07-30T07:03:37.829Z
+Source SHA-256: `e541b85b0a03ef9b54e8aa96b5380f49fe232774a3d531abcaad880071c60c32`
+Normalised source lines: 5902
 Traceable records: 5900
 
 The complete line-level ledger is in `requirements-matrix.json` and `requirements-matrix.csv`. No row is marked complete merely because code exists; production, security, legal, regulatory and external-account gates remain explicit.

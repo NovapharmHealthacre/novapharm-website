@@ -1,6 +1,6 @@
 # Official Technical and Compliance Source Register
 
-Status: active  
+Status: active
 Review date: 30 July 2026
 
 Only primary and official sources are used for implementation decisions. Product/version-specific guidance must be rechecked at the time of deployment.

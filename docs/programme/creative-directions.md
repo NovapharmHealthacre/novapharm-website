@@ -1,6 +1,6 @@
 # Unified Estate Creative Directions
 
-Status: three directions evaluated; `Regulated Continuum` selected provisionally  
+Status: three directions evaluated; `Regulated Continuum` selected provisionally
 Review date: 30 July 2026
 
 The three properties must feel related without becoming copies. Each direction uses the official NovaPharm identity, approved portraits and evidence-safe pharmaceutical imagery. None relies on decorative orbs, generic doodles, fake facilities or unsupported operating claims.

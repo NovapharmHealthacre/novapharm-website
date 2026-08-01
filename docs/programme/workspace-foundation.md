@@ -1,7 +1,7 @@
 # Unified Workspace Foundation
 
-Status: implemented and tested; application migration in progress  
-Date: 30 July 2026  
+Status: implemented and tested; application migration in progress
+Date: 30 July 2026
 Owner: NovaPharm digital-estate programme
 
 ## Purpose
