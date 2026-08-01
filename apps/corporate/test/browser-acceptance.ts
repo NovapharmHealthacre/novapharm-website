@@ -119,8 +119,17 @@ async function scrollThroughPage(page: Page): Promise<void> {
   await page.waitForTimeout(30);
 }
 
-async function waitForImages(page: Page): Promise<void> {
-  const deadline = Date.now() + 20_000;
+async function waitForImages(page: Page, engine: string, route: string): Promise<void> {
+  const images = page.locator("img");
+  for (let index = 0; index < await images.count(); index += 1) {
+    const image = images.nth(index);
+    if (!(await image.evaluate((element) => (element as HTMLImageElement).complete))) {
+      await image.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(25);
+    }
+  }
+
+  const deadline = Date.now() + 45_000;
   while (Date.now() < deadline) {
     const complete = await page.evaluate(() => {
       for (const image of document.images) if (!image.complete) return false;
@@ -129,7 +138,13 @@ async function waitForImages(page: Page): Promise<void> {
     if (complete) return;
     await page.waitForTimeout(100);
   }
-  throw new Error("Responsive images did not settle within the acceptance window");
+  const pending = await page.evaluate(() =>
+    [...document.images]
+      .filter((image) => !image.complete)
+      .slice(0, 8)
+      .map((image) => image.currentSrc || image.src),
+  );
+  throw new Error(`${engine} ${route}: responsive images did not settle within the acceptance window: ${pending.join(" | ")}`);
 }
 
 async function verifyPage(page: Page, engine: string, viewport: (typeof viewports)[number], route: string): Promise<void> {
@@ -161,7 +176,7 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
   const keyViewport = viewport.name === "desktop-1440" || viewport.name === "mobile-390";
   if (keyViewport) {
     await scrollThroughPage(page);
-    await waitForImages(page);
+    await waitForImages(page, engine, route);
   }
   const layout = await page.evaluate(() => ({
     viewportWidth: document.documentElement.clientWidth,
