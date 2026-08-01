@@ -8,6 +8,8 @@ Traceable records: 5900
 
 The complete line-level ledger is in `requirements-matrix.json` and `requirements-matrix.csv`. No row is marked complete merely because code exists; production, security, legal, regulatory and external-account gates remain explicit.
 
+This file and its JSON/CSV companions preserve the audited baseline. Current repository increments and their evidence are recorded in `implementation-evidence.json`; that overlay does not convert owner-controlled Azure, Entra, SharePoint, DNS, legal, regulatory or production gates into completed requirements.
+
 ## Current status distribution
 
 - `partial`: 4088

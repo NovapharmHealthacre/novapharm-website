@@ -1,7 +1,7 @@
 # Unified Estate Migration Strategy
 
-Status: approved source strategy; production execution pending external gates  
-Date: 30 July 2026
+Status: source migration implemented; managed staging and production execution pending external gates
+Date: 1 August 2026
 
 ## Objective
 
@@ -43,7 +43,7 @@ Exit evidence: one lockfile, strict typecheck, no duplicated canonical facts and
 Migration order:
 
 1. Founder, because it has the smallest route surface and a strong evidence-bound content model.
-2. NIT, after dependency and mobile corrections and legal-relationship evidence review.
+2. Technology, after dependency and mobile corrections and legal-relationship evidence review.
 3. Corporate, preserving all approved product media, Insights, legal content and current canonical routes.
 
 Each property requires:
@@ -63,6 +63,7 @@ Each property requires:
 - Store relational state in Azure SQL staging.
 - Store validation uploads in private Blob quarantine.
 - Activate forms only after API health and end-to-end provider tests pass.
+- Route public browser submissions through the corporate same-origin gateway so slot-specific API origins remain server-side configuration.
 
 ### Stage 4 - Identity and portal
 
@@ -71,6 +72,7 @@ Each property requires:
 - Enforce customer isolation and resource-level document access.
 - Complete customer, employee, board and administrator route matrix.
 - Keep bootstrap authentication restricted to controlled activation and password replacement.
+- Sign portal-to-API Easy Auth assertions and reject stale, altered or replayed principal handoffs.
 
 ### Stage 5 - Microsoft 365 and controlled documents
 
@@ -85,6 +87,7 @@ Each property requires:
 - Add `noindex`, `nofollow`, `X-Robots-Tag` and restricted access.
 - Run the full functional, security, browser, accessibility, performance, backup and restoration suites.
 - Record costs before any production approval.
+- Deploy six independent release packages on separate public and secure plans, with API-only SQL/Blob access and separate portal/API secret vaults.
 
 ### Stage 7 - Production candidate and cutover
 

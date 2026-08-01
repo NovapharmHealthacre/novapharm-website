@@ -1,127 +1,68 @@
-# ADR-005: Azure Production Platform Migration
+# ADR-005: Unified Azure Production Platform
 
-Status: accepted for implementation; cloud deployment remains owner-controlled  
-Decision date: 14 July 2026  
-Decision owners: NovaPharm Healthcare Ltd and digital platform engineering
+Status: accepted and implemented in the repository; managed deployment remains owner-controlled
+Original decision: 14 July 2026
+Reconciled with the unified estate: 1 August 2026
 
-## Context
-
-NovaPharm has a generated public website and a custom Node application. Public content is already emitted as complete HTML, has stable canonical URLs and passes strong repository SEO/claims checks. The application uses synchronous SQLite, local persistent files and local credentials. GitHub Pages serves the public site but cannot execute authenticated APIs.
-
-Two paths were assessed:
-
-- **Path A:** preserve the public generator and current Node domain behaviour while replacing production hosting, identity, data, files, secrets, telemetry and CI/CD with Azure-managed services.
-- **Path B:** immediately rebuild public and portal experiences in TypeScript, React and Next.js before platform migration.
+This record supersedes the earlier single-App-Service variant of ADR-005. The detailed migration decision and evidence are maintained in `docs/programme/architecture-decision-record.md` and `docs/programme/azure-unified-estate-acceptance.md`.
 
 ## Decision
 
-Choose **Path A** for the production migration.
+Use the hardened Node/Next.js strangler path already implemented in this repository. Deploy six independently packaged applications to Azure App Service for Linux:
 
-Deploy the conventional Node application to **Azure App Service for Linux** on a production-capable dedicated tier with Always On, a staging slot, managed identity, health checks and controlled scale. Replace SQLite with **Azure SQL Database**, private files with **Azure Blob Storage**, local workforce/customer credentials with **Microsoft Entra ID and Microsoft Entra External ID**, host secrets with **Azure Key Vault references**, and local-only logs with **Application Insights and Log Analytics**.
+1. Corporate public website
+2. Innovation and Technology public website
+3. Founder public website
+4. Secure portal
+5. Application API
+6. Sanitised public status service
 
-Retain generated, server-readable public HTML during migration. Introduce TypeScript at cloud boundaries and new modules; do not force a full React/Next rewrite into the security migration. Reassess Next.js after Azure cutover when a verified need exists for a CMS, richer product applications, React component reuse or a larger editorial team.
-
-## Target architecture
+The four public/status applications share a public App Service plan. Portal and API share a separate secure plan but retain separate processes, managed identities and package boundaries. Azure SQL is the transactional source of truth. Private Azure Blob containers hold uploads and authorised documents. Microsoft Entra governs workforce and approved external identities. Separate portal and API Key Vaults prevent a public or portal compromise from inheriting database, document, email or session secrets.
 
 ```mermaid
 flowchart TB
-  U["Public visitors and authorised portal users"] --> APP["Azure App Service for Linux"]
-  APP --> PUB["Generated canonical public HTML"]
-  APP --> API["Node application APIs"]
-  API --> AUTH["Entra ID and Entra External ID"]
-  API --> SQL["Azure SQL Database"]
-  API --> BLOB["Private Blob quarantine and clean containers"]
-  API --> SP["SharePoint through Microsoft Graph"]
-  API --> MAIL["Transactional email provider"]
-  APP --> KV["Key Vault references via managed identity"]
-  APP --> AI["Application Insights and Log Analytics"]
-  BLOB --> DEF["Defender for Storage on-upload scanning"]
-  GHA["GitHub Actions with Azure OIDC"] --> SLOT["Staging slot"]
-  SLOT --> APP
+  USERS["Public visitors and authorised users"] --> PUBLIC["Corporate, Technology and Founder apps"]
+  USERS --> PORTAL["Secure portal"]
+  PUBLIC -->|"same-origin public workflow gateway"| API["Application API"]
+  PORTAL -->|"signed, replay-protected identity handoff"| API
+  STATUS["Sanitised status service"] --> PUBLIC
+  STATUS --> PORTAL
+  STATUS --> API
+  API --> SQL["Azure SQL"]
+  API --> BLOB["Private Blob quarantine and document containers"]
+  API --> GRAPH["Microsoft Graph and approved SharePoint sites"]
+  API --> MAIL["Transactional email"]
+  PORTAL --> PKV["Portal Key Vault"]
+  API --> AKV["API Key Vault"]
+  GHA["GitHub Actions with Azure OIDC"] --> APPS["Six candidate packages"]
 ```
 
-## Why not Path B now
+## Why this path
 
-| Consideration | Path A | Path B |
-|---|---|---|
-| Immediate security value | Directly replaces identity/data/file/secret boundaries | Delays those controls behind a frontend rewrite |
-| SEO/GEO | Preserves complete generated HTML and current URLs | Can be excellent, but requires parity migration and redirect risk |
-| Portal compatibility | Existing route and test contracts can be migrated incrementally | Requires substantial UI/API reimplementation |
-| Database effort | High but isolated to persistence/domain boundaries | Same database effort plus framework migration |
-| Downtime | Parallel Azure deployment and DNS cutover | Longer parallel build and content parity period |
-| Rollback | Return DNS to unchanged GitHub Pages public site | Harder if routes/content/rendering change together |
-| Maintainability | Improved through modular cloud adapters and TypeScript at new boundaries | Potentially stronger frontend model after larger rewrite |
-| Cost | App Service, SQL, Storage, Key Vault and monitoring | Same platform costs plus migration engineering |
-| CMS future | Generator remains code-owned | Next.js better when a real editorial/CMS requirement is approved |
+- It preserves approved routes, content, imagery and search equity while replacing the broken static/runtime boundary.
+- It isolates public presentation, privileged user experience and data APIs without introducing container orchestration that NovaPharm does not yet need.
+- App Service provides managed identity, health checks, candidate slots, managed certificates and operational simplicity for conventional persistent Node applications.
+- The repository now uses strict TypeScript workspaces and five Next.js standalone applications while retaining the tested API domain implementation behind a dedicated compiled entry point.
+- Production slot promotion, DNS, Microsoft permissions and GitHub Pages retirement remain explicit owner-controlled gates.
 
-Next.js is not rejected. It is sequenced after the operational trust boundary is managed and observable.
+## Data, identity and documents
 
-## Azure hosting decision
+- Azure SQL is authoritative for identity linkage, scopes, sessions, applications, customers, transactions, consent and audit events.
+- SharePoint Lists may expose controlled Microsoft 365 work views but do not replace security or transactional records.
+- SharePoint document libraries hold approved controlled records under least privilege. OneDrive is not an application backend.
+- Public uploads enter a private quarantine container. Release requires an approved malware result and authorised workflow.
+- Employees, board and administrators use workforce Entra; approved customers use Entra External ID or the currently supported invitation-based Microsoft external identity service.
+- Server-side role, scope, customer ownership and document authorisation remain mandatory after identity-provider validation.
 
-Use **Azure App Service for Linux** rather than Container Apps for the first production release because:
+## Production controls
 
-- this is one conventional persistent HTTP application, not a multi-service container topology;
-- deployment slots, managed certificates, Easy Auth, managed identity, health checks and Key Vault references are native;
-- a dedicated instance avoids an intentional scale-to-zero cold start on a secure portal;
-- operational ownership is simpler for a small company;
-- the current Dockerfile remains a portability and disaster-recovery option.
+- Node 24, HTTPS only, TLS 1.2 minimum, FTPS disabled and Always On on paid Standard-or-better plans.
+- Private endpoints for SQL, Blob and both vaults; portal/API VNet integration.
+- Separate production and candidate SQL databases, private containers, identities and secrets.
+- Application Insights and Log Analytics with sensitive telemetry suppression.
+- OIDC deployment from an exact reviewed SHA; production packages go only to candidate slots.
+- No workflow command swaps slots, changes DNS, binds domains, changes SharePoint permissions or retires GitHub Pages.
 
-Container Apps Consumption remains suitable for later stateless workers or bursty integration jobs. It is not automatically cheaper once a minimum always-on replica, private networking, logs and operational complexity are included.
+## Open owner-controlled gates
 
-## Identity decision
-
-- Employees, board and administrators authenticate through the NovaPharm workforce Entra tenant.
-- Customers and external partners authenticate through Entra External ID after account approval or invitation.
-- App Service Authentication validates federated sessions; the application still enforces roles, scopes, customer isolation and resource ownership server-side.
-- App roles are `customer`, `employee`, `board`, `admin`.
-- Vishal Chakravarty is mapped to all four scopes. The public designation remains `Chief Executive Officer`; founder/statutory-director facts remain separate.
-- Privileged access requires MFA and, where licensed and approved, Conditional Access.
-- The local bootstrap credential remains a time-limited migration/recovery mechanism only and cannot open confidential board/admin data until its forced change is complete.
-
-## Data and file decisions
-
-- Azure SQL Database is the canonical system of record. Managed identity is preferred; a Key Vault credential is a temporary fallback only.
-- Runtime and migration roles are separated where practical.
-- Staging, production and development use different databases, storage containers, identities, secrets and external-provider settings.
-- Public uploads enter a private quarantine container. A database record remains `pending_scan` until Defender for Storage returns a clean result. Only then may an authorised workflow promote the object to the clean container or SharePoint.
-- No private blob receives anonymous access. Downloads are streamed through authorised application routes or short-lived, narrowly scoped user-delegation URLs.
-
-## Network decision
-
-The production design uses App Service VNet integration, private endpoints for Azure SQL, Storage and Key Vault where the selected tier/region supports them, private DNS zones, HTTPS-only ingress, minimum TLS 1.2 and SCM restrictions. Public database access is disabled after provisioning/migration access is complete.
-
-## Availability and recovery
-
-- Production uses a paid App Service tier; Free/Shared tiers are prohibited.
-- Default infrastructure parameters begin with two production instances where budget approval permits. A one-instance release must be recorded as an accepted availability risk.
-- Azure SQL point-in-time restore, Blob soft delete/versioning and deployment-slot rollback are required.
-- The unchanged GitHub Pages site remains the public rollback until Azure acceptance and a defined stabilisation period complete.
-
-## Consequences
-
-Positive:
-
-- the migration addresses the material trust boundaries first;
-- current search equity and public content survive;
-- Azure-managed identity and data access reduce secret and desktop-server risk;
-- cloud infrastructure becomes repeatable and observable.
-
-Trade-offs:
-
-- the custom Node server and generator remain temporarily;
-- moving synchronous SQLite logic to asynchronous Azure SQL repositories is a real application refactor;
-- Entra External ID and tenant roles require owner/tenant administration;
-- Defender malware scanning, App Service, SQL, monitoring and private networking incur charges;
-- a later React/Next migration may still be desirable.
-
-## Evidence sources
-
-- [Azure App Service authentication and authorisation](https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization)
-- [App Service managed identities](https://learn.microsoft.com/en-us/azure/app-service/overview-managed-identity)
-- [App Service Key Vault references](https://learn.microsoft.com/en-us/azure/app-service/app-service-key-vault-references)
-- [App Service deployment slots](https://learn.microsoft.com/en-us/azure/app-service/deploy-staging-slots)
-- [Node.js passwordless Azure SQL connection](https://learn.microsoft.com/en-us/azure/azure-sql/database/azure-sql-javascript-mssql-quickstart)
-- [Microsoft Entra External ID](https://learn.microsoft.com/en-us/entra/external-id/external-identities-overview)
-- [Defender for Storage malware scanning](https://learn.microsoft.com/en-us/azure/defender-for-cloud/introduction-malware-scanning)
-- [Azure Monitor OpenTelemetry for Node.js](https://learn.microsoft.com/en-us/azure/azure-monitor/app/opentelemetry-enable)
-
+The repository decision does not prove Azure cost approval, tenant configuration, Entra/MFA, Graph consent, SharePoint least privilege, email delivery, Azure migration/reconciliation, malware scanning, backup restoration, penetration testing, managed visual acceptance or production cutover. These remain required before production completion.

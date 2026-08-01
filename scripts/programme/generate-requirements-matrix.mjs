@@ -436,6 +436,7 @@ const markdown = `# Master Requirements Traceability Matrix\n\n` +
   `Normalised source lines: ${metadata.source_line_count}  \n` +
   `Traceable records: ${metadata.requirement_record_count}\n\n` +
   `The complete line-level ledger is in \`requirements-matrix.json\` and \`requirements-matrix.csv\`. No row is marked complete merely because code exists; production, security, legal, regulatory and external-account gates remain explicit.\n\n` +
+  `This file and its JSON/CSV companions preserve the audited baseline. Current repository increments and their evidence are recorded in \`implementation-evidence.json\`; that overlay does not convert owner-controlled Azure, Entra, SharePoint, DNS, legal, regulatory or production gates into completed requirements.\n\n` +
   `## Current status distribution\n\n` +
   statusCounts.map(([status, count]) => `- \`${status}\`: ${count}`).join("\n") +
   `\n\n## Primary section baseline\n\n` +

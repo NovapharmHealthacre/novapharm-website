@@ -1,7 +1,7 @@
 # ADR-001: NovaPharm Unified Digital Estate Architecture
 
-Status: accepted for implementation, external deployment gates pending  
-Date: 30 July 2026  
+Status: implemented in repository; external deployment gates pending
+Date: 1 August 2026
 Decision owners: NovaPharm Healthcare Ltd and the implementation programme
 
 ## Context
@@ -24,36 +24,32 @@ The target source architecture is:
 ```text
 apps/
   corporate/
-  nit/
+  technology/
   founder/
   portal/
   api/
   status/
 packages/
   accessibility/
-  analytics/
   auth/
-  brand/
   claims/
   config/
   content/
-  database/
   design-system/
   forms/
-  integrations/
-  observability/
   platform-mode/
+  portal-contracts/
   security/
   seo/
-  testing/
 infra/
-  azure/
+  modules/
+  unified-estate.bicep
 ```
 
 Use:
 
 - strict TypeScript;
-- pnpm workspaces and Turborepo;
+- npm workspaces with one exact lockfile and Turborepo available for package-level orchestration;
 - Next.js 16.2.12 or a later security-patched release within the approved Active LTS line at implementation time;
 - React 19;
 - Next.js App Router, server rendering and static generation according to route needs;
@@ -67,13 +63,17 @@ The existing corporate static generator and Node service remain available as mig
 
 | Boundary | Responsibility | Target |
 |---|---|---|
-| Public applications | Corporate, NIT and founder content, public forms when API health is confirmed | Next.js applications on Azure App Service for Linux |
+| Public applications | Corporate, Technology and founder content; corporate form gateway when API health is confirmed | Three isolated Next.js applications on a shared public Azure App Service plan |
 | Portal | Customer, employee, board and administrator experiences | Dedicated Next.js/Node portal origin, never deployed to static hosting |
 | API | Forms, workflows, identity linkage, transactions, documents and integrations | Dedicated Node/TypeScript API service |
 | Status | Sanitised public service state only | Separate minimal application with no confidential telemetry |
 | Edge | TLS, redirects, host policy, WAF/rate controls and safe caching | Azure Front Door Premium only when cost and operational need are approved; App Service ingress during earlier staging |
 
 Azure App Service for Linux is preferred for the conventional persistent Node/Next.js workload because it offers a simpler operating model than container orchestration. Azure Container Apps remains a measured alternative only if independent services, event processing or scale characteristics create a demonstrated advantage.
+
+The implemented Azure contract uses six independently packaged App Services on two plans. Corporate, Technology, founder and status share the public plan. Portal and API share a separate secure plan but retain separate managed identities. Only the API identity receives Azure SQL and private Blob access. Portal and API use separate Key Vaults so the portal cannot read session, email or bootstrap secrets. Production uses candidate slots and separate candidate SQL/Blob resources; staging uses a separate resource group and no production data.
+
+The corporate browser submits contact and account workflows through a narrow same-origin gateway. That gateway permits only public form endpoints and resolves the API origin at runtime, preventing a candidate API hostname from being frozen into JavaScript during slot promotion. The portal signs every App Service-authenticated principal handoff to the API with a short-lived HMAC assertion. The API checks timestamp, method, path, selected access type and a database-backed nonce before trusting the identity header.
 
 ## Authoritative data boundaries
 
@@ -115,6 +115,7 @@ Builds fail when a route or control violates the selected mode. This resolves th
 
 - Managed identities are preferred for Azure resources.
 - Azure Key Vault is the production secret authority.
+- Portal and API use distinct vault boundaries; the gateway signing secret is rotated coherently in both vaults while unrelated secrets remain isolated.
 - GitHub Actions uses workload identity federation rather than long-lived deployment credentials.
 - Credentials, tokens and session material never enter client bundles, logs, analytics, screenshots or documentation.
 - Private files are never stored under a public web root.
@@ -146,7 +147,7 @@ An absent or expired evidence state prevents publication of the associated regul
 
 1. Correct current public/static boundary defects without taking production offline.
 2. Introduce shared typed packages and CI gates.
-3. Migrate one public property at a time with route, content, metadata and visual parity.
+3. Migrate one public property at a time with route, content, metadata and visual parity. Founder, Technology and corporate migrations are now represented in `apps/` with acceptance evidence.
 4. Deploy isolated Azure staging with synthetic data.
 5. Activate API, forms, portal, identity, database and private documents behind generated staging origins.
 6. Rehearse migration, backup, restore and rollback.

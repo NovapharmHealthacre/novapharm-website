@@ -157,4 +157,4 @@ Deletion is irreversible for the synthetic environment. It does not affect GitHu
 
 ## 12. Paid-production upgrade remains separate
 
-The future production path remains `infra/main.bicep`: App Service S1 or measured alternative, Always On, candidate slot, production SQL, Key Vault, private networking, Defender for Storage, full monitoring, production Entra/External ID, domains and managed TLS. None is authorised by this runbook.
+The future production path is `infra/unified-estate.bicep` with the `unified-production.bicepparam` contract: six isolated applications on separate public and secure plans, Always On, candidate slots, production SQL, separate portal/API Key Vaults, private networking, approved malware scanning, full monitoring, production Entra/External ID, domains and managed TLS. The earlier `infra/main.bicep` file is retained only as single-application migration evidence. None of the paid production path is authorised by this runbook.

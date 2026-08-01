@@ -41,6 +41,16 @@
       "requirement_sections": [5, 6, 21, 23, 24, 25, 27, 28, 30],
       "status": "repository-accepted-with-managed-deployment-pending",
       "evidence": ["docs/programme/status-migration-acceptance.md"]
+    },
+    {
+      "name": "Unified Azure estate and immutable release contract",
+      "requirement_sections": [5, 6, 7, 9, 10, 11, 19, 20, 23, 24, 26, 27, 30],
+      "status": "repository-accepted-with-azure-acceptance-pending",
+      "evidence": [
+        "docs/programme/azure-unified-estate-acceptance.md",
+        "deployment/infrastructure-deployment-guide.md",
+        "infra/unified-estate.bicep"
+      ]
     }
   ],
   "completion_rule": "No repository acceptance entry proves Azure, Entra, SharePoint, email, legal, DNS or production completion. Those requirements remain open until independently verified in the approved live environment."
