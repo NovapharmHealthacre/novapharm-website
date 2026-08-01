@@ -23,6 +23,10 @@ test("the browser gateway uses a fixed API origin and a route allowlist", () => 
   assert.match(gateway, /PORTAL_VALIDATION_MODE/);
   assert.match(gateway, /127\.0\.0\.1/);
   assert.match(gateway, /production API origin must use HTTPS/);
+  assert.match(gateway, /createPortalGatewaySignature/);
+  assert.match(gateway, /PORTAL_GATEWAY_SECRET/);
+  assert.match(gateway, /x-novapharm-gateway-signature/);
+  assert.doesNotMatch(gateway, /x-ms-client-principal-id/);
 });
 
 test("authentication and writes require fresh CSRF tokens and keep credentials out of storage", () => {

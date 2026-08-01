@@ -1,10 +1,28 @@
 import assert from "node:assert/strict";
 import { type ChildProcess, spawn } from "node:child_process";
-import { pbkdf2Sync, randomBytes } from "node:crypto";
+import { pbkdf2Sync, randomBytes, randomUUID } from "node:crypto";
 import { rmSync } from "node:fs";
 import { createServer } from "node:net";
 import path from "node:path";
 import test from "node:test";
+import { createPortalGatewaySignature } from "../../../src/core/portal-gateway-signature.mjs";
+
+function principalHeader(): string {
+  const tenantId = randomUUID();
+  return Buffer.from(JSON.stringify({
+    auth_typ: "aad",
+    user_id: randomUUID(),
+    user_details: "signed-admin@example.invalid",
+    claims: [
+      { typ: "tid", val: tenantId },
+      { typ: "oid", val: randomUUID() },
+      { typ: "preferred_username", val: "signed-admin@example.invalid" },
+      { typ: "name", val: "Signed Boundary Administrator" },
+      { typ: "iss", val: `https://login.microsoftonline.com/${tenantId}/v2.0` },
+      { typ: "roles", val: "NovaPharm.Admin" },
+    ],
+  })).toString("base64");
+}
 
 async function availablePort(): Promise<number> {
   return new Promise((resolve, reject) => {
@@ -52,6 +70,7 @@ test("the extracted runtime exposes only the governed API boundary", { timeout: 
   const secureRoot = `/tmp/novapharm-api-boundary-secure-${runId}`;
   const salt = randomBytes(16).toString("hex");
   const syntheticPassword = `Aa1!${randomBytes(32).toString("base64url")}`;
+  const gatewaySecret = randomBytes(48).toString("base64url");
   const apiOrigin = `http://127.0.0.1:${port}`;
   const portalOrigin = "http://127.0.0.1:4303";
   const environment = { ...process.env };
@@ -70,6 +89,8 @@ test("the extracted runtime exposes only the governed API boundary", { timeout: 
     DOCUMENT_STORAGE_ROOT: documentRoot,
     SECURE_CONTENT_ROOT: secureRoot,
     SESSION_SECRET: randomBytes(40).toString("base64url"),
+    PORTAL_GATEWAY_SECRET: gatewaySecret,
+    ENTRA_AUTH_ENABLED: "true",
     PORTAL_USERNAME: "BoundaryAdmin",
     PORTAL_DISPLAY_NAME: "Boundary Administrator",
     PORTAL_PASSWORD_SALT: salt,
@@ -110,6 +131,9 @@ test("the extracted runtime exposes only the governed API boundary", { timeout: 
     assert.equal(allowed.status, 200);
     assert.equal(allowed.headers.get("access-control-allow-origin"), portalOrigin);
     assert.equal(allowed.headers.get("access-control-allow-credentials"), "true");
+    const csrf = await allowed.json() as { csrfToken: string };
+    const csrfCookie = allowed.headers.get("set-cookie")?.split(";", 1)[0] ?? "";
+    assert.ok(csrf.csrfToken && csrfCookie);
 
     const preflight = await fetch(`${apiOrigin}/api/auth/login`, {
       method: "OPTIONS",
@@ -122,6 +146,51 @@ test("the extracted runtime exposes only the governed API boundary", { timeout: 
     assert.equal(rejected.status, 403);
     assert.equal((await rejected.json()).code, "origin_rejected");
     assert.equal(rejected.headers.get("access-control-allow-origin"), null);
+
+    const principal = principalHeader();
+    const federatedBody = JSON.stringify({ accessType: "admin" });
+    const directSpoof = await fetch(`${apiOrigin}/api/auth/federated`, {
+      method: "POST",
+      headers: {
+        Origin: portalOrigin,
+        Cookie: csrfCookie,
+        "Content-Type": "application/json",
+        "X-CSRF-Token": csrf.csrfToken,
+        "X-MS-Client-Principal": principal,
+      },
+      body: federatedBody,
+    });
+    assert.equal(directSpoof.status, 401, "An unsigned App Service principal header must be rejected.");
+
+    const timestamp = String(Date.now());
+    const nonce = randomUUID();
+    const signature = createPortalGatewaySignature({
+      secret: gatewaySecret,
+      timestamp,
+      nonce,
+      method: "POST",
+      pathname: "/api/auth/federated",
+      accessType: "admin",
+      principal,
+    });
+    const signedHeaders = {
+      Origin: portalOrigin,
+      Cookie: csrfCookie,
+      "Content-Type": "application/json",
+      "X-CSRF-Token": csrf.csrfToken,
+      "X-MS-Client-Principal": principal,
+      "X-Novapharm-Gateway-Timestamp": timestamp,
+      "X-Novapharm-Gateway-Nonce": nonce,
+      "X-Novapharm-Gateway-Access": "admin",
+      "X-Novapharm-Gateway-Signature": signature,
+    };
+    const signedLogin = await fetch(`${apiOrigin}/api/auth/federated`, { method: "POST", headers: signedHeaders, body: federatedBody });
+    assert.equal(signedLogin.status, 200);
+    assert.match(signedLogin.headers.get("set-cookie") ?? "", /np_session=/);
+    assert.equal((await signedLogin.json()).redirectTo, "/admin/dashboard/");
+
+    const replay = await fetch(`${apiOrigin}/api/auth/federated`, { method: "POST", headers: signedHeaders, body: federatedBody });
+    assert.equal(replay.status, 401, "A consumed gateway assertion must be rejected.");
   } finally {
     await stop(child);
     rmSync(databasePath, { force: true });

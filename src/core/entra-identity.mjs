@@ -69,13 +69,13 @@ function roleForScopes(scopes) {
   return "client";
 }
 
-function trustedAppServiceRuntime(environment) {
-  if (environment.WEBSITE_INSTANCE_ID || environment.WEBSITE_SITE_NAME) return true;
+function trustedIdentityBoundary(environment, trustedGateway) {
+  if (trustedGateway) return true;
   return environment.NODE_ENV !== "production" && environment.ENTRA_TRUST_PROXY_HEADERS === "true";
 }
 
-export function appServicePrincipalFromHeaders(headers, environment = process.env) {
-  if (environment.ENTRA_AUTH_ENABLED !== "true" || !trustedAppServiceRuntime(environment)) return null;
+export function appServicePrincipalFromHeaders(headers, environment = process.env, { trustedGateway = false } = {}) {
+  if (environment.ENTRA_AUTH_ENABLED !== "true" || !trustedIdentityBoundary(environment, trustedGateway)) return null;
   const principal = decodePrincipal(headerValue(headers, "x-ms-client-principal"));
   if (!principal) return null;
 

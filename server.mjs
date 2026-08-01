@@ -73,6 +73,7 @@ import { processDocumentScanEvents } from "./src/integrations/azure-storage/scan
 import { emailIntegrationStatus, emailNotificationPreview, emailQueueStatus, processEmailRetries, replayEmailNotification, sendApplicationNotifications, sendLeadNotifications } from "./src/integrations/email/client.mjs";
 import { documentStorageStatus } from "./src/storage/document-store.mjs";
 import { appServicePrincipalFromHeaders, provisionFederatedIdentity } from "./src/core/entra-identity.mjs";
+import { verifyPortalGatewayIdentity } from "./src/core/portal-gateway-identity.mjs";
 import { isResolvedSecret, isUnresolvedSecretReference } from "./src/core/secret-value.mjs";
 import { hasSharePointCredentials } from "./src/integrations/sharepoint/graph-client.mjs";
 import { executeInternalAiReview, internalAiGatewayStatus } from "./src/core/ai/ai-gateway.mjs";
@@ -664,12 +665,16 @@ export async function handleRequest(request, response) {
     if (pathname === "/api/auth/federated" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
       if (!await rateLimit(request, "federated-login", 12, 15 * 60 * 1000)) return json(response, 429, { error: "Too many sign-in attempts. Try again later." });
-      const identity = appServicePrincipalFromHeaders(request.headers);
+      const gatewayIdentity = await verifyPortalGatewayIdentity(request);
+      const identity = gatewayIdentity
+        ? appServicePrincipalFromHeaders({ "x-ms-client-principal": gatewayIdentity.principalHeader }, process.env, { trustedGateway: true })
+        : null;
       if (!identity) return json(response, 401, { error: "Microsoft sign-in could not be verified." });
-      const user = await provisionFederatedIdentity(identity);
-      if (!user) return json(response, 403, { error: "This Microsoft identity is not approved for a NovaPharm portal." });
       const body = await readBody(request);
       const accessType = normalizeAccessType(body.accessType);
+      if (accessType !== gatewayIdentity.accessType) return json(response, 403, { error: "The selected portal area could not be verified." });
+      const user = await provisionFederatedIdentity(identity);
+      if (!user) return json(response, 403, { error: "This Microsoft identity is not approved for a NovaPharm portal." });
       if (!hasScope(user, [accessType])) return json(response, 403, { error: "This identity is not authorised for the selected portal area." });
       const sessionCookie = await createSession(user, accessType);
       json(response, 200, { ok: true, accessType, redirectTo: accessRedirects[accessType] }, { "Set-Cookie": cookie("np_session", sessionCookie, { maxAge: Math.floor(sessionTtlMs / 1000) }) });

@@ -1,4 +1,6 @@
+import { randomUUID } from "node:crypto";
 import type { NextRequest } from "next/server";
+import { createPortalGatewaySignature, validPortalGatewaySecret } from "../../../../../src/core/portal-gateway-signature.mjs";
 
 export const dynamic = "force-dynamic";
 
@@ -37,6 +39,39 @@ function isPermitted(path: string): boolean {
   return /^[A-Za-z0-9._~%/-]+$/.test(path) && !path.includes("..") && permittedPaths.some((pattern) => pattern.test(path));
 }
 
+function signedFederatedIdentityHeaders(request: NextRequest, body: ArrayBuffer | undefined): Readonly<Record<string, string>> {
+  if (!process.env["WEBSITE_INSTANCE_ID"] && !process.env["WEBSITE_SITE_NAME"]) return {};
+  const principal = request.headers.get("x-ms-client-principal") ?? "";
+  if (!principal) return {};
+  const secret = process.env["PORTAL_GATEWAY_SECRET"] ?? "";
+  if (!validPortalGatewaySecret(secret)) throw new Error("The private portal gateway is not configured.");
+  let accessType = "";
+  try {
+    accessType = String(JSON.parse(Buffer.from(body ?? new ArrayBuffer(0)).toString("utf8")).accessType ?? "").toLowerCase();
+  } catch {
+    throw new Error("The Microsoft sign-in request is invalid.");
+  }
+  if (!["customer", "employee", "board", "admin"].includes(accessType)) throw new Error("The Microsoft sign-in portal selection is invalid.");
+  const timestamp = String(Date.now());
+  const nonce = randomUUID();
+  const signature = createPortalGatewaySignature({
+    secret,
+    timestamp,
+    nonce,
+    method: request.method,
+    pathname: "/api/auth/federated",
+    accessType: accessType as "customer" | "employee" | "board" | "admin",
+    principal,
+  });
+  return {
+    "x-ms-client-principal": principal,
+    "x-novapharm-gateway-timestamp": timestamp,
+    "x-novapharm-gateway-nonce": nonce,
+    "x-novapharm-gateway-access": accessType,
+    "x-novapharm-gateway-signature": signature,
+  };
+}
+
 async function forward(request: NextRequest, context: { params: Promise<{ path: string[] }> }): Promise<Response> {
   const { path: segments } = await context.params;
   const path = segments.join("/");
@@ -44,6 +79,7 @@ async function forward(request: NextRequest, context: { params: Promise<{ path: 
 
   const target = new URL(`/api/${path}`, apiOrigin());
   target.search = request.nextUrl.search;
+  const body = ["GET", "HEAD"].includes(request.method) ? undefined : await request.arrayBuffer();
   const headers = new Headers();
   for (const name of ["accept", "content-type", "cookie", "x-csrf-token", "x-application-upload-token"]) {
     const value = request.headers.get(name);
@@ -51,11 +87,15 @@ async function forward(request: NextRequest, context: { params: Promise<{ path: 
   }
   headers.set("origin", portalOrigin(request));
 
-  if (process.env["WEBSITE_INSTANCE_ID"]) {
-    for (const name of ["x-ms-client-principal", "x-ms-client-principal-id", "x-ms-client-principal-name", "x-ms-client-principal-idp"]) {
-      const value = request.headers.get(name);
-      if (value) headers.set(name, value);
+  try {
+    if (path === "auth/federated") {
+      for (const [name, value] of Object.entries(signedFederatedIdentityHeaders(request, body))) headers.set(name, value);
     }
+  } catch {
+    return Response.json(
+      { error: "Microsoft sign-in is temporarily unavailable. Please use an approved alternative sign-in route or try again later." },
+      { status: 503, headers: { "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow, noarchive" } },
+    );
   }
 
   let upstream: Response;
@@ -66,7 +106,7 @@ async function forward(request: NextRequest, context: { params: Promise<{ path: 
       redirect: "manual",
       cache: "no-store",
     };
-    if (!["GET", "HEAD"].includes(request.method)) requestInit.body = await request.arrayBuffer();
+    if (body) requestInit.body = body;
     upstream = await fetch(target, requestInit);
   } catch {
     return Response.json({ error: "The secure service is temporarily unavailable. Please try again shortly." }, { status: 503, headers: { "Cache-Control": "no-store", "Retry-After": "30", "X-Robots-Tag": "noindex, nofollow, noarchive" } });
