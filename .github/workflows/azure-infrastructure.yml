@@ -5,6 +5,7 @@ on:
     paths:
       - "infra/**"
       - "scripts/validate-free-validation-infrastructure.mjs"
+      - "scripts/validate-unified-estate-infrastructure.mjs"
       - ".github/workflows/azure-infrastructure.yml"
       - ".github/workflows/azure-deploy.yml"
       - ".github/workflows/azure-free-validation.yml"
@@ -13,6 +14,7 @@ on:
     paths:
       - "infra/**"
       - "scripts/validate-free-validation-infrastructure.mjs"
+      - "scripts/validate-unified-estate-infrastructure.mjs"
       - ".github/workflows/azure-infrastructure.yml"
       - ".github/workflows/azure-deploy.yml"
       - ".github/workflows/azure-free-validation.yml"
@@ -45,14 +47,14 @@ jobs:
       - name: Lint Bicep modules
         run: |
           set -euo pipefail
-          for file in infra/*.bicep; do
+          for file in infra/*.bicep infra/modules/*.bicep; do
             az bicep lint --file "$file"
           done
       - name: Compile Bicep modules and parameters
         run: |
           set -euo pipefail
           mkdir -p /tmp/novapharm-bicep
-          for file in infra/*.bicep; do
+          for file in infra/*.bicep infra/modules/*.bicep; do
             az bicep build --file "$file" --outdir /tmp/novapharm-bicep
           done
           for file in infra/environments/*.bicepparam; do
@@ -62,5 +64,8 @@ jobs:
           node scripts/validate-free-validation-infrastructure.mjs \
             /tmp/novapharm-bicep/free-validation-data.json \
             /tmp/novapharm-bicep/free-validation-app.json
+          node scripts/validate-unified-estate-infrastructure.mjs \
+            /tmp/novapharm-bicep/unified-estate.json \
+            /tmp/novapharm-bicep/unified-production.parameters.json
       - name: Confirm templates contain no literal secrets
         run: npm run security:scan

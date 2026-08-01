@@ -15,7 +15,7 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -43,3 +43,5 @@ jobs:
       - name: Enforce readiness result
         if: steps.readiness.outcome != 'success'
         run: exit 1
+      - name: Build and boot-test six isolated Azure artifacts
+        run: npm run azure:package && npm run azure:test-artifacts
