@@ -201,6 +201,7 @@ async function inspectModule(
     assert.match(response?.headers()["content-security-policy"] ?? "", /frame-ancestors 'none'/);
     assert.match(response?.headers()["x-robots-tag"] ?? "", /noindex/);
     await page.locator(".data-context").waitFor({ state: "visible", timeout: 20_000 });
+    await page.locator(".icon-command:not(:disabled)").waitFor({ state: "visible", timeout: 20_000 });
     assert.equal(await page.locator("h1").textContent(), module.title);
     assert.equal(await page.locator(".workflow-status").textContent(), "");
     assert.match(await page.locator('meta[name="robots"]').getAttribute("content") ?? "", /noindex/);

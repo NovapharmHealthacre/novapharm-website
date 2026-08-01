@@ -197,6 +197,7 @@ a { color: inherit; }
 .module-heading h1 { margin: 0; font-size: clamp(2rem, 4vw, 4.2rem); line-height: 1.02; font-weight: 680; }
 .module-heading > div > p:last-child { max-width: 74ch; margin: 16px 0 0; color: var(--muted); font-size: 1.02rem; line-height: 1.65; }
 .icon-command { min-width: 96px; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--white); font-weight: 700; cursor: pointer; }
+.icon-command:disabled { color: var(--muted); background: var(--white); opacity: 1; cursor: wait; }
 .icon-command svg { width: 17px; }
 .area-switcher { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 22px; padding: 12px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .area-switcher > span { color: var(--muted); font-size: 0.8rem; font-weight: 700; }
