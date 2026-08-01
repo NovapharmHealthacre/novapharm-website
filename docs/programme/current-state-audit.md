@@ -76,11 +76,13 @@ The audit table above records the state observed before migration work began. Th
 - Portal/API repository acceptance is documented in `docs/programme/portal-api-migration-acceptance.md`. The production standalone candidate passes four API boundary tests, six portal route/security tests, 798 Chromium/WebKit screenshots and 228 Axe runs with zero serious or critical findings.
 - Portal Lighthouse results are 100/100/100 and 98/100/100 for desktop/mobile sign-in, and 100/100/96 and 96/100/96 for the desktop/mobile authenticated customer dashboard. SEO is intentionally excluded for the private, noindex application. Mobile dashboard LCP is 2.7 seconds and remains a staging optimisation item.
 - Browser and performance acceptance use generated synthetic credentials and an isolated database in an operating-system temporary directory. The runner stops both services and removes the protected runtime after every run.
+- The sanitised estate status service has been added at `apps/status` and is documented in `docs/programme/status-migration-acceptance.md`. It distinguishes unconfigured public origins from private portal/API boundaries, exposes only minimal live/readiness contracts and remains non-indexable.
+- Status acceptance passes a 1,244-file standalone artifact scan, 14 Chromium/WebKit screenshots, four Axe runs with zero serious or critical findings and Lighthouse scores of 100/100/100 on desktop and 99/100/100 on mobile. The 0.5-second desktop and 2.1-second mobile LCP values are local laboratory results, not live field evidence.
 - The npm and pnpm dependency graphs now pin patched PostCSS and Sharp releases while retaining the latest stable Next.js release; a clean Node 24 npm installation reports zero vulnerabilities.
 
 ## Immediate release blockers
 
-1. The repository candidate has no deployed Azure API, portal, managed database or private document service; all current production origins remain static.
+1. The repository candidate has no deployed Azure API, portal, status service, managed database or private document service; all current production origins remain static.
 2. Entra workforce/External ID, MFA, managed identities, Azure SQL, private Blob storage, email and live monitoring require owner-controlled staging configuration and acceptance.
 3. Leadership roles, the NIT relationship and some location/entity facts still require owner evidence or approval.
 4. Historical retired-credential cleanup is not closed for GitHub-managed pull refs.
