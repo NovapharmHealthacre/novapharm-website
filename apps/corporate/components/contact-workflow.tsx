@@ -17,11 +17,7 @@ const enquiryTypes = [
   "General enquiry",
 ] as const;
 
-const apiOrigin = process.env.NEXT_PUBLIC_API_ORIGIN?.replace(/\/$/, "") ?? "";
-
-function endpoint(path: string): string {
-  return apiOrigin ? `${apiOrigin}${path}` : path;
-}
+const platformEndpoint = (path: string) => `/api/platform${path}`;
 
 function friendlyError(status: number, offline: boolean): string {
   if (offline) return "You appear to be offline. Reconnect and try again.";
@@ -58,7 +54,7 @@ export function ContactWorkflow() {
     setState("sending");
     setMessage("Submitting your enquiry securely.");
     try {
-      const csrfResponse = await fetch(endpoint("/api/security/csrf"), { credentials: "include", headers: { Accept: "application/json" } });
+      const csrfResponse = await fetch(platformEndpoint("/security/csrf"), { credentials: "include", headers: { Accept: "application/json" } });
       const csrfPayload = await csrfResponse.json().catch(() => ({})) as { csrfToken?: string };
       if (!csrfResponse.ok || !csrfPayload.csrfToken) throw Object.assign(new Error("csrf_unavailable"), { status: csrfResponse.status });
       const data = new FormData(form);
@@ -72,7 +68,7 @@ export function ContactWorkflow() {
           referringHost: referringHost(document.referrer),
         }),
       });
-      const response = await fetch(endpoint("/api/contact"), {
+      const response = await fetch(platformEndpoint("/contact"), {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfPayload.csrfToken },

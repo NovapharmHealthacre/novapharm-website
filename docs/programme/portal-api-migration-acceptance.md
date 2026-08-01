@@ -20,7 +20,8 @@ This acceptance used a production standalone portal build, a real API process, a
 - `PORTAL_ORIGIN`, `PUBLIC_API_ORIGIN` and public origins are separate exact-origin contracts. Credentialed CORS is granted only to configured trusted origins.
 - `apps/portal/app/gateway/[...path]/route.ts` is a same-origin backend-for-frontend gateway with a fixed API origin and explicit route allowlist.
 - Cookies, CSRF headers and controlled `Set-Cookie` values are relayed server-side. API details and raw backend errors are not shown in browser messages.
-- Microsoft EasyAuth identity headers are forwarded only when the portal is running inside a verified App Service environment.
+- Microsoft EasyAuth identity headers are accepted only through the portal's signed gateway assertion. The assertion binds the principal, selected access type, method, API path, timestamp and nonce with HMAC SHA-256. The API rejects direct App Service header spoofing, altered or stale assertions and database-recorded nonce replays.
+- SQLite regression coverage verifies the enterprise and replay-protection migrations in order, checks immutable SHA-256 values and confirms that repeated initialisation never reapplies either migration.
 - Local HTTP validation is permitted only for loopback hosts when `PORTAL_VALIDATION_MODE=true`; production requires HTTPS.
 - Portal routes are `noindex`, `noarchive`, non-cacheable and protected by server-side session and scope checks.
 - The API-only service publishes a disallow-all `robots.txt`; crawler rules are supplementary and never substitute for authentication.
@@ -73,6 +74,7 @@ The generated password is never printed, committed or included in an artifact. S
 | Node runtime | Passed on Node `24.14.0` |
 | API configuration and live-boundary tests | Passed: 4 of 4 |
 | Portal route and security unit tests | Passed: 6 of 6 |
+| Portal-to-API signed identity tests | Passed: valid handoff plus tamper, stale, missing-key and replay rejection |
 | Portal catalogue validation | Passed: 54 modules and four role areas |
 | Official brand validation | Passed: portal SVG and PNG match repository masters |
 | Portal production build | Passed |
@@ -113,7 +115,7 @@ Evidence is stored locally in ignored `artifacts/portal-browser` and `artifacts/
 2. Configure Entra workforce and External ID registrations, redirect URIs, app roles, groups and MFA policy.
 3. Replace validation SQLite with Azure SQL and complete schema migration, record reconciliation and isolated restore.
 4. Activate private Blob quarantine and an approved malware scanner before accepting documents.
-5. Configure Key Vault or approved protected staging settings and verify managed identity access.
+5. Configure separate portal and API Key Vaults, enter the coordinated gateway key through protected Azure inputs and verify that neither identity can read the other's unrelated secrets.
 6. Configure the approved transactional email provider and test real delivery, failure queueing and replay.
 7. Inventory and, only with approval, correct SharePoint permissions before board documents are connected.
 8. Complete staging IDOR, penetration, load, monitoring, backup, restore and rollback acceptance.

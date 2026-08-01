@@ -9,7 +9,6 @@ export function proxy(request: NextRequest): NextResponse {
     nonce,
     secureTransport: secureRequest,
     indexable: process.env.PUBLIC_INDEXABLE !== "false",
-    connectSources: process.env.PUBLIC_API_ORIGIN ? [process.env.PUBLIC_API_ORIGIN] : [],
   });
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-nonce", nonce);

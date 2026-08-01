@@ -18,6 +18,17 @@ test("contact workflow exposes professional errors and no embedded credential", 
   assert.doesNotMatch(source, /PORTAL_PASSWORD|BOOTSTRAP_ADMIN_PASSWORD|password\s*[:=]\s*["'][^"']+/i);
   assert.match(source, /No information was submitted/);
   assert.match(source, /X-CSRF-Token/);
+  assert.match(source, /\/api\/platform/);
+  assert.doesNotMatch(source, /NEXT_PUBLIC_API_ORIGIN/);
+});
+
+test("corporate gateway is narrow, same-origin and does not trust identity headers", () => {
+  const source = readFileSync(path.join(process.cwd(), "lib/platform-gateway.ts"), "utf8");
+  assert.match(source, /security\/csrf/);
+  assert.match(source, /account-applications/);
+  assert.match(source, /maximumRequestBytes/);
+  assert.match(source, /No information was submitted/);
+  assert.doesNotMatch(source, /x-ms-client-principal|authorization/i);
 });
 
 test("cookie controls do not load analytics or marketing providers", () => {

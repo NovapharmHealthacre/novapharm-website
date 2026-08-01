@@ -4,7 +4,7 @@ Status: repository candidate accepted; portal/API repository migration complete,
 
 Candidate branch: `codex/unified-digital-estate-foundation`
 
-Acceptance date: 30 July 2026
+Acceptance date: 1 August 2026
 
 Source baseline: `NovapharmHealthacre/novapharm-website` at `05a517f1ab7058c96d9b95b17612c5168730338d`
 
@@ -27,7 +27,7 @@ No live DNS, GitHub Pages deployment, production API, identity provider, databas
 
 ## Public workflow boundary
 
-The contact experience uses the real CSRF and contact API contracts when an approved API origin is configured and healthy. Network, static-host and provider failures are converted into a professional email handoff; raw browser or API exceptions are never displayed. The public page warns visitors not to submit patient-identifiable, adverse-event or urgent medical information.
+The contact experience uses the real CSRF and contact API contracts through a narrow same-origin server gateway. Only CSRF, contact and account-application paths are allowed; request sizes are bounded, identity and authorisation headers are never accepted from the browser, and API cookies are relayed without exposing the API origin to client JavaScript. Runtime origin resolution also prevents a candidate-slot hostname from remaining in the browser bundle after promotion. Network, provider and configuration failures become professional accessible messages; raw browser or API exceptions are never displayed. The public page warns visitors not to submit patient-identifiable, adverse-event or urgent medical information.
 
 The account-application page is a controlled expression-of-interest route. It does not expose a document uploader, create an identity or claim that onboarding is complete while the private API, storage quarantine and approval workflow are unavailable.
 
@@ -46,13 +46,13 @@ The public application contains no login or role selector. Its portal link resol
 | Gate | Result |
 |---|---|
 | Node runtime | Passed on Node `24.14.0` |
-| Biome source check | Passed: 39 source files checked |
+| Biome source check | Passed: 42 source files checked |
 | TypeScript | Passed after generated Next.js route types |
 | Content and claims validation | Passed: 37 canonical routes, 5 leaders and 6 articles |
-| Unit tests | Passed: 7 of 7 |
+| Unit and gateway tests | Passed: 11 of 11, including a real local upstream, CSRF cookie relay and malformed-origin failure handling |
 | Production build | Passed: 44 generated application routes |
 | Standalone packaging | Passed |
-| Standalone artifact security scan | Passed: 1,585 files |
+| Standalone artifact security scan | Passed: 1,593 files after the same-origin gateway addition |
 | Chromium rendered matrix | Passed: 38 route states at 7 required viewports |
 | WebKit rendered matrix | Passed: 38 route states at 7 required viewports |
 | Screenshot evidence | 532 genuine screenshots captured |
