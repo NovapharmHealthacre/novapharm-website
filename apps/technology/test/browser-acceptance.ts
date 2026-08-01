@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
+import { type ChildProcess, spawn } from "node:child_process";
 import fs from "node:fs/promises";
+import net from "node:net";
 import path from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { type BrowserType, chromium, type Page, webkit } from "playwright";
 
-const baseUrl = process.env["TECHNOLOGY_BASE_URL"] ?? "http://127.0.0.1:4302";
+const standaloneRoot = path.resolve(process.cwd(), ".next/standalone/apps/technology");
 const artifactRoot = path.join(process.cwd(), "..", "..", "artifacts", "technology-browser");
 const viewports = Object.freeze([
   { name: "desktop-1440", width: 1440, height: 900 },
@@ -42,6 +44,69 @@ interface Finding {
 const findings: Finding[] = [];
 let screenshots = 0;
 let accessibilityRuns = 0;
+let serverProcess: ChildProcess | undefined;
+let serverOutput = "";
+let baseUrl = process.env["TECHNOLOGY_BASE_URL"] ?? "";
+
+async function reservePort(): Promise<number> {
+  return await new Promise((resolve, reject) => {
+    const server = net.createServer();
+    server.once("error", reject);
+    server.listen(0, "127.0.0.1", () => {
+      const address = server.address();
+      if (!address || typeof address === "string") {
+        server.close();
+        reject(new Error("Unable to reserve a technology acceptance-test port"));
+        return;
+      }
+      server.close((error) => (error ? reject(error) : resolve(address.port)));
+    });
+  });
+}
+
+async function waitForServer(url: string): Promise<void> {
+  const deadline = Date.now() + 30_000;
+  while (Date.now() < deadline) {
+    if (serverProcess?.exitCode !== null && serverProcess?.exitCode !== undefined) {
+      throw new Error(`Technology acceptance server exited early.\n${serverOutput}`);
+    }
+    try {
+      const response = await fetch(url, { redirect: "manual" });
+      if (response.status === 200) return;
+    } catch {
+      // The standalone server is still starting.
+    }
+    await new Promise((resolve) => setTimeout(resolve, 200));
+  }
+  throw new Error(`Technology acceptance server did not become ready.\n${serverOutput}`);
+}
+
+async function startServer(): Promise<void> {
+  if (baseUrl) {
+    await waitForServer(`${baseUrl}/`);
+    return;
+  }
+  await fs.access(path.join(standaloneRoot, "server.js"));
+  const port = await reservePort();
+  baseUrl = `http://127.0.0.1:${port}`;
+  serverProcess = spawn(process.execPath, ["server.js"], {
+    cwd: standaloneRoot,
+    env: {
+      ...process.env,
+      HOSTNAME: "127.0.0.1",
+      PORT: String(port),
+      PUBLIC_INDEXABLE: "false",
+    },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  serverProcess.stdout?.on("data", (chunk) => {
+    serverOutput += String(chunk);
+  });
+  serverProcess.stderr?.on("data", (chunk) => {
+    serverOutput += String(chunk);
+  });
+  await waitForServer(`${baseUrl}/`);
+}
 
 function routeName(route: string): string {
   return route === "/" ? "home" : route.replace(/^\//, "").replace(/\/$/, "").replaceAll("/", "--");
@@ -151,9 +216,20 @@ async function runEngine(name: string, browserType: BrowserType): Promise<void> 
 }
 
 await fs.rm(artifactRoot, { recursive: true, force: true });
-await runEngine("chromium", chromium);
-await runEngine("webkit", webkit);
-const report = { generatedAt: new Date().toISOString(), baseUrl, viewports, routes, screenshots, accessibilityRuns, findings };
-await fs.writeFile(path.join(artifactRoot, "report.json"), `${JSON.stringify(report, null, 2)}\n`, "utf8");
-assert.deepEqual(findings, [], `Serious or critical accessibility findings:\n${JSON.stringify(findings, null, 2)}`);
-console.log(`Technology browser acceptance passed: ${screenshots} screenshots, ${accessibilityRuns} Axe runs, 2 engines.`);
+try {
+  await startServer();
+  await runEngine("chromium", chromium);
+  await runEngine("webkit", webkit);
+  const report = { generatedAt: new Date().toISOString(), baseUrl, viewports, routes, screenshots, accessibilityRuns, findings };
+  await fs.writeFile(path.join(artifactRoot, "report.json"), `${JSON.stringify(report, null, 2)}\n`, "utf8");
+  assert.deepEqual(findings, [], `Serious or critical accessibility findings:\n${JSON.stringify(findings, null, 2)}`);
+  console.log(`Technology browser acceptance passed: ${screenshots} screenshots, ${accessibilityRuns} Axe runs, 2 engines.`);
+} finally {
+  if (serverProcess && serverProcess.exitCode === null) {
+    serverProcess.kill("SIGTERM");
+    await new Promise<void>((resolve) => {
+      serverProcess?.once("exit", () => resolve());
+      setTimeout(resolve, 5_000).unref();
+    });
+  }
+}
