@@ -1,12 +1,14 @@
 import { organisationNode, personNode } from "@novapharm/seo";
 import type { Metadata } from "next";
 import type { ArticleRecord } from "./content";
+import type { ExternalPublicationRecord } from "./site-data";
 import {
   founderOrigin,
   founderProfile,
   founderProfileId,
   founderWebsiteId,
   profileReviewedOn,
+  publications,
   vishal,
 } from "./site-data";
 
@@ -76,7 +78,47 @@ export function websiteSchema(): JsonLd {
 }
 
 export function founderPersonSchema(): JsonLd {
-  return { "@context": "https://schema.org", ...personNode(vishal), mainEntityOfPage: { "@id": founderProfileId } };
+  return {
+    "@context": "https://schema.org",
+    ...personNode(vishal),
+    mainEntityOfPage: { "@id": founderProfileId },
+    "@reverse": {
+      author: publications.map((publication) => ({ "@id": `${publication.canonicalUrl}#article` })),
+    },
+  };
+}
+
+export function externalPublicationSchema(publication: ExternalPublicationRecord): JsonLd {
+  const publisherUrl =
+    publication.publisher === "Yakuji Nippo" ? "https://www.yakuji.co.jp/" : "https://www.pharmaceuticalcommerce.com/";
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": `${publication.canonicalUrl}#article`,
+    url: publication.canonicalUrl,
+    mainEntityOfPage: publication.canonicalUrl,
+    headline: publication.title,
+    description: publication.abstract,
+    datePublished: publication.publicationDate,
+    dateModified: publication.publicationDate,
+    inLanguage: publication.language,
+    author: { "@id": vishal.id, name: vishal.displayName, url: vishal.canonicalUrl },
+    publisher: {
+      "@type": "Organization",
+      name: publication.publisher,
+      url: publisherUrl,
+    },
+    about: publication.topics,
+    ...(publication.series
+      ? {
+          isPartOf: {
+            "@type": "CreativeWorkSeries",
+            name: publication.series.name,
+            position: publication.series.article,
+          },
+        }
+      : {}),
+  };
 }
 
 export function profileSchema(): JsonLd {

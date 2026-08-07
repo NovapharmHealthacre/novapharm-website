@@ -149,13 +149,6 @@ function formatDate(value: string): string {
   }).format(new Date(`${value}T00:00:00Z`));
 }
 
-const publicationRecord = publications
-  .map(
-    (publication) =>
-      `### ${publication.title}\n\n**${publication.subject} · ${formatDate(publication.date)}**\n\n${publication.abstract}\n\n- [Read in English](${publication.english})\n- [日本語で読む](${publication.japanese})`,
-  )
-  .join("\n\n");
-
 const pageVariables: Readonly<Record<string, string | number>> = Object.freeze({
   EMAIL: founderContact.email,
   LINKEDIN_URL: founderContact.linkedIn,
@@ -169,9 +162,8 @@ const pageVariables: Readonly<Record<string, string | number>> = Object.freeze({
   COMPANY_STATUS: "Active",
   COMPANY_LEGAL_FORM: "private limited company",
   COMPANY_INCORPORATED: formatDate(novapharmOrganisation.incorporatedOn),
-  PUBLISHED_INSTALLMENT_COUNT: publications.length,
+  PUBLISHED_EXTERNAL_COUNT: publications.length,
   VERIFICATION_DATE: formatDate(profileReviewedOn),
-  PUBLICATION_RECORD: publicationRecord,
 });
 
 function interpolate(body: string, filename: string): string {

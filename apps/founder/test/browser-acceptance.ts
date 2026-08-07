@@ -10,6 +10,8 @@ const standaloneRoot = path.resolve(process.cwd(), ".next/standalone/apps/founde
 const artifactRoot = path.join(process.cwd(), "..", "..", "artifacts", "founder-browser");
 
 const viewports = Object.freeze([
+  { name: "desktop-1280", width: 1280, height: 800 },
+  { name: "desktop-1366", width: 1366, height: 768 },
   { name: "desktop-1440", width: 1440, height: 900 },
   { name: "desktop-1920", width: 1920, height: 1080 },
   { name: "tablet-1024", width: 1024, height: 1366 },
@@ -17,6 +19,7 @@ const viewports = Object.freeze([
   { name: "mobile-390", width: 390, height: 844 },
   { name: "mobile-430", width: 430, height: 932 },
   { name: "mobile-375", width: 375, height: 667 },
+  { name: "mobile-320", width: 320, height: 568 },
 ]);
 
 const coreRoutes = Object.freeze([
@@ -177,7 +180,17 @@ async function verifyPage(
     for (const violation of result.violations.filter(
       (item) => item.impact === "serious" || item.impact === "critical",
     )) {
-      findings.push({ engine, viewport: viewport.name, route, type: `axe:${violation.id}`, detail: violation.help });
+      const targets = violation.nodes
+        .flatMap((node) => node.target)
+        .slice(0, 6)
+        .join(", ");
+      findings.push({
+        engine,
+        viewport: viewport.name,
+        route,
+        type: `axe:${violation.id}`,
+        detail: targets ? `${violation.help}: ${targets}` : violation.help,
+      });
     }
   }
 }
@@ -185,6 +198,17 @@ async function verifyPage(
 async function verifyInteractions(page: Page, engine: string): Promise<void> {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${baseUrl}/thinking/`, { waitUntil: "networkidle" });
+  assert.equal(
+    await page.locator(".publication-card").count(),
+    5,
+    `${engine}: thinking index must show five external publications`,
+  );
+  await page
+    .getByRole("link", {
+      name: /Read “Why Onshoring Alone Won’t Secure Pharma Supply Chains” on Pharmaceutical Commerce/,
+    })
+    .first()
+    .waitFor();
   const menu = page.getByRole("button", { name: "Menu" });
   await menu.click();
   assert.equal(await menu.getAttribute("aria-expanded"), "true", `${engine}: mobile menu did not open`);

@@ -715,6 +715,17 @@
   .writing {
     border-top: 1px solid var(--rule-dark);
   }
+  .external-work {
+    width: 100%;
+    max-width: none;
+    padding-inline: max(4vw, calc((100vw - 1440px) / 2));
+    background: var(--ivory);
+    color: var(--ink);
+  }
+  .external-work .section-number,
+  .external-work .eyebrow {
+    color: var(--oxblood);
+  }
   .essay-list {
     border-top: 1px solid var(--rule-dark);
   }
@@ -1268,6 +1279,100 @@
     display: grid;
     grid-template-columns: 0.65fr 1fr;
     gap: clamp(3rem, 9vw, 10rem);
+  }
+  .publication-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    align-self: start;
+    background: var(--rule-dark);
+    border: 1px solid var(--rule-dark);
+  }
+  .publication-grid-featured {
+    margin-top: 2rem;
+  }
+  .publication-card {
+    display: flex;
+    min-width: 0;
+    min-height: 28rem;
+    flex-direction: column;
+    padding: clamp(1.5rem, 3vw, 2.6rem);
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .external-work .publication-card {
+    background: var(--ivory);
+    color: var(--ink);
+  }
+  .publication-card-featured {
+    min-height: 31rem;
+  }
+  .publication-card-meta,
+  .publication-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.7rem 1.2rem;
+  }
+  .publication-card-meta,
+  .publication-type {
+    color: var(--graphite);
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+  .publication-type {
+    margin-top: 2.7rem;
+    color: var(--signal);
+  }
+  .external-work .publication-type {
+    color: var(--oxblood);
+  }
+  .publication-card h3 {
+    margin-top: 0.8rem;
+    font-family: var(--serif);
+    font-size: clamp(1.8rem, 3vw, 3.1rem);
+    line-height: 1.08;
+    overflow-wrap: anywhere;
+  }
+  .publication-card > p:not(.publication-type) {
+    max-width: 42rem;
+    margin-top: 1.2rem;
+    color: var(--graphite);
+  }
+  .publication-topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 1.6rem;
+    padding: 0;
+    list-style: none;
+  }
+  .publication-topics li {
+    padding: 0.45rem 0.6rem;
+    border: 1px solid var(--rule-dark);
+    color: var(--graphite);
+    font-family: var(--mono);
+    font-size: 0.58rem;
+  }
+  .external-work .publication-topics li {
+    border-color: var(--rule-light);
+  }
+  .external-work .publication-card-meta,
+  .external-work .publication-card > p:not(.publication-type),
+  .external-work .publication-topics li {
+    color: var(--muted);
+  }
+  .publication-actions {
+    justify-content: flex-start;
+    margin-top: auto;
+    padding-top: 2rem;
+  }
+  .publication-actions a {
+    font-size: 0.72rem;
+    text-decoration: none;
   }
   .series-intro {
     position: sticky;
@@ -1839,6 +1944,13 @@
     .essay-card {
       grid-template-columns: 2rem minmax(0, 1fr);
       gap: 1rem;
+    }
+    .publication-grid {
+      grid-template-columns: 1fr;
+    }
+    .publication-card,
+    .publication-card-featured {
+      min-height: auto;
     }
     .essay-card .round-link {
       display: none;

@@ -2,7 +2,7 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { ArticleRecord } from "@/lib/content";
-import { founderProfile } from "@/lib/site-data";
+import { type ExternalPublicationRecord, founderProfile } from "@/lib/site-data";
 
 export function Breadcrumbs({
   items,
@@ -112,6 +112,60 @@ export function ArticleCard({
       <Link className="round-link" href={article.canonicalPath} aria-label={`Read ${article.title}`}>
         <span aria-hidden="true">↗</span>
       </Link>
+    </article>
+  );
+}
+
+export function PublicationCard({
+  publication,
+  featured = false,
+}: {
+  readonly publication: ExternalPublicationRecord;
+  readonly featured?: boolean;
+}): React.JSX.Element {
+  const published = new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(`${publication.publicationDate}T00:00:00Z`));
+
+  return (
+    <article className={`publication-card${featured ? " publication-card-featured" : ""}`}>
+      <div className="publication-card-meta">
+        <span>{publication.publisher}</span>
+        <time dateTime={publication.publicationDate}>{published}</time>
+      </div>
+      <p className="publication-type">{publication.publicationType}</p>
+      <h3>{publication.title}</h3>
+      <p>{publication.abstract}</p>
+      <ul className="publication-topics" aria-label="Topics">
+        {publication.topics.slice(0, featured ? 4 : 3).map((topic) => (
+          <li key={topic}>{topic}</li>
+        ))}
+      </ul>
+      <div className="publication-actions">
+        <a
+          className="text-link"
+          href={publication.canonicalUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Read “${publication.title}” on ${publication.publisher} (opens in a new tab)`}
+        >
+          Read on {publication.publisher} <span aria-hidden="true">↗</span>
+        </a>
+        {publication.translations.map((translation) => (
+          <a
+            key={translation.url}
+            href={translation.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${translation.title} for “${publication.title}” (opens in a new tab)`}
+          >
+            日本語 <span aria-hidden="true">↗</span>
+          </a>
+        ))}
+      </div>
     </article>
   );
 }

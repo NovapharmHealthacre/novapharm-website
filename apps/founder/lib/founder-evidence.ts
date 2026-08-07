@@ -89,6 +89,7 @@ const concepts: Readonly<Record<string, readonly string[]>> = Object.freeze({
   access: ["market", "channel", "launch", "commercialisation", "availability"],
   cmo: ["manufacturer", "manufacturing", "cdmo", "site", "technology transfer"],
   resilience: ["supply", "continuity", "inventory", "lead time", "supplier"],
+  onshoring: ["resilience", "manufacturing concentration", "qualified redundancy", "continuity"],
   batch: ["manufacturing", "economics", "inventory", "minimum batch size"],
   founder: ["company building", "execution", "credibility", "entrepreneurship"],
   digital: ["technology", "data", "infrastructure", "traceability"],

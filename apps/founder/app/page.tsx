@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArticleCard, Portrait } from "@/components/content";
+import { ArticleCard, Portrait, PublicationCard } from "@/components/content";
 import { JsonLdScript } from "@/components/json-ld";
 import { getArticles } from "@/lib/content";
 import { breadcrumbSchema, pageMetadata, webPageSchema } from "@/lib/seo";
@@ -92,8 +92,8 @@ export default function HomePage(): React.JSX.Element {
               specialist medicines across regulated markets.
             </p>
             <p>
-              Regulated wholesale activity remains pre-operational and will begin only after the required authorisations
-              and operating controls are in place.
+              NovaPharm is active in corporate and commercial development. Regulated wholesale supply has not commenced
+              and will begin only after the required authorisations and operating controls are in place.
             </p>
             <div className="venture-status-pills">
               <span className="status-pill">
@@ -162,8 +162,25 @@ export default function HomePage(): React.JSX.Element {
         </div>
       </section>
 
+      <section className="external-work section" aria-labelledby="external-work-title">
+        <div className="section-heading">
+          <div>
+            <p className="section-number">05 / Published externally</p>
+            <h2 id="external-work-title">Current analysis in the pharmaceutical press</h2>
+          </div>
+          <Link className="text-link" href="/media/">
+            Publication record <span aria-hidden="true">→</span>
+          </Link>
+        </div>
+        <div className="publication-grid publication-grid-featured">
+          {publications.slice(0, 2).map((publication) => (
+            <PublicationCard key={publication.id} publication={publication} featured />
+          ))}
+        </div>
+      </section>
+
       <section className="evidence section" aria-labelledby="evidence-title">
-        <p className="section-number">05 / Selected record</p>
+        <p className="section-number">06 / Selected record</p>
         <div className="evidence-grid">
           <div>
             <h2 id="evidence-title">
@@ -179,9 +196,9 @@ export default function HomePage(): React.JSX.Element {
               <strong>NOVAPHARM HEALTHCARE LTD · Incorporated 2025</strong>
               <span aria-hidden="true">↗</span>
             </a>
-            <a href={publications[0]?.english} target="_blank" rel="noopener noreferrer">
-              <span>Yakuji Nippo</span>
-              <strong>UK–EU pharmaceutical market access series</strong>
+            <a href={publications[0]?.canonicalUrl} target="_blank" rel="noopener noreferrer">
+              <span>{publications[0]?.publisher}</span>
+              <strong>{publications[0]?.title}</strong>
               <span aria-hidden="true">↗</span>
             </a>
             <Link href="/facts/">
@@ -196,7 +213,7 @@ export default function HomePage(): React.JSX.Element {
       <section className="gallery-preview section" aria-labelledby="gallery-preview-title">
         <div className="section-heading">
           <div>
-            <p className="section-number">06 / Approved portrait</p>
+            <p className="section-number">07 / Approved portrait</p>
             <h2 id="gallery-preview-title">The official founder portrait.</h2>
           </div>
           <Link className="text-link" href="/gallery/">

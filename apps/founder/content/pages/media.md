@@ -5,23 +5,16 @@ canonicalPath: /media/
 public: true
 ---
 
-## Featured publication series
-
-Vishal contributes analysis to Yakuji Nippo, a Japanese pharmaceutical publication, on UK–EU pharmaceutical market access and compliance in the post-Brexit era.
-
-The published series examines how regulatory pathways, commercial sequencing, supply responsibilities and market-entry decisions changed after the United Kingdom left the European Union.
-
-{{PUBLICATION_RECORD}}
-
 ## Publication themes
 
-The series addresses:
+The external portfolio addresses:
 
 - separate UK and EU pharmaceutical market-access pathways;
 - post-Brexit regulatory and compliance planning;
 - parallel-import licensing and risk;
 - cross-border market entry;
 - the relationship between regulatory strategy and commercial execution.
+- pharmaceutical supply resilience, qualified redundancy and concentration risk.
 
 ## Selected independent essays
 

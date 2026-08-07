@@ -10,6 +10,7 @@
     "lint": "biome check app components lib scripts test next.config.ts proxy.ts",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "tsx --test test/*.test.ts",
+    "test:publication-links": "tsx scripts/verify-publication-links.ts",
     "test:browser": "tsx test/browser-acceptance.ts",
     "validate": "tsx scripts/validate-content.ts",
     "check": "npm run lint && npm run typecheck && npm run validate && npm test && npm run build"

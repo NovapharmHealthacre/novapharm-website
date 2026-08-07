@@ -2,8 +2,15 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import robots from "../app/robots";
 import type { ArticleRecord } from "../lib/content";
-import { absolute, articleSchema, founderOrganisationSchema, founderPersonSchema, webPageSchema } from "../lib/seo";
-import { vishal } from "../lib/site-data";
+import {
+  absolute,
+  articleSchema,
+  externalPublicationSchema,
+  founderOrganisationSchema,
+  founderPersonSchema,
+  webPageSchema,
+} from "../lib/seo";
+import { publications, vishal } from "../lib/site-data";
 
 const articleFixture = Object.freeze({
   slug: "entity-test",
@@ -36,6 +43,16 @@ test("person and organisation schemas share the canonical founder identifier", (
   const organisation = founderOrganisationSchema();
   assert.equal(person["@id"], vishal.id);
   assert.deepEqual(organisation["founder"], { "@id": vishal.id });
+  assert.equal((person["@reverse"] as { author: readonly unknown[] }).author.length, 5);
+});
+
+test("external publication schema keeps publisher canonicals and the Vishal author entity connected", () => {
+  const publication = publications[0];
+  assert.ok(publication);
+  const node = externalPublicationSchema(publication);
+  assert.equal(node["url"], publication.canonicalUrl);
+  assert.deepEqual(node["author"], { "@id": vishal.id, name: vishal.displayName, url: vishal.canonicalUrl });
+  assert.equal((node["publisher"] as { name: string }).name, "Pharmaceutical Commerce");
 });
 
 test("article and page entity links are absolute and share one identifier", () => {

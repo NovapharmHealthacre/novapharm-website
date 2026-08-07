@@ -42,13 +42,15 @@ Vishal leads the company’s strategy, product selection, partnerships, commerci
 
 ## Selected publications
 
-Vishal contributes to Yakuji Nippo on UK–EU pharmaceutical market access and compliance. Published work includes:
+Vishal has five verified external publications across Yakuji Nippo and Pharmaceutical Commerce. Published work includes:
 
+- *Why Onshoring Alone Won’t Secure Pharma Supply Chains*
+- *UK–EU Pharmaceutical Market Access and Compliance in the Post-Brexit Era — 4. Compliance-Driven Approaches to Cross-Border Market Entry*
 - *UK and EU Pharmaceutical Market Access Pathways After Brexit*
 - *Regulatory and Compliance Considerations Post-Brexit*
 - *Parallel Import Frameworks and Risk Considerations*
 
-See [Writing and Media](/media/) for English and Japanese publication links.
+See [Writing and Media](/media/) for verified publisher links and publisher-hosted translations where available.
 
 ## Selected essays
 
