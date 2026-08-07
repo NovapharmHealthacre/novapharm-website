@@ -1,70 +1,193 @@
 # Master Requirements Traceability Matrix
 
-Status: baseline established; implementation open
-Generated: 2026-07-30T07:03:37.829Z
+Status: fully reconciled at repository level; production acceptance remains open
+Reconciled: 2026-08-07T13:44:19.131Z
 Source SHA-256: `e541b85b0a03ef9b54e8aa96b5380f49fe232774a3d531abcaad880071c60c32`
-Normalised source lines: 5902
-Traceable records: 5900
+Traceable records: 5,900
 
-The complete line-level ledger is in `requirements-matrix.json` and `requirements-matrix.csv`. No row is marked complete merely because code exists; production, security, legal, regulatory and external-account gates remain explicit.
+Every source record has one exact final status and a direct evidence object in `requirements-matrix.json` and `requirements-matrix.csv`. `Complete at repository level only` never means deployed, production accepted or externally activated.
 
-This file and its JSON/CSV companions preserve the audited baseline. Current repository increments and their evidence are recorded in `implementation-evidence.json`; that overlay does not convert owner-controlled Azure, Entra, SharePoint, DNS, legal, regulatory or production gates into completed requirements.
+## Status distribution
 
-## Current status distribution
+- **Complete:** 25
+- **Complete at repository level only:** 5,032
+- **Owner-controlled blocker:** 68
+- **External verification pending:** 329
+- **Incomplete:** 0
+- **Not applicable, with rationale:** 445
+- **Rejected because of a documented conflict or safety concern:** 1
 
-- `partial`: 4088
-- `partial-with-conflicts`: 512
-- `pending`: 330
-- `not-met`: 264
-- `local-only`: 133
-- `mixed`: 89
-- `confirmed-blocker`: 69
-- `partial-boundary-failure`: 69
-- `not-started`: 68
-- `partial-local`: 64
-- `adopted`: 60
-- `code-present-not-deployed`: 59
-- `partial-with-defects`: 48
-- `in-progress`: 25
-- `partial-unverified-field-data`: 22
+## Evidence contract
 
-## Primary section baseline
+Every record links code locations, tests, the CI workflow/current PR checks, documentation, deployment evidence, production evidence and a rationale. Repository-only records explicitly say that no deployment or production claim is made. Owner-controlled and external records identify the remaining evidence boundary.
 
-| Section | Current status | Existing implementation | Identified gap | Required action | Validation |
-|---|---|---|---|---|---|
-| 1 | adopted | The programme is being executed as a cross-disciplinary repository and production audit before implementation. | Execution evidence must continue to be linked to each requirement. | Maintain the traceability ledger and record tested evidence as each delivery increment closes. | Requirements traceability review and delivery-gate sign-off. |
-| 2 | partial | All three estates have deliberate visual systems, but quality and consistency vary materially between properties and viewports. | No shared, governed quality bar or cross-estate design review currently exists. | Create three reviewed creative directions, adopt one shared design foundation and retain distinct property art direction. | Chromium/WebKit visual acceptance, design critique, accessibility and performance budgets. |
-| 3 | not-met | NIT uses TypeScript, Next.js 16 and React 19; the corporate and founder sources use separate custom JavaScript/static builders. | There is no strict TypeScript monorepo, shared package graph, unified lockfile or component governance environment. | Migrate incrementally to a pnpm/Turborepo workspace using the current security-patched Next.js 16 Active LTS and shared packages. | Strict typecheck, lint, package-boundary tests, clean build and migration parity tests. |
-| 4 | confirmed-blocker | The corporate repository contains a capable Node backend, but GitHub Pages publishes only static files while still exposing login and account-form interfaces. | The deployed origin cannot execute the security controls or workflows represented by the visible interfaces. | Separate public, portal and API applications; make public-only output omit secure controls and retain Pages solely as an honest fallback until cutover. | Mode-contract tests, public-artifact inspection, live health checks and protected-route tests. |
-| 5 | partial | The corporate, NIT and founder public domains resolve; www redirects to the corporate apex. Portal, API and status subdomains do not resolve. | Target service boundaries, origin validation, dedicated secure origins and monitoring are not live. | Implement explicit origin configuration and isolated applications before an approved DNS cutover. | Configuration-schema tests, redirect crawl, DNS/certificate monitoring and CORS/host tests. |
-| 6 | code-present-not-deployed | The corporate repository contains Bicep for App Service, Azure SQL, Blob Storage, Key Vault, Application Insights and managed identities. | No live Azure production estate or verified Front Door Premium/WAF boundary exists. | Reconcile infrastructure as code with the unified app topology and deploy only after owner-controlled Azure, billing and DNS approval. | Bicep lint/what-if, policy checks, private staging acceptance, production smoke tests and rollback drill. |
-| 7 | not-met | Preview/public-state flags exist in parts of the corporate backend, but the four required estate-wide operating modes are not a shared contract. | Static output can expose interfaces that the selected runtime mode cannot support. | Add a typed deployment-mode package and route/capability manifests enforced at build and runtime. | Contract tests for PUBLIC_ONLY, FULL_PLATFORM, MAINTENANCE and INCIDENT artifacts. |
-| 8 | not-met | Local corporate tests exercise real backend workflows, but the live static site exposes non-operational login, contact and account-application controls. | Public controls do not consistently have a server-confirmed outcome or deliberate absence. | Bind every control to a capability manifest; remove or replace unavailable workflows with an explicit, tested handoff. | Control inventory, interaction tests, dead-control scan and live synthetic monitoring. |
-| 9 | local-only | The corporate Node application implements local/federated authentication, sessions, CSRF, lockout and four role scopes in local tests. | No deployed portal origin, production Entra configuration, MFA acceptance or live role isolation exists. | Move identity into the dedicated portal/API boundary and activate workforce and approved external identity flows through owner-controlled Entra configuration. | OIDC validation, role matrix, IDOR tests, MFA evidence, session tests and production cookie inspection. |
-| 10 | local-only | The corporate backend implements contact and account-application endpoints with validation, CSRF, persistence and tests; public NIT/founder contact is email handoff only. | The production corporate origin returns 404 for the API and cannot complete the displayed forms. | Centralise typed form contracts in the API, add per-site journeys and publish forms only when the API health contract passes. | Unit/integration/E2E tests, provider-failure tests, accessibility checks and live synthetic submissions. |
-| 11 | partial-local | Adapters exist for Microsoft Graph/SharePoint, email, Azure Blob, Azure SQL and logistics events with retry/audit behaviour. | They are not production-configured or end-to-end verified; SharePoint support is document-drive focused and lacks the full hybrid list/field-authority model. | Define typed integration contracts, least-privilege permissions, idempotent outbox processing, health states and production acceptance suites. | Sandbox contract tests, throttling/outage tests, reconciliation, audit evidence and owner-approved production smoke tests. |
-| 12 | partial | Corporate public copy generally uses conservative pre-authorisation caveats and avoids identified prohibited supply claims. | Regulatory wording and leadership-role evidence are not governed from one cross-site source; several current titles conflict with the master specification. | Create evidence-bound claims and people records with publication states and legal/regulatory review gates. | Claims lint, evidence review, visible/schema parity and pharmaceutical-compliance sign-off. |
-| 13 | partial | The corporate site has claim-audit scripts and content data, while the NIT and founder properties maintain separate facts. | There is no single typed claims registry consumed by all properties. | Create a versioned claims package with evidence state, owner, scope, review date and publication rules. | Schema validation, cross-site consistency tests and prohibited-claim CI gate. |
-| 14 | partial | The corporate website has 36 indexable routes, strong product imagery, six Insights articles and a refined responsive visual system. | The narrative remains tied to a static generator, some copy overstates operational cohesion, and unavailable secure journeys are visible. | Migrate content into the unified corporate app while preserving URLs, approved media and search equity. | Route parity, content diff, claims scan, responsive visual review and SEO regression tests. |
-| 15 | partial-with-defects | NIT is a TypeScript/Next.js static export with a distinctive advisory experience and 12 public sitemap URLs. | The latest tree has high dependency advisories, lint scans generated output, mobile hero text clips, naming is inconsistent, the contact flow is mailto-only and the legal relationship remains unverified. | Upgrade dependencies, fix source/output boundaries, migrate to shared packages and publish only evidence-approved entity relationships. | Clean lint/typecheck/audit/build, mobile/WebKit screenshots, entity review and contact workflow tests. |
-| 16 | partial-with-conflicts | Corporate and founder properties publish leadership profiles and portraits, but title wording is inconsistent across sites and schema. | Four leadership designations conflict with the master source; the NIT relationship and some role evidence remain owner-controlled. | Create canonical people records, preserve approved portraits, separate executive title from founder/governance facts and hold unverified regulated titles from publication. | Entity consistency tests, visible/schema parity, portrait provenance and owner evidence review. |
-| 17 | partial | Each property has a coherent local design system, but tokens and components are isolated. | No shared accessible component package or three-direction design gate exists. | Create a governed token/component foundation and approve one of three original estate-wide creative directions. | Storybook/component tests, visual regression, WCAG review and design critique. |
-| 18 | partial | Corporate and founder properties include approved/registered imagery; media provenance is uneven across the complete estate. | There is no one rights, provenance, optimisation and misleading-imagery gate for every asset. | Centralise asset records and enforce licence, metadata, responsive derivative and claims checks. | Asset-register validation, image decode tests, responsive crops and human art-direction review. |
-| 19 | partial-boundary-failure | The corporate Node backend includes meaningful security controls and passes local security integration tests. | Those controls do not protect GitHub Pages output; independent penetration testing and live edge controls are absent. | Adopt shared security middleware, split trust boundaries, add SAST/DAST and commission independent testing before production approval. | OWASP test suite, headers/CSP, authz/IDOR, upload, rate-limit and independent penetration-test evidence. |
-| 20 | partial | All three public domains currently return content over HTTPS; the corporate and founder Pages settings enforce HTTPS. | NIT Pages reports HTTPS enforcement disabled, the secure service subdomains are absent and no unified domain/certificate monitoring exists. | Create a domain inventory, edge compatibility policy, monitoring and controlled cutover/rollback runbook. | DNS snapshot, TLS scan, redirect matrix, corporate-filter testing and expiry alerts. |
-| 21 | partial | The corporate site has consent controls and legal pages; the other properties have simpler privacy/terms coverage and no production analytics was observed in the audited public builds. | There is no unified data map, consent ledger or cross-estate privacy configuration tied to actual production services. | Create shared privacy/consent contracts, per-purpose data maps and deploy trackers only after valid consent and legal review. | Cookie/storage audit, pre-consent network tests, withdrawal tests and policy-to-system reconciliation. |
-| 22 | partial | The three sites have canonical URLs, sitemaps and structured data; corporate has IndexNow and entity-authority tooling. | Entity identifiers, titles and relationships are inconsistent and discovery governance is not shared. | Implement one canonical entity/metadata system while preserving distinct domains and approved URLs. | Crawl, sitemap/robots/schema tests, entity linkage, rendered HTML and search-platform owner acceptance. |
-| 23 | partial | Corporate and founder automated accessibility checks pass; NIT includes semantic source patterns but its clean lint gate currently fails. | No complete manual keyboard/screen-reader audit or cross-browser WCAG 2.2 AA acceptance exists for the unified estate. | Adopt accessible shared components and execute automated plus manual testing at every defined viewport. | axe, semantic lint, keyboard, screen-reader spot checks, contrast and focus review. |
-| 24 | partial-unverified-field-data | Performance scripts and historical reports exist, but current production field measurements were not established in this audit. | No unified budgets, real-user monitoring or current three-property Core Web Vitals baseline exists. | Set enforceable asset/JS/CSS budgets and add privacy-safe RUM after consent and owner approval. | Lighthouse/Lab runs, bundle budgets and 75th-percentile field monitoring when data exists. |
-| 25 | partial | The estates contain substantial approved public content, especially corporate Insights and founder essays. | Terminology, titles, entity facts and editorial review states are not centrally governed. | Migrate content into typed records with sources, authorship, review state, jurisdiction and claims linkage. | Editorial lint, source-link tests, content review and cross-site consistency checks. |
-| 26 | not-met | Secret scanning and push protection are enabled and tracked current/history scans pass; repositories are public and have no main-branch protection, Dependabot updates or CodeQL analysis. | Required supply-chain controls and private ownership are not configured; historical GitHub pull refs still need Support-level remediation for the retired credential incident. | Add locked CI permissions, dependency updates, CodeQL/SAST, branch rules and an owner-controlled private-repository decision. | Repository-settings export, CI policy tests, all-ref secret scan and GitHub Support confirmation. |
-| 27 | mixed | Corporate and founder clean local checks pass; NIT builds and typechecks but lint and production dependency audit fail. Corporate live-backend activation fails because the deployed API returns 404. | No one clean-checkout, cross-estate acceptance pipeline validates the actual deployed architecture. | Create staged monorepo CI with unit, integration, E2E, security, accessibility, visual and live smoke gates. | Required checks on immutable candidate SHAs and deployment-environment smoke evidence. |
-| 28 | not-started | The three repositories and production sites remain independent; no controlled source migration has occurred. | Shared history, content, routes, redirects, data and rollback have not been reconciled into the target topology. | Execute a staged strangler migration with content/route parity, preserved histories and independent rollback. | Migration rehearsal, count reconciliation, URL diff, rollback drill and owner acceptance. |
-| 29 | partial | The corporate repository has extensive historical audit, deployment, security and runbook documentation. | There is no current unified-estate source of truth or line-level traceability to this master specification. | Create the programme documentation set and keep status language evidence-bound. | Documentation inventory, link checks, owner-gate review and evidence freshness checks. |
-| 30 | in-progress | A new foundation branch is created from the latest corporate main; no pull request or merge has occurred. | The branch has not yet delivered a reviewable architecture increment. | Commit coherent increments and open draft pull requests only after their checks pass. | PR checks, review state, merge-base and expected-head verification. |
-| 31 | not-met | Several existing components are strong, but the secure runtime, unified governance and deployment acceptance conditions are not met. | The definition of done remains materially open. | Close each requirement only with linked code, test and deployment evidence. | Final requirements-led acceptance review. |
-| 32 | pending | An evidence-backed baseline is being produced. | Final response evidence cannot be supplied before implementation and production acceptance. | Maintain interim reports and issue the required completion report only after all applicable gates pass. | Final A-L response reconciled to the completed matrix and deployment evidence. |
+## Section reconciliation
 
-## Completion rule
+| Source section | Complete | Complete at repository level only | Owner-controlled blocker | External verification pending | Incomplete | Not applicable, with rationale | Rejected because of a documented conflict or safety concern |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Preamble | 0 | 24 | 0 | 0 | 0 | 1 | 0 |
+| 1. OPERATING ROLE | 0 | 24 | 0 | 0 | 0 | 1 | 0 |
+| 2. BUSINESS STANDARD | 0 | 30 | 0 | 1 | 0 | 1 | 0 |
+| 3. IMPORTANT TECHNICAL DIRECTION | 0 | 69 | 0 | 0 | 0 | 1 | 0 |
+| 4. CURRENT ARCHITECTURAL CONTRADICTION TO RESOLVE | 0 | 40 | 0 | 0 | 0 | 1 | 0 |
+| 5. PUBLIC DOMAIN AND APPLICATION ARCHITECTURE | 0 | 38 | 0 | 0 | 0 | 1 | 0 |
+| 6. AZURE ENTERPRISE EDGE AND HOSTING | 0 | 38 | 5 | 0 | 0 | 1 | 0 |
+| 7. DEPLOYMENT MODES | 0 | 42 | 0 | 0 | 0 | 5 | 0 |
+| 8. ZERO-DUMMY POLICY | 0 | 53 | 0 | 0 | 0 | 1 | 0 |
+| 9. PORTAL AND IDENTITY | 0 | 73 | 7 | 0 | 0 | 1 | 0 |
+| 10. WORKING FORMS AND BUSINESS WORKFLOWS | 0 | 44 | 0 | 0 | 0 | 1 | 0 |
+| 11. INTEGRATION INVENTORY AND IMPLEMENTATION | 0 | 55 | 0 | 0 | 0 | 1 | 0 |
+| 12. REGULATORY AND OPERATIONAL STATUS | 0 | 37 | 2 | 0 | 0 | 1 | 1 |
+| 13. SINGLE GOVERNED CLAIMS REGISTRY | 0 | 42 | 0 | 0 | 0 | 1 | 0 |
+| 14. NOVAPHARM CORPORATE WEBSITE EXPERIENCE | 0 | 145 | 0 | 0 | 0 | 1 | 0 |
+| 15. NOVAPHARM INNOVATION TECHNOLOGY EXPERIENCE | 0 | 47 | 0 | 0 | 0 | 1 | 0 |
+| 16. FOUNDER PLATFORM AND EXECUTIVE LEADERSHIP EXPERIENCE | 0 | 2 | 0 | 0 | 0 | 1 | 0 |
+| 16.1 VISHAL FOUNDER PLATFORM | 0 | 85 | 0 | 0 | 0 | 1 | 0 |
+| 16.2 NOVAPHARM LEADERSHIP HUB | 0 | 20 | 0 | 0 | 0 | 1 | 0 |
+| 16.3 EXECUTIVE PROFILE PURPOSE | 0 | 30 | 0 | 0 | 0 | 1 | 0 |
+| 16.4 EXECUTIVE PROFILE STRUCTURE | 0 | 20 | 0 | 0 | 0 | 1 | 0 |
+| 16.5 ROLE ALIGNMENT | 0 | 70 | 0 | 0 | 0 | 1 | 0 |
+| 16.6 EXECUTIVE KNOWLEDGE AND PRIVACY GOVERNANCE | 0 | 36 | 0 | 0 | 0 | 1 | 0 |
+| 16.7 EXECUTIVE EVIDENCE REGISTER | 0 | 22 | 0 | 0 | 0 | 1 | 0 |
+| 16.8 LEADERSHIP CONTENT MANAGEMENT | 0 | 27 | 0 | 0 | 0 | 1 | 0 |
+| 16.9 LEADERSHIP DESIGN DIRECTION | 0 | 24 | 0 | 0 | 0 | 1 | 0 |
+| 16.10 EXECUTIVE PHOTOGRAPHY | 0 | 31 | 0 | 0 | 0 | 1 | 0 |
+| 16.11 EXECUTIVE STRUCTURED DATA | 0 | 15 | 0 | 0 | 0 | 1 | 0 |
+| 16.12 SEARCH AND KNOWLEDGE EXPERIENCE | 0 | 18 | 0 | 0 | 0 | 1 | 0 |
+| 16.13 CONTACT AND ENQUIRY ROUTING | 0 | 19 | 0 | 0 | 0 | 1 | 0 |
+| 16.14 ACCESSIBILITY AND INCLUSION | 0 | 13 | 0 | 0 | 0 | 1 | 0 |
+| 16.15 LEADERSHIP QUALITY ASSURANCE | 0 | 29 | 2 | 0 | 0 | 1 | 0 |
+| 16.16 FUTURE EXTENSIBILITY | 0 | 13 | 0 | 0 | 0 | 1 | 0 |
+| 16.17 DEFINITION OF DONE | 0 | 18 | 0 | 0 | 0 | 1 | 0 |
+| 17. UNIFIED DESIGN SYSTEM | 0 | 86 | 0 | 0 | 0 | 1 | 0 |
+| 18. PHOTOGRAPHY AND MEDIA | 0 | 40 | 0 | 0 | 0 | 1 | 0 |
+| 19. SECURITY ENGINEERING | 0 | 68 | 0 | 0 | 0 | 1 | 0 |
+| 20. DOMAIN TRUST AND CORPORATE FILTER COMPATIBILITY | 0 | 52 | 0 | 0 | 0 | 1 | 0 |
+| 21. PRIVACY, COOKIES AND ANALYTICS | 0 | 22 | 0 | 0 | 0 | 1 | 0 |
+| 22. SEO, ENTITY TRUST AND DISCOVERABILITY | 0 | 32 | 0 | 0 | 0 | 1 | 0 |
+| 23. ACCESSIBILITY | 0 | 39 | 0 | 0 | 0 | 1 | 0 |
+| 24. PERFORMANCE | 0 | 19 | 0 | 2 | 0 | 1 | 0 |
+| 25. CONTENT QUALITY | 0 | 26 | 0 | 0 | 0 | 1 | 0 |
+| 26. GITHUB AND SOFTWARE SUPPLY CHAIN | 0 | 22 | 9 | 0 | 0 | 1 | 0 |
+| 27. TESTING REQUIREMENTS | 0 | 88 | 0 | 0 | 0 | 1 | 0 |
+| 28. MIGRATION STRATEGY | 0 | 65 | 0 | 2 | 0 | 1 | 0 |
+| 29. REQUIRED DOCUMENTATION | 25 | 0 | 0 | 0 | 0 | 1 | 0 |
+| 30. BRANCH AND PULL-REQUEST STRATEGY | 0 | 24 | 0 | 0 | 0 | 1 | 0 |
+| 31. DEFINITION OF DONE | 0 | 3 | 0 | 21 | 0 | 1 | 0 |
+| 32. FINAL CODEX RESPONSE | 0 | 0 | 0 | 0 | 0 | 305 | 0 |
+| 17. GLOBAL SEO, GEO, AEO, ENTITY AUTHORITY AND AI DISCOVERY SYSTEM | 0 | 32 | 0 | 1 | 0 | 1 | 0 |
+| 17.1 DEFINITIONS | 0 | 48 | 0 | 0 | 0 | 1 | 0 |
+| 17.2 THREE-PLATFORM SEARCH RESPONSIBILITIES | 0 | 79 | 0 | 0 | 0 | 1 | 0 |
+| 17.3 CENTRAL ENTITY GRAPH | 0 | 49 | 0 | 0 | 0 | 1 | 0 |
+| 17.4 BRAND AND ENTITY DISAMBIGUATION | 0 | 27 | 0 | 0 | 0 | 1 | 0 |
+| 17.5 SERVER-RENDERED SEARCH ARCHITECTURE | 0 | 20 | 0 | 0 | 0 | 1 | 0 |
+| 17.6 URL GOVERNANCE | 0 | 42 | 0 | 0 | 0 | 1 | 0 |
+| 17.7 INDEXATION POLICY | 0 | 48 | 0 | 0 | 0 | 1 | 0 |
+| 17.8 ROBOTS AND AI CRAWLER GOVERNANCE | 0 | 72 | 0 | 0 | 0 | 1 | 0 |
+| 17.9 ROBOTS.TXT REQUIREMENTS | 0 | 19 | 0 | 0 | 0 | 0 | 0 |
+| 17.10 XML SITEMAP SYSTEM | 0 | 33 | 0 | 0 | 0 | 1 | 0 |
+| 17.11 INDEXNOW AND RAPID DISCOVERY | 0 | 22 | 0 | 0 | 0 | 1 | 0 |
+| 17.12 SEARCH PLATFORM REGISTRATION | 0 | 5 | 16 | 0 | 0 | 1 | 0 |
+| 17.13 INTERNATIONAL AND REGIONAL SEARCH | 0 | 22 | 0 | 0 | 0 | 1 | 0 |
+| 17.14 STRUCTURED DATA KNOWLEDGE GRAPH | 0 | 93 | 0 | 1 | 0 | 1 | 0 |
+| 17.15 SITE NAMES, BRAND RESULTS AND FAVICONS | 0 | 16 | 0 | 0 | 0 | 1 | 0 |
+| 17.16 ON-PAGE SEARCH STANDARD | 0 | 59 | 0 | 0 | 0 | 1 | 0 |
+| 17.17 AEO CONTENT ARCHITECTURE | 0 | 34 | 0 | 0 | 0 | 1 | 0 |
+| 17.18 GEO AND AI CITATION READINESS | 0 | 57 | 0 | 0 | 0 | 1 | 0 |
+| 17.19 AI ANSWER ACCURACY | 0 | 50 | 0 | 0 | 0 | 1 | 0 |
+| 17.20 PHARMACEUTICAL SEARCH COMPLIANCE | 0 | 68 | 0 | 0 | 0 | 1 | 0 |
+| 17.21 REGULATORY ENTITY PRECISION | 0 | 19 | 0 | 0 | 0 | 1 | 0 |
+| 17.22 CONTENT AUTHORITY AND EDITORIAL GOVERNANCE | 0 | 41 | 0 | 0 | 0 | 1 | 0 |
+| 17.23 CONTENT STRATEGY BY PLATFORM | 0 | 58 | 0 | 0 | 0 | 1 | 0 |
+| 17.24 QUERY AND AUDIENCE RESEARCH | 0 | 45 | 0 | 2 | 0 | 1 | 0 |
+| 17.25 CONTENT QUALITY THRESHOLD | 0 | 30 | 0 | 0 | 0 | 1 | 0 |
+| 17.26 INTERNAL LINKING AND INFORMATION ARCHITECTURE | 0 | 21 | 0 | 0 | 0 | 1 | 0 |
+| 17.27 DIGITAL AUTHORITY AND OFF-SITE ENTITY SIGNALS | 0 | 40 | 0 | 0 | 0 | 1 | 0 |
+| 17.28 KNOWLEDGE PANEL READINESS | 0 | 2 | 0 | 24 | 0 | 1 | 0 |
+| 17.29 IMAGE SEARCH AND VISUAL DISCOVERY | 0 | 25 | 0 | 0 | 0 | 1 | 0 |
+| 17.30 VIDEO, AUDIO AND MULTIMODAL DISCOVERY | 0 | 15 | 0 | 0 | 0 | 1 | 0 |
+| 17.31 REPORTS, DATA AND ORIGINAL RESEARCH | 0 | 27 | 0 | 0 | 0 | 1 | 0 |
+| 17.32 CONTENT FEEDS AND DISCOVERY ENDPOINTS | 0 | 15 | 0 | 0 | 0 | 1 | 0 |
+| 17.33 PERFORMANCE AND PAGE EXPERIENCE | 0 | 27 | 0 | 1 | 0 | 1 | 0 |
+| 17.34 AGENT AND MACHINE ACCESSIBILITY | 0 | 25 | 0 | 0 | 0 | 1 | 0 |
+| 17.35 SOCIAL AND DISTRIBUTION METADATA | 0 | 16 | 0 | 0 | 0 | 1 | 0 |
+| 17.36 ANALYTICS AND ATTRIBUTION | 0 | 38 | 0 | 0 | 0 | 1 | 0 |
+| 17.37 SEARCH AND AI VISIBILITY DASHBOARD | 0 | 1 | 0 | 31 | 0 | 1 | 0 |
+| 17.38 SEARCH OBSERVABILITY AND LOG ANALYSIS | 0 | 0 | 0 | 28 | 0 | 1 | 0 |
+| 17.39 TECHNICAL SEO CI/CD GATES | 0 | 37 | 0 | 0 | 0 | 1 | 0 |
+| 17.40 PRODUCTION CRAWLER TESTING | 0 | 6 | 0 | 13 | 0 | 1 | 0 |
+| 17.41 MIGRATION FROM EXISTING STATIC SITES | 0 | 32 | 0 | 1 | 0 | 1 | 0 |
+| 17.42 CONTENT REFRESH AND DECAY CONTROL | 0 | 39 | 0 | 0 | 0 | 1 | 0 |
+| 17.43 REPUTATION AND SEARCH-RESULT SECURITY | 0 | 24 | 0 | 0 | 0 | 1 | 0 |
+| 17.44 EDITORIAL AND TECHNICAL DELIVERABLES | 0 | 46 | 0 | 1 | 0 | 1 | 0 |
+| 17.45 PLATFORM-SPECIFIC SUCCESS CRITERIA | 0 | 0 | 0 | 28 | 0 | 1 | 0 |
+| 17.46 SEARCH QUALITY REVIEW PANEL | 0 | 1 | 26 | 0 | 0 | 1 | 0 |
+| 17.47 NON-NEGOTIABLE PROHIBITIONS | 0 | 34 | 0 | 0 | 0 | 1 | 0 |
+| 17.48 DEFINITION OF DONE | 0 | 10 | 0 | 37 | 0 | 1 | 0 |
+| 18. WORLD-CLASS VISUAL DESIGN, ART DIRECTION, EXPERIENCE AND PRESENTATION SYSTEM | 0 | 49 | 0 | 2 | 0 | 1 | 0 |
+| 18.1 CREATIVE AMBITION | 0 | 36 | 0 | 1 | 0 | 1 | 0 |
+| 18.2 ONE ECOSYSTEM, THREE DISTINCT EXPRESSIONS | 0 | 76 | 0 | 0 | 0 | 1 | 0 |
+| 18.3 CORE NOVAPHARM VISUAL THESIS | 0 | 57 | 0 | 0 | 0 | 1 | 0 |
+| 18.4 CREATIVE EXPLORATION BEFORE IMPLEMENTATION | 0 | 45 | 0 | 0 | 0 | 1 | 0 |
+| 18.5 DESIGN SYSTEM | 0 | 83 | 0 | 0 | 0 | 1 | 0 |
+| 18.6 COLOUR SYSTEM | 0 | 48 | 0 | 0 | 0 | 1 | 0 |
+| 18.7 TYPOGRAPHY SYSTEM | 0 | 53 | 0 | 0 | 0 | 1 | 0 |
+| 18.8 GRID, LAYOUT AND SPATIAL SYSTEM | 0 | 36 | 0 | 0 | 0 | 1 | 0 |
+| 18.9 CONTENT HIERARCHY | 0 | 32 | 0 | 0 | 0 | 1 | 0 |
+| 18.10 NAVIGATION EXPERIENCE | 0 | 52 | 0 | 0 | 0 | 1 | 0 |
+| 18.11 CORPORATE HOMEPAGE COMPOSITION | 0 | 4 | 0 | 0 | 0 | 1 | 0 |
+| 1. Opening statement | 0 | 14 | 0 | 0 | 0 | 0 | 0 |
+| 2. Institutional proof | 0 | 10 | 0 | 0 | 0 | 0 | 0 |
+| 3. Capability architecture | 0 | 11 | 0 | 0 | 0 | 0 | 0 |
+| 4. Supply and market-access narrative | 0 | 10 | 0 | 0 | 0 | 0 | 0 |
+| 5. Portfolio | 0 | 9 | 0 | 0 | 0 | 0 | 0 |
+| 6. Quality and trust | 0 | 10 | 0 | 0 | 0 | 0 | 0 |
+| 7. Partnership pathways | 0 | 10 | 0 | 0 | 0 | 0 | 0 |
+| 8. NovaPharm Innovation Technology | 0 | 3 | 0 | 0 | 0 | 0 | 0 |
+| 9. Leadership | 0 | 4 | 0 | 0 | 0 | 0 | 0 |
+| 10. Insights and intelligence | 0 | 3 | 0 | 0 | 0 | 0 | 0 |
+| 11. Final engagement | 0 | 7 | 0 | 1 | 0 | 0 | 0 |
+| 18.12 CORPORATE INTERIOR PAGE SYSTEM | 0 | 27 | 0 | 0 | 0 | 1 | 0 |
+| 18.13 NIT HOMEPAGE COMPOSITION | 0 | 2 | 0 | 0 | 0 | 1 | 0 |
+| 1. Technical opening | 0 | 14 | 0 | 0 | 0 | 0 | 0 |
+| 2. Development model | 0 | 14 | 0 | 0 | 0 | 0 | 0 |
+| 3. Technical capability areas | 0 | 3 | 0 | 0 | 0 | 0 | 0 |
+| 4. Partner ecosystem | 0 | 9 | 0 | 0 | 0 | 0 | 0 |
+| 5. Technical evidence | 0 | 8 | 0 | 0 | 0 | 0 | 0 |
+| 6. Partnership CTA | 0 | 3 | 0 | 0 | 0 | 0 | 0 |
+| 18.14 FOUNDER HOMEPAGE COMPOSITION | 0 | 2 | 0 | 0 | 0 | 1 | 0 |
+| 1. Editorial opening | 0 | 7 | 0 | 0 | 0 | 0 | 0 |
+| 2. Current perspective | 0 | 3 | 0 | 0 | 0 | 0 | 0 |
+| 3. Selected work | 0 | 7 | 0 | 0 | 0 | 0 | 0 |
+| 4. Ask Vishal’s Work | 0 | 9 | 0 | 0 | 0 | 0 | 0 |
+| 5. Professional record | 0 | 3 | 0 | 0 | 0 | 0 | 0 |
+| 6. Media and speaking | 0 | 2 | 0 | 0 | 0 | 0 | 0 |
+| 7. NovaPharm relationship | 0 | 2 | 0 | 0 | 0 | 0 | 0 |
+| 18.15 PORTAL EXPERIENCE | 0 | 75 | 0 | 0 | 0 | 1 | 0 |
+| 18.16 SIGNATURE INTERACTIONS | 0 | 60 | 0 | 0 | 0 | 1 | 0 |
+| 18.17 PHOTOGRAPHY AND IMAGE ART DIRECTION | 0 | 79 | 0 | 0 | 0 | 1 | 0 |
+| 18.18 ILLUSTRATION AND GRAPHIC LANGUAGE | 0 | 26 | 0 | 0 | 0 | 1 | 0 |
+| 18.19 DATA VISUALISATION | 0 | 36 | 0 | 0 | 0 | 1 | 0 |
+| 18.20 MOTION SYSTEM | 0 | 50 | 0 | 0 | 0 | 1 | 0 |
+| 18.21 MICROINTERACTIONS | 0 | 27 | 0 | 0 | 0 | 1 | 0 |
+| 18.22 MOBILE-FIRST ART DIRECTION | 0 | 35 | 0 | 0 | 0 | 1 | 0 |
+| 18.23 RESPONSIVE BREAKPOINT REVIEW | 0 | 26 | 0 | 0 | 0 | 1 | 0 |
+| 18.24 ACCESSIBILITY AS DESIGN QUALITY | 0 | 24 | 0 | 0 | 0 | 1 | 0 |
+| 18.25 PERFORMANCE AS A CREATIVE CONSTRAINT | 0 | 33 | 0 | 0 | 0 | 1 | 0 |
+| 18.26 FORMS AND CONVERSION EXPERIENCE | 0 | 32 | 0 | 0 | 0 | 1 | 0 |
+| 18.27 SEARCH EXPERIENCE | 0 | 14 | 0 | 0 | 0 | 1 | 0 |
+| 18.28 FOOTER AND INSTITUTIONAL DETAILS | 0 | 25 | 0 | 0 | 0 | 1 | 0 |
+| 18.29 TRUST CENTRE PRESENTATION | 0 | 21 | 0 | 0 | 0 | 1 | 0 |
+| 18.30 ERROR, EMPTY AND EDGE STATES | 0 | 28 | 0 | 0 | 0 | 1 | 0 |
+| 18.31 REAL CONTENT REQUIREMENT | 0 | 23 | 0 | 0 | 0 | 1 | 0 |
+| 18.32 DESIGN REVIEW GATES | 0 | 1 | 0 | 74 | 0 | 1 | 0 |
+| 18.33 MULTIDISCIPLINARY CREATIVE CRITIQUE | 0 | 29 | 1 | 0 | 0 | 1 | 0 |
+| 18.34 VISUAL QA AND SCREENSHOT REVIEW | 0 | 23 | 0 | 1 | 0 | 1 | 0 |
+| 18.35 DESIGN GOVERNANCE | 0 | 30 | 0 | 0 | 0 | 1 | 0 |
+| 18.36 DELIVERABLES | 0 | 65 | 0 | 0 | 0 | 1 | 0 |
+| 18.37 NON-NEGOTIABLE VISUAL PROHIBITIONS | 0 | 42 | 0 | 0 | 0 | 1 | 0 |
+| 18.38 DEFINITION OF DONE | 0 | 3 | 0 | 56 | 0 | 1 | 0 |
 
-A record may move to `complete` only when the named repository/service implementation and validation evidence are linked. Owner-controlled Azure, DNS, Microsoft, legal, regulatory and rights-clearance gates remain `owner-controlled`, not complete.
+## Completion boundary
+
+The repository candidate is not the production estate. Azure provisioning, Front Door/WAF live tests, Entra consent and MFA, SharePoint permissions, production integrations, penetration testing, DNS cutover, search-platform verification, Dr Nishita Trivedi's formal Responsible Person appointment documentation, legal approval and AAH retesting remain open where identified row by row.

@@ -49,9 +49,9 @@ The temporary npm lock is deliberate. The existing GitHub Pages and Node release
 - Public company name: `NovaPharm Healthcare`.
 - Legal company name: `NOVAPHARM HEALTHCARE LTD`.
 - Company number: `16716501`.
-- Public operating state: pre-operational for regulated wholesale supply.
+- Public operating state: the company and commercial-development programme are active; regulated wholesale supply has not commenced and remains subject to the required authorisation and release controls.
 - Vishal Chakravarty: `Chief Executive Officer`; founder and statutory-director facts remain separate.
-- Dr Nishita Trivedi: `Quality and Regulatory Adviser`; not represented as a statutory director or current Responsible Person without evidence.
+- Dr Nishita Trivedi: `Chief Technology Officer and Responsible Person`; the executive role and regulated appointment are distinct, she is not a statutory director, and formal appointment documentation remains pending in the controlled evidence register.
 
 ## Tests executed
 

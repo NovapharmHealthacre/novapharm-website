@@ -22,7 +22,7 @@ The owner-supplied 59-page business plan was reviewed privately and represented 
 - Website gap analysis: `audit/business-plan-website-gap-analysis.md`
 - Public content evidence register: `docs/public-content-evidence-register.json`
 
-Excluded from publication are unverified authorisations, product approvals or availability, NHS supply or contracts, named Polar Speed or Marken activity, commercial partnerships, revenue and forecast figures, claimed AI or blockchain outcomes, patents, private supplier or product economics, immigration material and unverified leadership biography.
+Excluded from publication are unverified authorisations, product approvals or availability, NHS supply or contracts, unverified third-party logistics activity, commercial partnerships, revenue and forecast figures, claimed AI or blockchain outcomes, patents, private supplier or product economics, immigration material and unverified leadership biography.
 
 ## Oncology Evidence
 

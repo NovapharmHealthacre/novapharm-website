@@ -22,7 +22,7 @@ In **Clinical Research & CRO Support → Senior judgement**, show all three appr
 
 - Vishal Chakravarty — Chief Executive Officer
 - Dr Girish Shantilal Achliya — Director & Chief Scientific Officer
-- Prabhakar Vitthal Lahare — Managing Director & Chief Operating Officer
+- Prabhakar Vitthal Lahare — Chief Operating Officer
 
 Prabhakar's card must use the approved repository portrait and link to `/leadership/prabhakar-lahare/`. His summary should connect operating strategy, manufacturing partnerships, quality governance, supply continuity and controlled programme execution. Ensure the three cards have equal visual weight on desktop and a strong responsive layout on tablet and mobile.
 
