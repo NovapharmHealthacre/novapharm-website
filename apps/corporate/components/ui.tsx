@@ -26,7 +26,7 @@ export function SectionHeading({ kicker, title, intro }: { readonly kicker?: str
 }
 
 export function StatusNotice() {
-  return <aside className="status-notice" aria-label="Regulatory status"><strong>Regulatory status</strong><p>NovaPharm is pre-operational for regulated wholesale supply. Regulated activity will begin only after the required MHRA authorisations and other applicable permissions are granted.</p></aside>;
+  return <aside className="status-notice" aria-label="Regulatory status"><strong>Regulatory status</strong><p>NovaPharm is active in corporate and commercial development. Regulated wholesale supply has not commenced and will begin only after the required MHRA authorisations and applicable operating controls are in place.</p></aside>;
 }
 
 export function FinalCta({ title = "Build the next pharmaceutical partnership with NovaPharm." }: { readonly title?: string }) {

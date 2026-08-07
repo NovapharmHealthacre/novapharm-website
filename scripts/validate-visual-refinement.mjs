@@ -104,7 +104,10 @@ for (const [path, html] of [
 ]) {
   requireText(html, 'data-visual-refinement="2026-07"', `${path} build marker`);
   requireText(html, '/assets/js/visual-refinement.js', `${path} visual script`);
-  if (!html.toLowerCase().includes("pre-operational")) failures.push(`${path} regulatory truthfulness: pre-operational status is missing.`);
+  const pageText = html.toLowerCase();
+  if (!pageText.includes("active") || !pageText.includes("regulated wholesale supply has not commenced")) {
+    failures.push(`${path} regulatory truthfulness: active-company and regulated-wholesale boundaries are incomplete.`);
+  }
 }
 
 if (index.includes("<video")) failures.push("Homepage hero: unexpected video added; the approved motion-enhanced still-image path should remain lightweight.");

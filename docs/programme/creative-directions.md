@@ -1,7 +1,7 @@
 # Unified Estate Creative Directions
 
-Status: three directions evaluated; `Regulated Continuum` selected provisionally
-Review date: 30 July 2026
+Status: three directions prototyped and tested; `Regulated Continuum` selected
+Review date: 1 August 2026
 
 The three properties must feel related without becoming copies. Each direction uses the official NovaPharm identity, approved portraits and evidence-safe pharmaceutical imagery. None relies on decorative orbs, generic doodles, fake facilities or unsupported operating claims.
 
@@ -78,11 +78,52 @@ A modern corporate ledger: precise typography, document fragments, batch labels,
 
 Adopt ledger patterns selectively for regulatory roadmaps, batch integrity, article sources and secure operational views.
 
-## Provisional selection
+## Comparison and scoring
 
-`Regulated Continuum` is selected as the cross-estate foundation, with carefully limited elements from `Institutional Atlas` and `Clinical Ledger` where they clarify markets or evidence.
+Scores use a five-point scale and reflect multidisciplinary review of the rendered prototypes.
 
-The selection does not authorise invented media or claims. Final visual lock requires rendered Chromium and WebKit review at the required desktop, tablet and mobile sizes.
+| Criterion | Regulated Continuum | Institutional Atlas | Clinical Ledger |
+|---|---:|---:|---:|
+| Corporate authority | 5 | 4 | 4 |
+| Cross-property flexibility | 5 | 3 | 4 |
+| Pharmaceutical truthfulness | 5 | 3 | 5 |
+| Mobile clarity | 5 | 3 | 4 |
+| Portal utility | 4 | 3 | 5 |
+| Editorial warmth | 5 | 4 | 2 |
+| Performance restraint | 5 | 3 | 4 |
+| Total / 35 | **34** | 23 | 28 |
+
+## Final selection
+
+`Regulated Continuum` is selected as the cross-estate foundation, with carefully limited elements from `Institutional Atlas` and `Clinical Ledger` where they clarify markets or evidence. Its continuous evidence line, editorial imagery and measured contrast communicate movement and control without implying that a pictured facility or regulated activity belongs to NovaPharm.
+
+The selection does not authorise invented media or claims.
+
+## Multidisciplinary critique
+
+| Discipline | Finding | Correction |
+|---|---|---|
+| Product design | The first desktop layout left too much unused space between direction thesis and examples. | Rebuilt the direction canvas as a disciplined three-column composition: thesis, four property studies and mobile study. |
+| Brand | Early headings competed with the property prototypes. | Tightened display scale and preserved the official logo as the only brand mark. |
+| Accessibility | Focus, state semantics and compact viewport overflow needed executable evidence. | Added visible focus contracts, semantic component tests, axe checks and horizontal-overflow assertions. |
+| Pharmaceutical compliance | Facility photography could imply ownership. | Used representative controlled-supply imagery with neutral wording and explicit governance rules. |
+| Portal product | Promotional card language could make the portal look like a marketing dashboard. | Portal prototype uses dense dark operational composition and evidence-oriented language. |
+| Performance | A framework-heavy component catalogue would add avoidable dependency and runtime weight. | Built a deterministic server-rendered workbench with existing React, Playwright, axe and Sharp tooling. |
+
+## Prototype and screenshot evidence
+
+The governed workbench is `packages/design-system/workbench/index.html`. It contains high-fidelity Corporate, NIT, Founder, Portal and mobile examples for each direction plus the complete shared component inventory.
+
+Final screenshots are committed under `audit/evidence/design-system/`:
+
+- `chromium-desktop-direction-a.png` and `chromium-mobile-direction-a.png`;
+- corresponding Direction B and C captures;
+- equivalent WebKit captures;
+- component-workbench captures in both engines and sizes;
+- immutable review baselines under `audit/evidence/design-system/baselines/`;
+- machine-readable results in `visual-regression-report.json`.
+
+The final run produced 16 screenshots, zero axe violations and no horizontal overflow in Chromium or WebKit. This is repository-level visual evidence, not production-browser evidence.
 
 ## Shared design rules
 

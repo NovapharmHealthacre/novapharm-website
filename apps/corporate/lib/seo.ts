@@ -1,3 +1,4 @@
+import { novapharmOrganisation, personBySlug } from "@novapharm/content";
 import type { Metadata } from "next";
 import type { Article } from "@/data/articles";
 import type { CorporatePage } from "@/data/pages";
@@ -20,15 +21,15 @@ interface PersonRecord {
 const people = leadership as unknown as readonly PersonRecord[];
 
 export const siteUrl = "https://novapharmhealthcare.com";
-export const organisationId = `${siteUrl}/#organization`;
-export const websiteId = `${siteUrl}/#website`;
+export const organisationId = novapharmOrganisation.id;
+export const websiteId = novapharmOrganisation.websiteId;
 
 export function absoluteUrl(pathname = "/"): string {
   return new URL(pathname, siteUrl).toString();
 }
 
 export function organisationSchema() {
-  const vishal = people.find((person) => person.slug === "vishal-chakravarty");
+  const vishal = personBySlug("vishal-chakravarty");
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -42,7 +43,7 @@ export function organisationSchema() {
     description: company.summary,
     foundingDate: company.incorporated,
     identifier: { "@type": "PropertyValue", propertyID: "Companies House", value: company.companyNumber },
-    founder: vishal ? { "@id": `${siteUrl}/leadership/${vishal.slug}/#person` } : undefined,
+    founder: { "@id": vishal.id },
     sameAs: [company.companiesHouseUrl],
     areaServed: ["United Kingdom"],
     knowsAbout: ["Pharmaceutical market access", "Pharmaceutical sourcing", "Good Distribution Practice", "PLPI strategy", "Oncology supply continuity"],
@@ -83,12 +84,13 @@ export function pageSchema(page: CorporatePage) {
 export function personSchema(slug: string) {
   const person = people.find((candidate) => candidate.slug === slug);
   if (!person) return null;
-  const url = `${siteUrl}/leadership/${person.slug}/`;
+  const canonicalPerson = personBySlug(slug);
+  const profileUrl = `${siteUrl}/leadership/${person.slug}/`;
   return {
     "@context": "https://schema.org",
     "@graph": [
-      { "@type": "ProfilePage", "@id": `${url}#profilepage`, url, name: `${person.displayName} | NovaPharm Healthcare`, mainEntity: { "@id": `${url}#person` }, isPartOf: { "@id": websiteId }, breadcrumb: { "@id": `${url}#breadcrumb` } },
-      { "@type": "Person", "@id": `${url}#person`, name: person.displayName, jobTitle: person.schemaTitle, description: person.summary, url, image: person.image ? absoluteUrl(person.image) : undefined, worksFor: { "@id": organisationId }, sameAs: person.sameAs, knowsAbout: person.expertise },
+      { "@type": "ProfilePage", "@id": `${profileUrl}#profilepage`, url: profileUrl, name: `${person.displayName} | NovaPharm Healthcare`, mainEntity: { "@id": canonicalPerson.id }, isPartOf: { "@id": websiteId }, breadcrumb: { "@id": `${profileUrl}#breadcrumb` } },
+      { "@type": "Person", "@id": canonicalPerson.id, name: canonicalPerson.displayName, jobTitle: canonicalPerson.publicTitle, description: person.summary, url: canonicalPerson.canonicalUrl, image: canonicalPerson.canonicalImageUrl ?? (person.image ? absoluteUrl(person.image) : undefined), worksFor: { "@id": organisationId }, sameAs: canonicalPerson.sameAs, knowsAbout: person.expertise, subjectOf: { "@id": `${profileUrl}#profilepage` } },
       breadcrumbs(`leadership/${person.slug}`, person.displayName),
     ],
   };

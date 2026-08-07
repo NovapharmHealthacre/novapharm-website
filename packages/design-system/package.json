@@ -5,7 +5,12 @@
   "type": "module",
   "exports": "./src/index.ts",
   "scripts": {
+    "build:workbench": "tsx workbench/build.tsx",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "tsx --test test/*.test.ts"
+    "test": "tsx --test test/*.test.ts test/*.test.tsx"
+  },
+  "peerDependencies": {
+    "react": ">=19.2.0",
+    "react-dom": ">=19.2.0"
   }
 }

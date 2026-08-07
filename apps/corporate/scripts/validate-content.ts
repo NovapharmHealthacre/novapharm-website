@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
+import { personBySlug } from "@novapharm/content";
 import { articles } from "../data/articles";
 import { assertPageMetaCoverage, corporatePages } from "../data/pages";
 import { company, leadership, pageMeta, productCategories, servicePillars } from "../data/site";
@@ -11,7 +12,7 @@ const repositoryRoot = path.resolve(applicationRoot, "../..");
 const routeSet = new Set<string>();
 
 assertPageMetaCoverage();
-assert.equal(corporatePages.length, 26, "Corporate application must retain 26 canonical page records");
+assert.equal(corporatePages.length, 27, "Corporate application must retain 27 canonical page records");
 assert.equal(leadership.length, 5, "Five approved leadership profiles are required");
 assert.equal(articles.length, 6, "Six substantial Insights articles are required");
 assert.equal(Object.keys(pageMeta).length, corporatePages.length, "Every canonical page requires one metadata record");
@@ -31,6 +32,7 @@ for (const person of leadership) {
   assert.ok(!routeSet.has(route), `Duplicate leadership route: ${route}`);
   routeSet.add(route);
   assert.ok(person.biography.length >= 3, `${person.displayName} requires a reviewed biography`);
+  assert.equal(person.schemaTitle, personBySlug(person.slug).publicTitle, `${person.displayName} title diverges from the canonical people registry`);
   if (person.image) assert.ok(existsSync(path.join(applicationRoot, "public", person.image)), `Missing portrait: ${person.image}`);
 }
 
@@ -38,7 +40,10 @@ const vishal = leadership.find((person) => person.slug === "vishal-chakravarty")
 assert.equal(vishal?.title, "Chief Executive Officer");
 assert.equal(vishal?.governance, "Founder and statutory director");
 const nishita = leadership.find((person) => person.slug === "nishita-trivedi");
+assert.equal(nishita?.title, "Chief Technology Officer and Responsible Person");
 assert.match(nishita?.governance ?? "", /not a statutory director/i);
+const prabhakar = leadership.find((person) => person.slug === "prabhakar-lahare");
+assert.equal(prabhakar?.title, "Chief Operating Officer");
 
 for (const article of articles) {
   const route = `/news-insights/${article.slug}/`;
@@ -50,9 +55,10 @@ for (const article of articles) {
   assert.ok(existsSync(path.join(applicationRoot, "public", article.heroImage)), `Missing article image: ${article.heroImage}`);
 }
 
-assert.equal(routeSet.size, 37, "Corporate canonical route count changed unexpectedly");
+assert.equal(routeSet.size, 38, "Corporate canonical route count changed unexpectedly");
 assert.equal(company.companyNumber, "16716501");
-assert.match(company.regulatoryNotice, /pre-operational/i);
+assert.match(company.regulatoryNotice, /active in corporate, product, partnership and commercial-development work/i);
+assert.match(company.regulatoryNotice, /Regulated wholesale supply has not commenced/i);
 assert.equal(servicePillars.length, 8);
 assert.equal(productCategories.length, 8);
 
@@ -91,6 +97,9 @@ assert.ok(existsSync(heroAsset), "Homepage AVIF delivery asset is missing");
 assert.ok(statSync(heroAsset).size < 80_000, "Homepage AVIF must remain below its 80 KB performance budget");
 assert.match(renderedSource, /supply-network-hero\.avif/);
 assert.match(renderedSource, /fetchPriority="high"/);
+const productsView = renderedSource.match(/function ProductsPage\(\) \{([\s\S]*?)\n\}/)?.[1] ?? "";
+assert.equal((productsView.match(/Food Supplement Portfolio Review/g) ?? []).length, 1);
+assert.ok(productsView.indexOf("food-supplement-portfolio-review") < productsView.indexOf("product-grid"), "Food Supplement Portfolio Review must precede other portfolio categories");
 for (const prohibited of ["100% GDP compliant", "MHRA-authorised pharmaceutical wholesaler", "currently supplying NHS", "Founder & Chief Executive Officer"]) {
   assert.ok(!renderedSource.includes(prohibited), `Unsupported public claim found: ${prohibited}`);
 }

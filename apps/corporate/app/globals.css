@@ -220,13 +220,14 @@ small { font-size: 0.78rem; }
 .profile-detail aside li { padding: 12px 0; border-bottom: 1px solid var(--line); }
 
 .service-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
-.service-grid article { padding: 34px; border: 1px solid var(--line); scroll-margin-top: calc(var(--header) + 20px); }
+.service-grid article { min-width: 0; padding: 34px; border: 1px solid var(--line); scroll-margin-top: calc(var(--header) + 20px); }
 .service-index { margin-bottom: 24px; }
 .service-grid .eyebrow { min-height: 34px; color: var(--teal); }
 .service-grid dl { margin: 28px 0; }
 .service-grid dl div { padding: 14px 0; border-top: 1px solid var(--line); }
 .service-grid dt { color: var(--ink); font-size: .75rem; font-weight: 800; text-transform: uppercase; }
 .service-grid dd { margin: 5px 0 0; }
+.service-grid dd, .service-grid .caveat, .service-grid .text-link { overflow-wrap: anywhere; }
 .caveat { display: flex; gap: 10px; padding: 14px; background: var(--soft); font-size: .82rem; }
 .caveat svg { flex: 0 0 auto; width: 18px; color: var(--red-dark); }
 
@@ -280,6 +281,19 @@ tbody th { color: var(--ink); }
 .product-media img { object-fit: cover; }
 .product-copy { padding: 28px; align-self: center; }
 .status-chip { display: inline-block; margin-bottom: 20px; color: var(--teal); font-size: .72rem; font-weight: 800; text-transform: uppercase; }
+.portfolio-priority { border-block: 1px solid var(--line); background: linear-gradient(135deg, #f6f8f9 0%, #eaf1f4 100%); }
+.portfolio-priority-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(300px, .68fr); gap: clamp(48px, 7vw, 100px); align-items: center; }
+.portfolio-priority-copy { max-width: 760px; }
+.portfolio-priority-copy h2 { max-width: 720px; margin-bottom: 20px; font-size: 52px; }
+.portfolio-priority-copy > p { color: var(--muted); font-size: 1.05rem; }
+.portfolio-priority-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 30px 0 0; padding: 0; border-block: 1px solid var(--line); list-style: none; }
+.portfolio-priority-facts li { padding: 18px 18px 18px 0; color: var(--muted); font-size: .78rem; line-height: 1.4; }
+.portfolio-priority-facts li + li { padding-left: 18px; border-left: 1px solid var(--line); }
+.portfolio-priority-facts strong { display: block; margin-bottom: 4px; color: var(--ink); font-size: .9rem; }
+.portfolio-priority-media { position: relative; aspect-ratio: 1; min-width: 0; }
+.portfolio-priority-media img { object-fit: contain; filter: drop-shadow(0 24px 34px rgba(12, 29, 45, .13)); }
+.portfolio-priority-links { display: flex; flex-wrap: wrap; gap: 20px; margin: 20px 0 0; font-size: .82rem; font-weight: 700; }
+.portfolio-priority-links a { color: var(--navy); }
 
 .catalogue-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 40px; }
 .catalogue-grid article { border: 1px solid var(--line); background: var(--white); }
@@ -459,7 +473,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--focus); box-shad
   .trust-strip span:last-child { grid-column: span 2; }
   .sourcing-grid { grid-template-columns: 1fr; }
   .sourcing-grid article { min-height: 0; border-right: 0; border-bottom: 1px solid var(--line); }
-  .dark-band-grid, .roadmap-header, .narrative-grid, .evidence-boundary, .contact-layout { grid-template-columns: 1fr; gap: 42px; }
+  .dark-band-grid, .roadmap-header, .narrative-grid, .evidence-boundary, .contact-layout, .portfolio-priority-grid { grid-template-columns: 1fr; gap: 42px; }
+  .portfolio-priority-media { width: min(100%, 440px); margin-inline: auto; }
   .roadmap-track { grid-template-columns: repeat(2, 1fr); }
   .editorial-split { grid-template-columns: 110px 1fr; gap: 32px; }
   .maturity-grid, .article-grid, .leader-grid, .regulatory-grid, .principle-grid, .catalogue-grid { grid-template-columns: repeat(2, 1fr); }
@@ -526,6 +541,11 @@ input:focus, select:focus, textarea:focus { border-color: var(--focus); box-shad
   .mini-grid { grid-template-columns: 1fr; }
   .product-grid article { grid-template-columns: 1fr; }
   .product-media { min-height: 270px; }
+  .portfolio-priority-copy h2 { font-size: 36px; }
+  .portfolio-priority-facts { grid-template-columns: 1fr; }
+  .portfolio-priority-facts li,
+  .portfolio-priority-facts li + li { padding: 14px 0; border-left: 0; border-top: 1px solid var(--line); }
+  .portfolio-priority-facts li:first-child { border-top: 0; }
   .journey-track { grid-template-columns: 1fr; }
   .journey-track li { min-height: 110px; }
   .technology-stages > section > div { grid-template-columns: 1fr; }
