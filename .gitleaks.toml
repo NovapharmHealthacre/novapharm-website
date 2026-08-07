@@ -1,12 +1,18 @@
-title = "NovaPharm secret scanning policy"
+[extend]
+useDefault = true
 
-[[allowlists]]
-description = "Public IndexNow verification key in its two generated/configuration declarations"
-regexTarget = "match"
-regexes = [
-  '''da125cec(?:a8032e01)fc98782c388f894f'''
-]
-paths = [
-  '''^src/seo/authority-config\.mjs$''',
-  '''^seo/generated/indexnow-config\.json$'''
-]
+[[rules]]
+id = "generic-api-key"
+
+  [[rules.allowlists]]
+  description = "IndexNow verification keys are intentionally public protocol identifiers."
+  condition = "AND"
+  regexTarget = "line"
+  paths = [
+    '''(^|/)src/seo/authority-config\.mjs$''',
+    '''(^|/)seo/generated/indexnow-config\.json$''',
+  ]
+  regexes = [
+    '''^\s*export const INDEXNOW_KEY = "[0-9a-f]{32}";\s*$''',
+    '''^\s*"key": "[0-9a-f]{32}",?\s*$''',
+  ]

@@ -1,8 +1,8 @@
 # Secret Remediation Report
 
-Status: active Git history clean; GitHub cached pull-request refs pending Support removal
+Status: current candidate and active Git history clean; GitHub cached pull-request refs pending Support removal
 
-Last reviewed: 14 July 2026
+Last reviewed: 7 August 2026
 
 ## Completed
 
@@ -30,10 +30,22 @@ Last reviewed: 14 July 2026
 - GitHub secret scanning reports zero open alerts;
 - PR 5 remains open, draft and mergeable on the rewritten base and head.
 
+## PR 16 current acceptance
+
+- the repository secret-pattern validator passed against the current candidate;
+- Gitleaks 8.30.1 scanned a candidate snapshot of 1,373 tracked and intended untracked files, including the requirements artefacts, and found no leaks;
+- a fresh bare mirror fetched all 17 active remote branch heads and no tags, passed `git fsck --full`, scanned 286 commits and approximately 49.53 MB, and found no leaks;
+- GitHub secret scanning reports zero open alerts;
+- the candidate resolves the current high-severity `js-yaml` advisory at 3.15.1 and carries `sharp` 0.35.3; the default-branch Dependabot alert for older `sharp` remains open until an accepted merge updates `main`;
+- `npm audit --omit=dev --audit-level=high` reports zero vulnerabilities;
+- no exact retired value was requested, displayed or reintroduced during this acceptance run.
+
+Gitleaks initially identified the deliberately published IndexNow ownership-verification identifier in its source and generated config. The [official IndexNow protocol](https://www.indexnow.org/documentation) requires a host-accessible verification file. `.gitleaks.toml` therefore uses Gitleaks' documented rule-specific `AND` allowlist to constrain only the `generic-api-key` rule, the two IndexNow config paths and exact 32-hex declaration forms. The active-history and current-tree scans pass with that narrow reviewed exception; other rules and paths remain active.
+
 ## Not completed
 
 GitHub still advertises immutable historical pull-request refs for closed PRs 1 to 4. The corresponding all-advertised-ref mirror checked 1,648 reachable objects and found nine old objects even though all active branch ancestry is clean. GitHub Support must purge the cached pull-request material before an all-ref exact scan can pass.
 
-The free-validation implementation is committed and pushed. Final CI and GitHub Support removal remain external acceptance gates. Pull-request refs and cached diffs cannot be force-pushed by a repository administrator.
+Final exact-head CI and GitHub Support removal remain external acceptance gates. Pull-request refs and cached diffs cannot be force-pushed by a repository administrator.
 
 See `security/git-history-sanitisation.md`. Even a successful rewrite cannot delete downloaded, cached, forked or externally stored copies; credential retirement remains mandatory.

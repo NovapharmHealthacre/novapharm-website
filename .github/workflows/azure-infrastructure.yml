@@ -41,7 +41,7 @@ jobs:
       NOVAPHARM_OPERATIONS_EMAIL: operations@example.invalid
       AZURE_FREE_SQL_SERVER_NAME: novapharm-poc-sql-validation
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: Report Bicep version
         run: az bicep version
       - name: Lint Bicep modules

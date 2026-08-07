@@ -71,11 +71,11 @@ jobs:
       ENVIRONMENT_CODE: ${{ inputs.target == 'staging' && 'stg' || 'prod' }}
       TARGET_SLOT: ${{ inputs.target == 'production-candidate' && 'candidate' || '' }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ inputs.expected_sha }}
           fetch-depth: 0
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 24
           cache: npm
@@ -122,7 +122,7 @@ jobs:
             echo "Key Vault bootstrap access is temporarily enabled and must be removed immediately after protected secret entry."
           fi
       - name: Azure OIDC login
-        uses: azure/login@v3
+        uses: azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43 # v3
         with:
           client-id: ${{ vars.AZURE_OIDC_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
@@ -198,7 +198,7 @@ jobs:
           (cd artifacts/azure-zips && sha256sum -- ./*.zip > SHA256SUMS)
       - name: Upload signed-by-digest release evidence
         if: inputs.action == 'deploy'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: unified-azure-release-${{ inputs.expected_sha }}
           path: |
