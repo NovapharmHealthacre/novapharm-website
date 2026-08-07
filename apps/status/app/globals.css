@@ -31,10 +31,11 @@ a { color: inherit; }
 .status-hero .eyebrow { color: #ff858a; }
 .status-hero h1 { max-width: 18ch; margin: 0; font-size: clamp(2.35rem, 5vw, 5.4rem); line-height: 1.02; font-weight: 680; }
 .status-hero > p:not(.eyebrow) { max-width: 68ch; margin: 24px 0 0; color: #d9e3eb; font-size: 1.04rem; line-height: 1.7; }
+.status-hero .maintenance-notice { max-width: 62ch; padding: 16px 18px; border-left: 3px solid #e0ad58; color: #fff2d9; background: #182e42; }
 .status-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 34px; color: #c6d5e1; font-size: 0.83rem; }
 .overall { padding: 7px 10px; border: 1px solid #547087; text-transform: capitalize; }
 .overall-operational { border-color: #63aa91; color: #b9ead9; }
-.overall-degraded, .overall-activation { border-color: #c3964c; color: #f0d7ab; }
+.overall-degraded, .overall-activation, .overall-maintenance { border-color: #c3964c; color: #f0d7ab; }
 .overall-disruption { border-color: #e3787d; color: #ffd2d4; }
 .refresh-command { min-height: 42px; display: inline-flex; align-items: center; gap: 8px; margin-left: auto; padding: 9px 13px; border: 1px solid #547087; text-decoration: none; font-weight: 750; }
 .refresh-command svg { width: 17px; height: 17px; }

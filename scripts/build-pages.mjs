@@ -1,7 +1,7 @@
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { buildPublicPages } from "./build-public-pages.mjs";
-import { customerModules, employeeModules } from "../src/core/portal-module-catalog.mjs";
+import { customerModules, employeeModules, executiveModules as governedExecutiveModules } from "../src/core/portal-module-catalog.mjs";
 import { getPlatformCapabilities, resolvePlatformMode } from "../src/core/platform-mode.mjs";
 
 const platformMode = resolvePlatformMode();
@@ -119,7 +119,7 @@ function table(headers, bodyAttribute) {
   return `<div class="table-wrap" role="region" aria-label="Portal data table" tabindex="0"><table><thead><tr>${headers.map((header) => `<th>${header}</th>`).join("")}</tr></thead><tbody ${bodyAttribute}></tbody></table></div>`;
 }
 
-const executiveModules = [
+const executiveModuleDefinitions = [
   { title: "Command Centre", file: "NP_Hub.html", summary: "Cross-functional operating status, source readiness and controlled integration events.", metrics: ["customers", "products", "openOrders", "pendingSyncEvents"] },
   { title: "CEO Dashboard", file: "NP_CEO.html", summary: "A governed executive view of operational readiness without simulated commercial performance.", metrics: ["customers", "products", "openOrders", "pendingApplications", "pendingSyncEvents"] },
   { title: "Sales Intelligence", file: "NP_Sales.html", summary: "Customer and order indicators from the canonical application database.", metrics: ["customers", "openOrders"] },
@@ -161,12 +161,18 @@ const executiveModuleCode = Object.freeze({
   "NP_Blockchain.html": "executive.traceability"
 });
 
+const governedExecutiveByCode = new Map(governedExecutiveModules.map((module) => [module.code, module]));
+const executiveModules = executiveModuleDefinitions
+  .map((module) => ({ ...module, governed: governedExecutiveByCode.get(executiveModuleCode[module.file]) }))
+  .filter((module) => module.governed?.visibleInNavigation)
+  .map((module) => ({ ...module, maturity: module.governed.releaseClassificationLabel }));
+
 function executiveHref(module) {
   return module.file === "NP_CEO.html" ? "/portal/ceo-dashboard/" : `/portal/executive-platform/${module.file}`;
 }
 
 function executiveIndex() {
-  return `<!DOCTYPE html><html lang="en-GB" data-api-base="${apiBase}">${privateHead("Executive Platform | NovaPharm Healthcare")}<body><main class="portal-main executive-index"><a class="executive-brand" href="/portal/executive-platform/" aria-label="NovaPharm Healthcare Executive Platform">${brandPicture({ width: 320, height: 40, eager: true })}</a><div class="portal-topbar"><div><span class="eyebrow">Board workspace</span><h1>NovaPharm Executive Platform</h1></div><div class="portal-actions"><span class="status-pill">Signed in as <span data-user-name></span></span><button class="btn btn-outline" type="button" data-logout>Logout</button><button class="inline-link-button portal-cookie-settings" type="button" data-cookie-settings>Cookie settings</button></div></div><p class="executive-intro">Controlled executive modules share one authenticated data boundary. Live values come from the canonical database; unavailable integrations are stated rather than simulated.</p><div class="grid grid-3">${executiveModules.map((module) => `<a class="card" href="${executiveHref(module)}"><span class="maturity-tag">${module.maturity || "Live foundation"}</span><h2>${module.title}</h2><p>${module.summary}</p></a>`).join("")}</div></main><script src="/assets/js/api-client.js" defer></script><script src="/assets/js/portal-app.js" defer></script></body></html>`;
+  return `<!DOCTYPE html><html lang="en-GB" data-api-base="${apiBase}">${privateHead("Executive Platform | NovaPharm Healthcare")}<body><main class="portal-main executive-index"><a class="executive-brand" href="/portal/executive-platform/" aria-label="NovaPharm Healthcare Executive Platform">${brandPicture({ width: 320, height: 40, eager: true })}</a><div class="portal-topbar"><div><span class="eyebrow">Board workspace</span><h1>NovaPharm Executive Platform</h1></div><div class="portal-actions"><span class="status-pill">Signed in as <span data-user-name></span></span><button class="btn btn-outline" type="button" data-logout>Logout</button><button class="inline-link-button portal-cookie-settings" type="button" data-cookie-settings>Cookie settings</button></div></div><p class="executive-intro">Controlled executive modules share one authenticated data boundary. This release is informational and uses synthetic validation records; dependency-blocked integrations are hidden rather than simulated.</p><div class="grid grid-3">${executiveModules.map((module) => `<a class="card" href="${executiveHref(module)}"><span class="maturity-tag">${module.maturity}</span><h2>${module.title}</h2><p>${module.summary}</p></a>`).join("")}</div></main><script src="/assets/js/api-client.js" defer></script><script src="/assets/js/portal-app.js" defer></script></body></html>`;
 }
 
 function executiveModulePage(module) {
@@ -236,18 +242,18 @@ function reviewCards(items) {
   return `<div class="owner-review-grid">${items.map(([label, href, status, note]) => `<a class="owner-review-item" href="${href}"><span class="maturity-tag">${status}</span><strong>${label}</strong><small>${note}</small></a>`).join("")}</div>`;
 }
 
-const customerReview = customerNavigation.map(([slug, label]) => [label, `/portal/${slug}/`, ["dashboard", "orders", "products"].includes(slug) ? "Operational foundation" : "Source-controlled", slug === "dashboard" ? "Synthetic account metrics and recent orders." : "Uses the canonical customer boundary; unavailable external records are stated."]);
-const employeeReview = employeeNavigation.map(([slug, label]) => [label, `/employee/${slug}/`, ["dashboard", "customers", "suppliers", "products", "orders", "purchasing"].includes(slug) ? "Operational foundation" : "In development", "Shared SQL records and server-side employee scope; external source gaps are explicit."]);
-const executiveReview = executiveModules.map((module) => [module.title, executiveHref(module), module.maturity || "Operational foundation", module.summary]);
+const customerReview = customerNavigation.map(([slug, label]) => [label, `/portal/${slug}/`, "Informational only", slug === "dashboard" ? "Synthetic account metrics and recent orders." : "Uses the canonical customer boundary; unavailable external records are stated."]);
+const employeeReview = employeeNavigation.map(([slug, label]) => [label, `/employee/${slug}/`, "Informational only", "Shared SQL records and server-side employee scope; external source gaps are explicit."]);
+const executiveReview = executiveModules.map((module) => [module.title, executiveHref(module), module.maturity, module.summary]);
 const administratorReview = [
-  ["Dashboard", "/admin/dashboard/", "Operational foundation", "Canonical counts, owner controls and controlled record review."],
+  ["Dashboard", "/admin/dashboard/", "Informational only", "Synthetic counts and controlled record review."],
   ["Lead detail", "/admin/dashboard/#lead-review", "Synthetic validation", "Contact submissions, consent evidence and message detail."],
-  ["Application detail", "/admin/dashboard/#application-review", "Operational foundation", "Four-step applications, documents and immutable status history."],
+  ["Application detail", "/admin/dashboard/#application-review", "Informational only", "Four-step application contract, documents and immutable status history."],
   ["Document states", "/admin/dashboard/#application-review", "Synthetic validation", "Quarantine and clean-test labels; not production malware scanning."],
   ["Notification queue", "/admin/dashboard/#notification-queue", "Local capture", "Rendered HTML and text previews, sent, retrying, blocked and replay states."],
-  ["Audit reporting", "/admin/dashboard/", "Operational foundation", "Immutable audit and security records remain in the local SQL store."],
+  ["Audit reporting", "/admin/dashboard/", "Informational only", "Synthetic audit and security records remain in the local SQL store."],
   ["Account activation", "/admin/dashboard/#application-review", "Controlled workflow", "Approved synthetic applications can be activated without creating a password."],
-  ["Sessions", "/admin/users/", "Operational foundation", "Active-session count and administrator revocation control."],
+  ["Sessions", "/admin/users/", "Informational only", "Synthetic active-session count and administrator revocation contract."],
   ["Analytics", "/admin/analytics/", "Planned", "No production analytics or confidential portal tracking is enabled."],
   ["Content", "/admin/content/", "Repository governed", "Public content remains generated from the reviewed repository source." ]
 ];

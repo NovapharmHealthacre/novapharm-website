@@ -7,7 +7,29 @@
     "route": "/portal/dashboard/",
     "purpose": "Account position, current actions and recent customer-scoped activity.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Portal Product Owner",
+    "dataSource": "Azure SQL target: customers, organisations, orders, invoices and quality_complaints",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "customer",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "customer.account",
@@ -17,7 +39,29 @@
     "route": "/portal/account/",
     "purpose": "Controlled legal entity, contacts, addresses, terms and change-request status.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Customer Operations",
+    "dataSource": "Azure SQL target: customers, organisations, customer_contacts and organisation_addresses",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "customer",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "customer.orders",
@@ -27,7 +71,29 @@
     "route": "/portal/orders/",
     "purpose": "Customer-scoped orders, lines, status histories and linked fulfilment records.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Commercial Operations",
+    "dataSource": "Azure SQL target: orders and order_lines restricted by customer_id",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "customer",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "customer.invoices",
@@ -37,7 +103,29 @@
     "route": "/portal/invoices/",
     "purpose": "Customer invoices, outstanding balances, payments and credit notes.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Finance",
+    "dataSource": "Azure SQL target: invoices and invoice_lines restricted by customer_id",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "customer",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "customer.statements",
@@ -47,7 +135,29 @@
     "route": "/portal/statements/",
     "purpose": "Period statements reconciled from invoices, credits and payments.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Finance",
+    "dataSource": "Azure SQL target: invoices, credit notes and account transactions restricted by customer_id",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "customer",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "customer.products",
@@ -57,7 +167,29 @@
     "route": "/portal/products/",
     "purpose": "Account-authorised catalogue products with controlled pricing and availability state.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Product and Regulatory",
+    "dataSource": "Azure SQL target: customer_price_lists, products, product_variants and inventory_balances",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "customer",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "customer.price-lists",
@@ -67,7 +199,29 @@
     "route": "/portal/price-lists/",
     "purpose": "Effective customer-specific price lists without supplier cost or other-account pricing.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Commercial and Finance",
+    "dataSource": "Azure SQL target: customer_price_lists, price_lists and price_list_items",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "customer",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "customer.stock-availability",
@@ -77,7 +231,29 @@
     "route": "/portal/stock-availability/",
     "purpose": "Released available-to-promise quantities and explicit quarantine separation.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Supply Chain Operations",
+    "dataSource": "Azure SQL target: authorised products, released batches and inventory_balances",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "customer",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "customer.order-tracking",
@@ -87,7 +263,29 @@
     "route": "/portal/order-tracking/",
     "purpose": "Order status, allocation and linked shipment progress.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Supply Chain Operations",
+    "dataSource": "Azure SQL target: orders, shipments and shipment_events restricted by customer_id",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "customer",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "customer.delivery-tracking",
@@ -97,7 +295,29 @@
     "route": "/portal/delivery-tracking/",
     "purpose": "Carrier and delivery events from approved source records.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Supply Chain Operations",
+    "dataSource": "Azure SQL target: shipments and shipment_events restricted by customer_id",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "customer",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "customer.returns",
@@ -107,7 +327,29 @@
     "route": "/portal/returns/",
     "purpose": "Controlled return requests, inspection disposition and credit-note status.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Customer Operations and Quality",
+    "dataSource": "Azure SQL target: returns, return_lines, orders and order_lines restricted by customer_id",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "controlled_repository_write_implemented_but_not_released",
+    "authorisedRoles": [
+      "customer",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "customer.quality-complaints",
@@ -117,7 +359,29 @@
     "route": "/portal/quality-complaints/",
     "purpose": "Customer quality cases without processing adverse-event information.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Quality",
+    "dataSource": "Azure SQL target: quality_complaints, orders and products restricted by customer_id",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "controlled_repository_write_implemented_but_not_released",
+    "authorisedRoles": [
+      "customer",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "customer.documents",
@@ -127,7 +391,29 @@
     "route": "/portal/documents/",
     "purpose": "Authorised customer and order documents only.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Document Control",
+    "dataSource": "Azure SQL metadata plus private Blob/SharePoint delivery after document authorisation",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "customer",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "customer.support",
@@ -137,7 +423,29 @@
     "route": "/portal/support/",
     "purpose": "Customer-scoped service requests and linked order or product context.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Customer Operations",
+    "dataSource": "Azure SQL target: support_tickets restricted by customer_id",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "controlled_repository_write_implemented_but_not_released",
+    "authorisedRoles": [
+      "customer",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "customer.regulatory-documents",
@@ -147,7 +455,29 @@
     "route": "/portal/regulatory-documents/",
     "purpose": "Approved effective regulatory documents authorised for the account.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Regulatory and Quality",
+    "dataSource": "Azure SQL document metadata plus approved private regulatory document store",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "customer",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "customer.downloads",
@@ -157,7 +487,29 @@
     "route": "/portal/downloads/",
     "purpose": "Permission-controlled downloadable records with no direct storage disclosure.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Document Control",
+    "dataSource": "Azure SQL document authorisations plus private Blob/SharePoint delivery",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "customer",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "customer.analytics",
@@ -167,7 +519,29 @@
     "route": "/portal/analytics/",
     "purpose": "Customer-only order, spend, service and complaint indicators.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Portal Product Owner",
+    "dataSource": "Azure SQL customer-scoped aggregate queries; no third-party analytics source connected",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "customer",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "customer.settings",
@@ -177,7 +551,29 @@
     "route": "/portal/settings/",
     "purpose": "Identity, notification and controlled account-change preferences.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Portal Product Owner",
+    "dataSource": "Azure SQL target: identity linkage and customer notification preferences",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "customer",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "employee.dashboard",
@@ -187,7 +583,29 @@
     "route": "/employee/dashboard/",
     "purpose": "Cross-functional tasks, exceptions and data-source readiness.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Portal Product Owner",
+    "dataSource": "No approved production source connected",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "employee",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "employee.customers",
@@ -197,7 +615,29 @@
     "route": "/employee/customers/",
     "purpose": "Canonical customer accounts, contacts, credit and connected records.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Customer Operations",
+    "dataSource": "Azure SQL target: customers, organisations, contacts and account workflow state",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "employee",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "employee.suppliers",
@@ -207,7 +647,29 @@
     "route": "/employee/suppliers/",
     "purpose": "Qualification, contacts, products, purchasing and evidence.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Supplier Quality and Procurement",
+    "dataSource": "Azure SQL target: suppliers, organisations, qualification and quality-agreement state",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "employee",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "employee.products",
@@ -217,7 +679,29 @@
     "route": "/employee/products/",
     "purpose": "Product lifecycle, variants, composition, claims, media and linked records.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Product and Regulatory",
+    "dataSource": "Azure SQL target: products, variants, composition, media and lifecycle events",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "controlled_repository_write_implemented_but_not_released",
+    "authorisedRoles": [
+      "employee",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "employee.orders",
@@ -227,7 +711,29 @@
     "route": "/employee/orders/",
     "purpose": "Validated order creation and governed order lifecycle.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Commercial Operations",
+    "dataSource": "Azure SQL target: orders, order_lines, customers and fulfilment state",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "employee",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "employee.warehouse",
@@ -237,7 +743,29 @@
     "route": "/employee/warehouse/",
     "purpose": "Third-party warehouse validation foundation and canonical inventory ledger.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Supply Chain Operations",
+    "dataSource": "Azure SQL target: batches, inventory_balances and warehouse_transactions; no live WMS connected",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "employee",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "employee.purchasing",
@@ -247,7 +775,29 @@
     "route": "/employee/purchasing/",
     "purpose": "Purchase orders, receipts, supplier invoices and three-way matching.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Procurement",
+    "dataSource": "Azure SQL target: purchase_orders, purchase_order_lines and supplier records",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "employee",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "employee.finance",
@@ -257,7 +807,29 @@
     "route": "/employee/finance/",
     "purpose": "Synthetic double-entry, receivables, payables and control exceptions.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Finance",
+    "dataSource": "Azure SQL target: invoices, journals, receivables and payables; no live accounting platform connected",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "employee",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "employee.quality",
@@ -267,7 +839,29 @@
     "route": "/employee/quality/",
     "purpose": "Complaints, deviations, CAPA and batch-quality controls.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Quality",
+    "dataSource": "Azure SQL target: quality_complaints, CAPA and quality workflow records",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "employee",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "employee.regulatory",
@@ -277,7 +871,29 @@
     "route": "/employee/regulatory/",
     "purpose": "Classification and milestone records without asserting unverified authorisation.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Regulatory",
+    "dataSource": "Azure SQL target: regulatory_cases and evidence status; no regulator system connected",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "employee",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "employee.crm",
@@ -287,7 +903,29 @@
     "route": "/employee/crm/",
     "purpose": "Leads, opportunities, attribution and account-conversion context.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Commercial Operations",
+    "dataSource": "Azure SQL target: opportunities and CRM activities; no Salesforce tenant connected",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "employee",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "employee.reports",
@@ -297,7 +935,29 @@
     "route": "/employee/reports/",
     "purpose": "Governed read-only operational reporting with stated scope and freshness.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Business Intelligence",
+    "dataSource": "Azure SQL governed reporting queries; no production BI workspace connected",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "employee",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "employee.administration",
@@ -307,7 +967,29 @@
     "route": "/employee/administration/",
     "purpose": "Tasks, permissions and workflow state without security-admin duplication.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Platform Administration",
+    "dataSource": "Azure SQL target: workflow_instances, outbox state and controlled domain events",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "controlled_repository_write_implemented_but_not_released",
+    "authorisedRoles": [
+      "employee",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "executive.command-centre",
@@ -317,7 +999,29 @@
     "route": "/portal/executive-platform/command-centre/",
     "purpose": "Cross-functional operating position, exceptions and decisions required.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Board and Chief Executive Officer",
+    "dataSource": "Azure SQL read model across governed workflows, risks and review events",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "board",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "executive.ceo-dashboard",
@@ -327,7 +1031,29 @@
     "route": "/portal/executive-platform/ceo-dashboard/",
     "purpose": "Synthetic financial and operational indicators linked to canonical records.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Chief Executive Officer",
+    "dataSource": "Azure SQL synthetic-validation executive aggregate; no production finance feed connected",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "board",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "executive.sales-intelligence",
@@ -337,7 +1063,29 @@
     "route": "/portal/executive-platform/sales-intelligence/",
     "purpose": "Pipeline, product interest, conversion and order indicators.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Commercial Operations",
+    "dataSource": "Azure SQL opportunities and commercial pipeline; no production CRM feed connected",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "board",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "executive.customer-analytics",
@@ -347,7 +1095,29 @@
     "route": "/portal/executive-platform/customer-analytics/",
     "purpose": "Customer, application, credit, service and complaint indicators.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Commercial Operations",
+    "dataSource": "Azure SQL customer aggregates; no production analytics warehouse connected",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "board",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "executive.product-master",
@@ -357,7 +1127,29 @@
     "route": "/portal/executive-platform/product-master/",
     "purpose": "Read-only strategic view of product readiness and claim controls.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Product and Regulatory",
+    "dataSource": "Azure SQL product, regulatory and evidence-readiness read model",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "board",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "executive.nhs-data",
@@ -367,7 +1159,28 @@
     "route": "/portal/executive-platform/nhs-data/",
     "purpose": "Licensed-data integration contract and honest no-data state.",
     "maturity": "blocked_external_integration",
-    "externalDependency": "Licensed NHS data source and approved purpose"
+    "externalDependency": "Licensed NHS data source and approved purpose",
+    "releaseClassification": "hidden_until_dependency_exists",
+    "releaseClassificationLabel": "Hidden until its dependency exists",
+    "businessOwner": "Commercial and Regulatory",
+    "dataSource": "No approved source connected; licensed NHS data source and purpose required",
+    "dataSourceStatus": "not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "none_while_hidden",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "board",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts (hidden route rejection)",
+      "src/core/enterprise-domain-service.mjs (server fail-closed gate)"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": false,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The required approved external system, evidence or business record does not exist; route and API access fail closed."
   },
   {
     "code": "executive.plpi",
@@ -377,7 +1190,28 @@
     "route": "/portal/executive-platform/plpi/",
     "purpose": "Internal project governance only; no granted licence is implied.",
     "maturity": "planned",
-    "externalDependency": "Verified project records and regulatory approval"
+    "externalDependency": "Verified project records and regulatory approval",
+    "releaseClassification": "hidden_until_dependency_exists",
+    "releaseClassificationLabel": "Hidden until its dependency exists",
+    "businessOwner": "Regulatory",
+    "dataSource": "No verified production projects connected; Azure SQL governance schema only",
+    "dataSourceStatus": "not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "none_while_hidden",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "board",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts (hidden route rejection)",
+      "src/core/enterprise-domain-service.mjs (server fail-closed gate)"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": false,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The required approved external system, evidence or business record does not exist; route and API access fail closed."
   },
   {
     "code": "executive.pharmacovigilance",
@@ -387,7 +1221,28 @@
     "route": "/portal/executive-platform/pharmacovigilance/",
     "purpose": "Qualified safety-system boundary; general portal safety intake remains prohibited.",
     "maturity": "blocked_external_integration",
-    "externalDependency": "Approved qualified safety system and process"
+    "externalDependency": "Approved qualified safety system and process",
+    "releaseClassification": "hidden_until_dependency_exists",
+    "releaseClassificationLabel": "Hidden until its dependency exists",
+    "businessOwner": "Qualified Safety Owner",
+    "dataSource": "No qualified safety system connected",
+    "dataSourceStatus": "not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "none_while_hidden",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "board",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts (hidden route rejection)",
+      "src/core/enterprise-domain-service.mjs (server fail-closed gate)"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": false,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The required approved external system, evidence or business record does not exist; route and API access fail closed."
   },
   {
     "code": "executive.sourcing",
@@ -397,7 +1252,29 @@
     "route": "/portal/executive-platform/sourcing/",
     "purpose": "Supplier qualification, product relationships and evidence status.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Procurement and Supplier Quality",
+    "dataSource": "Azure SQL supplier qualification and sourcing-readiness read model",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "board",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "executive.tenders",
@@ -407,7 +1284,28 @@
     "route": "/portal/executive-platform/tenders/",
     "purpose": "Controlled opportunity tracking without implying award.",
     "maturity": "planned",
-    "externalDependency": "Approved tender source and records"
+    "externalDependency": "Approved tender source and records",
+    "releaseClassification": "hidden_until_dependency_exists",
+    "releaseClassificationLabel": "Hidden until its dependency exists",
+    "businessOwner": "Commercial Operations",
+    "dataSource": "No approved tender source connected",
+    "dataSourceStatus": "not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "none_while_hidden",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "board",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts (hidden route rejection)",
+      "src/core/enterprise-domain-service.mjs (server fail-closed gate)"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": false,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The required approved external system, evidence or business record does not exist; route and API access fail closed."
   },
   {
     "code": "executive.warehouse",
@@ -417,7 +1315,29 @@
     "route": "/portal/executive-platform/warehouse/",
     "purpose": "Third-party integration readiness and canonical stock indicators.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Supply Chain Operations",
+    "dataSource": "Azure SQL synthetic shipment read model; no live WMS or Polar Speed feed connected",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "board",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "executive.service-levels",
@@ -427,7 +1347,29 @@
     "route": "/portal/executive-platform/service-levels/",
     "purpose": "Measured delivery indicators from approved synthetic source records.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Supply Chain Operations",
+    "dataSource": "Azure SQL synthetic shipment events; no accepted production carrier feed connected",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "board",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "executive.finance",
@@ -437,7 +1379,29 @@
     "route": "/portal/executive-platform/finance/",
     "purpose": "Read-only synthetic finance controls and reconciled indicators.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Finance",
+    "dataSource": "Azure SQL synthetic journals and invoices; no production finance system connected",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "board",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "executive.capital",
@@ -447,7 +1411,28 @@
     "route": "/portal/executive-platform/capital/",
     "purpose": "Controlled budget and capital-planning boundary without published forecasts.",
     "maturity": "planned",
-    "externalDependency": "Board-approved planning records"
+    "externalDependency": "Board-approved planning records",
+    "releaseClassification": "hidden_until_dependency_exists",
+    "releaseClassificationLabel": "Hidden until its dependency exists",
+    "businessOwner": "Board and Finance",
+    "dataSource": "No board-approved capital planning source connected",
+    "dataSourceStatus": "not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "none_while_hidden",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "board",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts (hidden route rejection)",
+      "src/core/enterprise-domain-service.mjs (server fail-closed gate)"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": false,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The required approved external system, evidence or business record does not exist; route and API access fail closed."
   },
   {
     "code": "executive.microsoft-365",
@@ -457,7 +1442,28 @@
     "route": "/portal/executive-platform/microsoft-365/",
     "purpose": "Graph and SharePoint integration health and least-privilege state.",
     "maturity": "blocked_external_integration",
-    "externalDependency": "Microsoft tenant credentials and permission approval"
+    "externalDependency": "Microsoft tenant credentials and permission approval",
+    "releaseClassification": "hidden_until_dependency_exists",
+    "releaseClassificationLabel": "Hidden until its dependency exists",
+    "businessOwner": "Microsoft 365 Platform Owner",
+    "dataSource": "No production Graph or SharePoint connection; tenant consent required",
+    "dataSourceStatus": "not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "none_while_hidden",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "board",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts (hidden route rejection)",
+      "src/core/enterprise-domain-service.mjs (server fail-closed gate)"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": false,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The required approved external system, evidence or business record does not exist; route and API access fail closed."
   },
   {
     "code": "executive.documents",
@@ -467,7 +1473,29 @@
     "route": "/portal/executive-platform/documents/",
     "purpose": "Controlled metadata and links without public file exposure.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Document Control",
+    "dataSource": "Azure SQL document metadata; private SharePoint/Blob content not connected in production",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "board",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "executive.ai-technology",
@@ -477,7 +1505,28 @@
     "route": "/portal/executive-platform/ai-technology/",
     "purpose": "Governed use-case register; no autonomous decisions are presented as live.",
     "maturity": "planned",
-    "externalDependency": "Approved use cases, models and risk review"
+    "externalDependency": "Approved use cases, models and risk review",
+    "releaseClassification": "hidden_until_dependency_exists",
+    "releaseClassificationLabel": "Hidden until its dependency exists",
+    "businessOwner": "AI Governance Committee",
+    "dataSource": "No production AI use case or model approved",
+    "dataSourceStatus": "not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "none_while_hidden",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "board",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts (hidden route rejection)",
+      "src/core/enterprise-domain-service.mjs (server fail-closed gate)"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": false,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The required approved external system, evidence or business record does not exist; route and API access fail closed."
   },
   {
     "code": "executive.traceability",
@@ -487,7 +1536,29 @@
     "route": "/portal/executive-platform/traceability/",
     "purpose": "Canonical product, batch, order and inventory lineage; blockchain is not claimed.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Quality and Supply Chain Operations",
+    "dataSource": "Azure SQL stock and transaction events; no blockchain capability claimed",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "board",
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "admin.dashboard",
@@ -497,7 +1568,28 @@
     "route": "/admin/dashboard/",
     "purpose": "Controlled platform, lead, application and integration overview.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Portal Product Owner",
+    "dataSource": "Azure SQL target: workflow, integration, security and audit aggregates",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "admin.local-review",
@@ -507,7 +1599,28 @@
     "route": "/admin/local-review/",
     "purpose": "Synthetic local acceptance index and module maturity.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Platform Administration",
+    "dataSource": "Synthetic local acceptance register only",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "admin.users",
@@ -517,7 +1630,28 @@
     "route": "/admin/users/",
     "purpose": "Identity scopes, sessions and revocation controls.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Identity and Access Management",
+    "dataSource": "Azure SQL target: identity linkage, sessions and security events; Entra not connected in production",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "admin.content",
@@ -527,7 +1661,28 @@
     "route": "/admin/content/",
     "purpose": "Product content, claims, imagery and publication control.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Content Governance",
+    "dataSource": "Repository claims/content registries plus Azure SQL publication workflow target",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   },
   {
     "code": "admin.analytics",
@@ -537,6 +1692,27 @@
     "route": "/admin/analytics/",
     "purpose": "Audit, security, migration, backup and data-quality indicators.",
     "maturity": "operational_foundation",
-    "externalDependency": null
+    "externalDependency": "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance",
+    "releaseClassification": "informational_only",
+    "releaseClassificationLabel": "Informational only",
+    "businessOwner": "Portal Product Owner",
+    "dataSource": "Application Insights and Azure SQL target; no live telemetry estate connected",
+    "dataSourceStatus": "repository_query_implemented_production_not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "repository_tested_read_model",
+    "writeCapability": "none_read_only",
+    "authorisedRoles": [
+      "admin"
+    ],
+    "testCoverage": [
+      "packages/portal-contracts/test/catalog.test.ts",
+      "apps/portal/test/routes.test.ts",
+      "scripts/test-enterprise-portal.mjs",
+      "apps/portal/test/browser-acceptance.ts"
+    ],
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": true,
+    "productionStatus": "not_deployed_owner_controlled",
+    "classificationRationale": "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."
   }
 ]

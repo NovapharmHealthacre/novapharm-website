@@ -1,14 +1,19 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { portalModules } from "@novapharm/portal-contracts";
+import { portalModules, visiblePortalModules } from "@novapharm/portal-contracts";
 import { areaLandingRoutes, normalisePortalPath, resolvePortalView } from "../data/routes";
 
-test("all governed modules resolve through the component portal", () => {
+test("only release-visible governed modules resolve through the component portal", () => {
   for (const module of portalModules) {
     const view = resolvePortalView(module.route);
-    assert.equal(view?.kind, "module");
-    if (view?.kind === "module") assert.equal(view.module.code, module.code);
+    if (module.visibleInNavigation) {
+      assert.equal(view?.kind, "module");
+      if (view?.kind === "module") assert.equal(view.module.code, module.code);
+    } else {
+      assert.equal(view, null, `${module.code} must fail closed until its dependency exists`);
+    }
   }
+  assert.equal(visiblePortalModules.length, 47);
 });
 
 test("login, password replacement and legacy board aliases remain controlled", () => {

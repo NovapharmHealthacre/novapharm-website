@@ -1,6 +1,6 @@
 import { RefreshCw } from "lucide-react";
 import Image from "next/image";
-import { getStatusSnapshot, type ServiceState } from "@/lib/status";
+import { getStatusSnapshot, type OverallState, type ServiceState } from "@/lib/status";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -18,6 +18,14 @@ const destinationLabels = {
   current: "Current page",
 } as const;
 
+const overallLabels: Readonly<Record<OverallState, string>> = {
+  operational: "Operational",
+  degraded: "Attention required",
+  activation: "Activation in progress",
+  maintenance: "Planned maintenance",
+  disruption: "Service disruption",
+};
+
 export default async function StatusPage() {
   const snapshot = await getStatusSnapshot();
   const checked = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(new Date(snapshot.checkedAt));
@@ -33,8 +41,9 @@ export default async function StatusPage() {
         <p className="eyebrow">Digital estate availability</p>
         <h1 id="status-title">{snapshot.headline}</h1>
         <p>This page reports only sanitised endpoint availability. It does not expose customer records, portal activity, infrastructure identifiers or internal diagnostics.</p>
+        {snapshot.notice ? <p className="maintenance-notice">{snapshot.notice}</p> : null}
         <div className="status-meta">
-          <span className={`overall overall-${snapshot.overall}`}>{snapshot.overall === "activation" ? "Activation in progress" : snapshot.overall}</span>
+          <span className={`overall overall-${snapshot.overall}`}>{overallLabels[snapshot.overall]}</span>
           <span>Checked {checked} UTC</span>
           <a className="refresh-command" href="/"><RefreshCw aria-hidden="true" />Refresh</a>
         </div>

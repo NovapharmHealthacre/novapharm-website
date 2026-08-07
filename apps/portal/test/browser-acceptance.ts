@@ -4,7 +4,7 @@ import { statSync } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import AxeBuilder from "@axe-core/playwright";
-import { type PortalArea, type PortalModule, portalModules } from "@novapharm/portal-contracts";
+import { type PortalArea, type PortalModule, portalModules, visiblePortalModules } from "@novapharm/portal-contracts";
 import { type Browser, type BrowserContext, type BrowserType, chromium, type Page, webkit } from "playwright";
 
 type StoredBrowserState = Awaited<ReturnType<BrowserContext["storageState"]>>;
@@ -15,9 +15,11 @@ const portalOrigin = process.env["PORTAL_BASE_URL"] ?? "http://127.0.0.1:4303";
 const credentialPath = path.resolve(
   process.env["PORTAL_VISUAL_CREDENTIALS_PATH"] ?? "../../artifacts/portal-browser-runtime/credentials.json",
 );
-const artifactRoot = path.resolve(process.cwd(), "../../artifacts/portal-browser");
+const artifactRoot = path.resolve(process.cwd(), process.env["PORTAL_BROWSER_ARTIFACT_ROOT"] ?? "../../artifacts/portal-browser");
 const standaloneRoot = path.resolve(process.cwd(), ".next/standalone/apps/portal");
 const viewports = [
+  { name: "desktop-1280", width: 1280, height: 800 },
+  { name: "desktop-1366", width: 1366, height: 768 },
   { name: "desktop-1440", width: 1440, height: 900 },
   { name: "desktop-1920", width: 1920, height: 1080 },
   { name: "tablet-1024", width: 1024, height: 1366 },
@@ -25,6 +27,7 @@ const viewports = [
   { name: "mobile-390", width: 390, height: 844 },
   { name: "mobile-430", width: 430, height: 932 },
   { name: "mobile-375", width: 375, height: 667 },
+  { name: "mobile-320", width: 320, height: 568 },
 ] as const;
 const primaryViewport = viewports[0];
 const accessTypeByArea: Readonly<Record<PortalArea, "customer" | "employee" | "board" | "admin">> = {
@@ -181,6 +184,21 @@ async function inspectLayout(page: Page, label: string): Promise<void> {
   assert.equal(layout.rawError, false, `${label}: raw technical error was shown`);
 }
 
+async function captureInteractionState(
+  page: Page,
+  engine: string,
+  viewport: AcceptanceViewport,
+  name: string,
+): Promise<void> {
+  await inspectLayout(page, `${engine} ${viewport.name} ${name}`);
+  await capture(page, engine, viewport.name, name, true);
+  const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
+  axeRuns += 1;
+  for (const violation of result.violations.filter((item) => item.impact === "serious" || item.impact === "critical")) {
+    findings.push({ engine, viewport: viewport.name, route: page.url(), type: `axe:${violation.id}`, detail: violation.help });
+  }
+}
+
 async function inspectModule(
   context: BrowserContext,
   engine: string,
@@ -270,20 +288,61 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     await page.locator('.portal-search > button[type="submit"]').click();
     await page.locator(".search-results").waitFor();
     assert.ok(await page.locator(".search-results a").count() > 0, `${engine}: authorised search returned no seeded products`);
+    await captureInteractionState(page, engine, mobileViewport, "interaction.search-results");
+    await page.getByLabel("Search authorised records").fill("no-authorised-record-matches-this-query");
+    await page.locator('.portal-search > button[type="submit"]').click();
+    await page.getByText("No authorised records found.", { exact: true }).waitFor();
+    await captureInteractionState(page, engine, mobileViewport, "interaction.empty-search");
   } finally {
     await employeeContext.close();
   }
 
-  const customerContext = await browser.newContext(contextOptions(viewports[0], states.get("customer")));
+  const desktopViewport = viewports[0];
+  const loadingContext = await browser.newContext(contextOptions(desktopViewport, states.get("customer")));
+  try {
+    const page = await loadingContext.newPage();
+    let releaseSession!: () => void;
+    const sessionGate = new Promise<void>((resolve) => { releaseSession = resolve; });
+    await page.route("**/gateway/portal/session", async (route) => {
+      await sessionGate;
+      await route.continue();
+    });
+    await page.goto(`${portalOrigin}/portal/dashboard/`, { waitUntil: "domcontentloaded" });
+    await page.locator(".loading-state").waitFor();
+    await captureInteractionState(page, engine, desktopViewport, "interaction.loading");
+    releaseSession();
+    await page.locator(".data-context").waitFor();
+  } finally {
+    await loadingContext.close();
+  }
+
+  const deniedContext = await browser.newContext(contextOptions(desktopViewport, states.get("customer")));
+  try {
+    const page = await deniedContext.newPage();
+    await page.route("**/gateway/portal/session", async (route) => {
+      const response = await route.fetch();
+      const payload = await response.json() as { user: Readonly<{ accessScopes: readonly string[]; [key: string]: unknown }> };
+      await route.fulfill({ response, json: { user: { ...payload.user, accessScopes: ["customer"] } } });
+    });
+    await page.goto(`${portalOrigin}/admin/dashboard/`, { waitUntil: "domcontentloaded" });
+    await page.getByText("This identity is not authorised for the requested workspace.", { exact: true }).waitFor();
+    await captureInteractionState(page, engine, desktopViewport, "interaction.access-denied");
+  } finally {
+    await deniedContext.close();
+  }
+
+  const customerContext = await browser.newContext(contextOptions(desktopViewport, states.get("customer")));
   try {
     const page = await customerContext.newPage();
     await page.goto(`${portalOrigin}/portal/support/`, { waitUntil: "domcontentloaded" });
     await page.locator(".data-context").waitFor();
-    const form = page.locator(".action-grid form").filter({ hasText: "Create support ticket" });
-    await form.getByLabel("Subject").fill(`Synthetic portal acceptance ${engine}`);
-    await form.getByLabel("Description").fill("Synthetic non-confidential support request created during controlled browser acceptance.");
-    await form.getByRole("button", { name: "Create ticket" }).click();
-    await page.getByText("Support ticket created.", { exact: true }).waitFor();
+    assert.equal(await page.locator(".available-actions").count(), 0, `${engine}: informational module exposed a write panel`);
+    assert.equal(
+      await page.locator(".data-context").getByText("Read only", { exact: true }).count(),
+      1,
+      `${engine}: informational module did not state its read-only boundary`,
+    );
+    await captureInteractionState(page, engine, desktopViewport, "interaction.read-only");
 
     await page.goto(`${portalOrigin}/portal/change-password/`, { waitUntil: "domcontentloaded" });
     await page.getByLabel("Current temporary password").fill(credentials.password as string);
@@ -291,6 +350,7 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     await page.getByLabel("Confirm new password").fill("Synthetic-New-Password-47!Beta");
     await page.getByRole("button", { name: "Update password" }).click();
     await page.getByText("The new password and confirmation do not match.", { exact: true }).waitFor();
+    await captureInteractionState(page, engine, desktopViewport, "interaction.password-error");
 
     await page.goto(`${portalOrigin}/portal/dashboard/`, { waitUntil: "domcontentloaded" });
     await page.locator(".data-context").waitFor();
@@ -298,8 +358,36 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     await page.waitForURL((url) => url.pathname === "/");
     const rejected = await page.goto(`${portalOrigin}/portal/dashboard/`, { waitUntil: "domcontentloaded" });
     assert.equal(new URL(rejected?.url() ?? portalOrigin).pathname, "/", `${engine}: logout did not reject the protected route`);
+    await captureInteractionState(page, engine, desktopViewport, "interaction.session-ended");
   } finally {
     await customerContext.close();
+  }
+
+  const expiredContext = await browser.newContext(contextOptions(desktopViewport, states.get("employee")));
+  try {
+    const page = await expiredContext.newPage();
+    await page.route("**/gateway/portal/session", async (route) => {
+      await route.fulfill({ status: 401, contentType: "application/json", body: JSON.stringify({ error: "Authentication required." }) });
+    });
+    await page.goto(`${portalOrigin}/employee/dashboard/`, { waitUntil: "domcontentloaded" });
+    await page.waitForURL((url) => url.pathname === "/");
+    await captureInteractionState(page, engine, desktopViewport, "interaction.session-expired");
+  } finally {
+    await expiredContext.close();
+  }
+
+  const boardContext = await browser.newContext(contextOptions(desktopViewport, states.get("executive")));
+  try {
+    const page = await boardContext.newPage();
+    const hiddenModules = portalModules.filter((entry) => !entry.visibleInNavigation);
+    for (const [index, module] of hiddenModules.entries()) {
+      const response = await page.goto(`${portalOrigin}${module.route}`, { waitUntil: "domcontentloaded" });
+      assert.equal(response?.status(), 404, `${engine}: dependency-blocked module resolved: ${module.code}`);
+      await page.getByRole("heading", { name: "Portal route not found" }).waitFor();
+      if (index === 0) await captureInteractionState(page, engine, desktopViewport, "interaction.hidden-module-not-found");
+    }
+  } finally {
+    await boardContext.close();
   }
 }
 
@@ -318,7 +406,7 @@ async function runEngine(engine: string, browserType: BrowserType): Promise<void
       for (const area of areas) {
         const context = await browser.newContext(contextOptions(viewport, states.get(area)));
         try {
-          for (const module of portalModules.filter((entry) => entry.area === area)) {
+          for (const module of visiblePortalModules.filter((entry) => entry.area === area)) {
             await inspectModule(context, engine, viewport, module);
           }
           if (area === "customer") {
@@ -355,7 +443,8 @@ try {
     candidate: "local standalone portal with isolated synthetic API",
     engines: selectedEngines,
     viewports,
-    moduleCount: portalModules.length,
+    governedModuleCount: portalModules.length,
+    visibleInformationalModuleCount: visiblePortalModules.length,
     screenshots,
     axeRuns,
     seriousOrCriticalAccessibilityFindings: findings,
@@ -365,11 +454,11 @@ try {
   await fs.writeFile(path.join(artifactRoot, "report.json"), `${JSON.stringify(report, null, 2)}\n`, "utf8");
   await fs.writeFile(
     path.join(artifactRoot, "report.md"),
-    `# Portal browser acceptance\n\n- Mode: ${interactionOnly ? "interactions only" : "full matrix"}\n- Modules: ${portalModules.length}\n- Engines: ${selectedEngines.join(", ")}\n- Viewports: ${interactionOnly ? 0 : viewports.length}\n- Screenshots: ${screenshots}\n- Axe runs: ${axeRuns}\n- Serious or critical findings: ${findings.length}\n- Data: synthetic and non-confidential only\n- Indexing: disabled\n`,
+    `# Portal browser acceptance\n\n- Mode: ${interactionOnly ? "interactions only" : "full matrix"}\n- Governed modules: ${portalModules.length}\n- Visible informational modules: ${visiblePortalModules.length}\n- Dependency-blocked modules: ${portalModules.length - visiblePortalModules.length}\n- Engines: ${selectedEngines.join(", ")}\n- Viewports: ${interactionOnly ? 0 : viewports.length}\n- Screenshots: ${screenshots}\n- Axe runs: ${axeRuns}\n- Serious or critical findings: ${findings.length}\n- Data: synthetic and non-confidential only\n- Indexing: disabled\n`,
     "utf8",
   );
   assert.deepEqual(findings, [], `Serious or critical accessibility findings:\n${JSON.stringify(findings, null, 2)}`);
-  console.log(`Portal browser acceptance passed: ${screenshots} screenshots, ${axeRuns} Axe runs, ${portalModules.length} modules, ${selectedEngines.length} engine(s).`);
+  console.log(`Portal browser acceptance passed: ${screenshots} screenshots, ${axeRuns} Axe runs, ${portalModules.length} governed modules (${visiblePortalModules.length} visible), ${selectedEngines.length} engine(s).`);
 } finally {
   if (portalProcess && portalProcess.exitCode === null) {
     portalProcess.kill("SIGTERM");

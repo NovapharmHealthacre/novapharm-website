@@ -225,6 +225,12 @@ try {
   const employeeLogin = await login("employee@example.invalid", validationPasswords.employee, "employee", "127.20.0.12");
   assert.equal(employeeLogin.statusCode, 200);
   assert.equal((await request({ url: "/api/enterprise/modules/employee.finance", headers: jsonHeaders(employeeLogin.session) })).statusCode, 200);
+  const crm = await request({ url: "/api/enterprise/modules/employee.crm", headers: jsonHeaders(employeeLogin.session) });
+  assert.equal(crm.statusCode, 200);
+  assert.equal(crm.payload.module.code, "employee.crm");
+  assert.equal(crm.payload.module.releaseClassification, "informational_only");
+  assert.ok(crm.payload.sections.some((entry) => entry.title === "Opportunities" && entry.rows.length > 0));
+  assert.ok(crm.payload.sections.some((entry) => entry.title === "Lead queue" && entry.rows.length > 0));
   assert.equal((await request({ url: "/api/enterprise/modules/executive.ceo-dashboard", headers: jsonHeaders(employeeLogin.session) })).statusCode, 403);
   const advanced = await request({ method: "POST", url: "/api/enterprise/workflows/demo-workflow-product-onboarding-nutraxin-review/advance", headers: jsonHeaders(employeeLogin.session), body: "{}", address: "127.20.0.13" });
   assert.equal(advanced.statusCode, 200);
@@ -233,6 +239,7 @@ try {
   const boardLogin = await login("board@example.invalid", validationPasswords.board, "board", "127.20.0.14");
   assert.equal(boardLogin.statusCode, 200);
   assert.equal((await request({ url: "/api/enterprise/modules/executive.ceo-dashboard", headers: jsonHeaders(boardLogin.session) })).statusCode, 200);
+  assert.equal((await request({ url: "/api/enterprise/modules/executive.nhs-data", headers: jsonHeaders(boardLogin.session) })).statusCode, 404);
   assert.equal((await request({ method: "POST", url: "/api/enterprise/workflows/demo-workflow-product-onboarding-nutraxin-review/advance", headers: jsonHeaders(boardLogin.session), body: "{}", address: "127.20.0.15" })).statusCode, 403);
 
   for (const accessType of ["employee", "board", "admin"]) {

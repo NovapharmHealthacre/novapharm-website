@@ -4,7 +4,7 @@ Status: repository candidate accepted; managed deployment and live service origi
 
 Candidate branch: `codex/unified-digital-estate-foundation`
 
-Acceptance date: 1 August 2026
+Acceptance date: 7 August 2026
 
 ## Outcome
 
@@ -30,13 +30,13 @@ No Azure resource, production hostname, DNS record or deployment was created. Un
 | Biome source check | Passed: 16 files, no findings |
 | TypeScript and generated route types | Passed |
 | Status contract and brand validation | Passed |
-| Unit tests | Passed: 3 of 3 |
+| Unit tests | Passed: 5 of 5 |
 | Production build | Passed: page, 404, robots and three health routes |
 | Standalone artifact scan | Passed: 1,244 files |
-| Chromium rendered matrix | Passed: seven required viewports |
-| WebKit rendered matrix | Passed: seven required viewports |
-| Screenshot evidence | 14 genuine screenshots |
-| Automated accessibility | 4 Axe WCAG 2.2 AA runs; zero serious or critical findings |
+| Chromium rendered matrix | Passed: ten viewports for normal state plus desktop/mobile exceptional states |
+| WebKit rendered matrix | Passed: ten viewports for normal state plus desktop/mobile exceptional states |
+| Screenshot evidence | 32 genuine screenshots across four scenarios |
+| Automated accessibility | 16 Axe WCAG 2.2 AA runs; zero serious or critical findings |
 | Boundary labels | Passed: current page, three unconfigured public origins and two private boundaries |
 | Horizontal overflow and broken media | Passed: zero findings at every rendered viewport |
 | Runtime cleanup | Passed: no status or Next.js process remained after each suite |
@@ -48,15 +48,15 @@ Lighthouse ran against the local production standalone artifact. SEO was intenti
 | Form factor | Performance | Accessibility | Best practices | LCP | CLS | TBT | Transfer |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | Desktop | 100 | 100 | 100 | 0.5 s | 0 | 0 ms | 166 KiB |
-| Mobile | 99 | 100 | 100 | 2.1 s | 0 | 0 ms | 166 KiB |
+| Mobile | 99 | 100 | 100 | 2.0 s | 0 | 10 ms | 166 KiB |
 
 These are local laboratory measurements, not production field data or a guarantee of live performance.
 
 ## Manual visual review
 
-Representative Chromium desktop and WebKit mobile captures were inspected after the automated suite. The review corrected an initial red-on-navy contrast failure and clarified the distinction between public origins that are not configured and portal/API private boundaries. The accepted layout has no material text clipping, horizontal overflow, broken brand asset, ambiguous private link or mobile table collision.
+Representative normal, activation-pending, planned-maintenance and incident captures were inspected in Chromium desktop and WebKit mobile. The review corrected an initial red-on-navy contrast failure and clarified the distinction between public origins that are not configured and portal/API private boundaries. The accepted layout has no material text clipping, horizontal overflow, broken brand asset, ambiguous private link or mobile table collision.
 
-Generated screenshots and Lighthouse summaries are retained in ignored `artifacts/status-browser` and `artifacts/status-lighthouse` directories. Only this sanitised acceptance record is committed.
+The complete generated screenshot and Lighthouse runs remain in ignored `artifacts/status-browser` and `artifacts/status-lighthouse` directories. A curated, checksum-manifested set of genuine rendered status screenshots is retained under `audit/evidence/final-visual-lock/status/` alongside this sanitised acceptance record.
 
 ## Remaining managed-environment gates
 

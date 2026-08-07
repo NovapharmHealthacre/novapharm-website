@@ -24,7 +24,8 @@ type Snapshot = Readonly<{
 }>;
 type SearchResult = Readonly<{ type: string; title: string; reference: string; route: string; status?: string | null }>;
 
-const modulesByArea: Readonly<Record<PortalArea, readonly PortalModule[]>> = { customer: customerModules, employee: employeeModules, executive: executiveModules, admin: adminModules };
+const visible = (modules: readonly PortalModule[]) => modules.filter((module) => module.visibleInNavigation);
+const modulesByArea: Readonly<Record<PortalArea, readonly PortalModule[]>> = { customer: visible(customerModules), employee: visible(employeeModules), executive: visible(executiveModules), admin: visible(adminModules) };
 
 function readable(value: unknown): string {
   if (value === null || value === undefined || value === "") return "Not recorded";
@@ -147,17 +148,17 @@ export function Dashboard({ module }: Readonly<{ module: PortalModule }>) {
     <aside className={menuOpen ? "workspace-sidebar open" : "workspace-sidebar"}>
       <div className="sidebar-brand"><PortalBrand home={areaLandingRoutes[module.area]} /><button type="button" aria-label="Close navigation" onClick={() => setMenuOpen(false)}><X aria-hidden="true" /></button></div>
       <p className="sidebar-label">{areaLabels[module.area]} workspace</p>
-      <nav aria-label={`${areaLabels[module.area]} portal`}><ul>{navigation.map((entry) => <li key={entry.code}><a className={entry.code === module.code ? "active" : ""} href={entry.route} aria-current={entry.code === module.code ? "page" : undefined}><span>{entry.title}</span>{entry.maturity !== "operational_foundation" ? <small>{entry.maturity === "planned" ? "Planned" : "External gate"}</small> : null}</a></li>)}</ul></nav>
+      <nav aria-label={`${areaLabels[module.area]} portal`}><ul>{navigation.map((entry) => <li key={entry.code}><a className={entry.code === module.code ? "active" : ""} href={entry.route} aria-current={entry.code === module.code ? "page" : undefined}><span>{entry.title}</span><small>{entry.releaseClassificationLabel}</small></a></li>)}</ul></nav>
       <div className="sidebar-security"><ShieldCheck aria-hidden="true" /><span>Server-enforced access<br />No public caching</span></div>
     </aside>
     <section className="workspace-main">
       <header className="workspace-topbar"><button className="menu-button" type="button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu aria-hidden="true" /></button><search><form className="portal-search" onSubmit={search}><Search aria-hidden="true" /><label className="sr-only" htmlFor="portal-search">Search authorised records</label><input id="portal-search" name="query" placeholder="Search" autoComplete="off" /><button type="submit">Search</button>{searchOpen ? <div className="search-results"><button className="search-close" type="button" aria-label="Close search results" onClick={() => setSearchOpen(false)}><X aria-hidden="true" /></button>{searchResults.length ? searchResults.map((result) => <a key={`${result.type}-${result.reference}`} href={result.route}><strong>{result.title}</strong><span>{result.type} · {result.reference}{result.status ? ` · ${readable(result.status)}` : ""}</span></a>) : <p>No authorised records found.</p>}</div> : null}</form></search><div className="user-summary"><span>{user?.displayName ?? "Secure user"}</span><small>{user ? readable(user.accessType) : "Verifying"}</small><button type="button" onClick={logout} aria-label="Sign out"><LogOut aria-hidden="true" /></button></div></header>
       <div className="workspace-content">
-        <header className="module-heading"><div><p className="eyebrow">{areaLabels[module.area]} / {readable(module.maturity)}</p><h1>{module.title}</h1><p>{module.purpose}</p></div><button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data"><RefreshCw aria-hidden="true" /><span>Refresh</span></button></header>
+        <header className="module-heading"><div><p className="eyebrow">{areaLabels[module.area]} / {module.releaseClassificationLabel}</p><h1>{module.title}</h1><p>{module.purpose}</p></div><button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data"><RefreshCw aria-hidden="true" /><span>Refresh</span></button></header>
         {user ? <AreaSwitcher user={user} /> : null}
         <p className="workflow-status" aria-live="polite">{status}</p>
         {loading ? <div className="loading-state"><Activity aria-hidden="true" /><span>Loading authorised records…</span></div> : null}
-        {snapshot ? <><div className="data-context"><span>{snapshot.dataState === "synthetic" ? "Synthetic validation data" : readable(snapshot.module.maturity)}</span><span>Updated {new Date(snapshot.dataFreshness).toLocaleString("en-GB")}</span>{snapshot.readOnly ? <span>Read only</span> : null}</div>{snapshot.notices.map((notice) => <p className="module-notice" key={notice}>{notice}</p>)}<MetricGrid metrics={snapshot.metrics} />{snapshot.sections.map((section) => <DataTable key={section.title} section={section} />)}<ActionPanel snapshot={snapshot} onComplete={load} onMessage={setStatus} /></> : null}
+        {snapshot ? <><div className="data-context"><span>{snapshot.dataState === "synthetic" ? "Synthetic validation data" : snapshot.module.releaseClassificationLabel}</span><span>Updated {new Date(snapshot.dataFreshness).toLocaleString("en-GB")}</span><span>Read only</span></div>{snapshot.notices.map((notice) => <p className="module-notice" key={notice}>{notice}</p>)}<MetricGrid metrics={snapshot.metrics} />{snapshot.sections.map((section) => <DataTable key={section.title} section={section} />)}<ActionPanel snapshot={snapshot} onComplete={load} onMessage={setStatus} /></> : null}
       </div>
     </section>
   </main>;

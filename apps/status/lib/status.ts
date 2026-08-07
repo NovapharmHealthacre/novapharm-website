@@ -1,4 +1,5 @@
 export type ServiceState = "operational" | "degraded" | "unavailable" | "configuration";
+export type OverallState = "operational" | "degraded" | "activation" | "maintenance" | "disruption";
 
 export interface ServiceStatus {
   readonly code: string;
@@ -11,8 +12,9 @@ export interface ServiceStatus {
 
 export interface StatusSnapshot {
   readonly checkedAt: string;
-  readonly overall: "operational" | "degraded" | "activation" | "disruption";
+  readonly overall: OverallState;
   readonly headline: string;
+  readonly notice?: string;
   readonly services: readonly ServiceStatus[];
 }
 
@@ -34,11 +36,13 @@ const targets: readonly TargetDefinition[] = Object.freeze([
   { code: "api", name: "Platform API", variable: "PUBLIC_API_ORIGIN", path: "/api/health/live", publicLink: false, expectedService: "novapharm-api" },
 ]);
 
-function configuredOrigin(value: string | undefined, production: boolean): string | null {
+function configuredOrigin(value: string | undefined, production: boolean, loopbackValidation: boolean): string | null {
   if (!value) return null;
   const url = new URL(value);
   const loopback = ["127.0.0.1", "localhost", "::1"].includes(url.hostname);
-  if (production && url.protocol !== "https:") throw new Error("Production status targets must use HTTPS.");
+  if (production && url.protocol !== "https:" && !(loopbackValidation && loopback && url.protocol === "http:")) {
+    throw new Error("Production status targets must use HTTPS.");
+  }
   if (!production && url.protocol !== "https:" && !(loopback && url.protocol === "http:")) {
     throw new Error("Validation status targets must use HTTPS or an HTTP loopback origin.");
   }
@@ -52,7 +56,11 @@ async function inspectTarget(target: TargetDefinition, environment: NodeJS.Proce
   const visibility = target.publicLink ? "public" as const : "private" as const;
   let origin: string | null;
   try {
-    origin = configuredOrigin(environment[target.variable], environment["NODE_ENV"] === "production");
+    origin = configuredOrigin(
+      environment[target.variable],
+      environment["NODE_ENV"] === "production",
+      environment["STATUS_VALIDATION_MODE"] === "loopback-browser-acceptance",
+    );
   } catch {
     return Object.freeze({ code: target.code, name: target.name, state: "configuration", message: "Origin configuration requires review.", visibility });
   }
@@ -95,12 +103,31 @@ export async function getStatusSnapshot(
     ...inspected,
   ]);
   const states = new Set(services.map((service) => service.state));
-  const overall = states.has("unavailable") ? "disruption" : states.has("degraded") ? "degraded" : states.has("configuration") ? "activation" : "operational";
+  const maintenance = environment["STATUS_MODE"] === "maintenance";
+  const maintenanceNotice = maintenance
+    ? (environment["STATUS_MAINTENANCE_MESSAGE"]?.trim() || "Planned maintenance is in progress. Service availability remains visible below.").slice(0, 240)
+    : undefined;
+  const overall: OverallState = states.has("unavailable")
+    ? "disruption"
+    : maintenance
+      ? "maintenance"
+      : states.has("degraded")
+        ? "degraded"
+        : states.has("configuration")
+          ? "activation"
+          : "operational";
   const headline = {
     operational: "All configured services are responding normally.",
     degraded: "A configured service needs attention.",
     activation: "Managed service activation is still in progress.",
+    maintenance: "Planned maintenance is in progress.",
     disruption: "A configured service is currently unavailable.",
   }[overall];
-  return Object.freeze({ checkedAt: new Date().toISOString(), overall, headline, services });
+  return Object.freeze({
+    checkedAt: new Date().toISOString(),
+    overall,
+    headline,
+    ...(maintenanceNotice && overall === "maintenance" ? { notice: maintenanceNotice } : {}),
+    services,
+  });
 }

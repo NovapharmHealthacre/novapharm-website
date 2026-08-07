@@ -42,3 +42,41 @@ test("invalid and unavailable targets fail safely", async () => {
   assert.equal(snapshot.services.find((service) => service.code === "corporate")?.state, "configuration");
   assert.equal(snapshot.services.find((service) => service.code === "api")?.state, "unavailable");
 });
+
+test("planned maintenance is explicit without hiding a real disruption", async () => {
+  const maintenance = await getStatusSnapshot(
+    { NODE_ENV: "test", STATUS_MODE: "maintenance", STATUS_MAINTENANCE_MESSAGE: "Planned validation maintenance." },
+    async () => { throw new Error("fetch should not run"); },
+  );
+  assert.equal(maintenance.overall, "maintenance");
+  assert.equal(maintenance.notice, "Planned validation maintenance.");
+
+  const disruption = await getStatusSnapshot(
+    {
+      NODE_ENV: "production",
+      STATUS_MODE: "maintenance",
+      PUBLIC_API_ORIGIN: "https://api.example.invalid",
+    },
+    async () => new Response("unavailable", { status: 503 }),
+  );
+  assert.equal(disruption.overall, "disruption");
+  assert.equal(disruption.notice, undefined);
+});
+
+test("loopback HTTP remains limited to the explicit browser-validation mode", async () => {
+  const rejected = await getStatusSnapshot(
+    { NODE_ENV: "production", CORPORATE_ORIGIN: "http://127.0.0.1:4305" },
+    async () => new Response("ok", { status: 200 }),
+  );
+  assert.equal(rejected.services.find((service) => service.code === "corporate")?.state, "configuration");
+
+  const accepted = await getStatusSnapshot(
+    {
+      NODE_ENV: "production",
+      STATUS_VALIDATION_MODE: "loopback-browser-acceptance",
+      CORPORATE_ORIGIN: "http://127.0.0.1:4305",
+    },
+    async () => new Response("ok", { status: 200 }),
+  );
+  assert.equal(accepted.services.find((service) => service.code === "corporate")?.state, "operational");
+});

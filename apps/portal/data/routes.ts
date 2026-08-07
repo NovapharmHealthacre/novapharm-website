@@ -1,4 +1,4 @@
-import { type PortalArea, type PortalModule, portalModuleByCode, portalModules } from "@novapharm/portal-contracts";
+import { type PortalArea, type PortalModule, portalModuleByCode, visiblePortalModules } from "@novapharm/portal-contracts";
 
 export type PortalView =
   | Readonly<{ kind: "login" }>
@@ -44,7 +44,10 @@ export function resolvePortalView(pathname: string): PortalView | null {
   if (normalised === "/portal/change-password/") return { kind: "password-change" };
   if (normalised === "/auth/entra-complete/") return { kind: "entra-complete" };
   const alias = legacyAliases.get(normalised);
-  if (alias) return { kind: "module", module: portalModuleByCode.get(alias) as PortalModule };
-  const module = portalModules.find((entry) => entry.route === normalised);
+  if (alias) {
+    const module = portalModuleByCode.get(alias);
+    return module?.visibleInNavigation ? { kind: "module", module } : null;
+  }
+  const module = visiblePortalModules.find((entry) => entry.route === normalised);
   return module ? { kind: "module", module } : null;
 }
