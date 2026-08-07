@@ -11,9 +11,9 @@ export const company = Object.freeze({
   siteUrl: "https://novapharmhealthcare.com",
   companiesHouseUrl: "https://find-and-update.company-information.service.gov.uk/company/16716501",
   officersUrl: "https://find-and-update.company-information.service.gov.uk/company/16716501/officers",
-  summary: "A UK-based, compliance-first and technology-enabled B2B pharmaceutical company preparing regulated trading, sourcing and wholesale distribution capabilities for oncology, specialty and licensed medicines.",
+  summary: "An active UK-based, compliance-first and technology-enabled B2B pharmaceutical company developing regulated trading, sourcing and wholesale distribution capabilities for oncology, specialty and licensed medicines.",
   purpose: "NovaPharm combines regulatory intelligence, diversified sourcing, quality-led distribution planning and digital supply-chain infrastructure to improve medicine availability, resilience, transparency and operational efficiency.",
-  regulatoryNotice: "NovaPharm is pre-operational for regulated wholesale supply. The company will not commence regulated wholesale activities until the required MHRA authorisations and other applicable permissions are in place. Product-specific parallel-import activity remains subject to the grant and maintenance of the relevant PLPI licence.",
+  regulatoryNotice: "NovaPharm Healthcare is active in corporate, product, partnership and commercial-development work. Regulated wholesale supply has not commenced and will begin only after the required MHRA authorisations and applicable operating controls are in place. Product-specific parallel-import activity remains subject to the grant and maintenance of the relevant PLPI licence.",
   medicalDisclaimer: "This website is for corporate and qualified B2B information only. NovaPharm does not provide medical advice, sell medicines to patients or invite patient orders. Product and regulatory information is not a substitute for advice from a healthcare professional or the relevant competent authority."
 });
 
@@ -61,14 +61,14 @@ export const leadership = Object.freeze([
     slug: "prabhakar-lahare",
     name: "Prabhakar Vitthal Lahare",
     displayName: "Prabhakar Vitthal Lahare",
-    title: "Managing Director & Chief Operating Officer",
-    schemaTitle: "Managing Director and Chief Operating Officer",
-    governance: "Statutory director; executive title described in the March 2026 business plan",
+    title: "Chief Operating Officer",
+    schemaTitle: "Chief Operating Officer",
+    governance: "Founder and statutory director",
     initials: "PL",
     image: "/assets/prabhakarvitthallahare.jpeg",
     imageWidth: 1121,
     imageHeight: 1280,
-    imageAlt: "Prabhakar Vitthal Lahare, Director of NovaPharm Healthcare",
+    imageAlt: "Prabhakar Vitthal Lahare, Chief Operating Officer of NovaPharm Healthcare",
     companiesHouseUrl: "https://find-and-update.company-information.service.gov.uk/officers/WbYqt5GNwcUztqJmSS1Q-zuIra4/appointments",
     sameAs: ["https://find-and-update.company-information.service.gov.uk/officers/WbYqt5GNwcUztqJmSS1Q-zuIra4/appointments"],
     summary: "Prabhakar supports operating strategy, manufacturing partnerships, quality governance, supply continuity and scalable execution.",
@@ -83,9 +83,9 @@ export const leadership = Object.freeze([
     slug: "girish-achliya",
     name: "Dr Girish Shantilal Achliya",
     displayName: "Dr Girish Shantilal Achliya",
-    title: "Director & Chief Scientific Officer",
-    schemaTitle: "Director and Chief Scientific Officer",
-    governance: "Statutory director; executive title described in the March 2026 business plan",
+    title: "Chief Technical Director",
+    schemaTitle: "Chief Technical Director",
+    governance: "Statutory director",
     initials: "GA",
     image: "/assets/girishshantilalachliya.jpeg",
     imageWidth: 1600,
@@ -105,8 +105,8 @@ export const leadership = Object.freeze([
     slug: "helly-panchal",
     name: "Dr Helly Kamlesh Panchal",
     displayName: "Dr Helly Panchal",
-    title: "Director, Technical & Formulation",
-    schemaTitle: "Director, Technical and Formulation",
+    title: "Chief Medical Director",
+    schemaTitle: "Chief Medical Director",
     governance: "Statutory director",
     initials: "HP",
     image: null,
@@ -125,21 +125,24 @@ export const leadership = Object.freeze([
     slug: "nishita-trivedi",
     name: "Dr Nishita Trivedi",
     displayName: "Dr Nishita Trivedi",
-    title: "Quality & Regulatory Adviser",
-    schemaTitle: "Quality and Regulatory Adviser",
-    governance: "Specialist adviser described in the business plan; not a statutory director",
+    title: "Chief Technology Officer and Responsible Person",
+    schemaTitle: "Chief Technology Officer and Responsible Person",
+    executiveRole: "Chief Technology Officer",
+    regulatedAppointment: "Responsible Person",
+    appointmentEvidence: "Owner-approved title; formal controlled appointment record pending",
+    governance: "Responsible Person appointment; not a statutory director",
     initials: "NT",
     image: null,
     imageAlt: null,
     companiesHouseUrl: null,
     sameAs: [],
-    summary: "Dr Nishita supports the planned quality and regulatory framework, including QMS, GDP, PLPI activities, vendor oversight and MHRA liaison.",
+    summary: "Dr Nishita leads NovaPharm's technology governance as Chief Technology Officer and holds the owner-approved Responsible Person designation, with the executive and regulated responsibilities governed separately.",
     biography: [
       "NovaPharm's business-plan materials describe Dr Nishita as an experienced pharmaceutical quality and regulatory professional with approximately 20 years of experience across quality systems, GMP and GDP compliance, audits, validation, data integrity, CAPA, pharmacovigilance support and regulatory liaison.",
-      "Her experience includes responsible-person duties within UK pharmaceutical organisations. Any formal Responsible Person or RP(i) appointment for NovaPharm would remain subject to the applicable authorisation, governance and regulatory requirements.",
-      "Dr Nishita is not presented as a director or shareholder of NovaPharm Healthcare. Private contact information and CV-specific personal data are not published."
+      "Her Chief Technology Officer responsibility covers technology governance and controlled digital systems. Her Responsible Person appointment is a distinct regulated responsibility and does not imply that she acts for the MHRA, grants approvals, or has prescribing, medical or clinical authority.",
+      "The owner has approved the public title. A formal appointment or equivalent controlled record for the applicable legal entity, authorisation and scope remains a documentary governance action. Dr Nishita is not presented as a statutory director or shareholder."
     ],
-    expertise: ["Quality management systems", "GMP and GDP", "PLPI support", "Vendor audits", "CAPA", "Pharmacovigilance support"]
+    expertise: ["Technology governance", "Quality management systems", "GMP and GDP", "PLPI support", "Vendor audits", "CAPA"]
   }
 ]);
 
@@ -220,9 +223,9 @@ export const servicePillars = Object.freeze([
     title: "Logistics & distribution operations",
     audience: "B2B buyers, supply partners and logistics providers",
     problem: "Pharmaceutical fulfilment requires controlled storage, transport, batch, expiry and outsourced-activity oversight.",
-    approach: "A capital-efficient third-party logistics model covering ambient and controlled-temperature requirements, import/export documentation, order fulfilment and performance reporting.",
-    value: "Scalable distribution planning without presenting infrastructure ownership as an achieved capability.",
-    caveat: "Polar Speed/Marken integration and service scope remain subject to final contracts, authorisations and technical onboarding.",
+    approach: "Owner-attested contracted logistics and warehousing arrangements with Polar Speed are being incorporated into a controlled third-party model covering service, quality, storage, transport, documentation and performance responsibilities.",
+    value: "Contracted specialist infrastructure without presenting a third-party site, authorisation or certificate as NovaPharm-owned.",
+    caveat: "The relationship does not attribute Polar Speed's WDA(H), GDP certificate or site authorisation to NovaPharm. Regulated use remains subject to NovaPharm authorisation, verified scope, quality-system release and technical onboarding.",
     cta: "Discuss logistics integration"
   },
   {
@@ -375,7 +378,7 @@ export const pageMeta = Object.freeze({
   },
   "about/company": {
     title: "Company | NovaPharm Healthcare Ltd",
-    description: "NovaPharm Healthcare Ltd company facts, B2B pharmaceutical business model, three-pillar sourcing strategy and pre-operational regulatory status.",
+    description: "NovaPharm Healthcare Ltd company facts, active B2B development, three-pillar sourcing strategy and authorisation-dependent regulated wholesale status.",
     eyebrow: "Company"
   },
   "about/governance": {
@@ -385,7 +388,7 @@ export const pageMeta = Object.freeze({
   },
   "leadership": {
     title: "Leadership | NovaPharm Healthcare",
-    description: "Meet NovaPharm Healthcare's directors and specialist quality and regulatory adviser, with verified governance status and conservative professional profiles.",
+    description: "Meet NovaPharm Healthcare's executive leadership, with statutory office, owner-approved roles and regulated appointments presented through distinct governance fields.",
     eyebrow: "Leadership"
   },
   "services": {
@@ -409,8 +412,8 @@ export const pageMeta = Object.freeze({
     eyebrow: "Oncology continuity"
   },
   "product-portfolio": {
-    title: "Strategic Pharmaceutical Portfolio | Oncology and Specialty Medicines",
-    description: "NovaPharm's planned B2B portfolio focus across oncology, specialty, oral liquid and selected licensed medicines, subject to authorisation and availability.",
+    title: "Food Supplements and Strategic Pharmaceutical Portfolio | NovaPharm",
+    description: "Review NovaPharm's Nutraxin UK food supplement catalogue reference and strategic B2B pharmaceutical categories, with availability, claims and authorisation boundaries stated clearly.",
     eyebrow: "Products"
   },
   "product-portfolio/nutraxin": {
@@ -447,6 +450,11 @@ export const pageMeta = Object.freeze({
     title: "Business Account Application | NovaPharm Healthcare",
     description: "Register interest in a future NovaPharm business account through a controlled B2B onboarding route with regulatory, quality and due-diligence review.",
     eyebrow: "Business account"
+  },
+  "trust-centre": {
+    title: "Trust Centre | NovaPharm Healthcare",
+    description: "Review NovaPharm Healthcare's verified corporate, pharmaceutical-status, security, privacy, accessibility and service-assurance boundaries.",
+    eyebrow: "Trust Centre"
   },
   "investor-information": {
     title: "Investor Information | NovaPharm Healthcare Ltd",

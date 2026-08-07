@@ -7,6 +7,11 @@ test("organisation identifiers are canonical and stable", () => {
   assert.equal(novapharmOrganisation.legalName, "NOVAPHARM HEALTHCARE LTD");
   assert.equal(novapharmOrganisation.companyNumber, "16716501");
   assert.equal(novapharmOrganisation.id, "https://novapharmhealthcare.com/#organization");
+  assert.equal(novapharmOrganisation.operatingStatus.corporate, "active");
+  assert.equal(
+    novapharmOrganisation.operatingStatus.regulatedWholesaleSupply,
+    "not_commenced_subject_to_authorisation",
+  );
 });
 
 test("people have unique persistent identities", () => {
@@ -20,7 +25,17 @@ test("people have unique persistent identities", () => {
 
 test("regulated appointment and statutory governance remain separate", () => {
   const nishita = personBySlug("nishita-trivedi");
+  assert.equal(nishita.publicTitle, "Chief Technology Officer and Responsible Person");
+  assert.equal(nishita.executiveRole, "Chief Technology Officer");
   assert.equal(nishita.statutoryDirector, false);
-  assert.equal(nishita.regulatedAppointment?.requestedTitle, "Responsible Person");
-  assert.equal(nishita.regulatedAppointment?.publicationDecision, "hold");
+  assert.equal(nishita.regulatedAppointment?.title, "Responsible Person");
+  assert.equal(nishita.regulatedAppointment?.publicationDecision, "approved");
+  assert.equal(nishita.regulatedAppointment?.documentaryEvidenceState, "pending_evidence");
+});
+
+test("canonical executive titles remain separate from governance facts", () => {
+  const prabhakar = personBySlug("prabhakar-lahare");
+  assert.equal(prabhakar.publicTitle, "Chief Operating Officer");
+  assert.equal(prabhakar.executiveRole, "Chief Operating Officer");
+  assert.deepEqual(prabhakar.governanceFacts, ["Founder", "Statutory director"]);
 });

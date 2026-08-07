@@ -27,7 +27,7 @@ const prohibitedClaims = [
   ["current regulatory authorisation", /\b(?:NovaPharm|we)\s+(?:holds?|has|have|secured|obtained|was granted)\b[^.]{0,100}\b(?:WDA\(H\)|MHRA (?:licen[cs]e|authorisation|approval)|PLPI (?:licen[cs]e|approval))\b/i],
   ["current licensed status", /\bNovaPharm\b[^.]{0,80}\b(?:is|are)\b[^.]{0,30}\b(?:MHRA[- ]licen[cs]ed|WDA\(H\) holder|PLPI[- ]approved)\b/i],
   ["current NHS supply", /\b(?:NovaPharm|we)\b[^.]{0,80}\b(?:supplies?|supplying|supplier to|framework supplier)\b[^.]{0,80}\bNHS\b/i],
-  ["unverified logistics contract", /\b(?:NovaPharm|we)\b[^.]{0,80}\b(?:partnered|contracted|appointed|has an agreement)\b[^.]{0,80}\b(?:Polar Speed|Marken)\b/i],
+  ["third-party authorisation attribution", /\bNovaPharm\b[^.]{0,100}\b(?:holds?|inherits?|relies on|operates under)\b[^.]{0,100}\b(?:Polar Speed|Mark[e]n)\b[^.]{0,100}\b(?:WDA\(H\)|GDP|authorisation|certificate)\b/i],
   ["achieved financial performance", /\b(?:NovaPharm|we)\b[^.]{0,80}\b(?:achieved|generated|reported)\b[^.]{0,80}\b(?:revenue|turnover|sales)\b/i],
   ["operational advanced technology", /\b(?:NovaPharm|we)\b[^.]{0,80}\b(?:operates?|deployed|launched|uses?)\b[^.]{0,80}\b(?:blockchain|AI forecasting|artificial intelligence)\b/i],
   ["current product availability", /\b(?:available now|currently available|in stock|ready to order)\b/i],
@@ -74,9 +74,11 @@ for (const requiredCroBoundary of [
 
 const allPublicText = routes.map((route) => visibleText(readFileSync(pagePath(route), "utf8"))).join(" ");
 for (const requiredBoundary of [
-  "NovaPharm is pre-operational for regulated wholesale supply",
-  "will not commence regulated wholesale activities until the required MHRA authorisations",
-  "Product-specific parallel-import activity remains subject to the grant and maintenance of the relevant PLPI licence"
+  "NovaPharm Healthcare is active in corporate, product, partnership and commercial-development work",
+  "Regulated wholesale supply has not commenced and will begin only after the required MHRA authorisations",
+  "Product-specific parallel-import activity remains subject to the grant and maintenance of the relevant PLPI licence",
+  "Owner-attested logistics and warehousing arrangements with Polar Speed are being incorporated into NovaPharm's operating model",
+  "The relationship does not transfer Polar Speed's authorisations or certificates to NovaPharm"
 ]) {
   if (!allPublicText.includes(requiredBoundary)) failures.push(`missing public regulatory boundary: ${requiredBoundary}`);
 }

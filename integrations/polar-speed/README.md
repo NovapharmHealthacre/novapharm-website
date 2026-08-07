@@ -1,6 +1,6 @@
 # Polar Speed Integration Architecture
 
-Polar Speed is treated as NovaPharm's warehouse and final-mile logistics integration boundary. Public Marken/UPS Healthcare material describes Polar Speed services, Polar Track temperature/location visibility, Maestro shipment management, and Solo inventory workflows, but a public developer API contract was not available during implementation.
+Polar Speed is treated as NovaPharm's intended third-party warehouse and final-mile logistics integration boundary under an owner-attested contracted arrangement. No public developer API contract was available during implementation, and no Polar Speed authorisation, certificate or operating status is attributed to NovaPharm.
 
 ## Implemented boundary
 
@@ -11,7 +11,7 @@ Polar Speed is treated as NovaPharm's warehouse and final-mile logistics integra
 
 ## Required API contract
 
-NovaPharm needs Polar Speed or Marken to provide:
+NovaPharm needs Polar Speed to provide:
 
 - Authentication method and token format.
 - Order reservation endpoint.

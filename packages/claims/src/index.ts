@@ -23,8 +23,30 @@ export interface ClaimDecision {
 
 export const claimRegistry: readonly GovernedClaim[] = Object.freeze([
   Object.freeze({
-    id: "company.pre-operational-wholesale",
-    statement: "NovaPharm is pre-operational for regulated wholesale supply and will not commence regulated wholesale activities until the required authorisations and other applicable permissions are in place.",
+    id: "leadership.nishita-current-title",
+    statement: "Dr Nishita Trivedi's owner-approved current public title is Chief Technology Officer and Responsible Person. Chief Technology Officer is the executive responsibility; Responsible Person is a distinct regulated appointment. The title does not represent MHRA authority, regulatory approval powers, or prescribing, medical or clinical authority.",
+    maturity: "current",
+    evidence: "owner_attested",
+    publication: "approved",
+    risk: "corporate",
+    owner: "Board and regulatory governance",
+    reviewedOn: "2026-08-07",
+    reviewBy: "2026-11-07"
+  }),
+  Object.freeze({
+    id: "leadership.prabhakar-current-title",
+    statement: "Prabhakar Vitthal Lahare's owner-approved current executive title is Chief Operating Officer; founder and statutory-director status are separate governance facts.",
+    maturity: "current",
+    evidence: "owner_attested",
+    publication: "approved",
+    risk: "corporate",
+    owner: "Board and corporate governance",
+    reviewedOn: "2026-08-07",
+    reviewBy: "2026-11-07"
+  }),
+  Object.freeze({
+    id: "company.regulated-wholesale-authorisation-boundary",
+    statement: "NovaPharm Healthcare is an active UK company undertaking corporate, product, partnership and commercial-development work. Regulated wholesale supply has not commenced and will begin only after the required authorisations and applicable operating controls are in place.",
     maturity: "subject_to_authorisation",
     evidence: "owner_attested",
     publication: "approved",
@@ -56,14 +78,25 @@ export const claimRegistry: readonly GovernedClaim[] = Object.freeze([
     reviewBy: "2026-10-30"
   }),
   Object.freeze({
-    id: "logistics.partner-plan",
-    statement: "NovaPharm plans to use qualified third-party pharmaceutical logistics; provider identity, scope and operating commitments remain subject to contract, authorisation and onboarding.",
-    maturity: "planned",
+    id: "logistics.polar-speed-contracted-infrastructure",
+    statement: "NovaPharm has owner-attested contracted logistics and warehousing arrangements with Polar Speed for intended operations, governed by the applicable service and quality-agreement controls. This does not attribute Polar Speed's authorisations or certificates to NovaPharm and does not authorise NovaPharm regulated wholesale supply.",
+    maturity: "current",
     evidence: "owner_attested",
     publication: "approved",
     risk: "commercial",
     owner: "Operations and legal",
     reviewedOn: "2026-07-30",
+    reviewBy: "2026-10-30"
+  }),
+  Object.freeze({
+    id: "logistics.polar-speed-certificate-boundary",
+    statement: "No Polar Speed WDA(H), GDP certificate or site authorisation is represented as a NovaPharm authorisation; certificate-specific public wording remains on hold until the exact holder, number, site, scope, effective date and restrictions are verified from official evidence.",
+    maturity: "subject_to_authorisation",
+    evidence: "pending",
+    publication: "approved",
+    risk: "regulated",
+    owner: "Regulatory governance and operations",
+    reviewedOn: "2026-08-01",
     reviewBy: "2026-10-30"
   }),
   Object.freeze({
@@ -79,23 +112,28 @@ export const claimRegistry: readonly GovernedClaim[] = Object.freeze([
   }),
   Object.freeze({
     id: "regulatory.responsible-person-appointment",
-    statement: "A named NovaPharm Responsible Person appointment is operational.",
+    statement: "The formal controlled appointment record for NovaPharm's named Responsible Person remains pending documentary verification for the applicable legal entity, authorisation, site and scope.",
     maturity: "current",
     evidence: "pending",
     publication: "hold",
     risk: "regulated",
     owner: "Regulatory governance",
-    reviewedOn: "2026-07-30",
-    reviewBy: "2026-08-30"
+    reviewedOn: "2026-08-07",
+    reviewBy: "2026-09-07"
   })
 ]);
 
-const safeFutureLanguage = /\b(plans?|planned|preparing|in development|subject to|will not|does not currently|not operational|does not assert)\b/i;
+const safeFutureLanguage = /\b(plans?|planned|preparing|in development|subject to|will not|will begin only after|has not commenced|does not currently|not operational|does not assert|remains on hold)\b/i;
 
 export function evaluateClaim(claim: GovernedClaim, onDate = new Date()): ClaimDecision {
   if (claim.publication !== "approved") return { publishable: false, reason: `Publication state is ${claim.publication}.` };
   if (Date.parse(`${claim.reviewBy}T23:59:59Z`) < onDate.getTime()) return { publishable: false, reason: "The evidence review date has expired." };
-  if (claim.maturity === "current" && claim.evidence !== "verified") return { publishable: false, reason: "A current operational claim requires verified evidence." };
+  if (claim.maturity === "current" && !["verified", "owner_attested"].includes(claim.evidence)) {
+    return { publishable: false, reason: "A current operational claim requires verified or controlled owner-attested evidence." };
+  }
+  if (claim.risk === "regulated" && claim.maturity === "current" && claim.evidence !== "verified") {
+    return { publishable: false, reason: "A current regulated claim requires verified evidence." };
+  }
   if (claim.risk === "regulated" && claim.maturity === "current" && !claim.evidenceUrl) return { publishable: false, reason: "A current regulated claim requires a public or controlled evidence reference." };
   if (["planned", "in_development", "subject_to_authorisation", "not_operational"].includes(claim.maturity) && !safeFutureLanguage.test(claim.statement)) {
     return { publishable: false, reason: "A non-current claim must state its maturity clearly in visible wording." };

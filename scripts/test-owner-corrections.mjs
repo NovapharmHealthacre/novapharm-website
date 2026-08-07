@@ -60,10 +60,11 @@ for (const required of [
   "/leadership/girish-achliya/",
   "/leadership/prabhakar-lahare/",
   "Prabhakar Vitthal Lahare",
-  "Managing Director &amp; Chief Operating Officer"
+  "Chief Operating Officer"
 ]) {
   if (!cro.includes(required)) fail(`CRO Senior judgement is missing: ${required}`);
 }
+if (cro.includes("Managing Director &amp; Chief Operating Officer")) fail("CRO Senior judgement contains Prabhakar's superseded executive title");
 const croLeaderCount = (cro.match(/class="cro-leader"/g) || []).length;
 if (croLeaderCount !== 3) fail(`CRO Senior judgement must contain exactly 3 leader cards; found ${croLeaderCount}`);
 

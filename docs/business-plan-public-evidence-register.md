@@ -2,7 +2,7 @@
 
 Status: publication control
 Document owner: NovaPharm Healthcare board
-Reviewed: 22 July 2026
+Reviewed: 7 August 2026
 Source reviewed: owner-supplied March 2026 business plan, 59 PDF pages
 Source SHA-256: `6ab32585f9028a770a78c8963d1bece6ae22a3ee56e5ea651d8e99c20a30da88`
 
@@ -31,7 +31,7 @@ The business plan is a strategy and discovery source, not proof that a licence, 
 | WDA(H) or wholesale dealer authorisation | 4, 5, 31 and Annex D | C/E | State that regulated wholesale supply will not begin before required authorisation. Do not imply an application outcome or current authority. | MHRA public register evidence and legal/regulatory approval. |
 | PLPI products, approvals or timelines | 4, 8-9, Annex C-D | C/E | Explain product-specific assessment only. Do not name products, promise timelines or claim approvals. | MHRA product licence evidence and approved product copy. |
 | NHS supply, frameworks, hospitals or customer base | 3-5, 11-12, Annex E | C/E | Do not claim current NHS supply, agreements, customers or availability. | Executed contract, permission to disclose and claims approval. |
-| Polar Speed or Marken partnership and service scope | 3-6, 18-21 | C | Refer only as a proposed third-party logistics route where necessary; do not state an executed partnership. | Signed agreement, written naming permission and verified service scope. |
+| Polar Speed relationship and service scope | 3-6, 18-21 | C | Owner-attested contracted logistics arrangements may be described as being incorporated into the operating model, with an explicit statement that no third-party authorisation is attributed to NovaPharm and regulated wholesale supply has not commenced. | Controlled agreement, written naming permission, verified service scope and Quality/Legal approval before stronger wording. |
 | Owned warehouse, laboratory, manufacturing or trial sites | throughout | E | Explicitly avoid ownership implications. | Property, licence and operational evidence plus legal approval. |
 | Oncology product availability or supply continuity | Annex A-C | C/E | Discuss governance and readiness, never availability or guaranteed continuity. | Authorisation, inventory, qualified supplier and approved availability feed. |
 | Revenue, margins, customer counts and transaction volumes | 3-4, 7-10, 28-29, Annex C-G | D | Exclude from public pages and public AI retrieval. | Board-approved audited or otherwise verified public disclosure. |
@@ -42,7 +42,7 @@ The business plan is a strategy and discovery source, not proof that a licence, 
 | Founder biography and experience | Annex F | C/D | Use only separately verified and owner-approved professional facts. | Independent source or approved biography evidence. |
 | Innovator Founder Visa material | 2, 25-27 and annexes | D | Exclude from public website, public AI index and search metadata. | Not applicable to normal public publication. |
 | Personal investment, cap table and financial forecasts | 28-29, Annex F-G | D | Exclude from public pages and public AI retrieval. | Board and professional-adviser approval for a specific disclosure. |
-| Leadership roles | Annex F | A/C | Use Companies House for statutory office and board-approved copy for executive titles. Dr Nishita Trivedi is not presented as a statutory director. | Current Companies House record and board confirmation. |
+| Leadership roles | Annex F | A/C | Use Companies House for statutory office and the dated owner-approved leadership record for executive titles. Dr Nishita Trivedi's CTO responsibility and RP appointment are separate; she is not presented as a statutory director or regulatory authority. | Current Companies House record; owner title approval; formal controlled RP appointment evidence remains pending. |
 | CMO/CDMO, supplier and product-owner collaboration | 7-10, Annex C | B | Publish as partner types sought and a due-diligence pathway. | Written approval before naming any organisation or logo. |
 | Clinical-development continuity | Annex A-D | B | Publish as coordination, evidence and responsibility architecture; do not imply sponsor, site, laboratory or full-service CRO status. | Legal, insurance and scope review before paid delivery. |
 
