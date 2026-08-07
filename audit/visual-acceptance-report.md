@@ -1,5 +1,7 @@
 # Visual Acceptance Report
 
+> Historical 15 July acceptance record. The PR 16 final matrix and human review are recorded in `docs/programme/final-human-visual-dossier.md`.
+
 Candidate date: 15 July 2026
 
 Status: local rendered acceptance passed; Azure-hosted acceptance pending

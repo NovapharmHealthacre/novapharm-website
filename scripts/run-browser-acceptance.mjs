@@ -4,7 +4,7 @@ import { mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { chromium, webkit } from "playwright";
-import { adminModules, customerModules, employeeModules } from "../src/core/portal-module-catalog.mjs";
+import { adminModules, customerModules, employeeModules, executiveModules } from "../src/core/portal-module-catalog.mjs";
 
 const baseUrl = new URL(process.env.VISUAL_BASE_URL || "http://127.0.0.1:4178").origin;
 const credentialsPath = resolve(process.env.VISUAL_CREDENTIALS_PATH || "");
@@ -57,8 +57,6 @@ let publicRoutes = [
   ["nutraxin-catalogue", "/product-portfolio/nutraxin/"],
   ["partners", "/partner-with-us/"],
   ["technology", "/technology/"],
-  ["ai-governance", "/technology/ai-governance/"],
-  ["search-directory", "/search/"],
   ["insights", "/news-insights/"],
   ["insight-traceability", "/news-insights/batch-to-buyer-pharmaceutical-traceability/"],
   ["insight-compliance-distribution", "/news-insights/compliance-first-pharmaceutical-distribution-uk/"],
@@ -83,26 +81,34 @@ let publicRoutes = [
   ["service-unavailable", "/service-unavailable/"]
 ];
 
-const executiveRoutes = [
-  ["command-centre", "NP_Hub.html"],
-  ["ceo-dashboard", "NP_CEO.html"],
-  ["sales-intelligence", "NP_Sales.html"],
-  ["customer-analytics", "NP_Customers.html"],
-  ["product-master", "NP_Products.html"],
-  ["nhs-data", "NP_NHS_Data.html"],
-  ["plpi", "NP_PLPI.html"],
-  ["pharmacovigilance", "NP_PV.html"],
-  ["sourcing", "NP_Sourcing.html"],
-  ["tenders", "NP_Tenders.html"],
-  ["warehouse", "NP_Warehouse.html"],
-  ["service-levels", "NP_SLA.html"],
-  ["finance", "NP_Finance.html"],
-  ["capital", "NP_Capital.html"],
-  ["microsoft-365", "NP_M365.html"],
-  ["documents", "NP_Documents.html"],
-  ["ai-technology", "NP_AI_Tech.html"],
-  ["traceability", "NP_Blockchain.html"]
-];
+const executiveLegacyFiles = new Map([
+  ["executive.command-centre", "NP_Hub.html"],
+  ["executive.ceo-dashboard", "NP_CEO.html"],
+  ["executive.sales-intelligence", "NP_Sales.html"],
+  ["executive.customer-analytics", "NP_Customers.html"],
+  ["executive.product-master", "NP_Products.html"],
+  ["executive.nhs-data", "NP_NHS_Data.html"],
+  ["executive.plpi", "NP_PLPI.html"],
+  ["executive.pharmacovigilance", "NP_PV.html"],
+  ["executive.sourcing", "NP_Sourcing.html"],
+  ["executive.tenders", "NP_Tenders.html"],
+  ["executive.warehouse", "NP_Warehouse.html"],
+  ["executive.service-levels", "NP_SLA.html"],
+  ["executive.finance", "NP_Finance.html"],
+  ["executive.capital", "NP_Capital.html"],
+  ["executive.microsoft-365", "NP_M365.html"],
+  ["executive.documents", "NP_Documents.html"],
+  ["executive.ai-technology", "NP_AI_Tech.html"],
+  ["executive.traceability", "NP_Blockchain.html"]
+]);
+
+const executiveRoutes = executiveModules
+  .filter((module) => module.releaseClassification !== "hidden_until_dependency_exists")
+  .map((module) => {
+    const file = executiveLegacyFiles.get(module.code);
+    if (!file) throw new Error(`Missing legacy route mapping for ${module.code}.`);
+    return [module.slug, file];
+  });
 
 let protectedRoutes = [
   ...customerModules.map((module) => [`customer-${module.slug}`, module.route, "customer"]),
@@ -143,7 +149,6 @@ const screenshotPublicRoutes = new Set([
   "products",
   "partners",
   "technology",
-  "ai-governance",
   "contact"
 ]);
 const screenshotProtectedRoutes = new Set([

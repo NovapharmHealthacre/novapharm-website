@@ -84,9 +84,13 @@ async function ready() {
 }
 
 const existingPid = runningPid();
-if (existingPid && await ready()) {
+const existingRuntimeReady = await ready();
+if (existingPid && existingRuntimeReady) {
   console.log(JSON.stringify({ status: "already_running", url: "http://127.0.0.1:4178", credentialsPath, pid: existingPid }));
   process.exit(0);
+}
+if (!existingPid && existingRuntimeReady) {
+  throw new Error("Port 4178 is already serving a different validation runtime. Stop that generated runtime before starting this one.");
 }
 rmSync(pidPath, { force: true });
 
@@ -115,8 +119,16 @@ chmodSync(pidPath, 0o600);
 child.unref();
 
 const started = Date.now();
-while (Date.now() - started < 30000 && !await ready()) await new Promise((resolvePromise) => setTimeout(resolvePromise, 300));
-if (!await ready()) {
+let childRunning = true;
+let childReady = false;
+while (Date.now() - started < 30000) {
+  try { process.kill(child.pid, 0); }
+  catch { childRunning = false; break; }
+  childReady = await ready();
+  if (childReady) break;
+  await new Promise((resolvePromise) => setTimeout(resolvePromise, 300));
+}
+if (!childRunning || !childReady) {
   try { process.kill(child.pid, "SIGTERM"); } catch {}
   rmSync(pidPath, { force: true });
   const tail = existsSync(logPath) ? readFileSync(logPath, "utf8").split(/\r?\n/).slice(-20).join("\n") : "No log was created.";
