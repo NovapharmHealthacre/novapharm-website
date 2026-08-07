@@ -86,7 +86,7 @@ Queries assessed included NovaPharm Healthcare, NOVAPHARM HEALTHCARE LTD, the do
 
 ## Claims and privacy controls
 
-- NovaPharm remains described as pre-operational for regulated wholesale supply.
+- NovaPharm is described as corporately and commercially active while regulated wholesale supply is explicitly stated as not commenced and subject to the required authorisations and release controls.
 - No WDA(H), PLPI, NHS-supply, product-availability, warehouse-ownership or manufacturing-ownership claim was introduced.
 - No private portal URL is submitted in sitemaps or IndexNow.
 - No full form contents, passwords, documents or patient information are captured in analytics.

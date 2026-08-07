@@ -65,7 +65,7 @@ NovaPharm cannot credibly compete on multinational scale, pipeline breadth or ow
 
 - a clear regulatory-commercial operating model;
 - practical UK market-entry and product-viability frameworks;
-- transparent pre-operational status;
+- transparent separation between active corporate/commercial development and authorisation-dependent regulated wholesale activity;
 - sourcing-resilience thinking;
 - CMO/CDMO and supplier qualification expertise;
 - governed batch, documentation and traceability principles;

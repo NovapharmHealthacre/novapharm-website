@@ -97,7 +97,7 @@ Every discovered reference should be recorded with:
 
 ## External profile consistency checklist
 
-Use the exact public brand `NovaPharm Healthcare`, the legal name `NOVAPHARM HEALTHCARE LTD` where required, the canonical domain and the approved CEO designation `Chief Executive Officer`. The founder relationship is expressed separately. Company descriptions must preserve the pre-operational regulatory status.
+Use the exact public brand `NovaPharm Healthcare`, the legal name `NOVAPHARM HEALTHCARE LTD` where required, the canonical domain and the approved CEO designation `Chief Executive Officer`. The founder relationship is expressed separately. Company descriptions must distinguish active corporate and commercial development from regulated wholesale activity, which has not commenced and remains subject to applicable authorisation.
 
 Profiles to verify manually:
 

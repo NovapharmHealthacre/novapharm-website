@@ -1,7 +1,7 @@
 # Official Technical and Compliance Source Register
 
 Status: active
-Review date: 30 July 2026
+Review date: 1 August 2026
 
 Only primary and official sources are used for implementation decisions. Product/version-specific guidance must be rechecked at the time of deployment.
 
@@ -19,6 +19,10 @@ Only primary and official sources are used for implementation decisions. Product
 | Microsoft Graph permissions | [Microsoft Graph permissions reference](https://learn.microsoft.com/en-us/graph/permissions-reference) | Request the least privilege and use selected-site access where feasible | Microsoft admin consent |
 | SharePoint selected permissions | [Selected permissions overview](https://learn.microsoft.com/en-us/graph/permissions-selected-overview) | Restrict application access to approved sites/lists/files instead of tenant-wide content | SharePoint/Graph administrator approval |
 | GitHub OIDC for Azure | [Configure OpenID Connect in Azure](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-azure) | Use short-lived workload federation for deployment | GitHub/Azure environment setup |
+| GitHub CodeQL Action | [Supported CodeQL Action versions](https://github.com/github/codeql-action) | Use the current supported `v4` major for JavaScript/TypeScript advanced setup | Enable code scanning and require the check |
+| Azure Front Door security | [Secure your Azure Front Door deployment](https://learn.microsoft.com/en-us/azure/frontdoor/secure-front-door) | Use Premium/WAF, current DRS, protected origins and versioned policy | Azure deployment and live acceptance |
+| Azure Front Door origin security | [Secure traffic to origins](https://learn.microsoft.com/en-us/azure/frontdoor/origin-security) | Pair `AzureFrontDoor.Backend` filtering with exact `X-Azure-FDID` validation | Verify direct-origin rejection after deployment |
+| Azure Front Door WAF custom rules | [Custom rules for Azure Front Door WAF](https://learn.microsoft.com/en-us/azure/web-application-firewall/afds/waf-front-door-custom-rules) | Use explicit match and rate-limit rules with reviewed priorities | Live WAF rule testing |
 | Google AI search features | [AI features and the website](https://developers.google.com/search/docs/appearance/ai-features) | Normal search fundamentals apply; no separate AI-only content layer or ranking guarantee | Search Console monitoring |
 | Google organisation markup | [Organization structured data](https://developers.google.com/search/docs/appearance/structured-data/organization) | Publish one consistent canonical organisation entity and official logo | Verify public facts |
 | Google sitemaps | [Build and submit a sitemap](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap) | Include canonical public URLs and meaningful `lastmod` only | Submit after owner verification |

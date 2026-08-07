@@ -403,7 +403,7 @@
         "types": [
           "WebPage"
         ],
-        "name": "Strategic Pharmaceutical Portfolio | Oncology and Specialty Medicines",
+        "name": "Food Supplements and Strategic Pharmaceutical Portfolio | NovaPharm",
         "mainEntity": null,
         "publisher": null,
         "author": null
@@ -576,6 +576,33 @@
           "WebPage"
         ],
         "name": "Open a Pharmaceutical Customer Account | NovaPharm Healthcare",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      }
+    ]
+  },
+  {
+    "route": "/trust-centre/",
+    "canonical": "https://novapharmhealthcare.com/trust-centre/",
+    "file": "trust-centre/index.html",
+    "entities": [
+      {
+        "id": "https://novapharmhealthcare.com/trust-centre/#webpage",
+        "types": [
+          "WebPage"
+        ],
+        "name": "Trust Centre | NovaPharm Healthcare",
         "mainEntity": null,
         "publisher": null,
         "author": null

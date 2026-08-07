@@ -9,7 +9,7 @@
     "canonicalUrl": "https://novapharmhealthcare.com",
     "id": "https://novapharmhealthcare.com/#organization",
     "companyNumber": "16716501",
-    "description": "A UK-based, compliance-first and technology-enabled B2B pharmaceutical company preparing regulated trading, sourcing and wholesale distribution capabilities for oncology, specialty and licensed medicines.",
+    "description": "An active UK-based, compliance-first and technology-enabled B2B pharmaceutical company developing regulated trading, sourcing and wholesale distribution capabilities for oncology, specialty and licensed medicines.",
     "image": "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png",
     "role": "UK corporate entity preparing regulated B2B pharmaceutical market-entry, sourcing and distribution capabilities",
     "verifiedSources": [
@@ -48,7 +48,7 @@
     "id": "https://novapharmhealthcare.com/leadership/prabhakar-lahare/#person",
     "description": "Prabhakar supports operating strategy, manufacturing partnerships, quality governance, supply continuity and scalable execution.",
     "image": "https://novapharmhealthcare.com/assets/prabhakarvitthallahare.jpeg",
-    "role": "Managing Director and Chief Operating Officer",
+    "role": "Chief Operating Officer",
     "organizationRelationship": "https://novapharmhealthcare.com/#organization",
     "verifiedSources": [
       "https://find-and-update.company-information.service.gov.uk/officers/WbYqt5GNwcUztqJmSS1Q-zuIra4/appointments",
@@ -65,7 +65,7 @@
     "id": "https://novapharmhealthcare.com/leadership/girish-achliya/#person",
     "description": "Dr Girish supports scientific strategy, product development, technical due diligence and the development of a differentiated oncology and specialty portfolio.",
     "image": "https://novapharmhealthcare.com/assets/girishshantilalachliya.jpeg",
-    "role": "Director and Chief Scientific Officer",
+    "role": "Chief Technical Director",
     "organizationRelationship": "https://novapharmhealthcare.com/#organization",
     "verifiedSources": [
       "https://find-and-update.company-information.service.gov.uk/officers/ySPfnJGidBuLkYcU7u9BKT9Iyew/appointments",
@@ -84,7 +84,7 @@
     "id": "https://novapharmhealthcare.com/leadership/helly-panchal/#person",
     "description": "Dr Helly supports NovaPharm's technical and formulation strategy, with a focus on product assessment, scientific review and supply-chain innovation.",
     "image": null,
-    "role": "Director, Technical and Formulation",
+    "role": "Chief Medical Director",
     "organizationRelationship": "https://novapharmhealthcare.com/#organization",
     "verifiedSources": [
       "https://find-and-update.company-information.service.gov.uk/officers/bq-JYKh-sLwG0D5J5ooGbQb37xQ/appointments",
@@ -99,9 +99,9 @@
     "alternateNames": [],
     "canonicalUrl": "https://novapharmhealthcare.com/leadership/nishita-trivedi/",
     "id": "https://novapharmhealthcare.com/leadership/nishita-trivedi/#person",
-    "description": "Dr Nishita supports the planned quality and regulatory framework, including QMS, GDP, PLPI activities, vendor oversight and MHRA liaison.",
+    "description": "Dr Nishita leads NovaPharm's technology governance as Chief Technology Officer and holds the owner-approved Responsible Person designation, with the executive and regulated responsibilities governed separately.",
     "image": null,
-    "role": "Quality and Regulatory Adviser",
+    "role": "Chief Technology Officer and Responsible Person",
     "organizationRelationship": "https://novapharmhealthcare.com/#organization",
     "verifiedSources": [
       "https://novapharmhealthcare.com/leadership/nishita-trivedi/"
