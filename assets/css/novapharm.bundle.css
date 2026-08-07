@@ -4558,6 +4558,10 @@ body[data-page="technology"] .page-hero-cinematic::after {
   }
 
   @media (max-width: 1040px) {
+    .nutraxin-feature-meta {
+      grid-template-columns: 0.72fr 1.2fr 1.08fr;
+    }
+
     .nutraxin-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
