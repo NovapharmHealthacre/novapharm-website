@@ -52,6 +52,28 @@ param entraClientSecretSettingName string = 'ENTRA_CLIENT_SECRET'
 @description('Optional Log Analytics workspace resource ID for platform diagnostics.')
 param logAnalyticsWorkspaceId string = ''
 
+@description('Unique Front Door profile identifier used to reject traffic from other Front Door tenants.')
+param frontDoorId string = ''
+
+@description('Deny direct public origin access and admit only the AzureFrontDoor.Backend service tag with the matching X-Azure-FDID header.')
+param restrictOriginToFrontDoor bool = false
+
+var frontDoorRestrictions = restrictOriginToFrontDoor ? [
+  {
+    action: 'Allow'
+    description: 'Allow only this Azure Front Door Premium profile.'
+    headers: {
+      'x-azure-fdid': [
+        frontDoorId
+      ]
+    }
+    ipAddress: 'AzureFrontDoor.Backend'
+    name: 'Allow-NovaPharm-Front-Door'
+    priority: 100
+    tag: 'ServiceTag'
+  }
+] : []
+
 var siteProperties = {
   clientAffinityEnabled: false
   httpsOnly: true
@@ -63,11 +85,13 @@ var siteProperties = {
     ftpsState: 'Disabled'
     healthCheckPath: healthCheckPath
     http20Enabled: true
-    ipSecurityRestrictionsDefaultAction: 'Allow'
+    ipSecurityRestrictions: frontDoorRestrictions
+    ipSecurityRestrictionsDefaultAction: restrictOriginToFrontDoor ? 'Deny' : 'Allow'
     linuxFxVersion: 'NODE|24-lts'
     loadBalancing: 'LeastRequests'
     minTlsVersion: '1.2'
     remoteDebuggingEnabled: false
+    scmIpSecurityRestrictionsUseMain: true
     scmMinTlsVersion: '1.2'
     use32BitWorkerProcess: false
     vnetRouteAllEnabled: !empty(virtualNetworkSubnetId)

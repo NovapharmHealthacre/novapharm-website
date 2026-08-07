@@ -1,6 +1,6 @@
 # NovaPharm Azure infrastructure
 
-These Bicep templates implement the approved **Path A** target: six isolated Node/Next.js applications on Azure App Service for Linux, Azure SQL Database, private Blob Storage, separate portal/API Key Vaults, managed identities, private service endpoints, Application Insights and Log Analytics.
+These Bicep templates implement the approved **Path A** target: six isolated Node/Next.js applications on Azure App Service for Linux behind Azure Front Door Premium and Azure WAF, with Azure SQL Database, private Blob Storage, separate portal/API Key Vaults, managed identities, private service endpoints, Application Insights and Log Analytics.
 
 The current paid staging/production contract is `unified-estate.bicep`, with `unified-development.bicepparam`, `unified-staging.bicepparam` and `unified-production.bicepparam`. The earlier single-application `main.bicep` and parameter files remain only as migration rollback evidence and must not be used for a new estate deployment. The separately cost-gated proof of concept remains split into `free-validation-data.bicep` and `free-validation-app.bicep`; it does not represent the six-app production topology.
 
@@ -17,12 +17,14 @@ The current paid staging/production contract is `unified-estate.bicep`, with `un
 
 Production candidate slots use separate SQL and Blob resources. Every application has its own system-assigned managed identity and deployment artifact digest.
 
+Each application receives an isolated Front Door production endpoint, origin group, HTTPS-only route and WAF association. Candidate slots use separate generated Front Door endpoints. App Service origin access is restricted to the `AzureFrontDoor.Backend` service tag with the exact profile `X-Azure-FDID`. The production template declares optional priority-two regional origins but leaves them disabled until a separately deployed and accepted secondary region exists.
+
 ## Safety gates
 
 - Nothing in this folder deploys automatically from a developer computer.
 - `enableDefenderForStorage` defaults to `false` because on-upload malware scanning has a usage-based charge.
 - App Service Authentication defaults to `false` until the Entra registrations, redirect URIs, app roles and owners are approved.
-- Custom-domain binding and managed-certificate activation are separate post-acceptance templates. Run `custom-domain.bicep` only after the DNS change is approved, then run `managed-certificate.bicep` after Azure verifies the hostname.
+- The unified production contract declares Front Door custom domains and Azure-managed TLS, but DNS validation and activation remain owner-controlled. The earlier direct App Service `custom-domain.bicep` and `managed-certificate.bicep` files are rollback evidence and must not be used for the Front Door topology.
 - No DNS record, SharePoint permission, credential or production secret is created here.
 - Staging and production use separate resource groups and unified parameter files. The production candidate slots use a separate database and private containers.
 - Public applications cannot read either Key Vault, Azure SQL or private Blob Storage.
@@ -30,7 +32,15 @@ Production candidate slots use separate SQL and Blob resources. Every applicatio
 - Free validation uses resource group `novapharm-free-validation-rg`, environment code `poc`, synthetic data, the generated Azure hostname and no production DNS.
 - The free-validation workflow fails unless Azure reports the subscription spending limit as `On`, the owner has recently verified positive promotional credit, and the SQL portal has shown the zero-cost free offer.
 - Free validation uses F1 with no Always On, slots, custom domain, VNet integration or paid backup. It is not the production baseline.
-- Application Insights, Log Analytics, Defender for Storage, private endpoints, Front Door, WAF, NAT Gateway and Azure Firewall are absent from the free-validation templates.
+- Application Insights, Log Analytics, Defender for Storage, private endpoints, Front Door, WAF, NAT Gateway and Azure Firewall are absent from the separately cost-gated free-validation templates.
+
+## Front Door and WAF boundary
+
+- `modules/front-door-core.bicep` creates the Premium profile, prevention-mode WAF, Microsoft Default Rule Set 2.2, Bot Manager 1.1, global and sensitive-path rate limits, diagnostics and edge alerts.
+- `modules/front-door-application.bicep` creates production/candidate endpoints, health-probed origin groups, managed-TLS custom domains, HTTPS-only routes, WAF associations and the optional regional failover origin.
+- `modules/web-app.bicep` restricts each App Service origin to the exact Front Door profile when `restrictOriginToFrontDoor` is enabled.
+- `scripts/validate-unified-estate-infrastructure.mjs` validates the compiled template and environment contract without provisioning resources.
+- Live WAF effectiveness, managed-certificate issuance, failover, log ingestion and alert delivery remain external verification gates after owner-approved Azure deployment.
 
 ## Required non-secret inputs
 

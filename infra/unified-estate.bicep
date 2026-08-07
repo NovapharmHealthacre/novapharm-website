@@ -37,6 +37,59 @@ param apiOrigin string = ''
 @description('Public status service origin. Leave blank outside production to use the generated Azure hostname.')
 param statusOrigin string = ''
 
+@description('Provision Azure Front Door managed custom domains after owner-controlled DNS validation.')
+param enableEdgeCustomDomains bool = false
+
+@description('Enable priority-based failover only after a second regional application estate has passed acceptance.')
+param enableRegionalFailover bool = false
+
+@description('Canonical corporate hostname for Azure Front Door.')
+param corporateCustomHostname string = 'novapharmhealthcare.com'
+
+@description('Alternate corporate hostname redirected or routed through Azure Front Door.')
+param corporateAlternateHostname string = 'www.novapharmhealthcare.com'
+
+@description('Canonical Innovation and Technology hostname for Azure Front Door.')
+param technologyCustomHostname string = 'nit.novapharmhealthcare.com'
+
+@description('Canonical founder hostname for Azure Front Door.')
+param founderCustomHostname string = 'vishal.novapharmhealthcare.com'
+
+@description('Canonical portal hostname for Azure Front Door.')
+param portalCustomHostname string = 'portal.novapharmhealthcare.com'
+
+@description('Canonical API hostname for Azure Front Door.')
+param apiCustomHostname string = 'api.novapharmhealthcare.com'
+
+@description('Canonical status hostname for Azure Front Door.')
+param statusCustomHostname string = 'status.novapharmhealthcare.com'
+
+@description('Optional accepted secondary-region corporate App Service hostname.')
+param secondaryCorporateHostName string = ''
+
+@description('Optional accepted secondary-region Innovation and Technology App Service hostname.')
+param secondaryTechnologyHostName string = ''
+
+@description('Optional accepted secondary-region founder App Service hostname.')
+param secondaryFounderHostName string = ''
+
+@description('Optional accepted secondary-region portal App Service hostname.')
+param secondaryPortalHostName string = ''
+
+@description('Optional accepted secondary-region API App Service hostname.')
+param secondaryApiHostName string = ''
+
+@description('Optional accepted secondary-region status App Service hostname.')
+param secondaryStatusHostName string = ''
+
+@description('Global Azure Front Door per-client request threshold per minute.')
+@minValue(60)
+param globalRateLimitPerMinute int = 1200
+
+@description('Azure Front Door per-client request threshold for authentication and account workflows.')
+@minValue(10)
+param sensitiveRateLimitPerMinute int = 120
+
 @description('Object ID of the approved Microsoft Entra group that administers Azure SQL.')
 param sqlEntraAdminObjectId string
 
@@ -190,6 +243,8 @@ var founderAppName = take('${resourceStem}-founder-${compactSuffix}', 60)
 var portalAppName = take('${resourceStem}-portal-${compactSuffix}', 60)
 var apiAppName = take('${resourceStem}-api-${compactSuffix}', 60)
 var statusAppName = take('${resourceStem}-status-${compactSuffix}', 60)
+var frontDoorProfileName = '${resourceStem}-edge'
+var frontDoorWafPolicyName = '${resourceStem}-edge-waf'
 
 var resolvedCorporateOrigin = empty(corporateOrigin) ? 'https://${corporateAppName}.azurewebsites.net' : corporateOrigin
 var resolvedTechnologyOrigin = empty(technologyOrigin) ? 'https://${technologyAppName}.azurewebsites.net' : technologyOrigin
@@ -269,6 +324,19 @@ module dataPlatform './modules/data-platform.bicep' = {
   }
 }
 
+module edgeCore './modules/front-door-core.bicep' = {
+  name: 'front-door-core'
+  params: {
+    profileName: frontDoorProfileName
+    wafPolicyName: frontDoorWafPolicyName
+    tags: union(tags, { component: 'edge' })
+    logAnalyticsWorkspaceId: dataPlatform.outputs.logAnalyticsWorkspaceId
+    operationsEmail: operationsEmail
+    globalRateLimitPerMinute: globalRateLimitPerMinute
+    sensitiveRateLimitPerMinute: sensitiveRateLimitPerMinute
+  }
+}
+
 var nextBaseSettings = {
   NODE_ENV: 'production'
   HOSTNAME: '0.0.0.0'
@@ -317,6 +385,8 @@ module corporateApp './modules/web-app.bicep' = {
     ]
     alwaysOn: true
     logAnalyticsWorkspaceId: dataPlatform.outputs.logAnalyticsWorkspaceId
+    frontDoorId: edgeCore.outputs.frontDoorId
+    restrictOriginToFrontDoor: true
   }
 }
 
@@ -344,6 +414,8 @@ module technologyApp './modules/web-app.bicep' = {
     ]
     alwaysOn: true
     logAnalyticsWorkspaceId: dataPlatform.outputs.logAnalyticsWorkspaceId
+    frontDoorId: edgeCore.outputs.frontDoorId
+    restrictOriginToFrontDoor: true
   }
 }
 
@@ -371,6 +443,8 @@ module founderApp './modules/web-app.bicep' = {
     ]
     alwaysOn: true
     logAnalyticsWorkspaceId: dataPlatform.outputs.logAnalyticsWorkspaceId
+    frontDoorId: edgeCore.outputs.frontDoorId
+    restrictOriginToFrontDoor: true
   }
 }
 
@@ -419,6 +493,8 @@ module portalApp './modules/web-app.bicep' = {
     entraTenantId: entraTenantId
     entraClientId: entraClientId
     logAnalyticsWorkspaceId: dataPlatform.outputs.logAnalyticsWorkspaceId
+    frontDoorId: edgeCore.outputs.frontDoorId
+    restrictOriginToFrontDoor: true
   }
 }
 
@@ -538,6 +614,8 @@ module apiApp './modules/web-app.bicep' = {
     alwaysOn: true
     virtualNetworkSubnetId: dataPlatform.outputs.secureAppSubnetId
     logAnalyticsWorkspaceId: dataPlatform.outputs.logAnalyticsWorkspaceId
+    frontDoorId: edgeCore.outputs.frontDoorId
+    restrictOriginToFrontDoor: true
   }
 }
 
@@ -576,6 +654,117 @@ module statusApp './modules/web-app.bicep' = {
     ]
     alwaysOn: true
     logAnalyticsWorkspaceId: dataPlatform.outputs.logAnalyticsWorkspaceId
+    frontDoorId: edgeCore.outputs.frontDoorId
+    restrictOriginToFrontDoor: true
+  }
+}
+
+module corporateEdge './modules/front-door-application.bicep' = {
+  name: 'corporate-edge'
+  params: {
+    profileName: edgeCore.outputs.profileName
+    wafPolicyName: frontDoorWafPolicyName
+    applicationCode: 'corporate'
+    primaryHostName: corporateApp.outputs.defaultHostname
+    candidateHostName: corporateApp.outputs.candidateHostname
+    secondaryHostName: secondaryCorporateHostName
+    healthPath: '/'
+    primaryCustomHostname: corporateCustomHostname
+    alternateCustomHostname: corporateAlternateHostname
+    enableCustomDomains: enableEdgeCustomDomains
+    deployCandidateEndpoint: deployCandidateSlots
+    enableRegionalFailover: enableRegionalFailover
+    tags: union(tags, { component: 'corporate-edge' })
+  }
+}
+
+module technologyEdge './modules/front-door-application.bicep' = {
+  name: 'technology-edge'
+  params: {
+    profileName: edgeCore.outputs.profileName
+    wafPolicyName: frontDoorWafPolicyName
+    applicationCode: 'technology'
+    primaryHostName: technologyApp.outputs.defaultHostname
+    candidateHostName: technologyApp.outputs.candidateHostname
+    secondaryHostName: secondaryTechnologyHostName
+    healthPath: '/'
+    primaryCustomHostname: technologyCustomHostname
+    enableCustomDomains: enableEdgeCustomDomains
+    deployCandidateEndpoint: deployCandidateSlots
+    enableRegionalFailover: enableRegionalFailover
+    tags: union(tags, { component: 'technology-edge' })
+  }
+}
+
+module founderEdge './modules/front-door-application.bicep' = {
+  name: 'founder-edge'
+  params: {
+    profileName: edgeCore.outputs.profileName
+    wafPolicyName: frontDoorWafPolicyName
+    applicationCode: 'founder'
+    primaryHostName: founderApp.outputs.defaultHostname
+    candidateHostName: founderApp.outputs.candidateHostname
+    secondaryHostName: secondaryFounderHostName
+    healthPath: '/'
+    primaryCustomHostname: founderCustomHostname
+    enableCustomDomains: enableEdgeCustomDomains
+    deployCandidateEndpoint: deployCandidateSlots
+    enableRegionalFailover: enableRegionalFailover
+    tags: union(tags, { component: 'founder-edge' })
+  }
+}
+
+module portalEdge './modules/front-door-application.bicep' = {
+  name: 'portal-edge'
+  params: {
+    profileName: edgeCore.outputs.profileName
+    wafPolicyName: frontDoorWafPolicyName
+    applicationCode: 'portal'
+    primaryHostName: portalApp.outputs.defaultHostname
+    candidateHostName: portalApp.outputs.candidateHostname
+    secondaryHostName: secondaryPortalHostName
+    healthPath: '/'
+    primaryCustomHostname: portalCustomHostname
+    enableCustomDomains: enableEdgeCustomDomains
+    deployCandidateEndpoint: deployCandidateSlots
+    enableRegionalFailover: enableRegionalFailover
+    tags: union(tags, { component: 'portal-edge' })
+  }
+}
+
+module apiEdge './modules/front-door-application.bicep' = {
+  name: 'api-edge'
+  params: {
+    profileName: edgeCore.outputs.profileName
+    wafPolicyName: frontDoorWafPolicyName
+    applicationCode: 'api'
+    primaryHostName: apiApp.outputs.defaultHostname
+    candidateHostName: apiApp.outputs.candidateHostname
+    secondaryHostName: secondaryApiHostName
+    healthPath: '/api/health/ready'
+    primaryCustomHostname: apiCustomHostname
+    enableCustomDomains: enableEdgeCustomDomains
+    deployCandidateEndpoint: deployCandidateSlots
+    enableRegionalFailover: enableRegionalFailover
+    tags: union(tags, { component: 'api-edge' })
+  }
+}
+
+module statusEdge './modules/front-door-application.bicep' = {
+  name: 'status-edge'
+  params: {
+    profileName: edgeCore.outputs.profileName
+    wafPolicyName: frontDoorWafPolicyName
+    applicationCode: 'status'
+    primaryHostName: statusApp.outputs.defaultHostname
+    candidateHostName: statusApp.outputs.candidateHostname
+    secondaryHostName: secondaryStatusHostName
+    healthPath: '/api/health/ready'
+    primaryCustomHostname: statusCustomHostname
+    enableCustomDomains: enableEdgeCustomDomains
+    deployCandidateEndpoint: deployCandidateSlots
+    enableRegionalFailover: enableRegionalFailover
+    tags: union(tags, { component: 'status-edge' })
   }
 }
 
@@ -756,6 +945,39 @@ output applications object = {
     name: statusApp.outputs.applicationName
     hostname: statusApp.outputs.defaultHostname
     candidateHostname: statusApp.outputs.candidateHostname
+  }
+}
+output edge object = {
+  profileName: edgeCore.outputs.profileName
+  profileId: edgeCore.outputs.profileId
+  wafPolicyId: edgeCore.outputs.wafPolicyId
+  managedCustomDomainsEnabled: enableEdgeCustomDomains
+  regionalFailoverEnabled: enableRegionalFailover
+  applications: {
+    corporate: {
+      productionHostname: corporateEdge.outputs.productionEndpointHostname
+      candidateHostname: corporateEdge.outputs.candidateEndpointHostname
+    }
+    technology: {
+      productionHostname: technologyEdge.outputs.productionEndpointHostname
+      candidateHostname: technologyEdge.outputs.candidateEndpointHostname
+    }
+    founder: {
+      productionHostname: founderEdge.outputs.productionEndpointHostname
+      candidateHostname: founderEdge.outputs.candidateEndpointHostname
+    }
+    portal: {
+      productionHostname: portalEdge.outputs.productionEndpointHostname
+      candidateHostname: portalEdge.outputs.candidateEndpointHostname
+    }
+    api: {
+      productionHostname: apiEdge.outputs.productionEndpointHostname
+      candidateHostname: apiEdge.outputs.candidateEndpointHostname
+    }
+    status: {
+      productionHostname: statusEdge.outputs.productionEndpointHostname
+      candidateHostname: statusEdge.outputs.candidateEndpointHostname
+    }
   }
 }
 output keyVaultNames object = {
