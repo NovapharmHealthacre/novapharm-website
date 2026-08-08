@@ -171,14 +171,25 @@ const bundles = Object.freeze({
       "scripts/test-design-system-workbench.mjs",
       "audit/evidence/design-system/visual-regression-report.json",
     ],
-    docs: ["docs/programme/design-system.md", "docs/programme/creative-directions.md", "docs/programme/brand-governance.md"],
+    docs: [
+      "docs/programme/design-system.md",
+      "docs/programme/creative-directions.md",
+      "docs/programme/apple-caliber-craft-audit.md",
+      "docs/programme/apple-caliber-continuation-matrix.md",
+      "docs/programme/brand-governance.md",
+    ],
   },
   media: {
     implementation:
       "Approved media is tracked through asset registers and rendered with intrinsic sizes, responsive derivatives, accurate alternatives and ownership caveats.",
     code: ["creative-assets/image-asset-register.json", "creative-assets/module-media-asset-register.json", "scripts/optimise-images.mjs"],
     tests: ["scripts/test-visual-contracts.mjs", "scripts/validate-module-media-sanity.mjs", "scripts/validate-visual-refinement.mjs"],
-    docs: ["docs/programme/brand-governance.md", "docs/programme/creative-directions.md"],
+    docs: [
+      "docs/programme/brand-governance.md",
+      "docs/programme/creative-directions.md",
+      "docs/programme/apple-caliber-craft-audit.md",
+      "docs/programme/apple-caliber-continuation-matrix.md",
+    ],
   },
   security: {
     implementation:

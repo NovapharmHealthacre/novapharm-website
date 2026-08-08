@@ -2,7 +2,7 @@
 
 Status: repository candidate accepted; managed staging and production review pending
 
-Review date: 7 August 2026
+Review date: 8 August 2026
 
 Candidate: Draft PR 16 on `codex/unified-digital-estate-foundation`
 
@@ -26,6 +26,8 @@ The compact retained dossier contains 62 WebP screenshots and original Playwrigh
 
 Every full public and portal matrix used 1280x800, 1366x768, 1440x900, 1920x1080, 1024x1366, 768x1024, 390x844, 430x932, 375x667 and 320x568 viewports. Status normal used all ten; its three exceptional scenarios used 1440x900 and 390x844 in both engines.
 
+A separate interactive in-app browser review added a 414-pixel mobile checkpoint for Corporate, NIT and Founder. It exercised navigation, cookie rejection, the corporate motion control, Products order, image loading, console output and horizontal overflow. Automated craft preflights add two Chromium/WebKit scriptless-navigation runs to each public property and two Corporate high-density product-media runs. An isolated WebKit 320x568 rerun also completed 89 pages, 89 Axe scans and 16 screenshots with zero reported issues after a prior full-run harness timeout. The timeout was not reproducible and is classified as a harness interruption, not a product defect.
+
 ## Human review
 
 Corporate review covered the homepage, About, Company, Governance, Services, Regulatory, CRO, Oncology, Products, Nutraxin, Partners, Technology, AI governance, all five leadership profiles, six Insights articles, Contact, account application, investor information, careers, Trust Centre, legal pages and 404. The accepted direction has institutional hierarchy, restrained red, readable editorial typography, truthful capability labels, consistent portraits and a balanced desktop/mobile grid.
@@ -45,6 +47,8 @@ Status review covered normal, activation-pending, planned-maintenance and incide
 | Corporate Services at 320 px | High | One service composition could exceed the narrow viewport | Grid children, headings and links were allowed to shrink and wrap; Chromium and WebKit reruns passed | None |
 | Leadership evidence | High | Prior derivatives did not all match the owner-supplied authoritative portraits | Vishal, Prabhakar and Dr Girish derivatives were rebuilt with metadata removed and provenance hashes updated | Portrait rights remain owner-attested |
 | Products hierarchy | High | Food Supplement Portfolio Review appeared after other portfolio content | The section now appears exactly once as the first substantive portfolio block; ten before and ten after captures prove order and balance | Catalogue availability and claims remain explicitly bounded |
+| Products contextual links and source density | Medium | The two links were visually dense and below the 44-pixel interaction target; the owner-supplied 700-pixel product master needed an honest high-density display budget | Stacked the links below 430 pixels, applied a 44-pixel target and capped the product image at 350 CSS pixels; Chromium and WebKit preflights enforce both contracts at 2x density | None |
+| Scriptless public navigation | Medium | NIT and Founder mobile navigation depended on hydration even though primary public navigation should progressively enhance | Added nonce-compatible pre-hydration state and scriptless CSS navigation; Corporate, NIT and Founder now pass Chromium and WebKit no-JavaScript checkpoints | None |
 | Corporate trust route | High | The required canonical Trust Centre did not exist | Added a substantive Trust Centre, metadata, footer route, schema coverage and browser coverage | Managed-service assurance remains pending live evidence |
 | Status scenarios | Medium | Maintenance and incident visual states lacked deterministic acceptance coverage | Added normal, activation, maintenance and incident fixtures, screenshots and tests | Live incident integration remains pending |
 | Portal visual states | Medium | Several asserted interaction states lacked named retained captures | Added 18 interaction screenshots and 18 Axe scans across both engines | Live Entra and production session expiry remain pending |

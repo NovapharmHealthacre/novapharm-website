@@ -1,7 +1,7 @@
 # Official Technical and Compliance Source Register
 
 Status: active
-Review date: 1 August 2026
+Review date: 8 August 2026
 
 Only primary and official sources are used for implementation decisions. Product/version-specific guidance must be rechecked at the time of deployment.
 
@@ -20,6 +20,14 @@ Only primary and official sources are used for implementation decisions. Product
 | SharePoint selected permissions | [Selected permissions overview](https://learn.microsoft.com/en-us/graph/permissions-selected-overview) | Restrict application access to approved sites/lists/files instead of tenant-wide content | SharePoint/Graph administrator approval |
 | GitHub OIDC for Azure | [Configure OpenID Connect in Azure](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-azure) | Use short-lived workload federation for deployment | GitHub/Azure environment setup |
 | GitHub CodeQL Action | [Supported CodeQL Action versions](https://github.com/github/codeql-action) | Use the current supported `v4` major for JavaScript/TypeScript advanced setup | Enable code scanning and require the check |
+| Apple design foundation | [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines) | Apply hierarchy, harmony and consistency as quality principles without copying Apple assets or trade dress | None |
+| Apple design principles | [Principles of great design, WWDC26](https://developer.apple.com/videos/play/wwdc2026/250/) | Use purpose, simplicity, craft, responsibility and flexibility as the visual critique frame | None |
+| Apple adaptive layout | [Layout guidance](https://developer.apple.com/design/human-interface-guidelines/layout) | Prioritise important content, align for scanability and validate every supported size | None |
+| Apple typography | [Typography guidance](https://developer.apple.com/design/human-interface-guidelines/typography) | Preserve readable scale, contrast and line length rather than imitating proprietary type treatments | None |
+| Apple accessibility | [Accessibility guidance](https://developer.apple.com/design/human-interface-guidelines/accessibility) | Keep semantic controls, visible focus, adequate targets and equivalent experiences | Independent/manual review recommended |
+| Apple reduced motion | [Reduced motion evaluation criteria](https://developer.apple.com/help/app-store-connect/manage-app-accessibility/reduced-motion-evaluation-criteria) | Remove nonessential movement without hiding content or functionality | None |
+| WebKit motion behaviour | [Scroll-driven animation guide](https://webkit.org/blog/17101/a-guide-to-scroll-driven-animations-with-just-css/) | Avoid scroll hijacking and large motion; retain `prefers-reduced-motion` controls and WebKit acceptance | Repeat on managed staging |
+| Current Safari/WebKit | [Safari 26.4 web-platform features](https://webkit.org/blog/17862/webkit-features-for-safari-26-4/) | Validate production CSS and motion in current WebKit rather than assuming Chromium parity | Real Safari staging review |
 | Azure Front Door security | [Secure your Azure Front Door deployment](https://learn.microsoft.com/en-us/azure/frontdoor/secure-front-door) | Use Premium/WAF, current DRS, protected origins and versioned policy | Azure deployment and live acceptance |
 | Azure Front Door origin security | [Secure traffic to origins](https://learn.microsoft.com/en-us/azure/frontdoor/origin-security) | Pair `AzureFrontDoor.Backend` filtering with exact `X-Azure-FDID` validation | Verify direct-origin rejection after deployment |
 | Azure Front Door WAF custom rules | [Custom rules for Azure Front Door WAF](https://learn.microsoft.com/en-us/azure/web-application-firewall/afds/waf-front-door-custom-rules) | Use explicit match and rate-limit rules with reviewed priorities | Live WAF rule testing |
