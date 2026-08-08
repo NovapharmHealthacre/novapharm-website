@@ -10,14 +10,18 @@ import sharp from "sharp";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const workbench = join(root, "packages/design-system/workbench/index.html");
-const evidenceRoot = join(root, "audit/evidence/design-system");
-const baselineRoot = join(evidenceRoot, "baselines");
 const update = process.argv.includes("--update");
+const committedEvidenceRoot = join(root, "audit/evidence/design-system");
+const evidenceRoot = update
+  ? committedEvidenceRoot
+  : resolve(process.env.DESIGN_SYSTEM_EVIDENCE_ROOT || join(root, "artifacts/design-system-browser"));
+const baselineRoot = join(committedEvidenceRoot, "baselines");
 const engines = [{ name: "chromium", launcher: chromium }, { name: "webkit", launcher: webkit }];
 const viewports = [{ name: "desktop", width: 1440, height: 900 }, { name: "mobile", width: 390, height: 844 }];
 const selectors = ["#direction-a", "#direction-b", "#direction-c", "#component-workbench"];
 
 await access(workbench);
+await mkdir(evidenceRoot, { recursive: true });
 await mkdir(baselineRoot, { recursive: true });
 
 const contentTypes = new Map([[".html", "text/html; charset=utf-8"], [".css", "text/css; charset=utf-8"], [".svg", "image/svg+xml"], [".jpg", "image/jpeg"], [".png", "image/png"], [".webp", "image/webp"], [".avif", "image/avif"]]);

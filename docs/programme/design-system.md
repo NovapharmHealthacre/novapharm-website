@@ -36,9 +36,10 @@ The workbench is the approved Storybook-equivalent for this repository. It is de
 - Baseline comparison uses decoded pixel differences through Sharp.
 - Axe runs report zero violations for the selected sections.
 - Horizontal overflow checks pass.
-- Current evidence and baselines are under `audit/evidence/design-system/`.
+- Approved review evidence and immutable baselines are under `audit/evidence/design-system/`.
+- Normal browser runs write fresh screenshots and their report to ignored `artifacts/design-system-browser/`, leaving the committed baseline clean.
 
-Visual regression baselines must change only through `node scripts/test-design-system-workbench.mjs --update` after a reviewed intentional visual change. Normal CI runs without `--update`.
+Visual regression baselines and committed review evidence must change only through `node scripts/test-design-system-workbench.mjs --update` after a reviewed intentional visual change. Normal CI runs without `--update` and must not modify tracked files.
 
 ## Adoption boundary
 
