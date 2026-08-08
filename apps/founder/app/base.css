@@ -234,6 +234,9 @@
     border: 0;
     background: transparent;
   }
+  .no-js .evidence-nav-item {
+    display: none;
+  }
   .site-footer {
     width: var(--page);
     margin-inline: auto;
@@ -1886,6 +1889,27 @@
     }
     .site-header {
       min-height: var(--header-h);
+    }
+    .no-js .site-header {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+    .no-js .site-navigation {
+      width: 100%;
+      margin-left: 0;
+    }
+    .no-js .site-nav-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0;
+    }
+    .no-js .site-nav-list a {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      border-top: 1px solid var(--rule-dark);
+      overflow-wrap: anywhere;
     }
     .hero {
       min-height: auto;

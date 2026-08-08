@@ -290,7 +290,7 @@ tbody th { color: var(--ink); }
 .portfolio-priority-facts li { padding: 18px 18px 18px 0; color: var(--muted); font-size: .78rem; line-height: 1.4; }
 .portfolio-priority-facts li + li { padding-left: 18px; border-left: 1px solid var(--line); }
 .portfolio-priority-facts strong { display: block; margin-bottom: 4px; color: var(--ink); font-size: .9rem; }
-.portfolio-priority-media { position: relative; aspect-ratio: 1; min-width: 0; }
+.portfolio-priority-media { position: relative; width: min(100%, 350px); aspect-ratio: 1; min-width: 0; justify-self: center; }
 .portfolio-priority-media img { object-fit: contain; filter: drop-shadow(0 24px 34px rgba(12, 29, 45, .13)); }
 .portfolio-priority-links { display: flex; flex-wrap: wrap; gap: 20px; margin: 20px 0 0; font-size: .82rem; font-weight: 700; }
 .portfolio-priority-links a { color: var(--navy); }
@@ -474,7 +474,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--focus); box-shad
   .sourcing-grid { grid-template-columns: 1fr; }
   .sourcing-grid article { min-height: 0; border-right: 0; border-bottom: 1px solid var(--line); }
   .dark-band-grid, .roadmap-header, .narrative-grid, .evidence-boundary, .contact-layout, .portfolio-priority-grid { grid-template-columns: 1fr; gap: 42px; }
-  .portfolio-priority-media { width: min(100%, 440px); margin-inline: auto; }
+  .portfolio-priority-media { width: min(100%, 350px); margin-inline: auto; }
   .roadmap-track { grid-template-columns: repeat(2, 1fr); }
   .editorial-split { grid-template-columns: 110px 1fr; gap: 32px; }
   .maturity-grid, .article-grid, .leader-grid, .regulatory-grid, .principle-grid, .catalogue-grid { grid-template-columns: repeat(2, 1fr); }
@@ -546,6 +546,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--focus); box-shad
   .portfolio-priority-facts li,
   .portfolio-priority-facts li + li { padding: 14px 0; border-left: 0; border-top: 1px solid var(--line); }
   .portfolio-priority-facts li:first-child { border-top: 0; }
+  .portfolio-priority-links { flex-direction: column; gap: 0; }
+  .portfolio-priority-links a { display: inline-flex; align-items: center; min-height: 44px; border-bottom: 1px solid var(--line); }
   .journey-track { grid-template-columns: 1fr; }
   .journey-track li { min-height: 110px; }
   .technology-stages > section > div { grid-template-columns: 1fr; }

@@ -4,6 +4,14 @@
     .site-header__inner { grid-template-columns: 1fr auto; }
     .site-header__nav, .header-cta { display: none; }
     .menu-toggle { display: block; justify-self: end; }
+    .no-js .site-header,
+    .no-js .site-header.has-dark-hero:not(.is-scrolled) { position: relative; height: auto; color: var(--ink); }
+    .no-js .site-header::before { opacity: 1; border-color: var(--line); }
+    .no-js .site-header__inner { grid-template-columns: 1fr; height: auto; gap: 0; padding-block: 12px; }
+    .no-js .site-header__nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; margin-top: 12px; }
+    .no-js .site-header__nav a { min-height: 44px; display: flex; align-items: center; border-top: 1px solid var(--line); white-space: normal; }
+    .no-js .header-cta { display: inline-flex; min-height: 44px; justify-self: stretch; justify-content: space-between; border-top: 1px solid var(--line); }
+    .no-js .menu-toggle { display: none; }
     .hero__grid { grid-template-columns: 1fr; }
     .hero__bottom { grid-column: 1; }
     .section-heading--split, .statement-grid { grid-template-columns: 1fr 1fr; }

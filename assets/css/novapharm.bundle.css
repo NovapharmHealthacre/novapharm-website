@@ -4251,8 +4251,10 @@ body[data-page="technology"] .page-hero-cinematic::after {
 
   .nutraxin-feature > .nutraxin-product-picture {
     display: block;
+    width: min(100%, 350px);
     aspect-ratio: 1;
     min-width: 0;
+    justify-self: center;
   }
 
   .nutraxin-feature > .nutraxin-product-picture img {
@@ -4578,7 +4580,7 @@ body[data-page="technology"] .page-hero-cinematic::after {
     }
 
     .nutraxin-feature > .nutraxin-product-picture {
-      width: min(100%, 420px);
+      width: min(100%, 350px);
       margin-inline: auto;
     }
 
@@ -4603,6 +4605,18 @@ body[data-page="technology"] .page-hero-cinematic::after {
 
     .nutraxin-feature-actions .btn {
       width: 100%;
+    }
+
+    .nutraxin-feature-links {
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .nutraxin-feature-links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      border-bottom: 1px solid var(--line);
     }
 
     .nutraxin-facts span,

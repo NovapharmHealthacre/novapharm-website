@@ -43,6 +43,8 @@ interface Finding {
 const findings: Finding[] = [];
 let screenshots = 0;
 let accessibilityRuns = 0;
+let highDensityRuns = 0;
+let noJavaScriptRuns = 0;
 let serverProcess: ChildProcess | undefined;
 let serverOutput = "";
 let baseUrl = process.env.CORPORATE_BASE_URL ?? "";
@@ -325,8 +327,85 @@ async function runInteractionPreflight(name: string, browserType: BrowserType): 
   }
 }
 
+async function runCraftPreflight(name: string, browserType: BrowserType): Promise<void> {
+  const browser = await browserType.launch({ headless: true });
+  try {
+    const highDensityContext = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      deviceScaleFactor: 2,
+      colorScheme: "light",
+      reducedMotion: "reduce",
+    });
+    try {
+      const page = await highDensityContext.newPage();
+      const response = await page.goto(`${baseUrl}/product-portfolio/`, { waitUntil: "networkidle" });
+      assert.equal(response?.status(), 200, `${name}: product portfolio high-density response failed`);
+      const productImage = page.getByAltText(
+        "Nutraxin Vitamin D3 box and 120-tablet bottle shown as an owner-supplied catalogue reference",
+        { exact: true },
+      );
+      await productImage.waitFor({ state: "visible" });
+      const imageMetrics = await productImage.evaluate((element) => {
+        const image = element as HTMLImageElement;
+        return {
+          naturalWidth: image.naturalWidth,
+          renderedWidth: image.getBoundingClientRect().width,
+          currentSrc: image.currentSrc,
+        };
+      });
+      assert.match(imageMetrics.currentSrc, /vitamin-d3-120-tablets-800\.webp$/, `${name}: product feature did not load the approved high-density asset`);
+      assert.ok(imageMetrics.renderedWidth <= 350.5, `${name}: product feature exceeds its approved 350px display width`);
+      assert.ok(
+        imageMetrics.naturalWidth >= imageMetrics.renderedWidth * 1.95,
+        `${name}: product feature does not retain a genuine high-density source (${imageMetrics.naturalWidth}px for ${imageMetrics.renderedWidth}px)`,
+      );
+
+      const linkHeights = await page.locator(".portfolio-priority-links a").evaluateAll((links) =>
+        links.map((link) => link.getBoundingClientRect().height),
+      );
+      assert.equal(linkHeights.length, 2, `${name}: expected two product context links`);
+      assert.ok(linkHeights.every((height) => height >= 44), `${name}: product context link falls below the 44px touch target`);
+      highDensityRuns += 1;
+    } finally {
+      await highDensityContext.close();
+    }
+
+    const noJavaScriptContext = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      deviceScaleFactor: 2,
+      javaScriptEnabled: false,
+      colorScheme: "light",
+      reducedMotion: "reduce",
+    });
+    try {
+      const page = await noJavaScriptContext.newPage();
+      const response = await page.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
+      assert.equal(response?.status(), 200, `${name}: scriptless homepage response failed`);
+      assert.equal(await page.locator("h1").count(), 1, `${name}: scriptless homepage must retain one H1`);
+      const menu = page.locator("details.mobile-menu summary");
+      assert.equal(await menu.count(), 1, `${name}: scriptless mobile navigation control is missing`);
+      await menu.click();
+      const visibleNavigationLinks = page.locator('header nav a:visible');
+      assert.ok(await visibleNavigationLinks.count() >= 10, `${name}: scriptless primary navigation is incomplete`);
+      const layout = await page.evaluate(() => ({
+        viewportWidth: document.documentElement.clientWidth,
+        documentWidth: document.documentElement.scrollWidth,
+      }));
+      assert.ok(
+        layout.documentWidth <= layout.viewportWidth + 1,
+        `${name}: scriptless homepage overflows horizontally (${layout.documentWidth}px > ${layout.viewportWidth}px)`,
+      );
+      noJavaScriptRuns += 1;
+    } finally {
+      await noJavaScriptContext.close();
+    }
+  } finally {
+    await browser.close();
+  }
+}
+
 function markdownReport(generatedAt: string): string {
-  return `# Corporate browser acceptance\n\n- Generated: ${generatedAt}\n- Candidate: local standalone Node production artifact\n- Engines: Chromium and WebKit\n- Canonical routes: ${canonicalRoutes.length}\n- Viewports: ${viewports.length}\n- Screenshots: ${screenshots}\n- Axe runs: ${accessibilityRuns}\n- Serious or critical findings: ${findings.length}\n- Search indexing: disabled with meta robots and X-Robots-Tag during validation\n- Data: synthetic and non-confidential only\n`;
+  return `# Corporate browser acceptance\n\n- Generated: ${generatedAt}\n- Candidate: local standalone Node production artifact\n- Engines: Chromium and WebKit\n- Canonical routes: ${canonicalRoutes.length}\n- Viewports: ${viewports.length}\n- Screenshots: ${screenshots}\n- Axe runs: ${accessibilityRuns}\n- High-density product-media runs: ${highDensityRuns}\n- Scriptless-navigation runs: ${noJavaScriptRuns}\n- Serious or critical findings: ${findings.length}\n- Search indexing: disabled with meta robots and X-Robots-Tag during validation\n- Data: synthetic and non-confidential only\n`;
 }
 
 await fs.rm(artifactRoot, { recursive: true, force: true });
@@ -335,14 +414,16 @@ try {
   await startServer();
   await runInteractionPreflight("chromium", chromium);
   await runInteractionPreflight("webkit", webkit);
+  await runCraftPreflight("chromium", chromium);
+  await runCraftPreflight("webkit", webkit);
   await runEngine("chromium", chromium);
   await runEngine("webkit", webkit);
   const generatedAt = new Date().toISOString();
-  const report = { generatedAt, baseUrl, canonicalRoutes, viewports, routes, screenshots, accessibilityRuns, findings };
+  const report = { generatedAt, baseUrl, canonicalRoutes, viewports, routes, screenshots, accessibilityRuns, highDensityRuns, noJavaScriptRuns, findings };
   await fs.writeFile(path.join(artifactRoot, "report.json"), `${JSON.stringify(report, null, 2)}\n`, "utf8");
   await fs.writeFile(path.join(artifactRoot, "report.md"), markdownReport(generatedAt), "utf8");
   assert.deepEqual(findings, [], `Serious or critical accessibility findings:\n${JSON.stringify(findings, null, 2)}`);
-  console.log(`Corporate browser acceptance passed: ${screenshots} screenshots, ${accessibilityRuns} Axe runs, 2 engines.`);
+  console.log(`Corporate browser acceptance passed: ${screenshots} screenshots, ${accessibilityRuns} Axe runs, ${highDensityRuns} high-density runs, ${noJavaScriptRuns} scriptless runs, 2 engines.`);
 } finally {
   if (serverProcess && serverProcess.exitCode === null) {
     serverProcess.kill("SIGTERM");

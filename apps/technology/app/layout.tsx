@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
+import Script from "next/script";
 import "./globals.css";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
@@ -62,9 +64,20 @@ export const viewport: Viewport = {
   colorScheme: "light dark",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
   return (
-    <html lang="en-GB" suppressHydrationWarning>
+    <html className="no-js" lang="en-GB" suppressHydrationWarning>
+      <head>
+        <Script
+          id="technology-javascript-mode"
+          nonce={nonce}
+          strategy="beforeInteractive"
+        >
+          {'document.documentElement.classList.remove("no-js");document.documentElement.classList.add("js");'}
+        </Script>
+      </head>
       <body>
         <a className="skip-link" href="#main-content">Skip to main content</a>
         <SiteHeader />

@@ -35,6 +35,7 @@ const routes = Object.freeze([
   "/terms/",
   "/acceptance-not-found/",
 ]);
+const expectedScriptlessNavigationLinks = 5;
 
 interface Finding {
   readonly engine: string;
@@ -47,6 +48,7 @@ interface Finding {
 const findings: Finding[] = [];
 let screenshots = 0;
 let accessibilityRuns = 0;
+let noJavaScriptRuns = 0;
 let serverProcess: ChildProcess | undefined;
 let serverOutput = "";
 let baseUrl = process.env["TECHNOLOGY_BASE_URL"] ?? "";
@@ -184,6 +186,36 @@ async function verifyInteractions(page: Page, engine: string): Promise<void> {
   await page.getByText("No form data is uploaded to or stored by this website.").waitFor();
 }
 
+async function verifyNoJavaScript(browserType: BrowserType, engine: string): Promise<void> {
+  const browser = await browserType.launch({ headless: true });
+  try {
+    const context = await browser.newContext({
+      javaScriptEnabled: false,
+      viewport: { width: 390, height: 844 },
+      reducedMotion: "reduce",
+    });
+    try {
+      const page = await context.newPage();
+      const response = await page.goto(`${baseUrl}/`, { waitUntil: "networkidle", timeout: 30_000 });
+      assert.equal(response?.status(), 200, `${engine}: scriptless homepage did not return 200`);
+      assert.equal(await page.locator("h1").count(), 1, `${engine}: scriptless homepage lacks one H1`);
+      assert.equal(
+        await page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link").count(),
+        expectedScriptlessNavigationLinks,
+        `${engine}: scriptless primary navigation is incomplete`,
+      );
+      assert.equal(await page.locator("button.menu-toggle:visible").count(), 0, `${engine}: inert scriptless menu button is visible`);
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      assert.ok(overflow <= 1, `${engine}: scriptless homepage has horizontal overflow`);
+      noJavaScriptRuns += 1;
+    } finally {
+      await context.close();
+    }
+  } finally {
+    await browser.close();
+  }
+}
+
 async function runEngine(name: string, browserType: BrowserType): Promise<void> {
   const browser = await browserType.launch({ headless: true });
   try {
@@ -223,10 +255,12 @@ try {
   await startServer();
   await runEngine("chromium", chromium);
   await runEngine("webkit", webkit);
-  const report = { generatedAt: new Date().toISOString(), baseUrl, viewports, routes, screenshots, accessibilityRuns, findings };
+  await verifyNoJavaScript(chromium, "chromium");
+  await verifyNoJavaScript(webkit, "webkit");
+  const report = { generatedAt: new Date().toISOString(), baseUrl, viewports, routes, screenshots, accessibilityRuns, noJavaScriptRuns, findings };
   await fs.writeFile(path.join(artifactRoot, "report.json"), `${JSON.stringify(report, null, 2)}\n`, "utf8");
   assert.deepEqual(findings, [], `Serious or critical accessibility findings:\n${JSON.stringify(findings, null, 2)}`);
-  console.log(`Technology browser acceptance passed: ${screenshots} screenshots, ${accessibilityRuns} Axe runs, 2 engines.`);
+  console.log(`Technology browser acceptance passed: ${screenshots} screenshots, ${accessibilityRuns} Axe runs, ${noJavaScriptRuns} scriptless runs, 2 engines.`);
 } finally {
   if (serverProcess && serverProcess.exitCode === null) {
     serverProcess.kill("SIGTERM");

@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
+import Script from "next/script";
 import { SiteChrome } from "@/components/chrome";
 import { JsonLdScript } from "@/components/json-ld";
 import { founderPersonSchema, websiteSchema } from "@/lib/seo";
@@ -29,9 +31,18 @@ export const viewport: Viewport = {
   colorScheme: "dark light",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>): React.JSX.Element {
+export default async function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>): Promise<React.JSX.Element> {
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
   return (
-    <html className="js" lang="en-GB">
+    <html className="no-js" lang="en-GB" suppressHydrationWarning>
+      <head>
+        <Script id="founder-javascript-mode" nonce={nonce} strategy="beforeInteractive">
+          {'document.documentElement.classList.remove("no-js");document.documentElement.classList.add("js");'}
+        </Script>
+      </head>
       <body>
         <JsonLdScript data={websiteSchema()} />
         <JsonLdScript data={founderPersonSchema()} />

@@ -58,7 +58,7 @@ function SiteHeader(): React.JSX.Element {
               </Link>
             </li>
           ))}
-          <li>
+          <li className="evidence-nav-item">
             <OpenEvidenceLink>Ask Vishal’s Work</OpenEvidenceLink>
           </li>
           <li>
