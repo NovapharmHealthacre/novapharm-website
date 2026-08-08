@@ -158,6 +158,13 @@ const screenshotProtectedRoutes = new Set([
   "admin-dashboard"
 ]);
 
+const redirectByAccessType = {
+  customer: "/portal/dashboard/",
+  employee: "/employee/dashboard/",
+  board: "/portal/executive-platform/",
+  admin: "/admin/dashboard/"
+};
+
 mkdirSync(outputRoot, { recursive: true });
 
 const startedAt = new Date().toISOString();
@@ -167,6 +174,8 @@ const issues = [];
 const screenshots = [];
 let pagesInspected = 0;
 let axeScans = 0;
+let sessionPreflightChecks = 0;
+let syntheticSessionRenewals = 0;
 
 function addIssue(issue) {
   issues.push(issue);
@@ -328,37 +337,72 @@ async function dismissCookieBanner(page) {
   }
 }
 
+async function authenticateStorageState(browser, accessType, viewport) {
+  const authenticationContext = await browser.newContext({
+    baseURL: baseUrl,
+    viewport,
+    locale: "en-GB",
+    reducedMotion: "reduce"
+  });
+  try {
+    const authenticationPage = await authenticationContext.newPage();
+    await authenticationPage.goto(`${baseUrl}/portal/`, { waitUntil: "domcontentloaded" });
+    await waitForStablePage(authenticationPage);
+    await dismissCookieBanner(authenticationPage);
+    await authenticationPage.locator(`input[name='accessType'][value='${accessType}']`).check();
+    await authenticationPage.locator("#username").fill(credentials.username);
+    await authenticationPage.locator("#password").fill(credentials.password);
+    await Promise.all([
+      authenticationPage.waitForURL((url) => url.pathname === redirectByAccessType[accessType], { timeout: 15000 }),
+      authenticationPage.locator("button[type='submit']").click()
+    ]);
+    return await authenticationContext.storageState();
+  } finally {
+    await authenticationContext.close();
+  }
+}
+
+async function openAuthenticatedContext(browser, accessType, viewport, storageStates) {
+  const createContext = (storageState) => browser.newContext({
+    baseURL: baseUrl,
+    viewport,
+    locale: "en-GB",
+    reducedMotion: "reduce",
+    storageState
+  });
+  let context = await createContext(storageStates.get(accessType));
+  let sessionResponse = await context.request.get(`${baseUrl}/api/portal/session`);
+  sessionPreflightChecks += 1;
+
+  if (sessionResponse.status() === 401) {
+    await context.close();
+    const storageState = await authenticateStorageState(browser, accessType, viewport);
+    storageStates.set(accessType, storageState);
+    syntheticSessionRenewals += 1;
+    context = await createContext(storageState);
+    sessionResponse = await context.request.get(`${baseUrl}/api/portal/session`);
+    sessionPreflightChecks += 1;
+  }
+
+  if (!sessionResponse.ok()) {
+    await context.close();
+    throw new Error(`Protected ${accessType} session preflight failed with HTTP ${sessionResponse.status()}.`);
+  }
+  const session = await sessionResponse.json();
+  if (session?.user?.accessType !== accessType || !session?.user?.accessScopes?.includes(accessType)) {
+    await context.close();
+    throw new Error(`Protected ${accessType} session preflight returned an invalid access context.`);
+  }
+  return context;
+}
+
 for (const [engineName, engine] of engines) {
   console.log(`Starting ${engineName} browser acceptance.`);
   const browser = await engine.launch({ headless: true });
   try {
     const storageStates = new Map();
-    const redirectByAccessType = {
-      customer: "/portal/dashboard/",
-      employee: "/employee/dashboard/",
-      board: "/portal/executive-platform/",
-      admin: "/admin/dashboard/"
-    };
     for (const accessType of new Set(protectedRoutes.map(([, , routeAccessType]) => routeAccessType))) {
-      const authenticationContext = await browser.newContext({
-        baseURL: baseUrl,
-        viewport: viewports[0][1],
-        locale: "en-GB",
-        reducedMotion: "reduce"
-      });
-      const authenticationPage = await authenticationContext.newPage();
-      await authenticationPage.goto(`${baseUrl}/portal/`, { waitUntil: "domcontentloaded" });
-      await waitForStablePage(authenticationPage);
-      await dismissCookieBanner(authenticationPage);
-      await authenticationPage.locator(`input[name='accessType'][value='${accessType}']`).check();
-      await authenticationPage.locator("#username").fill(credentials.username);
-      await authenticationPage.locator("#password").fill(credentials.password);
-      await Promise.all([
-        authenticationPage.waitForURL((url) => url.pathname === redirectByAccessType[accessType], { timeout: 15000 }),
-        authenticationPage.locator("button[type='submit']").click()
-      ]);
-      storageStates.set(accessType, await authenticationContext.storageState());
-      await authenticationContext.close();
+      storageStates.set(accessType, await authenticateStorageState(browser, accessType, viewports[0][1]));
     }
 
     for (const [viewportName, viewport] of viewports) {
@@ -396,13 +440,7 @@ for (const [engineName, engine] of engines) {
       await publicContext.close();
 
       for (const accessType of storageStates.keys()) {
-        const protectedContext = await browser.newContext({
-          baseURL: baseUrl,
-          viewport,
-          locale: "en-GB",
-          reducedMotion: "reduce",
-          storageState: storageStates.get(accessType)
-        });
+        const protectedContext = await openAuthenticatedContext(browser, accessType, viewport, storageStates);
         const protectedPage = await protectedContext.newPage();
         for (const [routeName, routePath, routeAccessType] of protectedRoutes.filter(([, , value]) => value === accessType)) {
           await inspectPage({ page: protectedPage, engineName, viewportName, routeName, expectedPath: routePath, area: `protected-${routeAccessType}` });
@@ -437,6 +475,8 @@ const report = {
   expectedPages,
   pagesInspected,
   axeScans,
+  sessionPreflightChecks,
+  syntheticSessionRenewals,
   screenshotCount: screenshots.length,
   screenshots,
   issues
@@ -449,7 +489,7 @@ const issueSummary = Object.fromEntries(
 report.issueSummary = issueSummary;
 
 writeFileSync(resolve(outputRoot, "visual-acceptance.json"), `${JSON.stringify(report, null, 2)}\n`);
-writeFileSync(resolve(outputRoot, "visual-acceptance.md"), `# Browser Acceptance Evidence\n\n- Status: **${report.status.toUpperCase()}**\n- Shard: \`${shardId}\`\n- Commit: \`${commit}\`\n- Engine: ${report.engines.join(", ")}\n- Viewports: ${report.viewports.map(({ name }) => name).join(", ")}\n- Pages inspected: ${pagesInspected} of ${expectedPages} expected\n- Axe scans: ${axeScans}\n- Curated screenshots: ${screenshots.length}\n- Issues: ${issues.length}\n- Started: ${startedAt}\n- Finished: ${finishedAt}\n\nSynthetic credentials are not included in this report.\n`);
+writeFileSync(resolve(outputRoot, "visual-acceptance.md"), `# Browser Acceptance Evidence\n\n- Status: **${report.status.toUpperCase()}**\n- Shard: \`${shardId}\`\n- Commit: \`${commit}\`\n- Engine: ${report.engines.join(", ")}\n- Viewports: ${report.viewports.map(({ name }) => name).join(", ")}\n- Pages inspected: ${pagesInspected} of ${expectedPages} expected\n- Axe scans: ${axeScans}\n- Protected-session preflights: ${sessionPreflightChecks}\n- Synthetic session renewals: ${syntheticSessionRenewals}\n- Curated screenshots: ${screenshots.length}\n- Issues: ${issues.length}\n- Started: ${startedAt}\n- Finished: ${finishedAt}\n\nSynthetic credentials are not included in this report.\n`);
 
 console.log(`Browser acceptance ${report.status}: ${pagesInspected} pages, ${axeScans} axe scans, ${screenshots.length} screenshots, ${issues.length} issues.`);
 if (issues.length) {
