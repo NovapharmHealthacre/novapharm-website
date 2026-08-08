@@ -144,10 +144,18 @@ function enhanceTechnology() {
   write("technology/index.html", html);
 }
 
+const excludedPublicTraversalRoots = new Set([
+  ".changeset", ".git", ".github", "_secure", "apps", "architecture", "artifacts", "assets", "audit",
+  "compliance", "config", "creative-assets", "data", "database", "deployment", "docs", "final-report",
+  "geo", "infra", "integrations", "node_modules", "packages", "performance", "private-content", "public",
+  "research", "scripts", "security", "seo", "sharepoint", "src", "tests",
+]);
+
 function publicHtmlFiles(directory = root) {
   const output = [];
   for (const entry of readdirSync(directory)) {
     if ([".git", "node_modules", "_secure", "portal", "employee", "admin"].includes(entry)) continue;
+    if (directory === root && excludedPublicTraversalRoots.has(entry)) continue;
     const path = join(directory, entry);
     const stats = statSync(path);
     if (stats.isDirectory()) output.push(...publicHtmlFiles(path));

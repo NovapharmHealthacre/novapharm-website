@@ -3,9 +3,10 @@ import { join, resolve } from "node:path";
 
 const root = resolve(process.cwd());
 const excludedTopLevel = new Set([
-  ".git", ".github", "_secure", "architecture", "audit", "compliance", "data", "database",
-  "deployment", "docs", "final-report", "geo", "integrations", "node_modules", "performance",
-  "private-content", "public", "research", "scripts", "security", "seo", "sharepoint", "src", "tests"
+  ".changeset", ".git", ".github", "_secure", "apps", "architecture", "artifacts", "assets", "audit",
+  "compliance", "config", "creative-assets", "data", "database", "deployment", "docs", "final-report",
+  "geo", "infra", "integrations", "node_modules", "packages", "performance", "private-content", "public",
+  "research", "scripts", "security", "seo", "sharepoint", "src", "tests"
 ]);
 const retiredPublicRoutes = ["/search/", "/technology/ai-governance/"];
 
