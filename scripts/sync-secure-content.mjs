@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { randomUUID } from "node:crypto";
 import { mkdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
-import { basename, isAbsolute, join, relative, resolve, sep } from "node:path";
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { GraphClient, hasSharePointCredentials, sharePointConfigFromEnv } from "../src/integrations/sharepoint/graph-client.mjs";
 import { applyExecutiveBranding } from "../src/integrations/sharepoint/secure-content-branding.mjs";
 
@@ -18,6 +18,17 @@ if (!remoteRoot) throw new Error("SHAREPOINT_EXECUTIVE_PLATFORM_PATH is required
 const allowedExtensions = new Set([".html", ".js", ".pdf", ".json"]);
 const maxFileBytes = Number(process.env.SECURE_CONTENT_MAX_FILE_BYTES || 25 * 1024 * 1024);
 const manifest = [];
+
+function writePrivateFileAtomically(destination, bytes) {
+  const target = controlledLocalPath(dirname(destination), basename(destination));
+  const temporaryPath = `${target}.${randomUUID()}.tmp`;
+  try {
+    writeFileSync(temporaryPath, bytes, { mode: 0o600, flag: "wx" });
+    renameSync(temporaryPath, target);
+  } finally {
+    rmSync(temporaryPath, { force: true });
+  }
+}
 
 function extension(name) {
   const index = name.lastIndexOf(".");
@@ -64,21 +75,13 @@ async function syncFolder(remotePath, localPath) {
       ? Buffer.from(applyExecutiveBranding(new TextDecoder().decode(downloadedBytes), item.name), "utf8")
       : Buffer.from(downloadedBytes);
     if (bytes.length === 0 || bytes.length > maxFileBytes) throw new Error(`Secure content file exceeds the post-processing limit: ${item.name}`);
-    const temporaryPath = `${nextLocalPath}.${randomUUID()}.tmp`;
-    try {
-      // The destination is path-confined and content is private, extension-allowlisted and byte-limited before this controlled Graph sync.
-      // codeql[js/http-to-file-access]
-      writeFileSync(temporaryPath, bytes, { mode: 0o600, flag: "wx" });
-      renameSync(temporaryPath, nextLocalPath);
-    } finally {
-      rmSync(temporaryPath, { force: true });
-    }
+    // Graph content is private, path-confined, extension-allowlisted and byte-limited before this exclusive write.
+    writePrivateFileAtomically(nextLocalPath, bytes);
     manifest.push({ path: nextRemotePath.slice(remoteRoot.length + 1), itemId: item.id, eTag: item.eTag, size: item.size, lastModifiedDateTime: item.lastModifiedDateTime });
   }
 }
 
 await syncFolder(remoteRoot, localRoot);
-// This fixed-path private manifest intentionally records validated Graph metadata; it is not served by a public route.
-// codeql[js/http-to-file-access]
-writeFileSync(join(localRoot, ".sharepoint-manifest.json"), JSON.stringify({ syncedAt: new Date().toISOString(), siteId: site.id, driveId: drive.id, remoteRoot, files: manifest }, null, 2), { mode: 0o600 });
+// This private manifest records validated Graph metadata and is not served by a public route.
+writePrivateFileAtomically(join(localRoot, ".sharepoint-manifest.json"), JSON.stringify({ syncedAt: new Date().toISOString(), siteId: site.id, driveId: drive.id, remoteRoot, files: manifest }, null, 2));
 console.log(`Synchronized ${manifest.length} controlled Executive Platform files from SharePoint.`);

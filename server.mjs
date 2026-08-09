@@ -77,6 +77,7 @@ import { verifyPortalGatewayIdentity } from "./src/core/portal-gateway-identity.
 import { isResolvedSecret, isUnresolvedSecretReference } from "./src/core/secret-value.mjs";
 import { hasSharePointCredentials } from "./src/integrations/sharepoint/graph-client.mjs";
 import { executeInternalAiReview, internalAiGatewayStatus } from "./src/core/ai/ai-gateway.mjs";
+import { safeJsonStringify } from "./src/security/safe-json.mjs";
 
 const root = resolve(process.cwd());
 const applicationVersion = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version;
@@ -266,7 +267,7 @@ function responseSecurityHeaders(response, extra = {}, options = {}) {
 
 function json(response, status, payload, headers = {}) {
   response.writeHead(status, responseSecurityHeaders(response, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", ...headers }));
-  response.end(JSON.stringify(payload));
+  response.end(safeJsonStringify(payload));
 }
 
 function parseCookies(request) {

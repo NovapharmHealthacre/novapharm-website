@@ -189,8 +189,7 @@ export async function isKnownCompromisedPassword(password, { fetchImplementation
     if (required) throw Object.assign(new Error("Password safety verification is temporarily unavailable."), { statusCode: 503 });
     return false;
   }
-  // The HIBP k-anonymity range protocol mandates SHA-1; this transient prefix is not a local password verifier.
-  // codeql[js/weak-cryptographic-algorithm,js/insufficient-password-hash]
+  // HIBP mandates this transient SHA-1 range digest; NovaPharm password verifiers use PBKDF2 and never persist this value.
   const digest = createHash("sha1").update(String(password), "utf8").digest("hex").toUpperCase();
   const prefix = digest.slice(0, 5);
   const suffix = digest.slice(5);

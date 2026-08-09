@@ -1,5 +1,5 @@
-import { createHash } from "node:crypto";
-import { closeSync, fstatSync, mkdirSync, openSync, readFileSync, writeFileSync } from "node:fs";
+import { createHash, randomUUID } from "node:crypto";
+import { closeSync, fstatSync, mkdirSync, openSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 
 const root = resolve(process.cwd());
@@ -190,11 +190,16 @@ if (existingDerivativesAreValid()) {
     const derivatives = {};
     for (const format of Object.keys(formats)) {
       const result = await download(asset, format);
-      const path = join(outputRoot, `${approved.id}.${format}`);
-      mkdirSync(dirname(path), { recursive: true });
-      // The destination and source are fixed by the reviewed asset allowlist; bytes are size, MIME, signature and dimension checked above.
-      // codeql[js/http-to-file-access]
-      writeFileSync(path, result.buffer);
+      const targetPath = join(outputRoot, `${approved.id}.${format}`);
+      const temporaryPath = `${targetPath}.${randomUUID()}.tmp`;
+      mkdirSync(dirname(targetPath), { recursive: true });
+      try {
+        // Source and destination are allowlisted; content is size, MIME, signature and dimension checked before this exclusive write.
+        writeFileSync(temporaryPath, result.buffer, { mode: 0o600, flag: "wx" });
+        renameSync(temporaryPath, targetPath);
+      } finally {
+        rmSync(temporaryPath, { force: true });
+      }
       derivatives[format] = {
         path: `assets/media/products/${approved.id}.${format}`,
         sourceUrl: result.sourceUrl,

@@ -22,6 +22,7 @@ Test date: 9 August 2026
 | Unresolved Key Vault references | Passed fail-closed test | secret-resolution test |
 | Backup and isolated restore | Passed for SQLite | backup-restore test |
 | Cross-browser/axe acceptance | Passed | 2,510 screenshots and 526 Axe runs across six applications in Chromium/WebKit |
+| JSON response injection boundary | Passed | safe-JSON unit test and production/integration server suites |
 | Browser contact/application/admin workflow | Passed | Chromium and WebKit synthetic workflow test |
 | Current-tree and reachable-history secret scan | Passed | Gitleaks directory and Git-history scans with redaction |
 | Dependency audits | Passed | full and production-only `npm audit --audit-level=high`, zero vulnerabilities |
@@ -37,7 +38,16 @@ The six-application rendered matrix produced 2,510 genuine screenshots and 526 A
 
 The current-tree and active-history Gitleaks 8.30.1 scans completed with exit code 0. Both full and production-only dependency audits reported zero vulnerabilities. The supply-chain gate validated immutable workflow references, lockfiles, licence policy, changesets and release governance. A CycloneDX SBOM containing 450 components was generated as ignored build evidence; release artifacts for Corporate, NIT, Founder, Portal, API and Status passed checksum and runtime-content validation.
 
-Local CodeQL-driven remediations now use structured HTML parsing, bounded validation, descriptor-stable file reads, constrained file/network sinks, keyed HMAC digests and exact portal access contracts. CodeQL and dependency-review conclusions must still be rerun on the exact pushed candidate SHA; the earlier PR head is not accepted as evidence for this increment.
+Local CodeQL-driven remediations now use structured HTML parsing, bounded validation, descriptor-stable file reads, escaped JSON responses, atomic constrained file/network sinks, keyed HMAC digests and exact portal access contracts. CodeQL and dependency-review conclusions must still be rerun on the exact pushed candidate SHA; an earlier PR head is not accepted as evidence for a later increment.
+
+## Reviewed CodeQL boundaries
+
+| Boundary | Source review and compensating controls | Disposition |
+|---|---|---|
+| API JSON response | Payloads are JSON encoded, then `<`, `>`, `&`, U+2028 and U+2029 are escaped before a no-store `application/json` response with `nosniff`; the data model is verified by a round-trip test. | Remediated in source; exact-SHA analysis required |
+| HIBP range digest | The Pwned Passwords k-anonymity protocol requires a transient SHA-1 digest. Only the first five hexadecimal characters leave the process; neither digest nor password is stored. Local password verification remains PBKDF2 based. | Protocol-specific false positive if reported; requires an auditable GitHub dismissal, not treatment as a password hash |
+| Product-media acquisition | Both source URL and repository destination come from a reviewed allowlist; redirects are rejected; byte size, MIME type, file signature and dimensions are checked before an exclusive temporary write and atomic rename. | Controlled build sink; exact-SHA analysis and auditable review required |
+| SharePoint secure-content sync | Names and extensions are allowlisted, paths are confined to the private content root, size is checked before and after transformation, and exclusive temporary writes are atomically renamed with restrictive modes. No synced file is served anonymously. | Controlled private integration sink; exact-SHA analysis and auditable review required |
 
 History sanitisation removed the retired value from all owner-writable active branches and tags, and Gitleaks reported zero findings. GitHub-managed read-only pull-request refs 1-4 still retain nine historical matches, so complete remote-object purge remains blocked on GitHub Support. Rotation remains mandatory because rewriting cannot erase external clones, forks or caches.
 
