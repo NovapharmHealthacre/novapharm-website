@@ -82,26 +82,26 @@ The generated password is never printed, committed or included in an artifact. S
 | Legacy backend integration suite | Passed after API-only extraction |
 | Production-security suite | Passed |
 | Preview-security suite | Passed |
-| Chromium rendered matrix | Passed: 54 modules plus login, password-change and error states at seven viewports |
+| Chromium rendered matrix | Passed: 54 governed modules plus login, password-change and error states at ten viewports |
 | WebKit rendered matrix | Passed: same route and viewport matrix |
-| Screenshot evidence | 798 genuine screenshots |
-| Automated accessibility | 228 Axe runs; zero serious or critical findings |
+| Screenshot evidence | 1,018 genuine screenshots |
+| Automated accessibility | 218 Axe runs; zero serious or critical findings |
 | Authentication interactions | Passed: unauthenticated rejection, invalid login, four role sessions and logout |
 | Portal interactions | Passed: mobile navigation, authorised search, controlled write and password-mismatch handling |
 | Temporary runtime cleanup | Passed: API, portal, database and synthetic credential removed |
 
 ## Performance evidence
 
-Lighthouse ran against the production standalone portal and real synthetic API. SEO scoring is deliberately excluded because private portal routes must remain non-indexable.
+Lighthouse ran three consecutive trials per profile against the production standalone portal and real synthetic API; the table reports medians. SEO scoring is deliberately excluded because private portal routes must remain non-indexable.
 
 | Surface | Form factor | Performance | Accessibility | Best practices | LCP | CLS | TBT |
 |---|---|---:|---:|---:|---:|---:|---:|
 | Sign-in | Desktop | 100 | 100 | 100 | 0.5 s | 0 | 0 ms |
 | Customer dashboard | Desktop | 100 | 100 | 96 | 0.6 s | 0 | 0 ms |
 | Sign-in | Mobile | 98 | 100 | 100 | 2.3 s | 0 | 0 ms |
-| Customer dashboard | Mobile | 96 | 100 | 96 | 2.7 s | 0 | 0 ms |
+| Customer dashboard | Mobile | 96 | 100 | 96 | 2.8 s | 0 | 0 ms |
 
-These are local laboratory results, not production field data. The mobile dashboard LCP is 0.2 seconds above the 2.5-second target and remains a staging optimisation and real-user monitoring item.
+These are local laboratory results, not production field data. The mobile dashboard median LCP is 0.28 seconds above the 2.5-second target and remains a staging optimisation and real-user monitoring item.
 
 ## Manual visual review
 

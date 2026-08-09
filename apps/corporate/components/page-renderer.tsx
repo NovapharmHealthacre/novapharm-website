@@ -69,7 +69,7 @@ function HomePage() {
   return (
     <>
       <section className="home-hero">
-        <Image className="home-hero-media" src="/assets/media/home/supply-network-hero.avif" alt="" fill priority fetchPriority="high" sizes="100vw" />
+        <Image className="home-hero-media" src="/assets/media/home/supply-network-hero.avif" alt="" fill priority fetchPriority="high" sizes="100vw" unoptimized />
         <div className="home-hero-overlay" aria-hidden="true" />
         <div className="shell home-hero-content">
           <span className="eyebrow">UK pharmaceutical company</span>

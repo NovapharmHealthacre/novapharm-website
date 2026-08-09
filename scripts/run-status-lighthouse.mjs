@@ -19,6 +19,7 @@ const statusRoot = join(
 );
 const artifactRoot = join(repositoryRoot, "artifacts", "status-lighthouse");
 const origin = "http://127.0.0.1:4304";
+const trialCount = 3;
 let statusProcess;
 let statusOutput = "";
 let chrome;
@@ -59,7 +60,18 @@ function metric(lhr, id) {
 	};
 }
 
-async function audit(formFactor) {
+function median(values) {
+	const sorted = [...values].sort((left, right) => left - right);
+	return sorted[Math.floor(sorted.length / 2)];
+}
+
+function medianMetric(trials, name) {
+	const numericValue = median(trials.map((trial) => trial.metrics[name].numericValue));
+	const source = trials.find((trial) => trial.metrics[name].numericValue === numericValue);
+	return { numericValue, displayValue: source?.metrics[name].displayValue ?? null };
+}
+
+async function auditTrial(formFactor) {
 	const result = await lighthouse(
 		origin,
 		{
@@ -89,6 +101,32 @@ async function audit(formFactor) {
 			totalBlockingTime: metric(lhr, "total-blocking-time"),
 			totalByteWeight: metric(lhr, "total-byte-weight"),
 		},
+	};
+	return summary;
+}
+
+async function audit(formFactor) {
+	const trials = [];
+	for (let trial = 1; trial <= trialCount; trial += 1) {
+		trials.push(await auditTrial(formFactor));
+	}
+	const summary = {
+		formFactor,
+		runCount: trials.length,
+		aggregation: "median",
+		scores: {
+			performance: median(trials.map((trial) => trial.scores.performance)),
+			accessibility: median(trials.map((trial) => trial.scores.accessibility)),
+			bestPractices: median(trials.map((trial) => trial.scores.bestPractices)),
+		},
+		metrics: {
+			firstContentfulPaint: medianMetric(trials, "firstContentfulPaint"),
+			largestContentfulPaint: medianMetric(trials, "largestContentfulPaint"),
+			cumulativeLayoutShift: medianMetric(trials, "cumulativeLayoutShift"),
+			totalBlockingTime: medianMetric(trials, "totalBlockingTime"),
+			totalByteWeight: medianMetric(trials, "totalByteWeight"),
+		},
+		trials,
 	};
 	assert.ok(
 		summary.scores.performance >= 90,
@@ -143,7 +181,7 @@ try {
 	);
 	writeFileSync(
 		join(artifactRoot, "summary.md"),
-		`# Status Lighthouse acceptance\n\n${results.map((entry) => `- ${entry.formFactor}: performance ${entry.scores.performance}, accessibility ${entry.scores.accessibility}, best practices ${entry.scores.bestPractices}; LCP ${entry.metrics.largestContentfulPaint.displayValue}; CLS ${entry.metrics.cumulativeLayoutShift.displayValue}; TBT ${entry.metrics.totalBlockingTime.displayValue}.`).join("\n")}\n\nSEO is intentionally excluded because the status service is noindex. These are local laboratory results rather than production field data.\n`,
+		`# Status Lighthouse acceptance\n\n${results.map((entry) => `- ${entry.formFactor} (${entry.runCount}-run median): performance ${entry.scores.performance}, accessibility ${entry.scores.accessibility}, best practices ${entry.scores.bestPractices}; LCP ${entry.metrics.largestContentfulPaint.displayValue}; CLS ${entry.metrics.cumulativeLayoutShift.displayValue}; TBT ${entry.metrics.totalBlockingTime.displayValue}.`).join("\n")}\n\nSEO is intentionally excluded because the status service is noindex. These are local laboratory medians rather than production field data.\n`,
 	);
 	console.log(
 		"Status Lighthouse acceptance passed for desktop and mobile profiles.",

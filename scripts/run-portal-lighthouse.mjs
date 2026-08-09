@@ -16,6 +16,7 @@ const portalRoot = join(repositoryRoot, "apps", "portal", ".next", "standalone",
 const artifactRoot = join(repositoryRoot, "artifacts", "portal-lighthouse");
 const apiOrigin = "http://127.0.0.1:4178";
 const portalOrigin = "http://127.0.0.1:4303";
+const trialCount = 3;
 let portalProcess;
 let portalOutput = "";
 let chrome;
@@ -99,7 +100,18 @@ function metric(lhr, id) {
   return { numericValue: audit?.numericValue ?? null, displayValue: audit?.displayValue ?? null };
 }
 
-async function auditPage(name, pathName, formFactor, cookieHeader = "") {
+function median(values) {
+  const sorted = [...values].sort((left, right) => left - right);
+  return sorted[Math.floor(sorted.length / 2)];
+}
+
+function medianMetric(trials, name) {
+  const numericValue = median(trials.map((trial) => trial.metrics[name].numericValue));
+  const source = trials.find((trial) => trial.metrics[name].numericValue === numericValue);
+  return { numericValue, displayValue: source?.metrics[name].displayValue ?? null };
+}
+
+async function auditPageTrial(name, pathName, formFactor, cookieHeader = "") {
   const flags = {
     port: chrome.port,
     output: "json",
@@ -128,6 +140,34 @@ async function auditPage(name, pathName, formFactor, cookieHeader = "") {
       totalBlockingTime: metric(lhr, "total-blocking-time"),
       totalByteWeight: metric(lhr, "total-byte-weight"),
     },
+  };
+  return summary;
+}
+
+async function auditPage(name, pathName, formFactor, cookieHeader = "") {
+  const trials = [];
+  for (let trial = 1; trial <= trialCount; trial += 1) {
+    trials.push(await auditPageTrial(name, pathName, formFactor, cookieHeader));
+  }
+  const summary = {
+    name,
+    path: pathName,
+    formFactor,
+    runCount: trials.length,
+    aggregation: "median",
+    scores: {
+      performance: median(trials.map((trial) => trial.scores.performance)),
+      accessibility: median(trials.map((trial) => trial.scores.accessibility)),
+      bestPractices: median(trials.map((trial) => trial.scores.bestPractices)),
+    },
+    metrics: {
+      firstContentfulPaint: medianMetric(trials, "firstContentfulPaint"),
+      largestContentfulPaint: medianMetric(trials, "largestContentfulPaint"),
+      cumulativeLayoutShift: medianMetric(trials, "cumulativeLayoutShift"),
+      totalBlockingTime: medianMetric(trials, "totalBlockingTime"),
+      totalByteWeight: medianMetric(trials, "totalByteWeight"),
+    },
+    trials,
   };
   assert.ok(summary.scores.performance >= 90, `${name}: performance score ${summary.scores.performance} is below 90.`);
   assert.ok(summary.scores.accessibility >= 95, `${name}: accessibility score ${summary.scores.accessibility} is below 95.`);
@@ -166,7 +206,7 @@ try {
   writeFileSync(join(artifactRoot, "summary.json"), `${JSON.stringify(report, null, 2)}\n`);
   writeFileSync(
     join(artifactRoot, "summary.md"),
-    `# Portal Lighthouse acceptance\n\n${results.map((entry) => `- ${entry.name}: performance ${entry.scores.performance}, accessibility ${entry.scores.accessibility}, best practices ${entry.scores.bestPractices}; LCP ${entry.metrics.largestContentfulPaint.displayValue}; CLS ${entry.metrics.cumulativeLayoutShift.displayValue}; TBT ${entry.metrics.totalBlockingTime.displayValue}.`).join("\n")}\n\nSEO is intentionally excluded because every portal route is private and noindex. Raw Lighthouse reports and temporary authentication material are not persisted.\n`,
+    `# Portal Lighthouse acceptance\n\n${results.map((entry) => `- ${entry.name} (${entry.runCount}-run median): performance ${entry.scores.performance}, accessibility ${entry.scores.accessibility}, best practices ${entry.scores.bestPractices}; LCP ${entry.metrics.largestContentfulPaint.displayValue}; CLS ${entry.metrics.cumulativeLayoutShift.displayValue}; TBT ${entry.metrics.totalBlockingTime.displayValue}.`).join("\n")}\n\nSEO is intentionally excluded because every portal route is private and noindex. Raw Lighthouse reports and temporary authentication material are not persisted.\n`,
   );
   console.log(`Portal Lighthouse acceptance passed for ${results.length} authenticated and anonymous profiles.`);
 } finally {

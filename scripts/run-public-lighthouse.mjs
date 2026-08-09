@@ -35,6 +35,7 @@ const applications = Object.freeze([
     environment: { PUBLIC_INDEXABLE: "true" },
   },
 ]);
+const trialCount = 3;
 
 let chrome;
 
@@ -75,7 +76,24 @@ function metric(lhr, id) {
   return { numericValue: audit?.numericValue ?? null, displayValue: audit?.displayValue ?? null };
 }
 
-async function audit(application, formFactor) {
+function lcpElement(lhr) {
+  const items = lhr.audits["lcp-breakdown-insight"]?.details?.items;
+  const node = Array.isArray(items) ? items.find((item) => item?.type === "node") : null;
+  return node ? { selector: node.selector ?? null, label: node.nodeLabel ?? null, snippet: node.snippet ?? null } : null;
+}
+
+function median(values) {
+  const sorted = [...values].sort((left, right) => left - right);
+  return sorted[Math.floor(sorted.length / 2)];
+}
+
+function medianMetric(trials, name) {
+  const numericValue = median(trials.map((trial) => trial.metrics[name].numericValue));
+  const source = trials.find((trial) => trial.metrics[name].numericValue === numericValue);
+  return { numericValue, displayValue: source?.metrics[name].displayValue ?? null };
+}
+
+async function auditTrial(application, formFactor) {
   const origin = `http://127.0.0.1:${application.port}`;
   const result = await lighthouse(
     origin,
@@ -106,6 +124,35 @@ async function audit(application, formFactor) {
       totalBlockingTime: metric(lhr, "total-blocking-time"),
       totalByteWeight: metric(lhr, "total-byte-weight"),
     },
+    lcpElement: lcpElement(lhr),
+  };
+  return summary;
+}
+
+async function audit(application, formFactor) {
+  const trials = [];
+  for (let trial = 1; trial <= trialCount; trial += 1) {
+    trials.push(await auditTrial(application, formFactor));
+  }
+  const summary = {
+    formFactor,
+    runCount: trials.length,
+    aggregation: "median",
+    scores: {
+      performance: median(trials.map((trial) => trial.scores.performance)),
+      accessibility: median(trials.map((trial) => trial.scores.accessibility)),
+      bestPractices: median(trials.map((trial) => trial.scores.bestPractices)),
+      seo: median(trials.map((trial) => trial.scores.seo)),
+    },
+    metrics: {
+      firstContentfulPaint: medianMetric(trials, "firstContentfulPaint"),
+      largestContentfulPaint: medianMetric(trials, "largestContentfulPaint"),
+      cumulativeLayoutShift: medianMetric(trials, "cumulativeLayoutShift"),
+      totalBlockingTime: medianMetric(trials, "totalBlockingTime"),
+      totalByteWeight: medianMetric(trials, "totalByteWeight"),
+    },
+    lcpElement: trials.find((trial) => trial.lcpElement)?.lcpElement ?? null,
+    trials,
   };
   assert.ok(summary.scores.performance >= 75, `${application.key} ${formFactor}: performance regression floor failed at ${summary.scores.performance}.`);
   assert.ok(summary.scores.accessibility >= 95, `${application.key} ${formFactor}: accessibility failed at ${summary.scores.accessibility}.`);
@@ -162,7 +209,7 @@ try {
       writeFileSync(join(artifactRoot, "summary.json"), `${JSON.stringify(report, null, 2)}\n`);
       writeFileSync(
         join(artifactRoot, "summary.md"),
-        `# ${application.name} Lighthouse audit\n\n${results.map((entry) => `- ${entry.formFactor}: performance ${entry.scores.performance}, accessibility ${entry.scores.accessibility}, best practices ${entry.scores.bestPractices}, SEO ${entry.scores.seo}; LCP ${entry.metrics.largestContentfulPaint.displayValue}; CLS ${entry.metrics.cumulativeLayoutShift.displayValue}; TBT ${entry.metrics.totalBlockingTime.displayValue}.`).join("\n")}\n\nThese are local production-standalone laboratory results, not production field data. Performance 90 and LCP 2.5 seconds are reported as targets rather than silently converted into pass claims.\n`,
+        `# ${application.name} Lighthouse audit\n\n${results.map((entry) => `- ${entry.formFactor} (${entry.runCount}-run median): performance ${entry.scores.performance}, accessibility ${entry.scores.accessibility}, best practices ${entry.scores.bestPractices}, SEO ${entry.scores.seo}; LCP ${entry.metrics.largestContentfulPaint.displayValue}; CLS ${entry.metrics.cumulativeLayoutShift.displayValue}; TBT ${entry.metrics.totalBlockingTime.displayValue}.`).join("\n")}\n\nThese are local production-standalone laboratory medians, not production field data. Performance 90 and LCP 2.5 seconds are reported as targets rather than silently converted into pass claims.\n`,
       );
       console.log(`${application.name} Lighthouse audit completed for desktop and mobile.`);
     } finally {

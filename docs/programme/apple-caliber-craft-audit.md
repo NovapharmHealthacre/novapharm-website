@@ -104,7 +104,7 @@ The candidate uses React and React DOM `19.2.8` and Next.js `16.2.12`. RSC is pr
 
 ## Performance and accessibility boundary
 
-Repository Lighthouse evidence remains strong: desktop public surfaces scored 100 for performance in the retained run; mobile public scores were 97, with measured lab LCP between 2.61 and 2.69 seconds. Portal mobile performance ranged from 96 to 98 and Status scored 99. Accessibility scores were 100 in those runs, and the full Axe matrix reported no serious or critical findings.
+Repository Lighthouse evidence remains strong: three-run medians give every desktop public surface 100 for performance; mobile public scores are 95-97, with measured lab LCP between 2.61 and 2.91 seconds. Portal mobile performance ranges from 96 to 98 and Status scores 99. Accessibility scores are 100 in those runs, and the full Axe matrix reported no serious or critical findings.
 
 These are lab results, not field Core Web Vitals. The public mobile LCP target of 2.5 seconds is therefore a staging and field-data follow-up rather than a completed production claim. No richer media is accepted if it worsens that boundary.
 

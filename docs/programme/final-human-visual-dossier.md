@@ -2,7 +2,7 @@
 
 Status: repository candidate accepted; managed staging and production review pending
 
-Review date: 8 August 2026
+Review date: 9 August 2026
 
 Candidate: Draft PR 16 on `codex/unified-digital-estate-foundation`
 
@@ -53,7 +53,7 @@ Status review covered normal, activation-pending, planned-maintenance and incide
 | Status scenarios | Medium | Maintenance and incident visual states lacked deterministic acceptance coverage | Added normal, activation, maintenance and incident fixtures, screenshots and tests | Live incident integration remains pending |
 | Portal visual states | Medium | Several asserted interaction states lacked named retained captures | Added 18 interaction screenshots and 18 Axe scans across both engines | Live Entra and production session expiry remain pending |
 | Founder mobile capture | Low | One in-app screenshot encoding attempt was invalid | Discarded it and retained a valid independent Playwright Chromium capture | No application defect |
-| Public mobile LCP | Medium | Lab LCP was 2.60-2.68 seconds against a 2.5-second target | Transfer, CLS and blocking work remain controlled; scores are 97 | Recheck on accepted staging and use field data before claiming target attainment |
+| Public mobile LCP | Medium | Three-run median lab LCP was 2.61-2.91 seconds against a 2.5-second target | Transfer, CLS and blocking work remain controlled; scores are 95-97 | Recheck on accepted staging and use field data before claiming target attainment |
 
 No critical or unresolved high visual finding remains. The mobile LCP observation is a transparent performance follow-up, not a hidden pass.
 

@@ -27,7 +27,7 @@ Portal is also a Next.js application because authenticated dashboards, forms, ta
 - React Compiler: not enabled. The measured application does not justify adding compiler complexity to this release.
 - Create React App: not used.
 
-React `19.2.8` is the current stable registry release at review time. The official React advisory identifies `19.2.4` as the patched 19.2 RSC floor, so the installed release is beyond that floor. The official Next.js July 2026 security release identifies `16.2.11` as the Active LTS security floor; the candidate uses `16.2.12`. The production and full dependency audits report zero known vulnerabilities after pinning transitive `nanoid` to `3.3.18`.
+React `19.2.8` is the current stable registry release at review time. The official React advisory identifies `19.2.4` as the patched 19.2 RSC floor, so the installed release is beyond that floor. The official Next.js July 2026 security release identifies `16.2.11` as the Active LTS security floor; the candidate uses `16.2.12`. The production and full dependency audits report zero known vulnerabilities after pinning transitive `nanoid` to `3.3.18` and `js-yaml` 3.x to `3.15.1`.
 
 Next.js `16.3.0` became the latest stable registry release during this review. It is not introduced into the release candidate because this programme already has exact-head build, browser and security evidence on the patched 16.2 Active LTS line. A minor-framework migration immediately before owner review would add change risk without solving a known product defect. It should be assessed in a separate dependency change with its own build, browser, performance and security evidence.
 
@@ -48,9 +48,9 @@ These are local diagnostic traces, not production field Core Web Vitals. Standar
 
 ## Performance and dependency judgement
 
-No React package, animation library or UI kit was added in this continuation. The change removes a `next/script` component import from two root layouts and replaces it with a fixed inline state switch. It therefore does not create a new route bundle or hydration boundary. Existing client components remain narrow and route-specific; no custom Server Function payload or downloadable privileged logic is introduced.
+No React package, animation library or UI kit was added in this continuation. The root-only `parse5` development dependency supports build-time evidence parsing and is not shipped to browser routes. The change removes a `next/script` component import from two root layouts and replaces it with a fixed inline state switch. It therefore does not create a new route bundle or hydration boundary. Existing client components remain narrow and route-specific; no custom Server Function payload or downloadable privileged logic is introduced.
 
-The current production-standalone measurements are recorded in `docs/programme/final-performance-acceptance.md`. Public desktop performance is 100; public mobile performance is 97; accessibility, Best Practices and SEO are 100 for all six public profiles. Mobile LCP remains 2.6 to 2.7 seconds in local lab runs and is explicitly pending managed-staging and field validation rather than reported as a pass against the 2.5-second target.
+The current production-standalone measurements are recorded in `docs/programme/final-performance-acceptance.md`. Three-run medians give public desktop performance 100 and public mobile performance 95-97; accessibility, Best Practices and SEO are 100 for all six public profiles. Mobile LCP remains 2.61 to 2.91 seconds in local lab runs and is explicitly pending managed-staging and field validation rather than reported as a pass against the 2.5-second target.
 
 ## Official sources reviewed
 

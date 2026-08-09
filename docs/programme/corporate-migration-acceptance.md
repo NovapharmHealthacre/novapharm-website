@@ -52,21 +52,21 @@ The public application contains no login or role selector. Its portal link resol
 | Unit and gateway tests | Passed: 11 of 11, including a real local upstream, CSRF cookie relay and malformed-origin failure handling |
 | Production build | Passed: 44 generated application routes |
 | Standalone packaging | Passed |
-| Standalone artifact security scan | Passed: 1,593 files after the same-origin gateway addition |
-| Chromium rendered matrix | Passed: 38 route states at 7 required viewports |
-| WebKit rendered matrix | Passed: 38 route states at 7 required viewports |
-| Screenshot evidence | 532 genuine screenshots captured |
-| Automated accessibility | 152 Axe runs; zero serious or critical findings |
+| Standalone artifact security scan | Passed: 1,594 files in the current standalone build |
+| Chromium rendered matrix | Passed: 39 route states at 10 required viewports |
+| WebKit rendered matrix | Passed: the same 39-route, 10-viewport matrix |
+| Screenshot evidence | 780 genuine screenshots captured |
+| Automated accessibility | 156 Axe runs; zero serious or critical findings |
 | Lighthouse desktop | Performance 100, Accessibility 100, Best Practices 100, SEO 100 |
-| Lighthouse mobile | Performance 97, Accessibility 100, Best Practices 100, SEO 100 |
-| Desktop lab values | FCP 0.2 s, LCP 0.7 s, CLS 0, TBT 0 ms, 401 KiB transfer |
-| Mobile lab values | FCP 0.9 s, LCP 2.7 s, CLS 0, TBT 0 ms, 257 KiB transfer |
+| Lighthouse mobile | Performance 95, Accessibility 100, Best Practices 100, SEO 100 |
+| Desktop median lab values | FCP 0.2 s, LCP 0.59 s, CLS 0, TBT 0 ms, 276 KiB transfer |
+| Mobile median lab values | FCP 0.9 s, LCP 2.91 s, CLS 0, TBT 4 ms, 258 KiB transfer |
 
-Lighthouse results are local laboratory measurements against the production standalone build in public-indexable mode. They are not production field data. The mobile simulated LCP remains 0.2 seconds above the 2.5-second target and is recorded as an optimisation and field-monitoring item, not rounded into a pass.
+Lighthouse results are three-run medians from local laboratory measurements against the production standalone build in public-indexable mode. They are not production field data. The mobile simulated LCP remains 0.41 seconds above the 2.5-second target and is recorded as an optimisation and field-monitoring item, not rounded into a pass.
 
 ## Media and visual acceptance
 
-- The homepage LCP visual is an approved local pharmaceutical supply-chain image delivered as a 54,741-byte AVIF with an immediate priority hint and responsive Next.js image generation.
+- The homepage LCP visual is an approved local pharmaceutical supply-chain image delivered directly as a 54,741-byte AVIF with an immediate priority and preload hint; runtime image transformation is deliberately avoided for this already-optimised local asset.
 - Product, CRO, oncology, regulatory, partner and technology imagery uses reviewed local assets with recorded provenance and conservative captions.
 - Leadership pages use approved portraits where supplied; controlled no-image states remain where an approved portrait is unavailable.
 - Representative desktop and mobile captures were manually reviewed for the homepage, contact, regulatory, product portfolio, partners, technology, Vishal Chakravarty profile, an Insights article, mobile privacy page and 404.
