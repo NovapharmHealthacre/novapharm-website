@@ -135,6 +135,7 @@
   "overrides": {
     "@opentelemetry/propagator-jaeger": "2.9.0",
     "fast-xml-parser": "5.10.1",
+    "nanoid": "3.3.18",
     "next@16.2.12": {
       "postcss": "$postcss",
       "sharp": "$sharp"

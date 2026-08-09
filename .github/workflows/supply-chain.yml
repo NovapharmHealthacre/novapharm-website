@@ -36,8 +36,14 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
+        with:
+          version: 11.9.0
+          run_install: false
       - name: Install the immutable dependency graph
         run: npm ci --ignore-scripts
+      - name: Verify the migration workspace lock
+        run: pnpm install --lockfile-only --frozen-lockfile --ignore-scripts
       - name: Validate action pins, dependency licences and release governance
         run: npm run supply-chain:validate
       - name: Generate CycloneDX SBOM and checksum
