@@ -1,6 +1,6 @@
 # Apple-Caliber Continuation Matrix
 
-Status: repository reconciliation in progress; production unchanged
+Status: repository reconciliation complete; exact pushed-SHA checks pending; production unchanged
 
 Reviewed: 8 August 2026
 
@@ -67,7 +67,7 @@ This register maps every numbered section in the continuation specification to o
 | 42 | Performance as visual design | Complete at repository level only | Media, fonts, CSS and motion are budgeted; retained Lighthouse scores are documented. Production field metrics remain pending. |
 | 43 | LCP image discipline | Complete at repository level only | LCP media is explicit and decorative assets are deferred; Nutraxin density is capped honestly. Public mobile lab LCP of 2.60-2.68 seconds remains a staging/field follow-up. |
 | 44 | CSS discipline | Complete | Shared tokens and property-specific layers are used; generated compatibility CSS is deterministic and no source-map release is accepted. |
-| 45 | JavaScript discipline | Complete at repository level only | Essential public content and primary navigation survive without JavaScript; interactivity progressively enhances and no unnecessary animation library was added. |
+| 45 | JavaScript discipline | Complete at repository level only | Essential public content and primary navigation survive without JavaScript; interactivity progressively enhances and no unnecessary animation library was added. NIT and Founder use a tested nonce-bearing parser bootstrap to prevent hydration layout shift. See `docs/programme/react-architecture-handoff.md`. |
 | 46 | Real Safari quality | External verification pending | Playwright WebKit passes the complete matrix, but real Safari on representative Apple hardware has not been independently exercised against managed staging. |
 | 47 | Security must not be sacrificed | Complete at repository level only | CSP, secure headers, protected-route boundaries, module classification and supply-chain controls remain intact. Managed edge, identity and penetration testing are external. |
 | 48 | Media provenance | Complete | Rights, origin, creator, licence/approval, transformation and hashes are retained across the four media registers. Missing owner assets remain explicit, not fabricated. |
@@ -79,11 +79,11 @@ This register maps every numbered section in the continuation specification to o
 | 54 | Performance-engineer red team | Complete at repository level only | Asset transfer, LCP, CLS, script and animation risks are recorded; richer video was rejected. Field measurements remain pending. |
 | 55 | Accessibility-specialist red team | Complete at repository level only | Axe, keyboard, reduced-motion, target-size, focus and no-JavaScript paths pass; independent user testing remains external. |
 | 56 | No-JavaScript public experience | Complete | Corporate, NIT and Founder each pass Chromium and WebKit scriptless checkpoints at 390 pixels and 2x density with one H1, substantive content, complete navigation and no overflow. |
-| 57 | Performance measurement | Complete at repository level only | Lab Lighthouse and browser metrics are recorded honestly. Real-user Core Web Vitals and managed-edge timing are external verification items. |
+| 57 | Performance measurement | Complete at repository level only | Lab Lighthouse, constrained-start CLS diagnostics and browser metrics are recorded honestly. Real-user Core Web Vitals and managed-edge timing are external verification items. |
 | 58 | Visual acceptance matrix | Complete at repository level only | 2,510 screenshots and 526 Axe runs cover the full retained estate across required routes and viewports; Corporate adds 2x and scriptless preflights. |
 | 59 | Curated screenshot evidence | Complete | A 62-image WebP dossier and source PNG hashes retain high-signal evidence without committing every generated capture. |
 | 60 | Full repository release gate | Complete at repository level only | The exact committed candidate is reproduced in an isolated checkout and subjected to the locked-runtime root, browser, accessibility, security, packaging and history gates. Managed staging and production remain separate. |
-| 61 | Dependency and secret security | Complete at repository level only | CODEOWNERS, Dependabot, CodeQL, dependency review, pinned actions, licence policy, SBOM, secret and active-history controls exist. Exact final-candidate reruns remain part of section 60. |
+| 61 | Dependency and secret security | Complete at repository level only | CODEOWNERS, Dependabot, CodeQL, dependency review, pinned actions, licence policy, SBOM, secret and active-history controls exist. React/Next security floors are reviewed and transitive `nanoid` is pinned to patched `3.3.18`; exact final-candidate reruns remain part of section 60. |
 | 62 | Clean-checkout reproducibility | Complete at repository level only | The final repository candidate is installed and validated in a separate checkout under the locked Node and package-manager versions; exact results are recorded in the PR and final handoff. |
 | 63 | GitHub Actions | External verification pending | Existing remote checks are green only for the previous PR head. Exact pushed-SHA checks must run after local clean acceptance. |
 | 64 | Draft PR 16 | External verification pending | PR 16 remains open and draft. It will be updated only after the exact candidate is committed, clean-tested and pushed; merge and deployment remain prohibited. |

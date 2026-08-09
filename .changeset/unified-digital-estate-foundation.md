@@ -8,4 +8,4 @@
 "@novapharm/portal-contracts": minor
 ---
 
-Establish the governed unified digital-estate foundation, shared design system, truthful operating-status contracts, five-publication founder evidence model, read-only portal release classifications, and Azure Front Door/WAF infrastructure contract.
+Establish the governed unified digital-estate foundation, shared design system, truthful operating-status contracts, five-publication founder evidence model, read-only portal release classifications, Azure Front Door/WAF infrastructure contract, parser-stable public hydration state and patched dependency floor.

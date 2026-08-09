@@ -4,7 +4,7 @@ Status: repository candidate accepted; managed staging and production review pen
 
 Review date: 8 August 2026
 
-Review baseline: local Draft PR 16 candidate descending from `1a3f04c05487efa86e75eb9e0ca0e82cf5439bdd`
+Review baseline: local Draft PR 16 candidate descending from `5407336ac2914a47f9cb0a00682cfb8deb73c798`
 
 ## Purpose and evidence boundary
 
@@ -94,10 +94,17 @@ No homepage background video is introduced. There is no verified NovaPharm facil
 - Founder acceptance completed 420 screenshots, 84 Axe runs and two scriptless-navigation runs across Chromium and WebKit.
 - The Products correction was tested with both contextual links at a computed 44-pixel minimum height and with the 700-pixel owner-supplied source rendering no wider than 350 CSS pixels at 2x density.
 - All three public properties retain one H1, substantive main content, complete primary navigation and no horizontal overflow when JavaScript is disabled at the 390-pixel, 2x-density checkpoint.
+- NIT and Founder now switch from their complete scriptless navigation state before body parsing through a nonce-bearing inline bootstrap. Constrained 390-pixel traces reduced the corresponding local diagnostic CLS from `0.3391` and `0.2042` to `0`; browser tests reject a deferred or non-nonce bootstrap.
+
+## React architecture decision
+
+Corporate, NIT and Founder remain Next.js App Router applications, classified as E - React framework. This is the established unified-estate architecture, not a new visual-only migration. Server Components provide the first HTML; client boundaries are limited to controls, forms, evidence dialogue and NIT interactions that genuinely need browser state.
+
+The candidate uses React and React DOM `19.2.8` and Next.js `16.2.12`. RSC is present through the App Router default, but no custom Server Function or Server Action exists and React Compiler is not enabled. No additional React dependency, generic UI kit or animation package was introduced. The detailed security, bundle and deliberate non-change rationale is in `docs/programme/react-architecture-handoff.md`.
 
 ## Performance and accessibility boundary
 
-Repository Lighthouse evidence remains strong: desktop public surfaces scored 100 for performance in the retained run; mobile public scores were 97, with measured lab LCP between 2.60 and 2.68 seconds. Portal mobile performance ranged from 96 to 98 and Status scored 99. Accessibility scores were 100 in those runs, and the full Axe matrix reported no serious or critical findings.
+Repository Lighthouse evidence remains strong: desktop public surfaces scored 100 for performance in the retained run; mobile public scores were 97, with measured lab LCP between 2.61 and 2.69 seconds. Portal mobile performance ranged from 96 to 98 and Status scored 99. Accessibility scores were 100 in those runs, and the full Axe matrix reported no serious or critical findings.
 
 These are lab results, not field Core Web Vitals. The public mobile LCP target of 2.5 seconds is therefore a staging and field-data follow-up rather than a completed production claim. No richer media is accepted if it worsens that boundary.
 
@@ -105,6 +112,6 @@ The legacy public-page post-processing traversal is now bounded to generated rou
 
 ## Decision
 
-The Draft PR 16 candidate is accepted at repository level for visual craft, property distinction, responsive hierarchy, truthful media use, reduced-motion behaviour and interaction clarity. The design is recognisably NovaPharm and benefits from the benchmark without imitating Apple.
+The Draft PR 16 candidate is accepted at repository level for visual craft, property distinction, responsive hierarchy, truthful media use, reduced-motion behaviour, interaction clarity and disciplined React boundaries. The design is recognisably NovaPharm and benefits from the benchmark without imitating Apple.
 
 Production visual acceptance remains pending the exact release deployment through the intended edge architecture, real Safari review on representative Apple hardware, managed identity and data states, staging Lighthouse, production smoke tests and post-launch field observation.

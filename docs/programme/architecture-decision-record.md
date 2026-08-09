@@ -49,13 +49,15 @@ infra/
 Use:
 
 - strict TypeScript;
-- npm workspaces with one exact lockfile and Turborepo available for package-level orchestration;
+- pnpm 11.9 workspaces with an exact canonical lockfile and Turborepo for package-level orchestration; the exact npm lock remains temporarily for legacy release workflows, and CI rejects drift in either graph until those workflows migrate;
 - Next.js 16.2.12 or a later security-patched release within the approved Active LTS line at implementation time;
-- React 19;
+- React and React DOM 19.2.8, the current stable registry release at the 9 August 2026 review;
 - Next.js App Router, server rendering and static generation according to route needs;
 - accessible semantic HTML as browser output;
 - shared typed facts, claims, people, routes, forms, integrations and security contracts;
 - distinct visual compositions for corporate, NIT, founder and portal experiences.
+
+The App Router uses React Server Components by default. No custom Server Function or Server Action is present, and React Compiler is not enabled. Client Components are limited to stateful navigation, consent, forms, evidence dialogue, portal workflows and bounded NIT interactions. The exact security and deliberate non-migration decision is recorded in `docs/programme/react-architecture-handoff.md`.
 
 The existing corporate static generator and Node service remain available as migration reference implementations until parity and rollback evidence is complete. They are not the long-term source architecture.
 

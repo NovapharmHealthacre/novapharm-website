@@ -1,12 +1,16 @@
 # Official Technical and Compliance Source Register
 
 Status: active
-Review date: 8 August 2026
+Review date: 9 August 2026
 
 Only primary and official sources are used for implementation decisions. Product/version-specific guidance must be rechecked at the time of deployment.
 
 | Topic | Official source | Decision informed | Owner action |
 |---|---|---|---|
+| React stable release | [React 19.2](https://react.dev/blog/2025/10/01/react-19-2) | Use current stable React and React DOM; the candidate resolves both to `19.2.8` | None |
+| React Server Components security | [React RSC security update](https://react.dev/blog/2025/12/11/denial-of-service-and-source-code-exposure-in-react-server-components) | Keep RSC packages beyond the patched `19.2.4` floor and rerun dependency audits | Recheck before deployment |
+| Next.js July 2026 security release | [July 2026 Security Release](https://nextjs.org/blog/july-2026-security-release) | Keep the release on a patched Active LTS line; candidate `16.2.12` is beyond the documented `16.2.11` floor | Recheck before deployment |
+| Next.js server/client boundary | [Server and Client Components](https://nextjs.org/docs/app/getting-started/server-and-client-components) | Render editorial content on the server and create narrow client boundaries only for interaction | None |
 | Next.js release support | [Next.js release policy](https://nextjs.org/support-policy) | Use a security-patched Active LTS release, not an unpatched pinned minor | None |
 | Next.js self-hosting | [Next.js self-hosting guide](https://nextjs.org/docs/app/guides/self-hosting) | Use a reverse proxy/managed ingress, stable server-action key and deliberate cache/version-skew design | None |
 | Next.js static export | [Next.js static exports](https://nextjs.org/docs/app/guides/static-exports) | Static export is suitable only for public routes that do not require server features | None |
@@ -21,7 +25,7 @@ Only primary and official sources are used for implementation decisions. Product
 | GitHub OIDC for Azure | [Configure OpenID Connect in Azure](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-azure) | Use short-lived workload federation for deployment | GitHub/Azure environment setup |
 | GitHub CodeQL Action | [Supported CodeQL Action versions](https://github.com/github/codeql-action) | Use the current supported `v4` major for JavaScript/TypeScript advanced setup | Enable code scanning and require the check |
 | Apple design foundation | [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines) | Apply hierarchy, harmony and consistency as quality principles without copying Apple assets or trade dress | None |
-| Apple design principles | [Principles of great design, WWDC26](https://developer.apple.com/videos/play/wwdc2026/250/) | Use purpose, simplicity, craft, responsibility and flexibility as the visual critique frame | None |
+| Apple design principles | [Design principles](https://developer.apple.com/design/human-interface-guidelines/design-principles) and [Principles of great design, WWDC26](https://developer.apple.com/videos/play/wwdc2026/250/) | Use purpose, agency, responsibility, familiarity, flexibility, simplicity, craft and delight as a critique frame, never as permission to imitate Apple | None |
 | Apple adaptive layout | [Layout guidance](https://developer.apple.com/design/human-interface-guidelines/layout) | Prioritise important content, align for scanability and validate every supported size | None |
 | Apple typography | [Typography guidance](https://developer.apple.com/design/human-interface-guidelines/typography) | Preserve readable scale, contrast and line length rather than imitating proprietary type treatments | None |
 | Apple accessibility | [Accessibility guidance](https://developer.apple.com/design/human-interface-guidelines/accessibility) | Keep semantic controls, visible focus, adequate targets and equivalent experiences | Independent/manual review recommended |

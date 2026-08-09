@@ -25,6 +25,7 @@ Owner: Security, Platform and Corporate Governance
 | Immutable action pinning | All third-party workflow actions are pinned to reviewed full commit SHAs; version lines remain as comments | Dependabot updates require review and the supply-chain validator rejects mutable refs | `npm run supply-chain:validate` and reviewed workflow diff |
 | Release notes and changesets | `CHANGELOG.md`, `.changeset/config.json` and reviewed workspace changesets are implemented and CI validated | Convert Unreleased to a versioned heading only for an approved immutable production SHA | `npm run supply-chain:validate`, release PR and deployment manifest |
 | Dependency licences | Lockfile SPDX inventory and fail-closed policy implemented | UK solicitor reviews final distribution obligations, including LGPL and CC-BY notices | `config/dependency-license-policy.json`, audit report and `npm run supply-chain:validate` |
+| Dependency vulnerability floor | React/React DOM `19.2.8`, Next.js `16.2.12` and transitive `nanoid` `3.3.18` are pinned in both temporary migration lock graphs; production-only and full npm audits report zero known vulnerabilities | Re-run official advisory and registry checks on the exact deployment SHA | npm clean install, pnpm frozen-lockfile validation, `npm audit --omit=dev --audit-level=high`, full `npm audit` and `docs/programme/react-architecture-handoff.md` |
 
 ## Required `main` ruleset
 

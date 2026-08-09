@@ -176,6 +176,7 @@ const bundles = Object.freeze({
       "docs/programme/creative-directions.md",
       "docs/programme/apple-caliber-craft-audit.md",
       "docs/programme/apple-caliber-continuation-matrix.md",
+      "docs/programme/react-architecture-handoff.md",
       "docs/programme/brand-governance.md",
     ],
   },
@@ -241,7 +242,13 @@ const bundles = Object.freeze({
       "Performance budgets, local Lighthouse coverage and image/runtime controls exist; production 75th-percentile field evidence does not.",
     code: ["scripts/validate-seo-authority.mjs", "scripts/test-ai-performance.mjs", "scripts/run-portal-lighthouse.mjs"],
     tests: ["scripts/test-ai-performance.mjs", "scripts/run-portal-lighthouse.mjs", "scripts/run-status-lighthouse.mjs"],
-    docs: ["performance/performance-report.md", "audit/ai-performance-report.md", "docs/programme/design-system.md"],
+    docs: [
+      "performance/performance-report.md",
+      "audit/ai-performance-report.md",
+      "docs/programme/design-system.md",
+      "docs/programme/final-performance-acceptance.md",
+      "docs/programme/react-architecture-handoff.md",
+    ],
   },
   content: {
     implementation:

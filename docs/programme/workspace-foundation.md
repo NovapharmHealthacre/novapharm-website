@@ -13,12 +13,12 @@ This foundation establishes the shared contracts that all NovaPharm applications
 | Control | Implemented value | Validation |
 |---|---|---|
 | Runtime | Node.js 24.x | Repository engine and CI runtime |
-| Workspace manager | pnpm 11.9.x | `pnpm-lock.yaml` and supply-chain policy check |
+| Workspace manager | pnpm 11.9.x | `pnpm-lock.yaml` and immutable CI frozen-lockfile check |
 | Task orchestration | Turborepo 2.10.7 | 18 package tasks run successfully |
 | Language | TypeScript 7.0.2 in strict, no-emit mode | Workspace and package type checks |
 | Legacy-release compatibility | npm lock retained temporarily | Existing Pages and backend workflows continue to use `npm ci` during the strangler migration |
 
-The temporary npm lock is deliberate. The existing GitHub Pages and Node release workflows remain reproducible while applications are migrated. It must be removed, together with npm-specific workflow steps, before the ADR acceptance condition of one estate lockfile can be marked complete.
+The temporary npm lock is deliberate. The existing GitHub Pages and Node release workflows remain reproducible while applications are migrated. CI installs the npm graph and independently rejects a stale pnpm workspace lock. The npm lock must be removed, together with npm-specific workflow steps, before the ADR acceptance condition of one estate lockfile can be marked complete.
 
 ## Shared packages
 
