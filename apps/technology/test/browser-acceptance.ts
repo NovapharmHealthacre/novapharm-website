@@ -113,6 +113,20 @@ async function startServer(): Promise<void> {
   await waitForServer(`${baseUrl}/`);
 }
 
+async function verifyParserExecutedBootstrap(): Promise<void> {
+  const response = await fetch(`${baseUrl}/`);
+  assert.equal(response.status, 200, "Technology bootstrap probe did not return 200");
+  const html = await response.text();
+  const script = html.match(
+    /<script(?=[^>]*\bid="technology-javascript-mode")(?=[^>]*\bnonce="[^"]+")[^>]*>document\.documentElement\.classList\.remove\("no-js"\);document\.documentElement\.classList\.add\("js"\);<\/script>/u,
+  );
+  assert.ok(script, "Technology JavaScript-mode bootstrap must be a nonce-bearing parser script");
+  assert.ok(
+    html.indexOf(script[0]) < html.indexOf("<body"),
+    "Technology JavaScript-mode bootstrap must execute before the body is parsed",
+  );
+}
+
 function routeName(route: string): string {
   return route === "/" ? "home" : route.replace(/^\//, "").replace(/\/$/, "").replaceAll("/", "--");
 }
@@ -253,6 +267,7 @@ async function runEngine(name: string, browserType: BrowserType): Promise<void> 
 await fs.rm(artifactRoot, { recursive: true, force: true });
 try {
   await startServer();
+  await verifyParserExecutedBootstrap();
   await runEngine("chromium", chromium);
   await runEngine("webkit", webkit);
   await verifyNoJavaScript(chromium, "chromium");

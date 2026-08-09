@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
-import Script from "next/script";
 import { SiteChrome } from "@/components/chrome";
 import { JsonLdScript } from "@/components/json-ld";
 import { founderPersonSchema, websiteSchema } from "@/lib/seo";
@@ -39,9 +38,9 @@ export default async function RootLayout({
   return (
     <html className="no-js" lang="en-GB" suppressHydrationWarning>
       <head>
-        <Script id="founder-javascript-mode" nonce={nonce} strategy="beforeInteractive">
+        <script id="founder-javascript-mode" nonce={nonce}>
           {'document.documentElement.classList.remove("no-js");document.documentElement.classList.add("js");'}
-        </Script>
+        </script>
       </head>
       <body>
         <JsonLdScript data={websiteSchema()} />

@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
-import Script from "next/script";
 import "./globals.css";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
@@ -70,13 +69,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html className="no-js" lang="en-GB" suppressHydrationWarning>
       <head>
-        <Script
-          id="technology-javascript-mode"
-          nonce={nonce}
-          strategy="beforeInteractive"
-        >
+        <script id="technology-javascript-mode" nonce={nonce}>
           {'document.documentElement.classList.remove("no-js");document.documentElement.classList.add("js");'}
-        </Script>
+        </script>
       </head>
       <body>
         <a className="skip-link" href="#main-content">Skip to main content</a>
