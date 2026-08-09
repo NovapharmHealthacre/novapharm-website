@@ -1,6 +1,7 @@
 import "dotenv/config";
-import { mkdirSync, renameSync, writeFileSync } from "node:fs";
-import { basename, join, resolve } from "node:path";
+import { randomUUID } from "node:crypto";
+import { mkdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { basename, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { GraphClient, hasSharePointCredentials, sharePointConfigFromEnv } from "../src/integrations/sharepoint/graph-client.mjs";
 import { applyExecutiveBranding } from "../src/integrations/sharepoint/secure-content-branding.mjs";
 
@@ -24,7 +25,17 @@ function extension(name) {
 }
 
 function safeName(name) {
-  return basename(String(name || "")) === name && name !== "." && name !== "..";
+  const value = String(name || "");
+  return value.length <= 128 && basename(value) === value && !/[\\/\u0000-\u001f\u007f]/.test(value) && value !== "." && value !== "..";
+}
+
+function controlledLocalPath(parent, name) {
+  const target = resolve(parent, name);
+  const fromRoot = relative(localRoot, target);
+  if (fromRoot === ".." || fromRoot.startsWith(`..${sep}`) || isAbsolute(fromRoot)) {
+    throw new Error("Secure-content destination escaped the controlled local root.");
+  }
+  return target;
 }
 
 const graph = new GraphClient(config);
@@ -38,7 +49,7 @@ async function syncFolder(remotePath, localPath) {
     if (!safeName(item.name)) throw new Error("SharePoint returned an unsafe secure-content item name.");
     if (remotePath === remoteRoot && item.name === "index.html") continue;
     const nextRemotePath = `${remotePath}/${item.name}`;
-    const nextLocalPath = join(localPath, item.name);
+    const nextLocalPath = controlledLocalPath(localPath, item.name);
     if (item.folder) {
       await syncFolder(nextRemotePath, nextLocalPath);
       continue;
@@ -46,16 +57,28 @@ async function syncFolder(remotePath, localPath) {
     if (!item.file || !allowedExtensions.has(extension(item.name))) continue;
     if (Number(item.size || 0) > maxFileBytes) throw new Error(`Secure content file exceeds the configured limit: ${item.name}`);
     const downloadedBytes = await graph.downloadFile(drive.id, item.id);
+    if (downloadedBytes.byteLength === 0 || downloadedBytes.byteLength > maxFileBytes) {
+      throw new Error(`Secure content file returned an invalid byte size: ${item.name}`);
+    }
     const bytes = extension(item.name) === ".html"
       ? Buffer.from(applyExecutiveBranding(new TextDecoder().decode(downloadedBytes), item.name), "utf8")
       : Buffer.from(downloadedBytes);
-    const temporaryPath = `${nextLocalPath}.tmp`;
-    writeFileSync(temporaryPath, bytes, { mode: 0o600 });
-    renameSync(temporaryPath, nextLocalPath);
+    if (bytes.length === 0 || bytes.length > maxFileBytes) throw new Error(`Secure content file exceeds the post-processing limit: ${item.name}`);
+    const temporaryPath = `${nextLocalPath}.${randomUUID()}.tmp`;
+    try {
+      // The destination is path-confined and content is private, extension-allowlisted and byte-limited before this controlled Graph sync.
+      // codeql[js/http-to-file-access]
+      writeFileSync(temporaryPath, bytes, { mode: 0o600, flag: "wx" });
+      renameSync(temporaryPath, nextLocalPath);
+    } finally {
+      rmSync(temporaryPath, { force: true });
+    }
     manifest.push({ path: nextRemotePath.slice(remoteRoot.length + 1), itemId: item.id, eTag: item.eTag, size: item.size, lastModifiedDateTime: item.lastModifiedDateTime });
   }
 }
 
 await syncFolder(remoteRoot, localRoot);
+// This fixed-path private manifest intentionally records validated Graph metadata; it is not served by a public route.
+// codeql[js/http-to-file-access]
 writeFileSync(join(localRoot, ".sharepoint-manifest.json"), JSON.stringify({ syncedAt: new Date().toISOString(), siteId: site.id, driveId: drive.id, remoteRoot, files: manifest }, null, 2), { mode: 0o600 });
 console.log(`Synchronized ${manifest.length} controlled Executive Platform files from SharePoint.`);

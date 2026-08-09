@@ -1,4 +1,4 @@
-import { createHash, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { audit } from "../../data/database.mjs";
 
 export async function recordAiReviewEvent({ actor, useCaseId, input, recordCount, outcome, provider, persist = true }) {
@@ -8,9 +8,9 @@ export async function recordAiReviewEvent({ actor, useCaseId, input, recordCount
     useCaseId,
     provider,
     outcome,
-    inputSha256: createHash("sha256").update(String(input || "")).digest("hex"),
     inputCharacters: String(input || "").length,
     recordCount: Number(recordCount || 0),
+    inputFingerprintStored: false,
     promptBodyStored: false,
     humanReviewRequired: true,
     productionWriteAllowed: false

@@ -12,6 +12,15 @@ const credentialsPath = join(runtimeRoot, "credentials.json");
 const pidPath = join(runtimeRoot, "server.pid");
 const logPath = join(runtimeRoot, "server.log");
 
+function readOptionalText(path) {
+  try {
+    return readFileSync(path, "utf8");
+  } catch (error) {
+    if (error?.code === "ENOENT") return null;
+    throw error;
+  }
+}
+
 if (Number(process.versions.node.split(".")[0]) !== 24) throw new Error(`Node.js 24 is required. Current runtime: ${process.version}.`);
 mkdirSync(runtimeRoot, { recursive: true, mode: 0o700 });
 assertBrowserValidationRoot(runtimeRoot);
@@ -119,19 +128,17 @@ chmodSync(pidPath, 0o600);
 child.unref();
 
 const started = Date.now();
-let childRunning = true;
 let childReady = false;
 while (Date.now() - started < 30000) {
-  try { process.kill(child.pid, 0); }
-  catch { childRunning = false; break; }
   childReady = await ready();
   if (childReady) break;
   await new Promise((resolvePromise) => setTimeout(resolvePromise, 300));
 }
-if (!childRunning || !childReady) {
+if (!childReady) {
   try { process.kill(child.pid, "SIGTERM"); } catch {}
   rmSync(pidPath, { force: true });
-  const tail = existsSync(logPath) ? readFileSync(logPath, "utf8").split(/\r?\n/).slice(-20).join("\n") : "No log was created.";
+  const log = readOptionalText(logPath);
+  const tail = log === null ? "No log was created." : log.split(/\r?\n/).slice(-20).join("\n");
   throw new Error(`Browser validation server did not become ready.\n${tail}`);
 }
 

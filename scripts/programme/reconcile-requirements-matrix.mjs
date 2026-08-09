@@ -194,13 +194,25 @@ const bundles = Object.freeze({
   },
   security: {
     implementation:
-      "Shared security policy, API/portal trust boundaries, secret scanning and CodeQL workflow exist; live controls and independent penetration testing remain separate gates.",
-    code: ["packages/security/src/index.ts", "server.mjs", ".github/workflows/codeql.yml", "scripts/scan-secrets.mjs"],
+      "Shared security policy, API/portal trust boundaries, keyed non-password digests, fixed application-owned redirects, structured HTML parsing, descriptor-stable file access, secret scanning and CodeQL workflow exist; live controls and independent penetration testing remain separate gates.",
+    code: [
+      "packages/security/src/index.ts",
+      "server.mjs",
+      "src/security/keyed-digest.mjs",
+      "apps/portal/data/routes.ts",
+      "scripts/lib/html-text.mjs",
+      ".github/workflows/codeql.yml",
+      "scripts/scan-secrets.mjs",
+    ],
     tests: [
       "packages/security/test/security.test.ts",
+      "packages/forms/test/forms.test.ts",
       "scripts/test-production-security.mjs",
       "scripts/test-preview-security.mjs",
       "scripts/test-portal-gateway-identity.mjs",
+      "scripts/test-keyed-digest.mjs",
+      "scripts/test-html-text.mjs",
+      "scripts/test-internal-ai-gateway.mjs",
     ],
     docs: ["docs/programme/threat-model.md", "docs/programme/security-governance-gates.md", "security/security-test-report.md"],
   },
@@ -269,7 +281,7 @@ const bundles = Object.freeze({
   },
   supplyChain: {
     implementation:
-      "CODEOWNERS, Dependabot, CodeQL, dependency review, SBOM generation, licence policy, release checksums, Changesets and immutable action SHAs are repository-controlled; account-level GitHub governance remains externally controlled.",
+      "CODEOWNERS, Dependabot, CodeQL, dependency review, patched lockfile overrides, SBOM generation, licence policy, release checksums, Changesets and immutable action SHAs are repository-controlled; account-level GitHub governance remains externally controlled.",
     code: [
       ".github/CODEOWNERS",
       ".github/dependabot.yml",
@@ -277,6 +289,9 @@ const bundles = Object.freeze({
       ".github/workflows/supply-chain.yml",
       ".changeset/config.json",
       "config/dependency-license-policy.json",
+      "package-lock.json",
+      "pnpm-lock.yaml",
+      "pnpm-workspace.yaml",
       "scripts/validate-supply-chain.mjs",
     ],
     tests: [

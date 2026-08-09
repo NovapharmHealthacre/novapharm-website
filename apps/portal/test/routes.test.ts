@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { portalModules, visiblePortalModules } from "@novapharm/portal-contracts";
-import { areaLandingRoutes, normalisePortalPath, resolvePortalView } from "../data/routes";
+import { areaLandingRoutes, isPortalAccessType, landingRouteForAccess, normalisePortalPath, resolvePortalView } from "../data/routes";
 
 test("only release-visible governed modules resolve through the component portal", () => {
   for (const module of portalModules) {
@@ -27,6 +27,10 @@ test("login, password replacement and legacy board aliases remain controlled", (
 
 test("area landing routes are canonical and unknown routes fail closed", () => {
   assert.equal(areaLandingRoutes.admin, "/admin/dashboard/");
+  assert.equal(landingRouteForAccess("board"), "/portal/executive-platform/");
+  assert.equal(landingRouteForAccess("customer"), "/portal/dashboard/");
+  assert.equal(isPortalAccessType("admin"), true);
+  assert.equal(isPortalAccessType("https://attacker.example"), false);
   assert.equal(normalisePortalPath("/employee/dashboard?ignored=true"), "/employee/dashboard/");
   assert.equal(resolvePortalView("/public-data/"), null);
 });

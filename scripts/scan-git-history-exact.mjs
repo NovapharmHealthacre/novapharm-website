@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync, statSync } from "node:fs";
+import { closeSync, fstatSync, openSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const args = process.argv.slice(2);
@@ -13,10 +13,15 @@ if (!repositoryInput || !protectedInput) {
 
 const repository = resolve(repositoryInput);
 const protectedFile = resolve(protectedInput);
-const mode = statSync(protectedFile).mode & 0o777;
-if ((mode & 0o077) !== 0) throw new Error("Protected input must not be readable by group or other users.");
-
-const needle = readFileSync(protectedFile);
+const protectedDescriptor = openSync(protectedFile, "r");
+let needle;
+try {
+  const mode = fstatSync(protectedDescriptor).mode & 0o777;
+  if ((mode & 0o077) !== 0) throw new Error("Protected input must not be readable by group or other users.");
+  needle = readFileSync(protectedDescriptor);
+} finally {
+  closeSync(protectedDescriptor);
+}
 if (needle.length < 6 || needle.includes(0x0a) || needle.includes(0x0d)) {
   throw new Error("Protected input must be a single value of at least six bytes.");
 }

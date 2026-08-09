@@ -142,7 +142,9 @@ async function login(browser: Browser, area: PortalArea): Promise<StoredBrowserS
 async function verifyAuthenticationBoundaries(browser: Browser, engine: string): Promise<void> {
   const rejected = await fetch(`${portalOrigin}/admin/dashboard/`, { redirect: "manual" });
   assert.ok([307, 308].includes(rejected.status), `${engine}: protected route was not rejected before authentication`);
-  assert.match(rejected.headers.get("location") ?? "", /returnTo=%2Fadmin%2Fdashboard%2F/);
+  const loginLocation = new URL(rejected.headers.get("location") ?? "/", portalOrigin);
+  assert.equal(loginLocation.pathname, "/");
+  assert.equal(loginLocation.search, "", `${engine}: protected paths must not be reflected into a login redirect`);
 
   const context = await browser.newContext(contextOptions());
   try {

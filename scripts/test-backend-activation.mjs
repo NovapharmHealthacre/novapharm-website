@@ -40,13 +40,14 @@ function decodedMimeParts(encodedMime) {
 }
 const originalFetch = globalThis.fetch;
 globalThis.fetch = async (url, options = {}) => {
-  if (String(url).includes("login.microsoftonline.com")) {
+  const requestUrl = new URL(String(url));
+  if (requestUrl.protocol === "https:" && requestUrl.hostname === "login.microsoftonline.com") {
     return new Response(JSON.stringify({ access_token: "synthetic-validation-token", expires_in: 3600 }), {
       status: 200,
       headers: { "content-type": "application/json" }
     });
   }
-  if (String(url).includes("graph.microsoft.com") && String(url).endsWith("/sendMail")) {
+  if (requestUrl.protocol === "https:" && requestUrl.hostname === "graph.microsoft.com" && requestUrl.pathname.endsWith("/sendMail")) {
     assert.equal(options.headers["Content-Type"], "text/plain");
     graphRequests.push(decodedMimeParts(options.body));
     if (!graphThrottled) {
@@ -55,7 +56,7 @@ globalThis.fetch = async (url, options = {}) => {
     }
     return new Response(null, { status: 202 });
   }
-  throw new Error(`Unexpected external request in backend activation test: ${url}`);
+  throw new Error(`Unexpected external request in backend activation test: ${requestUrl.origin}${requestUrl.pathname}`);
 };
 
 const { handleRequest } = await import("../server.mjs");

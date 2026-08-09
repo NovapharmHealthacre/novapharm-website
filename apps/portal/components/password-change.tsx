@@ -2,6 +2,7 @@
 
 import { ShieldCheck } from "lucide-react";
 import { type FormEvent, useState } from "react";
+import { isPortalAccessType, landingRouteForAccess } from "../data/routes";
 import { professionalError, protectedMutation } from "../lib/gateway";
 import { PortalBrand } from "./portal-brand";
 
@@ -22,13 +23,14 @@ export function PasswordChange() {
       return;
     }
     try {
-      const result = await protectedMutation<{ redirectTo: string }>("auth/change-password", {
+      const result = await protectedMutation<{ accessType: string }>("auth/change-password", {
         currentPassword: form.get("currentPassword"),
         newPassword,
         confirmation,
       });
+      if (!isPortalAccessType(result.accessType)) throw new Error("The authorised portal area could not be verified after the password change.");
       setStatus("Password updated. Your other sessions have been signed out.");
-      window.location.replace(result.redirectTo);
+      window.location.replace(landingRouteForAccess(result.accessType));
     } catch (error) {
       setStatus(professionalError(error));
     } finally {

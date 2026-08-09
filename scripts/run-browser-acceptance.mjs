@@ -1,6 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { closeSync, fstatSync, mkdirSync, openSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { chromium, webkit } from "playwright";
@@ -14,9 +14,14 @@ const shardId = process.env.VISUAL_SHARD_ID || "local-full-matrix";
 const viewportGroup = process.env.VISUAL_VIEWPORT_GROUP || "all";
 
 if (!process.env.VISUAL_CREDENTIALS_PATH) throw new Error("VISUAL_CREDENTIALS_PATH is required.");
-if ((statSync(credentialsPath).mode & 0o077) !== 0) throw new Error("Visual credentials must not be readable by group or other users.");
-
-const credentials = JSON.parse(readFileSync(credentialsPath, "utf8"));
+const credentialsDescriptor = openSync(credentialsPath, "r");
+let credentials;
+try {
+  if ((fstatSync(credentialsDescriptor).mode & 0o077) !== 0) throw new Error("Visual credentials must not be readable by group or other users.");
+  credentials = JSON.parse(readFileSync(credentialsDescriptor, "utf8"));
+} finally {
+  closeSync(credentialsDescriptor);
+}
 if (!credentials.username || !credentials.password) throw new Error("Synthetic visual credentials are incomplete.");
 
 let engines = [

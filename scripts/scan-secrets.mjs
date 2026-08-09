@@ -1,4 +1,4 @@
-import { existsSync, lstatSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { closeSync, fstatSync, lstatSync, openSync, readFileSync, readdirSync } from "node:fs";
 import { basename, extname, join, relative, resolve } from "node:path";
 import { execFileSync } from "node:child_process";
 
@@ -47,17 +47,27 @@ for (const path of trackedFiles) {
   const absolutePath = join(root, path);
   const name = basename(path);
   if (forbiddenNames.some((pattern) => pattern.test(name))) failures.push(`${path}: tracked forbidden development or secret-bearing artefact`);
-  if (existsSync(absolutePath) && lstatSync(absolutePath).isSymbolicLink()) failures.push(`${path}: tracked symbolic links are not permitted`);
+  try {
+    if (lstatSync(absolutePath).isSymbolicLink()) failures.push(`${path}: tracked symbolic links are not permitted`);
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+  }
 }
 for (const file of files) {
   const name = basename(file);
   if (ignoredLocalFiles.has(name)) continue;
   const path = relative(root, file);
   if (forbiddenNames.some((pattern) => pattern.test(name))) failures.push(`${path}: forbidden development or secret-bearing artefact`);
-  if (binaryExtensions.has(extname(name).toLowerCase()) || statSync(file).size > 2 * 1024 * 1024) continue;
-  const content = readFileSync(file, "utf8");
-  for (const [label, pattern] of secretPatterns) {
-    if (pattern.test(content)) failures.push(`${path}: possible ${label}`);
+  if (binaryExtensions.has(extname(name).toLowerCase())) continue;
+  const descriptor = openSync(file, "r");
+  try {
+    if (fstatSync(descriptor).size > 2 * 1024 * 1024) continue;
+    const content = readFileSync(descriptor, "utf8");
+    for (const [label, pattern] of secretPatterns) {
+      if (pattern.test(content)) failures.push(`${path}: possible ${label}`);
+    }
+  } finally {
+    closeSync(descriptor);
   }
 }
 

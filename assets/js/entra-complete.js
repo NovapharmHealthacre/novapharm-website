@@ -14,7 +14,10 @@ async function completeFederatedLogin() {
       body: JSON.stringify({ accessType })
     });
     if (status) status.textContent = "Access verified. Opening the authorised portal...";
-    window.location.replace(result.redirectTo || "/portal/dashboard/");
+    if (!["customer", "employee", "board", "admin"].includes(result.accessType) || result.accessType !== accessType) {
+      throw new Error("The authorised portal area did not match the requested workspace.");
+    }
+    window.location.replace(window.NovaPharmApi.portalLandingRoute(result.accessType));
   } catch (error) {
     if (status) {
       status.textContent = window.NovaPharmApi.friendlyError(error, "login");

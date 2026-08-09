@@ -4,10 +4,11 @@ import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { oncologyContent } from "../src/content/oncology-content.mjs";
 import { navigation, pageMeta } from "../src/content/site-content.mjs";
+import { visibleTextFromHtml } from "./lib/html-text.mjs";
 
 const root = resolve(process.cwd());
 const html = readFileSync(join(root, "oncology/index.html"), "utf8");
-const visible = html.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim();
+const visible = visibleTextFromHtml(html);
 
 assert.deepEqual(navigation.find(([, href]) => href === "/oncology/"), ["Oncology", "/oncology/"]);
 assert.ok(pageMeta.oncology?.title.includes("Oncology"));

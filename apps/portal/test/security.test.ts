@@ -32,7 +32,19 @@ test("the browser gateway uses a fixed API origin and a route allowlist", () => 
 test("authentication and writes require fresh CSRF tokens and keep credentials out of storage", () => {
   const gateway = source("lib/gateway.ts");
   const login = source("components/login-panel.tsx");
+  const entra = source("components/entra-complete.tsx");
+  const passwordChange = source("components/password-change.tsx");
   assert.match(gateway, /security\/csrf/);
   assert.match(gateway, /X-CSRF-Token/);
   assert.doesNotMatch(`${gateway}\n${login}`, /localStorage|sessionStorage/);
+  assert.doesNotMatch(`${login}\n${entra}\n${passwordChange}`, /result\.redirectTo|returnTo/);
+  assert.match(`${login}\n${entra}\n${passwordChange}`, /landingRouteForAccess/);
+});
+
+test("legacy portal clients use fixed application-owned destinations", () => {
+  const clients = ["../../assets/js/portal-login.js", "../../assets/js/entra-complete.js", "../../assets/js/password-change.js", "../../assets/js/portal-app.js"]
+    .map((file) => source(file))
+    .join("\n");
+  assert.doesNotMatch(clients, /\.redirectTo|logoutUrl/);
+  assert.match(clients, /portalLandingRoute|post_logout_redirect_uri/);
 });

@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import { chmodSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { all, audit, closeDatabase, nowIso, one, run, transaction } from "../../src/data/database.mjs";
@@ -29,7 +29,11 @@ function ensureSyntheticDocument(fileName, body) {
   mkdirSync(directory, { recursive: true, mode: 0o700 });
   const path = join(directory, fileName);
   const bytes = Buffer.from(body);
-  if (!existsSync(path)) writeFileSync(path, bytes, { mode: 0o600, flag: "wx" });
+  try {
+    writeFileSync(path, bytes, { mode: 0o600, flag: "wx" });
+  } catch (error) {
+    if (error?.code !== "EEXIST") throw error;
+  }
   chmodSync(path, 0o600);
   return { path, bytes, checksum: createHash("sha256").update(bytes).digest("hex") };
 }

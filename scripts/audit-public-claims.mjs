@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { parse } from "parse5";
 
 const root = resolve(process.cwd());
 const siteUrl = "https://novapharmhealthcare.com";
@@ -11,16 +12,16 @@ function pagePath(route) {
 }
 
 function visibleText(html) {
-  return html
-    .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
-    .replace(/<[^>]+>/g, " ")
-    .replaceAll("&amp;", "&")
-    .replaceAll("&#39;", "'")
-    .replaceAll("&quot;", '"')
-    .replaceAll("&nbsp;", " ")
-    .replace(/\s+/g, " ")
-    .trim();
+  const excludedElements = new Set(["script", "style", "noscript", "template"]);
+  const fragments = [];
+  const visit = (node, excluded = false) => {
+    const hidden = excluded || excludedElements.has(String(node.tagName || "").toLowerCase());
+    if (!hidden && node.nodeName === "#text") fragments.push(String(node.value || ""));
+    if (hidden) return;
+    for (const child of node.childNodes || []) visit(child, hidden);
+  };
+  visit(parse(html));
+  return fragments.join(" ").replace(/\s+/g, " ").trim();
 }
 
 const prohibitedClaims = [

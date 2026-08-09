@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { closeSync, ftruncateSync, openSync, readFileSync, readdirSync, rmSync, writeSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 const root = resolve(process.cwd());
@@ -9,6 +9,28 @@ const excludedTopLevel = new Set([
   "research", "scripts", "security", "seo", "sharepoint", "src", "tests"
 ]);
 const retiredPublicRoutes = ["/search/", "/technology/ai-governance/"];
+
+function rewriteTextFile(path, transform, { optional = false } = {}) {
+  let descriptor;
+  try {
+    descriptor = openSync(path, "r+");
+  } catch (error) {
+    if (optional && error?.code === "ENOENT") return false;
+    throw error;
+  }
+  try {
+    const source = readFileSync(descriptor, "utf8");
+    const output = transform(source);
+    if (typeof output !== "string") throw new Error(`Text rewrite did not return text for ${path}.`);
+    if (output !== source) {
+      ftruncateSync(descriptor, 0);
+      writeSync(descriptor, output, 0, "utf8");
+    }
+    return true;
+  } finally {
+    closeSync(descriptor);
+  }
+}
 
 function walkHtml(directory, relative = "") {
   const files = [];
@@ -55,16 +77,24 @@ function removeRetiredSitemapBlocks(xml) {
 
 function filterGeneratedRouteRegisters() {
   const directory = join(root, "seo", "generated");
-  if (!existsSync(directory)) return;
-  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+  let entries;
+  try {
+    entries = readdirSync(directory, { withFileTypes: true });
+  } catch (error) {
+    if (error?.code === "ENOENT") return;
+    throw error;
+  }
+  for (const entry of entries) {
     if (!entry.isFile() || !entry.name.endsWith(".json")) continue;
     const target = join(directory, entry.name);
-    let parsed;
-    try { parsed = JSON.parse(readFileSync(target, "utf8")); }
-    catch { continue; }
-    if (!Array.isArray(parsed)) continue;
-    const filtered = parsed.filter((item) => !retiredPublicRoutes.includes(item?.route));
-    if (filtered.length !== parsed.length) writeFileSync(target, `${JSON.stringify(filtered, null, 2)}\n`);
+    rewriteTextFile(target, (source) => {
+      let parsed;
+      try { parsed = JSON.parse(source); }
+      catch { return source; }
+      if (!Array.isArray(parsed)) return source;
+      const filtered = parsed.filter((item) => !retiredPublicRoutes.includes(item?.route));
+      return filtered.length === parsed.length ? source : `${JSON.stringify(filtered, null, 2)}\n`;
+    });
   }
 }
 
@@ -73,52 +103,49 @@ const prabhakarCard = `<a class="cro-leader" href="/leadership/prabhakar-lahare/
 const oncologyGallery = `<section class="section oncology-editorial-gallery" data-reveal><div class="container"><div class="section-head"><span class="section-kicker">Oncology operating contexts</span><h2>Product, formulation and controlled handling must be read together.</h2><p>Original Oncology-specific editorial visuals connect product pathways, accountable evidence handovers and condition-sensitive custody.</p></div><div class="oncology-editorial-grid"><figure><img src="/assets/media/oncology/oncology-formulation-pathways.svg" alt="Abstract oncology formulation pathways connecting vial, liquid and specialist presentations" width="1600" height="900" loading="lazy" decoding="async"><figcaption>Formulation and presentation pathways</figcaption></figure><figure><img src="/assets/media/oncology/oncology-evidence-continuity.svg" alt="Abstract controlled records and decision gates across an oncology programme" width="1600" height="900" loading="lazy" decoding="async"><figcaption>Programme evidence continuity</figcaption></figure><figure><img src="/assets/media/oncology/oncology-condition-control.svg" alt="Abstract specialist packaging, temperature evidence and custody checkpoints" width="1600" height="900" loading="lazy" decoding="async"><figcaption>Condition and custody control</figcaption></figure></div></div></section>`;
 
 for (const file of walkHtml(root)) {
-  let html = readFileSync(file.absolute, "utf8");
-  html = removePublicAi(html);
+  rewriteTextFile(file.absolute, (source) => {
+    let html = removePublicAi(source);
 
-  if (file.relative === "cro/index.html" && !html.includes("/leadership/prabhakar-lahare/")) {
-    const marker = '<a class="cro-leader" href="/leadership/girish-achliya/">';
-    const start = html.indexOf(marker);
-    if (start < 0) throw new Error("CRO leadership marker was not found.");
-    const end = html.indexOf("</a>", start);
-    if (end < 0) throw new Error("CRO leadership card boundary was not found.");
-    html = `${html.slice(0, end + 4)}${prabhakarCard}${html.slice(end + 4)}`;
-  }
+    if (file.relative === "cro/index.html" && !html.includes("/leadership/prabhakar-lahare/")) {
+      const marker = '<a class="cro-leader" href="/leadership/girish-achliya/">';
+      const start = html.indexOf(marker);
+      if (start < 0) throw new Error("CRO leadership marker was not found.");
+      const end = html.indexOf("</a>", start);
+      if (end < 0) throw new Error("CRO leadership card boundary was not found.");
+      html = `${html.slice(0, end + 4)}${prabhakarCard}${html.slice(end + 4)}`;
+    }
 
-  if (file.relative === "oncology/index.html" && !html.includes("oncology-editorial-gallery")) {
-    const marker = '<section class="section oncology-readiness"';
-    const index = html.indexOf(marker);
-    if (index < 0) throw new Error("Oncology readiness marker was not found.");
-    html = `${html.slice(0, index)}${oncologyGallery}${html.slice(index)}`;
-  }
+    if (file.relative === "oncology/index.html" && !html.includes("oncology-editorial-gallery")) {
+      const marker = '<section class="section oncology-readiness"';
+      const index = html.indexOf(marker);
+      if (index < 0) throw new Error("Oncology readiness marker was not found.");
+      html = `${html.slice(0, index)}${oncologyGallery}${html.slice(index)}`;
+    }
 
-  html = correctAccessibleRoles(html, file.relative);
-  writeFileSync(file.absolute, html);
+    return correctAccessibleRoles(html, file.relative);
+  });
 }
 
 for (const relative of ["search", "technology/ai-governance", "assets/ai"]) {
-  const target = join(root, relative);
-  if (existsSync(target)) rmSync(target, { recursive: true, force: true });
+  rmSync(join(root, relative), { recursive: true, force: true });
 }
 for (const relative of ["assets/js/ai-search.js", "assets/css/ai-search.css"]) {
-  const target = join(root, relative);
-  if (existsSync(target) && statSync(target).isFile()) rmSync(target, { force: true });
+  rmSync(join(root, relative), { force: true });
 }
 
 for (const sitemapName of ["sitemap.xml", "sitemap-images.xml", "sitemap-insights.xml"]) {
   const target = join(root, sitemapName);
-  if (!existsSync(target)) continue;
-  writeFileSync(target, removeRetiredSitemapBlocks(readFileSync(target, "utf8")));
+  rewriteTextFile(target, removeRetiredSitemapBlocks, { optional: true });
 }
 filterGeneratedRouteRegisters();
 
 const robotsPath = join(root, "robots.txt");
-if (existsSync(robotsPath)) {
-  const robots = readFileSync(robotsPath, "utf8")
+rewriteTextFile(robotsPath, (source) => {
+  const robots = source
     .split("\n")
     .filter((line) => !retiredPublicRoutes.some((route) => line.includes(route)))
     .join("\n");
-  writeFileSync(robotsPath, robots.endsWith("\n") ? robots : `${robots}\n`);
-}
+  return robots.endsWith("\n") ? robots : `${robots}\n`;
+}, { optional: true });
 
 console.log("Applied owner corrections: public AI/search removed, CRO leadership completed, Oncology imagery expanded and ARIA semantics corrected.");

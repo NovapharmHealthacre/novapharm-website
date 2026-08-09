@@ -1,12 +1,13 @@
-import { createHash, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
+import { randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
 import { all, nowIso, one, run, transaction } from "../data/database.mjs";
+import { keyedDigest } from "../security/keyed-digest.mjs";
 
 const uploadTtlMs = Number(process.env.APPLICATION_UPLOAD_TOKEN_TTL_MS || 30 * 60 * 1000);
 const resumeTtlMs = Number(process.env.APPLICATION_RESUME_TOKEN_TTL_MS || 24 * 60 * 60 * 1000);
 const maximumFiles = 10;
 
 function tokenHash(secret) {
-  return createHash("sha256").update(secret).digest("hex");
+  return keyedDigest(secret, { purpose: "application-upload-token" });
 }
 
 function tokenParts(token) {

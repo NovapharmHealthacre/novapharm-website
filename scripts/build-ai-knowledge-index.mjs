@@ -5,6 +5,7 @@ import { leadership, pageMeta } from "../src/content/site-content.mjs";
 import { chunkPublicSources } from "../src/ai/content-chunker.mjs";
 import { buildKeywordIndex } from "../src/ai/keyword-index.mjs";
 import { PUBLIC_SEMANTIC_MODEL, SEMANTIC_GROUPS, embedText } from "../src/ai/model-registry.mjs";
+import { extractVisibleBlocks } from "./lib/html-text.mjs";
 
 const root = resolve(process.cwd());
 const siteUrl = "https://novapharmhealthcare.com";
@@ -19,38 +20,6 @@ function write(path, content) {
   const target = join(root, path);
   mkdirSync(dirname(target), { recursive: true });
   writeFileSync(target, content);
-}
-
-function decodeHtml(value) {
-  return String(value || "")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&#39;|&apos;/g, "'")
-    .replace(/&quot;/g, '"')
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&#(\d+);/g, (_, value) => String.fromCodePoint(Number(value)));
-}
-
-function visibleText(value) {
-  return decodeHtml(value.replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
-}
-
-function blocksFromHtml(html) {
-  const main = html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/i)?.[1];
-  if (!main) throw new Error("Approved AI source has no main landmark.");
-  const controlled = main
-    .replace(/<form\b[\s\S]*?<\/form>/gi, "")
-    .replace(/<script\b[\s\S]*?<\/script>/gi, "")
-    .replace(/<style\b[\s\S]*?<\/style>/gi, "")
-    .replace(/<nav\b[\s\S]*?<\/nav>/gi, "");
-  const blocks = [];
-  for (const match of controlled.matchAll(/<(h[1-4]|p|li|td|th|summary)\b[^>]*>([\s\S]*?)<\/\1>/gi)) {
-    const text = visibleText(match[2]);
-    if (text.length < 3) continue;
-    blocks.push({ type: /^h/i.test(match[1]) ? "heading" : "paragraph", text });
-  }
-  return blocks;
 }
 
 function routePath(slug) {
@@ -105,7 +74,7 @@ const sources = sourceDefinitions.map((source) => {
   if (/noindex/i.test(html.match(/<meta name="robots" content="([^"]+)"/i)?.[1] || "")) {
     throw new Error(`AI source ${source.file} is noindex.`);
   }
-  const blocks = blocksFromHtml(html);
+  const blocks = extractVisibleBlocks(html);
   if (!blocks.length) throw new Error(`AI source ${source.file} produced no approved blocks.`);
   return { ...source, blocks, sourceHash: sha256(blocks.map((block) => `${block.type}:${block.text}`).join("\n")) };
 });

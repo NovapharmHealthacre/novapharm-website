@@ -6,6 +6,8 @@ export type PortalView =
   | Readonly<{ kind: "entra-complete" }>
   | Readonly<{ kind: "module"; module: PortalModule }>;
 
+export type PortalAccessType = "customer" | "employee" | "board" | "admin";
+
 const legacyAliases = new Map<string, string>([
   ["/board/", "executive.command-centre"],
   ["/portal/executive-platform/", "executive.command-centre"],
@@ -32,6 +34,14 @@ export const areaLandingRoutes: Readonly<Record<PortalArea, string>> = Object.fr
   executive: "/portal/executive-platform/",
   admin: "/admin/dashboard/",
 });
+
+export function isPortalAccessType(value: unknown): value is PortalAccessType {
+  return value === "customer" || value === "employee" || value === "board" || value === "admin";
+}
+
+export function landingRouteForAccess(accessType: PortalAccessType): string {
+  return areaLandingRoutes[accessType === "board" ? "executive" : accessType];
+}
 
 export function normalisePortalPath(value: string): string {
   const pathname = new URL(value, "https://portal.novapharmhealthcare.com").pathname;

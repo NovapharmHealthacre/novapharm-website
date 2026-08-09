@@ -56,7 +56,12 @@ if (loginForm) {
         },
         body: JSON.stringify(payload)
       });
-      window.location.href = data.redirectTo || "/portal/dashboard/";
+      if (!["customer", "employee", "board", "admin"].includes(data.accessType) || data.accessType !== payload.accessType) {
+        throw new Error("The authorised portal area did not match the requested workspace.");
+      }
+      window.location.href = data.mustChangePassword === true
+        ? "/portal/change-password/"
+        : window.NovaPharmApi.portalLandingRoute(data.accessType);
     } catch (error) {
       if (error?.status === 0 || error?.status === 404 || error?.status === 503 || error?.code === "csrf_unavailable" || error?.code === "network_unavailable") {
         showRuntimeUnavailable();

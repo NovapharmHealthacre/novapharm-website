@@ -264,13 +264,9 @@ function responseSecurityHeaders(response, extra = {}, options = {}) {
   return securityHeaders({ ...corsHeaders, ...extra }, options);
 }
 
-function send(response, status, body, headers = {}) {
-  response.writeHead(status, responseSecurityHeaders(response, headers));
-  response.end(body);
-}
-
 function json(response, status, payload, headers = {}) {
-  send(response, status, JSON.stringify(payload), { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", ...headers });
+  response.writeHead(status, responseSecurityHeaders(response, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", ...headers }));
+  response.end(JSON.stringify(payload));
 }
 
 function parseCookies(request) {
@@ -606,7 +602,9 @@ export async function handleRequest(request, response) {
     const pathname = url.pathname;
 
     if (isApiOnly && pathname === "/robots.txt" && request.method === "GET") {
-      return send(response, 200, "User-agent: *\nDisallow: /\n", { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" });
+      response.writeHead(200, responseSecurityHeaders(response, { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" }));
+      response.end("User-agent: *\nDisallow: /\n");
+      return;
     }
     if (isApiOnly && !pathname.startsWith("/api/")) {
       return json(response, 404, { error: "Not found." });
@@ -626,11 +624,13 @@ export async function handleRequest(request, response) {
     }
 
     if (isPreview && !["/api/health", "/api/health/live", "/api/health/ready", "/api/live", "/api/ready", "/robots.txt"].includes(pathname) && !previewAccessAllowed(request.headers.authorization, previewUsername, previewPassword)) {
-      return send(response, 401, "Preview authentication required.", {
+      response.writeHead(401, responseSecurityHeaders(response, {
         "Content-Type": "text/plain; charset=utf-8",
         "Cache-Control": "no-store",
         "WWW-Authenticate": 'Basic realm="NovaPharm private preview", charset="UTF-8"'
-      });
+      }));
+      response.end("Preview authentication required.");
+      return;
     }
 
     if (pathname === "/api/security/csrf" && request.method === "GET") {
@@ -640,7 +640,8 @@ export async function handleRequest(request, response) {
     }
 
     if (pathname === "/robots.txt" && request.method === "GET" && (isPreview || isLocalPortal)) {
-      send(response, 200, "User-agent: *\nDisallow: /\n", { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" });
+      response.writeHead(200, responseSecurityHeaders(response, { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" }));
+      response.end("User-agent: *\nDisallow: /\n");
       return;
     }
 
@@ -697,7 +698,7 @@ export async function handleRequest(request, response) {
         fetchImplementation: isProduction ? globalThis.fetch : null
       });
       const sessionCookie = await createSession(user, existingSession.accessType);
-      json(response, 200, { ok: true, redirectTo: accessRedirects[existingSession.accessType] }, { "Set-Cookie": cookie("np_session", sessionCookie, { maxAge: Math.floor(sessionTtlMs / 1000) }) });
+      json(response, 200, { ok: true, accessType: existingSession.accessType, redirectTo: accessRedirects[existingSession.accessType] }, { "Set-Cookie": cookie("np_session", sessionCookie, { maxAge: Math.floor(sessionTtlMs / 1000) }) });
       return;
     }
 
@@ -705,7 +706,7 @@ export async function handleRequest(request, response) {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
       const session = await getSession(request);
       if (session) await revokePersistentSession(session.id);
-      json(response, 200, { ok: true, logoutUrl: session?.identityProvider?.startsWith("entra-") ? "/.auth/logout?post_logout_redirect_uri=/portal/" : "/portal/" }, { "Set-Cookie": cookie("np_session", "", { maxAge: 0 }) });
+      json(response, 200, { ok: true, federatedLogout: Boolean(session?.identityProvider?.startsWith("entra-")) }, { "Set-Cookie": cookie("np_session", "", { maxAge: 0 }) });
       return;
     }
 
@@ -1164,7 +1165,8 @@ export async function handleRequest(request, response) {
         response.writeHead(404, securityHeaders({ "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" }));
         createReadStream(notFoundPage).pipe(response);
       } else {
-        send(response, 404, "Not found", { "Content-Type": "text/plain; charset=utf-8" });
+        response.writeHead(404, responseSecurityHeaders(response, { "Content-Type": "text/plain; charset=utf-8" }));
+        response.end("Not found");
       }
       return;
     }

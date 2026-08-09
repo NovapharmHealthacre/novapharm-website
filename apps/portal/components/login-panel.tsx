@@ -2,7 +2,7 @@
 
 import { Building2, KeyRound, ShieldCheck, Users } from "lucide-react";
 import { type FormEvent, useState } from "react";
-import { areaLandingRoutes } from "../data/routes";
+import { isPortalAccessType, landingRouteForAccess } from "../data/routes";
 import { professionalError, protectedMutation } from "../lib/gateway";
 import { PortalBrand } from "./portal-brand";
 
@@ -15,13 +15,6 @@ const accessTypes = [
 
 type AccessType = (typeof accessTypes)[number]["value"];
 
-function destination(accessType: AccessType, responsePath: string): string {
-  const requested = new URLSearchParams(window.location.search).get("returnTo") ?? "";
-  if (requested.startsWith("/") && !requested.startsWith("//")) return requested;
-  if (responsePath.startsWith("/") && !responsePath.startsWith("//")) return responsePath;
-  return areaLandingRoutes[accessType === "board" ? "executive" : accessType];
-}
-
 export function LoginPanel() {
   const [accessType, setAccessType] = useState<AccessType>("customer");
   const [status, setStatus] = useState("");
@@ -33,12 +26,13 @@ export function LoginPanel() {
     setStatus("");
     const form = new FormData(event.currentTarget);
     try {
-      const result = await protectedMutation<{ redirectTo: string }>("auth/login", {
+      const result = await protectedMutation<{ accessType: string; mustChangePassword: boolean }>("auth/login", {
         username: form.get("username"),
         password: form.get("password"),
         accessType,
       });
-      window.location.assign(destination(accessType, result.redirectTo));
+      if (!isPortalAccessType(result.accessType) || result.accessType !== accessType) throw new Error("The authorised portal area did not match the requested workspace.");
+      window.location.assign(result.mustChangePassword ? "/portal/change-password/" : landingRouteForAccess(result.accessType));
     } catch (error) {
       setStatus(professionalError(error));
     } finally {

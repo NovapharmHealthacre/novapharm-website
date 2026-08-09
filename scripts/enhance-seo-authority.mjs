@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { company, leadership, pageMeta } from "../src/content/site-content.mjs";
+import { textContentFromFragment } from "./lib/html-text.mjs";
 import {
   INDEXNOW_KEY,
   INDEXNOW_KEY_URL,
@@ -49,7 +50,7 @@ function extract(html, pattern, fallback = "") {
 }
 
 function textContent(value = "") {
-  return value.replace(/<[^>]+>/g, " ").replace(/&amp;/g, "&").replace(/&#39;/g, "'").replace(/\s+/g, " ").trim();
+  return textContentFromFragment(value);
 }
 
 function canonicalOrganization() {

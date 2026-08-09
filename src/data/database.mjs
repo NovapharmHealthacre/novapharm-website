@@ -1,5 +1,6 @@
 import { AsyncLocalStorage } from "node:async_hooks";
-import { createHash, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
+import { keyedDigest } from "../security/keyed-digest.mjs";
 import { SqliteProvider } from "./providers/sqlite.mjs";
 
 const configuredProvider = String(process.env.DATABASE_PROVIDER || (process.env.AZURE_SQL_SERVER ? "azure-sql" : "sqlite")).trim().toLowerCase();
@@ -29,7 +30,7 @@ export function nowIso() {
 }
 
 export function stableHash(value) {
-  return createHash("sha256").update(JSON.stringify(value)).digest("hex");
+  return keyedDigest(value, { purpose: "database-record" });
 }
 
 export async function all(sql, ...params) {

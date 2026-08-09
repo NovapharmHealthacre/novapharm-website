@@ -34,3 +34,18 @@ test("honeypot submissions fail without entering ordinary validation flow", () =
   assert.equal(result.ok, false);
   assert.equal(result.botDetected, true);
 });
+
+test("business email validation is bounded and rejects malformed domains", () => {
+  for (const email of [
+    "missing-at.example.test",
+    "double@@example.test",
+    "contact@.example.test",
+    "contact@example..test",
+    "contact@example.test-",
+    `${"a".repeat(10_000)}@example.test`,
+  ]) {
+    const result = validateContactSubmission({ ...validInput, email });
+    assert.equal(result.ok, false, email.slice(0, 80));
+    assert.equal(result.errors["email"], "Enter a valid business email address.");
+  }
+});

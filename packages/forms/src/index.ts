@@ -59,6 +59,26 @@ function bounded(value: string, minimum: number, maximum: number): boolean {
   return value.length >= minimum && value.length <= maximum;
 }
 
+function validBusinessEmail(value: string): boolean {
+  if (!bounded(value, 3, 160)) return false;
+  const at = value.indexOf("@");
+  if (at <= 0 || at !== value.lastIndexOf("@") || at === value.length - 1) return false;
+  for (const character of value) {
+    const code = character.charCodeAt(0);
+    if (code <= 32 || code === 127) return false;
+  }
+  const domain = value.slice(at + 1);
+  if (domain.startsWith(".") || domain.endsWith(".") || !domain.includes(".")) return false;
+  for (const label of domain.split(".")) {
+    if (!label || label.length > 63 || label.startsWith("-") || label.endsWith("-")) return false;
+    for (const character of label) {
+      const code = character.toLowerCase().charCodeAt(0);
+      if (!((code >= 97 && code <= 122) || (code >= 48 && code <= 57) || character === "-")) return false;
+    }
+  }
+  return true;
+}
+
 function safeAttribution(value: unknown): string | undefined {
   const candidate = text(value);
   if (!candidate) return undefined;
@@ -98,7 +118,7 @@ export function validateContactSubmission(input: Readonly<Record<string, unknown
   const honeypot = text(input["website"]);
 
   if (!bounded(name, 2, 120)) errors["name"] = "Enter a name between 2 and 120 characters.";
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 160) errors["email"] = "Enter a valid business email address.";
+  if (!validBusinessEmail(email)) errors["email"] = "Enter a valid business email address.";
   if (!bounded(company, 2, 160)) errors["company"] = "Enter a company name between 2 and 160 characters.";
   if (!bounded(role, 2, 120)) errors["role"] = "Enter a role between 2 and 120 characters.";
   if (!bounded(country, 2, 80)) errors["country"] = "Enter a country between 2 and 80 characters.";

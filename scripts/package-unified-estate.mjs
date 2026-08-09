@@ -125,16 +125,22 @@ async function validateArtifact(name) {
   ];
   for (const file of files) {
     const relative = path.relative(directory, file);
-    const stat = await fs.stat(file);
-    if (stat.size > 2 * 1024 * 1024 || !/[.](?:css|html|js|json|mjs|mts|ts|txt|xml)$/i.test(file)) continue;
-    const content = await fs.readFile(file, "utf8");
-    assert.ok(secretPatterns.every((pattern) => !pattern.test(content)), `Possible secret in ${path.relative(directory, file)}`);
-    if (!relative.startsWith("node_modules/")) {
-      assert.doesNotMatch(
-        content,
-        /\b(?:PORTAL_PASSWORD|BOOTSTRAP_ADMIN_PASSWORD|SESSION_SECRET|PORTAL_GATEWAY_SECRET)\s*=\s*["'][^"']{6,}["']/,
-        `Possible first-party secret assignment in ${relative}`,
-      );
+    if (!/[.](?:css|html|js|json|mjs|mts|ts|txt|xml)$/i.test(file)) continue;
+    const handle = await fs.open(file, "r");
+    try {
+      const stat = await handle.stat();
+      if (stat.size > 2 * 1024 * 1024) continue;
+      const content = await handle.readFile({ encoding: "utf8" });
+      assert.ok(secretPatterns.every((pattern) => !pattern.test(content)), `Possible secret in ${path.relative(directory, file)}`);
+      if (!relative.startsWith("node_modules/")) {
+        assert.doesNotMatch(
+          content,
+          /\b(?:PORTAL_PASSWORD|BOOTSTRAP_ADMIN_PASSWORD|SESSION_SECRET|PORTAL_GATEWAY_SECRET)\s*=\s*["'][^"']{6,}["']/,
+          `Possible first-party secret assignment in ${relative}`,
+        );
+      }
+    } finally {
+      await handle.close();
     }
   }
 

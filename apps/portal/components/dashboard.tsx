@@ -123,7 +123,13 @@ export function Dashboard({ module }: Readonly<{ module: PortalModule }>) {
   useEffect(() => { void load(); }, [load]);
 
   async function logout() {
-    try { await protectedMutation("auth/logout", {}); } finally { window.location.replace("/"); }
+    let federatedLogout = false;
+    try {
+      const result = await protectedMutation<{ federatedLogout: boolean }>("auth/logout", {});
+      federatedLogout = result.federatedLogout === true;
+    } finally {
+      window.location.replace(federatedLogout ? "/.auth/logout?post_logout_redirect_uri=/" : "/");
+    }
   }
 
   async function search(event: FormEvent<HTMLFormElement>) {

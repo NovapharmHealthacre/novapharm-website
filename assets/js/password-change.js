@@ -24,10 +24,11 @@ if (passwordForm) {
         headers: { "Content-Type": "application/json", "x-csrf-token": csrfToken },
         body: JSON.stringify(payload)
       });
+      if (!["customer", "employee", "board", "admin"].includes(result.accessType)) throw new Error("The authorised portal area could not be verified after the password change.");
       passwordForm.reset();
       status.textContent = "Your password has been changed and other sessions have been signed out. Redirecting to your portal...";
       status.className = "alert alert-success";
-      window.setTimeout(() => { window.location.href = result.redirectTo || "/portal/dashboard/"; }, 800);
+      window.setTimeout(() => { window.location.href = window.NovaPharmApi.portalLandingRoute(result.accessType); }, 800);
     } catch (error) {
       if (error?.status === 401) {
         status.textContent = "The current temporary password is not correct.";

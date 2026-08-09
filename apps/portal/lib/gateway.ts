@@ -7,7 +7,7 @@ export type PortalUser = Readonly<{
   mustChangePassword: boolean;
 }>;
 
-type ErrorPayload = { error?: string; code?: string; redirectTo?: string };
+type ErrorPayload = { error?: string; code?: string };
 
 export class GatewayError extends Error {
   readonly status: number;

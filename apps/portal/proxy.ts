@@ -11,9 +11,7 @@ export function proxy(request: NextRequest): NextResponse {
   const pathname = request.nextUrl.pathname.endsWith("/") ? request.nextUrl.pathname : `${request.nextUrl.pathname}/`;
 
   if (!pathname.startsWith("/gateway/") && !anonymousPaths.has(pathname) && !request.cookies.has("np_session")) {
-    const login = new URL("/", request.url);
-    login.searchParams.set("returnTo", pathname);
-    return NextResponse.redirect(login);
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   const requestHeaders = new Headers(request.headers);

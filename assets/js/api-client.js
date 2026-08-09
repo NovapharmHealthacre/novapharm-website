@@ -71,5 +71,12 @@
     return "The secure NovaPharm service is temporarily unavailable. Please try again later.";
   }
 
-  window.NovaPharmApi = { apiUrl, csrf, friendlyError, request };
+  function portalLandingRoute(accessType) {
+    if (accessType === "employee") return "/employee/dashboard/";
+    if (accessType === "board") return "/portal/executive-platform/";
+    if (accessType === "admin") return "/admin/dashboard/";
+    return "/portal/dashboard/";
+  }
+
+  window.NovaPharmApi = { apiUrl, csrf, friendlyError, portalLandingRoute, request };
 })();

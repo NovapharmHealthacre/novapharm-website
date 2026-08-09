@@ -61,6 +61,10 @@ assert.match(unauthorised.headers["WWW-Authenticate"], /NovaPharm private previe
 assert.match(unauthorised.headers["X-Robots-Tag"], /noindex/);
 const invalid = await request({ url: "/", headers: { authorization: `Basic ${Buffer.from(`${previewUsername}:incorrect`).toString("base64")}` } });
 assert.equal(invalid.statusCode, 401);
+const invalidUsername = await request({ url: "/", headers: { authorization: `Basic ${Buffer.from(`reviewer-with-a-longer-name:${previewPassword}`).toString("base64")}` } });
+assert.equal(invalidUsername.statusCode, 401);
+const oversized = await request({ url: "/", headers: { authorization: `Basic ${Buffer.from(`${"x".repeat(5000)}:${previewPassword}`).toString("base64")}` } });
+assert.equal(oversized.statusCode, 401);
 const authorised = await request({ url: "/", headers: { authorization: `Basic ${Buffer.from(`${previewUsername}:${previewPassword}`).toString("base64")}`, accept: "text/html" } });
 assert.equal(authorised.statusCode, 200);
 assert.match(authorised.headers["X-Robots-Tag"], /noindex, nofollow, noarchive/);

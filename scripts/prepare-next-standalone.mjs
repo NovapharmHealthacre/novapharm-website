@@ -41,13 +41,18 @@ async function secureDeploymentArtifact() {
   ];
   for (const file of files) {
     if (!textExtensions.has(path.extname(file))) continue;
-    const stat = await fs.stat(file);
-    if (stat.size > 2 * 1024 * 1024) continue;
-    const content = await fs.readFile(file, "utf8");
-    assert.ok(
-      secretPatterns.every((pattern) => !pattern.test(content)),
-      `Possible secret in deployment artifact: ${path.relative(root, file)}`,
-    );
+    const handle = await fs.open(file, "r");
+    try {
+      const stat = await handle.stat();
+      if (stat.size > 2 * 1024 * 1024) continue;
+      const content = await handle.readFile({ encoding: "utf8" });
+      assert.ok(
+        secretPatterns.every((pattern) => !pattern.test(content)),
+        `Possible secret in deployment artifact: ${path.relative(root, file)}`,
+      );
+    } finally {
+      await handle.close();
+    }
   }
   return files.length;
 }
