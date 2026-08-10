@@ -32,7 +32,8 @@ const allowedTopLevelDirectories = new Set([
   "regulatory-services",
   "service-unavailable",
   "services",
-  "technology"
+  "technology",
+  "trust-centre"
 ]);
 
 const allowedRootFiles = new Set([
@@ -46,6 +47,7 @@ const allowedRootFiles = new Set([
   "favicon-16x16.png",
   "favicon-32x32.png",
   "favicon.ico",
+  "feed.xml",
   "humans.txt",
   "index.html",
   "llms.txt",
@@ -66,11 +68,13 @@ const requiredPublicPaths = [
   "index.html",
   "404.html",
   "CNAME",
+  "feed.xml",
   "assets",
   "cro/index.html",
   "oncology/index.html",
   "contact/index.html",
-  "portal/index.html"
+  "portal/index.html",
+  "trust-centre/index.html"
 ];
 
 const forbiddenPublicMarkers = [
