@@ -190,6 +190,109 @@ async function analyticsView(snapshot) {
   };
 }
 
+async function commandCentreView(snapshot) {
+  const [workflows, integrations, quality, regulatory, counts] = await Promise.all([
+    all("SELECT workflow_code, business_key, status, current_step, updated_at FROM workflow_instances WHERE status <> 'completed' ORDER BY updated_at DESC LIMIT 24"),
+    all("SELECT destination_system, event_type, status, created_at FROM integration_events WHERE status IN ('pending','retrying','blocked') ORDER BY created_at DESC LIMIT 24"),
+    all("SELECT complaint_number, severity, status, pv_escalation_status, due_at, created_at FROM quality_complaints WHERE status <> 'closed' ORDER BY due_at, created_at DESC LIMIT 24"),
+    all("SELECT case_number, case_type, status, current_stage, target_date FROM regulatory_cases WHERE status NOT IN ('closed','approved') ORDER BY target_date LIMIT 24"),
+    one(`SELECT
+      (SELECT COUNT(*) FROM workflow_instances WHERE status <> 'completed') AS active_workflows,
+      (SELECT COUNT(*) FROM integration_events WHERE status IN ('pending','retrying','blocked')) AS integration_exceptions,
+      (SELECT COUNT(*) FROM quality_complaints WHERE status <> 'closed') AS quality_exceptions,
+      (SELECT COUNT(*) FROM regulatory_cases WHERE status NOT IN ('closed','approved')) AS regulatory_actions`)
+  ]);
+  return {
+    ...snapshot,
+    readOnly: true,
+    actions: [],
+    metrics: [
+      metric("active-workflows", "Active workflows", counts?.active_workflows),
+      metric("integration-exceptions", "Integration exceptions", counts?.integration_exceptions),
+      metric("quality-exceptions", "Quality exceptions", counts?.quality_exceptions),
+      metric("regulatory-actions", "Regulatory actions", counts?.regulatory_actions)
+    ],
+    sections: [
+      section("Decision and workflow queue", [["workflow_code", "Workflow"], ["business_key", "Business key"], ["status", "Status", "status"], ["current_step", "Current step"], ["updated_at", "Updated"]], workflows, "No active decision workflow is recorded."),
+      section("Quality exceptions", [["complaint_number", "Complaint"], ["severity", "Severity", "status"], ["status", "Status", "status"], ["pv_escalation_status", "Safety escalation", "status"], ["due_at", "Due"]], quality, "No open quality exception is recorded."),
+      section("Regulatory actions", [["case_number", "Case"], ["case_type", "Type", "status"], ["status", "Status", "status"], ["current_stage", "Stage"], ["target_date", "Target"]], regulatory, "No open regulatory action is recorded."),
+      section("Integration exceptions", [["destination_system", "Destination"], ["event_type", "Event"], ["status", "Status", "status"], ["created_at", "Raised"]], integrations, "No integration exception is recorded.")
+    ],
+    notices: [
+      ...snapshot.notices,
+      "Command Centre is a read-only exception and decision surface; it does not replace the authoritative operational workflows.",
+      "All records remain synthetic/local-validation evidence until managed staging and live authorities are accepted."
+    ]
+  };
+}
+
+async function ceoDashboardView(snapshot) {
+  const [pipeline, workflows, quality, regulatory, counts] = await Promise.all([
+    all("SELECT opportunity_number, name, stage, probability_basis_points, estimated_value_minor, currency, next_action_at FROM crm_opportunities WHERE stage NOT IN ('won','lost','closed') ORDER BY next_action_at LIMIT 16"),
+    all("SELECT workflow_code, business_key, status, current_step, updated_at FROM workflow_instances WHERE status <> 'completed' ORDER BY updated_at DESC LIMIT 16"),
+    all("SELECT complaint_number, severity, status, due_at FROM quality_complaints WHERE status <> 'closed' ORDER BY due_at LIMIT 16"),
+    all("SELECT case_number, case_type, status, current_stage, target_date FROM regulatory_cases WHERE status NOT IN ('closed','approved') ORDER BY target_date LIMIT 16"),
+    one(`SELECT
+      (SELECT COUNT(*) FROM customers WHERE lifecycle_status = 'active') AS active_customers,
+      (SELECT COUNT(*) FROM orders WHERE status NOT IN ('closed','cancelled','delivered','invoiced')) AS open_orders,
+      (SELECT COALESCE(SUM(total_minor),0) FROM invoices) AS invoice_value,
+      (SELECT COALESCE(SUM(outstanding_minor),0) FROM invoices) AS receivables,
+      (SELECT COUNT(*) FROM crm_opportunities WHERE stage NOT IN ('won','lost','closed')) AS pipeline,
+      (SELECT COUNT(*) FROM quality_complaints WHERE status <> 'closed') AS quality_exceptions,
+      (SELECT COUNT(*) FROM regulatory_cases WHERE status NOT IN ('closed','approved')) AS regulatory_actions`)
+  ]);
+  return {
+    ...snapshot,
+    readOnly: true,
+    actions: [],
+    metrics: [
+      metric("active-customers", "Active customers", counts?.active_customers),
+      metric("open-orders", "Open orders", counts?.open_orders),
+      metric("invoice-value", "Synthetic invoiced value", counts?.invoice_value, "money"),
+      metric("receivables", "Synthetic receivables", counts?.receivables, "money"),
+      metric("pipeline", "Open opportunities", counts?.pipeline),
+      metric("quality-exceptions", "Quality exceptions", counts?.quality_exceptions),
+      metric("regulatory-actions", "Regulatory actions", counts?.regulatory_actions)
+    ],
+    sections: [
+      section("Commercial outlook", [["opportunity_number", "Opportunity"], ["name", "Name"], ["stage", "Stage", "status"], ["probability_basis_points", "Probability", "basis_points"], ["estimated_value_minor", "Synthetic value", "money"], ["next_action_at", "Next action"]], pipeline, "No open opportunity is recorded."),
+      section("Operating decisions", [["workflow_code", "Workflow"], ["business_key", "Business key"], ["status", "Status", "status"], ["current_step", "Current step"], ["updated_at", "Updated"]], workflows, "No active operating workflow is recorded."),
+      section("Quality posture", [["complaint_number", "Complaint"], ["severity", "Severity", "status"], ["status", "Status", "status"], ["due_at", "Due"]], quality, "No open quality exception is recorded."),
+      section("Regulatory posture", [["case_number", "Case"], ["case_type", "Type", "status"], ["status", "Status", "status"], ["current_stage", "Stage"], ["target_date", "Target"]], regulatory, "No open regulatory action is recorded.")
+    ],
+    notices: [
+      ...snapshot.notices,
+      "CEO Dashboard is a balanced synthetic-validation scorecard, not a Finance clone and not a claim of NovaPharm revenue or performance.",
+      "Live commercial, finance and regulatory interpretation remains dependent on approved production data authorities."
+    ]
+  };
+}
+
+function rollingWarehouseView(snapshot) {
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+  const horizon = new Date(today);
+  horizon.setUTCDate(horizon.getUTCDate() + 90);
+  const todayKey = today.toISOString().slice(0, 10);
+  const horizonKey = horizon.toISOString().slice(0, 10);
+  const ledger = snapshot.sections.find((item) => item.title === "Inventory ledger")?.rows || [];
+  const expired = ledger.filter((row) => row.expiry_date && row.expiry_date < todayKey).length;
+  const expiring = ledger.filter((row) => row.expiry_date && row.expiry_date >= todayKey && row.expiry_date <= horizonKey).length;
+  const metrics = snapshot.metrics.filter((item) => !["expiring", "expired"].includes(item.key));
+  return {
+    ...snapshot,
+    metrics: [
+      ...metrics,
+      metric("expiring", "Expiring in 90 days", expiring),
+      metric("expired", "Expired batches", expired)
+    ],
+    notices: [
+      ...snapshot.notices,
+      `Expiry posture is evaluated against the current UTC date with a rolling 90-day horizon ending ${horizonKey}; no fixed calendar cutoff is used.`
+    ]
+  };
+}
+
 async function authoredAdminView(snapshot) {
   switch (snapshot.module.slug) {
     case "dashboard": return dashboardView(snapshot);
@@ -203,6 +306,9 @@ async function authoredAdminView(snapshot) {
 
 export async function enterpriseModuleSnapshot(code, context) {
   const snapshot = await base.enterpriseModuleSnapshot(code, context);
-  if (snapshot.module.area !== "admin") return snapshot;
-  return authoredAdminView(snapshot);
+  if (snapshot.module.area === "admin") return authoredAdminView(snapshot);
+  if (snapshot.module.area === "executive" && snapshot.module.slug === "command-centre") return commandCentreView(snapshot);
+  if (snapshot.module.area === "executive" && snapshot.module.slug === "ceo-dashboard") return ceoDashboardView(snapshot);
+  if (snapshot.module.area === "employee" && snapshot.module.slug === "warehouse") return rollingWarehouseView(snapshot);
+  return snapshot;
 }
