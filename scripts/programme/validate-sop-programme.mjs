@@ -35,10 +35,10 @@ for (const procedure of register.procedures) {
   assert.equal(Array.isArray(procedure.rehearsalEvidence), true);
   assert.equal(Array.isArray(procedure.productionAcceptanceEvidence), true);
 
-  if (!['REHEARSED_MANAGED_STAGING', 'PRODUCTION_ACCEPTED'].includes(procedure.status)) {
+  if (!["REHEARSED_MANAGED_STAGING", "PRODUCTION_ACCEPTED"].includes(procedure.status)) {
     assert.equal(procedure.rehearsalEvidence.length, 0, `${procedure.id}: unrehearsed state must not contain rehearsal claims`);
   }
-  if (procedure.status !== 'PRODUCTION_ACCEPTED') {
+  if (procedure.status !== "PRODUCTION_ACCEPTED") {
     assert.equal(procedure.productionAcceptanceEvidence.length, 0, `${procedure.id}: non-production state must not contain production acceptance`);
   }
 
@@ -53,7 +53,8 @@ for (const procedure of register.procedures) {
   for (const heading of requiredHeadings) {
     assert.ok(markdown.includes(`## ${heading}`), `${procedure.id}: missing ## ${heading}`);
   }
-  assert.match(markdown, new RegExp(`## Owner\\s+${procedure.owner.replace(/[.*+?^${}()|[\\]\\\\]/gu, "\\$&")}`, "iu"), `${procedure.id}: owner mismatch`);
+  const ownerSection = markdown.split("## Owner")[1]?.split("## Purpose")[0] ?? "";
+  assert.ok(ownerSection.includes(procedure.owner), `${procedure.id}: owner mismatch`);
   assert.doesNotMatch(markdown, /\b(?:TODO|TBD|FIXME|placeholder)\b/iu, `${procedure.id}: unresolved placeholder language is prohibited`);
   assert.match(markdown, /STOP condition/iu, `${procedure.id}: executable stop behavior required`);
   assert.match(markdown, /Repository procedure existence is \*\*not\*\*/iu, `${procedure.id}: truth boundary missing`);
