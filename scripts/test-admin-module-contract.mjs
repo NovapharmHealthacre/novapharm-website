@@ -11,7 +11,7 @@ assert.match(source, /if \(snapshot\.module\.area === "admin"\) return authoredA
 assert.match(source, /if \(snapshot\.module\.area === "executive" && snapshot\.module\.slug === "command-centre"\) return commandCentreView\(snapshot\)/u);
 assert.match(source, /if \(snapshot\.module\.area === "executive" && snapshot\.module\.slug === "ceo-dashboard"\) return ceoDashboardView\(snapshot\)/u);
 assert.match(source, /if \(snapshot\.module\.area === "employee" && snapshot\.module\.slug === "warehouse"\) return rollingWarehouseView\(snapshot\)/u);
-assert.match(source, /return snapshot;\s*\n}/u, "Every non-intercepted current module must delegate to the preserved snapshot unchanged.");
+assert.ok(source.includes("return snapshot;\n}"), "Every non-intercepted current module must delegate to the preserved snapshot unchanged.");
 
 for (const slug of ["dashboard", "local-review", "users", "content", "analytics"]) {
   assert.match(source, new RegExp(`case "${slug}"`, "u"), `Admin ${slug} must have an authored snapshot branch.`);
