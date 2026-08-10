@@ -32,9 +32,9 @@ import {
 } from "../src/index.ts";
 
 const outputRoot = dirname(fileURLToPath(import.meta.url));
-const logo = "../../../apps/corporate/public/assets/brand/novapharm-healthcare-logo.svg";
-const heroImage = "../../../apps/corporate/public/assets/media/home/supply-network-hero.jpg";
-const productImage = "../../../apps/corporate/public/assets/media/products/oncology-vial-handling.jpg";
+const logo = "../../../assets/brand/novapharm-healthcare-logo.svg";
+const heroImage = "../../../assets/media/home/supply-network-hero.jpg";
+const productImage = "../../../assets/media/products/oncology-vial-handling.jpg";
 const portrait = "../../../apps/founder/public/images/portrait/vishal-chakravarty-960.jpg";
 
 const noop = () => undefined;
