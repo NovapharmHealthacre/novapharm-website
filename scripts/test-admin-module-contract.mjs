@@ -7,7 +7,11 @@ const preserved = await readFile(resolve("src/core/enterprise-domain-service-bas
 
 assert.match(source, /export \* from "\.\/enterprise-domain-service-base\.mjs"/u);
 assert.match(source, /const snapshot = await base\.enterpriseModuleSnapshot\(code, context\)/u);
-assert.match(source, /if \(snapshot\.module\.area !== "admin"\) return snapshot/u);
+assert.match(source, /if \(snapshot\.module\.area === "admin"\) return authoredAdminView\(snapshot\)/u);
+assert.match(source, /if \(snapshot\.module\.area === "executive" && snapshot\.module\.slug === "command-centre"\) return commandCentreView\(snapshot\)/u);
+assert.match(source, /if \(snapshot\.module\.area === "executive" && snapshot\.module\.slug === "ceo-dashboard"\) return ceoDashboardView\(snapshot\)/u);
+assert.match(source, /if \(snapshot\.module\.area === "employee" && snapshot\.module\.slug === "warehouse"\) return rollingWarehouseView\(snapshot\)/u);
+assert.ok(source.includes("return snapshot;\n}"), "Every non-intercepted current module must delegate to the preserved snapshot unchanged.");
 
 for (const slug of ["dashboard", "local-review", "users", "content", "analytics"]) {
   assert.match(source, new RegExp(`case "${slug}"`, "u"), `Admin ${slug} must have an authored snapshot branch.`);
@@ -27,7 +31,8 @@ assert.match(preserved, /async function adminSnapshot/u);
 
 console.log(JSON.stringify({
   authoredAdminModules: 5,
-  delegatedNonAdminModules: 49,
+  explicitNonAdminOverlays: 3,
+  delegatedRemainingModules: 46,
   sensitiveIdentityFieldsExcluded: true,
   genericAdminFallback: false
 }, null, 2));
