@@ -6,8 +6,12 @@ on:
   pull_request:
     paths:
       - .github/workflows/pages-live-publish.yml
+      - portal/index.html
+      - contact/index.html
+      - account-application/index.html
       - scripts/check-links.mjs
       - scripts/stage-pages-artifact.mjs
+      - scripts/test-static-public-source-safety.mjs
       - package.json
   workflow_dispatch:
 
@@ -39,6 +43,9 @@ jobs:
         with:
           node-version: 24
           cache: npm
+
+      - name: Verify checked-in public source is default-deny
+        run: node scripts/test-static-public-source-safety.mjs
 
       - name: Install locked dependencies
         run: npm ci --ignore-scripts
@@ -77,6 +84,9 @@ jobs:
             -f context="$STATUS_CONTEXT" \
             -f description="Building the owner-approved public release" \
             -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >/dev/null
+
+      - name: Verify checked-in public source is default-deny
+        run: node scripts/test-static-public-source-safety.mjs
 
       - name: Install locked dependencies
         run: npm ci --ignore-scripts
