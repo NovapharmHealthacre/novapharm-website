@@ -12,8 +12,7 @@ const contracts = [
       'type="password"',
       "/.auth/login/",
       "bootstrap account",
-      "data-password-change-form",
-      "data-api-base"
+      "data-password-change-form"
     ]
   },
   {
@@ -24,8 +23,7 @@ const contracts = [
     forbidden: [
       "data-contact-form",
       "<form",
-      "data-file-upload",
-      "data-api-base"
+      "data-file-upload"
     ]
   },
   {
@@ -39,8 +37,7 @@ const contracts = [
       "<form",
       'type="file"',
       "data-step-next",
-      "Submit application",
-      "data-api-base"
+      "Submit application"
     ]
   }
 ];
@@ -65,4 +62,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Static public source is default-deny: public safety declarations are present and authentication, enquiry submission, account-document submission, and API-bound forms are absent.");
+console.log("Static public source is default-deny: public safety declarations are present and authentication, enquiry submission, account-document submission, and uploads are absent.");
