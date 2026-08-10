@@ -15,6 +15,8 @@ on:
       - "scripts/validate-seo-authority.mjs"
       - "scripts/validate-social-authority.mjs"
       - "scripts/indexnow.mjs"
+      - "scripts/stage-pages-artifact.mjs"
+      - "scripts/test-static-public-source-safety.mjs"
       - "assets/js/marketing-attribution.js"
       - "seo/**"
       - "robots.txt"
@@ -37,16 +39,23 @@ jobs:
         with:
           node-version: 24
           cache: npm
+
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      - name: Build linked authority system
-        run: npm run build
+
+      - name: Verify checked-in public source is default-deny
+        run: node scripts/test-static-public-source-safety.mjs
+
+      - name: Build public authority system
+        run: npm run build:public-only
+
       - name: Validate SEO, GEO, entities and discovery
         id: seo_validation
         continue-on-error: true
         run: |
           set -o pipefail
           npm run seo:validate 2>&1 | tee /tmp/seo-authority-validation.log
+
       - name: Upload SEO validation diagnostics
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -55,14 +64,32 @@ jobs:
           path: /tmp/seo-authority-validation.log
           if-no-files-found: error
           retention-days: 7
+
       - name: Enforce SEO validation result
         if: steps.seo_validation.outcome != 'success'
         run: exit 1
+
       - name: Validate IndexNow without network submission
         run: npm run seo:indexnow:dry-run -- https://novapharmhealthcare.com/
-      - name: Run existing public claims and security validation
+
+      - name: Run public claims and security validation
         run: |
           npm run audit:claims
           npm run security:scan
-      - name: Verify generated files are reproducible
-        run: git diff --exit-code
+          npm run test:owner-corrections:public-only
+          npm run validate:domain
+          node scripts/test-static-public-source-safety.mjs
+
+      - name: Capture first deployable public artifact
+        run: node scripts/stage-pages-artifact.mjs /tmp/novapharm-public-a
+
+      - name: Rebuild the same release mode
+        run: npm run build:public-only
+
+      - name: Capture second deployable public artifact
+        run: |
+          node scripts/test-static-public-source-safety.mjs
+          node scripts/stage-pages-artifact.mjs /tmp/novapharm-public-b
+
+      - name: Verify deployable public artifact is reproducible
+        run: diff -qr /tmp/novapharm-public-a /tmp/novapharm-public-b
