@@ -54,7 +54,7 @@ jobs:
         continue-on-error: true
         run: |
           set -o pipefail
-          npm run seo:validate 2>&1 | tee /tmp/seo-authority-validation.log
+          PLATFORM_MODE=PUBLIC_ONLY npm run seo:validate 2>&1 | tee /tmp/seo-authority-validation.log
 
       - name: Upload SEO validation diagnostics
         if: always()
