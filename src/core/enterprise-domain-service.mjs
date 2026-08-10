@@ -26,6 +26,9 @@ function directOverlayModule(module) {
 
 function directSnapshotEnvelope(module) {
   const validationEnvironment = process.env.LOCAL_PORTAL_MODE === "true" || process.env.BROWSER_VALIDATION_MODE === "true";
+  const areaNotice = module.area === "admin"
+    ? "State changes remain available only through authorised, CSRF-protected workflow endpoints. Raw-table editing is intentionally unavailable."
+    : "Board access is read-only; all figures are synthetic local-validation records.";
   return {
     module,
     environment: process.env.BROWSER_VALIDATION_MODE === "true"
@@ -41,6 +44,7 @@ function directSnapshotEnvelope(module) {
     metrics: [],
     sections: [],
     notices: [
+      areaNotice,
       "Current release classification: informational only. Repository write contracts are not released as live operations.",
     ],
     actions: [],
