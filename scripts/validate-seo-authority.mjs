@@ -25,11 +25,11 @@ const unique = (values) => new Set(values).size === values.length;
 const articles = readdirSync(join(root, "src/content/insights"))
   .filter((file) => file.endsWith(".json"))
   .map((file) => JSON.parse(source(`src/content/insights/${file}`)));
+const indexablePageMeta = Object.keys(pageMeta).filter((slug) => !(publicOnly && slug === "account-application"));
 const publicFiles = [
-  ...Object.keys(pageMeta).map((slug) => slug ? `${slug}/index.html` : "index.html"),
+  ...indexablePageMeta.map((slug) => slug ? `${slug}/index.html` : "index.html"),
   ...leadership.map((person) => `leadership/${person.slug}/index.html`),
-  ...articles.map((article) => `news-insights/${article.slug}/index.html`),
-  ...(publicOnly ? [] : [accountApplicationFile])
+  ...articles.map((article) => `news-insights/${article.slug}/index.html`)
 ].filter((file) => !retiredPublicFiles.has(file));
 const files = [...new Set(publicFiles)];
 const records = [];
