@@ -3,6 +3,7 @@ import { access, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 await import("./validate-absolute-mandate-register.mjs");
+await import("./validate-sop-programme.mjs");
 
 const allowedStatuses = new Set([
   "Complete",
