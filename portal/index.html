@@ -1,1 +1,26 @@
-<!DOCTYPE html><html lang="en-GB" data-api-base=""><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Secure Portal Login | NovaPharm Healthcare</title><link rel="icon" href="/assets/brand/novapharm-healthcare-logo.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/css/novapharm.bundle.css"><script type="module" src="/assets/js/cookie-consent.js"></script><script src="/assets/js/local-validation-banner.js" defer></script></head><body class="login-page"><main class="login-panel"><div class="login-logo"><picture class="brand-logo"><source srcset="/assets/brand/novapharm-healthcare-logo.svg" type="image/svg+xml"><img src="/assets/brand/novapharm-healthcare-logo.png" alt="NovaPharm Healthcare" width="320" height="40" fetchpriority="high" decoding="async"></picture></div><span class="section-kicker">Private access</span><h1>NovaPharm Secure Portal</h1><p>Choose your authorised access area and sign in. Customer, employee, board and administrator information remains locked until the secure backend verifies your session and permissions.</p><form class="form-grid" data-login-form><fieldset class="portal-access"><legend>Portal access</legend><label><input type="radio" name="accessType" value="customer" checked><span><strong>Customer</strong><small>Orders, invoices, statements and documents</small></span></label><label><input type="radio" name="accessType" value="employee"><span><strong>Employee</strong><small>Operations, products, purchasing and CRM</small></span></label><label><input type="radio" name="accessType" value="board"><span><strong>Board member</strong><small>Executive Platform and CEO dashboard</small></span></label><label><input type="radio" name="accessType" value="admin"><span><strong>Administrator</strong><small>Users, content, analytics and platform controls</small></span></label></fieldset><a class="btn btn-outline" href="/.auth/login/aad" data-entra-login hidden>Continue with Microsoft</a><div class="portal-login-divider" aria-hidden="true"><span>or use an approved bootstrap account</span></div><div class="form-row"><div class="field"><label for="username">Username</label><input id="username" name="username" autocomplete="username" required></div><div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required></div></div><button class="btn btn-primary" type="submit">Sign in securely</button><div class="alert" data-login-status role="status" aria-live="polite">Credentials and portal permissions are verified server-side.</div></form><button class="inline-link-button portal-cookie-settings" type="button" data-cookie-settings>Cookie settings</button></main><script src="/assets/js/api-client.js" defer></script><script src="/assets/js/portal-login.js" defer></script></body></html>
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#b81220">
+  <title>Portal Security | NovaPharm Healthcare</title>
+  <meta name="description" content="Security guidance for authorised NovaPharm portal users. The public corporate site never collects portal credentials or confidential company records.">
+  <link rel="icon" href="/assets/brand/novapharm-healthcare-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/css/novapharm.bundle.css">
+</head>
+<body class="login-page">
+  <main class="login-panel locked-panel" id="main">
+    <a class="login-logo" href="/" aria-label="NovaPharm Healthcare home">
+      <picture class="brand-logo"><source srcset="/assets/brand/novapharm-healthcare-logo.svg" type="image/svg+xml"><img src="/assets/brand/novapharm-healthcare-logo.png" alt="NovaPharm Healthcare" width="320" height="40" fetchpriority="high" decoding="async"></picture>
+    </a>
+    <span class="section-kicker">Public information release</span>
+    <h1>Use only the managed NovaPharm portal.</h1>
+    <p>This public website never asks for a portal username, password or confidential company record. Authorised customers, employees, board members and administrators should use only the secure portal address issued directly by NovaPharm.</p>
+    <div class="alert"><strong>No authentication occurs here.</strong><br>No login, account, document, board or administration information is processed on this static public host.</div>
+    <p>If an unexpected page asks you for NovaPharm credentials on the public corporate domain, do not continue. Verify the portal address through an established NovaPharm business contact.</p>
+    <a class="btn btn-outline" href="/">Return to the corporate website</a>
+  </main>
+</body>
+</html>

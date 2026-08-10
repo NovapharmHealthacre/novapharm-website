@@ -12,6 +12,9 @@ import {
 } from "../src/seo/authority-config.mjs";
 
 const root = resolve(process.cwd());
+const platformMode = process.env.PLATFORM_MODE === "PUBLIC_ONLY" ? "PUBLIC_ONLY" : "FULL_PLATFORM";
+const publicOnly = platformMode === "PUBLIC_ONLY";
+const accountApplicationFile = "account-application/index.html";
 const EDITORIAL_TEAM_ID = `${SITE_URL}/#editorial-team`;
 const retiredPublicFiles = new Set(["technology/ai-governance/index.html"]);
 let failures = 0;
@@ -22,11 +25,11 @@ const unique = (values) => new Set(values).size === values.length;
 const articles = readdirSync(join(root, "src/content/insights"))
   .filter((file) => file.endsWith(".json"))
   .map((file) => JSON.parse(source(`src/content/insights/${file}`)));
+const indexablePageMeta = Object.keys(pageMeta).filter((slug) => !(publicOnly && slug === "account-application"));
 const publicFiles = [
-  ...Object.keys(pageMeta).map((slug) => slug ? `${slug}/index.html` : "index.html"),
+  ...indexablePageMeta.map((slug) => slug ? `${slug}/index.html` : "index.html"),
   ...leadership.map((person) => `leadership/${person.slug}/index.html`),
-  ...articles.map((article) => `news-insights/${article.slug}/index.html`),
-  "account-application/index.html"
+  ...articles.map((article) => `news-insights/${article.slug}/index.html`)
 ].filter((file) => !retiredPublicFiles.has(file));
 const files = [...new Set(publicFiles)];
 const records = [];
@@ -141,6 +144,16 @@ for (const sitemap of ["sitemap.xml", "sitemap-insights.xml", "sitemap-images.xm
 
 const sitemap = source("sitemap.xml");
 for (const record of records) if (!sitemap.includes(`<loc>${record.canonical}</loc>`)) fail(`sitemap.xml omits ${record.route}`);
+if (publicOnly) {
+  if (!existsSync(join(root, accountApplicationFile))) {
+    fail(`${accountApplicationFile} public fallback is missing in PUBLIC_ONLY`);
+  } else {
+    const accountHtml = source(accountApplicationFile);
+    const accountRobots = accountHtml.match(/<meta name="robots" content="([^"]+)"/i)?.[1] || "";
+    if (!/noindex/i.test(accountRobots)) fail(`${accountApplicationFile} must remain noindex in PUBLIC_ONLY`);
+    if (sitemap.includes(`${SITE_URL}/account-application/`)) fail("sitemap.xml must omit /account-application/ in PUBLIC_ONLY");
+  }
+}
 for (const retiredRoute of ["/search/", "/technology/ai-governance/"]) {
   if (sitemap.includes(`${SITE_URL}${retiredRoute}`)) fail(`sitemap.xml includes retired route ${retiredRoute}`);
 }
@@ -173,4 +186,4 @@ if (jsBytes > performanceBudgets.initialJavaScriptBytes) fail(`initial public Ja
 if (cssBytes > performanceBudgets.initialCssBytes) fail(`public CSS budget exceeded: ${cssBytes} bytes`);
 
 if (failures) process.exit(1);
-console.log(`Validated ${records.length} canonical public pages, ${articles.length} articles, ${leadership.length} leadership entities, crawler policy, sitemaps, IndexNow and authority deliverables.`);
+console.log(`Validated ${records.length} canonical public pages in ${platformMode}, ${articles.length} articles, ${leadership.length} leadership entities, crawler policy, sitemaps, IndexNow and authority deliverables.`);
