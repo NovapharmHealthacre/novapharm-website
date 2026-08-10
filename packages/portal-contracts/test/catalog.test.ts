@@ -102,12 +102,15 @@ test("all 54 modules have one complete, unambiguous production activation record
     assert.equal(activation.writeState, source.writeCapability);
     assert.equal(activation.allowedRoles.join("|"), source.authorisedRoles.join("|"));
     assert.equal(activation.currentTests.join("|"), source.testCoverage.join("|"));
-    assert.equal(activation.apiEndpoints[0].startsWith(`GET /api/enterprise/modules/${activation.code}`), true);
+
+    const [readEndpoint] = activation.apiEndpoints;
+    assert.ok(readEndpoint, `${activation.code}: governed read endpoint missing`);
+    assert.equal(readEndpoint.startsWith(`GET /api/enterprise/modules/${activation.code}`), true);
 
     if (activation.finalReleaseState === "HIDDEN FOR SAFETY") {
       assert.equal(source.visibleInNavigation, false);
       assert.equal(source.releaseClassification, "hidden_until_dependency_exists");
-      assert.match(activation.apiEndpoints[0], /fail-closed/iu);
+      assert.match(readEndpoint, /fail-closed/iu);
     } else {
       assert.equal(activation.finalReleaseState, "DEPENDENCY-BLOCKED");
       assert.equal(source.visibleInNavigation, true);
