@@ -54,6 +54,9 @@ function authoriseDirectOverlay(code, context) {
     throw Object.assign(new Error("Portal module is not available in this release."), { statusCode: 404 });
   }
   if (!canUseModule(module, context)) throw forbidden();
+  if (module.releaseClassification !== "informational_only") {
+    throw Object.assign(new Error("Direct module release classification requires an explicit dispatcher review."), { statusCode: 500 });
+  }
   return module;
 }
 
