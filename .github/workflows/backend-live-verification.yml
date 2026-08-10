@@ -1,9 +1,12 @@
 name: Verify live forms, portal and Microsoft activation
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: Exact reviewed 40-character commit SHA deployed to the backend-live environment
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -21,10 +24,17 @@ jobs:
       LIVE_ORIGIN: https://novapharmhealthcare.com
       GH_TOKEN: ${{ github.token }}
       STATUS_CONTEXT: backend-live-activation
+      RELEASE_SHA: ${{ inputs.expected_sha }}
     steps:
+      - name: Validate reviewed backend release SHA
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_SHA" =~ ^[0-9a-f]{40}$ ]] || { echo "expected_sha must be a complete lowercase commit SHA." >&2; exit 1; }
+          gh api "repos/$GITHUB_REPOSITORY/commits/$RELEASE_SHA" >/dev/null
+
       - name: Mark backend verification pending
         run: |
-          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$RELEASE_SHA" \
             -f state=pending \
             -f context="$STATUS_CONTEXT" \
             -f description="Checking live forms, portal API and Microsoft identity" \
@@ -38,7 +48,7 @@ jobs:
           curl --fail --silent --show-error --location \
             -H 'Accept: application/json' \
             -H 'Cache-Control: no-cache' \
-            "$LIVE_ORIGIN/api/health?release=$GITHUB_SHA" \
+            "$LIVE_ORIGIN/api/health?release=$RELEASE_SHA" \
             --output /tmp/health.json \
             --dump-header /tmp/health.headers
           grep -Eiq '^content-type: application/json' /tmp/health.headers
@@ -52,7 +62,7 @@ jobs:
             -H 'Accept: application/json' \
             -H 'Cache-Control: no-cache' \
             -c /tmp/cookies.txt \
-            "$LIVE_ORIGIN/api/security/csrf?release=$GITHUB_SHA" \
+            "$LIVE_ORIGIN/api/security/csrf?release=$RELEASE_SHA" \
             --output /tmp/csrf.json
           jq -e '.csrfToken | type == "string" and length >= 32' /tmp/csrf.json >/dev/null
           grep -q 'np_csrf' /tmp/cookies.txt
@@ -62,7 +72,7 @@ jobs:
         continue-on-error: true
         run: |
           set -euo pipefail
-          cache="release=$GITHUB_SHA-$(date +%s)"
+          cache="release=$RELEASE_SHA-$(date +%s)"
           curl --fail --silent --show-error --location "$LIVE_ORIGIN/contact/?$cache" > /tmp/contact.html
           curl --fail --silent --show-error --location "$LIVE_ORIGIN/account-application/?$cache" > /tmp/account.html
           curl --fail --silent --show-error --location "$LIVE_ORIGIN/portal/?$cache" > /tmp/portal.html
@@ -92,7 +102,7 @@ jobs:
           {
             echo '# NovaPharm live backend activation'
             echo
-            echo "- Commit: $GITHUB_SHA"
+            echo "- Commit: $RELEASE_SHA"
             echo "- Runtime and CSRF: ${{ steps.runtime.outcome }}"
             echo "- Form and portal entry points: ${{ steps.entrypoints.outcome }}"
             echo "- Microsoft identity: ${{ steps.entra.outcome }}"
@@ -115,7 +125,7 @@ jobs:
       - name: Mark backend activation successful
         if: steps.runtime.outcome == 'success' && steps.entrypoints.outcome == 'success' && steps.entra.outcome == 'success'
         run: |
-          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$RELEASE_SHA" \
             -f state=success \
             -f context="$STATUS_CONTEXT" \
             -f description="Forms, portal API and Microsoft identity are active on the live domain" \
@@ -124,7 +134,7 @@ jobs:
       - name: Mark backend activation incomplete
         if: steps.runtime.outcome != 'success' || steps.entrypoints.outcome != 'success' || steps.entra.outcome != 'success'
         run: |
-          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$RELEASE_SHA" \
             -f state=failure \
             -f context="$STATUS_CONTEXT" \
             -f description="Live Node API, portal or Microsoft identity is not fully activated" \
