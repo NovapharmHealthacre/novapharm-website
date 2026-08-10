@@ -85,7 +85,7 @@ async function usersView(snapshot) {
     all(`SELECT event_type, username, outcome, occurred_at FROM security_events
       WHERE event_type LIKE 'authentication.%' OR event_type LIKE 'password.%' OR event_type LIKE 'administrator.%'
       ORDER BY occurred_at DESC LIMIT 40`),
-    one("SELECT COUNT(*) AS value FROM auth_sessions WHERE revoked_at IS NULL AND expires_at > CURRENT_TIMESTAMP")
+    one("SELECT COUNT(*) AS value FROM auth_sessions WHERE revoked_at IS NULL AND expires_at > ?", new Date().toISOString())
   ]);
   const scopesByUser = new Map();
   for (const row of scopes) {
