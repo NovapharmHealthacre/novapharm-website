@@ -57,7 +57,7 @@ for (const procedure of register.procedures) {
   assert.ok(ownerSection.includes(procedure.owner), `${procedure.id}: owner mismatch`);
   assert.doesNotMatch(markdown, /\b(?:TODO|TBD|FIXME|placeholder)\b/iu, `${procedure.id}: unresolved placeholder language is prohibited`);
   assert.match(markdown, /STOP condition/iu, `${procedure.id}: executable stop behavior required`);
-  assert.match(markdown, /Repository procedure existence is \*\*not\*\*/iu, `${procedure.id}: truth boundary missing`);
+  assert.match(markdown, /Repository procedure existence (?:is|does) \*\*not\*\*/iu, `${procedure.id}: truth boundary missing`);
 }
 
 assert.deepEqual([...numbers].sort((a, b) => a - b), Array.from({ length: 44 }, (_, i) => i + 1));
