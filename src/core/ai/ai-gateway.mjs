@@ -98,6 +98,11 @@ export async function executeInternalAiReview({ useCaseId, input, records = [], 
     review,
     localDraft,
     controls: { humanReviewRequired: true, productionWriteAllowed: false, prohibitedDecision: policy.useCase.prohibitedDecision, promptBodyStored: false },
-    audit: { eventId: audit.eventId, outcome: audit.outcome }
+    audit: {
+      eventId: audit.eventId,
+      outcome: audit.outcome,
+      inputFingerprintStored: audit.inputFingerprintStored,
+      promptBodyStored: audit.promptBodyStored,
+    }
   };
 }

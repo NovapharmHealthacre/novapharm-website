@@ -1,0 +1,567 @@
+{
+  "schemaVersion": 2,
+  "reviewedDate": "2026-08-07",
+  "evidenceType": "genuine rendered application screenshots",
+  "evidenceEncoding": "WebP quality 90; each record retains the SHA-256 and byte count of its original Playwright PNG.",
+  "screenshotCount": 62,
+  "screenshots": [
+    {
+      "path": "audit/evidence/final-visual-lock/corporate/home-chromium-1440.webp",
+      "width": 1440,
+      "height": 9580,
+      "bytes": 897626,
+      "sha256": "3357adf77b5104ed19186cdc7b617950a487b736672c03112eeda240bfcf4c78",
+      "sourcePngBytes": 3938399,
+      "sourcePngSha256": "4878e36badee9f637236896e588ec73ef59a1fc566bdb9650d01629cd5b1b788"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/corporate/home-webkit-390.webp",
+      "width": 390,
+      "height": 15855,
+      "bytes": 676490,
+      "sha256": "35474338a7f74cab458c8411da1eb04b2dd66f8c90c6d1b4765488ec2a87ba0a",
+      "sourcePngBytes": 2722381,
+      "sourcePngSha256": "15d6b33b1c50fd1ed79e169a1a6cd03c505880c44307d45a6d23db07d856de7e"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/corporate/leadership-girish-achliya-chromium-1440.webp",
+      "width": 1440,
+      "height": 2022,
+      "bytes": 221998,
+      "sha256": "7610a7f3bf72384813f49da14198759b84ce0025a2083d4e4d64fc270a83182a",
+      "sourcePngBytes": 781888,
+      "sourcePngSha256": "5d5d0511602cf51b3d1a36c21b95fa7155e7cf01cbfb6de7a11696f87b3a4bd8"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/corporate/leadership-helly-panchal-chromium-1440.webp",
+      "width": 1440,
+      "height": 1969,
+      "bytes": 130358,
+      "sha256": "c2522d8fe3e5a8f884d37a789c6d117e37310e2c3e2b5fd6ec29c7fb32feb40d",
+      "sourcePngBytes": 358817,
+      "sourcePngSha256": "9e225e58aaae132a86d4abc43ab2ecd428bd4bb4ca384857478222fbc208a680"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/corporate/leadership-hub-chromium-1440.webp",
+      "width": 1440,
+      "height": 3133,
+      "bytes": 284672,
+      "sha256": "3beb401ab0266177f4b705b7b06ac1a19ee29f1dcc18cb020da00770cc59333f",
+      "sourcePngBytes": 1485928,
+      "sourcePngSha256": "9154fb973fda292bd9e1e74acb6d42f3f6d102486305584e17896ed24670fad9"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/corporate/leadership-nishita-trivedi-chromium-1440.webp",
+      "width": 1440,
+      "height": 2128,
+      "bytes": 179522,
+      "sha256": "bab03dc55b17b3a95e8fb422899fd00fe1ff2ae8c5169196020d0999b1920b84",
+      "sourcePngBytes": 434867,
+      "sourcePngSha256": "4f47fd11f57c07d61c8a441fff0e90bee96cdbf9de2994f4cf7dd07920274191"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/corporate/leadership-prabhakar-lahare-chromium-1440.webp",
+      "width": 1440,
+      "height": 2054,
+      "bytes": 203942,
+      "sha256": "1285918661a60c72121439ae933d9f353e6b812479c6aa7b5edd7f1a11aafc69",
+      "sourcePngBytes": 634309,
+      "sourcePngSha256": "8062c57bd51e80c1bbff70a45451d8beb2d558f448cdc7375e42de913f5ce618"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/corporate/leadership-vishal-chakravarty-chromium-1440.webp",
+      "width": 1440,
+      "height": 2083,
+      "bytes": 187322,
+      "sha256": "55dfebefb696ccc887efd6eb6458a90e5d5fdd90a7ba6ca4d2b5ff451d344fbe",
+      "sourcePngBytes": 565612,
+      "sourcePngSha256": "6548f274b7644af954eefd2b656b2c37e5953f2686205b3e55e79524bf2196a2"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/corporate/services-chromium-320.webp",
+      "width": 320,
+      "height": 568,
+      "bytes": 29314,
+      "sha256": "3ee446dd38054549016672d0d25a2289cb7e4430abe46a33b55955c694d56c50",
+      "sourcePngBytes": 145696,
+      "sourcePngSha256": "02765c944c5ecfc4c730093847e2b13a618bd01ff5a180cd3d6804203beb0948"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/corporate/trust-centre-chromium-1440.webp",
+      "width": 1440,
+      "height": 4329,
+      "bytes": 336972,
+      "sha256": "bb4f5a6a004dbdaf5e54f24408a305c2b227f5d0e87ed51c99efae34981474d5",
+      "sourcePngBytes": 696411,
+      "sourcePngSha256": "243933546081d2e2abb290aad039312a161449912845122abe5afccb720ec463"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/corporate/trust-centre-webkit-390.webp",
+      "width": 390,
+      "height": 6205,
+      "bytes": 281008,
+      "sha256": "566cc22641b5c5c2a7de6063f99159d691c022cd7986a5ad3a6f91383a49e5f7",
+      "sourcePngBytes": 595904,
+      "sourcePngSha256": "9842da3e1f40764f587bbb053d5f5a778fd019d035ca337753ade5bc8370a48d"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/founder/ask-vishals-work-chromium-1440.webp",
+      "width": 1440,
+      "height": 900,
+      "bytes": 113546,
+      "sha256": "c62ba5687510a380212b5a023dfe7c8dc5e602690b37d7fdeb97e30e6c5e39dd",
+      "sourcePngBytes": 135943,
+      "sourcePngSha256": "aaa237deaffc846c00460bdac27498b37cc344e803eb33864fccea924444d0c0"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/founder/ask-vishals-work-chromium-390.webp",
+      "width": 390,
+      "height": 844,
+      "bytes": 33636,
+      "sha256": "7e681fa0efda1bd0a4b35be2d2e6b64d4b898f90e0a058686db3a2851dc412ff",
+      "sourcePngBytes": 69121,
+      "sourcePngSha256": "42fd5e01eaf96d44e7d547195eb7f3cbe1ba7a8a0fd2bd75bbc30e1bc09459c3"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/founder/ask-vishals-work-response-chromium-390.webp",
+      "width": 390,
+      "height": 844,
+      "bytes": 50434,
+      "sha256": "6d0718eee263d2b9e15bd735df8cad8e6d84db3a6440fd8b01861f26a6a51890",
+      "sourcePngBytes": 100683,
+      "sourcePngSha256": "f585f02ff6f2abc4725962afd159cf73aac3c68767dbba914ec2b759db8b01a5"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/founder/home-chromium-1440.webp",
+      "width": 1440,
+      "height": 900,
+      "bytes": 62230,
+      "sha256": "5a844d56d9391fa99d21bb9ea54f29345d5862042b9a0b70d46d4d5458d748d9",
+      "sourcePngBytes": 376576,
+      "sourcePngSha256": "e84c5219fca044b1201586726c405f109c41c41cb44c2a858d3f8a4cb4c4f9d4"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/founder/home-webkit-390.webp",
+      "width": 390,
+      "height": 844,
+      "bytes": 26204,
+      "sha256": "13a8473f67d432742e61b05aec4a7c61b6199c3404b372d16214cfaf7f346e41",
+      "sourcePngBytes": 184538,
+      "sourcePngSha256": "2527a6e80645639556a4fb86bb76901b72341e528397869cf3e8b5c0e6d5c7f8"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/founder/media-webkit-390.webp",
+      "width": 390,
+      "height": 844,
+      "bytes": 32934,
+      "sha256": "72f7ea2b9dede37ed2291eaa0f2ba8fa0f80d88426a0c8088d63c97230be24e0",
+      "sourcePngBytes": 169084,
+      "sourcePngSha256": "741fc6397f2488d244424219742069c300eb017f3c56c937e86abb6fd10b5d0c"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/founder/publications-chromium-1440.webp",
+      "width": 1440,
+      "height": 900,
+      "bytes": 41800,
+      "sha256": "31377010220d3ea8d0ad5396127a3bff0fdfd71028e8a86d69408b9cfbca2aca",
+      "sourcePngBytes": 210308,
+      "sourcePngSha256": "b2611bbb0a66ff359bda09ed055ba17e4b7ba568a133d8176e0aa06ea14edc8d"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/portal/screenshots/chromium/desktop-1280/interaction.access-denied.webp",
+      "width": 1280,
+      "height": 800,
+      "bytes": 37056,
+      "sha256": "95f461b25413f674e76b9f5339432a95f6e636331f88b0ff948a6ca6c2324525",
+      "sourcePngBytes": 72848,
+      "sourcePngSha256": "5fb4e401fe6e49ca40925c9f540c209b5fc8660be020c8082194071035464fe0"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/portal/screenshots/chromium/desktop-1280/interaction.hidden-module-not-found.webp",
+      "width": 1280,
+      "height": 800,
+      "bytes": 16844,
+      "sha256": "f31495f02e82ad84011ffd894a2e60571692664e7a701f6672410f0343741976",
+      "sourcePngBytes": 29186,
+      "sourcePngSha256": "007a5704d4c7cd0430d53b5782dd99eab970b1410f7d72541a9334d15aaf9156"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/portal/screenshots/chromium/desktop-1280/interaction.loading.webp",
+      "width": 1280,
+      "height": 800,
+      "bytes": 41868,
+      "sha256": "0170c5901eb10261dd5d3057834468d3d148e90983a452479ee67209f5cf1787",
+      "sourcePngBytes": 93152,
+      "sourcePngSha256": "961cb96c9a9fdd53f6446e76224efa648554a06e8a7ddf9afdf1bf00c0a2e482"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/portal/screenshots/chromium/desktop-1280/interaction.password-error.webp",
+      "width": 1280,
+      "height": 996,
+      "bytes": 45464,
+      "sha256": "c169d62fbb99e81933d587f23d222d01a5d01e9ccd1eb88e4b74cb82764b27b6",
+      "sourcePngBytes": 79192,
+      "sourcePngSha256": "c6c43d86c572f6d08b8a5e8cd33266a973548f52c512ecbdfcec9ef57bafddee"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/portal/screenshots/chromium/desktop-1280/interaction.read-only.webp",
+      "width": 1280,
+      "height": 800,
+      "bytes": 61398,
+      "sha256": "1dce54c6810d70c48512e6f42cfac42a6ca9f6015c5dc98d740f77ce657cbe0a",
+      "sourcePngBytes": 126553,
+      "sourcePngSha256": "365eb4ecb3c505c2f56423b650b0ba3af8f02527246896f7e29b7e4c881b5321"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/portal/screenshots/chromium/desktop-1280/interaction.session-ended.webp",
+      "width": 1280,
+      "height": 893,
+      "bytes": 67860,
+      "sha256": "7f4e7174392d0c9bbbe89c45453819b452c087dc301c62a5dcf2a108685a79ed",
+      "sourcePngBytes": 306468,
+      "sourcePngSha256": "aa2dbbcd34fa07130ad443eee8a5ad73c00d2ebc0a85c67e2056e57acc74d33c"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/portal/screenshots/chromium/desktop-1280/interaction.session-expired.webp",
+      "width": 1280,
+      "height": 893,
+      "bytes": 67860,
+      "sha256": "7f4e7174392d0c9bbbe89c45453819b452c087dc301c62a5dcf2a108685a79ed",
+      "sourcePngBytes": 306468,
+      "sourcePngSha256": "aa2dbbcd34fa07130ad443eee8a5ad73c00d2ebc0a85c67e2056e57acc74d33c"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/portal/screenshots/chromium/mobile-390/interaction.empty-search.webp",
+      "width": 390,
+      "height": 3112,
+      "bytes": 87202,
+      "sha256": "61b24b6892c892449a21f4b854b95b81a10ac238521ef6cda43a2948e336c7b3",
+      "sourcePngBytes": 195542,
+      "sourcePngSha256": "5d292f2ab8807dbabb01c5b9d52ff5c13f2863511e84e6b8c68e3f8c39a3f4b1"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/portal/screenshots/chromium/mobile-390/interaction.search-results.webp",
+      "width": 390,
+      "height": 3112,
+      "bytes": 94510,
+      "sha256": "40f747229d753c8b8814eda5328f2d5535f1837fbd351ef2eea781ba25b81088",
+      "sourcePngBytes": 210573,
+      "sourcePngSha256": "28899a7abc31b1644e7fad321f5d89a5b89f529431ee74a3d07c1cc5fe52dd9b"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/portal/screenshots/webkit/desktop-1280/interaction.access-denied.webp",
+      "width": 1280,
+      "height": 800,
+      "bytes": 37586,
+      "sha256": "3c32e39d8ac5889021f3faf2b6344274866cf74eb8b85eb56401696d63fb9b8a",
+      "sourcePngBytes": 97132,
+      "sourcePngSha256": "ba02ce4804073a07969064f79227cff4d03afad452ab67e6232d367facb073c8"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/portal/screenshots/webkit/desktop-1280/interaction.hidden-module-not-found.webp",
+      "width": 1280,
+      "height": 800,
+      "bytes": 15916,
+      "sha256": "227d5fec21f62bd7244a0da9e7d92ed21c2545f6ab54faf5c2ac96a5e8a8fc11",
+      "sourcePngBytes": 46963,
+      "sourcePngSha256": "2d6a9f1338b7b1356e171c2622c648996f8654c7334aaef2293ae592c0854b43"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/portal/screenshots/webkit/desktop-1280/interaction.loading.webp",
+      "width": 1280,
+      "height": 800,
+      "bytes": 42158,
+      "sha256": "1801cf9dc8090a7efd5ab8b55901045fc862d11c8c539a9012a53ed74519c6f4",
+      "sourcePngBytes": 119626,
+      "sourcePngSha256": "757059042fbbe9d4a16538f1ad1e92dbf1ba239928e6e9c2d870c034461603d6"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/portal/screenshots/webkit/desktop-1280/interaction.password-error.webp",
+      "width": 1280,
+      "height": 996,
+      "bytes": 45336,
+      "sha256": "c5893a9da8819823aac2161c64b7757c5d671d51bb5b9a4fc87d6b7aef0a3488",
+      "sourcePngBytes": 111369,
+      "sourcePngSha256": "a4c9d858c14cfa848f63cdb95df5bbf69b2d24b7a48f03efe88f1ce3d0c5906f"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/portal/screenshots/webkit/desktop-1280/interaction.read-only.webp",
+      "width": 1280,
+      "height": 800,
+      "bytes": 62230,
+      "sha256": "e01f85645d1446924daeebf669f912b1419f8cb137f97e273ba1209a0ceba23d",
+      "sourcePngBytes": 157003,
+      "sourcePngSha256": "483cd59fad9290654c2aeda0d94e1fff616642f44609c356ad64905a43c36a68"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/portal/screenshots/webkit/desktop-1280/interaction.session-ended.webp",
+      "width": 1280,
+      "height": 893,
+      "bytes": 67558,
+      "sha256": "a77dfbc5746db049cec43353bd9d726f65465e2d8403b844e52366604a5d665e",
+      "sourcePngBytes": 677994,
+      "sourcePngSha256": "846258d3bf890c47912a3169e61b724ae2c0241c690eeb60b876edb680387c66"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/portal/screenshots/webkit/desktop-1280/interaction.session-expired.webp",
+      "width": 1280,
+      "height": 893,
+      "bytes": 67558,
+      "sha256": "a77dfbc5746db049cec43353bd9d726f65465e2d8403b844e52366604a5d665e",
+      "sourcePngBytes": 677994,
+      "sourcePngSha256": "846258d3bf890c47912a3169e61b724ae2c0241c690eeb60b876edb680387c66"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/portal/screenshots/webkit/mobile-390/interaction.empty-search.webp",
+      "width": 390,
+      "height": 3112,
+      "bytes": 89016,
+      "sha256": "0450700f63e7154ccb7e26c604f08bf4eca74bad47c04983b820f5490fb03321",
+      "sourcePngBytes": 249630,
+      "sourcePngSha256": "c9c76de3490fafd984e2125dd745da138414ce2a4ace204c210288bf58283c7f"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/portal/screenshots/webkit/mobile-390/interaction.search-results.webp",
+      "width": 390,
+      "height": 3112,
+      "bytes": 96668,
+      "sha256": "b02ed72370742ec19ee7f0887d35bbb9ff08eadef80a6db1fd00603801f81c13",
+      "sourcePngBytes": 267778,
+      "sourcePngSha256": "ecc02ab3749842dffa67f9e9c4388310b1074733aa8fa7e330782a655ee25f7c"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/after/chromium/desktop-1366x768.webp",
+      "width": 1366,
+      "height": 7644,
+      "bytes": 680770,
+      "sha256": "b97ac8b0c8e179b53a741b606960fdc5ca327f708ec1bb408c4cc5cb6f60184f",
+      "sourcePngBytes": 3959365,
+      "sourcePngSha256": "d574b2d852d4024539948a3b4821360d666642b2e7a79d1d12bd57b4c77bac3e"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/after/chromium/desktop-1440x900.webp",
+      "width": 1440,
+      "height": 7664,
+      "bytes": 698064,
+      "sha256": "d8ddd4d3ae02453d9de0937c188c5f23136c6261a92b9e1f3b7a4a65e4b53e88",
+      "sourcePngBytes": 4122716,
+      "sourcePngSha256": "4a85a63dfbcca441755775ef6d763f07c4439b00800b504db1200715949f5efd"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/after/chromium/desktop-1920x1080.webp",
+      "width": 1920,
+      "height": 7664,
+      "bytes": 718232,
+      "sha256": "c55cf5402722a200bff2b32ed188cd8420c8eca9aec3f27ad5126e37dda9e35b",
+      "sourcePngBytes": 4611426,
+      "sourcePngSha256": "8566442f16e69bdda3f6f917d40d96a286712d37059853bc15966dc0890cd14c"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/after/chromium/mobile-390x844.webp",
+      "width": 390,
+      "height": 12520,
+      "bytes": 500806,
+      "sha256": "216bd12231a2946a821d9b636432dcd04f85ab1c50abc3041969b5284070fa9c",
+      "sourcePngBytes": 1836947,
+      "sourcePngSha256": "b1d05722a4f7c7f9a04b73bebd4954d4e157747771e41ebfc8cb6bd148b50609"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/after/chromium/tablet-768x1024.webp",
+      "width": 768,
+      "height": 9145,
+      "bytes": 532794,
+      "sha256": "2603afc905a77a0497af988f18954b25ba92a52ccefece138101e643a919b279",
+      "sourcePngBytes": 2233433,
+      "sourcePngSha256": "64eee2f62b0aa04e80af099e64cfe75b1d8821fb3a516b40cc25a96fecd8482f"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/after/webkit/desktop-1366x768.webp",
+      "width": 1366,
+      "height": 7621,
+      "bytes": 691340,
+      "sha256": "0e15ca6f26b0cde8d8f4ddc98e2783c4e2bd79db5b3121e216049ede5fefbdc2",
+      "sourcePngBytes": 6550132,
+      "sourcePngSha256": "23cb0ddbc5f9ca3899462aadd35873568b5f8d8395a2a1ebc76ad977bcdb6990"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/after/webkit/desktop-1440x900.webp",
+      "width": 1440,
+      "height": 7642,
+      "bytes": 704344,
+      "sha256": "f63351913fe7d9070e7684aecb90938b1364e7a2cb5f89741fe634204aebc9d6",
+      "sourcePngBytes": 6901768,
+      "sourcePngSha256": "a068dc5290da9c4d1c5328f6fe51458f9c47b132684d323b8e8c866de422ba0b"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/after/webkit/desktop-1920x1080.webp",
+      "width": 1920,
+      "height": 7642,
+      "bytes": 725064,
+      "sha256": "b5cfbc02e99e4e855ed9f07cc3ba85aadd087957ee99f93957b9595c0ef63147",
+      "sourcePngBytes": 7882763,
+      "sourcePngSha256": "460ddc2cdba4aadf486f13834f3026b90372cd453370e1479ad1bb86142b2d04"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/after/webkit/mobile-390x844.webp",
+      "width": 390,
+      "height": 12497,
+      "bytes": 505762,
+      "sha256": "a29be1d6e781df285c8a954b9e89518618ad3b1e38dc9f4d95ed3b730d766ec3",
+      "sourcePngBytes": 2926835,
+      "sourcePngSha256": "83653ae91b629273825a0e17fb5bded3340f1eaf781a33df88bc1d100df60773"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/after/webkit/tablet-768x1024.webp",
+      "width": 768,
+      "height": 9123,
+      "bytes": 535544,
+      "sha256": "47fabc3c49719203c703d0ab1aa643798c88023612b4ecfcb4d18730b526aacf",
+      "sourcePngBytes": 3586442,
+      "sourcePngSha256": "c2ac3b18d5411929e9422bc4115add37edbe15aa8d35ebc9638b5e7ee0d95fa1"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/before/chromium/desktop-1366x768.webp",
+      "width": 1366,
+      "height": 7504,
+      "bytes": 659216,
+      "sha256": "3de0e5cc220b294fb1263ae440b311d896787d148f98a9e28fedc6672cd17bb3",
+      "sourcePngBytes": 3720287,
+      "sourcePngSha256": "cae853ae348c2f5d513dc21222d57d5caa9309e2232f9e78f27597d71fb95af3"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/before/chromium/desktop-1440x900.webp",
+      "width": 1440,
+      "height": 7529,
+      "bytes": 679552,
+      "sha256": "4a8789fc125cd98aefc4d936de478fbc83c094b229d37243ff348844ad1c2a17",
+      "sourcePngBytes": 3868337,
+      "sourcePngSha256": "d1edc45cd3781801f887b98b20bf016453d9da01f7e80550f646753ce856ffc8"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/before/chromium/desktop-1920x1080.webp",
+      "width": 1920,
+      "height": 7529,
+      "bytes": 699458,
+      "sha256": "0cbd49a20d7a5b383b1594882d3da49b9ee495457a417dd19e65ff051949fe47",
+      "sourcePngBytes": 4328372,
+      "sourcePngSha256": "e28ee17100cdc92c332e1adc13c127db9ad3c2a42701f717f8fef018ef41deb6"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/before/chromium/mobile-390x844.webp",
+      "width": 390,
+      "height": 12118,
+      "bytes": 482766,
+      "sha256": "7fb1f46f2c8790f03036279861fa81f79af601d096acbae05a53902ad86c623c",
+      "sourcePngBytes": 1702285,
+      "sourcePngSha256": "fc428f16677d99d9c97aba70bce614f6e86a54790236dd0ff056858e4c0ae7a8"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/before/chromium/tablet-768x1024.webp",
+      "width": 768,
+      "height": 8823,
+      "bytes": 518618,
+      "sha256": "8b7cfc34330ca1f467e5fdbed51df2db8d88dfdf1cb6512e4f3bd5069fc581b8",
+      "sourcePngBytes": 2015779,
+      "sourcePngSha256": "d3554cf9140e6ac29095e0e11055d0cc12fc25d15260f1f2825513c0ca89fde4"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/before/webkit/desktop-1366x768.webp",
+      "width": 1366,
+      "height": 7481,
+      "bytes": 665796,
+      "sha256": "6dfc372cd334da5544b5b137301f1d2db21a08a8e457b117aecc70dba4155e31",
+      "sourcePngBytes": 5610928,
+      "sourcePngSha256": "51b9889a141bab39eed20564f4121a58dcb6a3e8f59dbaee605d584855459297"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/before/webkit/desktop-1440x900.webp",
+      "width": 1440,
+      "height": 7507,
+      "bytes": 685000,
+      "sha256": "9f8ecc983c94802e1ce441cc2baa8e7ecc4066a979728f422184e5dc8cf54035",
+      "sourcePngBytes": 5913078,
+      "sourcePngSha256": "9a316da3d0dd068071c1aa5ba3c8b89bcad0eb74e0bab23a4844db734c7f3844"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/before/webkit/desktop-1920x1080.webp",
+      "width": 1920,
+      "height": 7506,
+      "bytes": 704402,
+      "sha256": "30d3690b13973c120ab65e9b5c7a6b4cd16381139b783eddc6c2b43c5c1f5963",
+      "sourcePngBytes": 6800787,
+      "sourcePngSha256": "a764eed887a4684a71521208ec98c876b7108683f2daaf29dfdd3a2a911fd8b8"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/before/webkit/mobile-390x844.webp",
+      "width": 390,
+      "height": 12095,
+      "bytes": 488412,
+      "sha256": "e499f4bdf29789ff4b2085b52775afd2daab960cfba0e106e6241514844be5b1",
+      "sourcePngBytes": 2448250,
+      "sourcePngSha256": "1e7a72f27aa723145ccdb8a10ed8daf3a5684e1cc43fbbf09056a60f94e79e37"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/products/before/webkit/tablet-768x1024.webp",
+      "width": 768,
+      "height": 8801,
+      "bytes": 522552,
+      "sha256": "5ace3a2f8c6e5b69a70f9cf27aeb3acdf620fa3d5a88c9b8c56ed8f168091507",
+      "sourcePngBytes": 2993248,
+      "sourcePngSha256": "8965480fdaa26a6e5d86906951e25a6f3d663b978bbb30c1c09042668cd2d2e5"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/status/incident-chromium-1440.webp",
+      "width": 1440,
+      "height": 1690,
+      "bytes": 87016,
+      "sha256": "44bc91f94ada39417b678802c8425130807fd9b8575a7ea602a9fcced99aeeb0",
+      "sourcePngBytes": 158219,
+      "sourcePngSha256": "4c5cee406e5f8cec44c2edf3f57e256d5cc570bcdb349dbdd32493ae4d91bdbe"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/status/maintenance-webkit-390.webp",
+      "width": 390,
+      "height": 2056,
+      "bytes": 77662,
+      "sha256": "2dc343e8d490478d6ec7207f0c6d4a135075074c44aab73cf501fe5817836fb6",
+      "sourcePngBytes": 172230,
+      "sourcePngSha256": "a9526074d286e629d813b038bcc5173223c9ff4479decb0c348ada4fdb4e3501"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/status/normal-chromium-1440.webp",
+      "width": 1440,
+      "height": 1763,
+      "bytes": 89614,
+      "sha256": "2b1ea99d9b31b92ce8b4de58898d8fd45267e26a5625194940c63be3b6dc5ced",
+      "sourcePngBytes": 162396,
+      "sourcePngSha256": "5b3c05a40ee5aceb10b459e5bca918e14e9ddafad3f0e0f4a5ed917536074bcf"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/technology/article-technology-transfer-chromium-1440.webp",
+      "width": 1440,
+      "height": 900,
+      "bytes": 69528,
+      "sha256": "80eb9db84bd31e45e77c02b03bbd02eccb3c0e1286e963ca33b3329585922d71",
+      "sourcePngBytes": 136663,
+      "sourcePngSha256": "75db1361044ee81c8c6857d99432cae55bb9229a84294ecfe338b45876d6d9c5"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/technology/home-chromium-1440.webp",
+      "width": 1440,
+      "height": 900,
+      "bytes": 71188,
+      "sha256": "161b8c8f2df30af738013744bb53630517aab1463a76f9083420b77c44527e73",
+      "sourcePngBytes": 611910,
+      "sourcePngSha256": "f6bfe5ed54e36d00e47c4e777685361ce611af4b0b2f2457bfb846760cc674bb"
+    },
+    {
+      "path": "audit/evidence/final-visual-lock/technology/home-webkit-390.webp",
+      "width": 390,
+      "height": 844,
+      "bytes": 35608,
+      "sha256": "73bc3ba75855ca6f5264ad334c76103d38f4464ce5f2256a84a9c47f08f0de9f",
+      "sourcePngBytes": 374407,
+      "sourcePngSha256": "1a32893d36a14e4e09d66d215778776e48895b97ed45f435dce23e878a3b5a22"
+    }
+  ]
+}

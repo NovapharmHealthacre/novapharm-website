@@ -1,0 +1,57 @@
+{
+  "updated_at": "2026-08-01",
+  "master_specification_sha256": "e541b85b0a03ef9b54e8aa96b5380f49fe232774a3d531abcaad880071c60c32",
+  "programme_status": "repository migration in progress; production acceptance open",
+  "increments": [
+    {
+      "name": "Unified workspace foundation",
+      "requirement_sections": [3, 7, 13, 17, 22, 23, 25, 27, 28, 29, 30],
+      "status": "repository-accepted",
+      "evidence": [
+        "docs/programme/workspace-foundation.md",
+        "docs/programme/architecture-decision-record.md"
+      ]
+    },
+    {
+      "name": "Founder public application migration",
+      "requirement_sections": [16, 17, 22, 23, 24, 25, 28],
+      "status": "repository-accepted",
+      "evidence": ["docs/programme/founder-migration-acceptance.md"]
+    },
+    {
+      "name": "Technology public application migration",
+      "requirement_sections": [15, 17, 22, 23, 24, 25, 28],
+      "status": "repository-accepted-with-performance-follow-up",
+      "evidence": ["docs/programme/technology-migration-acceptance.md"]
+    },
+    {
+      "name": "Corporate public application migration",
+      "requirement_sections": [8, 12, 14, 17, 18, 21, 22, 23, 24, 25, 28],
+      "status": "repository-accepted-with-managed-workflows-pending",
+      "evidence": ["docs/programme/corporate-migration-acceptance.md"]
+    },
+    {
+      "name": "Secure portal and API separation",
+      "requirement_sections": [4, 5, 8, 9, 10, 11, 19, 23, 24, 27, 28],
+      "status": "repository-accepted-with-managed-deployment-pending",
+      "evidence": ["docs/programme/portal-api-migration-acceptance.md"]
+    },
+    {
+      "name": "Sanitised estate status service",
+      "requirement_sections": [5, 6, 21, 23, 24, 25, 27, 28, 30],
+      "status": "repository-accepted-with-managed-deployment-pending",
+      "evidence": ["docs/programme/status-migration-acceptance.md"]
+    },
+    {
+      "name": "Unified Azure estate and immutable release contract",
+      "requirement_sections": [5, 6, 7, 9, 10, 11, 19, 20, 23, 24, 26, 27, 30],
+      "status": "repository-accepted-with-azure-acceptance-pending",
+      "evidence": [
+        "docs/programme/azure-unified-estate-acceptance.md",
+        "deployment/infrastructure-deployment-guide.md",
+        "infra/unified-estate.bicep"
+      ]
+    }
+  ],
+  "completion_rule": "No repository acceptance entry proves Azure, Entra, SharePoint, email, legal, DNS or production completion. Those requirements remain open until independently verified in the approved live environment."
+}

@@ -9,7 +9,18 @@ const read = (path) => readFileSync(join(root, path), "utf8");
 const config = JSON.parse(read("config/module-art-direction.json"));
 const productionRegister = JSON.parse(read("creative-assets/module-media-asset-register.json"));
 const assets = new Map(config.assets.map((asset) => [asset.id, asset]));
-const excludedDirectories = new Set([".git", "node_modules", "audit", "coverage", "dist", ".runtime"]);
+const excludedDirectories = new Set([
+  ".git",
+  ".next",
+  ".runtime",
+  ".turbo",
+  "apps",
+  "audit",
+  "coverage",
+  "dist",
+  "node_modules",
+  "packages"
+]);
 
 function diskPath(webPath) {
   return join(root, webPath.replace(/^\//, ""));

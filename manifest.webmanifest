@@ -1,7 +1,7 @@
 {
   "name": "NovaPharm Healthcare",
   "short_name": "NovaPharm",
-  "description": "A UK-based, compliance-first and technology-enabled B2B pharmaceutical company preparing regulated trading, sourcing and wholesale distribution capabilities for oncology, specialty and licensed medicines.",
+  "description": "An active UK-based, compliance-first and technology-enabled B2B pharmaceutical company developing regulated trading, sourcing and wholesale distribution capabilities for oncology, specialty and licensed medicines.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

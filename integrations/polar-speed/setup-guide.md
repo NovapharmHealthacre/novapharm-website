@@ -13,7 +13,7 @@ POLAR_SPEED_INVENTORY_PATH=
 POLAR_SPEED_TIMEOUT_MS=30000
 ```
 
-Use the exact endpoint paths supplied by Polar Speed or Marken. For example, if tracking is documented as `/shipments/{reference}`, set `POLAR_SPEED_TRACKING_PATH=/shipments/{reference}`.
+Use the exact endpoint paths supplied by Polar Speed. For example, if tracking is documented as `/shipments/{reference}`, set `POLAR_SPEED_TRACKING_PATH=/shipments/{reference}`.
 
 ## Validation Steps
 
@@ -26,4 +26,4 @@ Use the exact endpoint paths supplied by Polar Speed or Marken. For example, if 
 
 ## Current Blocker
 
-The code is ready for an API contract, but live warehouse connectivity cannot be completed until NovaPharm receives Polar Speed/Marken integration credentials and endpoint documentation.
+The code is ready for an API contract, but live warehouse connectivity cannot be completed until NovaPharm receives Polar Speed integration credentials and endpoint documentation and approves the controlled technical scope.

@@ -55,6 +55,11 @@ assert.equal((await getPersistentSession(persistentSession.id)).identityProvider
 
 const untrusted = appServicePrincipalFromHeaders({ "x-ms-client-principal": "ignored" }, { NODE_ENV: "production", ENTRA_AUTH_ENABLED: "true" });
 assert.equal(untrusted, null, "Proxy identity headers must not be trusted outside App Service in production");
+const appServiceSpoof = appServicePrincipalFromHeaders(
+  { "x-ms-client-principal": principalHeader({ tenantId: workforceTenant, subject: randomUUID(), email: "spoof@example.invalid", name: "Spoofed Identity", roles: ["NovaPharm.Admin"] }) },
+  { NODE_ENV: "production", ENTRA_AUTH_ENABLED: "true", WEBSITE_INSTANCE_ID: "synthetic-app-service-instance" },
+);
+assert.equal(appServiceSpoof, null, "Running on App Service must not make direct identity headers trustworthy");
 
 const customerSubject = randomUUID();
 const customerEmail = "approved-customer@example.invalid";
@@ -86,4 +91,4 @@ assert.equal(customer.role, "client");
 
 await closeDatabase();
 rmSync(databasePath, { force: true });
-console.log("Entra identity tests passed: trusted-header enforcement, app-role mapping, administrator scopes, credential-free sessions and approved-customer isolation.");
+console.log("Entra identity tests passed: signed-boundary enforcement, app-role mapping, administrator scopes, credential-free sessions and approved-customer isolation.");

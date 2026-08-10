@@ -125,7 +125,7 @@ Each asset needs a named owner, version, review date, primary-source list, regul
 - Vishal Chakravarty: market entry, sourcing strategy, partnerships, PLPI commercial strategy and operating models.
 - Prabhakar Vitthal Lahare: operations, quality systems, manufacturing, audit readiness and supply continuity, subject to approved public role wording.
 - Dr Girish Shantilal Achliya: formulation, product development, technical due diligence and technology transfer.
-- Dr Nishita Trivedi: quality/regulatory review only when the review is formally completed and approved; not presented as a statutory director.
+- Dr Nishita Trivedi: technology governance and quality/regulatory review within the approved CTO and RP responsibility boundaries; not presented as a statutory director, MHRA representative, approval authority or clinical authority.
 - Dr Helly Panchal: technical/formulation review only after the contribution and public biography are approved.
 
 No content should use “medically reviewed” unless the review actually meets that description and the reviewer is appropriately qualified for that specific purpose.

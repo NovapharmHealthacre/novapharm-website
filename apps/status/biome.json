@@ -1,0 +1,14 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.6/schema.json",
+  "files": {
+    "includes": ["app/**", "lib/**", "scripts/**", "test/**", "next.config.ts", "proxy.ts", "!public/assets"]
+  },
+  "formatter": { "enabled": false },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "complexity": { "noImportantStyles": "off", "useLiteralKeys": "off" }
+    }
+  }
+}

@@ -189,6 +189,7 @@ export async function isKnownCompromisedPassword(password, { fetchImplementation
     if (required) throw Object.assign(new Error("Password safety verification is temporarily unavailable."), { statusCode: 503 });
     return false;
   }
+  // HIBP mandates this transient SHA-1 range digest; NovaPharm password verifiers use PBKDF2 and never persist this value.
   const digest = createHash("sha1").update(String(password), "utf8").digest("hex").toUpperCase();
   const prefix = digest.slice(0, 5);
   const suffix = digest.slice(5);

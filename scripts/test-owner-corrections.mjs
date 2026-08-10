@@ -1,12 +1,16 @@
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { getPlatformCapabilities, resolvePlatformMode } from "../src/core/platform-mode.mjs";
 
 const root = resolve(process.cwd());
+const platformMode = resolvePlatformMode();
+const platformCapabilities = getPlatformCapabilities(platformMode);
 const failures = [];
 const excludedTopLevel = new Set([
-  ".git", ".github", "_secure", "architecture", "audit", "compliance", "data", "database",
-  "deployment", "docs", "final-report", "geo", "integrations", "node_modules", "performance",
-  "private-content", "public", "research", "scripts", "security", "seo", "sharepoint", "src", "tests"
+  ".changeset", ".git", ".github", "_secure", "apps", "architecture", "artifacts", "assets", "audit",
+  "compliance", "config", "creative-assets", "data", "database", "deployment", "docs", "final-report",
+  "geo", "infra", "integrations", "node_modules", "packages", "performance", "private-content", "public",
+  "research", "scripts", "security", "seo", "sharepoint", "src", "tests"
 ]);
 
 function fail(message) { failures.push(message); }
@@ -57,10 +61,11 @@ for (const required of [
   "/leadership/girish-achliya/",
   "/leadership/prabhakar-lahare/",
   "Prabhakar Vitthal Lahare",
-  "Managing Director &amp; Chief Operating Officer"
+  "Chief Operating Officer"
 ]) {
   if (!cro.includes(required)) fail(`CRO Senior judgement is missing: ${required}`);
 }
+if (cro.includes("Managing Director &amp; Chief Operating Officer")) fail("CRO Senior judgement contains Prabhakar's superseded executive title");
 const croLeaderCount = (cro.match(/class="cro-leader"/g) || []).length;
 if (croLeaderCount !== 3) fail(`CRO Senior judgement must contain exactly 3 leader cards; found ${croLeaderCount}`);
 
@@ -86,16 +91,27 @@ if (!home.includes("/portal/")) fail("Homepage no longer links to Secure portal"
 if (!home.includes("/account-application/")) fail("Homepage no longer links to Open an account");
 
 const contact = text("contact/index.html");
-if (!contact.includes("data-contact-form")) fail("Contact enquiry form hook is missing");
+if (platformCapabilities.publicForms && !contact.includes("data-contact-form")) fail("Contact enquiry form hook is missing");
+if (!platformCapabilities.publicForms && (contact.includes("data-contact-form") || contact.includes("<form"))) fail("PUBLIC_ONLY contact page exposes a server-dependent form");
+if (!platformCapabilities.publicForms && !contact.includes("does not collect or transmit enquiry details")) fail("PUBLIC_ONLY contact page is missing the non-collection notice");
 if (!text("assets/js/novapharm.js").includes('request("/api/contact"')) fail("Contact form API submission path is missing");
 
 const account = text("account-application/index.html");
-if (!account.includes("data-account-application")) fail("Account application form hook is missing");
+if (platformCapabilities.accountApplication && !account.includes("data-account-application")) fail("Account application form hook is missing");
+if (!platformCapabilities.accountApplication && (account.includes("data-account-application") || account.includes("<form") || account.includes('type="file"'))) fail("PUBLIC_ONLY account page exposes a server-dependent form or upload");
+if (!platformCapabilities.accountApplication && !account.includes("does not accept account applications or business documents")) fail("PUBLIC_ONLY account page is missing the non-collection notice");
 if (!text("assets/js/account-application.js").includes('request("/api/account-applications"')) fail("Account application API path is missing");
 
 const portal = text("portal/index.html");
-if (!portal.includes("data-login-form")) fail("Secure portal login form is missing");
-if (!portal.includes("data-entra-login")) fail("Microsoft login control is missing");
+if (platformCapabilities.portal && !portal.includes("data-login-form")) fail("Secure portal login form is missing");
+if (platformCapabilities.portal && !portal.includes("data-entra-login")) fail("Microsoft login control is missing");
+if (!platformCapabilities.portal && (portal.includes("data-login-form") || portal.includes('type="password"') || portal.includes('name="accessType"'))) fail("PUBLIC_ONLY portal exposes a credential or role-selection control");
+if (!platformCapabilities.portal && !portal.includes("This public website never asks for a portal username, password or confidential company record")) fail("PUBLIC_ONLY portal is missing the credential-safety notice");
+if (!platformCapabilities.portal) {
+  for (const path of ["admin", "employee", "entra-complete", "_secure", "portal/change-password", "portal/dashboard", "portal/executive-platform"]) {
+    if (existsSync(join(root, path))) fail(`PUBLIC_ONLY build contains protected path: ${path}`);
+  }
+}
 const portalScript = text("assets/js/portal-login.js");
 if (!portalScript.includes('request("/api/health"')) fail("Portal health activation check is missing");
 if (!portalScript.includes("/.auth/login/aad")) fail("Microsoft Entra login path is missing");
@@ -108,4 +124,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`Owner corrective release validation passed across ${publicHtml.length} public HTML documents.`);
+console.log(`Owner corrective release validation passed for ${platformMode} across ${publicHtml.length} public HTML documents.`);

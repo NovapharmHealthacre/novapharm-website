@@ -1,0 +1,57 @@
+# Official Technical and Compliance Source Register
+
+Status: active
+Review date: 9 August 2026
+
+Only primary and official sources are used for implementation decisions. Product/version-specific guidance must be rechecked at the time of deployment.
+
+| Topic | Official source | Decision informed | Owner action |
+|---|---|---|---|
+| React stable release | [React 19.2](https://react.dev/blog/2025/10/01/react-19-2) | Use current stable React and React DOM; the candidate resolves both to `19.2.8` | None |
+| React Server Components security | [React RSC security update](https://react.dev/blog/2025/12/11/denial-of-service-and-source-code-exposure-in-react-server-components) | Keep RSC packages beyond the patched `19.2.4` floor and rerun dependency audits | Recheck before deployment |
+| Next.js July 2026 security release | [July 2026 Security Release](https://nextjs.org/blog/july-2026-security-release) | Keep the release on a patched Active LTS line; candidate `16.2.12` is beyond the documented `16.2.11` floor | Recheck before deployment |
+| Next.js server/client boundary | [Server and Client Components](https://nextjs.org/docs/app/getting-started/server-and-client-components) | Render editorial content on the server and create narrow client boundaries only for interaction | None |
+| Next.js release support | [Next.js release policy](https://nextjs.org/support-policy) | Use a security-patched Active LTS release, not an unpatched pinned minor | None |
+| Next.js self-hosting | [Next.js self-hosting guide](https://nextjs.org/docs/app/guides/self-hosting) | Use a reverse proxy/managed ingress, stable server-action key and deliberate cache/version-skew design | None |
+| Next.js static export | [Next.js static exports](https://nextjs.org/docs/app/guides/static-exports) | Static export is suitable only for public routes that do not require server features | None |
+| Azure Node runtime | [Configure Node.js in Azure App Service](https://learn.microsoft.com/en-us/azure/app-service/configure-language-nodejs) | Target supported Node 24 LTS configuration for the managed runtime | Confirm region/SKU at deployment |
+| Azure App Service | [App Service overview](https://learn.microsoft.com/en-us/azure/app-service/overview) | Preferred simple managed host for conventional Next.js/Node services | Azure subscription and cost approval |
+| Azure managed identity | [Managed identities for Azure resources](https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/overview) | Prefer identity-based service access over stored credentials | Tenant/subscription rights |
+| Azure Key Vault | [Key Vault security guidance](https://learn.microsoft.com/en-us/azure/key-vault/general/security-features) | Production secret authority with managed identity and recovery controls | Azure approval |
+| Azure SQL authentication | [Microsoft Entra service principals with Azure SQL](https://learn.microsoft.com/en-us/azure/azure-sql/database/authentication-aad-service-principal) | Prefer managed identity and least-privilege database principals | Entra/SQL administrator action |
+| Entra External ID | [Microsoft Entra External ID overview](https://learn.microsoft.com/en-us/entra/external-id/external-identities-overview) | Use the current Microsoft customer identity platform for approved external users | External tenant configuration |
+| Microsoft Graph permissions | [Microsoft Graph permissions reference](https://learn.microsoft.com/en-us/graph/permissions-reference) | Request the least privilege and use selected-site access where feasible | Microsoft admin consent |
+| SharePoint selected permissions | [Selected permissions overview](https://learn.microsoft.com/en-us/graph/permissions-selected-overview) | Restrict application access to approved sites/lists/files instead of tenant-wide content | SharePoint/Graph administrator approval |
+| GitHub OIDC for Azure | [Configure OpenID Connect in Azure](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-azure) | Use short-lived workload federation for deployment | GitHub/Azure environment setup |
+| GitHub CodeQL Action | [Supported CodeQL Action versions](https://github.com/github/codeql-action) | Use the current supported `v4` major for JavaScript/TypeScript advanced setup | Enable code scanning and require the check |
+| Apple design foundation | [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines) | Apply hierarchy, harmony and consistency as quality principles without copying Apple assets or trade dress | None |
+| Apple design principles | [Design principles](https://developer.apple.com/design/human-interface-guidelines/design-principles) and [Principles of great design, WWDC26](https://developer.apple.com/videos/play/wwdc2026/250/) | Use purpose, agency, responsibility, familiarity, flexibility, simplicity, craft and delight as a critique frame, never as permission to imitate Apple | None |
+| Apple adaptive layout | [Layout guidance](https://developer.apple.com/design/human-interface-guidelines/layout) | Prioritise important content, align for scanability and validate every supported size | None |
+| Apple typography | [Typography guidance](https://developer.apple.com/design/human-interface-guidelines/typography) | Preserve readable scale, contrast and line length rather than imitating proprietary type treatments | None |
+| Apple accessibility | [Accessibility guidance](https://developer.apple.com/design/human-interface-guidelines/accessibility) | Keep semantic controls, visible focus, adequate targets and equivalent experiences | Independent/manual review recommended |
+| Apple reduced motion | [Reduced motion evaluation criteria](https://developer.apple.com/help/app-store-connect/manage-app-accessibility/reduced-motion-evaluation-criteria) | Remove nonessential movement without hiding content or functionality | None |
+| WebKit motion behaviour | [Scroll-driven animation guide](https://webkit.org/blog/17101/a-guide-to-scroll-driven-animations-with-just-css/) | Avoid scroll hijacking and large motion; retain `prefers-reduced-motion` controls and WebKit acceptance | Repeat on managed staging |
+| Current Safari/WebKit | [Safari 26.4 web-platform features](https://webkit.org/blog/17862/webkit-features-for-safari-26-4/) | Validate production CSS and motion in current WebKit rather than assuming Chromium parity | Real Safari staging review |
+| Azure Front Door security | [Secure your Azure Front Door deployment](https://learn.microsoft.com/en-us/azure/frontdoor/secure-front-door) | Use Premium/WAF, current DRS, protected origins and versioned policy | Azure deployment and live acceptance |
+| Azure Front Door origin security | [Secure traffic to origins](https://learn.microsoft.com/en-us/azure/frontdoor/origin-security) | Pair `AzureFrontDoor.Backend` filtering with exact `X-Azure-FDID` validation | Verify direct-origin rejection after deployment |
+| Azure Front Door WAF custom rules | [Custom rules for Azure Front Door WAF](https://learn.microsoft.com/en-us/azure/web-application-firewall/afds/waf-front-door-custom-rules) | Use explicit match and rate-limit rules with reviewed priorities | Live WAF rule testing |
+| Google AI search features | [AI features and the website](https://developers.google.com/search/docs/appearance/ai-features) | Normal search fundamentals apply; no separate AI-only content layer or ranking guarantee | Search Console monitoring |
+| Google organisation markup | [Organization structured data](https://developers.google.com/search/docs/appearance/structured-data/organization) | Publish one consistent canonical organisation entity and official logo | Verify public facts |
+| Google sitemaps | [Build and submit a sitemap](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap) | Include canonical public URLs and meaningful `lastmod` only | Submit after owner verification |
+| Google robots guidance | [Introduction to robots.txt](https://developers.google.com/search/docs/crawling-indexing/robots/intro) | Use crawler rules for crawl control, never as confidential-data protection | None |
+| Google Knowledge Panels | [About Knowledge Panels](https://support.google.com/knowledgepanel/answer/9163198) | Treat panels as automatically generated; do not guarantee or manufacture one | Claim only if an eligible panel appears |
+| OpenAI search crawler | [OpenAI publishers and developers FAQ](https://help.openai.com/en/articles/12627856-publishers-and-developers-faq) | Allow `OAI-SearchBot` for public discovery; decide `GPTBot` policy separately; keep private content protected | Owner crawler-training preference |
+| OpenAI crawler controls | [OpenAI crawler overview](https://platform.openai.com/docs/bots) | Maintain current user-agent policy and verify published IP guidance when needed | None |
+| Bing/IndexNow | [IndexNow documentation](https://www.indexnow.org/documentation) | Submit only created, materially updated, redirected or removed canonical URLs; handle throttling safely | Bing Webmaster verification |
+| Schema vocabulary | [Schema.org documentation](https://schema.org/docs/documents.html) | Build a connected JSON-LD graph supported by visible content | None |
+| WCAG 2.2 | [Web Content Accessibility Guidelines 2.2](https://www.w3.org/TR/WCAG22/) | Target WCAG 2.2 AA and avoid unsupported conformance claims | Independent/manual review recommended |
+| Accessible patterns | [WAI ARIA Authoring Practices Guide](https://www.w3.org/WAI/ARIA/apg/) | Use proven keyboard/focus/dialog/navigation patterns | None |
+| Application security | [OWASP Application Security Verification Standard](https://owasp.org/www-project-application-security-verification-standard/) | Use a structured security acceptance baseline in addition to tests | Independent penetration test approval |
+| UK data protection law | [Data (Use and Access) Act 2025](https://www.legislation.gov.uk/ukpga/2025/18/contents) | Review current UK data-processing wording and amendments against actual systems | UK solicitor review |
+| ICO cookie guidance | [ICO cookies and similar technologies](https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/cookies-and-similar-technologies/) | Block non-essential storage before consent and make rejection/withdrawal accessible | Privacy review |
+| Modern Slavery Act guidance | [Transparency in supply chains guidance](https://www.gov.uk/government/publications/transparency-in-supply-chains-a-practical-guide) | Determine section 54 applicability from verified turnover/group facts; otherwise publish a voluntary policy | Owner financial facts and solicitor review |
+| UK energy/carbon reporting | [Environmental reporting guidance](https://www.gov.uk/government/publications/environmental-reporting-guidelines-including-mandatory-greenhouse-gas-emissions-reporting-guidance) | Determine SECR applicability from verified company facts and avoid unsupported emissions claims | Accountant/solicitor review |
+
+## Review rule
+
+The URL, publication date and relevant recommendation are rechecked before any production implementation that depends on changeable product, legal, crawler, pricing or licensing behaviour. Search outcomes, rich results, Knowledge Panels and AI citations remain platform decisions and are never guaranteed.

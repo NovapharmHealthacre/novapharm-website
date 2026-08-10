@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { closeSync, existsSync, ftruncateSync, openSync, readFileSync, readdirSync, writeFileSync, writeSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { leadership, pageMeta } from "../src/content/site-content.mjs";
 import { SITE_URL } from "../src/seo/authority-config.mjs";
@@ -114,33 +114,45 @@ const register = [];
 
 for (const file of [...new Set(files)]) {
   const path = join(root, file);
-  if (!existsSync(path)) continue;
+  let descriptor;
+  try {
+    descriptor = openSync(path, "r+");
+  } catch (error) {
+    if (error?.code === "ENOENT") continue;
+    throw error;
+  }
   const route = routeForFile(file);
   const image = routeImages.get(route) || fallback;
   if (image !== fallback && !existsSync(join(root, image.url.replace(/^\//, "")))) {
+    closeSync(descriptor);
     throw new Error(`Social image is missing for ${route}: ${image.url}`);
   }
   const absolute = `${SITE_URL}${image.url}`;
-  let html = readFileSync(path, "utf8");
-  html = html.replace(/\s*<!-- page-specific-social-start -->[\s\S]*?<!-- page-specific-social-end -->/g, "");
-  const social = `\n  <!-- page-specific-social-start -->\n  <meta property="og:image" content="${absolute}">\n  <meta property="og:image:secure_url" content="${absolute}">\n  <meta property="og:image:type" content="${image.type}">\n  <meta property="og:image:width" content="${image.width}">\n  <meta property="og:image:height" content="${image.height}">\n  <meta property="og:image:alt" content="${image.alt.replaceAll('"', '&quot;')}">\n  <!-- page-specific-social-end -->`;
-  html = html.replace(/(<meta property="og:image" content="https:\/\/novapharmhealthcare\.com\/assets\/brand\/novapharm-healthcare-logo\.png">)/, `${social}\n  $1`);
-  html = html.replace(/<meta name="twitter:image" content="[^"]+">/, `<meta name="twitter:image" content="${absolute}">`);
-  html = html.replace(/<meta name="twitter:image:alt" content="[^"]+">/, `<meta name="twitter:image:alt" content="${image.alt.replaceAll('"', '&quot;')}">`);
+  try {
+    let html = readFileSync(descriptor, "utf8");
+    html = html.replace(/\s*<!-- page-specific-social-start -->[\s\S]*?<!-- page-specific-social-end -->/g, "");
+    const social = `\n  <!-- page-specific-social-start -->\n  <meta property="og:image" content="${absolute}">\n  <meta property="og:image:secure_url" content="${absolute}">\n  <meta property="og:image:type" content="${image.type}">\n  <meta property="og:image:width" content="${image.width}">\n  <meta property="og:image:height" content="${image.height}">\n  <meta property="og:image:alt" content="${image.alt.replaceAll('"', '&quot;')}">\n  <!-- page-specific-social-end -->`;
+    html = html.replace(/(<meta property="og:image" content="https:\/\/novapharmhealthcare\.com\/assets\/brand\/novapharm-healthcare-logo\.png">)/, `${social}\n  $1`);
+    html = html.replace(/<meta name="twitter:image" content="[^"]+">/, `<meta name="twitter:image" content="${absolute}">`);
+    html = html.replace(/<meta name="twitter:image:alt" content="[^"]+">/, `<meta name="twitter:image:alt" content="${image.alt.replaceAll('"', '&quot;')}">`);
 
-  const schemas = [];
-  for (const match of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/gi)) {
-    const schema = JSON.parse(match[1]);
-    const types = Array.isArray(schema["@type"]) ? schema["@type"] : [schema["@type"]];
-    if (types.some((type) => ["WebPage", "AboutPage", "ContactPage", "ProfilePage"].includes(type))) {
-      schema.primaryImageOfPage = imageObject(image);
+    const schemas = [];
+    for (const match of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/gi)) {
+      const schema = JSON.parse(match[1]);
+      const types = Array.isArray(schema["@type"]) ? schema["@type"] : [schema["@type"]];
+      if (types.some((type) => ["WebPage", "AboutPage", "ContactPage", "ProfilePage"].includes(type))) {
+        schema.primaryImageOfPage = imageObject(image);
+      }
+      schemas.push(schema);
     }
-    schemas.push(schema);
+    html = html.replace(/\s*<script type="application\/ld\+json">[\s\S]*?<\/script>/gi, "");
+    const serialized = schemas.map((schema) => `  <script type="application/ld+json">${JSON.stringify(schema)}</script>`).join("\n");
+    html = html.replace("</head>", `${serialized}\n</head>`);
+    ftruncateSync(descriptor, 0);
+    writeSync(descriptor, html, 0, "utf8");
+  } finally {
+    closeSync(descriptor);
   }
-  html = html.replace(/\s*<script type="application\/ld\+json">[\s\S]*?<\/script>/gi, "");
-  const serialized = schemas.map((schema) => `  <script type="application/ld+json">${JSON.stringify(schema)}</script>`).join("\n");
-  html = html.replace("</head>", `${serialized}\n</head>`);
-  writeFileSync(path, html);
   register.push({ route, page: `${SITE_URL}${route}`, ...image, absoluteUrl: absolute });
 }
 

@@ -150,6 +150,26 @@
     "absoluteUrl": "https://novapharmhealthcare.com/assets/media/modules/contact-qualified-enquiry.jpg"
   },
   {
+    "route": "/account-application/",
+    "page": "https://novapharmhealthcare.com/account-application/",
+    "url": "/assets/media/modules/account-controlled-onboarding.jpg",
+    "type": "image/jpeg",
+    "width": 1600,
+    "height": 900,
+    "alt": "Representative business-account review; submission does not create or approve an account",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/modules/account-controlled-onboarding.jpg"
+  },
+  {
+    "route": "/trust-centre/",
+    "page": "https://novapharmhealthcare.com/trust-centre/",
+    "url": "/assets/brand/novapharm-healthcare-logo.png",
+    "type": "image/png",
+    "width": 3356,
+    "height": 420,
+    "alt": "NovaPharm Healthcare official logo",
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png"
+  },
+  {
     "route": "/investor-information/",
     "page": "https://novapharmhealthcare.com/investor-information/",
     "url": "/assets/media/modules/investors-capital-readiness.jpg",
@@ -256,7 +276,7 @@
     "type": "image/jpeg",
     "width": 1102,
     "height": 1378,
-    "alt": "Prabhakar Vitthal Lahare, Managing Director and Chief Operating Officer at NovaPharm Healthcare",
+    "alt": "Prabhakar Vitthal Lahare, Chief Operating Officer at NovaPharm Healthcare",
     "absoluteUrl": "https://novapharmhealthcare.com/assets/prabhakarvitthallahare.jpeg"
   },
   {
@@ -266,7 +286,7 @@
     "type": "image/jpeg",
     "width": 1102,
     "height": 1378,
-    "alt": "Dr Girish Shantilal Achliya, Director and Chief Scientific Officer at NovaPharm Healthcare",
+    "alt": "Dr Girish Shantilal Achliya, Chief Technical Director at NovaPharm Healthcare",
     "absoluteUrl": "https://novapharmhealthcare.com/assets/girishshantilalachliya.jpeg"
   },
   {
@@ -348,15 +368,5 @@
     "height": 900,
     "alt": "Three-Pillar Sourcing: Direct GMP Partnerships, PLPI and European Buying Networks",
     "absoluteUrl": "https://novapharmhealthcare.com/assets/media/insights/three-pillar-sourcing.jpg"
-  },
-  {
-    "route": "/account-application/",
-    "page": "https://novapharmhealthcare.com/account-application/",
-    "url": "/assets/media/modules/account-controlled-onboarding.jpg",
-    "type": "image/jpeg",
-    "width": 1600,
-    "height": 900,
-    "alt": "Representative business-account review; submission does not create or approve an account",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/modules/account-controlled-onboarding.jpg"
   }
 ]

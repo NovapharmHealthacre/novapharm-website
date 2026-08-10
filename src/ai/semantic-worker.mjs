@@ -2,6 +2,9 @@ import { cosineSparse, embedText, tokenize } from "./model-registry.mjs";
 
 const DB_NAME = "novapharm-public-ai";
 const STORE_NAME = "semantic-assets";
+const MODEL_URL = "/assets/ai/novapharm-evidence-vector-v1.json";
+const EMBEDDINGS_URL = "/assets/ai/company-embeddings.json";
+const allowedMessageTypes = new Set(["init", "search", "clear-cache"]);
 let knowledge = null;
 let embeddings = null;
 let model = null;
@@ -87,8 +90,8 @@ async function fetchJson(url, label, useCache) {
 
 async function initialise(message) {
   knowledge = message.knowledge;
-  model = await fetchJson(message.modelUrl, "model", message.useCache);
-  embeddings = await fetchJson(message.embeddingsUrl, "embeddings", message.useCache);
+  model = await fetchJson(MODEL_URL, "model", message.useCache);
+  embeddings = await fetchJson(EMBEDDINGS_URL, "embeddings", message.useCache);
   if (embeddings.corpusHash !== knowledge.corpusHash) throw new Error("corpus_mismatch");
   self.postMessage({ type: "ready", model: { id: model.id, revision: model.revision, dimensions: model.dimensions } });
 }
@@ -112,14 +115,17 @@ function search(message) {
 }
 
 self.addEventListener("message", async (event) => {
+  if (event.origin && event.origin !== self.location.origin) return;
+  const message = event.data;
+  if (!message || typeof message !== "object" || !allowedMessageTypes.has(message.type)) return;
   try {
-    if (event.data.type === "init") await initialise(event.data);
-    if (event.data.type === "search") search(event.data);
-    if (event.data.type === "clear-cache") {
+    if (message.type === "init") await initialise(message);
+    if (message.type === "search") search(message);
+    if (message.type === "clear-cache") {
       await clearCache();
       self.postMessage({ type: "cache-cleared" });
     }
   } catch (error) {
-    self.postMessage({ type: "error", requestId: event.data.requestId, code: error?.message || "semantic_unavailable" });
+    self.postMessage({ type: "error", requestId: message.requestId, code: error?.message || "semantic_unavailable" });
   }
 });

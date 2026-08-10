@@ -12,6 +12,15 @@ const credentialsPath = join(runtimeRoot, "credentials.json");
 const pidPath = join(runtimeRoot, "server.pid");
 const logPath = join(runtimeRoot, "server.log");
 
+function readOptionalText(path) {
+  try {
+    return readFileSync(path, "utf8");
+  } catch (error) {
+    if (error?.code === "ENOENT") return null;
+    throw error;
+  }
+}
+
 if (Number(process.versions.node.split(".")[0]) !== 24) throw new Error(`Node.js 24 is required. Current runtime: ${process.version}.`);
 mkdirSync(runtimeRoot, { recursive: true, mode: 0o700 });
 assertBrowserValidationRoot(runtimeRoot);
@@ -84,13 +93,17 @@ async function ready() {
 }
 
 const existingPid = runningPid();
-if (existingPid && await ready()) {
+const existingRuntimeReady = await ready();
+if (existingPid && existingRuntimeReady) {
   console.log(JSON.stringify({ status: "already_running", url: "http://127.0.0.1:4178", credentialsPath, pid: existingPid }));
   process.exit(0);
 }
+if (!existingPid && existingRuntimeReady) {
+  throw new Error("Port 4178 is already serving a different validation runtime. Stop that generated runtime before starting this one.");
+}
 rmSync(pidPath, { force: true });
 
-run("build-site.mjs", "Validation build", { PUBLIC_API_ORIGIN: "" });
+run("build-site.mjs", "Validation build", { PLATFORM_MODE: "FULL_PLATFORM", PUBLIC_API_ORIGIN: "" });
 run("initialise-browser-validation.mjs", "Validation database initialisation");
 run(join("local-portal", "seed.mjs"), "Base synthetic scenario seed");
 run("import-nutraxin-catalogue.mjs", "Nutraxin validation import");
@@ -115,11 +128,17 @@ chmodSync(pidPath, 0o600);
 child.unref();
 
 const started = Date.now();
-while (Date.now() - started < 30000 && !await ready()) await new Promise((resolvePromise) => setTimeout(resolvePromise, 300));
-if (!await ready()) {
+let childReady = false;
+while (Date.now() - started < 30000) {
+  childReady = await ready();
+  if (childReady) break;
+  await new Promise((resolvePromise) => setTimeout(resolvePromise, 300));
+}
+if (!childReady) {
   try { process.kill(child.pid, "SIGTERM"); } catch {}
   rmSync(pidPath, { force: true });
-  const tail = existsSync(logPath) ? readFileSync(logPath, "utf8").split(/\r?\n/).slice(-20).join("\n") : "No log was created.";
+  const log = readOptionalText(logPath);
+  const tail = log === null ? "No log was created." : log.split(/\r?\n/).slice(-20).join("\n");
   throw new Error(`Browser validation server did not become ready.\n${tail}`);
 }
 

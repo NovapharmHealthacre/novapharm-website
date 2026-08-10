@@ -42,6 +42,26 @@ function optional(value, maximum = 200) {
   return String(value || "").replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, maximum) || null;
 }
 
+function validBusinessEmail(value) {
+  if (value.length < 3 || value.length > 160) return false;
+  const at = value.indexOf("@");
+  if (at <= 0 || at !== value.lastIndexOf("@") || at === value.length - 1) return false;
+  for (const character of value) {
+    const code = character.charCodeAt(0);
+    if (code <= 32 || code === 127) return false;
+  }
+  const domain = value.slice(at + 1);
+  if (domain.startsWith(".") || domain.endsWith(".") || !domain.includes(".")) return false;
+  for (const label of domain.split(".")) {
+    if (!label || label.length > 63 || label.startsWith("-") || label.endsWith("-")) return false;
+    for (const character of label) {
+      const code = character.toLowerCase().charCodeAt(0);
+      if (!((code >= 97 && code <= 122) || (code >= 48 && code <= 57) || character === "-")) return false;
+    }
+  }
+  return true;
+}
+
 function contactAttribution(input) {
   let payload = {};
   try { payload = JSON.parse(String(input.attributionPayload || "{}")); } catch { payload = {}; }
@@ -149,7 +169,7 @@ export async function createLead(input, actor = "public_website", context = {}) 
     telephone: String(input.telephone || "").replace(/[^0-9+().\-\s]/g, "").trim().slice(0, 40) || null,
     status: "new"
   };
-  if (!/^\S+@\S+\.\S+$/.test(lead.email)) throw Object.assign(new Error("Enter a valid email address."), { statusCode: 400 });
+  if (!validBusinessEmail(lead.email)) throw Object.assign(new Error("Enter a valid email address."), { statusCode: 400 });
   if (!enquiryTypes.has(lead.enquiryType)) throw Object.assign(new Error("Select a valid enquiry type."), { statusCode: 400 });
   if (lead.message.length < 20) throw Object.assign(new Error("Message must contain at least 20 characters."), { statusCode: 400 });
   if (containsRestrictedSafetyContent(lead.message)) {
@@ -264,7 +284,7 @@ export async function submitCustomerApplication(input, actor = "public_applicant
   if (!gdpStatuses.has(gdpStatus)) throw Object.assign(new Error("GDP status is invalid."), { statusCode: 400 });
   const responsiblePeople = responsiblePeopleInput.map((person) => {
     const email = required(person?.email, "Responsible person email").toLowerCase().slice(0, 160);
-    if (!/^\S+@\S+\.\S+$/.test(email)) throw Object.assign(new Error("Responsible person email is invalid."), { statusCode: 400 });
+    if (!validBusinessEmail(email)) throw Object.assign(new Error("Responsible person email is invalid."), { statusCode: 400 });
     return { name: required(person?.name, "Responsible person name").slice(0, 120), role: required(person?.role, "Responsible person role").slice(0, 120), email };
   });
   const addresses = addressesInput.map((address) => ({
@@ -274,7 +294,7 @@ export async function submitCustomerApplication(input, actor = "public_applicant
     country: String(address?.country || "GB").trim().toUpperCase().slice(0, 2)
   }));
   const email = required(input.email, "Contact email").toLowerCase().slice(0, 160);
-  if (!/^\S+@\S+\.\S+$/.test(email)) throw Object.assign(new Error("Contact email is invalid."), { statusCode: 400 });
+  if (!validBusinessEmail(email)) throw Object.assign(new Error("Contact email is invalid."), { statusCode: 400 });
   if (input.bank?.confirmationProvided !== true) throw Object.assign(new Error("Bank confirmation must be available for review."), { statusCode: 400 });
   if (input.privacyAcknowledgement !== "yes") throw Object.assign(new Error("Confirm that you have read the privacy notice before submitting the application."), { statusCode: 400 });
   if (input.applicantDeclaration !== "yes") throw Object.assign(new Error("Confirm the application declaration before submitting."), { statusCode: 400 });

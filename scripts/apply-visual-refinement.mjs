@@ -62,7 +62,7 @@ function enhanceHome() {
     <div class="hero-media" aria-hidden="true"><picture><source media="(max-width: 760px)" srcset="/assets/media/home/supply-network-hero-1200.jpg"><img src="/assets/media/home/supply-network-hero.jpg" srcset="/assets/media/home/supply-network-hero-1200.jpg 1200w, /assets/media/home/supply-network-hero.jpg 1672w" sizes="100vw" alt="" width="1672" height="941" fetchpriority="high" decoding="async"></picture></div>
     <div class="hero-cinematic-layer" aria-hidden="true"><div class="hero-cinematic-grid"></div><div class="hero-cinematic-orbit"></div><div class="hero-signal-stack"><div class="hero-signal-card"><span>01</span><strong>Regulatory sequence</strong><small>Permission before supply</small></div><div class="hero-signal-card"><span>02</span><strong>Qualified sourcing</strong><small>Evidence before onboarding</small></div><div class="hero-signal-card"><span>03</span><strong>Evidence continuity</strong><small>Batch to governed transaction</small></div></div></div>
     <button class="motion-toggle" type="button" data-motion-toggle aria-pressed="false">Pause motion</button>
-    <div class="container hero-content"><div class="hero-copy"><span class="eyebrow">UK pharmaceutical company</span><h1>Building a more resilient pharmaceutical supply network.</h1><p class="hero-lead">NovaPharm Healthcare brings together regulatory intelligence, diversified sourcing, quality-led distribution and digital infrastructure to improve access to oncology, specialty and licensed medicines.</p><div class="hero-actions"><a class="btn btn-primary" href="/about/">Explore NovaPharm</a><a class="btn btn-ghost" href="/partner-with-us/">Partner with us</a></div><p class="hero-status">Pre-operational for regulated wholesale supply · B2B only · Subject to applicable MHRA authorisation</p></div></div>
+    <div class="container hero-content"><div class="hero-copy"><span class="eyebrow">UK pharmaceutical company</span><h1>Building a more resilient pharmaceutical supply network.</h1><p class="hero-lead">NovaPharm Healthcare brings together regulatory intelligence, diversified sourcing, quality-led distribution and digital infrastructure to improve access to oncology, specialty and licensed medicines.</p><div class="hero-actions"><a class="btn btn-primary" href="/about/">Explore NovaPharm</a><a class="btn btn-ghost" href="/partner-with-us/">Partner with us</a></div><p class="hero-status">Active corporate and commercial development · Regulated wholesale supply not commenced · B2B only</p></div></div>
   </section>
   `;
   html = replaceRange(html, '<section class="hero hero-flagship">', '<section class="trust-strip"', hero, "homepage flagship hero");
@@ -76,7 +76,7 @@ function enhanceHome() {
     ["Evidence trail", "Batch and document integrity"],
     ["Release gate", "Commercial release only after applicable authorisation"]
   ];
-  const roadmap = `<section class="section regulatory-roadmap-section" data-reveal><div class="container regulatory-roadmap-shell"><div class="regulatory-roadmap-intro"><div class="section-head"><span class="section-kicker">Regulatory foundation</span><h2>No regulated supply before the required permissions.</h2><p>The roadmap connects authorisation, quality systems and product-specific responsibilities before commercial release.</p></div><aside class="regulatory-notice" aria-label="Regulatory status"><strong>Regulatory status</strong><p>NovaPharm is pre-operational for regulated wholesale supply. The company will not commence regulated wholesale activities until the required MHRA authorisations and other applicable permissions are in place. Product-specific parallel-import activity remains subject to the grant and maintenance of the relevant PLPI licence.</p></aside></div><ol class="regulatory-roadmap">${stages.map(([stage, title], index) => `<li><span class="roadmap-number">${String(index + 1).padStart(2, "0")}</span><span class="roadmap-stage">${stage}</span><h3>${title}</h3></li>`).join("")}</ol></div></section>
+  const roadmap = `<section class="section regulatory-roadmap-section" data-reveal><div class="container regulatory-roadmap-shell"><div class="regulatory-roadmap-intro"><div class="section-head"><span class="section-kicker">Regulatory foundation</span><h2>No regulated supply before the required permissions.</h2><p>The roadmap connects authorisation, quality systems and product-specific responsibilities before commercial release.</p></div><aside class="regulatory-notice" aria-label="Regulatory status"><strong>Regulatory status</strong><p>NovaPharm Healthcare is active in corporate, product, partnership and commercial-development work. Regulated wholesale supply has not commenced and will begin only after the required MHRA authorisations and applicable operating controls are in place. Product-specific parallel-import activity remains subject to the grant and maintenance of the relevant PLPI licence.</p></aside></div><ol class="regulatory-roadmap">${stages.map(([stage, title], index) => `<li><span class="roadmap-number">${String(index + 1).padStart(2, "0")}</span><span class="roadmap-stage">${stage}</span><h3>${title}</h3></li>`).join("")}</ol></div></section>
   `;
   html = replaceRange(html, '<section class="section regulatory-foundation"', '<section class="visual-band"', roadmap, "homepage regulatory roadmap");
 
@@ -144,10 +144,18 @@ function enhanceTechnology() {
   write("technology/index.html", html);
 }
 
+const excludedPublicTraversalRoots = new Set([
+  ".changeset", ".git", ".github", "_secure", "apps", "architecture", "artifacts", "assets", "audit",
+  "compliance", "config", "creative-assets", "data", "database", "deployment", "docs", "final-report",
+  "geo", "infra", "integrations", "node_modules", "packages", "performance", "private-content", "public",
+  "research", "scripts", "security", "seo", "sharepoint", "src", "tests",
+]);
+
 function publicHtmlFiles(directory = root) {
   const output = [];
   for (const entry of readdirSync(directory)) {
     if ([".git", "node_modules", "_secure", "portal", "employee", "admin"].includes(entry)) continue;
+    if (directory === root && excludedPublicTraversalRoots.has(entry)) continue;
     const path = join(directory, entry);
     const stats = statSync(path);
     if (stats.isDirectory()) output.push(...publicHtmlFiles(path));

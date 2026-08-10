@@ -10,6 +10,11 @@
     gap: clamp(32px, 6vw, 88px);
   }
 
+  .portfolio-priority-section {
+    border-block: 1px solid var(--line);
+    background: linear-gradient(135deg, #f5f8fa 0%, #eaf1f5 100%);
+  }
+
   .nutraxin-feature-copy {
     max-width: 720px;
   }
@@ -28,10 +33,55 @@
     line-height: 1.65;
   }
 
+  .nutraxin-feature-meta {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 30px 0;
+    border-block: 1px solid var(--line);
+  }
+
+  .nutraxin-feature-meta span {
+    padding: 18px 18px 18px 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .nutraxin-feature-meta span + span {
+    padding-left: 18px;
+    border-left: 1px solid var(--line);
+  }
+
+  .nutraxin-feature-meta strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--ink);
+    font-size: 16px;
+  }
+
+  .nutraxin-feature-actions,
+  .nutraxin-feature-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .nutraxin-feature-links {
+    margin: 20px 0 0;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .nutraxin-feature-links a {
+    color: var(--ink);
+  }
+
   .nutraxin-feature > .nutraxin-product-picture {
     display: block;
+    width: min(100%, 350px);
     aspect-ratio: 1;
     min-width: 0;
+    justify-self: center;
   }
 
   .nutraxin-feature > .nutraxin-product-picture img {
@@ -337,6 +387,10 @@
   }
 
   @media (max-width: 1040px) {
+    .nutraxin-feature-meta {
+      grid-template-columns: 0.72fr 1.2fr 1.08fr;
+    }
+
     .nutraxin-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -353,12 +407,43 @@
     }
 
     .nutraxin-feature > .nutraxin-product-picture {
-      width: min(100%, 420px);
+      width: min(100%, 350px);
       margin-inline: auto;
     }
 
     .nutraxin-facts {
       grid-template-columns: 1fr;
+    }
+
+    .nutraxin-feature-meta {
+      grid-template-columns: 1fr;
+    }
+
+    .nutraxin-feature-meta span,
+    .nutraxin-feature-meta span + span {
+      padding: 14px 0;
+      border-left: 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .nutraxin-feature-meta span:first-child {
+      border-top: 0;
+    }
+
+    .nutraxin-feature-actions .btn {
+      width: 100%;
+    }
+
+    .nutraxin-feature-links {
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .nutraxin-feature-links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      border-bottom: 1px solid var(--line);
     }
 
     .nutraxin-facts span,

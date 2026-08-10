@@ -26,16 +26,17 @@ function collectAttribution() {
     .map((field) => [field, params.get(field)])
     .filter(([, value]) => value));
   const referringHost = (() => {
-    try { return document.referrer ? new URL(document.referrer).hostname : ""; }
+    try { return document.referrer ? new URL(document.referrer).hostname.toLowerCase() : ""; }
     catch { return ""; }
   })();
+  const chatGptReferral = referringHost === "chatgpt.com" || referringHost.endsWith(".chatgpt.com");
   if (!Object.keys(campaign).length && !referringHost) return null;
   return {
     firstLandingPath: location.pathname,
     referringHost,
     campaign,
     capturedAt: new Date().toISOString(),
-    sourceClass: campaign.utm_source === "chatgpt.com" || referringHost.endsWith("chatgpt.com")
+    sourceClass: campaign.utm_source?.toLowerCase() === "chatgpt.com" || chatGptReferral
       ? "chatgpt-search"
       : campaign.utm_source || referringHost || "direct"
   };

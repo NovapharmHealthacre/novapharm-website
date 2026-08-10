@@ -37,6 +37,8 @@ await assert.rejects(() => execute({ useCaseId: "claims-consistency-review", inp
 for (const result of [claims, gaps, comparison, safety, brief, outline]) {
   assert.equal(result.audit.outcome, "human_review_required");
   assert.equal("input" in result.audit, false);
+  assert.equal("inputSha256" in result.audit, false);
+  assert.equal(result.audit.inputFingerprintStored, false);
   assert.equal(result.localDraft, null);
 }
 console.log("Protected AI gateway passed six bounded use cases, provider-none default, role gates, source-class gates, safety routing and no-write controls.");

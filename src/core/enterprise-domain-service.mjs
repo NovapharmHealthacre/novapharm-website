@@ -38,10 +38,11 @@ function canUseModule(module, context) {
 }
 
 function baseSnapshot(module, extras = {}) {
+  const validationEnvironment = process.env.LOCAL_PORTAL_MODE === "true" || process.env.BROWSER_VALIDATION_MODE === "true";
   return {
     module,
-    environment: process.env.LOCAL_PORTAL_MODE === "true" ? "local_validation" : process.env.NODE_ENV === "production" ? "production" : "development",
-    dataState: process.env.LOCAL_PORTAL_MODE === "true" ? "synthetic" : "canonical",
+    environment: process.env.BROWSER_VALIDATION_MODE === "true" ? "browser_validation" : process.env.LOCAL_PORTAL_MODE === "true" ? "local_validation" : process.env.NODE_ENV === "production" ? "production" : "development",
+    dataState: validationEnvironment ? "synthetic" : "canonical",
     dataFreshness: nowIso(),
     readOnly: module.area === "executive",
     metrics: [],
@@ -506,14 +507,33 @@ async function adminSnapshot(module) {
 export async function enterpriseModuleSnapshot(code, context) {
   const module = portalModuleByCode.get(code);
   if (!module) throw Object.assign(new Error("Portal module not found."), { statusCode: 404 });
+  if (!module.visibleInNavigation || module.releaseClassification === "hidden_until_dependency_exists" || module.releaseClassification === "removed") {
+    throw Object.assign(new Error("Portal module is not available in this release."), { statusCode: 404 });
+  }
   if (!canUseModule(module, context)) throw forbidden();
+  let snapshot;
   if (module.area === "customer") {
     if (!context.customerId) throw forbidden("A customer account context is required.");
-    return customerSnapshot(module, context.customerId, context);
+    snapshot = await customerSnapshot(module, context.customerId, context);
+  } else if (module.area === "employee") {
+    snapshot = await employeeSnapshot(module, context);
+  } else if (module.area === "executive") {
+    snapshot = await executiveSnapshot(module, context);
+  } else {
+    snapshot = await adminSnapshot(module, context);
   }
-  if (module.area === "employee") return employeeSnapshot(module, context);
-  if (module.area === "executive") return executiveSnapshot(module, context);
-  return adminSnapshot(module, context);
+  if (module.releaseClassification === "informational_only") {
+    return {
+      ...snapshot,
+      readOnly: true,
+      actions: [],
+      notices: [
+        ...snapshot.notices,
+        "Current release classification: informational only. Repository write contracts are not released as live operations.",
+      ],
+    };
+  }
+  return snapshot;
 }
 
 export async function authorisedEnterpriseSearch(query, context) {

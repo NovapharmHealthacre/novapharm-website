@@ -18,6 +18,7 @@ const password = `Aa1!${randomBytes(30).toString("base64url")}`;
 const salt = randomBytes(16).toString("hex");
 const hash = pbkdf2Sync(password, salt, 210000, 32, "sha256").toString("hex");
 const origin = `http://127.0.0.1:${port}`;
+const portalOrigin = process.env.PORTAL_VALIDATION_ORIGIN || "http://127.0.0.1:4303";
 const serverEnvironmentPath = resolve(outputRoot, "server.env");
 const credentialsPath = resolve(outputRoot, "credentials.json");
 
@@ -28,6 +29,7 @@ const serverEnvironment = {
   PORT: String(port),
   PUBLIC_ORIGIN: origin,
   PUBLIC_API_ORIGIN: origin,
+  PORTAL_ORIGIN: portalOrigin,
   SITE_URL: origin,
   DATABASE_PATH: resolve(outputRoot, "visual-validation.sqlite"),
   DATABASE_PROVIDER: "sqlite",

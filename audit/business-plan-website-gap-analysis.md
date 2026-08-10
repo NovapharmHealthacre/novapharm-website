@@ -24,7 +24,7 @@ The website already communicates the legal entity, pre-authorisation boundary, t
 
 ## Existing strengths preserved
 
-- Conservative pre-operational and B2B-only wording.
+- Conservative B2B-only wording with corporate activity separated clearly from authorisation-dependent wholesale supply.
 - Explicit boundary between incorporation and pharmaceutical authorisation.
 - Current CRO responsibility architecture and sponsor-retained duties.
 - Approved leadership naming, governance status and portrait controls.
@@ -36,7 +36,7 @@ The website already communicates the legal entity, pre-authorisation boundary, t
 - WDA(H), PLPI or other regulatory approvals.
 - Current NHS supply, framework participation, hospital customers or pharmacy network size.
 - Product availability, stock, treatment or patient-access outcomes.
-- Polar Speed or Marken contractual and operating claims.
+- Unsupported third-party logistics, authorisation and operating claims.
 - Revenue, margin, customer, transaction, savings or service-level forecasts.
 - Operational AI forecasting, blockchain traceability, patents or performance improvements.
 - Private product, supplier, pricing, investment, cap-table and immigration information.

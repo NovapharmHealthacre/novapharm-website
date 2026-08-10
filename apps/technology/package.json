@@ -1,0 +1,39 @@
+{
+  "name": "@novapharm/technology",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build && node ../../scripts/prepare-next-standalone.mjs technology assets/NIT-logo.svg",
+    "start": "node .next/standalone/apps/technology/server.js",
+    "lint": "biome check app components data lib scripts test next.config.ts proxy.ts",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "tsx --test test/*.test.ts",
+    "test:browser": "tsx test/browser-acceptance.ts",
+    "validate": "tsx scripts/validate-content.ts",
+    "check": "npm run lint && npm run typecheck && npm run validate && npm test && npm run build"
+  },
+  "dependencies": {
+    "@novapharm/content": "0.1.0",
+    "@novapharm/security": "0.1.0",
+    "@novapharm/seo": "0.1.0",
+    "motion": "12.42.2",
+    "next": "16.2.12",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "sharp": "0.35.3"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.12.1",
+    "@biomejs/biome": "2.5.6",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "playwright": "1.61.1",
+    "tsx": "4.23.1",
+    "typescript": "7.0.2"
+  },
+  "engines": {
+    "node": "24.x"
+  }
+}

@@ -8,25 +8,27 @@ const secureRoot = resolve(process.env.SECURE_CONTENT_ROOT || join(root, "_secur
 const pages = ["index.html", "portal/index.html", "portal/executive-platform/index.html"];
 
 const executivePages = [
-  "NP_Hub.html",
-  "NP_CEO.html",
-  "NP_Sales.html",
-  "NP_Customers.html",
-  "NP_Products.html",
-  "NP_NHS_Data.html",
-  "NP_PLPI.html",
-  "NP_Sourcing.html",
-  "NP_SLA.html",
-  "NP_Warehouse.html",
-  "NP_Tenders.html",
-  "NP_PV.html",
-  "NP_Blockchain.html",
-  "NP_AI_Tech.html",
-  "NP_Finance.html",
-  "NP_Capital.html",
-  "NP_M365.html",
-  "NP_Documents.html"
+  ["executive.command-centre", "NP_Hub.html"],
+  ["executive.ceo-dashboard", "NP_CEO.html"],
+  ["executive.sales-intelligence", "NP_Sales.html"],
+  ["executive.customer-analytics", "NP_Customers.html"],
+  ["executive.product-master", "NP_Products.html"],
+  ["executive.nhs-data", "NP_NHS_Data.html"],
+  ["executive.plpi", "NP_PLPI.html"],
+  ["executive.sourcing", "NP_Sourcing.html"],
+  ["executive.service-levels", "NP_SLA.html"],
+  ["executive.warehouse", "NP_Warehouse.html"],
+  ["executive.tenders", "NP_Tenders.html"],
+  ["executive.pharmacovigilance", "NP_PV.html"],
+  ["executive.traceability", "NP_Blockchain.html"],
+  ["executive.ai-technology", "NP_AI_Tech.html"],
+  ["executive.finance", "NP_Finance.html"],
+  ["executive.capital", "NP_Capital.html"],
+  ["executive.microsoft-365", "NP_M365.html"],
+  ["executive.documents", "NP_Documents.html"]
 ];
+const moduleCatalogue = JSON.parse(readFileSync(join(root, "packages/portal-contracts/src/module-catalog.json"), "utf8"));
+const modulesByCode = new Map(moduleCatalogue.map((module) => [module.code, module]));
 
 const pagesToValidate = pages;
 const localExtensions = new Set([".html", ".pdf", ".js", ".css", ".json", ".webmanifest", ".svg", ".png"]);
@@ -110,15 +112,26 @@ const executiveFixture = `<html><head><style></style></head><body><div class="sb
 const brandedFixture = applyExecutiveBranding(executiveFixture, "NP_Hub.html");
 if (!brandedFixture.includes("/assets/brand/novapharm-healthcare-logo.svg") || brandedFixture.includes("sb-mark")) fail("Executive Platform official-brand transformation failed");
 
-for (const page of executivePages) {
+let protectedExecutivePages = 0;
+for (const [code, page] of executivePages) {
+  const module = modulesByCode.get(code);
+  if (!module) {
+    fail(`missing governed portal module: ${code}`);
+    continue;
+  }
   if (fileExists(page) || fileExists(`portal/executive-platform/${page}`)) {
     fail(`public Executive Platform page still exists: ${page}`);
   }
   const securePage = join(secureRoot, "executive-platform", page);
+  if (module.releaseClassification === "hidden_until_dependency_exists") {
+    if (existsSync(securePage)) fail(`dependency-blocked Executive Platform page was materialised: ${page}`);
+    continue;
+  }
   if (!existsSync(securePage)) {
     fail(`missing protected Executive Platform page: ${page}`);
     continue;
   }
+  protectedExecutivePages += 1;
   const secureHtml = readFileSync(securePage, "utf8");
   if (!secureHtml.includes("noindex,nofollow") || !secureHtml.includes("/assets/brand/novapharm-healthcare-logo.svg")) {
     fail(`protected Executive Platform page is missing privacy or official-brand controls: ${page}`);
@@ -129,4 +142,4 @@ if (process.exitCode) {
   process.exit(process.exitCode);
 }
 
-console.log(`Validated ${pagesToValidate.length} public entry pages and ${executivePages.length} protected Executive Platform modules.`);
+console.log(`Validated ${pagesToValidate.length} public entry pages, ${protectedExecutivePages} protected Executive Platform modules and ${executivePages.length - protectedExecutivePages} dependency-blocked modules.`);

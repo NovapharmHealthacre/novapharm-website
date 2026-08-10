@@ -1,8 +1,11 @@
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { buildPublicPages } from "./build-public-pages.mjs";
-import { customerModules, employeeModules } from "../src/core/portal-module-catalog.mjs";
+import { customerModules, employeeModules, executiveModules as governedExecutiveModules } from "../src/core/portal-module-catalog.mjs";
+import { getPlatformCapabilities, resolvePlatformMode } from "../src/core/platform-mode.mjs";
 
+const platformMode = resolvePlatformMode();
+const platformCapabilities = getPlatformCapabilities(platformMode);
 const apiBase = process.env.PUBLIC_API_ORIGIN || "";
 const secureRoot = process.env.SECURE_CONTENT_ROOT || "_secure";
 const brandLogoSvg = "/assets/brand/novapharm-healthcare-logo.svg";
@@ -39,6 +42,17 @@ function writeProtected(path, content, scope) {
 
 function loginPage() {
   return `<!DOCTYPE html><html lang="en-GB" data-api-base="${apiBase}">${privateHead("Secure Portal Login | NovaPharm Healthcare")}<body class="login-page"><main class="login-panel"><div class="login-logo">${brandPicture({ width: 320, height: 40, eager: true })}</div><span class="section-kicker">Private access</span><h1>NovaPharm Secure Portal</h1><p>Choose your authorised access area and sign in. Customer, employee, board and administrator information remains locked until the secure backend verifies your session and permissions.</p><form class="form-grid" data-login-form><fieldset class="portal-access"><legend>Portal access</legend><label><input type="radio" name="accessType" value="customer" checked><span><strong>Customer</strong><small>Orders, invoices, statements and documents</small></span></label><label><input type="radio" name="accessType" value="employee"><span><strong>Employee</strong><small>Operations, products, purchasing and CRM</small></span></label><label><input type="radio" name="accessType" value="board"><span><strong>Board member</strong><small>Executive Platform and CEO dashboard</small></span></label><label><input type="radio" name="accessType" value="admin"><span><strong>Administrator</strong><small>Users, content, analytics and platform controls</small></span></label></fieldset><a class="btn btn-outline" href="/.auth/login/aad" data-entra-login hidden>Continue with Microsoft</a><div class="portal-login-divider" aria-hidden="true"><span>or use an approved bootstrap account</span></div><div class="form-row"><div class="field"><label for="username">Username</label><input id="username" name="username" autocomplete="username" required></div><div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required></div></div><button class="btn btn-primary" type="submit">Sign in securely</button><div class="alert" data-login-status role="status" aria-live="polite">Credentials and portal permissions are verified server-side.</div></form><button class="inline-link-button portal-cookie-settings" type="button" data-cookie-settings>Cookie settings</button></main><script src="/assets/js/api-client.js" defer></script><script src="/assets/js/portal-login.js" defer></script></body></html>`;
+}
+
+function publicOnlyPortalPage() {
+  const configuredPortalOrigin = process.env.PUBLIC_PORTAL_ORIGIN;
+  let portalAction = "";
+  if (configuredPortalOrigin) {
+    const portalUrl = new URL(configuredPortalOrigin);
+    if (portalUrl.protocol !== "https:") throw new Error("PUBLIC_PORTAL_ORIGIN must use HTTPS.");
+    portalAction = `<a class="btn btn-primary" href="${portalUrl.toString()}">Continue to the managed portal</a>`;
+  }
+  return `<!DOCTYPE html><html lang="en-GB">${privateHead("Portal Security | NovaPharm Healthcare")}<body class="login-page"><main class="login-panel locked-panel"><a class="login-logo" href="/" aria-label="NovaPharm Healthcare home">${brandPicture({ width: 320, height: 40, eager: true })}</a><span class="section-kicker">Public information release</span><h1>Use only the managed NovaPharm portal.</h1><p>This public website never asks for a portal username, password or confidential company record. Authorised customers, employees and board members should use only the secure portal address issued directly by NovaPharm.</p>${portalAction}<div class="alert">No login, account, document or board information is processed on this static public host.</div><a class="btn btn-outline" href="/">Return to the corporate website</a><button class="inline-link-button portal-cookie-settings" type="button" data-cookie-settings>Cookie settings</button></main></body></html>`;
 }
 
 function entraCompletePage() {
@@ -105,7 +119,7 @@ function table(headers, bodyAttribute) {
   return `<div class="table-wrap" role="region" aria-label="Portal data table" tabindex="0"><table><thead><tr>${headers.map((header) => `<th>${header}</th>`).join("")}</tr></thead><tbody ${bodyAttribute}></tbody></table></div>`;
 }
 
-const executiveModules = [
+const executiveModuleDefinitions = [
   { title: "Command Centre", file: "NP_Hub.html", summary: "Cross-functional operating status, source readiness and controlled integration events.", metrics: ["customers", "products", "openOrders", "pendingSyncEvents"] },
   { title: "CEO Dashboard", file: "NP_CEO.html", summary: "A governed executive view of operational readiness without simulated commercial performance.", metrics: ["customers", "products", "openOrders", "pendingApplications", "pendingSyncEvents"] },
   { title: "Sales Intelligence", file: "NP_Sales.html", summary: "Customer and order indicators from the canonical application database.", metrics: ["customers", "openOrders"] },
@@ -147,12 +161,18 @@ const executiveModuleCode = Object.freeze({
   "NP_Blockchain.html": "executive.traceability"
 });
 
+const governedExecutiveByCode = new Map(governedExecutiveModules.map((module) => [module.code, module]));
+const executiveModules = executiveModuleDefinitions
+  .map((module) => ({ ...module, governed: governedExecutiveByCode.get(executiveModuleCode[module.file]) }))
+  .filter((module) => module.governed?.visibleInNavigation)
+  .map((module) => ({ ...module, maturity: module.governed.releaseClassificationLabel }));
+
 function executiveHref(module) {
   return module.file === "NP_CEO.html" ? "/portal/ceo-dashboard/" : `/portal/executive-platform/${module.file}`;
 }
 
 function executiveIndex() {
-  return `<!DOCTYPE html><html lang="en-GB" data-api-base="${apiBase}">${privateHead("Executive Platform | NovaPharm Healthcare")}<body><main class="portal-main executive-index"><a class="executive-brand" href="/portal/executive-platform/" aria-label="NovaPharm Healthcare Executive Platform">${brandPicture({ width: 320, height: 40, eager: true })}</a><div class="portal-topbar"><div><span class="eyebrow">Board workspace</span><h1>NovaPharm Executive Platform</h1></div><div class="portal-actions"><span class="status-pill">Signed in as <span data-user-name></span></span><button class="btn btn-outline" type="button" data-logout>Logout</button><button class="inline-link-button portal-cookie-settings" type="button" data-cookie-settings>Cookie settings</button></div></div><p class="executive-intro">Controlled executive modules share one authenticated data boundary. Live values come from the canonical database; unavailable integrations are stated rather than simulated.</p><div class="grid grid-3">${executiveModules.map((module) => `<a class="card" href="${executiveHref(module)}"><span class="maturity-tag">${module.maturity || "Live foundation"}</span><h2>${module.title}</h2><p>${module.summary}</p></a>`).join("")}</div></main><script src="/assets/js/api-client.js" defer></script><script src="/assets/js/portal-app.js" defer></script></body></html>`;
+  return `<!DOCTYPE html><html lang="en-GB" data-api-base="${apiBase}">${privateHead("Executive Platform | NovaPharm Healthcare")}<body><main class="portal-main executive-index"><a class="executive-brand" href="/portal/executive-platform/" aria-label="NovaPharm Healthcare Executive Platform">${brandPicture({ width: 320, height: 40, eager: true })}</a><div class="portal-topbar"><div><span class="eyebrow">Board workspace</span><h1>NovaPharm Executive Platform</h1></div><div class="portal-actions"><span class="status-pill">Signed in as <span data-user-name></span></span><button class="btn btn-outline" type="button" data-logout>Logout</button><button class="inline-link-button portal-cookie-settings" type="button" data-cookie-settings>Cookie settings</button></div></div><p class="executive-intro">Controlled executive modules share one authenticated data boundary. This release is informational and uses synthetic validation records; dependency-blocked integrations are hidden rather than simulated.</p><div class="grid grid-3">${executiveModules.map((module) => `<a class="card" href="${executiveHref(module)}"><span class="maturity-tag">${module.maturity}</span><h2>${module.title}</h2><p>${module.summary}</p></a>`).join("")}</div></main><script src="/assets/js/api-client.js" defer></script><script src="/assets/js/portal-app.js" defer></script></body></html>`;
 }
 
 function executiveModulePage(module) {
@@ -222,18 +242,18 @@ function reviewCards(items) {
   return `<div class="owner-review-grid">${items.map(([label, href, status, note]) => `<a class="owner-review-item" href="${href}"><span class="maturity-tag">${status}</span><strong>${label}</strong><small>${note}</small></a>`).join("")}</div>`;
 }
 
-const customerReview = customerNavigation.map(([slug, label]) => [label, `/portal/${slug}/`, ["dashboard", "orders", "products"].includes(slug) ? "Operational foundation" : "Source-controlled", slug === "dashboard" ? "Synthetic account metrics and recent orders." : "Uses the canonical customer boundary; unavailable external records are stated."]);
-const employeeReview = employeeNavigation.map(([slug, label]) => [label, `/employee/${slug}/`, ["dashboard", "customers", "suppliers", "products", "orders", "purchasing"].includes(slug) ? "Operational foundation" : "In development", "Shared SQL records and server-side employee scope; external source gaps are explicit."]);
-const executiveReview = executiveModules.map((module) => [module.title, executiveHref(module), module.maturity || "Operational foundation", module.summary]);
+const customerReview = customerNavigation.map(([slug, label]) => [label, `/portal/${slug}/`, "Informational only", slug === "dashboard" ? "Synthetic account metrics and recent orders." : "Uses the canonical customer boundary; unavailable external records are stated."]);
+const employeeReview = employeeNavigation.map(([slug, label]) => [label, `/employee/${slug}/`, "Informational only", "Shared SQL records and server-side employee scope; external source gaps are explicit."]);
+const executiveReview = executiveModules.map((module) => [module.title, executiveHref(module), module.maturity, module.summary]);
 const administratorReview = [
-  ["Dashboard", "/admin/dashboard/", "Operational foundation", "Canonical counts, owner controls and controlled record review."],
+  ["Dashboard", "/admin/dashboard/", "Informational only", "Synthetic counts and controlled record review."],
   ["Lead detail", "/admin/dashboard/#lead-review", "Synthetic validation", "Contact submissions, consent evidence and message detail."],
-  ["Application detail", "/admin/dashboard/#application-review", "Operational foundation", "Four-step applications, documents and immutable status history."],
+  ["Application detail", "/admin/dashboard/#application-review", "Informational only", "Four-step application contract, documents and immutable status history."],
   ["Document states", "/admin/dashboard/#application-review", "Synthetic validation", "Quarantine and clean-test labels; not production malware scanning."],
   ["Notification queue", "/admin/dashboard/#notification-queue", "Local capture", "Rendered HTML and text previews, sent, retrying, blocked and replay states."],
-  ["Audit reporting", "/admin/dashboard/", "Operational foundation", "Immutable audit and security records remain in the local SQL store."],
+  ["Audit reporting", "/admin/dashboard/", "Informational only", "Synthetic audit and security records remain in the local SQL store."],
   ["Account activation", "/admin/dashboard/#application-review", "Controlled workflow", "Approved synthetic applications can be activated without creating a password."],
-  ["Sessions", "/admin/users/", "Operational foundation", "Active-session count and administrator revocation control."],
+  ["Sessions", "/admin/users/", "Informational only", "Synthetic active-session count and administrator revocation contract."],
   ["Analytics", "/admin/analytics/", "Planned", "No production analytics or confidential portal tracking is enabled."],
   ["Content", "/admin/content/", "Repository governed", "Public content remains generated from the reviewed repository source." ]
 ];
@@ -241,3 +261,10 @@ const administratorReview = [
 writeProtected("admin/local-review/index.html", adminPage("local-review", "Owner Review Index", `<div class="owner-review-intro"><p>This index organises the exact NovaPharm application for local owner acceptance. All records are synthetic, every company name is marked TEST or DEMO, and external email, SharePoint, analytics and production services remain disabled.</p><div class="alert">This environment validates application behaviour only. It is not approved for pharmaceutical trading, live customer onboarding, confidential board distribution or production records.</div></div><section class="owner-review-group"><span class="eyebrow">Customer</span><h2>Customer portal</h2>${reviewCards(customerReview)}</section><section class="owner-review-group"><span class="eyebrow">Employee</span><h2>Employee portal</h2>${reviewCards(employeeReview)}</section><section class="owner-review-group"><span class="eyebrow">Board and executive</span><h2>Executive Platform</h2>${reviewCards(executiveReview)}</section><section class="owner-review-group"><span class="eyebrow">Administrator</span><h2>Administration</h2>${reviewCards(administratorReview)}</section>`), "admin");
 
 buildPublicPages();
+
+if (!platformCapabilities.portal) {
+  for (const directory of [secureRoot, "admin", "employee", "entra-complete", "portal"]) {
+    rmSync(directory, { recursive: true, force: true });
+  }
+  write("portal/index.html", publicOnlyPortalPage());
+}

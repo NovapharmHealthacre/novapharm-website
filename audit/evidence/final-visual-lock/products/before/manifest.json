@@ -1,0 +1,120 @@
+{
+  "generatedAt": "2026-08-07T11:16:31.315Z",
+  "phase": "before",
+  "sourceUrl": "http://127.0.0.1:4179/product-portfolio/",
+  "renderedEvidence": true,
+  "generatedMockup": false,
+  "records": [
+    {
+      "engine": "chromium",
+      "viewport": {
+        "label": "mobile-390x844",
+        "width": 390,
+        "height": 844
+      },
+      "filename": "chromium/mobile-390x844.webp",
+      "occurrenceCount": 1,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "label": "tablet-768x1024",
+        "width": 768,
+        "height": 1024
+      },
+      "filename": "chromium/tablet-768x1024.webp",
+      "occurrenceCount": 1,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "label": "desktop-1366x768",
+        "width": 1366,
+        "height": 768
+      },
+      "filename": "chromium/desktop-1366x768.webp",
+      "occurrenceCount": 1,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "label": "desktop-1440x900",
+        "width": 1440,
+        "height": 900
+      },
+      "filename": "chromium/desktop-1440x900.webp",
+      "occurrenceCount": 1,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "label": "desktop-1920x1080",
+        "width": 1920,
+        "height": 1080
+      },
+      "filename": "chromium/desktop-1920x1080.webp",
+      "occurrenceCount": 1,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "label": "mobile-390x844",
+        "width": 390,
+        "height": 844
+      },
+      "filename": "webkit/mobile-390x844.webp",
+      "occurrenceCount": 1,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "label": "tablet-768x1024",
+        "width": 768,
+        "height": 1024
+      },
+      "filename": "webkit/tablet-768x1024.webp",
+      "occurrenceCount": 1,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "label": "desktop-1366x768",
+        "width": 1366,
+        "height": 768
+      },
+      "filename": "webkit/desktop-1366x768.webp",
+      "occurrenceCount": 1,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "label": "desktop-1440x900",
+        "width": 1440,
+        "height": 900
+      },
+      "filename": "webkit/desktop-1440x900.webp",
+      "occurrenceCount": 1,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "label": "desktop-1920x1080",
+        "width": 1920,
+        "height": 1080
+      },
+      "filename": "webkit/desktop-1920x1080.webp",
+      "occurrenceCount": 1,
+      "horizontalOverflow": false
+    }
+  ],
+  "evidenceEncoding": "WebP quality 90 derived from the original Playwright PNG; source PNG hashes are retained in the selected screenshot manifest."
+}

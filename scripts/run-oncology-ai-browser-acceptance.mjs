@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { extname, relative, resolve, sep } from "node:path";
+import { closeSync, fstatSync, mkdirSync, openSync, readFileSync, writeFileSync } from "node:fs";
+import { extname, isAbsolute, relative, resolve, sep } from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { chromium, webkit } from "playwright";
 
@@ -74,10 +74,21 @@ async function installStaticRoutes(context, staticRoot = repositoryRoot, origin 
     let requested = decodeURIComponent(url.pathname).replace(/^\/+/, "");
     if (!requested || requested.endsWith("/")) requested += "index.html";
     const path = resolve(staticRoot, requested);
-    const insideRepository = path.startsWith(`${staticRoot}${sep}`);
-    if (!insideRepository || !existsSync(path) || !statSync(path).isFile()) {
+    const relativePath = relative(staticRoot, path);
+    const insideRepository = relativePath !== ".." && !relativePath.startsWith(`..${sep}`) && !isAbsolute(relativePath);
+    let descriptor;
+    let body;
+    try {
+      if (!insideRepository) throw Object.assign(new Error("outside_static_root"), { code: "ENOENT" });
+      descriptor = openSync(path, "r");
+      if (!fstatSync(descriptor).isFile()) throw Object.assign(new Error("not_a_file"), { code: "ENOENT" });
+      body = readFileSync(descriptor);
+    } catch (error) {
+      if (error?.code !== "ENOENT") throw error;
       await route.fulfill({ status: 404, contentType: "text/plain; charset=utf-8", body: "Not found" });
       return;
+    } finally {
+      if (descriptor !== undefined) closeSync(descriptor);
     }
     await route.fulfill({
       status: 200,
@@ -86,7 +97,7 @@ async function installStaticRoutes(context, staticRoot = repositoryRoot, origin 
         "cache-control": "public, max-age=300",
         "x-content-type-options": "nosniff"
       },
-      body: readFileSync(path)
+      body
     });
   });
 }

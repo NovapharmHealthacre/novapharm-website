@@ -1,4 +1,4 @@
-name: Controlled Azure deployment
+name: Controlled unified Azure deployment
 
 on:
   workflow_dispatch:
@@ -11,15 +11,19 @@ on:
           - staging
           - production-candidate
       action:
-        description: Validate, provision infrastructure, or deploy the application
+        description: Validate, provision infrastructure, or deploy all six applications
         required: true
         type: choice
         options:
           - what-if
           - provision
           - deploy
+      expected_sha:
+        description: Exact reviewed 40-character commit SHA
+        required: true
+        type: string
       run_schema_migrations:
-        description: Run schema migration through the temporarily authorised app identity
+        description: Run reviewed schema migrations through the candidate API identity
         required: true
         default: false
         type: boolean
@@ -29,21 +33,21 @@ permissions:
   id-token: write
 
 concurrency:
-  group: novapharm-azure-${{ inputs.target }}
+  group: novapharm-unified-azure-${{ inputs.target }}
   cancel-in-progress: false
 
 jobs:
   deploy:
     if: inputs.target == 'staging' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
     environment: ${{ inputs.target == 'staging' && 'azure-staging' || 'azure-production' }}
     env:
+      EXPECTED_SHA: ${{ inputs.expected_sha }}
       AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
       AZURE_RESOURCE_GROUP: ${{ inputs.target == 'staging' && vars.AZURE_STAGING_RESOURCE_GROUP || vars.AZURE_PRODUCTION_RESOURCE_GROUP }}
       AZURE_SQL_ENTRA_ADMIN_OBJECT_ID: ${{ vars.AZURE_SQL_ENTRA_ADMIN_OBJECT_ID }}
       AZURE_SQL_ENTRA_ADMIN_LOGIN: ${{ vars.AZURE_SQL_ENTRA_ADMIN_LOGIN }}
-      NOVAPHARM_STAGING_ORIGIN: ${{ vars.NOVAPHARM_STAGING_ORIGIN }}
       AZURE_KEY_VAULT_BOOTSTRAP_IP_CIDR: ${{ vars.AZURE_KEY_VAULT_BOOTSTRAP_IP_CIDR }}
       NOVAPHARM_ENABLE_BOOTSTRAP_ADMIN: ${{ vars.NOVAPHARM_ENABLE_BOOTSTRAP_ADMIN }}
       NOVAPHARM_ENABLE_ENTRA_AUTH: ${{ vars.NOVAPHARM_ENABLE_ENTRA_AUTH }}
@@ -63,14 +67,27 @@ jobs:
       NOVAPHARM_CONTACT_NOTIFICATION_TO: ${{ vars.NOVAPHARM_CONTACT_NOTIFICATION_TO }}
       NOVAPHARM_EMAIL_PROVIDER: ${{ vars.NOVAPHARM_EMAIL_PROVIDER }}
       NOVAPHARM_MICROSOFT_EMAIL_SENDER: ${{ vars.NOVAPHARM_MICROSOFT_EMAIL_SENDER }}
-      PARAMETER_FILE: ${{ inputs.target == 'staging' && 'infra/environments/staging.bicepparam' || 'infra/environments/production.bicepparam' }}
+      PARAMETER_FILE: ${{ inputs.target == 'staging' && 'infra/environments/unified-staging.bicepparam' || 'infra/environments/unified-production.bicepparam' }}
       ENVIRONMENT_CODE: ${{ inputs.target == 'staging' && 'stg' || 'prod' }}
+      TARGET_SLOT: ${{ inputs.target == 'production-candidate' && 'candidate' || '' }}
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ inputs.expected_sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 24
           cache: npm
+      - name: Enforce reviewed immutable source
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]] || { echo "expected_sha must be a complete lowercase commit SHA." >&2; exit 1; }
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA" || { echo "Checked-out source does not match expected_sha." >&2; exit 1; }
+          if [ "${{ inputs.target }}" = production-candidate ]; then
+            test "$GITHUB_REF" = refs/heads/main || { echo "Production candidates must be dispatched from main." >&2; exit 1; }
+            test "$(git rev-parse origin/main)" = "$EXPECTED_SHA" || { echo "Production candidate SHA is not the current main SHA." >&2; exit 1; }
+          fi
       - name: Verify owner-controlled Azure configuration
         run: |
           set -euo pipefail
@@ -78,32 +95,45 @@ jobs:
           for name in "${required[@]}"; do
             test -n "${!name:-}" || { echo "Required GitHub Environment variable $name is missing." >&2; exit 1; }
           done
-          if [ -n "${AZURE_KEY_VAULT_BOOTSTRAP_IP_CIDR:-}" ]; then
-            echo "Key Vault bootstrap network access is enabled for one reviewed address and must be removed after secret entry."
-          fi
-          if [ "${{ inputs.action }}" = deploy ] && [ "${NOVAPHARM_ENABLE_BOOTSTRAP_ADMIN:-false}" != true ] && [ "${NOVAPHARM_ENABLE_ENTRA_AUTH:-false}" != true ]; then
-            echo "Application deployment requires either the temporary bootstrap identity or approved Entra authentication." >&2
-            exit 1
-          fi
           if [ "${NOVAPHARM_ENABLE_ENTRA_AUTH:-false}" = true ]; then
             required_entra=(NOVAPHARM_ENTRA_CLIENT_ID NOVAPHARM_ENTRA_ADMIN_GROUP_ID NOVAPHARM_ENTRA_BOARD_GROUP_ID NOVAPHARM_ENTRA_EMPLOYEE_GROUP_ID)
             for name in "${required_entra[@]}"; do
               test -n "${!name:-}" || { echo "Required Entra configuration $name is missing." >&2; exit 1; }
             done
           fi
+          if [ "${{ inputs.action }}" = deploy ]; then
+            case "${NOVAPHARM_EMAIL_PROVIDER:-}" in
+              resend|microsoft-graph) ;;
+              *) echo "NOVAPHARM_EMAIL_PROVIDER must explicitly select resend or microsoft-graph for a managed deployment." >&2; exit 1 ;;
+            esac
+            required_email=(NOVAPHARM_EMAIL_FROM NOVAPHARM_CONTACT_NOTIFICATION_TO)
+            for name in "${required_email[@]}"; do
+              test -n "${!name:-}" || { echo "Required transactional-email configuration $name is missing." >&2; exit 1; }
+            done
+            if [ "$NOVAPHARM_EMAIL_PROVIDER" = microsoft-graph ]; then
+              test -n "${NOVAPHARM_MICROSOFT_EMAIL_SENDER:-}" || { echo "NOVAPHARM_MICROSOFT_EMAIL_SENDER is required for Microsoft Graph email." >&2; exit 1; }
+            fi
+          fi
+          if [ "${{ inputs.action }}" = deploy ] && [ "${NOVAPHARM_ENABLE_BOOTSTRAP_ADMIN:-false}" != true ] && [ "${NOVAPHARM_ENABLE_ENTRA_AUTH:-false}" != true ]; then
+            echo "Deployment requires approved Entra authentication or the protected one-time bootstrap workflow." >&2
+            exit 1
+          fi
+          if [ -n "${AZURE_KEY_VAULT_BOOTSTRAP_IP_CIDR:-}" ]; then
+            echo "Key Vault bootstrap access is temporarily enabled and must be removed immediately after protected secret entry."
+          fi
       - name: Azure OIDC login
-        uses: azure/login@v3
+        uses: azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43 # v3
         with:
           client-id: ${{ vars.AZURE_OIDC_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-      - name: Validate resource group
+      - name: Validate resource-group definition
         run: >-
           az deployment sub validate
           --location "$AZURE_LOCATION"
           --template-file infra/resource-group.bicep
           --parameters resourceGroupName="$AZURE_RESOURCE_GROUP" location="$AZURE_LOCATION" environmentCode="$ENVIRONMENT_CODE"
-      - name: Create resource group
+      - name: Create isolated resource group
         if: inputs.action != 'what-if'
         run: >-
           az deployment sub create
@@ -111,79 +141,145 @@ jobs:
           --location "$AZURE_LOCATION"
           --template-file infra/resource-group.bicep
           --parameters resourceGroupName="$AZURE_RESOURCE_GROUP" location="$AZURE_LOCATION" environmentCode="$ENVIRONMENT_CODE"
+      - name: Validate unified infrastructure contract
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/bicep"
+          az bicep build --file infra/unified-estate.bicep --outfile "$RUNNER_TEMP/bicep/unified-estate.json"
+          az bicep build-params --file "$PARAMETER_FILE" --outfile "$RUNNER_TEMP/bicep/parameters.json"
+          if [ "$ENVIRONMENT_CODE" = prod ]; then
+            node scripts/validate-unified-estate-infrastructure.mjs "$RUNNER_TEMP/bicep/unified-estate.json" "$RUNNER_TEMP/bicep/parameters.json"
+          else
+            node scripts/validate-unified-estate-infrastructure.mjs "$RUNNER_TEMP/bicep/unified-estate.json"
+          fi
       - name: Azure deployment what-if
         run: |
           set -euo pipefail
           if [ "$(az group exists --name "$AZURE_RESOURCE_GROUP")" = true ]; then
             az deployment group what-if \
               --resource-group "$AZURE_RESOURCE_GROUP" \
-              --name "novapharm-${ENVIRONMENT_CODE}-${GITHUB_RUN_ID}" \
-              --parameters "$PARAMETER_FILE"
+              --name "novapharm-unified-${ENVIRONMENT_CODE}-${GITHUB_RUN_ID}" \
+              --parameters "$PARAMETER_FILE" releaseVersion="$EXPECTED_SHA"
           else
-            echo "The resource group does not exist yet. The subscription deployment above validated its definition; the first owner-approved deploy will create it."
+            echo "The isolated resource group does not exist. The subscription-level definition and compiled template passed validation; no resource was created in what-if mode."
           fi
-      - name: Deploy Azure resources
+      - name: Deploy unified Azure resources
         if: inputs.action != 'what-if'
         id: infrastructure
         run: |
           set -euo pipefail
-          deployment="novapharm-${ENVIRONMENT_CODE}-${GITHUB_RUN_ID}"
-          az deployment group create --resource-group "$AZURE_RESOURCE_GROUP" --name "$deployment" --parameters "$PARAMETER_FILE"
-          app_name=$(az deployment group show --resource-group "$AZURE_RESOURCE_GROUP" --name "$deployment" --query properties.outputs.applicationName.value -o tsv)
-          if [ "$ENVIRONMENT_CODE" = prod ]; then
-            hostname=$(az deployment group show --resource-group "$AZURE_RESOURCE_GROUP" --name "$deployment" --query properties.outputs.candidateHostname.value -o tsv)
-          else
-            hostname=$(az deployment group show --resource-group "$AZURE_RESOURCE_GROUP" --name "$deployment" --query properties.outputs.applicationDefaultHostname.value -o tsv)
-          fi
-          test -n "$app_name" && test -n "$hostname"
-          echo "app_name=$app_name" >> "$GITHUB_OUTPUT"
-          echo "hostname=$hostname" >> "$GITHUB_OUTPUT"
-      - name: Build and test release
+          deployment="novapharm-unified-${ENVIRONMENT_CODE}-${GITHUB_RUN_ID}"
+          az deployment group create \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$deployment" \
+            --parameters "$PARAMETER_FILE" releaseVersion="$EXPECTED_SHA"
+          applications=$(az deployment group show \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --name "$deployment" \
+            --query properties.outputs.applications.value -o json | jq -c .)
+          test "$(jq 'length' <<<"$applications")" = 6
+          echo "applications=$applications" >> "$GITHUB_OUTPUT"
+          echo "deployment=$deployment" >> "$GITHUB_OUTPUT"
+      - name: Build, test and package immutable release
         if: inputs.action == 'deploy'
+        env:
+          NEXT_PUBLIC_ENTRA_LOGIN_ENABLED: ${{ vars.NOVAPHARM_ENABLE_ENTRA_AUTH }}
         run: |
+          set -euo pipefail
           npm ci --ignore-scripts
           npm audit --omit=dev --audit-level=high
           npm run check
-          npm prune --omit=dev
-          zip -qr /tmp/novapharm-release.zip . \
-            -x '.git/*' '.github/*' 'data/*' 'tmp/*' 'artifacts/*' 'vishal-portfolio-rebuild/*'
-      - name: Deploy staging application
-        if: inputs.action == 'deploy' && inputs.target == 'staging'
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: ${{ steps.infrastructure.outputs.app_name }}
-          package: /tmp/novapharm-release.zip
-      - name: Deploy production candidate slot
-        if: inputs.action == 'deploy' && inputs.target == 'production-candidate'
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: ${{ steps.infrastructure.outputs.app_name }}
-          slot-name: candidate
-          package: /tmp/novapharm-release.zip
-      - name: Run controlled schema migrations
-        if: inputs.action == 'deploy' && inputs.run_schema_migrations
-        run: |
-          set -euo pipefail
-          slot_args=()
-          if [ "$ENVIRONMENT_CODE" = prod ]; then slot_args=(--slot candidate); fi
-          az webapp config appsettings set --resource-group "$AZURE_RESOURCE_GROUP" --name "${{ steps.infrastructure.outputs.app_name }}" "${slot_args[@]}" --settings AZURE_SQL_RUN_MIGRATIONS=true >/dev/null
-          az webapp restart --resource-group "$AZURE_RESOURCE_GROUP" --name "${{ steps.infrastructure.outputs.app_name }}" "${slot_args[@]}"
-          for _ in {1..30}; do
-            if curl --fail --silent --show-error "https://${{ steps.infrastructure.outputs.hostname }}/api/health" >/tmp/health.json; then break; fi
-            sleep 10
+          RELEASE_VERSION="$EXPECTED_SHA" npm run azure:package
+          npm run azure:test-artifacts
+          mkdir -p artifacts/azure-zips
+          for app in corporate technology founder portal api status; do
+            (cd "artifacts/azure-release/$app" && zip -q -r "../../azure-zips/$app.zip" .)
           done
-          jq -e '.status == "ok" and .database == "ready"' /tmp/health.json
-          az webapp config appsettings set --resource-group "$AZURE_RESOURCE_GROUP" --name "${{ steps.infrastructure.outputs.app_name }}" "${slot_args[@]}" --settings AZURE_SQL_RUN_MIGRATIONS=false >/dev/null
-          az webapp restart --resource-group "$AZURE_RESOURCE_GROUP" --name "${{ steps.infrastructure.outputs.app_name }}" "${slot_args[@]}"
-      - name: Candidate health and indexing smoke test
+          (cd artifacts/azure-zips && sha256sum -- ./*.zip > SHA256SUMS)
+      - name: Upload signed-by-digest release evidence
         if: inputs.action == 'deploy'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: unified-azure-release-${{ inputs.expected_sha }}
+          path: |
+            artifacts/azure-release/release-manifest.json
+            artifacts/azure-zips/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 30
+      - name: Deploy six isolated application packages
+        if: inputs.action == 'deploy'
+        env:
+          APPLICATIONS: ${{ steps.infrastructure.outputs.applications }}
         run: |
           set -euo pipefail
-          origin="https://${{ steps.infrastructure.outputs.hostname }}"
-          for _ in {1..30}; do
-            status=$(curl -sS -o /tmp/health.json -w '%{http_code}' "$origin/api/health" || true)
-            if [ "$status" = 200 ]; then break; fi
+          for app in corporate technology founder portal api status; do
+            name=$(jq -r --arg app "$app" '.[$app].name' <<<"$APPLICATIONS")
+            test -n "$name" && test "$name" != null
+            slot_args=()
+            if [ -n "$TARGET_SLOT" ]; then slot_args=(--slot "$TARGET_SLOT"); fi
+            az webapp deploy \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --name "$name" \
+              "${slot_args[@]}" \
+              --src-path "artifacts/azure-zips/$app.zip" \
+              --type zip \
+              --clean true \
+              --restart true
+          done
+      - name: Run controlled Azure SQL migrations
+        if: inputs.action == 'deploy' && inputs.run_schema_migrations
+        env:
+          APPLICATIONS: ${{ steps.infrastructure.outputs.applications }}
+        run: |
+          set -euo pipefail
+          api_name=$(jq -r '.api.name' <<<"$APPLICATIONS")
+          api_host=$(jq -r --arg field "${TARGET_SLOT:+candidateHostname}" --arg fallback hostname '.api[if $field == "" then $fallback else $field end]' <<<"$APPLICATIONS")
+          slot_args=()
+          if [ -n "$TARGET_SLOT" ]; then slot_args=(--slot "$TARGET_SLOT"); fi
+          cleanup() {
+            az webapp config appsettings set --resource-group "$AZURE_RESOURCE_GROUP" --name "$api_name" "${slot_args[@]}" --settings AZURE_SQL_RUN_MIGRATIONS=false >/dev/null || true
+          }
+          trap cleanup EXIT
+          az webapp config appsettings set --resource-group "$AZURE_RESOURCE_GROUP" --name "$api_name" "${slot_args[@]}" --settings AZURE_SQL_RUN_MIGRATIONS=true >/dev/null
+          az webapp restart --resource-group "$AZURE_RESOURCE_GROUP" --name "$api_name" "${slot_args[@]}"
+          for _ in {1..40}; do
+            if curl --fail --silent --show-error "https://$api_host/api/health/ready" >/tmp/api-ready.json; then break; fi
             sleep 10
           done
-          jq -e '.status == "ok" and .database == "ready"' /tmp/health.json
-          curl --fail --silent --show-error --head "$origin/" | tr -d '\r' | grep -qi '^x-robots-tag:.*noindex'
+          jq -e '.status == "ready" and .database == "ready"' /tmp/api-ready.json
+      - name: Smoke-test all candidate services
+        if: inputs.action == 'deploy'
+        env:
+          APPLICATIONS: ${{ steps.infrastructure.outputs.applications }}
+        run: |
+          set -euo pipefail
+          field=hostname
+          if [ -n "$TARGET_SLOT" ]; then field=candidateHostname; fi
+          for app in corporate technology founder portal status; do
+            host=$(jq -r --arg app "$app" --arg field "$field" '.[$app][$field]' <<<"$APPLICATIONS")
+            test -n "$host" && test "$host" != null
+            for _ in {1..40}; do
+              code=$(curl -sS -o "/tmp/$app.html" -D "/tmp/$app.headers" -w '%{http_code}' "https://$host/" || true)
+              if [ "$code" = 200 ]; then break; fi
+              sleep 10
+            done
+            test "$code" = 200
+            tr -d '\r' < "/tmp/$app.headers" | grep -qi '^x-robots-tag:.*noindex'
+          done
+          api_host=$(jq -r --arg field "$field" '.api[$field]' <<<"$APPLICATIONS")
+          for _ in {1..40}; do
+            code=$(curl -sS -o /tmp/api-live.json -w '%{http_code}' "https://$api_host/api/health/live" || true)
+            if [ "$code" = 200 ]; then break; fi
+            sleep 10
+          done
+          test "$code" = 200
+          jq -e '.status == "live" and .service == "novapharm-api"' /tmp/api-live.json
+      - name: Record deployment evidence
+        if: inputs.action != 'what-if'
+        run: |
+          printf '%s\n' \
+            "deployment=${{ steps.infrastructure.outputs.deployment }}" \
+            "source=$EXPECTED_SHA" \
+            "target=${{ inputs.target }}" \
+            "action=${{ inputs.action }}" \
+            "No DNS, domain binding, slot swap, SharePoint permission or GitHub Pages change was performed."

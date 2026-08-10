@@ -68,10 +68,11 @@
     },
     {
       "id": "BP-007",
-      "topic": "Polar Speed or Marken relationship",
+      "topic": "Polar Speed relationship and service scope",
       "pages": [3, 4, 5, 6, 18, 19, 20, 21],
       "class": "C",
-      "publicStatus": "planned_only",
+      "publicStatus": "owner_attested_with_evidence_gate",
+      "publicExpression": "Owner-attested contracted third-party logistics arrangements with Polar Speed are being incorporated into the operating model; this does not attribute any third-party authorisation to NovaPharm or authorise regulated wholesale supply.",
       "requiredEvidence": ["executed agreement", "written naming permission", "verified service scope"]
     },
     {

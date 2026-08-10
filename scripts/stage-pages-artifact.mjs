@@ -73,6 +73,16 @@ const requiredPublicPaths = [
   "portal/index.html"
 ];
 
+const forbiddenPublicMarkers = [
+  "data-login-form",
+  "data-account-application",
+  "data-contact-form",
+  'type="password"',
+  'type="file"',
+  'name="accessType"',
+  "data-enterprise-module"
+];
+
 function copyDirectory(source, destination) {
   cpSync(source, destination, {
     recursive: true,
@@ -124,6 +134,12 @@ for (const requiredPath of requiredPublicPaths) {
   if (!existsSync(target)) throw new Error(`Pages artifact is missing required public path: ${requiredPath}`);
 }
 
+for (const forbiddenPath of ["admin", "employee", "entra-complete", "_secure", "portal/change-password", "portal/dashboard", "portal/executive-platform"]) {
+  if (existsSync(join(output, forbiddenPath))) {
+    throw new Error(`Secure or server-dependent path entered the Pages artifact: ${forbiddenPath}`);
+  }
+}
+
 const cname = readFileSync(join(output, "CNAME"), "utf8").trim();
 if (cname !== "novapharmhealthcare.com") {
   throw new Error(`Unexpected Pages custom domain in artifact: ${cname || "<empty>"}`);
@@ -142,6 +158,12 @@ for (const file of stagedFiles) {
   }
   if (/\.(?:env|pem|key|sqlite|db|bak)$/i.test(stagedPath)) {
     throw new Error(`Sensitive file type entered the Pages artifact: ${stagedPath}`);
+  }
+  if (/\.html?$/i.test(stagedPath)) {
+    const html = readFileSync(file, "utf8");
+    for (const marker of forbiddenPublicMarkers) {
+      if (html.includes(marker)) throw new Error(`Server-dependent control entered ${stagedPath}: ${marker}`);
+    }
   }
 }
 

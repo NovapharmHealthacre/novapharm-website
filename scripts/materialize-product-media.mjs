@@ -1,5 +1,5 @@
-import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createHash, randomUUID } from "node:crypto";
+import { closeSync, fstatSync, mkdirSync, openSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 
 const root = resolve(process.cwd());
@@ -17,6 +17,20 @@ const acceptedReviewStatuses = new Set([
   "downloaded-and-technically-validated",
   "rendered-and-brand-reviewed"
 ]);
+
+function approvedAsset(id) {
+  switch (id) {
+    case "oncology-vial-handling": return { id: "oncology-vial-handling", downloadBaseUrl: "https://images.pexels.com/photos/4299424/pexels-photo-4299424.jpeg" };
+    case "specialty-pharmacy-handling": return { id: "specialty-pharmacy-handling", downloadBaseUrl: "https://images.pexels.com/photos/8940469/pexels-photo-8940469.jpeg" };
+    case "oral-liquid-formulation": return { id: "oral-liquid-formulation", downloadBaseUrl: "https://images.pexels.com/photos/9628804/pexels-photo-9628804.jpeg" };
+    case "licensed-generics-packaging": return { id: "licensed-generics-packaging", downloadBaseUrl: "https://images.pexels.com/photos/5995060/pexels-photo-5995060.jpeg" };
+    case "cardiovascular-quality-control": return { id: "cardiovascular-quality-control", downloadBaseUrl: "https://images.pexels.com/photos/3735716/pexels-photo-3735716.jpeg" };
+    case "respiratory-manufacturing": return { id: "respiratory-manufacturing", downloadBaseUrl: "https://images.pexels.com/photos/37466061/pexels-photo-37466061.jpeg" };
+    case "metabolic-laboratory-analysis": return { id: "metabolic-laboratory-analysis", downloadBaseUrl: "https://images.pexels.com/photos/3082451/pexels-photo-3082451.jpeg" };
+    case "hospital-supply-logistics": return { id: "hospital-supply-logistics", downloadBaseUrl: "https://images.pexels.com/photos/6170458/pexels-photo-6170458.jpeg" };
+    default: throw new Error(`Unapproved product-media asset identifier: ${id}`);
+  }
+}
 
 if (process.env.ALLOW_MEDIA_DOWNLOAD !== "true") {
   throw new Error("External media acquisition is disabled. Set ALLOW_MEDIA_DOWNLOAD=true only in the controlled acquisition workflow.");
@@ -99,7 +113,9 @@ function dimensionsFor(format, buffer) {
 }
 
 async function download(asset, format) {
-  const url = new URL(asset.downloadBaseUrl);
+  const approved = approvedAsset(asset.id);
+  if (asset.downloadBaseUrl !== approved.downloadBaseUrl) throw new Error(`Product-media source does not match the approved register for ${approved.id}.`);
+  const url = new URL(approved.downloadBaseUrl);
   url.searchParams.set("auto", "compress");
   url.searchParams.set("cs", "tinysrgb");
   url.searchParams.set("fit", "crop");
@@ -114,12 +130,10 @@ async function download(asset, format) {
       Accept: formats[format],
       "User-Agent": "NovaPharm-asset-acquisition/1.0"
     },
-    redirect: "follow",
+    redirect: "error",
     signal: AbortSignal.timeout(30000)
   });
   if (!response.ok) throw new Error(`${asset.id}.${format} returned HTTP ${response.status}.`);
-  if (new URL(response.url).hostname !== "images.pexels.com") throw new Error(`${asset.id}.${format} redirected to an unapproved host.`);
-
   const contentType = (response.headers.get("content-type") || "").split(";", 1)[0].toLowerCase();
   if (contentType !== formats[format]) {
     throw new Error(`${asset.id}.${format} returned ${contentType || "no content type"}; expected ${formats[format]}.`);
@@ -141,16 +155,24 @@ function existingDerivativesAreValid() {
   try {
     return register.assets.every((asset) => {
       if (!acceptedReviewStatuses.has(asset.reviewStatus)) return false;
+      const approved = approvedAsset(asset.id);
+      if (asset.downloadBaseUrl !== approved.downloadBaseUrl) return false;
       return Object.keys(formats).every((format) => {
         const derivative = asset.derivatives?.[format];
-        const path = derivative?.path ? resolve(root, derivative.path) : "";
-        if (!path || !existsSync(path)) return false;
-        const buffer = readFileSync(path);
-        const dimensions = dimensionsFor(format, buffer);
-        return derivative.contentType === formats[format] &&
-          derivative.width === expectedWidth && dimensions.width === expectedWidth &&
-          derivative.height === expectedHeight && dimensions.height === expectedHeight &&
-          derivative.byteSize === buffer.length && derivative.sha256 === sha256(buffer);
+        const expectedPath = `assets/media/products/${approved.id}.${format}`;
+        if (derivative?.path !== expectedPath) return false;
+        const descriptor = openSync(join(root, expectedPath), "r");
+        try {
+          if (!fstatSync(descriptor).isFile()) return false;
+          const buffer = readFileSync(descriptor);
+          const dimensions = dimensionsFor(format, buffer);
+          return derivative.contentType === formats[format] &&
+            derivative.width === expectedWidth && dimensions.width === expectedWidth &&
+            derivative.height === expectedHeight && dimensions.height === expectedHeight &&
+            derivative.byteSize === buffer.length && derivative.sha256 === sha256(buffer);
+        } finally {
+          closeSync(descriptor);
+        }
       });
     });
   } catch {
@@ -163,14 +185,23 @@ if (existingDerivativesAreValid()) {
 } else {
   mkdirSync(outputRoot, { recursive: true });
   for (const asset of register.assets) {
+    const approved = approvedAsset(asset.id);
+    if (asset.downloadBaseUrl !== approved.downloadBaseUrl) throw new Error(`Product-media source does not match the approved register for ${approved.id}.`);
     const derivatives = {};
     for (const format of Object.keys(formats)) {
       const result = await download(asset, format);
-      const path = join(outputRoot, `${asset.id}.${format}`);
-      mkdirSync(dirname(path), { recursive: true });
-      writeFileSync(path, result.buffer);
+      const targetPath = join(outputRoot, `${approved.id}.${format}`);
+      const temporaryPath = `${targetPath}.${randomUUID()}.tmp`;
+      mkdirSync(dirname(targetPath), { recursive: true });
+      try {
+        // Source and destination are allowlisted; content is size, MIME, signature and dimension checked before this exclusive write.
+        writeFileSync(temporaryPath, result.buffer, { mode: 0o600, flag: "wx" });
+        renameSync(temporaryPath, targetPath);
+      } finally {
+        rmSync(temporaryPath, { force: true });
+      }
       derivatives[format] = {
-        path: `assets/media/products/${asset.id}.${format}`,
+        path: `assets/media/products/${approved.id}.${format}`,
         sourceUrl: result.sourceUrl,
         contentType: result.contentType,
         width: result.dimensions.width,

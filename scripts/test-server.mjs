@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { createHash, randomBytes } from "node:crypto";
+import { createHash, randomBytes, randomInt } from "node:crypto";
 import { rmSync } from "node:fs";
 import { Readable, Writable } from "node:stream";
 
@@ -11,11 +11,10 @@ const adminPassword = randomBytes(24).toString("base64url");
 
 function randomStrongPassword(prefix = "Aa1!") {
   const alphabet = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789!@#$%^&*";
-  const bytes = randomBytes(32);
   let value = prefix;
-  for (let index = 0; index < bytes.length; index += 1) {
-    let character = alphabet[(bytes[index] + index) % alphabet.length];
-    if (value.endsWith(character.repeat(3))) character = alphabet[(bytes[index] + index + 1) % alphabet.length];
+  for (let index = 0; index < 32; index += 1) {
+    let character = alphabet[randomInt(alphabet.length)];
+    while (value.endsWith(character.repeat(3))) character = alphabet[randomInt(alphabet.length)];
     value += character;
   }
   return value;
@@ -456,6 +455,10 @@ assert.equal(customerLogin.payload.redirectTo, "/portal/dashboard/");
 assert.equal(employeeLogin.payload.redirectTo, "/employee/dashboard/");
 assert.equal(boardLogin.payload.redirectTo, "/portal/executive-platform/");
 assert.equal(adminLogin.payload.redirectTo, "/admin/dashboard/");
+assert.deepEqual(
+  [customerLogin, employeeLogin, boardLogin, adminLogin].map((result) => result.payload.accessType),
+  ["customer", "employee", "board", "admin"]
+);
 
 const wrongPortal = await login({ username: "CustomerUser", password: customerPassword, accessType: "employee", csrfCookie, address: "127.0.0.15" });
 assert.equal(wrongPortal.statusCode, 403);
@@ -710,6 +713,7 @@ const logout = await request({
   address: "127.0.0.28"
 });
 assert.equal(logout.statusCode, 200);
+assert.equal(logout.payload.federatedLogout, false);
 const revokedSession = await request({ url: "/api/portal/session", headers: { cookie: `np_session=${adminLogin.sessionCookie}` } });
 assert.equal(revokedSession.statusCode, 401);
 

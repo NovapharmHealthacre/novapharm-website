@@ -1,0 +1,10 @@
+# The repository owner remains the final reviewer until approved teams are created.
+* @NovapharmHealthacre
+
+/.github/ @NovapharmHealthacre
+/infra/ @NovapharmHealthacre
+/security/ @NovapharmHealthacre
+/packages/claims/ @NovapharmHealthacre
+/packages/security/ @NovapharmHealthacre
+/apps/api/ @NovapharmHealthacre
+/apps/portal/ @NovapharmHealthacre

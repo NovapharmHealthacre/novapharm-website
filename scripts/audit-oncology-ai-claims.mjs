@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { visibleTextFromHtml } from "./lib/html-text.mjs";
 
 const targets = ["oncology/index.html", "technology/ai-governance/index.html"];
 const patterns = [
@@ -11,13 +12,9 @@ const patterns = [
 
 const explicitBoundary = /\b(?:does not|do not|not|no|without|cannot|isn't|aren't)\b/i;
 
-function visibleText(html) {
-  return html.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").replace(/&(?:#39|apos);/gi, "'").replace(/&amp;/gi, "&").replace(/\s+/g, " ").trim();
-}
-
 const findings = [];
 for (const file of targets) {
-  const text = visibleText(readFileSync(resolve(file), "utf8"));
+  const text = visibleTextFromHtml(readFileSync(resolve(file), "utf8"));
   for (const phrase of patterns) {
     let cursor = 0;
     while (cursor < text.length) {

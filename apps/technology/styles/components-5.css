@@ -1,0 +1,9 @@
+@layer components {
+.footer-label { margin-bottom: 1.2rem; color: var(--red-bright) !important; font-size: .63rem; letter-spacing: .13em; text-transform: uppercase; }
+  .site-footer__grid nav { display: flex; flex-direction: column; gap: .6rem; }
+  .site-footer__grid > div:not(:first-child) { color: var(--muted-light); font-size: .82rem; }
+  .site-footer address { display: flex; flex-direction: column; margin-top: 1rem; }
+  .site-footer__bottom { display: grid; grid-template-columns: 1fr auto 1fr; gap: 2rem; align-items: center; padding-top: 2rem; color: #858990; font-size: .65rem; }
+  .site-footer__bottom > div { display: flex; gap: 1.4rem; }
+  .site-footer__bottom > p:last-child { text-align: right; }
+}

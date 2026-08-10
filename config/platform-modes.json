@@ -1,0 +1,30 @@
+{
+  "PUBLIC_ONLY": {
+    "publicContent": true,
+    "publicForms": false,
+    "accountApplication": false,
+    "portal": false,
+    "secureApi": false
+  },
+  "FULL_PLATFORM": {
+    "publicContent": true,
+    "publicForms": true,
+    "accountApplication": true,
+    "portal": true,
+    "secureApi": true
+  },
+  "MAINTENANCE": {
+    "publicContent": true,
+    "publicForms": false,
+    "accountApplication": false,
+    "portal": false,
+    "secureApi": false
+  },
+  "INCIDENT": {
+    "publicContent": true,
+    "publicForms": false,
+    "accountApplication": false,
+    "portal": false,
+    "secureApi": false
+  }
+}

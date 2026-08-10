@@ -5,8 +5,6 @@ import { ABSTENTION, evaluatePublicPolicy } from "./policy-engine.mjs";
 
 const INDEX_URL = "/assets/ai/company-knowledge-index.json";
 const MANIFEST_URL = "/assets/ai/company-source-manifest.json";
-const MODEL_URL = "/assets/ai/novapharm-evidence-vector-v1.json";
-const EMBEDDINGS_URL = "/assets/ai/company-embeddings.json";
 
 let knowledgePromise;
 let manifestPromise;
@@ -244,7 +242,7 @@ export async function initialiseSearchDialog(dialog) {
         }
       }
     });
-    worker.postMessage({ type: "init", knowledge, modelUrl: MODEL_URL, embeddingsUrl: EMBEDDINGS_URL, useCache: true });
+    worker.postMessage({ type: "init", knowledge, useCache: true });
   };
 
   modeButtons.forEach((button) => button.addEventListener("click", () => {

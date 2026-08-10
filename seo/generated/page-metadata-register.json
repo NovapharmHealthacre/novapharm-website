@@ -62,7 +62,7 @@
     "canonical": "https://novapharmhealthcare.com/about/company/",
     "file": "about/company/index.html",
     "title": "Company | NovaPharm Healthcare Ltd",
-    "description": "NovaPharm Healthcare Ltd company facts, B2B pharmaceutical business model, three-pillar sourcing strategy and pre-operational regulatory status.",
+    "description": "NovaPharm Healthcare Ltd company facts, active B2B development, three-pillar sourcing strategy and authorisation-dependent regulated wholesale status.",
     "h1": "A UK B2B pharmaceutical business in regulated preparation.",
     "indexable": true,
     "schemaTypes": [
@@ -112,7 +112,7 @@
     "canonical": "https://novapharmhealthcare.com/leadership/",
     "file": "leadership/index.html",
     "title": "Leadership | NovaPharm Healthcare",
-    "description": "Meet NovaPharm Healthcare&#39;s directors and specialist quality and regulatory adviser, with verified governance status and conservative professional profiles.",
+    "description": "Meet NovaPharm Healthcare&#39;s executive leadership, with statutory office, owner-approved roles and regulated appointments presented through distinct governance fields.",
     "h1": "Leadership for scientific, regulatory and operational scrutiny.",
     "indexable": true,
     "schemaTypes": [
@@ -309,8 +309,8 @@
     "route": "/product-portfolio/",
     "canonical": "https://novapharmhealthcare.com/product-portfolio/",
     "file": "product-portfolio/index.html",
-    "title": "Strategic Pharmaceutical Portfolio | Oncology and Specialty Medicines",
-    "description": "NovaPharm&#39;s planned B2B portfolio focus across oncology, specialty, oral liquid and selected licensed medicines, subject to authorisation and availability.",
+    "title": "Food Supplements and Strategic Pharmaceutical Portfolio | NovaPharm",
+    "description": "Review NovaPharm&#39;s Nutraxin UK food supplement catalogue reference and strategic B2B pharmaceutical categories, with availability, claims and authorisation boundaries stated clearly.",
     "h1": "A strategic B2B portfolio, not a public pharmacy catalogue.",
     "indexable": true,
     "schemaTypes": [
@@ -323,6 +323,7 @@
       "partners",
       "contact",
       "open-an-account",
+      "partnership-pathway",
       "discuss-a-partnership",
       "open-an-account",
       "partners",
@@ -477,6 +478,52 @@
     "indexable": true,
     "schemaTypes": [
       "ContactPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/account-application/",
+    "canonical": "https://novapharmhealthcare.com/account-application/",
+    "file": "account-application/index.html",
+    "title": "Open a Pharmaceutical Customer Account | NovaPharm Healthcare",
+    "description": "Apply for a future NovaPharm Healthcare B2B customer account through a controlled company, responsible-person, GDP, credit and document onboarding workflow.",
+    "h1": "A controlled route into the future NovaPharm customer network.",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
+    ],
+    "intendedCta": [
+      "partners",
+      "contact",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
+    ]
+  },
+  {
+    "route": "/trust-centre/",
+    "canonical": "https://novapharmhealthcare.com/trust-centre/",
+    "file": "trust-centre/index.html",
+    "title": "Trust Centre | NovaPharm Healthcare",
+    "description": "Review NovaPharm Healthcare&#39;s verified corporate, pharmaceutical-status, security, privacy, accessibility and service-assurance boundaries.",
+    "h1": "Trust is a verified operating condition.",
+    "indexable": true,
+    "schemaTypes": [
+      "WebPage",
       "BreadcrumbList",
       "ListItem",
       "ListItem"
@@ -733,8 +780,8 @@
     "route": "/leadership/prabhakar-lahare/",
     "canonical": "https://novapharmhealthcare.com/leadership/prabhakar-lahare/",
     "file": "leadership/prabhakar-lahare/index.html",
-    "title": "Prabhakar Vitthal Lahare | Managing Director & Chief Operating Officer | NovaPharm Healthcare",
-    "description": "Prabhakar Vitthal Lahare is Managing Director &amp; Chief Operating Officer at NovaPharm Healthcare. Prabhakar supports operating strategy, manufacturing partnerships, quality governance, supply continuity and scalable execution.",
+    "title": "Prabhakar Vitthal Lahare | Chief Operating Officer | NovaPharm Healthcare",
+    "description": "Prabhakar Vitthal Lahare is Chief Operating Officer at NovaPharm Healthcare. Prabhakar supports operating strategy, manufacturing partnerships, quality governance, supply continuity and scalable execution.",
     "h1": "Prabhakar Vitthal Lahare",
     "indexable": true,
     "schemaTypes": [
@@ -762,8 +809,8 @@
     "route": "/leadership/girish-achliya/",
     "canonical": "https://novapharmhealthcare.com/leadership/girish-achliya/",
     "file": "leadership/girish-achliya/index.html",
-    "title": "Dr Girish Shantilal Achliya | Director & Chief Scientific Officer | NovaPharm Healthcare",
-    "description": "Dr Girish Shantilal Achliya is Director &amp; Chief Scientific Officer at NovaPharm Healthcare. Dr Girish supports scientific strategy, product development, technical due diligence and the development of a differentiated oncology and specialty portfolio.",
+    "title": "Dr Girish Shantilal Achliya | Chief Technical Director | NovaPharm Healthcare",
+    "description": "Dr Girish Shantilal Achliya is Chief Technical Director at NovaPharm Healthcare. Dr Girish supports scientific strategy, product development, technical due diligence and the development of a differentiated oncology and specialty portfolio.",
     "h1": "Dr Girish Shantilal Achliya",
     "indexable": true,
     "schemaTypes": [
@@ -791,8 +838,8 @@
     "route": "/leadership/helly-panchal/",
     "canonical": "https://novapharmhealthcare.com/leadership/helly-panchal/",
     "file": "leadership/helly-panchal/index.html",
-    "title": "Dr Helly Panchal | Director, Technical & Formulation | NovaPharm Healthcare",
-    "description": "Dr Helly Panchal is Director, Technical &amp; Formulation at NovaPharm Healthcare. Dr Helly supports NovaPharm&#39;s technical and formulation strategy, with a focus on product assessment, scientific review and supply-chain innovation.",
+    "title": "Dr Helly Panchal | Chief Medical Director | NovaPharm Healthcare",
+    "description": "Dr Helly Panchal is Chief Medical Director at NovaPharm Healthcare. Dr Helly supports NovaPharm&#39;s technical and formulation strategy, with a focus on product assessment, scientific review and supply-chain innovation.",
     "h1": "Dr Helly Panchal",
     "indexable": true,
     "schemaTypes": [
@@ -818,8 +865,8 @@
     "route": "/leadership/nishita-trivedi/",
     "canonical": "https://novapharmhealthcare.com/leadership/nishita-trivedi/",
     "file": "leadership/nishita-trivedi/index.html",
-    "title": "Dr Nishita Trivedi | Quality & Regulatory Adviser | NovaPharm Healthcare",
-    "description": "Dr Nishita Trivedi is Quality &amp; Regulatory Adviser at NovaPharm Healthcare. Dr Nishita supports the planned quality and regulatory framework, including QMS, GDP, PLPI activities, vendor oversight and MHRA liaison.",
+    "title": "Dr Nishita Trivedi | Chief Technology Officer and Responsible Person | NovaPharm Healthcare",
+    "description": "Dr Nishita Trivedi is Chief Technology Officer and Responsible Person at NovaPharm Healthcare. Dr Nishita leads NovaPharm&#39;s technology governance as Chief Technology Officer and holds the owner-approved Responsible Person designation, with the executive and regulated responsibilities governed separately.",
     "h1": "Dr Nishita Trivedi",
     "indexable": true,
     "schemaTypes": [
@@ -989,29 +1036,6 @@
       "contact",
       "open-an-account",
       "partnership-ecosystem",
-      "partners",
-      "contact",
-      "open-an-account"
-    ]
-  },
-  {
-    "route": "/account-application/",
-    "canonical": "https://novapharmhealthcare.com/account-application/",
-    "file": "account-application/index.html",
-    "title": "Open a Pharmaceutical Customer Account | NovaPharm Healthcare",
-    "description": "Apply for a future NovaPharm Healthcare B2B customer account through a controlled company, responsible-person, GDP, credit and document onboarding workflow.",
-    "h1": "A controlled route into the future NovaPharm customer network.",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "BreadcrumbList",
-      "ListItem",
-      "ListItem"
-    ],
-    "intendedCta": [
-      "partners",
-      "contact",
-      "open-an-account",
       "partners",
       "contact",
       "open-an-account"

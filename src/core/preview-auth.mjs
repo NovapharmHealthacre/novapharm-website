@@ -1,7 +1,14 @@
-import { createHash, timingSafeEqual } from "node:crypto";
+import { timingSafeEqual } from "node:crypto";
 
-function digest(value) {
-  return createHash("sha256").update(String(value), "utf8").digest();
+function constantTimeTextEqual(suppliedValue, expectedValue) {
+  const supplied = Buffer.from(String(suppliedValue), "utf8");
+  const expected = Buffer.from(String(expectedValue), "utf8");
+  const length = Math.max(supplied.length, expected.length, 1);
+  const suppliedPadded = Buffer.alloc(length);
+  const expectedPadded = Buffer.alloc(length);
+  supplied.copy(suppliedPadded);
+  expected.copy(expectedPadded);
+  return supplied.length === expected.length && timingSafeEqual(suppliedPadded, expectedPadded);
 }
 
 export function previewAccessAllowed(authorizationHeader, expectedUsername, expectedPassword) {
@@ -13,11 +20,9 @@ export function previewAccessAllowed(authorizationHeader, expectedUsername, expe
   } catch {
     return false;
   }
+  if (decoded.length > 4096) return false;
   const separator = decoded.indexOf(":");
   if (separator < 1) return false;
-  const suppliedUsername = digest(decoded.slice(0, separator));
-  const suppliedPassword = digest(decoded.slice(separator + 1));
-  const username = digest(expectedUsername);
-  const password = digest(expectedPassword);
-  return timingSafeEqual(suppliedUsername, username) && timingSafeEqual(suppliedPassword, password);
+  return constantTimeTextEqual(decoded.slice(0, separator), expectedUsername)
+    && constantTimeTextEqual(decoded.slice(separator + 1), expectedPassword);
 }

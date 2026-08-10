@@ -1,0 +1,281 @@
+{
+  "generatedAt": "2026-08-01T10:07:49.337Z",
+  "mode": "compared-with-committed-baseline",
+  "source": "packages/design-system/workbench/index.html",
+  "engines": [
+    "chromium",
+    "webkit"
+  ],
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "componentFamilies": 24,
+  "creativeDirections": 3,
+  "results": [
+    {
+      "engine": "chromium",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "selector": "#direction-a",
+      "file": "audit/evidence/design-system/chromium-desktop-direction-a.png",
+      "sha256": "28902762fff7c2c969a2a009214f9a2bd3e722cf7cefe2bc18e93fa95d67e46f",
+      "changedPixels": 0,
+      "changedRatio": 0,
+      "pixels": 1654560,
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "selector": "#direction-b",
+      "file": "audit/evidence/design-system/chromium-desktop-direction-b.png",
+      "sha256": "4923ba4c96366147e4141e6f56f6b0c69bd26a56c25b8497ebc04786fee954ce",
+      "changedPixels": 0,
+      "changedRatio": 0,
+      "pixels": 1654560,
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "selector": "#direction-c",
+      "file": "audit/evidence/design-system/chromium-desktop-direction-c.png",
+      "sha256": "8bf6406184ef0237b1386f2d30134fc56e14dbe9a875d7d2035ecceac5b19de8",
+      "changedPixels": 0,
+      "changedRatio": 0,
+      "pixels": 1736640,
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "selector": "#component-workbench",
+      "file": "audit/evidence/design-system/chromium-desktop-component-workbench.png",
+      "sha256": "d9a3e0d2d44313327d073d5e310eaf6b6c4b5388f93e8a403bd17793a6809815",
+      "changedPixels": 0,
+      "changedRatio": 0,
+      "pixels": 650208,
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "selector": "#direction-a",
+      "file": "audit/evidence/design-system/chromium-mobile-direction-a.png",
+      "sha256": "43c99f6bbc0918ad195a9ca8dfe32ea0a63f21703ed2c454294207a2bbde6900",
+      "changedPixels": 0,
+      "changedRatio": 0,
+      "pixels": 1196130,
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "selector": "#direction-b",
+      "file": "audit/evidence/design-system/chromium-mobile-direction-b.png",
+      "sha256": "1c25cfa9fccf3830ff42b4a987b8041c1af84b0150dbf87b989d9af2138fbc0f",
+      "changedPixels": 0,
+      "changedRatio": 0,
+      "pixels": 1196520,
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "selector": "#direction-c",
+      "file": "audit/evidence/design-system/chromium-mobile-direction-c.png",
+      "sha256": "519b7f372a562aadb5c004c4a9fa9eeec1918a32188c18455161bc2286c3b952",
+      "changedPixels": 0,
+      "changedRatio": 0,
+      "pixels": 1229670,
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "chromium",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "selector": "#component-workbench",
+      "file": "audit/evidence/design-system/chromium-mobile-component-workbench.png",
+      "sha256": "2d94c72cb607449114f858ee96406a78025fb89b31d0c6bfd76db65dd239ff66",
+      "changedPixels": 0,
+      "changedRatio": 0,
+      "pixels": 251160,
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "selector": "#direction-a",
+      "file": "audit/evidence/design-system/webkit-desktop-direction-a.png",
+      "sha256": "e5d5c979c3d29e6e5511dbeec610c2b60b8ec0db1d2841feaefe969d26f54461",
+      "changedPixels": 0,
+      "changedRatio": 0,
+      "pixels": 1654560,
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "selector": "#direction-b",
+      "file": "audit/evidence/design-system/webkit-desktop-direction-b.png",
+      "sha256": "ddb634efee37dd125b987cb0f4865e88468fc7cd5d97547ec5233f43b4a5f621",
+      "changedPixels": 0,
+      "changedRatio": 0,
+      "pixels": 1654560,
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "selector": "#direction-c",
+      "file": "audit/evidence/design-system/webkit-desktop-direction-c.png",
+      "sha256": "808add5dce3a2009bf03a9740b1fb30c8883c8555bbfa85c57fe2b02c8f4699d",
+      "changedPixels": 0,
+      "changedRatio": 0,
+      "pixels": 1736640,
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "selector": "#component-workbench",
+      "file": "audit/evidence/design-system/webkit-desktop-component-workbench.png",
+      "sha256": "c081415d6198abd38d3b7fe4fcbf6a78a2c008dd7cd99d0d43782342aa2f8244",
+      "changedPixels": 0,
+      "changedRatio": 0,
+      "pixels": 650208,
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "selector": "#direction-a",
+      "file": "audit/evidence/design-system/webkit-mobile-direction-a.png",
+      "sha256": "9b654ba644814887735e219ceaddefa2ec68d075331ee15e7a905387b721d67a",
+      "changedPixels": 0,
+      "changedRatio": 0,
+      "pixels": 1196130,
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "selector": "#direction-b",
+      "file": "audit/evidence/design-system/webkit-mobile-direction-b.png",
+      "sha256": "ab71846ec9668143361ca0184afaa86ea2ffabf71790ed5b000aaef2cec80644",
+      "changedPixels": 0,
+      "changedRatio": 0,
+      "pixels": 1196130,
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "selector": "#direction-c",
+      "file": "audit/evidence/design-system/webkit-mobile-direction-c.png",
+      "sha256": "51bacffd544f1c60837c8910ab89a28f04a447873e504e7b38834debc0241260",
+      "changedPixels": 0,
+      "changedRatio": 0,
+      "pixels": 1229670,
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    },
+    {
+      "engine": "webkit",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "selector": "#component-workbench",
+      "file": "audit/evidence/design-system/webkit-mobile-component-workbench.png",
+      "sha256": "4287f37483c44167366fdbf52e1677fcf6bce5f7a95a49622dd2777e0e2eccff",
+      "changedPixels": 0,
+      "changedRatio": 0,
+      "pixels": 251160,
+      "accessibilityViolations": 0,
+      "horizontalOverflow": false
+    }
+  ]
+}

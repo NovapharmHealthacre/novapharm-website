@@ -32,12 +32,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Every query binds the authenticated customer_id; cross-account identifiers are rejected.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### My Account
 
@@ -60,12 +60,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Every query binds the authenticated customer_id; cross-account identifiers are rejected.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### My Orders
 
@@ -88,12 +88,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Every query binds the authenticated customer_id; cross-account identifiers are rejected.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### My Invoices
 
@@ -116,12 +116,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Every query binds the authenticated customer_id; cross-account identifiers are rejected.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### My Statements
 
@@ -144,12 +144,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Every query binds the authenticated customer_id; cross-account identifiers are rejected.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### My Products
 
@@ -172,12 +172,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Every query binds the authenticated customer_id; cross-account identifiers are rejected.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Price Lists
 
@@ -200,12 +200,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Every query binds the authenticated customer_id; cross-account identifiers are rejected.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Stock Availability
 
@@ -228,12 +228,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Every query binds the authenticated customer_id; cross-account identifiers are rejected.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Order Tracking
 
@@ -256,12 +256,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Every query binds the authenticated customer_id; cross-account identifiers are rejected.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Delivery Tracking
 
@@ -284,12 +284,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Every query binds the authenticated customer_id; cross-account identifiers are rejected.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Returns
 
@@ -312,12 +312,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** Command-specific event where implemented; otherwise audit-only until a production workflow is approved.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Every query binds the authenticated customer_id; cross-account identifiers are rejected.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Quality Complaints
 
@@ -340,12 +340,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** Command-specific event where implemented; otherwise audit-only until a production workflow is approved.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Every query binds the authenticated customer_id; cross-account identifiers are rejected.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Documents
 
@@ -368,12 +368,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Every query binds the authenticated customer_id; cross-account identifiers are rejected.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Support Tickets
 
@@ -396,12 +396,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** Command-specific event where implemented; otherwise audit-only until a production workflow is approved.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Every query binds the authenticated customer_id; cross-account identifiers are rejected.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Regulatory Documents
 
@@ -424,12 +424,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Every query binds the authenticated customer_id; cross-account identifiers are rejected.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Downloads
 
@@ -452,12 +452,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Every query binds the authenticated customer_id; cross-account identifiers are rejected.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Customer Analytics
 
@@ -480,12 +480,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Every query binds the authenticated customer_id; cross-account identifiers are rejected.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Settings
 
@@ -508,12 +508,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Every query binds the authenticated customer_id; cross-account identifiers are rejected.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ## Employee modules (13)
 
@@ -538,12 +538,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Customers
 
@@ -566,12 +566,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Suppliers
 
@@ -594,12 +594,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** Command-specific event where implemented; otherwise audit-only until a production workflow is approved.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Product Master
 
@@ -622,12 +622,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** Command-specific event where implemented; otherwise audit-only until a production workflow is approved.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Telesales Orders
 
@@ -650,12 +650,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** Command-specific event where implemented; otherwise audit-only until a production workflow is approved.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Warehouse & Inventory
 
@@ -678,12 +678,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Purchasing
 
@@ -706,12 +706,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** Command-specific event where implemented; otherwise audit-only until a production workflow is approved.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Finance
 
@@ -734,12 +734,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Quality
 
@@ -762,12 +762,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Regulatory
 
@@ -790,12 +790,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### CRM
 
@@ -818,12 +818,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Reports
 
@@ -846,12 +846,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Operational Administration
 
@@ -874,12 +874,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** Command-specific event where implemented; otherwise audit-only until a production workflow is approved.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ## Executive modules (18)
 
@@ -904,12 +904,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### CEO Dashboard
 
@@ -932,12 +932,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Sales Intelligence
 
@@ -960,12 +960,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Customer Analytics
 
@@ -988,12 +988,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Product Master
 
@@ -1016,12 +1016,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### NHS Data
 
@@ -1128,12 +1128,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Tenders
 
@@ -1184,12 +1184,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Service Levels
 
@@ -1212,12 +1212,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Finance
 
@@ -1240,12 +1240,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Capital
 
@@ -1324,12 +1324,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### AI & Technology
 
@@ -1380,12 +1380,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ## Admin modules (5)
 
@@ -1410,12 +1410,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Owner Review
 
@@ -1438,12 +1438,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Users & Sessions
 
@@ -1466,12 +1466,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Content Governance
 
@@ -1494,12 +1494,12 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
 ### Platform Analytics
 
@@ -1522,9 +1522,9 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
 - **Integration status:** operational_foundation
-- **Empty state:** A useful no-record state names the canonical dataset and does not fabricate activity.
+- **Empty state:** Honest blocked state: Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
 - **Current maturity:** operational_foundation
-- **Remaining production dependency:** Production data, approved operating procedures and owner acceptance.
+- **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance

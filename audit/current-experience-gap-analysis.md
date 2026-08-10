@@ -24,13 +24,13 @@ The merged implementation established the correct enterprise foundation: structu
 
 ## Content and claims review
 
-The candidate correctly labels NovaPharm as pre-operational for regulated wholesale supply and does not present WDA(H), PLPI, NHS supply, stock, Polar Speed/Marken scope, AI or blockchain capabilities as achieved. Product categories remain strategic, not a live public catalogue. Confidential financial forecasts and visa material are not used in public content.
+The candidate correctly distinguishes NovaPharm's active corporate and commercial-development work from regulated wholesale supply, which has not commenced. It does not present WDA(H), PLPI, NHS supply, stock, third-party authorisations, AI or blockchain capabilities as achieved. Product categories remain strategic, not a live public catalogue. Confidential financial forecasts and visa material are not used in public content.
 
 ## Leadership review
 
 - Vishal Chakravarty, Prabhakar Vitthal Lahare and Dr Girish Shantilal Achliya use owner-supplied photographs.
 - Dr Helly Kamlesh Panchal and Dr Nishita Trivedi retain neutral, clearly labelled portrait-pending treatments.
-- Dr Nishita Trivedi remains a Quality & Regulatory Adviser and is explicitly not presented as a statutory director.
+- Dr Nishita Trivedi is presented under the owner-approved title `Chief Technology Officer and Responsible Person`; the CTO and RP responsibilities are distinct, she is not a statutory director, and formal appointment documentation remains a controlled evidence action.
 - Governance labels distinguish statutory records from executive responsibilities described in the company plan.
 
 ## Architecture decision

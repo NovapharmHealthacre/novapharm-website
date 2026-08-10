@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { readFileSync, statSync } from "node:fs";
+import { closeSync, fstatSync, openSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { chromium, webkit } from "playwright";
 
@@ -7,9 +7,14 @@ const baseUrl = new URL(process.env.VISUAL_BASE_URL || "http://127.0.0.1:4178").
 const credentialsPath = resolve(process.env.VISUAL_CREDENTIALS_PATH || "");
 
 if (!process.env.VISUAL_CREDENTIALS_PATH) throw new Error("VISUAL_CREDENTIALS_PATH is required.");
-if ((statSync(credentialsPath).mode & 0o077) !== 0) throw new Error("Browser-workflow credentials must not be readable by group or other users.");
-
-const credentials = JSON.parse(readFileSync(credentialsPath, "utf8"));
+const credentialsDescriptor = openSync(credentialsPath, "r");
+let credentials;
+try {
+  if ((fstatSync(credentialsDescriptor).mode & 0o077) !== 0) throw new Error("Browser-workflow credentials must not be readable by group or other users.");
+  credentials = JSON.parse(readFileSync(credentialsDescriptor, "utf8"));
+} finally {
+  closeSync(credentialsDescriptor);
+}
 if (!credentials.username || !credentials.password) throw new Error("Synthetic browser-workflow credentials are incomplete.");
 
 function assert(condition, message) {
