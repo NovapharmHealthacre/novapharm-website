@@ -6,6 +6,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/pages-live-publish.yml
+      - scripts/check-links.mjs
       - scripts/stage-pages-artifact.mjs
       - package.json
   workflow_dispatch:
@@ -48,6 +49,8 @@ jobs:
           npm run test:owner-corrections:public-only
           npm run validate:domain
           node scripts/stage-pages-artifact.mjs _site
+          node scripts/check-links.mjs _site
+          test "$(tr -d '\r\n' < _site/CNAME)" = "novapharmhealthcare.com"
 
   build:
     if: github.event_name != 'pull_request'
@@ -81,15 +84,13 @@ jobs:
       - name: Build corrected public output
         run: npm run build:public-only
 
-      - name: Validate owner corrections and public routes
+      - name: Validate owner corrections and public release artifact
         run: |
           npm run test:owner-corrections:public-only
           npm run validate:domain
-          npm run check:links
-          test "$(tr -d '\r\n' < CNAME)" = "novapharmhealthcare.com"
-
-      - name: Stage a public-only Pages artifact
-        run: node scripts/stage-pages-artifact.mjs _site
+          node scripts/stage-pages-artifact.mjs _site
+          node scripts/check-links.mjs _site
+          test "$(tr -d '\r\n' < _site/CNAME)" = "novapharmhealthcare.com"
 
       - name: Configure Pages with an administration token when available
         if: env.PAGES_ADMIN_TOKEN != ''
@@ -131,6 +132,17 @@ jobs:
         with:
           path: _site
           retention-days: 1
+
+      - name: Mark publication failed before deployment
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            -f state=failure \
+            -f context="$STATUS_CONTEXT" \
+            -f description="Public release build or validation failed before deployment" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >/dev/null
 
   deploy:
     if: github.event_name != 'pull_request'
