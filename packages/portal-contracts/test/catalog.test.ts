@@ -86,6 +86,8 @@ test("all 54 modules have one complete, unambiguous production activation record
 
     assert.ok(activation.allowedRoles.length, `${activation.code}: allowed roles are required`);
     assert.ok(activation.apiEndpoints.length, `${activation.code}: API boundary must be recorded`);
+    assert.deepEqual(activation.releasedModuleApiEndpoints, activation.apiEndpoints, `${activation.code}: released endpoint alias drift`);
+    assert.ok(Array.isArray(activation.implementedProtectedServerAuthorities), `${activation.code}: protected server authorities must be explicit`);
     assert.ok(activation.databaseTablesViews.length, `${activation.code}: database tables/views boundary must be recorded`);
     assert.ok(activation.integrationDependencies.length, `${activation.code}: integration dependency must be recorded`);
     assert.ok(activation.auditRequirements.length, `${activation.code}: audit requirements are required`);
@@ -119,10 +121,10 @@ test("all 54 modules have one complete, unambiguous production activation record
   }
 });
 
-test("write-capable module activation records name only the implemented controlled endpoints", () => {
+test("write-capable module activation records name only the implemented released endpoints", () => {
   const writes = new Map(portalModuleActivationMatrix
     .filter((module) => module.writeState !== "none_read_only")
-    .map((module) => [module.code, module.apiEndpoints.filter((endpoint) => endpoint.startsWith("POST "))]));
+    .map((module) => [module.code, module.releasedModuleApiEndpoints.filter((endpoint) => endpoint.startsWith("POST "))]));
 
   assert.deepEqual(Object.fromEntries(writes), {
     "customer.returns": ["POST /api/enterprise/customer/returns"],
@@ -131,4 +133,32 @@ test("write-capable module activation records name only the implemented controll
     "employee.products": ["POST /api/enterprise/products/{productId}/status"],
     "employee.administration": ["POST /api/enterprise/workflows/{workflowId}/advance"],
   });
+});
+
+test("protected Admin server authorities are governed without releasing R1 module mutations", () => {
+  const byCode = new Map(portalModuleActivationMatrix.map((module) => [module.code, module]));
+  const dashboard = byCode.get("admin.dashboard");
+  const localReview = byCode.get("admin.local-review");
+  const users = byCode.get("admin.users");
+  assert.ok(dashboard && localReview && users);
+
+  assert.deepEqual(dashboard.implementedProtectedServerAuthorities, ["GET /api/admin/summary"]);
+  assert.deepEqual(localReview.implementedProtectedServerAuthorities, [
+    "GET /api/admin/applications/{applicationId}",
+    "POST /api/admin/applications/{applicationId}/status",
+    "POST /api/admin/applications/{applicationId}/activate",
+    "GET /api/admin/notifications/{notificationId}/preview",
+    "POST /api/admin/notifications/{notificationId}/replay",
+  ]);
+  assert.deepEqual(users.implementedProtectedServerAuthorities, ["POST /api/admin/users/{username}/sessions/revoke"]);
+
+  for (const activation of [dashboard, localReview, users]) {
+    assert.equal(activation.writeState, "none_read_only");
+    assert.equal(activation.releasedModuleApiEndpoints.some((endpoint) => endpoint.startsWith("POST ")), false);
+    assert.equal(activation.finalReleaseState, "DEPENDENCY-BLOCKED");
+  }
+
+  assert.match(localReview.auditRequirements.join(" "), /protected server-authority/iu);
+  assert.match(users.monitoring.join(" "), /protected server-authority/iu);
+  assert.match(users.missingTests.join(" "), /without implying that the module UI releases the mutation/iu);
 });
