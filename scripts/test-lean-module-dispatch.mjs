@@ -10,6 +10,7 @@ assert.match(dispatcher, /portalModuleByCode\.get\(code\)/u, "Direct overlays mu
 assert.match(dispatcher, /!module\.visibleInNavigation/u, "Direct overlays must preserve release visibility checks.");
 assert.match(dispatcher, /hidden_until_dependency_exists/u, "Direct overlays must fail closed for hidden modules.");
 assert.match(dispatcher, /canUseModule\(module, context\)/u, "Direct overlays must preserve role authorization.");
+assert.match(dispatcher, /module\.releaseClassification !== "informational_only"/u, "Direct overlays must fail closed if their R1 release classification changes without review.");
 assert.match(dispatcher, /Current release classification: informational only/u, "Direct overlays must preserve the R1 informational-only notice.");
 
 const directIndex = dispatcher.indexOf("if (candidate && directOverlayModule(candidate))");
@@ -32,5 +33,6 @@ console.log(JSON.stringify({
   directOverlayModules: 7,
   directOverlayBaseQueries: 0,
   warehouseUsesCanonicalLedger: true,
-  releaseAndRoleChecksBeforeDirectQueries: true
+  releaseAndRoleChecksBeforeDirectQueries: true,
+  releasePromotionRequiresExplicitReview: true
 }, null, 2));
