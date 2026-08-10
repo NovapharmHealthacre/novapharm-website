@@ -28,5 +28,10 @@ assert.match(base, /gatewayJson<\{ user: PortalUser \}>\("portal\/session"\)/u, 
 assert.match(base, /protectedMutation/u, "Preserved dashboard must retain controlled mutation plumbing.");
 assert.match(base, /enterprise\/modules\/\$\{encodeURIComponent\(module\.code\)\}/u, "Preserved dashboard must retain server-authorized module loading.");
 
+assert.match(css, /\.catalogue :global\(\.table-region\)[\s\S]*max-height: min\(68vh, 760px\)/u, "Desktop catalogues must use a bounded operational pane instead of an unbounded page-length table.");
+assert.match(css, /\.catalogue :global\(\.table-region th\)[\s\S]*position: sticky/u, "Bounded catalogue panes must retain sticky column context.");
+assert.match(css, /\.command :global\(\.data-section:nth-of-type\(odd\):last-of-type\)[\s\S]*grid-column: 1 \/ -1/u, "Odd command section counts must not leave an orphan half-width card.");
+assert.match(css, /\.intelligence :global\(\.data-section:nth-of-type\(odd\):last-of-type\)[\s\S]*grid-column: 1 \/ -1/u, "Odd intelligence section counts must not leave an orphan half-width card.");
+
 const counts = Object.fromEntries([...allowed].map((archetype) => [archetype, Object.values(presentations).filter((value) => value === archetype).length]));
-console.log(JSON.stringify({ governedModules: catalog.length, archetypes: counts, authenticatedDashboardPreserved: true }, null, 2));
+console.log(JSON.stringify({ governedModules: catalog.length, archetypes: counts, authenticatedDashboardPreserved: true, boundedCataloguePane: true, orphanCommandCards: false }, null, 2));
