@@ -112,6 +112,23 @@
   background: linear-gradient(180deg, rgba(242, 246, 251, 0.92), rgba(255, 255, 255, 0));
 }
 
+@media (min-width: 901px) {
+  .catalogue :global(.table-region) {
+    max-height: min(68vh, 760px);
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+
+  .catalogue :global(.table-region th) {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #f4f7fa;
+    box-shadow: inset 0 -1px #d7dee8;
+  }
+}
+
 @media (min-width: 1180px) {
   .command :global(.workspace-content),
   .intelligence :global(.workspace-content) {
@@ -142,6 +159,11 @@
   .command :global(.data-section),
   .intelligence :global(.data-section) {
     min-width: 0;
+  }
+
+  .command :global(.data-section:nth-of-type(odd):last-of-type),
+  .intelligence :global(.data-section:nth-of-type(odd):last-of-type) {
+    grid-column: 1 / -1;
   }
 }
 
