@@ -12,6 +12,8 @@ assert.match(dispatcher, /hidden_until_dependency_exists/u, "Direct overlays mus
 assert.match(dispatcher, /canUseModule\(module, context\)/u, "Direct overlays must preserve role authorization.");
 assert.match(dispatcher, /module\.releaseClassification !== "informational_only"/u, "Direct overlays must fail closed if their R1 release classification changes without review.");
 assert.match(dispatcher, /Current release classification: informational only/u, "Direct overlays must preserve the R1 informational-only notice.");
+assert.match(dispatcher, /State changes remain available only through authorised, CSRF-protected workflow endpoints/u, "Admin direct overlays must preserve the controlled-change truth notice.");
+assert.match(dispatcher, /Board access is read-only; all figures are synthetic local-validation records/u, "Board direct overlays must preserve the synthetic/read-only truth notice.");
 
 const directIndex = dispatcher.indexOf("if (candidate && directOverlayModule(candidate))");
 const baseIndex = dispatcher.indexOf("await base.enterpriseModuleSnapshot(code, context)");
@@ -34,5 +36,6 @@ console.log(JSON.stringify({
   directOverlayBaseQueries: 0,
   warehouseUsesCanonicalLedger: true,
   releaseAndRoleChecksBeforeDirectQueries: true,
-  releasePromotionRequiresExplicitReview: true
+  releasePromotionRequiresExplicitReview: true,
+  areaTruthNoticesPreserved: true
 }, null, 2));
