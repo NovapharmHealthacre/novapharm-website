@@ -1,7 +1,8 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { dirname, extname, join, normalize, resolve } from "node:path";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { dirname, extname, join, resolve } from "node:path";
 
-const root = resolve(process.cwd());
+const requestedRoot = process.argv[2] ?? ".";
+const root = resolve(process.cwd(), requestedRoot);
 const ignoredDirectories = new Set([
   ".git",
   ".next",
@@ -16,6 +17,11 @@ const ignoredDirectories = new Set([
 ]);
 let failures = 0;
 let checked = 0;
+
+if (!existsSync(root) || !statSync(root).isDirectory()) {
+  console.error(`Link check failed: validation root does not exist or is not a directory: ${requestedRoot}`);
+  process.exit(1);
+}
 
 function walk(directory = root) {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -60,4 +66,4 @@ for (const file of walk()) {
 }
 
 if (failures) process.exit(1);
-console.log(`Checked ${checked} local links and asset references with no broken targets.`);
+console.log(`Checked ${checked} local links and asset references under ${requestedRoot} with no broken targets.`);
