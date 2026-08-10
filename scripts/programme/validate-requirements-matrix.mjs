@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
+await import("./validate-absolute-mandate-register.mjs");
+
 const allowedStatuses = new Set([
   "Complete",
   "Complete at repository level only",

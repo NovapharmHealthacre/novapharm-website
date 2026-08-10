@@ -1,6 +1,17 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { adminModules, customerModules, employeeModules, executiveModules, portalModules, visiblePortalModules } from "../src/index";
+import {
+  adminModules,
+  customerModules,
+  dependencyBlockedPortalModules,
+  employeeModules,
+  executiveModules,
+  hiddenForSafetyPortalModules,
+  moduleFinalReleaseStates,
+  portalModuleActivationMatrix,
+  portalModules,
+  visiblePortalModules,
+} from "../src/index";
 
 test("one catalogue governs all four portal areas", () => {
   assert.equal(portalModules.length, 54);
@@ -40,4 +51,84 @@ test("release classifications expose only honest informational modules", () => {
       assert.equal(module.readCapability, "none_while_hidden");
     }
   }
+});
+
+test("all 54 modules have one complete, unambiguous production activation record", () => {
+  assert.equal(portalModuleActivationMatrix.length, 54);
+  assert.equal(new Set(portalModuleActivationMatrix.map((module) => module.code)).size, 54);
+  assert.equal(dependencyBlockedPortalModules.length, 47);
+  assert.equal(hiddenForSafetyPortalModules.length, 7);
+  assert.deepEqual(new Set(moduleFinalReleaseStates), new Set([
+    "FULLY OPERATIONAL",
+    "OPERATIONAL READ-ONLY",
+    "DEPENDENCY-BLOCKED",
+    "HIDDEN FOR SAFETY",
+    "NOT APPLICABLE",
+  ]));
+
+  for (const activation of portalModuleActivationMatrix) {
+    for (const value of [
+      activation.purpose,
+      activation.businessOwner,
+      activation.route,
+      activation.dataAuthority,
+      activation.currentRepositoryState,
+      activation.requiredExternalDependency,
+      activation.productionDataSource,
+      activation.documentAuthority,
+      activation.securityClassification,
+      activation.accessibilityState,
+      activation.responsiveState,
+      activation.performanceState,
+      activation.backupRecoveryImplications,
+      activation.knownLimitation,
+    ]) assert.ok(value.trim(), `${activation.code}: activation field must not be blank`);
+
+    assert.ok(activation.allowedRoles.length, `${activation.code}: allowed roles are required`);
+    assert.ok(activation.apiEndpoints.length, `${activation.code}: API boundary must be recorded`);
+    assert.ok(activation.databaseTablesViews.length, `${activation.code}: database tables/views boundary must be recorded`);
+    assert.ok(activation.integrationDependencies.length, `${activation.code}: integration dependency must be recorded`);
+    assert.ok(activation.auditRequirements.length, `${activation.code}: audit requirements are required`);
+    assert.ok(activation.currentTests.length, `${activation.code}: current tests are required`);
+    assert.ok(activation.missingTests.length, `${activation.code}: missing production/staging tests must be explicit`);
+    assert.ok(activation.monitoring.length, `${activation.code}: monitoring requirements are required`);
+    assert.equal(activation.businessOwnerAcceptance, "NOT ACCEPTED FOR PRODUCTION");
+    assert.deepEqual(activation.productionEvidence, []);
+    assert.ok(moduleFinalReleaseStates.includes(activation.finalReleaseState));
+
+    const source = portalModules.find((module) => module.code === activation.code);
+    assert.ok(source, `${activation.code}: source catalogue record missing`);
+    assert.equal(activation.readState, source.readCapability);
+    assert.equal(activation.writeState, source.writeCapability);
+    assert.equal(activation.allowedRoles.join("|"), source.authorisedRoles.join("|"));
+    assert.equal(activation.currentTests.join("|"), source.testCoverage.join("|"));
+
+    const [readEndpoint] = activation.apiEndpoints;
+    assert.ok(readEndpoint, `${activation.code}: governed read endpoint missing`);
+    assert.equal(readEndpoint.startsWith(`GET /api/enterprise/modules/${activation.code}`), true);
+
+    if (activation.finalReleaseState === "HIDDEN FOR SAFETY") {
+      assert.equal(source.visibleInNavigation, false);
+      assert.equal(source.releaseClassification, "hidden_until_dependency_exists");
+      assert.match(readEndpoint, /fail-closed/iu);
+    } else {
+      assert.equal(activation.finalReleaseState, "DEPENDENCY-BLOCKED");
+      assert.equal(source.visibleInNavigation, true);
+      assert.equal(source.releaseClassification, "informational_only");
+    }
+  }
+});
+
+test("write-capable module activation records name only the implemented controlled endpoints", () => {
+  const writes = new Map(portalModuleActivationMatrix
+    .filter((module) => module.writeState !== "none_read_only")
+    .map((module) => [module.code, module.apiEndpoints.filter((endpoint) => endpoint.startsWith("POST "))]));
+
+  assert.deepEqual(Object.fromEntries(writes), {
+    "customer.returns": ["POST /api/enterprise/customer/returns"],
+    "customer.quality-complaints": ["POST /api/enterprise/customer/quality-complaints"],
+    "customer.support": ["POST /api/enterprise/customer/support"],
+    "employee.products": ["POST /api/enterprise/products/{productId}/status"],
+    "employee.administration": ["POST /api/enterprise/workflows/{workflowId}/advance"],
+  });
 });
