@@ -7,7 +7,7 @@ import { capabilities } from "@/data/site";
 
 export const metadata: Metadata = {
   title: "Pharmaceutical Consulting Expertise",
-  description: "Explore NIT advisory capabilities across pharma strategy, portfolio, market entry, product development, technology transfer, operations, launch, digital and partnerships.",
+  description: "Explore NIT advisory capabilities across pharma strategy, portfolio, market entry, development, operations, digital and partnerships.",
   alternates: { canonical: "/expertise/" },
 };
 
@@ -17,18 +17,16 @@ export default function ExpertisePage() {
       <PageHero
         eyebrow="Expertise"
         index="01"
-        title={<>Pharmaceutical decisions require <em>connected expertise.</em></>}
-        intro="Our work connects strategic, technical, operational, commercial, and market realities. The objective is not a longer list of recommendations. It is a better decision and a controllable route to execution."
+        title={<>Connected expertise for <em>better decisions.</em></>}
+        intro="Strategy, technical reality, operations and markets—considered together."
       />
 
       <section className="section section--paper expertise-intro">
         <div className="shell">
           <Reveal className="statement-grid">
             <p className="eyebrow">How we create value</p>
-            <h2>We bring the functions into the same room—before their assumptions collide in execution.</h2>
-            <p>
-              A portfolio decision changes development priorities. A market choice changes evidence, manufacturing, pack, price, partner, and supply requirements. A technology decision changes data, governance, and operating behaviour. Our role is to make those connections visible early.
-            </p>
+            <h2>Connect the functions before assumptions become execution problems.</h2>
+            <p>Define the decision, expose dependencies and build a route teams can control.</p>
           </Reveal>
         </div>
       </section>
@@ -46,14 +44,13 @@ export default function ExpertisePage() {
                   </div>
                 </div>
                 <div className="expertise-item__body">
-                  <p className="expertise-item__statement">{capability.statement}</p>
                   <div>
-                    <h3>Questions we help answer</h3>
-                    <ul>{capability.questions.map((question) => <li key={question}>{question}</li>)}</ul>
+                    <h3>Key questions</h3>
+                    <ul>{capability.questions.slice(0, 2).map((question) => <li key={question}>{question}</li>)}</ul>
                   </div>
                   <div>
                     <h3>Typical outputs</h3>
-                    <ul>{capability.deliverables.map((deliverable) => <li key={deliverable}>{deliverable}</li>)}</ul>
+                    <ul>{capability.deliverables.slice(0, 3).map((deliverable) => <li key={deliverable}>{deliverable}</li>)}</ul>
                   </div>
                 </div>
               </Reveal>
@@ -66,12 +63,10 @@ export default function ExpertisePage() {
         <div className="shell engagement-callout__grid">
           <Reveal>
             <p className="eyebrow eyebrow--light">Engagements</p>
-            <h2>Focused enough for one decision. Integrated enough for the system around it.</h2>
+            <h2>Focused on the decision. Integrated around it.</h2>
           </Reveal>
           <Reveal delay={0.08}>
-            <p>
-              Engagements may begin with a market, product, partner, manufacturing, portfolio, launch, or operating-model question. We define the scope around the decision and bring in qualified specialists where formal regulated, legal, laboratory, engineering, clinical, or other expert work is required.
-            </p>
+            <p>Scope starts with the decision. Qualified specialists support formal regulated, legal, laboratory, engineering or clinical work where required.</p>
             <Link className="button button--light" href="/contact">Discuss an engagement <ArrowRight /></Link>
           </Reveal>
         </div>
