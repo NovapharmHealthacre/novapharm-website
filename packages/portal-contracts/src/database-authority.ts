@@ -1,0 +1,77 @@
+import type { GovernedPortalModuleCode } from "./activation";
+
+const executiveSharedSnapshotTables = [
+  "customers",
+  "products",
+  "orders",
+  "invoices",
+  "supplier_invoices",
+  "quality_complaints",
+  "regulatory_cases",
+  "crm_opportunities",
+  "integration_events",
+] as const;
+
+export const currentRuntimeDatabaseAuthorityByModule = Object.freeze({
+  "customer.dashboard": ["customers", "organizations", "orders", "invoices", "quality_complaints"],
+  "customer.account": ["customers", "organizations", "customer_contacts", "organization_addresses"],
+  "customer.orders": ["customers", "organizations", "orders", "order_lines"],
+  "customer.invoices": ["customers", "organizations", "invoices", "orders", "payments", "credit_notes"],
+  "customer.statements": ["customers", "organizations", "customer_statements", "statement_lines"],
+  "customer.products": ["customers", "organizations", "customer_price_lists", "price_lists", "price_list_items", "products", "product_variants", "product_families", "product_media", "inventory_balances", "batches"],
+  "customer.price-lists": ["customers", "organizations", "customer_price_lists", "price_lists", "price_list_items", "products", "product_variants", "product_families", "product_media", "inventory_balances", "batches"],
+  "customer.stock-availability": ["customers", "organizations", "customer_price_lists", "price_lists", "price_list_items", "products", "product_variants", "product_families", "product_media", "inventory_balances", "batches"],
+  "customer.order-tracking": ["customers", "organizations", "orders", "shipments", "delivery_events"],
+  "customer.delivery-tracking": ["customers", "organizations", "orders", "shipments", "delivery_events"],
+  "customer.returns": ["customers", "organizations", "returns", "orders", "return_lines", "credit_notes", "order_lines", "products"],
+  "customer.quality-complaints": ["customers", "organizations", "quality_complaints", "products", "batches", "orders", "order_lines"],
+  "customer.documents": ["customers", "organizations", "documents", "document_links", "orders"],
+  "customer.support": ["customers", "organizations", "support_tickets"],
+  "customer.regulatory-documents": ["customers", "organizations", "documents", "document_links", "orders"],
+  "customer.downloads": ["customers", "organizations", "documents", "document_links", "orders"],
+  "customer.analytics": ["customers", "organizations", "orders", "invoices", "returns", "quality_complaints", "order_lines", "products"],
+  "customer.settings": ["customers", "organizations"],
+
+  "employee.dashboard": ["customers", "products", "orders", "purchase_orders", "quality_complaints", "regulatory_cases", "workflow_instances", "integration_events"],
+  "employee.customers": ["customers", "organizations", "orders", "quality_complaints"],
+  "employee.suppliers": ["suppliers", "organizations", "product_supplier_links", "purchase_orders"],
+  "employee.products": ["products", "product_variants", "product_families", "product_composition_items", "product_media", "batches"],
+  "employee.orders": ["orders", "customers", "organizations", "order_lines"],
+  "employee.warehouse": ["inventory_balances", "inventory_locations", "products", "batches", "inventory_movements"],
+  "employee.purchasing": ["purchase_orders", "suppliers", "organizations", "purchase_order_lines", "goods_receipts", "goods_receipt_lines", "supplier_invoices", "invoice_matches"],
+  "employee.finance": ["journal_entries", "journal_lines", "invoices", "customers", "organizations", "supplier_invoices", "suppliers"],
+  "employee.quality": ["quality_complaints", "products", "batches", "quality_deviations", "capa_records"],
+  "employee.regulatory": ["regulatory_cases", "products", "regulatory_milestones"],
+  "employee.crm": ["crm_opportunities", "leads", "organizations"],
+  "employee.reports": ["crm_opportunities", "customers", "orders", "purchase_orders", "inventory_balances", "journal_entries", "quality_complaints", "regulatory_cases", "security_events", "integration_events"],
+  "employee.administration": ["workflow_instances", "role_permissions"],
+
+  "executive.command-centre": ["workflow_instances", "integration_events", "quality_complaints", "regulatory_cases"],
+  "executive.ceo-dashboard": ["customers", "orders", "invoices", "crm_opportunities", "workflow_instances", "quality_complaints", "regulatory_cases"],
+  "executive.sales-intelligence": [...executiveSharedSnapshotTables],
+  "executive.customer-analytics": [...executiveSharedSnapshotTables, "organizations"],
+  "executive.product-master": [...executiveSharedSnapshotTables, "product_families", "product_variants", "batches"],
+  "executive.nhs-data": [],
+  "executive.plpi": [],
+  "executive.pharmacovigilance": [],
+  "executive.sourcing": [...executiveSharedSnapshotTables, "suppliers", "organizations", "product_supplier_links", "purchase_orders"],
+  "executive.tenders": [],
+  "executive.warehouse": [...executiveSharedSnapshotTables, "shipments"],
+  "executive.service-levels": [...executiveSharedSnapshotTables, "shipments"],
+  "executive.finance": [...executiveSharedSnapshotTables, "journal_entries", "journal_lines"],
+  "executive.capital": [],
+  "executive.microsoft-365": [],
+  "executive.documents": [...executiveSharedSnapshotTables, "documents"],
+  "executive.ai-technology": [],
+  "executive.traceability": [...executiveSharedSnapshotTables, "inventory_movements", "batches"],
+
+  "admin.dashboard": ["workflow_instances", "integration_events", "outbox_messages", "security_events"],
+  "admin.local-review": ["schema_migrations", "catalogue_imports", "workflow_instances"],
+  "admin.users": ["users", "auth_user_scopes", "auth_sessions", "security_events"],
+  "admin.content": ["products", "product_variants", "catalogue_imports"],
+  "admin.analytics": ["domain_events", "security_events", "integration_events", "outbox_messages", "schema_migrations"],
+} as const satisfies Record<GovernedPortalModuleCode, readonly string[]>);
+
+export const noCurrentRuntimeDatabaseAuthorityReason = "HIDDEN FOR SAFETY — the module is rejected before snapshot construction, so no current runtime database table/view authority is exercised. Any future source/table authority requires explicit dependency approval and activation review.";
+
+export const executiveSharedSnapshotDatabaseAuthority = executiveSharedSnapshotTables;
