@@ -45,7 +45,8 @@ assert.equal(register.sections[121].state, "ACTIVE_DIRECTIVE");
 const expectedAmendmentIds = ["0A", "0B", "3A", "3B", "3C", "3D", "3E", "3F", "3G", "3H", "3I", "3J", "3K"];
 assert.equal(amendments.metadata.current_release_state, register.metadata.current_release_state);
 assert.equal(amendments.metadata.production_complete, false);
-assert.match(amendments.metadata.reconciled_against_main_sha, /^[a-f0-9]{40}$/u);
+assert.match(amendments.metadata.reconciliation_basis, /exact repository checkout.*requirements:validate/iu, "Binding amendment currency must be proven by the checkout under CI rather than a self-staling SHA field");
+assert.equal(Object.hasOwn(amendments.metadata, "reconciled_against_main_sha"), false, "Binding amendment metadata must not make a static SHA claim of perpetual currency");
 assert.deepEqual(amendments.amendments.map((entry) => entry.id), expectedAmendmentIds, "All binding 0A/0B and 3A-3K amendments must remain explicitly governed in source order");
 
 for (const amendment of amendments.amendments) {
@@ -73,6 +74,7 @@ assert.match(byAmendmentId.get("3K")?.remaining_gate ?? "", /staging.*identity.*
 console.log(JSON.stringify({
   governedSections: register.sections.length,
   bindingAmendments: amendments.amendments.length,
+  reconciliation: "current CI checkout",
   currentReleaseState: register.metadata.current_release_state,
   productionComplete: register.metadata.production_complete,
   states: Object.fromEntries([...allowedStates].map((state) => [state, register.sections.filter((section) => section.state === state).length])),
