@@ -53,13 +53,14 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
         "apps/founder/app/layout.tsx",
         "apps/founder/app/manifest.ts",
         "apps/founder/package.json",
-        "apps/founder/proxy.ts"
+        "apps/founder/proxy.ts",
+        "docs/application-media-provenance.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -486,8 +487,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 7,
-      "referenceCount": 7,
+      "usageCount": 8,
+      "referenceCount": 8,
       "usageFiles": [
         "apps/founder/content/articles/choosing-a-cmo-for-regulated-markets.md",
         "apps/founder/content/articles/minimum-batch-size-product-future.md",
@@ -495,7 +496,8 @@
         "apps/founder/content/articles/route-to-market-before-launch.md",
         "apps/founder/content/articles/supply-resilience-before-first-purchase-order.md",
         "apps/founder/content/articles/technology-transfer-before-formula-moves.md",
-        "apps/founder/content/articles/why-i-chose-to-build-in-pharmaceuticals.md"
+        "apps/founder/content/articles/why-i-chose-to-build-in-pharmaceuticals.md",
+        "docs/application-media-provenance.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -531,10 +533,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 2,
       "usageFiles": [
-        "apps/founder/content/articles/how-to-win-when-odds-are-against-you.md"
+        "apps/founder/content/articles/how-to-win-when-odds-are-against-you.md",
+        "docs/application-media-provenance.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -570,10 +573,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 2,
       "usageFiles": [
-        "apps/founder/content/articles/regulated-industries.md"
+        "apps/founder/content/articles/regulated-industries.md",
+        "docs/application-media-provenance.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -609,10 +613,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 2,
       "usageFiles": [
-        "apps/founder/content/articles/what-parallel-import-actually-means.md"
+        "apps/founder/content/articles/what-parallel-import-actually-means.md",
+        "docs/application-media-provenance.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -648,9 +653,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 0,
-      "referenceCount": 0,
-      "usageFiles": [],
+      "usageCount": 1,
+      "referenceCount": 1,
+      "usageFiles": [
+        "docs/application-media-provenance.json"
+      ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
@@ -685,14 +692,15 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 5,
-      "referenceCount": 7,
+      "usageCount": 6,
+      "referenceCount": 8,
       "usageFiles": [
         "apps/technology/app/layout.tsx",
         "apps/technology/app/manifest.ts",
         "apps/technology/components/brand.tsx",
         "apps/technology/lib/seo.ts",
-        "apps/technology/package.json"
+        "apps/technology/package.json",
+        "docs/application-media-provenance.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -10498,9 +10506,10 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 2,
       "usageFiles": [
+        "docs/application-media-provenance.json",
         "scripts/build-public-pages.mjs"
       ],
       "exactDuplicateGroup": null,
