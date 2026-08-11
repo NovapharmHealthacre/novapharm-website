@@ -44,9 +44,9 @@ export default function AccountApplicationPage() {
             title="Approval before access."
             intro="Public interest is separated from regulated due diligence and portal identity."
           />
-          <ol className="journey-track account-journey">
+          <ol className="journey-track account-journey" style={{ background: "transparent" }}>
             {steps.map((step, index) => (
-              <li key={step}><span>{String(index + 1).padStart(2, "0")}</span><strong>{step}</strong></li>
+              <li key={step} style={{ border: "1px solid var(--line)" }}><span>{String(index + 1).padStart(2, "0")}</span><strong>{step}</strong></li>
             ))}
           </ol>
           <aside className="status-notice">
