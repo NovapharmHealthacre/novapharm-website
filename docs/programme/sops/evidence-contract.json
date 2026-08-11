@@ -1,0 +1,66 @@
+{
+  "metadata": {
+    "authority": "NovaPharm Section 70 SOP evidence provenance contract",
+    "purpose": "Define the minimum machine-verifiable evidence required before an SOP may be promoted from repository-executable status to rehearsed managed staging or production accepted.",
+    "currentReleaseState": "R1 PUBLIC RELEASE VERIFIED",
+    "autoPromotionAllowed": false,
+    "productionEvidenceMayBeFabricated": false
+  },
+  "rehearsalEvidence": {
+    "environment": "managed-staging",
+    "requiredFields": [
+      "evidenceId",
+      "environment",
+      "target",
+      "sourceSha",
+      "performedAt",
+      "performedBy",
+      "outcome",
+      "evidenceReferences",
+      "rollbackDisposition",
+      "recoveryDisposition",
+      "notes"
+    ],
+    "allowedOutcomes": ["PASS", "FAIL", "ABORTED"],
+    "allowedDispositions": ["VERIFIED", "NOT_APPLICABLE", "FAILED"],
+    "promotionOutcome": "PASS",
+    "sourceShaPattern": "^[0-9a-f]{40}$",
+    "minimumEvidenceReferences": 1,
+    "rule": "REHEARSED_MANAGED_STAGING requires at least one managed-staging PASS record for the SOP with a 40-character source SHA, normalized UTC timestamp, named operator, target, evidence references, and no failed rollback or recovery disposition."
+  },
+  "productionAcceptanceEvidence": {
+    "environment": "production",
+    "requiredFields": [
+      "evidenceId",
+      "environment",
+      "target",
+      "sourceSha",
+      "acceptedAt",
+      "acceptedBy",
+      "outcome",
+      "evidenceReferences",
+      "rollbackDisposition",
+      "recoveryDisposition",
+      "releaseState",
+      "notes"
+    ],
+    "allowedOutcomes": ["PASS", "REJECTED"],
+    "allowedDispositions": ["VERIFIED", "NOT_APPLICABLE", "FAILED"],
+    "allowedReleaseStates": ["R5 PRODUCTION LIVE — MONITORING", "R6 PRODUCTION ACCEPTED"],
+    "promotionOutcome": "PASS",
+    "requiredPromotionReleaseState": "R6 PRODUCTION ACCEPTED",
+    "sourceShaPattern": "^[0-9a-f]{40}$",
+    "minimumEvidenceReferences": 1,
+    "rule": "PRODUCTION_ACCEPTED requires at least one production PASS record bound to R6 PRODUCTION ACCEPTED with a 40-character source SHA, normalized UTC timestamp, named acceptor, target, evidence references, and no failed rollback or recovery disposition."
+  },
+  "referencePolicy": {
+    "allowed": ["repository-relative path", "https URL"],
+    "localReferencesMustExist": true,
+    "emptyOrPlaceholderReferencesAllowed": false
+  },
+  "promotionRules": {
+    "REHEARSED_MANAGED_STAGING": "Structured rehearsal evidence is mandatory and must contain a qualifying PASS record.",
+    "PRODUCTION_ACCEPTED": "Structured rehearsal evidence and structured production acceptance evidence are mandatory; production evidence must contain a qualifying R6 PASS record.",
+    "allOtherStatuses": "Rehearsal and production acceptance arrays must remain empty so repository presence cannot be mistaken for environment acceptance."
+  }
+}
