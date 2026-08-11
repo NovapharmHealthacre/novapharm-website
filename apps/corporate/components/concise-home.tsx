@@ -1,29 +1,42 @@
 import { ArrowRight, Check, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { sourcingPillars } from "@/data/site";
 import { FinalCta } from "./ui";
 
-const principles = [
-  "Qualified sourcing",
-  "Regulatory discipline",
-  "Quality-led decisions",
+const principles = ["Qualified sourcing", "Regulatory discipline", "Quality-led decisions"];
+
+const sourcingRoutes = [
+  {
+    number: "01",
+    title: "Direct GMP partnerships",
+    text: "Qualified manufacturing relationships with controlled technical and quality review.",
+  },
+  {
+    number: "02",
+    title: "Product-specific PLPI",
+    text: "Evidence-led assessment of appropriate parallel-import opportunities and obligations.",
+  },
+  {
+    number: "03",
+    title: "European sourcing",
+    text: "Diversified authorised supply routes with licence, quality and continuity checks.",
+  },
 ];
 
 const focusAreas = [
   {
     title: "Oncology & specialty",
-    text: "Focused assessment of products where continuity, formulation and evidence need closer control.",
+    text: "Closer control of formulation, continuity and evidence.",
     href: "/oncology/",
   },
   {
     title: "Regulatory & quality",
-    text: "Authorisation, QMS, vendor oversight and product-specific responsibilities before commercial release.",
+    text: "Authorisation, QMS and vendor oversight before release.",
     href: "/regulatory-services/",
   },
   {
     title: "Technology & traceability",
-    text: "A governed digital operating layer for accounts, documents, evidence and decision history.",
+    text: "Governed accounts, documents, evidence and decision history.",
     href: "/technology/",
   },
 ];
@@ -36,7 +49,7 @@ export function ConciseHomePage() {
           <div className="pharma-home-copy">
             <p className="pharma-kicker">NovaPharm Healthcare</p>
             <h1>Pharmaceutical supply, built around evidence.</h1>
-            <p className="pharma-home-intro">A compliance-first B2B model connecting qualified sourcing, regulatory readiness and controlled distribution planning.</p>
+            <p className="pharma-home-intro">Qualified sourcing, regulatory readiness and controlled B2B distribution planning.</p>
             <div className="action-row">
               <Link className="button button-primary" href="/about/">Explore NovaPharm <ArrowRight aria-hidden="true" size={17} /></Link>
               <Link className="button button-quiet" href="/partner-with-us/">Partner with us</Link>
@@ -59,11 +72,11 @@ export function ConciseHomePage() {
         <div className="shell">
           <div className="pharma-section-heading">
             <p className="pharma-kicker">Sourcing strategy</p>
-            <h2>Three routes. One qualification standard.</h2>
-            <p>Diversification matters only when every route meets the same evidence threshold.</p>
+            <h2>Three routes. One standard.</h2>
+            <p>Every route must meet the same evidence threshold.</p>
           </div>
           <div className="pharma-pillar-grid">
-            {sourcingPillars.map((pillar) => (
+            {sourcingRoutes.map((pillar) => (
               <article key={pillar.number}>
                 <span>{pillar.number}</span>
                 <h3>{pillar.title}</h3>
@@ -82,7 +95,7 @@ export function ConciseHomePage() {
           <div className="pharma-focus-copy">
             <p className="pharma-kicker">Controlled growth</p>
             <h2>Clarity before complexity.</h2>
-            <p>NovaPharm separates what is operational, what is being built and what still requires external approval.</p>
+            <p>Operational, in development and externally gated remain visibly separate.</p>
             <Link className="text-link" href="/trust-centre/">Review the evidence boundary <ArrowRight aria-hidden="true" size={16} /></Link>
           </div>
         </div>
