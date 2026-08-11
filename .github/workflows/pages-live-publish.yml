@@ -6,12 +6,18 @@ on:
   pull_request:
     paths:
       - .github/workflows/pages-live-publish.yml
+      - assets/css/apple-pharma-public.css
       - portal/index.html
       - contact/index.html
       - account-application/index.html
+      - scripts/apply-pages-presentation-parity.mjs
+      - scripts/build-css-bundle.mjs
+      - scripts/build-site.mjs
       - scripts/check-links.mjs
       - scripts/stage-pages-artifact.mjs
       - scripts/test-static-public-source-safety.mjs
+      - scripts/validate-module-media-sanity.mjs
+      - scripts/validate-visual-refinement.mjs
       - package.json
   workflow_dispatch:
 
@@ -57,6 +63,8 @@ jobs:
           npm run validate:domain
           node scripts/stage-pages-artifact.mjs _site
           node scripts/check-links.mjs _site
+          grep -Fq 'Pharmaceutical supply, built around evidence.' _site/index.html
+          grep -Fq -- '--apple-pharma-public-contract: 1' _site/assets/css/novapharm.bundle.css
           test "$(tr -d '\r\n' < _site/CNAME)" = "novapharmhealthcare.com"
 
   build:
@@ -100,6 +108,8 @@ jobs:
           npm run validate:domain
           node scripts/stage-pages-artifact.mjs _site
           node scripts/check-links.mjs _site
+          grep -Fq 'Pharmaceutical supply, built around evidence.' _site/index.html
+          grep -Fq -- '--apple-pharma-public-contract: 1' _site/assets/css/novapharm.bundle.css
           test "$(tr -d '\r\n' < _site/CNAME)" = "novapharmhealthcare.com"
 
       - name: Configure Pages with an administration token when available
@@ -179,8 +189,12 @@ jobs:
               "${DEPLOYED_URL}?${cache_key}-${attempt}" > /tmp/deployed-home.html || true
             curl --fail --silent --show-error --location \
               -H 'Cache-Control: no-cache, no-store, max-age=0' \
+              "${DEPLOYED_URL%/}/assets/css/novapharm.bundle.css?${cache_key}-${attempt}" > /tmp/deployed-bundle.css || true
+            curl --fail --silent --show-error --location \
+              -H 'Cache-Control: no-cache, no-store, max-age=0' \
               "${DEPLOYED_URL%/}/portal/?${cache_key}-${attempt}" > /tmp/deployed-portal.html || true
-            if grep -Fq 'Building a more resilient pharmaceutical supply network.' /tmp/deployed-home.html \
+            if grep -Fq 'Pharmaceutical supply, built around evidence.' /tmp/deployed-home.html \
+              && grep -Fq -- '--apple-pharma-public-contract: 1' /tmp/deployed-bundle.css \
               && ! grep -Fq 'data-ai-search-open' /tmp/deployed-home.html \
               && ! grep -Fq 'Search &amp; Ask NovaPharm' /tmp/deployed-home.html \
               && grep -Fq 'This public website never asks for a portal username, password or confidential company record' /tmp/deployed-portal.html \
@@ -206,6 +220,9 @@ jobs:
               "$LIVE_ORIGIN/?${cache_key}-${attempt}" > /tmp/live-home.html || true
             curl --fail --silent --show-error --location \
               -H 'Cache-Control: no-cache, no-store, max-age=0' \
+              "$LIVE_ORIGIN/assets/css/novapharm.bundle.css?${cache_key}-${attempt}" > /tmp/live-bundle.css || true
+            curl --fail --silent --show-error --location \
+              -H 'Cache-Control: no-cache, no-store, max-age=0' \
               "$LIVE_ORIGIN/cro/?${cache_key}-${attempt}" > /tmp/live-cro.html || true
             curl --fail --silent --show-error --location \
               -H 'Cache-Control: no-cache, no-store, max-age=0' \
@@ -222,7 +239,8 @@ jobs:
             search_status=$(curl --silent --output /dev/null --write-out '%{http_code}' --location "$LIVE_ORIGIN/search/?${cache_key}-${attempt}" || true)
             ai_status=$(curl --silent --output /dev/null --write-out '%{http_code}' --location "$LIVE_ORIGIN/technology/ai-governance/?${cache_key}-${attempt}" || true)
 
-            if grep -Fq 'Building a more resilient pharmaceutical supply network.' /tmp/live-home.html \
+            if grep -Fq 'Pharmaceutical supply, built around evidence.' /tmp/live-home.html \
+              && grep -Fq -- '--apple-pharma-public-contract: 1' /tmp/live-bundle.css \
               && ! grep -Fq 'data-ai-search-open' /tmp/live-home.html \
               && ! grep -Fq 'Search &amp; Ask NovaPharm' /tmp/live-home.html \
               && grep -Fq 'Prabhakar Vitthal Lahare' /tmp/live-cro.html \

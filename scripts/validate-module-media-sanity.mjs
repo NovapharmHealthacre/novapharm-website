@@ -103,11 +103,13 @@ for (const module of config.modules) {
   }
   const html = read(module.path);
   if (module.id === "home") {
-    assert.match(html, /hero-cinematic-layer/, "homepage cinematic hero must remain present");
-    assert.match(html, /hero-uk-marker/, "homepage must identify the United Kingdom home market");
-    assert.match(html, /sourcing-route-grid/, "homepage must use the three-route sourcing composition");
-    assert.match(html, /partner-pathway-grid/, "homepage must use four distinct partner pathways");
-    assert.match(html, /data-media-asset="regulatory-batch-integrity"/, "homepage batch-integrity media must be photographic");
+    assert.match(html, /pharma-home-hero/, "homepage concise pharma hero must remain present");
+    assert.match(html, /pharma-principles-grid/, "homepage must keep the three operating-principle strip");
+    assert.match(html, /pharma-pillar-grid/, "homepage must use the three-route sourcing composition");
+    assert.match(html, /pharma-focus-grid/, "homepage must retain three focused specialist pathways");
+    assert.match(html, /assets\/media\/stories\/regulatory-batch-integrity/, "homepage evidence boundary media must be photographic");
+    assert.doesNotMatch(html, /hero-cinematic-layer/, "homepage must not regress to the removed cinematic decoration");
+    assert.doesNotMatch(html, /partner-pathway-grid/, "homepage must not regress to the duplicate partner-pathway block");
     continue;
   }
   assert.match(html, new RegExp(`data-module-media="${module.id}"`), `${module.id} must have a module-specific hero`);
