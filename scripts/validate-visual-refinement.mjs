@@ -31,21 +31,25 @@ const vishal = read("leadership/vishal-chakravarty/index.html");
 const prabhakar = read("leadership/prabhakar-lahare/index.html");
 const girish = read("leadership/girish-achliya/index.html");
 const css = read("assets/css/visual-refinement.css");
+const publicCss = read("assets/css/apple-pharma-public.css");
+const bundleCss = read("assets/css/novapharm.bundle.css");
 const moduleCss = read("assets/css/module-media-sanity.css");
 const javascript = read("assets/js/visual-refinement.js");
 const build = read("scripts/build-site.mjs");
 
 [
-  [index, "hero-cinematic-layer", "Homepage cinematic hero"],
-  [index, "data-motion-toggle", "Homepage motion control"],
-  [index, "regulatory-roadmap", "Homepage regulatory roadmap"],
-  [index, "Commercial release only after applicable authorisation", "Roadmap seventh release gate"],
-  [index, "batch-integrity-feature", "Homepage batch-integrity photo feature"],
-  [index, '<figure class="batch-integrity-media">', "Semantic batch-integrity figure"],
-  [index, "/assets/media/stories/regulatory-batch-integrity.jpg", "Homepage batch-integrity photograph"],
-  [index, "partner-ecosystem-directed", "Homepage tailored partner ecosystem"],
-  [index, "partner-pathway-grid", "Homepage partner pathway composition"],
-  [index, "Photography is representative", "Homepage partnership disclosure"],
+  [index, "pharma-home-hero", "Homepage concise Apple-pharma hero"],
+  [index, "Pharmaceutical supply, built around evidence.", "Homepage concise primary message"],
+  [index, "pharma-principles-grid", "Homepage operating-principles strip"],
+  [index, "pharma-pillar-grid", "Homepage three-route sourcing architecture"],
+  [index, "Three routes. One standard.", "Homepage sourcing hierarchy"],
+  [index, "/assets/media/stories/regulatory-batch-integrity.jpg", "Homepage evidence-boundary photograph"],
+  [index, "Clarity before complexity.", "Homepage controlled-growth message"],
+  [index, "pharma-focus-grid", "Homepage focused specialist pathways"],
+  [index, "Specialist work. Less noise.", "Homepage decluttering contract"],
+  [index, "Regulated wholesale supply has not commenced.", "Homepage regulated-wholesale boundary"],
+  [index, "Owner-attested logistics and warehousing arrangements with Polar Speed are being incorporated into NovaPharm's operating model", "Homepage owner-attested logistics boundary"],
+  [index, "The relationship does not transfer Polar Speed's authorisations or certificates to NovaPharm", "Homepage authorisation-transfer boundary"],
   [services, "service-visual-story", "Services visual introduction"],
   [services, '<figure class="service-visual-media">', "Semantic Services visual figure"],
   [services, "service-evidence-grid", "Services evidence architecture"],
@@ -66,15 +70,26 @@ const build = read("scripts/build-site.mjs");
   [prabhakar, "/assets/prabhakarvitthallahare.jpeg", "Prabhakar profile portrait"],
   [girish, "/assets/girishshantilalachliya.jpeg", "Girish profile portrait"],
   [css, "@media (prefers-reduced-motion: reduce)", "Reduced-motion support"],
+  [publicCss, "--apple-pharma-public-contract: 1", "Public Apple-pharma source contract"],
+  [publicCss, "-apple-system", "Native system-font strategy"],
+  [publicCss, "@media (prefers-reduced-motion: reduce)", "Public reduced-motion support"],
+  [bundleCss, "--apple-pharma-public-contract: 1", "Bundled public Apple-pharma contract"],
   [moduleCss, "page-hero-cinematic", "Module-specific cinematic page heroes"],
   [moduleCss, "modulePhotoDrift", "Module-specific photo motion"],
   [javascript, "data-motion-toggle", "Accessible motion controller"],
   [javascript, "IntersectionObserver", "Progressive visual reveal"],
   [build, 'import("./apply-visual-refinement.mjs")', "Deterministic visual build integration"],
   [build, 'import("./apply-module-media-sanity.mjs")', "Module media build integration"],
-  [build, 'import("./normalise-visual-semantics.mjs")', "Semantic visual build integration"]
+  [build, 'import("./normalise-visual-semantics.mjs")', "Semantic visual build integration"],
+  [build, 'import("./apply-pages-presentation-parity.mjs")', "Concise public presentation integration"]
 ].forEach(([content, text, label]) => requireText(content, text, label));
 
+forbidText(index, "hero-cinematic-layer", "Homepage legacy cinematic layer");
+forbidText(index, "data-motion-toggle", "Homepage unnecessary hero motion control");
+forbidText(index, "regulatory-roadmap", "Homepage legacy seven-stage roadmap");
+forbidText(index, "batch-integrity-feature", "Homepage duplicate batch-integrity feature");
+forbidText(index, "partner-ecosystem-directed", "Homepage duplicate partner-ecosystem block");
+forbidText(index, "partner-pathway-grid", "Homepage duplicate partner-pathway block");
 forbidText(index, "/assets/media/editorial/quality-batch-integrity.svg", "Homepage");
 forbidText(services, "/assets/media/editorial/quality-batch-integrity.svg", "Services");
 forbidText(regulatory, "/assets/media/insights/gdp-qms-foundations.svg", "Regulatory");
@@ -86,11 +101,11 @@ forbidText(regulatory, "/assets/media/products/", "Regulatory product-category p
 forbidText(partners, "/assets/media/products/", "Partners product-category photography leak");
 forbidText(technology, "/assets/media/products/", "Technology product-category photography leak");
 
-const roadmapItems = (index.match(/class="roadmap-number"/g) || []).length;
-if (roadmapItems !== 7) failures.push(`Regulatory roadmap: expected 7 stages, found ${roadmapItems}.`);
+const pillarCards = (index.match(/<div class="pharma-pillar-grid">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) || []).length;
+if (pillarCards !== 3) failures.push(`Homepage sourcing routes: expected 3 purposeful routes, found ${pillarCards}.`);
 
-const pathwayCards = (index.match(/<div class="partner-pathway-grid">[\s\S]*?<\/div><p class="partner-ecosystem-disclosure">/)?.[0].match(/class="partner-pathway-card"/g) || []).length;
-if (pathwayCards !== 4) failures.push(`Homepage partner pathways: expected 4 tailored pathways, found ${pathwayCards}.`);
+const focusCards = (index.match(/<div class="pharma-focus-grid">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) || []).length;
+if (focusCards !== 3) failures.push(`Homepage core focus: expected 3 specialist pathways, found ${focusCards}.`);
 
 const fullPartnerCards = (partners.match(/<div class="partner-pathway-grid partner-module-pathway-grid">[\s\S]*?<\/div><\/div><\/section>/)?.[0].match(/class="partner-pathway-card"/g) || []).length;
 if (fullPartnerCards !== 4) failures.push(`Partner page ecosystem: expected 4 distinct image-led pathways, found ${fullPartnerCards}.`);
@@ -110,7 +125,7 @@ for (const [path, html] of [
   }
 }
 
-if (index.includes("<video")) failures.push("Homepage hero: unexpected video added; the approved motion-enhanced still-image path should remain lightweight.");
+if (index.includes("<video")) failures.push("Homepage hero: unexpected video added; the approved high-quality still-image path should remain lightweight.");
 if (!css.includes("@media (max-width: 760px)")) failures.push("Responsive visual refinement: mobile rules are missing.");
 
 if (failures.length) {
@@ -118,4 +133,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Visual refinement validation passed: cinematic homepage, tailored module photography, seven-stage roadmap, leadership portraits, responsive and reduced-motion controls verified.");
+console.log("Visual refinement validation passed: concise white-led homepage, purposeful sourcing/focus hierarchy, regulated boundaries, system typography, responsive and reduced-motion controls verified.");
