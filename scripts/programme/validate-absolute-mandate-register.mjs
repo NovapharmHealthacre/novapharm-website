@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 const register = JSON.parse(await readFile(resolve("docs/programme/absolute-mandate-register.json"), "utf8"));
+const amendments = JSON.parse(await readFile(resolve("docs/programme/binding-mandate-amendments.json"), "utf8"));
 const allowedStates = new Set(Object.keys(register.state_definitions));
 
 assert.equal(register.metadata.source_sections, "0-121");
@@ -41,8 +42,37 @@ assert.equal(register.sections[111].state, "OWNER_GATED_FINANCIAL_CONTRACTUAL");
 assert.equal(register.sections[112].state, "OWNER_GATED_LEGAL_REGULATORY");
 assert.equal(register.sections[121].state, "ACTIVE_DIRECTIVE");
 
+const expectedAmendmentIds = ["0A", "0B", "3A", "3B", "3C", "3D", "3E", "3F", "3G", "3H", "3I", "3J", "3K"];
+assert.equal(amendments.metadata.current_release_state, register.metadata.current_release_state);
+assert.equal(amendments.metadata.production_complete, false);
+assert.match(amendments.metadata.reconciled_against_main_sha, /^[a-f0-9]{40}$/u);
+assert.deepEqual(amendments.amendments.map((entry) => entry.id), expectedAmendmentIds, "All binding 0A/0B and 3A-3K amendments must remain explicitly governed in source order");
+
+for (const amendment of amendments.amendments) {
+  assert.ok(amendment.title?.trim(), `${amendment.id}: binding amendment title missing`);
+  assert.ok(allowedStates.has(amendment.state), `${amendment.id}: ungoverned state ${amendment.state}`);
+  assert.doesNotMatch(amendment.state, /COMPLETE|PRODUCTION_ACCEPTED|R6/iu, `${amendment.id}: amendment must not imply unsupported production completion`);
+  assert.ok(Array.isArray(amendment.evidence) && amendment.evidence.length > 0, `${amendment.id}: evidence missing`);
+  assert.ok(amendment.remaining_gate?.trim(), `${amendment.id}: remaining gate missing`);
+  for (const evidencePath of amendment.evidence) await access(resolve(evidencePath));
+}
+
+const byAmendmentId = new Map(amendments.amendments.map((entry) => [entry.id, entry]));
+assert.equal(byAmendmentId.get("0A")?.state, "REPOSITORY_VERIFIED_STAGING_LIVE_EVIDENCE_REQUIRED", "0A must retain staging/live and real-device truth boundaries");
+assert.match(byAmendmentId.get("0A")?.remaining_gate ?? "", /Apple hardware|official Apple|private Apple/iu, "0A must preserve current-primary-source and real-device limits");
+assert.equal(byAmendmentId.get("0B")?.state, "VERIFIED_GOVERNANCE_GUARD");
+for (const id of ["3A", "3B", "3C", "3D", "3E", "3H", "3I"]) {
+  assert.equal(byAmendmentId.get(id)?.state, "VERIFIED_REPOSITORY_GOVERNANCE", `${id} must remain a proved repository release-control repair`);
+}
+for (const id of ["3F", "3G", "3J"]) {
+  assert.equal(byAmendmentId.get(id)?.state, "VERIFIED_GOVERNANCE_GUARD", `${id} must remain an active release-control guard`);
+}
+assert.equal(byAmendmentId.get("3K")?.state, "ACTIVE_DIRECTIVE");
+assert.match(byAmendmentId.get("3K")?.remaining_gate ?? "", /staging.*identity.*modules.*recovery.*cutover/iu, "3K must retain the mandated programme sequence");
+
 console.log(JSON.stringify({
   governedSections: register.sections.length,
+  bindingAmendments: amendments.amendments.length,
   currentReleaseState: register.metadata.current_release_state,
   productionComplete: register.metadata.production_complete,
   states: Object.fromEntries([...allowedStates].map((state) => [state, register.sections.filter((section) => section.state === state).length])),
