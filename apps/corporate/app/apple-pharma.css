@@ -287,6 +287,22 @@ p { max-width: 64ch; }
   .pharma-focus-grid article:last-child { border-bottom: 0; }
 }
 
+@media (max-width: 420px) {
+  .header-inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+  }
+  .header-inner > .portal-link { display: none; }
+  .brand {
+    width: min(178px, 100%);
+    min-width: 0;
+  }
+  .mobile-menu summary {
+    width: 42px;
+    height: 42px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     scroll-behavior: auto !important;
