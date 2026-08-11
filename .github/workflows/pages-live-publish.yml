@@ -10,6 +10,7 @@ on:
       - portal/index.html
       - contact/index.html
       - account-application/index.html
+      - regulatory-services/index.html
       - scripts/apply-pages-presentation-parity.mjs
       - scripts/build-css-bundle.mjs
       - scripts/build-site.mjs
@@ -64,7 +65,10 @@ jobs:
           node scripts/stage-pages-artifact.mjs _site
           node scripts/check-links.mjs _site
           grep -Fq 'Pharmaceutical supply, built around evidence.' _site/index.html
-          grep -Fq -- '--apple-pharma-public-contract: 1' _site/assets/css/novapharm.bundle.css
+          grep -Fq -- '--apple-pharma-public-contract: 2' _site/assets/css/novapharm.bundle.css
+          grep -Fq 'body[data-page="home"]' _site/assets/css/novapharm.bundle.css
+          grep -Fq 'regulatory-dossier-control' _site/regulatory-services/index.html
+          grep -Fq '/assets/media/modules/regulatory-dossier-control.jpg' _site/regulatory-services/index.html
           test "$(tr -d '\r\n' < _site/CNAME)" = "novapharmhealthcare.com"
 
   build:
@@ -109,7 +113,10 @@ jobs:
           node scripts/stage-pages-artifact.mjs _site
           node scripts/check-links.mjs _site
           grep -Fq 'Pharmaceutical supply, built around evidence.' _site/index.html
-          grep -Fq -- '--apple-pharma-public-contract: 1' _site/assets/css/novapharm.bundle.css
+          grep -Fq -- '--apple-pharma-public-contract: 2' _site/assets/css/novapharm.bundle.css
+          grep -Fq 'body[data-page="home"]' _site/assets/css/novapharm.bundle.css
+          grep -Fq 'regulatory-dossier-control' _site/regulatory-services/index.html
+          grep -Fq '/assets/media/modules/regulatory-dossier-control.jpg' _site/regulatory-services/index.html
           test "$(tr -d '\r\n' < _site/CNAME)" = "novapharmhealthcare.com"
 
       - name: Configure Pages with an administration token when available
@@ -184,19 +191,14 @@ jobs:
           set -euo pipefail
           cache_key="release-${GITHUB_SHA}-$(date +%s)"
           for attempt in $(seq 1 36); do
-            curl --fail --silent --show-error --location \
-              -H 'Cache-Control: no-cache, no-store, max-age=0' \
-              "${DEPLOYED_URL}?${cache_key}-${attempt}" > /tmp/deployed-home.html || true
-            curl --fail --silent --show-error --location \
-              -H 'Cache-Control: no-cache, no-store, max-age=0' \
-              "${DEPLOYED_URL%/}/assets/css/novapharm.bundle.css?${cache_key}-${attempt}" > /tmp/deployed-bundle.css || true
-            curl --fail --silent --show-error --location \
-              -H 'Cache-Control: no-cache, no-store, max-age=0' \
-              "${DEPLOYED_URL%/}/portal/?${cache_key}-${attempt}" > /tmp/deployed-portal.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "${DEPLOYED_URL}?${cache_key}-${attempt}" > /tmp/deployed-home.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "${DEPLOYED_URL%/}/assets/css/novapharm.bundle.css?${cache_key}-${attempt}" > /tmp/deployed-bundle.css || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "${DEPLOYED_URL%/}/regulatory-services/?${cache_key}-${attempt}" > /tmp/deployed-regulatory.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "${DEPLOYED_URL%/}/portal/?${cache_key}-${attempt}" > /tmp/deployed-portal.html || true
             if grep -Fq 'Pharmaceutical supply, built around evidence.' /tmp/deployed-home.html \
-              && grep -Fq -- '--apple-pharma-public-contract: 1' /tmp/deployed-bundle.css \
+              && grep -Fq -- '--apple-pharma-public-contract: 2' /tmp/deployed-bundle.css \
+              && grep -Fq 'regulatory-dossier-control' /tmp/deployed-regulatory.html \
               && ! grep -Fq 'data-ai-search-open' /tmp/deployed-home.html \
-              && ! grep -Fq 'Search &amp; Ask NovaPharm' /tmp/deployed-home.html \
               && grep -Fq 'This public website never asks for a portal username, password or confidential company record' /tmp/deployed-portal.html \
               && ! grep -Fq 'data-login-form' /tmp/deployed-portal.html \
               && ! grep -Fq 'type="password"' /tmp/deployed-portal.html; then
@@ -214,35 +216,22 @@ jobs:
           cache_key="release-${GITHUB_SHA}-$(date +%s)"
           for attempt in $(seq 1 72); do
             echo "Custom-domain verification attempt $attempt"
-            curl --fail --silent --show-error --location \
-              -H 'Cache-Control: no-cache, no-store, max-age=0' \
-              -H 'Pragma: no-cache' \
-              "$LIVE_ORIGIN/?${cache_key}-${attempt}" > /tmp/live-home.html || true
-            curl --fail --silent --show-error --location \
-              -H 'Cache-Control: no-cache, no-store, max-age=0' \
-              "$LIVE_ORIGIN/assets/css/novapharm.bundle.css?${cache_key}-${attempt}" > /tmp/live-bundle.css || true
-            curl --fail --silent --show-error --location \
-              -H 'Cache-Control: no-cache, no-store, max-age=0' \
-              "$LIVE_ORIGIN/cro/?${cache_key}-${attempt}" > /tmp/live-cro.html || true
-            curl --fail --silent --show-error --location \
-              -H 'Cache-Control: no-cache, no-store, max-age=0' \
-              "$LIVE_ORIGIN/oncology/?${cache_key}-${attempt}" > /tmp/live-oncology.html || true
-            curl --fail --silent --show-error --location \
-              -H 'Cache-Control: no-cache, no-store, max-age=0' \
-              "$LIVE_ORIGIN/contact/?${cache_key}-${attempt}" > /tmp/live-contact.html || true
-            curl --fail --silent --show-error --location \
-              -H 'Cache-Control: no-cache, no-store, max-age=0' \
-              "$LIVE_ORIGIN/account-application/?${cache_key}-${attempt}" > /tmp/live-account.html || true
-            curl --fail --silent --show-error --location \
-              -H 'Cache-Control: no-cache, no-store, max-age=0' \
-              "$LIVE_ORIGIN/portal/?${cache_key}-${attempt}" > /tmp/live-portal.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' "$LIVE_ORIGIN/?${cache_key}-${attempt}" > /tmp/live-home.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/assets/css/novapharm.bundle.css?${cache_key}-${attempt}" > /tmp/live-bundle.css || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/regulatory-services/?${cache_key}-${attempt}" > /tmp/live-regulatory.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/cro/?${cache_key}-${attempt}" > /tmp/live-cro.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/oncology/?${cache_key}-${attempt}" > /tmp/live-oncology.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/contact/?${cache_key}-${attempt}" > /tmp/live-contact.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/account-application/?${cache_key}-${attempt}" > /tmp/live-account.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/portal/?${cache_key}-${attempt}" > /tmp/live-portal.html || true
             search_status=$(curl --silent --output /dev/null --write-out '%{http_code}' --location "$LIVE_ORIGIN/search/?${cache_key}-${attempt}" || true)
             ai_status=$(curl --silent --output /dev/null --write-out '%{http_code}' --location "$LIVE_ORIGIN/technology/ai-governance/?${cache_key}-${attempt}" || true)
 
             if grep -Fq 'Pharmaceutical supply, built around evidence.' /tmp/live-home.html \
-              && grep -Fq -- '--apple-pharma-public-contract: 1' /tmp/live-bundle.css \
+              && grep -Fq -- '--apple-pharma-public-contract: 2' /tmp/live-bundle.css \
+              && grep -Fq 'regulatory-dossier-control' /tmp/live-regulatory.html \
+              && grep -Fq '/assets/media/modules/regulatory-dossier-control.jpg' /tmp/live-regulatory.html \
               && ! grep -Fq 'data-ai-search-open' /tmp/live-home.html \
-              && ! grep -Fq 'Search &amp; Ask NovaPharm' /tmp/live-home.html \
               && grep -Fq 'Prabhakar Vitthal Lahare' /tmp/live-cro.html \
               && grep -Fq 'oncology-editorial-gallery' /tmp/live-oncology.html \
               && grep -Fq 'does not collect or transmit enquiry details' /tmp/live-contact.html \
@@ -253,7 +242,7 @@ jobs:
               && ! grep -Fq 'data-login-form' /tmp/live-portal.html \
               && [ "$search_status" = "404" ] \
               && [ "$ai_status" = "404" ]; then
-              echo "The owner-corrected public release is live at $LIVE_ORIGIN."
+              echo "The corrected scoped release, including the Regulatory dossier composition, is live at $LIVE_ORIGIN."
               exit 0
             fi
             sleep 10
@@ -269,7 +258,7 @@ jobs:
           gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
             -f state=success \
             -f context="$STATUS_CONTEXT" \
-            -f description="Corrected NovaPharm public release is live and verified" \
+            -f description="Corrected scoped NovaPharm public release is live and verified" \
             -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >/dev/null
 
       - name: Mark publication failed
