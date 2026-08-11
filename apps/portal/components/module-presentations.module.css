@@ -40,7 +40,7 @@
 
 .presentation :global(.workspace-sidebar a.active small) {
   max-width: 64px;
-  color: #d8e6ef;
+  color: var(--portal-muted, #6e6e73);
   font-size: 0.6rem;
   line-height: 1.15;
 }
