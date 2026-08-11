@@ -70,9 +70,9 @@ test("Executive least-data views do not retain the retired shared KPI query foot
   assert.deepEqual(currentRuntimeDatabaseAuthorityByModule["executive.traceability"], ["inventory_movements", "batches", "products"]);
 
   for (const code of ["executive.sales-intelligence", "executive.warehouse", "executive.service-levels", "executive.documents"] as const) {
-    const tables = currentRuntimeDatabaseAuthorityByModule[code];
+    const tableSet = new Set<string>(currentRuntimeDatabaseAuthorityByModule[code]);
     for (const retiredSharedTable of ["customers", "supplier_invoices", "quality_complaints", "regulatory_cases", "integration_events"]) {
-      assert.equal(tables.includes(retiredSharedTable as never), false, `${code}: must not retain unrelated shared Executive table ${retiredSharedTable}`);
+      assert.equal(tableSet.has(retiredSharedTable), false, `${code}: must not retain unrelated shared Executive table ${retiredSharedTable}`);
     }
   }
 });
