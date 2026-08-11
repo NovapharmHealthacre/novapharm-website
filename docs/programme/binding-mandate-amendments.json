@@ -1,0 +1,117 @@
+{
+  "metadata": {
+    "purpose": "Machine-auditable binding amendments that sit alongside the governed numbered Sections 0-121 without changing the 122-section count.",
+    "source": "NOVAPHARM EXECUTIVE PLATFORM — consolidated post-PR-16 mandate",
+    "reconciliation_basis": "Evidence paths and state invariants are validated against the exact repository checkout running requirements:validate; no static SHA is used as a claim of perpetual currency.",
+    "current_release_state": "R1 PUBLIC RELEASE VERIFIED",
+    "production_complete": false
+  },
+  "amendments": [
+    {
+      "id": "0A",
+      "title": "APPLE-GRADE WEB ENGINEERING, SOURCE-CODE, FORMAT, ART-DIRECTION & FOUNDER-MIND OVERRIDE",
+      "state": "REPOSITORY_VERIFIED_STAGING_LIVE_EVIDENCE_REQUIRED",
+      "scope": "All 0A.x clauses remain binding, including evidence-not-mythology Apple reference rules, authored source code, semantic HTML, CSS-first motion, responsive engineering, visual rejection loops, real-device review and Swift/Wasm evidence gates.",
+      "evidence": [
+        "scripts/validate-visual-refinement.mjs",
+        "scripts/test-visual-contracts.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/programme/absolute-mandate-register.json"
+      ],
+      "remaining_gate": "Managed-staging/live evidence and owner-controlled real Apple hardware review remain required where the underlying clause demands them. Current official Apple/WebKit/Swift evidence must be re-checked at execution time; private Apple implementation remains unknown."
+    },
+    {
+      "id": "0B",
+      "title": "POST-PR-16 MERGE — AUTHORITATIVE REALITY OVERRIDE",
+      "state": "VERIFIED_GOVERNANCE_GUARD",
+      "scope": "Live Git/GitHub and infrastructure reality override obsolete branch assumptions; PR 16 is historical merged baseline evidence rather than an active feature branch.",
+      "evidence": [
+        "docs/programme/post-pr16-release-control.md",
+        "docs/programme/current-state-audit.md"
+      ],
+      "remaining_gate": "Remain bound to current repository/deployment reality on every continuation change."
+    },
+    {
+      "id": "3A",
+      "title": "PHASE -1 — POST-MERGE RELEASE-CONTROL REPAIR",
+      "state": "VERIFIED_REPOSITORY_GOVERNANCE",
+      "evidence": ["docs/programme/post-pr16-release-control.md"],
+      "remaining_gate": "Preserve the repaired release-control contract."
+    },
+    {
+      "id": "3B",
+      "title": "REPAIR THE PUBLIC LINK-VALIDATION CONTRACT",
+      "state": "VERIFIED_REPOSITORY_GOVERNANCE",
+      "evidence": ["scripts/check-links.mjs", "docs/programme/post-pr16-release-control.md"],
+      "remaining_gate": "Keep public artifact and internal workbench validation scopes explicit."
+    },
+    {
+      "id": "3C",
+      "title": "EXPLICIT DEPLOYMENT / RELEASE MODE CONTRACT",
+      "state": "VERIFIED_REPOSITORY_GOVERNANCE",
+      "evidence": ["docs/programme/post-pr16-release-control.md", "docs/programme/current-state-audit.md"],
+      "remaining_gate": "Do not promote mode/state without its named evidence."
+    },
+    {
+      "id": "3D",
+      "title": "BACKEND-LIVE VERIFICATION MUST ONLY GATE A BACKEND-LIVE RELEASE",
+      "state": "VERIFIED_REPOSITORY_GOVERNANCE",
+      "evidence": [".github/workflows/backend-live-verification.yml", "docs/programme/post-pr16-release-control.md"],
+      "remaining_gate": "Backend-live verification remains explicit and SHA-bound when backend activation is actually attempted."
+    },
+    {
+      "id": "3E",
+      "title": "NO DANGLING GITHUB RELEASE STATUS",
+      "state": "VERIFIED_REPOSITORY_GOVERNANCE",
+      "evidence": [".github/workflows/pages-live-publish.yml", "docs/programme/post-pr16-release-control.md"],
+      "remaining_gate": "Every release status writer must preserve terminal success/failure behavior."
+    },
+    {
+      "id": "3F",
+      "title": "FIX-FORWARD PR ACCEPTANCE",
+      "state": "VERIFIED_GOVERNANCE_GUARD",
+      "evidence": ["docs/programme/post-pr16-release-control.md", ".github/workflows/ci.yml"],
+      "remaining_gate": "Continuation PRs remain small, exact-SHA tested and evidence-driven."
+    },
+    {
+      "id": "3G",
+      "title": "SOURCE-CONTROL MERGE BOUNDARY",
+      "state": "VERIFIED_GOVERNANCE_GUARD",
+      "evidence": ["docs/programme/current-state-audit.md", ".github/workflows/ci.yml"],
+      "remaining_gate": "A merge may be production-relevant; merge only tested/authorized changes and retain separate production cutover gates."
+    },
+    {
+      "id": "3H",
+      "title": "DEPENDENCY FREEZE DURING RELEASE REPAIR",
+      "state": "VERIFIED_REPOSITORY_GOVERNANCE",
+      "evidence": ["docs/programme/post-pr16-release-control.md", "scripts/validate-supply-chain.mjs"],
+      "remaining_gate": "Future dependency changes must earn their place independently; no broad churn is inherited from the repair phase."
+    },
+    {
+      "id": "3I",
+      "title": "POST-REPAIR PUBLIC BASELINE",
+      "state": "VERIFIED_REPOSITORY_GOVERNANCE",
+      "evidence": ["docs/programme/post-pr16-release-control.md", "docs/programme/current-state-audit.md"],
+      "remaining_gate": "R1 public baseline remains distinct from managed staging and production."
+    },
+    {
+      "id": "3J",
+      "title": "RELEASE STATE MACHINE",
+      "state": "VERIFIED_GOVERNANCE_GUARD",
+      "evidence": ["docs/programme/absolute-mandate-register.json", "docs/programme/current-state-audit.md"],
+      "remaining_gate": "R2-R6 remain unavailable until their explicit evidence gates are satisfied."
+    },
+    {
+      "id": "3K",
+      "title": "POST-MERGE PRIORITY OVERRIDE",
+      "state": "ACTIVE_DIRECTIVE",
+      "evidence": [
+        "docs/programme/absolute-mandate-register.json",
+        "docs/programme/sops/README.md",
+        "docs/programme/sops/sop-register.json",
+        "scripts/programme/validate-sop-programme.mjs"
+      ],
+      "remaining_gate": "Continue the mandated sequence: truthful repository baseline, justified language choices, Portal/forms, staging, real identity/data/integrations, all modules, security/monitoring/recovery, executable procedures, cutover readiness, controlled production, monitoring, then R6 evidence."
+    }
+  ]
+}
