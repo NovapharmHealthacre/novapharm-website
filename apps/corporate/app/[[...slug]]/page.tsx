@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ConciseHomePage } from "@/components/concise-home";
 import { JsonLd } from "@/components/json-ld";
 import { ArticlePage, CorporatePageRenderer, PersonPage } from "@/components/page-renderer";
 import { articleBySlug, articles } from "@/data/articles";
+import { conciseCorporatePage } from "@/data/concise-pages";
 import { corporatePages, pageBySlug } from "@/data/pages";
 import { leadership } from "@/data/site";
 import { articleSchema, metadataForArticle, metadataForPage, metadataForPerson, pageSchema, personSchema } from "@/lib/seo";
@@ -52,5 +54,7 @@ export default async function CorporateRoute({ params }: RouteProps) {
   if (article) return <><ArticlePage article={article} /><JsonLd id="article-page-schema" value={articleSchema(article)} /></>;
   const page = pageBySlug.get(slug);
   if (!page) notFound();
-  return <><CorporatePageRenderer page={page} /><JsonLd id="corporate-page-schema" value={pageSchema(page)} /></>;
+  if (slug === "") return <><ConciseHomePage /><JsonLd id="corporate-page-schema" value={pageSchema(page)} /></>;
+  const concisePage = conciseCorporatePage(page);
+  return <><CorporatePageRenderer page={concisePage} /><JsonLd id="corporate-page-schema" value={pageSchema(page)} /></>;
 }
