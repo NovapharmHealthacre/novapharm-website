@@ -7,21 +7,44 @@
   "releaseRule": "Do not mark this programme complete and do not manufacture 8K status by enlarging lower-resolution files. A qualified master must be natively at least 7680x4320 and have approved provenance/licensing or owner-authorised generation evidence.",
   "qualifiedMasters": [],
   "priorityQueue": [
-    {"route": "/", "purpose": "Primary pharmaceutical supply hero", "currentAsset": "assets/media/home/supply-network-hero.jpg", "status": "source-acquisition-required"},
-    {"route": "/regulatory-services/", "purpose": "Regulatory dossier control and submission evidence", "currentAsset": "assets/media/modules/regulatory-dossier-control.jpg", "status": "source-acquisition-required"},
-    {"route": "/services/", "purpose": "Service and launch-readiness evidence", "currentAsset": "assets/media/stories/services-launch-readiness.jpg", "status": "source-acquisition-required"},
-    {"route": "/oncology/", "purpose": "Oncology supply continuity and formulation evidence", "currentAsset": "assets/media/modules/oncology-supply-continuity.jpg", "status": "source-acquisition-required"},
-    {"route": "/cro/", "purpose": "Clinical-development and delivery architecture", "currentAsset": "assets/media/cro/cro-evidence-architecture.jpg", "status": "source-acquisition-required"},
-    {"route": "/technology/", "purpose": "Technology control architecture and traceability", "currentAsset": "assets/media/stories/technology-control-architecture.jpg", "status": "source-acquisition-required"},
-    {"route": "/partner-with-us/", "purpose": "Qualified sourcing and partnership ecosystem", "currentAsset": "assets/media/modules/partners-qualified-ecosystem.jpg", "status": "source-acquisition-required"},
-    {"route": "/product-portfolio/", "purpose": "Portfolio/category pharmaceutical presentation", "currentAsset": "assets/media/modules/product-portfolio-catalogue.jpg", "status": "source-acquisition-required"},
-    {"route": "/about/", "purpose": "Operating-model and company evidence", "currentAsset": "assets/media/modules/about-operating-model.jpg", "status": "source-acquisition-required"},
-    {"route": "/leadership/", "purpose": "Leadership portrait and governance presentation", "currentAsset": "assets/media/modules/leadership-governance.jpg", "status": "source-acquisition-required"},
-    {"route": "/quality/", "purpose": "Quality-system control evidence", "currentAsset": "assets/media/modules/quality-system-control.jpg", "status": "source-acquisition-required"},
-    {"route": "/supply-chain/", "purpose": "Supply-chain and distribution evidence", "currentAsset": "assets/media/modules/supply-chain-control.jpg", "status": "source-acquisition-required"},
-    {"route": "/news-insights/", "purpose": "Editorial/insight visual authority", "currentAsset": "assets/media/insights/three-pillar-sourcing.jpg", "status": "source-acquisition-required"},
-    {"route": "/trust-centre/", "purpose": "Trust, evidence and release-state communication", "currentAsset": "assets/media/modules/trust-evidence-control.jpg", "status": "source-acquisition-required"},
-    {"route": "/company/", "purpose": "Corporate structure and legal-record presentation", "currentAsset": "assets/media/modules/company-corporate-structure.jpg", "status": "source-acquisition-required"},
-    {"route": "/contact/", "purpose": "Professional public contact experience", "currentAsset": "assets/media/modules/contact-qualified-enquiry.jpg", "status": "source-acquisition-required"}
+    {
+      "route": "/",
+      "purpose": "Primary pharmaceutical supply hero",
+      "currentAsset": "assets/media/home/supply-network-hero.jpg",
+      "status": "source-acquisition-required"
+    },
+    {
+      "route": "/regulatory-services/",
+      "purpose": "Regulatory dossier control and submission evidence",
+      "currentAsset": "assets/media/modules/regulatory-dossier-control.jpg",
+      "status": "source-acquisition-required"
+    },
+    {
+      "route": "/services/",
+      "purpose": "Service and launch-readiness evidence",
+      "currentAsset": "assets/media/stories/services-launch-readiness.jpg",
+      "status": "source-acquisition-required"
+    },
+    {
+      "route": "/technology/",
+      "purpose": "Technology control architecture and traceability",
+      "currentAsset": "assets/media/stories/technology-control-architecture.jpg",
+      "status": "source-acquisition-required"
+    },
+    {
+      "route": "/about/",
+      "purpose": "Operating-model and company evidence",
+      "currentAsset": "assets/media/modules/about-operating-model.jpg",
+      "status": "source-acquisition-required"
+    }
+  ],
+  "nextAcquisitionWave": [
+    "/oncology/",
+    "/cro/",
+    "/partner-with-us/",
+    "/product-portfolio/",
+    "/leadership/",
+    "/trust-centre/",
+    "/news-insights/"
   ]
 }
