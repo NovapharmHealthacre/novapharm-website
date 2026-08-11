@@ -2,7 +2,7 @@
   "metadata": {
     "purpose": "Machine-auditable binding amendments that sit alongside the governed numbered Sections 0-121 without changing the 122-section count.",
     "source": "NOVAPHARM EXECUTIVE PLATFORM — consolidated post-PR-16 mandate",
-    "reconciled_against_main_sha": "64125a654d4ed3a9543381cc87acceac3ebcdc7d",
+    "reconciliation_basis": "Evidence paths and state invariants are validated against the exact repository checkout running requirements:validate; no static SHA is used as a claim of perpetual currency.",
     "current_release_state": "R1 PUBLIC RELEASE VERIFIED",
     "production_complete": false
   },
