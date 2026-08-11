@@ -39,7 +39,12 @@ for (const area of ["customer", "employee", "executive", "admin"]) {
 assert.match(css, /\.workspace-sidebar a:not\(\.active\) small\)[\s\S]*display: none/u, "Inactive navigation must not repeat informational-only status noise on every row.");
 assert.match(css, /\.module-notice \+ \.module-notice\)[\s\S]*border-top/u, "Consecutive truth statements must read as one evidence rail rather than stacked notification cards.");
 
-assert.match(css, /\.command :global\(\.metric-grid\)[\s\S]*gap: 1px/u, "Command surfaces need a deliberate continuous metric strip.");
+assert.match(css, /\.command :global\(\.metric-grid\)[\s\S]*gap: 1px[\s\S]*background: transparent/u, "Command KPI grids must keep unused columns as real whitespace rather than phantom grey cards.");
+assert.match(css, /\.command :global\(\.metric\)[\s\S]*border: 1px solid var\(--presentation-rule\)/u, "Command KPI cards must own their visible boundary instead of relying on a grid filler background.");
+assert.match(css, /\.workflow :global\(\.metric-grid\)[\s\S]*background: transparent/u, "Workflow KPI grids must not paint unused columns.");
+assert.match(css, /\.workflow :global\(\.metric\)[\s\S]*border: 1px solid var\(--presentation-rule\)/u, "Workflow KPI cards must own their visible boundary.");
+assert.match(css, /\.intelligence :global\(\.metric-grid\)[\s\S]*background: transparent/u, "Intelligence KPI grids must not paint unused columns.");
+assert.match(css, /\.intelligence :global\(\.metric\)[\s\S]*border: 1px solid var\(--presentation-rule\)/u, "Intelligence KPI cards must own their visible boundary.");
 assert.match(css, /\.command :global\(\.metric:first-child\)[\s\S]*presentation-accent/u, "Command surfaces need a governed decision accent.");
 assert.match(css, /\.intelligence :global\(\.data-section:first-of-type\)[\s\S]*grid-column: 1 \/ -1/u, "Intelligence surfaces need a full-width primary analysis region.");
 assert.match(css, /\.workflow :global\(\.available-actions\)[\s\S]*background: var\(--presentation-soft\)/u, "Workflow surfaces need an action-first decision rail.");
@@ -64,6 +69,7 @@ console.log(JSON.stringify({
   compactTruthRail: true,
   authenticatedDashboardPreserved: true,
   presentationAppliedOutsideSecurityBoundary: true,
+  emptyMetricColumnsStayWhitespace: true,
   oddCommandSectionsSpan: true,
   boundedDesktopCatalogue: true,
 }, null, 2));
