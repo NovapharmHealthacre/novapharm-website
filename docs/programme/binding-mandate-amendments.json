@@ -27,7 +27,7 @@
       "scope": "Live Git/GitHub and infrastructure reality override obsolete branch assumptions; PR 16 is historical merged baseline evidence rather than an active feature branch.",
       "evidence": [
         "docs/programme/post-pr16-release-control.md",
-        "docs/programme/release-control-authority.md"
+        "docs/programme/current-state-audit.md"
       ],
       "remaining_gate": "Remain bound to current repository/deployment reality on every continuation change."
     },
@@ -49,7 +49,7 @@
       "id": "3C",
       "title": "EXPLICIT DEPLOYMENT / RELEASE MODE CONTRACT",
       "state": "VERIFIED_REPOSITORY_GOVERNANCE",
-      "evidence": ["docs/programme/platform-truth-contract.md", "docs/programme/release-control-authority.md"],
+      "evidence": ["docs/programme/post-pr16-release-control.md", "docs/programme/current-state-audit.md"],
       "remaining_gate": "Do not promote mode/state without its named evidence."
     },
     {
@@ -77,7 +77,7 @@
       "id": "3G",
       "title": "SOURCE-CONTROL MERGE BOUNDARY",
       "state": "VERIFIED_GOVERNANCE_GUARD",
-      "evidence": ["docs/programme/release-control-authority.md"],
+      "evidence": ["docs/programme/current-state-audit.md", ".github/workflows/production-readiness.yml"],
       "remaining_gate": "A merge may be production-relevant; merge only tested/authorized changes and retain separate production cutover gates."
     },
     {
@@ -91,14 +91,14 @@
       "id": "3I",
       "title": "POST-REPAIR PUBLIC BASELINE",
       "state": "VERIFIED_REPOSITORY_GOVERNANCE",
-      "evidence": ["docs/programme/post-pr16-release-control.md", "docs/programme/platform-truth-contract.md"],
+      "evidence": ["docs/programme/post-pr16-release-control.md", "docs/programme/current-state-audit.md"],
       "remaining_gate": "R1 public baseline remains distinct from managed staging and production."
     },
     {
       "id": "3J",
       "title": "RELEASE STATE MACHINE",
       "state": "VERIFIED_GOVERNANCE_GUARD",
-      "evidence": ["docs/programme/absolute-mandate-register.json", "docs/programme/release-control-authority.md"],
+      "evidence": ["docs/programme/absolute-mandate-register.json", "docs/programme/current-state-audit.md"],
       "remaining_gate": "R2-R6 remain unavailable until their explicit evidence gates are satisfied."
     },
     {
