@@ -218,12 +218,12 @@ export function ConciseProductsPage() {
             <span className="eyebrow">Nutraxin UK catalogue reference</span>
             <h2>Food Supplement Portfolio Review</h2>
             <p>19 owner-supplied catalogue records for qualified B2B evaluation. No claim of UK availability, price, stock, permitted claims or medicinal status.</p>
-            <div className="action-row">
+            <div className="action-row portfolio-priority-links">
               <Link className="button button-primary" href="/product-portfolio/nutraxin/">Review 19 references</Link>
               <Link className="button button-light" href="/contact/?enquiry=Product%20opportunity">Discuss an opportunity</Link>
             </div>
           </div>
-          <div className="portfolio-priority-media"><Image src="/assets/media/products/nutraxin/vitamin-d3-120-tablets-800.webp" alt="Nutraxin Vitamin D3 owner-supplied catalogue reference" fill sizes="350px" priority unoptimized /></div>
+          <div className="portfolio-priority-media"><Image src="/assets/media/products/nutraxin/vitamin-d3-120-tablets-800.webp" alt="Nutraxin Vitamin D3 box and 120-tablet bottle shown as an owner-supplied catalogue reference" fill sizes="350px" priority unoptimized /></div>
         </div>
       </section>
       <section className="section">
