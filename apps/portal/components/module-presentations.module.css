@@ -1,5 +1,28 @@
 .presentation {
   min-height: 100%;
+  --presentation-accent: #344b62;
+  --presentation-soft: #f2f5f7;
+  --presentation-rule: #d7dee8;
+}
+
+.presentation[data-module^="customer."] {
+  --presentation-accent: #236b8e;
+  --presentation-soft: #f0f6f9;
+}
+
+.presentation[data-module^="employee."] {
+  --presentation-accent: #426774;
+  --presentation-soft: #f1f5f6;
+}
+
+.presentation[data-module^="executive."] {
+  --presentation-accent: #b4232e;
+  --presentation-soft: #fff5f5;
+}
+
+.presentation[data-module^="admin."] {
+  --presentation-accent: #344b62;
+  --presentation-soft: #f2f4f7;
 }
 
 .presentation :global(.workspace-content) {
@@ -7,19 +30,98 @@
   flex-direction: column;
 }
 
-.presentation :global(.module-heading) { order: 1; }
+.presentation :global(.workspace-sidebar a:not(.active) small) {
+  display: none;
+}
+
+.presentation :global(.workspace-sidebar a.active) {
+  border-left-color: var(--presentation-accent);
+}
+
+.presentation :global(.workspace-sidebar a.active small) {
+  max-width: 64px;
+  color: #d8e6ef;
+  font-size: 0.6rem;
+  line-height: 1.15;
+}
+
+.presentation :global(.sidebar-label) {
+  letter-spacing: 0.035em;
+}
+
+.presentation :global(.module-heading) {
+  order: 1;
+  padding-top: 4px;
+}
+
+.presentation :global(.module-heading .eyebrow) {
+  color: var(--presentation-accent);
+}
+
+.presentation :global(.module-heading h1) {
+  letter-spacing: -0.035em;
+}
+
 .presentation :global(.area-switcher) { order: 2; }
 .presentation :global(.workflow-status) { order: 3; }
 .presentation :global(.loading-state) { order: 4; }
-.presentation :global(.data-context) { order: 5; }
-.presentation :global(.module-notice) { order: 6; }
+
+.presentation :global(.data-context) {
+  order: 5;
+  margin-bottom: 8px;
+}
+
+.presentation :global(.data-context span) {
+  border-color: var(--presentation-rule);
+  background: var(--presentation-soft);
+}
+
+.presentation :global(.module-notice) {
+  order: 6;
+  margin: 0;
+  padding: 9px 2px 9px 14px;
+  border-left: 2px solid var(--presentation-accent);
+  color: #3e4e5f;
+  background: transparent;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.presentation :global(.module-notice + .module-notice) {
+  border-top: 1px solid #dfe5eb;
+}
+
 .presentation :global(.metric-grid) { order: 7; }
 .presentation :global(.data-section) { order: 8; }
 .presentation :global(.available-actions) { order: 9; }
 
+.command :global(.module-heading) {
+  margin-bottom: 0;
+  padding-bottom: 30px;
+  border-bottom: 1px solid var(--presentation-rule);
+}
+
+.command :global(.area-switcher) {
+  margin-bottom: 26px;
+  border-top: 0;
+}
+
 .command :global(.metric-grid) {
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin-bottom: 28px;
+  gap: 1px;
+  margin: 26px 0 30px;
+  border: 0;
+  background: var(--presentation-rule);
+}
+
+.command :global(.metric) {
+  min-height: 126px;
+  border: 0;
+  background: #fff;
+}
+
+.command :global(.metric:first-child) {
+  box-shadow: inset 0 3px var(--presentation-accent);
 }
 
 .command :global(.metric strong),
@@ -36,19 +138,30 @@
 
 .ledger :global(.metric-grid) {
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-bottom: 20px;
+  margin: 22px 0 18px;
+  border-top: 2px solid var(--presentation-accent);
 }
 
 .ledger :global(.data-section) {
-  border-radius: 14px;
+  border-right: 0;
+  border-left: 0;
+  border-radius: 0;
   box-shadow: none;
+}
+
+.ledger :global(table),
+.ledger :global(.metric strong) {
+  font-variant-numeric: tabular-nums;
 }
 
 .workflow :global(.available-actions),
 .regulated :global(.available-actions) {
   order: 7;
-  margin-top: 6px;
-  margin-bottom: 24px;
+  margin: 18px 0 26px;
+  padding: 22px;
+  border-top: 0;
+  border-left: 3px solid var(--presentation-accent);
+  background: var(--presentation-soft);
 }
 
 .workflow :global(.metric-grid),
@@ -56,31 +169,63 @@
   order: 8;
 }
 
+.workflow :global(.metric-grid) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  border: 0;
+  background: var(--presentation-rule);
+}
+
+.workflow :global(.metric) {
+  border: 0;
+  background: #fff;
+}
+
 .workflow :global(.data-section),
 .regulated :global(.data-section) {
   order: 9;
 }
 
-.workflow :global(.available-actions) {
-  border-left: 3px solid #243f64;
+.workflow :global(.data-section) {
+  border-left: 3px solid var(--presentation-accent);
+  box-shadow: none;
 }
 
 .regulated :global(.module-notice) {
-  border-left: 3px solid #b4232e;
-  background: #fff8f8;
+  border-left-color: #b4232e;
   color: #54242a;
 }
 
-.regulated :global(.data-context) {
+.regulated :global(.module-notice + .module-notice) {
+  border-top-color: #efd7da;
+}
+
+.regulated :global(.data-context span) {
   border-color: #e7c9cd;
+  background: #fff7f7;
+}
+
+.regulated :global(.available-actions) {
+  --presentation-accent: #b4232e;
+  background: #fff8f8;
+}
+
+.regulated :global(.data-section) {
+  border-top: 2px solid #b4232e;
 }
 
 .catalogue :global(.metric-grid) {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 2px solid var(--presentation-accent);
 }
 
 .catalogue :global(.data-section) {
-  border-top: 3px solid #243f64;
+  border-top: 3px solid var(--presentation-accent);
+  box-shadow: none;
+}
+
+.catalogue :global(.data-section > header) {
+  background: var(--presentation-soft);
 }
 
 .tracking :global(.metric-grid) {
@@ -88,28 +233,59 @@
 }
 
 .tracking :global(.data-section) {
-  border-left: 3px solid #6b7f99;
+  border-left: 3px solid var(--presentation-accent);
+  box-shadow: none;
+}
+
+.tracking :global(.data-section > header) {
+  border-bottom-color: var(--presentation-rule);
 }
 
 .documents :global(.data-section) {
   order: 7;
-  border-left: 3px solid #243f64;
+  border-left: 3px solid var(--presentation-accent);
+  box-shadow: none;
+}
+
+.documents :global(.data-section > header) {
+  background: var(--presentation-soft);
 }
 
 .documents :global(.metric-grid) {
   order: 8;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 2px solid var(--presentation-accent);
 }
 
 .documents :global(.available-actions) { order: 9; }
 
+.intelligence :global(.module-heading) {
+  margin-bottom: 18px;
+}
+
 .intelligence :global(.metric-grid) {
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin-bottom: 28px;
+  gap: 1px;
+  margin-bottom: 30px;
+  border: 0;
+  background: var(--presentation-rule);
+}
+
+.intelligence :global(.metric) {
+  border: 0;
+  background: #fff;
+}
+
+.intelligence :global(.metric:first-child) {
+  box-shadow: inset 0 3px var(--presentation-accent);
+}
+
+.intelligence :global(.data-section) {
+  border-top: 2px solid var(--presentation-accent);
 }
 
 .intelligence :global(.data-section > header) {
-  background: linear-gradient(180deg, rgba(242, 246, 251, 0.92), rgba(255, 255, 255, 0));
+  background: linear-gradient(180deg, var(--presentation-soft), rgba(255, 255, 255, 0));
 }
 
 @media (min-width: 1180px) {
@@ -149,6 +325,10 @@
     grid-column: 1 / -1;
   }
 
+  .intelligence :global(.data-section:first-of-type) {
+    grid-column: 1 / -1;
+  }
+
   .catalogue :global(.table-region) {
     max-height: min(68vh, 760px);
     overflow: auto;
@@ -172,20 +352,35 @@
   .documents :global(.metric-grid) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .workflow :global(.metric-grid) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 620px) {
+  .presentation :global(.module-notice) {
+    padding: 8px 0 8px 12px;
+    font-size: 0.84rem;
+  }
+
+  .command :global(.module-heading) {
+    padding-bottom: 22px;
+  }
+
   .command :global(.metric-grid),
   .tracking :global(.metric-grid),
   .intelligence :global(.metric-grid),
   .ledger :global(.metric-grid),
   .catalogue :global(.metric-grid),
-  .documents :global(.metric-grid) {
+  .documents :global(.metric-grid),
+  .workflow :global(.metric-grid) {
     grid-template-columns: 1fr;
   }
 
   .workflow :global(.available-actions),
   .regulated :global(.available-actions) {
+    padding: 16px;
     border-left-width: 2px;
   }
 }

@@ -100,6 +100,23 @@ function metric(lhr, id) {
   return { numericValue: audit?.numericValue ?? null, displayValue: audit?.displayValue ?? null };
 }
 
+function categoryFailures(lhr, categoryId) {
+  const category = lhr.categories[categoryId];
+  if (!category) return [];
+  return category.auditRefs
+    .filter((reference) => (reference.weight ?? 0) > 0)
+    .map((reference) => {
+      const audit = lhr.audits[reference.id];
+      return {
+        id: reference.id,
+        title: audit?.title ?? reference.id,
+        score: audit?.score ?? null,
+        weight: reference.weight ?? 0,
+      };
+    })
+    .filter((audit) => audit.score !== null && audit.score < 1);
+}
+
 function median(values) {
   const sorted = [...values].sort((left, right) => left - right);
   return sorted[Math.floor(sorted.length / 2)];
@@ -109,6 +126,14 @@ function medianMetric(trials, name) {
   const numericValue = median(trials.map((trial) => trial.metrics[name].numericValue));
   const source = trials.find((trial) => trial.metrics[name].numericValue === numericValue);
   return { numericValue, displayValue: source?.metrics[name].displayValue ?? null };
+}
+
+function uniqueAuditFailures(trials) {
+  const failures = new Map();
+  for (const trial of trials) {
+    for (const audit of trial.bestPracticesFailures) failures.set(audit.id, audit);
+  }
+  return [...failures.values()].sort((left, right) => left.id.localeCompare(right.id));
 }
 
 async function auditPageTrial(name, pathName, formFactor, cookieHeader = "") {
@@ -133,6 +158,7 @@ async function auditPageTrial(name, pathName, formFactor, cookieHeader = "") {
       accessibility: score(lhr.categories.accessibility),
       bestPractices: score(lhr.categories["best-practices"]),
     },
+    bestPracticesFailures: categoryFailures(lhr, "best-practices"),
     metrics: {
       firstContentfulPaint: metric(lhr, "first-contentful-paint"),
       largestContentfulPaint: metric(lhr, "largest-contentful-paint"),
@@ -160,6 +186,7 @@ async function auditPage(name, pathName, formFactor, cookieHeader = "") {
       accessibility: median(trials.map((trial) => trial.scores.accessibility)),
       bestPractices: median(trials.map((trial) => trial.scores.bestPractices)),
     },
+    bestPracticesFailures: uniqueAuditFailures(trials),
     metrics: {
       firstContentfulPaint: medianMetric(trials, "firstContentfulPaint"),
       largestContentfulPaint: medianMetric(trials, "largestContentfulPaint"),
@@ -206,7 +233,12 @@ try {
   writeFileSync(join(artifactRoot, "summary.json"), `${JSON.stringify(report, null, 2)}\n`);
   writeFileSync(
     join(artifactRoot, "summary.md"),
-    `# Portal Lighthouse acceptance\n\n${results.map((entry) => `- ${entry.name} (${entry.runCount}-run median): performance ${entry.scores.performance}, accessibility ${entry.scores.accessibility}, best practices ${entry.scores.bestPractices}; LCP ${entry.metrics.largestContentfulPaint.displayValue}; CLS ${entry.metrics.cumulativeLayoutShift.displayValue}; TBT ${entry.metrics.totalBlockingTime.displayValue}.`).join("\n")}\n\nSEO is intentionally excluded because every portal route is private and noindex. Raw Lighthouse reports and temporary authentication material are not persisted.\n`,
+    `# Portal Lighthouse acceptance\n\n${results.map((entry) => {
+      const gaps = entry.bestPracticesFailures.length > 0
+        ? `; best-practices gaps ${entry.bestPracticesFailures.map((audit) => `${audit.id} (${audit.score})`).join(", ")}`
+        : "; best-practices gaps none";
+      return `- ${entry.name} (${entry.runCount}-run median): performance ${entry.scores.performance}, accessibility ${entry.scores.accessibility}, best practices ${entry.scores.bestPractices}; LCP ${entry.metrics.largestContentfulPaint.displayValue}; CLS ${entry.metrics.cumulativeLayoutShift.displayValue}; TBT ${entry.metrics.totalBlockingTime.displayValue}${gaps}.`;
+    }).join("\n")}\n\nSEO is intentionally excluded because every portal route is private and noindex. Raw Lighthouse reports, audit details that could expose page content, and temporary authentication material are not persisted. Only weighted failed audit identifiers/titles/scores are retained for actionable diagnostics.\n`,
   );
   console.log(`Portal Lighthouse acceptance passed for ${results.length} authenticated and anonymous profiles.`);
 } finally {
