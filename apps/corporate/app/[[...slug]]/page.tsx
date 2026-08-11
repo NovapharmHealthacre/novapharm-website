@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ConciseHomePage } from "@/components/concise-home";
+import {
+  ConciseCroPage,
+  ConciseOncologyPage,
+  ConciseProductsPage,
+  ConciseRegulatoryPage,
+  ConciseServicesPage,
+} from "@/components/concise-specialist-pages";
 import { JsonLd } from "@/components/json-ld";
 import { ArticlePage, CorporatePageRenderer, PersonPage } from "@/components/page-renderer";
 import { articleBySlug, articles } from "@/data/articles";
@@ -25,6 +32,18 @@ function personForRoute(slug: string) {
 function articleForRoute(slug: string) {
   const match = slug.match(/^news-insights\/([^/]+)$/);
   return match ? articleBySlug.get(match[1] ?? "") : undefined;
+}
+
+function renderCorporatePage(kind: string, presentedPage: ReturnType<typeof presentationPage>) {
+  switch (kind) {
+    case "home": return <ConciseHomePage />;
+    case "services": return <ConciseServicesPage />;
+    case "regulatory": return <ConciseRegulatoryPage />;
+    case "cro": return <ConciseCroPage />;
+    case "oncology": return <ConciseOncologyPage />;
+    case "products": return <ConciseProductsPage />;
+    default: return <CorporatePageRenderer page={presentedPage} />;
+  }
 }
 
 export function generateStaticParams() {
@@ -56,7 +75,5 @@ export default async function CorporateRoute({ params }: RouteProps) {
   if (!page) notFound();
 
   const presentedPage = presentationPage(page);
-  const renderedPage = page.kind === "home" ? <ConciseHomePage /> : <CorporatePageRenderer page={presentedPage} />;
-
-  return <>{renderedPage}<JsonLd id="corporate-page-schema" value={pageSchema(presentedPage)} /></>;
+  return <>{renderCorporatePage(page.kind, presentedPage)}<JsonLd id="corporate-page-schema" value={pageSchema(presentedPage)} /></>;
 }
