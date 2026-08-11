@@ -12,24 +12,32 @@ for (const module of ["base", "tokens", "foundations", "premium-experience", "mo
 }
 assert.doesNotMatch(cssEntrypoint, /ai-search\.css/, "the retired public AI stylesheet must not be imported");
 
+const publicCss = text("assets/css/apple-pharma-public.css");
+const bundleCss = text("assets/css/novapharm.bundle.css");
+assert.match(publicCss, /--apple-pharma-public-contract:\s*1/);
+assert.match(publicCss, /-apple-system, BlinkMacSystemFont/);
+assert.match(publicCss, /@media \(prefers-reduced-motion: reduce\)/);
+assert.match(bundleCss, /--apple-pharma-public-contract:\s*1/);
+
 const home = text("index.html");
-assert.match(home, /Building a more resilient pharmaceutical supply network\./);
-assert.match(home, /<div class="hero-media"[^>]*><picture>/);
-assert.match(home, /supply-network-hero-1200\.jpg 1200w/);
-assert.match(home, /class="hero-cinematic-layer"/);
-assert.match(home, /data-motion-toggle/);
-assert.match(home, /class="[^\"]*\bsourcing-portfolio\b[^\"]*"/);
-assert.equal((home.match(/class="sourcing-route-card"/g) || []).length, 3);
-assert.match(home, /class="governed-convergence"/);
-assert.equal((home.match(/class="roadmap-number"/g) || []).length, 7, "the regulatory roadmap must contain seven controlled stages");
-assert.match(home, /Commercial release only after applicable authorisation/);
+assert.match(home, /Pharmaceutical supply, built around evidence\./);
+assert.match(home, /class="pharma-home-hero"/);
+assert.match(home, /class="container pharma-home-grid"/);
+assert.match(home, /class="pharma-home-media"/);
+assert.match(home, /supply-network-hero\.avif/);
+assert.match(home, /supply-network-hero\.jpg/);
+assert.match(home, /class="pharma-principles-grid"/);
+assert.equal((home.match(/<span>Qualified sourcing<\/span>|<span>Regulatory discipline<\/span>|<span>Quality-led decisions<\/span>/g) || []).length, 3, "homepage must expose three operating principles");
+assert.match(home, /Three routes\. One standard\./);
+assert.equal((home.match(/<div class="pharma-pillar-grid">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) || []).length, 3, "homepage must present three sourcing routes");
 assert.match(home, /regulatory-batch-integrity\.jpg/);
-assert.match(home, /<figure class="batch-integrity-media">/);
-assert.doesNotMatch(home, /quality-batch-integrity\.svg/);
-assert.match(home, /partner-ecosystem-directed/);
-assert.match(home, /partner-pathway-grid/);
-assert.equal((home.match(/<div class="partner-pathway-grid">[\s\S]*?<\/div><p class="partner-ecosystem-disclosure">/)?.[0].match(/class="partner-pathway-card"/g) || []).length, 4, "the homepage must present four distinct partnership pathways");
-assert.equal((home.match(/class="partner-ecosystem-card"/g) || []).length, 0, "the homepage must not repeat the product-style partner grid");
+assert.match(home, /Clarity before complexity\./);
+assert.match(home, /Specialist work\. Less noise\./);
+assert.equal((home.match(/<div class="pharma-focus-grid">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) || []).length, 3, "homepage must present three specialist focus pathways");
+assert.match(home, /Regulated wholesale supply has not commenced\./);
+assert.match(home, /Owner-attested logistics and warehousing arrangements with Polar Speed are being incorporated into NovaPharm's operating model/);
+assert.match(home, /The relationship does not transfer Polar Speed's authorisations or certificates to NovaPharm/);
+assert.doesNotMatch(home, /hero-cinematic-layer|data-motion-toggle|regulatory-roadmap|batch-integrity-feature|partner-ecosystem-directed|partner-pathway-grid/);
 assert.doesNotMatch(home, /data-ai-search-open|nav-search|ai-search-dialog/);
 
 const services = text("services/index.html");
@@ -168,8 +176,8 @@ assert.match(text("assets/css/module-media-sanity.css"), /@media \(prefers-reduc
 assert.match(text("assets/css/owner-corrections.css"), /@media \(prefers-reduced-motion: reduce\)/);
 assert.match(text("assets/js/visual-refinement.js"), /data-motion-toggle/);
 assert.match(text("assets/js/novapharm.js"), /saveData/);
-for (const stylesheet of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity", "cro", "oncology", "owner-corrections"]) {
+for (const stylesheet of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity", "cro", "oncology", "apple-pharma-public", "owner-corrections"]) {
   assert.doesNotMatch(text(`assets/css/${stylesheet}.css`), /prefers-color-scheme:\s*dark/, `${stylesheet}.css must not create an untested automatic dark theme`);
 }
 
-console.log("Visual contracts passed for the corrected public release, Oncology gallery, three CRO leaders, sixteen tailored modules, portal entry, motion preferences and asset budgets.");
+console.log("Visual contracts passed for the concise white-led public release, Oncology gallery, three CRO leaders, sixteen tailored modules, portal entry, motion preferences and asset budgets.");
