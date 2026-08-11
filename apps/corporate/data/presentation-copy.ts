@@ -129,6 +129,14 @@ const conciseNarrativeBySlug: Readonly<Record<string, NarrativePresentation>> = 
 });
 
 export function presentationPage(page: CorporatePage): CorporatePage {
+  if (page.kind === "home") {
+    return Object.freeze({
+      ...page,
+      heroTitle: "Resilient pharmaceutical access, built on evidence.",
+      intro: "Qualified sourcing, regulatory discipline and secure digital operations for B2B healthcare partners.",
+    });
+  }
+
   const presentation = conciseNarrativeBySlug[page.slug];
   if (!presentation || page.kind !== "narrative") return page;
 
