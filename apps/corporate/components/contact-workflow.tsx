@@ -19,6 +19,12 @@ const enquiryTypes = [
 
 const platformEndpoint = (path: string) => `/api/platform${path}`;
 
+function serverEnquiryType(selected: string): string {
+  if (selected === "Clinical development & CRO support") return "Regulatory services";
+  if (selected === "Oncology & specialist medicines") return "Product opportunity";
+  return selected;
+}
+
 function friendlyError(status: number, offline: boolean): string {
   if (offline) return "You appear to be offline. Reconnect and try again.";
   if (status === 400 || status === 422) return "Please check the highlighted information and try again.";
@@ -60,7 +66,11 @@ export function ContactWorkflow() {
       const data = new FormData(form);
       const params = new URLSearchParams(window.location.search);
       const payload = Object.fromEntries(data.entries());
+      const selectedType = String(payload.enquiryType ?? "");
+      const selectedMessage = String(payload.message ?? "");
       Object.assign(payload, {
+        enquiryType: serverEnquiryType(selectedType),
+        message: serverEnquiryType(selectedType) === selectedType ? selectedMessage : `Topic: ${selectedType}. ${selectedMessage}`,
         sourcePage: window.location.pathname,
         sourceCta: params.get("cta") ?? "corporate-contact",
         attributionPayload: JSON.stringify({
