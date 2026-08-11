@@ -10,4 +10,5 @@ await import("./reconcile-article-authority.mjs");
 await import("./reconcile-social-authority.mjs");
 await import("./finalise-social-cards.mjs");
 await import("./apply-owner-corrections.mjs");
+await import("./apply-pages-presentation-parity.mjs");
 await import("./generate-structured-data-register.mjs");
