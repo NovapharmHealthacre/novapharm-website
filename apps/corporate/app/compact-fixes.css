@@ -1,3 +1,12 @@
+/* Final cross-route accessibility and compact-layout hardening. */
+.section.section-dark {
+  background-color: var(--navy);
+}
+
+.narrative-grid .editorial-number {
+  opacity: 1;
+}
+
 @media (max-width: 420px) {
   h1 {
     font-size: clamp(2.35rem, 12vw, 2.65rem);
