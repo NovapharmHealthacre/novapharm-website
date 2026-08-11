@@ -39,6 +39,11 @@
   color: #4d5d6c;
 }
 
+/* Product context links otherwise inherit the dark inline-link color; primary red CTA requires white text. */
+.portfolio-priority .button-primary {
+  color: #ffffff;
+}
+
 @media (max-width: 420px) {
   h1 {
     font-size: clamp(2.35rem, 12vw, 2.65rem);
