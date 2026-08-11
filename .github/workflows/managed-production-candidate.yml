@@ -1,0 +1,62 @@
+name: Dispatch managed production candidate
+
+on:
+  workflow_run:
+    workflows: ["Production readiness"]
+    types: [completed]
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: novapharm-managed-production-candidate
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      contains(github.event.workflow_run.head_commit.message, '[managed-production-candidate]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch exact-SHA production candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          gh workflow run azure-deploy.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f target=production-candidate \
+            -f action=deploy \
+            -f expected_sha="$RELEASE_SHA" \
+            -f run_schema_migrations=true
+          echo "Dispatched controlled unified Azure production candidate for $RELEASE_SHA."
+
+      - name: Confirm dispatch was accepted
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 12); do
+            run_id=$(gh run list \
+              --repo "$GITHUB_REPOSITORY" \
+              --workflow azure-deploy.yml \
+              --event workflow_dispatch \
+              --limit 20 \
+              --json databaseId,headSha,createdAt \
+              --jq ".[] | select(.headSha == \"$RELEASE_SHA\") | .databaseId" | head -1)
+            if [ -n "$run_id" ]; then
+              echo "Managed Azure deployment run accepted: $run_id"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "GitHub did not expose a controlled Azure deployment run for $RELEASE_SHA." >&2
+          exit 1
