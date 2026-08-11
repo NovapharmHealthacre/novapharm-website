@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0",
+  "programme": "NovaPharm governed 8K master art-direction",
+  "master": {
+    "minimumWidth": 7680,
+    "minimumHeight": 4320,
+    "aspectRatio": "16:9",
+    "neverUpscale": true,
+    "publicationRule": "8K files are source masters, not default browser payloads. Only responsive derivatives are published unless an explicit reviewed exception exists."
+  },
+  "derivatives": {
+    "widths": [640, 960, 1600, 2560, 3840],
+    "formats": ["avif", "webp", "jpg"],
+    "fit": "cover",
+    "requireIntrinsicDimensions": true,
+    "requireSrcset": true,
+    "requireSizes": true,
+    "heroFetchPriority": "high",
+    "nonHeroLoading": "lazy"
+  },
+  "governance": {
+    "requiredFields": [
+      "id",
+      "route",
+      "purpose",
+      "sourceReference",
+      "licenceStatus",
+      "alt",
+      "caption",
+      "desktopFocalPoint",
+      "mobileFocalPoint",
+      "structuredDataRelationship"
+    ],
+    "allowedLicenceStatus": ["owned", "licensed", "owner-authorised-generated", "source-acquisition-required"],
+    "prohibitFabricatedClaims": true,
+    "prohibitFalseFacilityRepresentation": true,
+    "prohibitFalseRegulatoryApproval": true,
+    "requireHumanReleaseReview": true,
+    "requireChromiumAndWebKitReview": true,
+    "requireAccessibilityReview": true,
+    "requirePerformanceReview": true
+  },
+  "budgets": {
+    "640": {"avif": 90000, "webp": 130000, "jpg": 180000},
+    "960": {"avif": 130000, "webp": 190000, "jpg": 260000},
+    "1600": {"avif": 220000, "webp": 320000, "jpg": 450000},
+    "2560": {"avif": 420000, "webp": 620000, "jpg": 900000},
+    "3840": {"avif": 750000, "webp": 1100000, "jpg": 1600000}
+  }
+}
