@@ -46,6 +46,18 @@
   font-size: 10px;
 }
 
+.module-signal .module-signal-disclosure {
+  grid-column: 1 / -1;
+  max-width: none;
+  margin: 0;
+  padding: 8px 13px 10px;
+  border-top: 1px solid rgba(226, 236, 233, .18);
+  color: #d9e5e2;
+  font-size: 10.5px;
+  line-height: 1.4;
+  text-align: left;
+}
+
 .module-photo-governance .module-signal,
 .module-photo-regulatory .module-signal,
 .module-photo-technology .module-signal {

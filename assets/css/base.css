@@ -99,6 +99,7 @@ h1, h2, h3, h4, p, a, td, th { overflow-wrap: break-word; }
   font-weight: 650;
   padding: 9px 9px;
   border-radius: 6px;
+  white-space: nowrap;
 }
 .site-nav .nav-portal { margin-left: 8px; border-left: 1px solid var(--line); border-radius: 0; padding-left: 18px; }
 .site-nav .nav-cta { color: #fff; padding-inline: 15px; }
@@ -1026,7 +1027,7 @@ td { color: var(--text); }
 .service-detail { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 30px; padding: 58px 0; border-top: 1px solid var(--line); scroll-margin-top: 96px; }
 .service-detail:last-child { border-bottom: 1px solid var(--line); }
 .service-number { color: var(--brand); font-size: 13px; font-weight: 820; }
-.service-detail h2 { max-width: 760px; margin: 8px 0 24px; color: var(--ink); font-size: 36px; line-height: 1.14; }
+.service-detail h2 { max-width: 760px; margin: 8px 0 24px; color: var(--ink); font-size: 36px; line-height: 1.14; overflow-wrap: normal; word-break: normal; }
 .service-detail-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 30px; }
 .service-detail-grid h3 { color: var(--ink); font-size: 14px; }
 .service-detail-grid p { color: var(--muted); }

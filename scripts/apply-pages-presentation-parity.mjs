@@ -6,6 +6,13 @@ const html = readFileSync(homePath, "utf8");
 
 const conciseMain = `<main id="main">
   <section class="pharma-home-hero">
+    <div class="pharma-home-media" aria-hidden="true">
+      <picture>
+        <source srcset="/assets/media/home/supply-network-hero.avif" type="image/avif">
+        <img src="/assets/media/home/supply-network-hero.jpg" alt="" width="1672" height="941" fetchpriority="high" decoding="async">
+      </picture>
+    </div>
+    <div class="pharma-home-shade" aria-hidden="true"></div>
     <div class="container pharma-home-grid">
       <div class="pharma-home-copy">
         <p class="pharma-kicker">NovaPharm Healthcare</p>
@@ -17,12 +24,7 @@ const conciseMain = `<main id="main">
         </div>
         <p class="pharma-status">Regulated wholesale supply has not commenced.</p>
       </div>
-      <figure class="pharma-home-media">
-        <picture>
-          <source srcset="/assets/media/home/supply-network-hero.avif" type="image/avif">
-          <img src="/assets/media/home/supply-network-hero.jpg" alt="Pharmaceutical supply and quality operations" width="1672" height="941" fetchpriority="high" decoding="async">
-        </picture>
-      </figure>
+      <p class="pharma-media-boundary">Conceptual supply-chain visual. No NovaPharm facility, vehicle, inventory or current distribution activity is depicted.</p>
     </div>
   </section>
 
@@ -49,21 +51,23 @@ const conciseMain = `<main id="main">
     </div>
   </section>
 
-  <section class="pharma-section pharma-focus-section">
+  <section class="pharma-focus-section">
+    <div class="pharma-focus-media" aria-hidden="true">
+      <picture>
+        <source srcset="/assets/media/stories/regulatory-batch-integrity.avif" type="image/avif">
+        <source srcset="/assets/media/stories/regulatory-batch-integrity.webp" type="image/webp">
+        <img src="/assets/media/stories/regulatory-batch-integrity.jpg" alt="" width="1600" height="900" loading="lazy" decoding="async">
+      </picture>
+    </div>
+    <div class="pharma-focus-shade" aria-hidden="true"></div>
     <div class="container pharma-focus-layout">
-      <figure class="pharma-focus-media">
-        <picture>
-          <source srcset="/assets/media/stories/regulatory-batch-integrity.avif" type="image/avif">
-          <source srcset="/assets/media/stories/regulatory-batch-integrity.webp" type="image/webp">
-          <img src="/assets/media/stories/regulatory-batch-integrity.jpg" alt="Controlled pharmaceutical packaging and traceability records" width="1600" height="900" loading="lazy" decoding="async">
-        </picture>
-      </figure>
       <div class="pharma-focus-copy">
-        <p class="pharma-kicker">Controlled growth</p>
-        <h2>Clarity before complexity.</h2>
-        <p>Operational, in development and externally gated remain visibly separate.</p>
+        <p class="pharma-kicker">Batch integrity</p>
+        <h2>Evidence travels with the batch.</h2>
+        <p>Clarity before complexity. Packaging, records and release status remain connected across each governed transaction.</p>
         <a href="/trust-centre/">Review the evidence boundary →</a>
       </div>
+      <p class="pharma-media-boundary">Representative traceability composition. It is not a NovaPharm facility, product or active batch record.</p>
     </div>
   </section>
 

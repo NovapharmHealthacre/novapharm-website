@@ -45,6 +45,10 @@ export function ConciseHomePage() {
   return (
     <>
       <section className="pharma-home-hero">
+        <div className="pharma-home-media" aria-hidden="true">
+          <Image src="/assets/media/home/supply-network-hero.avif" alt="" fill priority sizes="100vw" />
+        </div>
+        <div className="pharma-home-shade" aria-hidden="true" />
         <div className="shell pharma-home-grid">
           <div className="pharma-home-copy">
             <p className="pharma-kicker">NovaPharm Healthcare</p>
@@ -56,9 +60,7 @@ export function ConciseHomePage() {
             </div>
             <p className="pharma-status"><ShieldCheck aria-hidden="true" size={16} /> Regulated wholesale supply has not commenced.</p>
           </div>
-          <div className="pharma-home-media">
-            <Image src="/assets/media/home/supply-network-hero.avif" alt="Pharmaceutical supply and quality operations" fill priority sizes="(max-width: 900px) 100vw, 50vw" />
-          </div>
+          <p className="pharma-media-boundary">Conceptual supply-chain visual. No NovaPharm facility, vehicle, inventory or current distribution activity is depicted.</p>
         </div>
       </section>
 
@@ -87,17 +89,19 @@ export function ConciseHomePage() {
         </div>
       </section>
 
-      <section className="section pharma-section pharma-focus-section">
+      <section className="pharma-focus-section">
+        <div className="pharma-focus-media" aria-hidden="true">
+          <Image src="/assets/media/stories/regulatory-batch-integrity.jpg" alt="" fill sizes="100vw" />
+        </div>
+        <div className="pharma-focus-shade" aria-hidden="true" />
         <div className="shell pharma-focus-layout">
-          <div className="pharma-focus-media">
-            <Image src="/assets/media/stories/regulatory-batch-integrity.jpg" alt="Controlled pharmaceutical packaging and traceability records" fill sizes="(max-width: 900px) 100vw, 48vw" />
-          </div>
           <div className="pharma-focus-copy">
-            <p className="pharma-kicker">Controlled growth</p>
-            <h2>Clarity before complexity.</h2>
-            <p>Operational, in development and externally gated remain visibly separate.</p>
+            <p className="pharma-kicker">Batch integrity</p>
+            <h2>Evidence travels with the batch.</h2>
+            <p>Clarity before complexity. Packaging, records and release status remain connected across each governed transaction.</p>
             <Link className="text-link" href="/trust-centre/">Review the evidence boundary <ArrowRight aria-hidden="true" size={16} /></Link>
           </div>
+          <p className="pharma-media-boundary">Representative traceability composition. It is not a NovaPharm facility, product or active batch record.</p>
         </div>
       </section>
 

@@ -35,8 +35,14 @@ function replaceRange(html, start, end, replacement, label) {
   return `${html.slice(0, from)}${replacement}${html.slice(to)}`;
 }
 
-function moduleOverlay(kind, eyebrow, items) {
-  return `<div class="module-signal module-signal-${esc(kind)}" aria-hidden="true"><span class="module-signal-eyebrow">${esc(eyebrow)}</span>${items.map((item, index) => `<i><b>${String(index + 1).padStart(2, "0")}</b>${esc(item)}</i>`).join("")}</div>`;
+function moduleOverlay(kind, eyebrow, items, disclosure = "") {
+  const attributes = disclosure
+    ? `role="note" aria-label="${esc(`${eyebrow} visual context`)}"`
+    : 'aria-hidden="true"';
+  const disclosureMarkup = disclosure
+    ? `<p class="module-signal-disclosure">${esc(disclosure)}</p>`
+    : "";
+  return `<div class="module-signal module-signal-${esc(kind)}" ${attributes}><span class="module-signal-eyebrow">${esc(eyebrow)}</span>${disclosureMarkup}${items.map((item, index) => `<i><b>${String(index + 1).padStart(2, "0")}</b>${esc(item)}</i>`).join("")}</div>`;
 }
 
 function picture(asset, { alt = asset.alt, className = "", loading = "lazy", priority = false, sizes = "100vw" } = {}) {
@@ -47,7 +53,7 @@ function picture(asset, { alt = asset.alt, className = "", loading = "lazy", pri
 function moduleMedia(module, asset, className = "module-hero-media") {
   const isHero = className === "module-hero-media";
   const media = `<div class="${className} module-photo-${module.id}" data-media-role="${isHero ? "hero" : "secondary"}">${picture(asset, { priority: isHero })}${isHero ? "" : moduleOverlay(module.id, module.label, module.signals)}</div>`;
-  return isHero ? `${media}${moduleOverlay(module.id, module.label, module.signals)}` : media;
+  return isHero ? `${media}${moduleOverlay(module.id, module.label, module.signals, asset.caption)}` : media;
 }
 
 function leadershipMedia(module) {

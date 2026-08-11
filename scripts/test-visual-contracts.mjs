@@ -14,11 +14,11 @@ assert.doesNotMatch(cssEntrypoint, /ai-search\.css/, "the retired public AI styl
 
 const publicCss = text("assets/css/apple-pharma-public.css");
 const bundleCss = text("assets/css/novapharm.bundle.css");
-assert.match(publicCss, /--apple-pharma-public-contract:\s*2/);
+assert.match(publicCss, /--apple-pharma-public-contract:\s*3/);
 assert.match(publicCss, /body\[data-page="home"\]/);
 assert.match(publicCss, /-apple-system, BlinkMacSystemFont/);
 assert.match(publicCss, /@media \(prefers-reduced-motion: reduce\)/);
-assert.match(bundleCss, /--apple-pharma-public-contract:\s*2/);
+assert.match(bundleCss, /--apple-pharma-public-contract:\s*3/);
 for (const forbiddenGlobal of [
   /\n\.section,\n/,
   /\n\.page-hero,\n/,
@@ -36,14 +36,18 @@ assert.match(home, /Pharmaceutical supply, built around evidence\./);
 assert.match(home, /class="pharma-home-hero"/);
 assert.match(home, /class="container pharma-home-grid"/);
 assert.match(home, /class="pharma-home-media"/);
+assert.match(home, /class="pharma-home-shade"/);
 assert.match(home, /supply-network-hero\.avif/);
 assert.match(home, /supply-network-hero\.jpg/);
+assert.match(home, /Conceptual supply-chain visual\. No NovaPharm facility, vehicle, inventory or current distribution activity is depicted\./);
 assert.match(home, /class="[^"]*\bpharma-principles-grid\b[^"]*"/);
 assert.equal((home.match(/<span>Qualified sourcing<\/span>|<span>Regulatory discipline<\/span>|<span>Quality-led decisions<\/span>/g) || []).length, 3, "homepage must expose three operating principles");
 assert.match(home, /Three routes\. One standard\./);
 assert.equal((home.match(/<div class="pharma-pillar-grid">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) || []).length, 3, "homepage must present three sourcing routes");
 assert.match(home, /regulatory-batch-integrity\.jpg/);
+assert.match(home, /Evidence travels with the batch\./);
 assert.match(home, /Clarity before complexity\./);
+assert.match(home, /Representative traceability composition\. It is not a NovaPharm facility, product or active batch record\./);
 assert.match(home, /Specialist work\. Less noise\./);
 assert.equal((home.match(/<div class="pharma-focus-grid">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) || []).length, 3, "homepage must present three specialist focus pathways");
 assert.match(home, /Regulated wholesale supply has not commenced\./);
@@ -54,6 +58,7 @@ assert.doesNotMatch(home, /data-ai-search-open|nav-search|ai-search-dialog/);
 
 const services = text("services/index.html");
 assert.match(services, /class="service-visual-story"/);
+assert.match(services, /class="module-signal-disclosure"/);
 assert.match(services, /class="service-evidence-grid"/);
 assert.match(services, /services-launch-readiness\.jpg/);
 assert.match(services, /module-signal-services/);
@@ -62,6 +67,7 @@ assert.doesNotMatch(services, /assets\/media\/products\//);
 
 const regulatory = text("regulatory-services/index.html");
 assert.match(regulatory, /class="container regulatory-stage-grid"/);
+assert.match(regulatory, /class="module-signal-disclosure"/);
 assert.match(regulatory, /regulatory-dossier-control/);
 assert.match(regulatory, /\/assets\/media\/modules\/regulatory-dossier-control\.avif/);
 assert.match(regulatory, /\/assets\/media\/modules\/regulatory-dossier-control\.webp/);
@@ -80,6 +86,7 @@ assert.doesNotMatch(partners, /partnership-pathway\.svg/);
 assert.doesNotMatch(partners, /assets\/media\/products\//);
 
 const technology = text("technology/index.html");
+assert.match(technology, /class="module-signal-disclosure"/);
 for (const marker of ["technology-evidence-grid", "architecture-map-photographic", "Live capabilities", "In development capabilities", "Planned capabilities"]) assert.match(technology, new RegExp(marker));
 assert.match(technology, /technology-control-architecture\.jpg/);
 assert.match(technology, /module-signal-technology/);
@@ -197,4 +204,4 @@ for (const stylesheet of ["base", "tokens", "foundations", "premium-experience",
   assert.doesNotMatch(text(`assets/css/${stylesheet}.css`), /prefers-color-scheme:\s*dark/, `${stylesheet}.css must not create an untested automatic dark theme`);
 }
 
-console.log("Visual contracts passed for scoped Apple-pharma v2, preserved Regulatory dossier composition, Oncology gallery, CRO leadership, sixteen tailored modules, portal entry, motion preferences and asset budgets.");
+console.log("Visual contracts passed for scoped Apple-pharma v3, full-bleed truth-bounded homepage media, preserved Regulatory dossier composition, Oncology gallery, CRO leadership, sixteen tailored modules, portal entry, motion preferences and asset budgets.");
