@@ -50,13 +50,16 @@ requires(deployWorkflow, /Azure deployment what-if/u, "Every controlled deployme
 requires(deployWorkflow, /test "\$\(git rev-parse HEAD\)" = "\$EXPECTED_SHA"/u, "Deployment must enforce the reviewed immutable source SHA.");
 requires(deployWorkflow, /No DNS, domain binding, slot swap, SharePoint permission or GitHub Pages change was performed\./u, "Deployment evidence must preserve the no-cutover truth boundary.");
 
-requires(acceptance, /R2 — managed staging ready/u, "The acceptance pack must retain an explicit R2 gate.");
-requires(acceptance, /Subscription and cost approval/u, "Managed staging must remain cost/owner gated.");
-requires(acceptance, /Azure OIDC and protected environments/u, "Managed staging must require OIDC/protected environments.");
-requires(acceptance, /Real identity acceptance/u, "Managed staging must retain real identity acceptance as a named gate.");
-requires(acceptance, /Azure SQL isolated restore/u, "Managed staging must retain isolated restore evidence as a gate.");
-requires(acceptance, /Graph `Sites.Selected`/u, "Managed staging must retain least-privilege Microsoft Graph acceptance.");
-requires(acceptance, /Remain on GitHub Pages\/local validation/u, "The acceptance pack must preserve the fail-closed fallback when any managed-staging gate fails.");
+requires(acceptance, /Status: repository contract accepted; Azure what-if, provisioning and managed-environment acceptance pending/iu, "The acceptance pack must state that managed-environment acceptance is still pending.");
+requires(acceptance, /The following are not complete and must not be inferred from repository acceptance:/iu, "The acceptance pack must explicitly separate repository proof from unresolved managed-environment gates.");
+requires(acceptance, /owner-approved Azure subscription, region and cost estimate/iu, "Managed staging must remain cost/owner gated.");
+requires(acceptance, /GitHub OIDC registration and protected environments/iu, "Managed staging must require real OIDC/protected environments.");
+requires(acceptance, /Entra workforce and External ID registrations, groups, app roles and MFA evidence/iu, "Managed staging must retain real identity acceptance as a named gate.");
+requires(acceptance, /Azure SQL contained users, migration, reconciliation, backup and isolated restore/iu, "Managed staging must retain isolated restore evidence as a gate.");
+requires(acceptance, /Graph `Sites.Selected` consent and owner-approved SharePoint permissions/iu, "Managed staging must retain least-privilege Microsoft Graph acceptance.");
+requires(acceptance, /managed staging visual, security, accessibility, performance and penetration acceptance/iu, "Managed staging must retain non-functional acceptance gates.");
+requires(acceptance, /Existing GitHub Pages deployment remains the public rollback until owner-approved managed cutover acceptance/iu, "The acceptance pack must preserve the fail-closed public rollback until managed cutover is accepted.");
+requires(acceptance, /Repository acceptance is not production completion\./iu, "Repository acceptance must never be represented as production completion.");
 
 console.log(JSON.stringify({
   target: "managed-staging-repository-preflight",
@@ -68,6 +71,7 @@ console.log(JSON.stringify({
   exactShaRequired: true,
   oidcRequired: true,
   whatIfRequired: true,
+  managedEnvironmentAcceptancePending: true,
   productionCutoverPerformed: false,
   currentReleaseState: "R1 PUBLIC RELEASE VERIFIED",
 }, null, 2));
