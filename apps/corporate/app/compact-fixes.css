@@ -44,6 +44,18 @@
   color: #ffffff;
 }
 
+@media (max-width: 760px) {
+  /* Article navigation and references are real touch controls on small screens. */
+  .article-aside a,
+  .article-sources a {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+}
+
 @media (max-width: 420px) {
   h1 {
     font-size: clamp(2.35rem, 12vw, 2.65rem);
