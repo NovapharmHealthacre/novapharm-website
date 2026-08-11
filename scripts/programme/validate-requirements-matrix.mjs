@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 
 await import("./validate-absolute-mandate-register.mjs");
 await import("./validate-sop-programme.mjs");
+await import("./validate-rollback-authority.mjs");
 
 const allowedStatuses = new Set([
   "Complete",
