@@ -4,9 +4,47 @@
     overflow-wrap: break-word;
   }
 
+  h2 {
+    overflow-wrap: break-word;
+  }
+
   .pharma-home-copy h1,
   .page-hero h1,
   .profile-hero h1 {
     max-width: 100%;
+  }
+
+  .service-grid,
+  .concise-service-grid,
+  .concise-service-grid article,
+  .concise-service-grid dl,
+  .concise-service-grid dl > div,
+  .evidence-details,
+  .evidence-details-body {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .concise-service-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .evidence-details summary {
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .evidence-details summary svg {
+    flex: 0 0 auto;
+    margin-top: 2px;
+  }
+
+  .concise-service-grid .text-link {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 }
