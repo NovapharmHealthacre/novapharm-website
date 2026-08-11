@@ -57,6 +57,7 @@ const build = read("scripts/build-site.mjs");
   [regulatory, "regulatory-stage-grid", "Regulatory staged layout"],
   [regulatory, "regulatory-control-stage", "Regulatory tailored control sequence"],
   [regulatory, '<figure class="service-visual-media">', "Semantic Regulatory visual figure"],
+  [regulatory, "/assets/media/modules/regulatory-dossier-control.jpg", "Regulatory dossier hero photography"],
   [partners, "partner-module-pathway-grid", "Partners image-led ecosystem"],
   [partners, '<figure class="service-visual-media">', "Semantic Partners visual figure"],
   [technology, "technology-evidence-grid", "Technology evidence introduction"],
@@ -70,10 +71,11 @@ const build = read("scripts/build-site.mjs");
   [prabhakar, "/assets/prabhakarvitthallahare.jpeg", "Prabhakar profile portrait"],
   [girish, "/assets/girishshantilalachliya.jpeg", "Girish profile portrait"],
   [css, "@media (prefers-reduced-motion: reduce)", "Reduced-motion support"],
-  [publicCss, "--apple-pharma-public-contract: 1", "Public Apple-pharma source contract"],
+  [publicCss, "--apple-pharma-public-contract: 2", "Scoped public Apple-pharma source contract"],
+  [publicCss, 'body[data-page="home"]', "Homepage scoping contract"],
   [publicCss, "-apple-system", "Native system-font strategy"],
   [publicCss, "@media (prefers-reduced-motion: reduce)", "Public reduced-motion support"],
-  [bundleCss, "--apple-pharma-public-contract: 1", "Bundled public Apple-pharma contract"],
+  [bundleCss, "--apple-pharma-public-contract: 2", "Bundled scoped Apple-pharma contract"],
   [moduleCss, "page-hero-cinematic", "Module-specific cinematic page heroes"],
   [moduleCss, "modulePhotoDrift", "Module-specific photo motion"],
   [javascript, "data-motion-toggle", "Accessible motion controller"],
@@ -100,6 +102,20 @@ forbidText(services, "/assets/media/products/", "Services product-category photo
 forbidText(regulatory, "/assets/media/products/", "Regulatory product-category photography leak");
 forbidText(partners, "/assets/media/products/", "Partners product-category photography leak");
 forbidText(technology, "/assets/media/products/", "Technology product-category photography leak");
+
+// A homepage parity layer must never take ownership of the independently art-directed
+// dossier/module geometry. These were the root cause of the 11 Aug live regression.
+for (const forbiddenGlobal of [
+  "\n.section,\n",
+  "\n.page-hero,\n",
+  "\n.section-dark,\n",
+  "\n.card,\n",
+  "\nfigure img,\n",
+  ".page-hero-cinematic::before",
+  ".hero-cinematic-layer,"
+]) {
+  forbidText(publicCss, forbiddenGlobal, "Scoped Apple-pharma parity");
+}
 
 const pillarCards = (index.match(/<div class="pharma-pillar-grid">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) || []).length;
 if (pillarCards !== 3) failures.push(`Homepage sourcing routes: expected 3 purposeful routes, found ${pillarCards}.`);
@@ -133,4 +149,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Visual refinement validation passed: concise white-led homepage, purposeful sourcing/focus hierarchy, regulated boundaries, system typography, responsive and reduced-motion controls verified.");
+console.log("Visual refinement validation passed: scoped Apple-pharma homepage, preserved dossier/module art direction, regulated boundaries, system typography, responsive and reduced-motion controls verified.");
