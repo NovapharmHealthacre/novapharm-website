@@ -2,11 +2,16 @@ import type { Metadata } from "next";
 import { AccountInterestWorkflow } from "@/components/account-interest-workflow";
 import { JsonLd } from "@/components/json-ld";
 import { PageHero, SectionHeading, StatusNotice } from "@/components/ui";
-import { pageBySlug } from "@/data/pages";
+import { type CorporatePage, pageBySlug } from "@/data/pages";
 import { metadataForPage, pageSchema } from "@/lib/seo";
 
-const page = pageBySlug.get("account-application");
-if (!page) throw new Error("The account-application page definition is missing.");
+function requiredPage(slug: string): CorporatePage {
+  const match = pageBySlug.get(slug);
+  if (!match) throw new Error(`The ${slug} page definition is missing.`);
+  return match;
+}
+
+const page = requiredPage("account-application");
 
 export const metadata: Metadata = metadataForPage(page);
 
