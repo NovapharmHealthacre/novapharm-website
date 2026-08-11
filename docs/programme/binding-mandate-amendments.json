@@ -105,7 +105,12 @@
       "id": "3K",
       "title": "POST-MERGE PRIORITY OVERRIDE",
       "state": "ACTIVE_DIRECTIVE",
-      "evidence": ["docs/programme/absolute-mandate-register.json", "docs/programme/section-44-procedure-index.md"],
+      "evidence": [
+        "docs/programme/absolute-mandate-register.json",
+        "docs/programme/sops/README.md",
+        "docs/programme/sops/sop-register.json",
+        "scripts/programme/validate-sop-programme.mjs"
+      ],
       "remaining_gate": "Continue the mandated sequence: truthful repository baseline, justified language choices, Portal/forms, staging, real identity/data/integrations, all modules, security/monitoring/recovery, executable procedures, cutover readiness, controlled production, monitoring, then R6 evidence."
     }
   ]
