@@ -20,6 +20,8 @@ const trialCount = 3;
 let portalProcess;
 let portalOutput = "";
 let chrome;
+let lighthouseBrowser;
+let lighthouseContext;
 
 function run(command, argumentsList, label, environment = process.env, capture = false) {
   const result = spawnSync(command, argumentsList, {
@@ -71,7 +73,7 @@ function startPortal() {
   portalProcess.stderr?.on("data", (chunk) => { portalOutput += String(chunk); });
 }
 
-async function authenticatedCookieHeader(credentials) {
+async function authenticatedCookies(credentials) {
   const browser = await chromium.launch({ headless: true });
   try {
     const page = await browser.newPage({ baseURL: portalOrigin, locale: "en-GB" });
@@ -85,10 +87,23 @@ async function authenticatedCookieHeader(credentials) {
     await page.locator(".data-context").waitFor();
     const cookies = await page.context().cookies(portalOrigin);
     assert.ok(cookies.some((cookie) => cookie.name === "np_session"), "Authenticated Lighthouse session cookie was not issued.");
-    return cookies.map((cookie) => `${cookie.name}=${cookie.value}`).join("; ");
+    return cookies;
   } finally {
     await browser.close();
   }
+}
+
+async function attachLighthouseBrowser() {
+  lighthouseBrowser = await chromium.connectOverCDP(`http://127.0.0.1:${chrome.port}`);
+  const contexts = lighthouseBrowser.contexts();
+  assert.equal(contexts.length, 1, "Lighthouse Chrome must expose exactly one controlled browser context.");
+  [lighthouseContext] = contexts;
+}
+
+async function setLighthouseCookies(cookies = []) {
+  assert.ok(lighthouseContext, "Lighthouse browser context is not attached.");
+  await lighthouseContext.clearCookies();
+  if (cookies.length > 0) await lighthouseContext.addCookies(cookies);
 }
 
 function score(category) {
@@ -98,6 +113,57 @@ function score(category) {
 function metric(lhr, id) {
   const audit = lhr.audits[id];
   return { numericValue: audit?.numericValue ?? null, displayValue: audit?.displayValue ?? null };
+}
+
+function safeUrlPath(value) {
+  if (typeof value !== "string" || !value) return null;
+  try {
+    const url = new URL(value, portalOrigin);
+    return `${url.pathname}${url.hash ? "#fragment" : ""}`;
+  } catch {
+    return null;
+  }
+}
+
+function safeConsoleDiagnostics(audit) {
+  if (audit?.id !== "errors-in-console" || !Array.isArray(audit?.details?.items)) return [];
+  const seen = new Set();
+  const diagnostics = [];
+  for (const item of audit.details.items) {
+    const description = typeof item?.description === "string" ? item.description : "";
+    const statusMatch = description.match(/\b([45]\d\d)\b/u);
+    const diagnostic = {
+      source: typeof item?.source === "string" ? item.source : "unknown",
+      statusCode: statusMatch ? Number(statusMatch[1]) : null,
+      urlPath: safeUrlPath(item?.sourceLocation?.url ?? item?.url),
+      line: Number.isInteger(item?.sourceLocation?.line) ? item.sourceLocation.line : null,
+      column: Number.isInteger(item?.sourceLocation?.column) ? item.sourceLocation.column : null,
+    };
+    const key = JSON.stringify(diagnostic);
+    if (!seen.has(key)) {
+      seen.add(key);
+      diagnostics.push(diagnostic);
+    }
+  }
+  return diagnostics;
+}
+
+function categoryFailures(lhr, categoryId) {
+  const category = lhr.categories[categoryId];
+  if (!category) return [];
+  return category.auditRefs
+    .filter((reference) => (reference.weight ?? 0) > 0)
+    .map((reference) => {
+      const audit = lhr.audits[reference.id];
+      return {
+        id: reference.id,
+        title: audit?.title ?? reference.id,
+        score: audit?.score ?? null,
+        weight: reference.weight ?? 0,
+        diagnostics: safeConsoleDiagnostics(audit),
+      };
+    })
+    .filter((audit) => audit.score !== null && audit.score < 1);
 }
 
 function median(values) {
@@ -111,20 +177,33 @@ function medianMetric(trials, name) {
   return { numericValue, displayValue: source?.metrics[name].displayValue ?? null };
 }
 
-async function auditPageTrial(name, pathName, formFactor, cookieHeader = "") {
+function uniqueAuditFailures(trials) {
+  const failures = new Map();
+  for (const trial of trials) {
+    for (const audit of trial.bestPracticesFailures) {
+      const existing = failures.get(audit.id);
+      const diagnostics = [...(existing?.diagnostics ?? []), ...(audit.diagnostics ?? [])];
+      const uniqueDiagnostics = [...new Map(diagnostics.map((item) => [JSON.stringify(item), item])).values()];
+      failures.set(audit.id, { ...audit, diagnostics: uniqueDiagnostics });
+    }
+  }
+  return [...failures.values()].sort((left, right) => left.id.localeCompare(right.id));
+}
+
+async function auditPageTrial(name, pathName, formFactor) {
   const flags = {
     port: chrome.port,
     output: "json",
     logLevel: "error",
     onlyCategories: ["performance", "accessibility", "best-practices"],
     formFactor,
-    extraHeaders: cookieHeader ? { Cookie: cookieHeader } : undefined,
+    disableStorageReset: true,
   };
   const result = await lighthouse(`${portalOrigin}${pathName}`, flags, formFactor === "desktop" ? desktopConfig : undefined);
   if (!result) throw new Error(`Lighthouse returned no result for ${name}.`);
   const lhr = result.lhr;
   if (lhr.runtimeError) throw new Error(`${name}: ${lhr.runtimeError.message}`);
-  const summary = {
+  return {
     name,
     path: pathName,
     formFactor,
@@ -133,6 +212,7 @@ async function auditPageTrial(name, pathName, formFactor, cookieHeader = "") {
       accessibility: score(lhr.categories.accessibility),
       bestPractices: score(lhr.categories["best-practices"]),
     },
+    bestPracticesFailures: categoryFailures(lhr, "best-practices"),
     metrics: {
       firstContentfulPaint: metric(lhr, "first-contentful-paint"),
       largestContentfulPaint: metric(lhr, "largest-contentful-paint"),
@@ -141,13 +221,12 @@ async function auditPageTrial(name, pathName, formFactor, cookieHeader = "") {
       totalByteWeight: metric(lhr, "total-byte-weight"),
     },
   };
-  return summary;
 }
 
-async function auditPage(name, pathName, formFactor, cookieHeader = "") {
+async function auditPage(name, pathName, formFactor) {
   const trials = [];
   for (let trial = 1; trial <= trialCount; trial += 1) {
-    trials.push(await auditPageTrial(name, pathName, formFactor, cookieHeader));
+    trials.push(await auditPageTrial(name, pathName, formFactor));
   }
   const summary = {
     name,
@@ -160,6 +239,7 @@ async function auditPage(name, pathName, formFactor, cookieHeader = "") {
       accessibility: median(trials.map((trial) => trial.scores.accessibility)),
       bestPractices: median(trials.map((trial) => trial.scores.bestPractices)),
     },
+    bestPracticesFailures: uniqueAuditFailures(trials),
     metrics: {
       firstContentfulPaint: medianMetric(trials, "firstContentfulPaint"),
       largestContentfulPaint: medianMetric(trials, "largestContentfulPaint"),
@@ -169,9 +249,10 @@ async function auditPage(name, pathName, formFactor, cookieHeader = "") {
     },
     trials,
   };
-  assert.ok(summary.scores.performance >= 90, `${name}: performance score ${summary.scores.performance} is below 90.`);
-  assert.ok(summary.scores.accessibility >= 95, `${name}: accessibility score ${summary.scores.accessibility} is below 95.`);
-  assert.ok(summary.scores.bestPractices >= 95, `${name}: best-practices score ${summary.scores.bestPractices} is below 95.`);
+  assert.ok(summary.scores.performance >= 95, `${name}: performance score ${summary.scores.performance} is below 95.`);
+  assert.equal(summary.scores.accessibility, 100, `${name}: accessibility must remain 100; received ${summary.scores.accessibility}.`);
+  assert.equal(summary.scores.bestPractices, 100, `${name}: best practices must remain 100; received ${summary.scores.bestPractices}.`);
+  assert.deepEqual(summary.bestPracticesFailures, [], `${name}: weighted Best Practices audit gaps remain.`);
   return summary;
 }
 
@@ -194,22 +275,39 @@ try {
   const credentials = JSON.parse(readFileSync(credentialsPath, "utf8"));
   assert.equal(typeof credentials.username, "string");
   assert.equal(typeof credentials.password, "string");
-  const cookieHeader = await authenticatedCookieHeader(credentials);
+  const sessionCookies = await authenticatedCookies(credentials);
 
   chrome = await launch({ chromePath: chromium.executablePath(), chromeFlags: ["--headless=new", "--no-sandbox", "--disable-dev-shm-usage"] });
+  await attachLighthouseBrowser();
   const results = [];
   for (const formFactor of ["desktop", "mobile"]) {
+    await setLighthouseCookies();
     results.push(await auditPage(`Portal sign-in (${formFactor})`, "/", formFactor));
-    results.push(await auditPage(`Customer dashboard (${formFactor})`, "/portal/dashboard/", formFactor, cookieHeader));
+    await setLighthouseCookies(sessionCookies);
+    results.push(await auditPage(`Customer dashboard (${formFactor})`, "/portal/dashboard/", formFactor));
   }
+  await setLighthouseCookies();
+
   const report = { generatedAt: new Date().toISOString(), candidate: "local production standalone portal with isolated synthetic API", results };
   writeFileSync(join(artifactRoot, "summary.json"), `${JSON.stringify(report, null, 2)}\n`);
   writeFileSync(
     join(artifactRoot, "summary.md"),
-    `# Portal Lighthouse acceptance\n\n${results.map((entry) => `- ${entry.name} (${entry.runCount}-run median): performance ${entry.scores.performance}, accessibility ${entry.scores.accessibility}, best practices ${entry.scores.bestPractices}; LCP ${entry.metrics.largestContentfulPaint.displayValue}; CLS ${entry.metrics.cumulativeLayoutShift.displayValue}; TBT ${entry.metrics.totalBlockingTime.displayValue}.`).join("\n")}\n\nSEO is intentionally excluded because every portal route is private and noindex. Raw Lighthouse reports and temporary authentication material are not persisted.\n`,
+    `# Portal Lighthouse acceptance\n\n${results.map((entry) => {
+      const gaps = entry.bestPracticesFailures.length > 0
+        ? `; best-practices gaps ${entry.bestPracticesFailures.map((audit) => {
+          const diagnostics = audit.diagnostics?.length > 0
+            ? ` [${audit.diagnostics.map((item) => `${item.source}${item.statusCode ? ` ${item.statusCode}` : ""}${item.urlPath ? ` ${item.urlPath}` : ""}`).join("; ")}]`
+            : "";
+          return `${audit.id} (${audit.score})${diagnostics}`;
+        }).join(", ")}`
+        : "; best-practices gaps none";
+      return `- ${entry.name} (${entry.runCount}-run median): performance ${entry.scores.performance}, accessibility ${entry.scores.accessibility}, best practices ${entry.scores.bestPractices}; LCP ${entry.metrics.largestContentfulPaint.displayValue}; CLS ${entry.metrics.cumulativeLayoutShift.displayValue}; TBT ${entry.metrics.totalBlockingTime.displayValue}${gaps}.`;
+    }).join("\n")}\n\nAcceptance requires performance >=95, accessibility 100 and Best Practices 100 for every profile. SEO is intentionally excluded because every portal route is private and noindex. Raw Lighthouse reports, console descriptions, query strings, page-content audit details and temporary authentication material are not persisted. Only weighted failed audit identifiers/titles/scores plus sanitized console source/status/path/line/column diagnostics are retained for debugging if a future run fails.\n`,
   );
   console.log(`Portal Lighthouse acceptance passed for ${results.length} authenticated and anonymous profiles.`);
 } finally {
+  if (lighthouseContext) await lighthouseContext.clearCookies().catch(() => {});
+  if (lighthouseBrowser) await lighthouseBrowser.close().catch(() => {});
   if (chrome) await chrome.kill();
   if (portalProcess && portalProcess.exitCode === null) {
     portalProcess.kill("SIGTERM");

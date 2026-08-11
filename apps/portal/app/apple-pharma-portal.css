@@ -1,0 +1,232 @@
+:root {
+  --portal-ink: #1d1d1f;
+  --portal-muted: #6e6e73;
+  --portal-line: #d2d2d7;
+  --portal-soft: #f5f5f7;
+  --portal-white: #ffffff;
+  --portal-red: #b4232e;
+  --portal-red-soft: #fff3f4;
+}
+
+html,
+body {
+  background: var(--portal-white);
+  color: var(--portal-ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+.eyebrow {
+  color: var(--portal-red);
+  font-size: .7rem;
+  letter-spacing: .08em;
+}
+
+.button,
+.icon-command,
+.area-switcher a,
+.portal-search > button {
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.button.primary { background: var(--portal-red); }
+.button.primary:hover { background: #8f1c25; }
+.button.microsoft { border-color: var(--portal-line); }
+
+/* Sign-in: remove the dark enterprise split and keep one calm white surface. */
+.login-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(440px, .78fr);
+  background: var(--portal-white);
+}
+
+.login-context {
+  color: var(--portal-ink);
+  background: var(--portal-white);
+  border-right: 1px solid #ececef;
+}
+
+.login-context .portal-brand {
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+}
+
+.login-copy { max-width: 720px; }
+.login-copy h1 {
+  color: var(--portal-ink);
+  font-size: clamp(3rem, 5.4vw, 6rem);
+  letter-spacing: -.045em;
+  line-height: .98;
+  font-weight: 620;
+}
+.login-copy p:last-child,
+.environment-line { color: var(--portal-muted); }
+
+.login-panel { max-width: 560px; }
+.login-panel h2 {
+  letter-spacing: -.035em;
+  font-weight: 620;
+}
+
+.access-selector label {
+  border-color: var(--portal-line);
+  border-radius: 14px;
+  background: var(--portal-white);
+}
+.access-selector label.selected {
+  border-color: var(--portal-red);
+  box-shadow: none;
+  background: var(--portal-red-soft);
+}
+
+.login-form input,
+.login-form select,
+.login-form textarea,
+.action-grid input,
+.action-grid select,
+.action-grid textarea {
+  border-color: #c7c7cc;
+  border-radius: 12px;
+  background: var(--portal-white);
+}
+
+.focused-layout,
+.system-page {
+  background: var(--portal-white);
+}
+.focused-panel,
+.system-page {
+  border: 1px solid #e5e5e7;
+  border-top: 2px solid var(--portal-red);
+  border-radius: 18px;
+  box-shadow: 0 18px 48px rgba(0,0,0,.06);
+}
+
+/* Workspace: white canvas, white navigation, content-first hierarchy. */
+.workspace-shell { background: var(--portal-white); }
+.workspace-sidebar {
+  color: var(--portal-ink);
+  background: var(--portal-white);
+  border-right: 1px solid #e5e5e7;
+}
+.sidebar-brand {
+  min-height: 72px;
+  background: var(--portal-white);
+  border-bottom: 1px solid #eeeeef;
+}
+.sidebar-label { color: #86868b; }
+.workspace-sidebar a:not(.portal-brand) {
+  color: #424245;
+  border-left: 0;
+  border-radius: 10px;
+  font-size: .86rem;
+  font-weight: 560;
+}
+.workspace-sidebar a:not(.portal-brand):hover { background: var(--portal-soft); }
+.workspace-sidebar a.active {
+  color: var(--portal-ink);
+  border-left: 0;
+  background: var(--portal-red-soft);
+  box-shadow: inset 3px 0 var(--portal-red);
+}
+.workspace-sidebar a small { color: #86868b; }
+.sidebar-security {
+  border-top-color: #e5e5e7;
+  color: var(--portal-muted);
+}
+.sidebar-security svg { color: #17745a; }
+
+.workspace-main { background: var(--portal-white); }
+.workspace-topbar {
+  min-height: 64px;
+  border-bottom-color: #e5e5e7;
+  background: rgba(255,255,255,.9);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+.portal-search input { border-bottom-color: #c7c7cc; }
+.portal-search > button,
+.user-summary button { background: var(--portal-white); border-color: var(--portal-line); }
+
+.workspace-content {
+  width: min(1380px, 100%);
+  padding: clamp(28px, 4vw, 56px);
+}
+.module-heading { margin-bottom: 28px; }
+.module-heading h1 {
+  color: var(--portal-ink);
+  font-size: clamp(2.3rem, 4vw, 4.6rem);
+  letter-spacing: -.045em;
+  font-weight: 620;
+}
+.module-heading > div > p:last-child {
+  max-width: 62ch;
+  color: var(--portal-muted);
+  font-size: .96rem;
+  line-height: 1.5;
+}
+
+.area-switcher {
+  border-color: #e5e5e7;
+  padding-block: 10px;
+}
+.area-switcher a { background: var(--portal-white); }
+
+/* Quieter cards and evidence surfaces; architecture remains intact. */
+.module-card,
+.metric-card,
+.data-card,
+.presentation-panel,
+.action-panel,
+.table-shell,
+.evidence-card,
+.truth-card {
+  border-color: #e5e5e7 !important;
+  background: var(--portal-white) !important;
+  box-shadow: none !important;
+}
+
+.data-context span,
+.status-chip,
+.truth-chip,
+.module-chip {
+  border-color: #dedee1 !important;
+  background: var(--portal-soft) !important;
+  color: #515154 !important;
+}
+
+/* Keep semantic role/archetype accenting small and intentional. */
+[data-role="customer"],
+[data-role="employee"],
+[data-role="executive"],
+[data-role="administrator"] {
+  --role-surface: var(--portal-white);
+}
+
+@media (max-width: 980px) {
+  .login-layout { grid-template-columns: 1fr; }
+  .login-context {
+    min-height: auto;
+    padding-bottom: 28px;
+    border-right: 0;
+    border-bottom: 1px solid #ececef;
+  }
+  .login-copy { padding: 42px 0 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

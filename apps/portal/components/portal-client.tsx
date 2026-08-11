@@ -18,7 +18,7 @@ function ModulePresentation({ module }: Readonly<{ module: PortalModule }>) {
   const presentationClass = styles["presentation"];
   const archetypeClass = styles[archetype];
   if (!presentationClass || !archetypeClass) throw new Error(`${module.code} has an incomplete presentation stylesheet contract.`);
-  return <div className={`${presentationClass} ${archetypeClass}`} data-presentation={archetype}><Dashboard module={module} /></div>;
+  return <div className={`${presentationClass} ${archetypeClass}`} data-module={module.code} data-presentation={archetype}><Dashboard module={module} /></div>;
 }
 
 export function PortalClient({ view }: Readonly<{ view: PortalView }>) {

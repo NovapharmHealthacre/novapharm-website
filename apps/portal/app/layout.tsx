@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
+import "./apple-pharma-portal.css";
 
 export const metadata: Metadata = {
   title: "NovaPharm Secure Portal",
