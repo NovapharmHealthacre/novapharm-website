@@ -24,7 +24,7 @@ test("account pathway renders only real governed stages", () => {
   const route = read("app/account-application/page.tsx");
   assert.match(route, /<ol className="journey-track account-journey" style=\{\{ background: "transparent" \}\}>/);
   assert.match(route, /<li key=\{step\} style=\{\{ border: "1px solid var\(--line\)" \}\}>/);
-  assert.equal((route.match(/^  "/gmu) ?? []).length >= 8, true, "The account pathway must retain its governed stages.");
+  assert.equal((route.match(/^ {2}"/gmu) ?? []).length >= 8, true, "The account pathway must retain its governed stages.");
   assert.doesNotMatch(route, /placeholder|coming soon|future stage/i, "Unused pathway tracks must remain whitespace, not invented stages.");
 });
 
