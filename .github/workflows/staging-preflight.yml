@@ -1,0 +1,35 @@
+name: Managed staging preflight
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/azure-deploy.yml'
+      - '.github/workflows/staging-preflight.yml'
+      - 'infra/**'
+      - 'docs/programme/azure-unified-estate-acceptance.md'
+      - 'scripts/validate-unified-staging-preflight.mjs'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/azure-deploy.yml'
+      - '.github/workflows/staging-preflight.yml'
+      - 'infra/**'
+      - 'docs/programme/azure-unified-estate-acceptance.md'
+      - 'scripts/validate-unified-staging-preflight.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  repository-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Validate managed-staging repository contract
+        run: node scripts/validate-unified-staging-preflight.mjs
