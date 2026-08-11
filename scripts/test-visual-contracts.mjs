@@ -26,7 +26,7 @@ assert.match(home, /class="container pharma-home-grid"/);
 assert.match(home, /class="pharma-home-media"/);
 assert.match(home, /supply-network-hero\.avif/);
 assert.match(home, /supply-network-hero\.jpg/);
-assert.match(home, /class="pharma-principles-grid"/);
+assert.match(home, /class="[^"]*\bpharma-principles-grid\b[^"]*"/);
 assert.equal((home.match(/<span>Qualified sourcing<\/span>|<span>Regulatory discipline<\/span>|<span>Quality-led decisions<\/span>/g) || []).length, 3, "homepage must expose three operating principles");
 assert.match(home, /Three routes\. One standard\./);
 assert.equal((home.match(/<div class="pharma-pillar-grid">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) || []).length, 3, "homepage must present three sourcing routes");
