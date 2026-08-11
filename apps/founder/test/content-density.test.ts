@@ -7,6 +7,7 @@ const pageLimits = Object.freeze({
   "ventures.md": 320,
   "facts.md": 260,
   "media.md": 220,
+  "speaking-partnerships.md": 260,
 });
 
 const wordCount = (value: string) => value.match(/[\p{L}\p{N}][\p{L}\p{N}’'&/–—-]*/gu)?.length ?? 0;
