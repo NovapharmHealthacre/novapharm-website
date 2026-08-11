@@ -18,4 +18,6 @@ minimumReleaseAgeExclude:
   - postcss@8.5.25
 
 onlyBuiltDependencies:
+  - "esbuild"
+  - "protobufjs"
   - "sharp"
