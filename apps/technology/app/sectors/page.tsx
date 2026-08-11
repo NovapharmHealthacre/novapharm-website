@@ -5,7 +5,7 @@ import { sectors } from "@/data/site";
 
 export const metadata: Metadata = {
   title: "Pharma & Life Sciences Sectors",
-  description: "Advisory for pharmaceuticals, generics, biotech, consumer health, medical devices, CDMOs, manufacturers, distributors and market-access organisations.",
+  description: "Advisory for pharmaceuticals, biotech, consumer health, devices, manufacturers, CDMOs, distributors and market-access organisations.",
   alternates: { canonical: "/sectors/" },
 };
 
@@ -16,17 +16,15 @@ export default function SectorsPage() {
         eyebrow="Sectors"
         index="02"
         title={<>One industry. Distinct <em>business systems.</em></>}
-        intro="Pharmaceuticals, biotech, consumer health, devices, manufacturing, and distribution share a regulated ecosystem—but create value through different economics, capabilities, risks, and routes to market."
+        intro="Different economics, capabilities and routes to market require different decisions."
       />
 
       <section className="section section--paper sector-detail-section">
         <div className="shell">
           <Reveal className="statement-grid">
             <p className="eyebrow">Sector judgement</p>
-            <h2>Industry knowledge matters when it changes the question, not when it decorates the answer.</h2>
-            <p>
-              We examine each business through its own value-creation logic while keeping sight of the wider system: science, evidence, regulation, quality, manufacturing, access, channels, economics, technology, and organisational capability.
-            </p>
+            <h2>Use industry knowledge where it changes the decision.</h2>
+            <p>Keep science, regulation, manufacturing, access, channels and economics connected.</p>
           </Reveal>
 
           <div className="sector-detail-grid">
@@ -34,7 +32,7 @@ export default function SectorsPage() {
               <Reveal className="sector-detail" delay={index * 0.04} key={sector.title}>
                 <div className="sector-detail__index">{sector.index}</div>
                 <h2>{sector.title}</h2>
-                <p>{sector.description}</p>
+                <p>{sector.priorities.slice(0, 2).join(" · ")}</p>
                 <div className="sector-detail__tags">
                   {sector.priorities.map((priority) => <span key={priority}>{priority}</span>)}
                 </div>
@@ -47,13 +45,11 @@ export default function SectorsPage() {
       <section className="cross-sector-section">
         <div className="shell cross-sector-section__grid">
           <Reveal>
-            <p className="eyebrow eyebrow--light">Cross-sector advantage</p>
-            <h2>The most useful ideas often move across boundaries.</h2>
+            <p className="eyebrow eyebrow--light">Cross-sector perspective</p>
+            <h2>Useful ideas move across boundaries.</h2>
           </Reveal>
           <Reveal delay={0.08}>
-            <p>
-              A distributor&apos;s view can expose an unrealistic launch plan. A manufacturer&apos;s constraint can reshape portfolio priorities. A consumer-health channel can reveal a better adoption mechanism. A digital operating model can improve transfer governance. We connect those perspectives deliberately.
-            </p>
+            <p>Manufacturer, distributor, market-access and digital perspectives often expose risks another function cannot see alone.</p>
           </Reveal>
         </div>
       </section>
