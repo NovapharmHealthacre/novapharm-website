@@ -122,7 +122,7 @@ textarea {
   background: var(--portal-white);
   border-bottom: 1px solid #eeeeef;
 }
-.sidebar-label { color: #86868b; }
+.sidebar-label { color: var(--portal-muted); }
 .workspace-sidebar a:not(.portal-brand) {
   color: #424245;
   border-left: 0;
@@ -137,7 +137,7 @@ textarea {
   background: var(--portal-red-soft);
   box-shadow: inset 3px 0 var(--portal-red);
 }
-.workspace-sidebar a small { color: #86868b; }
+.workspace-sidebar a small { color: var(--portal-muted); }
 .sidebar-security {
   border-top-color: #e5e5e7;
   color: var(--portal-muted);
