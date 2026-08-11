@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ConciseHomePage } from "@/components/concise-home";
 import { JsonLd } from "@/components/json-ld";
 import { ArticlePage, CorporatePageRenderer, PersonPage } from "@/components/page-renderer";
 import { articleBySlug, articles } from "@/data/articles";
 import { corporatePages, pageBySlug } from "@/data/pages";
+import { presentationPage } from "@/data/presentation-copy";
 import { leadership } from "@/data/site";
 import { articleSchema, metadataForArticle, metadataForPage, metadataForPerson, pageSchema, personSchema } from "@/lib/seo";
 
@@ -41,7 +43,7 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
   const article = articleForRoute(slug);
   if (article) return metadataForArticle(article);
   const page = pageBySlug.get(slug);
-  return page ? metadataForPage(page) : {};
+  return page ? metadataForPage(presentationPage(page)) : {};
 }
 
 export default async function CorporateRoute({ params }: RouteProps) {
@@ -52,5 +54,9 @@ export default async function CorporateRoute({ params }: RouteProps) {
   if (article) return <><ArticlePage article={article} /><JsonLd id="article-page-schema" value={articleSchema(article)} /></>;
   const page = pageBySlug.get(slug);
   if (!page) notFound();
-  return <><CorporatePageRenderer page={page} /><JsonLd id="corporate-page-schema" value={pageSchema(page)} /></>;
+
+  const presentedPage = presentationPage(page);
+  const renderedPage = page.kind === "home" ? <ConciseHomePage /> : <CorporatePageRenderer page={presentedPage} />;
+
+  return <>{renderedPage}<JsonLd id="corporate-page-schema" value={pageSchema(presentedPage)} /></>;
 }
