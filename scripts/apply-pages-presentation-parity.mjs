@@ -91,6 +91,7 @@ const conciseMain = `<main id="main">
         <a class="btn btn-primary" href="/contact/">Contact NovaPharm</a>
         <a class="btn btn-ghost" href="/account-application/">Open an account</a>
       </div>
+      <p class="pharma-disclosure">Owner-attested logistics and warehousing arrangements with Polar Speed are being incorporated into NovaPharm's operating model. The relationship does not transfer Polar Speed's authorisations or certificates to NovaPharm.</p>
     </div>
   </section>
 </main>`;
@@ -106,6 +107,9 @@ if (!next.includes("Pharmaceutical supply, built around evidence.")) {
 }
 if (!next.includes("Regulated wholesale supply has not commenced.")) {
   throw new Error("PUBLIC_ONLY homepage presentation parity failed: release-state truth marker missing.");
+}
+if (!next.includes("The relationship does not transfer Polar Speed's authorisations or certificates to NovaPharm")) {
+  throw new Error("PUBLIC_ONLY homepage presentation parity failed: governed logistics boundary missing.");
 }
 if (/data-login-form|data-contact-form|data-account-application/.test(next)) {
   throw new Error("PUBLIC_ONLY homepage presentation parity must not introduce protected form controls.");
