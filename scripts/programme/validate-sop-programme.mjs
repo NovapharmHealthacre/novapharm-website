@@ -114,8 +114,49 @@ async function validateProductionEvidence(procedure, evidence, index) {
   );
 }
 
+const contractFixtureProcedure = { id: "SOP-99" };
+const fixtureSha = "f".repeat(40);
+const validRehearsalFixture = {
+  evidenceId: "SOP-99-STG-contract-test",
+  environment: "managed-staging",
+  target: "synthetic-validator-fixture",
+  sourceSha: fixtureSha,
+  performedAt: "2026-08-11T00:00:00.000Z",
+  performedBy: "validator fixture",
+  outcome: "PASS",
+  evidenceReferences: ["package.json"],
+  rollbackDisposition: "VERIFIED",
+  recoveryDisposition: "VERIFIED",
+  notes: "Synthetic validator fixture only; this is not rehearsal evidence for a governed SOP."
+};
+const validProductionFixture = {
+  evidenceId: "SOP-99-PRD-contract-test",
+  environment: "production",
+  target: "synthetic-validator-fixture",
+  sourceSha: fixtureSha,
+  acceptedAt: "2026-08-11T00:00:00.000Z",
+  acceptedBy: "validator fixture",
+  outcome: "PASS",
+  evidenceReferences: ["package.json"],
+  rollbackDisposition: "VERIFIED",
+  recoveryDisposition: "VERIFIED",
+  releaseState: "R6 PRODUCTION ACCEPTED",
+  notes: "Synthetic validator fixture only; this is not production evidence for a governed SOP."
+};
+await validateRehearsalEvidence(contractFixtureProcedure, validRehearsalFixture, 0);
+await validateProductionEvidence(contractFixtureProcedure, validProductionFixture, 0);
+await assert.rejects(
+  validateRehearsalEvidence(contractFixtureProcedure, { ...validRehearsalFixture, sourceSha: "not-a-sha" }, 1),
+  /exact 40-character source SHA required/u,
+);
+await assert.rejects(
+  validateProductionEvidence(contractFixtureProcedure, { ...validProductionFixture, evidenceReferences: ["http://invalid.example/evidence"] }, 1),
+  /only HTTPS URLs or repository-relative paths are allowed/u,
+);
+
 const ids = new Set();
 const numbers = new Set();
+const evidenceIds = new Set();
 const files = await readdir(root);
 const sopFiles = files.filter((name) => /^SOP-\d{2}-.*\.md$/u.test(name)).sort();
 assert.equal(sopFiles.length, 44, "Exactly 44 canonical SOP Markdown files are required");
@@ -141,9 +182,13 @@ for (const procedure of register.procedures) {
 
   for (const [index, evidence] of procedure.rehearsalEvidence.entries()) {
     await validateRehearsalEvidence(procedure, evidence, index);
+    assert.equal(evidenceIds.has(evidence.evidenceId), false, `${procedure.id}: duplicate evidenceId ${evidence.evidenceId}`);
+    evidenceIds.add(evidence.evidenceId);
   }
   for (const [index, evidence] of procedure.productionAcceptanceEvidence.entries()) {
     await validateProductionEvidence(procedure, evidence, index);
+    assert.equal(evidenceIds.has(evidence.evidenceId), false, `${procedure.id}: duplicate evidenceId ${evidence.evidenceId}`);
+    evidenceIds.add(evidence.evidenceId);
   }
 
   if (procedure.status === "REHEARSED_MANAGED_STAGING" || procedure.status === "PRODUCTION_ACCEPTED") {
@@ -194,6 +239,7 @@ console.log(JSON.stringify({
   repositoryProcedureComplete: register.metadata.repositoryProcedureComplete,
   rehearsalComplete: register.metadata.rehearsalComplete,
   productionAccepted: register.metadata.productionAccepted,
-  evidenceContract: "structured exact-SHA environment-bound evidence enforced",
+  evidenceContract: "structured exact-SHA environment-bound evidence enforced and self-tested",
+  evidenceIds: evidenceIds.size,
   statuses: Object.fromEntries([...allowedStatuses].map((status) => [status, register.procedures.filter((procedure) => procedure.status === status).length])),
 }, null, 2));
