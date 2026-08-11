@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./apple-pharma.css";
 import { CookieControls } from "@/components/cookie-controls";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
