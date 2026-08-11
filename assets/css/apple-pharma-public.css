@@ -61,7 +61,7 @@ body {
   color: #29292c;
   font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: -0.005em;
+  letter-spacing: 0;
   text-transform: none;
 }
 
@@ -75,7 +75,7 @@ h4 {
   color: var(--np-ink);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   font-weight: 600;
-  letter-spacing: -0.035em;
+  letter-spacing: 0;
   text-wrap: balance;
 }
 
@@ -102,7 +102,7 @@ p { text-wrap: pretty; }
   box-shadow: none;
   font-size: 0.9rem;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
 }
 
@@ -315,6 +315,14 @@ p { text-wrap: pretty; }
 .pharma-focus-media { min-height: 560px; }
 .pharma-focus-copy h2 { margin: 10px 0 20px; }
 .pharma-focus-copy > p:last-of-type { color: var(--np-muted); font-size: 1.08rem; }
+
+.pharma-disclosure {
+  max-width: 920px;
+  margin: 32px 0 0;
+  color: var(--np-muted);
+  font-size: 0.76rem;
+  line-height: 1.55;
+}
 
 /* Remaining static fallback routes: true-white, restrained, hierarchy-led. */
 .section,
