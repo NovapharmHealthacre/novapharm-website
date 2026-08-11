@@ -111,12 +111,12 @@
   gap: 1px;
   margin: 26px 0 30px;
   border: 0;
-  background: var(--presentation-rule);
+  background: transparent;
 }
 
 .command :global(.metric) {
   min-height: 126px;
-  border: 0;
+  border: 1px solid var(--presentation-rule);
   background: #fff;
 }
 
@@ -173,11 +173,11 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1px;
   border: 0;
-  background: var(--presentation-rule);
+  background: transparent;
 }
 
 .workflow :global(.metric) {
-  border: 0;
+  border: 1px solid var(--presentation-rule);
   background: #fff;
 }
 
@@ -268,11 +268,11 @@
   gap: 1px;
   margin-bottom: 30px;
   border: 0;
-  background: var(--presentation-rule);
+  background: transparent;
 }
 
 .intelligence :global(.metric) {
-  border: 0;
+  border: 1px solid var(--presentation-rule);
   background: #fff;
 }
 
