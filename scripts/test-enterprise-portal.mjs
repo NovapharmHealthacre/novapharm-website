@@ -4,3 +4,4 @@ await import("./test-executive-warehouse-contract.mjs");
 await import("./test-module-authorship-completeness.mjs");
 await import("./test-lean-module-dispatch.mjs");
 await import("./test-executive-least-data-contract.mjs");
+await import("./test-module-presentation-archetypes.mjs");
