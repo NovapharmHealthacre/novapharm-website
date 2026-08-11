@@ -100,6 +100,39 @@ function metric(lhr, id) {
   return { numericValue: audit?.numericValue ?? null, displayValue: audit?.displayValue ?? null };
 }
 
+function safeUrlPath(value) {
+  if (typeof value !== "string" || !value) return null;
+  try {
+    const url = new URL(value, portalOrigin);
+    return `${url.pathname}${url.hash ? "#fragment" : ""}`;
+  } catch {
+    return null;
+  }
+}
+
+function safeConsoleDiagnostics(audit) {
+  if (audit?.id !== "errors-in-console" || !Array.isArray(audit?.details?.items)) return [];
+  const seen = new Set();
+  const diagnostics = [];
+  for (const item of audit.details.items) {
+    const description = typeof item?.description === "string" ? item.description : "";
+    const statusMatch = description.match(/\b([45]\d\d)\b/u);
+    const diagnostic = {
+      source: typeof item?.source === "string" ? item.source : "unknown",
+      statusCode: statusMatch ? Number(statusMatch[1]) : null,
+      urlPath: safeUrlPath(item?.sourceLocation?.url ?? item?.url),
+      line: Number.isInteger(item?.sourceLocation?.line) ? item.sourceLocation.line : null,
+      column: Number.isInteger(item?.sourceLocation?.column) ? item.sourceLocation.column : null,
+    };
+    const key = JSON.stringify(diagnostic);
+    if (!seen.has(key)) {
+      seen.add(key);
+      diagnostics.push(diagnostic);
+    }
+  }
+  return diagnostics;
+}
+
 function categoryFailures(lhr, categoryId) {
   const category = lhr.categories[categoryId];
   if (!category) return [];
@@ -112,6 +145,7 @@ function categoryFailures(lhr, categoryId) {
         title: audit?.title ?? reference.id,
         score: audit?.score ?? null,
         weight: reference.weight ?? 0,
+        diagnostics: safeConsoleDiagnostics(audit),
       };
     })
     .filter((audit) => audit.score !== null && audit.score < 1);
@@ -131,7 +165,12 @@ function medianMetric(trials, name) {
 function uniqueAuditFailures(trials) {
   const failures = new Map();
   for (const trial of trials) {
-    for (const audit of trial.bestPracticesFailures) failures.set(audit.id, audit);
+    for (const audit of trial.bestPracticesFailures) {
+      const existing = failures.get(audit.id);
+      const diagnostics = [...(existing?.diagnostics ?? []), ...(audit.diagnostics ?? [])];
+      const uniqueDiagnostics = [...new Map(diagnostics.map((item) => [JSON.stringify(item), item])).values()];
+      failures.set(audit.id, { ...audit, diagnostics: uniqueDiagnostics });
+    }
   }
   return [...failures.values()].sort((left, right) => left.id.localeCompare(right.id));
 }
@@ -235,10 +274,15 @@ try {
     join(artifactRoot, "summary.md"),
     `# Portal Lighthouse acceptance\n\n${results.map((entry) => {
       const gaps = entry.bestPracticesFailures.length > 0
-        ? `; best-practices gaps ${entry.bestPracticesFailures.map((audit) => `${audit.id} (${audit.score})`).join(", ")}`
+        ? `; best-practices gaps ${entry.bestPracticesFailures.map((audit) => {
+          const diagnostics = audit.diagnostics?.length > 0
+            ? ` [${audit.diagnostics.map((item) => `${item.source}${item.statusCode ? ` ${item.statusCode}` : ""}${item.urlPath ? ` ${item.urlPath}` : ""}`).join("; ")}]`
+            : "";
+          return `${audit.id} (${audit.score})${diagnostics}`;
+        }).join(", ")}`
         : "; best-practices gaps none";
       return `- ${entry.name} (${entry.runCount}-run median): performance ${entry.scores.performance}, accessibility ${entry.scores.accessibility}, best practices ${entry.scores.bestPractices}; LCP ${entry.metrics.largestContentfulPaint.displayValue}; CLS ${entry.metrics.cumulativeLayoutShift.displayValue}; TBT ${entry.metrics.totalBlockingTime.displayValue}${gaps}.`;
-    }).join("\n")}\n\nSEO is intentionally excluded because every portal route is private and noindex. Raw Lighthouse reports, audit details that could expose page content, and temporary authentication material are not persisted. Only weighted failed audit identifiers/titles/scores are retained for actionable diagnostics.\n`,
+    }).join("\n")}\n\nSEO is intentionally excluded because every portal route is private and noindex. Raw Lighthouse reports, console descriptions, query strings, page-content audit details and temporary authentication material are not persisted. Only weighted failed audit identifiers/titles/scores plus sanitized console source/status/path/line/column diagnostics are retained for actionable debugging.\n`,
   );
   console.log(`Portal Lighthouse acceptance passed for ${results.length} authenticated and anonymous profiles.`);
 } finally {
