@@ -14,7 +14,7 @@ The current lockfile inventory contains 524 reviewed third-party package records
 
 ## Dependency lifecycle scripts
 
-Pnpm lifecycle scripts fail closed unless the package appears in `onlyBuiltDependencies`. The machine-readable `config/dependency-build-script-policy.json` records the exact approved version, dependency path, lifecycle responsibility and rationale for the three permitted packages: `esbuild`, `protobufjs` and `sharp`. `npm run supply-chain:validate` requires that policy to match the pnpm workspace allowlist and lockfile exactly. No wildcard or approve-all setting is permitted.
+Pnpm lifecycle scripts fail closed unless an exact package/version matcher is approved in `allowBuilds`. The machine-readable `config/dependency-build-script-policy.json` records the exact approved version, dependency path, lifecycle responsibility and rationale for the three permitted packages: `esbuild`, `protobufjs` and `sharp`. `npm run supply-chain:validate` requires that policy to match the pnpm workspace map and lockfile exactly, rejects the removed `onlyBuiltDependencies` setting and prohibits `dangerouslyAllowAllBuilds`. This follows the [official pnpm build-settings contract](https://pnpm.io/settings/build). No wildcard or approve-all setting is permitted.
 
 ## Obligations and limits
 

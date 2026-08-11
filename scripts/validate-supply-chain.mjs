@@ -69,14 +69,24 @@ function validateDependencyBuildScripts() {
     return { packageName: entry.packageName, version: entry.version };
   });
   const approvedNames = approved.map((entry) => entry.packageName);
+  const approvedMatchers = approved.map((entry) => `${entry.packageName}@${entry.version}`);
   assert.equal(new Set(approvedNames).size, approvedNames.length, "Dependency build-script policy contains duplicate packages.");
   assert.deepEqual(approvedNames, [...approvedNames].sort(), "Dependency build-script approvals must remain alphabetically ordered.");
 
   const workspace = readFileSync(join(root, "pnpm-workspace.yaml"), "utf8");
-  const block = workspace.match(/^onlyBuiltDependencies:\n((?:  - "[^"]+"\n?)+)/mu);
-  assert.ok(block, "pnpm-workspace.yaml must contain a bounded onlyBuiltDependencies allowlist.");
-  const workspaceNames = [...block[1].matchAll(/^  - "([^"]+)"$/gmu)].map((match) => match[1]);
-  assert.deepEqual(workspaceNames, approvedNames, "pnpm lifecycle-script allowlist differs from the governed policy.");
+  const block = workspace.match(/^allowBuilds:\n((?:  [^:\n]+:\s+(?:true|false)\n?)+)/mu);
+  assert.ok(block, "pnpm-workspace.yaml must contain a bounded allowBuilds map.");
+  const workspaceApprovals = [...block[1].matchAll(/^  ([^:\n]+):\s+(true|false)$/gmu)].map((match) => ({
+    matcher: match[1],
+    allowed: match[2] === "true",
+  }));
+  assert.deepEqual(
+    workspaceApprovals,
+    approvedMatchers.map((matcher) => ({ matcher, allowed: true })),
+    "pnpm lifecycle-script allowBuilds map differs from the exact-version governed policy.",
+  );
+  assert.doesNotMatch(workspace, /dangerouslyAllowAllBuilds:\s*true/u, "Pnpm must never permit every dependency build script.");
+  assert.doesNotMatch(workspace, /^onlyBuiltDependencies:/mu, "Removed pnpm v10 build-script settings must not return.");
 
   const lockfile = readFileSync(join(root, "pnpm-lock.yaml"), "utf8");
   for (const entry of approved) {
@@ -85,7 +95,7 @@ function validateDependencyBuildScripts() {
       `${entry.packageName}@${entry.version} is approved for lifecycle scripts but absent from the pnpm lockfile.`,
     );
   }
-  return { approvedPackages: approved.length };
+  return { approvedPackages: approved.length, exactVersionMatchers: approvedMatchers.length };
 }
 
 function validateReleaseGovernance() {
