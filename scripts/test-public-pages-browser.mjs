@@ -8,7 +8,7 @@ const baseUrl = process.env.PUBLIC_PAGES_BASE_URL ?? "http://127.0.0.1:4310";
 const artifactRoot = path.resolve(process.env.PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT ?? "artifacts/public-pages-browser");
 const routes = [
   { path: "/", name: "home", required: "Pharmaceutical supply, built around evidence." },
-  { path: "/regulatory-services/", name: "regulatory-dossier", required: "Regulatory Services" },
+  { path: "/regulatory-services/", name: "regulatory-dossier", required: "Regulatory readiness before regulated activity." },
   { path: "/services/", name: "services", required: "Services" },
   { path: "/oncology/", name: "oncology", required: "Oncology" },
   { path: "/cro/", name: "cro", required: "Clinical" },
