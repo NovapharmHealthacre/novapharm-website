@@ -28,7 +28,7 @@ function articleForRoute(slug: string) {
 export function generateStaticParams() {
   return [
     { slug: [] },
-    ...corporatePages.filter((page) => page.slug).map((page) => ({ slug: page.slug.split("/") })),
+    ...corporatePages.filter((page) => page.slug && page.slug !== "account-application").map((page) => ({ slug: page.slug.split("/") })),
     ...leadership.map((person) => ({ slug: ["leadership", person.slug] })),
     ...articles.map((article) => ({ slug: ["news-insights", article.slug] })),
   ];
