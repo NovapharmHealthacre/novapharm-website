@@ -1,5 +1,6 @@
 import { nowIso } from "../data/database.mjs";
 import * as base from "./enterprise-domain-service-base.mjs";
+import { authoredExecutiveView } from "./executive-module-views.mjs";
 import {
   authoredAdminView,
   ceoDashboardView,
@@ -20,8 +21,7 @@ function canUseModule(module, context) {
 }
 
 function directOverlayModule(module) {
-  return module.area === "admin"
-    || (module.area === "executive" && ["command-centre", "ceo-dashboard"].includes(module.slug));
+  return module.area === "admin" || module.area === "executive";
 }
 
 function directSnapshotEnvelope(module) {
@@ -72,7 +72,7 @@ export async function enterpriseModuleSnapshot(code, context) {
     if (module.area === "admin") return authoredAdminView(envelope);
     if (module.slug === "command-centre") return commandCentreView(envelope);
     if (module.slug === "ceo-dashboard") return ceoDashboardView(envelope);
-    throw Object.assign(new Error("Authored direct module has no snapshot builder."), { statusCode: 500 });
+    return authoredExecutiveView(envelope);
   }
 
   const snapshot = await base.enterpriseModuleSnapshot(code, context);
