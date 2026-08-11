@@ -85,6 +85,23 @@ export const writeEndpointByModule = Object.freeze({
   "employee.administration": "POST /api/enterprise/workflows/{workflowId}/advance",
 } as const satisfies Partial<Record<GovernedPortalModuleCode, string>>);
 
+export const protectedServerAuthoritiesByModule = Object.freeze({
+  "customer.returns": ["POST /api/enterprise/customer/returns"],
+  "customer.quality-complaints": ["POST /api/enterprise/customer/quality-complaints"],
+  "customer.support": ["POST /api/enterprise/customer/support"],
+  "employee.products": ["POST /api/enterprise/products/{productId}/status"],
+  "employee.administration": ["POST /api/enterprise/workflows/{workflowId}/advance"],
+  "admin.dashboard": ["GET /api/admin/summary"],
+  "admin.local-review": [
+    "GET /api/admin/applications/{applicationId}",
+    "POST /api/admin/applications/{applicationId}/status",
+    "POST /api/admin/applications/{applicationId}/activate",
+    "GET /api/admin/notifications/{notificationId}/preview",
+    "POST /api/admin/notifications/{notificationId}/replay",
+  ],
+  "admin.users": ["POST /api/admin/users/{username}/sessions/revoke"],
+} as const satisfies Partial<Record<GovernedPortalModuleCode, readonly string[]>>);
+
 export const documentAuthorityByModule = Object.freeze({
   "customer.returns": "Approved quarantine/private document store where return evidence is required.",
   "customer.quality-complaints": "Approved quarantine/private document store for complaint evidence; never a public storage surface.",

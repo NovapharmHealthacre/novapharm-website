@@ -6,12 +6,17 @@ import {
   hiddenDependencyAuthorities,
   moduleFinalReleaseStates,
   moduleReadEndpoint,
+  protectedServerAuthoritiesByModule,
   securityClassificationByArea,
   securityClassificationByModule,
   writeEndpointByModule,
   type GovernedPortalModuleCode,
   type ModuleFinalReleaseState,
 } from "./activation";
+import {
+  currentRuntimeDatabaseAuthorityByModule,
+  noCurrentRuntimeDatabaseAuthorityReason,
+} from "./database-authority";
 
 export type PortalArea = "customer" | "employee" | "executive" | "admin";
 export type ModuleMaturity = "operational_foundation" | "blocked_external_integration" | "planned";
@@ -55,6 +60,8 @@ export type PortalModuleActivation = Readonly<{
   readState: PortalModule["readCapability"];
   writeState: PortalModule["writeCapability"];
   apiEndpoints: readonly string[];
+  releasedModuleApiEndpoints: readonly string[];
+  implementedProtectedServerAuthorities: readonly string[];
   databaseTablesViews: readonly string[];
   documentAuthority: string;
   integrationDependencies: readonly string[];
@@ -73,7 +80,12 @@ export type PortalModuleActivation = Readonly<{
   knownLimitation: string;
 }>;
 
-export { moduleFinalReleaseStates, governedPortalModuleCodes };
+export {
+  currentRuntimeDatabaseAuthorityByModule,
+  governedPortalModuleCodes,
+  moduleFinalReleaseStates,
+  noCurrentRuntimeDatabaseAuthorityReason,
+};
 export type { GovernedPortalModuleCode, ModuleFinalReleaseState };
 
 export const portalModules = Object.freeze(moduleCatalog as readonly PortalModule[]);
@@ -94,25 +106,27 @@ for (const module of portalModules) {
 const noDocumentAuthority = "NOT APPLICABLE to the current module contract; any future document access must use an approved private document authority.";
 const productionRecovery = "Fail closed to the non-operational state; suppress unsafe navigation/mutations, preserve audit, revoke affected access where required, restore or reconcile authoritative data/configuration using tested procedures, and require re-acceptance before reactivation.";
 
-function auditRequirements(module: PortalModule): readonly string[] {
+function auditRequirements(module: PortalModule, protectedAuthorities: readonly string[]): readonly string[] {
   const requirements = [
     "Record authenticated subject, effective role, module code, action, outcome, correlation/request identifier and timestamp.",
     "Record authorization denials and security-relevant failures.",
   ];
-  if (module.writeCapability !== "none_read_only") requirements.push("Record write intent, resulting canonical record/event identifiers and retry/dead-letter outcome.");
+  if (module.writeCapability !== "none_read_only") requirements.push("Record released write intent, resulting canonical record/event identifiers and retry/dead-letter outcome.");
+  if (protectedAuthorities.some((authority) => authority.startsWith("POST "))) requirements.push("Record protected server-authority invocation, CSRF/authorization outcome, actor, canonical result identifier and recovery/retry outcome even while the module UI remains read-only.");
   return Object.freeze(requirements);
 }
 
-function monitoringRequirements(module: PortalModule): readonly string[] {
+function monitoringRequirements(module: PortalModule, protectedAuthorities: readonly string[]): readonly string[] {
   const requirements = ["route/API availability", "authorization denials", "error rate", "request latency", "audit-pipeline health"];
   if (module.area === "customer") requirements.push("customer-isolation violations must remain zero");
   if (module.area === "executive") requirements.push("authoritative-source freshness/staleness");
   if (module.area === "admin") requirements.push("privileged-change events");
-  if (module.writeCapability !== "none_read_only") requirements.push("write failure, retry and dead-letter state");
+  if (module.writeCapability !== "none_read_only") requirements.push("released write failure, retry and dead-letter state");
+  if (protectedAuthorities.some((authority) => authority.startsWith("POST "))) requirements.push("protected server-authority denials, failures and recovery outcomes");
   return Object.freeze(requirements);
 }
 
-function missingTests(module: PortalModule, hidden: boolean): readonly string[] {
+function missingTests(module: PortalModule, hidden: boolean, protectedAuthorities: readonly string[]): readonly string[] {
   const tests = hidden
     ? [
         "Named external authority/dependency acceptance in managed staging.",
@@ -126,7 +140,8 @@ function missingTests(module: PortalModule, hidden: boolean): readonly string[] 
         "Tested backup/restore or recovery evidence for every authoritative source used by the module.",
         "Business-owner production acceptance evidence.",
       ];
-  if (module.writeCapability !== "none_read_only") tests.push("End-to-end write recovery acceptance covering audit, retry/dead-letter handling and canonical record reconciliation.");
+  if (module.writeCapability !== "none_read_only") tests.push("End-to-end released-write recovery acceptance covering audit, retry/dead-letter handling and canonical record reconciliation.");
+  if (protectedAuthorities.some((authority) => authority.startsWith("POST "))) tests.push("Managed-staging protected-authority acceptance covering CSRF, role denial, audit evidence, failure handling and recovery without implying that the module UI releases the mutation.");
   return Object.freeze(tests);
 }
 
@@ -135,7 +150,9 @@ export const portalModuleActivationMatrix = Object.freeze(portalModules.map((mod
   const finalReleaseState = finalReleaseStateFor(code);
   const hidden = finalReleaseState === "HIDDEN FOR SAFETY";
   const writeEndpoint = writeEndpointByModule[code as keyof typeof writeEndpointByModule];
-  const apiEndpoints = [moduleReadEndpoint(code, hidden), ...(writeEndpoint ? [writeEndpoint] : [])];
+  const releasedEndpoints = [moduleReadEndpoint(code, hidden), ...(writeEndpoint ? [writeEndpoint] : [])];
+  const protectedAuthorities = protectedServerAuthoritiesByModule[code as keyof typeof protectedServerAuthoritiesByModule] ?? [];
+  const databaseTablesViews = currentRuntimeDatabaseAuthorityByModule[code];
   const requiredIntegrationAuthority = hiddenDependencyAuthorities[code as keyof typeof hiddenDependencyAuthorities];
   const documentAuthority = documentAuthorityByModule[code as keyof typeof documentAuthorityByModule] ?? noDocumentAuthority;
   const securityClassification = securityClassificationByModule[code as keyof typeof securityClassificationByModule]
@@ -143,6 +160,8 @@ export const portalModuleActivationMatrix = Object.freeze(portalModules.map((mod
   const repositoryState = `${module.maturity}; ${module.releaseClassification}; ${module.validationDataState}; ${module.productionStatus}`;
   const hiddenState = module.releaseClassification === "hidden_until_dependency_exists";
   if (hidden !== hiddenState) throw new Error(`${module.code}: release classification conflicts with final activation state.`);
+  if (hidden && databaseTablesViews.length !== 0) throw new Error(`${module.code}: hidden module must exercise no current runtime database authority.`);
+  if (!hidden && databaseTablesViews.length === 0) throw new Error(`${module.code}: visible module must state its current runtime database authority.`);
 
   return Object.freeze({
     code,
@@ -156,14 +175,16 @@ export const portalModuleActivationMatrix = Object.freeze(portalModules.map((mod
     productionDataSource: module.dataSource,
     readState: module.readCapability,
     writeState: module.writeCapability,
-    apiEndpoints: Object.freeze(apiEndpoints),
-    databaseTablesViews: Object.freeze([module.dataSource]),
+    apiEndpoints: Object.freeze([...releasedEndpoints]),
+    releasedModuleApiEndpoints: Object.freeze([...releasedEndpoints]),
+    implementedProtectedServerAuthorities: Object.freeze([...protectedAuthorities]),
+    databaseTablesViews: Object.freeze([...databaseTablesViews]),
     documentAuthority,
     integrationDependencies: Object.freeze([requiredIntegrationAuthority ?? module.externalDependency]),
     securityClassification,
-    auditRequirements: auditRequirements(module),
+    auditRequirements: auditRequirements(module, protectedAuthorities),
     currentTests: Object.freeze([...module.testCoverage]),
-    missingTests: missingTests(module, hidden),
+    missingTests: missingTests(module, hidden, protectedAuthorities),
     accessibilityState: hidden
       ? "HIDDEN — route/API must fail closed until the dependency earns visibility."
       : "REPOSITORY VERIFIED — browser acceptance exists; managed-staging accessibility acceptance is still required.",
@@ -173,13 +194,14 @@ export const portalModuleActivationMatrix = Object.freeze(portalModules.map((mod
     performanceState: hidden
       ? "HIDDEN — no production performance claim until the dependency earns visibility."
       : "REPOSITORY VERIFIED — Lighthouse/browser evidence exists; managed-staging and post-go-live performance evidence are still required.",
-    monitoring: monitoringRequirements(module),
+    monitoring: monitoringRequirements(module, protectedAuthorities),
     backupRecoveryImplications: productionRecovery,
     finalReleaseState,
     businessOwnerAcceptance: "NOT ACCEPTED FOR PRODUCTION",
     productionEvidence: Object.freeze([]),
-    knownLimitation: requiredIntegrationAuthority
-      ?? "No accepted production Portal runtime, production identity mapping, canonical production data connection, active production monitoring or tested production recovery evidence exists at R1.",
+    knownLimitation: hidden
+      ? `${requiredIntegrationAuthority ?? module.externalDependency}. ${noCurrentRuntimeDatabaseAuthorityReason}`
+      : "No accepted production Portal runtime, production identity mapping, canonical production data connection, active production monitoring or tested production recovery evidence exists at R1.",
   });
 }));
 
