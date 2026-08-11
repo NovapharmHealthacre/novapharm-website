@@ -1,0 +1,108 @@
+/* Final cross-route accessibility and compact-layout hardening. */
+.section.section-dark {
+  background-color: var(--navy);
+}
+
+.narrative-grid .editorial-number {
+  opacity: 1;
+}
+
+/* Preserve intentional dark/media-backed surfaces after the white-led presentation layer. */
+.profile-hero {
+  background-color: var(--navy);
+}
+
+.ecosystem-grid .ecosystem-featured {
+  isolation: isolate;
+}
+
+.ecosystem-grid .ecosystem-featured .ecosystem-media {
+  z-index: 0;
+}
+
+.ecosystem-grid .ecosystem-featured > :not(.ecosystem-media) {
+  position: relative;
+  z-index: 1;
+}
+
+.media-story .check-list li {
+  color: #d4e1e8;
+  border-bottom-color: rgba(255, 255, 255, 0.23);
+}
+
+.media-story .check-list svg {
+  color: #8ed2cd;
+}
+
+/* The priority copy crosses a light gradient; use a token that remains AA at its darkest stop. */
+.portfolio-priority-copy > p {
+  color: #4d5d6c;
+}
+
+/* Product context links otherwise inherit the dark inline-link color; primary red CTA requires white text. */
+.portfolio-priority .button-primary {
+  color: #ffffff;
+}
+
+@media (max-width: 760px) {
+  /* Article navigation and references are real touch controls on small screens. */
+  .article-aside a,
+  .article-sources a {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 420px) {
+  h1 {
+    font-size: clamp(2.35rem, 12vw, 2.65rem);
+    overflow-wrap: break-word;
+  }
+
+  h2 {
+    overflow-wrap: break-word;
+  }
+
+  .pharma-home-copy h1,
+  .page-hero h1,
+  .profile-hero h1 {
+    max-width: 100%;
+  }
+
+  .service-grid,
+  .concise-service-grid,
+  .concise-service-grid article,
+  .concise-service-grid dl,
+  .concise-service-grid dl > div,
+  .evidence-details,
+  .evidence-details-body {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .concise-service-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .evidence-details summary {
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .evidence-details summary svg {
+    flex: 0 0 auto;
+    margin-top: 2px;
+  }
+
+  .concise-service-grid .text-link {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}

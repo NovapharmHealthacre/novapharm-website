@@ -1,9 +1,19 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ConciseHomePage } from "@/components/concise-home";
+import {
+  ConciseCroPage,
+  ConciseOncologyPage,
+  ConciseProductsPage,
+  ConciseRegulatoryPage,
+  ConciseServicesPage,
+} from "@/components/concise-specialist-pages";
 import { JsonLd } from "@/components/json-ld";
 import { ArticlePage, CorporatePageRenderer, PersonPage } from "@/components/page-renderer";
 import { articleBySlug, articles } from "@/data/articles";
+import { conciseCorporatePage } from "@/data/concise-pages";
 import { corporatePages, pageBySlug } from "@/data/pages";
+import { presentationPage } from "@/data/presentation-copy";
 import { leadership } from "@/data/site";
 import { articleSchema, metadataForArticle, metadataForPage, metadataForPerson, pageSchema, personSchema } from "@/lib/seo";
 
@@ -28,7 +38,9 @@ function articleForRoute(slug: string) {
 export function generateStaticParams() {
   return [
     { slug: [] },
-    ...corporatePages.filter((page) => page.slug).map((page) => ({ slug: page.slug.split("/") })),
+    ...corporatePages
+      .filter((page) => page.slug && page.slug !== "account-application")
+      .map((page) => ({ slug: page.slug.split("/") })),
     ...leadership.map((person) => ({ slug: ["leadership", person.slug] })),
     ...articles.map((article) => ({ slug: ["news-insights", article.slug] })),
   ];
@@ -48,9 +60,40 @@ export default async function CorporateRoute({ params }: RouteProps) {
   const slug = joined((await params).slug);
   const person = personForRoute(slug);
   if (person) return <><PersonPage person={person} /><JsonLd id="person-page-schema" value={personSchema(person.slug)} /></>;
+
   const article = articleForRoute(slug);
   if (article) return <><ArticlePage article={article} /><JsonLd id="article-page-schema" value={articleSchema(article)} /></>;
+
   const page = pageBySlug.get(slug);
   if (!page) notFound();
-  return <><CorporatePageRenderer page={page} /><JsonLd id="corporate-page-schema" value={pageSchema(page)} /></>;
+
+  let content: React.ReactNode;
+  switch (slug) {
+    case "":
+      content = <ConciseHomePage />;
+      break;
+    case "services":
+      content = <ConciseServicesPage />;
+      break;
+    case "regulatory-services":
+      content = <ConciseRegulatoryPage />;
+      break;
+    case "cro":
+      content = <ConciseCroPage />;
+      break;
+    case "oncology":
+      content = <ConciseOncologyPage />;
+      break;
+    case "product-portfolio":
+      content = <ConciseProductsPage />;
+      break;
+    case "product-portfolio/nutraxin":
+      // Preserve the dedicated authoritative renderer and exact owner-supplied catalogue imagery.
+      content = <CorporatePageRenderer page={page} />;
+      break;
+    default:
+      content = <CorporatePageRenderer page={presentationPage(conciseCorporatePage(page))} />;
+  }
+
+  return <>{content}<JsonLd id="corporate-page-schema" value={pageSchema(page)} /></>;
 }

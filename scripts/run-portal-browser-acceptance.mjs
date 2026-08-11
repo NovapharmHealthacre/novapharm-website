@@ -25,6 +25,16 @@ function stopValidationRuntime() {
   run(process.execPath, [join(repositoryRoot, "scripts", "stop-browser-validation.mjs"), runtimeRoot], "Validation runtime shutdown", process.env, true);
 }
 
+function isolatedPortalEnvironment(additions = {}) {
+  const environment = { ...process.env, ...additions };
+  // The acceptance harness must always launch and inspect the exact standalone
+  // Portal built from this candidate. An inherited deployment/legacy base URL
+  // would cause browser coverage to target a different host and invalidate the
+  // exact-SHA evidence.
+  delete environment.PORTAL_BASE_URL;
+  return environment;
+}
+
 stopValidationRuntime();
 if (existsSync(runtimeRoot)) rmSync(runtimeRoot, { recursive: true, force: true });
 
@@ -34,17 +44,16 @@ try {
     process.execPath,
     [join(repositoryRoot, "scripts", "start-browser-validation.mjs"), runtimeRoot],
     "Synthetic API startup",
-    { ...process.env, PORTAL_VALIDATION_ORIGIN: "http://127.0.0.1:4303" },
+    isolatedPortalEnvironment({ PORTAL_VALIDATION_ORIGIN: "http://127.0.0.1:4303" }),
   );
   run(
     "npm",
     ["run", "test:browser", "--workspace=@novapharm/portal"],
     "Portal browser acceptance",
-    {
-      ...process.env,
+    isolatedPortalEnvironment({
       PORTAL_VISUAL_CREDENTIALS_PATH: credentialsPath,
       PORTAL_API_BASE_URL: "http://127.0.0.1:4178",
-    },
+    }),
   );
 } finally {
   stopValidationRuntime();
