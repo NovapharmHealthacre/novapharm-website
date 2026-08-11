@@ -14,10 +14,22 @@ assert.doesNotMatch(cssEntrypoint, /ai-search\.css/, "the retired public AI styl
 
 const publicCss = text("assets/css/apple-pharma-public.css");
 const bundleCss = text("assets/css/novapharm.bundle.css");
-assert.match(publicCss, /--apple-pharma-public-contract:\s*1/);
+assert.match(publicCss, /--apple-pharma-public-contract:\s*2/);
+assert.match(publicCss, /body\[data-page="home"\]/);
 assert.match(publicCss, /-apple-system, BlinkMacSystemFont/);
 assert.match(publicCss, /@media \(prefers-reduced-motion: reduce\)/);
-assert.match(bundleCss, /--apple-pharma-public-contract:\s*1/);
+assert.match(bundleCss, /--apple-pharma-public-contract:\s*2/);
+for (const forbiddenGlobal of [
+  /\n\.section,\n/,
+  /\n\.page-hero,\n/,
+  /\n\.section-dark,\n/,
+  /\n\.card,\n/,
+  /\nfigure img,\n/,
+  /\.page-hero-cinematic::before/,
+  /\.hero-cinematic-layer,/
+]) {
+  assert.doesNotMatch(publicCss, forbiddenGlobal, "homepage Apple-pharma parity must not override shared module geometry");
+}
 
 const home = text("index.html");
 assert.match(home, /Pharmaceutical supply, built around evidence\./);
@@ -50,6 +62,10 @@ assert.doesNotMatch(services, /assets\/media\/products\//);
 
 const regulatory = text("regulatory-services/index.html");
 assert.match(regulatory, /class="container regulatory-stage-grid"/);
+assert.match(regulatory, /regulatory-dossier-control/);
+assert.match(regulatory, /\/assets\/media\/modules\/regulatory-dossier-control\.avif/);
+assert.match(regulatory, /\/assets\/media\/modules\/regulatory-dossier-control\.webp/);
+assert.match(regulatory, /\/assets\/media\/modules\/regulatory-dossier-control\.jpg/);
 assert.match(regulatory, /regulatory-batch-integrity\.jpg/);
 assert.match(regulatory, /regulatory-control-stage/);
 assert.doesNotMatch(regulatory, /gdp-qms-foundations\.svg/);
@@ -156,6 +172,7 @@ assert.equal(new Set(articleImages).size, insightFiles.length, "insight articles
 for (const path of [
   "assets/media/home/supply-network-hero.jpg",
   "assets/media/home/supply-network-hero-1200.jpg",
+  "assets/media/modules/regulatory-dossier-control.jpg",
   "assets/media/stories/regulatory-batch-integrity.jpg",
   "assets/media/stories/services-launch-readiness.jpg",
   "assets/media/stories/technology-control-architecture.jpg",
@@ -180,4 +197,4 @@ for (const stylesheet of ["base", "tokens", "foundations", "premium-experience",
   assert.doesNotMatch(text(`assets/css/${stylesheet}.css`), /prefers-color-scheme:\s*dark/, `${stylesheet}.css must not create an untested automatic dark theme`);
 }
 
-console.log("Visual contracts passed for the concise white-led public release, Oncology gallery, three CRO leaders, sixteen tailored modules, portal entry, motion preferences and asset budgets.");
+console.log("Visual contracts passed for scoped Apple-pharma v2, preserved Regulatory dossier composition, Oncology gallery, CRO leadership, sixteen tailored modules, portal entry, motion preferences and asset budgets.");

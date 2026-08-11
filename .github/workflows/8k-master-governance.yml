@@ -1,0 +1,49 @@
+name: 8K master art-direction governance
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/8k-master-governance.yml
+      - config/image-master-policy.json
+      - creative-assets/8k-master-register.json
+      - scripts/validate-8k-master-programme.mjs
+      - assets/media/**
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/8k-master-governance.yml
+      - config/image-master-policy.json
+      - creative-assets/8k-master-register.json
+      - scripts/validate-8k-master-programme.mjs
+      - assets/media/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-native-masters:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out governed media source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Use Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install locked media tooling
+        run: npm ci --ignore-scripts
+      - name: Validate native 8K masters and responsive derivative policy
+        run: node scripts/validate-8k-master-programme.mjs
+      - name: Reject false completion
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const register = JSON.parse(fs.readFileSync('creative-assets/8k-master-register.json', 'utf8'));
+          if (register.programmeStatus === 'complete' && register.qualifiedMasterCount === 0) {
+            throw new Error('8K programme cannot be complete without native qualified masters.');
+          }
+          console.log(`8K programme state: ${register.programmeStatus}; native masters: ${register.qualifiedMasterCount}`);
+          NODE
