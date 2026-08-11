@@ -1,5 +1,7 @@
 # Apple-Caliber Craft Audit
 
+> Historical candidate notice: the retained review below records the Draft PR 16 craft baseline. Post-PR53 observable geometry and the current intervention are governed by `docs/visual/apple-parity-matrix.md`; exact current GitHub state is in `docs/programme/post-pr53-current-truth.md`.
+
 Status: repository candidate accepted; managed staging and production review pending
 
 Review date: 8 August 2026

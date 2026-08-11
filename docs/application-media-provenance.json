@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "1.0.0",
+  "reviewedAt": "2026-08-11",
+  "policy": {
+    "scope": "Application identity, founder social-preview and retired fallback assets not covered by the corporate photography registers.",
+    "noThirdPartyRuntimeRequests": true,
+    "socialCardsAreEditorialDerivatives": true,
+    "retiredFallbackMustNotRender": true
+  },
+  "assets": [
+    {
+      "path": "apps/founder/public/favicon.svg",
+      "id": "founder-favicon",
+      "source": "Original repository-authored founder-platform identity mark",
+      "licence": "Original NovaPharm founder-platform project work",
+      "semanticPurpose": "Founder-platform browser identity",
+      "pageUsage": ["Founder metadata and web manifest"],
+      "reviewStatus": "approved-existing-application-asset"
+    },
+    {
+      "path": "apps/founder/public/images/social/default-og.jpg",
+      "id": "founder-default-social-card",
+      "source": "Repository-authored Open Graph composition using approved founder metadata and the owner-supplied Vishal portrait",
+      "licence": "Original founder-platform composition; portrait use inherits the owner-authorised NovaPharm project-media boundary",
+      "semanticPurpose": "Founder-platform default social preview",
+      "pageUsage": ["Founder homepage and default social metadata"],
+      "reviewStatus": "rendered-and-editorially-reviewed"
+    },
+    {
+      "path": "apps/founder/public/images/social/how-to-win-when-odds-are-against-you-og.jpg",
+      "id": "founder-odds-essay-social-card",
+      "source": "Repository-authored Open Graph composition generated from the approved visible essay title",
+      "licence": "Original founder-platform project work",
+      "semanticPurpose": "Essay-specific social preview",
+      "pageUsage": ["Founder essay social metadata"],
+      "reviewStatus": "rendered-and-editorially-reviewed"
+    },
+    {
+      "path": "apps/founder/public/images/social/regulated-industries-og.jpg",
+      "id": "founder-regulated-industries-social-card",
+      "source": "Repository-authored Open Graph composition generated from the approved visible essay title",
+      "licence": "Original founder-platform project work",
+      "semanticPurpose": "Essay-specific social preview",
+      "pageUsage": ["Founder essay social metadata"],
+      "reviewStatus": "rendered-and-editorially-reviewed"
+    },
+    {
+      "path": "apps/founder/public/images/social/what-parallel-import-actually-means-og.jpg",
+      "id": "founder-parallel-import-social-card",
+      "source": "Repository-authored Open Graph composition generated from the approved visible essay title",
+      "licence": "Original founder-platform project work",
+      "semanticPurpose": "Essay-specific social preview",
+      "pageUsage": ["Founder essay social metadata"],
+      "reviewStatus": "rendered-and-editorially-reviewed"
+    },
+    {
+      "path": "apps/founder/public/images/social/why-i-left-swiggy-og.jpg",
+      "id": "founder-swiggy-essay-social-card",
+      "source": "Repository-authored Open Graph composition generated from the approved visible essay title",
+      "licence": "Original founder-platform project work",
+      "semanticPurpose": "Essay-specific social preview",
+      "pageUsage": ["Founder essay social metadata"],
+      "reviewStatus": "rendered-and-editorially-reviewed"
+    },
+    {
+      "path": "apps/technology/public/assets/NIT-logo.svg",
+      "id": "nit-application-logo",
+      "source": "Approved existing NIT vector identity asset retained from the owner-controlled NIT property",
+      "licence": "Owner-authorised NovaPharm Innovation Technology digital identity use",
+      "semanticPurpose": "NIT browser and application identity",
+      "pageUsage": ["NIT metadata, navigation and web manifest"],
+      "reviewStatus": "approved-existing-application-asset"
+    },
+    {
+      "path": "assets/media/products/licensed-image-pending.svg",
+      "id": "retired-product-image-fallback",
+      "source": "Original repository-authored neutral fallback SVG",
+      "licence": "Original NovaPharm project work",
+      "semanticPurpose": "Retired pre-materialisation fallback retained for deterministic recovery only",
+      "pageUsage": [],
+      "reviewStatus": "retired-not-permitted-in-production-render"
+    }
+  ]
+}
