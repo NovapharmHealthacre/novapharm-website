@@ -1,7 +1,7 @@
 # Post-PR53 Current Truth
 
 Status: implementation baseline recorded; managed production remains unverified
-Observed: 11 August 2026
+Observed: 11 August 2026; candidate media inventory refreshed 13 August 2026
 Repository: `NovapharmHealthacre/novapharm-website`
 
 This ledger records the repository and GitHub state inspected before the post-PR53 refinement began. It supersedes stale branch, pull-request and SHA references in earlier audit narratives. Earlier files remain useful historical evidence, but they must not be read as the current release state.
@@ -21,8 +21,8 @@ This ledger records the repository and GitHub state inspected before the post-PR
 | `PROTECTED_ROUTES` | Fifty visible protected acceptance routes, derived from 18 customer modules, 13 employee modules, 11 release-visible Executive modules, five administrator modules and governed account/workspace states. Seven additional Executive modules remain hidden until dependencies exist. |
 | `PORTAL_MODULE_COUNT` | Exactly 54, enforced by typed catalogue and tests: 47 release-visible informational modules and seven hidden-for-safety modules. |
 | `GOVERNED_SECTION_COUNT` | Exactly 122, Sections 0 through 121 inclusive, enforced in `absolute-mandate-register.json`. |
-| `IMAGE_COUNT` | 540 tracked image/vector/PDF assets. This is a physical-file count and includes governed derivatives and authorised duplication across delivery surfaces; it is not a count of unique photographs. |
-| `LOGO_ASSETS_FOUND` | Canonical repository SVG and PNG under `assets/brand/`. No authoritative EPS or PDF logo master is present in the current tracked tree. |
+| `IMAGE_COUNT` | 647 governed image/vector/PDF assets after integrating the owner-approved identity pack and seven retained review frames. This is a physical-file count and includes non-public masters, governed derivatives, visual evidence and authorised duplication across delivery surfaces; it is not a count of unique photographs. |
+| `LOGO_ASSETS_FOUND` | The owner-approved 93-file NovaPharm identity pack is preserved under `creative-assets/brand/novapharm-logo-asset-pack/`, including canonical SVG, PDF and EPS masters, web derivatives, app icons, social assets, brand tokens and checksums. Seventeen exact source-pack derivatives are exposed under `assets/brand/` for web delivery. |
 | `FONT_STACKS_FOUND` | Native system sans for the concise Apple-pharma layers; established sans/serif/mono property stacks elsewhere. No proprietary Apple font is bundled. |
 | `CURRENT_FRAMEWORKS` | Next.js 16.2.12, React/React DOM 19.2.8, TypeScript 7.0.2, Node 24.x, Playwright 1.61.1, Axe 4.12.1 and Sharp 0.35.3. |
 | `CURRENT_LANGUAGES` | GitHub reports JavaScript, HTML, TypeScript, CSS, Bicep, T-SQL and Dockerfile. No tracked Swift, Objective-C, C, C++, Metal, Wasm, Python, Perl or Ruby application source exists. |

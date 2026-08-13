@@ -17,8 +17,8 @@ export function organisationNode(): JsonLdNode {
       "@id": `${novapharmOrganisation.website}/#logo`,
       url: `${novapharmOrganisation.website}/assets/brand/novapharm-healthcare-logo.png`,
       contentUrl: `${novapharmOrganisation.website}/assets/brand/novapharm-healthcare-logo.png`,
-      width: 3356,
-      height: 420,
+      width: 2048,
+      height: 258,
       caption: "NovaPharm Healthcare"
     }),
     identifier: Object.freeze({ "@type": "PropertyValue", propertyID: "Companies House", value: novapharmOrganisation.companyNumber }),

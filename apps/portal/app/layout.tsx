@@ -7,7 +7,14 @@ export const metadata: Metadata = {
   title: "NovaPharm Secure Portal",
   description: "Authorised access to NovaPharm customer, employee, board and administration services.",
   robots: { index: false, follow: false, noarchive: true },
-  icons: { icon: "/assets/brand/novapharm-healthcare-logo.svg" },
+  icons: {
+    icon: [
+      { url: "/assets/brand/favicon.svg", type: "image/svg+xml" },
+      { url: "/assets/brand/favicon.ico", sizes: "any" },
+    ],
+    shortcut: "/assets/brand/favicon.ico",
+    apple: "/assets/brand/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

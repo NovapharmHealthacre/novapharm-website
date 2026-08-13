@@ -16,7 +16,7 @@
 }
 
 .presentation[data-module^="executive."] {
-  --presentation-accent: #b4232e;
+  --presentation-accent: #E3120B;
   --presentation-soft: #fff5f5;
 }
 
@@ -192,7 +192,7 @@
 }
 
 .regulated :global(.module-notice) {
-  border-left-color: #b4232e;
+  border-left-color: #E3120B;
   color: #54242a;
 }
 
@@ -206,12 +206,12 @@
 }
 
 .regulated :global(.available-actions) {
-  --presentation-accent: #b4232e;
+  --presentation-accent: #E3120B;
   background: #fff8f8;
 }
 
 .regulated :global(.data-section) {
-  border-top: 2px solid #b4232e;
+  border-top: 2px solid #E3120B;
 }
 
 .catalogue :global(.metric-grid) {

@@ -7,8 +7,8 @@
   --text: #344054;
   --muted: #667085;
   --line: #d0d5dd;
-  --brand: #c1121f;
-  --brand-2: #8f111d;
+  --brand: #E3120B;
+  --brand-2: #B30E09;
   --navy: #081827;
   --teal: #087f8c;
   --blue: #2457d6;
@@ -82,7 +82,7 @@ h1, h2, h3, h4, p, a, td, th { overflow-wrap: break-word; }
   background: #fff;
 }
 .brand-logo { display: block; line-height: 0; }
-.brand-logo img { display: block; width: 100%; height: auto; aspect-ratio: 3356 / 420; object-fit: contain; }
+.brand-logo img { display: block; width: 100%; height: auto; aspect-ratio: 2048 / 258; object-fit: contain; }
 .brand .brand-logo { width: 248px; }
 
 .nav-toggle { display: none; }

@@ -18,8 +18,8 @@
   --np-line-soft: #e8e8ed;
   --np-soft: #f5f5f7;
   --np-white: #ffffff;
-  --np-red: #b4232e;
-  --np-red-dark: #8f1c25;
+  --np-red: #E3120B;
+  --np-red-dark: #B30E09;
   --np-content: 1180px;
   --np-radius-media: 28px;
   --np-radius-control: 999px;
@@ -406,6 +406,8 @@ body[data-page="home"] .final-cta h2 { max-width: 840px; }
   border-radius: 28px;
   box-shadow: 0 28px 90px rgba(0, 0, 0, 0.08);
 }
+
+.login-panel-authentication { max-width: 900px; }
 
 .login-panel h1 { font-size: clamp(2.5rem, 6vw, 4.3rem); }
 

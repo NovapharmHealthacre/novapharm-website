@@ -186,8 +186,10 @@ const bundles = Object.freeze({
   },
   media: {
     implementation:
-      "All 540 tracked raster, vector, EPS and PDF assets have a generated inventory; approved public media retains intrinsic sizes, responsive derivatives, accurate alternatives, registered provenance and visible representative-image boundaries.",
+      "Every tracked raster, vector, EPS and PDF asset has a generated inventory; the authoritative 93-file logo pack and approved public media retain checksums, intrinsic sizes, responsive derivatives, accurate alternatives, registered provenance and visible representation boundaries.",
     code: [
+      "creative-assets/brand/novapharm-logo-asset-pack",
+      "creative-assets/asset-register.json",
       "creative-assets/image-asset-register.json",
       "creative-assets/module-media-asset-register.json",
       "docs/application-media-provenance.json",
@@ -199,10 +201,13 @@ const bundles = Object.freeze({
       "scripts/test-visual-contracts.mjs",
       "scripts/validate-module-media-sanity.mjs",
       "scripts/validate-visual-refinement.mjs",
+      "scripts/programme/validate-brand-assets.mjs",
       "scripts/programme/validate-post-pr53-candidate.mjs",
     ],
     docs: [
       "docs/programme/brand-governance.md",
+      "docs/programme/owner-approved-logo-asset-pack-2026-08-13.md",
+      "final-report/official-logo-register.md",
       "docs/programme/creative-directions.md",
       "docs/programme/apple-caliber-craft-audit.md",
       "docs/programme/apple-caliber-continuation-matrix.md",

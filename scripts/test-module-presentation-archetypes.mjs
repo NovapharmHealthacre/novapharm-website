@@ -52,7 +52,7 @@ assert.match(css, /\.ledger :global\(table\)[\s\S]*font-variant-numeric: tabular
 assert.match(css, /\.catalogue :global\(\.data-section\)[\s\S]*border-top: 3px solid var\(--presentation-accent\)/u, "Catalogue surfaces need a strong governed collection boundary.");
 assert.match(css, /\.tracking :global\(\.data-section\)[\s\S]*border-left: 3px solid var\(--presentation-accent\)/u, "Tracking surfaces need an explicit progress rail.");
 assert.match(css, /\.documents :global\(\.data-section > header\)[\s\S]*background: var\(--presentation-soft\)/u, "Document surfaces need a distinct repository/document header treatment.");
-assert.match(css, /\.regulated :global\(\.data-section\)[\s\S]*border-top: 2px solid #b4232e/u, "Regulated surfaces need a restrained safety boundary.");
+assert.match(css, /\.regulated :global\(\.data-section\)[\s\S]*border-top: 2px solid #E3120B/u, "Regulated surfaces need a restrained safety boundary.");
 
 assert.match(css, /\.command :global\(\.data-section:nth-of-type\(odd\):last-of-type\)/u, "Odd command/intelligence section counts must not leave a half-width orphan on desktop.");
 assert.match(css, /\.catalogue :global\(\.table-region\)[\s\S]*max-height:[\s\S]*overflow: auto/u, "Desktop catalogue tables must be bounded and keyboard-scrollable.");

@@ -11,7 +11,7 @@ const textPattern = /\.(?:css|html|js|jsx|json|md|mdx|mjs|ts|tsx|xml|ya?ml)$/iu;
 const rasterPattern = /\.(?:avif|jpe?g|png|webp)$/iu;
 
 function trackedFiles() {
-  return execFileSync("git", ["ls-files", "-z"], { cwd: root, encoding: "utf8" })
+  return execFileSync("git", ["ls-files", "-z", "--cached", "--others", "--exclude-standard"], { cwd: root, encoding: "utf8" })
     .split("\0")
     .filter(Boolean)
     .sort();
@@ -29,8 +29,7 @@ function canonicalDeliveryPath(relativePath) {
   const publicMarker = "/public/";
   const publicIndex = relativePath.indexOf(publicMarker);
   if (publicIndex >= 0) return relativePath.slice(publicIndex + publicMarker.length);
-  const marker = relativePath.indexOf("assets/");
-  return marker >= 0 ? relativePath.slice(marker) : relativePath;
+  return relativePath;
 }
 
 function licenceName(value) {
@@ -254,6 +253,19 @@ for (const asset of applicationRegister.assets ?? []) {
   });
 }
 
+for (const file of mediaFiles.filter((value) => value.startsWith("creative-assets/brand/novapharm-logo-asset-pack/"))) {
+  addRegistryRecord(registry, file, {
+    id: `official-logo-pack:${path.relative("creative-assets/brand/novapharm-logo-asset-pack", file)}`,
+    source: "Owner-supplied NovaPharm Healthcare Logo Asset Pack received 13 August 2026",
+    licence: "Owner-authorised NovaPharm Healthcare identity use; source rights controlled by NovaPharm Healthcare Ltd",
+    semanticPurpose: "Governed non-public source master or approved brand derivative",
+    pageUsage: [],
+    reviewStatus: "owner-approved-authoritative-logo-pack",
+    technicalStatus: "checksum-verified-source-archive",
+    provenanceRecord: "final-report/official-logo-register.md"
+  });
+}
+
 for (const file of mediaFiles.filter((value) => value.startsWith("assets/media/oncology/") && value.endsWith(".svg"))) {
   const canonical = canonicalDeliveryPath(file);
   addRegistryRecord(registry, canonical, {
@@ -363,6 +375,8 @@ for (const relativePath of mediaFiles) {
     perceptualDuplicateCandidateGroup: null,
     budgetReview: relativePath.startsWith("audit/evidence/")
       ? "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
+      : relativePath.startsWith("creative-assets/brand/novapharm-logo-asset-pack/")
+        ? "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
       : info.size > 800_000
         ? "REVIEW_OVER_800_KB"
         : "WITHIN_PHYSICAL_FILE_CEILING"
@@ -418,7 +432,7 @@ const countBy = (field) => Object.fromEntries(
 
 const report = {
   schemaVersion: "1.0",
-  reviewDate: "2026-08-11",
+  reviewDate: "2026-08-13",
   scope: "All tracked raster, vector, EPS and PDF assets; generated build directories and node_modules are excluded by git inventory.",
   caveats: [
     "Perceptual groups are automated candidates at dHash distance <= 2 and require human review before deletion or replacement.",

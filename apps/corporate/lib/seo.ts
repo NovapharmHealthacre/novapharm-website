@@ -38,7 +38,7 @@ export function organisationSchema() {
     legalName: company.legalName,
     alternateName: "NovaPharm",
     url: siteUrl,
-    logo: { "@type": "ImageObject", url: `${siteUrl}/assets/brand/novapharm-healthcare-logo.png`, width: 2048, height: 256 },
+    logo: { "@type": "ImageObject", url: `${siteUrl}/assets/brand/novapharm-healthcare-logo.png`, width: 2048, height: 258 },
     image: `${siteUrl}/assets/brand/novapharm-healthcare-logo.png`,
     description: company.summary,
     foundingDate: company.incorporated,

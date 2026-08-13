@@ -1,2 +1,5 @@
 # Preserve the byte-identical approved CorelDRAW master without line-ending normalisation.
 apps/technology/public/assets/NIT-logo.svg -text -diff
+
+# Preserve the checksum-governed owner asset pack byte-for-byte on every platform.
+creative-assets/brand/novapharm-logo-asset-pack/** -text -diff

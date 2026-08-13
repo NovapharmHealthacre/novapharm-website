@@ -12,11 +12,11 @@ const artDirection = JSON.parse(readFileSync(join(root, "config/module-art-direc
 const artAssets = new Map(artDirection.assets.map((asset) => [asset.id, asset]));
 
 const fallback = {
-  url: "/assets/brand/novapharm-healthcare-logo.png",
-  type: "image/png",
-  width: 3356,
-  height: 420,
-  alt: "NovaPharm Healthcare official logo"
+  url: "/assets/brand/novapharm-open-graph-1200x630-white.jpg",
+  type: "image/jpeg",
+  width: 1200,
+  height: 630,
+  alt: "NovaPharm Healthcare"
 };
 
 const routeImages = new Map();
@@ -132,7 +132,7 @@ for (const file of [...new Set(files)]) {
     let html = readFileSync(descriptor, "utf8");
     html = html.replace(/\s*<!-- page-specific-social-start -->[\s\S]*?<!-- page-specific-social-end -->/g, "");
     const social = `\n  <!-- page-specific-social-start -->\n  <meta property="og:image" content="${absolute}">\n  <meta property="og:image:secure_url" content="${absolute}">\n  <meta property="og:image:type" content="${image.type}">\n  <meta property="og:image:width" content="${image.width}">\n  <meta property="og:image:height" content="${image.height}">\n  <meta property="og:image:alt" content="${image.alt.replaceAll('"', '&quot;')}">\n  <!-- page-specific-social-end -->`;
-    html = html.replace(/(<meta property="og:image" content="https:\/\/novapharmhealthcare\.com\/assets\/brand\/novapharm-healthcare-logo\.png">)/, `${social}\n  $1`);
+    html = html.replace(/(<meta property="og:image" content="https:\/\/novapharmhealthcare\.com\/assets\/brand\/novapharm-open-graph-1200x630-white\.jpg">)/, `${social}\n  $1`);
     html = html.replace(/<meta name="twitter:image" content="[^"]+">/, `<meta name="twitter:image" content="${absolute}">`);
     html = html.replace(/<meta name="twitter:image:alt" content="[^"]+">/, `<meta name="twitter:image:alt" content="${image.alt.replaceAll('"', '&quot;')}">`);
 

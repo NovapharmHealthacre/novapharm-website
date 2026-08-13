@@ -22,9 +22,12 @@ export const metadata: Metadata = {
   publisher: company.legalName,
   category: "Pharmaceuticals",
   icons: {
-    icon: [{ url: "/assets/brand/novapharm-healthcare-logo.svg", type: "image/svg+xml" }],
-    shortcut: "/assets/brand/novapharm-healthcare-logo.svg",
-    apple: "/assets/brand/novapharm-healthcare-logo.png",
+    icon: [
+      { url: "/assets/brand/favicon.svg", type: "image/svg+xml" },
+      { url: "/assets/brand/favicon.ico", sizes: "any" },
+    ],
+    shortcut: "/assets/brand/favicon.ico",
+    apple: "/assets/brand/apple-touch-icon.png",
   },
   robots: {
     index: indexable,
@@ -37,7 +40,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   colorScheme: "light",
-  themeColor: "#ffffff",
+  themeColor: "#E3120B",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

@@ -33,7 +33,7 @@ export default async function StatusPage() {
     <main id="status-main">
       <header className="status-header">
         <a className="brand" href="https://novapharmhealthcare.com/" aria-label="NovaPharm Healthcare home">
-          <Image src="/assets/brand/novapharm-healthcare-logo.svg" alt="NovaPharm Healthcare" width="452" height="88" priority />
+          <Image src="/assets/brand/novapharm-healthcare-logo.svg" alt="NovaPharm Healthcare" width="2048" height="258" priority />
         </a>
         <span>Service status</span>
       </header>

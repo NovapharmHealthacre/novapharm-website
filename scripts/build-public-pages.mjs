@@ -35,8 +35,12 @@ const organisationId = `${siteUrl}/#organisation`;
 const websiteId = `${siteUrl}/#website`;
 const brandLogoSvg = "/assets/brand/novapharm-healthcare-logo.svg";
 const brandLogoPng = "/assets/brand/novapharm-healthcare-logo.png";
-const brandLogoWidth = 3356;
-const brandLogoHeight = 420;
+const brandLogoWidth = 2048;
+const brandLogoHeight = 258;
+const brandFaviconSvg = "/assets/brand/favicon.svg";
+const brandSocialImage = "/assets/brand/novapharm-open-graph-1200x630-white.jpg";
+const brandSocialWidth = 1200;
+const brandSocialHeight = 630;
 const maturityLabels = Object.freeze({ live: "Live", development: "In development", planned: "Planned" });
 
 function esc(value) {
@@ -59,8 +63,8 @@ function write(path, content) {
   writeFileSync(target, content);
 }
 
-function brandPicture({ className = "brand-logo", width = 280, height = 35, eager = false } = {}) {
-  return `<picture class="${className}"><source srcset="${brandLogoSvg}" type="image/svg+xml"><img src="${brandLogoPng}" alt="NovaPharm Healthcare" width="${width}" height="${height}"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async"></picture>`;
+function brandPicture({ className = "brand-logo", eager = false } = {}) {
+  return `<picture class="${className}"><source srcset="${brandLogoSvg}" type="image/svg+xml"><img src="${brandLogoPng}" alt="NovaPharm Healthcare" width="${brandLogoWidth}" height="${brandLogoHeight}"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async"></picture>`;
 }
 
 function productCategoryMedia(category) {
@@ -288,13 +292,13 @@ function pageSchemas(meta, slug, options = {}) {
 
 function head(meta, slug = "", options = {}) {
   const canonical = absoluteUrl(routePath(slug));
-  const usesBrandImage = !options.image;
-  const image = options.image || absoluteUrl(brandLogoPng);
-  const imageWidth = options.imageWidth || (usesBrandImage ? brandLogoWidth : 1672);
-  const imageHeight = options.imageHeight || (usesBrandImage ? brandLogoHeight : 941);
-  const imageType = options.imageType || (usesBrandImage ? "image/png" : "image/jpeg");
-  const imageAlt = options.imageAlt || (usesBrandImage ? "NovaPharm Healthcare official logo" : "NovaPharm Healthcare pharmaceutical supply infrastructure");
-  const twitterCard = usesBrandImage ? "summary" : "summary_large_image";
+  const usesDefaultSocialImage = !options.image;
+  const image = options.image || absoluteUrl(brandSocialImage);
+  const imageWidth = options.imageWidth || (usesDefaultSocialImage ? brandSocialWidth : 1672);
+  const imageHeight = options.imageHeight || (usesDefaultSocialImage ? brandSocialHeight : 941);
+  const imageType = options.imageType || "image/jpeg";
+  const imageAlt = options.imageAlt || (usesDefaultSocialImage ? "NovaPharm Healthcare" : "NovaPharm Healthcare pharmaceutical supply infrastructure");
+  const twitterCard = "summary_large_image";
   const type = options.ogType || "website";
   const schemas = options.schemas || pageSchemas(meta, slug, options);
   const schemaMarkup = schemas.length
@@ -317,14 +321,17 @@ function head(meta, slug = "", options = {}) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#b81220">
+  <meta name="theme-color" content="#E3120B">
   <title>${esc(meta.title)}</title>
   <meta name="description" content="${esc(meta.description)}">
   <meta name="robots" content="${options.robots || "index, follow, max-snippet:-1, max-image-preview:large"}">
   <meta name="author" content="NovaPharm Healthcare Ltd">
   <link rel="canonical" href="${canonical}">
   <link rel="alternate" type="application/rss+xml" title="NovaPharm Healthcare Insights" href="${siteUrl}/feed.xml">
-  <link rel="icon" href="${brandLogoSvg}" type="image/svg+xml">
+  <link rel="icon" href="${brandFaviconSvg}" type="image/svg+xml">
+  <link rel="icon" href="/assets/brand/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png" sizes="180x180">
+  <link rel="mask-icon" href="/assets/brand/safari-pinned-tab.svg" color="#E3120B">
   <link rel="manifest" href="/manifest.webmanifest">
 ${preloadMarkup}  <link rel="stylesheet" href="/assets/css/novapharm.bundle.css">
   <meta property="og:type" content="${type}">
@@ -1140,9 +1147,13 @@ export function buildPublicPages() {
     start_url: "/",
     scope: "/",
     display: "standalone",
-    background_color: "#f6f7f8",
-    theme_color: "#b81220",
-    icons: [{ src: brandLogoSvg, sizes: "any", type: "image/svg+xml", purpose: "any" }]
+    background_color: "#ffffff",
+    theme_color: "#E3120B",
+    icons: [
+      { src: "/assets/brand/pwa-icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/assets/brand/pwa-icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+      { src: "/assets/brand/pwa-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" }
+    ]
   }, null, 2));
   return { publicRoutes, articles, leadership };
 }

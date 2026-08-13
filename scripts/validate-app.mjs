@@ -101,6 +101,8 @@ const login = readFileSync(join(root, "portal/index.html"), "utf8");
 if (!login.includes("name=\"accessType\"")) fail("portal login is missing access-type selection");
 if (login.includes("href=\"/portal/executive-platform/NP_")) fail("portal login exposes executive launch links");
 if (!login.includes("/assets/brand/novapharm-healthcare-logo.svg") || !login.includes("/assets/brand/novapharm-healthcare-logo.png")) fail("portal login is missing the approved logo and fallback");
+if (!login.includes("login-panel-authentication")) fail("portal login is missing its governed wide authentication composition");
+if (!login.includes("/assets/brand/favicon.svg") || !login.includes("/assets/brand/apple-touch-icon.png")) fail("portal login is missing approved small-format identity metadata");
 if (login.includes("Vishal has customer")) fail("portal login exposes administrator access details");
 
 const executiveFixture = `<html><head><style></style></head><body><div class="sb-hd">

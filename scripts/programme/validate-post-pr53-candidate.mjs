@@ -129,6 +129,16 @@ for (const marker of [
   requireText(visualMatrix, marker, "Apple-parity evidence matrix");
 }
 
+const brandGovernance = read("docs/programme/brand-governance.md");
+for (const marker of [
+  "authoritative 93-file owner pack",
+  "#E3120B",
+  "creative-assets/brand/novapharm-logo-asset-pack/",
+  "npm run brand:validate"
+]) {
+  requireText(brandGovernance, marker, "Brand-governance evidence");
+}
+
 const moduleCatalog = json("packages/portal-contracts/src/module-catalog.json") ?? [];
 requireValue(Array.isArray(moduleCatalog), "Portal module catalogue must be an array");
 if (Array.isArray(moduleCatalog)) {
@@ -163,7 +173,7 @@ requireValue(
 );
 
 const imageInventory = json("audit/generated/image-inventory.json");
-const trackedMedia = execFileSync("git", ["ls-files", "-z"], { cwd: root, encoding: "utf8" })
+const trackedMedia = execFileSync("git", ["ls-files", "-z", "--cached", "--others", "--exclude-standard"], { cwd: root, encoding: "utf8" })
   .split("\0")
   .filter((file) => /\.(?:avif|eps|jpe?g|pdf|png|svg|webp)$/iu.test(file));
 const inventoryAssets = imageInventory?.assets ?? [];
@@ -197,9 +207,12 @@ for (const [marker, label] of [
 
 const publicCss = read("assets/css/apple-pharma-public.css");
 const bundleCss = read("assets/css/novapharm.bundle.css");
+const privatePageGenerator = read("scripts/build-pages.mjs");
 requireText(publicCss, "--apple-pharma-public-contract: 3", "Scoped public visual contract");
 requireText(bundleCss, "--apple-pharma-public-contract: 3", "Bundled public visual contract");
 requireText(publicCss, "@media (prefers-reduced-motion: reduce)", "Reduced-motion design");
+requireText(publicCss, ".login-panel-authentication { max-width: 900px; }", "Portal authentication composition");
+requireText(privatePageGenerator, "login-panel login-panel-authentication", "Portal authentication markup");
 
 const browserAcceptance = read("scripts/test-public-pages-browser.mjs");
 const browserWidths = new Set(
