@@ -589,7 +589,7 @@ const metadata = {
   ...source.metadata,
   reconciled_at: new Date().toISOString(),
   reconciled_repository_sha: candidateSha,
-  reconciliation_scope: "All 5,900 records reassessed after the post-PR53 current-truth audit, leadership and Products controls, Front Door/WAF, design-system, portal classification, software-supply-chain controls, 540-asset inventory, technology-fit decisions and Apple-parity visual validation; each retains one explicit final status with row-level evidence.",
+  reconciliation_scope: "All 5,900 records reassessed after the post-PR53 current-truth audit, leadership and Products controls, Front Door/WAF, design-system, portal classification, software-supply-chain controls, governed media inventory, technology-fit decisions and Apple-parity visual validation; each retains one explicit final status with row-level evidence.",
   requirement_record_count: records.length,
   status_language: Object.fromEntries(statuses.map((status) => [status, status])),
   status_counts: statusCounts,
