@@ -73,7 +73,15 @@ p { max-width: 64ch; }
 }
 .portal-link:hover { background: var(--apple-ink); }
 
-.eyebrow,
+.eyebrow {
+  color: var(--pharma-red-dark);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
 .pharma-kicker {
   color: var(--pharma-red);
   font-size: .72rem;

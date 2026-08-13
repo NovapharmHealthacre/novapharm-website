@@ -66,6 +66,9 @@ assert.doesNotMatch(conciseHomeComponent, />Learn more\s*</, "the Next.js homepa
 assert.match(conciseHomeComponent, /\{item\.linkLabel\}/);
 const corporateGlobals = text("apps/corporate/app/globals.css");
 assert.match(corporateGlobals, /\.final-cta \.eyebrow \{ color: var\(--white\); \}/, "the final CTA eyebrow must retain accessible contrast on the canonical red field");
+const corporateApplePharma = text("apps/corporate/app/apple-pharma.css");
+assert.match(corporateApplePharma, /\.eyebrow \{\s+color: var\(--pharma-red-dark\);/, "small corporate eyebrow text must use the accessible foreground red");
+assert.match(corporateApplePharma, /\.pharma-kicker \{\s+color: var\(--pharma-red\);/, "the branded homepage kicker may retain the canonical identity red");
 assert.match(home, /Regulated wholesale supply has not commenced\./);
 assert.match(home, /Owner-attested logistics and warehousing arrangements with Polar Speed are being incorporated into NovaPharm's operating model/);
 assert.match(home, /The relationship does not transfer Polar Speed's authorisations or certificates to NovaPharm/);
