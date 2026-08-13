@@ -181,7 +181,7 @@ small { font-size: 0.78rem; }
 
 .final-cta { padding: 72px 0; background: var(--red); color: var(--white); }
 .final-cta-inner { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: center; }
-.final-cta .eyebrow { color: #ffe6e8; }
+.final-cta .eyebrow { color: var(--white); }
 .final-cta h2 { max-width: 780px; margin: 0; color: var(--white); }
 .final-cta .button-primary { background: var(--navy); }
 .final-cta .button-light { border-color: var(--white); }

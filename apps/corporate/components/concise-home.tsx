@@ -28,16 +28,19 @@ const focusAreas = [
     title: "Oncology & specialty",
     text: "Closer control of formulation, continuity and evidence.",
     href: "/oncology/",
+    linkLabel: "Explore oncology continuity",
   },
   {
     title: "Regulatory & quality",
     text: "Authorisation, QMS and vendor oversight before release.",
     href: "/regulatory-services/",
+    linkLabel: "Review regulatory services",
   },
   {
     title: "Technology & traceability",
     text: "Governed accounts, documents, evidence and decision history.",
     href: "/technology/",
+    linkLabel: "Explore technology controls",
   },
 ];
 
@@ -116,7 +119,7 @@ export function ConciseHomePage() {
               <article key={item.title}>
                 <h3>{item.title}</h3>
                 <p>{item.text}</p>
-                <Link href={item.href}>Learn more <ArrowRight aria-hidden="true" size={15} /></Link>
+                <Link href={item.href}>{item.linkLabel} <ArrowRight aria-hidden="true" size={15} /></Link>
               </article>
             ))}
           </div>
