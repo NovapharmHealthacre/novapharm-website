@@ -9,6 +9,7 @@
   --line: #d0d5dd;
   --brand: #E3120B;
   --brand-2: #B30E09;
+  --brand-text: #B30E09;
   --navy: #081827;
   --teal: #087f8c;
   --blue: #2457d6;
@@ -212,7 +213,7 @@ h1, h2, h3, h4, p, a, td, th { overflow-wrap: break-word; }
   letter-spacing: 0;
 }
 .section-head-wide { max-width: 940px; }
-.section-kicker { display: block; margin-bottom: 12px; color: var(--brand); font-size: 12px; font-weight: 800; text-transform: uppercase; }
+.section-kicker { display: block; margin-bottom: 12px; color: var(--brand-text); font-size: 12px; font-weight: 800; text-transform: uppercase; }
 .section-head p { margin: 0; color: var(--muted); font-size: 17px; }
 
 .grid { display: grid; gap: 18px; }
@@ -254,7 +255,7 @@ h1, h2, h3, h4, p, a, td, th { overflow-wrap: break-word; }
 .signal-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; margin: 28px 0; border-top: 1px solid rgba(8,24,39,0.16); }
 .signal-list span { padding: 16px 0; border-bottom: 1px solid rgba(8,24,39,0.16); color: var(--ink); font-weight: 700; }
 .signal-list span:nth-child(odd) { padding-right: 20px; }
-.text-link { color: var(--brand); font-weight: 750; }
+.text-link { color: var(--brand-text); font-weight: 750; }
 .executive-section { background: var(--navy); color: #dce7ef; }
 .executive-grid { display: grid; grid-template-columns: minmax(280px, 0.72fr) minmax(0, 1.28fr); gap: 72px; align-items: center; }
 .executive-media { height: 560px; overflow: hidden; border-radius: 4px; background: #d8dde2; }
@@ -814,7 +815,7 @@ td { color: var(--text); }
   padding: 5px 8px;
   border: 1px solid color-mix(in srgb, var(--brand) 24%, var(--line));
   border-radius: 4px;
-  color: var(--brand);
+  color: var(--brand-text);
   background: color-mix(in srgb, var(--brand) 6%, var(--surface));
   font-size: 11px;
   font-weight: 780;
@@ -885,7 +886,7 @@ td { color: var(--text); }
 .regulatory-notice strong { color: var(--ink); }
 .regulatory-notice p { margin: 6px 0 0; color: var(--text); }
 .logistics-story { background: color-mix(in srgb, var(--surface) 88%, #b8d9dc); }
-.editorial-index { color: var(--brand); font-size: 13px; font-weight: 820; text-transform: uppercase; }
+.editorial-index { color: var(--brand-text); font-size: 13px; font-weight: 820; text-transform: uppercase; }
 .section-dark .editorial-index { color: #ffd3d4; }
 .editorial-split h2 { margin-top: 0; color: var(--ink); font-size: 43px; line-height: 1.12; }
 .editorial-split p { max-width: 780px; font-size: 18px; }

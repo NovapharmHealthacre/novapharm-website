@@ -13,6 +13,7 @@ The owner supplied and approved the complete NovaPharm Healthcare Logo Asset Pac
 The following decisions are authoritative:
 
 - Economist Red `#E3120B` is the canonical NovaPharm identity red.
+- The existing governed dark red `#B30E09` may be used as the accessible foreground-text derivative where canonical red does not retain sufficient contrast on an approved neutral surface; this does not alter the logo artwork or its canonical colour.
 - The path-based horizontal SVG is the preferred web wordmark.
 - The horizontal wordmark must not be typed, redrawn, stretched or replaced by the monogram on normal brand surfaces.
 - The supplied reverse-white and monochrome-black vectors are approved for their documented contrast and single-colour contexts.

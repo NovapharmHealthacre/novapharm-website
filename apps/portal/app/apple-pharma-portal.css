@@ -5,6 +5,7 @@
   --portal-soft: #f5f5f7;
   --portal-white: #ffffff;
   --portal-red: #E3120B;
+  --portal-red-text: #B30E09;
   --portal-red-soft: #fff3f4;
 }
 
@@ -24,7 +25,7 @@ textarea {
 }
 
 .eyebrow {
-  color: var(--portal-red);
+  color: var(--portal-red-text);
   font-size: .7rem;
   letter-spacing: .08em;
 }

@@ -43,7 +43,7 @@
 .np-data-table .np-numeric{text-align:right;font-variant-numeric:tabular-nums}
 .np-timeline{counter-reset:step;list-style:none;padding:0;margin:0}
 .np-timeline li{display:grid;grid-template-columns:3rem 1fr;gap:1rem;padding-block:1.25rem;border-top:1px solid #d8dde4}
-.np-timeline__index{font-variant-numeric:tabular-nums;color:#E3120B;font-weight:700}
+.np-timeline__index{font-variant-numeric:tabular-nums;color:#B30E09;font-weight:700}
 .np-field,.np-search,.np-file-upload{min-width:0;display:grid;gap:.5rem}
 .np-field__hint{color:#667085;margin:0}
 .np-field__error{color:#9f1239;font-weight:650}

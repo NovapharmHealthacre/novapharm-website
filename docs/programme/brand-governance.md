@@ -28,6 +28,8 @@ Application build scripts copy the approved delivery assets and checksum tests v
 
 The selected direction is `Regulated Continuum`. The palette uses midnight navy, warm white, graphite, cool grey, muted silver and NovaPharm red as a controlled accent. Red is not a page background default and cannot be the only status signal. Cards use restrained radii and are limited to real item groupings or tools.
 
+Economist Red `#E3120B` remains the canonical identity colour for the logo, graphical accents, fills and borders. The governed darker derivative `#B30E09` is used when red is foreground text on white or neutral surfaces, particularly for small labels and links. This accessibility treatment does not recolour or alter the official logo; it preserves a minimum contrast margin across the estate's approved neutral surfaces.
+
 ## Media and portraits
 
 - Every media asset requires source, rights, acquisition/review date, subject, crop, alt text and misleading-implication review.

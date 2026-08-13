@@ -33,3 +33,5 @@ Default Open Graph image URL: `https://novapharmhealthcare.com/assets/brand/nova
 ## Owner decision
 
 The owner explicitly approved the complete asset pack on 13 August 2026. The supplied horizontal corporate logo remains unchanged in role and is never replaced by typed text. The pack's `N` favicon and `N + original arc` application mark are approved only for sizes where the full horizontal wordmark would be unreadable. Reverse and monochrome variants are approved only for their documented contrast/output contexts. Economist Red `#E3120B` is the authoritative primary identity colour.
+
+Accessibility colour treatment: the logo and canonical graphical identity retain `#E3120B`. Small foreground labels and links on light neutral surfaces use the governed darker derivative `#B30E09` where required to preserve WCAG contrast. Browser acceptance verifies this distinction across Chromium and WebKit rather than modifying the supplied artwork.

@@ -7,6 +7,7 @@ export const designTokens = Object.freeze({
     silver: "#d8dde4",
     pharmaceuticalBlue: "#eaf3f8",
     novapharmRed: "#E3120B",
+    novapharmRedText: "#B30E09",
     focus: "#0b69ff"
   }),
   radius: Object.freeze({ small: "4px", card: "8px" }),

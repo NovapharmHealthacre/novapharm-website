@@ -14,11 +14,20 @@ assert.doesNotMatch(cssEntrypoint, /ai-search\.css/, "the retired public AI styl
 
 const publicCss = text("assets/css/apple-pharma-public.css");
 const bundleCss = text("assets/css/novapharm.bundle.css");
+const tokenCss = text("assets/css/tokens.css");
+const baseCss = text("assets/css/base.css");
 assert.match(publicCss, /--apple-pharma-public-contract:\s*3/);
 assert.match(publicCss, /body\[data-page="home"\]/);
 assert.match(publicCss, /-apple-system, BlinkMacSystemFont/);
 assert.match(publicCss, /@media \(prefers-reduced-motion: reduce\)/);
 assert.match(bundleCss, /--apple-pharma-public-contract:\s*3/);
+assert.match(tokenCss, /--brand:\s*#E3120B;/, "the canonical identity red must remain Economist Red");
+assert.match(tokenCss, /--brand-text:\s*#B30E09;/, "small red foreground text needs the governed contrast-safe derivative");
+for (const selector of ["section-kicker", "status-label", "text-link", "editorial-index"]) {
+  assert.match(baseCss, new RegExp(`\\.${selector}[\\s\\S]{0,260}color:\\s*var\\(--brand-text\\)`), `${selector} must not use identity red as small foreground text`);
+}
+assert.match(text("assets/css/portal.css"), /\.portal-topbar \.eyebrow\s*\{\s*color:\s*var\(--brand-text\);\s*\}/);
+assert.match(text("assets/css/cro.css"), /\.cro-decision-questions button > span\s*\{\s*color:\s*var\(--brand-text\);/);
 for (const forbiddenGlobal of [
   /\n\.section,\n/,
   /\n\.page-hero,\n/,
