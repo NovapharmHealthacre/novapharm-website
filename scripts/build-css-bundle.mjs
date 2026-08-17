@@ -19,6 +19,7 @@ const sources = [
   ["cro.css", null],
   ["oncology.css", null],
   ["apple-pharma-public.css", null],
+  ["leadership-apple.css", null],
   ["owner-corrections.css", null]
 ];
 
@@ -35,6 +36,9 @@ ${sections.join("\n\n")}\n`;
 
 if (!bundle.includes("--apple-pharma-public-contract: 2")) {
   throw new Error("Scoped public Apple-pharma presentation contract v2 is missing from the generated CSS bundle.");
+}
+if (!bundle.includes("--leadership-apple-contract: 1")) {
+  throw new Error("Leadership Apple-aligned presentation contract v1 is missing from the generated CSS bundle.");
 }
 
 writeFileSync(resolve(cssRoot, "novapharm.bundle.css"), bundle);

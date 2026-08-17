@@ -65,6 +65,34 @@ for (const value of required) {
   if (!peopleSource.includes(value)) throw new Error(`Canonical people registry is missing ${value}`);
 }
 
+/* Canonical owner-approved leadership source must never regress before build. */
+const canonicalLeadershipSources = [
+  "packages/content/src/index.ts",
+  "src/content/site-content.mjs",
+  "apps/corporate/data/site.ts"
+];
+for (const relative of canonicalLeadershipSources) {
+  const source = readFileSync(path.join(root, relative), "utf8");
+  if (source.includes("Chief Technical Director")) {
+    throw new Error(`${relative} contains Dr Girish's superseded Chief Technical Director title.`);
+  }
+  if (!source.includes("Chief Scientific Officer")) {
+    throw new Error(`${relative} is missing Dr Girish's approved Chief Scientific Officer title.`);
+  }
+}
+
+for (const [relative, portrait] of [
+  ["src/content/site-content.mjs", "/assets/vishalchakravarty.png"],
+  ["src/content/site-content.mjs", "/assets/prabhakarvitthallahare.png"],
+  ["src/content/site-content.mjs", "/assets/girishshantilalachliya.png"],
+  ["apps/corporate/data/site.ts", "/assets/vishalchakravarty.png"],
+  ["apps/corporate/data/site.ts", "/assets/prabhakarvitthallahare.png"],
+  ["apps/corporate/data/site.ts", "/assets/girishshantilalachliya.png"]
+]) {
+  const source = readFileSync(path.join(root, relative), "utf8");
+  if (!source.includes(portrait)) throw new Error(`${relative} is missing approved portrait reference ${portrait}`);
+}
+
 const nishitaProfile = readFileSync(path.join(root, "leadership/nishita-trivedi/index.html"), "utf8");
 if (!nishitaProfile.includes("Chief Technology Officer and Responsible Person")) throw new Error("Dr Nishita's canonical public title is missing from her profile.");
 if (!/not a statutory director/i.test(nishitaProfile)) throw new Error("Dr Nishita's statutory-governance boundary is missing.");
