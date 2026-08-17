@@ -7,7 +7,9 @@ import { chromium, webkit } from "playwright";
 const baseUrl = process.env.PUBLIC_PAGES_BASE_URL ?? "http://127.0.0.1:4310";
 const artifactRoot = path.resolve(process.env.PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT ?? "artifacts/public-pages-browser");
 const routes = [
-  { path: "/", name: "home", required: "Pharmaceutical supply, built around evidence." },
+  { path: "/", name: "home", required: "Medicine. Where it needs to be" },
+  { path: "/leadership/", name: "leadership", required: "Chief Scientific Officer" },
+  { path: "/leadership/girish-achliya/", name: "leadership-girish", required: "Chief Scientific Officer" },
   { path: "/regulatory-services/", name: "regulatory-dossier", required: "Regulatory readiness before regulated activity." },
   { path: "/services/", name: "services", required: "Services" },
   { path: "/oncology/", name: "oncology", required: "Oncology" },
@@ -90,6 +92,71 @@ for (const [engineName, browserType] of engines) {
             assert.deepEqual(failedResources, [], `${engineName} ${viewport.name} ${route.path}: failed subresources`);
             assert.deepEqual(consoleErrors, [], `${engineName} ${viewport.name} ${route.path}: console errors`);
 
+            if (route.name === "leadership" || route.name === "leadership-girish") {
+              assert.equal(bodyText.includes("Chief Technical Director"), false, `${engineName} ${viewport.name} ${route.path}: superseded Dr Girish title is visible`);
+              const typography = await page.evaluate(() => {
+                const h1 = document.querySelector("main h1");
+                const h1Style = h1 ? getComputedStyle(h1) : null;
+                return {
+                  contract: getComputedStyle(document.documentElement).getPropertyValue("--leadership-apple-contract").trim(),
+                  bodyFontFamily: getComputedStyle(document.body).fontFamily,
+                  h1FontWeight: h1Style?.fontWeight ?? "",
+                  h1LineHeight: h1Style?.lineHeight ?? ""
+                };
+              });
+              assert.equal(typography.contract, "1", `${engineName} ${viewport.name} ${route.path}: leadership presentation contract missing`);
+              assert.ok(typography.bodyFontFamily.includes("-apple-system"), `${engineName} ${viewport.name} ${route.path}: system-font stack missing`);
+              assert.equal(typography.h1FontWeight, "600", `${engineName} ${viewport.name} ${route.path}: heading weight must be semibold 600`);
+            }
+
+            if (route.name === "leadership") {
+              const expectedPortraits = [
+                ["vishalchakravarty.png", 1200, 1200],
+                ["prabhakarvitthallahare.png", 960, 1200],
+                ["girishshantilalachliya.png", 960, 1200]
+              ];
+              assert.equal(await page.locator(".leader-card").count(), 5, `${engineName} ${viewport.name}: leadership profile count changed unexpectedly`);
+              for (const [filename, naturalWidth, naturalHeight] of expectedPortraits) {
+                const portrait = page.locator(`.leader-card-media img[src$="/${filename}"]`);
+                assert.equal(await portrait.count(), 1, `${engineName} ${viewport.name}: approved ${filename} leadership portrait missing`);
+                const state = await portrait.evaluate((image) => {
+                  const rect = image.getBoundingClientRect();
+                  const style = getComputedStyle(image);
+                  return {
+                    naturalWidth: image.naturalWidth,
+                    naturalHeight: image.naturalHeight,
+                    width: rect.width,
+                    height: rect.height,
+                    display: style.display,
+                    visibility: style.visibility,
+                    opacity: Number(style.opacity)
+                  };
+                });
+                assert.equal(state.naturalWidth, naturalWidth, `${engineName} ${viewport.name}: ${filename} natural width changed`);
+                assert.equal(state.naturalHeight, naturalHeight, `${engineName} ${viewport.name}: ${filename} natural height changed`);
+                assert.ok(state.width > 180 && state.height > 220, `${engineName} ${viewport.name}: ${filename} portrait collapsed`);
+                assert.notEqual(state.display, "none", `${engineName} ${viewport.name}: ${filename} is display:none`);
+                assert.notEqual(state.visibility, "hidden", `${engineName} ${viewport.name}: ${filename} is hidden`);
+                assert.ok(state.opacity > 0, `${engineName} ${viewport.name}: ${filename} is transparent`);
+              }
+            }
+
+            if (route.name === "leadership-girish") {
+              const portrait = page.locator('.profile-hero-media img[src$="/assets/girishshantilalachliya.png"]');
+              assert.equal(await portrait.count(), 1, `${engineName} ${viewport.name}: Dr Girish approved profile portrait missing`);
+              const portraitState = await portrait.evaluate((image) => ({
+                naturalWidth: image.naturalWidth,
+                naturalHeight: image.naturalHeight,
+                width: image.getBoundingClientRect().width,
+                height: image.getBoundingClientRect().height
+              }));
+              assert.equal(portraitState.naturalWidth, 960, `${engineName} ${viewport.name}: Dr Girish profile portrait width changed`);
+              assert.equal(portraitState.naturalHeight, 1200, `${engineName} ${viewport.name}: Dr Girish profile portrait height changed`);
+              assert.ok(portraitState.width > 180 && portraitState.height > 220, `${engineName} ${viewport.name}: Dr Girish profile portrait collapsed`);
+              const schemaText = await page.locator('script[type="application/ld+json"]').allTextContents();
+              assert.ok(schemaText.some((value) => value.includes('"jobTitle":"Chief Scientific Officer"')), `${engineName} ${viewport.name}: Dr Girish JSON-LD jobTitle is not Chief Scientific Officer`);
+            }
+
             if (route.name === "regulatory-dossier") {
               const dossier = page.locator('img[src*="regulatory-dossier-control"]');
               assert.equal(await dossier.count(), 1, `${engineName} ${viewport.name}: dossier hero image missing`);
@@ -147,4 +214,4 @@ for (const [engineName, browserType] of engines) {
   }
 }
 
-console.log(`Public Pages rendered acceptance passed: ${screenshots} screenshots, ${axeRuns} Axe runs, Chromium + WebKit, desktop + mobile, including visible Regulatory dossier media and no horizontal overflow.`);
+console.log(`Public Pages rendered acceptance passed: ${screenshots} screenshots, ${axeRuns} Axe runs, Chromium + WebKit, desktop + mobile, including Leadership portrait/title validation, visible Regulatory dossier media and no horizontal overflow.`);
