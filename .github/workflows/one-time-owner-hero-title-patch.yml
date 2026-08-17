@@ -30,7 +30,7 @@ jobs:
           new = "Medicine. Where it needs to be"
           targets = {
               Path("scripts/apply-pages-presentation-parity.mjs"): 2,
-              Path(".github/workflows/pages-live-publish.yml"): 2,
+              Path(".github/workflows/pages-live-publish.yml"): 4,
           }
 
           for path, expected_count in targets.items():
