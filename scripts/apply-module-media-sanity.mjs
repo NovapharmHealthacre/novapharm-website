@@ -52,11 +52,11 @@ function moduleMedia(module, asset, className = "module-hero-media") {
 
 function leadershipMedia(module) {
   const portraits = [
-    ["/assets/vishalchakravarty.jpeg", "Vishal Chakravarty"],
-    ["/assets/prabhakarvitthallahare.jpeg", "Prabhakar Vitthal Lahare"],
-    ["/assets/girishshantilalachliya.jpeg", "Dr Girish Shantilal Achliya"]
+    ["/assets/vishalchakravarty.png", "Vishal Chakravarty", 1200, 1200],
+    ["/assets/prabhakarvitthallahare.png", "Prabhakar Vitthal Lahare", 960, 1200],
+    ["/assets/girishshantilalachliya.png", "Dr Girish Shantilal Achliya", 960, 1200]
   ];
-  return `<div class="module-hero-media module-portrait-composition" data-media-role="hero" aria-label="Approved NovaPharm leadership portraits">${portraits.map(([src, name]) => `<img src="${src}" alt="${name}" width="900" height="900" loading="eager" decoding="async">`).join("")}</div>${moduleOverlay(module.id, module.label, module.signals)}`;
+  return `<div class="module-hero-media module-portrait-composition" data-media-role="hero" aria-label="Approved NovaPharm leadership portraits">${portraits.map(([src, name, width, height]) => `<img src="${src}" alt="${name}" width="${width}" height="${height}" loading="eager" decoding="async">`).join("")}</div>${moduleOverlay(module.id, module.label, module.signals)}`;
 }
 
 function writeFocalPointCss() {
