@@ -12,9 +12,9 @@ await mkdir(publicRoot, { recursive: true });
 await Promise.all([
   cp(path.join(sourceRoot, "brand"), path.join(publicRoot, "brand"), { recursive: true }),
   cp(path.join(sourceRoot, "media"), path.join(publicRoot, "media"), { recursive: true }),
-  cp(path.join(sourceRoot, "vishalchakravarty.jpeg"), path.join(publicRoot, "vishalchakravarty.jpeg")),
-  cp(path.join(sourceRoot, "prabhakarvitthallahare.jpeg"), path.join(publicRoot, "prabhakarvitthallahare.jpeg")),
-  cp(path.join(sourceRoot, "girishshantilalachliya.jpeg"), path.join(publicRoot, "girishshantilalachliya.jpeg")),
+  cp(path.join(sourceRoot, "vishalchakravarty.png"), path.join(publicRoot, "vishalchakravarty.png")),
+  cp(path.join(sourceRoot, "prabhakarvitthallahare.png"), path.join(publicRoot, "prabhakarvitthallahare.png")),
+  cp(path.join(sourceRoot, "girishshantilalachliya.png"), path.join(publicRoot, "girishshantilalachliya.png")),
 ]);
 
 const logo = await readFile(path.join(publicRoot, "brand", "novapharm-healthcare-logo.svg"), "utf8");
