@@ -54,7 +54,7 @@ const peopleSource = readFileSync(path.join(root, "packages/content/src/index.ts
 const required = [
   'publicTitle: "Chief Executive Officer"',
   'publicTitle: "Chief Operating Officer"',
-  'publicTitle: "Chief Technical Director"',
+  'publicTitle: "Chief Scientific Officer"',
   'publicTitle: "Chief Medical Director"',
   'publicTitle: "Chief Technology Officer and Responsible Person"',
   'executiveRole: "Chief Technology Officer"',
