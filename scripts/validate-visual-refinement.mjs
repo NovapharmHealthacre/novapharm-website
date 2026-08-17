@@ -39,7 +39,7 @@ const build = read("scripts/build-site.mjs");
 
 [
   [index, "pharma-home-hero", "Homepage concise Apple-pharma hero"],
-  [index, "Pharmaceutical supply, built around evidence.", "Homepage concise primary message"],
+  [index, "Medicine. Where it needs to be", "Homepage concise primary message"],
   [index, "pharma-principles-grid", "Homepage operating-principles strip"],
   [index, "pharma-pillar-grid", "Homepage three-route sourcing architecture"],
   [index, "Three routes. One standard.", "Homepage sourcing hierarchy"],
