@@ -126,7 +126,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",
-    "@types/node": "24.13.3",
+    "@types/node": "26.2.0",
     "chrome-launcher": "1.2.1",
     "lighthouse": "13.4.1",
     "parse5": "8.0.1",
