@@ -58,6 +58,13 @@ function removePublicAi(html) {
     .replace(/\s*<a\b[^>]*href="\/search\/"[^>]*>[\s\S]*?<\/a>/g, "");
 }
 
+function refreshCroLeadershipPortraits(html, relativePath) {
+  if (relativePath !== "cro/index.html") return html;
+  return html
+    .replace(/<picture><source srcset="\/assets\/media\/cro\/leadership\/vishal-chakravarty-480\.avif[\s\S]*?<\/picture>/, '<img src="/assets/vishalchakravarty.jpeg" alt="Vishal Chakravarty, Chief Executive Officer of NovaPharm Healthcare" width="1200" height="1200" loading="lazy" decoding="async">')
+    .replace(/<picture><source srcset="\/assets\/media\/cro\/leadership\/girish-achliya-480\.avif[\s\S]*?<\/picture>/, '<img src="/assets/girishshantilalachliya.jpeg" alt="Dr Girish Shantilal Achliya, Chief Scientific Officer of NovaPharm Healthcare" width="960" height="1200" loading="lazy" decoding="async">');
+}
+
 function correctAccessibleRoles(html, relativePath) {
   if (relativePath === "cro/index.html") {
     return html.replace(/ role="list"/g, "").replace(/ role="listitem"/g, "");
@@ -122,6 +129,7 @@ for (const file of walkHtml(root)) {
       html = `${html.slice(0, index)}${oncologyGallery}${html.slice(index)}`;
     }
 
+    html = refreshCroLeadershipPortraits(html, file.relative);
     return correctAccessibleRoles(html, file.relative);
   });
 }
@@ -148,4 +156,4 @@ rewriteTextFile(robotsPath, (source) => {
   return robots.endsWith("\n") ? robots : `${robots}\n`;
 }, { optional: true });
 
-console.log("Applied owner corrections: public AI/search removed, CRO leadership completed, Oncology imagery expanded and ARIA semantics corrected.");
+console.log("Applied owner corrections: public AI/search removed, CRO leadership completed, leadership portraits refreshed, Oncology imagery expanded and ARIA semantics corrected.");
