@@ -1,0 +1,45 @@
+name: Materialize approved leadership portraits
+
+on:
+  push:
+    branches:
+      - chore/update-leadership-headshots-cso
+    paths:
+      - .github/workflows/materialize-leadership-portraits.yml
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: chore/update-leadership-headshots-cso
+          fetch-depth: 0
+
+      - name: Download owner-approved portraits
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -L --fail --retry 3 --output assets/vishalchakravarty.png 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:9020b2e2-c8ab-4a8a-889e-684b677bcf61'
+          curl -L --fail --retry 3 --output assets/prabhakarvitthallahare.png 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:43c43f19-2b61-40c6-bec1-8690ddb02be8'
+          curl -L --fail --retry 3 --output assets/girishshantilalachliya.png 'https://photoshop-api.adobe.io/v2/short-url/urn:aaid:ps:US:697900fd-8bff-4e00-ba0a-bb47d92fdd89'
+          file assets/vishalchakravarty.png assets/prabhakarvitthallahare.png assets/girishshantilalachliya.png
+
+      - name: Commit portraits to branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/vishalchakravarty.png assets/prabhakarvitthallahare.png assets/girishshantilalachliya.png
+          if git diff --cached --quiet; then
+            echo 'Portraits already materialized.'
+            exit 0
+          fi
+          git commit -m 'Update approved leadership portraits'
+          git push origin HEAD:chore/update-leadership-headshots-cso
