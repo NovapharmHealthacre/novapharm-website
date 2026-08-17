@@ -122,7 +122,7 @@
     "@azure/monitor-opentelemetry": "1.19.0",
     "@azure/storage-blob": "12.33.0",
     "dotenv": "^17.4.2",
-    "mssql": "12.6.0"
+    "mssql": "12.7.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",
