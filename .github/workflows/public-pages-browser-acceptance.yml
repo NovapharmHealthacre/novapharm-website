@@ -6,15 +6,23 @@ on:
       - .github/workflows/public-pages-browser-acceptance.yml
       - assets/css/**
       - assets/media/**
+      - assets/*.png
       - index.html
+      - leadership/**
       - regulatory-services/**
       - services/**
       - oncology/**
       - cro/**
       - technology/**
+      - apps/corporate/data/site.ts
+      - packages/content/src/index.ts
+      - src/content/site-content.mjs
+      - creative-assets/asset-register.json
       - scripts/build-site.mjs
       - scripts/build-pages.mjs
       - scripts/apply-pages-presentation-parity.mjs
+      - scripts/programme/validate-leadership-titles.mjs
+      - scripts/test-owner-corrections.mjs
       - scripts/test-public-pages-browser.mjs
       - package.json
       - package-lock.json
@@ -24,15 +32,23 @@ on:
       - .github/workflows/public-pages-browser-acceptance.yml
       - assets/css/**
       - assets/media/**
+      - assets/*.png
       - index.html
+      - leadership/**
       - regulatory-services/**
       - services/**
       - oncology/**
       - cro/**
       - technology/**
+      - apps/corporate/data/site.ts
+      - packages/content/src/index.ts
+      - src/content/site-content.mjs
+      - creative-assets/asset-register.json
       - scripts/build-site.mjs
       - scripts/build-pages.mjs
       - scripts/apply-pages-presentation-parity.mjs
+      - scripts/programme/validate-leadership-titles.mjs
+      - scripts/test-owner-corrections.mjs
       - scripts/test-public-pages-browser.mjs
       - package.json
       - package-lock.json

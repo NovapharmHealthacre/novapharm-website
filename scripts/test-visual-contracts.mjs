@@ -32,7 +32,7 @@ for (const forbiddenGlobal of [
 }
 
 const home = text("index.html");
-assert.match(home, /Pharmaceutical supply, built around evidence\./);
+assert.match(home, /Medicine\. Where it needs to be/);
 assert.match(home, /class="pharma-home-hero"/);
 assert.match(home, /class="container pharma-home-grid"/);
 assert.match(home, /class="pharma-home-media"/);
@@ -92,9 +92,11 @@ assert.equal((cro.match(/data-cro-stage="\d+"/g) || []).length, 8, "CRO navigato
 assert.equal((cro.match(/class="cro-lane cro-lane-/g) || []).length, 3, "CRO delivery architecture must expose three responsibility lanes");
 assert.match(cro, /cro-evidence-architecture-640\.avif 640w/);
 assert.match(cro, /cro-delivery-architecture-640\.webp 640w/);
-assert.match(cro, /vishal-chakravarty-480\.avif 480w/);
-assert.match(cro, /girish-achliya-800\.webp 800w/);
-assert.match(cro, /prabhakarvitthallahare\.jpeg/);
+for (const portrait of ["vishalchakravarty.png", "girishshantilalachliya.png", "prabhakarvitthallahare.png"]) {
+  assert.match(cro, new RegExp(portrait.replace(".", "\\.")), `CRO must use approved portrait ${portrait}`);
+}
+assert.match(cro, /Chief Scientific Officer/);
+assert.doesNotMatch(cro, /Chief Technical Director/);
 assert.equal((cro.match(/class="cro-leader"/g) || []).length, 3, "CRO Senior judgement must show three leaders");
 assert.match(cro, /href="\/leadership\/prabhakar-lahare\/"/);
 assert.match(cro, /class="cro-governance-map"/);
@@ -121,7 +123,7 @@ for (const retired of ["technology/ai-governance/index.html", "search/index.html
 
 const leadership = text("leadership/index.html");
 assert.match(leadership, /module-portrait-composition/);
-for (const portrait of ["vishalchakravarty.jpeg", "prabhakarvitthallahare.jpeg", "girishshantilalachliya.jpeg"]) assert.match(leadership, new RegExp(portrait));
+for (const portrait of ["vishalchakravarty.png", "prabhakarvitthallahare.png", "girishshantilalachliya.png"]) assert.match(leadership, new RegExp(portrait));
 
 const moduleRegister = JSON.parse(text("docs/module-media-register.json"));
 assert.equal(moduleRegister.modules.length, 16, "the full public module register must contain sixteen entries");
@@ -193,7 +195,7 @@ assert.match(text("assets/css/module-media-sanity.css"), /@media \(prefers-reduc
 assert.match(text("assets/css/owner-corrections.css"), /@media \(prefers-reduced-motion: reduce\)/);
 assert.match(text("assets/js/visual-refinement.js"), /data-motion-toggle/);
 assert.match(text("assets/js/novapharm.js"), /saveData/);
-for (const stylesheet of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity", "cro", "oncology", "apple-pharma-public", "owner-corrections"]) {
+for (const stylesheet of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity", "cro", "oncology", "apple-pharma-public", "leadership-apple", "owner-corrections"]) {
   assert.doesNotMatch(text(`assets/css/${stylesheet}.css`), /prefers-color-scheme:\s*dark/, `${stylesheet}.css must not create an untested automatic dark theme`);
 }
 
