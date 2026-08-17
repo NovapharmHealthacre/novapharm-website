@@ -92,9 +92,11 @@ assert.equal((cro.match(/data-cro-stage="\d+"/g) || []).length, 8, "CRO navigato
 assert.equal((cro.match(/class="cro-lane cro-lane-/g) || []).length, 3, "CRO delivery architecture must expose three responsibility lanes");
 assert.match(cro, /cro-evidence-architecture-640\.avif 640w/);
 assert.match(cro, /cro-delivery-architecture-640\.webp 640w/);
-assert.match(cro, /vishal-chakravarty-480\.avif 480w/);
-assert.match(cro, /girish-achliya-800\.webp 800w/);
-assert.match(cro, /prabhakarvitthallahare\.png/);
+for (const portrait of ["vishalchakravarty.png", "girishshantilalachliya.png", "prabhakarvitthallahare.png"]) {
+  assert.match(cro, new RegExp(portrait.replace(".", "\\.")), `CRO must use approved portrait ${portrait}`);
+}
+assert.match(cro, /Chief Scientific Officer/);
+assert.doesNotMatch(cro, /Chief Technical Director/);
 assert.equal((cro.match(/class="cro-leader"/g) || []).length, 3, "CRO Senior judgement must show three leaders");
 assert.match(cro, /href="\/leadership\/prabhakar-lahare\/"/);
 assert.match(cro, /class="cro-governance-map"/);
