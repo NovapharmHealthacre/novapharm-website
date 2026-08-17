@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { getPlatformCapabilities, resolvePlatformMode } from "../src/core/platform-mode.mjs";
 
@@ -16,11 +16,15 @@ const excludedTopLevel = new Set([
 function fail(message) { failures.push(message); }
 function text(relative) {
   const target = join(root, relative);
-  if (!existsSync(target)) {
-    fail(`Missing required file: ${relative}`);
-    return "";
+  try {
+    return readFileSync(target, "utf8");
+  } catch (error) {
+    if (error?.code === "ENOENT") {
+      fail(`Missing required file: ${relative}`);
+      return "";
+    }
+    throw error;
   }
-  return readFileSync(target, "utf8");
 }
 function walkHtml(directory, relative = "") {
   const files = [];
@@ -97,11 +101,17 @@ for (const [name, relative, expectedWidth, expectedHeight] of approvedPortraits)
   const publicPath = `/${relative}`;
   if (!leadershipIndex.includes(publicPath)) fail(`Leadership index is not using the approved portrait for ${name}: ${publicPath}`);
   const absolute = join(root, relative);
-  if (!existsSync(absolute) || !statSync(absolute).isFile()) {
-    fail(`Approved portrait is missing for ${name}: ${relative}`);
+  let image;
+  try {
+    image = readFileSync(absolute);
+  } catch (error) {
+    if (error?.code === "ENOENT") {
+      fail(`Approved portrait is missing for ${name}: ${relative}`);
+      continue;
+    }
+    fail(`Approved portrait is unreadable for ${name}: ${relative}`);
     continue;
   }
-  const image = readFileSync(absolute);
   if (image.length < 24 || !image.subarray(0, 8).equals(pngSignature)) {
     fail(`Approved portrait is not a valid PNG for ${name}: ${relative}`);
     continue;
@@ -124,7 +134,11 @@ const cssBundle = text("assets/css/novapharm.bundle.css");
 if (!leadershipCssSource.includes("--leadership-apple-contract: 1")) fail("Leadership Apple-aligned source contract is missing.");
 if (!cssBundle.includes("--leadership-apple-contract: 1")) fail("Leadership Apple-aligned CSS was not included in the generated bundle.");
 if (!leadershipCssSource.includes('-apple-system, BlinkMacSystemFont')) fail("Leadership typography is not using the platform-native Apple system-font stack.");
-if (/@font-face\b/i.test(leadershipCssSource) || /(?:apple\.com|developer\.apple\.com)\/.*\.(?:woff2?|ttf|otf)/i.test(leadershipCssSource)) {
+const appleFontHostTokens = ["//apple.com/", "//www.apple.com/", "//developer.apple.com/"];
+const fontAssetExtensions = [".woff", ".woff2", ".ttf", ".otf"];
+const hotlinksAppleFont = appleFontHostTokens.some((host) => leadershipCssSource.includes(host))
+  && fontAssetExtensions.some((extension) => leadershipCssSource.includes(extension));
+if (/@font-face\b/i.test(leadershipCssSource) || hotlinksAppleFont) {
   fail("Leadership CSS must not embed, copy or hotlink Apple proprietary font assets.");
 }
 if (!leadershipCssSource.includes('body[data-page="leadership"]') || !leadershipCssSource.includes('body[data-page^="leadership/"]')) {
@@ -139,7 +153,12 @@ for (const asset of [
   "/assets/media/oncology/oncology-condition-control.svg"
 ]) {
   if (!oncology.includes(asset)) fail(`Oncology gallery does not reference ${asset}`);
-  if (!existsSync(join(root, asset.slice(1))) || !statSync(join(root, asset.slice(1))).isFile()) fail(`Oncology gallery asset is missing: ${asset}`);
+  try {
+    readFileSync(join(root, asset.slice(1)));
+  } catch (error) {
+    if (error?.code === "ENOENT") fail(`Oncology gallery asset is missing: ${asset}`);
+    else fail(`Oncology gallery asset is unreadable: ${asset}`);
+  }
 }
 
 for (const sitemap of ["sitemap.xml", "sitemap-images.xml", "sitemap-insights.xml"]) {
