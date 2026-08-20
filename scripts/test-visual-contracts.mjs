@@ -16,6 +16,7 @@ const publicCss = text("assets/css/apple-pharma-public.css");
 const bundleCss = text("assets/css/novapharm.bundle.css");
 const tokenCss = text("assets/css/tokens.css");
 const baseCss = text("assets/css/base.css");
+const portalCss = text("assets/css/portal.css");
 assert.match(publicCss, /--apple-pharma-public-contract:\s*3/);
 assert.match(publicCss, /body\[data-page="home"\]/);
 assert.match(publicCss, /-apple-system, BlinkMacSystemFont/);
@@ -26,7 +27,9 @@ assert.match(tokenCss, /--brand-text:\s*#B30E09;/, "small red foreground text ne
 for (const selector of ["section-kicker", "status-label", "text-link", "editorial-index"]) {
   assert.match(baseCss, new RegExp(`\\.${selector}[\\s\\S]{0,260}color:\\s*var\\(--brand-text\\)`), `${selector} must not use identity red as small foreground text`);
 }
-assert.match(text("assets/css/portal.css"), /\.portal-topbar \.eyebrow\s*\{\s*color:\s*var\(--brand-text\);\s*\}/);
+assert.match(portalCss, /\.portal-topbar \.eyebrow\s*\{\s*color:\s*var\(--brand-text\);\s*\}/);
+assert.match(baseCss, /\.status-pill\s*\{[\s\S]{0,180}column-gap:\s*0\.25em;/, "identity badges must preserve visual separation between their label and value");
+assert.match(portalCss, /\.metric strong\s*\{[\s\S]{0,260}font-size:\s*clamp\(24px, 2vw, 34px\);[\s\S]{0,180}white-space:\s*nowrap;/, "portal metric values must fit on one intentional line");
 assert.match(text("assets/css/cro.css"), /\.cro-decision-questions button > span\s*\{\s*color:\s*var\(--brand-text\);/);
 for (const forbiddenGlobal of [
   /\n\.section,\n/,
