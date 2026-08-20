@@ -50,10 +50,11 @@ requires(deployWorkflow, /Azure deployment what-if/u, "Every controlled deployme
 requires(deployWorkflow, /test "\$\(git rev-parse HEAD\)" = "\$EXPECTED_SHA"/u, "Deployment must enforce the reviewed immutable source SHA.");
 requires(deployWorkflow, /No DNS, domain binding, slot swap, SharePoint permission or GitHub Pages change was performed\./u, "Deployment evidence must preserve the no-cutover truth boundary.");
 
-requires(acceptance, /Status: repository contract accepted; Azure what-if, provisioning and managed-environment acceptance pending/iu, "The acceptance pack must state that managed-environment acceptance is still pending.");
+requires(acceptance, /Status: repository contract accepted; authenticated Azure what-if reaches provider preflight; provisioning is blocked by App Service quota/iu, "The acceptance pack must state the verified OIDC/preflight boundary and current quota stop condition.");
 requires(acceptance, /The following are not complete and must not be inferred from repository acceptance:/iu, "The acceptance pack must explicitly separate repository proof from unresolved managed-environment gates.");
-requires(acceptance, /owner-approved Azure subscription, region and cost estimate/iu, "Managed staging must remain cost/owner gated.");
-requires(acceptance, /GitHub OIDC registration and protected environments/iu, "Managed staging must require real OIDC/protected environments.");
+requires(acceptance, /owner portal approval of four UK South App Service workers and successful exact-SHA what-if/iu, "Managed staging must retain the observed provider-capacity gate.");
+requires(acceptance, /explicit review of the recurring staging and production cost before provisioning/iu, "Managed staging must remain cost/owner gated.");
+requires(acceptance, /Deployment identity[^\n]*separate `azure-staging` and `azure-production` federated credentials/iu, "The acceptance pack must preserve verified OIDC environment separation.");
 requires(acceptance, /Entra workforce and External ID registrations, groups, app roles and MFA evidence/iu, "Managed staging must retain real identity acceptance as a named gate.");
 requires(acceptance, /Azure SQL contained users, migration, reconciliation, backup and isolated restore/iu, "Managed staging must retain isolated restore evidence as a gate.");
 requires(acceptance, /Graph `Sites.Selected` consent and owner-approved SharePoint permissions/iu, "Managed staging must retain least-privilege Microsoft Graph acceptance.");

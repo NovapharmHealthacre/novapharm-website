@@ -1,14 +1,14 @@
 # Azure Unified Estate Repository Acceptance
 
-Status: repository contract accepted; Azure what-if, provisioning and managed-environment acceptance pending
-Acceptance date: 1 August 2026
-Candidate branch: `codex/unified-digital-estate-foundation`
+Status: repository contract accepted; authenticated Azure what-if reaches provider preflight; provisioning is blocked by App Service quota
+Acceptance updated: 20 August 2026
+Candidate branch: `codex/post-pr53-apple-parity`
 
 ## Outcome
 
 The Azure source contract now matches the migrated monorepo. `infra/unified-estate.bicep` defines six independently deployed applications rather than the obsolete single-web-app topology. Corporate, Technology, founder and status use a public App Service plan. Portal and API use a separate secure plan and separate system-assigned managed identities. The API alone receives Azure SQL and private Blob permissions.
 
-No Azure resource, subscription, DNS record, domain binding, certificate, Entra registration, SharePoint permission or production deployment changed during this acceptance. The templates were compiled locally only. Cost approval, authenticated Azure what-if and owner-controlled secrets remain external gates.
+The selected Pay-As-You-Go subscription, GitHub OIDC identity and protected staging environment are now authenticated and verified. Azure what-if reaches the real `Microsoft.Web/serverFarms` preflight but cannot pass while the subscription's UK South App Service `Total Regional VMs` limit remains zero. No billable resource, DNS record, domain binding, certificate, SharePoint permission or production deployment changed during this acceptance. Cost approval, capacity, owner-controlled secrets and managed-staging acceptance remain external gates.
 
 ## Implemented boundaries
 
@@ -75,6 +75,24 @@ Artifact counts and digests are regenerated for every immutable SHA; the figures
 | Release artifact structural tests | Passed |
 | Packaged API startup | Passed on Node `24.14.0` |
 
+## Authenticated Azure preflight
+
+Observed on 20 August 2026:
+
+| Control | Verified state |
+|---|---|
+| Subscription | `NovaPharm_Website` (`af821f2e-8285-472b-abf7-85dfa05f2910`) is enabled in tenant `08811bc1-2d20-4fbb-bcb3-f02011e53b60` |
+| Existing resources | `novapharm-stg-rg` exists in UK South and contains no resources; no billable or partial estate was created |
+| Deployment identity | `NovaPharm GitHub Deployments` is enabled with separate `azure-staging` and `azure-production` federated credentials |
+| GitHub environment | Exact-SHA checkout, protected environment variables, Azure OIDC login, resource-group validation and compiled topology validation all pass |
+| Provider preflight | Workflow run `32364509502` reached Azure what-if and stopped at `SubscriptionIsOverQuotaForSku`; tracking ID `a7ba93f8-c913-470b-a8d7-e499963b4bea` |
+| Current limit | UK South reports `Total Regional VMs: 0`, `S1 VMs: 0`; each of the two plans requires one worker |
+| Self-service quota API | `Microsoft.Quota` was registered. Request `55a3b0d7-a003-4cf4-8d03-ad766efd4f9b` asked for four S1 instances and failed `QuotaNotAvailableForResource` |
+| Support API | A quota-support operation was attempted and failed `InvalidSupportPlan` because the subscription has the Free support plan; no support ticket was created |
+| Production effect | None. Provisioning, deployment, DNS and traffic changes did not run |
+
+The next valid action is an owner portal quota request for four UK South App Service workers. After Azure reports sufficient S1 and total regional capacity, rerun the exact-SHA staging `what-if`. A failed preflight is evidence of a correctly enforced stop condition, not staging acceptance.
+
 ## Deployment workflow safety
 
 `.github/workflows/azure-deploy.yml` is manual only. It requires:
@@ -102,16 +120,15 @@ Production deploys only to candidate slots. There is deliberately no automatic s
 
 The following are not complete and must not be inferred from repository acceptance:
 
-1. owner-approved Azure subscription, region and cost estimate;
-2. GitHub OIDC registration and protected environments;
-3. authenticated Azure what-if and actual resource IDs;
-4. protected entry and resolution of both vaults' secrets;
-5. Entra workforce and External ID registrations, groups, app roles and MFA evidence;
-6. Azure SQL contained users, migration, reconciliation, backup and isolated restore;
-7. private Blob quarantine and an approved malware-scanning service;
-8. transactional email delivery and provider-failure replay;
-9. Graph `Sites.Selected` consent and owner-approved SharePoint permissions;
-10. managed staging visual, security, accessibility, performance and penetration acceptance;
-11. production candidate acceptance, cost approval, merge, domain binding, DNS and GitHub Pages retirement.
+1. owner portal approval of four UK South App Service workers and successful exact-SHA what-if;
+2. explicit review of the recurring staging and production cost before provisioning;
+3. protected entry and resolution of both vaults' secrets;
+4. Entra workforce and External ID registrations, groups, app roles and MFA evidence;
+5. Azure SQL contained users, migration, reconciliation, backup and isolated restore;
+6. private Blob quarantine and an approved malware-scanning service;
+7. transactional email delivery and provider-failure replay;
+8. Graph `Sites.Selected` consent and owner-approved SharePoint permissions;
+9. managed staging visual, security, accessibility, performance and penetration acceptance;
+10. production candidate acceptance, merge, domain binding, DNS and GitHub Pages retirement.
 
 Repository acceptance is not production completion.
