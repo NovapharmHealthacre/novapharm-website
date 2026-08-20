@@ -49,7 +49,15 @@ export function ConciseHomePage() {
     <>
       <section className="pharma-home-hero">
         <div className="pharma-home-media" aria-hidden="true">
-          <Image src="/assets/media/home/supply-network-hero.avif" alt="" fill priority sizes="100vw" />
+          <Image
+            src="/assets/media/home/supply-network-hero.avif"
+            alt=""
+            fill
+            priority
+            fetchPriority="high"
+            sizes="100vw"
+            unoptimized
+          />
         </div>
         <div className="pharma-home-shade" aria-hidden="true" />
         <div className="shell pharma-home-grid">
