@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
+import { existsSync } from "node:fs";
 import { readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
@@ -106,7 +107,17 @@ function hammingDistance(left, right) {
   return distance;
 }
 
-const tracked = trackedFiles();
+function crossPlatformComparable(report) {
+  const comparable = structuredClone(report);
+  delete comparable.summary.perceptualDuplicateCandidateGroups;
+  for (const asset of comparable.assets) {
+    delete asset.perceptualHash;
+    delete asset.perceptualDuplicateCandidateGroup;
+  }
+  return JSON.stringify(comparable);
+}
+
+const tracked = trackedFiles().filter((file) => existsSync(path.join(root, file)));
 const mediaFiles = tracked.filter((file) => mediaPattern.test(file));
 const textFiles = tracked.filter((file) => textPattern.test(file) && file !== "audit/generated/image-inventory.json");
 const textCorpus = [];
@@ -438,6 +449,7 @@ const report = {
   scope: "All tracked raster, vector, EPS and PDF assets; generated build directories and node_modules are excluded by git inventory.",
   caveats: [
     "Perceptual groups are automated candidates at dHash distance <= 2 and require human review before deletion or replacement.",
+    "Cross-platform staleness validation excludes only native-decoder-derived perceptual hashes and candidate groups; byte hashes, dimensions, provenance, usage and all other fields remain strict.",
     "A physical file may be a governed delivery derivative or an intentional application copy; duplicate status alone is not permission to remove it.",
     "Repository-generated screenshots are test evidence, not public visual assets.",
     "Null semantic or provenance fields are explicit gaps, not inferred approvals."
@@ -458,10 +470,21 @@ const serialised = `${JSON.stringify(report, null, 2)}\n`;
 if (process.argv.includes("--check")) {
   const current = await readFile(outputPath, "utf8").catch(() => "");
   if (current !== serialised) {
-    console.error("Image inventory is stale. Run npm run images:inventory and review the resulting provenance gaps.");
-    process.exit(1);
+    let currentReport;
+    try {
+      currentReport = JSON.parse(current);
+    } catch {
+      console.error("Image inventory is missing or invalid. Run npm run images:inventory and review the generated report.");
+      process.exit(1);
+    }
+    if (crossPlatformComparable(currentReport) !== crossPlatformComparable(report)) {
+      console.error("Image inventory authoritative fields are stale. Run npm run images:inventory and review the resulting provenance gaps.");
+      process.exit(1);
+    }
+    console.log("Image inventory authoritative fields are current; native-decoder perceptual candidates differ on this platform and remain advisory.");
+  } else {
+    console.log(`Image inventory is current: ${inventory.length} tracked assets, ${exactIndex} exact duplicate groups and ${perceptualIndex} visual-review candidate groups.`);
   }
-  console.log(`Image inventory is current: ${inventory.length} tracked assets, ${exactIndex} exact duplicate groups and ${perceptualIndex} visual-review candidate groups.`);
 } else {
   await writeFile(outputPath, serialised);
   console.log(`Generated image inventory for ${inventory.length} tracked assets at audit/generated/image-inventory.json.`);

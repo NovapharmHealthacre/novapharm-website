@@ -497,14 +497,9 @@
     "file": "account-application/index.html",
     "title": "Open a Pharmaceutical Customer Account | NovaPharm Healthcare",
     "description": "Apply for a future NovaPharm Healthcare B2B customer account through a controlled company, responsible-person, GDP, credit and document onboarding workflow.",
-    "h1": "A controlled route into the future NovaPharm customer network.",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "BreadcrumbList",
-      "ListItem",
-      "ListItem"
-    ],
+    "h1": "Business account onboarding is controlled.",
+    "indexable": false,
+    "schemaTypes": [],
     "intendedCta": [
       "partners",
       "contact",
