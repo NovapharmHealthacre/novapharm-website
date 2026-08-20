@@ -1,6 +1,6 @@
 {
-  "version": "1.3",
-  "reviewed": "2026-08-13",
+  "version": "1.4",
+  "reviewed": "2026-08-20",
   "legacyVisualStatus": "Editorial SVG records are retained for provenance only. They are retired from public production; creative-assets/module-media-asset-register.json is the current module and Insights media register.",
   "competitorCodeOrAssetsUsed": false,
   "authoringMaster": {
@@ -8,7 +8,11 @@
     "storage": "protected off-repository creative archive",
     "source": "OpenAI built-in image generation using creative-assets/image-generation-brief.md",
     "dimensions": "1672x941",
-    "productionDerivatives": ["assets/media/home/supply-network-hero.jpg", "assets/media/home/supply-network-hero-1200.jpg", "assets/media/home/supply-network-hero.avif"]
+    "productionDerivatives": [
+      "assets/media/home/supply-network-hero.jpg",
+      "assets/media/home/supply-network-hero-1200.jpg",
+      "assets/media/home/supply-network-hero.avif"
+    ]
   },
   "assets": [
     {
@@ -20,7 +24,7 @@
       "modified": false,
       "dimensions": "viewBox 0 0 11189.894 1410.2538",
       "optimisedVariants": ["assets/brand/novapharm-healthcare-logo.png", "assets/brand/novapharm-healthcare-logo-reverse.svg", "assets/brand/novapharm-healthcare-logo-monochrome.svg"],
-      "pageUsage": ["public header", "public footer", "portal login", "customer portal", "employee portal", "board portal", "administrator portal", "Executive Platform", "error pages"],
+      "pageUsage": ["public header", "public footer", "portal login", "customer portal", "employee portal", "board portal", "administrator portal", "Executive Platform", "error pages", "web manifest"],
       "altText": "NovaPharm Healthcare",
       "caption": null,
       "technicalStatus": "hash-verified",
@@ -35,7 +39,12 @@
       "modified": false,
       "dimensions": "2048x258",
       "optimisedVariants": [],
-      "pageUsage": ["SVG fallback", "structured-data organisation identity", "transactional email branding where supported"],
+      "pageUsage": [
+        "SVG fallback",
+        "Open Graph metadata",
+        "structured-data organisation identity",
+        "transactional email branding where supported"
+      ],
       "altText": "NovaPharm Healthcare",
       "caption": null,
       "technicalStatus": "hash-verified",
@@ -78,8 +87,13 @@
       "generated": true,
       "modified": true,
       "dimensions": "1672x941",
-      "optimisedVariants": ["assets/media/home/supply-network-hero-1200.jpg", "assets/media/home/supply-network-hero.avif"],
-      "pageUsage": ["homepage flagship hero"],
+      "optimisedVariants": [
+        "assets/media/home/supply-network-hero-1200.jpg",
+        "assets/media/home/supply-network-hero.avif"
+      ],
+      "pageUsage": [
+        "homepage flagship hero"
+      ],
       "altText": "",
       "caption": "Editorial representation of regulated medicine movement, batch integrity and connected sourcing.",
       "technicalStatus": "optimised; below 350 KB budget",
@@ -93,7 +107,9 @@
       "modified": true,
       "dimensions": "1200x675",
       "optimisedVariants": [],
-      "pageUsage": ["homepage responsive hero up to 1200 CSS pixels"],
+      "pageUsage": [
+        "homepage responsive hero up to 1200 CSS pixels"
+      ],
       "altText": "",
       "caption": "Editorial representation of regulated medicine movement, batch integrity and connected sourcing.",
       "technicalStatus": "optimised; below 220 KB budget",
@@ -107,7 +123,9 @@
       "modified": true,
       "dimensions": "1672x941",
       "optimisedVariants": [],
-      "pageUsage": ["homepage flagship hero in AVIF-capable browsers"],
+      "pageUsage": [
+        "homepage flagship hero in AVIF-capable browsers"
+      ],
       "altText": "",
       "caption": "Editorial representation of regulated medicine movement, batch integrity and connected sourcing.",
       "technicalStatus": "metadata stripped; 55 KB; Lighthouse-validated LCP asset",
@@ -248,51 +266,63 @@
       "ownerApproval": "superseded"
     },
     {
-      "path": "assets/vishalchakravarty.jpeg",
+      "path": "assets/vishalchakravarty.png",
       "type": "leadership-photo",
-      "source": "owner-supplied authoritative master Vishal.png",
-      "sourceMasterSha256": "937d3e601a7c434247f30ec8ed6d38811a54d35d52cd4b0cb7b61d1acd62e271",
-      "assetSha256": "a4e5ddb5164e8c5c1f9450f7deac28615327d8782ed88c59e9f622f4d9559c72",
-      "acquisitionDate": "2026-08-07",
+      "source": "owner-supplied authoritative master Vishal Chakravarty.png",
+      "sourceMasterSha256": "34935cd045cb08bd991099d9e16f58ea4e2ec13ecda17d04fd50bb001dc5c70f",
+      "assetSha256": "248451ddc51bed215d0b28f805d1129dbe4ba9b202d7e3e6b2a33bb31d5b2a08",
+      "acquisitionDate": "2026-08-17",
       "generated": false,
-      "dimensions": "1122x1402",
-      "optimisedVariants": ["assets/media/cro/leadership/vishal-chakravarty-{480,800}.{avif,webp,jpg}"],
-      "pageUsage": ["leadership index", "Vishal Chakravarty profile", "CRO senior judgement"],
+      "dimensions": "1200x1200",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "leadership index",
+        "Vishal Chakravarty profile",
+        "CRO senior judgement"
+      ],
       "altText": "Vishal Chakravarty, Chief Executive Officer of NovaPharm Healthcare",
       "caption": null,
-      "technicalStatus": "authoritative master converted to metadata-stripped progressive JPEG; intrinsic dimensions declared",
+      "technicalStatus": "owner-approved authoritative portrait resized with Adobe to declared web presentation dimensions; PNG",
       "ownerApproval": "approved"
     },
     {
-      "path": "assets/prabhakarvitthallahare.jpeg",
+      "path": "assets/prabhakarvitthallahare.png",
       "type": "leadership-photo",
-      "source": "owner-supplied authoritative master Prabhakar.png",
-      "sourceMasterSha256": "9cdba03cb594ef7f60583cae30ced19d61399eb47dc34ebe3e29764c54ab79b1",
-      "assetSha256": "1a455394ac03088fafbabfa856b3cee42cced394c936e1463fa1f83be1b8b8ed",
-      "acquisitionDate": "2026-08-07",
+      "source": "owner-supplied authoritative master Prabhkar Lahare.png",
+      "sourceMasterSha256": "88e23ba2d98b29a40b61f639e01cd42d2390b345a0867e9a175a0c248f623241",
+      "assetSha256": "23992b9dc44c5d8da0ef11826e84f8529b331f3b90cd316e8f778f5081b39b52",
+      "acquisitionDate": "2026-08-17",
       "generated": false,
-      "dimensions": "1122x1402",
+      "dimensions": "960x1200",
       "optimisedVariants": [],
-      "pageUsage": ["leadership index", "Prabhakar Vitthal Lahare profile"],
+      "pageUsage": [
+        "leadership index",
+        "Prabhakar Vitthal Lahare profile",
+        "CRO senior judgement"
+      ],
       "altText": "Prabhakar Vitthal Lahare, Chief Operating Officer of NovaPharm Healthcare",
       "caption": null,
-      "technicalStatus": "authoritative master converted to metadata-stripped progressive JPEG; intrinsic dimensions declared",
+      "technicalStatus": "owner-approved authoritative portrait resized with Adobe to declared web presentation dimensions; PNG",
       "ownerApproval": "approved"
     },
     {
-      "path": "assets/girishshantilalachliya.jpeg",
+      "path": "assets/girishshantilalachliya.png",
       "type": "leadership-photo",
-      "source": "owner-supplied authoritative master Dr. Girish.png",
-      "sourceMasterSha256": "cca51da4fa9dce26f46e6d8724cd5d00992d2d1901daa084f1880ef24e06525e",
-      "assetSha256": "14e020b1a2fb858412b2c49244577d7057fe15fbd72e8e4680ac972674048b80",
-      "acquisitionDate": "2026-08-07",
+      "source": "owner-supplied authoritative master Dr Girish.png",
+      "sourceMasterSha256": "b47256019242b7c9f9b425e6f719e3db0056caee88b73ffba041f12d48d25201",
+      "assetSha256": "58e866c777fdc7d7f228f64fe6771270b2e3e603687ac38164a0c2c19f3028cd",
+      "acquisitionDate": "2026-08-17",
       "generated": false,
-      "dimensions": "1122x1402",
-      "optimisedVariants": ["assets/media/cro/leadership/girish-achliya-{480,800}.{avif,webp,jpg}"],
-      "pageUsage": ["leadership index", "Dr Girish Shantilal Achliya profile", "CRO senior judgement"],
-      "altText": "Dr Girish Shantilal Achliya, Chief Technical Director of NovaPharm Healthcare",
+      "dimensions": "960x1200",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "leadership index",
+        "Dr Girish Shantilal Achliya profile",
+        "CRO senior judgement"
+      ],
+      "altText": "Dr Girish Shantilal Achliya, Chief Scientific Officer of NovaPharm Healthcare",
       "caption": null,
-      "technicalStatus": "authoritative master converted to metadata-stripped progressive JPEG; intrinsic dimensions declared",
+      "technicalStatus": "owner-approved authoritative portrait resized with Adobe to declared web presentation dimensions; PNG",
       "ownerApproval": "approved"
     }
   ],

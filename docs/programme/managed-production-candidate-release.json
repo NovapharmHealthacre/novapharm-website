@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "1.0",
+  "requestedAt": "2026-08-11",
+  "purpose": "Trigger the controlled exact-SHA Azure production-candidate deployment after Production Readiness succeeds on main.",
+  "sourcePr": 56,
+  "layoutAndDossierRepairMerge": "f5a8d814016f2a82e89e8d44f0036892bbdeb9be",
+  "target": "production-candidate",
+  "action": "deploy",
+  "runSchemaMigrations": true,
+  "productionCutoverAuthorized": false,
+  "notes": [
+    "This marker does not weaken the PUBLIC_ONLY GitHub Pages boundary.",
+    "The controlled Azure deployment workflow must validate owner-controlled Azure, Entra, email and SQL configuration before provisioning or deployment.",
+    "Candidate smoke tests must pass before any later production hostname, DNS or slot cutover decision."
+  ]
+}

@@ -50,9 +50,9 @@ They are representative stock photographs. They do not identify NovaPharm-owned 
 
 Approved images used:
 
-- `assets/vishalchakravarty.jpeg`
-- `assets/prabhakarvitthallahare.jpeg`
-- `assets/girishshantilalachliya.jpeg`
+- `assets/vishalchakravarty.png`
+- `assets/prabhakarvitthallahare.png`
+- `assets/girishshantilalachliya.png`
 
 No approved portrait was available in this run for:
 

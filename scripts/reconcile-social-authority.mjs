@@ -33,10 +33,10 @@ for (const module of artDirection.modules) {
   });
 }
 routeImages.set("/leadership/", {
-  url: "/assets/vishalchakravarty.jpeg",
-  type: "image/jpeg",
-  width: 1796,
-  height: 1749,
+  url: "/assets/vishalchakravarty.png",
+  type: "image/png",
+  width: 1200,
+  height: 1200,
   alt: "Vishal Chakravarty, Chief Executive Officer of NovaPharm Healthcare"
 });
 routeImages.set("/product-portfolio/nutraxin/", {
@@ -82,8 +82,8 @@ for (const person of leadership) {
   routeImages.set(`/leadership/${person.slug}/`, person.image ? {
     url: person.image,
     type: person.image.endsWith(".png") ? "image/png" : "image/jpeg",
-    width: 1102,
-    height: 1378,
+    width: person.imageWidth,
+    height: person.imageHeight,
     alt: `${person.displayName}, ${person.schemaTitle} at NovaPharm Healthcare`
   } : fallback);
 }

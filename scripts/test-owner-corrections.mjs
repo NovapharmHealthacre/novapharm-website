@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { getPlatformCapabilities, resolvePlatformMode } from "../src/core/platform-mode.mjs";
 
@@ -16,11 +16,15 @@ const excludedTopLevel = new Set([
 function fail(message) { failures.push(message); }
 function text(relative) {
   const target = join(root, relative);
-  if (!existsSync(target)) {
-    fail(`Missing required file: ${relative}`);
-    return "";
+  try {
+    return readFileSync(target, "utf8");
+  } catch (error) {
+    if (error?.code === "ENOENT") {
+      fail(`Missing required file: ${relative}`);
+      return "";
+    }
+    throw error;
   }
-  return readFileSync(target, "utf8");
 }
 function walkHtml(directory, relative = "") {
   const files = [];
@@ -69,6 +73,78 @@ if (cro.includes("Managing Director &amp; Chief Operating Officer")) fail("CRO S
 const croLeaderCount = (cro.match(/class="cro-leader"/g) || []).length;
 if (croLeaderCount !== 3) fail(`CRO Senior judgement must contain exactly 3 leader cards; found ${croLeaderCount}`);
 
+/*
+ * Leadership release red-team contract.
+ * These checks run after the site build, so the generated public HTML—not a
+ * stale checked-in snapshot—is tested as the deployable authority.
+ */
+const leadershipIndex = text("leadership/index.html");
+const girishProfile = text("leadership/girish-achliya/index.html");
+const approvedLeadershipTitle = "Chief Scientific Officer";
+const supersededLeadershipTitle = "Chief Technical Director";
+const approvedPortraits = [
+  ["Vishal Chakravarty", "assets/vishalchakravarty.png", 1200, 1200],
+  ["Prabhakar Vitthal Lahare", "assets/prabhakarvitthallahare.png", 960, 1200],
+  ["Dr Girish Shantilal Achliya", "assets/girishshantilalachliya.png", 960, 1200]
+];
+
+if (!leadershipIndex.includes(approvedLeadershipTitle)) fail(`Leadership index is missing Dr Girish's approved title: ${approvedLeadershipTitle}`);
+if (leadershipIndex.includes(supersededLeadershipTitle)) fail(`Leadership index still contains superseded title: ${supersededLeadershipTitle}`);
+if (!girishProfile.includes(approvedLeadershipTitle)) fail(`Dr Girish profile is missing approved title: ${approvedLeadershipTitle}`);
+if (girishProfile.includes(supersededLeadershipTitle)) fail(`Dr Girish profile still contains superseded title: ${supersededLeadershipTitle}`);
+if (!girishProfile.includes('"jobTitle":"Chief Scientific Officer"')) fail("Dr Girish structured Person data is missing Chief Scientific Officer jobTitle.");
+if (!girishProfile.includes("/assets/girishshantilalachliya.png")) fail("Dr Girish profile is not using the approved PNG portrait master.");
+if (!girishProfile.includes("Dr Girish Shantilal Achliya, Chief Scientific Officer of NovaPharm Healthcare")) fail("Dr Girish portrait accessibility text is not aligned to the approved CSO title.");
+
+const pngSignature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+for (const [name, relative, expectedWidth, expectedHeight] of approvedPortraits) {
+  const publicPath = `/${relative}`;
+  if (!leadershipIndex.includes(publicPath)) fail(`Leadership index is not using the approved portrait for ${name}: ${publicPath}`);
+  const absolute = join(root, relative);
+  let image;
+  try {
+    image = readFileSync(absolute);
+  } catch (error) {
+    if (error?.code === "ENOENT") {
+      fail(`Approved portrait is missing for ${name}: ${relative}`);
+      continue;
+    }
+    fail(`Approved portrait is unreadable for ${name}: ${relative}`);
+    continue;
+  }
+  if (image.length < 24 || !image.subarray(0, 8).equals(pngSignature)) {
+    fail(`Approved portrait is not a valid PNG for ${name}: ${relative}`);
+    continue;
+  }
+  const width = image.readUInt32BE(16);
+  const height = image.readUInt32BE(20);
+  if (width !== expectedWidth || height !== expectedHeight) {
+    fail(`Approved portrait dimensions changed for ${name}: expected ${expectedWidth}x${expectedHeight}, found ${width}x${height}`);
+  }
+}
+
+for (const portraitPath of approvedPortraits.map(([, relative]) => `/${relative}`)) {
+  if (!cro.includes(portraitPath)) fail(`CRO leadership presentation is not using approved portrait: ${portraitPath}`);
+}
+if (!cro.includes(approvedLeadershipTitle)) fail(`CRO leadership presentation is missing Dr Girish's approved title: ${approvedLeadershipTitle}`);
+if (cro.includes(supersededLeadershipTitle)) fail(`CRO leadership presentation still contains superseded title: ${supersededLeadershipTitle}`);
+
+const leadershipCssSource = text("assets/css/leadership-apple.css");
+const cssBundle = text("assets/css/novapharm.bundle.css");
+if (!leadershipCssSource.includes("--leadership-apple-contract: 1")) fail("Leadership Apple-aligned source contract is missing.");
+if (!cssBundle.includes("--leadership-apple-contract: 1")) fail("Leadership Apple-aligned CSS was not included in the generated bundle.");
+if (!leadershipCssSource.includes('-apple-system, BlinkMacSystemFont')) fail("Leadership typography is not using the platform-native Apple system-font stack.");
+const appleFontHostTokens = ["//apple.com/", "//www.apple.com/", "//developer.apple.com/"];
+const fontAssetExtensions = [".woff", ".woff2", ".ttf", ".otf"];
+const hotlinksAppleFont = appleFontHostTokens.some((host) => leadershipCssSource.includes(host))
+  && fontAssetExtensions.some((extension) => leadershipCssSource.includes(extension));
+if (/@font-face\b/i.test(leadershipCssSource) || hotlinksAppleFont) {
+  fail("Leadership CSS must not embed, copy or hotlink Apple proprietary font assets.");
+}
+if (!leadershipCssSource.includes('body[data-page="leadership"]') || !leadershipCssSource.includes('body[data-page^="leadership/"]')) {
+  fail("Leadership visual refinement is not safely scoped to leadership routes.");
+}
+
 const oncology = text("oncology/index.html");
 if (!oncology.includes("oncology-editorial-gallery")) fail("Oncology editorial image gallery is missing");
 for (const asset of [
@@ -77,7 +153,12 @@ for (const asset of [
   "/assets/media/oncology/oncology-condition-control.svg"
 ]) {
   if (!oncology.includes(asset)) fail(`Oncology gallery does not reference ${asset}`);
-  if (!existsSync(join(root, asset.slice(1))) || !statSync(join(root, asset.slice(1))).isFile()) fail(`Oncology gallery asset is missing: ${asset}`);
+  try {
+    readFileSync(join(root, asset.slice(1)));
+  } catch (error) {
+    if (error?.code === "ENOENT") fail(`Oncology gallery asset is missing: ${asset}`);
+    else fail(`Oncology gallery asset is unreadable: ${asset}`);
+  }
 }
 
 for (const sitemap of ["sitemap.xml", "sitemap-images.xml", "sitemap-insights.xml"]) {
@@ -89,6 +170,7 @@ const home = text("index.html");
 if (home.includes("nav-search")) fail("Homepage navigation still contains the removed search control");
 if (!home.includes("/portal/")) fail("Homepage no longer links to Secure portal");
 if (!home.includes("/account-application/")) fail("Homepage no longer links to Open an account");
+if (!home.includes("Medicine. Where it needs to be")) fail("Homepage is missing the owner-approved hero title.");
 
 const contact = text("contact/index.html");
 if (platformCapabilities.publicForms && !contact.includes("data-contact-form")) fail("Contact enquiry form hook is missing");
@@ -100,7 +182,7 @@ const account = text("account-application/index.html");
 if (platformCapabilities.accountApplication && !account.includes("data-account-application")) fail("Account application form hook is missing");
 if (!platformCapabilities.accountApplication && (account.includes("data-account-application") || account.includes("<form") || account.includes('type="file"'))) fail("PUBLIC_ONLY account page exposes a server-dependent form or upload");
 if (!platformCapabilities.accountApplication && !account.includes("does not accept account applications or business documents")) fail("PUBLIC_ONLY account page is missing the non-collection notice");
-if (!text("assets/js/account-application.js").includes('request("/api/account-applications"')) fail("Account application API path is missing");
+if (!text("assets/js/account-application.js").includes('request("/api/account-applications"')) fail("Account application form API submission path is missing");
 
 const portal = text("portal/index.html");
 if (platformCapabilities.portal && !portal.includes("data-login-form")) fail("Secure portal login form is missing");

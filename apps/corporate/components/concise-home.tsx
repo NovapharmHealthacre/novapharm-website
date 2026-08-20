@@ -55,7 +55,7 @@ export function ConciseHomePage() {
         <div className="shell pharma-home-grid">
           <div className="pharma-home-copy">
             <p className="pharma-kicker">NovaPharm Healthcare</p>
-            <h1>Pharmaceutical supply, built around evidence.</h1>
+            <h1>Medicine. Where it needs to be</h1>
             <p className="pharma-home-intro">Qualified sourcing, regulatory readiness and controlled B2B distribution planning.</p>
             <div className="action-row">
               <Link className="button button-primary" href="/about/">Explore NovaPharm <ArrowRight aria-hidden="true" size={17} /></Link>

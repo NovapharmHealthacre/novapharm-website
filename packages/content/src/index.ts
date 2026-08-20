@@ -93,7 +93,7 @@ export const people: readonly PersonEntity[] = Object.freeze([
     titleEvidence: Object.freeze({ state: "owner_attested", source: "NovaPharm master specification", checkedOn: "2026-07-30" }),
     governanceFacts: Object.freeze(["Founder", "Statutory director"]),
     statutoryDirector: true,
-    imagePath: "/assets/vishalchakravarty.jpeg",
+    imagePath: "/assets/vishalchakravarty.png",
     canonicalImageUrl: "https://vishal.novapharmhealthcare.com/images/portrait/vishal-chakravarty-1440.jpg",
     sameAs: Object.freeze([
       "https://uk.linkedin.com/in/vishal-chakravarty",
@@ -112,7 +112,7 @@ export const people: readonly PersonEntity[] = Object.freeze([
     titleEvidence: Object.freeze({ state: "owner_attested", source: "Owner-approved leadership-title record dated 2026-08-07", checkedOn: "2026-08-07" }),
     governanceFacts: Object.freeze(["Founder", "Statutory director"]),
     statutoryDirector: true,
-    imagePath: "/assets/prabhakarvitthallahare.jpeg",
+    imagePath: "/assets/prabhakarvitthallahare.png",
     sameAs: Object.freeze(["https://find-and-update.company-information.service.gov.uk/officers/WbYqt5GNwcUztqJmSS1Q-zuIra4/appointments"])
   }),
   Object.freeze({
@@ -121,14 +121,14 @@ export const people: readonly PersonEntity[] = Object.freeze([
     canonicalUrl: "https://novapharmhealthcare.com/leadership/girish-achliya/",
     canonicalName: "Dr Girish Shantilal Achliya",
     displayName: "Dr Girish Shantilal Achliya",
-    publicTitle: "Chief Technical Director",
-    executiveRole: "Chief Technical Director",
-    previousPublishedTitle: "Director and Chief Scientific Officer",
+    publicTitle: "Chief Scientific Officer",
+    executiveRole: "Chief Scientific Officer",
+    previousPublishedTitle: "Chief Technical Director",
     titleDecision: "approved",
-    titleEvidence: Object.freeze({ state: "owner_attested", source: "NovaPharm master specification", checkedOn: "2026-07-30" }),
+    titleEvidence: Object.freeze({ state: "owner_attested", source: "Owner-approved leadership-title update dated 2026-08-17", checkedOn: "2026-08-17" }),
     governanceFacts: Object.freeze(["Statutory director"]),
     statutoryDirector: true,
-    imagePath: "/assets/girishshantilalachliya.jpeg",
+    imagePath: "/assets/girishshantilalachliya.png",
     sameAs: Object.freeze(["https://find-and-update.company-information.service.gov.uk/officers/ySPfnJGidBuLkYcU7u9BKT9Iyew/appointments"])
   }),
   Object.freeze({

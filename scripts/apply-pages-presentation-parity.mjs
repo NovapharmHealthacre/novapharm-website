@@ -16,7 +16,7 @@ const conciseMain = `<main id="main">
     <div class="container pharma-home-grid">
       <div class="pharma-home-copy">
         <p class="pharma-kicker">NovaPharm Healthcare</p>
-        <h1>Pharmaceutical supply, built around evidence.</h1>
+        <h1>Medicine. Where it needs to be</h1>
         <p class="pharma-home-intro">Qualified sourcing, regulatory readiness and controlled B2B distribution planning.</p>
         <div class="pharma-actions">
           <a class="btn btn-primary" href="/about/">Explore NovaPharm</a>
@@ -106,7 +106,7 @@ if (!mainPattern.test(html)) {
 }
 
 const next = html.replace(mainPattern, conciseMain);
-if (!next.includes("Pharmaceutical supply, built around evidence.")) {
+if (!next.includes("Medicine. Where it needs to be")) {
   throw new Error("PUBLIC_ONLY homepage presentation parity failed: concise hero marker missing.");
 }
 if (!next.includes("Regulated wholesale supply has not commenced.")) {

@@ -54,7 +54,7 @@ const peopleSource = readFileSync(path.join(root, "packages/content/src/index.ts
 const required = [
   'publicTitle: "Chief Executive Officer"',
   'publicTitle: "Chief Operating Officer"',
-  'publicTitle: "Chief Technical Director"',
+  'publicTitle: "Chief Scientific Officer"',
   'publicTitle: "Chief Medical Director"',
   'publicTitle: "Chief Technology Officer and Responsible Person"',
   'executiveRole: "Chief Technology Officer"',
@@ -63,6 +63,41 @@ const required = [
 ];
 for (const value of required) {
   if (!peopleSource.includes(value)) throw new Error(`Canonical people registry is missing ${value}`);
+}
+
+/*
+ * Canonical owner-approved leadership source must never regress before build.
+ * A historical `previousPublishedTitle` is valid provenance; only current/public
+ * title fields are prohibited from reverting to the superseded Girish title.
+ */
+const currentTitleAssertions = [
+  ["packages/content/src/index.ts", ['publicTitle: "Chief Scientific Officer"', 'executiveRole: "Chief Scientific Officer"'], ['publicTitle: "Chief Technical Director"', 'executiveRole: "Chief Technical Director"']],
+  ["src/content/site-content.mjs", ['title: "Chief Scientific Officer"', 'schemaTitle: "Chief Scientific Officer"'], ['title: "Chief Technical Director"', 'schemaTitle: "Chief Technical Director"']],
+  ["apps/corporate/data/site.ts", ['title: "Chief Scientific Officer"', 'schemaTitle: "Chief Scientific Officer"'], ['title: "Chief Technical Director"', 'schemaTitle: "Chief Technical Director"']]
+];
+for (const [relative, requiredCurrentTitles, prohibitedCurrentTitles] of currentTitleAssertions) {
+  const source = readFileSync(path.join(root, relative), "utf8");
+  for (const value of requiredCurrentTitles) {
+    if (!source.includes(value)) throw new Error(`${relative} is missing Dr Girish's approved current title field: ${value}`);
+  }
+  for (const value of prohibitedCurrentTitles) {
+    if (source.includes(value)) throw new Error(`${relative} uses Dr Girish's superseded title as a current field: ${value}`);
+  }
+}
+if (!peopleSource.includes('previousPublishedTitle: "Chief Technical Director"')) {
+  throw new Error("Canonical people registry is missing Dr Girish's superseded-title provenance.");
+}
+
+for (const [relative, portrait] of [
+  ["src/content/site-content.mjs", "/assets/vishalchakravarty.png"],
+  ["src/content/site-content.mjs", "/assets/prabhakarvitthallahare.png"],
+  ["src/content/site-content.mjs", "/assets/girishshantilalachliya.png"],
+  ["apps/corporate/data/site.ts", "/assets/vishalchakravarty.png"],
+  ["apps/corporate/data/site.ts", "/assets/prabhakarvitthallahare.png"],
+  ["apps/corporate/data/site.ts", "/assets/girishshantilalachliya.png"]
+]) {
+  const source = readFileSync(path.join(root, relative), "utf8");
+  if (!source.includes(portrait)) throw new Error(`${relative} is missing approved portrait reference ${portrait}`);
 }
 
 const nishitaProfile = readFileSync(path.join(root, "leadership/nishita-trivedi/index.html"), "utf8");
