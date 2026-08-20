@@ -75,17 +75,18 @@ async function materialiseLazyMedia(page) {
     await page.evaluate((top) => window.scrollTo({ top, behavior: "instant" }), y);
     await page.waitForTimeout(35);
   }
+  await page.evaluate(() => {
+    for (const image of document.images) {
+      if (!image.complete) image.loading = "eager";
+    }
+  });
+  await page.waitForFunction(
+    () => [...document.images].every((image) => image.complete),
+    undefined,
+    { timeout: 15_000 }
+  );
   await page.evaluate(async () => {
     await Promise.all([...document.images].map(async (image) => {
-      if (!image.complete) {
-        await Promise.race([
-          new Promise((resolve) => {
-            image.addEventListener("load", resolve, { once: true });
-            image.addEventListener("error", resolve, { once: true });
-          }),
-          new Promise((resolve) => setTimeout(resolve, 8_000))
-        ]);
-      }
       if (typeof image.decode === "function" && image.naturalWidth > 0) {
         await image.decode().catch(() => undefined);
       }
