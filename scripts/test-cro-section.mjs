@@ -7,6 +7,7 @@ import { navigation } from "../src/content/site-content.mjs";
 const root = resolve(process.cwd());
 const read = (path) => readFileSync(join(root, path), "utf8");
 const cro = read("cro/index.html");
+const leadershipMedia = JSON.parse(read("config/leadership-media.json"));
 
 assert.deepEqual(navigation.map(([label]) => label), ["About", "Services", "Regulatory", "CRO", "Oncology", "Products", "Partners", "Technology", "Insights", "Contact"]);
 assert.equal((cro.match(/<h1\b/g) || []).length, 1, "CRO page must contain exactly one H1");
@@ -57,21 +58,21 @@ assert.match(cro, /does not present itself as a global full-service CRO/);
 assert.match(cro, /A conventional full-service CRO may be the better fit/);
 assert.match(cro, /Do not submit patient data/);
 
-for (const portrait of ["vishal-chakravarty", "girish-achliya"]) {
-  for (const width of [480, 800]) {
+for (const portrait of leadershipMedia.portraits) {
+  for (const width of portrait.widths) {
     for (const extension of ["avif", "webp", "jpg"]) {
-      const path = `assets/media/cro/leadership/${portrait}-${width}.${extension}`;
+      const path = `${portrait.outputBase}-${width}.${extension}`;
       assert.ok(existsSync(join(root, path)), `${path} is required`);
-      assert.ok(statSync(join(root, path)).size < 90_000, `${path} must remain below 90 KB`);
+      assert.ok(statSync(join(root, path)).size <= leadershipMedia.deliveryCeilingBytes, `${path} must remain below the governed delivery ceiling`);
     }
   }
 }
 
 const provenance = JSON.parse(read("docs/cro-media-provenance.json"));
-assert.equal(provenance.assets.length, 4);
+assert.equal(provenance.assets.length, 5);
 for (const asset of provenance.assets) {
   assert.equal(asset.reviewStatus, "human-reviewed-approved-for-candidate");
-  assert.match(asset.fallbackChecksumSha256, /^[a-f0-9]{64}$/);
+  assert.match(asset.fallbackChecksumSha256 ?? asset.assetChecksumSha256, /^[a-f0-9]{64}$/);
 }
 assert.ok(provenance.graphics.length >= 5, "five code-native signature graphics must be registered");
 

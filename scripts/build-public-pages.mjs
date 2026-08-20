@@ -397,10 +397,16 @@ function finalCta(title = "Build the next pharmaceutical partnership with NovaPh
   return `<section class="section final-cta"><div class="container final-cta-inner"><div><span class="section-kicker">Start a qualified conversation</span><h2>${esc(title)}</h2></div><div class="hero-actions"><a class="btn btn-primary" href="/contact/">Discuss a partnership</a><a class="btn btn-outline" href="/account-application/">Open an account</a></div></div></section>`;
 }
 
-function leaderVisual(profile, eager = false) {
-  return profile.image
-    ? `<img src="${profile.image}" alt="${esc(profile.imageAlt)}" width="${profile.imageWidth}" height="${profile.imageHeight}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`
-    : `<div class="leader-placeholder" role="img" aria-label="Portrait pending approval for ${esc(profile.displayName)}"><span>${profile.initials}</span><small>Portrait pending approval</small></div>`;
+function leaderVisual(profile, eager = false, sizes = eager ? "(max-width: 760px) 100vw, 50vw" : "(max-width: 720px) 92vw, (max-width: 1080px) 44vw, 390px") {
+  if (!profile.image) {
+    return `<div class="leader-placeholder" role="img" aria-label="Portrait pending approval for ${esc(profile.displayName)}"><span>${profile.initials}</span><small>Portrait pending approval</small></div>`;
+  }
+  if (!profile.imageBase || !profile.imageWidths?.length) {
+    return `<img src="${profile.image}" alt="${esc(profile.imageAlt)}" width="${profile.imageWidth}" height="${profile.imageHeight}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`;
+  }
+
+  const sourceSet = (extension) => profile.imageWidths.map((width) => `${profile.imageBase}-${width}.${extension} ${width}w`).join(", ");
+  return `<picture><source srcset="${sourceSet("avif")}" sizes="${sizes}" type="image/avif"><source srcset="${sourceSet("webp")}" sizes="${sizes}" type="image/webp"><img src="${profile.image}" srcset="${sourceSet("jpg")}" sizes="${sizes}" alt="${esc(profile.imageAlt)}" width="${profile.imageWidth}" height="${profile.imageHeight}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
 }
 
 function leaderCard(profile) {
@@ -429,14 +435,8 @@ function responsiveProductImage(base, alt, { eager = false, className = "" } = {
 }
 
 function responsiveCroPortrait(profile) {
-  const portraitBaseBySlug = {
-    "vishal-chakravarty": "/assets/media/cro/leadership/vishal-chakravarty",
-    "girish-achliya": "/assets/media/cro/leadership/girish-achliya"
-  };
-  const base = portraitBaseBySlug[profile.slug];
-  if (!base) return leaderVisual(profile);
   const sizes = "(max-width: 720px) 92vw, (max-width: 1080px) 44vw, 390px";
-  return `<picture><source srcset="${base}-480.avif 480w, ${base}-800.avif 800w" sizes="${sizes}" type="image/avif"><source srcset="${base}-480.webp 480w, ${base}-800.webp 800w" sizes="${sizes}" type="image/webp"><img src="${base}-800.jpg" srcset="${base}-480.jpg 480w, ${base}-800.jpg 800w" sizes="${sizes}" alt="${esc(profile.imageAlt)}" width="800" height="600" loading="lazy" decoding="async"></picture>`;
+  return leaderVisual(profile, false, sizes);
 }
 
 function articleCard(article, featured = false, withMedia = true) {

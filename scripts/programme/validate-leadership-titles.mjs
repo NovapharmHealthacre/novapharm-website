@@ -89,12 +89,12 @@ if (!peopleSource.includes('previousPublishedTitle: "Chief Technical Director"')
 }
 
 for (const [relative, portrait] of [
-  ["src/content/site-content.mjs", "/assets/vishalchakravarty.png"],
-  ["src/content/site-content.mjs", "/assets/prabhakarvitthallahare.png"],
-  ["src/content/site-content.mjs", "/assets/girishshantilalachliya.png"],
-  ["apps/corporate/data/site.ts", "/assets/vishalchakravarty.png"],
-  ["apps/corporate/data/site.ts", "/assets/prabhakarvitthallahare.png"],
-  ["apps/corporate/data/site.ts", "/assets/girishshantilalachliya.png"]
+  ["src/content/site-content.mjs", "/assets/media/leadership/vishal-chakravarty-1200.jpg"],
+  ["src/content/site-content.mjs", "/assets/media/leadership/prabhakar-lahare-960.jpg"],
+  ["src/content/site-content.mjs", "/assets/media/leadership/girish-achliya-960.jpg"],
+  ["apps/corporate/data/site.ts", "/assets/media/leadership/vishal-chakravarty-1200.jpg"],
+  ["apps/corporate/data/site.ts", "/assets/media/leadership/prabhakar-lahare-960.jpg"],
+  ["apps/corporate/data/site.ts", "/assets/media/leadership/girish-achliya-960.jpg"]
 ]) {
   const source = readFileSync(path.join(root, relative), "utf8");
   if (!source.includes(portrait)) throw new Error(`${relative} is missing approved portrait reference ${portrait}`);

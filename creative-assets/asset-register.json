@@ -266,15 +266,25 @@
       "ownerApproval": "superseded"
     },
     {
-      "path": "assets/vishalchakravarty.png",
-      "type": "leadership-photo",
+      "path": "creative-assets/leadership/approved-2026-08-17/vishal-chakravarty.png",
+      "type": "leadership-photo-master",
       "source": "owner-supplied authoritative master Vishal Chakravarty.png",
       "sourceMasterSha256": "34935cd045cb08bd991099d9e16f58ea4e2ec13ecda17d04fd50bb001dc5c70f",
       "assetSha256": "248451ddc51bed215d0b28f805d1129dbe4ba9b202d7e3e6b2a33bb31d5b2a08",
       "acquisitionDate": "2026-08-17",
       "generated": false,
       "dimensions": "1200x1200",
-      "optimisedVariants": [],
+      "optimisedVariants": [
+        "assets/media/leadership/vishal-chakravarty-480.avif",
+        "assets/media/leadership/vishal-chakravarty-480.webp",
+        "assets/media/leadership/vishal-chakravarty-480.jpg",
+        "assets/media/leadership/vishal-chakravarty-800.avif",
+        "assets/media/leadership/vishal-chakravarty-800.webp",
+        "assets/media/leadership/vishal-chakravarty-800.jpg",
+        "assets/media/leadership/vishal-chakravarty-1200.avif",
+        "assets/media/leadership/vishal-chakravarty-1200.webp",
+        "assets/media/leadership/vishal-chakravarty-1200.jpg"
+      ],
       "pageUsage": [
         "leadership index",
         "Vishal Chakravarty profile",
@@ -282,19 +292,29 @@
       ],
       "altText": "Vishal Chakravarty, Chief Executive Officer of NovaPharm Healthcare",
       "caption": null,
-      "technicalStatus": "owner-approved authoritative portrait resized with Adobe to declared web presentation dimensions; PNG",
+      "technicalStatus": "owner-approved authoritative PNG preserved outside the public delivery tree; deterministic AVIF, WebP and JPEG derivatives at 480, 800 and 1200 pixels, each below the governed delivery ceiling",
       "ownerApproval": "approved"
     },
     {
-      "path": "assets/prabhakarvitthallahare.png",
-      "type": "leadership-photo",
+      "path": "creative-assets/leadership/approved-2026-08-17/prabhakar-vitthal-lahare.png",
+      "type": "leadership-photo-master",
       "source": "owner-supplied authoritative master Prabhkar Lahare.png",
       "sourceMasterSha256": "88e23ba2d98b29a40b61f639e01cd42d2390b345a0867e9a175a0c248f623241",
       "assetSha256": "23992b9dc44c5d8da0ef11826e84f8529b331f3b90cd316e8f778f5081b39b52",
       "acquisitionDate": "2026-08-17",
       "generated": false,
       "dimensions": "960x1200",
-      "optimisedVariants": [],
+      "optimisedVariants": [
+        "assets/media/leadership/prabhakar-lahare-480.avif",
+        "assets/media/leadership/prabhakar-lahare-480.webp",
+        "assets/media/leadership/prabhakar-lahare-480.jpg",
+        "assets/media/leadership/prabhakar-lahare-768.avif",
+        "assets/media/leadership/prabhakar-lahare-768.webp",
+        "assets/media/leadership/prabhakar-lahare-768.jpg",
+        "assets/media/leadership/prabhakar-lahare-960.avif",
+        "assets/media/leadership/prabhakar-lahare-960.webp",
+        "assets/media/leadership/prabhakar-lahare-960.jpg"
+      ],
       "pageUsage": [
         "leadership index",
         "Prabhakar Vitthal Lahare profile",
@@ -302,19 +322,29 @@
       ],
       "altText": "Prabhakar Vitthal Lahare, Chief Operating Officer of NovaPharm Healthcare",
       "caption": null,
-      "technicalStatus": "owner-approved authoritative portrait resized with Adobe to declared web presentation dimensions; PNG",
+      "technicalStatus": "owner-approved authoritative PNG preserved outside the public delivery tree; deterministic AVIF, WebP and JPEG derivatives at 480, 768 and 960 pixels, each below the governed delivery ceiling",
       "ownerApproval": "approved"
     },
     {
-      "path": "assets/girishshantilalachliya.png",
-      "type": "leadership-photo",
+      "path": "creative-assets/leadership/approved-2026-08-17/girish-shantilal-achliya.png",
+      "type": "leadership-photo-master",
       "source": "owner-supplied authoritative master Dr Girish.png",
       "sourceMasterSha256": "b47256019242b7c9f9b425e6f719e3db0056caee88b73ffba041f12d48d25201",
       "assetSha256": "58e866c777fdc7d7f228f64fe6771270b2e3e603687ac38164a0c2c19f3028cd",
       "acquisitionDate": "2026-08-17",
       "generated": false,
       "dimensions": "960x1200",
-      "optimisedVariants": [],
+      "optimisedVariants": [
+        "assets/media/leadership/girish-achliya-480.avif",
+        "assets/media/leadership/girish-achliya-480.webp",
+        "assets/media/leadership/girish-achliya-480.jpg",
+        "assets/media/leadership/girish-achliya-768.avif",
+        "assets/media/leadership/girish-achliya-768.webp",
+        "assets/media/leadership/girish-achliya-768.jpg",
+        "assets/media/leadership/girish-achliya-960.avif",
+        "assets/media/leadership/girish-achliya-960.webp",
+        "assets/media/leadership/girish-achliya-960.jpg"
+      ],
       "pageUsage": [
         "leadership index",
         "Dr Girish Shantilal Achliya profile",
@@ -322,7 +352,7 @@
       ],
       "altText": "Dr Girish Shantilal Achliya, Chief Scientific Officer of NovaPharm Healthcare",
       "caption": null,
-      "technicalStatus": "owner-approved authoritative portrait resized with Adobe to declared web presentation dimensions; PNG",
+      "technicalStatus": "owner-approved authoritative PNG preserved outside the public delivery tree; deterministic AVIF, WebP and JPEG derivatives at 480, 768 and 960 pixels, each below the governed delivery ceiling",
       "ownerApproval": "approved"
     }
   ],

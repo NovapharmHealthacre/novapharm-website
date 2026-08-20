@@ -118,8 +118,8 @@ assert.equal((cro.match(/data-cro-stage="\d+"/g) || []).length, 8, "CRO navigato
 assert.equal((cro.match(/class="cro-lane cro-lane-/g) || []).length, 3, "CRO delivery architecture must expose three responsibility lanes");
 assert.match(cro, /cro-evidence-architecture-640\.avif 640w/);
 assert.match(cro, /cro-delivery-architecture-640\.webp 640w/);
-for (const portrait of ["vishalchakravarty.png", "girishshantilalachliya.png", "prabhakarvitthallahare.png"]) {
-  assert.match(cro, new RegExp(portrait.replace(".", "\\.")), `CRO must use approved portrait ${portrait}`);
+for (const portrait of ["vishal-chakravarty-1200.jpg", "girish-achliya-960.jpg", "prabhakar-lahare-960.jpg"]) {
+  assert.match(cro, new RegExp(portrait.replace(".", "\\.")), `CRO must use approved responsive portrait ${portrait}`);
 }
 assert.match(cro, /Chief Scientific Officer/);
 assert.doesNotMatch(cro, /Chief Technical Director/);
@@ -149,7 +149,8 @@ for (const retired of ["technology/ai-governance/index.html", "search/index.html
 
 const leadership = text("leadership/index.html");
 assert.match(leadership, /module-portrait-composition/);
-for (const portrait of ["vishalchakravarty.png", "prabhakarvitthallahare.png", "girishshantilalachliya.png"]) assert.match(leadership, new RegExp(portrait));
+for (const portrait of ["vishal-chakravarty-1200.jpg", "prabhakar-lahare-960.jpg", "girish-achliya-960.jpg"]) assert.match(leadership, new RegExp(portrait));
+for (const format of ["avif", "webp"]) assert.match(leadership, new RegExp(`assets/media/leadership/vishal-chakravarty-480\\.${format}`));
 
 const moduleRegister = JSON.parse(text("docs/module-media-register.json"));
 assert.equal(moduleRegister.modules.length, 16, "the full public module register must contain sixteen entries");

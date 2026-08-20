@@ -207,12 +207,12 @@ for (const [engineName, browserType] of engines) {
 
             if (route.name === "leadership") {
               const expectedPortraits = [
-                ["vishalchakravarty.png", 1200, 1200],
-                ["prabhakarvitthallahare.png", 960, 1200],
-                ["girishshantilalachliya.png", 960, 1200]
+                ["vishal-chakravarty-1200.jpg", /vishal-chakravarty-(?:480|800|1200)\.(?:avif|webp|jpg)$/, 1],
+                ["prabhakar-lahare-960.jpg", /prabhakar-lahare-(?:480|768|960)\.(?:avif|webp|jpg)$/, 0.8],
+                ["girish-achliya-960.jpg", /girish-achliya-(?:480|768|960)\.(?:avif|webp|jpg)$/, 0.8]
               ];
               assert.equal(await page.locator(".leader-card").count(), 5, `${engineName} ${viewport.name}: leadership profile count changed unexpectedly`);
-              for (const [filename, naturalWidth, naturalHeight] of expectedPortraits) {
+              for (const [filename, expectedSource, expectedAspectRatio] of expectedPortraits) {
                 const portrait = page.locator(`.leader-card-media img[src$="/${filename}"]`);
                 assert.equal(await portrait.count(), 1, `${engineName} ${viewport.name}: approved ${filename} leadership portrait missing`);
                 const state = await portrait.evaluate((image) => {
@@ -221,6 +221,7 @@ for (const [engineName, browserType] of engines) {
                   return {
                     naturalWidth: image.naturalWidth,
                     naturalHeight: image.naturalHeight,
+                    currentSrc: image.currentSrc,
                     width: rect.width,
                     height: rect.height,
                     display: style.display,
@@ -228,8 +229,8 @@ for (const [engineName, browserType] of engines) {
                     opacity: Number(style.opacity)
                   };
                 });
-                assert.equal(state.naturalWidth, naturalWidth, `${engineName} ${viewport.name}: ${filename} natural width changed`);
-                assert.equal(state.naturalHeight, naturalHeight, `${engineName} ${viewport.name}: ${filename} natural height changed`);
+                assert.ok(Math.abs((state.naturalWidth / state.naturalHeight) - expectedAspectRatio) < 0.01, `${engineName} ${viewport.name}: ${filename} aspect ratio changed`);
+                assert.match(state.currentSrc, expectedSource, `${engineName} ${viewport.name}: ${filename} did not resolve through the governed responsive portrait set`);
                 assert.ok(state.width > 180 && state.height > 220, `${engineName} ${viewport.name}: ${filename} portrait collapsed`);
                 assert.notEqual(state.display, "none", `${engineName} ${viewport.name}: ${filename} is display:none`);
                 assert.notEqual(state.visibility, "hidden", `${engineName} ${viewport.name}: ${filename} is hidden`);
@@ -238,7 +239,7 @@ for (const [engineName, browserType] of engines) {
             }
 
             if (route.name === "leadership-girish") {
-              const portrait = page.locator('.profile-hero-media img[src$="/assets/girishshantilalachliya.png"]');
+              const portrait = page.locator('.profile-hero-media img[src$="/assets/media/leadership/girish-achliya-960.jpg"]');
               assert.equal(await portrait.count(), 1, `${engineName} ${viewport.name}: Dr Girish approved profile portrait missing`);
               const portraitState = await portrait.evaluate((image) => ({
                 naturalWidth: image.naturalWidth,
@@ -246,8 +247,7 @@ for (const [engineName, browserType] of engines) {
                 width: image.getBoundingClientRect().width,
                 height: image.getBoundingClientRect().height
               }));
-              assert.equal(portraitState.naturalWidth, 960, `${engineName} ${viewport.name}: Dr Girish profile portrait width changed`);
-              assert.equal(portraitState.naturalHeight, 1200, `${engineName} ${viewport.name}: Dr Girish profile portrait height changed`);
+              assert.ok(Math.abs((portraitState.naturalWidth / portraitState.naturalHeight) - 0.8) < 0.01, `${engineName} ${viewport.name}: Dr Girish profile portrait aspect ratio changed`);
               assert.ok(portraitState.width > 180 && portraitState.height > 220, `${engineName} ${viewport.name}: Dr Girish profile portrait collapsed`);
               const schemaText = await page.locator('script[type="application/ld+json"]').allTextContents();
               assert.ok(schemaText.some((value) => value.includes('"jobTitle":"Chief Scientific Officer"')), `${engineName} ${viewport.name}: Dr Girish JSON-LD jobTitle is not Chief Scientific Officer`);

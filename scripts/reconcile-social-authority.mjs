@@ -33,8 +33,8 @@ for (const module of artDirection.modules) {
   });
 }
 routeImages.set("/leadership/", {
-  url: "/assets/vishalchakravarty.png",
-  type: "image/png",
+  url: "/assets/media/leadership/vishal-chakravarty-1200.jpg",
+  type: "image/jpeg",
   width: 1200,
   height: 1200,
   alt: "Vishal Chakravarty, Chief Executive Officer of NovaPharm Healthcare"

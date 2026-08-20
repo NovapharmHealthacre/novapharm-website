@@ -42,12 +42,12 @@
   {
     "route": "/leadership/",
     "page": "https://novapharmhealthcare.com/leadership/",
-    "url": "/assets/vishalchakravarty.png",
-    "type": "image/png",
+    "url": "/assets/media/leadership/vishal-chakravarty-1200.jpg",
+    "type": "image/jpeg",
     "width": 1200,
     "height": 1200,
     "alt": "Vishal Chakravarty, Chief Executive Officer of NovaPharm Healthcare",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/vishalchakravarty.png"
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/leadership/vishal-chakravarty-1200.jpg"
   },
   {
     "route": "/services/",
@@ -262,32 +262,32 @@
   {
     "route": "/leadership/vishal-chakravarty/",
     "page": "https://novapharmhealthcare.com/leadership/vishal-chakravarty/",
-    "url": "/assets/vishalchakravarty.png",
-    "type": "image/png",
+    "url": "/assets/media/leadership/vishal-chakravarty-1200.jpg",
+    "type": "image/jpeg",
     "width": 1200,
     "height": 1200,
     "alt": "Vishal Chakravarty, Chief Executive Officer at NovaPharm Healthcare",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/vishalchakravarty.png"
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/leadership/vishal-chakravarty-1200.jpg"
   },
   {
     "route": "/leadership/prabhakar-lahare/",
     "page": "https://novapharmhealthcare.com/leadership/prabhakar-lahare/",
-    "url": "/assets/prabhakarvitthallahare.png",
-    "type": "image/png",
+    "url": "/assets/media/leadership/prabhakar-lahare-960.jpg",
+    "type": "image/jpeg",
     "width": 960,
     "height": 1200,
     "alt": "Prabhakar Vitthal Lahare, Chief Operating Officer at NovaPharm Healthcare",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/prabhakarvitthallahare.png"
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/leadership/prabhakar-lahare-960.jpg"
   },
   {
     "route": "/leadership/girish-achliya/",
     "page": "https://novapharmhealthcare.com/leadership/girish-achliya/",
-    "url": "/assets/girishshantilalachliya.png",
-    "type": "image/png",
+    "url": "/assets/media/leadership/girish-achliya-960.jpg",
+    "type": "image/jpeg",
     "width": 960,
     "height": 1200,
     "alt": "Dr Girish Shantilal Achliya, Chief Scientific Officer at NovaPharm Healthcare",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/girishshantilalachliya.png"
+    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/leadership/girish-achliya-960.jpg"
   },
   {
     "route": "/leadership/helly-panchal/",

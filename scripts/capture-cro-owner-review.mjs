@@ -95,8 +95,8 @@ try {
   const contactInputs = [
     ["Evidence architecture", resolve("assets/media/cro/cro-evidence-architecture-1600.jpg")],
     ["Oversight architecture", resolve("assets/media/cro/cro-delivery-architecture-1600.jpg")],
-    ["Vishal Chakravarty", resolve("assets/media/cro/leadership/vishal-chakravarty-800.jpg")],
-    ["Dr Girish Shantilal Achliya", resolve("assets/media/cro/leadership/girish-achliya-800.jpg")],
+    ["Vishal Chakravarty", resolve("assets/media/leadership/vishal-chakravarty-800.jpg")],
+    ["Dr Girish Shantilal Achliya", resolve("assets/media/leadership/girish-achliya-960.jpg")],
     ["Responsibility lanes", join(outputRoot, "section-responsibility-architecture.jpg")],
     ["Development navigator", join(outputRoot, "section-development-navigator.jpg")],
     ["Governance dependencies", join(outputRoot, "section-quality-governance.jpg")],

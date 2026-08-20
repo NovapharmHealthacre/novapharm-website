@@ -1,5 +1,5 @@
 {
-  "version": "2.1.0",
+  "version": "2.2.0",
   "reviewed": "2026-08-20",
   "policy": {
     "representativeOnly": true,
@@ -68,7 +68,9 @@
       "desktopCrop": "Square executive portrait with responsive object-position treatment",
       "tabletCrop": "Square executive portrait with responsive object-position treatment",
       "mobileCrop": "Square executive portrait with responsive object-position treatment",
-      "transformations": "Owner-approved resize with Adobe to the declared web presentation dimensions; PNG.",
+      "transformations": "Owner-approved PNG preserved as the checksum-verified source master outside the public delivery tree; white-background flattening and deterministic AVIF, WebP and JPEG derivatives at 480, 800 and 1200 pixels.",
+      "deliveryBase": "/assets/media/leadership/vishal-chakravarty",
+      "deliveryCeilingBytes": 307200,
       "sourceMasterChecksumSha256": "34935cd045cb08bd991099d9e16f58ea4e2ec13ecda17d04fd50bb001dc5c70f",
       "assetChecksumSha256": "248451ddc51bed215d0b28f805d1129dbe4ba9b202d7e3e6b2a33bb31d5b2a08",
       "reviewStatus": "human-reviewed-approved-for-candidate"
@@ -89,7 +91,9 @@
       "desktopCrop": "4:5 executive portrait with responsive object-position treatment",
       "tabletCrop": "4:5 executive portrait with responsive object-position treatment",
       "mobileCrop": "4:5 executive portrait with responsive object-position treatment",
-      "transformations": "Owner-approved resize with Adobe to the declared web presentation dimensions; PNG.",
+      "transformations": "Owner-approved PNG preserved as the checksum-verified source master outside the public delivery tree; white-background flattening and deterministic AVIF, WebP and JPEG derivatives at 480, 768 and 960 pixels.",
+      "deliveryBase": "/assets/media/leadership/prabhakar-lahare",
+      "deliveryCeilingBytes": 307200,
       "sourceMasterChecksumSha256": "88e23ba2d98b29a40b61f639e01cd42d2390b345a0867e9a175a0c248f623241",
       "assetChecksumSha256": "23992b9dc44c5d8da0ef11826e84f8529b331f3b90cd316e8f778f5081b39b52",
       "reviewStatus": "human-reviewed-approved-for-candidate"
@@ -110,7 +114,9 @@
       "desktopCrop": "4:5 executive portrait with responsive object-position treatment",
       "tabletCrop": "4:5 executive portrait with responsive object-position treatment",
       "mobileCrop": "4:5 executive portrait with responsive object-position treatment",
-      "transformations": "Owner-approved resize with Adobe to the declared web presentation dimensions; PNG.",
+      "transformations": "Owner-approved PNG preserved as the checksum-verified source master outside the public delivery tree; white-background flattening and deterministic AVIF, WebP and JPEG derivatives at 480, 768 and 960 pixels.",
+      "deliveryBase": "/assets/media/leadership/girish-achliya",
+      "deliveryCeilingBytes": 307200,
       "sourceMasterChecksumSha256": "b47256019242b7c9f9b425e6f719e3db0056caee88b73ffba041f12d48d25201",
       "assetChecksumSha256": "58e866c777fdc7d7f228f64fe6771270b2e3e603687ac38164a0c2c19f3028cd",
       "reviewStatus": "human-reviewed-approved-for-candidate"

@@ -198,9 +198,11 @@ for (const asset of provenanceRegister.assets ?? []) {
 
 for (const asset of croRegister.assets ?? []) {
   const prefixes = asset.id === "vishal-chakravarty-cro-portrait"
-    ? ["assets/media/cro/leadership/vishal-chakravarty-", "images/portrait/vishal-chakravarty-"]
+    ? ["assets/media/leadership/vishal-chakravarty-", "images/portrait/vishal-chakravarty-"]
+    : asset.id === "prabhakar-lahare-cro-portrait"
+      ? ["assets/media/leadership/prabhakar-lahare-"]
     : asset.id === "girish-achliya-cro-portrait"
-      ? ["assets/media/cro/leadership/girish-achliya-"]
+      ? ["assets/media/leadership/girish-achliya-"]
       : [`assets/media/cro/${asset.id}-`];
   for (const file of mediaFiles) {
     const canonical = canonicalDeliveryPath(file);
@@ -375,7 +377,7 @@ for (const relativePath of mediaFiles) {
     perceptualDuplicateCandidateGroup: null,
     budgetReview: relativePath.startsWith("audit/evidence/")
       ? "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
-      : relativePath.startsWith("creative-assets/brand/novapharm-logo-asset-pack/")
+      : relativePath.startsWith("creative-assets/brand/novapharm-logo-asset-pack/") || relativePath.startsWith("creative-assets/leadership/approved-")
         ? "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
       : info.size > 800_000
         ? "REVIEW_OVER_800_KB"

@@ -5,6 +5,7 @@ const root = resolve(process.cwd());
 const read = (path) => readFileSync(join(root, path), "utf8");
 const write = (path, value) => writeFileSync(join(root, path), value);
 const config = JSON.parse(read("config/module-art-direction.json"));
+const leadershipConfig = JSON.parse(read("config/leadership-media.json"));
 const licensedImageRegister = JSON.parse(read("creative-assets/image-asset-register.json"));
 const assets = new Map(config.assets.map((asset) => [asset.id, asset]));
 
@@ -57,12 +58,14 @@ function moduleMedia(module, asset, className = "module-hero-media") {
 }
 
 function leadershipMedia(module) {
-  const portraits = [
-    ["/assets/vishalchakravarty.png", "Vishal Chakravarty", 1200, 1200],
-    ["/assets/prabhakarvitthallahare.png", "Prabhakar Vitthal Lahare", 960, 1200],
-    ["/assets/girishshantilalachliya.png", "Dr Girish Shantilal Achliya", 960, 1200]
-  ];
-  return `<div class="module-hero-media module-portrait-composition" data-media-role="hero" aria-label="Approved NovaPharm leadership portraits">${portraits.map(([src, name, width, height]) => `<img src="${src}" alt="${name}" width="${width}" height="${height}" loading="eager" decoding="async">`).join("")}</div>${moduleOverlay(module.id, module.label, module.signals)}`;
+  const sizes = "(max-width: 720px) 31vw, 24vw";
+  const portraits = leadershipConfig.portraits.map((portrait) => {
+    const base = `/${portrait.outputBase}`;
+    const sourceSet = (extension) => portrait.widths.map((width) => `${base}-${width}.${extension} ${width}w`).join(", ");
+    const fallbackWidth = portrait.widths.at(-1);
+    return `<picture><source srcset="${sourceSet("avif")}" sizes="${sizes}" type="image/avif"><source srcset="${sourceSet("webp")}" sizes="${sizes}" type="image/webp"><img src="${base}-${fallbackWidth}.jpg" srcset="${sourceSet("jpg")}" sizes="${sizes}" alt="${esc(portrait.alt)}" width="${portrait.width}" height="${portrait.height}" loading="eager" decoding="async"></picture>`;
+  });
+  return `<div class="module-hero-media module-portrait-composition" data-media-role="hero" aria-label="Approved NovaPharm leadership portraits">${portraits.join("")}</div>${moduleOverlay(module.id, module.label, module.signals)}`;
 }
 
 function writeFocalPointCss() {
