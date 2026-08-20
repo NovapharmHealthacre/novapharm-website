@@ -39,10 +39,10 @@ async function copyTree(source, destination) {
 }
 
 async function resolveInstalledPackage(packageName, fromDirectory) {
-  let cursor = fromDirectory;
+  let cursor = await fs.realpath(fromDirectory);
   while (true) {
     const candidate = path.join(cursor, "node_modules", ...packageName.split("/"));
-    if (await exists(path.join(candidate, "package.json"))) return candidate;
+    if (await exists(path.join(candidate, "package.json"))) return fs.realpath(candidate);
     const parent = path.dirname(cursor);
     if (parent === cursor) return null;
     cursor = parent;
@@ -51,8 +51,13 @@ async function resolveInstalledPackage(packageName, fromDirectory) {
 
 async function copyProductionDependencyClosure(destinationRoot) {
   const rootPackage = JSON.parse(await fs.readFile(path.join(root, "package.json"), "utf8"));
-  const queue = Object.keys(rootPackage.dependencies ?? {}).map((name) => ({ name, from: root, required: true }));
-  const copied = new Set();
+  const queue = Object.keys(rootPackage.dependencies ?? {}).sort().map((name) => ({
+    name,
+    from: root,
+    parentDestination: destinationRoot,
+    required: true,
+  }));
+  const copied = new Map();
 
   while (queue.length) {
     const request = queue.shift();
@@ -61,20 +66,51 @@ async function copyProductionDependencyClosure(destinationRoot) {
       assert.equal(request.required, false, `Required runtime dependency ${request.name} is not installed.`);
       continue;
     }
-    const relative = path.relative(root, source);
-    assert.ok(relative.startsWith("node_modules/"), `Runtime dependency escaped node_modules: ${relative}`);
-    if (copied.has(relative)) continue;
-    copied.add(relative);
-    await copyTree(source, path.join(destinationRoot, relative));
-
     const packageJson = JSON.parse(await fs.readFile(path.join(source, "package.json"), "utf8"));
+    assert.equal(packageJson.name, request.name, `Resolved runtime dependency name mismatch for ${request.name}.`);
+    const sourceRelative = path.relative(root, source);
+    assert.ok(
+      !sourceRelative.startsWith("..") && sourceRelative.split(path.sep).includes("node_modules"),
+      `Runtime dependency escaped the frozen installation: ${sourceRelative}`,
+    );
+
+    const identity = `${packageJson.name}@${packageJson.version}:${sourceRelative}`;
+    const topLevelDestination = path.join(destinationRoot, "node_modules", ...request.name.split("/"));
+    let destination = topLevelDestination;
+    const topLevelIdentity = copied.get(topLevelDestination);
+    if (topLevelIdentity && topLevelIdentity !== identity) {
+      destination = path.join(request.parentDestination, "node_modules", ...request.name.split("/"));
+    }
+
+    const existingIdentity = copied.get(destination);
+    if (existingIdentity) {
+      assert.equal(existingIdentity, identity, `Conflicting runtime dependency placement for ${request.name}.`);
+      continue;
+    }
+
+    copied.set(destination, identity);
+    await copyTree(source, destination);
+
     const requiredDependencies = { ...(packageJson.dependencies ?? {}) };
     const optionalDependencies = { ...(packageJson.optionalDependencies ?? {}) };
     const peerDependencies = { ...(packageJson.peerDependencies ?? {}) };
     const peerMetadata = packageJson.peerDependenciesMeta ?? {};
-    for (const name of Object.keys(requiredDependencies)) queue.push({ name, from: source, required: true });
-    for (const name of Object.keys(optionalDependencies)) queue.push({ name, from: source, required: false });
-    for (const name of Object.keys(peerDependencies)) queue.push({ name, from: source, required: peerMetadata[name]?.optional !== true });
+    const dependencyRequests = new Map();
+    for (const name of Object.keys(requiredDependencies)) dependencyRequests.set(name, true);
+    for (const name of Object.keys(optionalDependencies)) {
+      if (!dependencyRequests.has(name)) dependencyRequests.set(name, false);
+    }
+    for (const name of Object.keys(peerDependencies)) {
+      if (!dependencyRequests.has(name)) dependencyRequests.set(name, peerMetadata[name]?.optional !== true);
+    }
+    for (const name of [...dependencyRequests.keys()].sort()) {
+      queue.push({
+        name,
+        from: source,
+        parentDestination: destination,
+        required: dependencyRequests.get(name),
+      });
+    }
   }
   return copied.size;
 }
