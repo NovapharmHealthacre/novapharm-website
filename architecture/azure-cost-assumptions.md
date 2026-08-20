@@ -2,7 +2,7 @@
 
 Status: planning model only; not a quote or approval to incur charges  
 Currency/region assumption: GBP, UK South preferred, UK West recovery consideration  
-Prepared: 14 July 2026; topology reconciled 1 August 2026
+Prepared: 14 July 2026; topology reconciled 20 August 2026
 
 ## Principles
 
@@ -16,7 +16,7 @@ Free validation does not alter this paid-production cost model. It uses the spli
 
 | Service | Initial assumption | Main cost driver | Cost-control decision |
 |---|---|---|---|
-| App Service | Two Linux Standard S1-or-better plans: public applications and secure portal/API; six applications, with production candidate slots sharing their plan compute | Plan SKU and instance count billed continuously | Begin with one measured worker per plan; add instances only after budget approval or measured availability/capacity need |
+| App Service | Two Linux Premium v4 P0v4 plans: public applications and secure portal/API; six applications, with production candidate slots sharing their plan compute | Plan SKU and instance count billed continuously | UK South exposes P0v4 capacity while legacy S1 quota is zero; begin with one measured worker per plan and add instances only after budget approval or measured need |
 | Azure SQL Database | General Purpose serverless or provisioned small database; production auto-pause disabled | vCore/DTU, storage, backup and zone settings | Set maximum capacity; staging may auto-pause; production must not introduce unacceptable wake latency |
 | Storage | GPv2 LRS/ZRS, private Blob containers | Stored GB, operations, egress, redundancy | Lifecycle policy only after retention approval; no public access |
 | Defender for Storage | On-upload malware scanning for quarantine uploads | GB scanned; scanning is charged from day one | Configure monthly scan cap and upload limits; owner approval required |
@@ -26,7 +26,7 @@ Free validation does not alter this paid-production cost model. It uses the spli
 | Entra External ID | Current active-user/authentication model | Monthly active users and premium features | Validate tenant pricing and MFA/Conditional Access licensing before invitation |
 | Resend/email | Existing provider outside Azure | Messages/domain plan | Keep transactional only; set quotas and alerts |
 | Backups/exports | Azure SQL automated backups plus optional long-term/export storage | Retention and storage | Define RPO/RTO and legal retention before long-term retention |
-| Optional Front Door | Not in baseline | Requests, rules, WAF and egress | Add only after performance/security measurement demonstrates value |
+| Azure Front Door Premium + WAF | One governed profile per standing environment, with six isolated routes, origin restrictions, managed rules and rate limits | Fixed profile fee plus requests, rules and data transfer | Mandatory for the accepted edge/security topology; staging should exist only for active acceptance windows unless the owner approves its recurring standing cost |
 
 ## Environment isolation
 
@@ -38,13 +38,15 @@ Free validation does not alter this paid-production cost model. It uses the spli
 
 1. Select subscription and billing scope.
 2. Confirm UK South or another approved region based on data residency, service availability and recovery needs.
-3. Generate calculator estimates for both App Service plans at one and two workers, the selected SQL tier and candidate database, Storage, four private endpoints plus DNS zones, two Key Vaults, Defender scanning, monitoring and expected External ID users.
+3. Generate calculator estimates for both P0v4 App Service plans at one and two workers, Front Door Premium/WAF, the selected SQL tier and candidate database, Storage, four private endpoints plus DNS zones, two Key Vaults, Defender scanning, monitoring and expected External ID users.
 4. Set subscription/resource-group budget alerts at 50%, 80%, 100% and forecasted-overrun thresholds.
 5. Approve the selected estimate before any Bicep deployment.
 
 ## Official pricing references
 
 - [App Service pricing](https://azure.microsoft.com/en-gb/pricing/details/app-service/)
+- [Premium v4 availability and characteristics](https://learn.microsoft.com/en-us/azure/app-service/app-service-configure-premium-v4-tier)
+- [Azure Front Door pricing](https://azure.microsoft.com/en-gb/pricing/details/frontdoor/)
 - [Azure SQL Database pricing](https://azure.microsoft.com/en-gb/pricing/details/azure-sql-database/single/)
 - [Azure Container Apps pricing](https://azure.microsoft.com/en-us/pricing/details/container-apps/)
 - [Microsoft Defender for Cloud pricing](https://azure.microsoft.com/en-us/pricing/details/defender-for-cloud/)

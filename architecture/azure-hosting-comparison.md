@@ -27,7 +27,7 @@ Free-validation decision: try Linux App Service F1 first; use Container Apps Con
 
 ## Selected production profile
 
-- Linux App Service plan, Standard S1 minimum for staging-slot support; Premium v3 should be selected if private-network, performance, zone or scale requirements justify it.
+- Linux App Service Premium v4 P0v4. UK South currently grants this family capacity while legacy S1 quota is zero; P0v4 supports the required deployment slots, Always On, VNet integration and private endpoints.
 - Node 24 LTS runtime.
 - Always On enabled.
 - HTTPS only and minimum TLS 1.2.
@@ -35,6 +35,7 @@ Free-validation decision: try Linux App Service F1 first; use Container Apps Con
 - Staging slot with slot-specific settings and identity.
 - Production capacity of two instances where owner-approved budget permits. One instance is allowed only as an explicitly accepted availability risk.
 - No App Service F1/Shared production use.
+- Premium v4 outbound IP addresses are dynamic. The accepted data plane uses private endpoints; add NAT Gateway only if an approved external integration later requires stable egress and its cost is separately accepted.
 
 ## Free-validation profile
 
@@ -55,6 +56,8 @@ Reassess Container Apps when NovaPharm has separately deployable stateless integ
 
 - [Azure App Service hosting plans](https://learn.microsoft.com/en-us/azure/app-service/overview-hosting-plans)
 - [Plan and manage App Service costs](https://learn.microsoft.com/en-gb/azure/app-service/overview-manage-costs)
+- [Configure App Service Premium v4](https://learn.microsoft.com/en-us/azure/app-service/app-service-configure-premium-v4-tier)
+- [App Service private endpoints](https://learn.microsoft.com/en-us/azure/app-service/overview-private-endpoint)
 - [Azure Container Apps workload profiles](https://learn.microsoft.com/en-us/azure/container-apps/workload-profiles-overview)
 - [Azure Container Apps scaling](https://learn.microsoft.com/en-us/azure/container-apps/scale-app)
 - [Azure Container Apps pricing](https://azure.microsoft.com/en-us/pricing/details/container-apps/)
