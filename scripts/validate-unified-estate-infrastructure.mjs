@@ -48,9 +48,9 @@ const expectedDeployments = [
 
 const appServicePlans = resourceType("Microsoft.Web/serverfarms");
 assert.equal(appServicePlans.length, 2, "The estate must use separate public and secure App Service plans.");
-assert.equal(template.parameters.publicAppServiceSkuName.defaultValue, "P0v4", "The public plan default must use the capacity-verified Linux P0v4 baseline.");
+assert.equal(template.parameters.publicAppServiceSkuName.defaultValue, "P0v4", "The public plan default must use the family-eligible Linux P0v4 baseline.");
 assert.equal(template.parameters.publicAppServiceSkuTier.defaultValue, "PremiumV4", "The public P0v4 plan must declare the PremiumV4 tier.");
-assert.equal(template.parameters.secureAppServiceSkuName.defaultValue, "P0v4", "The secure plan default must use the capacity-verified Linux P0v4 baseline.");
+assert.equal(template.parameters.secureAppServiceSkuName.defaultValue, "P0v4", "The secure plan default must use the family-eligible Linux P0v4 baseline.");
 assert.equal(template.parameters.secureAppServiceSkuTier.defaultValue, "PremiumV4", "The secure P0v4 plan must declare the PremiumV4 tier.");
 assert.equal(template.parameters.workerCount.defaultValue, 1, "Each plan must begin with one worker until measured load and budget approval justify scale-out.");
 assert.deepEqual(
@@ -238,9 +238,9 @@ if (parameters) {
   assert.equal(values.enableEdgeCustomDomains?.value, true, "Production must declare managed Front Door custom domains.");
   assert.equal(values.enableRegionalFailover?.value, false, "Regional failover must remain disabled until a second accepted region exists.");
   assert.equal(values.enablePrivateNetworking?.value, true, "Production must retain private data-plane networking.");
-  assert.equal(values.publicAppServiceSkuName?.value, "P0v4", "Production public applications must use the capacity-verified P0v4 SKU.");
+  assert.equal(values.publicAppServiceSkuName?.value, "P0v4", "Production public applications must use the family-eligible P0v4 SKU.");
   assert.equal(values.publicAppServiceSkuTier?.value, "PremiumV4", "Production public applications must use the PremiumV4 tier.");
-  assert.equal(values.secureAppServiceSkuName?.value, "P0v4", "Production portal and API must use the capacity-verified P0v4 SKU.");
+  assert.equal(values.secureAppServiceSkuName?.value, "P0v4", "Production portal and API must use the family-eligible P0v4 SKU.");
   assert.equal(values.secureAppServiceSkuTier?.value, "PremiumV4", "Production portal and API must use the PremiumV4 tier.");
   assert.equal(values.sqlAutoPauseDelay?.value, -1, "The paid production database must not auto-pause.");
   assert.equal(values.corporateOrigin?.value, "https://novapharmhealthcare.com", "The corporate canonical origin is incorrect.");

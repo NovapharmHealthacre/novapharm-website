@@ -27,7 +27,7 @@ Free-validation decision: try Linux App Service F1 first; use Container Apps Con
 
 ## Selected production profile
 
-- Linux App Service Premium v4 P0v4. UK South currently grants this family capacity while legacy S1 quota is zero; P0v4 supports the required deployment slots, Always On, VNet integration and private endpoints.
+- Linux App Service Premium v4 P0v4. UK South grants a P0v4 family limit of 30 while legacy S1 quota is zero; P0v4 supports the required deployment slots, Always On, VNet integration and private endpoints. The separate subscription-wide `Total Regional VMs` limit is currently zero, so Microsoft must enable aggregate App Service capacity before this valid target SKU can be deployed.
 - Node 24 LTS runtime.
 - Always On enabled.
 - HTTPS only and minimum TLS 1.2.

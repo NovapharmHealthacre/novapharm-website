@@ -2,13 +2,13 @@
 
 Status: planning model only; not a quote or approval to incur charges  
 Currency/region assumption: GBP, UK South preferred, UK West recovery consideration  
-Prepared: 14 July 2026; topology reconciled 20 August 2026
+Prepared: 14 July 2026; topology and capacity gates reconciled 22 August 2026
 
 ## Principles
 
 Azure prices vary by agreement, region, reservation, currency and consumption. This repository intentionally does not hardcode a monthly total. Before deployment, the owner must create and approve an Azure Pricing Calculator estimate from the selected parameter file.
 
-The owner has separately authorised only a zero-out-of-pocket `free-validation` environment under an active spending limit or protected promotional credit. On 14 July 2026 the authenticated NovaPharm tenant exposed no accessible Azure subscription, so no resource was created. The evidence and service-by-service decision are in `azure-free-tier-eligibility-matrix.md`.
+The owner originally authorised only a zero-out-of-pocket `free-validation` environment under an active spending limit or protected promotional credit. The current `NovaPharm_Website` Pay-As-You-Go subscription is now accessible, but no protected free-validation allowance or spending limit has been established and no billable resource has been created. The evidence and service-by-service decision are in `azure-free-tier-eligibility-matrix.md`.
 
 Free validation does not alter this paid-production cost model. It uses the split `infra/free-validation-*.bicep` templates and must pass every cost gate in `deployment/free-validation-runbook.md`.
 
@@ -16,7 +16,7 @@ Free validation does not alter this paid-production cost model. It uses the spli
 
 | Service | Initial assumption | Main cost driver | Cost-control decision |
 |---|---|---|---|
-| App Service | Two Linux Premium v4 P0v4 plans: public applications and secure portal/API; six applications, with production candidate slots sharing their plan compute | Plan SKU and instance count billed continuously | UK South exposes P0v4 capacity while legacy S1 quota is zero; begin with one measured worker per plan and add instances only after budget approval or measured need |
+| App Service | Two Linux Premium v4 P0v4 plans: public applications and secure portal/API; six applications, with production candidate slots sharing their plan compute | Plan SKU and instance count billed continuously | UK South exposes a P0v4 family limit of 30, but the subscription-wide `Total Regional VMs` limit is zero and blocks every plan; obtain Microsoft approval for at least two staging workers and four combined standing staging/production workers before provisioning |
 | Azure SQL Database | General Purpose serverless or provisioned small database; production auto-pause disabled | vCore/DTU, storage, backup and zone settings | Set maximum capacity; staging may auto-pause; production must not introduce unacceptable wake latency |
 | Storage | GPv2 LRS/ZRS, private Blob containers | Stored GB, operations, egress, redundancy | Lifecycle policy only after retention approval; no public access |
 | Defender for Storage | On-upload malware scanning for quarantine uploads | GB scanned; scanning is charged from day one | Configure monthly scan cap and upload limits; owner approval required |

@@ -1,8 +1,8 @@
 # Azure Free-Tier Eligibility Matrix
 
-Status: deployment blocked - no accessible Azure subscription
+Status: historical free-validation plan superseded by accessible Pay-As-You-Go subscription; no free deployment approved
 
-Assessment date: 14 July 2026
+Assessment date: 14 July 2026; subscription and quota state updated 22 August 2026
 
 Proposed environment: `free-validation` / `poc`
 
@@ -12,25 +12,16 @@ Proposed region: UK South, subject to subscription-level SKU and free-offer conf
 
 ## Actual subscription evidence
 
-The owner completed Microsoft device authentication for the NovaPharm identity. Azure CLI then reported no accessible subscription in the NovaPharm tenant. `az account list --all` returned an empty list. A separate external tenant required a new Conditional Access sign-in and did not expose a subscription to this session.
+The owner subsequently created the enabled `NovaPharm_Website` Pay-As-You-Go subscription and authenticated the NovaPharm deployment identity. This removes the historical no-subscription blocker but does not establish a spending limit, promotional credit or eligibility for any free offer. The empty `novapharm-stg-rg` resource group remains the only staging resource-group state; no billable service was provisioned.
 
-Consequently, the following facts cannot yet be verified:
-
-- subscription offer or quota ID;
-- whether a spending limit exists and is `On`;
-- promotional-credit balance and expiry;
-- whether UK South exposes Linux App Service F1 to the subscription;
-- whether the Azure SQL portal applies the free offer;
-- whether the 12-month Storage and Key Vault benefits remain available.
-
-No resource was provisioned. A marketing page saying that a service has a free allowance is not accepted as proof that the allowance applies to this subscription.
+Authenticated quota evidence shows a UK South P0v4 family limit of 30 and a separate, non-self-service `Total Regional VMs` limit of zero. Exact-SHA Azure what-if run `32379031523` therefore failed before resource creation. The free-validation workflow remains unavailable until every zero-cost protection in its runbook is independently proven; Pay-As-You-Go status is not such proof.
 
 ## Eligibility matrix
 
 | Azure service | Proposed SKU | Region | Current official free allowance | Applies to this subscription | Could a payment method be charged? | Hard usage limit | Automatically stops at limit | Residual charge risk | Approved deployment decision |
 |---|---|---|---|---|---|---|---|---|---|
-| Resource Manager/resource group | ARM resource group tagged `free-validation` | UK South proposed | Resource groups and Resource Manager control-plane use are free | No accessible subscription to verify | No direct resource-group charge; resources inside it can charge | Not applicable | Not applicable | None from the empty group itself | **Blocked** until an eligible protected subscription is selected |
-| App Service | Linux Free F1, one worker | UK South proposed | Up to 10 web/API apps, 1 GB storage and 60 CPU minutes per day; free/Shared plans have no SLA | Unknown | F1 itself is free, but a wrong plan or attached service can charge | 60 CPU minutes/day and platform quotas | The app is stopped until quota reset | Cold stops, no Always On, no slots, no custom domain, no production SLA | **Preferred validation compute; blocked** until `az appservice list-locations --sku F1 --linux-workers-enabled` and portal pricing confirm F1 |
+| Resource Manager/resource group | ARM resource group tagged `free-validation` | UK South proposed | Resource groups and Resource Manager control-plane use are free | Pay-As-You-Go subscription exists; no protected free-validation resource group was created | No direct resource-group charge; resources inside it can charge | Not applicable | Not applicable | None from an empty group itself | **Control-plane validation only; no free resource deployment approved** |
+| App Service | Linux Free F1, one worker | UK South proposed | Up to 10 web/API apps, 1 GB storage and 60 CPU minutes per day; free/Shared plans have no SLA | Current UK South F1 family limit is zero | F1 itself is free, but a wrong plan or attached service can charge | 60 CPU minutes/day and platform quotas | The app is stopped until quota reset | Cold stops, no Always On, no slots, no custom domain, no production SLA | **Not eligible on the current regional quota; no free compute deployment approved** |
 | Container Apps | Consumption, 0.25 vCPU/0.5 GiB where supported, min 0/max 1 | UK South proposed | 180,000 vCPU-seconds, 360,000 GiB-seconds and 2 million requests per subscription/month | Unknown | Yes after the grant; environment/network/logging dependencies may also charge | No service-level billing hard stop | Scale-to-zero stops idle compute, not overage billing | Usage can exceed the grant; registry and Log Analytics can add cost | **Fallback only; not selected** while F1 remains viable |
 | Azure SQL Database | General Purpose serverless free-offer database, `GP_S_Gen5_2` | UK South proposed | 100,000 vCore-seconds, 32 GB data and 32 GB backup per database/month; up to 10 eligible databases | Unknown; Azure for Students Starter is incompatible | Only if `BillOverUsage` is selected or other paid features are added | 100,000 vCore-seconds and 32 GB | Yes, with `freeLimitExhaustionBehavior=AutoPause` | Open tools can prevent normal idle auto-pause; native restore into a free database is unavailable | **Template approved; deployment blocked** until the portal shows “Free offer applied” and estimated monthly database cost zero |
 | Blob Storage | StorageV2 Standard LRS, hot, private containers | UK South proposed | New-account 12-month benefit: 5 GB LRS hot block, 20,000 reads and 10,000 writes | Unknown; account age/offer unavailable | Yes after allowance or after the 12-month benefit expires | No service-level spending hard stop | No | Storage, operations and egress can charge | **Conditional only** with active credit and `spendingLimit=On`; seven-day synthetic-upload lifecycle required |
@@ -41,7 +32,7 @@ No resource was provisioned. A marketing page saying that a service has a free a
 | Application Insights / Log Analytics | None in free validation by default | Not selected | First 5 GB/month per billing account for Analytics Logs; included retention depends on data type | Unknown | Yes after ingestion/retention allowances | Daily cap stops ingestion, but is not a complete billing guarantee | Ingestion can stop at a configured cap | Cross-region data, export, alerts and retention can charge | **Not deployed** until allowance, sampling and protective caps are verified on the selected subscription |
 | Azure Defender for Storage | None | Not selected | No approved zero-charge malware-scanning allowance for this validation | Not applicable | Yes, usage based | Monthly cap is not a zero-cost guarantee | No | Scanned GB charges | **Prohibited** for free validation; use simulated scan-state tests only |
 | Private endpoints, NAT Gateway, Firewall, Front Door/WAF | None | Not selected | No zero-charge architecture approved for this phase | Not applicable | Yes | No | No | Hourly/data-processing charges | **Prohibited** for free validation and absent from the free-validation templates |
-| App Service Premium v4 P0v4 production baseline | P0v4 retained in `infra/main.bicep`; two plans in `infra/unified-estate.bicep` | Future owner-approved UK South production | No free allowance | Not applicable | Yes, continuously | No | No | Recurring compute charge | **Capacity verified but not authorised or deployed** |
+| App Service Premium v4 P0v4 production baseline | P0v4 retained in `infra/main.bicep`; two plans in `infra/unified-estate.bicep` | Future owner-approved UK South production | No free allowance | Not applicable | Yes, continuously | No | No | Recurring compute charge | **SKU family eligible; aggregate App Service capacity, budget approval and deployment remain blocked** |
 
 ## Enforced deployment policy
 

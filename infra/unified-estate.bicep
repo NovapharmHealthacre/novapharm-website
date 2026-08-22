@@ -113,13 +113,13 @@ param sqlMinCapacity int = 1
 @description('Serverless auto-pause delay. Use -1 for an approved permanent production service.')
 param sqlAutoPauseDelay int = 60
 
-@description('Public App Service plan SKU. Linux P0v4 is the UK South baseline because it supports slots and private networking on currently available quota.')
+@description('Public App Service plan SKU. Linux P0v4 is the UK South baseline because the SKU family supports slots and private networking; subscription-level aggregate capacity remains an external deployment gate.')
 param publicAppServiceSkuName string = 'P0v4'
 
 @description('Public App Service plan tier.')
 param publicAppServiceSkuTier string = 'PremiumV4'
 
-@description('Secure portal and API App Service plan SKU.')
+@description('Secure portal and API App Service plan SKU. Subscription-level aggregate capacity remains an external deployment gate.')
 param secureAppServiceSkuName string = 'P0v4'
 
 @description('Secure portal and API App Service plan tier.')
