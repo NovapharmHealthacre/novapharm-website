@@ -1,14 +1,14 @@
 # Azure Unified Estate Repository Acceptance
 
-Status: repository contract accepted; Azure what-if, provisioning and managed-environment acceptance pending
-Acceptance date: 1 August 2026
-Candidate branch: `codex/unified-digital-estate-foundation`
+Status: repository contract accepted; P0v4 family eligible; aggregate App Service capacity externally blocked
+Acceptance updated: 22 August 2026
+Candidate branch: `codex/post-pr53-apple-parity`
 
 ## Outcome
 
 The Azure source contract now matches the migrated monorepo. `infra/unified-estate.bicep` defines six independently deployed applications rather than the obsolete single-web-app topology. Corporate, Technology, founder and status use a public App Service plan. Portal and API use a separate secure plan and separate system-assigned managed identities. The API alone receives Azure SQL and private Blob permissions.
 
-No Azure resource, subscription, DNS record, domain binding, certificate, Entra registration, SharePoint permission or production deployment changed during this acceptance. The templates were compiled locally only. Cost approval, authenticated Azure what-if and owner-controlled secrets remain external gates.
+The selected Pay-As-You-Go subscription, GitHub OIDC identity and protected staging environment are authenticated and verified. The original Standard S1 preflight reached the real `Microsoft.Web/serverFarms` provider and failed because all legacy App Service families had zero quota. UK South exposes a P0v4 family limit of 30, so Linux P0v4 remains the governed baseline for both plans and preserves deployment slots, Always On, VNet integration and private endpoints. The exact-SHA P0v4 what-if then proved a separate subscription-wide `Total Regional VMs` limit of zero. That aggregate quota is marked non-applicable for self-service changes and blocks both plans before creation. No billable resource, DNS record, domain binding, certificate, SharePoint permission or production deployment changed during either preflight. Microsoft-enabled aggregate capacity, explicit cost approval, owner-controlled secrets and managed-staging acceptance remain gates.
 
 ## Implemented boundaries
 
@@ -16,6 +16,7 @@ No Azure resource, subscription, DNS record, domain binding, certificate, Entra 
 |---|---|
 | Compute | Six App Services, Node 24 LTS, HTTPS-only, TLS 1.2 minimum, FTPS disabled, independent commands and health paths |
 | Plans | One public plan and one secure portal/API plan |
+| Plan baseline | One Linux P0v4 worker per plan; PremiumV4 supports the governed slot and private-network boundaries, the P0v4 family limit is 30, and the separate aggregate regional limit of zero blocks deployment |
 | Release | Six isolated artifacts, file and byte manifests, SHA-256 digest per artifact, packaged API boot test |
 | Promotion | Production candidate slots only; the workflow contains no slot-swap, DNS, certificate or GitHub Pages retirement command |
 | Data | Azure SQL Entra-only administration, production/candidate databases, private endpoints and short-term retention |
@@ -75,6 +76,30 @@ Artifact counts and digests are regenerated for every immutable SHA; the figures
 | Release artifact structural tests | Passed |
 | Packaged API startup | Passed on Node `24.14.0` |
 
+## Authenticated Azure preflight
+
+Observed from 20 through 22 August 2026:
+
+| Control | Verified state |
+|---|---|
+| Subscription | `NovaPharm_Website` (`af821f2e-8285-472b-abf7-85dfa05f2910`) is enabled in tenant `08811bc1-2d20-4fbb-bcb3-f02011e53b60` |
+| Existing resources | `novapharm-stg-rg` exists in UK South and contains no resources; no billable or partial estate was created |
+| Deployment identity | `NovaPharm GitHub Deployments` is enabled with separate `azure-staging` and `azure-production` federated credentials |
+| GitHub environment | Exact-SHA checkout, protected environment variables, Azure OIDC login, resource-group validation and compiled topology validation all pass |
+| Legacy provider preflight | Workflow run `32364509502` reached Azure what-if with S1 and stopped at `SubscriptionIsOverQuotaForSku`; tracking ID `a7ba93f8-c913-470b-a8d7-e499963b4bea` |
+| Legacy capacity | UK South reports zero capacity for F1 through P3v3, including `S1 VMs: 0` |
+| P0v4 family quota | UK South reports `P0v4 VMs: 30`; staging needs two workers and the combined standing staging/production topology would need four |
+| Aggregate capacity | Exact-SHA P0v4 what-if run `32379031523` failed before creation because `Total Regional VMs` had limit `0`, usage `0`; tracking ID `067a9394-b21c-4bec-b783-b1b1d18ec58d` |
+| Selected baseline | Linux `P0v4` / `PremiumV4`, one worker for each public and secure plan; Microsoft documents slots, private endpoints and VNet integration for Premium v4 |
+| Retail observation | Azure Retail Prices API returned USD `0.0913` per Linux P0v4 plan-hour in UK South on 20 August 2026, versus USD `0.10` for Linux S1; this is evidence for review, not a quote |
+| Self-service quota API | `Microsoft.Quota` requests `55a3b0d7-a003-4cf4-8d03-ad766efd4f9b` and `4830e977-d3bd-489f-a960-ff8db35e82f0` each asked for four S1 instances and failed `QuotaNotAvailableForResource`; a direct aggregate request failed `InvalidResourceName` because `*` is not requestable and Azure reports `isQuotaApplicable: false` |
+| Support API | A quota-support operation was attempted and failed `InvalidSupportPlan` because the subscription has the Free support plan; no support ticket was created |
+| Production effect | None. Provisioning, deployment, DNS and traffic changes did not run |
+
+The next valid external action is for the subscription owner or Microsoft to enable `Total Regional VMs` capacity of at least two in UK South for staging, with four required if staging and production remain standing together. After that change, the exact candidate SHA must run a fresh staging what-if. Both failed preflights are evidence of correctly enforced stop conditions, not staging acceptance.
+
+Premium v4 intentionally exposes dynamic outbound IP addresses. The current design reaches SQL, Blob Storage and Key Vault through VNet integration and private endpoints and does not claim a stable egress IP. If an approved email, SharePoint or partner service later requires IP allowlisting, a governed NAT Gateway decision and cost review are required before activation.
+
 ## Deployment workflow safety
 
 `.github/workflows/azure-deploy.yml` is manual only. It requires:
@@ -102,16 +127,15 @@ Production deploys only to candidate slots. There is deliberately no automatic s
 
 The following are not complete and must not be inferred from repository acceptance:
 
-1. owner-approved Azure subscription, region and cost estimate;
-2. GitHub OIDC registration and protected environments;
-3. authenticated Azure what-if and actual resource IDs;
-4. protected entry and resolution of both vaults' secrets;
-5. Entra workforce and External ID registrations, groups, app roles and MFA evidence;
-6. Azure SQL contained users, migration, reconciliation, backup and isolated restore;
-7. private Blob quarantine and an approved malware-scanning service;
-8. transactional email delivery and provider-failure replay;
-9. Graph `Sites.Selected` consent and owner-approved SharePoint permissions;
-10. managed staging visual, security, accessibility, performance and penetration acceptance;
-11. production candidate acceptance, cost approval, merge, domain binding, DNS and GitHub Pages retirement.
+1. Microsoft-enabled UK South `Total Regional VMs` capacity followed by a successful exact-SHA staging what-if using the P0v4 plan;
+2. explicit review of the recurring staging and production cost before provisioning;
+3. protected entry and resolution of both vaults' secrets;
+4. Entra workforce and External ID registrations, groups, app roles and MFA evidence;
+5. Azure SQL contained users, migration, reconciliation, backup and isolated restore;
+6. private Blob quarantine and an approved malware-scanning service;
+7. transactional email delivery and provider-failure replay;
+8. Graph `Sites.Selected` consent and owner-approved SharePoint permissions;
+9. managed staging visual, security, accessibility, performance and penetration acceptance;
+10. production candidate acceptance, merge, domain binding, DNS and GitHub Pages retirement.
 
 Repository acceptance is not production completion.

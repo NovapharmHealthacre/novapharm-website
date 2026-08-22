@@ -46,6 +46,7 @@ jobs:
       EXPECTED_SHA: ${{ inputs.expected_sha }}
       AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
       AZURE_RESOURCE_GROUP: ${{ inputs.target == 'staging' && vars.AZURE_STAGING_RESOURCE_GROUP || vars.AZURE_PRODUCTION_RESOURCE_GROUP }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       AZURE_SQL_ENTRA_ADMIN_OBJECT_ID: ${{ vars.AZURE_SQL_ENTRA_ADMIN_OBJECT_ID }}
       AZURE_SQL_ENTRA_ADMIN_LOGIN: ${{ vars.AZURE_SQL_ENTRA_ADMIN_LOGIN }}
       AZURE_KEY_VAULT_BOOTSTRAP_IP_CIDR: ${{ vars.AZURE_KEY_VAULT_BOOTSTRAP_IP_CIDR }}
@@ -65,7 +66,7 @@ jobs:
       NOVAPHARM_OPERATIONS_EMAIL: ${{ vars.NOVAPHARM_OPERATIONS_EMAIL }}
       NOVAPHARM_EMAIL_FROM: ${{ vars.NOVAPHARM_EMAIL_FROM }}
       NOVAPHARM_CONTACT_NOTIFICATION_TO: ${{ vars.NOVAPHARM_CONTACT_NOTIFICATION_TO }}
-      NOVAPHARM_EMAIL_PROVIDER: ${{ vars.NOVAPHARM_EMAIL_PROVIDER }}
+      NOVAPHARM_EMAIL_PROVIDER: ${{ vars.NOVAPHARM_EMAIL_PROVIDER || 'auto' }}
       NOVAPHARM_MICROSOFT_EMAIL_SENDER: ${{ vars.NOVAPHARM_MICROSOFT_EMAIL_SENDER }}
       PARAMETER_FILE: ${{ inputs.target == 'staging' && 'infra/environments/unified-staging.bicepparam' || 'infra/environments/unified-production.bicepparam' }}
       ENVIRONMENT_CODE: ${{ inputs.target == 'staging' && 'stg' || 'prod' }}

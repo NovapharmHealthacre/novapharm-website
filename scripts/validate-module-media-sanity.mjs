@@ -118,6 +118,8 @@ for (const module of config.modules) {
     const asset = assets.get(module.heroAsset);
     assert.ok(asset, `${module.id} references an unknown hero asset`);
     assert.ok(html.includes(asset.base), `${module.id} must render its registered hero asset`);
+    assert.match(html, /module-signal-disclosure/, `${module.id} must expose its registered hero-media boundary visibly`);
+    assert.ok(html.includes(asset.caption.replaceAll("&", "&amp;")), `${module.id} must render its registered hero caption`);
   }
   assert.doesNotMatch(html, /assets\/media\/editorial\/[^"']+\.svg/, `${module.id} must not retain decorative editorial SVG imagery`);
 }

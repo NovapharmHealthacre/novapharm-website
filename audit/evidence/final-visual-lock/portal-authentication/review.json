@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0.0",
+  "reviewedAt": "2026-08-13",
+  "route": "/portal/",
+  "baseline": {
+    "sourceSha": "7d05b726ebbdcb535f3eb39d5ad316974dd9fb66",
+    "viewport": "1440x900",
+    "panelWidth": 680,
+    "roleTrackWidth": 127,
+    "finding": "The Administrator heading exceeded its role-card content box.",
+    "screenshot": {
+      "path": "before/portal-login-1440x900.png",
+      "sha256": "2b47ac151c848a8c6852dcfc5352787302c76ad22f21cab00ae10d572302471d"
+    }
+  },
+  "correction": {
+    "contract": "login-panel-authentication",
+    "maximumPanelWidth": 900,
+    "desktopRoleTrackWidth": 182,
+    "desktopColumns": 4,
+    "mobileColumns": 1
+  },
+  "after": [
+    {
+      "viewport": "390x844",
+      "documentOverflow": false,
+      "roleCardOverflow": false,
+      "screenshot": "after/portal-login-390x844.png",
+      "sha256": "8eb76d69ba2b1e54428abc73167a2f147f18c1d69914399a4e505d3d24f5580f"
+    },
+    {
+      "viewport": "1024x768",
+      "documentOverflow": false,
+      "roleCardOverflow": false,
+      "screenshot": "after/portal-login-1024x768.png",
+      "sha256": "4048756873ac70ab979b50919d2c797cedf03ba31233e74d59a46a5e59d6f3fa"
+    },
+    {
+      "viewport": "1280x800",
+      "documentOverflow": false,
+      "roleCardOverflow": false,
+      "screenshot": "after/portal-login-1280x800.png",
+      "sha256": "93eace6212c2c4dc3079c015a24ff25e318052a1854945c1a4e947d0d454b3ef"
+    },
+    {
+      "viewport": "1440x900",
+      "documentOverflow": false,
+      "roleCardOverflow": false,
+      "screenshot": "after/portal-login-1440x900.png",
+      "sha256": "9fc0b48afa287f126ffecca61798852a83cd2c90c579d6c503bc41650c2374ff"
+    }
+  ],
+  "browserConsoleWarningsOrErrors": 0,
+  "productionBoundary": "Local rendered evidence only; managed staging and production remain unverified."
+}

@@ -569,28 +569,7 @@
     "route": "/account-application/",
     "canonical": "https://novapharmhealthcare.com/account-application/",
     "file": "account-application/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/account-application/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Open a Pharmaceutical Customer Account | NovaPharm Healthcare",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": null,
-        "types": [
-          "BreadcrumbList"
-        ],
-        "name": null,
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
+    "entities": []
   },
   {
     "route": "/trust-centre/",

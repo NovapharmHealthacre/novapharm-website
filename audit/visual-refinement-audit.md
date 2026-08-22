@@ -50,9 +50,11 @@ They are representative stock photographs. They do not identify NovaPharm-owned 
 
 Approved images used:
 
-- `assets/vishalchakravarty.jpeg`
-- `assets/prabhakarvitthallahare.jpeg`
-- `assets/girishshantilalachliya.jpeg`
+- `creative-assets/leadership/approved-2026-08-17/vishal-chakravarty.png`
+- `creative-assets/leadership/approved-2026-08-17/prabhakar-vitthal-lahare.png`
+- `creative-assets/leadership/approved-2026-08-17/girish-shantilal-achliya.png`
+
+Public delivery uses checksum-derived AVIF, WebP and JPEG variants under `assets/media/leadership/`; the PNG masters are not shipped as page payloads.
 
 No approved portrait was available in this run for:
 

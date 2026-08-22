@@ -12,11 +12,9 @@ await mkdir(publicRoot, { recursive: true });
 await Promise.all([
   cp(path.join(sourceRoot, "brand"), path.join(publicRoot, "brand"), { recursive: true }),
   cp(path.join(sourceRoot, "media"), path.join(publicRoot, "media"), { recursive: true }),
-  cp(path.join(sourceRoot, "vishalchakravarty.png"), path.join(publicRoot, "vishalchakravarty.png")),
-  cp(path.join(sourceRoot, "prabhakarvitthallahare.png"), path.join(publicRoot, "prabhakarvitthallahare.png")),
-  cp(path.join(sourceRoot, "girishshantilalachliya.png"), path.join(publicRoot, "girishshantilalachliya.png")),
 ]);
 
 const logo = await readFile(path.join(publicRoot, "brand", "novapharm-healthcare-logo.svg"), "utf8");
-assert.match(logo, /Novapharm|NovaPharm/i, "Official corporate logo was not copied");
+assert.match(logo, /#E3120B/i, "Official corporate logo does not use the approved identity red");
+assert.doesNotMatch(logo, /<text\b/i, "Official corporate logo must remain path-based");
 console.log("Corporate public media synchronised from the approved repository asset register.");

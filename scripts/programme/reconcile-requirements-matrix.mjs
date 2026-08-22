@@ -1,9 +1,11 @@
+import { execFileSync } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 const matrixRoot = resolve("docs/programme/requirements");
 const matrixPath = resolve(matrixRoot, "requirements-matrix.json");
-const pullRequestChecks = "https://github.com/NovapharmHealthacre/novapharm-website/pull/16/checks";
+const candidateSha = process.env.GITHUB_SHA || execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+const candidateChecks = `https://github.com/NovapharmHealthacre/novapharm-website/commit/${candidateSha}/checks`;
 
 const statuses = Object.freeze([
   "Complete",
@@ -18,7 +20,7 @@ const statuses = Object.freeze([
 const commonCi = Object.freeze([
   ".github/workflows/ci.yml",
   ".github/workflows/browser-acceptance.yml",
-  pullRequestChecks,
+  candidateChecks,
 ]);
 
 const bundles = Object.freeze({
@@ -29,6 +31,7 @@ const bundles = Object.freeze({
     tests: ["packages/config/test/config.test.ts", "packages/platform-mode/test/platform-mode.test.ts"],
     docs: [
       "docs/programme/executive-summary.md",
+      "docs/programme/post-pr53-current-truth.md",
       "docs/programme/current-state-audit.md",
       "docs/programme/conflict-register.md",
     ],
@@ -176,20 +179,39 @@ const bundles = Object.freeze({
       "docs/programme/creative-directions.md",
       "docs/programme/apple-caliber-craft-audit.md",
       "docs/programme/apple-caliber-continuation-matrix.md",
+      "docs/visual/apple-parity-matrix.md",
       "docs/programme/react-architecture-handoff.md",
       "docs/programme/brand-governance.md",
     ],
   },
   media: {
     implementation:
-      "Approved media is tracked through asset registers and rendered with intrinsic sizes, responsive derivatives, accurate alternatives and ownership caveats.",
-    code: ["creative-assets/image-asset-register.json", "creative-assets/module-media-asset-register.json", "scripts/optimise-images.mjs"],
-    tests: ["scripts/test-visual-contracts.mjs", "scripts/validate-module-media-sanity.mjs", "scripts/validate-visual-refinement.mjs"],
+      "Every tracked raster, vector, EPS and PDF asset has a generated inventory; the authoritative 93-file logo pack and approved public media retain checksums, intrinsic sizes, responsive derivatives, accurate alternatives, registered provenance and visible representation boundaries.",
+    code: [
+      "creative-assets/brand/novapharm-logo-asset-pack",
+      "creative-assets/asset-register.json",
+      "creative-assets/image-asset-register.json",
+      "creative-assets/module-media-asset-register.json",
+      "docs/application-media-provenance.json",
+      "audit/generated/image-inventory.json",
+      "scripts/programme/generate-image-inventory.mjs",
+      "scripts/optimise-images.mjs",
+    ],
+    tests: [
+      "scripts/test-visual-contracts.mjs",
+      "scripts/validate-module-media-sanity.mjs",
+      "scripts/validate-visual-refinement.mjs",
+      "scripts/programme/validate-brand-assets.mjs",
+      "scripts/programme/validate-post-pr53-candidate.mjs",
+    ],
     docs: [
       "docs/programme/brand-governance.md",
+      "docs/programme/owner-approved-logo-asset-pack-2026-08-13.md",
+      "final-report/official-logo-register.md",
       "docs/programme/creative-directions.md",
       "docs/programme/apple-caliber-craft-audit.md",
       "docs/programme/apple-caliber-continuation-matrix.md",
+      "docs/visual/apple-parity-matrix.md",
     ],
   },
   security: {
@@ -315,7 +337,14 @@ const bundles = Object.freeze({
     implementation:
       "Workspace, application, integration, security, migration, browser, accessibility, visual and packaging test suites are defined for immutable candidates.",
     code: ["package.json", ".github/workflows/ci.yml", ".github/workflows/browser-acceptance.yml"],
-    tests: ["scripts", "apps/corporate/test", "apps/founder/test", "apps/portal/test", "packages"],
+    tests: [
+      "scripts",
+      "scripts/programme/validate-post-pr53-candidate.mjs",
+      "apps/corporate/test",
+      "apps/founder/test",
+      "apps/portal/test",
+      "packages",
+    ],
     docs: ["docs/programme/operations-runbook.md", "docs/programme/azure-unified-estate-acceptance.md"],
   },
   migration: {
@@ -334,7 +363,7 @@ const bundles = Object.freeze({
   },
   release: {
     implementation:
-      "Draft PR 16 is the review boundary; readiness, merge and deployment remain conditional on exact-SHA checks, staging acceptance and owner-controlled Azure, tenant and DNS gates.",
+      "The current feature branch and its review pull request form the release boundary; readiness, merge and deployment remain conditional on exact-SHA checks, staging acceptance and owner-controlled Azure, tenant and DNS gates.",
     code: [".github/workflows/ci.yml", ".github/workflows/azure-deploy.yml"],
     tests: ["scripts/test-unified-release-artifacts.mjs", "scripts/programme/validate-requirements-matrix.mjs"],
     docs: ["docs/programme/operations-runbook.md", "deployment/rollback-plan.md"],
@@ -559,7 +588,8 @@ for (const record of records) {
 const metadata = {
   ...source.metadata,
   reconciled_at: new Date().toISOString(),
-  reconciliation_scope: "All 5,900 records reassessed after leadership-title approval, Products reordering, Front Door/WAF, design-system, portal-classification and software-supply-chain changes; each retains one explicit final status with row-level evidence.",
+  reconciled_repository_sha: candidateSha,
+  reconciliation_scope: "All 5,900 records reassessed after the post-PR53 current-truth audit, leadership and Products controls, Front Door/WAF, design-system, portal classification, software-supply-chain controls, governed media inventory, technology-fit decisions and Apple-parity visual validation; each retains one explicit final status with row-level evidence.",
   requirement_record_count: records.length,
   status_language: Object.fromEntries(statuses.map((status) => [status, status])),
   status_counts: statusCounts,

@@ -35,6 +35,12 @@ const approvedLogo = path.join(repositoryRoot, "assets/brand/novapharm-healthcar
 const portalLogo = path.join(applicationRoot, "public/assets/brand/novapharm-healthcare-logo.svg");
 assert.ok(existsSync(portalLogo), "Portal logo is missing");
 assert.equal(logo(approvedLogo), logo(portalLogo), "Portal logo must remain byte-identical to the approved SVG");
+for (const name of ["favicon.svg", "favicon.ico", "apple-touch-icon.png", "pwa-icon-192.png", "pwa-icon-512.png", "pwa-maskable-512.png"]) {
+  const approved = path.join(repositoryRoot, "assets/brand", name);
+  const deployed = path.join(applicationRoot, "public/assets/brand", name);
+  assert.ok(existsSync(deployed), `Portal brand asset is missing: ${name}`);
+  assert.equal(logo(approved), logo(deployed), `Portal brand asset must remain byte-identical: ${name}`);
+}
 
 for (const prohibited of ["localStorage", "sessionStorage", "The string did not match the expected pattern", "Secure portal backend is not active", "PORTAL_PASSWORD="]) {
   assert.ok(!source.includes(prohibited), `Portal source contains prohibited pattern: ${prohibited}`);

@@ -83,9 +83,9 @@ const girishProfile = text("leadership/girish-achliya/index.html");
 const approvedLeadershipTitle = "Chief Scientific Officer";
 const supersededLeadershipTitle = "Chief Technical Director";
 const approvedPortraits = [
-  ["Vishal Chakravarty", "assets/vishalchakravarty.png", 1200, 1200],
-  ["Prabhakar Vitthal Lahare", "assets/prabhakarvitthallahare.png", 960, 1200],
-  ["Dr Girish Shantilal Achliya", "assets/girishshantilalachliya.png", 960, 1200]
+  ["Vishal Chakravarty", "creative-assets/leadership/approved-2026-08-17/vishal-chakravarty.png", "/assets/media/leadership/vishal-chakravarty", 1200],
+  ["Prabhakar Vitthal Lahare", "creative-assets/leadership/approved-2026-08-17/prabhakar-vitthal-lahare.png", "/assets/media/leadership/prabhakar-lahare", 960],
+  ["Dr Girish Shantilal Achliya", "creative-assets/leadership/approved-2026-08-17/girish-shantilal-achliya.png", "/assets/media/leadership/girish-achliya", 960]
 ];
 
 if (!leadershipIndex.includes(approvedLeadershipTitle)) fail(`Leadership index is missing Dr Girish's approved title: ${approvedLeadershipTitle}`);
@@ -93,37 +93,34 @@ if (leadershipIndex.includes(supersededLeadershipTitle)) fail(`Leadership index 
 if (!girishProfile.includes(approvedLeadershipTitle)) fail(`Dr Girish profile is missing approved title: ${approvedLeadershipTitle}`);
 if (girishProfile.includes(supersededLeadershipTitle)) fail(`Dr Girish profile still contains superseded title: ${supersededLeadershipTitle}`);
 if (!girishProfile.includes('"jobTitle":"Chief Scientific Officer"')) fail("Dr Girish structured Person data is missing Chief Scientific Officer jobTitle.");
-if (!girishProfile.includes("/assets/girishshantilalachliya.png")) fail("Dr Girish profile is not using the approved PNG portrait master.");
+if (!girishProfile.includes("/assets/media/leadership/girish-achliya-960.jpg")) fail("Dr Girish profile is not using the approved responsive portrait fallback.");
 if (!girishProfile.includes("Dr Girish Shantilal Achliya, Chief Scientific Officer of NovaPharm Healthcare")) fail("Dr Girish portrait accessibility text is not aligned to the approved CSO title.");
 
 const pngSignature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
-for (const [name, relative, expectedWidth, expectedHeight] of approvedPortraits) {
-  const publicPath = `/${relative}`;
-  if (!leadershipIndex.includes(publicPath)) fail(`Leadership index is not using the approved portrait for ${name}: ${publicPath}`);
-  const absolute = join(root, relative);
+for (const [name, master, publicBase, fallbackWidth] of approvedPortraits) {
+  const fallback = `${publicBase}-${fallbackWidth}.jpg`;
+  for (const extension of ["avif", "webp", "jpg"]) {
+    if (!leadershipIndex.includes(`${publicBase}-480.${extension}`)) fail(`Leadership index is missing the responsive ${extension.toUpperCase()} portrait for ${name}`);
+  }
+  if (!leadershipIndex.includes(fallback)) fail(`Leadership index is not using the approved portrait fallback for ${name}: ${fallback}`);
+  const absolute = join(root, master);
   let image;
   try {
     image = readFileSync(absolute);
   } catch (error) {
     if (error?.code === "ENOENT") {
-      fail(`Approved portrait is missing for ${name}: ${relative}`);
+      fail(`Approved portrait master is missing for ${name}: ${master}`);
       continue;
     }
-    fail(`Approved portrait is unreadable for ${name}: ${relative}`);
+    fail(`Approved portrait master is unreadable for ${name}: ${master}`);
     continue;
   }
   if (image.length < 24 || !image.subarray(0, 8).equals(pngSignature)) {
-    fail(`Approved portrait is not a valid PNG for ${name}: ${relative}`);
-    continue;
-  }
-  const width = image.readUInt32BE(16);
-  const height = image.readUInt32BE(20);
-  if (width !== expectedWidth || height !== expectedHeight) {
-    fail(`Approved portrait dimensions changed for ${name}: expected ${expectedWidth}x${expectedHeight}, found ${width}x${height}`);
+    fail(`Approved portrait master is not a valid PNG for ${name}: ${master}`);
   }
 }
 
-for (const portraitPath of approvedPortraits.map(([, relative]) => `/${relative}`)) {
+for (const portraitPath of approvedPortraits.map(([, , publicBase, fallbackWidth]) => `${publicBase}-${fallbackWidth}.jpg`)) {
   if (!cro.includes(portraitPath)) fail(`CRO leadership presentation is not using approved portrait: ${portraitPath}`);
 }
 if (!cro.includes(approvedLeadershipTitle)) fail(`CRO leadership presentation is missing Dr Girish's approved title: ${approvedLeadershipTitle}`);

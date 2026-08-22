@@ -9,7 +9,8 @@ test("shared foundation retains distinct property directions", () => {
 });
 
 test("tokens preserve controlled branding and usable interaction dimensions", () => {
-  assert.equal(designTokens.colour.novapharmRed, "#be3035");
+  assert.equal(designTokens.colour.novapharmRed, "#E3120B");
+  assert.equal(designTokens.colour.novapharmRedText, "#B30E09");
   assert.equal(designTokens.radius.card, "8px");
   assert.equal(designTokens.layout.touchTarget, "44px");
   assert.match(reducedMotionCss(), /prefers-reduced-motion/);

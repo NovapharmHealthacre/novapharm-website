@@ -1,27 +1,32 @@
 .presentation {
   min-height: 100%;
   --presentation-accent: #344b62;
+  --presentation-text-accent: #344b62;
   --presentation-soft: #f2f5f7;
   --presentation-rule: #d7dee8;
 }
 
 .presentation[data-module^="customer."] {
   --presentation-accent: #236b8e;
+  --presentation-text-accent: #236b8e;
   --presentation-soft: #f0f6f9;
 }
 
 .presentation[data-module^="employee."] {
   --presentation-accent: #426774;
+  --presentation-text-accent: #426774;
   --presentation-soft: #f1f5f6;
 }
 
 .presentation[data-module^="executive."] {
-  --presentation-accent: #b4232e;
+  --presentation-accent: #E3120B;
+  --presentation-text-accent: #B30E09;
   --presentation-soft: #fff5f5;
 }
 
 .presentation[data-module^="admin."] {
   --presentation-accent: #344b62;
+  --presentation-text-accent: #344b62;
   --presentation-soft: #f2f4f7;
 }
 
@@ -55,7 +60,7 @@
 }
 
 .presentation :global(.module-heading .eyebrow) {
-  color: var(--presentation-accent);
+  color: var(--presentation-text-accent);
 }
 
 .presentation :global(.module-heading h1) {
@@ -192,7 +197,7 @@
 }
 
 .regulated :global(.module-notice) {
-  border-left-color: #b4232e;
+  border-left-color: #E3120B;
   color: #54242a;
 }
 
@@ -206,12 +211,12 @@
 }
 
 .regulated :global(.available-actions) {
-  --presentation-accent: #b4232e;
+  --presentation-accent: #E3120B;
   background: #fff8f8;
 }
 
 .regulated :global(.data-section) {
-  border-top: 2px solid #b4232e;
+  border-top: 2px solid #E3120B;
 }
 
 .catalogue :global(.metric-grid) {

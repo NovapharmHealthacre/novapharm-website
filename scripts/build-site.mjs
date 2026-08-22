@@ -1,3 +1,4 @@
+await import("./materialize-leadership-media.mjs");
 await import("./build-pages.mjs");
 await import("./apply-visual-refinement.mjs");
 await import("./apply-module-media-sanity.mjs");

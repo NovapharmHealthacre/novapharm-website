@@ -7,8 +7,8 @@ export function Brand({ footer = false }: { readonly footer?: boolean }) {
       <Image
         src="/assets/brand/novapharm-healthcare-logo.svg"
         alt="NovaPharm Healthcare"
-        width={320}
-        height={40}
+        width={2048}
+        height={258}
         priority={!footer}
         unoptimized
       />

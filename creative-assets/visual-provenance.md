@@ -1,10 +1,12 @@
 # Visual Provenance
 
-Reviewed: 13 July 2026
+Reviewed: 13 August 2026
 
 ## Official identity
 
-`assets/brand/novapharm-healthcare-logo.svg` and `assets/brand/novapharm-healthcare-logo.png` are owner-supplied official masters. Repository validation pins their SHA-256 hashes. They were not redrawn, recoloured, cropped or passed through generative tooling.
+The owner supplied the 93-file `creative-assets/brand/novapharm-logo-asset-pack/` on 13 August 2026 as the authoritative NovaPharm Healthcare identity package. It preserves the four original source files, supplies path-based vector masters, normalises the official red to `#E3120B`, and includes purpose-specific web, favicon, PWA, Apple and social assets. The repository preserves this pack byte-for-byte outside public delivery and verifies its 92 registered checksums.
+
+`assets/brand/novapharm-healthcare-logo.svg` and `assets/brand/novapharm-healthcare-logo.png` are byte-identical deployment copies from that pack. The browser favicon and application marks use only the supplied small-format `N` or `N + arc` artwork; the repository has not independently redrawn or generated a substitute. The public site does not serve the original print masters, 8K source PNGs, native iconset or checksum archive.
 
 ## Leadership photography
 

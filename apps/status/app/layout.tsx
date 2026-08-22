@@ -8,8 +8,12 @@ export const metadata: Metadata = {
   applicationName: "NovaPharm Service Status",
   robots: { index: false, follow: false, noarchive: true },
   icons: {
-    icon: "/assets/brand/novapharm-healthcare-logo.svg",
-    apple: "/assets/brand/novapharm-healthcare-logo.png",
+    icon: [
+      { url: "/assets/brand/favicon.svg", type: "image/svg+xml" },
+      { url: "/assets/brand/favicon.ico", sizes: "any" },
+    ],
+    shortcut: "/assets/brand/favicon.ico",
+    apple: "/assets/brand/apple-touch-icon.png",
   },
 };
 

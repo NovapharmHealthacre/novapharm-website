@@ -67,8 +67,8 @@ function canonicalOrganization() {
       "@id": `${SITE_URL}/#logo`,
       url: logoUrl,
       contentUrl: logoUrl,
-      width: 3356,
-      height: 420,
+      width: 2048,
+      height: 258,
       caption: company.name
     },
     image: { "@id": `${SITE_URL}/#logo` },

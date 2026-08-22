@@ -1,0 +1,37 @@
+{
+  "version": "1.0.0",
+  "reviewed": "2026-08-20",
+  "deliveryCeilingBytes": 307200,
+  "portraits": [
+    {
+      "slug": "vishal-chakravarty",
+      "master": "creative-assets/leadership/approved-2026-08-17/vishal-chakravarty.png",
+      "masterSha256": "248451ddc51bed215d0b28f805d1129dbe4ba9b202d7e3e6b2a33bb31d5b2a08",
+      "outputBase": "assets/media/leadership/vishal-chakravarty",
+      "widths": [480, 800, 1200],
+      "width": 1200,
+      "height": 1200,
+      "alt": "Vishal Chakravarty, Chief Executive Officer of NovaPharm Healthcare"
+    },
+    {
+      "slug": "prabhakar-lahare",
+      "master": "creative-assets/leadership/approved-2026-08-17/prabhakar-vitthal-lahare.png",
+      "masterSha256": "23992b9dc44c5d8da0ef11826e84f8529b331f3b90cd316e8f778f5081b39b52",
+      "outputBase": "assets/media/leadership/prabhakar-lahare",
+      "widths": [480, 768, 960],
+      "width": 960,
+      "height": 1200,
+      "alt": "Prabhakar Vitthal Lahare, Chief Operating Officer of NovaPharm Healthcare"
+    },
+    {
+      "slug": "girish-achliya",
+      "master": "creative-assets/leadership/approved-2026-08-17/girish-shantilal-achliya.png",
+      "masterSha256": "58e866c777fdc7d7f228f64fe6771270b2e3e603687ac38164a0c2c19f3028cd",
+      "outputBase": "assets/media/leadership/girish-achliya",
+      "widths": [480, 768, 960],
+      "width": 960,
+      "height": 1200,
+      "alt": "Dr Girish Shantilal Achliya, Chief Scientific Officer of NovaPharm Healthcare"
+    }
+  ]
+}

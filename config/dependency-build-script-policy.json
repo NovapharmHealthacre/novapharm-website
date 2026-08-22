@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "1.0.0",
+  "approvedPackages": [
+    {
+      "packageName": "esbuild",
+      "version": "0.28.1",
+      "script": "postinstall",
+      "dependencyPath": "tsx development tooling",
+      "rationale": "Selects and verifies the lockfile-pinned platform binary required by the TypeScript execution tool used in repository validation."
+    },
+    {
+      "packageName": "protobufjs",
+      "version": "7.6.5",
+      "script": "postinstall",
+      "dependencyPath": "Azure Monitor OpenTelemetry through gRPC proto loading",
+      "rationale": "Writes the package's local version marker required by the lockfile-pinned telemetry dependency; it does not activate telemetry or contact a NovaPharm service."
+    },
+    {
+      "packageName": "sharp",
+      "version": "0.35.3",
+      "script": "install",
+      "dependencyPath": "governed image processing and validation",
+      "rationale": "Installs the lockfile-pinned image-processing binary used to create and validate responsive public media derivatives."
+    }
+  ]
+}

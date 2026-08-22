@@ -28,16 +28,19 @@ const focusAreas = [
     title: "Oncology & specialty",
     text: "Closer control of formulation, continuity and evidence.",
     href: "/oncology/",
+    linkLabel: "Explore oncology continuity",
   },
   {
     title: "Regulatory & quality",
     text: "Authorisation, QMS and vendor oversight before release.",
     href: "/regulatory-services/",
+    linkLabel: "Review regulatory services",
   },
   {
     title: "Technology & traceability",
     text: "Governed accounts, documents, evidence and decision history.",
     href: "/technology/",
+    linkLabel: "Explore technology controls",
   },
 ];
 
@@ -45,10 +48,22 @@ export function ConciseHomePage() {
   return (
     <>
       <section className="pharma-home-hero">
+        <div className="pharma-home-media" aria-hidden="true">
+          <Image
+            src="/assets/media/home/supply-network-hero.avif"
+            alt=""
+            fill
+            priority
+            fetchPriority="high"
+            sizes="100vw"
+            unoptimized
+          />
+        </div>
+        <div className="pharma-home-shade" aria-hidden="true" />
         <div className="shell pharma-home-grid">
           <div className="pharma-home-copy">
             <p className="pharma-kicker">NovaPharm Healthcare</p>
-            <h1>Pharmaceutical supply, built around evidence.</h1>
+            <h1>Medicine. Where it needs to be</h1>
             <p className="pharma-home-intro">Qualified sourcing, regulatory readiness and controlled B2B distribution planning.</p>
             <div className="action-row">
               <Link className="button button-primary" href="/about/">Explore NovaPharm <ArrowRight aria-hidden="true" size={17} /></Link>
@@ -56,9 +71,7 @@ export function ConciseHomePage() {
             </div>
             <p className="pharma-status"><ShieldCheck aria-hidden="true" size={16} /> Regulated wholesale supply has not commenced.</p>
           </div>
-          <div className="pharma-home-media">
-            <Image src="/assets/media/home/supply-network-hero.avif" alt="Pharmaceutical supply and quality operations" fill priority sizes="(max-width: 900px) 100vw, 50vw" />
-          </div>
+          <p className="pharma-media-boundary">Conceptual supply-chain visual. No NovaPharm facility, vehicle, inventory or current distribution activity is depicted.</p>
         </div>
       </section>
 
@@ -87,17 +100,19 @@ export function ConciseHomePage() {
         </div>
       </section>
 
-      <section className="section pharma-section pharma-focus-section">
+      <section className="pharma-focus-section">
+        <div className="pharma-focus-media" aria-hidden="true">
+          <Image src="/assets/media/stories/regulatory-batch-integrity.jpg" alt="" fill sizes="100vw" />
+        </div>
+        <div className="pharma-focus-shade" aria-hidden="true" />
         <div className="shell pharma-focus-layout">
-          <div className="pharma-focus-media">
-            <Image src="/assets/media/stories/regulatory-batch-integrity.jpg" alt="Controlled pharmaceutical packaging and traceability records" fill sizes="(max-width: 900px) 100vw, 48vw" />
-          </div>
           <div className="pharma-focus-copy">
-            <p className="pharma-kicker">Controlled growth</p>
-            <h2>Clarity before complexity.</h2>
-            <p>Operational, in development and externally gated remain visibly separate.</p>
+            <p className="pharma-kicker">Batch integrity</p>
+            <h2>Evidence travels with the batch.</h2>
+            <p>Clarity before complexity. Packaging, records and release status remain connected across each governed transaction.</p>
             <Link className="text-link" href="/trust-centre/">Review the evidence boundary <ArrowRight aria-hidden="true" size={16} /></Link>
           </div>
+          <p className="pharma-media-boundary">Representative traceability composition. It is not a NovaPharm facility, product or active batch record.</p>
         </div>
       </section>
 
@@ -112,7 +127,7 @@ export function ConciseHomePage() {
               <article key={item.title}>
                 <h3>{item.title}</h3>
                 <p>{item.text}</p>
-                <Link href={item.href}>Learn more <ArrowRight aria-hidden="true" size={15} /></Link>
+                <Link href={item.href}>{item.linkLabel} <ArrowRight aria-hidden="true" size={15} /></Link>
               </article>
             ))}
           </div>

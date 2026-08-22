@@ -5,7 +5,8 @@
   --soft: #f3f6f8;
   --white: #ffffff;
   --navy: #102336;
-  --red: #c83238;
+  --red: #E3120B;
+  --red-dark: #B30E09;
   --green: #17745a;
   --amber: #9a6315;
   --blue: #236b8e;
@@ -27,7 +28,7 @@ a { color: inherit; }
 .status-header img { display: block; width: 100%; height: auto; }
 .status-header > span { color: var(--muted); font-size: 0.82rem; font-weight: 750; text-transform: uppercase; }
 .status-hero { padding: clamp(54px, 8vw, 112px) clamp(20px, 10vw, 168px); color: var(--white); background: var(--navy); }
-.eyebrow { margin: 0 0 14px; color: var(--red); font-size: 0.74rem; font-weight: 800; text-transform: uppercase; }
+.eyebrow { margin: 0 0 14px; color: var(--red-dark); font-size: 0.74rem; font-weight: 800; text-transform: uppercase; }
 .status-hero .eyebrow { color: #ff858a; }
 .status-hero h1 { max-width: 18ch; margin: 0; font-size: clamp(2.35rem, 5vw, 5.4rem); line-height: 1.02; font-weight: 680; }
 .status-hero > p:not(.eyebrow) { max-width: 68ch; margin: 24px 0 0; color: #d9e3eb; font-size: 1.04rem; line-height: 1.7; }
@@ -53,7 +54,7 @@ a { color: inherit; }
 .state-dot.state-operational { background: var(--green); }
 .state-degraded, .state-configuration { color: var(--amber); }
 .state-dot.state-degraded, .state-dot.state-configuration { background: var(--amber); }
-.state-unavailable { color: var(--red); }
+.state-unavailable { color: var(--red-dark); }
 .state-dot.state-unavailable { background: var(--red); }
 .state-label { font-size: 0.78rem; }
 .service-row > a { justify-self: start; color: var(--blue); font-size: 0.78rem; font-weight: 750; }

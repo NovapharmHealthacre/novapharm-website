@@ -76,7 +76,7 @@ a:hover { color: var(--brand-2); }
 
 .section-kicker {
   margin-bottom: var(--space-3);
-  color: var(--brand);
+  color: var(--brand-text);
   font-size: 12px;
   font-weight: 800;
 }

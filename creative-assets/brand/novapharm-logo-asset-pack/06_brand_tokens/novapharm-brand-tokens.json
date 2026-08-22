@@ -1,0 +1,17 @@
+{
+  "brand": "NovaPharm Healthcare",
+  "primary": {
+    "name": "Economist Red",
+    "hex": "#E3120B",
+    "rgb": [
+      227,
+      18,
+      11
+    ]
+  },
+  "neutral": {
+    "white": "#FFFFFF",
+    "black": "#000000",
+    "nearBlack": "#111111"
+  }
+}

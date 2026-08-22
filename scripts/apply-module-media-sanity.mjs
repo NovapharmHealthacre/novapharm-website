@@ -5,6 +5,7 @@ const root = resolve(process.cwd());
 const read = (path) => readFileSync(join(root, path), "utf8");
 const write = (path, value) => writeFileSync(join(root, path), value);
 const config = JSON.parse(read("config/module-art-direction.json"));
+const leadershipConfig = JSON.parse(read("config/leadership-media.json"));
 const licensedImageRegister = JSON.parse(read("creative-assets/image-asset-register.json"));
 const assets = new Map(config.assets.map((asset) => [asset.id, asset]));
 
@@ -35,8 +36,14 @@ function replaceRange(html, start, end, replacement, label) {
   return `${html.slice(0, from)}${replacement}${html.slice(to)}`;
 }
 
-function moduleOverlay(kind, eyebrow, items) {
-  return `<div class="module-signal module-signal-${esc(kind)}" aria-hidden="true"><span class="module-signal-eyebrow">${esc(eyebrow)}</span>${items.map((item, index) => `<i><b>${String(index + 1).padStart(2, "0")}</b>${esc(item)}</i>`).join("")}</div>`;
+function moduleOverlay(kind, eyebrow, items, disclosure = "") {
+  const attributes = disclosure
+    ? `role="note" aria-label="${esc(`${eyebrow} visual context`)}"`
+    : 'aria-hidden="true"';
+  const disclosureMarkup = disclosure
+    ? `<p class="module-signal-disclosure">${esc(disclosure)}</p>`
+    : "";
+  return `<div class="module-signal module-signal-${esc(kind)}" ${attributes}><span class="module-signal-eyebrow">${esc(eyebrow)}</span>${disclosureMarkup}${items.map((item, index) => `<i><b>${String(index + 1).padStart(2, "0")}</b>${esc(item)}</i>`).join("")}</div>`;
 }
 
 function picture(asset, { alt = asset.alt, className = "", loading = "lazy", priority = false, sizes = "100vw" } = {}) {
@@ -47,16 +54,18 @@ function picture(asset, { alt = asset.alt, className = "", loading = "lazy", pri
 function moduleMedia(module, asset, className = "module-hero-media") {
   const isHero = className === "module-hero-media";
   const media = `<div class="${className} module-photo-${module.id}" data-media-role="${isHero ? "hero" : "secondary"}">${picture(asset, { priority: isHero })}${isHero ? "" : moduleOverlay(module.id, module.label, module.signals)}</div>`;
-  return isHero ? `${media}${moduleOverlay(module.id, module.label, module.signals)}` : media;
+  return isHero ? `${media}${moduleOverlay(module.id, module.label, module.signals, asset.caption)}` : media;
 }
 
 function leadershipMedia(module) {
-  const portraits = [
-    ["/assets/vishalchakravarty.png", "Vishal Chakravarty", 1200, 1200],
-    ["/assets/prabhakarvitthallahare.png", "Prabhakar Vitthal Lahare", 960, 1200],
-    ["/assets/girishshantilalachliya.png", "Dr Girish Shantilal Achliya", 960, 1200]
-  ];
-  return `<div class="module-hero-media module-portrait-composition" data-media-role="hero" aria-label="Approved NovaPharm leadership portraits">${portraits.map(([src, name, width, height]) => `<img src="${src}" alt="${name}" width="${width}" height="${height}" loading="eager" decoding="async">`).join("")}</div>${moduleOverlay(module.id, module.label, module.signals)}`;
+  const sizes = "(max-width: 720px) 31vw, 24vw";
+  const portraits = leadershipConfig.portraits.map((portrait) => {
+    const base = `/${portrait.outputBase}`;
+    const sourceSet = (extension) => portrait.widths.map((width) => `${base}-${width}.${extension} ${width}w`).join(", ");
+    const fallbackWidth = portrait.widths.at(-1);
+    return `<picture><source srcset="${sourceSet("avif")}" sizes="${sizes}" type="image/avif"><source srcset="${sourceSet("webp")}" sizes="${sizes}" type="image/webp"><img src="${base}-${fallbackWidth}.jpg" srcset="${sourceSet("jpg")}" sizes="${sizes}" alt="${esc(portrait.alt)}" width="${portrait.width}" height="${portrait.height}" loading="eager" decoding="async"></picture>`;
+  });
+  return `<div class="module-hero-media module-portrait-composition" data-media-role="hero" aria-label="Approved NovaPharm leadership portraits">${portraits.join("")}</div>${moduleOverlay(module.id, module.label, module.signals)}`;
 }
 
 function writeFocalPointCss() {

@@ -18,6 +18,10 @@ function forbids(source, pattern, message) {
 requires(stagingParameters, /^using '\.\.\/unified-estate\.bicep'$/mu, "Staging must use the governed unified estate template.");
 requires(stagingParameters, /^param environmentCode = 'stg'$/mu, "Staging must use the isolated stg environment code.");
 requires(stagingParameters, /^param sqlAutoPauseDelay = 60$/mu, "Staging SQL must retain cost-bounded auto-pause.");
+requires(stagingParameters, /^param publicAppServiceSkuName = 'P0v4'$/mu, "Staging public applications must use the family-eligible P0v4 SKU.");
+requires(stagingParameters, /^param publicAppServiceSkuTier = 'PremiumV4'$/mu, "Staging public applications must use the PremiumV4 tier.");
+requires(stagingParameters, /^param secureAppServiceSkuName = 'P0v4'$/mu, "Staging portal and API must use the family-eligible P0v4 SKU.");
+requires(stagingParameters, /^param secureAppServiceSkuTier = 'PremiumV4'$/mu, "Staging portal and API must use the PremiumV4 tier.");
 requires(stagingParameters, /^param deployCandidateSlots = false$/mu, "Staging must not create production-style candidate slots.");
 requires(stagingParameters, /^param enablePrivateNetworking = true$/mu, "Staging must keep the private data plane enabled.");
 requires(stagingParameters, /^param enableEntraAuthentication = bool\(readEnvironmentVariable\('NOVAPHARM_ENABLE_ENTRA_AUTH', 'false'\)\)$/mu, "Staging Entra activation must remain an explicit environment/owner decision.");
@@ -34,6 +38,10 @@ forbids(stagingParameters, /(?:SESSION_SECRET|PORTAL_GATEWAY_SECRET|ENTRA_CLIENT
 
 requires(productionParameters, /^param environmentCode = 'prod'$/mu, "Production parameter profile must remain separately identifiable.");
 requires(productionParameters, /^param sqlAutoPauseDelay = -1$/mu, "Production SQL must retain its distinct non-auto-pause setting.");
+requires(productionParameters, /^param publicAppServiceSkuName = 'P0v4'$/mu, "Production public applications must use the family-eligible P0v4 SKU.");
+requires(productionParameters, /^param publicAppServiceSkuTier = 'PremiumV4'$/mu, "Production public applications must use the PremiumV4 tier.");
+requires(productionParameters, /^param secureAppServiceSkuName = 'P0v4'$/mu, "Production portal and API must use the family-eligible P0v4 SKU.");
+requires(productionParameters, /^param secureAppServiceSkuTier = 'PremiumV4'$/mu, "Production portal and API must use the PremiumV4 tier.");
 requires(productionParameters, /^param deployCandidateSlots = true$/mu, "Production must retain candidate-slot isolation.");
 requires(productionParameters, /^param enableEdgeCustomDomains = true$/mu, "Production custom domains must remain a production-only parameter decision.");
 
@@ -50,10 +58,12 @@ requires(deployWorkflow, /Azure deployment what-if/u, "Every controlled deployme
 requires(deployWorkflow, /test "\$\(git rev-parse HEAD\)" = "\$EXPECTED_SHA"/u, "Deployment must enforce the reviewed immutable source SHA.");
 requires(deployWorkflow, /No DNS, domain binding, slot swap, SharePoint permission or GitHub Pages change was performed\./u, "Deployment evidence must preserve the no-cutover truth boundary.");
 
-requires(acceptance, /Status: repository contract accepted; Azure what-if, provisioning and managed-environment acceptance pending/iu, "The acceptance pack must state that managed-environment acceptance is still pending.");
+requires(acceptance, /Status: repository contract accepted; P0v4 family eligible; aggregate App Service capacity externally blocked/iu, "The acceptance pack must state the family and aggregate capacity boundary.");
 requires(acceptance, /The following are not complete and must not be inferred from repository acceptance:/iu, "The acceptance pack must explicitly separate repository proof from unresolved managed-environment gates.");
-requires(acceptance, /owner-approved Azure subscription, region and cost estimate/iu, "Managed staging must remain cost/owner gated.");
-requires(acceptance, /GitHub OIDC registration and protected environments/iu, "Managed staging must require real OIDC/protected environments.");
+requires(acceptance, /Microsoft-enabled UK South `Total Regional VMs` capacity followed by a successful exact-SHA staging what-if using the P0v4 plan/iu, "Managed staging must retain aggregate-capacity and exact-SHA Azure validation gates.");
+requires(acceptance, /Exact-SHA P0v4 what-if run `32379031523` failed before creation because `Total Regional VMs` had limit `0`, usage `0`/iu, "The acceptance pack must preserve the current exact-SHA aggregate quota evidence.");
+requires(acceptance, /explicit review of the recurring staging and production cost before provisioning/iu, "Managed staging must remain cost/owner gated.");
+requires(acceptance, /Deployment identity[^\n]*separate `azure-staging` and `azure-production` federated credentials/iu, "The acceptance pack must preserve verified OIDC environment separation.");
 requires(acceptance, /Entra workforce and External ID registrations, groups, app roles and MFA evidence/iu, "Managed staging must retain real identity acceptance as a named gate.");
 requires(acceptance, /Azure SQL contained users, migration, reconciliation, backup and isolated restore/iu, "Managed staging must retain isolated restore evidence as a gate.");
 requires(acceptance, /Graph `Sites.Selected` consent and owner-approved SharePoint permissions/iu, "Managed staging must retain least-privilege Microsoft Graph acceptance.");
@@ -67,6 +77,8 @@ console.log(JSON.stringify({
   sqlAutoPauseDelayMinutes: 60,
   candidateSlots: false,
   privateNetworking: true,
+  appServiceSku: "P0v4",
+  appServiceTier: "PremiumV4",
   automaticDeploymentTriggers: false,
   exactShaRequired: true,
   oidcRequired: true,

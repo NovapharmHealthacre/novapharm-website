@@ -35,6 +35,7 @@
   .page-hero h1 { font-size: 50px; }
   .page-hero-signal { display: none; }
   .leader-card-copy { padding: 40px; }
+  .service-detail h2 { font-size: 32px; }
   .architecture-layer { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .focus-section::after { width: 70%; opacity: 0.14; }
   .portal-sidebar { width: auto; }

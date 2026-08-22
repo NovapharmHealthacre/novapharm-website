@@ -1,5 +1,7 @@
 # NovaPharm Unified Digital Estate - Current-State Audit
 
+> Historical baseline notice: this document begins with the pre-migration audit and then records programme progress. For the current post-PR53/PR56 SHA, GitHub, workflow, route and deployment truth, use `docs/programme/post-pr53-current-truth.md`. Stale Draft PR 16 or earlier SHA references below are historical evidence, not the current release state.
+
 Status: evidence baseline complete
 Audit date: 30 July 2026
 Master specification SHA-256: `e541b85b0a03ef9b54e8aa96b5380f49fe232774a3d531abcaad880071c60c32`

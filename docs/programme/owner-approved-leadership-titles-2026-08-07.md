@@ -6,6 +6,8 @@ Document owner: NovaPharm Healthcare board
 Review due: 7 November 2026
 Approval-source SHA-256: `1a60fe106a0b6e4c70548dabc870bbea78cd2e66b44cde3dabc8fdd312455e7a`
 
+Historical status: the Dr Girish title in this 7 August record was superseded by the owner-approved 17 August 2026 decision recorded in `owner-approved-leadership-title-girish-cso-2026-08-17.md`. All other title decisions in this record remain current unless separately superseded.
+
 ## Approved Current Titles
 
 | Person | Canonical current executive title | Separate governance or regulated fact | Publication decision |

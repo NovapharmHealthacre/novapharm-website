@@ -17,5 +17,7 @@ minimumReleaseAgeExclude:
   - '@azure/monitor-opentelemetry@1.19.0'
   - postcss@8.5.25
 
-onlyBuiltDependencies:
-  - "sharp"
+allowBuilds:
+  esbuild@0.28.1: true
+  protobufjs@7.6.5: true
+  sharp@0.35.3: true

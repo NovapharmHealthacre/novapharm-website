@@ -55,6 +55,49 @@ function validateLicences() {
   };
 }
 
+function validateDependencyBuildScripts() {
+  const policy = readJson("config/dependency-build-script-policy.json");
+  assert.equal(policy.schemaVersion, "1.0.0", "Dependency build-script policy schema is unsupported.");
+  assert.ok(Array.isArray(policy.approvedPackages), "Dependency build-script policy must contain approvedPackages.");
+
+  const approved = policy.approvedPackages.map((entry) => {
+    assert.match(entry.packageName, /^[a-z0-9@/._-]+$/u, "Approved build-script package name is invalid.");
+    assert.match(entry.version, /^\d+\.\d+\.\d+(?:[-+][a-z0-9.-]+)?$/iu, `${entry.packageName} must have an exact approved version.`);
+    assert.ok(String(entry.script).trim().length > 0, `${entry.packageName} must name the approved lifecycle script.`);
+    assert.ok(String(entry.dependencyPath).trim().length >= 12, `${entry.packageName} must record its dependency path.`);
+    assert.ok(String(entry.rationale).trim().length >= 40, `${entry.packageName} must record a substantive approval rationale.`);
+    return { packageName: entry.packageName, version: entry.version };
+  });
+  const approvedNames = approved.map((entry) => entry.packageName);
+  const approvedMatchers = approved.map((entry) => `${entry.packageName}@${entry.version}`);
+  assert.equal(new Set(approvedNames).size, approvedNames.length, "Dependency build-script policy contains duplicate packages.");
+  assert.deepEqual(approvedNames, [...approvedNames].sort(), "Dependency build-script approvals must remain alphabetically ordered.");
+
+  const workspace = readFileSync(join(root, "pnpm-workspace.yaml"), "utf8");
+  const block = workspace.match(/^allowBuilds:\n((?:  [^:\n]+:\s+(?:true|false)\n?)+)/mu);
+  assert.ok(block, "pnpm-workspace.yaml must contain a bounded allowBuilds map.");
+  const workspaceApprovals = [...block[1].matchAll(/^  ([^:\n]+):\s+(true|false)$/gmu)].map((match) => ({
+    matcher: match[1],
+    allowed: match[2] === "true",
+  }));
+  assert.deepEqual(
+    workspaceApprovals,
+    approvedMatchers.map((matcher) => ({ matcher, allowed: true })),
+    "pnpm lifecycle-script allowBuilds map differs from the exact-version governed policy.",
+  );
+  assert.doesNotMatch(workspace, /dangerouslyAllowAllBuilds:\s*true/u, "Pnpm must never permit every dependency build script.");
+  assert.doesNotMatch(workspace, /^onlyBuiltDependencies:/mu, "Removed pnpm v10 build-script settings must not return.");
+
+  const lockfile = readFileSync(join(root, "pnpm-lock.yaml"), "utf8");
+  for (const entry of approved) {
+    assert.ok(
+      lockfile.includes(`  ${entry.packageName}@${entry.version}:`),
+      `${entry.packageName}@${entry.version} is approved for lifecycle scripts but absent from the pnpm lockfile.`,
+    );
+  }
+  return { approvedPackages: approved.length, exactVersionMatchers: approvedMatchers.length };
+}
+
 function validateReleaseGovernance() {
   const changelog = readFileSync(join(root, "CHANGELOG.md"), "utf8");
   assert.match(changelog, /^# Changelog$/mu);
@@ -91,5 +134,6 @@ function validateReleaseGovernance() {
 
 const workflow = validateWorkflowPins();
 const licences = validateLicences();
+const buildScripts = validateDependencyBuildScripts();
 const release = validateReleaseGovernance();
-console.log(`Supply-chain governance validated: ${workflow.remoteActionCount} immutable action references across ${workflow.workflowFiles} workflows, ${licences.packages} dependency licence records (${licences.expressions.length} approved expressions), and ${release.changesets} changeset across ${release.workspacePackages} workspace packages.`);
+console.log(`Supply-chain governance validated: ${workflow.remoteActionCount} immutable action references across ${workflow.workflowFiles} workflows, ${licences.packages} dependency licence records (${licences.expressions.length} approved expressions), ${buildScripts.approvedPackages} approved dependency build scripts, and ${release.changesets} changeset across ${release.workspacePackages} workspace packages.`);

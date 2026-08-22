@@ -58,11 +58,10 @@ function removePublicAi(html) {
     .replace(/\s*<a\b[^>]*href="\/search\/"[^>]*>[\s\S]*?<\/a>/g, "");
 }
 
-function refreshCroLeadershipPortraits(html, relativePath) {
-  if (relativePath !== "cro/index.html") return html;
-  return html
-    .replace(/<picture><source srcset="\/assets\/media\/cro\/leadership\/vishal-chakravarty-480\.avif[\s\S]*?<\/picture>/, '<img src="/assets/vishalchakravarty.png" alt="Vishal Chakravarty, Chief Executive Officer of NovaPharm Healthcare" width="1200" height="1200" loading="lazy" decoding="async">')
-    .replace(/<picture><source srcset="\/assets\/media\/cro\/leadership\/girish-achliya-480\.avif[\s\S]*?<\/picture>/, '<img src="/assets/girishshantilalachliya.png" alt="Dr Girish Shantilal Achliya, Chief Scientific Officer of NovaPharm Healthcare" width="960" height="1200" loading="lazy" decoding="async">');
+function responsiveLeadershipPicture({ base, widths, width, height, alt }) {
+  const sizes = "(max-width: 720px) 92vw, (max-width: 1080px) 44vw, 390px";
+  const sourceSet = (extension) => widths.map((candidate) => `${base}-${candidate}.${extension} ${candidate}w`).join(", ");
+  return `<picture><source srcset="${sourceSet("avif")}" sizes="${sizes}" type="image/avif"><source srcset="${sourceSet("webp")}" sizes="${sizes}" type="image/webp"><img src="${base}-${widths.at(-1)}.jpg" srcset="${sourceSet("jpg")}" sizes="${sizes}" alt="${alt}" width="${width}" height="${height}" loading="lazy" decoding="async"></picture>`;
 }
 
 function correctAccessibleRoles(html, relativePath) {
@@ -105,7 +104,14 @@ function filterGeneratedRouteRegisters() {
   }
 }
 
-const prabhakarCard = `<a class="cro-leader" href="/leadership/prabhakar-lahare/"><div class="cro-leader-media"><img src="/assets/prabhakarvitthallahare.png" alt="Prabhakar Vitthal Lahare, Chief Operating Officer of NovaPharm Healthcare" width="960" height="1200" loading="lazy" decoding="async"></div><div><span>Chief Operating Officer</span><h3>Prabhakar Vitthal Lahare</h3><p>Connects operating strategy, manufacturing partnerships, quality governance and supply continuity to controlled programme execution.</p><strong>View verified profile</strong></div></a>`;
+const prabhakarPortrait = responsiveLeadershipPicture({
+  base: "/assets/media/leadership/prabhakar-lahare",
+  widths: [480, 768, 960],
+  width: 960,
+  height: 1200,
+  alt: "Prabhakar Vitthal Lahare, Chief Operating Officer of NovaPharm Healthcare"
+});
+const prabhakarCard = `<a class="cro-leader" href="/leadership/prabhakar-lahare/"><div class="cro-leader-media">${prabhakarPortrait}</div><div><span>Chief Operating Officer</span><h3>Prabhakar Vitthal Lahare</h3><p>Connects operating strategy, manufacturing partnerships, quality governance and supply continuity to controlled programme execution.</p><strong>View verified profile</strong></div></a>`;
 
 const oncologyGallery = `<section class="section oncology-editorial-gallery" data-reveal><div class="container"><div class="section-head"><span class="section-kicker">Oncology operating contexts</span><h2>Product, formulation and controlled handling must be read together.</h2><p>Original Oncology-specific editorial visuals connect product pathways, accountable evidence handovers and condition-sensitive custody.</p></div><div class="oncology-editorial-grid"><figure><img src="/assets/media/oncology/oncology-formulation-pathways.svg" alt="Abstract oncology formulation pathways connecting vial, liquid and specialist presentations" width="1600" height="900" loading="lazy" decoding="async"><figcaption>Formulation and presentation pathways</figcaption></figure><figure><img src="/assets/media/oncology/oncology-evidence-continuity.svg" alt="Abstract controlled records and decision gates across an oncology programme" width="1600" height="900" loading="lazy" decoding="async"><figcaption>Programme evidence continuity</figcaption></figure><figure><img src="/assets/media/oncology/oncology-condition-control.svg" alt="Abstract specialist packaging, temperature evidence and custody checkpoints" width="1600" height="900" loading="lazy" decoding="async"><figcaption>Condition and custody control</figcaption></figure></div></div></section>`;
 
@@ -129,7 +135,6 @@ for (const file of walkHtml(root)) {
       html = `${html.slice(0, index)}${oncologyGallery}${html.slice(index)}`;
     }
 
-    html = refreshCroLeadershipPortraits(html, file.relative);
     return correctAccessibleRoles(html, file.relative);
   });
 }

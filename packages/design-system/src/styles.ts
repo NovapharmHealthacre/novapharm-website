@@ -43,7 +43,7 @@ export const designSystemCss = String.raw`
 .np-data-table .np-numeric{text-align:right;font-variant-numeric:tabular-nums}
 .np-timeline{counter-reset:step;list-style:none;padding:0;margin:0}
 .np-timeline li{display:grid;grid-template-columns:3rem 1fr;gap:1rem;padding-block:1.25rem;border-top:1px solid #d8dde4}
-.np-timeline__index{font-variant-numeric:tabular-nums;color:#be3035;font-weight:700}
+.np-timeline__index{font-variant-numeric:tabular-nums;color:#B30E09;font-weight:700}
 .np-field,.np-search,.np-file-upload{min-width:0;display:grid;gap:.5rem}
 .np-field__hint{color:#667085;margin:0}
 .np-field__error{color:#9f1239;font-weight:650}
@@ -54,26 +54,26 @@ export const designSystemCss = String.raw`
 .np-drawer>header,.np-document-viewer>header,.np-portal-controls{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
 .np-tabs [role=tablist]{display:flex;overflow:auto;border-bottom:1px solid #d8dde4}
 .np-tabs [role=tab]{min-height:44px;border:0;border-bottom:3px solid transparent;background:transparent;padding:.75rem 1rem}
-.np-tabs [role=tab][aria-selected=true]{border-color:#be3035}
+.np-tabs [role=tab][aria-selected=true]{border-color:#E3120B}
 .np-tabs [role=tabpanel]{padding-block:1.5rem}
 .np-search input,.np-field input,.np-field select,.np-field textarea,.np-file-upload input{width:100%;max-width:100%;min-height:44px;border:1px solid #98a2b3;border-radius:4px;padding:.7rem .8rem;font:inherit}
 .np-filters{border:0;padding:0}
 .np-state{border-inline-start:4px solid #667085;padding:1rem 1.25rem;background:#f8fafc}
-.np-state--error{border-color:#be3035}
+.np-state--error{border-color:#E3120B}
 .np-state--loading{border-color:#0b69ff}
 .np-portal-controls{padding-bottom:1.5rem;border-bottom:1px solid #d8dde4}
 .np-file-upload{border:1px dashed #98a2b3;padding:1.25rem}
 .np-status{display:inline-flex;align-items:center;min-height:1.75rem;padding:.2rem .55rem;border:1px solid #98a2b3;border-radius:4px;font-weight:650}
 .np-status--positive{border-color:#267a54;color:#175c3d}
 .np-status--warning{border-color:#9a6700;color:#7a4f00}
-.np-status--critical{border-color:#be3035;color:#9f1239}
+.np-status--critical{border-color:#E3120B;color:#9f1239}
 .np-audit-history{list-style:none;padding:0}
 .np-audit-history li{padding:1rem 0;border-bottom:1px solid #d8dde4}
 .np-audit-history time{font-variant-numeric:tabular-nums;color:#667085}
 .np-document-viewer__content{min-height:24rem;margin-top:1.5rem;border-top:1px solid #d8dde4;padding-top:1.5rem}
 .np-form{min-width:0;display:grid;gap:1.25rem}
 .np-button{min-height:44px;border-radius:4px;padding:.65rem 1rem;font:inherit;font-weight:700;border:1px solid transparent}
-.np-button--primary{background:#be3035;color:#fff}
+.np-button--primary{background:#E3120B;color:#fff}
 .np-button--secondary{background:#fff;color:#0d1b2a;border-color:#667085}
 .np-button--danger{background:#9f1239;color:#fff}
 :where(.np-button,.np-navigation a,.np-tabs button,input,select,textarea,summary):focus-visible{outline:3px solid #0b69ff;outline-offset:3px}

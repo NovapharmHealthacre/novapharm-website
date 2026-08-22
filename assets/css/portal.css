@@ -78,7 +78,7 @@
   border-bottom: 1px solid var(--line);
 }
 .portal-topbar h1 { font-family: var(--serif); font-size: 38px; font-weight: 560; }
-.portal-topbar .eyebrow { color: var(--brand); }
+.portal-topbar .eyebrow { color: var(--brand-text); }
 .portal-main .metric-row { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
 
 .portal-title { min-width: 0; }
@@ -156,9 +156,10 @@
 
 .metric strong {
   font-family: var(--serif);
-  font-size: 34px;
+  font-size: clamp(24px, 2vw, 34px);
   font-weight: 560;
-  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .executive-index .grid { border-top: 1px solid var(--line); border-left: 1px solid var(--line); gap: 0; }

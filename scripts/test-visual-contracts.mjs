@@ -14,11 +14,23 @@ assert.doesNotMatch(cssEntrypoint, /ai-search\.css/, "the retired public AI styl
 
 const publicCss = text("assets/css/apple-pharma-public.css");
 const bundleCss = text("assets/css/novapharm.bundle.css");
-assert.match(publicCss, /--apple-pharma-public-contract:\s*2/);
+const tokenCss = text("assets/css/tokens.css");
+const baseCss = text("assets/css/base.css");
+const portalCss = text("assets/css/portal.css");
+assert.match(publicCss, /--apple-pharma-public-contract:\s*3/);
 assert.match(publicCss, /body\[data-page="home"\]/);
 assert.match(publicCss, /-apple-system, BlinkMacSystemFont/);
 assert.match(publicCss, /@media \(prefers-reduced-motion: reduce\)/);
-assert.match(bundleCss, /--apple-pharma-public-contract:\s*2/);
+assert.match(bundleCss, /--apple-pharma-public-contract:\s*3/);
+assert.match(tokenCss, /--brand:\s*#E3120B;/, "the canonical identity red must remain Economist Red");
+assert.match(tokenCss, /--brand-text:\s*#B30E09;/, "small red foreground text needs the governed contrast-safe derivative");
+for (const selector of ["section-kicker", "status-label", "text-link", "editorial-index"]) {
+  assert.match(baseCss, new RegExp(`\\.${selector}[\\s\\S]{0,260}color:\\s*var\\(--brand-text\\)`), `${selector} must not use identity red as small foreground text`);
+}
+assert.match(portalCss, /\.portal-topbar \.eyebrow\s*\{\s*color:\s*var\(--brand-text\);\s*\}/);
+assert.match(baseCss, /\.status-pill\s*\{[\s\S]{0,180}column-gap:\s*0\.25em;/, "identity badges must preserve visual separation between their label and value");
+assert.match(portalCss, /\.metric strong\s*\{[\s\S]{0,260}font-size:\s*clamp\(24px, 2vw, 34px\);[\s\S]{0,180}white-space:\s*nowrap;/, "portal metric values must fit on one intentional line");
+assert.match(text("assets/css/cro.css"), /\.cro-decision-questions button > span\s*\{\s*color:\s*var\(--brand-text\);/);
 for (const forbiddenGlobal of [
   /\n\.section,\n/,
   /\n\.page-hero,\n/,
@@ -36,16 +48,30 @@ assert.match(home, /Medicine\. Where it needs to be/);
 assert.match(home, /class="pharma-home-hero"/);
 assert.match(home, /class="container pharma-home-grid"/);
 assert.match(home, /class="pharma-home-media"/);
+assert.match(home, /class="pharma-home-shade"/);
 assert.match(home, /supply-network-hero\.avif/);
 assert.match(home, /supply-network-hero\.jpg/);
+assert.match(home, /Conceptual supply-chain visual\. No NovaPharm facility, vehicle, inventory or current distribution activity is depicted\./);
 assert.match(home, /class="[^"]*\bpharma-principles-grid\b[^"]*"/);
 assert.equal((home.match(/<span>Qualified sourcing<\/span>|<span>Regulatory discipline<\/span>|<span>Quality-led decisions<\/span>/g) || []).length, 3, "homepage must expose three operating principles");
 assert.match(home, /Three routes\. One standard\./);
 assert.equal((home.match(/<div class="pharma-pillar-grid">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) || []).length, 3, "homepage must present three sourcing routes");
 assert.match(home, /regulatory-batch-integrity\.jpg/);
+assert.match(home, /Evidence travels with the batch\./);
 assert.match(home, /Clarity before complexity\./);
+assert.match(home, /Representative traceability composition\. It is not a NovaPharm facility, product or active batch record\./);
 assert.match(home, /Specialist work\. Less noise\./);
 assert.equal((home.match(/<div class="pharma-focus-grid">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) || []).length, 3, "homepage must present three specialist focus pathways");
+for (const label of ["Explore oncology continuity", "Review regulatory services", "Explore technology controls"]) assert.match(home, new RegExp(label));
+assert.doesNotMatch(home, />Learn more(?:\s|&nbsp;|→|<)/, "homepage links must name their destination");
+const conciseHomeComponent = text("apps/corporate/components/concise-home.tsx");
+assert.doesNotMatch(conciseHomeComponent, />Learn more\s*</, "the Next.js homepage must not regress to generic link text");
+assert.match(conciseHomeComponent, /\{item\.linkLabel\}/);
+const corporateGlobals = text("apps/corporate/app/globals.css");
+assert.match(corporateGlobals, /\.final-cta \.eyebrow \{ color: var\(--white\); \}/, "the final CTA eyebrow must retain accessible contrast on the canonical red field");
+const corporateApplePharma = text("apps/corporate/app/apple-pharma.css");
+assert.match(corporateApplePharma, /\.eyebrow \{\s+color: var\(--pharma-red-dark\);/, "small corporate eyebrow text must use the accessible foreground red");
+assert.match(corporateApplePharma, /\.pharma-kicker \{\s+color: var\(--pharma-red\);/, "the branded homepage kicker may retain the canonical identity red");
 assert.match(home, /Regulated wholesale supply has not commenced\./);
 assert.match(home, /Owner-attested logistics and warehousing arrangements with Polar Speed are being incorporated into NovaPharm's operating model/);
 assert.match(home, /The relationship does not transfer Polar Speed's authorisations or certificates to NovaPharm/);
@@ -54,6 +80,7 @@ assert.doesNotMatch(home, /data-ai-search-open|nav-search|ai-search-dialog/);
 
 const services = text("services/index.html");
 assert.match(services, /class="service-visual-story"/);
+assert.match(services, /class="module-signal-disclosure"/);
 assert.match(services, /class="service-evidence-grid"/);
 assert.match(services, /services-launch-readiness\.jpg/);
 assert.match(services, /module-signal-services/);
@@ -62,6 +89,7 @@ assert.doesNotMatch(services, /assets\/media\/products\//);
 
 const regulatory = text("regulatory-services/index.html");
 assert.match(regulatory, /class="container regulatory-stage-grid"/);
+assert.match(regulatory, /class="module-signal-disclosure"/);
 assert.match(regulatory, /regulatory-dossier-control/);
 assert.match(regulatory, /\/assets\/media\/modules\/regulatory-dossier-control\.avif/);
 assert.match(regulatory, /\/assets\/media\/modules\/regulatory-dossier-control\.webp/);
@@ -80,6 +108,7 @@ assert.doesNotMatch(partners, /partnership-pathway\.svg/);
 assert.doesNotMatch(partners, /assets\/media\/products\//);
 
 const technology = text("technology/index.html");
+assert.match(technology, /class="module-signal-disclosure"/);
 for (const marker of ["technology-evidence-grid", "architecture-map-photographic", "Live capabilities", "In development capabilities", "Planned capabilities"]) assert.match(technology, new RegExp(marker));
 assert.match(technology, /technology-control-architecture\.jpg/);
 assert.match(technology, /module-signal-technology/);
@@ -92,8 +121,8 @@ assert.equal((cro.match(/data-cro-stage="\d+"/g) || []).length, 8, "CRO navigato
 assert.equal((cro.match(/class="cro-lane cro-lane-/g) || []).length, 3, "CRO delivery architecture must expose three responsibility lanes");
 assert.match(cro, /cro-evidence-architecture-640\.avif 640w/);
 assert.match(cro, /cro-delivery-architecture-640\.webp 640w/);
-for (const portrait of ["vishalchakravarty.png", "girishshantilalachliya.png", "prabhakarvitthallahare.png"]) {
-  assert.match(cro, new RegExp(portrait.replace(".", "\\.")), `CRO must use approved portrait ${portrait}`);
+for (const portrait of ["vishal-chakravarty-1200.jpg", "girish-achliya-960.jpg", "prabhakar-lahare-960.jpg"]) {
+  assert.match(cro, new RegExp(portrait.replace(".", "\\.")), `CRO must use approved responsive portrait ${portrait}`);
 }
 assert.match(cro, /Chief Scientific Officer/);
 assert.doesNotMatch(cro, /Chief Technical Director/);
@@ -123,7 +152,8 @@ for (const retired of ["technology/ai-governance/index.html", "search/index.html
 
 const leadership = text("leadership/index.html");
 assert.match(leadership, /module-portrait-composition/);
-for (const portrait of ["vishalchakravarty.png", "prabhakarvitthallahare.png", "girishshantilalachliya.png"]) assert.match(leadership, new RegExp(portrait));
+for (const portrait of ["vishal-chakravarty-1200.jpg", "prabhakar-lahare-960.jpg", "girish-achliya-960.jpg"]) assert.match(leadership, new RegExp(portrait));
+for (const format of ["avif", "webp"]) assert.match(leadership, new RegExp(`assets/media/leadership/vishal-chakravarty-480\\.${format}`));
 
 const moduleRegister = JSON.parse(text("docs/module-media-register.json"));
 assert.equal(moduleRegister.modules.length, 16, "the full public module register must contain sixteen entries");
@@ -199,4 +229,4 @@ for (const stylesheet of ["base", "tokens", "foundations", "premium-experience",
   assert.doesNotMatch(text(`assets/css/${stylesheet}.css`), /prefers-color-scheme:\s*dark/, `${stylesheet}.css must not create an untested automatic dark theme`);
 }
 
-console.log("Visual contracts passed for scoped Apple-pharma v2, preserved Regulatory dossier composition, Oncology gallery, CRO leadership, sixteen tailored modules, portal entry, motion preferences and asset budgets.");
+console.log("Visual contracts passed for scoped Apple-pharma v3, full-bleed truth-bounded homepage media, preserved Regulatory dossier composition, Oncology gallery, CRO leadership, sixteen tailored modules, portal entry, motion preferences and asset budgets.");

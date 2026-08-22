@@ -5,14 +5,26 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#f6f7f8",
-  "theme_color": "#b81220",
+  "background_color": "#ffffff",
+  "theme_color": "#E3120B",
   "icons": [
     {
-      "src": "/assets/brand/novapharm-healthcare-logo.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/assets/brand/pwa-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/assets/brand/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/brand/pwa-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

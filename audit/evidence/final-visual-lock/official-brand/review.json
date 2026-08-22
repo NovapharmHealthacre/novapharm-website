@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0.0",
+  "reviewedAt": "2026-08-13",
+  "route": "/",
+  "authoritativePack": "creative-assets/brand/novapharm-logo-asset-pack",
+  "packFileCount": 93,
+  "verifiedChecksums": 92,
+  "deployedExactCopies": 17,
+  "officialRed": "#E3120B",
+  "screenshots": [
+    {
+      "viewport": "390x844",
+      "path": "after/corporate-home-390x844.png",
+      "sha256": "1a602ced4aad20205d2607d8489e6f21a5515a042dae19123928e9ae7853a39f",
+      "documentOverflow": false
+    },
+    {
+      "viewport": "1440x900",
+      "path": "after/corporate-home-1440x900.png",
+      "sha256": "06f0b9ef3c9792dc488fa6a5e4275eb18d14f7ed8f5311c57252e7a5c8865651",
+      "documentOverflow": false
+    }
+  ],
+  "checks": {
+    "wordmarkLegible": true,
+    "aspectRatioPreserved": true,
+    "headerAlignmentAccepted": true,
+    "faviconDeclared": true,
+    "appleTouchIconDeclared": true,
+    "themeColourDeclared": true,
+    "browserConsoleWarningsOrErrors": 0
+  },
+  "productionBoundary": "Local rendered evidence only; managed staging and production remain unverified."
+}

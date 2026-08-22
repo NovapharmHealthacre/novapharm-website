@@ -12,6 +12,10 @@ The approved engineering inventory currently covers permissive MIT, BSD, ISC, Ap
 
 The current lockfile inventory contains 524 reviewed third-party package records after adding the MIT-licensed `parse5` structured HTML parser and its entity dependency. The parser replaces ad hoc tag stripping in governed evidence extraction; it does not alter the final legal-review boundary.
 
+## Dependency lifecycle scripts
+
+Pnpm lifecycle scripts fail closed unless an exact package/version matcher is approved in `allowBuilds`. The machine-readable `config/dependency-build-script-policy.json` records the exact approved version, dependency path, lifecycle responsibility and rationale for the three permitted packages: `esbuild`, `protobufjs` and `sharp`. `npm run supply-chain:validate` requires that policy to match the pnpm workspace map and lockfile exactly, rejects the removed `onlyBuiltDependencies` setting and prohibits `dangerouslyAllowAllBuilds`. This follows the [official pnpm build-settings contract](https://pnpm.io/settings/build). No wildcard or approve-all setting is permitted.
+
 ## Obligations and limits
 
 - Preserve applicable dependency licence and attribution notices in distributed artifacts.

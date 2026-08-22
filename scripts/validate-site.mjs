@@ -162,6 +162,14 @@ const requiredFiles = [
   "assets/js/enterprise-app.js",
   "assets/brand/novapharm-healthcare-logo.svg",
   "assets/brand/novapharm-healthcare-logo.png",
+  "assets/brand/favicon.svg",
+  "assets/brand/favicon.ico",
+  "assets/brand/apple-touch-icon.png",
+  "assets/brand/pwa-icon-192.png",
+  "assets/brand/pwa-icon-512.png",
+  "assets/brand/pwa-maskable-512.png",
+  "assets/brand/safari-pinned-tab.svg",
+  "assets/brand/novapharm-open-graph-1200x630-white.jpg",
   "assets/media/home/supply-network-hero.jpg",
   "assets/media/home/supply-network-hero-1200.jpg",
   "assets/media/editorial/oncology-specialty.svg",
@@ -348,8 +356,9 @@ for (const file of publicPages) {
   if (!html.includes('/assets/brand/novapharm-healthcare-logo.png')) fail(`${file} does not include the approved PNG fallback or social image`);
   if (!html.includes('alt="NovaPharm Healthcare"')) fail(`${file} is missing the approved logo alternative text`);
   if (html.includes('/assets/Novapharm-logo.svg')) fail(`${file} references the retired logo path`);
-  if (!html.includes(`property="og:image" content="${siteUrl}/assets/brand/novapharm-healthcare-logo.png"`)) fail(`${file} does not use the approved social identity image`);
-  if (!html.includes('property="og:image:width" content="3356"') || !html.includes('property="og:image:height" content="420"')) fail(`${file} has incorrect social identity dimensions`);
+  if (!html.includes(`property="og:image" content="${siteUrl}/assets/brand/novapharm-open-graph-1200x630-white.jpg"`)) fail(`${file} does not retain the approved default social identity image`);
+  if (!html.includes('property="og:image:width" content="1200"') || !html.includes('property="og:image:height" content="630"')) fail(`${file} has incorrect social identity dimensions`);
+  if (!html.includes('/assets/brand/favicon.svg') || !html.includes('/assets/brand/apple-touch-icon.png')) fail(`${file} is missing approved small-format identity metadata`);
   if (/\b(?:undefined|lorem ipsum|placeholder content)\b/i.test(html)) fail(`${file} contains unfinished content`);
   if (/The string did not match the expected pattern|Secure portal backend is not active on this static host yet/i.test(html)) fail(`${file} contains a retired technical error message`);
   const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/gi)];
@@ -372,15 +381,27 @@ for (const type of ["Organization", "Person", "Article", "BlogPosting", "Service
 }
 
 const logoHashes = new Map([
-  ["assets/brand/novapharm-healthcare-logo.svg", "0450a3a7957b5a0ce0bb2f1764bddc2c07711222cb5b787d23b77c85cfee0239"],
-  ["assets/brand/novapharm-healthcare-logo.png", "b381ee4929b4014a40c889d26941c994bcbe7bfc558cd81f0f47d2d1917d00ad"]
+  ["assets/brand/novapharm-healthcare-logo.svg", "9199250e117b5c7d2b39d4d08d33522928f668d36316863b4e60f5eb7ca2a729"],
+  ["assets/brand/novapharm-healthcare-logo.png", "f1f5a0e0aa68ebf0f6f0370b45c2810d41b9420c2c930d4649cf199efeb96fdf"],
+  ["assets/brand/favicon.svg", "f8abf32bef19098701e2e66097358d6f4fd517307dce19efb56b18b7cac43fcc"],
+  ["assets/brand/novapharm-open-graph-1200x630-white.jpg", "1239b1c71f95a3d0c34d02e068c2f86c85196aab617551be18e9783e7a18be8f"]
 ]);
 for (const [file, expectedHash] of logoHashes) {
   const hash = createHash("sha256").update(readFileSync(join(root, file))).digest("hex");
   if (hash !== expectedHash) fail(`${file} no longer matches the supplied official master`);
 }
 const manifest = JSON.parse(source("manifest.webmanifest"));
-if (manifest.icons?.[0]?.src !== "/assets/brand/novapharm-healthcare-logo.svg" || manifest.icons?.[0]?.purpose !== "any") fail("web manifest must use the uncropped approved SVG identity");
+const expectedManifestIcons = [
+  ["/assets/brand/pwa-icon-192.png", "192x192", "any"],
+  ["/assets/brand/pwa-icon-512.png", "512x512", "any"],
+  ["/assets/brand/pwa-maskable-512.png", "512x512", "maskable"]
+];
+for (const [src, sizes, purpose] of expectedManifestIcons) {
+  if (!manifest.icons?.some((icon) => icon.src === src && icon.sizes === sizes && icon.purpose === purpose)) {
+    fail(`web manifest is missing approved icon ${src}`);
+  }
+}
+if (manifest.theme_color !== "#E3120B" || manifest.background_color !== "#ffffff") fail("web manifest must use approved NovaPharm brand colours");
 
 for (const file of redirectPages) {
   const html = source(file);

@@ -24,6 +24,7 @@ await fs.access(path.join(releaseRoot, "api", "apps", "api", "dist", "server.js"
 await fs.access(path.join(releaseRoot, "api", "server.mjs"));
 await fs.access(path.join(releaseRoot, "api", "database", "azure", "005_portal_gateway_replay_protection.sql"));
 await fs.access(path.join(releaseRoot, "api", "node_modules", "@azure", "identity", "package.json"));
+await fs.access(path.join(releaseRoot, "api", "node_modules", "@azure", "abort-controller", "package.json"));
 
 async function runNodeCheck(file) {
   await new Promise((resolve, reject) => {
