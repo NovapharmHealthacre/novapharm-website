@@ -1,6 +1,6 @@
 {
-  "version": "2.0",
-  "reviewed": "2026-07-15",
+  "version": "2.1",
+  "reviewed": "2026-08-22",
   "policies": {
     "principalHeroMaximumUses": 1,
     "generalMaximumUses": 2,
@@ -86,7 +86,7 @@
       "focalPoint": { "desktop": "72% 48%", "mobile": "73% 50%" },
       "maxReuse": 2,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/services/", "/#partner-ecosystem"]
+      "allowedRoutes": ["/services/", "/capabilities/"]
     },
     {
       "id": "regulatory-dossier-control",
@@ -112,7 +112,7 @@
       "focalPoint": { "desktop": "52% 48%", "mobile": "58% 50%" },
       "maxReuse": 2,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/product-portfolio/", "/oncology/"]
+      "allowedRoutes": ["/", "/oncology/"]
     },
     {
       "id": "product-portfolio-evidence",
@@ -125,7 +125,7 @@
       "focalPoint": { "desktop": "70% 50%", "mobile": "74% 50%" },
       "maxReuse": 1,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/product-portfolio/"]
+      "allowedRoutes": ["/products/"]
     },
     {
       "id": "product-oral-liquid-formulation",
@@ -138,7 +138,9 @@
       "focalPoint": { "desktop": "52% 48%", "mobile": "56% 50%" },
       "maxReuse": 2,
       "structuredDataRelationship": "contentImage",
-      "allowedRoutes": ["/product-portfolio/", "/oncology/"]
+      "allowedRoutes": ["/product-portfolio/", "/oncology/"],
+      "publicationStatus": "retired",
+      "retirementReason": "Removed from the concise canonical Products and Oncology presentation; retained as a governed, non-published source asset."
     },
     {
       "id": "product-specialty-handling",
@@ -151,7 +153,9 @@
       "focalPoint": { "desktop": "50% 48%", "mobile": "55% 50%" },
       "maxReuse": 2,
       "structuredDataRelationship": "contentImage",
-      "allowedRoutes": ["/product-portfolio/", "/oncology/"]
+      "allowedRoutes": ["/product-portfolio/", "/oncology/"],
+      "publicationStatus": "retired",
+      "retirementReason": "Removed from the concise canonical Products and Oncology presentation; retained as a governed, non-published source asset."
     },
     {
       "id": "product-licensed-generics",
@@ -164,7 +168,9 @@
       "focalPoint": { "desktop": "50% 50%", "mobile": "55% 50%" },
       "maxReuse": 1,
       "structuredDataRelationship": "contentImage",
-      "allowedRoutes": ["/product-portfolio/"]
+      "allowedRoutes": ["/product-portfolio/"],
+      "publicationStatus": "retired",
+      "retirementReason": "Removed when the legacy Product Portfolio route became a noindex compatibility redirect; retained as a governed, non-published source asset."
     },
     {
       "id": "partners-qualification",
@@ -281,7 +287,9 @@
       "focalPoint": { "desktop": "58% 50%", "mobile": "66% 50%" },
       "maxReuse": 1,
       "structuredDataRelationship": "contentImage",
-      "allowedRoutes": ["/services/"]
+      "allowedRoutes": ["/services/"],
+      "publicationStatus": "retired",
+      "retirementReason": "Removed during the concise Services editorial redesign to avoid an unnecessary second photographic composition."
     },
     {
       "id": "regulatory-batch-integrity",
@@ -307,7 +315,9 @@
       "focalPoint": { "desktop": "52% 50%", "mobile": "55% 50%" },
       "maxReuse": 2,
       "structuredDataRelationship": "contentImage",
-      "allowedRoutes": ["/about/", "/partner-with-us/"]
+      "allowedRoutes": ["/about/", "/partner-with-us/"],
+      "publicationStatus": "retired",
+      "retirementReason": "Removed during the collaboration-ecosystem redesign to avoid generic due-diligence meeting imagery."
     },
     {
       "id": "technology-control-architecture",
@@ -333,7 +343,9 @@
       "focalPoint": { "desktop": "58% 50%", "mobile": "54% 50%" },
       "maxReuse": 2,
       "structuredDataRelationship": "contentImage",
-      "allowedRoutes": ["/#three-pillar-sourcing", "/partner-with-us/"]
+      "allowedRoutes": ["/#three-pillar-sourcing", "/partner-with-us/"],
+      "publicationStatus": "retired",
+      "retirementReason": "Removed when the three sourcing routes became a concise evidence-led sequence rather than three image cards."
     },
     {
       "id": "sourcing-plpi-assessment",
@@ -346,7 +358,9 @@
       "focalPoint": { "desktop": "52% 50%", "mobile": "52% 50%" },
       "maxReuse": 2,
       "structuredDataRelationship": "contentImage",
-      "allowedRoutes": ["/#three-pillar-sourcing", "/partner-with-us/"]
+      "allowedRoutes": ["/#three-pillar-sourcing", "/partner-with-us/"],
+      "publicationStatus": "retired",
+      "retirementReason": "Removed when the three sourcing routes became a concise evidence-led sequence rather than three image cards."
     },
     {
       "id": "sourcing-european-network",
@@ -359,7 +373,9 @@
       "focalPoint": { "desktop": "58% 50%", "mobile": "62% 50%" },
       "maxReuse": 2,
       "structuredDataRelationship": "contentImage",
-      "allowedRoutes": ["/#three-pillar-sourcing", "/partner-with-us/"]
+      "allowedRoutes": ["/#three-pillar-sourcing", "/partner-with-us/"],
+      "publicationStatus": "retired",
+      "retirementReason": "Removed when the three sourcing routes became a concise evidence-led sequence rather than three image cards."
     },
     {
       "id": "insight-batch-to-buyer",
@@ -442,14 +458,14 @@
   ],
   "modules": [
     { "id": "home", "path": "index.html", "route": "/", "purpose": "Corporate positioning and governed supply-network overview", "label": "Corporate network", "heroAsset": "home-supply-network", "signals": ["Regulatory sequence", "Qualified sourcing", "Evidence continuity", "Controlled access"] },
-    { "id": "about", "path": "about/index.html", "route": "/about/", "purpose": "Operating model and company positioning", "label": "Operating model", "heroAsset": "about-operating-model", "secondaryAsset": "partners-due-diligence", "signals": ["Evidence", "Optionality", "Accountability", "Resilience"] },
+    { "id": "about", "path": "about/index.html", "route": "/about/", "purpose": "Operating model and company positioning", "label": "Operating model", "heroAsset": "about-operating-model", "signals": ["Evidence", "Optionality", "Accountability", "Resilience"] },
     { "id": "company", "path": "about/company/index.html", "route": "/about/company/", "purpose": "Legal identity, structure and operating status", "label": "Corporate structure", "heroAsset": "company-corporate-structure", "signals": ["Legal identity", "Business model", "Operating status", "Governance"] },
     { "id": "governance", "path": "about/governance/index.html", "route": "/about/governance/", "purpose": "Governance, claims and accountability", "label": "Governance control", "heroAsset": "governance-quality-oversight", "signals": ["Board", "Quality", "Claims", "Audit trail"] },
     { "id": "leadership", "path": "leadership/index.html", "route": "/leadership/", "purpose": "Leadership accountability", "label": "Leadership accountability", "heroType": "approved-portraits", "signals": ["Strategy", "Operations", "Science", "Quality"] },
-    { "id": "services", "path": "services/index.html", "route": "/services/", "purpose": "Connected pharmaceutical service delivery", "label": "Connected execution", "heroAsset": "services-connected-execution", "secondaryAsset": "services-launch-readiness", "signals": ["Assess", "Qualify", "Control", "Fulfil"] },
+    { "id": "services", "path": "services/index.html", "route": "/services/", "purpose": "Connected pharmaceutical service delivery", "label": "Connected execution", "heroAsset": "services-connected-execution", "signals": ["Assess", "Qualify", "Control", "Fulfil"] },
     { "id": "regulatory", "path": "regulatory-services/index.html", "route": "/regulatory-services/", "purpose": "Regulatory readiness and release controls", "label": "Regulatory control", "heroAsset": "regulatory-dossier-control", "secondaryAsset": "regulatory-batch-integrity", "signals": ["Authorisation", "QMS", "GDP", "Release gate"] },
-    { "id": "products", "path": "product-portfolio/index.html", "route": "/product-portfolio/", "purpose": "Product-category and opportunity architecture", "label": "Portfolio architecture", "heroAsset": "product-portfolio-evidence", "secondaryAsset": "product-licensed-generics", "signals": ["Oncology", "Specialty", "Licensed", "Opportunity review"] },
-    { "id": "partners", "path": "partner-with-us/index.html", "route": "/partner-with-us/", "purpose": "Partner qualification and collaboration routes", "label": "Partner qualification", "heroAsset": "partners-qualification", "secondaryAsset": "partners-due-diligence", "signals": ["Capability", "Licence", "Evidence", "Governance"] },
+    { "id": "products", "path": "products/index.html", "route": "/products/", "purpose": "Product-category and opportunity architecture", "label": "Portfolio architecture", "heroAsset": "product-portfolio-evidence", "signals": ["Nutraxin", "Oncology", "Specialty", "Opportunity review"] },
+    { "id": "partners", "path": "partner-with-us/index.html", "route": "/partner-with-us/", "purpose": "Partner qualification and collaboration routes", "label": "Partner qualification", "heroAsset": "partners-qualification", "signals": ["Capability", "Licence", "Evidence", "Governance"] },
     { "id": "technology", "path": "technology/index.html", "route": "/technology/", "purpose": "Controlled data, traceability and workflow architecture", "label": "Digital control plane", "heroAsset": "technology-traceability", "secondaryAsset": "technology-control-architecture", "signals": ["Identity", "Traceability", "Workflow", "Auditability"] },
     { "id": "insights", "path": "news-insights/index.html", "route": "/news-insights/", "purpose": "Evidence-led pharmaceutical editorial authority", "label": "Evidence-led insight", "heroAsset": "insights-evidence-editorial", "signals": ["Primary sources", "Expert review", "Material updates", "Clear scope"] },
     { "id": "contact", "path": "contact/index.html", "route": "/contact/", "purpose": "Qualified B2B enquiry", "label": "Qualified enquiry", "heroAsset": "contact-qualified-enquiry", "signals": ["Context", "Capability", "Evidence", "Next step"] },

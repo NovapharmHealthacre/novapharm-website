@@ -1,0 +1,855 @@
+{
+  "schemaVersion": "1.0.0",
+  "reviewDate": "2026-08-28",
+  "branch": "codex/corporate-product-discipline-rebuild",
+  "baseSha": "23310988e8fc484375aa10176aa1c1edbf5371a8",
+  "candidateState": "uncommitted_working_tree",
+  "precedence": "Latest explicit owner instruction controls apparent conflicts while truth, security, privacy, regulatory, accessibility and production safeguards remain mandatory.",
+  "sourcePrompts": [
+    {
+      "role": "additive-design-and-store-amendment",
+      "sha256": "c3f63b8b3e5e6e93bf3023badac10452196bfa904fb84cff2a8c5a4020256a33",
+      "sections": "48-section audit plus 49.1-49.20 store controls"
+    },
+    {
+      "role": "definitive-owner-execution-directive",
+      "sha256": "5bb617676983c5aebc58ff3c5a5e7432a55da5a71bc279536d92cc429b653450",
+      "sections": "1-49"
+    }
+  ],
+  "allowedStatuses": [
+    "Already complete and verified",
+    "Partially implemented",
+    "Not implemented",
+    "Externally blocked",
+    "Owner action required"
+  ],
+  "sections": [
+    {
+      "id": "1",
+      "title": "Start from current truth",
+      "status": "Already complete and verified",
+      "implementation": "Branch, HEAD, origin/main, dirty tree, GitHub state, Node 24 and deployment truth were rechecked without resetting the worktree.",
+      "evidence": [
+        "docs/programme/post-pr53-current-truth.md",
+        "docs/current-state/corporate-release-truth.md"
+      ],
+      "blocker": null,
+      "nextAction": "Refresh exact-SHA fields after the candidate is committed."
+    },
+    {
+      "id": "2",
+      "title": "Preserve all current work first",
+      "status": "Already complete and verified",
+      "implementation": "The accumulated working tree was preserved; no reset, stash, clean or destructive checkout was used.",
+      "evidence": [
+        "docs/current-state/corporate-release-truth.md"
+      ],
+      "blocker": null,
+      "nextAction": "Continue reviewing the complete diff before each release boundary."
+    },
+    {
+      "id": "3",
+      "title": "Latest Corporate Apple-discipline rebuild must go live",
+      "status": "Partially implemented",
+      "implementation": "The rebuilt PUBLIC_ONLY and managed Corporate candidates exist and passed prior repository/browser acceptance.",
+      "evidence": [
+        "docs/release/final-acceptance.md",
+        "docs/design/apple-vs-novapharm.md"
+      ],
+      "blocker": "The working tree has no immutable candidate SHA and the rebuilt branch is not the deployed GitHub Pages SHA.",
+      "nextAction": "Complete exact-tree acceptance, commit, push, wait for exact-head CI and release the truthful PUBLIC_ONLY artefact."
+    },
+    {
+      "id": "4",
+      "title": "Apple-grade Corporate standard",
+      "status": "Partially implemented",
+      "implementation": "Corporate navigation, page architecture, typography, products, CRO, Oncology and content density were substantially rebuilt.",
+      "evidence": [
+        "docs/design/apple-primary-source-study.md",
+        "docs/design/apple-vs-novapharm.md",
+        "docs/design/responsive-acceptance.md"
+      ],
+      "blocker": "Final current-source research, rendered red-team review and exact-final-CSS browser evidence are still being refreshed.",
+      "nextAction": "Finish the primary-source refresh and final human review without reintroducing decoration or false claims."
+    },
+    {
+      "id": "5",
+      "title": "Secure Portal must become usable",
+      "status": "Partially implemented",
+      "implementation": "The protected Next.js Portal, API, local session boundary and role-scoped read modules exist; PUBLIC_ONLY remains fail-closed.",
+      "evidence": [
+        "docs/portal/54-module-production-matrix.md",
+        "docs/portal/security-production-evidence.md"
+      ],
+      "blocker": "Managed hosting, Entra, production data, monitoring and acceptance are not operational.",
+      "nextAction": "Complete repository acceptance, then stage only after quota, cost and identity authority exist."
+    },
+    {
+      "id": "6",
+      "title": "54-module Apple-grade audit",
+      "status": "Partially implemented",
+      "implementation": "All 54 modules are catalogued with 48 visible informational routes and six hidden fail-closed routes.",
+      "evidence": [
+        "packages/portal-contracts/src/module-catalog.json",
+        "docs/portal/54-module-production-matrix.md"
+      ],
+      "blocker": "The exact final UI still needs complete per-module Chromium/WebKit state review after the latest PharmaScope changes.",
+      "nextAction": "Regenerate the module design ledger and rerun the complete module browser matrix."
+    },
+    {
+      "id": "7",
+      "title": "Medicines Intelligence becomes PharmaScope",
+      "status": "Partially implemented",
+      "implementation": "The existing governed module carries the PharmaScope identity and one coherent text-first medicine-intelligence workspace; no duplicate module or decorative mode selector was created.",
+      "evidence": [
+        "apps/portal/components/medicines-intelligence.tsx",
+        "apps/portal/components/pharmascope-brand.tsx"
+      ],
+      "blocker": "Historical national coverage, accepted forecasts and production deployment remain incomplete.",
+      "nextAction": "Connect each additional analytical state only when its governed source evidence is accepted."
+    },
+    {
+      "id": "8",
+      "title": "Official PharmaScope logo",
+      "status": "Already complete and verified",
+      "implementation": "The complete 127-file owner pack is preserved and seven delivery assets are checksum-validated and byte-identical.",
+      "evidence": [
+        "final-report/official-logo-register.md",
+        "scripts/programme/validate-brand-assets.mjs"
+      ],
+      "blocker": null,
+      "nextAction": "Use only governed variants and preserve the raster-containing SVG limitation."
+    },
+    {
+      "id": "9",
+      "title": "PharmaScope intelligence engines",
+      "status": "Partially implemented",
+      "implementation": "Identity search, accepted-fact analytics, geography, forecasting controls and opportunity controls are organised as one governed workflow with a shared filter contract. Retired brand-concept modes are not presented as product functionality.",
+      "evidence": [
+        "apps/portal/components/medicines-intelligence.tsx",
+        "packages/medicines-intelligence/src/index.ts",
+        "src/core/medicines-intelligence-service.mjs"
+      ],
+      "blocker": "Only one national EPD month is accepted; forecast and opportunity outputs remain evidence-gated.",
+      "nextAction": "Extend observed analytics through the shared contract, then activate forecast and opportunity outputs only after their independent acceptance gates pass."
+    },
+    {
+      "id": "10",
+      "title": "PharmaScope Apple and Economist design",
+      "status": "Partially implemented",
+      "implementation": "The approved desktop silhouette, text-first navigation, analytical density and restrained brand system are implemented.",
+      "evidence": [
+        "docs/data/medicines-intelligence-visual-acceptance.md",
+        "apps/portal/components/medicines-intelligence.module.css"
+      ],
+      "blocker": "Final side-by-side owner-reference and all-state responsive review remain pending on the exact final build.",
+      "nextAction": "Render desktop/mobile evidence in Chromium and WebKit and correct any material visual defect."
+    },
+    {
+      "id": "11",
+      "title": "PharmaScope search",
+      "status": "Partially implemented",
+      "implementation": "Canonical current-BNF identity search, governed aliases and the protected v1 API are implemented against the populated private-cloud database. The real Apixaban search completed in 407.15 ms.",
+      "evidence": [
+        "src/core/medicines-intelligence-service.mjs",
+        "docs/api/pharmascope-v1.openapi.yaml",
+        "docs/data/evidence/bnf-current-import.json",
+        "docs/data/evidence/epd-2026-06-private-cloud-query-benchmark-accepted.json"
+      ],
+      "blocker": "Exact rendered Chromium/WebKit acceptance against the latest UI is still pending.",
+      "nextAction": "Exercise the accepted query flow through the protected browser candidate and inspect the rendered result."
+    },
+    {
+      "id": "12",
+      "title": "PharmaScope medicine experience",
+      "status": "Partially implemented",
+      "implementation": "Identity, source evidence, accepted June presentation and substance analytics and explicit unavailable states are implemented without illustrative production numbers. A single accepted month is not drawn as a trend.",
+      "evidence": [
+        "apps/portal/components/medicines-intelligence.tsx",
+        "docs/data/medicine-identity-and-bnf-snomed.md",
+        "docs/data/evidence/epd-2026-06-private-cloud-query-benchmark-accepted.json"
+      ],
+      "blocker": "Historical trend, map polygons and forecasts remain data- or implementation-gated.",
+      "nextAction": "Render the accepted June analytical state and retain forecast unavailable until sufficient history exists."
+    },
+    {
+      "id": "13",
+      "title": "Complete EPD ingestion",
+      "status": "Partially implemented",
+      "implementation": "The complete June 2026 national EPD publisher resource is accepted in the isolated local private cloud: 18,374,449 input and accepted rows, zero rejected or duplicate rows, exact source hash, contiguous source positions and valid lineage digests.",
+      "evidence": [
+        "scripts/data/download-medicines-resource.ts",
+        "scripts/data/ingest-medicines-resource.ts",
+        "database/sqlite/009_authoritative_bulk_observations.sql",
+        "docs/data/evidence/epd-2026-06-private-cloud-import.json"
+      ],
+      "blocker": "One national period is not a historical backfill; the conservative full-history plan still exceeds current protected storage capacity.",
+      "nextAction": "Preserve June as accepted non-production evidence and expand history only after a fresh capacity gate and adequate encrypted storage."
+    },
+    {
+      "id": "14",
+      "title": "Complete PCA ingestion",
+      "status": "Partially implemented",
+      "implementation": "PCA discovery, schema parser, truthful no-actual-cost observation table and importer path are implemented and fixture-tested.",
+      "evidence": [
+        "scripts/data/ingest-medicines-resource.ts",
+        "database/sqlite/009_authoritative_bulk_observations.sql",
+        "packages/medicines-intelligence/test/source-records.test.ts"
+      ],
+      "blocker": "Only the 1,000-row sample is currently evidenced; full PCA history shares the storage blocker.",
+      "nextAction": "Run a bounded PCA period only after the EPD validation slice and a fresh capacity gate."
+    },
+    {
+      "id": "15",
+      "title": "Local MacBook private cloud v0",
+      "status": "Partially implemented",
+      "implementation": "Externalised raw, curated, mart, warehouse, forecast, manifest, export, backup, log and checkpoint paths are implemented outside Git. The complete June EPD resource and reconciled source-scoped marts are accepted there.",
+      "evidence": [
+        "packages/medicines-intelligence/src/private-cloud.ts",
+        "scripts/data/plan-medicines-backfill.ts",
+        "docs/data/evidence/epd-2026-06-private-cloud-import.json",
+        "docs/data/evidence/epd-2026-06-marts-private-cloud.json"
+      ],
+      "blocker": "The current volume cannot hold full EPD/PCA history plus governed recovery reserve.",
+      "nextAction": "Keep the accepted one-month validation operational; move NOVAPHARM_DATA_ROOT to encrypted external or NAS storage before a larger backfill."
+    },
+    {
+      "id": "16",
+      "title": "Future NAS, Azure and private-cloud portability",
+      "status": "Already complete and verified",
+      "implementation": "Storage, database and object-store authorities are environment-driven absolute paths rather than repository-relative assumptions.",
+      "evidence": [
+        "packages/medicines-intelligence/src/private-cloud.ts",
+        "docs/architecture/technology-fit-matrix.md"
+      ],
+      "blocker": null,
+      "nextAction": "Add measured migration/recovery evidence when the next storage authority is selected."
+    },
+    {
+      "id": "17",
+      "title": "Relevant NHS API and bulk integration",
+      "status": "Partially implemented",
+      "implementation": "Governed CKAN, ODS FHIR, DoHS, ONS postcode and UK source adapters exist with bounded server-side clients.",
+      "evidence": [
+        "packages/medicines-intelligence/src/ckan-client.ts",
+        "packages/medicines-intelligence/src/nhs-api-clients.ts",
+        "docs/data/nhsbsa-source-registry.md"
+      ],
+      "blocker": "DoHS production API credentials and several four-nation source executions are absent.",
+      "nextAction": "Complete public bulk paths now; apply credentialed enrichment only through approved secret storage."
+    },
+    {
+      "id": "18",
+      "title": "Automatic source discovery and refresh",
+      "status": "Partially implemented",
+      "implementation": "Runtime discovery records resources, periods, revisions, schema and source health; local discovery succeeded for 17 CKAN sources and one complete EPD period is accepted.",
+      "evidence": [
+        "scripts/data/discover-medicines-sources.ts",
+        "docs/data/evidence/source-discovery-local-private-cloud.json",
+        "docs/data/evidence/epd-2026-06-private-cloud-import.json"
+      ],
+      "blocker": "No accepted scheduler, operator or alert destination is active.",
+      "nextAction": "Add a fail-closed local schedule and prove restart, idempotency and alert behavior before claiming automatic operation."
+    },
+    {
+      "id": "19",
+      "title": "Source-health dashboard",
+      "status": "Partially implemented",
+      "implementation": "Source state, expected, discovered and ingested periods, schema and freshness are modelled and presented; June 2026 EPD is recorded as an accepted non-sample local ingest.",
+      "evidence": [
+        "src/core/medicines-intelligence-service.mjs",
+        "apps/portal/components/medicines-intelligence.tsx",
+        "docs/data/evidence/epd-2026-06-private-cloud-import.json"
+      ],
+      "blocker": "No production scheduler or monitoring authority supplies live operational health.",
+      "nextAction": "Verify the final protected rendered state and retain production wording as pending."
+    },
+    {
+      "id": "20",
+      "title": "Analytical marts",
+      "status": "Partially implemented",
+      "implementation": "The source-scoped mart builder populated June 2026 medicine/month, geography/month and presentation/month aggregates and reconciled items, quantity, NIC and actual cost exactly to 18,374,449 accepted facts. Exact rerun proved idempotency.",
+      "evidence": [
+        "scripts/data/build-medicines-marts.ts",
+        "database/sqlite/010_source_scoped_medicine_marts.sql",
+        "database/azure/010_source_scoped_medicine_marts.sql",
+        "docs/data/evidence/epd-2026-06-marts-private-cloud.json"
+      ],
+      "blocker": "Practice mart was deliberately omitted from this one-period national build; historical and managed-environment marts are not accepted.",
+      "nextAction": "Use the reconciled source-scoped marts for bounded analytics and extend only after measured need, history and capacity evidence."
+    },
+    {
+      "id": "21",
+      "title": "Real production forecasts",
+      "status": "Partially implemented",
+      "implementation": "Deterministic forecasting, rolling backtests, intervals and hierarchy reconciliation are unit-tested.",
+      "evidence": [
+        "packages/medicines-intelligence/src/forecasting.ts",
+        "docs/data/forecasting-methodology.md"
+      ],
+      "blocker": "One month is insufficient for accepted forecasting and no production model run exists.",
+      "nextAction": "Keep forecast unavailable; train/backtest only after sufficient accepted history is available."
+    },
+    {
+      "id": "22",
+      "title": "Geography",
+      "status": "Partially implemented",
+      "implementation": "Postcode normalisation, temporal geography, distance/catchment calculations, pharmacy/practice links and a 354,617-row June EPD geography mart are implemented and source-reconciled.",
+      "evidence": [
+        "packages/medicines-intelligence/src/geography.ts",
+        "docs/data/geography-postcode-postgis.md",
+        "docs/data/evidence/epd-2026-06-marts-private-cloud.json"
+      ],
+      "blocker": "Interactive polygons, historical boundary acceptance and map/table parity are not complete.",
+      "nextAction": "Run the real protected geography query, retain the patient-residence prohibition and implement a map only from accepted period-aware boundaries."
+    },
+    {
+      "id": "23",
+      "title": "Postcode API and authority",
+      "status": "Partially implemented",
+      "implementation": "ONS postcode client and governed coordinates are implemented; missing coordinates remain explicit.",
+      "evidence": [
+        "packages/medicines-intelligence/src/ons-postcode-client.ts",
+        "docs/data/geography-postcode-postgis.md"
+      ],
+      "blocker": "No production refresh schedule is active.",
+      "nextAction": "Verify the local source period and schedule only after operator/alert authority exists."
+    },
+    {
+      "id": "24",
+      "title": "5,725 blank/actioned emails",
+      "status": "Externally blocked",
+      "implementation": "The workbook truth is preserved: 7,211 source-verified business emails, 5,725 blank/actioned, zero automatic marketing eligibility.",
+      "evidence": [
+        "docs/data/pharmacy-email-enrichment.md",
+        "packages/medicines-intelligence/src/pharmacy-email-enrichment.ts"
+      ],
+      "blocker": "The NHS DoHS API key is unavailable; addresses may not be guessed or inferred.",
+      "nextAction": "Owner supplies the key through an approved secret channel; run exact ODS/postcode matching and human review."
+    },
+    {
+      "id": "25",
+      "title": "Pharmacy opportunity",
+      "status": "Partially implemented",
+      "implementation": "Deterministic scoring, evidence contributions and commercial/marketing fail-closed gates are implemented, and one accepted EPD demand/geography mart now exists.",
+      "evidence": [
+        "packages/medicines-intelligence/src/opportunity.ts",
+        "docs/data/opportunity-model.md",
+        "docs/data/evidence/epd-2026-06-marts-private-cloud.json"
+      ],
+      "blocker": "One month, no accepted forecast, no owner-approved weights and zero marketing-eligible contacts are insufficient for an opportunity output.",
+      "nextAction": "Keep scores unavailable until history, transparent weights, customer authority, contact eligibility and backtesting are accepted."
+    },
+    {
+      "id": "26",
+      "title": "Four-nation UK architecture",
+      "status": "Partially implemented",
+      "implementation": "England, Scotland, Wales and Northern Ireland sources and non-equivalent measure semantics are documented and parser-tested where available.",
+      "evidence": [
+        "docs/data/uk-nation-source-registry.md",
+        "packages/medicines-intelligence/src/source-records.ts"
+      ],
+      "blocker": "Complete four-nation datasets have not been ingested/backfilled.",
+      "nextAction": "Execute each source independently and preserve jurisdiction-specific caveats before cross-nation comparison."
+    },
+    {
+      "id": "27",
+      "title": "Regulatory product documents",
+      "status": "Partially implemented",
+      "implementation": "Publication gates and a Nutraxin regulatory source register exist; unsupported approvals remain blocked.",
+      "evidence": [
+        "docs/programme/regulatory-publication-rules.md",
+        "docs/nutraxin-regulatory-source-register.md"
+      ],
+      "blocker": "No complete controlled product-document authority is connected.",
+      "nextAction": "Register owner-approved documents with dates, scope and access classification before showing them."
+    },
+    {
+      "id": "28",
+      "title": "Product shelf life and expiry",
+      "status": "Partially implemented",
+      "implementation": "The product model separates source facts from availability/commerce and prohibits invented shelf-life claims.",
+      "evidence": [
+        "docs/nutraxin-product-register.json",
+        "docs/programme/regulatory-publication-rules.md"
+      ],
+      "blocker": "Authoritative shelf-life, batch and expiry evidence is not supplied for public or operational use.",
+      "nextAction": "Add evidence only from approved product/batch records; otherwise retain unavailable states."
+    },
+    {
+      "id": "29",
+      "title": "Patent intelligence",
+      "status": "Not implemented",
+      "implementation": "No public patent date, legal status or freedom-to-operate conclusion is published.",
+      "evidence": [
+        "docs/programme/regulatory-publication-rules.md"
+      ],
+      "blocker": "Authoritative legal data sources, jurisdiction rules and qualified review are not integrated.",
+      "nextAction": "Define a separately reviewed legal-intelligence source model before implementation."
+    },
+    {
+      "id": "30",
+      "title": "SPC intelligence",
+      "status": "Not implemented",
+      "implementation": "No SPC expiry or exclusivity claim is published or generated.",
+      "evidence": [
+        "docs/programme/regulatory-publication-rules.md"
+      ],
+      "blocker": "Authoritative registers and qualified legal/regulatory interpretation are not integrated.",
+      "nextAction": "Implement only after source/licence and review authority are accepted."
+    },
+    {
+      "id": "31",
+      "title": "PharmaScope API",
+      "status": "Partially implemented",
+      "implementation": "A stable Board-authorised v1 search, identity, analytics and nearby-geography API is implemented, documented and boundary-tested.",
+      "evidence": [
+        "docs/api/pharmascope-v1.openapi.yaml",
+        "apps/api/test/server-boundary.test.ts"
+      ],
+      "blocker": "Managed deployment and native-client acceptance do not exist.",
+      "nextAction": "Use v1 for the local web candidate; deploy only after identity/infrastructure acceptance."
+    },
+    {
+      "id": "32",
+      "title": "Security risks",
+      "status": "Partially implemented",
+      "implementation": "Session, role, customer isolation, source truth, secret, supply-chain and protected-route controls exist at repository level.",
+      "evidence": [
+        "docs/portal/security-production-evidence.md",
+        "SECURITY.md"
+      ],
+      "blocker": "Production identity, penetration test and managed-environment evidence remain external.",
+      "nextAction": "Run the complete exact-tree security suite; retain production security as pending."
+    },
+    {
+      "id": "33",
+      "title": "Accessibility",
+      "status": "Partially implemented",
+      "implementation": "WCAG/Axe, keyboard, contrast, reduced-motion and responsive controls are implemented and previously accepted.",
+      "evidence": [
+        "docs/design/accessibility-contrast-audit.md",
+        "apps/portal/test/browser-acceptance.ts"
+      ],
+      "blocker": "The exact latest PharmaScope build needs final all-state Chromium/WebKit reruns and human review.",
+      "nextAction": "Rerun automated and manual accessibility on the final CSS."
+    },
+    {
+      "id": "34",
+      "title": "Performance",
+      "status": "Partially implemented",
+      "implementation": "Resource budgets and Corporate Lighthouse medians are documented. Against the local 18.4-million-row EPD period, search measured 407.15 ms, presentation analytics 38.04 ms and full Apixaban substance analytics 3,796.77 ms after removal of a 78.94-second source-availability scan.",
+      "evidence": [
+        "docs/programme/final-performance-acceptance.md",
+        "docs/data/medicines-intelligence-visual-acceptance.md",
+        "docs/data/evidence/epd-2026-06-private-cloud-query-benchmark-accepted.json",
+        "docs/data/evidence/epd-2026-06-private-cloud-post-mart-acceptance.json"
+      ],
+      "blocker": "Protected browser runtime, concurrency, managed SQL and field performance remain unverified.",
+      "nextAction": "Measure the final browser build and staging concurrency without raising thresholds; continue optimising broad substance queries where proportionate."
+    },
+    {
+      "id": "35",
+      "title": "Local operational state",
+      "status": "Partially implemented",
+      "implementation": "The local protected stack, private-cloud path contract, source registry, complete June EPD import, reconciled one-period marts and real Apixaban protected queries are implemented and accepted.",
+      "evidence": [
+        "docs/data/source-refresh-and-runbook.md",
+        "packages/medicines-intelligence/src/private-cloud.ts",
+        "docs/data/evidence/epd-2026-06-private-cloud-post-mart-acceptance.json"
+      ],
+      "blocker": "The final rendered state and restart/recovery acceptance are still in progress.",
+      "nextAction": "Finish rendering, browser, recovery and exact-tree acceptance without converting local validation into a production claim."
+    },
+    {
+      "id": "36",
+      "title": "Public and private deployment",
+      "status": "Partially implemented",
+      "implementation": "PUBLIC_ONLY and FULL_PLATFORM contracts are separated and public protected actions fail closed.",
+      "evidence": [
+        "docs/infrastructure/managed-production-evidence.md",
+        "docs/current-state/corporate-release-truth.md"
+      ],
+      "blocker": "The current Corporate candidate is uncommitted; managed infrastructure is not provisioned and Azure aggregate VM quota remains zero.",
+      "nextAction": "Release PUBLIC_ONLY only after exact-head CI; hold managed deployment until quota/cost authority."
+    },
+    {
+      "id": "37",
+      "title": "iOS application",
+      "status": "Not implemented",
+      "implementation": "The protected v1 API and official 1024px PharmaScope app icon now provide prerequisites, but no iOS target exists.",
+      "evidence": [
+        "docs/api/pharmascope-v1.openapi.yaml",
+        "assets/brand/pharmascope-app-icon-1024.png"
+      ],
+      "blocker": "Full Xcode/signing identities, bundle identifier and owner account authority are unavailable.",
+      "nextAction": "Create the native target only after API acceptance and owner identifiers; do not ship an untestable scaffold."
+    },
+    {
+      "id": "38",
+      "title": "iOS Apple-grade design",
+      "status": "Not implemented",
+      "implementation": "Native design requirements are retained in the combined instruction; no unverifiable SwiftUI screen is claimed.",
+      "evidence": [
+        "docs/architecture/technology-fit-matrix.md"
+      ],
+      "blocker": "There is no compile/run/simulator acceptance environment for an iOS target.",
+      "nextAction": "Use SwiftUI native patterns and accessibility when the governed target can be built and exercised."
+    },
+    {
+      "id": "39",
+      "title": "Android application",
+      "status": "Not implemented",
+      "implementation": "The v1 API is platform-neutral, but no Android target exists.",
+      "evidence": [
+        "docs/api/pharmascope-v1.openapi.yaml"
+      ],
+      "blocker": "Android SDK/Gradle, application ID, signing and Play authority are unavailable.",
+      "nextAction": "Create and test the Android target only after identifiers, toolchain and owner release decisions are available."
+    },
+    {
+      "id": "40",
+      "title": "Mobile data rule",
+      "status": "Partially implemented",
+      "implementation": "Server-authoritative, no-client-secret, explicit unavailable-state and Board-role rules are enforced by the API.",
+      "evidence": [
+        "docs/api/pharmascope-v1.md",
+        "docs/data/analytics-security-and-privacy.md"
+      ],
+      "blocker": "No native clients exist to verify Keychain/Keystore, offline cache and mobile lifecycle behavior.",
+      "nextAction": "Apply the same v1 contracts and least-data policy when native targets are authorised."
+    },
+    {
+      "id": "41",
+      "title": "App Store",
+      "status": "Owner action required",
+      "implementation": "Official app identity assets and protected API prerequisites exist; no submission claim is made.",
+      "evidence": [
+        "assets/brand/pharmascope-app-icon-1024.png",
+        "docs/api/pharmascope-v1.md"
+      ],
+      "blocker": "Apple Developer identity, bundle ID, signing, privacy metadata, build and review are owner/external gates.",
+      "nextAction": "Complete the additive 49.1-49.20 store ledger before any TestFlight or App Store action."
+    },
+    {
+      "id": "42",
+      "title": "Google Play",
+      "status": "Owner action required",
+      "implementation": "API prerequisites exist; no Android binary or listing is claimed.",
+      "evidence": [
+        "docs/api/pharmascope-v1.md"
+      ],
+      "blocker": "Play account, application ID, signing, testing cohort and store metadata are owner/external gates.",
+      "nextAction": "Complete the additive store ledger after a tested Android target exists."
+    },
+    {
+      "id": "43",
+      "title": "Store credential security",
+      "status": "Already complete and verified",
+      "implementation": "No store credential, signing key, service-account key or developer password is present in repository code.",
+      "evidence": [
+        "SECURITY.md",
+        "docs/data/analytics-security-and-privacy.md"
+      ],
+      "blocker": null,
+      "nextAction": "Keep all future credentials in approved secret stores and require short-lived automation identity."
+    },
+    {
+      "id": "44",
+      "title": "Apple-grade review of everything",
+      "status": "Partially implemented",
+      "implementation": "Corporate, Portal and PharmaScope have governed design and browser acceptance artefacts.",
+      "evidence": [
+        "docs/design/apple-vs-novapharm.md",
+        "docs/data/medicines-intelligence-visual-acceptance.md"
+      ],
+      "blocker": "The exact latest worktree has not completed every module/state human review.",
+      "nextAction": "Finish the 48-section and 54-module visual ledgers on the exact final build."
+    },
+    {
+      "id": "45",
+      "title": "Human visual review",
+      "status": "Partially implemented",
+      "implementation": "Rendered Corporate and PharmaScope evidence exists and the owner reference is encoded in acceptance.",
+      "evidence": [
+        "docs/programme/final-human-visual-dossier.md",
+        "audit/evidence/medicines-intelligence/manifest.json"
+      ],
+      "blocker": "Latest branding/API/data-state changes require a new rendered comparison and manual inspection.",
+      "nextAction": "Capture desktop/tablet/mobile Chromium/WebKit evidence and inspect actual pixels."
+    },
+    {
+      "id": "46",
+      "title": "No fake completion",
+      "status": "Already complete and verified",
+      "implementation": "Public/private, sample/full, observed/forecast, contact/marketing and repository/production states are explicitly separated.",
+      "evidence": [
+        "docs/data/data-quality-and-caveats.md",
+        "docs/release/final-acceptance.md"
+      ],
+      "blocker": null,
+      "nextAction": "Continue using explicit qualifiers in every report and UI state."
+    },
+    {
+      "id": "47",
+      "title": "Execution order",
+      "status": "Partially implemented",
+      "implementation": "Truth, preservation, data contracts, private cloud, one complete national EPD period, source-scoped marts and incremental tests have proceeded in dependency order.",
+      "evidence": [
+        "docs/programme/post-pr53-current-truth.md",
+        "docs/data/evidence/epd-2026-06-private-cloud-import.json",
+        "docs/data/evidence/epd-2026-06-marts-private-cloud.json"
+      ],
+      "blocker": "The programme remains active across real-query, visual, full acceptance and release phases.",
+      "nextAction": "Continue through query evidence, rendering, complete tests, exact SHA and authorised deployment gates."
+    },
+    {
+      "id": "48",
+      "title": "Final acceptance report",
+      "status": "Partially implemented",
+      "implementation": "Existing Corporate, Portal and data reports distinguish repository and production states.",
+      "evidence": [
+        "docs/release/final-acceptance.md",
+        "docs/portal/54-module-production-matrix.md",
+        "docs/data/medicines-intelligence-requirements.md"
+      ],
+      "blocker": "No immutable final candidate SHA, exact-head CI conclusion or live managed deployment exists.",
+      "nextAction": "Regenerate one consolidated report only after all repository-controlled acceptance concludes."
+    },
+    {
+      "id": "49",
+      "title": "Owner standard",
+      "status": "Partially implemented",
+      "implementation": "The combined programme is being executed under truth, security, accessibility, performance and Apple-discipline priorities.",
+      "evidence": [
+        "docs/design/apple-primary-source-study.md",
+        "docs/programme/combined-owner-requirements.md"
+      ],
+      "blocker": "Material repository work and external release gates remain.",
+      "nextAction": "Do not declare completion until every row is verified or carries an exact blocker and next action."
+    }
+  ],
+  "storeReleaseAmendment": [
+    {
+      "id": "49.1",
+      "title": "Owner account identity",
+      "status": "Owner action required",
+      "implementation": "No identity is invented or stored in source.",
+      "evidence": [
+        "SECURITY.md"
+      ],
+      "blocker": "Owner/developer account email decisions are not recorded in an approved non-secret register.",
+      "nextAction": "Owner supplies approved account identities without passwords or recovery secrets."
+    },
+    {
+      "id": "49.2",
+      "title": "Apple Developer and App Store Connect",
+      "status": "Owner action required",
+      "implementation": "No external account action has been claimed.",
+      "evidence": [
+        "docs/release/owner-action-register.md"
+      ],
+      "blocker": "Owner membership, roles and agreements are unverified.",
+      "nextAction": "Verify membership and minimum required App Store Connect role."
+    },
+    {
+      "id": "49.3",
+      "title": "iOS signing",
+      "status": "Owner action required",
+      "implementation": "No signing material is committed.",
+      "evidence": [
+        "SECURITY.md"
+      ],
+      "blocker": "Team ID, bundle ID, certificates and profiles are absent.",
+      "nextAction": "Configure signing through approved Apple and CI secret authorities."
+    },
+    {
+      "id": "49.4",
+      "title": "iOS release pipeline",
+      "status": "Not implemented",
+      "implementation": "No unbuildable workflow is presented as complete.",
+      "evidence": [
+        "docs/architecture/technology-fit-matrix.md"
+      ],
+      "blocker": "No iOS target or full Xcode runner acceptance exists.",
+      "nextAction": "Implement archive/test/export only after a real target builds locally."
+    },
+    {
+      "id": "49.5",
+      "title": "TestFlight",
+      "status": "Externally blocked",
+      "implementation": "No TestFlight claim is made.",
+      "evidence": [
+        "docs/release/final-acceptance.md"
+      ],
+      "blocker": "Requires signed build, App Store Connect account and external processing.",
+      "nextAction": "Upload an accepted candidate and record tester/build evidence."
+    },
+    {
+      "id": "49.6",
+      "title": "iOS App Store metadata",
+      "status": "Not implemented",
+      "implementation": "Official logo assets exist, but no unsupported listing text is generated.",
+      "evidence": [
+        "final-report/official-logo-register.md"
+      ],
+      "blocker": "App identity, screenshots, category, support and privacy URLs require owner approval and rendered app evidence.",
+      "nextAction": "Create metadata from the tested application, not from mockups."
+    },
+    {
+      "id": "49.7",
+      "title": "iOS privacy",
+      "status": "Partially implemented",
+      "implementation": "Server least-data and privacy boundaries are documented.",
+      "evidence": [
+        "docs/data/analytics-security-and-privacy.md"
+      ],
+      "blocker": "Native SDK/data inventory and privacy manifest do not exist.",
+      "nextAction": "Generate privacy disclosures from the final binary and dependencies."
+    },
+    {
+      "id": "49.8",
+      "title": "iOS review",
+      "status": "Externally blocked",
+      "implementation": "Review requirements are retained without a false acceptance claim.",
+      "evidence": [
+        "docs/release/final-acceptance.md"
+      ],
+      "blocker": "Apple review is external and no submitted build exists.",
+      "nextAction": "Resolve review feedback against an exact build if submitted."
+    },
+    {
+      "id": "49.9",
+      "title": "iOS submission",
+      "status": "Externally blocked",
+      "implementation": "No submission attempted.",
+      "evidence": [
+        "docs/release/final-acceptance.md"
+      ],
+      "blocker": "Signing, metadata, account and tested build are absent.",
+      "nextAction": "Submit only after all preceding iOS controls pass."
+    },
+    {
+      "id": "49.10",
+      "title": "Google Play developer account",
+      "status": "Owner action required",
+      "implementation": "No account state is claimed.",
+      "evidence": [
+        "docs/release/owner-action-register.md"
+      ],
+      "blocker": "Owner Play Console authority is unverified.",
+      "nextAction": "Verify account, organisation and required roles."
+    },
+    {
+      "id": "49.11",
+      "title": "Android package identity",
+      "status": "Owner action required",
+      "implementation": "No package name is invented.",
+      "evidence": [
+        "docs/api/pharmascope-v1.md"
+      ],
+      "blocker": "Owner-approved application ID and product naming are absent.",
+      "nextAction": "Approve immutable application ID before target creation."
+    },
+    {
+      "id": "49.12",
+      "title": "Play App Signing",
+      "status": "Owner action required",
+      "implementation": "No signing key is committed.",
+      "evidence": [
+        "SECURITY.md"
+      ],
+      "blocker": "Play signing/enrollment and upload key do not exist.",
+      "nextAction": "Create through approved owner-controlled signing authority."
+    },
+    {
+      "id": "49.13",
+      "title": "Android release pipeline",
+      "status": "Not implemented",
+      "implementation": "No workflow pretends to build a missing target.",
+      "evidence": [
+        "docs/architecture/technology-fit-matrix.md"
+      ],
+      "blocker": "Android target and toolchain are absent.",
+      "nextAction": "Implement test/bundle/sign pipeline after a real target passes locally."
+    },
+    {
+      "id": "49.14",
+      "title": "Play Store listing",
+      "status": "Not implemented",
+      "implementation": "No mock listing is claimed.",
+      "evidence": [
+        "final-report/official-logo-register.md"
+      ],
+      "blocker": "Tested screens, owner copy, support and privacy metadata are absent.",
+      "nextAction": "Create listing assets from real rendered application states."
+    },
+    {
+      "id": "49.15",
+      "title": "Google Play data safety",
+      "status": "Partially implemented",
+      "implementation": "Server data categories and least-data rules are documented.",
+      "evidence": [
+        "docs/data/analytics-security-and-privacy.md"
+      ],
+      "blocker": "Final Android SDK/data-flow inventory does not exist.",
+      "nextAction": "Complete Data Safety from the final binary and runtime behavior."
+    },
+    {
+      "id": "49.16",
+      "title": "Google Play testing requirements",
+      "status": "Externally blocked",
+      "implementation": "No testing-track completion is claimed.",
+      "evidence": [
+        "docs/release/final-acceptance.md"
+      ],
+      "blocker": "Requires a signed Android build, Play account and external testing cohort/time.",
+      "nextAction": "Run required tracks and record exact-version evidence."
+    },
+    {
+      "id": "49.17",
+      "title": "Google Play production",
+      "status": "Externally blocked",
+      "implementation": "No release claim is made.",
+      "evidence": [
+        "docs/release/final-acceptance.md"
+      ],
+      "blocker": "All Android and external review gates are unresolved.",
+      "nextAction": "Promote only an accepted exact build."
+    },
+    {
+      "id": "49.18",
+      "title": "Store automation",
+      "status": "Not implemented",
+      "implementation": "No high-privilege placeholder automation exists.",
+      "evidence": [
+        "SECURITY.md"
+      ],
+      "blocker": "There are no native targets or approved store service identities.",
+      "nextAction": "Add least-privilege automation only after manual release flow is proven."
+    },
+    {
+      "id": "49.19",
+      "title": "Store credentials",
+      "status": "Owner action required",
+      "implementation": "Repository policy prohibits store credentials and long-lived keys in source.",
+      "evidence": [
+        "SECURITY.md"
+      ],
+      "blocker": "Owner secret-store and CI environment decisions are required.",
+      "nextAction": "Use protected environments and short-lived credentials where supported."
+    },
+    {
+      "id": "49.20",
+      "title": "Store release evidence",
+      "status": "Externally blocked",
+      "implementation": "The required evidence model is retained; no fabricated store status exists.",
+      "evidence": [
+        "docs/release/final-acceptance.md"
+      ],
+      "blocker": "No native candidate, review outcome or production listing exists.",
+      "nextAction": "Record build hash, signing identity, test result, review and live listing only when they occur."
+    }
+  ]
+}

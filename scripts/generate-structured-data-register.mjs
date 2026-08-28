@@ -8,11 +8,21 @@ const articles = readdirSync(join(root, "src/content/insights"))
   .filter((file) => file.endsWith(".json"))
   .map((file) => JSON.parse(readFileSync(join(root, "src/content/insights", file), "utf8")));
 const files = [
-  ...Object.keys(pageMeta).map((slug) => slug ? `${slug}/index.html` : "index.html"),
+  ...Object.keys(pageMeta)
+    .filter((slug) => !new Set(["search", "technology/ai-governance", "product-portfolio", "product-portfolio/nutraxin"]).has(slug))
+    .map((slug) => slug ? `${slug}/index.html` : "index.html"),
   ...leadership.map((person) => `leadership/${person.slug}/index.html`),
   ...articles.map((article) => `news-insights/${article.slug}/index.html`),
   "account-application/index.html"
 ];
+const nutraxinProductDirectory = join(root, "products", "nutraxin");
+if (existsSync(nutraxinProductDirectory)) {
+  for (const entry of readdirSync(nutraxinProductDirectory, { withFileTypes: true })) {
+    if (entry.isDirectory() && existsSync(join(nutraxinProductDirectory, entry.name, "index.html"))) {
+      files.push(`products/nutraxin/${entry.name}/index.html`);
+    }
+  }
+}
 
 function routeFor(file) {
   return file === "index.html" ? "/" : `/${file.replace(/index\.html$/, "")}`;

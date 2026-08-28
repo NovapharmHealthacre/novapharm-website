@@ -1,0 +1,4190 @@
+{
+  "schemaVersion": "1.0.0",
+  "reviewDate": "2026-08-26",
+  "candidateState": "uncommitted_working_tree",
+  "sectionAudits": [
+    {
+      "sectionNumber": 1,
+      "sectionName": "CRO refinement",
+      "purpose": "Present the CRO coordination model with clear responsibility boundaries.",
+      "primaryUser": "Pharmaceutical partner and regulator-aware reviewer",
+      "primaryUserGoal": "Present the CRO coordination model with clear responsibility boundaries",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 4
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [
+        "Exact latest rendered state has not completed final human red-team review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "docs/design/apple-vs-novapharm.md",
+        "docs/design/responsive-acceptance.md",
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 2,
+      "sectionName": "Stacked strategy",
+      "purpose": "Keep strategic information sequenced rather than competing in one viewport.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Keep strategic information sequenced rather than competing in one viewport",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "docs/design/apple-vs-novapharm.md",
+        "docs/design/responsive-acceptance.md",
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 3,
+      "sectionName": "Business-plan evidence",
+      "purpose": "Separate internal planning evidence from approved public claims.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Separate internal planning evidence from approved public claims",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "The stated repository scope is verified.",
+      "scores": {
+        "purpose": 5,
+        "agency": 5,
+        "responsibility": 5,
+        "familiarity": 5,
+        "flexibility": 5,
+        "simplicity": 5,
+        "craft": 5,
+        "delight": 4
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [],
+      "functionalDefects": [],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [],
+      "ownerStandardGap": "None within the stated repository scope.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "docs/programme/regulatory-publication-rules.md"
+      ],
+      "finalStatus": "Already complete and verified"
+    },
+    {
+      "sectionNumber": 4,
+      "sectionName": "Claims do not auto-publish",
+      "purpose": "Require evidence and approval before a planning statement becomes public.",
+      "primaryUser": "Authorised NovaPharm user and accountable owner",
+      "primaryUserGoal": "Require evidence and approval before a planning statement becomes public",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "The stated repository scope is verified.",
+      "scores": {
+        "purpose": 5,
+        "agency": 5,
+        "responsibility": 5,
+        "familiarity": 5,
+        "flexibility": 5,
+        "simplicity": 5,
+        "craft": 5,
+        "delight": 4
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "Fail-closed and evidence-gated at repository level; production remains separate.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [],
+      "functionalDefects": [],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [],
+      "ownerStandardGap": "None within the stated repository scope.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "scripts/audit-public-claims.mjs",
+        "docs/programme/regulatory-publication-rules.md"
+      ],
+      "finalStatus": "Already complete and verified"
+    },
+    {
+      "sectionNumber": 5,
+      "sectionName": "Business-plan themes",
+      "purpose": "Translate only owner-approved themes into concise public communication.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Translate only owner-approved themes into concise public communication",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "docs/design/content-audit.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 6,
+      "sectionName": "Oncology benchmark",
+      "purpose": "Hold the Oncology experience to a credible specialist-market benchmark.",
+      "primaryUser": "Pharmaceutical partner and regulator-aware reviewer",
+      "primaryUserGoal": "Hold the Oncology experience to a credible specialist-market benchmark",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 4
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [
+        "Exact latest rendered state has not completed final human red-team review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "docs/design/apple-vs-novapharm.md",
+        "scripts/test-oncology-content.mjs",
+        "oncology/index.html"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 7,
+      "sectionName": "Oncology positioning",
+      "purpose": "Explain continuity and evidence gates without implying unsupported clinical authority.",
+      "primaryUser": "Pharmaceutical partner and regulator-aware reviewer",
+      "primaryUserGoal": "Explain continuity and evidence gates without implying unsupported clinical authority",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "The stated repository scope is verified.",
+      "scores": {
+        "purpose": 5,
+        "agency": 5,
+        "responsibility": 5,
+        "familiarity": 5,
+        "flexibility": 5,
+        "simplicity": 5,
+        "craft": 5,
+        "delight": 5
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [],
+      "functionalDefects": [],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [],
+      "ownerStandardGap": "None within the stated repository scope.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "docs/design/apple-vs-novapharm.md",
+        "scripts/test-oncology-content.mjs",
+        "oncology/index.html"
+      ],
+      "finalStatus": "Already complete and verified"
+    },
+    {
+      "sectionNumber": 8,
+      "sectionName": "Oncology hero",
+      "purpose": "Make the first viewport concise, truthful and visually composed without decorative science.",
+      "primaryUser": "Pharmaceutical partner and regulator-aware reviewer",
+      "primaryUserGoal": "Make the first viewport concise, truthful and visually composed without decorative science",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "The stated repository scope is verified.",
+      "scores": {
+        "purpose": 5,
+        "agency": 5,
+        "responsibility": 5,
+        "familiarity": 5,
+        "flexibility": 5,
+        "simplicity": 5,
+        "craft": 5,
+        "delight": 5
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [],
+      "functionalDefects": [],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [],
+      "ownerStandardGap": "None within the stated repository scope.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "docs/design/apple-vs-novapharm.md",
+        "scripts/test-oncology-content.mjs",
+        "oncology/index.html"
+      ],
+      "finalStatus": "Already complete and verified"
+    },
+    {
+      "sectionNumber": 9,
+      "sectionName": "Oncology architecture",
+      "purpose": "Provide a short public journey with deeper detail only where necessary.",
+      "primaryUser": "Pharmaceutical partner and regulator-aware reviewer",
+      "primaryUserGoal": "Provide a short public journey with deeper detail only where necessary",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "The stated repository scope is verified.",
+      "scores": {
+        "purpose": 5,
+        "agency": 5,
+        "responsibility": 5,
+        "familiarity": 5,
+        "flexibility": 5,
+        "simplicity": 5,
+        "craft": 5,
+        "delight": 5
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [],
+      "functionalDefects": [],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [],
+      "ownerStandardGap": "None within the stated repository scope.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "docs/design/apple-vs-novapharm.md",
+        "scripts/test-oncology-content.mjs",
+        "oncology/index.html"
+      ],
+      "finalStatus": "Already complete and verified"
+    },
+    {
+      "sectionNumber": 10,
+      "sectionName": "Signature Oncology components",
+      "purpose": "Use typography and evidence-led structures instead of generic visual components.",
+      "primaryUser": "Pharmaceutical partner and regulator-aware reviewer",
+      "primaryUserGoal": "Use typography and evidence-led structures instead of generic visual components",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "The stated repository scope is verified.",
+      "scores": {
+        "purpose": 5,
+        "agency": 5,
+        "responsibility": 5,
+        "familiarity": 5,
+        "flexibility": 5,
+        "simplicity": 5,
+        "craft": 5,
+        "delight": 5
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [],
+      "functionalDefects": [],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [],
+      "ownerStandardGap": "None within the stated repository scope.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "docs/design/apple-vs-novapharm.md",
+        "scripts/test-oncology-content.mjs",
+        "oncology/index.html"
+      ],
+      "finalStatus": "Already complete and verified"
+    },
+    {
+      "sectionNumber": 11,
+      "sectionName": "Oncology language",
+      "purpose": "Use precise regulator-aware language and remove inflated healthcare prose.",
+      "primaryUser": "Pharmaceutical partner and regulator-aware reviewer",
+      "primaryUserGoal": "Use precise regulator-aware language and remove inflated healthcare prose",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "The stated repository scope is verified.",
+      "scores": {
+        "purpose": 5,
+        "agency": 5,
+        "responsibility": 5,
+        "familiarity": 5,
+        "flexibility": 5,
+        "simplicity": 5,
+        "craft": 5,
+        "delight": 5
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [],
+      "functionalDefects": [],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [],
+      "ownerStandardGap": "None within the stated repository scope.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "docs/design/apple-vs-novapharm.md",
+        "scripts/test-oncology-content.mjs",
+        "oncology/index.html"
+      ],
+      "finalStatus": "Already complete and verified"
+    },
+    {
+      "sectionNumber": 12,
+      "sectionName": "Oncology quality and safety",
+      "purpose": "Keep quality, permissions and sponsor responsibilities explicit.",
+      "primaryUser": "Pharmaceutical partner and regulator-aware reviewer",
+      "primaryUserGoal": "Keep quality, permissions and sponsor responsibilities explicit",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "The stated repository scope is verified.",
+      "scores": {
+        "purpose": 5,
+        "agency": 5,
+        "responsibility": 5,
+        "familiarity": 5,
+        "flexibility": 5,
+        "simplicity": 5,
+        "craft": 5,
+        "delight": 5
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [],
+      "functionalDefects": [],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [],
+      "ownerStandardGap": "None within the stated repository scope.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "docs/design/apple-vs-novapharm.md",
+        "scripts/test-oncology-content.mjs",
+        "oncology/index.html"
+      ],
+      "finalStatus": "Already complete and verified"
+    },
+    {
+      "sectionNumber": 13,
+      "sectionName": "Imagery",
+      "purpose": "Retain only authentic, necessary, licensed and correctly delivered media.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Retain only authentic, necessary, licensed and correctly delivered media",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 4
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "Exact latest rendered state has not completed final human red-team review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "docs/design/image-removal-register.md",
+        "audit/generated/image-inventory.json"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 14,
+      "sectionName": "Navigation",
+      "purpose": "Give each audience a short, predictable global route and appropriate local navigation.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Give each audience a short, predictable global route and appropriate local navigation",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 4
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "Exact latest rendered state has not completed final human red-team review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "docs/design/information-architecture.md",
+        "apps/corporate/components/site-header.tsx"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 15,
+      "sectionName": "SEO, GEO and AEO",
+      "purpose": "Make approved public facts discoverable without exposing protected or unsupported content.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Make approved public facts discoverable without exposing protected or unsupported content",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 4
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "Exact latest rendered state has not completed final human red-team review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "docs/programme/seo-geo-aeo-strategy.md",
+        "seo/generated/structured-data-register.json"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 16,
+      "sectionName": "Insights",
+      "purpose": "Publish concise evidence-led editorial material with source and claim governance.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Publish concise evidence-led editorial material with source and claim governance",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 4
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "Exact latest rendered state has not completed final human red-team review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "docs/design/content-audit.md",
+        "seo/generated/page-metadata-register.json"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 17,
+      "sectionName": "Trusted AI",
+      "purpose": "Allow AI only through governed evidence, policy and human authority.",
+      "primaryUser": "Authorised NovaPharm user and accountable owner",
+      "primaryUserGoal": "Allow AI only through governed evidence, policy and human authority",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "Fail-closed and evidence-gated at repository level; production remains separate.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "docs/data/analytics-security-and-privacy.md",
+        "scripts/test-internal-ai-gateway.mjs"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 18,
+      "sectionName": "Public AI search and ask",
+      "purpose": "Prevent a public assistant from inventing pharmaceutical answers or exposing private data.",
+      "primaryUser": "Authorised NovaPharm user and accountable owner",
+      "primaryUserGoal": "Prevent a public assistant from inventing pharmaceutical answers or exposing private data",
+      "currentImplementation": "No user-facing capability is represented as operational; the requirement remains explicitly gated.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "No false or placeholder implementation is exposed.",
+      "scores": {
+        "purpose": 3,
+        "agency": 3,
+        "responsibility": 4,
+        "familiarity": 3,
+        "flexibility": 3,
+        "simplicity": 3,
+        "craft": 3,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "Fail-closed and evidence-gated at repository level; production remains separate.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "Capability is intentionally not implemented and must not be presented as live."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "A justified, governed implementation and complete acceptance evidence."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "docs/programme/regulatory-publication-rules.md"
+      ],
+      "finalStatus": "Not implemented"
+    },
+    {
+      "sectionNumber": 19,
+      "sectionName": "Public AI foundation",
+      "purpose": "Establish a public-only knowledge boundary before any public AI interaction.",
+      "primaryUser": "Authorised NovaPharm user and accountable owner",
+      "primaryUserGoal": "Establish a public-only knowledge boundary before any public AI interaction",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "Fail-closed and evidence-gated at repository level; production remains separate.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "seo/generated/structured-data-register.json",
+        "docs/programme/regulatory-publication-rules.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 20,
+      "sectionName": "WebLLM",
+      "purpose": "Use browser inference only if a measured, private and maintainable product need is proven.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Use browser inference only if a measured, private and maintainable product need is proven",
+      "currentImplementation": "No user-facing capability is represented as operational; the requirement remains explicitly gated.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "No false or placeholder implementation is exposed.",
+      "scores": {
+        "purpose": 3,
+        "agency": 3,
+        "responsibility": 4,
+        "familiarity": 3,
+        "flexibility": 3,
+        "simplicity": 3,
+        "craft": 3,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "Capability is intentionally not implemented and must not be presented as live."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "A justified, governed implementation and complete acceptance evidence."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "docs/architecture/technology-fit-matrix.md"
+      ],
+      "finalStatus": "Not implemented"
+    },
+    {
+      "sectionNumber": 21,
+      "sectionName": "AI policy engine",
+      "purpose": "Apply deterministic policy before model output can influence a governed workflow.",
+      "primaryUser": "Authorised NovaPharm user and accountable owner",
+      "primaryUserGoal": "Apply deterministic policy before model output can influence a governed workflow",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "Fail-closed and evidence-gated at repository level; production remains separate.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "scripts/test-internal-ai-gateway.mjs",
+        "docs/data/analytics-security-and-privacy.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 22,
+      "sectionName": "Privacy",
+      "purpose": "Minimise collection and explain authority at the point of use.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Minimise collection and explain authority at the point of use",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 4
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "Fail-closed and evidence-gated at repository level; production remains separate.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "Exact latest rendered state has not completed final human red-team review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "legal/privacy/index.html",
+        "docs/data/analytics-security-and-privacy.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 23,
+      "sectionName": "User experience",
+      "purpose": "Make principal tasks clear, recoverable and restrained across public and protected surfaces.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Make principal tasks clear, recoverable and restrained across public and protected surfaces",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 4
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "Exact latest rendered state has not completed final human red-team review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "docs/design/apple-vs-novapharm.md",
+        "docs/design/responsive-acceptance.md",
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 24,
+      "sectionName": "Knowledge index",
+      "purpose": "Index only approved public knowledge and keep private source intelligence excluded.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Index only approved public knowledge and keep private source intelligence excluded",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "seo/generated/structured-data-register.json",
+        "scripts/generate-structured-data-register.mjs"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 25,
+      "sectionName": "Internal Portal AI gateway",
+      "purpose": "Keep model access server-side, role-scoped, logged and policy-controlled.",
+      "primaryUser": "Authorised NovaPharm user and accountable owner",
+      "primaryUserGoal": "Keep model access server-side, role-scoped, logged and policy-controlled",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "Fail-closed and evidence-gated at repository level; production remains separate.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "scripts/test-internal-ai-gateway.mjs",
+        "docs/portal/security-production-evidence.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 26,
+      "sectionName": "Internal AI use cases",
+      "purpose": "Expose only approved, low-risk use cases with an accountable human decision maker.",
+      "primaryUser": "Authorised NovaPharm user and accountable owner",
+      "primaryUserGoal": "Expose only approved, low-risk use cases with an accountable human decision maker",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "Fail-closed and evidence-gated at repository level; production remains separate.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "docs/data/analytics-security-and-privacy.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 27,
+      "sectionName": "AI roadmap only",
+      "purpose": "Label future AI capabilities as roadmap until code, evidence and approval exist.",
+      "primaryUser": "Authorised NovaPharm user and accountable owner",
+      "primaryUserGoal": "Label future AI capabilities as roadmap until code, evidence and approval exist",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "The stated repository scope is verified.",
+      "scores": {
+        "purpose": 5,
+        "agency": 5,
+        "responsibility": 5,
+        "familiarity": 5,
+        "flexibility": 5,
+        "simplicity": 5,
+        "craft": 5,
+        "delight": 4
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "Fail-closed and evidence-gated at repository level; production remains separate.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [],
+      "functionalDefects": [],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [],
+      "ownerStandardGap": "None within the stated repository scope.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "docs/programme/regulatory-publication-rules.md"
+      ],
+      "finalStatus": "Already complete and verified"
+    },
+    {
+      "sectionNumber": 28,
+      "sectionName": "Forecasting roadmap",
+      "purpose": "Keep forecasting unavailable until deterministic history and backtests support it.",
+      "primaryUser": "Authorised NovaPharm user and accountable owner",
+      "primaryUserGoal": "Keep forecasting unavailable until deterministic history and backtests support it",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "docs/data/forecasting-methodology.md",
+        "packages/medicines-intelligence/src/forecasting.ts"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 29,
+      "sectionName": "Traceability roadmap",
+      "purpose": "Avoid blockchain or end-to-end traceability claims without operational evidence.",
+      "primaryUser": "Authorised NovaPharm user and accountable owner",
+      "primaryUserGoal": "Avoid blockchain or end-to-end traceability claims without operational evidence",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "The stated repository scope is verified.",
+      "scores": {
+        "purpose": 5,
+        "agency": 5,
+        "responsibility": 5,
+        "familiarity": 5,
+        "flexibility": 5,
+        "simplicity": 5,
+        "craft": 5,
+        "delight": 4
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [],
+      "functionalDefects": [],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [],
+      "ownerStandardGap": "None within the stated repository scope.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "docs/programme/regulatory-publication-rules.md",
+        "src/core/executive-module-views.mjs"
+      ],
+      "finalStatus": "Already complete and verified"
+    },
+    {
+      "sectionNumber": 30,
+      "sectionName": "Public AI governance",
+      "purpose": "Explain AI limitations and responsibility without marketing unsupported capability.",
+      "primaryUser": "Authorised NovaPharm user and accountable owner",
+      "primaryUserGoal": "Explain AI limitations and responsibility without marketing unsupported capability",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "Fail-closed and evidence-gated at repository level; production remains separate.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "docs/data/analytics-security-and-privacy.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 31,
+      "sectionName": "Personal website AI",
+      "purpose": "Keep founder/publication surfaces separate from unapproved personal AI functionality.",
+      "primaryUser": "Authorised NovaPharm user and accountable owner",
+      "primaryUserGoal": "Keep founder/publication surfaces separate from unapproved personal AI functionality",
+      "currentImplementation": "No user-facing capability is represented as operational; the requirement remains explicitly gated.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "No false or placeholder implementation is exposed.",
+      "scores": {
+        "purpose": 3,
+        "agency": 3,
+        "responsibility": 4,
+        "familiarity": 3,
+        "flexibility": 3,
+        "simplicity": 3,
+        "craft": 3,
+        "delight": 3
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "Fail-closed and evidence-gated at repository level; production remains separate.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [
+        "Exact latest rendered state has not completed final human red-team review."
+      ],
+      "functionalDefects": [
+        "Capability is intentionally not implemented and must not be presented as live."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "A justified, governed implementation and complete acceptance evidence."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "docs/architecture/technology-fit-matrix.md"
+      ],
+      "finalStatus": "Not implemented"
+    },
+    {
+      "sectionNumber": 32,
+      "sectionName": "Licensing",
+      "purpose": "Record software, media, data and model licence authority before use.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Record software, media, data and model licence authority before use",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "docs/media-provenance-register.json",
+        "docs/data/nhsbsa-source-registry.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 33,
+      "sectionName": "OCR and voice",
+      "purpose": "Add OCR or voice only for a governed workflow with privacy, accessibility and accuracy evidence.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Add OCR or voice only for a governed workflow with privacy, accessibility and accuracy evidence",
+      "currentImplementation": "No user-facing capability is represented as operational; the requirement remains explicitly gated.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "No false or placeholder implementation is exposed.",
+      "scores": {
+        "purpose": 3,
+        "agency": 3,
+        "responsibility": 4,
+        "familiarity": 3,
+        "flexibility": 3,
+        "simplicity": 3,
+        "craft": 3,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "Capability is intentionally not implemented and must not be presented as live."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "A justified, governed implementation and complete acceptance evidence."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "docs/architecture/technology-fit-matrix.md"
+      ],
+      "finalStatus": "Not implemented"
+    },
+    {
+      "sectionNumber": 34,
+      "sectionName": "Prompt injection and data leakage",
+      "purpose": "Prevent untrusted content from overriding policy or extracting protected information.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Prevent untrusted content from overriding policy or extracting protected information",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "SECURITY.md",
+        "docs/portal/security-production-evidence.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 35,
+      "sectionName": "AI evaluation",
+      "purpose": "Measure groundedness, refusal, leakage and task correctness before an AI release.",
+      "primaryUser": "Authorised NovaPharm user and accountable owner",
+      "primaryUserGoal": "Measure groundedness, refusal, leakage and task correctness before an AI release",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "Fail-closed and evidence-gated at repository level; production remains separate.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "scripts/test-internal-ai-gateway.mjs",
+        "docs/data/analytics-security-and-privacy.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 36,
+      "sectionName": "Performance",
+      "purpose": "Keep public and protected experiences responsive under realistic resource budgets.",
+      "primaryUser": "Release engineer and owner reviewer",
+      "primaryUserGoal": "Keep public and protected experiences responsive under realistic resource budgets",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 4
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "Exact latest rendered state has not completed final human red-team review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "docs/programme/final-performance-acceptance.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 37,
+      "sectionName": "Accessibility",
+      "purpose": "Meet WCAG 2.2 AA through native semantics, keyboard, contrast, reflow and reduced motion.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Meet WCAG 2.2 AA through native semantics, keyboard, contrast, reflow and reduced motion",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 4
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "Exact latest rendered state has not completed final human red-team review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "docs/design/accessibility-contrast-audit.md",
+        "apps/portal/test/browser-acceptance.ts"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 38,
+      "sectionName": "Claims audit",
+      "purpose": "Fail the build when unsupported pharmaceutical or operating claims reappear.",
+      "primaryUser": "Authorised NovaPharm user and accountable owner",
+      "primaryUserGoal": "Fail the build when unsupported pharmaceutical or operating claims reappear",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "The stated repository scope is verified.",
+      "scores": {
+        "purpose": 5,
+        "agency": 5,
+        "responsibility": 5,
+        "familiarity": 5,
+        "flexibility": 5,
+        "simplicity": 5,
+        "craft": 5,
+        "delight": 4
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "Fail-closed and evidence-gated at repository level; production remains separate.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [],
+      "functionalDefects": [],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [],
+      "ownerStandardGap": "None within the stated repository scope.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "scripts/audit-public-claims.mjs",
+        "docs/programme/regulatory-publication-rules.md"
+      ],
+      "finalStatus": "Already complete and verified"
+    },
+    {
+      "sectionNumber": 39,
+      "sectionName": "Website gaps",
+      "purpose": "Keep every known gap explicit and close repository-controlled gaps before release.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Keep every known gap explicit and close repository-controlled gaps before release",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 4
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "Exact latest rendered state has not completed final human red-team review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "docs/release/final-acceptance.md",
+        "docs/release/owner-action-register.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 40,
+      "sectionName": "Content governance",
+      "purpose": "Give every public statement a source, owner, status and publication boundary.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Give every public statement a source, owner, status and publication boundary",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 4
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "Exact latest rendered state has not completed final human red-team review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "docs/programme/regulatory-publication-rules.md",
+        "scripts/audit-public-claims.mjs"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 41,
+      "sectionName": "Development and testing",
+      "purpose": "Verify each increment with canonical toolchain, tests, builds and generated-diff review.",
+      "primaryUser": "Release engineer and owner reviewer",
+      "primaryUserGoal": "Verify each increment with canonical toolchain, tests, builds and generated-diff review",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "package.json",
+        "docs/release/final-acceptance.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 42,
+      "sectionName": "Browser matrix",
+      "purpose": "Treat Chromium and WebKit, mobile and desktop, as first-class acceptance environments.",
+      "primaryUser": "Release engineer and owner reviewer",
+      "primaryUserGoal": "Treat Chromium and WebKit, mobile and desktop, as first-class acceptance environments",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Substantially redesigned; exact-final-build human review remains part of acceptance.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 4
+      },
+      "accessibility": "WCAG/Axe and manual exact-final rerun required after final CSS.",
+      "responsiveState": "Responsive implementation exists; exact-final viewport matrix pending.",
+      "webkitState": "WebKit evidence exists historically; exact-final rerun pending.",
+      "performanceState": "No known threshold waiver; exact-final measurement pending.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "Exact latest rendered state has not completed final human red-team review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "testEvidence": [
+        "docs/design/responsive-acceptance.md",
+        "apps/portal/test/browser-acceptance.ts"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 43,
+      "sectionName": "Owner evidence",
+      "purpose": "Preserve exact owner-supplied source, checksum and approval records.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Preserve exact owner-supplied source, checksum and approval records",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "Fail-closed and evidence-gated at repository level; production remains separate.",
+      "dataAuthority": "Only governed source/evidence may populate the experience.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "final-report/official-logo-register.md",
+        "docs/application-media-provenance.json"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 44,
+      "sectionName": "Red teams",
+      "purpose": "Challenge design, engineering, security and executive trust before release.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Challenge design, engineering, security and executive trust before release",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "docs/design/apple-vs-novapharm.md",
+        "docs/programme/final-human-visual-dossier.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 45,
+      "sectionName": "Git and PR",
+      "purpose": "Create one reviewable exact-SHA candidate without rewriting main or hiding dirty work.",
+      "primaryUser": "Release engineer and owner reviewer",
+      "primaryUserGoal": "Create one reviewable exact-SHA candidate without rewriting main or hiding dirty work",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "Fail-closed and evidence-gated at repository level; production remains separate.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "docs/current-state/corporate-release-truth.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 46,
+      "sectionName": "Company handoff",
+      "purpose": "Give the owner enough evidence to understand architecture, quality and blockers independently.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Give the owner enough evidence to understand architecture, quality and blockers independently",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "docs/release/final-acceptance.md",
+        "docs/programme/executive-summary.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 47,
+      "sectionName": "Owner decisions",
+      "purpose": "Keep cost, identity, legal, regulatory and store decisions in an explicit owner register.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Keep cost, identity, legal, regulatory and store decisions in an explicit owner register",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "Fail-closed and evidence-gated at repository level; production remains separate.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "docs/release/owner-action-register.md",
+        "docs/programme/combined-owner-requirements.md"
+      ],
+      "finalStatus": "Partially implemented"
+    },
+    {
+      "sectionNumber": 48,
+      "sectionName": "Final status",
+      "purpose": "Declare only the exact state supported by repository and environment evidence.",
+      "primaryUser": "Prospective partner, customer and owner reviewer",
+      "primaryUserGoal": "Declare only the exact state supported by repository and environment evidence",
+      "currentImplementation": "The governed implementation and evidence listed below are present in the current working tree.",
+      "currentVisualQuality": "Policy or engineering boundary; visual treatment applies only where surfaced.",
+      "currentFunctionalQuality": "Real implementation exists, with the stated exact-final or production layer outstanding.",
+      "scores": {
+        "purpose": 4,
+        "agency": 4,
+        "responsibility": 4,
+        "familiarity": 4,
+        "flexibility": 4,
+        "simplicity": 4,
+        "craft": 4,
+        "delight": 3
+      },
+      "accessibility": "No additional interactive surface introduced.",
+      "responsiveState": "Not applicable to a policy-only boundary.",
+      "webkitState": "No WebKit-specific runtime surface.",
+      "performanceState": "No additional client payload introduced.",
+      "securityState": "No security control weakened by this section.",
+      "dataAuthority": "Repository content and controlled application data only.",
+      "designDefects": [
+        "No final operational surface exists for complete review."
+      ],
+      "functionalDefects": [
+        "An applicable exact-final, data or production layer remains outstanding."
+      ],
+      "redundantElements": "No known element is retained solely to fill whitespace; final human review may remove more.",
+      "missingElements": [
+        "Exact-final verification evidence for the outstanding layer."
+      ],
+      "ownerStandardGap": "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
+      "changesMade": "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+      "screenshotEvidence": [],
+      "testEvidence": [
+        "docs/release/final-acceptance.md",
+        "docs/programme/combined-owner-requirements.md"
+      ],
+      "finalStatus": "Partially implemented"
+    }
+  ],
+  "moduleAudits": [
+    {
+      "id": "customer.dashboard",
+      "title": "Customer Dashboard",
+      "purpose": "Account position, current actions and recent customer-scoped activity.",
+      "route": "/portal/dashboard/",
+      "roles": [
+        "customer",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "Customer and organisation scope plus server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: customers, organisations, orders, invoices and quality_complaints",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "customer.account",
+      "title": "My Account",
+      "purpose": "Controlled legal entity, contacts, addresses, terms and change-request status.",
+      "route": "/portal/account/",
+      "roles": [
+        "customer",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "Customer and organisation scope plus server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: customers, organisations, customer_contacts and organisation_addresses",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "customer.orders",
+      "title": "My Orders",
+      "purpose": "Customer-scoped orders, lines, status histories and linked fulfilment records.",
+      "route": "/portal/orders/",
+      "roles": [
+        "customer",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "Customer and organisation scope plus server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: orders and order_lines restricted by customer_id",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "customer.invoices",
+      "title": "My Invoices",
+      "purpose": "Customer invoices, outstanding balances, payments and credit notes.",
+      "route": "/portal/invoices/",
+      "roles": [
+        "customer",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "Customer and organisation scope plus server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: invoices and invoice_lines restricted by customer_id",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "customer.statements",
+      "title": "My Statements",
+      "purpose": "Period statements reconciled from invoices, credits and payments.",
+      "route": "/portal/statements/",
+      "roles": [
+        "customer",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "Customer and organisation scope plus server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: invoices, credit notes and account transactions restricted by customer_id",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "customer.products",
+      "title": "My Products",
+      "purpose": "Account-authorised catalogue products with controlled pricing and availability state.",
+      "route": "/portal/products/",
+      "roles": [
+        "customer",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "Customer and organisation scope plus server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: customer_price_lists, products, product_variants and inventory_balances",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "customer.price-lists",
+      "title": "Price Lists",
+      "purpose": "Effective customer-specific price lists without supplier cost or other-account pricing.",
+      "route": "/portal/price-lists/",
+      "roles": [
+        "customer",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "Customer and organisation scope plus server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: customer_price_lists, price_lists and price_list_items",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "customer.stock-availability",
+      "title": "Stock Availability",
+      "purpose": "Released available-to-promise quantities and explicit quarantine separation.",
+      "route": "/portal/stock-availability/",
+      "roles": [
+        "customer",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "Customer and organisation scope plus server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: authorised products, released batches and inventory_balances",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "customer.order-tracking",
+      "title": "Order Tracking",
+      "purpose": "Order status, allocation and linked shipment progress.",
+      "route": "/portal/order-tracking/",
+      "roles": [
+        "customer",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "Customer and organisation scope plus server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: orders, shipments and shipment_events restricted by customer_id",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "customer.delivery-tracking",
+      "title": "Delivery Tracking",
+      "purpose": "Carrier and delivery events from approved source records.",
+      "route": "/portal/delivery-tracking/",
+      "roles": [
+        "customer",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "Customer and organisation scope plus server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: shipments and shipment_events restricted by customer_id",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "customer.returns",
+      "title": "Returns",
+      "purpose": "Controlled return requests, inspection disposition and credit-note status.",
+      "route": "/portal/returns/",
+      "roles": [
+        "customer",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "Customer and organisation scope plus server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: returns, return_lines, orders and order_lines restricted by customer_id",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "customer.quality-complaints",
+      "title": "Quality Complaints",
+      "purpose": "Customer quality cases without processing adverse-event information.",
+      "route": "/portal/quality-complaints/",
+      "roles": [
+        "customer",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "Customer and organisation scope plus server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: quality_complaints, orders and products restricted by customer_id",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "customer.documents",
+      "title": "Documents",
+      "purpose": "Authorised customer and order documents only.",
+      "route": "/portal/documents/",
+      "roles": [
+        "customer",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "Customer and organisation scope plus server role enforcement and noindex",
+      "dataAuthority": "Azure SQL metadata plus private Blob/SharePoint delivery after document authorisation",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "customer.support",
+      "title": "Support Tickets",
+      "purpose": "Customer-scoped service requests and linked order or product context.",
+      "route": "/portal/support/",
+      "roles": [
+        "customer",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "Customer and organisation scope plus server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: support_tickets restricted by customer_id",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "customer.regulatory-documents",
+      "title": "Regulatory Documents",
+      "purpose": "Approved effective regulatory documents authorised for the account.",
+      "route": "/portal/regulatory-documents/",
+      "roles": [
+        "customer",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "Customer and organisation scope plus server role enforcement and noindex",
+      "dataAuthority": "Azure SQL document metadata plus approved private regulatory document store",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "customer.downloads",
+      "title": "Downloads",
+      "purpose": "Permission-controlled downloadable records with no direct storage disclosure.",
+      "route": "/portal/downloads/",
+      "roles": [
+        "customer",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "Customer and organisation scope plus server role enforcement and noindex",
+      "dataAuthority": "Azure SQL document authorisations plus private Blob/SharePoint delivery",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "customer.analytics",
+      "title": "Customer Analytics",
+      "purpose": "Customer-only order, spend, service and complaint indicators.",
+      "route": "/portal/analytics/",
+      "roles": [
+        "customer",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "Customer and organisation scope plus server role enforcement and noindex",
+      "dataAuthority": "Azure SQL customer-scoped aggregate queries; no third-party analytics source connected",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "customer.settings",
+      "title": "Settings",
+      "purpose": "Identity, notification and controlled account-change preferences.",
+      "route": "/portal/settings/",
+      "roles": [
+        "customer",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "Customer and organisation scope plus server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: identity linkage and customer notification preferences",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "employee.dashboard",
+      "title": "Operations Dashboard",
+      "purpose": "Cross-functional tasks, exceptions and data-source readiness.",
+      "route": "/employee/dashboard/",
+      "roles": [
+        "employee",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "No approved production source connected",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "employee.customers",
+      "title": "Customers",
+      "purpose": "Canonical customer accounts, contacts, credit and connected records.",
+      "route": "/employee/customers/",
+      "roles": [
+        "employee",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: customers, organisations, contacts and account workflow state",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "employee.suppliers",
+      "title": "Suppliers",
+      "purpose": "Qualification, contacts, products, purchasing and evidence.",
+      "route": "/employee/suppliers/",
+      "roles": [
+        "employee",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: suppliers, organisations, qualification and quality-agreement state",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "employee.products",
+      "title": "Product Master",
+      "purpose": "Product lifecycle, variants, composition, claims, media and linked records.",
+      "route": "/employee/products/",
+      "roles": [
+        "employee",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: products, variants, composition, media and lifecycle events",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "employee.orders",
+      "title": "Telesales Orders",
+      "purpose": "Validated order creation and governed order lifecycle.",
+      "route": "/employee/orders/",
+      "roles": [
+        "employee",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: orders, order_lines, customers and fulfilment state",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "employee.warehouse",
+      "title": "Warehouse & Inventory",
+      "purpose": "Third-party warehouse validation foundation and canonical inventory ledger.",
+      "route": "/employee/warehouse/",
+      "roles": [
+        "employee",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: batches, inventory_balances and warehouse_transactions; no live WMS connected",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "employee.purchasing",
+      "title": "Purchasing",
+      "purpose": "Purchase orders, receipts, supplier invoices and three-way matching.",
+      "route": "/employee/purchasing/",
+      "roles": [
+        "employee",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: purchase_orders, purchase_order_lines and supplier records",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "employee.finance",
+      "title": "Finance",
+      "purpose": "Synthetic double-entry, receivables, payables and control exceptions.",
+      "route": "/employee/finance/",
+      "roles": [
+        "employee",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: invoices, journals, receivables and payables; no live accounting platform connected",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "employee.quality",
+      "title": "Quality",
+      "purpose": "Complaints, deviations, CAPA and batch-quality controls.",
+      "route": "/employee/quality/",
+      "roles": [
+        "employee",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: quality_complaints, CAPA and quality workflow records",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "employee.regulatory",
+      "title": "Regulatory",
+      "purpose": "Classification and milestone records without asserting unverified authorisation.",
+      "route": "/employee/regulatory/",
+      "roles": [
+        "employee",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: regulatory_cases and evidence status; no regulator system connected",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "employee.crm",
+      "title": "CRM",
+      "purpose": "Leads, opportunities, attribution and account-conversion context.",
+      "route": "/employee/crm/",
+      "roles": [
+        "employee",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: opportunities and CRM activities; no Salesforce tenant connected",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "employee.reports",
+      "title": "Reports",
+      "purpose": "Governed read-only operational reporting with stated scope and freshness.",
+      "route": "/employee/reports/",
+      "roles": [
+        "employee",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL governed reporting queries; no production BI workspace connected",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "employee.administration",
+      "title": "Operational Administration",
+      "purpose": "Tasks, permissions and workflow state without security-admin duplication.",
+      "route": "/employee/administration/",
+      "roles": [
+        "employee",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: workflow_instances, outbox state and controlled domain events",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "executive.command-centre",
+      "title": "Command Centre",
+      "purpose": "Cross-functional operating position, exceptions and decisions required.",
+      "route": "/portal/executive-platform/command-centre/",
+      "roles": [
+        "board",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL read model across governed workflows, risks and review events",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "executive.ceo-dashboard",
+      "title": "CEO Dashboard",
+      "purpose": "Synthetic financial and operational indicators linked to canonical records.",
+      "route": "/portal/executive-platform/ceo-dashboard/",
+      "roles": [
+        "board",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL synthetic-validation executive aggregate; no production finance feed connected",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "executive.sales-intelligence",
+      "title": "Sales Intelligence",
+      "purpose": "Pipeline, product interest, conversion and order indicators.",
+      "route": "/portal/executive-platform/sales-intelligence/",
+      "roles": [
+        "board",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL opportunities and commercial pipeline; no production CRM feed connected",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "executive.customer-analytics",
+      "title": "Customer Analytics",
+      "purpose": "Customer, application, credit, service and complaint indicators.",
+      "route": "/portal/executive-platform/customer-analytics/",
+      "roles": [
+        "board",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL customer aggregates; no production analytics warehouse connected",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "executive.product-master",
+      "title": "Product Master",
+      "purpose": "Read-only strategic view of product readiness and claim controls.",
+      "route": "/portal/executive-platform/product-master/",
+      "roles": [
+        "board",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL product, regulatory and evidence-readiness read model",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "executive.nhs-data",
+      "title": "Medicines Intelligence",
+      "purpose": "Governed medicine identity, source quality and UK pharmacy geography for executive analysis.",
+      "route": "/portal/executive-platform/medicines-intelligence/",
+      "roles": [
+        "board",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "NHSBSA BNF Code Information current-year identity; ONS postcode geography; owner-supplied UK pharmacy master; no prescribing or dispensing fact history yet ingested",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "packages/medicines-intelligence/test/*.test.ts",
+        "src/core/medicines-intelligence-service.mjs",
+        "scripts/test-enterprise-portal.mjs",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "executive.plpi",
+      "title": "PLPI",
+      "purpose": "Internal project governance only; no granted licence is implied.",
+      "route": "/portal/executive-platform/plpi/",
+      "roles": [
+        "board",
+        "admin"
+      ],
+      "releaseClassification": "hidden_until_dependency_exists",
+      "finalStatus": "Already complete and verified",
+      "visualReview": "Deliberate 404 with no navigation or capability chrome.",
+      "functionalReview": "Route and server module gate fail closed until the dependency exists.",
+      "stateCoverage": [
+        "hidden",
+        "not-found",
+        "server-denied"
+      ],
+      "accessibility": "No hidden control or inaccessible dead-end is exposed.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "No verified production projects connected; Azure SQL governance schema only",
+      "designDefects": [],
+      "functionalDefects": [],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts (hidden route rejection)",
+        "src/core/enterprise-domain-service.mjs (server fail-closed gate)",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "executive.pharmacovigilance",
+      "title": "Pharmacovigilance",
+      "purpose": "Qualified safety-system boundary; general portal safety intake remains prohibited.",
+      "route": "/portal/executive-platform/pharmacovigilance/",
+      "roles": [
+        "board",
+        "admin"
+      ],
+      "releaseClassification": "hidden_until_dependency_exists",
+      "finalStatus": "Already complete and verified",
+      "visualReview": "Deliberate 404 with no navigation or capability chrome.",
+      "functionalReview": "Route and server module gate fail closed until the dependency exists.",
+      "stateCoverage": [
+        "hidden",
+        "not-found",
+        "server-denied"
+      ],
+      "accessibility": "No hidden control or inaccessible dead-end is exposed.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "No qualified safety system connected",
+      "designDefects": [],
+      "functionalDefects": [],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts (hidden route rejection)",
+        "src/core/enterprise-domain-service.mjs (server fail-closed gate)",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "executive.sourcing",
+      "title": "Sourcing",
+      "purpose": "Supplier qualification, product relationships and evidence status.",
+      "route": "/portal/executive-platform/sourcing/",
+      "roles": [
+        "board",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL supplier qualification and sourcing-readiness read model",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "executive.tenders",
+      "title": "Tenders",
+      "purpose": "Controlled opportunity tracking without implying award.",
+      "route": "/portal/executive-platform/tenders/",
+      "roles": [
+        "board",
+        "admin"
+      ],
+      "releaseClassification": "hidden_until_dependency_exists",
+      "finalStatus": "Already complete and verified",
+      "visualReview": "Deliberate 404 with no navigation or capability chrome.",
+      "functionalReview": "Route and server module gate fail closed until the dependency exists.",
+      "stateCoverage": [
+        "hidden",
+        "not-found",
+        "server-denied"
+      ],
+      "accessibility": "No hidden control or inaccessible dead-end is exposed.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "No approved tender source connected",
+      "designDefects": [],
+      "functionalDefects": [],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts (hidden route rejection)",
+        "src/core/enterprise-domain-service.mjs (server fail-closed gate)",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "executive.warehouse",
+      "title": "Warehouse",
+      "purpose": "Third-party integration readiness and canonical stock indicators.",
+      "route": "/portal/executive-platform/warehouse/",
+      "roles": [
+        "board",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL synthetic shipment read model; no live WMS or Polar Speed feed connected",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "executive.service-levels",
+      "title": "Service Levels",
+      "purpose": "Measured delivery indicators from approved synthetic source records.",
+      "route": "/portal/executive-platform/service-levels/",
+      "roles": [
+        "board",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL synthetic shipment events; no accepted production carrier feed connected",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "executive.finance",
+      "title": "Finance",
+      "purpose": "Read-only synthetic finance controls and reconciled indicators.",
+      "route": "/portal/executive-platform/finance/",
+      "roles": [
+        "board",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL synthetic journals and invoices; no production finance system connected",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "executive.capital",
+      "title": "Capital",
+      "purpose": "Controlled budget and capital-planning boundary without published forecasts.",
+      "route": "/portal/executive-platform/capital/",
+      "roles": [
+        "board",
+        "admin"
+      ],
+      "releaseClassification": "hidden_until_dependency_exists",
+      "finalStatus": "Already complete and verified",
+      "visualReview": "Deliberate 404 with no navigation or capability chrome.",
+      "functionalReview": "Route and server module gate fail closed until the dependency exists.",
+      "stateCoverage": [
+        "hidden",
+        "not-found",
+        "server-denied"
+      ],
+      "accessibility": "No hidden control or inaccessible dead-end is exposed.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "No board-approved capital planning source connected",
+      "designDefects": [],
+      "functionalDefects": [],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts (hidden route rejection)",
+        "src/core/enterprise-domain-service.mjs (server fail-closed gate)",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "executive.microsoft-365",
+      "title": "Microsoft 365",
+      "purpose": "Graph and SharePoint integration health and least-privilege state.",
+      "route": "/portal/executive-platform/microsoft-365/",
+      "roles": [
+        "board",
+        "admin"
+      ],
+      "releaseClassification": "hidden_until_dependency_exists",
+      "finalStatus": "Already complete and verified",
+      "visualReview": "Deliberate 404 with no navigation or capability chrome.",
+      "functionalReview": "Route and server module gate fail closed until the dependency exists.",
+      "stateCoverage": [
+        "hidden",
+        "not-found",
+        "server-denied"
+      ],
+      "accessibility": "No hidden control or inaccessible dead-end is exposed.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "No production Graph or SharePoint connection; tenant consent required",
+      "designDefects": [],
+      "functionalDefects": [],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts (hidden route rejection)",
+        "src/core/enterprise-domain-service.mjs (server fail-closed gate)",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "executive.documents",
+      "title": "Documents",
+      "purpose": "Controlled metadata and links without public file exposure.",
+      "route": "/portal/executive-platform/documents/",
+      "roles": [
+        "board",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL document metadata; private SharePoint/Blob content not connected in production",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "executive.ai-technology",
+      "title": "AI & Technology",
+      "purpose": "Governed use-case register; no autonomous decisions are presented as live.",
+      "route": "/portal/executive-platform/ai-technology/",
+      "roles": [
+        "board",
+        "admin"
+      ],
+      "releaseClassification": "hidden_until_dependency_exists",
+      "finalStatus": "Already complete and verified",
+      "visualReview": "Deliberate 404 with no navigation or capability chrome.",
+      "functionalReview": "Route and server module gate fail closed until the dependency exists.",
+      "stateCoverage": [
+        "hidden",
+        "not-found",
+        "server-denied"
+      ],
+      "accessibility": "No hidden control or inaccessible dead-end is exposed.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "No production AI use case or model approved",
+      "designDefects": [],
+      "functionalDefects": [],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts (hidden route rejection)",
+        "src/core/enterprise-domain-service.mjs (server fail-closed gate)",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "executive.traceability",
+      "title": "Traceability",
+      "purpose": "Canonical product, batch, order and inventory lineage; blockchain is not claimed.",
+      "route": "/portal/executive-platform/traceability/",
+      "roles": [
+        "board",
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL stock and transaction events; no blockchain capability claimed",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "admin.dashboard",
+      "title": "Admin Dashboard",
+      "purpose": "Controlled platform, lead, application and integration overview.",
+      "route": "/admin/dashboard/",
+      "roles": [
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: workflow, integration, security and audit aggregates",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "admin.local-review",
+      "title": "Owner Review",
+      "purpose": "Synthetic local acceptance index and module maturity.",
+      "route": "/admin/local-review/",
+      "roles": [
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Synthetic local acceptance register only",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "admin.users",
+      "title": "Users & Sessions",
+      "purpose": "Identity scopes, sessions and revocation controls.",
+      "route": "/admin/users/",
+      "roles": [
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Azure SQL target: identity linkage, sessions and security events; Entra not connected in production",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "admin.content",
+      "title": "Content Governance",
+      "purpose": "Product content, claims, imagery and publication control.",
+      "route": "/admin/content/",
+      "roles": [
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Repository claims/content registries plus Azure SQL publication workflow target",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    },
+    {
+      "id": "admin.analytics",
+      "title": "Platform Analytics",
+      "purpose": "Audit, security, migration, backup and data-quality indicators.",
+      "route": "/admin/analytics/",
+      "roles": [
+        "admin"
+      ],
+      "releaseClassification": "informational_only",
+      "finalStatus": "Partially implemented",
+      "visualReview": "Purpose-built read-only presentation; exact-latest state matrix and human review pending.",
+      "functionalReview": "Repository route, protected API read model and empty/error/restricted contracts exist.",
+      "stateCoverage": [
+        "loading",
+        "success",
+        "empty",
+        "error",
+        "restricted",
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "accessibility": "Axe/keyboard/responsive suite configured; exact-latest rerun pending.",
+      "security": "server role enforcement and noindex",
+      "dataAuthority": "Application Insights and Azure SQL target; no live telemetry estate connected",
+      "designDefects": [
+        "Exact-latest rendered state requires final human review."
+      ],
+      "functionalDefects": [
+        "Production-authoritative data and managed deployment are not accepted."
+      ],
+      "evidence": [
+        "packages/portal-contracts/test/catalog.test.ts",
+        "apps/portal/test/routes.test.ts",
+        "scripts/test-enterprise-portal.mjs",
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/portal/54-module-production-matrix.md"
+      ]
+    }
+  ]
+}

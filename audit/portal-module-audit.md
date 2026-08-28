@@ -9,7 +9,7 @@
 |---|---:|---:|---:|
 | customer | 18 | 18 | 0 |
 | employee | 13 | 13 | 0 |
-| executive | 18 | 11 | 7 |
+| executive | 18 | 12 | 6 |
 | admin | 5 | 5 | 0 |
 
 ## Findings resolved

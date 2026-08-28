@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "statusDate": "2026-08-28",
+  "assets": [
+    {
+      "path": "audit/evidence/medicines-intelligence/reference/owner-approved-information-architecture.png",
+      "source": "Owner-supplied Medicines Intelligence design reference attached on 24 August 2026",
+      "licence": "Owner-provided for NovaPharm programme design and acceptance review",
+      "semanticPurpose": "Owner-approved information-architecture baseline; illustrative values are not data",
+      "reviewStatus": "owner-approved-reference",
+      "technicalStatus": "reference-only-not-public-delivery"
+    },
+    {
+      "path": "audit/evidence/medicines-intelligence/final/chromium-desktop-1600-populated.png",
+      "source": "Playwright Chromium capture from the local standalone Portal candidate",
+      "licence": "NovaPharm repository-generated acceptance evidence",
+      "semanticPurpose": "Populated 1600px desktop visual acceptance using an explicit validation fixture",
+      "reviewStatus": "human-reviewed-accepted",
+      "technicalStatus": "local-validation-not-production"
+    },
+    {
+      "path": "audit/evidence/medicines-intelligence/final/webkit-desktop-1600-populated.png",
+      "source": "Playwright WebKit capture from the local standalone Portal candidate",
+      "licence": "NovaPharm repository-generated acceptance evidence",
+      "semanticPurpose": "Populated 1600px WebKit visual acceptance using an explicit validation fixture",
+      "reviewStatus": "human-reviewed-accepted",
+      "technicalStatus": "local-validation-not-production"
+    },
+    {
+      "path": "audit/evidence/medicines-intelligence/final/chromium-mobile-390-populated.png",
+      "source": "Playwright Chromium capture from the local standalone Portal candidate",
+      "licence": "NovaPharm repository-generated acceptance evidence",
+      "semanticPurpose": "Populated 390px mobile visual acceptance using an explicit validation fixture",
+      "reviewStatus": "human-reviewed-accepted",
+      "technicalStatus": "local-validation-not-production"
+    },
+    {
+      "path": "audit/evidence/medicines-intelligence/final/webkit-mobile-390-populated.png",
+      "source": "Playwright WebKit capture from the local standalone Portal candidate",
+      "licence": "NovaPharm repository-generated acceptance evidence",
+      "semanticPurpose": "Populated 390px WebKit mobile visual acceptance using an explicit validation fixture",
+      "reviewStatus": "human-reviewed-accepted",
+      "technicalStatus": "local-validation-not-production"
+    },
+    {
+      "path": "audit/evidence/medicines-intelligence/final/chromium-mobile-320-empty.png",
+      "source": "Playwright Chromium capture from the local standalone Portal candidate",
+      "licence": "NovaPharm repository-generated acceptance evidence",
+      "semanticPurpose": "320px designed source-not-ingested state",
+      "reviewStatus": "human-reviewed-accepted",
+      "technicalStatus": "local-validation-not-production"
+    },
+    {
+      "path": "audit/evidence/medicines-intelligence/final/webkit-mobile-320-empty.png",
+      "source": "Playwright WebKit capture from the local standalone Portal candidate",
+      "licence": "NovaPharm repository-generated acceptance evidence",
+      "semanticPurpose": "320px WebKit designed source-not-ingested state",
+      "reviewStatus": "human-reviewed-accepted",
+      "technicalStatus": "local-validation-not-production"
+    },
+    {
+      "path": "audit/evidence/medicines-intelligence/final/chromium-tablet-1024-empty.png",
+      "source": "Playwright Chromium capture from the local standalone Portal candidate",
+      "licence": "NovaPharm repository-generated acceptance evidence",
+      "semanticPurpose": "1024px tablet designed source-not-ingested state",
+      "reviewStatus": "human-reviewed-accepted",
+      "technicalStatus": "local-validation-not-production"
+    },
+    {
+      "path": "audit/evidence/medicines-intelligence/final/chromium-desktop-1920-empty.png",
+      "source": "Playwright Chromium capture from the local standalone Portal candidate",
+      "licence": "NovaPharm repository-generated acceptance evidence",
+      "semanticPurpose": "1920px large-desktop designed source-not-ingested state",
+      "reviewStatus": "human-reviewed-accepted",
+      "technicalStatus": "local-validation-not-production"
+    }
+  ]
+}

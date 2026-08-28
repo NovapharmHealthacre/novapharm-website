@@ -4,6 +4,7 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { personBySlug } from "@novapharm/content";
 import { articles } from "../data/articles";
+import nutraxinRegister from "../data/nutraxin-product-register.json";
 import { assertPageMetaCoverage, corporatePages } from "../data/pages";
 import { company, leadership, pageMeta, productCategories, servicePillars } from "../data/site";
 
@@ -12,12 +13,13 @@ const repositoryRoot = path.resolve(applicationRoot, "../..");
 const routeSet = new Set<string>();
 
 assertPageMetaCoverage();
-assert.equal(corporatePages.length, 27, "Corporate application must retain 27 canonical page records");
+assert.equal(corporatePages.length, 29, "Corporate application must retain 29 canonical page records");
 assert.equal(leadership.length, 5, "Five approved leadership profiles are required");
 assert.equal(articles.length, 6, "Six substantial Insights articles are required");
-assert.equal(Object.keys(pageMeta).length, corporatePages.length, "Every canonical page requires one metadata record");
-assert.equal(new Set(Object.values(pageMeta).map((meta) => meta.title)).size, corporatePages.length, "Page titles must be unique");
-assert.equal(new Set(Object.values(pageMeta).map((meta) => meta.description)).size, corporatePages.length, "Page descriptions must be unique");
+const canonicalMeta = corporatePages.map((item) => pageMeta[item.slug as keyof typeof pageMeta]);
+assert.equal(Object.keys(pageMeta).length, corporatePages.length + 2, "Canonical metadata and two governed compatibility routes are required");
+assert.equal(new Set(canonicalMeta.map((meta) => meta.title)).size, corporatePages.length, "Canonical page titles must be unique");
+assert.equal(new Set(canonicalMeta.map((meta) => meta.description)).size, corporatePages.length, "Canonical page descriptions must be unique");
 
 for (const page of corporatePages) {
   const route = page.slug ? `/${page.slug}/` : "/";
@@ -55,7 +57,15 @@ for (const article of articles) {
   assert.ok(existsSync(path.join(applicationRoot, "public", article.heroImage)), `Missing article image: ${article.heroImage}`);
 }
 
-assert.equal(routeSet.size, 38, "Corporate canonical route count changed unexpectedly");
+assert.equal(nutraxinRegister.products.length, 19, "The governed Nutraxin register must retain 19 catalogue references");
+for (const product of nutraxinRegister.products) {
+  const route = `/products/nutraxin/${product.slug}/`;
+  assert.ok(!routeSet.has(route), `Duplicate Nutraxin route: ${route}`);
+  routeSet.add(route);
+  assert.ok(existsSync(path.join(applicationRoot, "public", "assets", "media", "products", "nutraxin", `${product.imageBase}-800.webp`)), `Missing Nutraxin delivery image: ${product.imageBase}`);
+}
+
+assert.equal(routeSet.size, 59, "Corporate canonical route count changed unexpectedly");
 assert.equal(company.companyNumber, "16716501");
 assert.match(company.regulatoryNotice, /active in corporate, product, partnership and commercial-development work/i);
 assert.match(company.regulatoryNotice, /Regulated wholesale supply has not commenced/i);
@@ -100,6 +110,8 @@ assert.match(renderedSource, /fetchPriority="high"/);
 const productsView = renderedSource.match(/function ProductsPage\(\) \{([\s\S]*?)\n\}/)?.[1] ?? "";
 assert.equal((productsView.match(/Food Supplement Portfolio Review/g) ?? []).length, 1);
 assert.ok(productsView.indexOf("food-supplement-portfolio-review") < productsView.indexOf("product-grid"), "Food Supplement Portfolio Review must precede other portfolio categories");
+assert.match(renderedSource, /\/products\/nutraxin\/\$\{product\.slug\}\//, "Nutraxin catalogue entries must link to canonical detail routes");
+assert.ok(!renderedSource.includes("lucide-react"), "The corporate presentation must not depend on a generic icon library");
 for (const prohibited of ["100% GDP compliant", "MHRA-authorised pharmaceutical wholesaler", "currently supplying NHS", "Founder & Chief Executive Officer"]) {
   assert.ok(!renderedSource.includes(prohibited), `Unsupported public claim found: ${prohibited}`);
 }

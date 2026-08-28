@@ -70,8 +70,9 @@ for (const required of [
   if (!cro.includes(required)) fail(`CRO Senior judgement is missing: ${required}`);
 }
 if (cro.includes("Managing Director &amp; Chief Operating Officer")) fail("CRO Senior judgement contains Prabhakar's superseded executive title");
-const croLeaderCount = (cro.match(/class="cro-leader"/g) || []).length;
-if (croLeaderCount !== 3) fail(`CRO Senior judgement must contain exactly 3 leader cards; found ${croLeaderCount}`);
+const croLeadershipLine = cro.match(/class="npd-leadership-line"[\s\S]*?<\/div>/)?.[0] ?? "";
+const croLeaderCount = (croLeadershipLine.match(/<a /g) || []).length;
+if (croLeaderCount !== 3) fail(`CRO Senior judgement must contain exactly 3 linked leadership records; found ${croLeaderCount}`);
 
 /*
  * Leadership release red-team contract.
@@ -120,9 +121,6 @@ for (const [name, master, publicBase, fallbackWidth] of approvedPortraits) {
   }
 }
 
-for (const portraitPath of approvedPortraits.map(([, , publicBase, fallbackWidth]) => `${publicBase}-${fallbackWidth}.jpg`)) {
-  if (!cro.includes(portraitPath)) fail(`CRO leadership presentation is not using approved portrait: ${portraitPath}`);
-}
 if (!cro.includes(approvedLeadershipTitle)) fail(`CRO leadership presentation is missing Dr Girish's approved title: ${approvedLeadershipTitle}`);
 if (cro.includes(supersededLeadershipTitle)) fail(`CRO leadership presentation still contains superseded title: ${supersededLeadershipTitle}`);
 
@@ -143,13 +141,13 @@ if (!leadershipCssSource.includes('body[data-page="leadership"]') || !leadership
 }
 
 const oncology = text("oncology/index.html");
-if (!oncology.includes("oncology-editorial-gallery")) fail("Oncology editorial image gallery is missing");
+if (oncology.includes("oncology-editorial-gallery")) fail("Oncology retains the superseded decorative editorial gallery");
 for (const asset of [
   "/assets/media/oncology/oncology-formulation-pathways.svg",
   "/assets/media/oncology/oncology-evidence-continuity.svg",
   "/assets/media/oncology/oncology-condition-control.svg"
 ]) {
-  if (!oncology.includes(asset)) fail(`Oncology gallery does not reference ${asset}`);
+  if (oncology.includes(asset)) fail(`Oncology public presentation still references prohibited diagram artwork: ${asset}`);
   try {
     readFileSync(join(root, asset.slice(1)));
   } catch (error) {

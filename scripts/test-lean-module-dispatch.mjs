@@ -14,7 +14,7 @@ assert.match(dispatcher, /canUseModule\(module, context\)/u, "Direct overlays mu
 assert.match(dispatcher, /module\.releaseClassification !== "informational_only"/u, "Direct overlays must fail closed if their R1 release classification changes without review.");
 assert.match(dispatcher, /Current release classification: informational only/u, "Direct overlays must preserve the R1 informational-only notice.");
 assert.match(dispatcher, /State changes remain available only through authorised, CSRF-protected workflow endpoints/u, "Admin direct overlays must preserve the controlled-change truth notice.");
-assert.match(dispatcher, /Board access is read-only; all figures are synthetic local-validation records/u, "Board direct overlays must preserve the synthetic/read-only truth notice.");
+assert.match(dispatcher, /Every module identifies whether its records are synthetic validation data, authoritative non-production evidence or unavailable/u, "Board direct overlays must preserve source-state truth.");
 assert.match(dispatcher, /module\.area === "admin" \|\| module\.area === "executive"/u, "All Admin and Executive modules must enter direct authorization before view construction.");
 
 const directIndex = dispatcher.indexOf("if (candidate && directOverlayModule(candidate))");
@@ -32,8 +32,8 @@ assert.match(overlays, /export function rollingWarehouseView/u);
 assert.match(executiveViews, /export async function authoredExecutiveView/u);
 
 console.log(JSON.stringify({
-  visibleDirectModules: 16,
-  hiddenExecutiveFailClosedModules: 7,
+  visibleDirectModules: 17,
+  hiddenExecutiveFailClosedModules: 6,
   directOverlayBaseQueries: 0,
   warehouseUsesCanonicalLedger: true,
   releaseAndRoleChecksBeforeDirectQueries: true,

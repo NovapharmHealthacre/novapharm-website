@@ -20,7 +20,8 @@ const sources = [
   ["oncology.css", null],
   ["apple-pharma-public.css", null],
   ["leadership-apple.css", null],
-  ["owner-corrections.css", null]
+  ["owner-corrections.css", null],
+  ["corporate-product-discipline.css", null]
 ];
 
 const sections = sources.map(([filename, layer]) => {
@@ -39,6 +40,9 @@ if (!bundle.includes("--apple-pharma-public-contract: 3")) {
 }
 if (!bundle.includes("--leadership-apple-contract: 1")) {
   throw new Error("Leadership Apple-aligned presentation contract v1 is missing from the generated CSS bundle.");
+}
+if (!bundle.includes("--corporate-product-discipline-contract: 1")) {
+  throw new Error("Corporate product-discipline presentation contract v1 is missing from the generated CSS bundle.");
 }
 
 writeFileSync(resolve(cssRoot, "novapharm.bundle.css"), bundle);

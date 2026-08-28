@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 const root = resolve(process.cwd());
-const platformMode = process.env.PLATFORM_MODE === "PUBLIC_ONLY" ? "PUBLIC_ONLY" : "FULL_PLATFORM";
+const platformMode = process.env.PLATFORM_MODE === "FULL_PLATFORM" ? "FULL_PLATFORM" : "PUBLIC_ONLY";
 const publicOnlyExcludedRoutes = new Set(platformMode === "PUBLIC_ONLY" ? ["/account-application/"] : []);
 let failures = 0;
 const fail = (message) => { failures += 1; console.error(`Social authority validation failed: ${message}`); };

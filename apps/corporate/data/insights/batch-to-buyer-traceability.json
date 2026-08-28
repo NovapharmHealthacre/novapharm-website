@@ -15,7 +15,7 @@
   "internalLinks": [
     { "label": "Technology maturity model", "href": "/technology/" },
     { "label": "Regulatory and quality approach", "href": "/regulatory-services/" },
-    { "label": "Digital B2B services", "href": "/services/#digital-b2b" }
+    { "label": "Governed technology", "href": "/technology/" }
   ],
   "references": [
     { "label": "MHRA: good manufacturing and distribution practice", "href": "https://www.gov.uk/guidance/good-manufacturing-practice-and-good-distribution-practice" },

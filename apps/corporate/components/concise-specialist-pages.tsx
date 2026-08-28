@@ -1,4 +1,3 @@
-import { ArrowRight, Check, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { croContent } from "@/data/cro";
@@ -15,7 +14,7 @@ function EvidenceDetails({
 }) {
   return (
     <details className="evidence-details">
-      <summary>{label}<ArrowRight aria-hidden="true" size={16} /></summary>
+      <summary>{label}</summary>
       <div className="evidence-details-body">{children}</div>
     </details>
   );
@@ -50,9 +49,9 @@ export function ConciseServicesPage() {
                     <div><dt>Problem</dt><dd>{service.problem}</dd></div>
                     <div><dt>Approach</dt><dd>{service.approach}</dd></div>
                   </dl>
-                  <p className="caveat"><ShieldCheck aria-hidden="true" />{service.caveat}</p>
+                  <p className="caveat">{service.caveat}</p>
                 </EvidenceDetails>
-                <a className="text-link" href={`/contact/?enquiry=${encodeURIComponent(service.cta)}`}>{service.cta} <ArrowRight aria-hidden="true" size={16} /></a>
+                <a className="text-link" href={`/contact/?enquiry=${encodeURIComponent(service.cta)}`}>{service.cta}</a>
               </article>
             ))}
           </div>
@@ -111,7 +110,7 @@ export function ConciseCroPage() {
             <SectionHeading kicker="Operating boundary" title="Focused orchestration. No unsupported full-service claim." intro={croContent.status} />
           </div>
           <div className="signal-list">
-            {croContent.audiences.map(([audience]) => <span key={audience}><Check aria-hidden="true" /><strong>{audience}</strong></span>)}
+            {croContent.audiences.map(([audience]) => <span key={audience}><strong>{audience}</strong></span>)}
           </div>
         </div>
       </section>
@@ -219,7 +218,7 @@ export function ConciseProductsPage() {
             <h2>Food Supplement Portfolio Review</h2>
             <p>19 owner-supplied catalogue records for qualified B2B evaluation. No claim of UK availability, price, stock, permitted claims or medicinal status.</p>
             <div className="action-row portfolio-priority-links">
-              <Link className="button button-primary" href="/product-portfolio/nutraxin/">Review 19 references</Link>
+              <Link className="button button-primary" href="/products/nutraxin/">Review 19 references</Link>
               <Link className="button button-light" href="/contact/?enquiry=Product%20opportunity">Discuss an opportunity</Link>
             </div>
           </div>
@@ -229,13 +228,13 @@ export function ConciseProductsPage() {
       <section className="section">
         <div className="shell">
           <StatusNotice />
-          <SectionHeading kicker="Strategic categories" title="Focus areas, not stock claims." intro="Open a category for its evidence boundary." />
+          <SectionHeading kicker="Strategic categories" title="Focus areas, not stock claims." intro="Each category states its evidence boundary." />
           <div className="product-grid concise-product-grid">
             {productCategories.map((category) => (
               <article key={category.title}>
                 <span className="status-chip">{category.status}</span>
                 <h2>{category.title}</h2>
-                <EvidenceDetails label="Category context"><p>{category.text}</p></EvidenceDetails>
+                <div className="category-context"><strong>Category context</strong><p>{category.text}</p></div>
               </article>
             ))}
           </div>
@@ -244,7 +243,7 @@ export function ConciseProductsPage() {
       <section className="section section-soft">
         <div className="shell editorial-split">
           <div className="editorial-number">Evidence gate</div>
-          <div><h2>No category implies stock, approval or supply.</h2><p>Representative imagery does not establish NovaPharm inventory, premises, employees or current partners.</p><Link className="text-link" href="/regulatory-services/">Review the regulatory model <ArrowRight aria-hidden="true" size={16} /></Link></div>
+          <div><h2>No category implies stock, approval or supply.</h2><p>Representative imagery does not establish NovaPharm inventory, premises, employees or current partners.</p><Link className="text-link" href="/regulatory-services/">Review the regulatory model</Link></div>
         </div>
       </section>
       <FinalCta title="Submit a product or portfolio opportunity for qualified assessment." />

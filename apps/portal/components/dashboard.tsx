@@ -3,8 +3,10 @@
 import { adminModules, customerModules, employeeModules, executiveModules, type PortalArea, type PortalModule } from "@novapharm/portal-contracts";
 import { Activity, ArrowUpRight, LogOut, Menu, RefreshCw, Search, ShieldCheck, X } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
+import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { areaLabels, areaLandingRoutes, areaScopes } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError, protectedMutation } from "../lib/gateway";
+import { MedicinesIntelligence } from "./medicines-intelligence";
 import { PortalBrand } from "./portal-brand";
 
 type Metric = Readonly<{ key: string; label: string; value: number; format?: string; href?: string | null }>;
@@ -84,7 +86,7 @@ function ActionPanel({ snapshot, onComplete, onMessage }: Readonly<{ snapshot: S
   })}</div></section>;
 }
 
-export function Dashboard({ module }: Readonly<{ module: PortalModule }>) {
+export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; subview: MedicinesIntelligenceSubview | undefined }>) {
   const [user, setUser] = useState<PortalUser | null>(null);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [status, setStatus] = useState("");
@@ -149,6 +151,18 @@ export function Dashboard({ module }: Readonly<{ module: PortalModule }>) {
     }
   }
 
+  if (module.code === "executive.nhs-data" && user && snapshot) {
+    return <MedicinesIntelligence
+      loading={loading}
+      onLogout={logout}
+      onRefresh={load}
+      parentStatus={status}
+      snapshot={snapshot}
+      subview={subview}
+      user={user}
+    />;
+  }
+
   const navigation = modulesByArea[module.area];
   return <main className="workspace-shell">
     <aside className={menuOpen ? "workspace-sidebar open" : "workspace-sidebar"}>
@@ -164,7 +178,7 @@ export function Dashboard({ module }: Readonly<{ module: PortalModule }>) {
         {user ? <AreaSwitcher user={user} /> : null}
         <p className="workflow-status" aria-live="polite">{status}</p>
         {loading ? <div className="loading-state"><Activity aria-hidden="true" /><span>Loading authorised records…</span></div> : null}
-        {snapshot ? <><div className="data-context"><span>{snapshot.dataState === "synthetic" ? "Synthetic validation data" : snapshot.module.releaseClassificationLabel}</span><span>Updated {new Date(snapshot.dataFreshness).toLocaleString("en-GB")}</span><span>Read only</span></div>{snapshot.notices.map((notice) => <p className="module-notice" key={notice}>{notice}</p>)}<MetricGrid metrics={snapshot.metrics} />{snapshot.sections.map((section) => <DataTable key={section.title} section={section} />)}<ActionPanel snapshot={snapshot} onComplete={load} onMessage={setStatus} /></> : null}
+        {snapshot ? <><div className="data-context"><span>{snapshot.dataState === "synthetic" ? "Synthetic validation data" : snapshot.dataState === "authoritative_non_production_validation" ? "Authoritative non-production validation evidence" : snapshot.dataState === "governed_sources_not_loaded" ? "No governed intelligence data loaded" : snapshot.module.releaseClassificationLabel}</span><span>Updated {new Date(snapshot.dataFreshness).toLocaleString("en-GB")}</span><span>Read only</span></div>{snapshot.notices.map((notice) => <p className="module-notice" key={notice}>{notice}</p>)}<MetricGrid metrics={snapshot.metrics} />{snapshot.sections.map((section) => <DataTable key={section.title} section={section} />)}<ActionPanel snapshot={snapshot} onComplete={load} onMessage={setStatus} /></> : null}
       </div>
     </section>
   </main>;

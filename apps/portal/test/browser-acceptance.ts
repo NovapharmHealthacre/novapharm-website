@@ -21,15 +21,19 @@ const viewports = [
   { name: "desktop-1280", width: 1280, height: 800 },
   { name: "desktop-1366", width: 1366, height: 768 },
   { name: "desktop-1440", width: 1440, height: 900 },
+  { name: "desktop-1600", width: 1600, height: 1000 },
   { name: "desktop-1920", width: 1920, height: 1080 },
   { name: "tablet-1024", width: 1024, height: 1366 },
+  { name: "tablet-834", width: 834, height: 1194 },
   { name: "tablet-768", width: 768, height: 1024 },
   { name: "mobile-390", width: 390, height: 844 },
   { name: "mobile-430", width: 430, height: 932 },
   { name: "mobile-375", width: 375, height: 667 },
+  { name: "mobile-360", width: 360, height: 800 },
   { name: "mobile-320", width: 320, height: 568 },
 ] as const;
 const primaryViewport = viewports[0];
+const ownerReferenceViewport = viewports[3];
 const accessTypeByArea: Readonly<Record<PortalArea, "customer" | "employee" | "board" | "admin">> = {
   customer: "customer",
   employee: "employee",
@@ -167,6 +171,18 @@ async function capture(page: Page, engine: string, viewport: string, name: strin
   screenshots += 1;
 }
 
+async function settleAtViewportTop(page: Page): Promise<void> {
+  await page.evaluate(() => new Promise<void>((resolve) => {
+    window.scrollTo(0, 0);
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+  }));
+}
+
+function axeDetail(violation: Readonly<{ help: string; nodes: readonly Readonly<{ target: readonly unknown[] }>[] }>): string {
+  const targets = violation.nodes.map((node) => node.target.map(String).join(" ")).join(", ");
+  return targets ? `${violation.help}: ${targets}` : violation.help;
+}
+
 async function inspectLayout(page: Page, label: string): Promise<void> {
   const layout = await page.evaluate(() => ({
     viewportWidth: document.documentElement.clientWidth,
@@ -197,7 +213,7 @@ async function captureInteractionState(
   const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
   axeRuns += 1;
   for (const violation of result.violations.filter((item) => item.impact === "serious" || item.impact === "critical")) {
-    findings.push({ engine, viewport: viewport.name, route: page.url(), type: `axe:${violation.id}`, detail: violation.help });
+    findings.push({ engine, viewport: viewport.name, route: page.url(), type: `axe:${violation.id}`, detail: axeDetail(violation) });
   }
 }
 
@@ -221,13 +237,26 @@ async function inspectModule(
     assert.match(response?.headers()["content-security-policy"] ?? "", /frame-ancestors 'none'/);
     assert.match(response?.headers()["x-robots-tag"] ?? "", /noindex/);
     await page.locator(".data-context").waitFor({ state: "visible", timeout: 20_000 });
-    await page.locator(".icon-command:not(:disabled)").waitFor({ state: "visible", timeout: 20_000 });
-    assert.equal(await page.locator("h1").textContent(), module.title);
+    if (module.code === "executive.nhs-data") {
+      await page.getByRole("button", { name: "Filters", exact: true }).waitFor({ state: "visible", timeout: 20_000 });
+    } else {
+      await page.locator(".icon-command:not(:disabled)").waitFor({ state: "visible", timeout: 20_000 });
+    }
+    const expectedHeading = module.code === "executive.nhs-data" ? "Search a medicine" : module.title;
+    assert.equal(await page.locator("h1").textContent(), expectedHeading);
     assert.equal(await page.locator(".workflow-status").textContent(), "");
     assert.match(await page.locator('meta[name="robots"]').getAttribute("content") ?? "", /noindex/);
-    assert.equal(await page.locator('img[alt="NovaPharm Healthcare"]').count(), 1);
-    assert.match(await page.locator('img[alt="NovaPharm Healthcare"]').getAttribute("src") ?? "", /novapharm-healthcare-logo\.svg/);
-    assert.equal(await page.getByText("Synthetic validation data", { exact: true }).count(), 1);
+    if (module.code === "executive.nhs-data") {
+      assert.equal(await page.locator('img[alt="PharmaScope"]').count(), 1);
+      assert.match(await page.locator('img[alt="PharmaScope"]').getAttribute("src") ?? "", /pharmascope-logo-reverse\.svg/);
+      assert.equal(await page.getByText("by NovaPharm Healthcare", { exact: true }).count(), 1);
+      assert.equal(await page.getByText("Know where medicine is moving.", { exact: true }).count(), 0);
+    } else {
+      assert.equal(await page.locator('img[alt="NovaPharm Healthcare"]').count(), 1);
+      assert.match(await page.locator('img[alt="NovaPharm Healthcare"]').getAttribute("src") ?? "", /novapharm-healthcare-logo\.svg/);
+    }
+    const expectedDataState = module.code === "executive.nhs-data" ? "No governed intelligence data loaded" : "Synthetic validation data";
+    assert.equal(await page.getByText(expectedDataState, { exact: true }).count(), 1);
     await inspectLayout(page, `${engine} ${viewport.name} ${module.route}`);
     assert.deepEqual(failedResources, [], `${engine} ${module.route}: failed subresources`);
     assert.deepEqual(consoleErrors, [], `${engine} ${module.route}: console errors`);
@@ -238,7 +267,7 @@ async function inspectModule(
       const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
       axeRuns += 1;
       for (const violation of result.violations.filter((item) => item.impact === "serious" || item.impact === "critical")) {
-        findings.push({ engine, viewport: viewport.name, route: module.route, type: `axe:${violation.id}`, detail: violation.help });
+        findings.push({ engine, viewport: viewport.name, route: module.route, type: `axe:${violation.id}`, detail: axeDetail(violation) });
       }
     }
   } finally {
@@ -268,7 +297,7 @@ async function inspectSystemPage(
       const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
       axeRuns += 1;
       for (const violation of result.violations.filter((item) => item.impact === "serious" || item.impact === "critical")) {
-        findings.push({ engine, viewport: viewport.name, route, type: `axe:${violation.id}`, detail: violation.help });
+        findings.push({ engine, viewport: viewport.name, route, type: `axe:${violation.id}`, detail: axeDetail(violation) });
       }
     }
   } finally {
@@ -381,6 +410,109 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
   const boardContext = await browser.newContext(contextOptions(desktopViewport, states.get("executive")));
   try {
     const page = await boardContext.newPage();
+    await page.goto(`${portalOrigin}/portal/executive-platform/medicines-intelligence/`, { waitUntil: "domcontentloaded" });
+    await page.getByText("No governed intelligence data loaded", { exact: true }).waitFor();
+    await page.getByRole("heading", { level: 1, name: "Search a medicine" }).waitFor();
+    assert.equal(await page.getByText("Analysis mode", { exact: true }).count(), 0, `${engine}: decorative analysis modes reappeared`);
+    await page.getByLabel("Medicine name, brand or code").fill("Apixaban");
+    await page.locator(".medicine-search-workspace").getByRole("button", { name: "Search", exact: true }).click();
+    await page.getByText("No current BNF identity matched that search.", { exact: true }).waitFor();
+    await captureInteractionState(page, engine, desktopViewport, "interaction.medicines-empty-search");
+
+    const validationMedicineId = "medicine-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    await page.route("**/gateway/enterprise/medicines/**", async (route) => {
+      const requestUrl = new URL(route.request().url());
+      const response = requestUrl.pathname.endsWith("/search") ? {
+        query: "Repository validation medicine", source: "Repository validation fixture", sourcePeriod: "2026-06", demandFactsIncluded: false,
+        results: [{ medicineId: validationMedicineId, canonicalName: "Repository validation medicine", presentationCode: "0208020Z0AAACAC", productName: "Validation medicine", productCode: "0208020Z0AA", chemicalSubstance: "Validation substance", chemicalSubstanceCode: "0208020Z0", identityStatus: "bnf_current_identity_only" }],
+        dataFreshness: "2026-08-24T00:00:00.000Z",
+      } : requestUrl.pathname.endsWith("/analytics") ? {
+        query: { dataset: "epd", metric: "items", page: 1, pageSize: 50 }, source: "Repository validation fixture", sourcePeriods: ["2026-06"], dataState: "accepted_facts",
+        rows: [{ month_key: "2026-06", medicine_id: validationMedicineId, canonical_name: "Repository validation medicine", practice_code: "A00001", practice_name: "Repository validation practice", practice_postcode: "SW1A 2AA", icb_code: "Q00", icb_name: "Repository validation ICB", region_code: "Y00", region_name: "Repository validation region", items: 12, quantity: 24, nic: 36, actual_cost: 30, registered_population: 1200, metric_value: 12 }],
+        series: [{ month_key: "2026-06", items: 12, quantity: 24, nic: 36, actual_cost: 30, metric_value: 12 }],
+        summary: { totalItems: 12, totalQuantity: 24, totalNic: 36, totalActualCost: 30, practiceCount: 1, geographyCount: 1, latestItemsPer1000: 10, firstMonth: "2026-06", latestMonth: "2026-06", sourceCutoffAt: "2026-07-31T00:00:00.000Z" },
+        breakdowns: {
+          geographies: [{ code: "Q00", name: "Repository validation ICB", items: 12, quantity: 24, nic: 36, actual_cost: 30, selected_metric: 12 }],
+          presentations: [{ medicine_id: validationMedicineId, canonical_name: "Repository validation medicine", items: 12, quantity: 24, nic: 36, actual_cost: 30, selected_metric: 12 }],
+          practices: [{ practice_code: "A00001", practice_name: "Repository validation practice", practice_postcode: "SW1A 2AA", icb_code: "Q00", icb_name: "Repository validation ICB", items: 12, quantity: 24, nic: 36, actual_cost: 30, selected_metric: 12 }],
+        },
+        pagination: { page: 1, pageSize: 50, totalRows: 1, totalPages: 1 }, reconciliation: { applicable: true, tableTotal: 12, seriesTotal: 12, reconciles: true, seriesTruncated: false },
+        limitations: ["Repository validation fixture only; no production fact is asserted."],
+      } : {
+        medicine: { medicineId: validationMedicineId, canonicalName: "Repository validation medicine", medicineLevel: "BNF_PRESENTATION", snomedCode: null, dmDStatus: "unverified", supplierName: null, formulation: null, route: null, strength: null, unitOfMeasure: null, validFrom: "2026-06-01", validTo: null, sourceId: "repository.validation", sourceLastSeenAt: "2026-08-24T00:00:00.000Z" },
+        aliases: [], codeHistory: [], hierarchy: [{ code: "02", name: "Repository validation chapter", level: "2", validFrom: "2026-06-01", validTo: null }],
+        analyticalAvailability: { epd: true, pca: false, scmd: false, forecast: false }, limitations: ["Repository validation fixture only; no production identity is asserted."],
+      };
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+    });
+    await page.getByLabel("Medicine name, brand or code").fill("Repository validation medicine");
+    await page.locator(".medicine-search-workspace").getByRole("button", { name: "Search", exact: true }).click();
+    await page.getByRole("button", { name: /Repository validation medicine/ }).click();
+    await page.getByRole("heading", { level: 1, name: "Repository validation medicine" }).waitFor();
+    await page.getByRole("heading", { name: "Examine accepted facts", exact: true }).waitFor();
+    await page.getByRole("heading", { name: "Current BNF hierarchy", exact: true }).waitFor();
+    assert.equal(await page.getByText("Repository validation chapter", { exact: true }).count(), 1, `${engine}: governed BNF hierarchy did not render`);
+    const filterDisclosure = page.locator(".intelligence-filter-disclosure");
+    assert.equal(await filterDisclosure.getAttribute("open"), null, `${engine}: optional analytical filters were not initially collapsed`);
+    await filterDisclosure.getByText("Filters", { exact: true }).click();
+    await page.getByLabel("Region").fill("Repository validation region");
+    await page.getByRole("button", { name: "Reset filters", exact: true }).click();
+    assert.equal(await page.getByLabel("Region").inputValue(), "", `${engine}: one-action filter reset did not clear the grouped filters`);
+    await page.getByLabel("Start month").fill("2026-06");
+    await page.getByLabel("End month").fill("2026-06");
+    await page.getByRole("button", { name: "Run governed query", exact: true }).click();
+    await page.getByText("1 accepted analytical rows matched this query.", { exact: true }).waitFor();
+    await page.getByText("Accepted analytical facts loaded", { exact: true }).waitFor();
+    assert.equal(await page.getByText("No governed intelligence data loaded", { exact: true }).count(), 0, `${engine}: stale empty-source state remained after accepted analytics loaded`);
+    await page.getByText("One accepted period is available", { exact: true }).waitFor();
+    assert.equal(await page.getByRole("heading", { name: "Accepted analytical rows", exact: true }).count(), 1, `${engine}: accepted analytical rows did not render`);
+    assert.equal(await page.getByText("999", { exact: true }).count(), 0, `${engine}: a validation-sample sentinel leaked into rendered analytics`);
+    const evidenceGates = page.locator("details").filter({ hasText: "Regulatory, patent and SPC evidence" });
+    assert.equal(await evidenceGates.getAttribute("open"), null, `${engine}: optional evidence gates were not initially collapsed`);
+    await evidenceGates.getByText("Regulatory, patent and SPC evidence", { exact: true }).click();
+    await page.getByText("Authority not connected", { exact: true }).waitFor();
+    await page.getByText("Legal interpretation not activated", { exact: true }).waitFor();
+    await page.setViewportSize({ width: ownerReferenceViewport.width, height: ownerReferenceViewport.height });
+    await settleAtViewportTop(page);
+    await inspectLayout(page, `${engine} ${ownerReferenceViewport.name} medicines-intelligence owner reference`);
+    await capture(page, engine, ownerReferenceViewport.name, "interaction.medicines-analytics.viewport", false);
+    await page.setViewportSize({ width: desktopViewport.width, height: desktopViewport.height });
+    await settleAtViewportTop(page);
+    await capture(page, engine, desktopViewport.name, "interaction.medicines-analytics.viewport", false);
+    await page.setViewportSize({ width: mobileViewport.width, height: mobileViewport.height });
+    await settleAtViewportTop(page);
+    await inspectLayout(page, `${engine} ${mobileViewport.name} medicines-intelligence populated`);
+    await capture(page, engine, mobileViewport.name, "interaction.medicines-analytics-mobile.viewport", false);
+    await captureInteractionState(page, engine, mobileViewport, "interaction.medicines-analytics-mobile");
+    await page.setViewportSize({ width: desktopViewport.width, height: desktopViewport.height });
+    await settleAtViewportTop(page);
+    await captureInteractionState(page, engine, desktopViewport, "interaction.medicines-analytics");
+    await page.unroute("**/gateway/enterprise/medicines/**");
+
+    const intelligenceViews = [
+      ["geography", "Pharmacy geography"],
+      ["prescribers", "Prescriber intelligence"],
+      ["pharmacies", "Pharmacy geography"],
+      ["forecasts", "Forecasts"],
+      ["opportunities", "Commercial opportunities"],
+      ["campaigns", "Campaigns"],
+      ["data-sources", "Data sources and quality"],
+    ] as const;
+    for (const [subview, heading] of intelligenceViews) {
+      const response = await page.goto(`${portalOrigin}/portal/executive-platform/medicines-intelligence/${subview}/`, { waitUntil: "domcontentloaded" });
+      assert.equal(response?.status(), 200, `${engine}: Medicines Intelligence ${subview} did not resolve`);
+      await page.getByRole("heading", { name: heading, exact: true }).waitFor();
+      assert.equal(await page.locator(`.intelligence-local-nav a[href$="/${subview}/"][aria-current="page"]`).count(), 1);
+      if (subview === "geography") {
+        await page.getByLabel("UK postcode").fill("SW1A 2AA");
+        await page.getByRole("button", { name: "Find organisations", exact: true }).click();
+        await page.getByText(/No governed postcode coordinate is available/).waitFor();
+      }
+      await inspectLayout(page, `${engine} medicines-intelligence ${subview}`);
+    }
+    const rejectedSubview = await page.goto(`${portalOrigin}/portal/executive-platform/medicines-intelligence/unapproved-view/`, { waitUntil: "domcontentloaded" });
+    assert.equal(rejectedSubview?.status(), 404, `${engine}: unapproved Medicines Intelligence child route did not fail closed`);
+
     const hiddenModules = portalModules.filter((entry) => !entry.visibleInNavigation);
     for (const [index, module] of hiddenModules.entries()) {
       const response = await page.goto(`${portalOrigin}${module.route}`, { waitUntil: "domcontentloaded" });
@@ -390,6 +522,26 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     }
   } finally {
     await boardContext.close();
+  }
+
+  const boardMobileContext = await browser.newContext(contextOptions(mobileViewport, states.get("executive")));
+  try {
+    const page = await boardMobileContext.newPage();
+    await page.goto(`${portalOrigin}/portal/executive-platform/medicines-intelligence/`, { waitUntil: "domcontentloaded" });
+    await page.getByRole("heading", { level: 1, name: "Search a medicine" }).waitFor();
+    await inspectLayout(page, `${engine} ${mobileViewport.name} medicines-intelligence`);
+    const touchTargets = await page.locator(".intelligence-local-nav a:visible, .medicines-intelligence button:visible, .intelligence-query input:visible, .intelligence-query select:visible").evaluateAll((elements) => elements.map((element) => ({
+      element: `${element.tagName.toLowerCase()}.${element.className || "unclassed"}`,
+      label: (element.getAttribute("aria-label") || element.textContent || "").trim().slice(0, 80),
+      height: element.getBoundingClientRect().height,
+    })));
+    const undersizedTargets = touchTargets.filter((target) => target.height < 44);
+    assert.deepEqual(undersizedTargets, [], `${engine}: Medicines Intelligence touch targets below 44px: ${JSON.stringify(undersizedTargets)}`);
+    await settleAtViewportTop(page);
+    await capture(page, engine, mobileViewport.name, "interaction.medicines-mobile.viewport", false);
+    await captureInteractionState(page, engine, mobileViewport, "interaction.medicines-mobile");
+  } finally {
+    await boardMobileContext.close();
   }
 }
 
