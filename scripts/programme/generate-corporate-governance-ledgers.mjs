@@ -9,7 +9,8 @@ const write = (path, value) => {
   writeFileSync(target, `${value.trim()}\n`);
 };
 const cell = (value) => String(value ?? "")
-  .replace(/\|/g, "\\|")
+  .replaceAll("\\", "\\\\")
+  .replaceAll("|", "\\|")
   .replace(/\r?\n/g, " ")
   .trim();
 

@@ -28,4 +28,6 @@ test("email governance preserves unknown dates and never enables marketing", () 
   });
   assert.equal(assessPharmacyEmail("", "ACTIONED - NO DEFENSIBLE PUBLIC NON-NHS EMAIL IN AVAILABLE EVIDENCE", "2026-08-24").status, "no_new_evidence");
   assert.equal(assessPharmacyEmail("branch@nhs.uk", "VERIFIED REAL EMAIL", "2026-08-24").status, "review_required");
+  assert.equal(assessPharmacyEmail("two@@example.test", "VERIFIED REAL EMAIL", "2026-08-24").status, "review_required");
+  assert.equal(assessPharmacyEmail(`branch@${"a.".repeat(100_000)}test`, "VERIFIED REAL EMAIL", "2026-08-24").status, "review_required");
 });

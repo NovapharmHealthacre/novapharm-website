@@ -24,7 +24,20 @@ export interface PharmacyEmailAssessment {
   readonly reason: string;
 }
 
-const emailShape = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
+function hasValidEmailShape(email: string): boolean {
+  if (!email || email.length > 254) return false;
+  const separator = email.indexOf("@");
+  if (separator < 1 || separator !== email.lastIndexOf("@") || separator > 64) return false;
+
+  const domain = email.slice(separator + 1);
+  const firstDot = domain.indexOf(".");
+  if (domain.length > 253 || firstDot < 1 || firstDot === domain.length - 1) return false;
+
+  for (const character of email) {
+    if (/\s/u.test(character) || character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127) return false;
+  }
+  return true;
+}
 
 function isNhsOperationalDomain(email: string): boolean {
   const domain = email.split("@").at(-1) ?? "";
@@ -66,7 +79,7 @@ export function assessPharmacyEmail(emailInput: string, statusInput: string, che
   const email = emailInput.trim().toLowerCase();
   const status = statusInput.trim();
   const checkedAt = checkedAtInput.trim() || null;
-  const publicBusinessEmail = Boolean(email && emailShape.test(email) && !isNhsOperationalDomain(email));
+  const publicBusinessEmail = hasValidEmailShape(email) && !isNhsOperationalDomain(email);
   if (status === "VERIFIED REAL EMAIL" && publicBusinessEmail) {
     return Object.freeze({ status: "verified", email, verifiedAt: checkedAt, marketingEligible: false, reason: "Evidence-backed public non-NHS business email supplied by the governed workbook." });
   }
