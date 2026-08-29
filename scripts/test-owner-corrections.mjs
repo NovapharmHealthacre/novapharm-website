@@ -175,6 +175,7 @@ if (!text("assets/js/novapharm.js").includes('request("/api/contact"')) fail("Co
 
 const account = text("account-application/index.html");
 if (platformCapabilities.accountApplication && !account.includes("data-account-application")) fail("Account application form hook is missing");
+if (platformCapabilities.accountApplication && !account.includes("data-application-status")) fail("Account application live-status region is missing");
 if (!platformCapabilities.accountApplication && (account.includes("data-account-application") || account.includes("<form") || account.includes('type="file"'))) fail("PUBLIC_ONLY account page exposes a server-dependent form or upload");
 if (!platformCapabilities.accountApplication && !account.includes("does not accept account applications or business documents")) fail("PUBLIC_ONLY account page is missing the non-collection notice");
 if (!text("assets/js/account-application.js").includes('request("/api/account-applications"')) fail("Account application form API submission path is missing");
