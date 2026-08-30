@@ -9,6 +9,10 @@ const applicationRoot = process.cwd();
 const repositoryRoot = path.resolve(applicationRoot, "../..");
 const sourceFiles = [
   "components/dashboard.tsx",
+  "components/medicines-intelligence.tsx",
+  "components/medicines-intelligence.module.css",
+  "components/pharmascope-brand.tsx",
+  "components/portal-brand.tsx",
   "components/login-panel.tsx",
   "components/password-change.tsx",
   "lib/gateway.ts",
@@ -28,7 +32,7 @@ for (const module of portalModules) {
     assert.equal(resolved, null, `Dependency-blocked portal route must fail closed: ${module.route}`);
   }
 }
-assert.equal(visiblePortalModules.length, 47, "Exactly 47 informational modules are release-visible");
+assert.equal(visiblePortalModules.length, 48, "Exactly 48 informational modules are release-visible");
 
 const logo = (file: string) => createHash("sha256").update(readFileSync(file)).digest("hex");
 const approvedLogo = path.join(repositoryRoot, "assets/brand/novapharm-healthcare-logo.svg");
@@ -41,8 +45,25 @@ for (const name of ["favicon.svg", "favicon.ico", "apple-touch-icon.png", "pwa-i
   assert.ok(existsSync(deployed), `Portal brand asset is missing: ${name}`);
   assert.equal(logo(approved), logo(deployed), `Portal brand asset must remain byte-identical: ${name}`);
 }
+for (const name of [
+  "pharmascope-logo.svg",
+  "pharmascope-logo-reverse.svg",
+  "pharmascope-app-icon-1024.png",
+  "pharmascope-open-graph-1200x630-dark.jpg",
+]) {
+  const approved = path.join(repositoryRoot, "assets/brand", name);
+  const deployed = path.join(applicationRoot, "public/assets/brand", name);
+  assert.ok(existsSync(deployed), `Portal PharmaScope asset is missing: ${name}`);
+  assert.equal(logo(approved), logo(deployed), `Portal PharmaScope asset must remain byte-identical: ${name}`);
+}
 
-for (const prohibited of ["localStorage", "sessionStorage", "The string did not match the expected pattern", "Secure portal backend is not active", "PORTAL_PASSWORD="]) {
+for (const prohibited of [
+  "localStorage",
+  "sessionStorage",
+  "The string did not match the expected pattern",
+  "Secure portal backend is not active",
+  "PORTAL_PASSWORD" + "=",
+]) {
   assert.ok(!source.includes(prohibited), `Portal source contains prohibited pattern: ${prohibited}`);
 }
 assert.match(source, /X-CSRF-Token/);
@@ -52,5 +73,15 @@ assert.match(source, /Customer/);
 assert.match(source, /Employee/);
 assert.match(source, /Board/);
 assert.match(source, /Administrator/);
+for (const decorativeMode of ["pharmascope-pulse.svg", "pharmascope-vector.svg", "pharmascope-helix.svg", "Analysis mode"]) {
+  assert.ok(!source.includes(decorativeMode), `Medicines Intelligence must not expose a decorative analysis mode: ${decorativeMode}`);
+}
+for (const redundantProductBanner of ["Know where medicine is moving.", "productHeader", "productHeaderCompact"]) {
+  assert.ok(!source.includes(redundantProductBanner), `Medicines Intelligence must not restore its redundant product banner: ${redundantProductBanner}`);
+}
+assert.match(source, /<Heading>Search a medicine<\/Heading>/);
+assert.match(source, /<h1>Prescriber intelligence<\/h1>/);
+assert.match(source, /Authority not connected/);
+assert.match(source, /Legal interpretation not activated/);
 
-console.log(`Portal validation passed: ${portalModules.length} governed modules, ${visiblePortalModules.length} release-visible modules, four role areas and byte-identical official branding.`);
+console.log(`Portal validation passed: ${portalModules.length} governed modules, ${visiblePortalModules.length} release-visible modules, four role areas, a text-first Medicines Intelligence workspace and byte-identical official branding.`);

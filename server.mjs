@@ -51,6 +51,7 @@ import {
   enterpriseModuleSnapshot,
   transitionProductLifecycle
 } from "./src/core/enterprise-domain-service.mjs";
+import { medicineIdentityDetail, nearbyHealthcareOrganisations, queryMedicineAnalytics, searchMedicines } from "./src/core/medicines-intelligence-service.mjs";
 import {
   changePassword,
   consumeRateLimit,
@@ -964,6 +965,42 @@ export async function handleRequest(request, response) {
       const session = await authenticated(request, response);
       if (!session) return;
       json(response, 200, await enterpriseModuleSnapshot(enterpriseModuleMatch[1], enterpriseContext(session)));
+      return;
+    }
+
+    if (["/api/enterprise/medicines/search", "/api/v1/pharmascope/medicines/search"].includes(pathname) && request.method === "GET") {
+      if (!await rateLimit(request, "medicine-search", 120, 60 * 1000)) return json(response, 429, { error: "Too many medicine searches. Try again shortly." });
+      const session = await scopedAuthentication(request, response, ["board"]);
+      if (!session) return;
+      json(response, 200, await searchMedicines(
+        url.searchParams.get("q") || "",
+        enterpriseContext(session),
+        Number(url.searchParams.get("limit") || 30),
+      ));
+      return;
+    }
+
+    if (["/api/enterprise/medicines/analytics", "/api/v1/pharmascope/analytics"].includes(pathname) && request.method === "GET") {
+      if (!await rateLimit(request, "medicine-analytics", 120, 60 * 1000)) return json(response, 429, { error: "Too many analytical requests. Try again shortly." });
+      const session = await scopedAuthentication(request, response, ["board"]);
+      if (!session) return;
+      json(response, 200, await queryMedicineAnalytics(url.searchParams, enterpriseContext(session)));
+      return;
+    }
+
+    if (["/api/enterprise/medicines/nearby", "/api/v1/pharmascope/geography/nearby"].includes(pathname) && request.method === "GET") {
+      if (!await rateLimit(request, "medicine-geography", 120, 60 * 1000)) return json(response, 429, { error: "Too many geography requests. Try again shortly." });
+      const session = await scopedAuthentication(request, response, ["board"]);
+      if (!session) return;
+      json(response, 200, await nearbyHealthcareOrganisations(url.searchParams, enterpriseContext(session)));
+      return;
+    }
+
+    const medicineIdentityMatch = pathname.match(/^\/api\/(?:enterprise\/medicines|v1\/pharmascope\/medicines)\/(medicine-[a-f0-9]{32})$/);
+    if (medicineIdentityMatch && request.method === "GET") {
+      const session = await scopedAuthentication(request, response, ["board"]);
+      if (!session) return;
+      json(response, 200, await medicineIdentityDetail(medicineIdentityMatch[1], enterpriseContext(session)));
       return;
     }
 

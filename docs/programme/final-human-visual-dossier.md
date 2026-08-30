@@ -1,16 +1,18 @@
 # Final Human Visual Dossier
 
-Status: current continuation candidate under final clean-checkout acceptance; managed staging and production review pending
+Status: immutable implementation candidate passed local visual, clean Node 24 and exact-head GitHub acceptance; merge, managed staging and production review pending
 
-Review date: 13 August 2026
+Review dates: 13 August 2026 estate baseline; 22 August 2026 corporate product-discipline continuation; 28 August 2026 exact-final rendered review; 30 August 2026 exact-head evidence reconciliation
 
-Candidate: `codex/post-pr53-apple-parity`, based on `f5a8d814016f2a82e89e8d44f0036892bbdeb9be`
+Candidate: `codex/corporate-product-discipline-rebuild`, implementation SHA `9f49161425790596413051a2b00cedeae51905a9`, Draft PR 70, based on live/main SHA `23310988e8fc484375aa10176aa1c1edbf5371a8`
 
 ## Evidence boundary
 
 This dossier records genuine screenshots from local production standalone applications. Chromium and Playwright WebKit rendered the real application code with reduced motion. Portal evidence used isolated synthetic users and records. It does not prove Azure, Front Door, WAF, Entra, SharePoint, email, production data, production network performance or live-domain acceptance.
 
 The compact retained dossier contains 62 WebP screenshots and original Playwright PNG hashes in `audit/evidence/final-visual-lock/selected-screenshot-manifest.json`. The image conversion reduced 103,060,939 source bytes to 17,663,204 review bytes without changing dimensions. Product before-and-after records are retained under `audit/evidence/final-visual-lock/products/`. The 13 August continuation adds seven lossless PNG frames for official-brand and Portal authentication review, with hashes and measured geometry under `audit/evidence/final-visual-lock/official-brand/` and `audit/evidence/final-visual-lock/portal-authentication/`.
+
+The 22 August corporate continuation added 20 retained WebP Products before/after screenshots at 390, 768, 1366x768, 1440 and 1920 pixels across Chromium and WebKit. The 28 August exact-final run supersedes its smaller temporary matrix: 820 Corporate screenshots, 164 Corporate Axe runs, two high-density checks, two scriptless checks and 12 temporary PDFs comprising 39 visually inspected pages. Temporary PNG/PDF laboratory output remains deliberately uncommitted; the deterministic capture and validation scripts are the release evidence mechanism.
 
 ## Rendered matrix
 
@@ -23,6 +25,25 @@ The compact retained dossier contains 62 WebP screenshots and original Playwrigh
 | Portal interaction states | Search, empty, loading, read-only, access denied, password error, hidden route, logout and expiry | 18 | 18 | 0 |
 | Status | Normal, activation pending, maintenance and incident | 32 | 16 | 0 |
 | Total | Full estate plus targeted interaction states | 2,510 | 526 | 0 |
+
+### Corporate continuation matrix
+
+| Scope | Screenshots | Axe runs | Additional geometry checks | Result |
+|---|---:|---:|---:|---|
+| Eight representative routes at 390, 768 and 1440 pixels in Chromium | 24 | 24 | 13 homepage widths | Pass |
+| Eight representative routes at 390, 768 and 1440 pixels in WebKit | 24 | 24 | 13 homepage widths | Pass |
+| Products before/after at five owner-required viewports in both engines | 20 retained WebP | Not applicable | Full-page order/overflow checks | Pass |
+| Twelve print routes (22 August historical run) | 12 PDFs / 36 rendered pages | Not applicable | Blank-page, sticky-UI and semantic checks | Pass; superseded by the 39-page exact-final run below |
+
+### 28 August exact-final matrices
+
+| Scope | Routes/modules | Viewports | Screenshots | Axe runs | Result |
+|---|---:|---:|---:|---:|---|
+| Corporate standalone | 40 canonical routes plus governed 404 | 10 across Chromium and WebKit | 820 | 164 | Pass; zero serious/critical findings and zero unresolved browser defects |
+| Secure Portal / Medicines Intelligence | 54 governed modules; 48 visible and 6 dependency-blocked | 13 across Chromium and WebKit | 1,360 | 230 | Pass with isolated synthetic data; zero serious/critical findings |
+| Corporate print | 12 routes | A4, rendered back to PNG | 12 PDFs / 39 pages | Not applicable | Pass; every page human-reviewed after final CSS |
+
+The Corporate matrix passed at `2026-08-28T15:06:51.669Z` after the last Products and Oncology composition corrections. The Portal matrix passed at `2026-08-28T05:21:04.022Z`. The accepted implementation was then committed as `9f49161425790596413051a2b00cedeae51905a9`; this remains local-browser evidence, not Azure-hosted or production evidence.
 
 Every full public and portal matrix used 1280x800, 1366x768, 1440x900, 1920x1080, 1024x1366, 768x1024, 390x844, 430x932, 375x667 and 320x568 viewports. Status normal used all ten; its three exceptional scenarios used 1440x900 and 390x844 in both engines.
 
@@ -54,13 +75,21 @@ Status review covered normal, activation-pending, planned-maintenance and incide
 | Corporate trust route | High | The required canonical Trust Centre did not exist | Added a substantive Trust Centre, metadata, footer route, schema coverage and browser coverage | Managed-service assurance remains pending live evidence |
 | Status scenarios | Medium | Maintenance and incident visual states lacked deterministic acceptance coverage | Added normal, activation, maintenance and incident fixtures, screenshots and tests | Live incident integration remains pending |
 | Portal visual states | Medium | Several asserted interaction states lacked named retained captures | Added 18 interaction screenshots and 18 Axe scans across both engines | Live Entra and production session expiry remain pending |
-| Portal authentication role layout | High | The 680-pixel panel forced four desktop role choices into 127-pixel tracks; the Administrator heading overflowed in six Chromium and six WebKit desktop/tablet checks | Added an explicit `login-panel-authentication` contract with a 900-pixel maximum, preserving four 182-pixel tracks from 1024 pixels upward and the deliberate single-column mobile layout | None; full exact-candidate Chromium/WebKit rerun remains part of the release gate |
+| Portal authentication role layout | High | The 680-pixel panel forced four desktop role choices into 127-pixel tracks; the Administrator heading overflowed in six Chromium and six WebKit desktop/tablet checks | Added an explicit `login-panel-authentication` contract with a 900-pixel maximum, preserving four 182-pixel tracks from 1024 pixels upward and the deliberate single-column mobile layout | None; the complete final Chromium/WebKit matrix passed |
 | Official identity assets | High | The repository carried only a limited logo pair and could not prove parity with the owner's complete identity package | Preserved and checksum-verified all 93 approved files, deployed 17 exact web derivatives, adopted the official `#E3120B` token, and updated favicons, PWA icons, social cards, manifests and structured logo metadata | Identity provenance is owner-approved; legal trademark administration remains owner-controlled |
 | Founder mobile capture | Low | One in-app screenshot encoding attempt was invalid | Discarded it and retained a valid independent Playwright Chromium capture | No application defect |
 | Public mobile LCP | Medium | Three-run median lab LCP was 2.61-2.91 seconds against a 2.5-second target | Transfer, CLS and blocking work remain controlled; scores are 95-97 | Recheck on accepted staging and use field data before claiming target attainment |
+| Corporate mobile resource priority | High | The rebuilt homepage preloaded a JPEG that the AVIF-capable browser did not paint, delaying discovery of the actual LCP image | The preload now matches the painted AVIF; mobile median improved 83 to 89 and transfer fell 552 KiB to 403 KiB | Throttled local LCP is 3.3 seconds; staging and field evidence remain pending |
+| Corporate 320 px identity | High | The inherited brand minimum width overflowed the compact header | Removed the conflicting minimum and retained a 176-pixel governed logo width; both engines report a 320-pixel document width | None |
+| Corporate local navigation | Medium | Long family labels clipped in the narrow horizontal strip | Local navigation now wraps as an authored multi-line row with full labels and compliant touch targets | None |
+| Corporate page identity | Medium | Chrome replacement overwrote page-specific `data-page`, disabling Leadership crop rules | Preserved page identity and introduced separate `data-family` and `data-route` attributes | None |
+| Public conversion routes | High | Static Contact and Open Account states were truthful but ended without a usable action | Added verified, non-confidential corporate `mailto:` fallbacks while preserving the no-storage/no-success boundary | Managed persistence and delivery remain production pending |
+| Corporate print | Medium | Skip-link chrome, isolated pack imagery, fragmented headings/service panels and screen-footer padding weakened PDFs | Added a 12-route PDF harness and corrected all print defects; 39 rendered pages passed and were human-reviewed | None in the implementation candidate; managed-staging print remains separate |
+| Products compact layout | High | Product-category context collapsed at 320 pixels, leaving visually empty framed surfaces | Replaced collapsed disclosure treatment with concise static context and tightened the category composition | None; complete Chromium/WebKit rerun passed |
+| Oncology principle grid | High | Four principles inherited a three-column grid, producing a large phantom grey cell | Re-authored the grid as two balanced columns with a single-column mobile transformation | None; complete Chromium/WebKit rerun passed |
 
 No critical or unresolved high visual finding remains. The mobile LCP observation is a transparent performance follow-up, not a hidden pass.
 
 ## Acceptance decision
 
-The prior repository candidate was visually accepted for review. The current continuation remains pending a clean-checkout rerun of the complete canonical and Chromium/WebKit acceptance suites after the identity and Portal corrections. It is not production accepted. The same accepted release must be deployed to managed staging and repeated through human, browser, accessibility, security and performance review before merge or production cutover.
+The corporate continuation is visually accepted at immutable implementation SHA `9f49161425790596413051a2b00cedeae51905a9` with no unresolved critical/high visual defect and no known material medium defect on the audited routes. The complete governed Node 24 root acceptance, Corporate Chromium/WebKit matrix, Corporate print/PDF suite, focused Lighthouse medians, Portal full matrix and security/supply-chain gates passed with an unchanged generated `PUBLIC_ONLY` artefact. A fresh detached worktree and every GitHub check at that exact implementation head also passed. Draft PR 70 remains unmerged; managed workflows still require their separate staging and production evidence.

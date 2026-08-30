@@ -1,0 +1,125 @@
+{
+  "evidenceType": "governed-prescriber-details-practice-master",
+  "ingestedAt": "2026-08-26T13:50:00.000Z",
+  "importerVersion": "prescriber-practice-master-v2",
+  "productionIngestionClaim": false,
+  "databaseType": "isolated-local-sqlite-validation",
+  "source": {
+    "sourceId": "nhsbsa.prescriber-details",
+    "publisher": "NHS Business Services Authority",
+    "resourceId": "5a2fb1aa-7cac-464b-bcc2-ed4d9921669a",
+    "reportingPeriod": "2026-07",
+    "resourceName": "Prescriber Details - Jul 2026",
+    "resourceUrl": "https://opendata.nhsbsa.net/dataset/3908d491-633e-46c3-89f3-465a9bbb769c/resource/5a2fb1aa-7cac-464b-bcc2-ed4d9921669a/download/prescriber_details_202607.csv",
+    "contentSha256": "e9de50ab65a3c0c7bc1d555de7576cb17be6d3a417888c53be4a61d0afbaea5d",
+    "bytes": 28444873,
+    "checksumMatched": true
+  },
+  "schema": {
+    "status": "exact",
+    "variant": "2026-current",
+    "fingerprint": "7bb8453de4f9a4ebbe04177e8476e0f221e955f7b4b1bc0cf84b02081468bd12",
+    "columns": [
+      "PROVIDER_SICBL_CODE",
+      "PROVIDER_SICBL_NAME",
+      "PRACTICE_CODE",
+      "PRACTICE_NAME",
+      "PRESCRIBER_CODE",
+      "PRESCRIBER_TITLE",
+      "PRESCRIBER_NAME",
+      "PRESCRIBER_TYPE",
+      "DATE_JOINED",
+      "ADDRESS_FIELD1",
+      "ADDRESS_FIELD2",
+      "ADDRESS_FIELD3",
+      "ADDRESS_FIELD4",
+      "POSTCODE",
+      "PRACTICE_TYPE"
+    ]
+  },
+  "rows": {
+    "source": 158388,
+    "accepted": 158381,
+    "rejected": 7,
+    "uniquePractices": 11787,
+    "repeatedPrescriberRows": 146594,
+    "materialIdentityConflicts": 0,
+    "practiceCodesWithMultipleSourceVariants": 851,
+    "practiceCodesWithMultiplePostcodes": 292,
+    "distinctPracticeSourceVariants": 12836,
+    "providers": 474
+  },
+  "governedRejections": {
+    "counts": {
+      "MISSING_PRACTICE_IDENTITY": 1,
+      "MISSING_PRACTICE_POSTCODE": 6
+    },
+    "sourceRowReferences": [
+      {
+        "sourceRow": 60973,
+        "errorCode": "MISSING_PRACTICE_IDENTITY",
+        "fieldName": "PRACTICE_CODE",
+        "sourceValueDigest": "6f26c3210c0cde07a06110a744b1cab217d1e1bfb98e9d48d958b7aaee71c36d"
+      },
+      {
+        "sourceRow": 76981,
+        "errorCode": "MISSING_PRACTICE_POSTCODE",
+        "fieldName": "POSTCODE",
+        "sourceValueDigest": "487c1376995e577b0b648a59390eba5e10c7fd27068d99b957eab97529c85645"
+      },
+      {
+        "sourceRow": 77002,
+        "errorCode": "MISSING_PRACTICE_POSTCODE",
+        "fieldName": "POSTCODE",
+        "sourceValueDigest": "4e4e68de61eedaf5520094d614d1fa9e7e6123918924b6dbdd9d804dd4560b98"
+      },
+      {
+        "sourceRow": 83046,
+        "errorCode": "MISSING_PRACTICE_POSTCODE",
+        "fieldName": "POSTCODE",
+        "sourceValueDigest": "5f546342687977956602284df0c681875f0e21dc1fd2339465985c74396e4fb7"
+      },
+      {
+        "sourceRow": 91993,
+        "errorCode": "MISSING_PRACTICE_POSTCODE",
+        "fieldName": "POSTCODE",
+        "sourceValueDigest": "1685cc923a4519d5c816cc959f7cbf66b131e6e1ec9b5b4e12f8c2722ac36df6"
+      },
+      {
+        "sourceRow": 93066,
+        "errorCode": "MISSING_PRACTICE_POSTCODE",
+        "fieldName": "POSTCODE",
+        "sourceValueDigest": "0f4e26f4334400215fbf7e1d2eaba4f1aca89e0905eeffbccc24ad0e53da455b"
+      },
+      {
+        "sourceRow": 93096,
+        "errorCode": "MISSING_PRACTICE_POSTCODE",
+        "fieldName": "POSTCODE",
+        "sourceValueDigest": "0bc56b16afe178102ac650696b9ec30aa78f957e6c37598d818b428c6ab9b139"
+      }
+    ],
+    "rawValuesCommitted": false
+  },
+  "canonicalLocationSelection": {
+    "method": "Most frequently observed complete source location per practice code; ties use address completeness then a stable variant digest.",
+    "sourceVariantsPreservedBy": "Immutable raw source checksum and aggregate evidence; no alternative address is recast as a separate practice identity.",
+    "ambiguousPracticesStatus": "source_observed_modal_location"
+  },
+  "practiceMaster": {
+    "practices": 11787,
+    "geocoded_practices": 0,
+    "population_linked_practices": 0
+  },
+  "privacyBoundary": [
+    "The raw immutable source contains public prescriber records, but the curated practice master deliberately excludes prescriber names, titles and codes.",
+    "No practice email, telephone or website is inferred from this source; DoHS and public-contact enrichment remain separately governed.",
+    "The provider SICBL relationship is preserved as a source-period observation and is not silently recast as a current ICB hierarchy.",
+    "Practice postcode is an organisation address and never patient residence.",
+    "Overseas BFPO practice identifiers are retained without assigning UK ONS geography or coordinates."
+  ],
+  "rawStorage": {
+    "committedToGit": false,
+    "localValidationOnly": true,
+    "immutableChecksumVerified": true
+  }
+}

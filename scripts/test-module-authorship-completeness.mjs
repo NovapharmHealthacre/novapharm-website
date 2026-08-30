@@ -25,8 +25,8 @@ const hiddenModules = catalog.filter((module) => module.releaseClassification ==
 
 const counts = Object.fromEntries(["customer", "employee", "executive", "admin"].map((area) => [area, catalog.filter((module) => module.area === area).length]));
 assert.deepEqual(counts, { customer: 18, employee: 13, executive: 18, admin: 5 });
-assert.equal(visibleModules.length, 47);
-assert.equal(hiddenModules.length, 7);
+assert.equal(visibleModules.length, 48);
+assert.equal(hiddenModules.length, 6);
 
 for (const module of visibleModules) {
   let source;

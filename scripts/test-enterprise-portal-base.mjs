@@ -239,7 +239,14 @@ try {
   const boardLogin = await login("board@example.invalid", validationPasswords.board, "board", "127.20.0.14");
   assert.equal(boardLogin.statusCode, 200);
   assert.equal((await request({ url: "/api/enterprise/modules/executive.ceo-dashboard", headers: jsonHeaders(boardLogin.session) })).statusCode, 200);
-  assert.equal((await request({ url: "/api/enterprise/modules/executive.nhs-data", headers: jsonHeaders(boardLogin.session) })).statusCode, 404);
+  const medicinesIntelligence = await request({ url: "/api/enterprise/modules/executive.nhs-data", headers: jsonHeaders(boardLogin.session) });
+  assert.equal(medicinesIntelligence.statusCode, 200);
+  assert.equal(medicinesIntelligence.payload.module.code, "executive.nhs-data");
+  assert.equal(medicinesIntelligence.payload.module.slug, "medicines-intelligence");
+  assert.equal(medicinesIntelligence.payload.module.releaseClassification, "informational_only");
+  assert.equal(medicinesIntelligence.payload.readOnly, true);
+  assert.equal(medicinesIntelligence.payload.dataState, "governed_sources_not_loaded");
+  assert.ok(medicinesIntelligence.payload.metrics.every((metric) => metric.value === 0));
   assert.equal((await request({ method: "POST", url: "/api/enterprise/workflows/demo-workflow-product-onboarding-nutraxin-review/advance", headers: jsonHeaders(boardLogin.session), body: "{}", address: "127.20.0.15" })).statusCode, 403);
 
   for (const accessType of ["employee", "board", "admin"]) {

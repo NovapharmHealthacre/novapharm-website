@@ -1,0 +1,71 @@
+{
+  "evidenceType": "governed-bnf-temporal-catalogue-ingestion",
+  "ingestedAt": "2026-08-24T06:07:26.414Z",
+  "importerVersion": "bnf-temporal-catalogue-v1",
+  "productionIngestionClaim": false,
+  "databaseType": "isolated-local-sqlite-validation",
+  "historic": {
+    "sourceId": "nhsbsa.bnf-historic",
+    "resourceId": "25067d9d-1f23-486b-9f9c-e61df9f12454",
+    "reportingPeriod": "2025",
+    "applicableMonth": "2025-12",
+    "resourceUrl": "https://opendata.nhsbsa.net/dataset/e319a615-3480-478c-986d-05427b481fa6/resource/25067d9d-1f23-486b-9f9c-e61df9f12454/download/bnf_code_historic_2025_version_88.csv",
+    "contentSha256": "794a7e36957be1ed6c12a2516063fd2cf1073b827bda60f7e2c8b92bc064ed42",
+    "bytes": 14163736,
+    "checksumMatched": true,
+    "sourceRows": 54792,
+    "acceptedRows": 54791,
+    "rejectedRows": 1,
+    "duplicateRows": 0,
+    "schemaStatus": "exact",
+    "schemaFingerprint": "79205dc7c9b9d78bcf374a5e1c1c1d025ed1dc02c0b282a0dced0f89077145b5"
+  },
+  "monthlyChanges": {
+    "sourceId": "nhsbsa.bnf-changes",
+    "resourceId": "01a1a90f-0e06-4256-a7ba-43f3c9be12bb",
+    "reportingPeriod": "2026-07",
+    "applicableMonths": [
+      "2025-12",
+      "2026-01",
+      "2026-02",
+      "2026-03",
+      "2026-04",
+      "2026-05",
+      "2026-06",
+      "2026-07"
+    ],
+    "resourceUrl": "https://opendata.nhsbsa.net/dataset/d35ed30f-83c7-4efc-a065-3d0330e43c90/resource/01a1a90f-0e06-4256-a7ba-43f3c9be12bb/download/bnf_code_monthly_changes_202607.csv",
+    "contentSha256": "76d7410219829cddd2b1566d89e0b296fac61b19e2dd5cd9465eb6f878c9455b",
+    "bytes": 316314,
+    "checksumMatched": true,
+    "sourceRows": 1134,
+    "acceptedRows": 1134,
+    "rejectedRows": 0,
+    "duplicateRows": 0,
+    "changeTypes": {
+      "add": 776,
+      "change": 218,
+      "remove": 140
+    },
+    "schemaStatus": "exact",
+    "schemaFingerprint": "9fd0d926074376cd9b557a129df035d0eecc588e1b641af05024eee4eaffdb84"
+  },
+  "temporalIdentity": {
+    "medicines": 55566,
+    "temporal_code_observations": 55788,
+    "temporal_aliases": 334728,
+    "temporal_bnf_nodes": 70257,
+    "ended_medicines": 139
+  },
+  "boundaries": [
+    "Historic and monthly-change observations are versioned separately from the July 2026 current catalogue.",
+    "Display names remain aliases with source-effective dates; they are never used as primary keys.",
+    "Removal events close earlier identity observations only when the code is absent from the current catalogue.",
+    "BNF history does not provide SNOMED or dm+d identity and does not create prescribing, dispensing, sales or forecast facts."
+  ],
+  "rawStorage": {
+    "committedToGit": false,
+    "localValidationOnly": true,
+    "immutableChecksumsVerified": true
+  }
+}

@@ -5,6 +5,7 @@ import sharp from "sharp";
 
 const root = process.cwd();
 const packRoot = path.join(root, "creative-assets/brand/novapharm-logo-asset-pack");
+const pharmaScopePackRoot = path.join(root, "creative-assets/brand/pharmascope-logo-asset-pack");
 const failures = [];
 
 const deployedAssets = Object.freeze([
@@ -39,6 +40,21 @@ const expectedRasterDimensions = Object.freeze({
   "assets/brand/pwa-maskable-512.png": [512, 512],
   "assets/brand/novapharm-open-graph-1200x630-white.jpg": [1200, 630],
   "assets/brand/novapharm-open-graph-1200x630-red.jpg": [1200, 630],
+});
+
+const pharmaScopeDeployedAssets = Object.freeze([
+  ["02_web/primary_transparent/pharmascope-logo.svg", "assets/brand/pharmascope-logo.svg"],
+  ["02_web/reverse_white/pharmascope-logo-white.svg", "assets/brand/pharmascope-logo-reverse.svg"],
+  ["08_visual_system/Pulse/pulse-mark.svg", "assets/brand/pharmascope-pulse.svg"],
+  ["08_visual_system/Vector/vector-mark.svg", "assets/brand/pharmascope-vector.svg"],
+  ["08_visual_system/Helix/helix-mark.svg", "assets/brand/pharmascope-helix.svg"],
+  ["04_apple_app_icons/AppIcon/AppIcon-1024x1024.png", "assets/brand/pharmascope-app-icon-1024.png"],
+  ["05_social_profile/pharmascope-open-graph-1200x630-dark.jpg", "assets/brand/pharmascope-open-graph-1200x630-dark.jpg"],
+]);
+
+const pharmaScopeRasterDimensions = Object.freeze({
+  "assets/brand/pharmascope-app-icon-1024.png": [1024, 1024],
+  "assets/brand/pharmascope-open-graph-1200x630-dark.jpg": [1200, 630],
 });
 
 async function filesUnder(directory) {
@@ -102,10 +118,59 @@ for (const [relativePath, [expectedWidth, expectedHeight]] of Object.entries(exp
   }
 }
 
+const pharmaScopePackFiles = await filesUnder(pharmaScopePackRoot);
+if (pharmaScopePackFiles.length !== 127) failures.push(`Governed PharmaScope pack must contain exactly 127 files; found ${pharmaScopePackFiles.length}`);
+if (pharmaScopePackFiles.some((file) => path.basename(file) === ".DS_Store")) failures.push("Governed PharmaScope pack must not contain .DS_Store metadata");
+
+const pharmaScopeChecksums = await readFile(path.join(pharmaScopePackRoot, "SHA256SUMS.txt"), "utf8");
+const pharmaScopeChecksumEntries = pharmaScopeChecksums.trim().split("\n").map((line) => {
+  const match = line.match(/^([a-f0-9]{64})  (.+)$/u);
+  if (!match) {
+    failures.push(`Malformed PharmaScope checksum entry: ${line}`);
+    return null;
+  }
+  return { expected: match[1], relativePath: match[2] };
+}).filter(Boolean);
+if (pharmaScopeChecksumEntries.length !== 126) failures.push(`PharmaScope checksum register must contain 126 governed entries; found ${pharmaScopeChecksumEntries.length}`);
+
+for (const entry of pharmaScopeChecksumEntries) {
+  const content = await readFile(path.join(pharmaScopePackRoot, entry.relativePath));
+  if (digest(content) !== entry.expected) failures.push(`PharmaScope pack checksum mismatch: ${entry.relativePath}`);
+}
+
+for (const [sourcePath, deployedPath] of pharmaScopeDeployedAssets) {
+  const [source, deployed] = await Promise.all([
+    readFile(path.join(pharmaScopePackRoot, sourcePath)),
+    readFile(path.join(root, deployedPath)),
+  ]);
+  if (!source.equals(deployed)) failures.push(`${deployedPath} is not byte-identical to its approved PharmaScope source ${sourcePath}`);
+}
+
+for (const relativePath of pharmaScopeDeployedAssets.map(([, deployedPath]) => deployedPath).filter((file) => file.endsWith(".svg"))) {
+  const svg = await readFile(path.join(root, relativePath), "utf8");
+  for (const forbidden of [/<script\b/iu, /(?:href|src)=["']https?:/iu]) {
+    if (forbidden.test(svg)) failures.push(`${relativePath} contains forbidden SVG content matching ${forbidden}`);
+  }
+}
+
+const pharmaScopeTokenSource = await readFile(path.join(pharmaScopePackRoot, "06_brand_tokens/pharmascope-brand-tokens.json"), "utf8");
+const pharmaScopeTokens = JSON.parse(pharmaScopeTokenSource);
+if (pharmaScopeTokens?.brand !== "PharmaScope") failures.push("PharmaScope token register has the wrong brand identity");
+if (pharmaScopeTokens?.colors?.ink !== "#09111E" || pharmaScopeTokens?.colors?.blue !== "#1663F2") {
+  failures.push("PharmaScope token register must preserve approved ink #09111E and analytical blue #1663F2");
+}
+
+for (const [relativePath, [expectedWidth, expectedHeight]] of Object.entries(pharmaScopeRasterDimensions)) {
+  const metadata = await sharp(path.join(root, relativePath)).metadata();
+  if (metadata.width !== expectedWidth || metadata.height !== expectedHeight) {
+    failures.push(`${relativePath} must be ${expectedWidth}x${expectedHeight}; found ${metadata.width}x${metadata.height}`);
+  }
+}
+
 if (failures.length) {
   console.error("Brand-asset validation failed:");
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
 
-console.log(`Brand-asset validation passed: ${packFiles.length} governed files, ${checksumEntries.length} registered checksums and ${deployedAssets.length} byte-identical web assets.`);
+console.log(`Brand-asset validation passed: NovaPharm ${packFiles.length}/${checksumEntries.length} files/checksums and PharmaScope ${pharmaScopePackFiles.length}/${pharmaScopeChecksumEntries.length}, with ${deployedAssets.length + pharmaScopeDeployedAssets.length} byte-identical deployed assets.`);

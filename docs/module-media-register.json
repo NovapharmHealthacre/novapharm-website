@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-15",
-  "version": "2.0",
+  "generatedAt": "2026-08-22",
+  "version": "2.1",
   "policy": {
     "principalHeroMaximumUses": 1,
     "generalMaximumUses": 2,
@@ -30,7 +30,7 @@
       "route": "/about/",
       "purpose": "Operating model and company positioning",
       "heroAsset": "about-operating-model",
-      "secondaryAsset": "partners-due-diligence",
+      "secondaryAsset": null,
       "signals": [
         "Evidence",
         "Optionality",
@@ -86,7 +86,7 @@
       "route": "/services/",
       "purpose": "Connected pharmaceutical service delivery",
       "heroAsset": "services-connected-execution",
-      "secondaryAsset": "services-launch-readiness",
+      "secondaryAsset": null,
       "signals": [
         "Assess",
         "Qualify",
@@ -110,15 +110,15 @@
     },
     {
       "id": "products",
-      "path": "product-portfolio/index.html",
-      "route": "/product-portfolio/",
+      "path": "products/index.html",
+      "route": "/products/",
       "purpose": "Product-category and opportunity architecture",
       "heroAsset": "product-portfolio-evidence",
-      "secondaryAsset": "product-licensed-generics",
+      "secondaryAsset": null,
       "signals": [
+        "Nutraxin",
         "Oncology",
         "Specialty",
-        "Licensed",
         "Opportunity review"
       ]
     },
@@ -128,7 +128,7 @@
       "route": "/partner-with-us/",
       "purpose": "Partner qualification and collaboration routes",
       "heroAsset": "partners-qualification",
-      "secondaryAsset": "partners-due-diligence",
+      "secondaryAsset": null,
       "signals": [
         "Capability",
         "Licence",
