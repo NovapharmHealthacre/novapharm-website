@@ -1,6 +1,6 @@
 # NovaPharm Healthcare corporate release truth
 
-Last verified: 2026-08-28
+Last verified: 2026-08-30
 
 ## Release identity
 
@@ -9,7 +9,7 @@ Last verified: 2026-08-28
 | Repository | `NovapharmHealthacre/novapharm-website` |
 | Current `origin/main` | `23310988e8fc484375aa10176aa1c1edbf5371a8` |
 | Current implementation branch | `codex/corporate-product-discipline-rebuild` |
-| Feature remote / PR | No `origin/codex/corporate-product-discipline-rebuild` ref and no pull request currently exist |
+| Feature remote / PR | `origin/codex/corporate-product-discipline-rebuild`; Draft PR [#70](https://github.com/NovapharmHealthacre/novapharm-website/pull/70), implementation SHA `9f49161425790596413051a2b00cedeae51905a9` |
 | Public canonical URL | `https://novapharmhealthcare.com/` |
 | Public host | GitHub Pages, branch `main`, repository root |
 | Custom domain state | Built, approved certificate, HTTPS enforced |
@@ -36,10 +36,28 @@ fail-closed result and must not be presented as a managed production release.
 
 PR 69 is the latest merged programme baseline and produced current `main`.
 PR 16 was merged on 10 August 2026 and is historical, not an open Draft PR.
-Ten open pull requests are Dependabot updates (#57-#66); none is the current
-working increment. Open programme issues remain #54 and #55. The latest
+Ten open pull requests are Dependabot updates (#57-#66); Draft PR 70 is the
+current programme candidate. Open programme issues remain #54 and #55. The latest
 scheduled CodeQL run for the exact main SHA also concluded successfully on
 24 August 2026. Branch protection and repository rulesets remain absent.
+
+The initial Draft PR 70 head failed every dependency-installing workflow before
+application tests ran because `package-lock.json` omitted the new
+`@novapharm/medicines-intelligence` workspace. That lock metadata was repaired.
+A later managed-account browser run then exposed a genuine live-region defect:
+the generated managed form had replaced its adjacent application-status node.
+The generator now preserves both elements and a focused regression test guards
+the contract.
+
+Immutable implementation commit
+`9f49161425790596413051a2b00cedeae51905a9` passed a fresh detached-worktree
+install and the complete governed Node 24 root acceptance. All GitHub checks at
+that exact PR head subsequently concluded successfully, including CodeQL,
+public and protected application builds, managed contact/account/auth browser
+workflows, Chromium/WebKit acceptance, production-readiness, visual, SEO,
+media, dependency, SBOM and supply-chain gates. GitHub Pages deployment jobs
+were skipped by design on the Draft PR; the candidate was not merged or
+deployed.
 
 ## Public and managed authority
 

@@ -1,9 +1,12 @@
 {
   "schemaVersion": "1.0.0",
-  "reviewDate": "2026-08-28",
+  "reviewDate": "2026-08-30",
   "branch": "codex/corporate-product-discipline-rebuild",
   "baseSha": "23310988e8fc484375aa10176aa1c1edbf5371a8",
-  "candidateState": "uncommitted_working_tree",
+  "implementationSha": "9f49161425790596413051a2b00cedeae51905a9",
+  "implementationChecksUrl": "https://github.com/NovapharmHealthacre/novapharm-website/commit/9f49161425790596413051a2b00cedeae51905a9/checks",
+  "pullRequest": 70,
+  "candidateState": "exact_head_verified_draft_pr_candidate",
   "precedence": "Latest explicit owner instruction controls apparent conflicts while truth, security, privacy, regulatory, accessibility and production safeguards remain mandatory.",
   "sourcePrompts": [
     {
@@ -29,13 +32,13 @@
       "id": "1",
       "title": "Start from current truth",
       "status": "Already complete and verified",
-      "implementation": "Branch, HEAD, origin/main, dirty tree, GitHub state, Node 24 and deployment truth were rechecked without resetting the worktree.",
+      "implementation": "Branch, implementation SHA, origin/main, Draft PR, GitHub state, Node 24 and deployment truth were rechecked without resetting the worktree.",
       "evidence": [
         "docs/programme/post-pr53-current-truth.md",
         "docs/current-state/corporate-release-truth.md"
       ],
       "blocker": null,
-      "nextAction": "Refresh exact-SHA fields after the candidate is committed."
+      "nextAction": "Resolve every subsequent acceptance result against the current Draft PR head."
     },
     {
       "id": "2",
@@ -52,50 +55,53 @@
       "id": "3",
       "title": "Latest Corporate Apple-discipline rebuild must go live",
       "status": "Partially implemented",
-      "implementation": "The rebuilt PUBLIC_ONLY and managed Corporate candidates exist and passed prior repository/browser acceptance.",
+      "implementation": "The rebuilt PUBLIC_ONLY and managed Corporate candidates exist in immutable implementation commit 9f49161425790596413051a2b00cedeae51905a9; clean Node 24 acceptance and exact-head GitHub workflows passed in Draft PR 70.",
       "evidence": [
         "docs/release/final-acceptance.md",
-        "docs/design/apple-vs-novapharm.md"
+        "docs/design/apple-vs-novapharm.md",
+        "docs/programme/post-pr53-current-truth.md"
       ],
-      "blocker": "The working tree has no immutable candidate SHA and the rebuilt branch is not the deployed GitHub Pages SHA.",
-      "nextAction": "Complete exact-tree acceptance, commit, push, wait for exact-head CI and release the truthful PUBLIC_ONLY artefact."
+      "blocker": "Draft PR 70 is not merged and the rebuilt branch is not the deployed GitHub Pages SHA.",
+      "nextAction": "Obtain owner merge/release authority, then release only the truthful PUBLIC_ONLY artefact."
     },
     {
       "id": "4",
       "title": "Apple-grade Corporate standard",
-      "status": "Partially implemented",
-      "implementation": "Corporate navigation, page architecture, typography, products, CRO, Oncology and content density were substantially rebuilt.",
+      "status": "Already complete and verified",
+      "implementation": "Corporate navigation, page architecture, typography, products, CRO, Oncology and content density passed the refreshed primary-source review, exact-final browser matrix and human red-team review.",
       "evidence": [
         "docs/design/apple-primary-source-study.md",
         "docs/design/apple-vs-novapharm.md",
         "docs/design/responsive-acceptance.md"
       ],
-      "blocker": "Final current-source research, rendered red-team review and exact-final-CSS browser evidence are still being refreshed.",
-      "nextAction": "Finish the primary-source refresh and final human review without reintroducing decoration or false claims."
+      "blocker": null,
+      "nextAction": "Preserve the accepted system and repeat affected acceptance after any later visual or functional change."
     },
     {
       "id": "5",
       "title": "Secure Portal must become usable",
       "status": "Partially implemented",
-      "implementation": "The protected Next.js Portal, API, local session boundary and role-scoped read modules exist; PUBLIC_ONLY remains fail-closed.",
+      "implementation": "The protected Next.js Portal, API, local session boundary and role-scoped read modules exist and passed repository acceptance; PUBLIC_ONLY remains fail-closed.",
       "evidence": [
         "docs/portal/54-module-production-matrix.md",
-        "docs/portal/security-production-evidence.md"
+        "docs/portal/security-production-evidence.md",
+        "docs/programme/post-pr53-current-truth.md"
       ],
       "blocker": "Managed hosting, Entra, production data, monitoring and acceptance are not operational.",
-      "nextAction": "Complete repository acceptance, then stage only after quota, cost and identity authority exist."
+      "nextAction": "Stage only after quota, cost and identity authority exist."
     },
     {
       "id": "6",
       "title": "54-module Apple-grade audit",
-      "status": "Partially implemented",
-      "implementation": "All 54 modules are catalogued with 48 visible informational routes and six hidden fail-closed routes.",
+      "status": "Already complete and verified",
+      "implementation": "All 54 modules are catalogued and passed the exact-final 13-viewport Chromium/WebKit review: 48 visible informational routes and six hidden fail-closed routes.",
       "evidence": [
         "packages/portal-contracts/src/module-catalog.json",
-        "docs/portal/54-module-production-matrix.md"
+        "docs/portal/54-module-production-matrix.md",
+        "docs/programme/final-human-visual-dossier.md"
       ],
-      "blocker": "The exact final UI still needs complete per-module Chromium/WebKit state review after the latest PharmaScope changes.",
-      "nextAction": "Regenerate the module design ledger and rerun the complete module browser matrix."
+      "blocker": null,
+      "nextAction": "Repeat the complete module matrix after any Portal presentation, catalogue or contract change."
     },
     {
       "id": "7",
@@ -137,41 +143,44 @@
     {
       "id": "10",
       "title": "PharmaScope Apple and Economist design",
-      "status": "Partially implemented",
-      "implementation": "The approved desktop silhouette, text-first navigation, analytical density and restrained brand system are implemented.",
+      "status": "Already complete and verified",
+      "implementation": "The approved desktop silhouette, text-first navigation, analytical density and restrained brand system passed the final responsive Chromium/WebKit matrix and human visual review.",
       "evidence": [
         "docs/data/medicines-intelligence-visual-acceptance.md",
-        "apps/portal/components/medicines-intelligence.module.css"
+        "apps/portal/components/medicines-intelligence.module.css",
+        "docs/programme/final-human-visual-dossier.md"
       ],
-      "blocker": "Final side-by-side owner-reference and all-state responsive review remain pending on the exact final build.",
-      "nextAction": "Render desktop/mobile evidence in Chromium and WebKit and correct any material visual defect."
+      "blocker": null,
+      "nextAction": "Preserve the accepted information architecture while authoritative data states are activated progressively."
     },
     {
       "id": "11",
       "title": "PharmaScope search",
-      "status": "Partially implemented",
-      "implementation": "Canonical current-BNF identity search, governed aliases and the protected v1 API are implemented against the populated private-cloud database. The real Apixaban search completed in 407.15 ms.",
+      "status": "Already complete and verified",
+      "implementation": "Canonical current-BNF identity search, governed aliases and the protected v1 API are implemented against the populated private-cloud database, browser-accepted, and benchmarked with a real Apixaban search at 407.15 ms.",
       "evidence": [
         "src/core/medicines-intelligence-service.mjs",
         "docs/api/pharmascope-v1.openapi.yaml",
         "docs/data/evidence/bnf-current-import.json",
-        "docs/data/evidence/epd-2026-06-private-cloud-query-benchmark-accepted.json"
+        "docs/data/evidence/epd-2026-06-private-cloud-query-benchmark-accepted.json",
+        "docs/programme/final-human-visual-dossier.md"
       ],
-      "blocker": "Exact rendered Chromium/WebKit acceptance against the latest UI is still pending.",
-      "nextAction": "Exercise the accepted query flow through the protected browser candidate and inspect the rendered result."
+      "blocker": null,
+      "nextAction": "Retain server-authoritative identity resolution and remeasure after source or query-plan changes."
     },
     {
       "id": "12",
       "title": "PharmaScope medicine experience",
       "status": "Partially implemented",
-      "implementation": "Identity, source evidence, accepted June presentation and substance analytics and explicit unavailable states are implemented without illustrative production numbers. A single accepted month is not drawn as a trend.",
+      "implementation": "Identity, source evidence, accepted June presentation and substance analytics and explicit unavailable states are implemented and browser-accepted without illustrative production numbers. A single accepted month is not drawn as a trend.",
       "evidence": [
         "apps/portal/components/medicines-intelligence.tsx",
         "docs/data/medicine-identity-and-bnf-snomed.md",
-        "docs/data/evidence/epd-2026-06-private-cloud-query-benchmark-accepted.json"
+        "docs/data/evidence/epd-2026-06-private-cloud-query-benchmark-accepted.json",
+        "docs/programme/final-human-visual-dossier.md"
       ],
       "blocker": "Historical trend, map polygons and forecasts remain data- or implementation-gated.",
-      "nextAction": "Render the accepted June analytical state and retain forecast unavailable until sufficient history exists."
+      "nextAction": "Preserve the accepted June state and activate trend, map and forecast only after their separate source and methodology gates pass."
     },
     {
       "id": "13",
@@ -256,14 +265,15 @@
       "id": "19",
       "title": "Source-health dashboard",
       "status": "Partially implemented",
-      "implementation": "Source state, expected, discovered and ingested periods, schema and freshness are modelled and presented; June 2026 EPD is recorded as an accepted non-sample local ingest.",
+      "implementation": "Source state, expected, discovered and ingested periods, schema and freshness are modelled, presented and browser-accepted; June 2026 EPD is recorded as an accepted non-sample local ingest.",
       "evidence": [
         "src/core/medicines-intelligence-service.mjs",
         "apps/portal/components/medicines-intelligence.tsx",
-        "docs/data/evidence/epd-2026-06-private-cloud-import.json"
+        "docs/data/evidence/epd-2026-06-private-cloud-import.json",
+        "docs/programme/final-human-visual-dossier.md"
       ],
       "blocker": "No production scheduler or monitoring authority supplies live operational health.",
-      "nextAction": "Verify the final protected rendered state and retain production wording as pending."
+      "nextAction": "Retain the accepted local state and connect production scheduler, operator and alert evidence before describing source health as operational."
     },
     {
       "id": "20",
@@ -415,64 +425,68 @@
       "id": "32",
       "title": "Security risks",
       "status": "Partially implemented",
-      "implementation": "Session, role, customer isolation, source truth, secret, supply-chain and protected-route controls exist at repository level.",
+      "implementation": "Session, role, customer isolation, source truth, secret, supply-chain and protected-route controls passed the clean exact-tree repository suite and CodeQL.",
       "evidence": [
         "docs/portal/security-production-evidence.md",
-        "SECURITY.md"
+        "SECURITY.md",
+        "docs/programme/post-pr53-current-truth.md"
       ],
       "blocker": "Production identity, penetration test and managed-environment evidence remain external.",
-      "nextAction": "Run the complete exact-tree security suite; retain production security as pending."
+      "nextAction": "Preserve the passing repository controls and retain production security as pending until live-environment evidence exists."
     },
     {
       "id": "33",
       "title": "Accessibility",
-      "status": "Partially implemented",
-      "implementation": "WCAG/Axe, keyboard, contrast, reduced-motion and responsive controls are implemented and previously accepted.",
+      "status": "Already complete and verified",
+      "implementation": "WCAG/Axe, keyboard, contrast, reduced-motion and responsive controls passed the exact-final Corporate and Portal Chromium/WebKit matrices with zero serious or critical findings.",
       "evidence": [
         "docs/design/accessibility-contrast-audit.md",
-        "apps/portal/test/browser-acceptance.ts"
+        "apps/portal/test/browser-acceptance.ts",
+        "docs/programme/final-human-visual-dossier.md"
       ],
-      "blocker": "The exact latest PharmaScope build needs final all-state Chromium/WebKit reruns and human review.",
-      "nextAction": "Rerun automated and manual accessibility on the final CSS."
+      "blocker": null,
+      "nextAction": "Repeat the affected automated and manual checks after any interaction, semantic or CSS change."
     },
     {
       "id": "34",
       "title": "Performance",
       "status": "Partially implemented",
-      "implementation": "Resource budgets and Corporate Lighthouse medians are documented. Against the local 18.4-million-row EPD period, search measured 407.15 ms, presentation analytics 38.04 ms and full Apixaban substance analytics 3,796.77 ms after removal of a 78.94-second source-availability scan.",
+      "implementation": "Resource budgets, exact-final Corporate Lighthouse medians and protected local data-query benchmarks are documented. Against the local 18.4-million-row EPD period, search measured 407.15 ms, presentation analytics 38.04 ms and full Apixaban substance analytics 3,796.77 ms after removal of a 78.94-second source-availability scan.",
       "evidence": [
         "docs/programme/final-performance-acceptance.md",
         "docs/data/medicines-intelligence-visual-acceptance.md",
         "docs/data/evidence/epd-2026-06-private-cloud-query-benchmark-accepted.json",
         "docs/data/evidence/epd-2026-06-private-cloud-post-mart-acceptance.json"
       ],
-      "blocker": "Protected browser runtime, concurrency, managed SQL and field performance remain unverified.",
-      "nextAction": "Measure the final browser build and staging concurrency without raising thresholds; continue optimising broad substance queries where proportionate."
+      "blocker": "Managed concurrency, Azure SQL, field Core Web Vitals and production-network performance remain unverified.",
+      "nextAction": "Retain the measured local results; measure managed concurrency, staging and field behavior without raising thresholds, and continue optimising broad substance queries where proportionate."
     },
     {
       "id": "35",
       "title": "Local operational state",
       "status": "Partially implemented",
-      "implementation": "The local protected stack, private-cloud path contract, source registry, complete June EPD import, reconciled one-period marts and real Apixaban protected queries are implemented and accepted.",
+      "implementation": "The local protected stack, private-cloud path contract, source registry, complete June EPD import, reconciled one-period marts, real Apixaban protected queries and final rendered state are implemented and accepted.",
       "evidence": [
         "docs/data/source-refresh-and-runbook.md",
         "packages/medicines-intelligence/src/private-cloud.ts",
-        "docs/data/evidence/epd-2026-06-private-cloud-post-mart-acceptance.json"
+        "docs/data/evidence/epd-2026-06-private-cloud-post-mart-acceptance.json",
+        "docs/programme/final-human-visual-dossier.md"
       ],
-      "blocker": "The final rendered state and restart/recovery acceptance are still in progress.",
-      "nextAction": "Finish rendering, browser, recovery and exact-tree acceptance without converting local validation into a production claim."
+      "blocker": "Full recovery rehearsal, scheduled operation and longer authoritative history remain incomplete.",
+      "nextAction": "Complete recovery and scheduler acceptance without converting local validation into a production claim."
     },
     {
       "id": "36",
       "title": "Public and private deployment",
       "status": "Partially implemented",
-      "implementation": "PUBLIC_ONLY and FULL_PLATFORM contracts are separated and public protected actions fail closed.",
+      "implementation": "PUBLIC_ONLY and FULL_PLATFORM contracts are separated, public protected actions fail closed, and immutable implementation commit 9f49161425790596413051a2b00cedeae51905a9 passed clean exact-head acceptance in Draft PR 70.",
       "evidence": [
         "docs/infrastructure/managed-production-evidence.md",
-        "docs/current-state/corporate-release-truth.md"
+        "docs/current-state/corporate-release-truth.md",
+        "docs/programme/post-pr53-current-truth.md"
       ],
-      "blocker": "The current Corporate candidate is uncommitted; managed infrastructure is not provisioned and Azure aggregate VM quota remains zero.",
-      "nextAction": "Release PUBLIC_ONLY only after exact-head CI; hold managed deployment until quota/cost authority."
+      "blocker": "The candidate is not merged; managed infrastructure is not provisioned and Azure aggregate VM quota remains zero.",
+      "nextAction": "Release PUBLIC_ONLY only after owner merge/release approval; hold managed deployment until quota and cost authority."
     },
     {
       "id": "37",
@@ -558,26 +572,27 @@
     {
       "id": "44",
       "title": "Apple-grade review of everything",
-      "status": "Partially implemented",
-      "implementation": "Corporate, Portal and PharmaScope have governed design and browser acceptance artefacts.",
+      "status": "Already complete and verified",
+      "implementation": "Corporate, Portal and PharmaScope completed their governed 48-section, 54-module, responsive, Chromium/WebKit and human-review acceptance at the immutable implementation boundary.",
       "evidence": [
         "docs/design/apple-vs-novapharm.md",
-        "docs/data/medicines-intelligence-visual-acceptance.md"
+        "docs/data/medicines-intelligence-visual-acceptance.md",
+        "docs/programme/final-human-visual-dossier.md"
       ],
-      "blocker": "The exact latest worktree has not completed every module/state human review.",
-      "nextAction": "Finish the 48-section and 54-module visual ledgers on the exact final build."
+      "blocker": null,
+      "nextAction": "Repeat only the affected review scope after a subsequent design or functional change."
     },
     {
       "id": "45",
       "title": "Human visual review",
-      "status": "Partially implemented",
-      "implementation": "Rendered Corporate and PharmaScope evidence exists and the owner reference is encoded in acceptance.",
+      "status": "Already complete and verified",
+      "implementation": "Rendered Corporate and PharmaScope evidence was inspected across desktop, tablet, mobile, Chromium and WebKit against the approved owner reference and no material P0, P1 or P2 defect remains.",
       "evidence": [
         "docs/programme/final-human-visual-dossier.md",
         "audit/evidence/medicines-intelligence/manifest.json"
       ],
-      "blocker": "Latest branding/API/data-state changes require a new rendered comparison and manual inspection.",
-      "nextAction": "Capture desktop/tablet/mobile Chromium/WebKit evidence and inspect actual pixels."
+      "blocker": null,
+      "nextAction": "Preserve the deterministic capture harness and repeat human inspection for changed surfaces."
     },
     {
       "id": "46",
@@ -595,27 +610,30 @@
       "id": "47",
       "title": "Execution order",
       "status": "Partially implemented",
-      "implementation": "Truth, preservation, data contracts, private cloud, one complete national EPD period, source-scoped marts and incremental tests have proceeded in dependency order.",
+      "implementation": "Truth, preservation, data contracts, private cloud, one complete national EPD period, source-scoped marts, visual review, clean-checkout acceptance and exact-head CI proceeded in dependency order.",
       "evidence": [
         "docs/programme/post-pr53-current-truth.md",
         "docs/data/evidence/epd-2026-06-private-cloud-import.json",
-        "docs/data/evidence/epd-2026-06-marts-private-cloud.json"
+        "docs/data/evidence/epd-2026-06-marts-private-cloud.json",
+        "docs/programme/final-human-visual-dossier.md"
       ],
-      "blocker": "The programme remains active across real-query, visual, full acceptance and release phases.",
-      "nextAction": "Continue through query evidence, rendering, complete tests, exact SHA and authorised deployment gates."
+      "blocker": "The programme remains active across broader authoritative data, owner release authority and authorised production phases.",
+      "nextAction": "Retain the accepted Draft PR candidate, then continue only through evidence-backed data and owner-authorised deployment work."
     },
     {
       "id": "48",
       "title": "Final acceptance report",
       "status": "Partially implemented",
-      "implementation": "Existing Corporate, Portal and data reports distinguish repository and production states.",
+      "implementation": "Corporate, Portal and data reports distinguish repository and production states and identify immutable implementation commit 9f49161425790596413051a2b00cedeae51905a9 in Draft PR 70. The npm lockfile and managed-account workflow failures were repaired, then the clean Node 24 suite and exact-head workflows passed.",
       "evidence": [
         "docs/release/final-acceptance.md",
         "docs/portal/54-module-production-matrix.md",
-        "docs/data/medicines-intelligence-requirements.md"
+        "docs/data/medicines-intelligence-requirements.md",
+        "package-lock.json",
+        "docs/programme/post-pr53-current-truth.md"
       ],
-      "blocker": "No immutable final candidate SHA, exact-head CI conclusion or live managed deployment exists.",
-      "nextAction": "Regenerate one consolidated report only after all repository-controlled acceptance concludes."
+      "blocker": "Draft PR 70 remains unmerged and no live managed deployment exists.",
+      "nextAction": "Obtain owner merge/release authority for PUBLIC_ONLY and retain all managed-production blockers separately."
     },
     {
       "id": "49",

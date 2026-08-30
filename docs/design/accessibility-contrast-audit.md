@@ -1,4 +1,4 @@
-# Accessibility and contrast audi
+# Accessibility and contrast audit
 
 Review date: 22 August 2026
 Target: WCAG 2.2 AA minimum

@@ -102,7 +102,7 @@ External analytics exports are currently absent. Before adding one, define:
 
 No public map or downloadable table may expose protected contact intelligence, patient-like granular data, customer status, opportunity ranking, or campaign state.
 
-## Logging and audi
+## Logging and audit
 
 Required audit events include source discovery, download, schema decision, run start/finish/failure, publish, data-quality override, identity/role denial, search, record view, future export, model run, score configuration, campaign approval, suppression, and correction.
 

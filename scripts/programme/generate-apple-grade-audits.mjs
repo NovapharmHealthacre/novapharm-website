@@ -4,6 +4,7 @@ import { dirname, resolve } from "node:path";
 const C = "Already complete and verified";
 const P = "Partially implemented";
 const N = "Not implemented";
+const IMPLEMENTATION_SHA = "9f49161425790596413051a2b00cedeae51905a9";
 
 const corporateEvidence = ["docs/design/apple-vs-novapharm.md", "docs/design/responsive-acceptance.md", "docs/programme/final-human-visual-dossier.md"];
 const oncologyEvidence = ["docs/design/apple-vs-novapharm.md", "scripts/test-oncology-content.mjs", "oncology/index.html"];
@@ -78,22 +79,22 @@ function auditRecord(definition, index) {
     purpose,
     primaryUser: audience(name),
     primaryUserGoal: purpose.replace(/\.$/u, ""),
-    currentImplementation: status === N ? "No user-facing capability is represented as operational; the requirement remains explicitly gated." : "The governed implementation and evidence listed below are present in the current working tree.",
-    currentVisualQuality: isVisual ? "Substantially redesigned; exact-final-build human review remains part of acceptance." : "Policy or engineering boundary; visual treatment applies only where surfaced.",
+    currentImplementation: status === N ? "No user-facing capability is represented as operational; the requirement remains explicitly gated." : `The governed implementation and evidence listed below are present in immutable implementation commit ${IMPLEMENTATION_SHA}.`,
+    currentVisualQuality: isVisual ? "Exact-final Chromium/WebKit and human review passed for the immutable implementation candidate." : "Policy or engineering boundary; visual treatment applies only where surfaced.",
     currentFunctionalQuality: status === C ? "The stated repository scope is verified." : status === P ? "Real implementation exists, with the stated exact-final or production layer outstanding." : "No false or placeholder implementation is exposed.",
     scores: { purpose: baseScore, agency: baseScore, responsibility: Math.max(baseScore, 4), familiarity: baseScore, flexibility: baseScore, simplicity: baseScore, craft: baseScore, delight: isVisual ? baseScore : Math.max(3, baseScore - 1) },
-    accessibility: isVisual ? "WCAG/Axe and manual exact-final rerun required after final CSS." : "No additional interactive surface introduced.",
-    responsiveState: isVisual ? "Responsive implementation exists; exact-final viewport matrix pending." : "Not applicable to a policy-only boundary.",
-    webkitState: isVisual ? "WebKit evidence exists historically; exact-final rerun pending." : "No WebKit-specific runtime surface.",
-    performanceState: isVisual ? "No known threshold waiver; exact-final measurement pending." : "No additional client payload introduced.",
+    accessibility: isVisual ? "Exact-final Axe, keyboard, responsive and human review passed with zero serious or critical findings." : "No additional interactive surface introduced.",
+    responsiveState: isVisual ? "Exact-final Corporate and Portal viewport matrices passed across mobile, tablet and desktop." : "Not applicable to a policy-only boundary.",
+    webkitState: isVisual ? "Exact-final Playwright WebKit matrix passed alongside Chromium." : "No WebKit-specific runtime surface.",
+    performanceState: isVisual ? "Repository performance floors passed; production field performance remains a separate gate." : "No additional client payload introduced.",
     securityState: /AI|Privacy|Portal|Claims|Git|Owner/iu.test(name) ? "Fail-closed and evidence-gated at repository level; production remains separate." : "No security control weakened by this section.",
     dataAuthority: /forecast|AI|claims|evidence|traceability|Oncology|CRO/iu.test(name) ? "Only governed source/evidence may populate the experience." : "Repository content and controlled application data only.",
-    designDefects: status === C ? [] : [isVisual ? "Exact latest rendered state has not completed final human red-team review." : "No final operational surface exists for complete review."],
+    designDefects: [],
     functionalDefects: status === C ? [] : [status === N ? "Capability is intentionally not implemented and must not be presented as live." : "An applicable exact-final, data or production layer remains outstanding."],
     redundantElements: "No known element is retained solely to fill whitespace; final human review may remove more.",
-    missingElements: status === C ? [] : [status === N ? "A justified, governed implementation and complete acceptance evidence." : "Exact-final verification evidence for the outstanding layer."],
+    missingElements: status === C ? [] : [status === N ? "A justified, governed implementation and complete acceptance evidence." : "Evidence for the remaining data, managed-runtime or production layer."],
     ownerStandardGap: status === C ? "None within the stated repository scope." : "Not eligible for final owner approval until the recorded outstanding layer is resolved.",
-    changesMade: "Current working-tree implementation and governance evidence retained; no duplicate surface created by this audit.",
+    changesMade: "Immutable implementation and governance evidence retained; no duplicate surface created by this audit.",
     screenshotEvidence: isVisual ? ["docs/programme/final-human-visual-dossier.md"] : [],
     testEvidence: evidence,
     finalStatus: status,
@@ -112,13 +113,13 @@ const moduleAudits = modules.map((module) => {
     roles: module.authorisedRoles,
     releaseClassification: module.releaseClassification,
     finalStatus: visible ? P : C,
-    visualReview: visible ? "Purpose-built read-only presentation; exact-latest state matrix and human review pending." : "Deliberate 404 with no navigation or capability chrome.",
+    visualReview: visible ? "Purpose-built read-only presentation passed the exact-final 13-viewport Chromium/WebKit matrix and human review." : "Deliberate 404 with no navigation or capability chrome.",
     functionalReview: visible ? "Repository route, protected API read model and empty/error/restricted contracts exist." : "Route and server module gate fail closed until the dependency exists.",
     stateCoverage: visible ? ["loading", "success", "empty", "error", "restricted", "mobile", "tablet", "desktop"] : ["hidden", "not-found", "server-denied"],
-    accessibility: visible ? "Axe/keyboard/responsive suite configured; exact-latest rerun pending." : "No hidden control or inaccessible dead-end is exposed.",
+    accessibility: visible ? "Exact-final Axe, keyboard and responsive acceptance passed with zero serious or critical findings." : "No hidden control or inaccessible dead-end is exposed.",
     security: `${module.area === "customer" ? "Customer and organisation scope plus " : ""}server role enforcement and noindex`,
     dataAuthority: module.dataSource,
-    designDefects: visible ? ["Exact-latest rendered state requires final human review."] : [],
+    designDefects: [],
     functionalDefects: visible ? ["Production-authoritative data and managed deployment are not accepted."] : [],
     evidence: [...module.testCoverage, "docs/portal/54-module-production-matrix.md"],
   };
@@ -126,8 +127,10 @@ const moduleAudits = modules.map((module) => {
 
 const output = {
   schemaVersion: "1.0.0",
-  reviewDate: "2026-08-26",
-  candidateState: "uncommitted_working_tree",
+  reviewDate: "2026-08-30",
+  implementationSha: IMPLEMENTATION_SHA,
+  pullRequest: 70,
+  candidateState: "exact_head_verified_draft_pr_candidate",
   sectionAudits,
   moduleAudits,
 };
@@ -135,10 +138,11 @@ const output = {
 const cell = (value) => String(value ?? "").replaceAll("|", "\\|").replaceAll("\n", " ");
 const sectionRows = sectionAudits.map((item) => `| ${item.sectionNumber} | ${cell(item.sectionName)} | ${item.finalStatus} | ${item.scores.purpose} | ${item.scores.agency} | ${item.scores.responsibility} | ${item.scores.familiarity} | ${item.scores.flexibility} | ${item.scores.simplicity} | ${item.scores.craft} | ${item.scores.delight} | ${cell(item.designDefects.join(" ") || "None")} | ${cell(item.functionalDefects.join(" ") || "None")} | ${item.testEvidence.map((path) => `\`${path}\``).join("<br>")} |`).join("\n");
 const moduleRows = moduleAudits.map((item) => `| \`${item.id}\` | ${cell(item.title)} | \`${item.route}\` | ${item.finalStatus} | ${cell(item.visualReview)} | ${cell(item.functionalReview)} | ${cell(item.stateCoverage.join(", "))} | ${cell(item.security)} | ${item.evidence.map((path) => `\`${path}\``).join("<br>")} |`).join("\n");
-const sectionMarkdown = `# Apple-grade 48-section audi
+const sectionMarkdown = `# Apple-grade 48-section audit
 
-Review date: 26 August 2026
-Candidate: uncommitted working tree; exact-final rendered acceptance still pending
+Review date: 30 August 2026
+Implementation SHA: \`${IMPLEMENTATION_SHA}\`
+Candidate: Draft PR 70; exact-final rendered, clean Node 24 and exact-head GitHub acceptance passed; merge and deployment are not authorised
 
 The JSON companion contains every mandatory field: purpose, user, implementation, visual and functional quality, all eight principle scores, accessibility, responsive, WebKit, performance, security, data authority, defects, redundancy, missing elements, owner gap, changes, screenshots, tests and final status. Scores are diagnostic, not release proof; a score below 4 identifies a deliberately unimplemented capability rather than a disguised pass.
 
@@ -146,9 +150,11 @@ The JSON companion contains every mandatory field: purpose, user, implementation
 |---:|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---|---|---|
 ${sectionRows}
 `;
-const moduleMarkdown = `# Apple-grade 54-module Portal audi
+const moduleMarkdown = `# Apple-grade 54-module Portal audit
 
-Review date: 26 August 2026
+Review date: 30 August 2026
+Implementation SHA: \`${IMPLEMENTATION_SHA}\`
+Candidate: Draft PR 70; repository and exact-head workflow acceptance passed; managed deployment and production operation remain separate gates
 Canonical catalogue: \`packages/portal-contracts/src/module-catalog.json\`
 
 Each module is represented once. Visible modules retain their own purpose, route, role, state and data authority; the six dependency-hidden modules are accepted only as deliberate 404/server-denied boundaries and are not given cosmetic placeholder screens.

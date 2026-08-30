@@ -28,7 +28,7 @@ Required widths: 1920, 1440, 1366, 1280, 1024, 768, 430, 390, 375, 360 and 320 C
 | Conversion/safety | `/contact/`, `/account-application/`, `/portal/` | Long warnings, safe action visibility | Content not appearing like a disabled form | Pass; truthful fail-closed routes expose no fake form or success state |
 | Institutional | `/trust-centre/`, legal routes, footer | Link grouping and readable disclosures | Footer stretch and low-contrast legal copy | Pass through static validation and institutional footer checks |
 
-## Exact working-tree rendered resul
+## Exact implementation rendered result
 
 The final 28 August standalone run covered 40 canonical routes plus the governed 404 at all ten listed viewports in Chromium and Playwright WebKit. It produced 820 screenshots, 164 WCAG 2.2 Axe runs at the key desktop/mobile viewports, two high-density product-media checks and two JavaScript-disabled navigation checks. No serious or critical Axe finding, horizontal overflow, broken image, failed subresource, unexpected console error, clipped principal action or mid-word major-heading break survived.
 
@@ -38,4 +38,4 @@ Reproduction command: `npm run test:browser --workspace=@novapharm/corporate` af
 
 ## Failure criteria
 
-Any horizontal overflow, clipped navigation, inaccessible control, hidden essential text, product crop, overlapping sticky element, empty first viewport, accidental single-word hero widow, unreadable disclosure or two-dimensional 400% reflow remains a release defect. The exact immutable candidate must rerun this same matrix after commit; this working-tree pass is not substituted for exact-SHA evidence.
+Any horizontal overflow, clipped navigation, inaccessible control, hidden essential text, product crop, overlapping sticky element, empty first viewport, accidental single-word hero widow, unreadable disclosure or two-dimensional 400% reflow remains a release defect. The accepted code was committed unchanged as `9f49161425790596413051a2b00cedeae51905a9`; subsequent visual or functional changes must rerun the affected matrix, while managed-staging browser evidence remains separate.

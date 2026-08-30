@@ -1,4 +1,4 @@
-# Corporate content audi
+# Corporate content audit
 
 Review date: 22 August 2026
 Editorial rule: one central user question per section, evidence before promotion, and the next action stated plainly.

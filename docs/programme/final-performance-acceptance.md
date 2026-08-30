@@ -47,7 +47,7 @@ Run the same scripts on the exact staging release, then monitor 75th-percentile 
 
 Measured: 22 August 2026
 
-Candidate: local `PUBLIC_ONLY` static output from `codex/corporate-product-discipline-rebuild`
+Candidate: local `PUBLIC_ONLY` static output from `codex/corporate-product-discipline-rebuild`, committed unchanged in implementation SHA `9f49161425790596413051a2b00cedeae51905a9`
 
 Method: three first-visit Lighthouse 13.4.1 runs per route/profile; median reported
 
@@ -64,7 +64,7 @@ The repository performance floor passes. The 2.5-second mobile LCP aspiration do
 
 Reproduction command: `CORPORATE_LIGHTHOUSE_BASE_URL=http://127.0.0.1:4178 npm run corporate:lighthouse:validate`.
 
-## Exact-final working-tree rerun
+## Exact-final implementation rerun
 
 Measured: 28 August 2026 at `2026-08-28T15:00:19.556Z`
 
@@ -79,6 +79,6 @@ Method: Lighthouse 13.4.1, three first-visit laboratory runs per route/profile, 
 | `/products/` | Desktop | 100 | 100 | 100 | 100 | 0.6 s | 0 | 0 ms | 358 KiB |
 | `/products/` | Mobile | 96 | 100 | 100 | 100 | 2.8 s | 0 | 0 ms | 346 KiB |
 
-The first diagnostic run used `PUBLIC_INDEXABLE=false`, which correctly reduced the SEO score because the validation server was intentionally non-indexable. That result was rejected as an orchestration mismatch, not treated as a product defect. The table above is the subsequent production-equivalent static-public run with canonical indexing enabled. It supersedes the 22 August corporate continuation table for this working tree while retaining that earlier table as historical optimisation evidence.
+The first diagnostic run used `PUBLIC_INDEXABLE=false`, which correctly reduced the SEO score because the validation server was intentionally non-indexable. That result was rejected as an orchestration mismatch, not treated as a product defect. The table above is the subsequent production-equivalent static-public run with canonical indexing enabled. It supersedes the 22 August corporate continuation table for implementation SHA `9f49161425790596413051a2b00cedeae51905a9` while retaining that earlier table as historical optimisation evidence.
 
 All repository performance floors pass. Mobile LCP improved by approximately 0.4-0.5 seconds from the 22 August candidate, but the 2.5-second aspiration remains unproven in this throttled laboratory profile. These values are not field Core Web Vitals and do not prove Front Door, WAF, production-network or real-user performance.

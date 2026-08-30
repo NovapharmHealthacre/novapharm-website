@@ -38,4 +38,4 @@ The corporate stylesheet contains a dedicated print mode that:
 
 Human inspection covered the homepage, Services, Regulatory roadmap and Batch Integrity section, Oncology, both Products portfolios, Contact safety states and the account lifecycle. The review corrected a printed skip-link, an isolated product-image page, a split strategic-portfolio heading, incomplete product context, split service decisions and an over-padded screen footer that had overridden print CSS. The final Products document is three balanced pages and preserves all required regulatory and medical notices; every Services decision remains intact without a split panel.
 
-These local PDFs are test intermediates and are not published downloads. The immutable candidate must rerun this harness after commit; managed-staging browser print remains a separate production gate.
+These local PDFs are test intermediates and are not published downloads. The accepted implementation was committed unchanged as `9f49161425790596413051a2b00cedeae51905a9`; managed-staging browser print remains a separate production gate.
