@@ -7,125 +7,187 @@ const text = (path) => readFileSync(join(root, path), "utf8");
 
 const cssEntrypoint = text("assets/css/novapharm.css");
 assert.match(cssEntrypoint, /@layer reset, tokens, foundations, layout, components, pages, utilities;/);
-for (const module of ["base", "tokens", "foundations", "portal", "responsive", "cro", "oncology", "corporate-product-discipline"]) {
+for (const module of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity", "cro", "oncology", "owner-corrections"]) {
   assert.match(cssEntrypoint, new RegExp(`@import url\\("\\./${module}\\.css"\\)`), `${module}.css must be part of the production CSS entrypoint`);
 }
 assert.doesNotMatch(cssEntrypoint, /ai-search\.css/, "the retired public AI stylesheet must not be imported");
 
-const css = text("assets/css/corporate-product-discipline.css");
+const publicCss = text("assets/css/apple-pharma-public.css");
 const bundleCss = text("assets/css/novapharm.bundle.css");
 const tokenCss = text("assets/css/tokens.css");
-assert.match(css, /--corporate-product-discipline-contract:\s*1/);
-assert.match(css, /--npd-container:\s*1200px/);
-assert.match(css, /--npd-header:\s*56px/);
-assert.match(css, /--npd-system:\s*-apple-system, BlinkMacSystemFont/);
-assert.match(css, /letter-spacing:\s*0/);
-assert.match(css, /@media \(max-width:\s*360px\)/);
-assert.match(css, /@media \(prefers-reduced-motion:\s*reduce\)/);
-assert.match(css, /@media \(forced-colors:\s*active\)/);
-assert.match(css, /@media print/);
-assert.match(bundleCss, /--corporate-product-discipline-contract:\s*1/);
+const baseCss = text("assets/css/base.css");
+const portalCss = text("assets/css/portal.css");
+assert.match(publicCss, /--apple-pharma-public-contract:\s*3/);
+assert.match(publicCss, /body\[data-page="home"\]/);
+assert.match(publicCss, /-apple-system, BlinkMacSystemFont/);
+assert.match(publicCss, /@media \(prefers-reduced-motion: reduce\)/);
+assert.match(bundleCss, /--apple-pharma-public-contract:\s*3/);
 assert.match(tokenCss, /--brand:\s*#E3120B;/, "the canonical identity red must remain Economist Red");
-assert.match(tokenCss, /--brand-text:\s*#B30E09;/, "small red foreground text needs the contrast-safe derivative");
+assert.match(tokenCss, /--brand-text:\s*#B30E09;/, "small red foreground text needs the governed contrast-safe derivative");
+for (const selector of ["section-kicker", "status-label", "text-link", "editorial-index"]) {
+  assert.match(baseCss, new RegExp(`\\.${selector}[\\s\\S]{0,260}color:\\s*var\\(--brand-text\\)`), `${selector} must not use identity red as small foreground text`);
+}
+assert.match(portalCss, /\.portal-topbar \.eyebrow\s*\{\s*color:\s*var\(--brand-text\);\s*\}/);
+assert.match(baseCss, /\.status-pill\s*\{[\s\S]{0,180}column-gap:\s*0\.25em;/, "identity badges must preserve visual separation between their label and value");
+assert.match(portalCss, /\.metric strong\s*\{[\s\S]{0,260}font-size:\s*clamp\(24px, 2vw, 34px\);[\s\S]{0,180}white-space:\s*nowrap;/, "portal metric values must fit on one intentional line");
+assert.match(text("assets/css/cro.css"), /\.cro-decision-questions button > span\s*\{\s*color:\s*var\(--brand-text\);/);
+for (const forbiddenGlobal of [
+  /\n\.section,\n/,
+  /\n\.page-hero,\n/,
+  /\n\.section-dark,\n/,
+  /\n\.card,\n/,
+  /\nfigure img,\n/,
+  /\.page-hero-cinematic::before/,
+  /\.hero-cinematic-layer,/
+]) {
+  assert.doesNotMatch(publicCss, forbiddenGlobal, "homepage Apple-pharma parity must not override shared module geometry");
+}
 
 const home = text("index.html");
-assert.match(home, /<main id="main" class="npd-main npd-home">/);
-assert.match(home, /Medicine\. Where it needs to be\./);
+assert.match(home, /Medicine\. Where it needs to be/);
+assert.match(home, /class="pharma-home-hero"/);
+assert.match(home, /class="container pharma-home-grid"/);
+assert.match(home, /class="pharma-home-media"/);
+assert.match(home, /class="pharma-home-shade"/);
 assert.match(home, /supply-network-hero\.avif/);
 assert.match(home, /supply-network-hero\.jpg/);
-assert.match(home, /Three routes\. One evidence standard\./);
-assert.equal((home.match(/<ol class="npd-numbered-grid">[\s\S]*?<\/ol>/)?.[0].match(/<li>/g) ?? []).length, 3, "homepage must present three sourcing routes");
-assert.equal((home.match(/<ol class="npd-roadmap">[\s\S]*?<\/ol>/)?.[0].match(/<li>/g) ?? []).length, 7, "homepage must present seven regulatory stages");
-assert.match(home, /Continuity begins before a product moves\./);
-assert.match(home, /Nineteen catalogue references\. Presented as products, governed as evidence\./);
-assert.equal((home.match(/<div class="npd-product-stage">[\s\S]*?<\/div><\/div><\/section>/)?.[0].match(/href="\/products\/nutraxin\//g) ?? []).length, 3, "homepage must stage three real product references");
-assert.match(home, /Use the smallest system that preserves control\./);
-assert.match(home, /Different organisations\. One disciplined route into partnership\./);
-assert.match(home, /Bring the opportunity\. We will start with the evidence\./);
-assert.match(home, /Regulated wholesale supply has not commenced/);
-assert.doesNotMatch(home, /<video|hero-cinematic-layer|data-motion-toggle|data-ai-search-open|nav-search|ai-search-dialog/);
+assert.match(home, /Conceptual supply-chain visual\. No NovaPharm facility, vehicle, inventory or current distribution activity is depicted\./);
+assert.match(home, /class="[^"]*\bpharma-principles-grid\b[^"]*"/);
+assert.equal((home.match(/<span>Qualified sourcing<\/span>|<span>Regulatory discipline<\/span>|<span>Quality-led decisions<\/span>/g) || []).length, 3, "homepage must expose three operating principles");
+assert.match(home, /Three routes\. One standard\./);
+assert.equal((home.match(/<div class="pharma-pillar-grid">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) || []).length, 3, "homepage must present three sourcing routes");
+assert.match(home, /regulatory-batch-integrity\.jpg/);
+assert.match(home, /Evidence travels with the batch\./);
+assert.match(home, /Clarity before complexity\./);
+assert.match(home, /Representative traceability composition\. It is not a NovaPharm facility, product or active batch record\./);
+assert.match(home, /Specialist work\. Less noise\./);
+assert.equal((home.match(/<div class="pharma-focus-grid">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) || []).length, 3, "homepage must present three specialist focus pathways");
+for (const label of ["Explore oncology continuity", "Review regulatory services", "Explore technology controls"]) assert.match(home, new RegExp(label));
+assert.doesNotMatch(home, />Learn more(?:\s|&nbsp;|→|<)/, "homepage links must name their destination");
+const conciseHomeComponent = text("apps/corporate/components/concise-home.tsx");
+assert.doesNotMatch(conciseHomeComponent, />Learn more\s*</, "the Next.js homepage must not regress to generic link text");
+assert.match(conciseHomeComponent, /\{item\.linkLabel\}/);
+const corporateGlobals = text("apps/corporate/app/globals.css");
+assert.match(corporateGlobals, /\.final-cta \.eyebrow \{ color: var\(--white\); \}/, "the final CTA eyebrow must retain accessible contrast on the canonical red field");
+const corporateApplePharma = text("apps/corporate/app/apple-pharma.css");
+assert.match(corporateApplePharma, /\.eyebrow \{\s+color: var\(--pharma-red-dark\);/, "small corporate eyebrow text must use the accessible foreground red");
+assert.match(corporateApplePharma, /\.pharma-kicker \{\s+color: var\(--pharma-red\);/, "the branded homepage kicker may retain the canonical identity red");
+assert.match(home, /Regulated wholesale supply has not commenced\./);
+assert.match(home, /Owner-attested logistics and warehousing arrangements with Polar Speed are being incorporated into NovaPharm's operating model/);
+assert.match(home, /The relationship does not transfer Polar Speed's authorisations or certificates to NovaPharm/);
+assert.doesNotMatch(home, /hero-cinematic-layer|data-motion-toggle|regulatory-roadmap|batch-integrity-feature|partner-ecosystem-directed|partner-pathway-grid/);
+assert.doesNotMatch(home, /data-ai-search-open|nav-search|ai-search-dialog/);
 
-const expectedNavigation = [
-  ["Company", "/about/"],
-  ["Capabilities", "/capabilities/"],
-  ["Oncology", "/oncology/"],
-  ["Products", "/products/"],
-  ["Insights", "/news-insights/"],
-  ["Contact", "/contact/"],
-  ["Secure Portal", "/portal/"],
-];
-for (const [label, href] of expectedNavigation) assert.match(home, new RegExp(`<a href="${href.replaceAll("/", "\\/")}"[^>]*>${label}<\\/a>`));
-assert.match(home, /<span data-menu-label>Menu<\/span>/, "mobile navigation must use the visible word Menu");
+const services = text("services/index.html");
+assert.match(services, /class="service-visual-story"/);
+assert.match(services, /class="module-signal-disclosure"/);
+assert.match(services, /class="service-evidence-grid"/);
+assert.match(services, /services-launch-readiness\.jpg/);
+assert.match(services, /module-signal-services/);
+assert.doesNotMatch(services, /quality-batch-integrity\.svg/);
+assert.doesNotMatch(services, /assets\/media\/products\//);
 
-const routeContracts = [
-  ["capabilities/index.html", "The right route depends on the evidence already in place."],
-  ["services/index.html", "npd-service-ledger"],
-  ["regulatory-services/index.html", "npd-roadmap npd-roadmap-large"],
-  ["cro/index.html", "Define the programme before assembling the delivery model."],
-  ["oncology/index.html", "Continuity is designed before supply begins."],
-  ["partner-with-us/index.html", "npd-horizontal-steps"],
-  ["technology/index.html", "npd-maturity npd-maturity-full"],
-  ["news-insights/index.html", "Regulated-market thinking, written to be challenged."],
-  ["contact/index.html", "A qualified B2B contact route."],
-];
-for (const [path, marker] of routeContracts) {
-  const html = text(path);
-  assert.match(html, /class="npd-main/);
-  assert.ok(html.includes(marker), `${path} must retain ${marker}`);
-  assert.match(html, /Regulated wholesale supply has not commenced/);
-  assert.doesNotMatch(html, /<svg|lucide|doodle|hero-cinematic-layer|module-signal-disclosure/);
+const regulatory = text("regulatory-services/index.html");
+assert.match(regulatory, /class="container regulatory-stage-grid"/);
+assert.match(regulatory, /class="module-signal-disclosure"/);
+assert.match(regulatory, /regulatory-dossier-control/);
+assert.match(regulatory, /\/assets\/media\/modules\/regulatory-dossier-control\.avif/);
+assert.match(regulatory, /\/assets\/media\/modules\/regulatory-dossier-control\.webp/);
+assert.match(regulatory, /\/assets\/media\/modules\/regulatory-dossier-control\.jpg/);
+assert.match(regulatory, /regulatory-batch-integrity\.jpg/);
+assert.match(regulatory, /regulatory-control-stage/);
+assert.doesNotMatch(regulatory, /gdp-qms-foundations\.svg/);
+assert.doesNotMatch(regulatory, /class="regulatory-stage-media"/);
+assert.doesNotMatch(regulatory, /assets\/media\/products\//);
+
+const partners = text("partner-with-us/index.html");
+assert.equal((partners.match(/<div class="partner-pathway-grid partner-module-pathway-grid">[\s\S]*?<\/div><\/div><\/section>/)?.[0].match(/class="partner-pathway-card"/g) || []).length, 4, "the Partners page must present four qualified image-led pathways");
+assert.match(partners, /sourcing-european-network\.jpg/);
+assert.match(partners, /module-signal-partners/);
+assert.doesNotMatch(partners, /partnership-pathway\.svg/);
+assert.doesNotMatch(partners, /assets\/media\/products\//);
+
+const technology = text("technology/index.html");
+assert.match(technology, /class="module-signal-disclosure"/);
+for (const marker of ["technology-evidence-grid", "architecture-map-photographic", "Live capabilities", "In development capabilities", "Planned capabilities"]) assert.match(technology, new RegExp(marker));
+assert.match(technology, /technology-control-architecture\.jpg/);
+assert.match(technology, /module-signal-technology/);
+assert.doesNotMatch(technology, /assets\/media\/products\//);
+assert.doesNotMatch(technology, /Responsible AI at NovaPharm|technology\/ai-governance/);
+
+const cro = text("cro/index.html");
+for (const marker of ["cro-hero", "Transparent delivery architecture", "Clinical Development Navigator", "Sponsor Decision Framework", "Development-to-Market Continuity", "cro-final-cta"]) assert.match(cro, new RegExp(marker, "i"));
+assert.equal((cro.match(/data-cro-stage="\d+"/g) || []).length, 8, "CRO navigator must expose eight stages without JavaScript");
+assert.equal((cro.match(/class="cro-lane cro-lane-/g) || []).length, 3, "CRO delivery architecture must expose three responsibility lanes");
+assert.match(cro, /cro-evidence-architecture-640\.avif 640w/);
+assert.match(cro, /cro-delivery-architecture-640\.webp 640w/);
+for (const portrait of ["vishal-chakravarty-1200.jpg", "girish-achliya-960.jpg", "prabhakar-lahare-960.jpg"]) {
+  assert.match(cro, new RegExp(portrait.replace(".", "\\.")), `CRO must use approved responsive portrait ${portrait}`);
 }
+assert.match(cro, /Chief Scientific Officer/);
+assert.doesNotMatch(cro, /Chief Technical Director/);
+assert.equal((cro.match(/class="cro-leader"/g) || []).length, 3, "CRO Senior judgement must show three leaders");
+assert.match(cro, /href="\/leadership\/prabhakar-lahare\/"/);
+assert.match(cro, /class="cro-governance-map"/);
+assert.match(cro, /class="cro-continuity-path"/);
+assert.doesNotMatch(cro, /"@type":"(?:ClinicalTrial|MedicalStudy)"/);
+assert.match(text("assets/css/cro.css"), /@media \(prefers-reduced-motion: reduce\)/);
+assert.match(text("assets/js/cro.js"), /IntersectionObserver/);
 
-const contact = text("contact/index.html");
-if (contact.includes('data-contact-form')) {
-  if (!contact.includes('class="form-grid contact-form"') || !contact.includes("Your information is transmitted to the secure NovaPharm API")) {
-    assert.fail("Managed contact presentation is missing its form or API-authority boundary");
-  }
-} else if (!contact.includes("This public information release does not collect or transmit enquiry details.") || !contact.includes("mailto:vishal@novapharmhealthcare.com")) {
-  assert.fail("PUBLIC_ONLY contact presentation is missing its non-collection notice or verified fallback");
+const oncology = text("oncology/index.html");
+for (const marker of ["oncology-hero", "Oncology Supply Continuity Architecture", "Formulation and Complexity Navigator", "Oncology Product-Readiness Matrix", "Development-to-Access Continuity", "oncology-editorial-gallery"]) assert.match(oncology, new RegExp(marker, "i"));
+assert.equal((oncology.match(/data-axis="\d"/g) || []).length, 6, "oncology continuity architecture must expose six evidence axes without CSP-blocked inline styles");
+assert.match(oncology, /class="development-continuity" tabindex="0"/, "scrollable oncology continuity must be keyboard focusable");
+assert.doesNotMatch(oncology, /style="--axis:/, "oncology continuity must not require inline styles");
+assert.equal((oncology.match(/data-formulation-panel=/g) || []).length, 4, "formulation navigator must preserve four no-JavaScript panels");
+for (const asset of ["oncology-formulation-pathways.svg", "oncology-evidence-continuity.svg", "oncology-condition-control.svg"]) assert.match(oncology, new RegExp(asset.replace(".", "\\.")));
+assert.equal((oncology.match(/class="oncology-editorial-grid"[\s\S]*?<\/div><\/div><\/section>/)?.[0].match(/<figure>/g) || []).length, 3, "Oncology editorial gallery must show three distinct visuals");
+assert.doesNotMatch(oncology, /data-ai-search-open|ai-search-dialog|oncology-ai-roadmap/);
+assert.match(text("assets/css/oncology.css"), /@media \(prefers-reduced-motion: reduce\)/);
+assert.match(text("assets/js/oncology.js"), /data-formulation-panel/);
+
+for (const retired of ["technology/ai-governance/index.html", "search/index.html", "assets/js/ai-search.js", "assets/css/ai-search.css", "assets/ai"]) {
+  assert.equal(existsSync(join(root, retired)), false, `${retired} must not ship in the corrected public release`);
 }
-
-const products = text("products/index.html");
-const priorityPosition = products.indexOf("Food Supplement Portfolio Review");
-const strategicPosition = products.indexOf("Strategic pharmaceutical portfolio");
-assert.ok(priorityPosition >= 0 && strategicPosition > priorityPosition, "Food Supplement Portfolio Review must be the first substantive product section");
-assert.equal((products.match(/Food Supplement Portfolio Review/g) ?? []).length, 1);
-assert.match(products, /href="\/products\/nutraxin\/"/);
-assert.match(products, /href="\/products\/strategic-portfolio\/"/);
-assert.doesNotMatch(products, /£|\bGBP\b|Add to basket|Buy now|In stock/);
-
-const register = JSON.parse(text("apps/corporate/data/nutraxin-product-register.json"));
-assert.equal(register.products.length, 19);
-const nutraxin = text("products/nutraxin/index.html");
-assert.equal((nutraxin.match(/class="npd-product-card/g) ?? []).length, 19);
-for (const product of register.products) {
-  const route = `products/nutraxin/${product.slug}/index.html`;
-  assert.ok(existsSync(join(root, route)), `${route} must exist`);
-  const detail = text(route);
-  assert.match(detail, new RegExp(`<h1>${product.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}<\\/h1>`));
-  assert.match(detail, /"@type":"Product"/);
-  assert.doesNotMatch(detail, /"offers"|Add to basket|Buy now|In stock|£|\bGBP\b/);
-}
-
-const legacyProducts = text("product-portfolio/index.html");
-const legacyNutraxin = text("product-portfolio/nutraxin/index.html");
-assert.match(legacyProducts, /noindex, follow/);
-assert.match(legacyProducts, /url=\/products\//);
-assert.match(legacyNutraxin, /noindex, follow/);
-assert.match(legacyNutraxin, /url=\/products\/nutraxin\//);
-
-const corporateSource = [
-  text("apps/corporate/components/site-header.tsx"),
-  text("apps/corporate/components/mobile-navigation.tsx"),
-  text("apps/corporate/components/page-renderer.tsx"),
-  text("apps/corporate/package.json"),
-].join("\n");
-assert.doesNotMatch(corporateSource, /lucide-react/);
-assert.match(corporateSource, /products\/nutraxin\/\$\{product\.slug\}/);
 
 const leadership = text("leadership/index.html");
+assert.match(leadership, /module-portrait-composition/);
 for (const portrait of ["vishal-chakravarty-1200.jpg", "prabhakar-lahare-960.jpg", "girish-achliya-960.jpg"]) assert.match(leadership, new RegExp(portrait));
 for (const format of ["avif", "webp"]) assert.match(leadership, new RegExp(`assets/media/leadership/vishal-chakravarty-480\\.${format}`));
+
+const moduleRegister = JSON.parse(text("docs/module-media-register.json"));
+assert.equal(moduleRegister.modules.length, 16, "the full public module register must contain sixteen entries");
+for (const entry of moduleRegister.modules.filter((entry) => entry.id !== "home")) {
+  assert.match(text(entry.path), new RegExp(`data-module-media="${entry.id}"`), `${entry.id} must use its tailored visual composition`);
+}
+
+const login = text("portal/index.html");
+for (const accessType of ["customer", "employee", "board", "admin"]) assert.match(login, new RegExp(`value="${accessType}"`));
+
+const products = text("product-portfolio/index.html");
+assert.equal((products.match(/class="portfolio-media/g) || []).length, 8, "all product categories must have an explicit media element");
+assert.match(products, /Category photography is representative/);
+assert.doesNotMatch(text("assets/css/live-refinement.css"), /portfolio-table article[^\n{]*::before/);
+assert.doesNotMatch(text("assets/js/novapharm.js"), /pointermove|hero-shift/);
+const productMediaRoot = join(root, "assets", "media", "products");
+const productAssetIds = [
+  "oncology-vial-handling",
+  "specialty-pharmacy-handling",
+  "oral-liquid-formulation",
+  "licensed-generics-packaging",
+  "cardiovascular-quality-control",
+  "respiratory-manufacturing",
+  "metabolic-laboratory-analysis",
+  "hospital-supply-logistics"
+];
+const productMediaMaterialised = productAssetIds.every((id) => ["avif", "webp", "jpg"].every((extension) => existsSync(join(productMediaRoot, `${id}.${extension}`))));
+if (productMediaMaterialised) {
+  assert.equal((products.match(/type="image\/avif"/g) || []).length >= 8, true);
+  assert.equal((products.match(/type="image\/webp"/g) || []).length >= 8, true);
+  assert.doesNotMatch(products, /licensed-image-pending\.svg/);
+} else {
+  assert.match(products, /licensed-image-pending\.svg/);
+}
 
 const insightFiles = [
   "compliance-first-pharmaceutical-distribution-uk",
@@ -133,15 +195,11 @@ const insightFiles = [
   "oncology-supply-chain-demand-forecasting",
   "plpi-pharmaceutical-supply-resilience",
   "three-pillar-pharmaceutical-sourcing-model",
-  "batch-to-buyer-pharmaceutical-traceability",
+  "batch-to-buyer-pharmaceutical-traceability"
 ];
-const articleImages = insightFiles.map((slug) => text(`news-insights/${slug}/index.html`).match(/<div class="article-hero-media">[\s\S]*?<img src="([^"]+)"/)?.[1]);
+const articleImages = insightFiles.map((slug) => text(`news-insights/${slug}/index.html`).match(/<div class="article-hero-media">[\s\S]*?<img src="([^\"]+)"/)?.[1]);
 assert.ok(articleImages.every(Boolean), "each insight article must have a cover image");
 assert.equal(new Set(articleImages).size, insightFiles.length, "insight articles must use distinct cover images");
-
-for (const retired of ["technology/ai-governance/index.html", "search/index.html", "assets/js/ai-search.js", "assets/css/ai-search.css", "assets/ai"]) {
-  assert.equal(existsSync(join(root, retired)), false, `${retired} must not ship in the corrected public release`);
-}
 
 for (const path of [
   "assets/media/home/supply-network-hero.jpg",
@@ -150,23 +208,25 @@ for (const path of [
   "assets/media/stories/regulatory-batch-integrity.jpg",
   "assets/media/stories/services-launch-readiness.jpg",
   "assets/media/stories/technology-control-architecture.jpg",
+  "assets/media/oncology/oncology-formulation-pathways.svg",
+  "assets/media/oncology/oncology-evidence-continuity.svg",
+  "assets/media/oncology/oncology-condition-control.svg"
 ]) assert.ok(existsSync(join(root, path)), `${path} must exist`);
 
 assert.ok(statSync(join(root, "assets/media/home/supply-network-hero.jpg")).size < 350_000, "desktop hero must remain below 350 KB");
 assert.ok(statSync(join(root, "assets/media/home/supply-network-hero-1200.jpg")).size < 220_000, "responsive hero must remain below 220 KB");
 
-const login = text("portal/index.html");
-if (login.includes("data-login-form")) {
-  assert.match(login, /Credentials and portal permissions are verified server-side\./);
-  assert.match(login, /autocomplete="current-password"/);
-} else {
-  assert.match(login, /Use only the managed NovaPharm portal\./);
-  assert.match(login, /No login, account, document or board information is processed on this static public host\./);
-  assert.doesNotMatch(login, /<input|<form/);
+const responsive = text("assets/css/responsive.css");
+assert.match(responsive, /@media \(max-width: 980px\)/);
+assert.match(responsive, /@media \(max-width: 620px\)/);
+assert.match(responsive, /@media \(prefers-reduced-motion: reduce\)/);
+assert.match(text("assets/css/visual-refinement.css"), /@media \(prefers-reduced-motion: reduce\)/);
+assert.match(text("assets/css/module-media-sanity.css"), /@media \(prefers-reduced-motion: reduce\)/);
+assert.match(text("assets/css/owner-corrections.css"), /@media \(prefers-reduced-motion: reduce\)/);
+assert.match(text("assets/js/visual-refinement.js"), /data-motion-toggle/);
+assert.match(text("assets/js/novapharm.js"), /saveData/);
+for (const stylesheet of ["base", "tokens", "foundations", "premium-experience", "motion", "portal", "responsive", "visual-refinement", "module-media-sanity", "cro", "oncology", "apple-pharma-public", "leadership-apple", "owner-corrections"]) {
+  assert.doesNotMatch(text(`assets/css/${stylesheet}.css`), /prefers-color-scheme:\s*dark/, `${stylesheet}.css must not create an untested automatic dark theme`);
 }
 
-assert.match(text("scripts/build-site.mjs"), /apply-corporate-product-discipline\.mjs/);
-assert.match(text("assets/js/novapharm.js"), /visibleLabel\.textContent = isOpen \? "Close" : "Menu"/);
-assert.doesNotMatch(text("assets/js/novapharm.js"), /pointermove|hero-shift/);
-
-console.log("Visual contracts passed for the corporate product-discipline system, seven-destination navigation, 19 canonical Nutraxin product routes, truthful fail-closed workflows, responsive media and asset budgets.");
+console.log("Visual contracts passed for scoped Apple-pharma v3, full-bleed truth-bounded homepage media, preserved Regulatory dossier composition, Oncology gallery, CRO leadership, sixteen tailored modules, portal entry, motion preferences and asset budgets.");

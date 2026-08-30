@@ -68,32 +68,6 @@
           "byteSize": 155849,
           "sha256": "bdc5692953a505bd0969407cdf7857c897abe7edc6428f25b85b7926f21ae2d0"
         }
-      },
-      "responsiveDerivatives": {
-        "avif960": {
-          "path": "assets/media/products/oncology-vial-handling-960.avif",
-          "contentType": "image/avif",
-          "width": 960,
-          "height": 540,
-          "byteSize": 14024,
-          "sha256": "6a920a352e735d405e454aa4a585ce493c903fc4fba59a94333307854422b485"
-        },
-        "webp960": {
-          "path": "assets/media/products/oncology-vial-handling-960.webp",
-          "contentType": "image/webp",
-          "width": 960,
-          "height": 540,
-          "byteSize": 24286,
-          "sha256": "88d1192c3fb7d9f5df24daf63e7b662729f0e9781bf30bced814095736c5a97e"
-        },
-        "jpg960": {
-          "path": "assets/media/products/oncology-vial-handling-960.jpg",
-          "contentType": "image/jpeg",
-          "width": 960,
-          "height": 540,
-          "byteSize": 41576,
-          "sha256": "95ddcfed9f4e45e7be21b0a291609008323e45c6f3b9fbe15361099ea4d81c34"
-        }
       }
     },
     {

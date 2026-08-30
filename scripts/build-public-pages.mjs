@@ -306,7 +306,7 @@ function head(meta, slug = "", options = {}) {
     : "";
   const preloads = [
     options.preloadHero
-      ? '<link rel="preload" as="image" href="/assets/media/home/supply-network-hero.avif" type="image/avif" fetchpriority="high">'
+      ? '<link rel="preload" as="image" href="/assets/media/home/supply-network-hero.jpg" imagesrcset="/assets/media/home/supply-network-hero-1200.jpg 1200w, /assets/media/home/supply-network-hero.jpg 1672w" imagesizes="100vw" fetchpriority="high">'
       : "",
     options.preloadCroHero
       ? '<link rel="preload" as="image" href="/assets/media/cro/cro-evidence-architecture-1600.avif" imagesrcset="/assets/media/cro/cro-evidence-architecture-640.avif 640w, /assets/media/cro/cro-evidence-architecture-960.avif 960w, /assets/media/cro/cro-evidence-architecture-1600.avif 1600w" imagesizes="100vw" type="image/avif" fetchpriority="high">'

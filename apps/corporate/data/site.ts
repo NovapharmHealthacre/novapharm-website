@@ -18,13 +18,16 @@ export const company = Object.freeze({
 });
 
 export const navigation = Object.freeze([
-  ["Company", "/about/"],
-  ["Capabilities", "/capabilities/"],
+  ["About", "/about/"],
+  ["Services", "/services/"],
+  ["Regulatory", "/regulatory-services/"],
+  ["CRO", "/cro/"],
   ["Oncology", "/oncology/"],
-  ["Products", "/products/"],
+  ["Products", "/product-portfolio/"],
+  ["Partners", "/partner-with-us/"],
+  ["Technology", "/technology/"],
   ["Insights", "/news-insights/"],
-  ["Contact", "/contact/"],
-  ["Secure Portal", "/portal/"]
+  ["Contact", "/contact/"]
 ] as const);
 
 export const leadership = Object.freeze([
@@ -399,11 +402,6 @@ export const pageMeta = Object.freeze({
     description: "NovaPharm's planned pharmaceutical trading, PLPI strategy, European sourcing, GMP partnerships, QMS, GDP logistics and digital B2B services.",
     eyebrow: "Services"
   },
-  "capabilities": {
-    title: "Pharmaceutical Capabilities | NovaPharm Healthcare",
-    description: "Explore NovaPharm's connected services, regulatory and quality model, clinical-development support and governed technology architecture.",
-    eyebrow: "Capabilities"
-  },
   "regulatory-services": {
     title: "MHRA, WDA(H), PLPI and GDP Regulatory Strategy | NovaPharm",
     description: "NovaPharm's compliance-first regulatory roadmap covering WDA(H), product-specific PLPI pathways, QMS, GDP, pharmacovigilance and vendor qualification.",
@@ -423,21 +421,6 @@ export const pageMeta = Object.freeze({
     title: "Food Supplements and Strategic Pharmaceutical Portfolio | NovaPharm",
     description: "Review NovaPharm's Nutraxin UK food supplement catalogue reference and strategic B2B pharmaceutical categories, with availability, claims and authorisation boundaries stated clearly.",
     eyebrow: "Products"
-  },
-  "products": {
-    title: "Food Supplements and Strategic Pharmaceutical Portfolio | NovaPharm",
-    description: "Review NovaPharm's Nutraxin UK food supplement catalogue reference and strategic B2B pharmaceutical categories, with availability, claims and authorisation boundaries stated clearly.",
-    eyebrow: "Products"
-  },
-  "products/nutraxin": {
-    title: "Nutraxin UK Food Supplement Catalogue | NovaPharm Healthcare",
-    description: "Review 19 Nutraxin food supplement catalogue references with pack imagery and source-transcribed composition details for qualified B2B evaluation; availability, claims and regulatory status are not asserted.",
-    eyebrow: "Nutraxin catalogue"
-  },
-  "products/strategic-portfolio": {
-    title: "Strategic Pharmaceutical Portfolio | NovaPharm Healthcare",
-    description: "Review NovaPharm's evidence-gated strategic pharmaceutical focus across oncology, specialty, oral-liquid and selected licensed-medicine opportunities.",
-    eyebrow: "Strategic portfolio"
   },
   "product-portfolio/nutraxin": {
     title: "Nutraxin UK Food Supplement Catalogue | NovaPharm Healthcare",

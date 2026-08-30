@@ -1,5 +1,4 @@
 import { all, one } from "../data/database.mjs";
-import { medicinesIntelligenceModuleView } from "./medicines-intelligence-service.mjs";
 
 function section(title, columns, rows, emptyState, { source = "Canonical application database", description = "" } = {}) {
   return { title, description, columns, rows, emptyState, source, rowCount: rows.length };
@@ -204,7 +203,6 @@ export async function authoredExecutiveView(snapshot) {
     case "sales-intelligence": return salesIntelligenceView(snapshot);
     case "customer-analytics": return customerAnalyticsView(snapshot);
     case "product-master": return productMasterView(snapshot);
-    case "medicines-intelligence": return medicinesIntelligenceModuleView(snapshot);
     case "sourcing": return sourcingView(snapshot);
     case "warehouse": return shipmentView(snapshot, "warehouse");
     case "service-levels": return shipmentView(snapshot, "service");

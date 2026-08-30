@@ -68,6 +68,7 @@ export const governedPortalModuleCodes = Object.freeze([
 export type GovernedPortalModuleCode = (typeof governedPortalModuleCodes)[number];
 
 export const hiddenDependencyAuthorities = Object.freeze({
+  "executive.nhs-data": "Approved licensed NHS data source, lawful purpose and Commercial/Regulatory owner acceptance",
   "executive.plpi": "Verified PLPI programme records and Regulatory owner acceptance",
   "executive.pharmacovigilance": "Qualified Safety Owner and approved pharmacovigilance system/process",
   "executive.tenders": "Approved tender source and Commercial Operations owner acceptance",
@@ -99,10 +100,6 @@ export const protectedServerAuthoritiesByModule = Object.freeze({
     "POST /api/admin/notifications/{notificationId}/replay",
   ],
   "admin.users": ["POST /api/admin/users/{username}/sessions/revoke"],
-  "executive.nhs-data": [
-    "GET /api/enterprise/medicines/search",
-    "GET /api/enterprise/medicines/{medicineId}",
-  ],
 } as const satisfies Partial<Record<GovernedPortalModuleCode, readonly string[]>>);
 
 export const documentAuthorityByModule = Object.freeze({

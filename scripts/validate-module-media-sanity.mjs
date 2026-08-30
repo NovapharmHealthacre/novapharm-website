@@ -15,7 +15,6 @@ const excludedDirectories = new Set([
   ".runtime",
   ".turbo",
   "apps",
-  "artifacts",
   "audit",
   "coverage",
   "dist",
@@ -97,34 +96,20 @@ assert.equal(new Set(config.assets.map((entry) => entry.base)).size, config.asse
 const principalHeroes = config.modules.filter((module) => module.heroAsset).map((module) => module.heroAsset);
 assert.equal(new Set(principalHeroes).size, principalHeroes.length, "every principal module must have a unique hero asset");
 
-const authoredModuleContracts = new Map([
-  ["home", ["npd-main npd-home", "npd-hero-media", "npd-hero-boundary", "npd-numbered-grid", "npd-roadmap", "npd-product-stage"]],
-  ["about", ["npd-main", "npd-principles", "about-operating-model"]],
-  ["services", ["npd-main", "npd-service-ledger", "npd-horizontal-steps"]],
-  ["regulatory", ["npd-main", "npd-roadmap npd-roadmap-large", "regulatory-batch-integrity"]],
-  ["products", ["npd-main", "Food Supplement Portfolio Review", "npd-products-lead", "product-portfolio-evidence"]],
-  ["partners", ["npd-main", "npd-partner-editorial", "npd-horizontal-steps"]],
-  ["technology", ["npd-main", "npd-maturity npd-maturity-full", "technology-control-architecture"]],
-  ["insights", ["npd-main", "npd-insight-lead", "npd-insight-list"]],
-  ["contact", ["npd-main", "npd-contact-layout", "A qualified B2B contact route."]],
-  ["account", ["npd-main", "npd-account-stages", "An account is approved through evidence"]]
-]);
-
 for (const module of config.modules) {
   assert.ok(module.purpose && module.label && module.signals.length >= 4, `${module.id} requires complete art direction`);
   if (module.heroAsset && module.secondaryAsset) {
     assert.notEqual(module.heroAsset, module.secondaryAsset, `${module.id} cannot repeat one image as hero and secondary media`);
   }
   const html = read(module.path);
-  const authoredContract = authoredModuleContracts.get(module.id);
-  if (authoredContract) {
-    for (const marker of authoredContract) assert.ok(html.includes(marker), `${module.id} must retain ${marker}`);
-    if (module.heroAsset) {
-      const asset = assets.get(module.heroAsset);
-      assert.ok(asset, `${module.id} references an unknown hero or social asset`);
-      assert.ok(html.includes(asset.base), `${module.id} must retain its governed hero, content or social asset`);
-    }
-    assert.doesNotMatch(html, /hero-cinematic-layer|module-signal-disclosure/, `${module.id} must not regress to the retired module template`);
+  if (module.id === "home") {
+    assert.match(html, /pharma-home-hero/, "homepage concise pharma hero must remain present");
+    assert.match(html, /pharma-principles-grid/, "homepage must keep the three operating-principle strip");
+    assert.match(html, /pharma-pillar-grid/, "homepage must use the three-route sourcing composition");
+    assert.match(html, /pharma-focus-grid/, "homepage must retain three focused specialist pathways");
+    assert.match(html, /assets\/media\/stories\/regulatory-batch-integrity/, "homepage evidence boundary media must be photographic");
+    assert.doesNotMatch(html, /hero-cinematic-layer/, "homepage must not regress to the removed cinematic decoration");
+    assert.doesNotMatch(html, /partner-pathway-grid/, "homepage must not regress to the duplicate partner-pathway block");
     continue;
   }
   assert.match(html, new RegExp(`data-module-media="${module.id}"`), `${module.id} must have a module-specific hero`);
@@ -139,20 +124,15 @@ for (const module of config.modules) {
   assert.doesNotMatch(html, /assets\/media\/editorial\/[^"']+\.svg/, `${module.id} must not retain decorative editorial SVG imagery`);
 }
 
-for (const [path, assetId] of [
-  ["capabilities/index.html", "services-connected-execution"],
-  ["regulatory-services/index.html", "regulatory-batch-integrity"],
-  ["products/index.html", "product-portfolio-evidence"],
-  ["technology/index.html", "technology-control-architecture"]
-]) {
-  assert.ok(read(path).includes(assets.get(assetId).base), `${path} must include its approved contextual photography`);
+for (const moduleId of ["services", "regulatory", "partners", "technology"]) {
+  const module = config.modules.find((entry) => entry.id === moduleId);
+  const secondary = assets.get(module.secondaryAsset);
+  assert.ok(read(module.path).includes(secondary.base), `${module.path} must include its tailored secondary photography`);
 }
-assert.doesNotMatch(read("services/index.html"), /services-launch-readiness/, "Services must not restore the retired second photographic composition");
-assert.doesNotMatch(read("partner-with-us/index.html"), /partners-due-diligence/, "Partners must not restore generic due-diligence meeting imagery");
-assert.match(read("regulatory-services/index.html"), /npd-roadmap npd-roadmap-large/, "Regulatory must use the seven-stage control sequence");
-assert.match(read("technology/index.html"), /npd-maturity npd-maturity-full/, "Technology must expose the governed maturity architecture");
+assert.match(read("regulatory-services/index.html"), /regulatory-control-track/, "Regulatory must use a staged control sequence");
+assert.match(read("technology/index.html"), /architecture-map-photographic/, "Technology must use the photographic control architecture");
 assert.match(read("leadership/index.html"), /module-portrait-composition/, "Leadership must use approved portraits");
-assert.match(read("products/index.html"), /npd-product-picture/, "Products must retain approved category-specific product media");
+assert.match(read("product-portfolio/index.html"), /portfolio-media/, "Product Portfolio must retain category-specific product media");
 assert.doesNotMatch(read("index.html"), /partner-ecosystem-grid/, "Homepage must not retain the generic repeated partner grid");
 
 const generatedRegister = new Map(productionRegister.assets.map((asset) => [asset.id, asset]));
@@ -202,11 +182,6 @@ for (const asset of config.assets) {
 
   const usedRoutes = new Set(htmlDocuments.filter((document) => document.html.includes(asset.base)).map((document) => document.route));
   const allowedRoutes = new Set(asset.allowedRoutes.map(publicRoute));
-  if (asset.publicationStatus === "retired") {
-    assert.ok(asset.retirementReason, `${asset.id} requires a documented retirement reason`);
-    assert.equal(usedRoutes.size, 0, `${asset.id} is retired but remains referenced by public HTML`);
-    continue;
-  }
   assert.ok(usedRoutes.size > 0, `${asset.id} is registered but unused`);
   assert.ok(usedRoutes.size <= asset.maxReuse, `${asset.id} is used on ${usedRoutes.size} routes, above its limit of ${asset.maxReuse}`);
   for (const route of usedRoutes) {
@@ -278,4 +253,4 @@ for (const page of ["services", "regulatory-services", "partner-with-us", "techn
   );
 }
 
-console.log(`Unique module art direction passed: ${config.modules.length} principal modules, ${config.assets.length} registered assets (${config.assets.filter((asset) => asset.publicationStatus === "retired").length} governed retirements), ${generatedAssets.length} generated media sets, route-aware reuse limits, byte hashes and perceptual duplicate checks.`);
+console.log(`Unique module art direction passed: ${config.modules.length} principal modules, ${config.assets.length} registered assets, ${generatedAssets.length} generated media sets, route-aware reuse limits, byte hashes and perceptual duplicate checks.`);

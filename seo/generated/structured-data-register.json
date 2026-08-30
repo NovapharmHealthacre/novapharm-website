@@ -263,23 +263,6 @@
     ]
   },
   {
-    "route": "/capabilities/",
-    "canonical": "https://novapharmhealthcare.com/capabilities/",
-    "file": "capabilities/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/capabilities/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Pharmaceutical Capabilities | NovaPharm Healthcare",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
     "route": "/regulatory-services/",
     "canonical": "https://novapharmhealthcare.com/regulatory-services/",
     "file": "regulatory-services/index.html",
@@ -411,16 +394,26 @@
     ]
   },
   {
-    "route": "/products/",
-    "canonical": "https://novapharmhealthcare.com/products/",
-    "file": "products/index.html",
+    "route": "/product-portfolio/",
+    "canonical": "https://novapharmhealthcare.com/product-portfolio/",
+    "file": "product-portfolio/index.html",
     "entities": [
       {
-        "id": "https://novapharmhealthcare.com/products/#webpage",
+        "id": "https://novapharmhealthcare.com/product-portfolio/#webpage",
         "types": [
           "WebPage"
         ],
-        "name": "Products | NovaPharm Healthcare",
+        "name": "Food Supplements and Strategic Pharmaceutical Portfolio | NovaPharm",
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": null,
+        "types": [
+          "BreadcrumbList"
+        ],
+        "name": null,
         "mainEntity": null,
         "publisher": null,
         "author": null
@@ -428,33 +421,36 @@
     ]
   },
   {
-    "route": "/products/nutraxin/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/",
-    "file": "products/nutraxin/index.html",
+    "route": "/product-portfolio/nutraxin/",
+    "canonical": "https://novapharmhealthcare.com/product-portfolio/nutraxin/",
+    "file": "product-portfolio/nutraxin/index.html",
     "entities": [
       {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/#webpage",
+        "id": "https://novapharmhealthcare.com/product-portfolio/nutraxin/#webpage",
         "types": [
           "WebPage"
         ],
-        "name": "Nutraxin Food Supplement Catalogue | NovaPharm Healthcare",
+        "name": "Nutraxin UK Food Supplement Catalogue | NovaPharm Healthcare",
         "mainEntity": null,
         "publisher": null,
         "author": null
-      }
-    ]
-  },
-  {
-    "route": "/products/strategic-portfolio/",
-    "canonical": "https://novapharmhealthcare.com/products/strategic-portfolio/",
-    "file": "products/strategic-portfolio/index.html",
-    "entities": [
+      },
       {
-        "id": "https://novapharmhealthcare.com/products/strategic-portfolio/#webpage",
+        "id": null,
         "types": [
-          "WebPage"
+          "BreadcrumbList"
         ],
-        "name": "Strategic Pharmaceutical Portfolio | NovaPharm Healthcare",
+        "name": null,
+        "mainEntity": null,
+        "publisher": null,
+        "author": null
+      },
+      {
+        "id": "https://novapharmhealthcare.com/product-portfolio/nutraxin/#catalogue",
+        "types": [
+          "ItemList"
+        ],
+        "name": "Nutraxin UK catalogue references",
         "mainEntity": null,
         "publisher": null,
         "author": null
@@ -573,18 +569,7 @@
     "route": "/account-application/",
     "canonical": "https://novapharmhealthcare.com/account-application/",
     "file": "account-application/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/account-application/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Open a Business Account | NovaPharm Healthcare",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
+    "entities": []
   },
   {
     "route": "/trust-centre/",
@@ -1266,519 +1251,6 @@
         "mainEntity": "https://novapharmhealthcare.com/news-insights/three-pillar-pharmaceutical-sourcing-model/#webpage",
         "publisher": "https://novapharmhealthcare.com/#organization",
         "author": "https://novapharmhealthcare.com/#editorial-team"
-      }
-    ]
-  },
-  {
-    "route": "/products/nutraxin/artoflex-90-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/artoflex-90-tablets/",
-    "file": "products/nutraxin/artoflex-90-tablets/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/artoflex-90-tablets/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Nutraxin Artoflex 90 tablets | Nutraxin | NovaPharm",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/artoflex-90-tablets/#product",
-        "types": [
-          "Product"
-        ],
-        "name": "Nutraxin Artoflex",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
-    "route": "/products/nutraxin/collagen-complex-90-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/collagen-complex-90-tablets/",
-    "file": "products/nutraxin/collagen-complex-90-tablets/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/collagen-complex-90-tablets/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Nutraxin Collagen Complex 90 tablets | Nutraxin | NovaPharm",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/collagen-complex-90-tablets/#product",
-        "types": [
-          "Product"
-        ],
-        "name": "Nutraxin Collagen Complex",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
-    "route": "/products/nutraxin/collagen-gold-30-sachets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/collagen-gold-30-sachets/",
-    "file": "products/nutraxin/collagen-gold-30-sachets/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/collagen-gold-30-sachets/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Nutraxin Gold Quality Collagen Sachets 30 sachets | Nutraxin | NovaPharm",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/collagen-gold-30-sachets/#product",
-        "types": [
-          "Product"
-        ],
-        "name": "Nutraxin Gold Quality Collagen Sachets",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
-    "route": "/products/nutraxin/collagen-gold-30-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/collagen-gold-30-tablets/",
-    "file": "products/nutraxin/collagen-gold-30-tablets/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/collagen-gold-30-tablets/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Nutraxin Gold Quality Collagen 30 tablets | Nutraxin | NovaPharm",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/collagen-gold-30-tablets/#product",
-        "types": [
-          "Product"
-        ],
-        "name": "Nutraxin Gold Quality Collagen",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
-    "route": "/products/nutraxin/l-carnitine-60-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/l-carnitine-60-tablets/",
-    "file": "products/nutraxin/l-carnitine-60-tablets/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/l-carnitine-60-tablets/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Nutraxin L-Carnitine 700 mg 60 tablets | Nutraxin | NovaPharm",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/l-carnitine-60-tablets/#product",
-        "types": [
-          "Product"
-        ],
-        "name": "Nutraxin L-Carnitine 700 mg",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
-    "route": "/products/nutraxin/magnesium-complex-60-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/magnesium-complex-60-tablets/",
-    "file": "products/nutraxin/magnesium-complex-60-tablets/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/magnesium-complex-60-tablets/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Nutraxin Magnesium Complex + Vitamin B6 60 tablets | Nutraxin | NovaPharm",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/magnesium-complex-60-tablets/#product",
-        "types": [
-          "Product"
-        ],
-        "name": "Nutraxin Magnesium Complex + Vitamin B6",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
-    "route": "/products/nutraxin/magnesium-daily-60-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/magnesium-daily-60-tablets/",
-    "file": "products/nutraxin/magnesium-daily-60-tablets/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/magnesium-daily-60-tablets/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Nutraxin Magnesium Daily 60 tablets | Nutraxin | NovaPharm",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/magnesium-daily-60-tablets/#product",
-        "types": [
-          "Product"
-        ],
-        "name": "Nutraxin Magnesium Daily",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
-    "route": "/products/nutraxin/mens-multivitamin-complex-60-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/mens-multivitamin-complex-60-tablets/",
-    "file": "products/nutraxin/mens-multivitamin-complex-60-tablets/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/mens-multivitamin-complex-60-tablets/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Nutraxin Men's Multivitamin Complex 60 tablets | Nutraxin | NovaPharm",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/mens-multivitamin-complex-60-tablets/#product",
-        "types": [
-          "Product"
-        ],
-        "name": "Nutraxin Men's Multivitamin Complex",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
-    "route": "/products/nutraxin/multivitamin-mineral-energy-60-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/multivitamin-mineral-energy-60-tablets/",
-    "file": "products/nutraxin/multivitamin-mineral-energy-60-tablets/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/multivitamin-mineral-energy-60-tablets/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Nutraxin Multivitamin Mineral Energy 60 tablets | Nutraxin | NovaPharm",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/multivitamin-mineral-energy-60-tablets/#product",
-        "types": [
-          "Product"
-        ],
-        "name": "Nutraxin Multivitamin Mineral Energy",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
-    "route": "/products/nutraxin/vitamin-b12-60-sublingual-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/vitamin-b12-60-sublingual-tablets/",
-    "file": "products/nutraxin/vitamin-b12-60-sublingual-tablets/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/vitamin-b12-60-sublingual-tablets/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Nutraxin Vitamin B12 Methylcobalamin 60 sublingual tablets | Nutraxin | NovaPharm",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/vitamin-b12-60-sublingual-tablets/#product",
-        "types": [
-          "Product"
-        ],
-        "name": "Nutraxin Vitamin B12 Methylcobalamin",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
-    "route": "/products/nutraxin/vitamin-c-1000mg-30-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/vitamin-c-1000mg-30-tablets/",
-    "file": "products/nutraxin/vitamin-c-1000mg-30-tablets/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/vitamin-c-1000mg-30-tablets/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Nutraxin Vitamin C 1000 mg 30 tablets | Nutraxin | NovaPharm",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/vitamin-c-1000mg-30-tablets/#product",
-        "types": [
-          "Product"
-        ],
-        "name": "Nutraxin Vitamin C 1000 mg",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
-    "route": "/products/nutraxin/vitamin-c-500mg-chewable-30-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/vitamin-c-500mg-chewable-30-tablets/",
-    "file": "products/nutraxin/vitamin-c-500mg-chewable-30-tablets/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/vitamin-c-500mg-chewable-30-tablets/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Nutraxin Vitamin C 500 mg Chewable 30 chewable tablets | Nutraxin | NovaPharm",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/vitamin-c-500mg-chewable-30-tablets/#product",
-        "types": [
-          "Product"
-        ],
-        "name": "Nutraxin Vitamin C 500 mg Chewable",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
-    "route": "/products/nutraxin/vitamin-d3-120-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-120-tablets/",
-    "file": "products/nutraxin/vitamin-d3-120-tablets/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-120-tablets/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Nutraxin Vitamin D3 120 tablets | Nutraxin | NovaPharm",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-120-tablets/#product",
-        "types": [
-          "Product"
-        ],
-        "name": "Nutraxin Vitamin D3",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
-    "route": "/products/nutraxin/vitamin-d3-k2-120-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-k2-120-tablets/",
-    "file": "products/nutraxin/vitamin-d3-k2-120-tablets/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-k2-120-tablets/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Nutraxin Vitamin D3 + K2 120 tablets | Nutraxin | NovaPharm",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-k2-120-tablets/#product",
-        "types": [
-          "Product"
-        ],
-        "name": "Nutraxin Vitamin D3 + K2",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
-    "route": "/products/nutraxin/vitamin-d3-k2-spray-30ml/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-k2-spray-30ml/",
-    "file": "products/nutraxin/vitamin-d3-k2-spray-30ml/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-k2-spray-30ml/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Nutraxin Vitamin D3 + K2 Spray 30 ml | Nutraxin | NovaPharm",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-k2-spray-30ml/#product",
-        "types": [
-          "Product"
-        ],
-        "name": "Nutraxin Vitamin D3 + K2 Spray",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
-    "route": "/products/nutraxin/vitamin-d3-spray-30ml/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-spray-30ml/",
-    "file": "products/nutraxin/vitamin-d3-spray-30ml/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-spray-30ml/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Nutraxin Vitamin D3 Spray 30 ml | Nutraxin | NovaPharm",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-spray-30ml/#product",
-        "types": [
-          "Product"
-        ],
-        "name": "Nutraxin Vitamin D3 Spray",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
-    "route": "/products/nutraxin/vitamin-max-15-effervescent-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/vitamin-max-15-effervescent-tablets/",
-    "file": "products/nutraxin/vitamin-max-15-effervescent-tablets/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/vitamin-max-15-effervescent-tablets/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Nutraxin Vitamin MAX C + D + Zinc Effervescent 15 effervescent tablets | Nutraxin | NovaPharm",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/vitamin-max-15-effervescent-tablets/#product",
-        "types": [
-          "Product"
-        ],
-        "name": "Nutraxin Vitamin MAX C + D + Zinc Effervescent",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
-    "route": "/products/nutraxin/vitamin-max-60-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/vitamin-max-60-tablets/",
-    "file": "products/nutraxin/vitamin-max-60-tablets/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/vitamin-max-60-tablets/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Nutraxin Vitamin MAX C + D + Zinc 60 tablets | Nutraxin | NovaPharm",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/vitamin-max-60-tablets/#product",
-        "types": [
-          "Product"
-        ],
-        "name": "Nutraxin Vitamin MAX C + D + Zinc",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      }
-    ]
-  },
-  {
-    "route": "/products/nutraxin/womens-multivitamin-complex-60-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/womens-multivitamin-complex-60-tablets/",
-    "file": "products/nutraxin/womens-multivitamin-complex-60-tablets/index.html",
-    "entities": [
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/womens-multivitamin-complex-60-tablets/#webpage",
-        "types": [
-          "WebPage"
-        ],
-        "name": "Nutraxin Women's Multivitamin Complex 60 tablets | Nutraxin | NovaPharm",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
-      },
-      {
-        "id": "https://novapharmhealthcare.com/products/nutraxin/womens-multivitamin-complex-60-tablets/#product",
-        "types": [
-          "Product"
-        ],
-        "name": "Nutraxin Women's Multivitamin Complex",
-        "mainEntity": null,
-        "publisher": null,
-        "author": null
       }
     ]
   }

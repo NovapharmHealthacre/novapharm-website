@@ -20,21 +20,9 @@ assert.equal(oncologyContent.continuityStages.length, 7);
 assert.equal(oncologyContent.partners.length, 5);
 assert.equal(oncologyContent.faqs.length, 6);
 assert.equal(oncologyContent.sources.length, 7);
-
-for (const phrase of [
-  "Continuity is designed before supply begins.",
-  "Can the evidence, product and accountable parties remain aligned through every hand-off?",
-  "Five dependencies that should be visible early.",
-  "A temperature range alone is not a control system.",
-  "Preserve context through each accountable hand-off.",
-  "NovaPharm does not provide medical advice, direct patient services or a guarantee of product authorisation",
-]) assert.ok(html.includes(phrase), phrase);
-
-assert.ok(visible.split(/\s+/).length >= 400, "Oncology page must remain concise but substantive");
-assert.equal((html.match(/class="npd-service-ledger"[\s\S]*?<\/ol>/)?.[0].match(/<li>/g) ?? []).length, 5);
-assert.equal((html.match(/class="npd-horizontal-steps"[\s\S]*?<\/ol>/)?.[0].match(/<li>/g) ?? []).length, 5);
-assert.match(html, /Representative scientific context; it does not depict a NovaPharm facility, product or active programme\./);
-assert.doesNotMatch(html, /<svg|oncology-editorial-gallery|Formulation and Complexity Navigator|Oncology Product-Readiness Matrix/);
+for (const phrase of ["Oncology Supply Continuity Architecture", "Formulation and Complexity Navigator", "Oncology Product-Readiness Matrix", "Development-to-Access Continuity", "no product approval, availability or treatment claim"]) assert.ok(html.includes(phrase), phrase);
+assert.ok(visible.split(/\s+/).length >= 1800, "Oncology page must remain substantial");
+assert.match(html, /Representative licensed scientific image; not a NovaPharm product, employee or facility\./);
 assert.doesNotMatch(html, /"@type":"(?:Drug|MedicalTherapy|MedicalStudy|ClinicalTrial)"/);
 
 const provenance = JSON.parse(readFileSync(join(root, "docs/oncology-media-provenance.json"), "utf8"));
@@ -47,4 +35,4 @@ for (const asset of provenance.assets) {
   }
 }
 
-console.log(`Oncology content passed: ${visible.split(/\s+/).length} visible words, concise authored hierarchy, five readiness dependencies, five accountable hand-offs and truthful evidence boundaries.`);
+console.log(`Oncology content passed: ${visible.split(/\s+/).length} visible words, 13 sections, 6 continuity axes, 6 readiness dimensions, 6 FAQs and 7 official sources.`);

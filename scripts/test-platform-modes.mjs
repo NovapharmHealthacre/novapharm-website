@@ -4,7 +4,6 @@ import { spawnSync } from "node:child_process";
 import { platformModes, getPlatformCapabilities, resolvePlatformMode } from "../src/core/platform-mode.mjs";
 
 const output = ".pages-test";
-const protectedDashboard = "_secure/portal/dashboard/index.html";
 
 function run(command, args, mode) {
   const result = spawnSync(command, args, {
@@ -26,12 +25,6 @@ assert.equal(resolvePlatformMode("public_only"), platformModes.PUBLIC_ONLY);
 assert.equal(getPlatformCapabilities(platformModes.PUBLIC_ONLY).portal, false);
 assert.equal(getPlatformCapabilities(platformModes.FULL_PLATFORM).portal, true);
 assert.throws(() => resolvePlatformMode("unknown"), /Unsupported PLATFORM_MODE/);
-
-const initialMode = existsSync(protectedDashboard)
-  && existsSync("portal/index.html")
-  && /data-login-form/.test(read("portal/index.html"))
-  ? platformModes.FULL_PLATFORM
-  : platformModes.PUBLIC_ONLY;
 
 try {
   run(process.execPath, ["scripts/build-site.mjs"], platformModes.PUBLIC_ONLY);
@@ -59,13 +52,12 @@ try {
   assert.equal(existsSync(`${output}/portal/index.html`), true);
   assert.equal(existsSync(`${output}/admin`), false);
   assert.equal(existsSync(`${output}/employee`), false);
-
-  run(process.execPath, ["scripts/build-site.mjs"], platformModes.FULL_PLATFORM);
-  assert.match(read("portal/index.html"), /data-login-form/);
-  assert.equal(existsSync(protectedDashboard), true);
 } finally {
   rmSync(output, { recursive: true, force: true });
-  run(process.execPath, ["scripts/build-site.mjs"], initialMode);
+  run(process.execPath, ["scripts/build-site.mjs"], platformModes.FULL_PLATFORM);
 }
+
+assert.match(read("portal/index.html"), /data-login-form/);
+assert.equal(existsSync("_secure/portal/dashboard/index.html"), true);
 
 console.log("Platform mode contracts passed for PUBLIC_ONLY and FULL_PLATFORM.");

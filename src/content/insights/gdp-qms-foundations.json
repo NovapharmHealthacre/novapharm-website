@@ -13,7 +13,7 @@
   "disclaimer": "Educational corporate content only. GDP and quality-system requirements depend on an organisation's authorised activities, products, sites and outsourcing model. Use current official guidance and qualified advice.",
   "related": ["compliance-first-pharmaceutical-distribution-uk", "batch-to-buyer-traceability", "plpi-pharmaceutical-supply-resilience"],
   "internalLinks": [
-    { "label": "Quality and regulatory services", "href": "/regulatory-services/" },
+    { "label": "Quality and regulatory services", "href": "/services/#quality-pv" },
     { "label": "Regulatory operating model", "href": "/regulatory-services/" },
     { "label": "Technology and audit records", "href": "/technology/" }
   ],

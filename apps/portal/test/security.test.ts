@@ -26,19 +26,7 @@ test("the browser gateway uses a fixed API origin and a route allowlist", () => 
   assert.match(gateway, /createPortalGatewaySignature/);
   assert.match(gateway, /PORTAL_GATEWAY_SECRET/);
   assert.match(gateway, /x-novapharm-gateway-signature/);
-  assert.match(gateway, /enterprise\\\/medicines\\\/search/);
-  assert.match(gateway, /enterprise\\\/medicines\\\/\(\?:analytics\|nearby\)/);
-  assert.match(gateway, /medicine-\[a-f0-9\]/);
   assert.doesNotMatch(gateway, /x-ms-client-principal-id/);
-});
-
-test("Medicines Intelligence uses protected aggregate endpoints without exposing business-email values", () => {
-  const intelligence = source("components/medicines-intelligence.tsx");
-  assert.match(intelligence, /enterprise\/medicines\/analytics/);
-  assert.match(intelligence, /enterprise\/medicines\/nearby/);
-  assert.match(intelligence, /Validation samples can never contribute/);
-  assert.doesNotMatch(intelligence, /public_business_email/);
-  assert.doesNotMatch(intelligence, /fake chart|synthetic chart/iu);
 });
 
 test("authentication and writes require fresh CSRF tokens and keep credentials out of storage", () => {

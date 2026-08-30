@@ -26,6 +26,7 @@ const authoredExecutiveSource = `${dispatcherSource}\n${overlaySource}\n${execut
 const activationByCode = new Map(portalModuleActivationMatrix.map((entry) => [entry.code, entry]));
 const allowedPresentations = new Set(["command", "ledger", "workflow", "catalogue", "tracking", "documents", "regulated", "intelligence"]);
 const hiddenExecutiveCodes = new Set([
+  "executive.nhs-data",
   "executive.plpi",
   "executive.pharmacovigilance",
   "executive.tenders",
@@ -92,8 +93,8 @@ test("every governed Portal module satisfies the complete repository-layer contr
     }
   }
 
-  assert.equal(completed.length, 48, "Exactly 48 modules should be repository-authored/visible in the current candidate");
-  assert.equal(hidden.length, 6, "Exactly six dependency-gated Executive modules should remain hidden for safety");
+  assert.equal(completed.length, 47, "Exactly 47 modules should be repository-authored/visible at R1");
+  assert.equal(hidden.length, 7, "Exactly seven dependency-gated Executive modules should remain hidden for safety");
   assert.deepEqual(new Set(hidden), hiddenExecutiveCodes, "Hidden-for-safety inventory drift");
 });
 

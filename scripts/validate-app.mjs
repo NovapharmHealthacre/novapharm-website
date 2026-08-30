@@ -4,11 +4,8 @@ import { applyExecutiveBranding } from "../src/integrations/sharepoint/secure-co
 
 const root = resolve(process.cwd());
 const secureRoot = resolve(process.env.SECURE_CONTENT_ROOT || join(root, "_secure"));
-const platformMode = process.env.PLATFORM_MODE === "FULL_PLATFORM" ? "FULL_PLATFORM" : "PUBLIC_ONLY";
 
-const pages = platformMode === "FULL_PLATFORM"
-  ? ["index.html", "portal/index.html", "portal/executive-platform/index.html"]
-  : ["index.html", "portal/index.html"];
+const pages = ["index.html", "portal/index.html", "portal/executive-platform/index.html"];
 
 const executivePages = [
   ["executive.command-centre", "NP_Hub.html"],
@@ -101,19 +98,12 @@ for (const page of pagesToValidate.filter((name) => name.endsWith(".html"))) {
 }
 
 const login = readFileSync(join(root, "portal/index.html"), "utf8");
+if (!login.includes("name=\"accessType\"")) fail("portal login is missing access-type selection");
+if (login.includes("href=\"/portal/executive-platform/NP_")) fail("portal login exposes executive launch links");
 if (!login.includes("/assets/brand/novapharm-healthcare-logo.svg") || !login.includes("/assets/brand/novapharm-healthcare-logo.png")) fail("portal login is missing the approved logo and fallback");
+if (!login.includes("login-panel-authentication")) fail("portal login is missing its governed wide authentication composition");
 if (!login.includes("/assets/brand/favicon.svg") || !login.includes("/assets/brand/apple-touch-icon.png")) fail("portal login is missing approved small-format identity metadata");
 if (login.includes("Vishal has customer")) fail("portal login exposes administrator access details");
-if (platformMode === "FULL_PLATFORM") {
-  if (!login.includes("name=\"accessType\"")) fail("portal login is missing access-type selection");
-  if (login.includes("href=\"/portal/executive-platform/NP_")) fail("portal login exposes executive launch links");
-  if (!login.includes("login-panel-authentication")) fail("portal login is missing its governed wide authentication composition");
-} else {
-  if (!login.includes("noindex,nofollow")) fail("public-only portal boundary is indexable");
-  if (!login.includes("This public website never asks for a portal username, password")) fail("public-only portal boundary is missing its credential warning");
-  if (/<form\b|<input\b|data-api-base|api-client\.js/i.test(login)) fail("public-only portal boundary exposes an interactive or managed-runtime control");
-  if (/href=["']\/portal\/(?:dashboard|change-password|executive-platform)/i.test(login)) fail("public-only portal boundary links to a protected route");
-}
 
 const executiveFixture = `<html><head><style></style></head><body><div class="sb-hd">
   <div class="sb-brand">
@@ -134,7 +124,6 @@ for (const [code, page] of executivePages) {
   if (fileExists(page) || fileExists(`portal/executive-platform/${page}`)) {
     fail(`public Executive Platform page still exists: ${page}`);
   }
-  if (platformMode === "PUBLIC_ONLY") continue;
   const securePage = join(secureRoot, "executive-platform", page);
   if (module.releaseClassification === "hidden_until_dependency_exists") {
     if (existsSync(securePage)) fail(`dependency-blocked Executive Platform page was materialised: ${page}`);
@@ -155,6 +144,4 @@ if (process.exitCode) {
   process.exit(process.exitCode);
 }
 
-console.log(platformMode === "FULL_PLATFORM"
-  ? `Validated ${pagesToValidate.length} public entry pages, ${protectedExecutivePages} protected Executive Platform modules and ${executivePages.length - protectedExecutivePages} dependency-blocked modules.`
-  : `Validated ${pagesToValidate.length} public entry pages and a fail-closed public-only Portal boundary; no protected Executive Platform module was materialised.`);
+console.log(`Validated ${pagesToValidate.length} public entry pages, ${protectedExecutivePages} protected Executive Platform modules and ${executivePages.length - protectedExecutivePages} dependency-blocked modules.`);

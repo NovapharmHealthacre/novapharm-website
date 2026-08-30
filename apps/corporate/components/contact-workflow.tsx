@@ -1,5 +1,6 @@
 "use client";
 
+import { AlertCircle, CheckCircle2, LoaderCircle, Mail } from "lucide-react";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 
 const enquiryTypes = [
@@ -113,9 +114,10 @@ export function ContactWorkflow() {
         <p className="field-note" id="contact-safety-warning">Do not include patient-identifiable information, an adverse-event report or urgent medical information. Report suspected medicine side effects through the <a href="https://yellowcard.mhra.gov.uk/">MHRA Yellow Card service</a>. For emergencies call 999; for urgent NHS advice use 111.</p>
         <label className="check-row"><input type="checkbox" name="safetyConfirmation" value="yes" required /><span>I confirm that this message contains no patient-identifiable information, adverse-event report or urgent medical information.</span></label>
         <label className="check-row"><input type="checkbox" name="privacyAcknowledgement" value="yes" required /><span>I have read the <a href="/legal/privacy/#business-enquiries">business-enquiry privacy information</a>. This is not marketing consent.</span></label>
-        <button className="button button-primary" type="submit" disabled={state === "sending"}>{state === "sending" ? "Submitting..." : "Submit enquiry"}</button>
+        <button className="button button-primary" type="submit" disabled={state === "sending"}>{state === "sending" ? <LoaderCircle className="spin" aria-hidden="true" /> : <Mail aria-hidden="true" />} Submit enquiry</button>
       </form>
       <div className={`form-status form-status-${state}`} ref={statusRef} role="status" aria-live="polite" tabIndex={-1}>
+        {state === "success" ? <CheckCircle2 aria-hidden="true" /> : state === "error" ? <AlertCircle aria-hidden="true" /> : null}
         <p>{message || "Your information is sent only to NovaPharm's secure server when you submit this form."}</p>
       </div>
       {state === "error" ? <a className="verified-email" href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20business%20enquiry">Use the verified corporate email route</a> : null}

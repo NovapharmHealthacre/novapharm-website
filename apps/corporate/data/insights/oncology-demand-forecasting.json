@@ -13,7 +13,7 @@
   "disclaimer": "Educational corporate content only. This article does not provide clinical advice and does not describe a deployed NovaPharm forecasting service. Any future model will require validated data, governance and expert oversight.",
   "related": ["three-pillar-sourcing", "batch-to-buyer-traceability", "compliance-first-pharmaceutical-distribution-uk"],
   "internalLinks": [
-    { "label": "Strategic product portfolio", "href": "/products/" },
+    { "label": "Strategic product portfolio", "href": "/product-portfolio/" },
     { "label": "Technology maturity", "href": "/technology/" },
     { "label": "Discuss an oncology opportunity", "href": "/contact/" }
   ],

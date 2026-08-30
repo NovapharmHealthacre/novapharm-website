@@ -21,10 +21,6 @@ const heroCopy: Readonly<Record<string, { readonly title: string; readonly intro
     title: "Connected services for regulated market entry.",
     intro: "Sourcing, quality, logistics, product assessment and digital operations—designed as one controlled B2B system.",
   },
-  capabilities: {
-    title: "Four connected capabilities. One governed route to market.",
-    intro: "Services, regulatory and quality, clinical-development support and technology are organised around the decision a partner needs to make.",
-  },
   "regulatory-services": {
     title: "Authorisation before supply.",
     intro: "Quality systems, product status, vendor oversight and post-market responsibilities are established before commercial release.",
@@ -37,17 +33,13 @@ const heroCopy: Readonly<Record<string, { readonly title: string; readonly intro
     title: "Oncology continuity begins before supply.",
     intro: "Source, formulation, quality, condition and regulatory readiness are assessed together before market access.",
   },
-  products: {
-    title: "Two portfolio routes. Different evidence. The same discipline.",
-    intro: "Review Nutraxin food-supplement references or NovaPharm's evidence-gated strategic pharmaceutical focus.",
+  "product-portfolio": {
+    title: "A portfolio of governed decisions.",
+    intro: "Oncology, specialty, oral-liquid and selected licensed medicine opportunities remain subject to evidence, authorisation and availability.",
   },
-  "products/nutraxin": {
+  "product-portfolio/nutraxin": {
     title: "Nutraxin references for qualified B2B review.",
     intro: "Approved pack imagery and source-transcribed composition details are presented without implying UK availability or regulatory acceptance.",
-  },
-  "products/strategic-portfolio": {
-    title: "Strategic pharmaceutical opportunities begin with evidence.",
-    intro: "Oncology, specialty, oral-liquid and selected licensed-medicine opportunities remain subject to rights, evidence, authorisation and confirmed availability.",
   },
   "partner-with-us": {
     title: "Partnerships built through qualification.",

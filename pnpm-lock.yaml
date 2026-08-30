@@ -108,6 +108,9 @@ importers:
       '@novapharm/seo':
         specifier: 0.1.0
         version: link:../../packages/seo
+      lucide-react:
+        specifier: 0.468.0
+        version: 0.468.0(react@19.2.8)
       next:
         specifier: 16.2.12
         version: 16.2.12(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)

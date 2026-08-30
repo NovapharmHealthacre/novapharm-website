@@ -5,7 +5,7 @@
     "file": "index.html",
     "title": "NovaPharm Healthcare | UK Pharmaceutical Distribution Strategy",
     "description": "NovaPharm Healthcare is a UK-based, compliance-first B2B pharmaceutical company preparing oncology, specialty, PLPI sourcing and quality-led distribution capabilities.",
-    "h1": "Medicine. Where it needs to be.",
+    "h1": "Building a more resilient pharmaceutical supply network.",
     "indexable": true,
     "schemaTypes": [
       "ImageObject",
@@ -19,14 +19,17 @@
       "ListItem"
     ],
     "intendedCta": [
-      "contact",
-      "discuss-an-opportunity",
-      "explore-partnerships",
-      "contact-novapharm",
-      "open-a-business-account",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account",
+      "partner-with-us",
+      "explore-partnerships",
+      "submit-an-opportunity",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
     ]
   },
   {
@@ -35,7 +38,7 @@
     "file": "about/index.html",
     "title": "About NovaPharm Healthcare | Compliance-First UK Pharmaceutical Company",
     "description": "Why NovaPharm exists, the UK pharmaceutical supply problem it is preparing to address, its mission, operating principles and international outlook.",
-    "h1": "Built for decisions that must withstand scrutiny.",
+    "h1": "A pharmaceutical company designed around evidence, optionality and accountable growth.",
     "indexable": true,
     "schemaTypes": [
       "WebPage",
@@ -44,11 +47,14 @@
       "ListItem"
     ],
     "intendedCta": [
-      "contact",
-      "partners",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
     ]
   },
   {
@@ -66,13 +72,14 @@
       "ListItem"
     ],
     "intendedCta": [
-      "contact",
       "partners",
+      "contact",
+      "open-an-account",
       "discuss-a-partnership",
       "open-an-account",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account"
     ]
   },
   {
@@ -90,13 +97,14 @@
       "ListItem"
     ],
     "intendedCta": [
-      "contact",
       "partners",
+      "contact",
+      "open-an-account",
       "discuss-a-partnership",
       "open-an-account",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account"
     ]
   },
   {
@@ -114,13 +122,14 @@
       "ListItem"
     ],
     "intendedCta": [
-      "contact",
       "partners",
+      "contact",
+      "open-an-account",
       "discuss-a-partnership",
       "open-an-account",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account"
     ]
   },
   {
@@ -129,7 +138,7 @@
     "file": "services/index.html",
     "title": "Pharmaceutical Services UK | Distribution, PLPI, Quality and Sourcing",
     "description": "NovaPharm&#39;s planned pharmaceutical trading, PLPI strategy, European sourcing, GMP partnerships, QMS, GDP logistics and digital B2B services.",
-    "h1": "Move from opportunity to a defined, reviewable route.",
+    "h1": "Substantive capabilities for regulated pharmaceutical growth.",
     "indexable": true,
     "schemaTypes": [
       "WebPage",
@@ -154,32 +163,14 @@
       "Audience"
     ],
     "intendedCta": [
-      "contact",
-      "discuss-a-requirement",
-      "contact-novapharm",
       "partners",
       "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/capabilities/",
-    "canonical": "https://novapharmhealthcare.com/capabilities/",
-    "file": "capabilities/index.html",
-    "title": "Pharmaceutical Capabilities | NovaPharm Healthcare",
-    "description": "Explore NovaPharm capabilities across sourcing, regulatory and quality readiness, clinical research coordination, oncology and governed technology.",
-    "h1": "The right route depends on the evidence already in place.",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage"
-    ],
-    "intendedCta": [
-      "contact",
-      "discuss-a-requirement",
-      "start-a-qualified-conversation",
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account"
     ]
   },
   {
@@ -188,7 +179,7 @@
     "file": "regulatory-services/index.html",
     "title": "MHRA, WDA(H), PLPI and GDP Regulatory Strategy | NovaPharm",
     "description": "NovaPharm&#39;s compliance-first regulatory roadmap covering WDA(H), product-specific PLPI pathways, QMS, GDP, pharmacovigilance and vendor qualification.",
-    "h1": "No regulated supply before the required permissions.",
+    "h1": "Regulatory readiness before regulated activity.",
     "indexable": true,
     "schemaTypes": [
       "WebPage",
@@ -204,10 +195,14 @@
       "Answer"
     ],
     "intendedCta": [
-      "contact",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
     ]
   },
   {
@@ -216,7 +211,7 @@
     "file": "cro/index.html",
     "title": "Clinical Research & CRO Support UK | NovaPharm Healthcare",
     "description": "Evidence-led clinical-development programme coordination, UK pathway integration, specialist-provider orchestration and sponsor-visible governance from NovaPharm.",
-    "h1": "Define the programme before assembling the delivery model.",
+    "h1": "Clinical development, connected to evidence and accountability.",
     "indexable": true,
     "schemaTypes": [
       "WebPage",
@@ -261,10 +256,12 @@
       "Service"
     ],
     "intendedCta": [
-      "contact",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
     ]
   },
   {
@@ -273,7 +270,7 @@
     "file": "oncology/index.html",
     "title": "Oncology Supply Continuity and Readiness | NovaPharm Healthcare",
     "description": "Explore NovaPharm&#39;s evidence-led B2B oncology continuity model across formulation, sourcing, quality, temperature governance, regulatory readiness and controlled market access.",
-    "h1": "Continuity is designed before supply begins.",
+    "h1": "Oncology continuity starts before supply.",
     "indexable": true,
     "schemaTypes": [
       "WebPage",
@@ -298,64 +295,103 @@
       "Country"
     ],
     "intendedCta": [
-      "contact",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
     ]
   },
   {
-    "route": "/products/",
-    "canonical": "https://novapharmhealthcare.com/products/",
-    "file": "products/index.html",
-    "title": "Products | NovaPharm Healthcare",
-    "description": "Review NovaPharm's Nutraxin food supplement catalogue reference and non-commerce strategic pharmaceutical opportunity portfolio.",
-    "h1": "Two portfolios. Two different decisions.",
+    "route": "/product-portfolio/",
+    "canonical": "https://novapharmhealthcare.com/product-portfolio/",
+    "file": "product-portfolio/index.html",
+    "title": "Food Supplements and Strategic Pharmaceutical Portfolio | NovaPharm",
+    "description": "Review NovaPharm&#39;s Nutraxin UK food supplement catalogue reference and strategic B2B pharmaceutical categories, with availability, claims and authorisation boundaries stated clearly.",
+    "h1": "A strategic B2B portfolio, not a public pharmacy catalogue.",
     "indexable": true,
     "schemaTypes": [
-      "WebPage"
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem"
     ],
     "intendedCta": [
-      "contact",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account",
+      "partnership-pathway",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
     ]
   },
   {
-    "route": "/products/nutraxin/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/",
-    "file": "products/nutraxin/index.html",
-    "title": "Nutraxin Food Supplement Catalogue | NovaPharm Healthcare",
-    "description": "Review 19 owner-supplied Nutraxin catalogue references with approved pack imagery and source-transcribed composition details for qualified B2B evaluation.",
-    "h1": "A catalogue designed around the product itself.",
+    "route": "/product-portfolio/nutraxin/",
+    "canonical": "https://novapharmhealthcare.com/product-portfolio/nutraxin/",
+    "file": "product-portfolio/nutraxin/index.html",
+    "title": "Nutraxin UK Food Supplement Catalogue | NovaPharm Healthcare",
+    "description": "Review 19 Nutraxin food supplement catalogue references with pack imagery and source-transcribed composition details for qualified B2B evaluation; availability, claims and regulatory status are not asserted.",
+    "h1": "Nutraxin food supplement catalogue references.",
     "indexable": true,
     "schemaTypes": [
-      "WebPage"
+      "WebPage",
+      "BreadcrumbList",
+      "ListItem",
+      "ListItem",
+      "ListItem",
+      "ItemList",
+      "ListItem",
+      "Thing",
+      "ListItem",
+      "Thing",
+      "ListItem",
+      "Thing",
+      "ListItem",
+      "Thing",
+      "ListItem",
+      "Thing",
+      "ListItem",
+      "Thing",
+      "ListItem",
+      "Thing",
+      "ListItem",
+      "Thing",
+      "ListItem",
+      "Thing",
+      "ListItem",
+      "Thing",
+      "ListItem",
+      "Thing",
+      "ListItem",
+      "Thing",
+      "ListItem",
+      "Thing",
+      "ListItem",
+      "Thing",
+      "ListItem",
+      "Thing",
+      "ListItem",
+      "Thing",
+      "ListItem",
+      "Thing",
+      "ListItem",
+      "Thing",
+      "ListItem",
+      "Thing"
     ],
     "intendedCta": [
-      "contact",
       "partners",
       "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/products/strategic-portfolio/",
-    "canonical": "https://novapharmhealthcare.com/products/strategic-portfolio/",
-    "file": "products/strategic-portfolio/index.html",
-    "title": "Strategic Pharmaceutical Portfolio | NovaPharm Healthcare",
-    "description": "Explore NovaPharm's evidence-led pharmaceutical opportunity priorities without implying stock, authorisation, availability or public sale.",
-    "h1": "A portfolio of questions before it becomes a portfolio of products.",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage"
-    ],
-    "intendedCta": [
-      "contact",
+      "open-an-account",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account"
     ]
   },
   {
@@ -364,7 +400,7 @@
     "file": "partner-with-us/index.html",
     "title": "Pharmaceutical Partnerships UK | Manufacturers, Dossier Owners and Buyers",
     "description": "Partner with NovaPharm across GMP manufacturing, CMO/CDMO, product dossiers, European sourcing, UK distribution, logistics and technology.",
-    "h1": "Partnership begins with a clear role and verifiable evidence.",
+    "h1": "Partnerships built through qualification, not logo walls.",
     "indexable": true,
     "schemaTypes": [
       "WebPage",
@@ -373,13 +409,15 @@
       "ListItem"
     ],
     "intendedCta": [
-      "contact",
-      "partners",
-      "start-a-partnership-conversation",
-      "contact-novapharm",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account",
+      "customers-open-a-business-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
     ]
   },
   {
@@ -388,7 +426,7 @@
     "file": "technology/index.html",
     "title": "Pharmaceutical Technology Platform | NovaPharm Healthcare",
     "description": "NovaPharm&#39;s API-first platform, portal, SharePoint, audit and integration architecture with clearly labelled live, in-development and planned capabilities.",
-    "h1": "Control first. Automation only where it earns trust.",
+    "h1": "Useful infrastructure, with maturity stated plainly.",
     "indexable": true,
     "schemaTypes": [
       "WebPage",
@@ -397,10 +435,14 @@
       "ListItem"
     ],
     "intendedCta": [
-      "contact",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account",
+      "discuss-a-partnership",
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
     ]
   },
   {
@@ -409,7 +451,7 @@
     "file": "news-insights/index.html",
     "title": "Pharmaceutical Insights | Regulatory, Oncology, Quality and Supply Chain",
     "description": "Original NovaPharm analysis on UK pharmaceutical regulation, PLPI, oncology supply, GDP, sourcing and traceability.",
-    "h1": "Regulated-market thinking, written to be challenged.",
+    "h1": "Evidence-led perspectives for regulated pharmaceutical work.",
     "indexable": true,
     "schemaTypes": [
       "WebPage",
@@ -418,10 +460,12 @@
       "ListItem"
     ],
     "intendedCta": [
-      "contact",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
     ]
   },
   {
@@ -430,7 +474,7 @@
     "file": "contact/index.html",
     "title": "Contact NovaPharm Healthcare | B2B Pharmaceutical Enquiries",
     "description": "Contact NovaPharm about product opportunities, distribution, pharmacy accounts, CMO/CDMO partnerships, regulatory services, suppliers, media or careers.",
-    "h1": "Start with the reason for the conversation.",
+    "h1": "Start a qualified business conversation.",
     "indexable": true,
     "schemaTypes": [
       "ContactPage",
@@ -439,28 +483,30 @@
       "ListItem"
     ],
     "intendedCta": [
-      "contact",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
     ]
   },
   {
     "route": "/account-application/",
     "canonical": "https://novapharmhealthcare.com/account-application/",
     "file": "account-application/index.html",
-    "title": "Open a Business Account | NovaPharm Healthcare",
-    "description": "Review NovaPharm's controlled B2B account pathway from non-confidential interest through qualification, private evidence, approval, identity provisioning and portal access.",
-    "h1": "An account is approved through evidence, not created by a public form.",
+    "title": "Open a Pharmaceutical Customer Account | NovaPharm Healthcare",
+    "description": "Apply for a future NovaPharm Healthcare B2B customer account through a controlled company, responsible-person, GDP, credit and document onboarding workflow.",
+    "h1": "Business account onboarding is controlled.",
     "indexable": false,
-    "schemaTypes": [
-      "WebPage"
-    ],
+    "schemaTypes": [],
     "intendedCta": [
-      "contact",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
     ]
   },
   {
@@ -478,10 +524,12 @@
       "ListItem"
     ],
     "intendedCta": [
-      "contact",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
     ]
   },
   {
@@ -499,13 +547,14 @@
       "ListItem"
     ],
     "intendedCta": [
-      "contact",
       "partners",
+      "contact",
+      "open-an-account",
       "discuss-a-partnership",
       "open-an-account",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account"
     ]
   },
   {
@@ -523,11 +572,12 @@
       "ListItem"
     ],
     "intendedCta": [
-      "contact",
-      "partners",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
     ]
   },
   {
@@ -545,11 +595,13 @@
       "ListItem"
     ],
     "intendedCta": [
+      "partners",
       "contact",
+      "open-an-account",
       "corporate-contact-route",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account"
     ]
   },
   {
@@ -567,10 +619,12 @@
       "ListItem"
     ],
     "intendedCta": [
-      "contact",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
     ]
   },
   {
@@ -588,10 +642,12 @@
       "ListItem"
     ],
     "intendedCta": [
-      "contact",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
     ]
   },
   {
@@ -609,10 +665,12 @@
       "ListItem"
     ],
     "intendedCta": [
-      "contact",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
     ]
   },
   {
@@ -630,10 +688,12 @@
       "ListItem"
     ],
     "intendedCta": [
-      "contact",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
     ]
   },
   {
@@ -651,10 +711,12 @@
       "ListItem"
     ],
     "intendedCta": [
-      "contact",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
     ]
   },
   {
@@ -672,10 +734,12 @@
       "ListItem"
     ],
     "intendedCta": [
-      "contact",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account",
+      "partners",
+      "contact",
+      "open-an-account"
     ]
   },
   {
@@ -697,13 +761,14 @@
       "ImageObject"
     ],
     "intendedCta": [
-      "contact",
       "partners",
+      "contact",
+      "open-an-account",
       "discuss-a-partnership",
       "open-an-account",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account"
     ]
   },
   {
@@ -725,13 +790,14 @@
       "ImageObject"
     ],
     "intendedCta": [
-      "contact",
       "partners",
+      "contact",
+      "open-an-account",
       "discuss-a-partnership",
       "open-an-account",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account"
     ]
   },
   {
@@ -753,13 +819,14 @@
       "ImageObject"
     ],
     "intendedCta": [
-      "contact",
       "partners",
+      "contact",
+      "open-an-account",
       "discuss-a-partnership",
       "open-an-account",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account"
     ]
   },
   {
@@ -779,13 +846,14 @@
       "Person"
     ],
     "intendedCta": [
-      "contact",
       "partners",
+      "contact",
+      "open-an-account",
       "discuss-a-partnership",
       "open-an-account",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account"
     ]
   },
   {
@@ -805,13 +873,14 @@
       "Person"
     ],
     "intendedCta": [
-      "contact",
       "partners",
+      "contact",
+      "open-an-account",
       "discuss-a-partnership",
       "open-an-account",
       "partners",
       "contact",
-      "open-a-business-account"
+      "open-an-account"
     ]
   },
   {
@@ -831,6 +900,7 @@
       "ImageObject"
     ],
     "intendedCta": [
+      "partners",
       "contact",
       "open-an-account",
       "partners",
@@ -855,6 +925,7 @@
       "ImageObject"
     ],
     "intendedCta": [
+      "partners",
       "contact",
       "open-an-account",
       "partner-with-novapharm",
@@ -880,6 +951,7 @@
       "ImageObject"
     ],
     "intendedCta": [
+      "partners",
       "contact",
       "open-an-account",
       "partners",
@@ -904,6 +976,7 @@
       "ImageObject"
     ],
     "intendedCta": [
+      "partners",
       "contact",
       "open-an-account",
       "discuss-an-oncology-opportunity",
@@ -929,6 +1002,7 @@
       "ImageObject"
     ],
     "intendedCta": [
+      "partners",
       "contact",
       "open-an-account",
       "partners",
@@ -953,449 +1027,13 @@
       "ImageObject"
     ],
     "intendedCta": [
+      "partners",
       "contact",
       "open-an-account",
       "partnership-ecosystem",
       "partners",
       "contact",
       "open-an-account"
-    ]
-  },
-  {
-    "route": "/products/nutraxin/artoflex-90-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/artoflex-90-tablets/",
-    "file": "products/nutraxin/artoflex-90-tablets/index.html",
-    "title": "Nutraxin Artoflex 90 tablets | Nutraxin | NovaPharm",
-    "description": "Nutraxin Artoflex, 90 tablets, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.",
-    "h1": "Nutraxin Artoflex",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "Product",
-      "Brand",
-      "PropertyValue",
-      "PropertyValue",
-      "PropertyValue"
-    ],
-    "intendedCta": [
-      "contact",
-      "partners",
-      "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/products/nutraxin/collagen-complex-90-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/collagen-complex-90-tablets/",
-    "file": "products/nutraxin/collagen-complex-90-tablets/index.html",
-    "title": "Nutraxin Collagen Complex 90 tablets | Nutraxin | NovaPharm",
-    "description": "Nutraxin Collagen Complex, 90 tablets, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.",
-    "h1": "Nutraxin Collagen Complex",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "Product",
-      "Brand",
-      "PropertyValue",
-      "PropertyValue",
-      "PropertyValue"
-    ],
-    "intendedCta": [
-      "contact",
-      "partners",
-      "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/products/nutraxin/collagen-gold-30-sachets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/collagen-gold-30-sachets/",
-    "file": "products/nutraxin/collagen-gold-30-sachets/index.html",
-    "title": "Nutraxin Gold Quality Collagen Sachets 30 sachets | Nutraxin | NovaPharm",
-    "description": "Nutraxin Gold Quality Collagen Sachets, 30 sachets, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.",
-    "h1": "Nutraxin Gold Quality Collagen Sachets",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "Product",
-      "Brand",
-      "PropertyValue",
-      "PropertyValue",
-      "PropertyValue"
-    ],
-    "intendedCta": [
-      "contact",
-      "partners",
-      "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/products/nutraxin/collagen-gold-30-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/collagen-gold-30-tablets/",
-    "file": "products/nutraxin/collagen-gold-30-tablets/index.html",
-    "title": "Nutraxin Gold Quality Collagen 30 tablets | Nutraxin | NovaPharm",
-    "description": "Nutraxin Gold Quality Collagen, 30 tablets, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.",
-    "h1": "Nutraxin Gold Quality Collagen",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "Product",
-      "Brand",
-      "PropertyValue",
-      "PropertyValue",
-      "PropertyValue"
-    ],
-    "intendedCta": [
-      "contact",
-      "partners",
-      "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/products/nutraxin/l-carnitine-60-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/l-carnitine-60-tablets/",
-    "file": "products/nutraxin/l-carnitine-60-tablets/index.html",
-    "title": "Nutraxin L-Carnitine 700 mg 60 tablets | Nutraxin | NovaPharm",
-    "description": "Nutraxin L-Carnitine 700 mg, 60 tablets, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.",
-    "h1": "Nutraxin L-Carnitine 700 mg",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "Product",
-      "Brand",
-      "PropertyValue",
-      "PropertyValue",
-      "PropertyValue"
-    ],
-    "intendedCta": [
-      "contact",
-      "partners",
-      "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/products/nutraxin/magnesium-complex-60-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/magnesium-complex-60-tablets/",
-    "file": "products/nutraxin/magnesium-complex-60-tablets/index.html",
-    "title": "Nutraxin Magnesium Complex + Vitamin B6 60 tablets | Nutraxin | NovaPharm",
-    "description": "Nutraxin Magnesium Complex + Vitamin B6, 60 tablets, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.",
-    "h1": "Nutraxin Magnesium Complex + Vitamin B6",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "Product",
-      "Brand",
-      "PropertyValue",
-      "PropertyValue",
-      "PropertyValue"
-    ],
-    "intendedCta": [
-      "contact",
-      "partners",
-      "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/products/nutraxin/magnesium-daily-60-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/magnesium-daily-60-tablets/",
-    "file": "products/nutraxin/magnesium-daily-60-tablets/index.html",
-    "title": "Nutraxin Magnesium Daily 60 tablets | Nutraxin | NovaPharm",
-    "description": "Nutraxin Magnesium Daily, 60 tablets, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.",
-    "h1": "Nutraxin Magnesium Daily",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "Product",
-      "Brand",
-      "PropertyValue",
-      "PropertyValue",
-      "PropertyValue"
-    ],
-    "intendedCta": [
-      "contact",
-      "partners",
-      "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/products/nutraxin/mens-multivitamin-complex-60-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/mens-multivitamin-complex-60-tablets/",
-    "file": "products/nutraxin/mens-multivitamin-complex-60-tablets/index.html",
-    "title": "Nutraxin Men's Multivitamin Complex 60 tablets | Nutraxin | NovaPharm",
-    "description": "Nutraxin Men's Multivitamin Complex, 60 tablets, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.",
-    "h1": "Nutraxin Men's Multivitamin Complex",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "Product",
-      "Brand",
-      "PropertyValue",
-      "PropertyValue",
-      "PropertyValue"
-    ],
-    "intendedCta": [
-      "contact",
-      "partners",
-      "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/products/nutraxin/multivitamin-mineral-energy-60-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/multivitamin-mineral-energy-60-tablets/",
-    "file": "products/nutraxin/multivitamin-mineral-energy-60-tablets/index.html",
-    "title": "Nutraxin Multivitamin Mineral Energy 60 tablets | Nutraxin | NovaPharm",
-    "description": "Nutraxin Multivitamin Mineral Energy, 60 tablets, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.",
-    "h1": "Nutraxin Multivitamin Mineral Energy",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "Product",
-      "Brand",
-      "PropertyValue",
-      "PropertyValue",
-      "PropertyValue"
-    ],
-    "intendedCta": [
-      "contact",
-      "partners",
-      "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/products/nutraxin/vitamin-b12-60-sublingual-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/vitamin-b12-60-sublingual-tablets/",
-    "file": "products/nutraxin/vitamin-b12-60-sublingual-tablets/index.html",
-    "title": "Nutraxin Vitamin B12 Methylcobalamin 60 sublingual tablets | Nutraxin | NovaPharm",
-    "description": "Nutraxin Vitamin B12 Methylcobalamin, 60 sublingual tablets, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.",
-    "h1": "Nutraxin Vitamin B12 Methylcobalamin",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "Product",
-      "Brand",
-      "PropertyValue",
-      "PropertyValue",
-      "PropertyValue"
-    ],
-    "intendedCta": [
-      "contact",
-      "partners",
-      "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/products/nutraxin/vitamin-c-1000mg-30-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/vitamin-c-1000mg-30-tablets/",
-    "file": "products/nutraxin/vitamin-c-1000mg-30-tablets/index.html",
-    "title": "Nutraxin Vitamin C 1000 mg 30 tablets | Nutraxin | NovaPharm",
-    "description": "Nutraxin Vitamin C 1000 mg, 30 tablets, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.",
-    "h1": "Nutraxin Vitamin C 1000 mg",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "Product",
-      "Brand",
-      "PropertyValue",
-      "PropertyValue",
-      "PropertyValue"
-    ],
-    "intendedCta": [
-      "contact",
-      "partners",
-      "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/products/nutraxin/vitamin-c-500mg-chewable-30-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/vitamin-c-500mg-chewable-30-tablets/",
-    "file": "products/nutraxin/vitamin-c-500mg-chewable-30-tablets/index.html",
-    "title": "Nutraxin Vitamin C 500 mg Chewable 30 chewable tablets | Nutraxin | NovaPharm",
-    "description": "Nutraxin Vitamin C 500 mg Chewable, 30 chewable tablets, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.",
-    "h1": "Nutraxin Vitamin C 500 mg Chewable",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "Product",
-      "Brand",
-      "PropertyValue",
-      "PropertyValue",
-      "PropertyValue"
-    ],
-    "intendedCta": [
-      "contact",
-      "partners",
-      "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/products/nutraxin/vitamin-d3-120-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-120-tablets/",
-    "file": "products/nutraxin/vitamin-d3-120-tablets/index.html",
-    "title": "Nutraxin Vitamin D3 120 tablets | Nutraxin | NovaPharm",
-    "description": "Nutraxin Vitamin D3, 120 tablets, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.",
-    "h1": "Nutraxin Vitamin D3",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "Product",
-      "Brand",
-      "PropertyValue",
-      "PropertyValue",
-      "PropertyValue"
-    ],
-    "intendedCta": [
-      "contact",
-      "partners",
-      "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/products/nutraxin/vitamin-d3-k2-120-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-k2-120-tablets/",
-    "file": "products/nutraxin/vitamin-d3-k2-120-tablets/index.html",
-    "title": "Nutraxin Vitamin D3 + K2 120 tablets | Nutraxin | NovaPharm",
-    "description": "Nutraxin Vitamin D3 + K2, 120 tablets, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.",
-    "h1": "Nutraxin Vitamin D3 + K2",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "Product",
-      "Brand",
-      "PropertyValue",
-      "PropertyValue",
-      "PropertyValue"
-    ],
-    "intendedCta": [
-      "contact",
-      "partners",
-      "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/products/nutraxin/vitamin-d3-k2-spray-30ml/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-k2-spray-30ml/",
-    "file": "products/nutraxin/vitamin-d3-k2-spray-30ml/index.html",
-    "title": "Nutraxin Vitamin D3 + K2 Spray 30 ml | Nutraxin | NovaPharm",
-    "description": "Nutraxin Vitamin D3 + K2 Spray, 30 ml, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.",
-    "h1": "Nutraxin Vitamin D3 + K2 Spray",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "Product",
-      "Brand",
-      "PropertyValue",
-      "PropertyValue",
-      "PropertyValue"
-    ],
-    "intendedCta": [
-      "contact",
-      "partners",
-      "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/products/nutraxin/vitamin-d3-spray-30ml/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-spray-30ml/",
-    "file": "products/nutraxin/vitamin-d3-spray-30ml/index.html",
-    "title": "Nutraxin Vitamin D3 Spray 30 ml | Nutraxin | NovaPharm",
-    "description": "Nutraxin Vitamin D3 Spray, 30 ml, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.",
-    "h1": "Nutraxin Vitamin D3 Spray",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "Product",
-      "Brand",
-      "PropertyValue",
-      "PropertyValue",
-      "PropertyValue"
-    ],
-    "intendedCta": [
-      "contact",
-      "partners",
-      "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/products/nutraxin/vitamin-max-15-effervescent-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/vitamin-max-15-effervescent-tablets/",
-    "file": "products/nutraxin/vitamin-max-15-effervescent-tablets/index.html",
-    "title": "Nutraxin Vitamin MAX C + D + Zinc Effervescent 15 effervescent tablets | Nutraxin | NovaPharm",
-    "description": "Nutraxin Vitamin MAX C + D + Zinc Effervescent, 15 effervescent tablets, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.",
-    "h1": "Nutraxin Vitamin MAX C + D + Zinc Effervescent",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "Product",
-      "Brand",
-      "PropertyValue",
-      "PropertyValue",
-      "PropertyValue"
-    ],
-    "intendedCta": [
-      "contact",
-      "partners",
-      "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/products/nutraxin/vitamin-max-60-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/vitamin-max-60-tablets/",
-    "file": "products/nutraxin/vitamin-max-60-tablets/index.html",
-    "title": "Nutraxin Vitamin MAX C + D + Zinc 60 tablets | Nutraxin | NovaPharm",
-    "description": "Nutraxin Vitamin MAX C + D + Zinc, 60 tablets, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.",
-    "h1": "Nutraxin Vitamin MAX C + D + Zinc",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "Product",
-      "Brand",
-      "PropertyValue",
-      "PropertyValue",
-      "PropertyValue"
-    ],
-    "intendedCta": [
-      "contact",
-      "partners",
-      "contact",
-      "open-a-business-account"
-    ]
-  },
-  {
-    "route": "/products/nutraxin/womens-multivitamin-complex-60-tablets/",
-    "canonical": "https://novapharmhealthcare.com/products/nutraxin/womens-multivitamin-complex-60-tablets/",
-    "file": "products/nutraxin/womens-multivitamin-complex-60-tablets/index.html",
-    "title": "Nutraxin Women's Multivitamin Complex 60 tablets | Nutraxin | NovaPharm",
-    "description": "Nutraxin Women's Multivitamin Complex, 60 tablets, presented as an owner-supplied Nutraxin catalogue reference for qualified B2B review; availability and regulatory status are not asserted.",
-    "h1": "Nutraxin Women's Multivitamin Complex",
-    "indexable": true,
-    "schemaTypes": [
-      "WebPage",
-      "Product",
-      "Brand",
-      "PropertyValue",
-      "PropertyValue",
-      "PropertyValue"
-    ],
-    "intendedCta": [
-      "contact",
-      "partners",
-      "contact",
-      "open-a-business-account"
     ]
   }
 ]

@@ -60,16 +60,6 @@
     "absoluteUrl": "https://novapharmhealthcare.com/assets/media/modules/services-connected-execution.jpg"
   },
   {
-    "route": "/capabilities/",
-    "page": "https://novapharmhealthcare.com/capabilities/",
-    "url": "/assets/brand/novapharm-open-graph-1200x630-white.jpg",
-    "type": "image/jpeg",
-    "width": 1200,
-    "height": 630,
-    "alt": "NovaPharm Healthcare",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/brand/novapharm-open-graph-1200x630-white.jpg"
-  },
-  {
     "route": "/regulatory-services/",
     "page": "https://novapharmhealthcare.com/regulatory-services/",
     "url": "/assets/media/modules/regulatory-dossier-control.jpg",
@@ -100,8 +90,8 @@
     "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/oncology-vial-handling.jpg"
   },
   {
-    "route": "/products/",
-    "page": "https://novapharmhealthcare.com/products/",
+    "route": "/product-portfolio/",
+    "page": "https://novapharmhealthcare.com/product-portfolio/",
     "url": "/assets/media/modules/product-portfolio-evidence.jpg",
     "type": "image/jpeg",
     "width": 1600,
@@ -110,24 +100,14 @@
     "absoluteUrl": "https://novapharmhealthcare.com/assets/media/modules/product-portfolio-evidence.jpg"
   },
   {
-    "route": "/products/nutraxin/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/",
+    "route": "/product-portfolio/nutraxin/",
+    "page": "https://novapharmhealthcare.com/product-portfolio/nutraxin/",
     "url": "/assets/media/products/nutraxin/vitamin-d3-120-tablets.png",
     "type": "image/png",
     "width": 700,
     "height": 700,
     "alt": "Nutraxin Vitamin D3 catalogue pack reference",
     "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-d3-120-tablets.png"
-  },
-  {
-    "route": "/products/strategic-portfolio/",
-    "page": "https://novapharmhealthcare.com/products/strategic-portfolio/",
-    "url": "/assets/brand/novapharm-open-graph-1200x630-white.jpg",
-    "type": "image/jpeg",
-    "width": 1200,
-    "height": 630,
-    "alt": "NovaPharm Healthcare",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/brand/novapharm-open-graph-1200x630-white.jpg"
   },
   {
     "route": "/partner-with-us/",
@@ -388,195 +368,5 @@
     "height": 900,
     "alt": "Three-Pillar Sourcing: Direct GMP Partnerships, PLPI and European Buying Networks",
     "absoluteUrl": "https://novapharmhealthcare.com/assets/media/insights/three-pillar-sourcing.jpg"
-  },
-  {
-    "route": "/products/nutraxin/artoflex-90-tablets/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/artoflex-90-tablets/",
-    "url": "/assets/media/products/nutraxin/artoflex-90-tablets.png",
-    "type": "image/png",
-    "width": 700,
-    "height": 700,
-    "alt": "Nutraxin artoflex 90 tablets catalogue pack reference",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/artoflex-90-tablets.png"
-  },
-  {
-    "route": "/products/nutraxin/collagen-complex-90-tablets/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/collagen-complex-90-tablets/",
-    "url": "/assets/media/products/nutraxin/collagen-complex-90-tablets.png",
-    "type": "image/png",
-    "width": 700,
-    "height": 700,
-    "alt": "Nutraxin collagen complex 90 tablets catalogue pack reference",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/collagen-complex-90-tablets.png"
-  },
-  {
-    "route": "/products/nutraxin/collagen-gold-30-sachets/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/collagen-gold-30-sachets/",
-    "url": "/assets/media/products/nutraxin/collagen-gold-30-sachets.png",
-    "type": "image/png",
-    "width": 700,
-    "height": 700,
-    "alt": "Nutraxin collagen gold 30 sachets catalogue pack reference",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/collagen-gold-30-sachets.png"
-  },
-  {
-    "route": "/products/nutraxin/collagen-gold-30-tablets/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/collagen-gold-30-tablets/",
-    "url": "/assets/media/products/nutraxin/collagen-gold-30-tablets.png",
-    "type": "image/png",
-    "width": 700,
-    "height": 700,
-    "alt": "Nutraxin collagen gold 30 tablets catalogue pack reference",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/collagen-gold-30-tablets.png"
-  },
-  {
-    "route": "/products/nutraxin/l-carnitine-60-tablets/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/l-carnitine-60-tablets/",
-    "url": "/assets/media/products/nutraxin/l-carnitine-60-tablets.png",
-    "type": "image/png",
-    "width": 700,
-    "height": 700,
-    "alt": "Nutraxin l carnitine 60 tablets catalogue pack reference",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/l-carnitine-60-tablets.png"
-  },
-  {
-    "route": "/products/nutraxin/magnesium-complex-60-tablets/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/magnesium-complex-60-tablets/",
-    "url": "/assets/media/products/nutraxin/magnesium-complex-60-tablets.png",
-    "type": "image/png",
-    "width": 700,
-    "height": 700,
-    "alt": "Nutraxin magnesium complex 60 tablets catalogue pack reference",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/magnesium-complex-60-tablets.png"
-  },
-  {
-    "route": "/products/nutraxin/magnesium-daily-60-tablets/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/magnesium-daily-60-tablets/",
-    "url": "/assets/media/products/nutraxin/magnesium-daily-60-tablets.png",
-    "type": "image/png",
-    "width": 700,
-    "height": 700,
-    "alt": "Nutraxin magnesium daily 60 tablets catalogue pack reference",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/magnesium-daily-60-tablets.png"
-  },
-  {
-    "route": "/products/nutraxin/mens-multivitamin-complex-60-tablets/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/mens-multivitamin-complex-60-tablets/",
-    "url": "/assets/media/products/nutraxin/mens-multivitamin-complex-60-tablets.png",
-    "type": "image/png",
-    "width": 700,
-    "height": 700,
-    "alt": "Nutraxin mens multivitamin complex 60 tablets catalogue pack reference",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/mens-multivitamin-complex-60-tablets.png"
-  },
-  {
-    "route": "/products/nutraxin/multivitamin-mineral-energy-60-tablets/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/multivitamin-mineral-energy-60-tablets/",
-    "url": "/assets/media/products/nutraxin/multivitamin-mineral-energy-60-tablets.png",
-    "type": "image/png",
-    "width": 700,
-    "height": 700,
-    "alt": "Nutraxin multivitamin mineral energy 60 tablets catalogue pack reference",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/multivitamin-mineral-energy-60-tablets.png"
-  },
-  {
-    "route": "/products/nutraxin/vitamin-b12-60-sublingual-tablets/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/vitamin-b12-60-sublingual-tablets/",
-    "url": "/assets/media/products/nutraxin/vitamin-b12-60-sublingual-tablets.png",
-    "type": "image/png",
-    "width": 700,
-    "height": 700,
-    "alt": "Nutraxin vitamin b12 60 sublingual tablets catalogue pack reference",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-b12-60-sublingual-tablets.png"
-  },
-  {
-    "route": "/products/nutraxin/vitamin-c-1000mg-30-tablets/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/vitamin-c-1000mg-30-tablets/",
-    "url": "/assets/media/products/nutraxin/vitamin-c-1000mg-30-tablets.png",
-    "type": "image/png",
-    "width": 700,
-    "height": 700,
-    "alt": "Nutraxin vitamin c 1000mg 30 tablets catalogue pack reference",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-c-1000mg-30-tablets.png"
-  },
-  {
-    "route": "/products/nutraxin/vitamin-c-500mg-chewable-30-tablets/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/vitamin-c-500mg-chewable-30-tablets/",
-    "url": "/assets/media/products/nutraxin/vitamin-c-500mg-chewable-30-tablets.png",
-    "type": "image/png",
-    "width": 700,
-    "height": 700,
-    "alt": "Nutraxin vitamin c 500mg chewable 30 tablets catalogue pack reference",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-c-500mg-chewable-30-tablets.png"
-  },
-  {
-    "route": "/products/nutraxin/vitamin-d3-120-tablets/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-120-tablets/",
-    "url": "/assets/media/products/nutraxin/vitamin-d3-120-tablets.png",
-    "type": "image/png",
-    "width": 700,
-    "height": 700,
-    "alt": "Nutraxin vitamin d3 120 tablets catalogue pack reference",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-d3-120-tablets.png"
-  },
-  {
-    "route": "/products/nutraxin/vitamin-d3-k2-120-tablets/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-k2-120-tablets/",
-    "url": "/assets/media/products/nutraxin/vitamin-d3-k2-120-tablets.png",
-    "type": "image/png",
-    "width": 700,
-    "height": 700,
-    "alt": "Nutraxin vitamin d3 k2 120 tablets catalogue pack reference",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-d3-k2-120-tablets.png"
-  },
-  {
-    "route": "/products/nutraxin/vitamin-d3-k2-spray-30ml/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-k2-spray-30ml/",
-    "url": "/assets/media/products/nutraxin/vitamin-d3-k2-spray-30ml.png",
-    "type": "image/png",
-    "width": 700,
-    "height": 700,
-    "alt": "Nutraxin vitamin d3 k2 spray 30ml catalogue pack reference",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-d3-k2-spray-30ml.png"
-  },
-  {
-    "route": "/products/nutraxin/vitamin-d3-spray-30ml/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/vitamin-d3-spray-30ml/",
-    "url": "/assets/media/products/nutraxin/vitamin-d3-spray-30ml.png",
-    "type": "image/png",
-    "width": 700,
-    "height": 700,
-    "alt": "Nutraxin vitamin d3 spray 30ml catalogue pack reference",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-d3-spray-30ml.png"
-  },
-  {
-    "route": "/products/nutraxin/vitamin-max-15-effervescent-tablets/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/vitamin-max-15-effervescent-tablets/",
-    "url": "/assets/media/products/nutraxin/vitamin-max-15-effervescent-tablets.png",
-    "type": "image/png",
-    "width": 700,
-    "height": 700,
-    "alt": "Nutraxin vitamin max 15 effervescent tablets catalogue pack reference",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-max-15-effervescent-tablets.png"
-  },
-  {
-    "route": "/products/nutraxin/vitamin-max-60-tablets/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/vitamin-max-60-tablets/",
-    "url": "/assets/media/products/nutraxin/vitamin-max-60-tablets.png",
-    "type": "image/png",
-    "width": 700,
-    "height": 700,
-    "alt": "Nutraxin vitamin max 60 tablets catalogue pack reference",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/vitamin-max-60-tablets.png"
-  },
-  {
-    "route": "/products/nutraxin/womens-multivitamin-complex-60-tablets/",
-    "page": "https://novapharmhealthcare.com/products/nutraxin/womens-multivitamin-complex-60-tablets/",
-    "url": "/assets/media/products/nutraxin/womens-multivitamin-complex-60-tablets.png",
-    "type": "image/png",
-    "width": 700,
-    "height": 700,
-    "alt": "Nutraxin womens multivitamin complex 60 tablets catalogue pack reference",
-    "absoluteUrl": "https://novapharmhealthcare.com/assets/media/products/nutraxin/womens-multivitamin-complex-60-tablets.png"
   }
 ]

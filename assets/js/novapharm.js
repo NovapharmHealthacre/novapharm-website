@@ -7,8 +7,6 @@ if (navToggle && siteNav) {
     navToggle.setAttribute("aria-expanded", String(isOpen));
     const label = navToggle.querySelector(".sr-only");
     if (label) label.textContent = isOpen ? "Close navigation" : "Open navigation";
-    const visibleLabel = navToggle.querySelector("[data-menu-label]");
-    if (visibleLabel) visibleLabel.textContent = isOpen ? "Close" : "Menu";
   };
 
   navToggle.addEventListener("click", () => setNavigation(!siteNav.classList.contains("open")));

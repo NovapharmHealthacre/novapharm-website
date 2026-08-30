@@ -70,7 +70,7 @@ for (const requiredCroBoundary of [
   "qualified specialists",
   "Do not submit patient data"
 ]) {
-  if (!croText.toLowerCase().includes(requiredCroBoundary.toLowerCase())) failures.push(`missing CRO responsibility boundary: ${requiredCroBoundary}`);
+  if (!croText.includes(requiredCroBoundary)) failures.push(`missing CRO responsibility boundary: ${requiredCroBoundary}`);
 }
 
 const allPublicText = routes.map((route) => visibleText(readFileSync(pagePath(route), "utf8"))).join(" ");

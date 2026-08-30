@@ -1,6 +1,6 @@
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import type { ReactNode } from "react";
 
 export function Breadcrumbs({ items }: { readonly items: readonly { readonly label: string; readonly href?: string }[] }) {
   return <nav className="breadcrumbs" aria-label="Breadcrumb">{items.map((item, index) => <span key={item.href ?? item.label}>{item.href ? <Link href={item.href}>{item.label}</Link> : item.label}{index < items.length - 1 ? <i aria-hidden="true">/</i> : null}</span>)}</nav>;
@@ -25,16 +25,10 @@ export function SectionHeading({ kicker, title, intro }: { readonly kicker?: str
   return <div className="section-heading">{kicker ? <span className="eyebrow">{kicker}</span> : null}<h2>{title}</h2>{intro ? <p>{intro}</p> : null}</div>;
 }
 
-export type NoticeVariant = "regulatory" | "information" | "warning" | "success" | "error";
-
-export function Notice({ label, variant = "information", children }: { readonly label: string; readonly variant?: NoticeVariant; readonly children: ReactNode }) {
-  return <aside className={`status-notice status-notice-${variant}`} aria-label={label}><strong>{label}</strong><p>{children}</p></aside>;
-}
-
 export function StatusNotice() {
-  return <Notice label="Regulatory status" variant="regulatory">NovaPharm is active in corporate and commercial development. Regulated wholesale supply has not commenced and will begin only after the required MHRA authorisations and applicable operating controls are in place.</Notice>;
+  return <aside className="status-notice" aria-label="Regulatory status"><strong>Regulatory status</strong><p>NovaPharm is active in corporate and commercial development. Regulated wholesale supply has not commenced and will begin only after the required MHRA authorisations and applicable operating controls are in place.</p></aside>;
 }
 
 export function FinalCta({ title = "Build the next pharmaceutical partnership with NovaPharm." }: { readonly title?: string }) {
-  return <section className="final-cta"><div className="shell final-cta-inner"><div><span className="eyebrow">Start a qualified conversation</span><h2>{title}</h2></div><div className="action-row"><Link className="button button-primary" href="/contact/">Discuss a partnership</Link><Link className="button button-light" href="/account-application/">Account interest</Link></div></div></section>;
+  return <section className="final-cta"><div className="shell final-cta-inner"><div><span className="eyebrow">Start a qualified conversation</span><h2>{title}</h2></div><div className="action-row"><Link className="button button-primary" href="/contact/">Discuss a partnership <ArrowRight aria-hidden="true" size={17} /></Link><Link className="button button-light" href="/account-application/">Account interest</Link></div></div></section>;
 }

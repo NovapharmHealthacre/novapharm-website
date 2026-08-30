@@ -10,7 +10,7 @@ const routes = [
   { path: "/", name: "home", required: "Medicine. Where it needs to be" },
   { path: "/leadership/", name: "leadership", required: "Chief Scientific Officer" },
   { path: "/leadership/girish-achliya/", name: "leadership-girish", required: "Chief Scientific Officer" },
-  { path: "/regulatory-services/", name: "regulatory-roadmap", required: "No regulated supply before the required permissions." },
+  { path: "/regulatory-services/", name: "regulatory-dossier", required: "Regulatory readiness before regulated activity." },
   { path: "/services/", name: "services", required: "Services" },
   { path: "/oncology/", name: "oncology", required: "Oncology" },
   { path: "/cro/", name: "cro", required: "Clinical" },
@@ -254,10 +254,10 @@ for (const [engineName, browserType] of engines) {
               assert.ok(schemaText.some((value) => value.includes('"jobTitle":"Chief Scientific Officer"')), `${engineName} ${viewport.name}: Dr Girish JSON-LD jobTitle is not Chief Scientific Officer`);
             }
 
-            if (route.name === "regulatory-roadmap") {
-              const batchIntegrity = page.locator('img[src*="regulatory-batch-integrity"]');
-              assert.equal(await batchIntegrity.count(), 1, `${engineName} ${viewport.name}: Batch Integrity image missing`);
-              const batchIntegrityState = await batchIntegrity.evaluate((image) => {
+            if (route.name === "regulatory-dossier") {
+              const dossier = page.locator('img[src*="regulatory-dossier-control"]');
+              assert.equal(await dossier.count(), 1, `${engineName} ${viewport.name}: dossier hero image missing`);
+              const dossierState = await dossier.evaluate((image) => {
                 const style = getComputedStyle(image);
                 const rect = image.getBoundingClientRect();
                 return {
@@ -270,12 +270,13 @@ for (const [engineName, browserType] of engines) {
                   naturalHeight: image.naturalHeight
                 };
               });
-              assert.notEqual(batchIntegrityState.display, "none", `${engineName} ${viewport.name}: Batch Integrity image is display:none`);
-              assert.notEqual(batchIntegrityState.visibility, "hidden", `${engineName} ${viewport.name}: Batch Integrity image is hidden`);
-              assert.ok(batchIntegrityState.opacity > 0, `${engineName} ${viewport.name}: Batch Integrity image is transparent`);
-              assert.ok(batchIntegrityState.width > 100 && batchIntegrityState.height > 100, `${engineName} ${viewport.name}: Batch Integrity image collapsed`);
-              assert.ok(batchIntegrityState.naturalWidth > 0 && batchIntegrityState.naturalHeight > 0, `${engineName} ${viewport.name}: Batch Integrity image did not decode`);
-              assert.equal(await page.locator(".npd-roadmap > li").count(), 7, `${engineName} ${viewport.name}: regulatory roadmap must contain seven governed gates`);
+              assert.notEqual(dossierState.display, "none", `${engineName} ${viewport.name}: dossier image is display:none`);
+              assert.notEqual(dossierState.visibility, "hidden", `${engineName} ${viewport.name}: dossier image is hidden`);
+              assert.ok(dossierState.opacity > 0, `${engineName} ${viewport.name}: dossier image is transparent`);
+              assert.ok(dossierState.width > 100 && dossierState.height > 100, `${engineName} ${viewport.name}: dossier image collapsed`);
+              assert.ok(dossierState.naturalWidth > 0 && dossierState.naturalHeight > 0, `${engineName} ${viewport.name}: dossier image did not decode`);
+              assert.equal(await page.locator(".regulatory-stage-grid").count(), 1, `${engineName} ${viewport.name}: regulatory stage grid missing`);
+              assert.equal(await page.locator(".regulatory-control-stage").count() > 0, true, `${engineName} ${viewport.name}: regulatory control stages missing`);
             }
 
             const axe = await new AxeBuilder({ page })
@@ -333,4 +334,4 @@ for (const [engineName, browserType] of engines) {
   }
 }
 
-console.log(`Public Pages rendered acceptance passed: ${screenshots} curated viewport screenshots, ${axeRuns} Axe runs and ${geometryRuns} additional homepage geometry checks across Chromium + WebKit. Lazy media was materialised, consent was dismissed for visual evidence, headings did not split inside words, Leadership portrait/title evidence and Regulatory roadmap/Batch Integrity media remained visible, and no route overflowed horizontally.`);
+console.log(`Public Pages rendered acceptance passed: ${screenshots} curated viewport screenshots, ${axeRuns} Axe runs and ${geometryRuns} additional homepage geometry checks across Chromium + WebKit. Lazy media was materialised, consent was dismissed for visual evidence, headings did not split inside words, Leadership portrait/title evidence and Regulatory dossier media remained visible, and no route overflowed horizontally.`);

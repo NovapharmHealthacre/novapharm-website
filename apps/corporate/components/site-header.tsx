@@ -1,3 +1,4 @@
+import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { navigation } from "@/data/site";
 import { Brand } from "./brand";
@@ -11,8 +12,11 @@ export function SiteHeader() {
       <div className="shell header-inner">
         <Brand />
         <nav className="desktop-nav" aria-label="Primary navigation">
-          {navigation.map(([label, href]) => href === "/portal/" ? <a key={href} href={portalOrigin} rel="nofollow">{label}</a> : <Link key={href} href={href}>{label}</Link>)}
+          {navigation.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}
         </nav>
+        <a className="portal-link" href={portalOrigin} rel="nofollow">
+          Portal <ExternalLink aria-hidden="true" size={15} strokeWidth={1.8} />
+        </a>
         <MobileNavigation items={navigation} portalOrigin={portalOrigin} />
       </div>
     </header>

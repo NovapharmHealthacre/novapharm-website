@@ -90,7 +90,7 @@ const sourceByCode = Object.freeze({
   "executive.sales-intelligence": "Azure SQL opportunities and commercial pipeline; no production CRM feed connected",
   "executive.customer-analytics": "Azure SQL customer aggregates; no production analytics warehouse connected",
   "executive.product-master": "Azure SQL product, regulatory and evidence-readiness read model",
-  "executive.nhs-data": "Governed medicines-intelligence tables: current BNF identity, owner-supplied UK pharmacy and contact evidence, official ONS postcode geography and registered-population context; prescribing and dispensing fact history is not loaded",
+  "executive.nhs-data": "No approved source connected; licensed NHS data source and purpose required",
   "executive.plpi": "No verified production projects connected; Azure SQL governance schema only",
   "executive.pharmacovigilance": "No qualified safety system connected",
   "executive.sourcing": "Azure SQL supplier qualification and sourcing-readiness read model",
@@ -126,32 +126,31 @@ const rolesByArea = Object.freeze({
 });
 
 const enriched = catalog.map((module) => {
-  const releaseClassification = module.releaseClassification
-    ?? (module.maturity === "operational_foundation" ? "informational_only" : "hidden_until_dependency_exists");
-  const hidden = releaseClassification === "hidden_until_dependency_exists";
+  const hidden = module.maturity !== "operational_foundation";
+  const releaseClassification = hidden ? "hidden_until_dependency_exists" : "informational_only";
   const productionDependency = module.externalDependency
     ?? "Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance";
   return {
     ...module,
     releaseClassification,
-    releaseClassificationLabel: module.releaseClassificationLabel ?? (hidden ? "Hidden until its dependency exists" : "Informational only"),
-    businessOwner: module.businessOwner ?? ownerBySlug[module.slug] ?? `${module.area} business owner`,
-    dataSource: module.dataSource ?? sourceByCode[module.code] ?? "No approved production source connected",
-    dataSourceStatus: module.dataSourceStatus ?? (hidden ? "not_connected" : "repository_query_implemented_production_not_connected"),
-    dataAuthority: module.dataAuthority ?? "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
-    readCapability: module.readCapability ?? (hidden ? "none_while_hidden" : "repository_tested_read_model"),
-    writeCapability: module.writeCapability ?? (writeModules.has(module.code) ? "controlled_repository_write_implemented_but_not_released" : "none_read_only"),
+    releaseClassificationLabel: hidden ? "Hidden until its dependency exists" : "Informational only",
+    businessOwner: ownerBySlug[module.slug] ?? `${module.area} business owner`,
+    dataSource: sourceByCode[module.code] ?? "No approved production source connected",
+    dataSourceStatus: hidden ? "not_connected" : "repository_query_implemented_production_not_connected",
+    dataAuthority: "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    readCapability: hidden ? "none_while_hidden" : "repository_tested_read_model",
+    writeCapability: writeModules.has(module.code) ? "controlled_repository_write_implemented_but_not_released" : "none_read_only",
     externalDependency: productionDependency,
-    authorisedRoles: module.authorisedRoles ?? rolesByArea[module.area],
-    testCoverage: module.testCoverage ?? (hidden
+    authorisedRoles: rolesByArea[module.area],
+    testCoverage: hidden
       ? ["packages/portal-contracts/test/catalog.test.ts", "apps/portal/test/routes.test.ts (hidden route rejection)", "src/core/enterprise-domain-service.mjs (server fail-closed gate)"]
-      : ["packages/portal-contracts/test/catalog.test.ts", "apps/portal/test/routes.test.ts", "scripts/test-enterprise-portal.mjs", "apps/portal/test/browser-acceptance.ts"]),
-    validationDataState: module.validationDataState ?? "synthetic_non_confidential_only",
-    visibleInNavigation: typeof module.visibleInNavigation === "boolean" ? module.visibleInNavigation : !hidden,
-    productionStatus: module.productionStatus ?? "not_deployed_owner_controlled",
-    classificationRationale: module.classificationRationale ?? (hidden
+      : ["packages/portal-contracts/test/catalog.test.ts", "apps/portal/test/routes.test.ts", "scripts/test-enterprise-portal.mjs", "apps/portal/test/browser-acceptance.ts"],
+    validationDataState: "synthetic_non_confidential_only",
+    visibleInNavigation: !hidden,
+    productionStatus: "not_deployed_owner_controlled",
+    classificationRationale: hidden
       ? "The required approved external system, evidence or business record does not exist; route and API access fail closed."
-      : "The repository read model and role boundary are tested with governed non-production data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only."),
+      : "The repository read model and role boundary are tested with synthetic data, but no accepted production runtime or canonical production data is connected, so the release remains informational and read-only.",
   };
 });
 
@@ -159,9 +158,7 @@ if (enriched.length !== 54) throw new Error(`Expected 54 portal modules, receive
 await writeFile(catalogPath, `${JSON.stringify(enriched, null, 2)}\n`, "utf8");
 
 const rows = enriched.map((module) => `| \`${module.code}\` | ${module.businessOwner} | ${module.releaseClassificationLabel} | ${module.readCapability} | ${module.writeCapability} | ${module.authorisedRoles.map((role) => `\`${role}\``).join(", ")} | ${module.productionStatus} |`).join("\n");
-const informationalCount = enriched.filter((module) => module.releaseClassification === "informational_only").length;
-const hiddenCount = enriched.filter((module) => module.releaseClassification === "hidden_until_dependency_exists").length;
-const report = `# Portal Module Maturity Register\n\nStatus: repository classification complete; production deployment pending\n\nReview date: 26 August 2026\n\nScope: all 54 governed modules\n\n## Decision\n\nNo module is described as fully operational in production. ${informationalCount} repository-backed modules are released as **informational only** and read-only because Azure, Entra and canonical production data are not deployed. ${hiddenCount} modules are **hidden until their dependency exists**. No module is silently removed. Governed local acceptance demonstrates contracts and access boundaries; it is not evidence of a live ERP, WMS, CRM, finance, NHS, pharmacovigilance or Microsoft 365 integration.\n\nThe canonical machine-readable record is [module-catalog.json](../../packages/portal-contracts/src/module-catalog.json). Each record names its actual repository or external source boundary, business owner, maturity, read/write state, dependency, authorised roles, test files, navigation state and production status.\n\n## Enforcement\n\n- Hidden modules do not resolve through portal routing and are rejected by the server module service.\n- Informational modules suppress mutation controls in the current release.\n- Every customer query retains database-enforced \`customer_id\` isolation.\n- An \`admin\` navigation link never replaces record-level authorisation.\n- SharePoint is not used for sessions, authentication, customer isolation or transactional authority.\n\n## Register\n\n| Module | Business owner | Release classification | Read | Write | Authorised roles | Production |\n|---|---|---|---|---|---|---|\n${rows}\n\n## Production activation gate\n\nA module can move to **Fully operational and tested** only after its named source is connected, real data ownership is approved, migrations reconcile, security and role tests pass in Azure staging, business acceptance is signed, backup/restore is proven, and live monitoring is active. The catalogue change must be reviewed like code and cannot be made from the browser.\n`;
+const report = `# Portal Module Maturity Register\n\nStatus: repository classification complete; production deployment pending  \nReview date: 1 August 2026  \nScope: all 54 governed modules\n\n## Decision\n\nNo module is described as fully operational in production. Forty-seven repository-backed modules are released as **informational only** and read-only because Azure, Entra and canonical production data are not deployed. Seven modules are **hidden until their dependency exists**. No module is silently removed. Synthetic local acceptance demonstrates contracts and access boundaries; it is not evidence of a live ERP, WMS, CRM, finance, NHS, pharmacovigilance or Microsoft 365 integration.\n\nThe canonical machine-readable record is [module-catalog.json](../../packages/portal-contracts/src/module-catalog.json). Each record names its actual repository or external source boundary, business owner, maturity, read/write state, dependency, authorised roles, test files, navigation state and production status.\n\n## Enforcement\n\n- Hidden modules do not resolve through portal routing and are rejected by the server module service.\n- Informational modules suppress mutation controls in the current release.\n- Every customer query retains database-enforced \`customer_id\` isolation.\n- An \`admin\` navigation link never replaces record-level authorisation.\n- SharePoint is not used for sessions, authentication, customer isolation or transactional authority.\n\n## Register\n\n| Module | Business owner | Release classification | Read | Write | Authorised roles | Production |\n|---|---|---|---|---|---|---|\n${rows}\n\n## Production activation gate\n\nA module can move to **Fully operational and tested** only after its named source is connected, real data ownership is approved, migrations reconcile, security and role tests pass in Azure staging, business acceptance is signed, backup/restore is proven, and live monitoring is active. The catalogue change must be reviewed like code and cannot be made from the browser.\n`;
 await writeFile(reportPath, report, "utf8");
 
 const counts = Object.groupBy(enriched, (module) => module.releaseClassification);

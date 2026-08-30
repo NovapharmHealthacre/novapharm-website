@@ -5,9 +5,6 @@ const root = resolve(process.cwd());
 const read = (path) => readFileSync(join(root, path), "utf8");
 const write = (path, value) => writeFileSync(join(root, path), value);
 const config = JSON.parse(read("config/module-art-direction.json"));
-const productDisciplineModules = new Set([
-  "home", "about", "services", "regulatory", "products", "partners", "technology", "insights", "contact", "account"
-]);
 const leadershipConfig = JSON.parse(read("config/leadership-media.json"));
 const licensedImageRegister = JSON.parse(read("creative-assets/image-asset-register.json"));
 const assets = new Map(config.assets.map((asset) => [asset.id, asset]));
@@ -78,7 +75,7 @@ function writeFocalPointCss() {
 }
 
 function injectPageHero(module) {
-  if (productDisciplineModules.has(module.id)) return;
+  if (module.id === "home") return;
   let html = read(module.path);
   const marker = '<section class="page-hero">';
   if (!html.includes(marker)) throw new Error(`Missing page hero in ${module.path}`);
@@ -306,7 +303,8 @@ function writeRegister() {
   }, null, 2)}\n`);
 }
 
-// The later corporate product-discipline pass owns the final home and core capability compositions.
+enhanceHome();
 for (const module of config.modules) injectPageHero(module);
+enhanceCoreCapabilityPages();
 writeRegister();
 writeFocalPointCss();

@@ -6,16 +6,12 @@ const applicationRoot = process.cwd();
 const repositoryRoot = path.resolve(applicationRoot, "../..");
 const sourceRoot = path.join(repositoryRoot, "assets");
 const publicRoot = path.join(applicationRoot, "public", "assets");
-const copyGovernedAsset = (source, destination) => cp(source, destination, {
-  recursive: true,
-  filter: (entry) => path.basename(entry) !== ".DS_Store",
-});
 
 await rm(publicRoot, { recursive: true, force: true });
 await mkdir(publicRoot, { recursive: true });
 await Promise.all([
-  copyGovernedAsset(path.join(sourceRoot, "brand"), path.join(publicRoot, "brand")),
-  copyGovernedAsset(path.join(sourceRoot, "media"), path.join(publicRoot, "media")),
+  cp(path.join(sourceRoot, "brand"), path.join(publicRoot, "brand"), { recursive: true }),
+  cp(path.join(sourceRoot, "media"), path.join(publicRoot, "media"), { recursive: true }),
 ]);
 
 const logo = await readFile(path.join(publicRoot, "brand", "novapharm-healthcare-logo.svg"), "utf8");

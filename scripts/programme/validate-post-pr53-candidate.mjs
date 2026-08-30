@@ -156,10 +156,10 @@ if (Array.isArray(moduleCatalog)) {
     counts.customer === 18 && counts.employee === 13 && counts.executive === 18 && counts.admin === 5,
     `Portal area counts must be customer 18, employee 13, executive 18 and admin 5; found ${JSON.stringify(counts)}`
   );
-  requireValue(hidden.length === 6, `Exactly six governed modules must remain hidden for safety, found ${hidden.length}`);
+  requireValue(hidden.length === 7, `Exactly seven governed modules must remain hidden for safety, found ${hidden.length}`);
   requireValue(
     hidden.every((module) => module.area === "executive" && module.releaseClassification === "hidden_until_dependency_exists"),
-    "All six hidden modules must be Executive modules classified hidden_until_dependency_exists"
+    "All seven hidden modules must be Executive modules classified hidden_until_dependency_exists"
   );
 }
 
@@ -194,7 +194,6 @@ requireValue(
 
 const homepageSource = read("apps/corporate/components/concise-home.tsx");
 const homepageArtifact = read("index.html");
-const regulatoryArtifact = read("regulatory-services/index.html");
 for (const [marker, label] of [
   ["pharma-home-shade", "directional hero contrast layer"],
   ["Conceptual supply-chain visual. No NovaPharm facility, vehicle, inventory or current distribution activity is depicted.", "conceptual hero truth boundary"],
@@ -203,16 +202,8 @@ for (const [marker, label] of [
   ["Regulated wholesale supply has not commenced.", "regulated-wholesale status boundary"]
 ]) {
   requireText(homepageSource, marker, `Corporate React homepage ${label}`);
+  requireText(homepageArtifact, marker, `PUBLIC_ONLY homepage ${label}`);
 }
-for (const [marker, label] of [
-  ["npd-hero-background", "directional hero contrast layer"],
-  ["Conceptual supply-chain visual. No NovaPharm facility, vehicle, inventory or current distribution activity is depicted.", "conceptual hero truth boundary"],
-  ["Regulated wholesale supply has not commenced.", "regulated-wholesale status boundary"]
-]) requireText(homepageArtifact, marker, `PUBLIC_ONLY homepage ${label}`);
-for (const [marker, label] of [
-  ["Evidence should travel with every governed product and transaction.", "Batch Integrity editorial heading"],
-  ["Representative traceability context; no active NovaPharm batch or inventory is depicted.", "Batch Integrity media boundary"]
-]) requireText(regulatoryArtifact, marker, `PUBLIC_ONLY Regulatory page ${label}`);
 
 const publicCss = read("assets/css/apple-pharma-public.css");
 const bundleCss = read("assets/css/novapharm.bundle.css");

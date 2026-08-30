@@ -1,5 +1,6 @@
 "use client";
 
+import { X } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 const storageKey = "np_cookie_consent";
@@ -121,7 +122,7 @@ export function CookieControls() {
       {manage ? (
         <div className="preference-backdrop">
           <section className="preference-dialog" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="preference-title" aria-describedby="preference-description">
-            <button className="preference-close" type="button" aria-label="Close cookie settings" onClick={close}>Close</button>
+            <button className="icon-button preference-close" type="button" onClick={close} aria-label="Close cookie settings"><X aria-hidden="true" /></button>
             <span className="eyebrow">Privacy controls</span>
             <h2 id="preference-title">Cookie settings</h2>
             <p id="preference-description">NovaPharm currently loads no analytics or marketing service. These controls preserve your choice if an approved service is introduced later.</p>

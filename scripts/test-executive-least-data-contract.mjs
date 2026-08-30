@@ -78,17 +78,17 @@ for (const field of inventedSchemaFields) {
 assert.doesNotMatch(finance, /supplier_invoices[^`]*outstanding_minor/su, "Supplier invoice queries must not invent an outstanding-balance column.");
 assert.doesNotMatch(documents, /\bdocument_type\b|\bcategory\b|\bsource_system\b/u, "Document register must use canonical document metadata fields only.");
 
-for (const slug of ["sales-intelligence", "customer-analytics", "product-master", "medicines-intelligence", "sourcing", "warehouse", "service-levels", "finance", "documents", "traceability"]) {
+for (const slug of ["sales-intelligence", "customer-analytics", "product-master", "sourcing", "warehouse", "service-levels", "finance", "documents", "traceability"]) {
   assert.match(source, new RegExp(`case "${slug}"`, "u"), `Visible Executive module ${slug} needs an explicit builder branch.`);
 }
-for (const hidden of ["plpi", "pharmacovigilance", "tenders", "capital", "microsoft-365", "ai-technology"]) {
+for (const hidden of ["nhs-data", "plpi", "pharmacovigilance", "tenders", "capital", "microsoft-365", "ai-technology"]) {
   assert.equal(source.includes(`case "${hidden}"`), false, `${hidden}: hidden-for-safety module must not acquire an active runtime builder.`);
 }
 
 console.log(JSON.stringify({
-  visibleExecutiveViews: 12,
+  visibleExecutiveViews: 11,
   hiddenExecutiveViews: 0,
-  hiddenExecutiveModulesFailClosedBeforeQuery: 6,
+  hiddenExecutiveModulesFailClosedBeforeQuery: 7,
   genericExecutiveKpiRibbon: false,
   crossDomainQueryInheritance: false,
   inventedSchemaFields: false

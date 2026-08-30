@@ -1154,19 +1154,19 @@
   {
     "code": "executive.nhs-data",
     "area": "executive",
-    "slug": "medicines-intelligence",
-    "title": "Medicines Intelligence",
-    "route": "/portal/executive-platform/medicines-intelligence/",
-    "purpose": "Governed medicine identity, source quality and UK pharmacy geography for executive analysis.",
-    "maturity": "operational_foundation",
-    "externalDependency": "Managed analytics deployment, scheduled source ingestion, production identity mapping and Commercial/Regulatory owner acceptance",
-    "releaseClassification": "informational_only",
-    "releaseClassificationLabel": "Repository-validated read-only foundation",
+    "slug": "nhs-data",
+    "title": "NHS Data",
+    "route": "/portal/executive-platform/nhs-data/",
+    "purpose": "Licensed-data integration contract and honest no-data state.",
+    "maturity": "blocked_external_integration",
+    "externalDependency": "Licensed NHS data source and approved purpose",
+    "releaseClassification": "hidden_until_dependency_exists",
+    "releaseClassificationLabel": "Hidden until its dependency exists",
     "businessOwner": "Commercial and Regulatory",
-    "dataSource": "NHSBSA BNF Code Information current-year identity; ONS postcode geography; owner-supplied UK pharmacy master; no prescribing or dispensing fact history yet ingested",
-    "dataSourceStatus": "repository_query_implemented_production_not_connected",
-    "dataAuthority": "Governed medicines-intelligence tables in the application database; raw source files remain outside public web storage",
-    "readCapability": "repository_tested_read_model",
+    "dataSource": "No approved source connected; licensed NHS data source and purpose required",
+    "dataSourceStatus": "not_connected",
+    "dataAuthority": "Azure SQL Database for transactional records; SharePoint only for authorised controlled documents",
+    "readCapability": "none_while_hidden",
     "writeCapability": "none_read_only",
     "authorisedRoles": [
       "board",
@@ -1174,15 +1174,13 @@
     ],
     "testCoverage": [
       "packages/portal-contracts/test/catalog.test.ts",
-      "apps/portal/test/routes.test.ts",
-      "packages/medicines-intelligence/test/*.test.ts",
-      "src/core/medicines-intelligence-service.mjs",
-      "scripts/test-enterprise-portal.mjs"
+      "apps/portal/test/routes.test.ts (hidden route rejection)",
+      "src/core/enterprise-domain-service.mjs (server fail-closed gate)"
     ],
-    "validationDataState": "authoritative_public_and_owner_supplied_non_production_validation",
-    "visibleInNavigation": true,
+    "validationDataState": "synthetic_non_confidential_only",
+    "visibleInNavigation": false,
     "productionStatus": "not_deployed_owner_controlled",
-    "classificationRationale": "Current BNF identity, owner-supplied pharmacy records and official ONS postcode geography are repository validated and may support a read-only executive foundation. Prescribing facts, forecasts, opportunity scores, outreach, managed deployment and production operation remain unavailable until their separate evidence and approvals exist."
+    "classificationRationale": "The required approved external system, evidence or business record does not exist; route and API access fail closed."
   },
   {
     "code": "executive.plpi",

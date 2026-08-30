@@ -65,7 +65,7 @@ const bundles = Object.freeze({
   },
   portal: {
     implementation:
-      "A dedicated noindex portal and API boundary enforce server-side sessions, scopes, customer isolation and a governed 54-module maturity catalogue; 48 modules are informational and six are hidden.",
+      "A dedicated noindex portal and API boundary enforce server-side sessions, scopes, customer isolation and a governed 54-module maturity catalogue; 47 modules are informational and seven are hidden.",
     code: [
       "apps/portal",
       "apps/api",

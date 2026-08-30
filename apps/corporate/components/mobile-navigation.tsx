@@ -1,5 +1,6 @@
 "use client";
 
+import { ExternalLink, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -43,10 +44,11 @@ export function MobileNavigation({ items, portalOrigin }: MobileNavigationProps)
   return (
     <details className="mobile-menu" ref={detailsRef} onToggle={(event) => setOpen(event.currentTarget.open)}>
       <summary aria-label={open ? "Close navigation" : "Open navigation"}>
-        {open ? "Close" : "Menu"}
+        {open ? <X aria-hidden="true" size={24} /> : <Menu aria-hidden="true" size={24} />}
       </summary>
       <nav aria-label="Mobile navigation">
-        {items.map(([label, href]) => href === "/portal/" ? <a key={href} href={portalOrigin} rel="nofollow" onClick={close}>{label}</a> : <Link key={href} href={href} onClick={close}>{label}</Link>)}
+        {items.map(([label, href]) => <Link key={href} href={href} onClick={close}>{label}</Link>)}
+        <a href={portalOrigin} rel="nofollow" onClick={close}>Secure portal <ExternalLink aria-hidden="true" size={15} /></a>
       </nav>
     </details>
   );

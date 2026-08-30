@@ -309,25 +309,9 @@ function addAttributionSignals(html) {
 }
 
 const publicFiles = [];
-const retiredOrCompatibilitySlugs = new Set([
-  "search",
-  "technology/ai-governance",
-  "product-portfolio",
-  "product-portfolio/nutraxin"
-]);
-for (const slug of Object.keys(pageMeta)) {
-  if (!retiredOrCompatibilitySlugs.has(slug)) publicFiles.push(slug ? `${slug}/index.html` : "index.html");
-}
+for (const slug of Object.keys(pageMeta)) publicFiles.push(slug ? `${slug}/index.html` : "index.html");
 for (const person of leadership) publicFiles.push(`leadership/${person.slug}/index.html`);
 for (const article of articles) publicFiles.push(`news-insights/${article.slug}/index.html`);
-const nutraxinProductDirectory = join(root, "products", "nutraxin");
-if (existsSync(nutraxinProductDirectory)) {
-  for (const entry of readdirSync(nutraxinProductDirectory, { withFileTypes: true })) {
-    if (entry.isDirectory() && existsSync(join(nutraxinProductDirectory, entry.name, "index.html"))) {
-      publicFiles.push(`products/nutraxin/${entry.name}/index.html`);
-    }
-  }
-}
 publicFiles.push("account-application/index.html");
 
 const pageRecords = [];

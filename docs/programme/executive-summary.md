@@ -18,7 +18,7 @@ The repository contains the paid Azure target for six isolated App Services, Azu
 | Source architecture | Complete at repository level |
 | Public application migrations | Complete at repository level; production cutover not performed |
 | Design system and creative-direction evidence | Complete at repository level |
-| Portal modules | 48 informational/read-only; six hidden; none claimed operational in production |
+| Portal modules | 47 informational/read-only; seven hidden; none claimed operational in production |
 | Azure edge and managed services | Implemented as IaC; owner-controlled deployment pending |
 | Entra, Graph and SharePoint | Application/integration contracts exist; tenant activation and permission evidence pending |
 | Search eligibility | Code and content eligibility implemented; Search Console, Bing, IndexNow and crawler production evidence pending |

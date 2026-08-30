@@ -2,7 +2,6 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { chromium, webkit } from "playwright";
-import sharp from "sharp";
 
 const phase = process.argv[2];
 if (!new Set(["before", "after"]).has(phase)) {
@@ -10,7 +9,6 @@ if (!new Set(["before", "after"]).has(phase)) {
 }
 
 const baseUrl = process.env.VISUAL_BASE_URL ?? "http://127.0.0.1:4178";
-const route = phase === "after" ? "/products/" : "/product-portfolio/";
 const evidenceRoot = path.resolve("audit/evidence/final-visual-lock/products", phase);
 const viewports = Object.freeze([
   { label: "mobile-390x844", width: 390, height: 844 },
@@ -32,13 +30,8 @@ for (const [engineName, engine] of engines) {
   try {
     for (const viewport of viewports) {
       const page = await browser.newPage({ viewport });
-      const response = await page.goto(`${baseUrl}${route}`, { waitUntil: "networkidle" });
+      const response = await page.goto(`${baseUrl}/product-portfolio/`, { waitUntil: "networkidle" });
       if (!response?.ok()) throw new Error(`${engineName} ${viewport.label}: Products returned ${response?.status()}`);
-      const rejectConsent = page.locator("[data-consent-action='reject']:visible").first();
-      if (await rejectConsent.count()) {
-        await rejectConsent.click();
-        await rejectConsent.waitFor({ state: "hidden", timeout: 5_000 });
-      }
       await page.evaluate(async () => {
         document.documentElement.style.scrollBehavior = "auto";
         await document.fonts.ready;
@@ -86,9 +79,8 @@ for (const [engineName, engine] of engines) {
 
       const directory = path.join(evidenceRoot, engineName);
       await mkdir(directory, { recursive: true });
-      const filename = `${viewport.label}.webp`;
-      const screenshot = await page.screenshot({ fullPage: true, animations: "disabled", type: "png" });
-      await sharp(screenshot).webp({ quality: 84, effort: 6, smartSubsample: true }).toFile(path.join(directory, filename));
+      const filename = `${viewport.label}.png`;
+      await page.screenshot({ path: path.join(directory, filename), fullPage: true, animations: "disabled" });
       records.push({ engine: engineName, viewport, filename: `${engineName}/${filename}`, occurrenceCount, horizontalOverflow });
       await page.close();
     }
@@ -101,7 +93,7 @@ await mkdir(evidenceRoot, { recursive: true });
 await writeFile(path.join(evidenceRoot, "manifest.json"), `${JSON.stringify({
   generatedAt: new Date().toISOString(),
   phase,
-  sourceUrl: `${baseUrl}${route}`,
+  sourceUrl: `${baseUrl}/product-portfolio/`,
   renderedEvidence: true,
   generatedMockup: false,
   records,
