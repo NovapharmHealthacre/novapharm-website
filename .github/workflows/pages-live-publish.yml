@@ -233,7 +233,7 @@ jobs:
               && grep -Fq '/assets/media/modules/regulatory-dossier-control.jpg' /tmp/live-regulatory.html \
               && ! grep -Fq 'data-ai-search-open' /tmp/live-home.html \
               && grep -Fq 'Prabhakar Vitthal Lahare' /tmp/live-cro.html \
-              && grep -Fq 'oncology-editorial-gallery' /tmp/live-oncology.html \
+              && ! grep -Fq 'oncology-editorial-gallery' /tmp/live-oncology.html \
               && grep -Fq 'does not collect or transmit enquiry details' /tmp/live-contact.html \
               && ! grep -Fq 'data-contact-form' /tmp/live-contact.html \
               && grep -Fq 'does not accept account applications or business documents' /tmp/live-account.html \

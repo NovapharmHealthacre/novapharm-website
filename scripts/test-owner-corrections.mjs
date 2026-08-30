@@ -142,6 +142,15 @@ if (!leadershipCssSource.includes('body[data-page="leadership"]') || !leadership
 
 const oncology = text("oncology/index.html");
 if (oncology.includes("oncology-editorial-gallery")) fail("Oncology retains the superseded decorative editorial gallery");
+const pagesPublishWorkflow = text(".github/workflows/pages-live-publish.yml");
+const liveOncologyGalleryAssertions = pagesPublishWorkflow
+  .split(/\r?\n/)
+  .filter((line) => line.includes("oncology-editorial-gallery") && line.includes("/tmp/live-oncology.html"));
+if (liveOncologyGalleryAssertions.length !== 1) {
+  fail(`Pages custom-domain smoke must contain exactly one Oncology gallery assertion; found ${liveOncologyGalleryAssertions.length}`);
+} else if (!liveOncologyGalleryAssertions[0].includes("&& ! grep -Fq 'oncology-editorial-gallery' /tmp/live-oncology.html")) {
+  fail("Pages custom-domain smoke does not enforce the approved absence of the Oncology editorial gallery");
+}
 for (const asset of [
   "/assets/media/oncology/oncology-formulation-pathways.svg",
   "/assets/media/oncology/oncology-evidence-continuity.svg",
