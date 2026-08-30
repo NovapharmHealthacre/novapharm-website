@@ -1,6 +1,5 @@
 "use client";
 
-import { AlertCircle, CheckCircle2, LoaderCircle, Send } from "lucide-react";
 import { type FormEvent, useRef, useState } from "react";
 
 const platformEndpoint = (path: string) => `/api/platform${path}`;
@@ -121,12 +120,10 @@ export function AccountInterestWorkflow() {
         <label className="check-row"><input type="checkbox" name="safetyConfirmation" value="yes" required /><span>I confirm that this submission contains no patient-identifiable information, adverse-event report or urgent medical information.</span></label>
         <label className="check-row"><input type="checkbox" name="privacyAcknowledgement" value="yes" required /><span>I have read the <a href="/legal/privacy/#business-enquiries">business-enquiry privacy information</a>. This is not marketing consent.</span></label>
         <button className="button button-primary" type="submit" disabled={state === "sending"}>
-          {state === "sending" ? <LoaderCircle className="spin" aria-hidden="true" /> : <Send aria-hidden="true" />}
-          Register qualified account interest
+          {state === "sending" ? "Submitting..." : "Register qualified account interest"}
         </button>
       </form>
       <div className={`form-status form-status-${state}`} ref={statusRef} role="status" aria-live="polite" tabIndex={-1}>
-        {state === "success" ? <CheckCircle2 aria-hidden="true" /> : state === "error" ? <AlertCircle aria-hidden="true" /> : null}
         <p>{message || "This first step records non-confidential account interest only. No customer account, approval or portal identity is created automatically."}</p>
       </div>
       {state === "error" ? <a className="verified-email" href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20account%20interest">Use the verified corporate email route</a> : null}

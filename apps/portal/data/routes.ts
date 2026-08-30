@@ -4,7 +4,21 @@ export type PortalView =
   | Readonly<{ kind: "login" }>
   | Readonly<{ kind: "password-change" }>
   | Readonly<{ kind: "entra-complete" }>
-  | Readonly<{ kind: "module"; module: PortalModule }>;
+  | Readonly<{ kind: "module"; module: PortalModule; subview?: MedicinesIntelligenceSubview }>;
+
+export const medicinesIntelligenceSubviews = Object.freeze([
+  "medicine-search",
+  "geography",
+  "prescribers",
+  "pharmacies",
+  "forecasts",
+  "opportunities",
+  "campaigns",
+  "data-sources",
+] as const);
+
+export type MedicinesIntelligenceSubview = (typeof medicinesIntelligenceSubviews)[number];
+const medicinesIntelligenceSubviewSet = new Set<string>(medicinesIntelligenceSubviews);
 
 export type PortalAccessType = "customer" | "employee" | "board" | "admin";
 
@@ -57,6 +71,13 @@ export function resolvePortalView(pathname: string): PortalView | null {
   if (alias) {
     const module = portalModuleByCode.get(alias);
     return module?.visibleInNavigation ? { kind: "module", module } : null;
+  }
+  const intelligencePrefix = "/portal/executive-platform/medicines-intelligence/";
+  if (normalised.startsWith(intelligencePrefix) && normalised !== intelligencePrefix) {
+    const suffix = normalised.slice(intelligencePrefix.length).replace(/\/$/u, "");
+    const module = portalModuleByCode.get("executive.nhs-data");
+    if (!module?.visibleInNavigation || !medicinesIntelligenceSubviewSet.has(suffix)) return null;
+    return { kind: "module", module, subview: suffix as MedicinesIntelligenceSubview };
   }
   const module = visiblePortalModules.find((entry) => entry.route === normalised);
   return module ? { kind: "module", module } : null;

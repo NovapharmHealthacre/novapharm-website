@@ -127,7 +127,7 @@ for (const file of textFiles) {
   textCorpus.push({ file, content: await readFile(path.join(root, file), "utf8") });
 }
 
-const [assetRegister, productRegister, moduleRegister, provenanceRegister, modulePageRegister, croRegister, nutraxinRegister, applicationRegister] = await Promise.all([
+const [assetRegister, productRegister, moduleRegister, provenanceRegister, modulePageRegister, croRegister, nutraxinRegister, applicationRegister, medicinesIntelligenceEvidence] = await Promise.all([
   json("creative-assets/asset-register.json"),
   json("creative-assets/image-asset-register.json"),
   json("creative-assets/module-media-asset-register.json"),
@@ -135,7 +135,8 @@ const [assetRegister, productRegister, moduleRegister, provenanceRegister, modul
   json("docs/module-media-register.json"),
   json("docs/cro-media-provenance.json"),
   json("docs/nutraxin-media-provenance.json"),
-  json("docs/application-media-provenance.json")
+  json("docs/application-media-provenance.json"),
+  json("audit/evidence/medicines-intelligence/provenance.json")
 ]);
 
 const registry = new Map();
@@ -266,6 +267,19 @@ for (const asset of applicationRegister.assets ?? []) {
   });
 }
 
+for (const asset of medicinesIntelligenceEvidence.assets ?? []) {
+  addRegistryRecord(registry, canonicalDeliveryPath(asset.path), {
+    id: asset.path,
+    source: asset.source,
+    licence: asset.licence,
+    semanticPurpose: asset.semanticPurpose,
+    pageUsage: [],
+    reviewStatus: asset.reviewStatus,
+    technicalStatus: asset.technicalStatus,
+    provenanceRecord: "audit/evidence/medicines-intelligence/provenance.json"
+  });
+}
+
 for (const file of mediaFiles.filter((value) => value.startsWith("creative-assets/brand/novapharm-logo-asset-pack/"))) {
   addRegistryRecord(registry, file, {
     id: `official-logo-pack:${path.relative("creative-assets/brand/novapharm-logo-asset-pack", file)}`,
@@ -274,6 +288,19 @@ for (const file of mediaFiles.filter((value) => value.startsWith("creative-asset
     semanticPurpose: "Governed non-public source master or approved brand derivative",
     pageUsage: [],
     reviewStatus: "owner-approved-authoritative-logo-pack",
+    technicalStatus: "checksum-verified-source-archive",
+    provenanceRecord: "final-report/official-logo-register.md"
+  });
+}
+
+for (const file of mediaFiles.filter((value) => value.startsWith("creative-assets/brand/pharmascope-logo-asset-pack/"))) {
+  addRegistryRecord(registry, file, {
+    id: `official-pharmascope-pack:${path.relative("creative-assets/brand/pharmascope-logo-asset-pack", file)}`,
+    source: "Owner-supplied PharmaScope Logo Asset Pack received 26 August 2026",
+    licence: "Owner-authorised PharmaScope product-identity use; source rights controlled by NovaPharm Healthcare Ltd",
+    semanticPurpose: "Governed non-public product-identity source master or approved derivative",
+    pageUsage: [],
+    reviewStatus: "owner-approved-authoritative-pharmascope-pack",
     technicalStatus: "checksum-verified-source-archive",
     provenanceRecord: "final-report/official-logo-register.md"
   });
@@ -388,7 +415,7 @@ for (const relativePath of mediaFiles) {
     perceptualDuplicateCandidateGroup: null,
     budgetReview: relativePath.startsWith("audit/evidence/")
       ? "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
-      : relativePath.startsWith("creative-assets/brand/novapharm-logo-asset-pack/") || relativePath.startsWith("creative-assets/leadership/approved-")
+      : relativePath.startsWith("creative-assets/brand/novapharm-logo-asset-pack/") || relativePath.startsWith("creative-assets/brand/pharmascope-logo-asset-pack/") || relativePath.startsWith("creative-assets/leadership/approved-")
         ? "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
       : info.size > 800_000
         ? "REVIEW_OVER_800_KB"
@@ -445,7 +472,7 @@ const countBy = (field) => Object.fromEntries(
 
 const report = {
   schemaVersion: "1.0",
-  reviewDate: "2026-08-13",
+  reviewDate: "2026-08-26",
   scope: "All tracked raster, vector, EPS and PDF assets; generated build directories and node_modules are excluded by git inventory.",
   caveats: [
     "Perceptual groups are automated candidates at dHash distance <= 2 and require human review before deletion or replacement.",

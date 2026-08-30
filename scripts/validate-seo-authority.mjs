@@ -12,11 +12,11 @@ import {
 } from "../src/seo/authority-config.mjs";
 
 const root = resolve(process.cwd());
-const platformMode = process.env.PLATFORM_MODE === "PUBLIC_ONLY" ? "PUBLIC_ONLY" : "FULL_PLATFORM";
+const platformMode = process.env.PLATFORM_MODE === "FULL_PLATFORM" ? "FULL_PLATFORM" : "PUBLIC_ONLY";
 const publicOnly = platformMode === "PUBLIC_ONLY";
 const accountApplicationFile = "account-application/index.html";
 const EDITORIAL_TEAM_ID = `${SITE_URL}/#editorial-team`;
-const retiredPublicFiles = new Set(["technology/ai-governance/index.html"]);
+const retiredPublicFiles = new Set(["technology/ai-governance/index.html", "product-portfolio/index.html", "product-portfolio/nutraxin/index.html"]);
 let failures = 0;
 const fail = (message) => { failures += 1; console.error(`SEO authority validation failed: ${message}`); };
 const source = (path) => readFileSync(join(root, path), "utf8");
@@ -25,11 +25,13 @@ const unique = (values) => new Set(values).size === values.length;
 const articles = readdirSync(join(root, "src/content/insights"))
   .filter((file) => file.endsWith(".json"))
   .map((file) => JSON.parse(source(`src/content/insights/${file}`)));
-const indexablePageMeta = Object.keys(pageMeta).filter((slug) => !(publicOnly && slug === "account-application"));
+const nutraxinProducts = JSON.parse(source("apps/corporate/data/nutraxin-product-register.json")).products;
+const indexablePageMeta = Object.keys(pageMeta).filter((slug) => !retiredPublicFiles.has(`${slug}/index.html`) && !(publicOnly && slug === "account-application"));
 const publicFiles = [
   ...indexablePageMeta.map((slug) => slug ? `${slug}/index.html` : "index.html"),
   ...leadership.map((person) => `leadership/${person.slug}/index.html`),
-  ...articles.map((article) => `news-insights/${article.slug}/index.html`)
+  ...articles.map((article) => `news-insights/${article.slug}/index.html`),
+  ...nutraxinProducts.map((product) => `products/nutraxin/${product.slug}/index.html`)
 ].filter((file) => !retiredPublicFiles.has(file));
 const files = [...new Set(publicFiles)];
 const records = [];

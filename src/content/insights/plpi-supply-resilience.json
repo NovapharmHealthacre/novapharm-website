@@ -13,9 +13,9 @@
   "disclaimer": "Educational corporate content only. PLPI eligibility, evidence, fees and obligations are product-specific and may change. Refer to current MHRA guidance and obtain qualified advice before acting.",
   "related": ["compliance-first-pharmaceutical-distribution-uk", "three-pillar-sourcing", "gdp-qms-foundations"],
   "internalLinks": [
-    { "label": "PLPI strategy services", "href": "/services/#plpi-strategy" },
+    { "label": "PLPI pathway context", "href": "/regulatory-services/" },
     { "label": "NovaPharm regulatory hub", "href": "/regulatory-services/" },
-    { "label": "Submit a product opportunity", "href": "/product-portfolio/#submit-opportunity" }
+    { "label": "Discuss a product opportunity", "href": "/contact/?enquiry=Product%20opportunity" }
   ],
   "references": [
     { "label": "MHRA: apply for a parallel import licence", "href": "https://www.gov.uk/guidance/medicines-apply-for-a-parallel-import-licence" },

@@ -1,4 +1,3 @@
-import { ArrowRight, Check, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FinalCta } from "./ui";
@@ -66,10 +65,10 @@ export function ConciseHomePage() {
             <h1>Medicine. Where it needs to be</h1>
             <p className="pharma-home-intro">Qualified sourcing, regulatory readiness and controlled B2B distribution planning.</p>
             <div className="action-row">
-              <Link className="button button-primary" href="/about/">Explore NovaPharm <ArrowRight aria-hidden="true" size={17} /></Link>
+              <Link className="button button-primary" href="/about/">Explore NovaPharm</Link>
               <Link className="button button-quiet" href="/partner-with-us/">Partner with us</Link>
             </div>
-            <p className="pharma-status"><ShieldCheck aria-hidden="true" size={16} /> Regulated wholesale supply has not commenced.</p>
+            <p className="pharma-status">Regulated wholesale supply has not commenced.</p>
           </div>
           <p className="pharma-media-boundary">Conceptual supply-chain visual. No NovaPharm facility, vehicle, inventory or current distribution activity is depicted.</p>
         </div>
@@ -77,7 +76,7 @@ export function ConciseHomePage() {
 
       <section className="pharma-principles" aria-label="NovaPharm operating principles">
         <div className="shell pharma-principles-grid">
-          {principles.map((item) => <span key={item}><Check aria-hidden="true" size={17} />{item}</span>)}
+          {principles.map((item) => <span key={item}>{item}</span>)}
         </div>
       </section>
 
@@ -110,7 +109,7 @@ export function ConciseHomePage() {
             <p className="pharma-kicker">Batch integrity</p>
             <h2>Evidence travels with the batch.</h2>
             <p>Clarity before complexity. Packaging, records and release status remain connected across each governed transaction.</p>
-            <Link className="text-link" href="/trust-centre/">Review the evidence boundary <ArrowRight aria-hidden="true" size={16} /></Link>
+            <Link className="text-link" href="/trust-centre/">Review the evidence boundary</Link>
           </div>
           <p className="pharma-media-boundary">Representative traceability composition. It is not a NovaPharm facility, product or active batch record.</p>
         </div>
@@ -127,7 +126,7 @@ export function ConciseHomePage() {
               <article key={item.title}>
                 <h3>{item.title}</h3>
                 <p>{item.text}</p>
-                <Link href={item.href}>{item.linkLabel} <ArrowRight aria-hidden="true" size={15} /></Link>
+                <Link href={item.href}>{item.linkLabel}</Link>
               </article>
             ))}
           </div>

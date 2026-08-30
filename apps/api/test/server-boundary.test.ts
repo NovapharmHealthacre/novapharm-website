@@ -24,6 +24,14 @@ function principalHeader(): string {
   })).toString("base64");
 }
 
+function stableGeneratedEnvelope(value: unknown): Readonly<Record<string, unknown>> {
+  assert.ok(value && typeof value === "object");
+  const { generatedAt, ...stable } = value as Record<string, unknown>;
+  assert.equal(typeof generatedAt, "string");
+  assert.equal(Number.isFinite(Date.parse(generatedAt as string)), true);
+  return stable;
+}
+
 async function availablePort(): Promise<number> {
   return new Promise((resolve, reject) => {
     const probe = createServer();
@@ -186,8 +194,77 @@ test("the extracted runtime exposes only the governed API boundary", { timeout: 
     };
     const signedLogin = await fetch(`${apiOrigin}/api/auth/federated`, { method: "POST", headers: signedHeaders, body: federatedBody });
     assert.equal(signedLogin.status, 200);
-    assert.match(signedLogin.headers.get("set-cookie") ?? "", /np_session=/);
+    const sessionCookie = signedLogin.headers.get("set-cookie")?.split(";", 1)[0] ?? "";
+    assert.match(sessionCookie, /np_session=/);
     assert.equal((await signedLogin.json()).redirectTo, "/admin/dashboard/");
+
+    const unauthenticatedMedicineSearch = await fetch(`${apiOrigin}/api/enterprise/medicines/search?q=apixaban`, { headers: { Origin: portalOrigin } });
+    assert.equal(unauthenticatedMedicineSearch.status, 401);
+    const unauthenticatedAnalytics = await fetch(`${apiOrigin}/api/enterprise/medicines/analytics?dataset=epd&medicineId=medicine-0123456789abcdef0123456789abcdef`, { headers: { Origin: portalOrigin } });
+    assert.equal(unauthenticatedAnalytics.status, 401);
+    const unauthenticatedNearby = await fetch(`${apiOrigin}/api/enterprise/medicines/nearby?postcode=SW1A%202AA&radiusKm=5`, { headers: { Origin: portalOrigin } });
+    assert.equal(unauthenticatedNearby.status, 401);
+    const unauthenticatedPharmaScope = await fetch(`${apiOrigin}/api/v1/pharmascope/medicines/search?q=apixaban`, { headers: { Origin: portalOrigin } });
+    assert.equal(unauthenticatedPharmaScope.status, 401);
+
+    const intelligenceModule = await fetch(`${apiOrigin}/api/enterprise/modules/executive.nhs-data`, {
+      headers: { Origin: portalOrigin, Cookie: sessionCookie },
+    });
+    assert.equal(intelligenceModule.status, 200);
+    const intelligencePayload = await intelligenceModule.json() as { module: { code: string; slug: string }; dataState: string; metrics: readonly { key: string; value: number }[] };
+    assert.equal(intelligencePayload.module.code, "executive.nhs-data");
+    assert.equal(intelligencePayload.module.slug, "medicines-intelligence");
+    assert.equal(intelligencePayload.dataState, "governed_sources_not_loaded");
+    assert.equal(intelligencePayload.metrics.every((metric) => metric.value === 0), true, "An empty validation database must not produce synthetic intelligence values.");
+
+    const medicineSearch = await fetch(`${apiOrigin}/api/enterprise/medicines/search?q=apixaban&limit=10`, {
+      headers: { Origin: portalOrigin, Cookie: sessionCookie },
+    });
+    assert.equal(medicineSearch.status, 200);
+    const medicineSearchPayload = await medicineSearch.json() as { results: readonly unknown[]; demandFactsIncluded: boolean };
+    assert.deepEqual(medicineSearchPayload.results, []);
+    assert.equal(medicineSearchPayload.demandFactsIncluded, false);
+    const versionedMedicineSearch = await fetch(`${apiOrigin}/api/v1/pharmascope/medicines/search?q=apixaban&limit=10`, {
+      headers: { Origin: portalOrigin, Cookie: sessionCookie },
+    });
+    assert.equal(versionedMedicineSearch.status, 200);
+    assert.deepEqual(stableGeneratedEnvelope(await versionedMedicineSearch.json()), stableGeneratedEnvelope(medicineSearchPayload));
+
+    const emptyAnalytics = await fetch(`${apiOrigin}/api/enterprise/medicines/analytics?dataset=epd&medicineId=medicine-0123456789abcdef0123456789abcdef`, {
+      headers: { Origin: portalOrigin, Cookie: sessionCookie },
+    });
+    assert.equal(emptyAnalytics.status, 200);
+    const emptyAnalyticsPayload = await emptyAnalytics.json() as { dataState: string; rows: readonly unknown[]; series: readonly unknown[]; pagination: { totalRows: number } };
+    assert.equal(emptyAnalyticsPayload.dataState, "source_not_ingested");
+    assert.deepEqual(emptyAnalyticsPayload.rows, []);
+    assert.deepEqual(emptyAnalyticsPayload.series, []);
+    assert.equal(emptyAnalyticsPayload.pagination.totalRows, 0);
+    const versionedAnalytics = await fetch(`${apiOrigin}/api/v1/pharmascope/analytics?dataset=epd&medicineId=medicine-0123456789abcdef0123456789abcdef`, {
+      headers: { Origin: portalOrigin, Cookie: sessionCookie },
+    });
+    assert.equal(versionedAnalytics.status, 200);
+    assert.deepEqual(stableGeneratedEnvelope(await versionedAnalytics.json()), stableGeneratedEnvelope(emptyAnalyticsPayload));
+
+    const unknownPostcode = await fetch(`${apiOrigin}/api/enterprise/medicines/nearby?postcode=SW1A%202AA&radiusKm=5`, {
+      headers: { Origin: portalOrigin, Cookie: sessionCookie },
+    });
+    assert.equal(unknownPostcode.status, 404);
+    assert.match(String((await unknownPostcode.json()).error), /No governed postcode coordinate/);
+    const versionedUnknownPostcode = await fetch(`${apiOrigin}/api/v1/pharmascope/geography/nearby?postcode=SW1A%202AA&radiusKm=5`, {
+      headers: { Origin: portalOrigin, Cookie: sessionCookie },
+    });
+    assert.equal(versionedUnknownPostcode.status, 404);
+
+    const absentMedicine = await fetch(`${apiOrigin}/api/enterprise/medicines/medicine-0123456789abcdef0123456789abcdef`, {
+      headers: { Origin: portalOrigin, Cookie: sessionCookie },
+    });
+    assert.equal(absentMedicine.status, 404);
+    assert.deepEqual(await absentMedicine.json(), { error: "Medicine identity not found." });
+    const versionedAbsentMedicine = await fetch(`${apiOrigin}/api/v1/pharmascope/medicines/medicine-0123456789abcdef0123456789abcdef`, {
+      headers: { Origin: portalOrigin, Cookie: sessionCookie },
+    });
+    assert.equal(versionedAbsentMedicine.status, 404);
+    assert.deepEqual(await versionedAbsentMedicine.json(), { error: "Medicine identity not found." });
 
     const replay = await fetch(`${apiOrigin}/api/auth/federated`, { method: "POST", headers: signedHeaders, body: federatedBody });
     assert.equal(replay.status, 401, "A consumed gateway assertion must be rejected.");

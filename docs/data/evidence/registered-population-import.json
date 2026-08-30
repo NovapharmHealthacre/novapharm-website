@@ -1,0 +1,87 @@
+{
+  "evidenceType": "governed-registered-population-import",
+  "importerVersion": "registered-population-v1",
+  "importedAt": "2026-08-24T12:00:00.000Z",
+  "repository": {
+    "baseSha": "23310988e8fc484375aa10176aa1c1edbf5371a8",
+    "workingTreeClean": false,
+    "exactCandidateSha": null
+  },
+  "productionIngestionClaim": false,
+  "databaseType": "isolated-local-sqlite-validation",
+  "source": {
+    "sourceId": "nhse.registered-patients",
+    "publisher": "NHS England",
+    "reportingPeriod": "2026-08",
+    "archives": [
+      {
+        "resourceId": "gp-reg-pat-prac-all-2026-08",
+        "resourceName": "All registered patients by GP practice",
+        "resourceUrl": "https://files.digital.nhs.uk/45/E255E0/gp-reg-pat-prac-all.zip",
+        "fileName": "gp-reg-pat-prac-all.zip",
+        "bytes": 73237,
+        "locallyComputedSha256": "0cd043122841f36107323d8ad8d4a50415024f52589218a47d5753de8bcaf7c0",
+        "publisherSuppliedChecksum": false,
+        "schemaStatus": "exact",
+        "schemaFingerprint": "fa96892fbb6fafa61e2596e8af40509ea721accb9da4337bdb8a9b331b5de7da"
+      },
+      {
+        "resourceId": "gp-reg-pat-prac-quin-age-2026-08",
+        "resourceName": "Registered patients by five-year age band and sex",
+        "resourceUrl": "https://files.digital.nhs.uk/07/080176/gp-reg-pat-prac-quin-age.zip",
+        "fileName": "gp-reg-pat-prac-quin-age.zip",
+        "bytes": 1912812,
+        "locallyComputedSha256": "5f6a6cef16a65bfd62532f639c462e4ff92a7f7bb652e1fe3c8200f5a2efd5f1",
+        "publisherSuppliedChecksum": false,
+        "schemaStatus": "exact",
+        "schemaFingerprint": "8bd1610ab20f547c010a0da99aea57a40a593b072d999006004cf606869616de"
+      },
+      {
+        "resourceId": "gp-reg-pat-prac-map-2026-08",
+        "resourceName": "Monthly GP practice organisation mapping",
+        "resourceUrl": "https://files.digital.nhs.uk/26/656B2E/gp-reg-pat-prac-map.zip",
+        "fileName": "gp-reg-pat-prac-map.zip",
+        "bytes": 128804,
+        "locallyComputedSha256": "0990db504aba548e41e4aa3d6ef59103176a1def87823524f58cd0ce39217b75",
+        "publisherSuppliedChecksum": false,
+        "schemaStatus": "exact",
+        "schemaFingerprint": "eb22b2bb0b051d15f8bbd003edc43aac9fa1733c61b0f80e5c930d5608b3cf44"
+      }
+    ]
+  },
+  "rows": {
+    "totals": 6129,
+    "ageSex": 325811,
+    "mappings": 6129,
+    "registeredPopulation": 63237908,
+    "matchedTotalPractices": 6129,
+    "unmatchedTotalPractices": 0,
+    "matchedAgeSexRows": 263547,
+    "unmatchedAgeSexRows": 0,
+    "matchedMappings": 6129,
+    "unmatchedMappings": 0,
+    "mappingWithoutTotal": 0,
+    "mappingPostcodeDifferences": 0,
+    "gpAllPersonAgeRows": 6129,
+    "gpAllPersonPopulationDifferences": 0,
+    "database": {
+      "practice_population_rows": 6129,
+      "age_sex_rows": 325811,
+      "mapping_rows": 6129,
+      "current_practices_updated": 6129
+    }
+  },
+  "reconciliation": {
+    "practiceIdentityCountsAgree": true,
+    "allPersonPopulationDifferences": 0,
+    "mappingsWithoutTotal": 0,
+    "postcodeDifferencesPreserved": 0
+  },
+  "privacyBoundary": [
+    "All records are published aggregate organisation or geography counts; no patient-level data is ingested.",
+    "Practice postcode is an organisation address and is never presented as patient residence.",
+    "The monthly mapping is retained as-of the publication month rather than overwritten by current ODS relationships.",
+    "Raw national archives remain outside Git and are represented in repository evidence only by governed metadata and SHA-256 digests."
+  ],
+  "productionState": "Repository importer and isolated local validation only; no Azure or production ingestion is claimed."
+}

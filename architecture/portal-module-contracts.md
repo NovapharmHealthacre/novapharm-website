@@ -1023,19 +1023,19 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Current maturity:** operational_foundation
 - **Remaining production dependency:** Accepted Azure deployment, Entra identity linkage, production data migration and owner acceptance
 
-### NHS Data
+### Medicines Intelligence
 
 - **Contract ID:** executive.nhs-data
-- **Route:** /portal/executive-platform/nhs-data/
+- **Route:** /portal/executive-platform/medicines-intelligence/
 - **Primary users:** Board and authorised executives
 - **Permitted roles:** board; admin (read-only module contract)
-- **Business purpose:** Licensed-data integration contract and honest no-data state.
-- **Canonical entities and source tables:** integration_events (approved licensed source required)
+- **Business purpose:** Governed medicine identity, source quality and UK pharmacy geography for executive analysis.
+- **Canonical entities and source tables:** canonical application database
 - **Service functions:** enterpriseModuleSnapshot; authorisedEnterpriseSearch; specialised command service where listed
 - **API endpoints:** /api/enterprise/modules/executive.nhs-data; GET /api/enterprise/search
 - **Key actions:** Inspect and drill into governed read models only.
 - **Approval requirements:** No approval for an authorised read; controlled records remain immutable from this view.
-- **Upstream dependencies:** integration_events (approved licensed source required)
+- **Upstream dependencies:** canonical application database
 - **Downstream effects:** No state change.
 - **Documents:** Related documents use canonical document_links and security classification.
 - **Alerts:** Module notices and exception rows are derived from canonical status and maturity data.
@@ -1043,13 +1043,13 @@ All modules use one canonical database, the same status vocabulary, server-side 
 - **Audit events:** No business audit event is emitted for an ordinary read; authentication failures and security exceptions use the existing security-event controls.
 - **Domain events:** None on read.
 - **Data freshness:** Request-time database snapshot with dataFreshness timestamp; external modules show their source status instead of stale invented data.
-- **Integration status:** blocked_external_integration
-- **Empty state:** Honest blocked state: Licensed NHS data source and approved purpose.
+- **Integration status:** operational_foundation
+- **Empty state:** Honest blocked state: Managed analytics deployment, scheduled source ingestion, production identity mapping and Commercial/Regulatory owner acceptance.
 - **Synthetic test scenario:** Seeded TEST/DEMO records exercise the module without production customers, suppliers, revenue or regulated operations.
 - **Security tests:** Authentication, role boundary, parameterised query and protected-route checks. Role and scope are checked server-side; no browser-provided role is trusted.
 - **Browser tests:** Desktop, tablet and mobile rendering; keyboard focus; responsive tables; clear status and empty states.
-- **Current maturity:** blocked_external_integration
-- **Remaining production dependency:** Licensed NHS data source and approved purpose
+- **Current maturity:** operational_foundation
+- **Remaining production dependency:** Managed analytics deployment, scheduled source ingestion, production identity mapping and Commercial/Regulatory owner acceptance
 
 ### PLPI
 

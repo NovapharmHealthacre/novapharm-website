@@ -46,6 +46,13 @@ routeImages.set("/product-portfolio/nutraxin/", {
   height: 700,
   alt: "Nutraxin Vitamin D3 catalogue pack reference"
 });
+routeImages.set("/products/nutraxin/", {
+  url: "/assets/media/products/nutraxin/vitamin-d3-120-tablets.png",
+  type: "image/png",
+  width: 700,
+  height: 700,
+  alt: "Nutraxin Vitamin D3 catalogue pack reference"
+});
 routeImages.set("/cro/", {
   url: "/assets/media/cro/cro-evidence-architecture-1600.jpg",
   type: "image/jpeg",
@@ -105,11 +112,29 @@ function imageObject(image) {
 }
 
 const files = [
-  ...Object.keys(pageMeta).map((slug) => slug ? `${slug}/index.html` : "index.html"),
+  ...Object.keys(pageMeta)
+    .filter((slug) => !new Set(["search", "technology/ai-governance", "product-portfolio", "product-portfolio/nutraxin"]).has(slug))
+    .map((slug) => slug ? `${slug}/index.html` : "index.html"),
   ...leadership.map((person) => `leadership/${person.slug}/index.html`),
   ...articles.map((article) => `news-insights/${article.slug}/index.html`),
   "account-application/index.html"
 ];
+const nutraxinProductDirectory = join(root, "products", "nutraxin");
+if (existsSync(nutraxinProductDirectory)) {
+  for (const entry of readdirSync(nutraxinProductDirectory, { withFileTypes: true })) {
+    if (entry.isDirectory() && existsSync(join(nutraxinProductDirectory, entry.name, "index.html"))) {
+      const file = `products/nutraxin/${entry.name}/index.html`;
+      files.push(file);
+      routeImages.set(`/products/nutraxin/${entry.name}/`, {
+        url: `/assets/media/products/nutraxin/${entry.name}.png`,
+        type: "image/png",
+        width: 700,
+        height: 700,
+        alt: `Nutraxin ${entry.name.replaceAll("-", " ")} catalogue pack reference`
+      });
+    }
+  }
+}
 const register = [];
 
 for (const file of [...new Set(files)]) {

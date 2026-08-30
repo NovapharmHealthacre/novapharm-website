@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "reviewedAt": "2026-08-11",
+  "reviewedAt": "2026-08-26",
   "policy": {
     "scope": "Application identity, founder social-preview and retired fallback assets not covered by the corporate photography registers.",
     "noThirdPartyRuntimeRequests": true,
@@ -70,6 +70,69 @@
       "semanticPurpose": "NIT browser and application identity",
       "pageUsage": ["NIT metadata, navigation and web manifest"],
       "reviewStatus": "approved-existing-application-asset"
+    },
+    {
+      "path": "assets/brand/pharmascope-logo.svg",
+      "id": "pharmascope-primary-logo",
+      "source": "Owner-supplied PharmaScope Logo Asset Pack; 02_web/primary_transparent/pharmascope-logo.svg",
+      "licence": "Owner-authorised PharmaScope product-identity use",
+      "semanticPurpose": "Primary PharmaScope wordmark for light analytical surfaces",
+      "pageUsage": ["Protected PharmaScope application identity"],
+      "reviewStatus": "checksum-verified-owner-approved-source"
+    },
+    {
+      "path": "assets/brand/pharmascope-logo-reverse.svg",
+      "id": "pharmascope-reverse-logo",
+      "source": "Owner-supplied PharmaScope Logo Asset Pack; 02_web/reverse_white/pharmascope-logo-white.svg",
+      "licence": "Owner-authorised PharmaScope product-identity use",
+      "semanticPurpose": "Reverse PharmaScope wordmark for the protected navigation surface",
+      "pageUsage": ["Protected PharmaScope left navigation"],
+      "reviewStatus": "checksum-verified-owner-approved-source"
+    },
+    {
+      "path": "assets/brand/pharmascope-pulse.svg",
+      "id": "pharmascope-pulse-mode",
+      "source": "Owner-supplied PharmaScope Logo Asset Pack; 08_visual_system/Pulse/pulse-mark.svg",
+      "licence": "Owner-authorised PharmaScope product-identity use",
+      "semanticPurpose": "Pulse analysis-mode identity for temporal medicine intelligence",
+      "pageUsage": ["Protected PharmaScope analysis-mode control"],
+      "reviewStatus": "checksum-verified-owner-approved-source"
+    },
+    {
+      "path": "assets/brand/pharmascope-vector.svg",
+      "id": "pharmascope-vector-mode",
+      "source": "Owner-supplied PharmaScope Logo Asset Pack; 08_visual_system/Vector/vector-mark.svg",
+      "licence": "Owner-authorised PharmaScope product-identity use",
+      "semanticPurpose": "Vector analysis-mode identity for geographic medicine intelligence",
+      "pageUsage": ["Protected PharmaScope analysis-mode control"],
+      "reviewStatus": "checksum-verified-owner-approved-source"
+    },
+    {
+      "path": "assets/brand/pharmascope-helix.svg",
+      "id": "pharmascope-helix-mode",
+      "source": "Owner-supplied PharmaScope Logo Asset Pack; 08_visual_system/Helix/helix-mark.svg",
+      "licence": "Owner-authorised PharmaScope product-identity use",
+      "semanticPurpose": "Helix analysis-mode identity for longitudinal and forecast intelligence",
+      "pageUsage": ["Protected PharmaScope analysis-mode control"],
+      "reviewStatus": "checksum-verified-owner-approved-source"
+    },
+    {
+      "path": "assets/brand/pharmascope-app-icon-1024.png",
+      "id": "pharmascope-app-icon-master",
+      "source": "Owner-supplied PharmaScope Logo Asset Pack; 04_apple_app_icons/AppIcon/AppIcon-1024x1024.png",
+      "licence": "Owner-authorised PharmaScope product-identity use",
+      "semanticPurpose": "Store and native-application icon master; not evidence of a submitted application",
+      "pageUsage": ["Native release asset register"],
+      "reviewStatus": "checksum-verified-owner-approved-source"
+    },
+    {
+      "path": "assets/brand/pharmascope-open-graph-1200x630-dark.jpg",
+      "id": "pharmascope-open-graph-dark",
+      "source": "Owner-supplied PharmaScope Logo Asset Pack; 05_social_profile/pharmascope-open-graph-1200x630-dark.jpg",
+      "licence": "Owner-authorised PharmaScope product-identity use",
+      "semanticPurpose": "Governed PharmaScope social-preview master for a future authorised public product surface",
+      "pageUsage": [],
+      "reviewStatus": "checksum-verified-owner-approved-source-not-published"
     },
     {
       "path": "assets/media/products/licensed-image-pending.svg",
