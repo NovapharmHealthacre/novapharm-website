@@ -22,6 +22,7 @@ function walk(directory = root) {
     if (entry.isDirectory() && ignoredDirectories.has(entry.name)) return [];
     const path = join(directory, entry.name);
     if (entry.isDirectory()) return walk(path);
+    if (entry.name.endsWith(".d.ts")) return [];
     return /\.(?:js|mjs|ts)$/.test(entry.name) ? [path] : [];
   });
 }
@@ -38,4 +39,4 @@ if (failures.length) {
   console.error(`Syntax validation failed:\n${failures.join("\n")}`);
   process.exit(1);
 }
-console.log(`Syntax validation passed for ${files.length} JavaScript, MJS and TypeScript files.`);
+console.log(`Syntax validation passed for ${files.length} JavaScript, MJS and executable TypeScript files; declaration files remain governed by TypeScript compilation.`);

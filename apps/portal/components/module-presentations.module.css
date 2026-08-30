@@ -100,6 +100,12 @@
 .presentation :global(.data-section) { order: 8; }
 .presentation :global(.available-actions) { order: 9; }
 
+.presentation[data-module="executive.nhs-data"] :global(.medicines-intelligence) {
+  order: 6;
+  min-width: 0;
+  grid-column: 1 / -1;
+}
+
 .command :global(.module-heading) {
   margin-bottom: 0;
   padding-bottom: 30px;

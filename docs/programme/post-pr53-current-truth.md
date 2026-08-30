@@ -1,41 +1,53 @@
 # Post-PR53 Current Truth
 
-Status: implementation baseline recorded; managed production remains unverified
-Observed: 11 August 2026; candidate media inventory refreshed 13 August 2026
+Status: immutable implementation candidate in Draft PR 70 passed clean Node 24 and exact-head CI; merge and managed production remain unverified
+Observed: 30 August 2026
 Repository: `NovapharmHealthacre/novapharm-website`
 
-This ledger records the repository and GitHub state inspected before the post-PR53 refinement began. It supersedes stale branch, pull-request and SHA references in earlier audit narratives. Earlier files remain useful historical evidence, but they must not be read as the current release state.
+This ledger records the current repository, GitHub and read-only Azure state after the post-PR53/PR69 continuation. It supersedes stale branch, pull-request and SHA references in earlier audit narratives. Earlier files remain useful historical evidence, but they must not be read as the current release state.
 
 ## Required audit ledger
 
 | Field | Current evidence |
 |---|---|
-| `CURRENT_MAIN_SHA` | `f5a8d814016f2a82e89e8d44f0036892bbdeb9be` |
-| `CURRENT_RELEASE_STATE` | GitHub Pages `PUBLIC_ONLY` release built successfully from current main and is served at `https://novapharmhealthcare.com/`. Managed Portal/API/Azure production is not evidenced or claimed. |
-| `OPEN_PRS` | None at observation time. |
+| `CURRENT_MAIN_SHA` | `23310988e8fc484375aa10176aa1c1edbf5371a8` |
+| `CURRENT_RELEASE_STATE` | GitHub Pages `PUBLIC_ONLY` release built successfully from current main and is served at `https://novapharmhealthcare.com/`. Immutable implementation commit `9f49161425790596413051a2b00cedeae51905a9` is in Draft PR 70 and is not live. Managed Portal/API/Azure production is not evidenced or claimed. |
+| `OPEN_PRS` | Draft programme PR 70 plus ten Dependabot updates, #57 through #66. |
 | `OPEN_ISSUES` | #54, governed 8K-master art direction and responsive delivery; #55, managed production activation for Portal and public submissions. |
-| `LATEST_WORKFLOW_STATUS` | Exact-main Pages, Production readiness, Supply chain, CodeQL, public Chromium/WebKit acceptance and 8K governance runs succeeded. The managed-production candidate dispatcher skipped by design because its external gate was not satisfied. |
+| `LATEST_WORKFLOW_STATUS` | Exact-main Pages, Production readiness, Supply chain, CodeQL, public Chromium/WebKit acceptance and 8K governance runs succeeded. At exact implementation commit `9f49161425790596413051a2b00cedeae51905a9`, the initial npm-workspace lock failure and subsequent managed-account live-region failure were repaired; every exact-head workflow then concluded successfully. GitHub Pages deployment jobs skipped by design on the Draft PR, and the managed-production candidate dispatcher skipped because its external gate was not satisfied. |
 | `APPLICATIONS_FOUND` | Six: Corporate, Founder, Innovation Technology, Portal, API and Status. |
-| `PACKAGES_FOUND` | Eleven: accessibility, auth, claims, config, content, design-system, forms, platform-mode, portal-contracts, security and SEO. |
-| `PUBLIC_ROUTES` | Forty routes in the retained unified visual-acceptance inventory, including public legal/error states and the truthful Portal information entry. Corporate, Founder and Technology also maintain their own canonical route inventories. |
-| `PROTECTED_ROUTES` | Fifty visible protected acceptance routes, derived from 18 customer modules, 13 employee modules, 11 release-visible Executive modules, five administrator modules and governed account/workspace states. Seven additional Executive modules remain hidden until dependencies exist. |
-| `PORTAL_MODULE_COUNT` | Exactly 54, enforced by typed catalogue and tests: 47 release-visible informational modules and seven hidden-for-safety modules. |
+| `PACKAGES_FOUND` | Twelve: accessibility, auth, claims, config, content, design-system, forms, medicines-intelligence, platform-mode, portal-contracts, security and SEO. |
+| `PUBLIC_ROUTES` | Corporate exact-final acceptance covers 40 canonical routes plus a governed 404; the generated `PUBLIC_ONLY` estate contains 57 indexable canonical routes and 58 enhanced public pages. Founder and Technology retain their own canonical inventories. |
+| `PROTECTED_ROUTES` | The Portal catalogue has 48 release-visible governed modules and six hidden-for-safety modules across customer, employee, executive and administrator roles. The exact local Portal matrix uses isolated synthetic identities and data only. |
+| `PORTAL_MODULE_COUNT` | Exactly 54, enforced by typed catalogue and tests: 48 release-visible informational modules and six hidden-for-safety modules. |
 | `GOVERNED_SECTION_COUNT` | Exactly 122, Sections 0 through 121 inclusive, enforced in `absolute-mandate-register.json`. |
-| `IMAGE_COUNT` | 647 governed image/vector/PDF assets after integrating the owner-approved identity pack and seven retained review frames. This is a physical-file count and includes non-public masters, governed derivatives, visual evidence and authorised duplication across delivery surfaces; it is not a count of unique photographs. |
-| `LOGO_ASSETS_FOUND` | The owner-approved 93-file NovaPharm identity pack is preserved under `creative-assets/brand/novapharm-logo-asset-pack/`, including canonical SVG, PDF and EPS masters, web derivatives, app icons, social assets, brand tokens and checksums. Seventeen exact source-pack derivatives are exposed under `assets/brand/` for web delivery. |
+| `IMAGE_COUNT` | 801 governed raster/vector/PDF assets in the 28 August inventory, including non-public masters, governed derivatives, visual evidence and authorised delivery duplication; 52 exact duplicate groups and 183 perceptual-review candidate groups remain explicitly classified rather than silently deleted. |
+| `LOGO_ASSETS_FOUND` | The owner-approved 93-file NovaPharm identity pack and 127-file PharmaScope pack are preserved and checksum-verified. Twenty-four deployed brand files are byte-identical to their governed sources. |
 | `FONT_STACKS_FOUND` | Native system sans for the concise Apple-pharma layers; established sans/serif/mono property stacks elsewhere. No proprietary Apple font is bundled. |
 | `CURRENT_FRAMEWORKS` | Next.js 16.2.12, React/React DOM 19.2.8, TypeScript 7.0.2, Node 24.x, Playwright 1.61.1, Axe 4.12.1 and Sharp 0.35.3. |
-| `CURRENT_LANGUAGES` | GitHub reports JavaScript, HTML, TypeScript, CSS, Bicep, T-SQL and Dockerfile. No tracked Swift, Objective-C, C, C++, Metal, Wasm, Python, Perl or Ruby application source exists. |
+| `CURRENT_LANGUAGES` | Current main reports JavaScript, HTML, TypeScript, CSS, Bicep, T-SQL and Dockerfile. Draft PR 70 adds substantive Python pharmacy-workbook tooling plus TypeScript/SQL medicines-intelligence implementation. Optional native Apple, Wasm and low-level technologies remain governed by the technology-fit matrix and are not represented by dummy application files. |
 | `CURRENT_DEPLOYMENT_TOPOLOGY` | Public GitHub Pages release on the corporate domain; six-application Azure/Front Door/WAF architecture is repository-authored but not live-verified. GitHub Pages intentionally cannot authenticate, accept confidential uploads or act as the secure Portal/API authority. |
-| `KNOWN_BLOCKERS` | No authenticated Azure CLI context; no live Entra, SQL, Blob, Key Vault, email, malware scanning, SharePoint or WAF evidence; main branch has no GitHub branch protection; no real-Safari hardware acceptance; no production field Core Web Vitals; no legal/regulatory final approval; no AAH retest. |
+| `KNOWN_BLOCKERS` | UK South aggregate App Service `Total Regional VMs` remains 0; no live App Service, Front Door/WAF, Entra, SQL, Blob, Key Vault, email, malware scanning or SharePoint evidence; main has no branch protection/ruleset; Draft PR 70 remains unmerged and needs explicit release authority; no real-Safari hardware acceptance; no production field Core Web Vitals; no legal/regulatory final approval; no AAH retest. |
 
 ## GitHub evidence
 
-- PR 56 merged at the current main SHA after PR 53 (`83fca4a16bbec19179d978aa036f63730e372430`).
+- PR 69 merged at current main after PR 53 and the later corrective releases. PR 16 is historical and merged, not an open Draft PR.
 - GitHub Pages reports `built`, the custom domain is configured, HTTPS is enforced and the certificate is approved.
-- The repository is public and has no GitHub release object at observation time.
+- Exact-main Pages, Production readiness, Supply chain, CodeQL, public Chromium/WebKit, Azure validation, managed-staging preflight and 8K governance workflows succeeded. The managed-production dispatcher skipped by design.
 - The `main` protection endpoint returned `Branch not protected`; ruleset/required-review activation remains an owner-controlled account setting.
-- No NovaPharm application, local preview or Playwright test server was active before edits. The running Codex MCP process is not an application release process.
+- Draft PR 70 tracks `codex/corporate-product-discipline-rebuild`; its immutable implementation commit is `9f49161425790596413051a2b00cedeae51905a9`.
+- The initial PR-head setup failures were caused by the missing `@novapharm/medicines-intelligence@0.1.0` workspace link. After that repair, a managed-account browser run correctly exposed an application-status live-region defect. Both defects were fixed, focused regressions passed in Chromium and WebKit, and all checks at exact implementation commit `9f49161425790596413051a2b00cedeae51905a9` concluded successfully.
+- No NovaPharm application, local preview or test worker remained active after acceptance. The running Codex MCP processes are not application release processes.
+
+## Implementation-candidate acceptance
+
+- Governed Node `24.19.0` / npm `11.17.0` complete root `npm run check`: pass for the implementation tree committed as `9f49161425790596413051a2b00cedeae51905a9`.
+- Requirements: 5,900 records; 25 Complete, 5,032 Complete at repository level only, 68 Owner-controlled blocker, 329 External verification pending, 0 Incomplete, 445 Not applicable with rationale and 1 Rejected for documented conflict/safety; 190 evidence paths; zero stale, ambiguous or undocumented states.
+- Corporate: 820 Chromium/WebKit screenshots, 164 Axe runs, two high-density checks, two scriptless checks and zero serious/critical findings.
+- Portal: 1,360 Chromium/WebKit screenshots, 230 Axe runs, 54 governed modules, 48 visible modules, six dependency-blocked modules and zero serious/critical findings.
+- Print: 12 tagged PDFs, 39 rendered pages and human review after final CSS.
+- Lighthouse: Corporate homepage and Products score 100 desktop and 96 mobile; Accessibility, Best Practices and SEO are 100, CLS 0 and TBT 0; mobile LCP is 2.8 seconds in the local throttled lab.
+- Azure read-only recheck: subscription enabled, `Microsoft.Web` registered, P0v4 family limit 30, aggregate regional limit 0, no App Service and no Front Door profile. No resource was provisioned.
 
 ## Evidence boundary
 

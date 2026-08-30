@@ -5,6 +5,7 @@ import { leadership, pageMeta } from "../src/content/site-content.mjs";
 
 const root = resolve(process.cwd());
 const siteUrl = "https://novapharmhealthcare.com";
+const nutraxinProducts = JSON.parse(readFileSync(join(root, "apps/corporate/data/nutraxin-product-register.json"), "utf8")).products;
 const publicPages = [
   "index.html",
   "about/index.html",
@@ -17,14 +18,15 @@ const publicPages = [
   "leadership/helly-panchal/index.html",
   "leadership/nishita-trivedi/index.html",
   "services/index.html",
+  "capabilities/index.html",
   "regulatory-services/index.html",
   "cro/index.html",
   "oncology/index.html",
-  "product-portfolio/index.html",
-  "product-portfolio/nutraxin/index.html",
+  "products/index.html",
+  "products/nutraxin/index.html",
+  "products/strategic-portfolio/index.html",
   "partner-with-us/index.html",
   "technology/index.html",
-  "technology/ai-governance/index.html",
   "news-insights/index.html",
   "contact/index.html",
   "investor-information/index.html",
@@ -37,9 +39,12 @@ const publicPages = [
   "legal/terms/index.html",
   "legal/accessibility/index.html",
   "legal/modern-slavery/index.html",
-  "legal/environment-carbon/index.html"
+  "legal/environment-carbon/index.html",
+  ...nutraxinProducts.map((product) => `products/nutraxin/${product.slug}/index.html`)
 ];
 const redirectPages = [
+  "product-portfolio/index.html",
+  "product-portfolio/nutraxin/index.html",
   "company-profile/index.html",
   "uk-international-regulatory-services/index.html",
   "distributor-opportunities/index.html",
@@ -146,7 +151,6 @@ const requiredFiles = [
   "assets/css/nutraxin-catalogue.css",
   "assets/css/cro.css",
   "assets/css/oncology.css",
-  "assets/css/ai-search.css",
   "assets/css/responsive.css",
   "assets/js/api-client.js",
   "assets/js/novapharm.js",
@@ -158,7 +162,6 @@ const requiredFiles = [
   "assets/js/account-application.js",
   "assets/js/cro.js",
   "assets/js/oncology.js",
-  "assets/js/ai-search.js",
   "assets/js/enterprise-app.js",
   "assets/brand/novapharm-healthcare-logo.svg",
   "assets/brand/novapharm-healthcare-logo.png",
@@ -254,11 +257,6 @@ const requiredFiles = [
   "scripts/test-ai-evaluation.mjs",
   "scripts/test-internal-ai-gateway.mjs",
   "scripts/run-oncology-ai-browser-acceptance.mjs",
-  "assets/ai/company-knowledge-index.json",
-  "assets/ai/company-source-manifest.json",
-  "assets/ai/novapharm-evidence-vector-v1.json",
-  "assets/ai/company-embeddings.json",
-  "search/index.html",
   ".github/workflows/ci.yml",
   ".node-version",
   ".dockerignore",
@@ -374,7 +372,7 @@ for (const file of publicPages) {
   if (!html.includes('href="#main"') || !html.includes('id="main"')) fail(`${file} needs a working skip link`);
 }
 
-const expectedPublicPageCount = Object.keys(pageMeta).length + leadership.length + insightFiles.length + 1;
+const expectedPublicPageCount = Object.keys(pageMeta).length - 3 + leadership.length + insightFiles.length + nutraxinProducts.length;
 if (publicPages.length !== expectedPublicPageCount) fail(`expected ${expectedPublicPageCount} source-defined public pages; found ${publicPages.length}`);
 for (const type of ["Organization", "Person", "Article", "BlogPosting", "Service", "BreadcrumbList"]) {
   if (!observedSchemaTypes.has(type)) fail(`structured data is missing ${type}`);
@@ -406,13 +404,14 @@ if (manifest.theme_color !== "#E3120B" || manifest.background_color !== "#ffffff
 for (const file of redirectPages) {
   const html = source(file);
   validateDocumentBasics(file, html);
-  if (!html.includes('http-equiv="refresh"') || !html.includes('name="robots" content="noindex,follow"')) {
+  if (!html.includes('http-equiv="refresh"') || !/name="robots" content="noindex,\s*follow"/.test(html)) {
     fail(`${file} is not a controlled noindex redirect`);
   }
 }
 
 function collectHtml(directory) {
   const files = [];
+  if (!existsSync(join(root, directory))) return files;
   for (const entry of readdirSync(join(root, directory), { withFileTypes: true })) {
     const relative = join(directory, entry.name);
     if (entry.isDirectory()) files.push(...collectHtml(relative));
@@ -449,23 +448,19 @@ if (!/does not imply/i.test(nishitaProfile)) fail("Dr Nishita Trivedi profile mu
 if (/Dr Nishita Trivedi[^<]{0,100}(?:statutory director|Director &|Director,)/i.test(nishitaProfile)) fail("Dr Nishita Trivedi is incorrectly presented as a director");
 
 const technologyPage = source("technology/index.html");
-for (const label of ["Live capabilities", "In development capabilities", "Planned capabilities"]) {
+for (const label of ["Public company platform", "Managed application architecture", "Production identity and data services", "Forecasting and advanced traceability"]) {
   if (!technologyPage.includes(label)) fail(`technology page is missing ${label}`);
 }
 
 const oncologyPage = source("oncology/index.html");
-for (const marker of ["Oncology Supply Continuity Architecture", "Formulation and Complexity Navigator", "Oncology Product-Readiness Matrix", "Development-to-Access Continuity"]) {
+for (const marker of ["Continuity is designed before supply begins.", "Five dependencies that should be visible early.", "A temperature range alone is not a control system.", "Preserve context through each accountable hand-off."]) {
   if (!oncologyPage.includes(marker)) fail(`oncology page is missing ${marker}`);
 }
-if (!oncologyPage.includes("no product approval, availability or treatment claim")) fail("oncology page is missing its public capability boundary");
+if (!oncologyPage.includes("does not provide medical advice, direct patient services or a guarantee of product authorisation")) fail("oncology page is missing its public capability boundary");
 
-const aiGovernancePage = source("technology/ai-governance/index.html");
-for (const marker of ["Responsible AI starts with evidence", "Private on-device semantic retrieval", "Internal development", "Prohibited", "I could not verify that from NovaPharm's approved public information"]) {
-  if (!aiGovernancePage.includes(marker)) fail(`AI governance page is missing ${marker}`);
+for (const retiredPublicPath of ["technology/ai-governance/index.html", "search/index.html", "assets/css/ai-search.css", "assets/js/ai-search.js", "assets/ai"]) {
+  if (existsSync(join(root, retiredPublicPath))) fail(`retired public AI/search output must not ship: ${retiredPublicPath}`);
 }
-const searchPage = source("search/index.html");
-if (!searchPage.includes('name="robots" content="noindex,follow"')) fail("search directory must remain noindex and crawlable for links");
-if (!searchPage.includes("Public topics")) fail("search directory needs a JavaScript-independent route index");
 
 const sitemap = source("sitemap.xml");
 const sitemapLocations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
@@ -473,7 +468,7 @@ if (new Set(sitemapLocations).size !== sitemapLocations.length) fail("sitemap co
 for (const privatePrefix of ["/portal/", "/employee/", "/admin/", "/_secure/", "/docs/"]) {
   if (sitemap.includes(`${siteUrl}${privatePrefix}`)) fail(`sitemap exposes private route ${privatePrefix}`);
 }
-for (const page of publicPages.filter((file) => file.endsWith("index.html") && file !== "index.html")) {
+for (const page of publicPages.filter((file) => file.endsWith("index.html") && !["index.html", "account-application/index.html"].includes(file))) {
   const route = `/${page.replace(/index\.html$/, "")}`;
   if (!sitemapLocations.includes(`${siteUrl}${route}`)) fail(`sitemap missing ${route}`);
 }

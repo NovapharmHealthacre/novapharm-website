@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-07T11:16:31.315Z",
+  "generatedAt": "2026-08-22T12:39:40.409Z",
   "phase": "before",
   "sourceUrl": "http://127.0.0.1:4179/product-portfolio/",
   "renderedEvidence": true,
@@ -115,6 +115,5 @@
       "occurrenceCount": 1,
       "horizontalOverflow": false
     }
-  ],
-  "evidenceEncoding": "WebP quality 90 derived from the original Playwright PNG; source PNG hashes are retained in the selected screenshot manifest."
+  ]
 }

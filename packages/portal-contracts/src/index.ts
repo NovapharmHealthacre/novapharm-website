@@ -41,7 +41,7 @@ export type PortalModule = Readonly<{
   externalDependency: string;
   authorisedRoles: readonly string[];
   testCoverage: readonly string[];
-  validationDataState: "synthetic_non_confidential_only";
+  validationDataState: "synthetic_non_confidential_only" | "authoritative_public_and_owner_supplied_non_production_validation";
   visibleInNavigation: boolean;
   productionStatus: "not_deployed_owner_controlled";
   classificationRationale: string;

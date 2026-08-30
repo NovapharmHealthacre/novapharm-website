@@ -18,6 +18,7 @@ const allowedTopLevelDirectories = new Set([
   "about",
   "account-application",
   "assets",
+  "capabilities",
   "careers",
   "contact",
   "cro",
@@ -28,6 +29,7 @@ const allowedTopLevelDirectories = new Set([
   "oncology",
   "partner-with-us",
   "portal",
+  "products",
   "product-portfolio",
   "regulatory-services",
   "service-unavailable",
@@ -70,10 +72,14 @@ const requiredPublicPaths = [
   "CNAME",
   "feed.xml",
   "assets",
+  "capabilities/index.html",
   "cro/index.html",
   "oncology/index.html",
   "contact/index.html",
   "portal/index.html",
+  "products/index.html",
+  "products/nutraxin/index.html",
+  "products/strategic-portfolio/index.html",
   "trust-centre/index.html"
 ];
 

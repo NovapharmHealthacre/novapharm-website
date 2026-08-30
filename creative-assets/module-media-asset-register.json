@@ -238,7 +238,7 @@
       "caption": "Representative cross-functional service delivery",
       "allowedRoutes": [
         "/services/",
-        "/#partner-ecosystem"
+        "/capabilities/"
       ],
       "maxReuse": 2,
       "focalPoint": {
@@ -372,7 +372,7 @@
       "alt": "Unbranded vials, oral-liquid bottle, blister packs, neutral cartons, labels and a quality dossier arranged for portfolio review",
       "caption": "Representative portfolio evidence; no marketed NovaPharm product, stock or facility is implied",
       "allowedRoutes": [
-        "/product-portfolio/"
+        "/products/"
       ],
       "maxReuse": 1,
       "focalPoint": {

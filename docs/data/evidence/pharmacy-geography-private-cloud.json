@@ -1,0 +1,50 @@
+{
+  "evidenceType": "governed-pharmacy-practice-postcode-geography",
+  "checkedAt": "2026-08-26T14:00:00.000Z",
+  "sources": [
+    {
+      "sourceId": "ons.onspd-live",
+      "endpoint": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Online_ONS_Postcode_Directory_Live/FeatureServer/1",
+      "matched": 18172,
+      "role": "current postcode authority"
+    },
+    {
+      "sourceId": "ons.onspd-quarterly",
+      "endpoint": "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/ONS_Postcode_Directory_(May_2026)_for_the_United_Kingdom_(Hosted_Table)/FeatureServer/0",
+      "matched": 101,
+      "role": "terminated postcode temporal fallback"
+    }
+  ],
+  "sourceAuthority": "Office for National Statistics Open Geography Portal",
+  "productionIngestionClaim": false,
+  "databaseType": "isolated-local-sqlite-validation",
+  "uniquePostcodesRequested": 18277,
+  "uniquePharmacyPostcodesRequested": 12532,
+  "uniquePracticePostcodesRequested": 7879,
+  "nonUkPracticePostcodesExcluded": 12,
+  "nonUkPracticePostcodesSha256": "35dd92a6c44a1fe28fec87a26e3e03261bf4ddea7161fafa862a996cf7dee941",
+  "uniquePostcodesMatched": 18273,
+  "uniquePostcodesMissing": 4,
+  "duplicateSourceResponsesResolved": 0,
+  "terminatedPostcodesRetained": 101,
+  "recognisedPostcodesWithoutCoordinates": 49,
+  "pharmaciesWithCoordinates": 12936,
+  "practicesWithCoordinates": 11710,
+  "importedPharmacies": 12936,
+  "importedCurrentPractices": 11787,
+  "batches": {
+    "live": 92,
+    "quarterlyFallback": 1
+  },
+  "batchSize": 200,
+  "concurrency": 6,
+  "missingPostcodesSha256": "ddc3836678930d891f40cbd89e1e22233a1634c51ad06cf58825b57faed8ef4b",
+  "caveats": [
+    "Coordinates are authoritative postcode centroids, not premises-level survey coordinates.",
+    "A recognised postcode with no published coordinate remains matched but is never assigned an invented latitude or longitude.",
+    "Terminated postcodes remain visible as data-quality evidence and do not automatically close a pharmacy.",
+    "BFPO and other non-UK practice postcode identifiers are retained in the practice master but excluded from ONS UK-postcode lookup.",
+    "Geography code names remain code-only until an official code-name list is ingested; no name was invented.",
+    "Distance is an opportunity feature and never proves that a pharmacy dispensed a medicine."
+  ]
+}

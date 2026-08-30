@@ -32,8 +32,8 @@ test("planned and externally blocked modules state their dependency", () => {
 test("release classifications expose only honest informational modules", () => {
   const informational = portalModules.filter((module) => module.releaseClassification === "informational_only");
   const hidden = portalModules.filter((module) => module.releaseClassification === "hidden_until_dependency_exists");
-  assert.equal(informational.length, 47);
-  assert.equal(hidden.length, 7);
+  assert.equal(informational.length, 48);
+  assert.equal(hidden.length, 6);
   assert.equal(visiblePortalModules.length, informational.length);
   assert.equal(portalModules.some((module) => module.releaseClassification === "fully_operational_and_tested"), false);
   assert.equal(portalModules.some((module) => module.productionStatus !== "not_deployed_owner_controlled"), false);
@@ -45,7 +45,11 @@ test("release classifications expose only honest informational modules", () => {
     assert.ok(module.externalDependency.trim(), `${module.code} requires an external dependency or production gate`);
     assert.ok(module.authorisedRoles.length, `${module.code} requires authorised roles`);
     assert.ok(module.testCoverage.length, `${module.code} requires test coverage`);
-    assert.equal(module.validationDataState, "synthetic_non_confidential_only");
+    if (module.code === "executive.nhs-data") {
+      assert.equal(module.validationDataState, "authoritative_public_and_owner_supplied_non_production_validation");
+    } else {
+      assert.equal(module.validationDataState, "synthetic_non_confidential_only");
+    }
     assert.equal(module.visibleInNavigation, module.releaseClassification === "informational_only");
     if (module.releaseClassification === "hidden_until_dependency_exists") assert.equal(module.readCapability, "none_while_hidden");
   }
@@ -54,8 +58,8 @@ test("release classifications expose only honest informational modules", () => {
 test("all 54 modules have one complete, unambiguous production activation record", () => {
   assert.equal(portalModuleActivationMatrix.length, 54);
   assert.equal(new Set(portalModuleActivationMatrix.map((module) => module.code)).size, 54);
-  assert.equal(dependencyBlockedPortalModules.length, 47);
-  assert.equal(hiddenForSafetyPortalModules.length, 7);
+  assert.equal(dependencyBlockedPortalModules.length, 48);
+  assert.equal(hiddenForSafetyPortalModules.length, 6);
   assert.deepEqual(new Set(moduleFinalReleaseStates), new Set([
     "FULLY OPERATIONAL",
     "OPERATIONAL READ-ONLY",

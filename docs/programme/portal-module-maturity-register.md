@@ -1,12 +1,14 @@
 # Portal Module Maturity Register
 
 Status: repository classification complete; production deployment pending
-Review date: 1 August 2026
+
+Review date: 26 August 2026
+
 Scope: all 54 governed modules
 
 ## Decision
 
-No module is described as fully operational in production. Forty-seven repository-backed modules are released as **informational only** and read-only because Azure, Entra and canonical production data are not deployed. Seven modules are **hidden until their dependency exists**. No module is silently removed. Synthetic local acceptance demonstrates contracts and access boundaries; it is not evidence of a live ERP, WMS, CRM, finance, NHS, pharmacovigilance or Microsoft 365 integration.
+No module is described as fully operational in production. 48 repository-backed modules are released as **informational only** and read-only because Azure, Entra and canonical production data are not deployed. 6 modules are **hidden until their dependency exists**. No module is silently removed. Governed local acceptance demonstrates contracts and access boundaries; it is not evidence of a live ERP, WMS, CRM, finance, NHS, pharmacovigilance or Microsoft 365 integration.
 
 The canonical machine-readable record is [module-catalog.json](../../packages/portal-contracts/src/module-catalog.json). Each record names its actual repository or external source boundary, business owner, maturity, read/write state, dependency, authorised roles, test files, navigation state and production status.
 
@@ -58,7 +60,7 @@ The canonical machine-readable record is [module-catalog.json](../../packages/po
 | `executive.sales-intelligence` | Commercial Operations | Informational only | repository_tested_read_model | none_read_only | `board`, `admin` | not_deployed_owner_controlled |
 | `executive.customer-analytics` | Commercial Operations | Informational only | repository_tested_read_model | none_read_only | `board`, `admin` | not_deployed_owner_controlled |
 | `executive.product-master` | Product and Regulatory | Informational only | repository_tested_read_model | none_read_only | `board`, `admin` | not_deployed_owner_controlled |
-| `executive.nhs-data` | Commercial and Regulatory | Hidden until its dependency exists | none_while_hidden | none_read_only | `board`, `admin` | not_deployed_owner_controlled |
+| `executive.nhs-data` | Commercial and Regulatory | Repository-validated read-only foundation | repository_tested_read_model | none_read_only | `board`, `admin` | not_deployed_owner_controlled |
 | `executive.plpi` | Regulatory | Hidden until its dependency exists | none_while_hidden | none_read_only | `board`, `admin` | not_deployed_owner_controlled |
 | `executive.pharmacovigilance` | Qualified Safety Owner | Hidden until its dependency exists | none_while_hidden | none_read_only | `board`, `admin` | not_deployed_owner_controlled |
 | `executive.sourcing` | Procurement and Supplier Quality | Informational only | repository_tested_read_model | none_read_only | `board`, `admin` | not_deployed_owner_controlled |
