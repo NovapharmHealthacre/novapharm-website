@@ -25,7 +25,8 @@ test("people have unique persistent identities", () => {
 
 test("regulated appointment and statutory governance remain separate", () => {
   const nishita = personBySlug("nishita-trivedi");
-  assert.equal(nishita.publicTitle, "Chief Technology Officer and Responsible Person");
+  assert.equal(nishita.publicTitle, "Chief Technology Officer");
+  assert.equal(personBySlug("helly-panchal").publicTitle, "Director, Scientific & Product Strategy");
   assert.equal(nishita.executiveRole, "Chief Technology Officer");
   assert.equal(nishita.statutoryDirector, false);
   assert.equal(nishita.regulatedAppointment?.title, "Responsible Person");

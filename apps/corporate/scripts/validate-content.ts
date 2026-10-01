@@ -33,7 +33,8 @@ for (const person of leadership) {
   const route = `/leadership/${person.slug}/`;
   assert.ok(!routeSet.has(route), `Duplicate leadership route: ${route}`);
   routeSet.add(route);
-  assert.ok(person.biography.length >= 3, `${person.displayName} requires a reviewed biography`);
+  const approvedParagraphCount = person.slug === "helly-panchal" ? 2 : person.slug === "vishal-chakravarty" ? 4 : 3;
+  assert.equal(person.biography.length, approvedParagraphCount, `${person.displayName} must retain the owner-approved 1 October biography`);
   assert.equal(person.schemaTitle, personBySlug(person.slug).publicTitle, `${person.displayName} title diverges from the canonical people registry`);
   if (person.image) assert.ok(existsSync(path.join(applicationRoot, "public", person.image)), `Missing portrait: ${person.image}`);
 }
@@ -42,7 +43,9 @@ const vishal = leadership.find((person) => person.slug === "vishal-chakravarty")
 assert.equal(vishal?.title, "Chief Executive Officer");
 assert.equal(vishal?.governance, "Founder and statutory director");
 const nishita = leadership.find((person) => person.slug === "nishita-trivedi");
-assert.equal(nishita?.title, "Chief Technology Officer and Responsible Person");
+assert.equal(nishita?.title, "Chief Technology Officer");
+assert.match(nishita?.biography.at(-1) ?? "", /governed separately from any regulated Responsible Person responsibilities/);
+assert.equal(leadership.find((person) => person.slug === "helly-panchal")?.title, "Director, Scientific & Product Strategy");
 assert.match(nishita?.governance ?? "", /not a statutory director/i);
 const prabhakar = leadership.find((person) => person.slug === "prabhakar-lahare");
 assert.equal(prabhakar?.title, "Chief Operating Officer");

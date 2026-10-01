@@ -442,9 +442,9 @@ for (const [file, person] of [
   if (!html.includes('"@type":"ProfilePage"') || !html.includes(`"name":"${person}"`)) fail(`${file} is missing its ProfilePage and Person entities`);
 }
 const nishitaProfile = source("leadership/nishita-trivedi/index.html");
-if (!nishitaProfile.includes("Chief Technology Officer and Responsible Person")) fail("Dr Nishita Trivedi must use the owner-approved current title");
+if (!nishitaProfile.includes("Chief Technology Officer")) fail("Dr Nishita Trivedi must use the owner-approved current title");
 if (!/not a statutory director/i.test(nishitaProfile)) fail("Dr Nishita Trivedi must be identified as a non-statutory director");
-if (!/does not imply/i.test(nishitaProfile)) fail("Dr Nishita Trivedi profile must preserve the regulated-authority boundary");
+if (!/governed separately from any regulated Responsible Person responsibilities/i.test(nishitaProfile)) fail("Dr Nishita Trivedi profile must preserve the regulated-authority boundary");
 if (/Dr Nishita Trivedi[^<]{0,100}(?:statutory director|Director &|Director,)/i.test(nishitaProfile)) fail("Dr Nishita Trivedi is incorrectly presented as a director");
 
 const technologyPage = source("technology/index.html");

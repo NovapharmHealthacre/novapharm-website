@@ -7,6 +7,7 @@ import { oncologyContent } from "@/data/oncology";
 import type { CorporatePage, NarrativeSection } from "@/data/pages";
 import { leadership, partnerJourney, partnerTypes, productCategories, regulatorySections, servicePillars, sourcingPillars, technologyMaturity } from "@/data/site";
 import { ContactWorkflow } from "./contact-workflow";
+import { NutraxinKnowMore } from "./nutraxin-know-more";
 import { PublicEmailContact } from "./public-email-contact";
 import { Breadcrumbs, FinalCta, Notice, PageHero, SectionHeading, StatusNotice } from "./ui";
 
@@ -60,7 +61,7 @@ function LeaderCard({ person }: { readonly person: Leader }) {
   return (
     <Link className="leader-card" href={`/leadership/${person.slug}/`}>
       <div className="leader-media"><LeaderPortrait person={person} /></div>
-      <div className="leader-copy"><span className="leader-governance">{person.governance}</span><h3>{person.displayName}</h3><p className="leader-title">{person.title}</p><p>{person.summary}</p><strong>View verified profile </strong></div>
+      <div className="leader-copy"><span className="leader-governance">{person.governance}</span><h3>{person.displayName}</h3><p className="leader-title">{person.title}</p><p>{person.summary}</p><strong>Read profile </strong></div>
     </Link>
   );
 }
@@ -104,11 +105,11 @@ function NarrativeBlock({ section, index }: { readonly section: NarrativeSection
 }
 
 function LeadershipPage() {
-  return <><PageHero eyebrow="Leadership" title="Leadership with verified governance boundaries." intro="Public profiles distinguish Companies House facts, owner-approved executive responsibilities and regulated appointments." image="/assets/media/modules/governance-quality-oversight.jpg" alt="Professional leadership and governance review" /><section className="section"><div className="shell"><div className="leader-grid">{leaders.map((person) => <LeaderCard person={person} key={person.slug} />)}</div><p className="source-note">Statutory status is linked to Companies House. Current executive titles follow the owner-approved leadership record dated 7 August 2026. Regulated appointment documentation remains separately controlled, and no generated portrait is presented as a real person.</p></div></section><FinalCta /></>;
+  return <><PageHero eyebrow="Leadership" title="Leadership with verified governance boundaries." intro="Public profiles distinguish Companies House facts, owner-approved executive responsibilities and regulated appointments." image="/assets/media/modules/governance-quality-oversight.jpg" alt="Professional leadership and governance review" /><section className="section"><div className="shell"><div className="leader-grid">{leaders.map((person) => <LeaderCard person={person} key={person.slug} />)}</div><p className="source-note">Statutory status is linked to Companies House. Profiles and current executive titles follow the owner-approved content update dated 1 October 2026. Regulated appointment documentation remains separately controlled, and no generated portrait is presented as a real person.</p></div></section><FinalCta /></>;
 }
 
 export function PersonPage({ person }: { readonly person: Leader }) {
-  return <><section className="profile-hero"><div className="profile-media"><LeaderPortrait person={person} priority /></div><div className="shell profile-copy"><Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Leadership", href: "/leadership/" }, { label: person.displayName }]} /><span className="eyebrow">{person.title}</span><h1>{person.displayName}</h1><p>{person.summary}</p><span className="governance-badge">{person.governance}</span></div></section><section className="section"><div className="shell profile-detail"><div className="prose profile-biography"><h2>Profile</h2>{person.biography.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div><aside><span className="eyebrow">Areas of focus</span><ul>{person.expertise.map((item) => <li key={item}>{item}</li>)}</ul>{person.companiesHouseUrl ? <a className="text-link" href={person.companiesHouseUrl}>Companies House appointment </a> : <p className="source-note">No statutory directorship is attributed to this profile. Executive and regulated responsibilities remain separate governance fields.</p>}</aside></div></section><FinalCta title={`Discuss a qualified opportunity with NovaPharm's ${person.title.toLowerCase()}.`} /></>;
+  return <><section className={`profile-hero${person.image ? "" : " profile-hero-text"}`}>{person.image ? <div className="profile-media"><LeaderPortrait person={person} priority /></div> : null}<div className="shell profile-copy"><Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Leadership", href: "/leadership/" }, { label: person.displayName }]} /><span className="eyebrow">{person.title}</span><h1>{person.displayName}</h1><p>{person.summary}</p><span className="governance-badge">{person.governance}</span></div></section><section className="section"><div className="shell profile-detail"><div className="prose profile-biography"><h2>Profile</h2>{person.biography.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div><aside><span className="eyebrow">Areas of focus</span><ul>{person.expertise.map((item) => <li key={item}>{item}</li>)}</ul>{person.companiesHouseUrl ? <a className="text-link" href={person.companiesHouseUrl}>Companies House appointment </a> : <p className="source-note">No statutory directorship is attributed to this profile. Executive and regulated responsibilities remain separate governance fields.</p>}</aside></div></section><FinalCta title={`Discuss a qualified opportunity with NovaPharm's ${person.title.toLowerCase()}.`} /></>;
 }
 
 function ServicesPage() {
@@ -133,7 +134,7 @@ function ProductsPage() {
 }
 
 function NutraxinPage() {
-  return <><PageHero eyebrow="Nutraxin catalogue" title="Product references for qualified B2B evaluation." intro="Approved pack imagery and source-transcribed composition details, without an assertion of UK availability, permitted claims or a supply agreement." /><section className="section"><div className="shell"><Notice label="Catalogue evidence boundary" variant="regulatory">Brand ownership, UK regulatory status, composition compliance, permitted nutrition or health claims, labelling, pricing and availability require owner and market review before any commercial use.</Notice><div className="catalogue-grid">{nutraxinRegister.products.map((product, index) => <article key={product.id}><a className="catalogue-media" href={`/products/nutraxin/${product.slug}/`} aria-label={`Review ${product.name}`}><Image src={`/assets/media/products/nutraxin/${product.imageBase}-800.webp`} alt={product.altText} fill sizes="(max-width: 640px) 92vw, (max-width: 1024px) 44vw, 300px" priority={index < 2} /></a><div className="catalogue-copy"><span className="eyebrow">{product.range}</span><h2><a href={`/products/nutraxin/${product.slug}/`}>{product.name}</a></h2><p>{product.packSize} · {product.dosageForm}</p><dl>{product.formulation.map((line) => <div key={`${line.name}-${line.amount}`}><dt>{line.name}</dt><dd>{line.amount}</dd></div>)}</dl><small>{product.servingText}. Source catalogue page {product.cataloguePage}.</small><a className="text-link" href={`/products/nutraxin/${product.slug}/`}>Review product reference</a></div></article>)}</div></div></section><FinalCta title="Discuss a qualified nutraceutical portfolio review." /></>;
+  return <><PageHero eyebrow="Nutraxin catalogue" title="Product references for qualified B2B evaluation." intro="Approved pack imagery and source-transcribed composition details, without an assertion of UK availability, permitted claims or a supply agreement." /><section className="section"><div className="shell"><Notice label="Catalogue evidence boundary" variant="regulatory">Brand ownership, UK regulatory status, composition compliance, permitted nutrition or health claims, labelling, pricing and availability require owner and market review before any commercial use.</Notice><div className="catalogue-grid">{nutraxinRegister.products.map((product, index) => <article key={product.id}><a className="catalogue-media" href={`/products/nutraxin/${product.slug}/`} aria-label={`Review ${product.name}`}><Image src={`/assets/media/products/nutraxin/${product.imageBase}-800.webp`} alt={product.altText} fill sizes="(max-width: 640px) 92vw, (max-width: 1024px) 44vw, 300px" priority={index < 2} unoptimized /></a><div className="catalogue-copy"><span className="eyebrow">{product.range}</span><h2><a href={`/products/nutraxin/${product.slug}/`}>{product.name}</a></h2><p>{product.packSize} · {product.dosageForm}</p><dl>{product.formulation.map((line) => <div key={`${line.name}-${line.amount}`}><dt>{line.name}</dt><dd>{line.amount}</dd></div>)}</dl><small>{product.servingText}. Source catalogue page {product.cataloguePage}.</small><div className="catalogue-actions"><a className="text-link" href={`/products/nutraxin/${product.slug}/`}>Review product reference</a><NutraxinKnowMore slug={product.slug} name={product.name} /></div></div></article>)}</div></div></section><FinalCta title="Discuss a qualified nutraceutical portfolio review." /></>;
 }
 
 export function NutraxinProductPage({ product }: { readonly product: NutraxinProduct }) {
@@ -149,9 +150,11 @@ export function NutraxinProductPage({ product }: { readonly product: NutraxinPro
           <h1>{product.name}</h1>
           <p>{product.packSize} · {product.dosageForm}</p>
           <p className="product-reference-status">Catalogue reference · B2B evaluation only · Availability not asserted</p>
+          <NutraxinKnowMore slug={product.slug} name={product.name} />
+          <p className="source-note">Product information on Nutraxin UK. Pack details may vary; approved labelling and availability must be confirmed separately.</p>
         </div>
         <div className="nutraxin-product-media">
-          <Image src={`/assets/media/products/nutraxin/${product.imageBase}-800.webp`} alt={product.altText} fill priority sizes="(max-width: 360px) 92vw, (max-width: 760px) 320px, 440px" />
+          <Image src={`/assets/media/products/nutraxin/${product.imageBase}-800.webp`} alt={product.altText} fill priority unoptimized sizes="(max-width: 360px) 92vw, (max-width: 760px) 320px, 440px" />
         </div>
       </div>
     </section>
@@ -162,11 +165,12 @@ export function NutraxinProductPage({ product }: { readonly product: NutraxinPro
           <h2>Catalogue reference</h2>
           <dl className="product-reference-table">{product.formulation.map((line) => <div key={`${line.name}-${line.amount}`}><dt>{line.name}</dt><dd>{line.amount}</dd></div>)}</dl>
           <p>{product.servingText}. Source catalogue page {product.cataloguePage}.</p>
+          {product.notes.length ? <div className="product-reference-limitations"><h3>Reference limitations</h3><ul>{product.notes.map((note) => <li key={note}>{note}</li>)}</ul></div> : null}
         </div>
         <Notice label="Evidence boundary" variant="regulatory">This page does not state a permitted health claim, UK regulatory acceptance, price, stock, consumer sale or current supply agreement. Approved labelling and commercial availability must be confirmed separately.</Notice>
       </div>
     </section>
-    {related.length ? <section className="section section-soft"><div className="shell"><SectionHeading kicker="Related references" title={`More from ${product.range}.`} /><div className="catalogue-grid catalogue-grid-related">{related.map((item) => <article key={item.id}><a className="catalogue-media" href={`/products/nutraxin/${item.slug}/`}><Image src={`/assets/media/products/nutraxin/${item.imageBase}-800.webp`} alt={item.altText} fill sizes="(max-width: 640px) 92vw, 300px" /></a><div className="catalogue-copy"><h3><a href={`/products/nutraxin/${item.slug}/`}>{item.name}</a></h3><p>{item.packSize}</p></div></article>)}</div></div></section> : null}
+    {related.length ? <section className="section section-soft"><div className="shell"><SectionHeading kicker="Related references" title={`More from ${product.range}.`} /><div className="catalogue-grid catalogue-grid-related">{related.map((item) => <article key={item.id}><a className="catalogue-media" href={`/products/nutraxin/${item.slug}/`}><Image src={`/assets/media/products/nutraxin/${item.imageBase}-800.webp`} alt={item.altText} fill unoptimized sizes="(max-width: 640px) 92vw, 300px" /></a><div className="catalogue-copy"><h3><a href={`/products/nutraxin/${item.slug}/`}>{item.name}</a></h3><p>{item.packSize}</p><NutraxinKnowMore slug={item.slug} name={item.name} /></div></article>)}</div></div></section> : null}
     <FinalCta title="Discuss this catalogue reference with NovaPharm." />
   </>;
 }

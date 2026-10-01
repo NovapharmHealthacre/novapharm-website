@@ -24,13 +24,13 @@ export interface ClaimDecision {
 export const claimRegistry: readonly GovernedClaim[] = Object.freeze([
   Object.freeze({
     id: "leadership.nishita-current-title",
-    statement: "Dr Nishita Trivedi's owner-approved current public title is Chief Technology Officer and Responsible Person. Chief Technology Officer is the executive responsibility; Responsible Person is a distinct regulated appointment. The title does not represent MHRA authority, regulatory approval powers, or prescribing, medical or clinical authority.",
+    statement: "Dr Nishita Trivedi's owner-approved current public title is Chief Technology Officer. Any Responsible Person responsibilities form a distinct regulated appointment requiring separately controlled documentary evidence. The title does not represent MHRA authority, regulatory approval powers, or prescribing, medical or clinical authority.",
     maturity: "current",
     evidence: "owner_attested",
     publication: "approved",
     risk: "corporate",
     owner: "Board and regulatory governance",
-    reviewedOn: "2026-08-07",
+    reviewedOn: "2026-10-01",
     reviewBy: "2026-11-07"
   }),
   Object.freeze({

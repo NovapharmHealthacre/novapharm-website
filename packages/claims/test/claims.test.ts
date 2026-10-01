@@ -18,7 +18,8 @@ test("unverified current regulated appointments are held", () => {
 
 test("owner-approved leadership titles remain distinct from regulated documentary evidence", () => {
   const title = claimById("leadership.nishita-current-title");
-  assert.match(title.statement, /Chief Technology Officer and Responsible Person/);
+  assert.match(title.statement, /current public title is Chief Technology Officer\./);
+  assert.doesNotMatch(title.statement, /current public title is Chief Technology Officer and Responsible Person/);
   assert.match(title.statement, /distinct regulated appointment/);
   assert.equal(evaluateClaim(title, reviewDate).publishable, true);
 

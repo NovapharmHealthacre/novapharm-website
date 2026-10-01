@@ -24,7 +24,7 @@ test("entity graph contains one node for each person", () => {
   assert.equal(nodes.length, people.length + 2);
   assert.equal(new Set(nodes.map((node) => node["@id"])).size, nodes.length);
   const nishita = nodes.find((node) => node["@id"] === "https://novapharmhealthcare.com/leadership/nishita-trivedi/#person");
-  assert.equal(nishita?.["jobTitle"], "Chief Technology Officer and Responsible Person");
+  assert.equal(nishita?.["jobTitle"], "Chief Technology Officer");
   assert.equal(personBySlug("nishita-trivedi").statutoryDirector, false);
   assert.equal(personBySlug("nishita-trivedi").regulatedAppointment?.documentaryEvidenceState, "pending_evidence");
 });
