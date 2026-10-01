@@ -220,6 +220,9 @@ small { font-size: 0.78rem; }
 .profile-copy .eyebrow { color: #f0a1a6; }
 .profile-copy h1 { color: var(--white); }
 .profile-copy > p { color: #d4e0e7; font-size: 1.12rem; }
+.profile-hero-text { min-height: 0; grid-template-columns: 1fr; }
+.profile-hero-text .profile-copy { width: min(1180px, calc(100% - 36px)); margin-inline: auto; padding: 64px 0; }
+.profile-hero-text .profile-copy > p { max-width: 58ch; }
 .governance-badge { display: inline-block; margin-top: 18px; padding: 8px 12px; border: 1px solid rgba(255,255,255,.42); color: var(--white); font-size: .78rem; }
 .profile-detail { display: grid; grid-template-columns: 1.35fr .65fr; gap: 100px; }
 .profile-biography h2 { margin-bottom: 35px; }

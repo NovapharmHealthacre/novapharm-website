@@ -10,6 +10,10 @@ Biographies are owner-attested, not an independent qualification or authorisatio
 certificate. Companies House identity links and existing real portrait boundaries
 remain unchanged. The approved Helly biography has two paragraphs, not the older
 three-paragraph minimum; validation now pins the actual approved paragraph counts.
+Profiles without an approved portrait use a compact text-led hero so the name,
+role and purpose are immediately visible. Existing portrait-bearing profiles and
+the approved Corporate hero remain unchanged. Directory portrait placeholders
+remain honest, and no generated face is substituted for an actual person.
 
 ## Nutraxin Destinations
 
