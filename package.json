@@ -144,7 +144,8 @@
     "apps:check": "npm run founder:check && npm run technology:check && npm run corporate:check && npm run api:check && npm run portal:check && npm run status:check",
     "azure:package": "node scripts/package-unified-estate.mjs",
     "azure:test-artifacts": "node scripts/test-unified-release-artifacts.mjs",
-    "azure:validate-topology": "node scripts/validate-unified-estate-infrastructure.mjs"
+    "azure:validate-topology": "node scripts/validate-unified-estate-infrastructure.mjs",
+    "corporate:pages:build": "node scripts/build-corporate-pages.mjs"
   },
   "engines": {
     "node": "24.x",
@@ -165,7 +166,7 @@
     "parse5": "8.0.1",
     "playwright": "1.61.1",
     "postcss": "8.5.25",
-    "sharp": "0.35.3",
+    "sharp": "0.35.4",
     "tsx": "4.23.1",
     "turbo": "2.10.7",
     "typescript": "7.0.2"
@@ -173,13 +174,13 @@
   "overrides": {
     "@opentelemetry/propagator-jaeger": "2.9.0",
     "fast-xml-parser": "5.10.1",
-    "js-yaml": "3.15.1",
+    "js-yaml": "3.15.2",
     "nanoid": "3.3.18",
-    "next@16.2.12": {
+    "next@16.3.6": {
       "postcss": "$postcss",
       "sharp": "$sharp"
     },
     "postcss": "8.5.25",
-    "sharp": "0.35.3"
+    "sharp": "0.35.4"
   }
 }

@@ -1,5 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/public-link";
+import { CorporateHero } from "./corporate-hero";
 import { FinalCta } from "./ui";
 
 const principles = ["Qualified sourcing", "Regulatory discipline", "Quality-led decisions"];
@@ -46,33 +47,19 @@ const focusAreas = [
 export function ConciseHomePage() {
   return (
     <>
-      <section className="pharma-home-hero">
-        <div className="pharma-home-media" aria-hidden="true">
-          <Image
-            src="/assets/media/home/supply-network-hero.avif"
-            alt=""
-            fill
-            priority
-            fetchPriority="high"
-            sizes="100vw"
-            unoptimized
-          />
-        </div>
-        <div className="pharma-home-shade" aria-hidden="true" />
-        <div className="shell pharma-home-grid">
-          <div className="pharma-home-copy">
-            <p className="pharma-kicker">NovaPharm Healthcare</p>
-            <h1>Medicine. Where it needs to be</h1>
-            <p className="pharma-home-intro">Qualified sourcing, regulatory readiness and controlled B2B distribution planning.</p>
+      <CorporateHero>
+          <div className="corporate-hero-copy">
+            <h1><Image src="/assets/brand/novapharm-healthcare-logo.svg" alt="NovaPharm Healthcare" width={11185} height={1398} className="corporate-hero-wordmark" priority /></h1>
+            <p className="corporate-hero-tagline">Medicine.<br />Where it needs to be.</p>
+            <p className="corporate-hero-intro">Qualified sourcing, regulatory readiness and controlled B2B distribution planning.</p>
             <div className="action-row">
               <Link className="button button-primary" href="/about/">Explore NovaPharm</Link>
               <Link className="button button-quiet" href="/partner-with-us/">Partner with us</Link>
             </div>
-            <p className="pharma-status">Regulated wholesale supply has not commenced.</p>
+            <p className="corporate-hero-status">Regulated wholesale supply has not commenced.</p>
           </div>
-          <p className="pharma-media-boundary">Conceptual supply-chain visual. No NovaPharm facility, vehicle, inventory or current distribution activity is depicted.</p>
-        </div>
-      </section>
+          <p className="corporate-hero-boundary">Illustrative composition.<br />Not a NovaPharm product or active batch.</p>
+      </CorporateHero>
 
       <section className="pharma-principles" aria-label="NovaPharm operating principles">
         <div className="shell pharma-principles-grid">

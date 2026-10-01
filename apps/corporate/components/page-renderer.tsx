@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/public-link";
 import { type Article, articleBySourceKey, articles, readingTime } from "@/data/articles";
 import { croContent } from "@/data/cro";
 import nutraxinRegister from "@/data/nutraxin-product-register.json";
@@ -7,6 +7,7 @@ import { oncologyContent } from "@/data/oncology";
 import type { CorporatePage, NarrativeSection } from "@/data/pages";
 import { leadership, partnerJourney, partnerTypes, productCategories, regulatorySections, servicePillars, sourcingPillars, technologyMaturity } from "@/data/site";
 import { ContactWorkflow } from "./contact-workflow";
+import { PublicEmailContact } from "./public-email-contact";
 import { Breadcrumbs, FinalCta, Notice, PageHero, SectionHeading, StatusNotice } from "./ui";
 
 export interface Leader {
@@ -132,7 +133,7 @@ function ProductsPage() {
 }
 
 function NutraxinPage() {
-  return <><PageHero eyebrow="Nutraxin catalogue" title="Product references for qualified B2B evaluation." intro="Approved pack imagery and source-transcribed composition details, without an assertion of UK availability, permitted claims or a supply agreement." /><section className="section"><div className="shell"><Notice label="Catalogue evidence boundary" variant="regulatory">Brand ownership, UK regulatory status, composition compliance, permitted nutrition or health claims, labelling, pricing and availability require owner and market review before any commercial use.</Notice><div className="catalogue-grid">{nutraxinRegister.products.map((product, index) => <article key={product.id}><Link className="catalogue-media" href={`/products/nutraxin/${product.slug}/`} aria-label={`Review ${product.name}`}><Image src={`/assets/media/products/nutraxin/${product.imageBase}-800.webp`} alt={product.altText} fill sizes="(max-width: 640px) 92vw, (max-width: 1024px) 44vw, 300px" priority={index < 2} /></Link><div className="catalogue-copy"><span className="eyebrow">{product.range}</span><h2><Link href={`/products/nutraxin/${product.slug}/`}>{product.name}</Link></h2><p>{product.packSize} · {product.dosageForm}</p><dl>{product.formulation.map((line) => <div key={`${line.name}-${line.amount}`}><dt>{line.name}</dt><dd>{line.amount}</dd></div>)}</dl><small>{product.servingText}. Source catalogue page {product.cataloguePage}.</small><Link className="text-link" href={`/products/nutraxin/${product.slug}/`}>Review product reference</Link></div></article>)}</div></div></section><FinalCta title="Discuss a qualified nutraceutical portfolio review." /></>;
+  return <><PageHero eyebrow="Nutraxin catalogue" title="Product references for qualified B2B evaluation." intro="Approved pack imagery and source-transcribed composition details, without an assertion of UK availability, permitted claims or a supply agreement." /><section className="section"><div className="shell"><Notice label="Catalogue evidence boundary" variant="regulatory">Brand ownership, UK regulatory status, composition compliance, permitted nutrition or health claims, labelling, pricing and availability require owner and market review before any commercial use.</Notice><div className="catalogue-grid">{nutraxinRegister.products.map((product, index) => <article key={product.id}><a className="catalogue-media" href={`/products/nutraxin/${product.slug}/`} aria-label={`Review ${product.name}`}><Image src={`/assets/media/products/nutraxin/${product.imageBase}-800.webp`} alt={product.altText} fill sizes="(max-width: 640px) 92vw, (max-width: 1024px) 44vw, 300px" priority={index < 2} /></a><div className="catalogue-copy"><span className="eyebrow">{product.range}</span><h2><a href={`/products/nutraxin/${product.slug}/`}>{product.name}</a></h2><p>{product.packSize} · {product.dosageForm}</p><dl>{product.formulation.map((line) => <div key={`${line.name}-${line.amount}`}><dt>{line.name}</dt><dd>{line.amount}</dd></div>)}</dl><small>{product.servingText}. Source catalogue page {product.cataloguePage}.</small><a className="text-link" href={`/products/nutraxin/${product.slug}/`}>Review product reference</a></div></article>)}</div></div></section><FinalCta title="Discuss a qualified nutraceutical portfolio review." /></>;
 }
 
 export function NutraxinProductPage({ product }: { readonly product: NutraxinProduct }) {
@@ -150,7 +151,7 @@ export function NutraxinProductPage({ product }: { readonly product: NutraxinPro
           <p className="product-reference-status">Catalogue reference · B2B evaluation only · Availability not asserted</p>
         </div>
         <div className="nutraxin-product-media">
-          <Image src={`/assets/media/products/nutraxin/${product.imageBase}-800.webp`} alt={product.altText} fill priority sizes="(max-width: 760px) 92vw, 48vw" />
+          <Image src={`/assets/media/products/nutraxin/${product.imageBase}-800.webp`} alt={product.altText} fill priority sizes="(max-width: 360px) 92vw, (max-width: 760px) 320px, 440px" />
         </div>
       </div>
     </section>
@@ -165,7 +166,7 @@ export function NutraxinProductPage({ product }: { readonly product: NutraxinPro
         <Notice label="Evidence boundary" variant="regulatory">This page does not state a permitted health claim, UK regulatory acceptance, price, stock, consumer sale or current supply agreement. Approved labelling and commercial availability must be confirmed separately.</Notice>
       </div>
     </section>
-    {related.length ? <section className="section section-soft"><div className="shell"><SectionHeading kicker="Related references" title={`More from ${product.range}.`} /><div className="catalogue-grid catalogue-grid-related">{related.map((item) => <article key={item.id}><Link className="catalogue-media" href={`/products/nutraxin/${item.slug}/`}><Image src={`/assets/media/products/nutraxin/${item.imageBase}-800.webp`} alt={item.altText} fill sizes="(max-width: 640px) 92vw, 300px" /></Link><div className="catalogue-copy"><h3><Link href={`/products/nutraxin/${item.slug}/`}>{item.name}</Link></h3><p>{item.packSize}</p></div></article>)}</div></div></section> : null}
+    {related.length ? <section className="section section-soft"><div className="shell"><SectionHeading kicker="Related references" title={`More from ${product.range}.`} /><div className="catalogue-grid catalogue-grid-related">{related.map((item) => <article key={item.id}><a className="catalogue-media" href={`/products/nutraxin/${item.slug}/`}><Image src={`/assets/media/products/nutraxin/${item.imageBase}-800.webp`} alt={item.altText} fill sizes="(max-width: 640px) 92vw, 300px" /></a><div className="catalogue-copy"><h3><a href={`/products/nutraxin/${item.slug}/`}>{item.name}</a></h3><p>{item.packSize}</p></div></article>)}</div></div></section> : null}
     <FinalCta title="Discuss this catalogue reference with NovaPharm." />
   </>;
 }
@@ -194,7 +195,8 @@ export function ArticlePage({ article }: { readonly article: Article }) {
 }
 
 function ContactPage() {
-  return <><PageHero eyebrow="Contact" title="Start a qualified B2B conversation." intro="Product, distribution, sourcing, CMO/CDMO, regulatory, media or careers enquiries. No patient or urgent medical information." image="/assets/media/modules/contact-qualified-enquiry.jpg" alt="Business professionals discussing a qualified pharmaceutical enquiry" /><section className="section"><div className="shell contact-layout"><div><SectionHeading kicker="Secure enquiry" title="Tell us what decision or opportunity you are assessing." intro="The managed workflow validates the request, records consent evidence and sends controlled notifications when the secure API is active." /><div className="contact-boundaries"><p><strong>Business only.</strong> NovaPharm does not accept patient orders or provide medical advice.</p><p><strong>Safety information.</strong> Use the MHRA Yellow Card service for suspected side effects; call 999 for emergencies.</p><p><strong>Confidential material.</strong> Do not upload a dossier, licence, patient record or commercially sensitive document through this general form.</p></div></div><ContactWorkflow /></div></section></>;
+  const publicPages = process.env.CORPORATE_OUTPUT_TARGET === "github-pages";
+  return <><PageHero eyebrow="Contact" title="Start a qualified B2B conversation." intro="Product, distribution, sourcing, CMO/CDMO, regulatory, media or careers enquiries. No patient or urgent medical information." image="/assets/media/modules/contact-qualified-enquiry.jpg" alt="Business professionals discussing a qualified pharmaceutical enquiry" /><section className="section"><div className="shell contact-layout"><div><SectionHeading kicker={publicPages ? "Business enquiries" : "Secure enquiry"} title="Tell us what decision or opportunity you are assessing." intro={publicPages ? "Contact the NovaPharm team by email. Private documents and account access remain separate." : "The managed workflow validates the request, records consent evidence and sends controlled notifications when the secure API is active."} /><div className="contact-boundaries"><p><strong>Business only.</strong> NovaPharm does not accept patient orders or provide medical advice.</p><p><strong>Safety information.</strong> Use the MHRA Yellow Card service for suspected side effects; call 999 for emergencies.</p><p><strong>Confidential material.</strong> Do not upload a dossier, licence, patient record or commercially sensitive document through this general form.</p></div></div>{publicPages ? <PublicEmailContact /> : <ContactWorkflow />}</div></section></>;
 }
 
 function AccountPage() {

@@ -1,3 +1,5 @@
+@import "./brand-identity.css";
+
 :root {
   color-scheme: only light;
   --bg: #f3f5f4;
@@ -10,9 +12,9 @@
   --muted: #657078;
   --line: #ccd5d2;
   --line-strong: #aebbb7;
-  --brand: #E3120B;
-  --brand-2: #B30E09;
-  --brand-text: #B30E09;
+  --brand: var(--novapharm-red);
+  --brand-2: var(--novapharm-red-text);
+  --brand-text: var(--novapharm-red-text);
   --navy: #101c27;
   --forest: #29584c;
   --teal: #477a76;
@@ -23,8 +25,8 @@
   --shadow: 0 24px 64px rgba(17, 24, 32, 0.10);
   --shadow-soft: 0 12px 34px rgba(17, 24, 32, 0.07);
   --radius: 6px;
-  --font: "Avenir Next", Avenir, "Segoe UI", Helvetica, Arial, sans-serif;
-  --serif: Charter, "Iowan Old Style", Baskerville, Georgia, serif;
+  --font: var(--nh-font-ui);
+  --serif: var(--nh-font-ui);
   --container: 1320px;
   --measure: 760px;
   --space-1: 0.5rem;

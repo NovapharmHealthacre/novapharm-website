@@ -1,0 +1,8 @@
+/* UI declarations from the approved v2 packs. Logo paths remain untouched. */
+:root {
+  --novapharm-red: #E3120B;
+  --novapharm-red-text: #B30E09;
+  --novapharm-font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Inter, Arial, sans-serif;
+  --nh-font-ui: var(--novapharm-font-ui);
+  --ni-font-ui: var(--novapharm-font-ui);
+}

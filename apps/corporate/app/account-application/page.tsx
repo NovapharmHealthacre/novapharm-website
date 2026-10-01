@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AccountInterestWorkflow } from "@/components/account-interest-workflow";
 import { JsonLd } from "@/components/json-ld";
+import { PublicEmailContact } from "@/components/public-email-contact";
 import { PageHero, SectionHeading, StatusNotice } from "@/components/ui";
 import { type CorporatePage, pageBySlug } from "@/data/pages";
 import { metadataForPage, pageSchema } from "@/lib/seo";
@@ -27,6 +28,7 @@ const steps = [
 ] as const;
 
 export default function AccountApplicationPage() {
+  const publicPages = process.env.CORPORATE_OUTPUT_TARGET === "github-pages";
   return (
     <>
       <PageHero
@@ -61,7 +63,7 @@ export default function AccountApplicationPage() {
             <SectionHeading
               kicker="Qualified account interest"
               title="Start with non-confidential business information."
-              intro="This first step records your organisation and intended business use so NovaPharm can determine whether a controlled application should be invited."
+              intro={publicPages ? "Email your organisation name and intended business use. NovaPharm will assess whether a controlled application should be invited." : "This first step records your organisation and intended business use so NovaPharm can determine whether a controlled application should be invited."}
             />
             <div className="contact-boundaries">
               <p><strong>No automatic account creation.</strong> A submission creates neither approval nor portal access.</p>
@@ -69,7 +71,7 @@ export default function AccountApplicationPage() {
               <p><strong>Controlled next stage.</strong> If the opportunity is eligible, NovaPharm can issue the appropriate due-diligence route separately.</p>
             </div>
           </div>
-          <AccountInterestWorkflow />
+          {publicPages ? <PublicEmailContact account /> : <AccountInterestWorkflow />}
         </div>
       </section>
       <JsonLd id="corporate-page-schema" value={pageSchema(page)} />

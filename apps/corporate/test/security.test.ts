@@ -18,7 +18,8 @@ test("contact workflow exposes professional errors and no embedded credential", 
   assert.doesNotMatch(source, /PORTAL_PASSWORD|BOOTSTRAP_ADMIN_PASSWORD|password\s*[:=]\s*["'][^"']+/i);
   assert.match(source, /No information was submitted/);
   assert.match(source, /X-CSRF-Token/);
-  assert.match(source, /\/api\/platform/);
+  assert.match(source, /enquiryRequest/);
+  assert.match(readFileSync(path.join(process.cwd(), "lib/enquiry-receipt.ts"), "utf8"), /\/api\/platform/);
   assert.doesNotMatch(source, /NEXT_PUBLIC_API_ORIGIN/);
 });
 
@@ -27,7 +28,8 @@ test("corporate gateway is narrow, same-origin and does not trust identity heade
   assert.match(source, /security\/csrf/);
   assert.match(source, /account-applications/);
   assert.match(source, /maximumRequestBytes/);
-  assert.match(source, /No information was submitted/);
+  assert.match(source, /response could not be confirmed/);
+  assert.doesNotMatch(source, /No information was submitted/);
   assert.doesNotMatch(source, /x-ms-client-principal|authorization/i);
 });
 

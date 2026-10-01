@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useEffect, useRef, useState } from "react";
+import { enquiryRequest, requireEnquiryReceipt, submissionUnconfirmed, unconfirmedEnquiryMessage } from "../lib/enquiry-receipt";
 
 const enquiryTypes = [
   "Product opportunity",
@@ -15,8 +16,6 @@ const enquiryTypes = [
   "Careers",
   "General enquiry",
 ] as const;
-
-const platformEndpoint = (path: string) => `/api/platform${path}`;
 
 function serverEnquiryType(selected: string): string {
   if (selected === "Clinical development & CRO support") return "Regulatory services";
@@ -45,7 +44,9 @@ export function ContactWorkflow() {
   const [state, setState] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
   const [defaultType, setDefaultType] = useState("");
+  const [reference, setReference] = useState("");
   const statusRef = useRef<HTMLDivElement>(null);
+  const submitting = useRef(false);
 
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get("enquiry") ?? "";
@@ -55,11 +56,14 @@ export function ContactWorkflow() {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
-    if (!form.reportValidity()) return;
+    if (submitting.current || !form.reportValidity()) return;
+    submitting.current = true;
+    setReference("");
     setState("sending");
     setMessage("Submitting your enquiry securely.");
+    let submissionStarted = false;
     try {
-      const csrfResponse = await fetch(platformEndpoint("/security/csrf"), { credentials: "include", headers: { Accept: "application/json" } });
+      const csrfResponse = await enquiryRequest("/security/csrf", { headers: { Accept: "application/json" } });
       const csrfPayload = await csrfResponse.json().catch(() => ({})) as { csrfToken?: string };
       if (!csrfResponse.ok || !csrfPayload.csrfToken) throw Object.assign(new Error("csrf_unavailable"), { status: csrfResponse.status });
       const data = new FormData(form);
@@ -77,21 +81,24 @@ export function ContactWorkflow() {
           referringHost: referringHost(document.referrer),
         }),
       });
-      const response = await fetch(platformEndpoint("/contact"), {
+      submissionStarted = true;
+      const response = await enquiryRequest("/contact", {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfPayload.csrfToken },
         body: JSON.stringify(payload),
       });
-      if (!response.ok) throw Object.assign(new Error("submission_failed"), { status: response.status });
+      const receipt = await requireEnquiryReceipt(response);
+      setReference(receipt.reference);
       form.reset();
       setDefaultType("");
       setState("success");
       setMessage("Thank you. Your enquiry has been received and recorded securely.");
     } catch (error) {
       setState("error");
-      setMessage(friendlyError(Number((error as { status?: number }).status ?? 0), !navigator.onLine));
+      const status = Number((error as { status?: number }).status ?? 0);
+      setMessage(submissionUnconfirmed(status, submissionStarted) ? unconfirmedEnquiryMessage : friendlyError(status, !navigator.onLine));
     } finally {
+      submitting.current = false;
       window.setTimeout(() => statusRef.current?.focus(), 0);
     }
   }
@@ -117,6 +124,7 @@ export function ContactWorkflow() {
       </form>
       <div className={`form-status form-status-${state}`} ref={statusRef} role="status" aria-live="polite" tabIndex={-1}>
         <p>{message || "Your information is sent only to NovaPharm's secure server when you submit this form."}</p>
+        {reference ? <p>Your reference: <strong>{reference}</strong></p> : null}
       </div>
       {state === "error" ? <a className="verified-email" href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20business%20enquiry">Use the verified corporate email route</a> : null}
     </div>

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/public-link";
 
 export function Brand({ footer = false }: { readonly footer?: boolean }) {
   return (
@@ -8,7 +8,7 @@ export function Brand({ footer = false }: { readonly footer?: boolean }) {
         src="/assets/brand/novapharm-healthcare-logo.svg"
         alt="NovaPharm Healthcare"
         width={2048}
-        height={258}
+        height={256}
         priority={!footer}
         unoptimized
       />

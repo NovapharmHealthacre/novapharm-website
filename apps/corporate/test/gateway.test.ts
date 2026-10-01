@@ -6,6 +6,46 @@ import { forwardPlatformRequest } from "../lib/platform-gateway";
 
 const mutableEnvironment = process.env as Record<string, string | undefined>;
 
+test("form gateway bounds streamed bodies and controls interrupted upstream replies", { concurrency: false }, async (t) => {
+  const keys = ["PUBLIC_API_ORIGIN", "PUBLIC_ORIGIN", "NODE_ENV"] as const;
+  const previous = keys.map((key) => process.env[key]);
+  mutableEnvironment.PUBLIC_API_ORIGIN = "https://api.example.test";
+  mutableEnvironment.PUBLIC_ORIGIN = "https://novapharmhealthcare.com";
+  mutableEnvironment.NODE_ENV = "production";
+  let forwarded = 0;
+  let responseMode = "empty";
+  t.mock.method(globalThis, "fetch", async () => {
+    forwarded += 1;
+    if (responseMode === "interrupted") return new Response(new ReadableStream({ start(controller) { controller.error(new Error("Interrupted reply")); } }));
+    return new Response(null, { status: 204 });
+  });
+  const context = { params: Promise.resolve({ path: ["contact"] }) };
+  const url = "https://novapharmhealthcare.com/api/platform/contact";
+  try {
+    const oversized = await forwardPlatformRequest(new NextRequest(url, { method: "POST", headers: { "content-length": "1" }, body: "x".repeat(129 * 1024) }), context);
+    assert.equal(oversized.status, 413);
+    assert.equal(forwarded, 0);
+    const broken = await forwardPlatformRequest(new NextRequest(url, {
+      method: "POST", duplex: "half", body: new ReadableStream({ start(controller) { controller.error(new Error("Interrupted upload")); } }),
+    } as ConstructorParameters<typeof NextRequest>[1]), context);
+    assert.equal(broken.status, 400);
+    assert.equal(forwarded, 0);
+    const empty = await forwardPlatformRequest(new NextRequest(url, { method: "POST", body: "{}" }), context);
+    assert.equal(empty.status, 204);
+    assert.equal(await empty.text(), "");
+    responseMode = "interrupted";
+    const interrupted = await forwardPlatformRequest(new NextRequest(url, { method: "POST", body: "{}" }), context);
+    assert.equal(interrupted.status, 503);
+    assert.match((await interrupted.json()).error, /could not be confirmed/);
+    assert.equal(interrupted.headers.get("cache-control"), "no-store");
+  } finally {
+    keys.forEach((key, index) => {
+      if (previous[index] === undefined) delete mutableEnvironment[key];
+      else mutableEnvironment[key] = previous[index];
+    });
+  }
+});
+
 async function upstreamServer() {
   let receivedOrigin = "";
   const server = createServer((request, response) => {
@@ -74,6 +114,41 @@ test("gateway rejects unlisted routes and oversized payloads before forwarding",
   );
   assert.equal(oversized.status, 413);
   assert.match((await oversized.json()).error, /too large/i);
+});
+
+test("gateway cannot claim non-submission when an upstream receives the write but drops its response", { concurrency: false }, async () => {
+  let receivedWrites = 0;
+  const server = createServer((request) => {
+    request.resume();
+    request.on("end", () => {
+      receivedWrites += 1;
+      request.socket.destroy();
+    });
+  });
+  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const address = server.address();
+  assert.ok(address && typeof address !== "string");
+  const keys = ["PUBLIC_API_ORIGIN", "PUBLIC_ORIGIN", "NODE_ENV"] as const;
+  const previous = keys.map((key) => process.env[key]);
+  mutableEnvironment.PUBLIC_API_ORIGIN = `http://127.0.0.1:${address.port}`;
+  mutableEnvironment.PUBLIC_ORIGIN = "https://novapharmhealthcare.com";
+  mutableEnvironment.NODE_ENV = "test";
+  try {
+    const response = await forwardPlatformRequest(new NextRequest("https://novapharmhealthcare.com/api/platform/contact", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: "{}",
+    }), { params: Promise.resolve({ path: ["contact"] }) });
+    assert.equal(receivedWrites, 1);
+    assert.equal(response.status, 503);
+    const payload = await response.json();
+    assert.match(payload.error, /could not be confirmed/);
+    assert.doesNotMatch(payload.error, /No information was submitted/);
+  } finally {
+    keys.forEach((key, index) => {
+      if (previous[index] === undefined) delete mutableEnvironment[key];
+      else mutableEnvironment[key] = previous[index];
+    });
+    await new Promise<void>((resolve) => server.close(() => resolve()));
+  }
 });
 
 test("gateway returns a controlled outage when runtime origins are invalid", { concurrency: false }, async () => {

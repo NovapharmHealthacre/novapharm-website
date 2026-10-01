@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/public-link";
 import { croContent } from "@/data/cro";
 import { oncologyContent } from "@/data/oncology";
 import { productCategories, regulatorySections, servicePillars } from "@/data/site";

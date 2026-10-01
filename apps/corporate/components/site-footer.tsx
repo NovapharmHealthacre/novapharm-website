@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/public-link";
 import { company } from "@/data/site";
 import { Brand } from "./brand";
 import { CookieSettingsButton } from "./cookie-controls";

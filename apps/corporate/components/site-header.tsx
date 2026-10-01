@@ -1,9 +1,10 @@
-import Link from "next/link";
+import Link from "@/components/public-link";
 import { navigation } from "@/data/site";
+import { portalLink } from "@/lib/portal-link";
 import { Brand } from "./brand";
 import { MobileNavigation } from "./mobile-navigation";
 
-const portalOrigin = process.env.PORTAL_ORIGIN ?? "https://portal.novapharmhealthcare.com";
+const portalOrigin = portalLink(process.env.PORTAL_ORIGIN);
 
 export function SiteHeader() {
   return (

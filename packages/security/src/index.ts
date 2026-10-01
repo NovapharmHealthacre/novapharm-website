@@ -1,3 +1,5 @@
+export { GatewayBodyError, gatewayRequestBody } from "./gateway-body";
+
 export interface PublicSecurityPolicyInput {
   readonly nonce: string;
   readonly secureTransport: boolean;

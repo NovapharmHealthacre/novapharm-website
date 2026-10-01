@@ -1,8 +1,7 @@
 "use client";
 
 import { type FormEvent, useRef, useState } from "react";
-
-const platformEndpoint = (path: string) => `/api/platform${path}`;
+import { enquiryRequest, requireEnquiryReceipt, submissionUnconfirmed, unconfirmedEnquiryMessage } from "../lib/enquiry-receipt";
 
 function friendlyError(status: number, offline: boolean): string {
   if (offline) return "You appear to be offline. Reconnect and try again.";
@@ -24,19 +23,23 @@ function referringHost(referrer: string): string {
 export function AccountInterestWorkflow() {
   const [state, setState] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [reference, setReference] = useState("");
   const statusRef = useRef<HTMLDivElement>(null);
+  const submitting = useRef(false);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
-    if (!form.reportValidity()) return;
+    if (submitting.current || !form.reportValidity()) return;
+    submitting.current = true;
+    setReference("");
 
     setState("sending");
     setMessage("Submitting your account interest securely.");
+    let submissionStarted = false;
 
     try {
-      const csrfResponse = await fetch(platformEndpoint("/security/csrf"), {
-        credentials: "include",
+      const csrfResponse = await enquiryRequest("/security/csrf", {
         headers: { Accept: "application/json" },
       });
       const csrfPayload = await csrfResponse.json().catch(() => ({})) as { csrfToken?: string };
@@ -64,24 +67,27 @@ export function AccountInterestWorkflow() {
         attributionPayload: JSON.stringify({ referringHost: referringHost(document.referrer) }),
       };
 
-      const response = await fetch(platformEndpoint("/contact"), {
+      submissionStarted = true;
+      const response = await enquiryRequest("/contact", {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           "X-CSRF-Token": csrfPayload.csrfToken,
         },
         body: JSON.stringify(payload),
       });
-      if (!response.ok) throw Object.assign(new Error("submission_failed"), { status: response.status });
+      const receipt = await requireEnquiryReceipt(response);
+      setReference(receipt.reference);
 
       form.reset();
       setState("success");
       setMessage("Your account interest has been received and recorded securely. This does not create an account or portal access; NovaPharm will review eligibility before any controlled application invitation.");
     } catch (error) {
       setState("error");
-      setMessage(friendlyError(Number((error as { status?: number }).status ?? 0), !navigator.onLine));
+      const status = Number((error as { status?: number }).status ?? 0);
+      setMessage(submissionUnconfirmed(status, submissionStarted) ? unconfirmedEnquiryMessage : friendlyError(status, !navigator.onLine));
     } finally {
+      submitting.current = false;
       window.setTimeout(() => statusRef.current?.focus(), 0);
     }
   }
@@ -125,6 +131,7 @@ export function AccountInterestWorkflow() {
       </form>
       <div className={`form-status form-status-${state}`} ref={statusRef} role="status" aria-live="polite" tabIndex={-1}>
         <p>{message || "This first step records non-confidential account interest only. No customer account, approval or portal identity is created automatically."}</p>
+        {reference ? <p>Your reference: <strong>{reference}</strong></p> : null}
       </div>
       {state === "error" ? <a className="verified-email" href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20account%20interest">Use the verified corporate email route</a> : null}
     </div>

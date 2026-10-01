@@ -1,6 +1,8 @@
 import { articles } from "@/data/articles";
 import { siteUrl } from "@/lib/seo";
 
+export const dynamic = "force-static";
+
 function xml(value: string): string {
   return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 }

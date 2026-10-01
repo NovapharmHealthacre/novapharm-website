@@ -1,3 +1,4 @@
+import { GatewayBodyError, gatewayRequestBody } from "@novapharm/security";
 import type { NextRequest } from "next/server";
 
 const permittedPaths = new Set(["security/csrf", "contact", "account-applications"]);
@@ -63,10 +64,16 @@ export async function forwardPlatformRequest(request: NextRequest, context: { pa
     if (value) headers.set(name, value);
   }
 
-  const body = request.method === "GET" ? undefined : await request.arrayBuffer();
-  if (body && body.byteLength > maximumRequestBytes) return errorResponse("The submitted information is too large.", 413);
+  let body: ArrayBuffer | undefined;
+  try {
+    body = await gatewayRequestBody(request, maximumRequestBytes);
+  } catch (error) {
+    if (error instanceof GatewayBodyError) return errorResponse(error.message, error.status);
+    return errorResponse("The request could not be read. No information was forwarded.", 400);
+  }
 
   let upstream: Response;
+  let responseBody: ArrayBuffer;
   try {
     upstream = await fetch(target, {
       method: request.method,
@@ -76,8 +83,9 @@ export async function forwardPlatformRequest(request: NextRequest, context: { pa
       redirect: "manual",
       signal: AbortSignal.timeout(15_000),
     });
+    responseBody = await upstream.arrayBuffer();
   } catch {
-    return errorResponse("The secure enquiry service is temporarily unavailable. No information was submitted.", 503, "30");
+    return errorResponse("The secure enquiry service response could not be confirmed. Please check with NovaPharm before resubmitting.", 503, "30");
   }
 
   const responseHeaders = new Headers({
@@ -92,5 +100,5 @@ export async function forwardPlatformRequest(request: NextRequest, context: { pa
   if (cookies.length) for (const cookie of cookies) responseHeaders.append("Set-Cookie", cookie);
   else if (upstream.headers.get("set-cookie")) responseHeaders.append("Set-Cookie", upstream.headers.get("set-cookie") as string);
 
-  return new Response(await upstream.arrayBuffer(), { status: upstream.status, headers: responseHeaders });
+  return new Response([204, 205, 304].includes(upstream.status) ? null : responseBody, { status: upstream.status, headers: responseHeaders });
 }
