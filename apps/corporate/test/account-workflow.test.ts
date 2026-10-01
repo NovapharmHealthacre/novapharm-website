@@ -30,8 +30,10 @@ test("account pathway renders only real governed stages", () => {
 
 test("public account interest uses the existing controlled lead authority", () => {
   const workflow = read("components/account-interest-workflow.tsx");
-  assert.match(workflow, /platformEndpoint\("\/security\/csrf"\)/);
-  assert.match(workflow, /platformEndpoint\("\/contact"\)/);
+  assert.match(workflow, /enquiryRequest\("\/security\/csrf",/);
+  assert.match(workflow, /enquiryRequest\("\/contact",/);
+  assert.match(workflow, /setReference\(receipt.reference\)/);
+  assert.match(workflow, /submitting.current \|\| !form.reportValidity\(\)/);
   assert.match(workflow, /"X-CSRF-Token"/);
   assert.match(workflow, /enquiryType: "Pharmacy or wholesaler account"/);
   assert.match(workflow, /No customer account, approval or portal identity is created automatically/i);

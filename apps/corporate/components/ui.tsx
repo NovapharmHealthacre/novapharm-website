@@ -1,6 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
 import type { ReactNode } from "react";
+import Link from "@/components/public-link";
 
 export function Breadcrumbs({ items }: { readonly items: readonly { readonly label: string; readonly href?: string }[] }) {
   return <nav className="breadcrumbs" aria-label="Breadcrumb">{items.map((item, index) => <span key={item.href ?? item.label}>{item.href ? <Link href={item.href}>{item.label}</Link> : item.label}{index < items.length - 1 ? <i aria-hidden="true">/</i> : null}</span>)}</nav>;

@@ -6,11 +6,13 @@ import path from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { type BrowserType, chromium, type Page, webkit } from "playwright";
 import { articles } from "../data/articles";
+import nutraxinRegister from "../data/nutraxin-product-register.json";
 import { corporatePages } from "../data/pages";
 import { leadership, navigation } from "../data/site";
+import { verifyHeroExperience } from "./hero-acceptance";
 
 const productionOrigin = "https://novapharmhealthcare.com";
-const artifactRoot = path.resolve(process.cwd(), "../../artifacts/corporate-browser");
+const artifactRoot = path.resolve(process.env.CORPORATE_BROWSER_ARTIFACT_ROOT ?? path.join(process.cwd(), "../../artifacts/corporate-browser"));
 const standaloneRoot = path.resolve(process.cwd(), ".next/standalone/apps/corporate");
 const viewports = Object.freeze([
   { name: "desktop-1280", width: 1280, height: 800 },
@@ -29,7 +31,10 @@ const canonicalRoutes = Object.freeze([
   ...corporatePages.map((page) => page.slug ? `/${page.slug}/` : "/"),
   ...leadership.map((person) => `/leadership/${person.slug}/`),
   ...articles.map((article) => `/news-insights/${article.slug}/`),
+  ...nutraxinRegister.products.map((product) => `/products/nutraxin/${product.slug}/`),
 ]);
+assert.equal(canonicalRoutes.length, 59, "All 59 Corporate routes must receive browser acceptance");
+assert.equal(new Set(canonicalRoutes).size, canonicalRoutes.length, "Corporate acceptance routes must be unique");
 const routes = Object.freeze([...canonicalRoutes, "/acceptance-not-found/"]);
 
 interface Finding {
@@ -126,15 +131,39 @@ async function scrollThroughPage(page: Page): Promise<void> {
 
 async function waitForImages(page: Page, engine: string, route: string): Promise<void> {
   const images = page.locator("img");
+  const deadline = Date.now() + 45_000;
   for (let index = 0; index < await images.count(); index += 1) {
     const image = images.nth(index);
-    if (!(await image.evaluate((element) => (element as HTMLImageElement).complete))) {
-      await image.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(25);
+    await image.scrollIntoViewIfNeeded();
+    // complete can change during hydration/srcset selection. Require an actual
+    // decode while each lazy image is in view, within the existing shared budget.
+    try {
+      const handle = await image.elementHandle();
+      assert.ok(handle, "Image detached during loading");
+      try {
+        await page.waitForFunction((element) => {
+          const image = element as HTMLImageElement;
+          return image.currentSrc !== "" && image.complete && image.naturalWidth > 0;
+        }, handle, { timeout: Math.max(1, deadline - Date.now()) });
+      } finally { await handle.dispose(); }
+      await image.evaluate(async (element, remaining) => {
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        try {
+          await Promise.race([
+            (element as HTMLImageElement).decode(),
+            new Promise<never>((_resolve, reject) => { timer = setTimeout(() => reject(new Error("Image decode timed out")), remaining); }),
+          ]);
+        } finally { clearTimeout(timer); }
+      }, Math.max(1, deadline - Date.now()));
+    } catch (error) {
+      const state = await image.evaluate((element) => {
+        const image = element as HTMLImageElement;
+        return { src: image.src, currentSrc: image.currentSrc, complete: image.complete, naturalWidth: image.naturalWidth, loading: image.loading };
+      });
+      throw new Error(`${engine} ${route}: image ${index} did not decode: ${JSON.stringify(state)}`, { cause: error });
     }
   }
 
-  const deadline = Date.now() + 45_000;
   while (Date.now() < deadline) {
     const complete = await page.evaluate(() => {
       for (const image of document.images) if (!image.complete) return false;
@@ -172,7 +201,7 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
   assert.match(response.headers()["x-robots-tag"] ?? "", /noindex/, `${engine} ${route}: validation response is indexable`);
 
   await page.locator("main").waitFor({ state: "visible" });
-  await page.evaluate(() => document.fonts.ready);
+  await page.waitForFunction(() => document.fonts.status === "loaded", undefined, { timeout: 30_000 });
   assert.equal(await page.locator("h1").count(), 1, `${engine} ${route}: expected exactly one H1`);
   const logo = page.locator('header img[alt="NovaPharm Healthcare"]');
   assert.equal(await logo.count(), 1, `${engine} ${route}: official header logo missing`);
@@ -196,6 +225,30 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
   assert.deepEqual(layout.brokenImages, [], `${engine} ${route}: broken image detected`);
   assert.equal(layout.passwordFields, 0, `${engine} ${route}: authentication field exposed by public app`);
   assert.equal(layout.rawTechnicalError, false, `${engine} ${route}: raw technical message exposed`);
+  if (route.startsWith("/products/nutraxin/") && route !== "/products/nutraxin/") {
+    const detailMedia = await page.locator(".nutraxin-product-media").evaluate((element) => {
+      const bounds = element.getBoundingClientRect();
+      const image = element.querySelector("img");
+      if (!image) throw new Error("Product detail image missing");
+      const imageBounds = image.getBoundingClientRect();
+      return { width: bounds.width, height: bounds.height, fit: getComputedStyle(image).objectFit, position: getComputedStyle(element).position, contained: imageBounds.left >= bounds.left - 1 && imageBounds.right <= bounds.right + 1 && imageBounds.top >= bounds.top - 1 && imageBounds.bottom <= bounds.bottom + 1 };
+    });
+    assert.equal(detailMedia.position, "relative", `${engine} ${route}: product image lost its positioning container`);
+    assert.equal(detailMedia.fit, "contain", `${engine} ${route}: product artwork must not stretch or crop`);
+    assert.ok(detailMedia.width >= 200 && detailMedia.width <= 441 && Math.abs(detailMedia.height - detailMedia.width) < 1, `${engine} ${route}: product image frame collapsed or became oversized`);
+    assert.ok(detailMedia.contained, `${engine} ${route}: product image escaped its frame`);
+  }
+  const catalogueMedia = await page.locator(".catalogue-media").evaluateAll((elements) => elements.map((element) => {
+    const bounds = element.getBoundingClientRect();
+    const image = element.querySelector("img")?.getBoundingClientRect();
+    return { width: bounds.width, height: bounds.height, imageWidth: image?.width ?? 0, imageHeight: image?.height ?? 0 };
+  }));
+  if (route === "/products/nutraxin/") assert.equal(catalogueMedia.length, 19, "All 19 catalogue images must be present");
+  for (const media of catalogueMedia) {
+    assert.ok(media.width >= 200 && media.height >= 150, `${engine} ${route}: catalogue media collapsed`);
+    assert.ok(Math.abs(media.width / media.height - 4 / 3) < 0.01, `${engine} ${route}: catalogue media aspect ratio changed`);
+    assert.ok(media.imageWidth >= 200 && media.imageHeight >= 150, `${engine} ${route}: product image collapsed`);
+  }
   assert.deepEqual(failedResources, [], `${engine} ${route}: failed subresources`);
   const unexpectedErrors = expectedStatus === 404 ? consoleErrors.filter((message) => !message.includes("status of 404")) : consoleErrors;
   assert.deepEqual(unexpectedErrors, [], `${engine} ${route}: browser console errors`);
@@ -225,6 +278,11 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
 }
 
 async function verifyInteractions(page: Page, engine: string): Promise<void> {
+  for (const [legacy, canonical] of [["/product-portfolio/", "/products/"], ["/product-portfolio/nutraxin/", "/products/nutraxin/"]]) {
+    const response = await page.request.get(`${baseUrl}${legacy}`, { maxRedirects: 0 });
+    assert.equal(response.status(), 308, `${engine}: legacy product URL must redirect permanently`);
+    assert.equal(new URL(response.headers().location, baseUrl).pathname, canonical, `${engine}: legacy product redirect target is incorrect`);
+  }
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${baseUrl}/`, { waitUntil: "domcontentloaded" });
 
@@ -250,8 +308,14 @@ async function verifyInteractions(page: Page, engine: string): Promise<void> {
 
   const menu = page.locator("details.mobile-menu summary");
   assert.equal(await menu.getAttribute("aria-label"), "Open navigation", `${engine}: mobile menu is not labelled`);
+  assert.equal(await menu.locator(".menu-open-icon").isVisible(), true);
   await menu.click();
   assert.equal(await page.locator("details.mobile-menu").getAttribute("open"), "", `${engine}: mobile menu did not open`);
+  assert.equal(await menu.locator(".menu-close-icon").isVisible(), true);
+  await page.keyboard.press("Escape");
+  assert.equal(await page.locator("details.mobile-menu").getAttribute("open"), null, `${engine}: Escape did not close navigation`);
+  assert.equal(await menu.evaluate((element) => element === document.activeElement), true, `${engine}: Escape did not restore menu focus`);
+  await menu.click();
   await page.getByRole("navigation", { name: "Mobile navigation" }).getByRole("link", { name: "Company" }).click();
   await page.waitForURL(/\/about\/$/);
   assert.equal(await page.locator("details.mobile-menu").getAttribute("open"), null, `${engine}: mobile menu did not close after navigation`);
@@ -271,6 +335,43 @@ async function verifyInteractions(page: Page, engine: string): Promise<void> {
   await failureMessage.waitFor({ state: "visible" });
   assert.equal(await page.getByText("The string did not match the expected pattern.").count(), 0, `${engine}: raw browser error exposed`);
   assert.equal(await page.getByRole("link", { name: "Use the verified corporate email route" }).count(), 1, `${engine}: verified fallback missing`);
+
+  await page.route("**/api/platform/security/csrf", (route) => route.fulfill({ json: { csrfToken: "isolated-browser-fixture" } }));
+  let receipt: unknown = {};
+  await page.route("**/api/platform/contact", (route) => route.fulfill({ status: 201, json: receipt }));
+  await page.getByRole("button", { name: "Submit enquiry" }).click();
+  await page.getByText(/We could not confirm whether your enquiry was recorded/).waitFor({ state: "visible" });
+  assert.equal(await page.getByLabel("Full name").inputValue(), "Validation User", `${engine}: unconfirmed enquiry must preserve user input`);
+  receipt = { ok: true, lead: { id: "browser-fixture", leadNumber: "NP-LEAD-FIXTURE" } };
+  await page.getByRole("button", { name: "Submit enquiry" }).click();
+  await page.getByText("Thank you. Your enquiry has been received and recorded securely.").waitFor({ state: "visible" });
+  await page.getByText("Your reference: NP-LEAD-FIXTURE", { exact: true }).waitFor({ state: "visible" });
+  assert.equal(await page.getByLabel("Full name").inputValue(), "", `${engine}: confirmed enquiry should clear user input`);
+
+  await page.goto(`${baseUrl}/account-application/`, { waitUntil: "domcontentloaded" });
+  await page.getByLabel("Full name").fill("Validation User");
+  await page.getByLabel("Business email").fill("validation@example.com");
+  await page.getByLabel("Company", { exact: true }).fill("Synthetic Validation Ltd");
+  await page.getByLabel("Role or job title").fill("Validation Lead");
+  await page.getByLabel("Country").fill("United Kingdom");
+  await page.getByLabel("Organisation type").selectOption({ label: "Pharmacy" });
+  await page.getByLabel("What would you like the account to support?").fill("Synthetic non-confidential account interest for isolated browser acceptance.");
+  await page.getByLabel(/I confirm that this submission/).check();
+  await page.getByLabel(/I have read the business-enquiry privacy information/).check();
+  receipt = {};
+  await page.getByRole("button", { name: "Register qualified account interest" }).click();
+  await page.getByText(/We could not confirm whether your enquiry was recorded/).waitFor({ state: "visible" });
+  assert.equal(await page.getByLabel("Full name").inputValue(), "Validation User", `${engine}: unconfirmed account interest must preserve input`);
+  receipt = { ok: true, lead: { id: "browser-fixture", leadNumber: "NP-LEAD-FIXTURE" } };
+  await page.getByRole("button", { name: "Register qualified account interest" }).click();
+  await page.getByText(/Your account interest has been received and recorded securely/).waitFor({ state: "visible" });
+  await page.getByText("Your reference: NP-LEAD-FIXTURE", { exact: true }).waitFor({ state: "visible" });
+  assert.equal(await page.locator('input[type="file"], input[type="password"]').count(), 0, `${engine}: account interest must not collect documents or passwords`);
+  await page.goto(`${baseUrl}/products/nutraxin/`, { waitUntil: "networkidle" });
+  await page.locator(".catalogue-media").first().click();
+  await page.waitForURL("**/products/nutraxin/vitamin-d3-120-tablets/");
+  await page.locator(".nutraxin-product-media img").evaluate(async (image) => { await (image as HTMLImageElement).decode(); });
+  assert.equal(await page.evaluate(() => window.scrollY), 0, `${engine}: opening a product must start at its identity, not retain catalogue scroll`);
 }
 
 async function expectHidden(locator: ReturnType<Page["locator"]>, message: string): Promise<void> {
@@ -278,9 +379,10 @@ async function expectHidden(locator: ReturnType<Page["locator"]>, message: strin
 }
 
 async function runEngine(name: string, browserType: BrowserType): Promise<void> {
-  const browser = await browserType.launch({ headless: true });
-  try {
-    for (const viewport of viewports) {
+  // Keep each width independent across this long-running route matrix.
+  for (const viewport of viewports) {
+    const browser = await browserType.launch({ headless: true });
+    try {
       const context = await browser.newContext({
         viewport: { width: viewport.width, height: viewport.height },
         colorScheme: "light",
@@ -296,6 +398,7 @@ async function runEngine(name: string, browserType: BrowserType): Promise<void> 
       });
       try {
         for (const route of routes) {
+          console.log(`${name}: checking ${viewport.name} ${route}`);
           const page = await context.newPage();
           try {
             await verifyPage(page, name, viewport, route);
@@ -307,9 +410,9 @@ async function runEngine(name: string, browserType: BrowserType): Promise<void> 
         await context.close();
       }
       console.log(`${name}: completed ${viewport.name}`);
+    } finally {
+      await browser.close();
     }
-  } finally {
-    await browser.close();
   }
 }
 
@@ -338,13 +441,14 @@ async function runCraftPreflight(name: string, browserType: BrowserType): Promis
     });
     try {
       const page = await highDensityContext.newPage();
-      const response = await page.goto(`${baseUrl}/product-portfolio/`, { waitUntil: "networkidle" });
+      const response = await page.goto(`${baseUrl}/products/`, { waitUntil: "domcontentloaded" });
       assert.equal(response?.status(), 200, `${name}: product portfolio high-density response failed`);
       const productImage = page.getByAltText(
         "Nutraxin Vitamin D3 box and 120-tablet bottle shown as an owner-supplied catalogue reference",
         { exact: true },
       );
       await productImage.waitFor({ state: "visible" });
+      await productImage.evaluate(async (element) => { await (element as HTMLImageElement).decode(); });
       const imageMetrics = await productImage.evaluate((element) => {
         const image = element as HTMLImageElement;
         return {
@@ -412,14 +516,19 @@ function markdownReport(generatedAt: string): string {
   return `# Corporate browser acceptance\n\n- Generated: ${generatedAt}\n- Candidate: local standalone Node production artifact\n- Engines: Chromium and WebKit\n- Canonical routes: ${canonicalRoutes.length}\n- Viewports: ${viewports.length}\n- Screenshots: ${screenshots}\n- Axe runs: ${accessibilityRuns}\n- High-density product-media runs: ${highDensityRuns}\n- Scriptless-navigation runs: ${noJavaScriptRuns}\n- Serious or critical findings: ${findings.length}\n- Search indexing: disabled with meta robots and X-Robots-Tag during validation\n- Data: synthetic and non-confidential only\n`;
 }
 
-await fs.rm(artifactRoot, { recursive: true, force: true });
-await fs.mkdir(artifactRoot, { recursive: true });
+await fs.mkdir(path.dirname(artifactRoot), { recursive: true });
+await fs.mkdir(artifactRoot);
 try {
   await startServer();
   await runInteractionPreflight("chromium", chromium);
   await runInteractionPreflight("webkit", webkit);
   await runCraftPreflight("chromium", chromium);
   await runCraftPreflight("webkit", webkit);
+  for (const [engine, driver] of [["chromium", chromium], ["webkit", webkit]] as const) {
+    const hero = await verifyHeroExperience(engine, driver, baseUrl, artifactRoot);
+    screenshots += hero.screenshots;
+    accessibilityRuns += hero.accessibilityRuns;
+  }
   await runEngine("chromium", chromium);
   await runEngine("webkit", webkit);
   const generatedAt = new Date().toISOString();

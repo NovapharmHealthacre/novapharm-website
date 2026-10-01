@@ -15,3 +15,4 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...articles.map((article) => ({ url: absoluteUrl(`/news-insights/${article.slug}/`), lastModified: new Date(`${article.updated}T00:00:00Z`), changeFrequency: "yearly" as const, priority: 0.8 })),
   ];
 }
+export const dynamic = "force-static";

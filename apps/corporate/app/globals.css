@@ -60,7 +60,10 @@ small { font-size: 0.78rem; }
 .portal-link { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 0 16px; border: 1px solid var(--navy); color: var(--navy); font-size: 0.82rem; font-weight: 700; text-decoration: none; }
 .portal-link:hover { background: var(--navy); color: var(--white); }
 .mobile-menu { display: none; position: relative; }
-.mobile-menu summary { display: flex; width: 44px; height: 44px; align-items: center; justify-content: center; cursor: pointer; list-style: none; border: 1px solid var(--line); }
+.mobile-menu summary { display: flex; width: 44px; height: 44px; align-items: center; justify-content: center; cursor: pointer; list-style: none; border-radius: 4px; }
+.mobile-menu summary:hover { background: #f5f5f7; }
+.mobile-menu summary .menu-close-icon, .mobile-menu[open] summary .menu-open-icon { display: none; }
+.mobile-menu[open] summary .menu-close-icon { display: block; }
 .mobile-menu summary::-webkit-details-marker { display: none; }
 .mobile-menu nav { position: fixed; top: var(--header); left: 0; right: 0; max-height: calc(100vh - var(--header)); overflow-y: auto; background: var(--white); border-top: 1px solid var(--line); box-shadow: var(--shadow); padding: 20px 32px 32px; }
 .mobile-menu nav a { display: flex; align-items: center; justify-content: space-between; min-height: 48px; border-bottom: 1px solid var(--line); color: var(--ink); font-weight: 700; text-decoration: none; }
@@ -302,13 +305,30 @@ tbody th { color: var(--ink); }
 
 .catalogue-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 40px; }
 .catalogue-grid article { border: 1px solid var(--line); background: var(--white); }
-.catalogue-media { position: relative; aspect-ratio: 4 / 3; background: #f7f8f8; overflow: hidden; }
+.catalogue-media { display: block; position: relative; aspect-ratio: 4 / 3; background: #f7f8f8; overflow: hidden; }
 .catalogue-media img { object-fit: contain; padding: 18px; }
 .catalogue-copy { padding: 24px; }
 .catalogue-copy h2 { font-size: 25px; }
 .catalogue-copy dl div { display: flex; justify-content: space-between; gap: 14px; padding: 9px 0; border-top: 1px solid var(--line); font-size: .8rem; }
 .catalogue-copy dd { margin: 0; text-align: right; }
 .catalogue-copy small { color: var(--muted); }
+
+.nutraxin-product-hero { padding: 40px 0 48px; }
+.nutraxin-product-hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: center; }
+.nutraxin-product-copy { min-width: 0; }
+.nutraxin-product-copy h1 { margin: 16px 0; font-size: 44px; line-height: 1.12; overflow-wrap: anywhere; }
+.nutraxin-product-media { position: relative; width: min(100%, 440px); aspect-ratio: 1; justify-self: center; overflow: hidden; }
+.nutraxin-product-media img { object-fit: contain; object-position: center; padding: 24px; }
+.product-reference-status { color: var(--muted); font-size: .875rem; }
+.product-reference-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+.product-reference-table > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.product-reference-table dd { margin: 0; text-align: right; }
+@media (max-width: 760px) {
+  .nutraxin-product-hero { padding: 24px 0; }
+  .nutraxin-product-hero-grid, .product-reference-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .nutraxin-product-copy h1 { font-size: 32px; }
+  .nutraxin-product-media { width: min(100%, 320px); }
+}
 
 .ecosystem-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
 .ecosystem-grid article { position: relative; min-height: 210px; padding: 24px; border: 1px solid var(--line); overflow: hidden; }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ConciseHomePage } from "@/components/concise-home";
 import {
   ConciseCroPage,
@@ -21,6 +21,8 @@ import { absoluteUrl, articleSchema, metadataForArticle, metadataForPage, metada
 interface RouteProps {
   readonly params: Promise<{ readonly slug?: readonly string[] }>;
 }
+
+export const dynamicParams = false;
 
 function joined(segments?: readonly string[]): string {
   return segments?.join("/") ?? "";
@@ -67,8 +69,10 @@ export function generateStaticParams() {
     ...leadership.map((person) => ({ slug: ["leadership", person.slug] })),
     ...articles.map((article) => ({ slug: ["news-insights", article.slug] })),
     ...nutraxinRegister.products.map((product) => ({ slug: ["products", "nutraxin", product.slug] })),
-    { slug: ["product-portfolio"] },
-    { slug: ["product-portfolio", "nutraxin"] },
+    ...(process.env.CORPORATE_OUTPUT_TARGET === "github-pages" ? [] : [
+      { slug: ["product-portfolio"] },
+      { slug: ["product-portfolio", "nutraxin"] },
+    ]),
   ];
 }
 
@@ -98,8 +102,8 @@ export default async function CorporateRoute({ params }: RouteProps) {
   const article = articleForRoute(slug);
   if (article) return <><ArticlePage article={article} /><JsonLd id="article-page-schema" value={articleSchema(article)} /></>;
 
-  if (slug === "product-portfolio") redirect("/products/");
-  if (slug === "product-portfolio/nutraxin") redirect("/products/nutraxin/");
+  if (slug === "product-portfolio") permanentRedirect("/products/");
+  if (slug === "product-portfolio/nutraxin") permanentRedirect("/products/nutraxin/");
 
   const product = productForRoute(slug);
   if (product) return <><NutraxinProductPage product={product} /><JsonLd id="nutraxin-product-schema" value={productSchema(product)} /></>;

@@ -1,0 +1,44 @@
+name: Corporate static publication acceptance
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'apps/corporate/**'
+      - 'assets/brand/**'
+      - 'assets/media/**'
+      - 'assets/css/**'
+      - 'packages/accessibility/**'
+      - 'packages/content/**'
+      - 'packages/design-system/**'
+      - 'packages/forms/**'
+      - 'packages/security/**'
+      - 'packages/seo/**'
+      - 'src/content/**'
+      - 'scripts/*corporate-pages.mjs'
+      - 'package*.json'
+      - '.github/workflows/corporate-static-acceptance.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  public-corporate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run lint --workspace=@novapharm/corporate
+      - run: npm run validate --workspace=@novapharm/corporate
+      - run: npm run test --workspace=@novapharm/corporate
+      - run: node scripts/build-corporate-pages.mjs artifacts/corporate-pages
+      - run: node scripts/check-links.mjs artifacts/corporate-pages
+      - run: npx playwright install --with-deps chromium webkit
+      - run: node scripts/test-corporate-pages.mjs artifacts/corporate-pages artifacts/corporate-pages-evidence

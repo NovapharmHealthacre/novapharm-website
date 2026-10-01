@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
+import { Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import Link from "@/components/public-link";
 
 interface MobileNavigationProps {
   readonly items: readonly (readonly [string, string])[];
@@ -42,8 +43,9 @@ export function MobileNavigation({ items, portalOrigin }: MobileNavigationProps)
 
   return (
     <details className="mobile-menu" ref={detailsRef} onToggle={(event) => setOpen(event.currentTarget.open)}>
-      <summary aria-label={open ? "Close navigation" : "Open navigation"}>
-        {open ? "Close" : "Menu"}
+      <summary aria-label={open ? "Close navigation" : "Open navigation"} title={open ? "Close navigation" : "Open navigation"}>
+        <Menu className="menu-open-icon" size={22} aria-hidden="true" />
+        <X className="menu-close-icon" size={22} aria-hidden="true" />
       </summary>
       <nav aria-label="Mobile navigation">
         {items.map(([label, href]) => href === "/portal/" ? <a key={href} href={portalOrigin} rel="nofollow" onClick={close}>{label}</a> : <Link key={href} href={href} onClick={close}>{label}</Link>)}

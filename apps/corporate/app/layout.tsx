@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
+import "../../../assets/css/brand-identity.css";
 import "./globals.css";
 import "./concise.css";
 import "./apple-pharma.css";
 import "./compact-fixes.css";
+import "./corporate-hero.css";
 import "./print.css";
 import { CookieControls } from "@/components/cookie-controls";
 import { JsonLd } from "@/components/json-ld";

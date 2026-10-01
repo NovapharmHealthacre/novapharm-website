@@ -3,19 +3,22 @@ import { fileURLToPath } from "node:url";
 import type { NextConfig } from "next";
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const publicPages = process.env.CORPORATE_OUTPUT_TARGET === "github-pages";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
+  output: publicPages ? "export" : "standalone",
   trailingSlash: true,
   poweredByHeader: false,
   reactStrictMode: true,
   typedRoutes: true,
   images: {
+    unoptimized: publicPages,
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 31_536_000,
     deviceSizes: [375, 430, 768, 1024, 1440, 1920],
   },
   async redirects() {
+    if (publicPages) return [];
     return [
       { source: "/company-profile/", destination: "/about/company/", permanent: true },
       { source: "/uk-international-regulatory-services/", destination: "/services/", permanent: true },
@@ -33,5 +36,7 @@ const nextConfig: NextConfig = {
     useTypeScriptCli: true,
   },
 };
+
+if (publicPages) delete nextConfig.redirects;
 
 export default nextConfig;
