@@ -1,0 +1,25 @@
+User-Agent: *
+Allow: /
+Disallow: /api/
+Disallow: /portal/
+Disallow: /employee/
+Disallow: /board/
+Disallow: /admin/
+Disallow: /executive-platform/
+Disallow: /_secure/
+
+User-Agent: OAI-SearchBot
+Allow: /
+Disallow: /api/
+Disallow: /portal/
+Disallow: /employee/
+Disallow: /board/
+Disallow: /admin/
+Disallow: /executive-platform/
+Disallow: /_secure/
+
+User-Agent: GPTBot
+Disallow: /
+
+Host: https://novapharmhealthcare.com
+Sitemap: https://novapharmhealthcare.com/sitemap.xml

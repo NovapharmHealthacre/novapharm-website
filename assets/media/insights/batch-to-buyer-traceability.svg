@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Batch-to-buyer pharmaceutical traceability</title>
+  <desc id="desc">A batch record connected to documents, orders, delivery and customer evidence.</desc>
+  <rect width="1200" height="675" fill="#eef3f1"/>
+  <g fill="none" stroke="#6d817a" stroke-width="2"><path d="M186 338h828"/><path d="M384 338 516 196M384 338 516 480M716 338 848 196M716 338 848 480"/></g>
+  <g fill="#fff" stroke="#9bada7" stroke-width="2"><rect x="98" y="266" width="176" height="144"/><rect x="516" y="132" width="176" height="128"/><rect x="516" y="416" width="176" height="128"/><rect x="848" y="132" width="176" height="128"/><rect x="848" y="416" width="176" height="128"/></g>
+  <g fill="#29584c"><circle cx="384" cy="338" r="18"/><circle cx="716" cy="338" r="18"/></g>
+  <circle cx="1014" cy="338" r="26" fill="#c12f35"/>
+</svg>

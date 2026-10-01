@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Three-pillar pharmaceutical sourcing model</title>
+  <desc id="desc">European sourcing, parallel imports and manufacturing partnerships converging on a resilient portfolio.</desc>
+  <rect width="1200" height="675" fill="#13222a"/>
+  <g fill="none" stroke="#d5e4de" stroke-opacity=".32" stroke-width="3"><circle cx="250" cy="178" r="74"/><circle cx="250" cy="338" r="74"/><circle cx="250" cy="498" r="74"/><path d="M324 178C592 178 578 338 824 338M324 338h500M324 498C592 498 578 338 824 338"/></g>
+  <circle cx="824" cy="338" r="106" fill="#f7faf8"/><circle cx="824" cy="338" r="28" fill="#c12f35"/>
+  <g fill="#477a76"><circle cx="250" cy="178" r="18"/><circle cx="250" cy="338" r="18"/><circle cx="250" cy="498" r="18"/></g>
+  <path d="M930 338h180" stroke="#c12f35" stroke-width="6"/>
+</svg>

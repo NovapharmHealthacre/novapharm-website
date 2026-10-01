@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Pharmaceutical partnership pathway</title>
+  <desc id="desc">Qualified organisations moving through evidence, agreement and launch-readiness stages.</desc>
+  <rect width="1200" height="675" fill="#f7f9f8"/>
+  <path d="M100 338H1096" fill="none" stroke="#b8c5c1" stroke-width="2"/>
+  <g fill="#fff" stroke="#7d918a" stroke-width="2">
+    <circle cx="144" cy="338" r="44"/><circle cx="362" cy="338" r="44"/><circle cx="580" cy="338" r="44"/><circle cx="798" cy="338" r="44"/><circle cx="1016" cy="338" r="44"/>
+  </g>
+  <g fill="#29584c"><circle cx="144" cy="338" r="13"/><circle cx="362" cy="338" r="13"/><circle cx="580" cy="338" r="13"/></g>
+  <g fill="#c12f35"><circle cx="798" cy="338" r="13"/><circle cx="1016" cy="338" r="13"/></g>
+  <g fill="#315793" opacity=".12"><rect x="92" y="96" width="370" height="96"/><rect x="730" y="484" width="370" height="96"/></g>
+</svg>

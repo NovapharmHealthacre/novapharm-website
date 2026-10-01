@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">Oncology and specialty portfolio information design</title>
+  <desc id="desc">A restrained scientific pattern of connected cells and controlled supply nodes.</desc>
+  <rect width="1200" height="900" fill="#13222a"/>
+  <g fill="none" stroke="#d9e7e1" stroke-opacity=".24" stroke-width="2">
+    <circle cx="820" cy="198" r="132"/><circle cx="974" cy="354" r="82"/><circle cx="742" cy="466" r="176"/>
+    <circle cx="986" cy="666" r="118"/><circle cx="592" cy="700" r="74"/>
+    <path d="M820 330 774 316M918 282 938 310M840 594 918 618M706 608 626 660M890 448 925 409"/>
+  </g>
+  <g fill="#f3f7f5">
+    <circle cx="820" cy="198" r="9"/><circle cx="974" cy="354" r="7"/><circle cx="742" cy="466" r="11"/>
+    <circle cx="986" cy="666" r="8"/><circle cx="592" cy="700" r="7"/>
+  </g>
+  <g fill="#c12f35"><circle cx="785" cy="215" r="13"/><circle cx="762" cy="452" r="15"/><circle cx="1002" cy="640" r="12"/></g>
+  <g fill="none" stroke="#477a76" stroke-width="18" stroke-opacity=".45">
+    <path d="M102 122h320M102 164h218M102 206h270"/>
+  </g>
+</svg>
