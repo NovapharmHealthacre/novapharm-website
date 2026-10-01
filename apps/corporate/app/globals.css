@@ -312,6 +312,10 @@ tbody th { color: var(--ink); }
 .catalogue-copy dl div { display: flex; justify-content: space-between; gap: 14px; padding: 9px 0; border-top: 1px solid var(--line); font-size: .8rem; }
 .catalogue-copy dd { margin: 0; text-align: right; }
 .catalogue-copy small { color: var(--muted); }
+.catalogue-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; margin-top: 16px; }
+.catalogue-actions > a { min-height: 44px; display: inline-flex; align-items: center; margin-top: 0; }
+.nutraxin-know-more { min-height: 44px; display: inline-flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.nutraxin-link-publisher { color: var(--muted); font-size: .8rem; font-weight: 400; }
 
 .nutraxin-product-hero { padding: 40px 0 48px; }
 .nutraxin-product-hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: center; }

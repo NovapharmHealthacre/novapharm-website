@@ -48,11 +48,12 @@ export const leadership = Object.freeze([
       "https://uk.linkedin.com/in/vishal-chakravarty",
       "https://find-and-update.company-information.service.gov.uk/officers/GCJvCvEf20rHFbzF_T9LKAGEJic/appointments"
     ],
-    summary: "Vishal leads NovaPharm's strategic direction, UK market entry, supplier relationships, pharmaceutical sourcing, regulatory pathway coordination, PLPI strategy, partnerships and board governance.",
+    summary: "Building the route from pharmaceutical opportunity to regulated market access.",
     biography: [
-      "Vishal founded NovaPharm Healthcare to build a more resilient and transparent route between qualified pharmaceutical supply, regulatory requirements and UK healthcare demand.",
-      "His pharmaceutical experience includes sourcing, oncology portfolio work, cross-border supplier coordination and practical exposure to MHRA licensing workflows, EU-GMP expectations and parallel-import strategy. At NovaPharm, he is responsible for the three-pillar sourcing model, commercial partnerships and the development of the company's digital operating platform.",
-      "Vishal's role is to ensure that growth does not move ahead of regulatory readiness. Planned products, licences, customer relationships and technology capabilities are governed as future milestones until independently verified."
+      "Vishal founded NovaPharm Healthcare to build a more resilient and transparent route between pharmaceutical supply, regulatory requirements and market demand.",
+      "His experience spans pharmaceutical sourcing, oncology portfolio development, cross-border supplier coordination, UK market access and parallel-import strategy.",
+      "At NovaPharm, Vishal leads company strategy, product and market selection, sourcing, commercial partnerships and the development of the company's digital operating platform.",
+      "His focus is simple: growth should follow evidence, regulatory readiness and the ability to execute."
     ],
     expertise: ["UK market entry", "Pharmaceutical sourcing", "PLPI strategy", "Supplier relationships", "Board governance", "Digital operating models"]
   },
@@ -72,11 +73,11 @@ export const leadership = Object.freeze([
     imageAlt: "Prabhakar Vitthal Lahare, Chief Operating Officer of NovaPharm Healthcare",
     companiesHouseUrl: "https://find-and-update.company-information.service.gov.uk/officers/WbYqt5GNwcUztqJmSS1Q-zuIra4/appointments",
     sameAs: ["https://find-and-update.company-information.service.gov.uk/officers/WbYqt5GNwcUztqJmSS1Q-zuIra4/appointments"],
-    summary: "Prabhakar supports operating strategy, manufacturing partnerships, quality governance, supply continuity and scalable execution.",
+    summary: "Turning strategy into controlled, reliable pharmaceutical operations.",
     biography: [
-      "Prabhakar is a pharmaceutical operations and quality-systems leader with more than 27 years of experience described in NovaPharm's business-plan materials across manufacturing, supply-chain operations, quality management and regulatory compliance.",
-      "His background includes operational leadership and audit readiness in highly regulated environments aligned with MHRA, US FDA, EMA and TGA expectations. His NovaPharm responsibilities centre on translating strategy into controlled operating processes, qualified supplier relationships and reliable execution.",
-      "Executive responsibilities remain subject to the board's current governance and formal role confirmations; his statutory director status is independently recorded at Companies House."
+      "Prabhakar brings more than 27 years of experience across pharmaceutical manufacturing, supply-chain operations, quality management and regulatory compliance.",
+      "At NovaPharm, he leads the operating systems behind the business, from manufacturing partnerships and supplier qualification to quality governance, supply continuity and scalable execution.",
+      "His role is to make sure that what NovaPharm plans can work reliably in practice."
     ],
     expertise: ["Pharmaceutical operations", "Quality systems", "Manufacturing", "Supply continuity", "Audit readiness", "Operational governance"]
   },
@@ -96,11 +97,11 @@ export const leadership = Object.freeze([
     imageAlt: "Dr Girish Shantilal Achliya, Chief Scientific Officer of NovaPharm Healthcare",
     companiesHouseUrl: "https://find-and-update.company-information.service.gov.uk/officers/ySPfnJGidBuLkYcU7u9BKT9Iyew/appointments",
     sameAs: ["https://find-and-update.company-information.service.gov.uk/officers/ySPfnJGidBuLkYcU7u9BKT9Iyew/appointments"],
-    summary: "Dr Girish supports scientific strategy, product development, technical due diligence and the development of a differentiated oncology and specialty portfolio.",
+    summary: "Bringing scientific depth to the decisions behind every product.",
     biography: [
-      "Dr Girish brings more than 25 years of pharmaceutical research and development experience described in NovaPharm's business-plan materials.",
-      "His experience spans formulation and analytical development, intellectual property, clinical and regulatory programmes, technology transfer and external development partnerships. At NovaPharm, he contributes scientific scrutiny to product opportunities, manufacturer assessment and development strategy.",
-      "No patent count, product approval or commercial achievement is attributed to Dr Girish on this website unless it is separately verified and approved for publication."
+      "Dr Girish brings more than 25 years of pharmaceutical research and development experience across formulation and analytical development, intellectual property, clinical and regulatory programmes, technology transfer and external development partnerships.",
+      "At NovaPharm, he leads scientific evaluation across product opportunities, development strategy, technical due diligence and manufacturer assessment.",
+      "His role is to make sure promising opportunities can withstand scientific and technical scrutiny."
     ],
     expertise: ["Pharmaceutical R&D", "Formulation development", "Technical due diligence", "Technology transfer", "External development", "Oncology strategy"]
   },
@@ -108,19 +109,18 @@ export const leadership = Object.freeze([
     slug: "helly-panchal",
     name: "Dr Helly Kamlesh Panchal",
     displayName: "Dr Helly Panchal",
-    title: "Chief Medical Director",
-    schemaTitle: "Chief Medical Director",
+    title: "Director, Scientific & Product Strategy",
+    schemaTitle: "Director, Scientific & Product Strategy",
     governance: "Statutory director",
     initials: "HP",
     image: null,
     imageAlt: null,
     companiesHouseUrl: "https://find-and-update.company-information.service.gov.uk/officers/bq-JYKh-sLwG0D5J5ooGbQb37xQ/appointments",
     sameAs: ["https://find-and-update.company-information.service.gov.uk/officers/bq-JYKh-sLwG0D5J5ooGbQb37xQ/appointments"],
-    summary: "Dr Helly supports NovaPharm's technical and formulation strategy, with a focus on product assessment, scientific review and supply-chain innovation.",
+    summary: "Looking at product opportunities through a scientific and development lens.",
     biography: [
-      "Dr Helly contributes to the board's evaluation of development opportunities and technically differentiated pharmaceutical products.",
-      "Her public profile is intentionally conservative. NovaPharm does not publish unverified qualifications, employers, publications, years of experience or achievements.",
-      "An approved professional portrait and any expanded biography will be added only after formal company approval."
+      "Dr Helly contributes to NovaPharm's evaluation of pharmaceutical development opportunities and technically differentiated products.",
+      "Her work supports the board in assessing the scientific rationale, development requirements and technical questions that should be understood before an opportunity progresses."
     ],
     expertise: ["Product assessment", "Scientific review", "Formulation strategy", "Technical governance", "Supply-chain innovation"]
   },
@@ -128,22 +128,22 @@ export const leadership = Object.freeze([
     slug: "nishita-trivedi",
     name: "Dr Nishita Trivedi",
     displayName: "Dr Nishita Trivedi",
-    title: "Chief Technology Officer and Responsible Person",
-    schemaTitle: "Chief Technology Officer and Responsible Person",
+    title: "Chief Technology Officer",
+    schemaTitle: "Chief Technology Officer",
     executiveRole: "Chief Technology Officer",
     regulatedAppointment: "Responsible Person",
     appointmentEvidence: "Owner-approved title; formal controlled appointment record pending",
-    governance: "Responsible Person appointment; not a statutory director",
+    governance: "Technology governance; not a statutory director",
     initials: "NT",
     image: null,
     imageAlt: null,
     companiesHouseUrl: null,
     sameAs: [],
-    summary: "Dr Nishita leads NovaPharm's technology governance as Chief Technology Officer and holds the owner-approved Responsible Person designation, with the executive and regulated responsibilities governed separately.",
+    summary: "Connecting pharmaceutical quality with controlled technology.",
     biography: [
-      "NovaPharm's business-plan materials describe Dr Nishita as an experienced pharmaceutical quality and regulatory professional with approximately 20 years of experience across quality systems, GMP and GDP compliance, audits, validation, data integrity, CAPA, pharmacovigilance support and regulatory liaison.",
-      "Her Chief Technology Officer responsibility covers technology governance and controlled digital systems. Her Responsible Person appointment is a distinct regulated responsibility and does not imply that she acts for the MHRA, grants approvals, or has prescribing, medical or clinical authority.",
-      "The owner has approved the public title. A formal appointment or equivalent controlled record for the applicable legal entity, authorisation and scope remains a documentary governance action. Dr Nishita is not presented as a statutory director or shareholder."
+      "Dr Nishita brings approximately 20 years of experience across pharmaceutical quality and regulatory systems, including GMP and GDP, audits, validation, data integrity, CAPA, pharmacovigilance support and regulatory liaison.",
+      "As Chief Technology Officer, she leads NovaPharm's approach to technology governance, controlled digital systems and the infrastructure connecting quality, information and operational decision-making.",
+      "Her technology responsibilities are governed separately from any regulated Responsible Person responsibilities associated with NovaPharm's wholesale distribution authorisation."
     ],
     expertise: ["Technology governance", "Quality management systems", "GMP and GDP", "PLPI support", "Vendor audits", "CAPA"]
   }

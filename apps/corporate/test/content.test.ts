@@ -44,7 +44,8 @@ test("leadership entities retain approved roles and portrait boundaries", () => 
     assert.equal(entity?.["@id"], canonical.id);
   }
   assert.equal(leadership.find((person) => person.slug === "nishita-trivedi")?.companiesHouseUrl, null);
-  assert.equal(leadership.find((person) => person.slug === "nishita-trivedi")?.title, "Chief Technology Officer and Responsible Person");
+  assert.equal(leadership.find((person) => person.slug === "nishita-trivedi")?.title, "Chief Technology Officer");
+  assert.equal(leadership.find((person) => person.slug === "helly-panchal")?.title, "Director, Scientific & Product Strategy");
   assert.equal(leadership.find((person) => person.slug === "prabhakar-lahare")?.title, "Chief Operating Officer");
 });
 

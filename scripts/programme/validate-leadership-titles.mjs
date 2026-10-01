@@ -55,8 +55,8 @@ const required = [
   'publicTitle: "Chief Executive Officer"',
   'publicTitle: "Chief Operating Officer"',
   'publicTitle: "Chief Scientific Officer"',
-  'publicTitle: "Chief Medical Director"',
-  'publicTitle: "Chief Technology Officer and Responsible Person"',
+  'publicTitle: "Director, Scientific & Product Strategy"',
+  'publicTitle: "Chief Technology Officer"',
   'executiveRole: "Chief Technology Officer"',
   'title: "Responsible Person"',
   'documentaryEvidenceState: "pending_evidence"',
@@ -101,8 +101,8 @@ for (const [relative, portrait] of [
 }
 
 const nishitaProfile = readFileSync(path.join(root, "leadership/nishita-trivedi/index.html"), "utf8");
-if (!nishitaProfile.includes("Chief Technology Officer and Responsible Person")) throw new Error("Dr Nishita's canonical public title is missing from her profile.");
+if (!nishitaProfile.includes("Chief Technology Officer")) throw new Error("Dr Nishita's canonical public title is missing from her profile.");
 if (!/not a statutory director/i.test(nishitaProfile)) throw new Error("Dr Nishita's statutory-governance boundary is missing.");
-if (!/does not imply|does not confer|does not state or imply/i.test(nishitaProfile)) throw new Error("Dr Nishita's regulated-authority boundary is missing.");
+if (!/governed separately from any regulated Responsible Person responsibilities/i.test(nishitaProfile)) throw new Error("Dr Nishita's regulated-authority boundary is missing.");
 
 console.log(`Leadership-title validation passed across ${files.length} current public and source files.`);
