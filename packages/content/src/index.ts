@@ -97,6 +97,7 @@ export const people: readonly PersonEntity[] = Object.freeze([
     canonicalImageUrl: "https://vishal.novapharmhealthcare.com/images/portrait/vishal-chakravarty-1440.jpg",
     sameAs: Object.freeze([
       "https://uk.linkedin.com/in/vishal-chakravarty",
+      "https://www.wikidata.org/wiki/Q137660690",
       "https://find-and-update.company-information.service.gov.uk/officers/GCJvCvEf20rHFbzF_T9LKAGEJic/appointments"
     ])
   }),
