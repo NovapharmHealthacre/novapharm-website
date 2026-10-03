@@ -10,6 +10,7 @@ test("organisation graph uses the official public identity", () => {
   assert.match(JSON.stringify(node["logo"]), /novapharm-healthcare-logo\.png/);
   assert.deepEqual(node["founder"], { "@id": "https://vishal.novapharmhealthcare.com/#person" });
   assert.ok((node["sameAs"] as readonly string[]).includes("https://www.linkedin.com/company/novapharm-healthcare/"));
+  assert.ok((node["sameAs"] as readonly string[]).includes("https://www.wikidata.org/wiki/Q137660644"));
 });
 
 test("Vishal entity has one canonical title and identifier", () => {
