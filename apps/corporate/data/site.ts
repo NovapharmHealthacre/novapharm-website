@@ -10,6 +10,7 @@ export const company = Object.freeze({
   registeredPostcode: "TW13 4AG",
   siteUrl: "https://novapharmhealthcare.com",
   companiesHouseUrl: "https://find-and-update.company-information.service.gov.uk/company/16716501",
+  linkedInUrl: "https://www.linkedin.com/company/novapharm-healthcare/",
   officersUrl: "https://find-and-update.company-information.service.gov.uk/company/16716501/officers",
   summary: "An active UK-based, compliance-first and technology-enabled B2B pharmaceutical company developing regulated trading, sourcing and wholesale distribution capabilities for oncology, specialty and licensed medicines.",
   purpose: "NovaPharm combines regulatory intelligence, diversified sourcing, quality-led distribution planning and digital supply-chain infrastructure to improve medicine availability, resilience, transparency and operational efficiency.",
