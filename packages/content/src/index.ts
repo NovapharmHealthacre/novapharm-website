@@ -16,6 +16,7 @@ export interface OrganisationEntity {
   readonly companyNumber: string;
   readonly incorporatedOn: string;
   readonly website: string;
+  readonly sameAs: readonly string[];
   readonly registeredJurisdiction: string;
   readonly registeredLocation: string;
   readonly registeredOfficeUse: "legal-record-only";
@@ -61,6 +62,10 @@ export const novapharmOrganisation: OrganisationEntity = Object.freeze({
   companyNumber: "16716501",
   incorporatedOn: "2025-09-15",
   website: "https://novapharmhealthcare.com",
+  sameAs: Object.freeze([
+    "https://find-and-update.company-information.service.gov.uk/company/16716501",
+    "https://www.linkedin.com/company/novapharm-healthcare/"
+  ]),
   registeredJurisdiction: "England and Wales",
   registeredLocation: "Feltham, England",
   registeredOfficeUse: "legal-record-only",
