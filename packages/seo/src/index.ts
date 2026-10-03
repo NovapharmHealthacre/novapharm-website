@@ -23,7 +23,8 @@ export function organisationNode(): JsonLdNode {
     }),
     identifier: Object.freeze({ "@type": "PropertyValue", propertyID: "Companies House", value: novapharmOrganisation.companyNumber }),
     foundingDate: novapharmOrganisation.incorporatedOn,
-    founder: Object.freeze({ "@id": founder.id })
+    founder: Object.freeze({ "@id": founder.id }),
+    sameAs: [...novapharmOrganisation.sameAs]
   });
 }
 
