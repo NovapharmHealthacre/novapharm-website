@@ -338,7 +338,7 @@ async function runCraftPreflight(name: string, browserType: BrowserType): Promis
     });
     try {
       const page = await highDensityContext.newPage();
-      const response = await page.goto(`${baseUrl}/product-portfolio/`, { waitUntil: "networkidle" });
+      const response = await page.goto(`${baseUrl}/product-portfolio/`, { waitUntil: "domcontentloaded", timeout: 45_000 });
       assert.equal(response?.status(), 200, `${name}: product portfolio high-density response failed`);
       const productImage = page.getByAltText(
         "Nutraxin Vitamin D3 box and 120-tablet bottle shown as an owner-supplied catalogue reference",
