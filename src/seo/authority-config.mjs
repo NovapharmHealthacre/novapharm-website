@@ -3,6 +3,8 @@ import { company, leadership, pageMeta } from "../content/site-content.mjs";
 export const SITE_URL = company.siteUrl;
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;
+export const VISHAL_PERSON_ID = "https://vishal.novapharmhealthcare.com/#person";
+export const VISHAL_PROFILE_URL = "https://vishal.novapharmhealthcare.com/about/";
 export const INDEXNOW_KEY = "da125ceca8032e01fc98782c388f894f";
 export const INDEXNOW_KEY_URL = `${SITE_URL}/${INDEXNOW_KEY}.txt`;
 
@@ -52,8 +54,8 @@ export const officialSourceRegister = Object.freeze([
   {
     topic: "Google Knowledge Panels",
     url: "https://support.google.com/knowledgepanel/answer/9163198",
-    reviewed: "2026-07-14",
-    decision: "Build verifiable entity consistency; never claim that schema or repository work guarantees a panel. Claim or suggest changes only through an owner-controlled Google flow if a panel exists."
+    reviewed: "2026-10-03",
+    decision: "Build verifiable entity consistency across official sites, public records and independent publishers; never claim that schema or repository work guarantees a panel. Claim or suggest changes only through an owner-controlled Google flow if a panel exists."
   },
   {
     topic: "IndexNow protocol",
@@ -120,20 +122,24 @@ export const canonicalEntities = Object.freeze([
     verifiedSources: [company.companiesHouseUrl, SITE_URL],
     lastVerified: "2026-07-14"
   },
-  ...leadership.map((person) => ({
-    type: "Person",
-    canonicalName: person.displayName,
-    legalName: person.name,
-    alternateNames: person.name === person.displayName ? [] : [person.name],
-    canonicalUrl: `${SITE_URL}/leadership/${person.slug}/`,
-    id: `${SITE_URL}/leadership/${person.slug}/#person`,
-    description: person.summary,
-    image: person.image ? `${SITE_URL}${person.image}` : null,
-    role: person.schemaTitle,
-    organizationRelationship: ORGANIZATION_ID,
-    verifiedSources: [...person.sameAs, `${SITE_URL}/leadership/${person.slug}/`],
-    lastVerified: "2026-07-14"
-  }))
+  ...leadership.map((person) => {
+    const isVishal = person.slug === "vishal-chakravarty";
+    const companyProfile = `${SITE_URL}/leadership/${person.slug}/`;
+    return {
+      type: "Person",
+      canonicalName: person.displayName,
+      legalName: person.name,
+      alternateNames: person.name === person.displayName ? [] : [person.name],
+      canonicalUrl: isVishal ? VISHAL_PROFILE_URL : companyProfile,
+      id: isVishal ? VISHAL_PERSON_ID : `${companyProfile}#person`,
+      description: person.summary,
+      image: person.image ? `${SITE_URL}${person.image}` : null,
+      role: person.schemaTitle,
+      organizationRelationship: ORGANIZATION_ID,
+      verifiedSources: [...person.sameAs, companyProfile],
+      lastVerified: "2026-10-03"
+    };
+  })
 ]);
 
 export const crawlerPolicy = Object.freeze([
