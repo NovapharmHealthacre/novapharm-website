@@ -90,7 +90,7 @@ export function personSchema(slug: string) {
     "@context": "https://schema.org",
     "@graph": [
       { "@type": "ProfilePage", "@id": `${profileUrl}#profilepage`, url: profileUrl, name: `${person.displayName} | NovaPharm Healthcare`, mainEntity: { "@id": canonicalPerson.id }, isPartOf: { "@id": websiteId }, breadcrumb: { "@id": `${profileUrl}#breadcrumb` } },
-      { "@type": "Person", "@id": canonicalPerson.id, name: canonicalPerson.displayName, jobTitle: canonicalPerson.publicTitle, description: person.summary, url: canonicalPerson.canonicalUrl, image: canonicalPerson.canonicalImageUrl ?? (person.image ? absoluteUrl(person.image) : undefined), worksFor: { "@id": organisationId }, sameAs: canonicalPerson.sameAs, knowsAbout: person.expertise, subjectOf: { "@id": `${profileUrl}#profilepage` } },
+      { "@type": "Person", "@id": canonicalPerson.id, name: canonicalPerson.displayName, alternateName: canonicalPerson.canonicalName !== canonicalPerson.displayName ? canonicalPerson.canonicalName : undefined, jobTitle: canonicalPerson.publicTitle, description: person.summary, url: canonicalPerson.canonicalUrl, image: canonicalPerson.canonicalImageUrl ?? (person.image ? absoluteUrl(person.image) : undefined), worksFor: { "@id": organisationId }, sameAs: canonicalPerson.sameAs, knowsAbout: person.expertise, subjectOf: { "@id": `${profileUrl}#profilepage` } },
       breadcrumbs(`leadership/${person.slug}`, person.displayName),
     ],
   };
