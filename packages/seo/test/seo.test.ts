@@ -9,6 +9,7 @@ test("organisation graph uses the official public identity", () => {
   assert.equal(node["name"], "NovaPharm Healthcare");
   assert.match(JSON.stringify(node["logo"]), /novapharm-healthcare-logo\.png/);
   assert.deepEqual(node["founder"], { "@id": "https://vishal.novapharmhealthcare.com/#person" });
+  assert.ok((node["sameAs"] as readonly string[]).includes("https://www.linkedin.com/company/novapharm-healthcare/"));
 });
 
 test("Vishal entity has one canonical title and identifier", () => {
@@ -16,6 +17,7 @@ test("Vishal entity has one canonical title and identifier", () => {
   assert.equal(node["jobTitle"], "Chief Executive Officer");
   assert.equal(node["@id"], "https://vishal.novapharmhealthcare.com/#person");
   assert.equal(node["url"], "https://vishal.novapharmhealthcare.com/about/");
+  assert.equal(node["alternateName"], "Vishal Om Prakash Chakravarty");
   assert.ok((node["sameAs"] as readonly string[]).includes("https://www.wikidata.org/wiki/Q137660690"));
 });
 
