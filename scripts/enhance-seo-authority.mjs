@@ -102,7 +102,7 @@ function canonicalOrganization() {
     foundingDate: company.incorporated,
     foundingLocation: { "@type": "Country", name: "United Kingdom" },
     description: company.summary,
-    sameAs: [company.companiesHouseUrl],
+    sameAs: [company.companiesHouseUrl, company.linkedInUrl],
     founder: { "@id": VISHAL_PERSON_ID },
     areaServed: [
       { "@type": "Country", name: "United Kingdom" },
