@@ -104,6 +104,7 @@ if (organisation?.founder?.["@id"] !== VISHAL_PERSON_ID) fail("homepage Organiza
 for (const sameAs of [
   company.companiesHouseUrl,
   company.linkedInUrl,
+  company.crunchbaseUrl,
 ]) {
   if (!organisation?.sameAs?.includes(sameAs)) fail(`homepage Organization sameAs is missing ${sameAs}`);
 }
@@ -120,7 +121,14 @@ for (const person of leadership) {
   if (profile?.mainEntity?.["@id"] !== personId) fail(`${file} ProfilePage does not identify its canonical Person`);
   if (personSchema?.["@id"] !== personId || personSchema?.name !== person.displayName) fail(`${file} Person entity uses an inconsistent name or id`);
   if (personSchema?.url !== personUrl) fail(`${file} Person entity does not use its canonical profile URL`);
-  if (person.slug === "vishal-chakravarty" && !personSchema?.sameAs?.includes("https://www.wikidata.org/wiki/Q137660690")) fail(`${file} Vishal Person entity lacks Wikidata reconciliation`);
+  if (person.slug === "vishal-chakravarty") {
+    for (const sameAs of [
+      "https://www.wikidata.org/wiki/Q137660690",
+      "https://www.crunchbase.com/person/vishal-chakravarty"
+    ]) {
+      if (!personSchema?.sameAs?.includes(sameAs)) fail(`${file} Vishal Person entity lacks reconciliation: ${sameAs}`);
+    }
+  }
   if (personSchema?.worksFor?.["@id"] !== ORGANIZATION_ID) fail(`${file} Person entity is not connected to NovaPharm`);
   if (person.image && typeof personSchema?.image !== "object") fail(`${file} lacks an ImageObject for the approved portrait`);
 }
