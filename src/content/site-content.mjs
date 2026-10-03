@@ -45,7 +45,7 @@ export const leadership = Object.freeze([
     companiesHouseUrl: "https://find-and-update.company-information.service.gov.uk/officers/GCJvCvEf20rHFbzF_T9LKAGEJic/appointments",
     sameAs: [
       "https://vishal.novapharmhealthcare.com/",
-      "https://uk.linkedin.com/in/vishal-chakravarty",
+      "https://www.linkedin.com/in/vishal-chakravarty",
       "https://www.wikidata.org/wiki/Q137660690",
       "https://find-and-update.company-information.service.gov.uk/officers/GCJvCvEf20rHFbzF_T9LKAGEJic/appointments"
     ],
