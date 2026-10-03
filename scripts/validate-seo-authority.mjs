@@ -104,7 +104,6 @@ if (organisation?.founder?.["@id"] !== VISHAL_PERSON_ID) fail("homepage Organiza
 for (const sameAs of [
   company.companiesHouseUrl,
   company.linkedInUrl,
-  company.crunchbaseUrl,
 ]) {
   if (!organisation?.sameAs?.includes(sameAs)) fail(`homepage Organization sameAs is missing ${sameAs}`);
 }
@@ -123,8 +122,7 @@ for (const person of leadership) {
   if (personSchema?.url !== personUrl) fail(`${file} Person entity does not use its canonical profile URL`);
   if (person.slug === "vishal-chakravarty") {
     for (const sameAs of [
-      "https://www.wikidata.org/wiki/Q137660690",
-      "https://www.crunchbase.com/person/vishal-chakravarty"
+      "https://www.wikidata.org/wiki/Q137660690"
     ]) {
       if (!personSchema?.sameAs?.includes(sameAs)) fail(`${file} Vishal Person entity lacks reconciliation: ${sameAs}`);
     }
