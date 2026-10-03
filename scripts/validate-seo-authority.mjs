@@ -100,6 +100,13 @@ const homepageSchemas = parseSchemas(source("index.html"), "index.html");
 const organisation = homepageSchemas.find((schema) => (Array.isArray(schema["@type"]) ? schema["@type"] : [schema["@type"]]).includes("Organization"));
 const website = homepageSchemas.find((schema) => schema["@type"] === "WebSite");
 if (organisation?.["@id"] !== ORGANIZATION_ID || organisation?.name !== company.name || organisation?.legalName !== company.legalName) fail("homepage Organization entity is incomplete or inconsistent");
+if (organisation?.founder?.["@id"] !== VISHAL_PERSON_ID) fail("homepage Organization founder must reference the canonical Vishal Person entity");
+for (const sameAs of [
+  company.companiesHouseUrl,
+  company.linkedInUrl,
+]) {
+  if (!organisation?.sameAs?.includes(sameAs)) fail(`homepage Organization sameAs is missing ${sameAs}`);
+}
 if (organisation?.address) fail("homepage Organization schema must not amplify the registered residential address");
 if (website?.["@id"] !== WEBSITE_ID || website?.publisher?.["@id"] !== ORGANIZATION_ID) fail("homepage WebSite entity is not linked to the publisher");
 
