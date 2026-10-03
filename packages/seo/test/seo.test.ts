@@ -16,6 +16,7 @@ test("Vishal entity has one canonical title and identifier", () => {
   assert.equal(node["jobTitle"], "Chief Executive Officer");
   assert.equal(node["@id"], "https://vishal.novapharmhealthcare.com/#person");
   assert.equal(node["url"], "https://vishal.novapharmhealthcare.com/about/");
+  assert.ok((node["sameAs"] as readonly string[]).includes("https://www.wikidata.org/wiki/Q137660690"));
 });
 
 test("entity graph contains one node for each person", () => {
