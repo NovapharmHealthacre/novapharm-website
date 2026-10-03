@@ -44,7 +44,7 @@ export function organisationSchema() {
     foundingDate: company.incorporated,
     identifier: { "@type": "PropertyValue", propertyID: "Companies House", value: company.companyNumber },
     founder: { "@id": vishal.id },
-    sameAs: [company.companiesHouseUrl],
+    sameAs: [company.companiesHouseUrl, company.linkedInUrl],
     areaServed: ["United Kingdom"],
     knowsAbout: ["Pharmaceutical market access", "Pharmaceutical sourcing", "Good Distribution Practice", "PLPI strategy", "Oncology supply continuity"],
     contactPoint: { "@type": "ContactPoint", contactType: "business enquiries", url: `${siteUrl}/contact/`, availableLanguage: "English" },
