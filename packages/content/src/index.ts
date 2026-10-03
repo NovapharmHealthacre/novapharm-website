@@ -64,8 +64,7 @@ export const novapharmOrganisation: OrganisationEntity = Object.freeze({
   website: "https://novapharmhealthcare.com",
   sameAs: Object.freeze([
     "https://find-and-update.company-information.service.gov.uk/company/16716501",
-    "https://www.linkedin.com/company/novapharm-healthcare/",
-    "https://www.crunchbase.com/organization/novapharm-healthcare"
+    "https://www.linkedin.com/company/novapharm-healthcare/"
   ]),
   registeredJurisdiction: "England and Wales",
   registeredLocation: "Feltham, England",
@@ -105,7 +104,6 @@ export const people: readonly PersonEntity[] = Object.freeze([
       "https://www.linkedin.com/in/vishal-chakravarty",
       "https://www.wikidata.org/wiki/Q137660690",
       "https://find-and-update.company-information.service.gov.uk/officers/GCJvCvEf20rHFbzF_T9LKAGEJic/appointments",
-      "https://www.crunchbase.com/person/vishal-chakravarty"
     ])
   }),
   Object.freeze({
