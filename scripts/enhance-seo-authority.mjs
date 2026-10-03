@@ -17,7 +17,28 @@ import {
 const root = resolve(process.cwd());
 const releaseDate = process.env.SEO_LASTMOD || "2026-07-18";
 const logoUrl = `${SITE_URL}/assets/brand/novapharm-healthcare-logo.png`;
+const VISHAL_PERSON_ID = "https://vishal.novapharmhealthcare.com/#person";
+const VISHAL_PROFILE_URL = "https://vishal.novapharmhealthcare.com/about/";
+const VISHAL_PROFILE_PAGE_ID = "https://vishal.novapharmhealthcare.com/about/#profile";
 const leaderBySlug = new Map(leadership.map((person) => [person.slug, person]));
+
+function personIdentity(person) {
+  const companyProfileUrl = `${SITE_URL}/leadership/${person.slug}/`;
+  if (person.slug === "vishal-chakravarty") {
+    return {
+      id: VISHAL_PERSON_ID,
+      canonicalUrl: VISHAL_PROFILE_URL,
+      canonicalProfilePageId: VISHAL_PROFILE_PAGE_ID,
+      companyProfileUrl
+    };
+  }
+  return {
+    id: `${companyProfileUrl}#person`,
+    canonicalUrl: companyProfileUrl,
+    canonicalProfilePageId: `${companyProfileUrl}#webpage`,
+    companyProfileUrl
+  };
+}
 const articleDirectory = join(root, "src", "content", "insights");
 const articles = readdirSync(articleDirectory)
   .filter((file) => file.endsWith(".json"))
@@ -81,8 +102,8 @@ function canonicalOrganization() {
     foundingDate: company.incorporated,
     foundingLocation: { "@type": "Country", name: "United Kingdom" },
     description: company.summary,
-    sameAs: [company.companiesHouseUrl],
-    founder: { "@id": `${SITE_URL}/leadership/vishal-chakravarty/#person` },
+    sameAs: [company.companiesHouseUrl, company.linkedInUrl, company.wikidataUrl],
+    founder: { "@id": VISHAL_PERSON_ID },
     areaServed: [
       { "@type": "Country", name: "United Kingdom" },
       { "@type": "AdministrativeArea", name: "Selected international regulated markets" }
@@ -115,16 +136,16 @@ function canonicalWebsite() {
 }
 
 function normalizePerson(schema, person) {
-  const canonicalUrl = `${SITE_URL}/leadership/${person.slug}/`;
+  const identity = personIdentity(person);
   return {
     ...schema,
     "@context": "https://schema.org",
-    "@id": `${canonicalUrl}#person`,
+    "@id": identity.id,
     "@type": "Person",
     name: person.displayName,
     alternateName: person.name !== person.displayName ? person.name : undefined,
     jobTitle: person.schemaTitle,
-    url: canonicalUrl,
+    url: identity.canonicalUrl,
     image: person.image ? {
       "@type": "ImageObject",
       url: `${SITE_URL}${person.image}`,
@@ -136,7 +157,8 @@ function normalizePerson(schema, person) {
     affiliation: { "@id": ORGANIZATION_ID },
     sameAs: person.sameAs,
     knowsAbout: person.expertise,
-    mainEntityOfPage: { "@id": `${canonicalUrl}#webpage` }
+    mainEntityOfPage: { "@id": identity.canonicalProfilePageId },
+    subjectOf: { "@id": `${identity.companyProfileUrl}#webpage` }
   };
 }
 
@@ -157,7 +179,7 @@ function normalizeArticle(schema, article, canonical, html) {
     description: article.summary,
     url: canonical,
     mainEntityOfPage: { "@id": `${canonical}#webpage` },
-    author: { "@id": `${SITE_URL}/leadership/${author.slug}/#person` },
+    author: { "@id": personIdentity(author).id },
     publisher: { "@id": ORGANIZATION_ID },
     image: {
       "@type": "ImageObject",
@@ -219,8 +241,8 @@ function enhanceJsonLd(html, route, article, leader) {
           "@type": "ProfilePage",
           url: canonical,
           isPartOf: { "@id": WEBSITE_ID },
-          about: { "@id": `${canonical}#person` },
-          mainEntity: { "@id": `${canonical}#person` },
+          about: { "@id": personIdentity(leader).id },
+          mainEntity: { "@id": personIdentity(leader).id },
           primaryImageOfPage: leader.image ? { "@type": "ImageObject", url: `${SITE_URL}${leader.image}` } : undefined,
           dateModified: releaseDate
         };

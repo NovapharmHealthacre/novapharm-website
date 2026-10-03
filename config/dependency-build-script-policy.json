@@ -17,7 +17,7 @@
     },
     {
       "packageName": "sharp",
-      "version": "0.35.3",
+      "version": "0.35.4",
       "script": "install",
       "dependencyPath": "governed image processing and validation",
       "rationale": "Installs the lockfile-pinned image-processing binary used to create and validate responsive public media derivatives."

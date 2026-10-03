@@ -44,7 +44,7 @@ export function organisationSchema() {
     foundingDate: company.incorporated,
     identifier: { "@type": "PropertyValue", propertyID: "Companies House", value: company.companyNumber },
     founder: { "@id": vishal.id },
-    sameAs: [company.companiesHouseUrl],
+    sameAs: [company.companiesHouseUrl, company.linkedInUrl, company.wikidataUrl],
     areaServed: ["United Kingdom"],
     knowsAbout: ["Pharmaceutical market access", "Pharmaceutical sourcing", "Good Distribution Practice", "PLPI strategy", "Oncology supply continuity"],
     contactPoint: { "@type": "ContactPoint", contactType: "business enquiries", url: `${siteUrl}/contact/`, availableLanguage: "English" },
@@ -90,7 +90,7 @@ export function personSchema(slug: string) {
     "@context": "https://schema.org",
     "@graph": [
       { "@type": "ProfilePage", "@id": `${profileUrl}#profilepage`, url: profileUrl, name: `${person.displayName} | NovaPharm Healthcare`, mainEntity: { "@id": canonicalPerson.id }, isPartOf: { "@id": websiteId }, breadcrumb: { "@id": `${profileUrl}#breadcrumb` } },
-      { "@type": "Person", "@id": canonicalPerson.id, name: canonicalPerson.displayName, jobTitle: canonicalPerson.publicTitle, description: person.summary, url: canonicalPerson.canonicalUrl, image: canonicalPerson.canonicalImageUrl ?? (person.image ? absoluteUrl(person.image) : undefined), worksFor: { "@id": organisationId }, sameAs: canonicalPerson.sameAs, knowsAbout: person.expertise, subjectOf: { "@id": `${profileUrl}#profilepage` } },
+      { "@type": "Person", "@id": canonicalPerson.id, name: canonicalPerson.displayName, alternateName: canonicalPerson.canonicalName !== canonicalPerson.displayName ? canonicalPerson.canonicalName : undefined, jobTitle: canonicalPerson.publicTitle, description: person.summary, url: canonicalPerson.canonicalUrl, image: canonicalPerson.canonicalImageUrl ?? (person.image ? absoluteUrl(person.image) : undefined), worksFor: { "@id": organisationId }, sameAs: canonicalPerson.sameAs, knowsAbout: person.expertise, subjectOf: person.slug === "vishal-chakravarty" ? [{ "@id": `${profileUrl}#profilepage` }, { "@type": "WebPage", "@id": "https://iphex-india.com/exhibition/overseasdelegates_participating_list_2026#vishal-chakravarty", url: "https://iphex-india.com/exhibition/overseasdelegates_participating_list_2026", name: "iPHEX 2026 overseas delegates list" }] : { "@id": `${profileUrl}#profilepage` } },
       breadcrumbs(`leadership/${person.slug}`, person.displayName),
     ],
   };

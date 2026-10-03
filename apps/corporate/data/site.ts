@@ -10,6 +10,8 @@ export const company = Object.freeze({
   registeredPostcode: "TW13 4AG",
   siteUrl: "https://novapharmhealthcare.com",
   companiesHouseUrl: "https://find-and-update.company-information.service.gov.uk/company/16716501",
+  linkedInUrl: "https://www.linkedin.com/company/novapharm-healthcare/",
+  wikidataUrl: "https://www.wikidata.org/wiki/Q137660644",
   officersUrl: "https://find-and-update.company-information.service.gov.uk/company/16716501/officers",
   summary: "An active UK-based, compliance-first and technology-enabled B2B pharmaceutical company developing regulated trading, sourcing and wholesale distribution capabilities for oncology, specialty and licensed medicines.",
   purpose: "NovaPharm combines regulatory intelligence, diversified sourcing, quality-led distribution planning and digital supply-chain infrastructure to improve medicine availability, resilience, transparency and operational efficiency.",
@@ -45,8 +47,9 @@ export const leadership = Object.freeze([
     companiesHouseUrl: "https://find-and-update.company-information.service.gov.uk/officers/GCJvCvEf20rHFbzF_T9LKAGEJic/appointments",
     sameAs: [
       "https://vishal.novapharmhealthcare.com/",
-      "https://uk.linkedin.com/in/vishal-chakravarty",
-      "https://find-and-update.company-information.service.gov.uk/officers/GCJvCvEf20rHFbzF_T9LKAGEJic/appointments"
+      "https://www.linkedin.com/in/vishal-chakravarty",
+      "https://www.wikidata.org/wiki/Q137660690",
+      "https://find-and-update.company-information.service.gov.uk/officers/GCJvCvEf20rHFbzF_T9LKAGEJic/appointments",
     ],
     summary: "Vishal leads NovaPharm's strategic direction, UK market entry, supplier relationships, pharmaceutical sourcing, regulatory pathway coordination, PLPI strategy, partnerships and board governance.",
     biography: [

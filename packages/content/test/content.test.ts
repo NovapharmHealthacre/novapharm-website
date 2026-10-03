@@ -8,6 +8,8 @@ test("organisation identifiers are canonical and stable", () => {
   assert.equal(novapharmOrganisation.companyNumber, "16716501");
   assert.equal(novapharmOrganisation.id, "https://novapharmhealthcare.com/#organization");
   assert.equal(novapharmOrganisation.operatingStatus.corporate, "active");
+  assert.ok(novapharmOrganisation.sameAs.includes("https://www.linkedin.com/company/novapharm-healthcare/"));
+  assert.ok(novapharmOrganisation.sameAs.includes("https://www.wikidata.org/wiki/Q137660644"));
   assert.equal(
     novapharmOrganisation.operatingStatus.regulatedWholesaleSupply,
     "not_commenced_subject_to_authorisation",
@@ -21,6 +23,8 @@ test("people have unique persistent identities", () => {
   assert.equal(vishal.publicTitle, "Chief Executive Officer");
   assert.equal(vishal.id, "https://vishal.novapharmhealthcare.com/#person");
   assert.equal(vishal.canonicalUrl, "https://vishal.novapharmhealthcare.com/about/");
+  assert.ok(vishal.sameAs.includes("https://www.wikidata.org/wiki/Q137660690"));
+  assert.ok(vishal.sameAs.includes("https://find-and-update.company-information.service.gov.uk/officers/GCJvCvEf20rHFbzF_T9LKAGEJic/appointments"));
 });
 
 test("regulated appointment and statutory governance remain separate", () => {

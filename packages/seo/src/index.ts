@@ -23,7 +23,8 @@ export function organisationNode(): JsonLdNode {
     }),
     identifier: Object.freeze({ "@type": "PropertyValue", propertyID: "Companies House", value: novapharmOrganisation.companyNumber }),
     foundingDate: novapharmOrganisation.incorporatedOn,
-    founder: Object.freeze({ "@id": founder.id })
+    founder: Object.freeze({ "@id": founder.id }),
+    sameAs: [...novapharmOrganisation.sameAs]
   });
 }
 
@@ -44,6 +45,7 @@ export function personNode(person: PersonEntity): JsonLdNode {
     "@type": "Person",
     "@id": person.id,
     name: person.displayName,
+    ...(person.canonicalName !== person.displayName ? { alternateName: person.canonicalName } : {}),
     url: person.canonicalUrl,
     jobTitle: person.publicTitle,
     worksFor: Object.freeze({ "@id": novapharmOrganisation.id }),

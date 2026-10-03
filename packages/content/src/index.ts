@@ -16,6 +16,7 @@ export interface OrganisationEntity {
   readonly companyNumber: string;
   readonly incorporatedOn: string;
   readonly website: string;
+  readonly sameAs: readonly string[];
   readonly registeredJurisdiction: string;
   readonly registeredLocation: string;
   readonly registeredOfficeUse: "legal-record-only";
@@ -61,6 +62,11 @@ export const novapharmOrganisation: OrganisationEntity = Object.freeze({
   companyNumber: "16716501",
   incorporatedOn: "2025-09-15",
   website: "https://novapharmhealthcare.com",
+  sameAs: Object.freeze([
+    "https://find-and-update.company-information.service.gov.uk/company/16716501",
+    "https://www.linkedin.com/company/novapharm-healthcare/",
+    "https://www.wikidata.org/wiki/Q137660644"
+  ]),
   registeredJurisdiction: "England and Wales",
   registeredLocation: "Feltham, England",
   registeredOfficeUse: "legal-record-only",
@@ -96,8 +102,9 @@ export const people: readonly PersonEntity[] = Object.freeze([
     imagePath: "/assets/media/leadership/vishal-chakravarty-1200.jpg",
     canonicalImageUrl: "https://vishal.novapharmhealthcare.com/images/portrait/vishal-chakravarty-1440.jpg",
     sameAs: Object.freeze([
-      "https://uk.linkedin.com/in/vishal-chakravarty",
-      "https://find-and-update.company-information.service.gov.uk/officers/GCJvCvEf20rHFbzF_T9LKAGEJic/appointments"
+      "https://www.linkedin.com/in/vishal-chakravarty",
+      "https://www.wikidata.org/wiki/Q137660690",
+      "https://find-and-update.company-information.service.gov.uk/officers/GCJvCvEf20rHFbzF_T9LKAGEJic/appointments",
     ])
   }),
   Object.freeze({

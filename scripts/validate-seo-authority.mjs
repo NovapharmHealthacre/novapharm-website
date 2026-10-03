@@ -6,6 +6,8 @@ import {
   ORGANIZATION_ID,
   SITE_URL,
   WEBSITE_ID,
+  VISHAL_PERSON_ID,
+  VISHAL_PROFILE_URL,
   canonicalEntities,
   crawlerPolicy,
   performanceBudgets
@@ -98,6 +100,14 @@ const homepageSchemas = parseSchemas(source("index.html"), "index.html");
 const organisation = homepageSchemas.find((schema) => (Array.isArray(schema["@type"]) ? schema["@type"] : [schema["@type"]]).includes("Organization"));
 const website = homepageSchemas.find((schema) => schema["@type"] === "WebSite");
 if (organisation?.["@id"] !== ORGANIZATION_ID || organisation?.name !== company.name || organisation?.legalName !== company.legalName) fail("homepage Organization entity is incomplete or inconsistent");
+if (organisation?.founder?.["@id"] !== VISHAL_PERSON_ID) fail("homepage Organization founder must reference the canonical Vishal Person entity");
+for (const sameAs of [
+  company.companiesHouseUrl,
+  company.linkedInUrl,
+  company.wikidataUrl,
+]) {
+  if (!organisation?.sameAs?.includes(sameAs)) fail(`homepage Organization sameAs is missing ${sameAs}`);
+}
 if (organisation?.address) fail("homepage Organization schema must not amplify the registered residential address");
 if (website?.["@id"] !== WEBSITE_ID || website?.publisher?.["@id"] !== ORGANIZATION_ID) fail("homepage WebSite entity is not linked to the publisher");
 
@@ -106,9 +116,18 @@ for (const person of leadership) {
   const schemas = parseSchemas(source(file), file);
   const profile = schemas.find((schema) => schema["@type"] === "ProfilePage");
   const personSchema = schemas.find((schema) => schema["@type"] === "Person");
-  const personId = `${SITE_URL}/leadership/${person.slug}/#person`;
+  const personId = person.slug === "vishal-chakravarty" ? VISHAL_PERSON_ID : `${SITE_URL}/leadership/${person.slug}/#person`;
+  const personUrl = person.slug === "vishal-chakravarty" ? VISHAL_PROFILE_URL : `${SITE_URL}/leadership/${person.slug}/`;
   if (profile?.mainEntity?.["@id"] !== personId) fail(`${file} ProfilePage does not identify its canonical Person`);
   if (personSchema?.["@id"] !== personId || personSchema?.name !== person.displayName) fail(`${file} Person entity uses an inconsistent name or id`);
+  if (personSchema?.url !== personUrl) fail(`${file} Person entity does not use its canonical profile URL`);
+  if (person.slug === "vishal-chakravarty") {
+    for (const sameAs of [
+      "https://www.wikidata.org/wiki/Q137660690"
+    ]) {
+      if (!personSchema?.sameAs?.includes(sameAs)) fail(`${file} Vishal Person entity lacks reconciliation: ${sameAs}`);
+    }
+  }
   if (personSchema?.worksFor?.["@id"] !== ORGANIZATION_ID) fail(`${file} Person entity is not connected to NovaPharm`);
   if (person.image && typeof personSchema?.image !== "object") fail(`${file} lacks an ImageObject for the approved portrait`);
 }
@@ -125,7 +144,9 @@ for (const article of articles) {
   const articleSchema = articleSchemas[0];
   if (articleSchema.publisher?.["@id"] !== ORGANIZATION_ID) fail(`${file} article publisher is not NovaPharm`);
   const leader = leadership.find((person) => person.displayName === article.author || person.name === article.author);
-  const expectedAuthorId = leader ? `${SITE_URL}/leadership/${leader.slug}/#person` : EDITORIAL_TEAM_ID;
+  const expectedAuthorId = leader
+    ? (leader.slug === "vishal-chakravarty" ? VISHAL_PERSON_ID : `${SITE_URL}/leadership/${leader.slug}/#person`)
+    : EDITORIAL_TEAM_ID;
   if (articleSchema.author?.["@id"] !== expectedAuthorId) fail(`${file} structured author does not match the visible byline`);
   if (!articleSchema.datePublished || !articleSchema.dateModified) fail(`${file} lacks accurate publication dates`);
   if (!articleSchema.wordCount || !articleSchema.timeRequired) fail(`${file} lacks article depth metadata`);

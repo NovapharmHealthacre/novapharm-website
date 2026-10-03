@@ -4,6 +4,9 @@ import { leadership } from "../src/content/site-content.mjs";
 import { ORGANIZATION_ID, SITE_URL, WEBSITE_ID } from "../src/seo/authority-config.mjs";
 
 const root = resolve(process.cwd());
+const VISHAL_PERSON_ID = "https://vishal.novapharmhealthcare.com/#person";
+const VISHAL_PROFILE_URL = "https://vishal.novapharmhealthcare.com/about/";
+const VISHAL_PROFILE_PAGE_ID = "https://vishal.novapharmhealthcare.com/about/#profile";
 
 function types(schema) {
   return Array.isArray(schema?.["@type"]) ? schema["@type"] : [schema?.["@type"]].filter(Boolean);
@@ -19,7 +22,9 @@ for (const person of leadership) {
   }
 
   const profileId = `${SITE_URL}${route}#webpage`;
-  const personId = `${SITE_URL}${route}#person`;
+  const personId = person.slug === "vishal-chakravarty" ? VISHAL_PERSON_ID : `${SITE_URL}${route}#person`;
+  const canonicalPersonUrl = person.slug === "vishal-chakravarty" ? VISHAL_PROFILE_URL : `${SITE_URL}${route}`;
+  const canonicalProfilePageId = person.slug === "vishal-chakravarty" ? VISHAL_PROFILE_PAGE_ID : profileId;
   const reconciled = schemas.map((schema) => {
     if (types(schema).includes("ProfilePage")) {
       return {
@@ -45,10 +50,11 @@ for (const person of leadership) {
         name: person.displayName,
         alternateName: person.name !== person.displayName ? person.name : undefined,
         jobTitle: person.schemaTitle,
-        url: `${SITE_URL}${route}`,
+        url: canonicalPersonUrl,
         worksFor: { "@id": ORGANIZATION_ID },
         affiliation: { "@id": ORGANIZATION_ID },
-        mainEntityOfPage: { "@id": profileId }
+        mainEntityOfPage: { "@id": canonicalProfilePageId },
+        subjectOf: { "@id": profileId }
       };
     }
     return schema;
