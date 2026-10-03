@@ -46,6 +46,7 @@ export const leadership = Object.freeze([
     sameAs: [
       "https://vishal.novapharmhealthcare.com/",
       "https://uk.linkedin.com/in/vishal-chakravarty",
+      "https://www.wikidata.org/wiki/Q137660690",
       "https://find-and-update.company-information.service.gov.uk/officers/GCJvCvEf20rHFbzF_T9LKAGEJic/appointments"
     ],
     summary: "Vishal leads NovaPharm's strategic direction, UK market entry, supplier relationships, pharmaceutical sourcing, regulatory pathway coordination, PLPI strategy, partnerships and board governance.",
