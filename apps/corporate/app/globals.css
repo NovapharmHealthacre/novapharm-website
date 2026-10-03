@@ -127,11 +127,11 @@ small { font-size: 0.78rem; }
 .status-notice-error { border-left-color: #b4232a; background: #fff5f5; }
 .status-notice strong { color: var(--ink); }
 .status-notice p { margin: 8px 0 0; }
-.roadmap-track { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; list-style: none; margin: 46px 0 0; padding: 0; border-top: 2px solid var(--navy); }
-.roadmap-track li { position: relative; min-height: 190px; padding: 34px 18px 18px 0; border-right: 1px solid var(--line); }
+.roadmap-track { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0; max-width: 100%; list-style: none; margin: 46px 0 0; padding: 0; border-top: 2px solid var(--navy); }
+.roadmap-track li { position: relative; min-width: 0; min-height: 190px; padding: 34px 18px 18px 0; border-right: 1px solid var(--line); }
 .roadmap-track li::before { content: ""; position: absolute; top: -8px; left: 0; width: 14px; height: 14px; border-radius: 50%; background: var(--red); border: 3px solid var(--white); box-shadow: 0 0 0 1px var(--red); }
 .roadmap-track span { display: block; margin-bottom: 20px; color: var(--red); font-weight: 800; }
-.roadmap-track strong { display: block; color: var(--ink); font-size: 0.88rem; line-height: 1.35; }
+.roadmap-track strong { display: block; min-width: 0; color: var(--ink); font-size: 0.88rem; line-height: 1.35; overflow-wrap: anywhere; }
 
 .batch-integrity { position: relative; min-height: 580px; display: grid; align-items: end; overflow: hidden; }
 .batch-integrity > img { object-fit: cover; }
@@ -249,8 +249,8 @@ small { font-size: 0.78rem; }
 .mini-grid > div { background: var(--navy); padding: 18px; }
 .mini-grid p { margin: 6px 0 0; font-size: .8rem; }
 
-.regulatory-grid, .principle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
-.regulatory-grid article, .principle-grid article { background: var(--white); padding: 28px; }
+.regulatory-grid, .principle-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; max-width: 100%; background: var(--line); border: 1px solid var(--line); }
+.regulatory-grid article, .principle-grid article { min-width: 0; background: var(--white); padding: 28px; }
 .regulatory-grid article > span, .principle-grid article > span { color: var(--red); font-size: .74rem; font-weight: 800; }
 .regulatory-grid h2, .principle-grid h2 { margin-top: 28px; font-size: 27px; }
 
