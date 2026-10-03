@@ -44,6 +44,7 @@ export function personNode(person: PersonEntity): JsonLdNode {
     "@type": "Person",
     "@id": person.id,
     name: person.displayName,
+    ...(person.canonicalName !== person.displayName ? { alternateName: person.canonicalName } : {}),
     url: person.canonicalUrl,
     jobTitle: person.publicTitle,
     worksFor: Object.freeze({ "@id": novapharmOrganisation.id }),
