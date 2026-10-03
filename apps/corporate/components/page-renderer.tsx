@@ -31,7 +31,7 @@ const leaders = leadership as unknown as readonly Leader[];
 export type NutraxinProduct = (typeof nutraxinRegister.products)[number];
 
 function ResponsiveImage({ src, alt, priority = false, className = "" }: { readonly src: string; readonly alt: string; readonly priority?: boolean; readonly className?: string }) {
-  return <Image className={className} src={src} alt={alt} fill sizes="(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 720px" priority={priority} />;
+  return <Image className={className} src={src} alt={alt} fill sizes="(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 720px" priority={priority} unoptimized />;
 }
 
 function ArticleCard({ article, featured = false }: { readonly article: Article; readonly featured?: boolean }) {
