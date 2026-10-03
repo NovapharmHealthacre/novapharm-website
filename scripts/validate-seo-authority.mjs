@@ -104,6 +104,7 @@ if (organisation?.founder?.["@id"] !== VISHAL_PERSON_ID) fail("homepage Organiza
 for (const sameAs of [
   company.companiesHouseUrl,
   company.linkedInUrl,
+  company.wikidataUrl,
 ]) {
   if (!organisation?.sameAs?.includes(sameAs)) fail(`homepage Organization sameAs is missing ${sameAs}`);
 }
