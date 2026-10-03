@@ -64,7 +64,8 @@ export const novapharmOrganisation: OrganisationEntity = Object.freeze({
   website: "https://novapharmhealthcare.com",
   sameAs: Object.freeze([
     "https://find-and-update.company-information.service.gov.uk/company/16716501",
-    "https://www.linkedin.com/company/novapharm-healthcare/"
+    "https://www.linkedin.com/company/novapharm-healthcare/",
+    "https://www.wikidata.org/wiki/Q137660644"
   ]),
   registeredJurisdiction: "England and Wales",
   registeredLocation: "Feltham, England",
