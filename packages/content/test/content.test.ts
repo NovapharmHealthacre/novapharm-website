@@ -9,6 +9,7 @@ test("organisation identifiers are canonical and stable", () => {
   assert.equal(novapharmOrganisation.id, "https://novapharmhealthcare.com/#organization");
   assert.equal(novapharmOrganisation.operatingStatus.corporate, "active");
   assert.ok(novapharmOrganisation.sameAs.includes("https://www.linkedin.com/company/novapharm-healthcare/"));
+  assert.ok(novapharmOrganisation.sameAs.includes("https://www.wikidata.org/wiki/Q137660644"));
   assert.equal(
     novapharmOrganisation.operatingStatus.regulatedWholesaleSupply,
     "not_commenced_subject_to_authorisation",
