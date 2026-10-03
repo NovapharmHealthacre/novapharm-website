@@ -45,10 +45,11 @@ test("leadership entities retain approved roles and portrait boundaries", () => 
   }
   const vishal = personSchema("vishal-chakravarty") as { "@graph": Array<Record<string, unknown>> };
   const vishalEntity = vishal["@graph"].find((item) => item["@type"] === "Person");
-  assert.equal(vishalEntity?.["@id"], "https://vishal.novapharmhealthcare.com/#person");
-  assert.equal(vishalEntity?.url, "https://vishal.novapharmhealthcare.com/about/");
-  assert.ok((vishalEntity?.sameAs as readonly string[]).includes("https://www.wikidata.org/wiki/Q137660690"));
-  assert.ok((vishalEntity?.sameAs as readonly string[]).includes("https://find-and-update.company-information.service.gov.uk/officers/GCJvCvEf20rHFbzF_T9LKAGEJic/appointments"));
+  assert.ok(vishalEntity);
+  assert.equal(vishalEntity["@id"], "https://vishal.novapharmhealthcare.com/#person");
+  assert.equal(vishalEntity.url, "https://vishal.novapharmhealthcare.com/about/");
+  assert.ok((vishalEntity.sameAs as readonly string[]).includes("https://www.wikidata.org/wiki/Q137660690"));
+  assert.ok((vishalEntity.sameAs as readonly string[]).includes("https://find-and-update.company-information.service.gov.uk/officers/GCJvCvEf20rHFbzF_T9LKAGEJic/appointments"));
   assert.equal(leadership.find((person) => person.slug === "nishita-trivedi")?.companiesHouseUrl, null);
   assert.equal(leadership.find((person) => person.slug === "nishita-trivedi")?.title, "Chief Technology Officer and Responsible Person");
   assert.equal(leadership.find((person) => person.slug === "prabhakar-lahare")?.title, "Chief Operating Officer");
