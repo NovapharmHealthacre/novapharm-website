@@ -87,6 +87,8 @@ try {
       assert.equal(await page.locator("form,input[type=password]").count(), 0);
       await page.goto(origin, { waitUntil: "networkidle" });
       assert.equal(await page.locator(".desktop-nav").getByRole("link", { name: "Secure Portal", exact: true }).getAttribute("href"), "https://portal.novapharmhealthcare.com/portal/");
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.locator(".mobile-menu summary").click();
       assert.equal(await page.locator(".mobile-menu").getByRole("link", { name: "Secure Portal", exact: true }).getAttribute("href"), "https://portal.novapharmhealthcare.com/portal/");
       const cookieContext = await browser.newContext({ viewport: { width: 390, height: 844 }, ignoreHTTPSErrors: true });
       const cookiePage = await cookieContext.newPage();
