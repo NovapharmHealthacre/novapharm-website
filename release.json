@@ -1,12 +1,14 @@
 {
   "product": "NovaPharm Healthcare corporate website",
   "profile": "PUBLIC_ONLY_GITHUB_PAGES",
-  "sourceRevision": "15c5360b1c161072e209fd17d17df69c26862a4c",
-  "builtAt": "2026-10-01T12:35:03.352Z",
+  "sourceRevision": "12a824a91b63de16831112093b95399abb836fa4",
+  "builtAt": "2026-10-05T04:33:44.082Z",
   "htmlCount": 72,
   "logoSha256": "8f1f352d4d957a9f2a8ef6cee6a3219e704bc6d20b00af60890b522da6481ebd",
-  "artifactFingerprint": "08e9b79efe330f3e9c223a077106f36619dc1865e978153d667317e7c822adc9",
+  "artifactFingerprint": "f47c98cd4ab83f6a7b119c293d694e87788189e98afa65f5108a8c13a4ba75ae",
   "automatedForms": "UNAVAILABLE",
-  "authenticatedPortal": "UNAVAILABLE",
+  "authenticatedPortal": "EXTERNAL_OWNER_ONLY",
+  "portalUrl": "https://portal.novapharmhealthcare.com/portal/",
+  "customerPortal": "UNAVAILABLE",
   "contact": "mailto:vishal@novapharmhealthcare.com"
 }
