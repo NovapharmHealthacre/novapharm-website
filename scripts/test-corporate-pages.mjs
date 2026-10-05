@@ -81,9 +81,15 @@ try {
       await page.goto(`${origin}/contact/`, { waitUntil: "networkidle" });
       assert((await page.getByRole("link", { name: "Email NovaPharm", exact: true }).getAttribute("href")).startsWith("mailto:vishal@novapharmhealthcare.com?subject="));
       await page.goto(`${origin}/portal/`, { waitUntil: "networkidle" });
-      assert.match(await page.locator("h1").innerText(), /not available/);
-      await page.getByRole("link", { name: "Contact NovaPharm", exact: true }).click();
-      await page.waitForURL("**/contact/");
+      assert.equal(await page.locator("h1").innerText(), "Your Secure Portal.");
+      assert.equal(await page.getByRole("link", { name: "Open Secure Portal", exact: true }).getAttribute("href"), "https://portal.novapharmhealthcare.com/portal/");
+      assert.equal(await page.getByText("Owner access is available. Customer access is not yet enabled.", { exact: true }).count(), 1);
+      assert.equal(await page.locator("form,input[type=password]").count(), 0);
+      await page.goto(origin, { waitUntil: "networkidle" });
+      assert.equal(await page.locator(".desktop-nav").getByRole("link", { name: "Secure Portal", exact: true }).getAttribute("href"), "https://portal.novapharmhealthcare.com/portal/");
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.locator(".mobile-menu summary").click();
+      assert.equal(await page.locator(".mobile-menu").getByRole("link", { name: "Secure Portal", exact: true }).getAttribute("href"), "https://portal.novapharmhealthcare.com/portal/");
       const cookieContext = await browser.newContext({ viewport: { width: 390, height: 844 }, ignoreHTTPSErrors: true });
       const cookiePage = await cookieContext.newPage();
       await cookiePage.goto(origin, { waitUntil: "networkidle" });

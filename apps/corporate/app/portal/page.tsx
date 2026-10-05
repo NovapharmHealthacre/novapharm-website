@@ -1,4 +1,4 @@
-import Link from "@/components/public-link";
+import { verifiedPortalUrl } from "@/lib/portal-link";
 
 export const metadata = {
   title: "Secure Portal access | NovaPharm Healthcare",
@@ -8,9 +8,10 @@ export const metadata = {
 export default function PortalAccessPage() {
   return <section className="section"><div className="shell">
     <span className="eyebrow">Secure Portal</span>
-    <h1>Sign-in is not available here yet.</h1>
-    <p>This website does not currently have a configured secure portal connection. No password has been checked and no account has been signed in.</p>
-    <p>Existing account holders should use their verified NovaPharm invitation link. Please do not send passwords or confidential documents through the general enquiry form.</p>
-    <Link className="button button-primary" href="/contact/">Contact NovaPharm</Link>
+    <h1>Your Secure Portal.</h1>
+    <p>Sign in with your approved Microsoft work account.</p>
+    <a className="button button-primary" href={verifiedPortalUrl} rel="nofollow">Open Secure Portal</a>
+    <p>Owner access is available. Customer access is not yet enabled.</p>
+    <p>This public website does not collect passwords or confidential company records.</p>
   </div></section>;
 }
