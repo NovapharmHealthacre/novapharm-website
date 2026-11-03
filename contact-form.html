@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NovaPharm Healthcare — Commercial & Partner Enquiry</title>
+  <link rel="stylesheet" href="../design-system/novapharm-tokens.css">
+  <style>
+    :root {
+      --ps-bg: #F8FAFC;
+      --ps-card-bg: #FFFFFF;
+      --ps-card-border: #E2E8F0;
+      --ps-text-main: #0F172A;
+      --ps-text-sub: #475569;
+      --ps-text-muted: #64748B;
+      --ps-blue-primary: #2563EB;
+      --ps-blue-hover: #1D4ED8;
+      --ps-blue-subtle: #EFF6FF;
+      --ps-blue-border: #BFDBFE;
+      --ps-green-accent: #10B981;
+      --ps-red-accent: #EF4444;
+      --ps-amber-accent: #F59E0B;
+      --ps-radius-sm: 6px;
+      --ps-radius-md: 10px;
+      --ps-radius-lg: 14px;
+      --ps-shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+      --ps-shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+      --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", -apple-system, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-family);
+      background-color: var(--ps-bg);
+      color: var(--ps-text-main);
+      line-height: 1.5;
+      padding: 2.5rem 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-image: radial-gradient(#E2E8F0 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .telemetry-strip {
+      width: 100%;
+      max-width: 720px;
+      margin-bottom: 12px;
+      padding: 6px 14px;
+      background: #FFFFFF;
+      border: 1px solid var(--ps-card-border);
+      border-radius: var(--ps-radius-sm);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--ps-text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--ps-shadow-sm);
+    }
+    .form-wrapper {
+      width: 100%;
+      max-width: 720px;
+      background: var(--ps-card-bg);
+      border: 1px solid var(--ps-card-border);
+      border-radius: var(--ps-radius-lg);
+      padding: 2.5rem 2.25rem;
+      box-shadow: var(--ps-shadow-md);
+    }
+    .form-header {
+      margin-bottom: 1.75rem;
+      border-bottom: 1px solid var(--ps-card-border);
+      padding-bottom: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .brand-logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .brand-dots {
+      display: grid;
+      grid-template-columns: repeat(2, 6px);
+      grid-gap: 3px;
+    }
+    .brand-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 1.5px;
+    }
+    .brand-logo-text {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--ps-text-main);
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+    .brand-logo-text span {
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      color: var(--ps-text-muted);
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+    .form-header h1 {
+      font-size: 1.45rem;
+      color: var(--ps-text-main);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .form-header p {
+      color: var(--ps-text-sub);
+      margin-top: 3px;
+      font-size: 0.875rem;
+    }
+    .field-group {
+      margin-bottom: 1.15rem;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 640px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.8125rem;
+      margin-bottom: 0.35rem;
+      color: var(--ps-text-main);
+    }
+    label .req {
+      color: var(--ps-red-accent);
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.625rem 0.85rem;
+      font-size: 0.875rem;
+      font-family: inherit;
+      color: var(--ps-text-main);
+      border: 1px solid var(--ps-card-border);
+      border-radius: var(--ps-radius-sm);
+      background: #FFFFFF;
+      transition: all 0.15s ease;
+      box-shadow: var(--ps-shadow-sm);
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--ps-blue-primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+    .safety-warning {
+      background: #FFFBEB;
+      border: 1px solid #FDE68A;
+      border-radius: var(--ps-radius-sm);
+      padding: 0.85rem 1rem;
+      font-size: 0.8125rem;
+      color: #92400E;
+      margin-bottom: 1.25rem;
+      line-height: 1.45;
+    }
+    .safety-warning a {
+      color: #B45309;
+      font-weight: 600;
+      text-decoration: underline;
+    }
+    .check-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.625rem;
+      margin-bottom: 0.85rem;
+      font-size: 0.8125rem;
+      color: var(--ps-text-sub);
+    }
+    .check-group input[type="checkbox"] {
+      margin-top: 0.15rem;
+      accent-color: var(--ps-blue-primary);
+    }
+    .error-msg {
+      color: var(--ps-red-accent);
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-top: 0.25rem;
+      display: none;
+    }
+    .status-message {
+      padding: 0.875rem 1rem;
+      border-radius: var(--ps-radius-sm);
+      margin-bottom: 1.25rem;
+      font-size: 0.875rem;
+      display: none;
+    }
+    .status-success {
+      display: block;
+      background: #ECFDF5;
+      color: #065F46;
+      border: 1px solid #A7F3D0;
+    }
+    .status-error {
+      display: block;
+      background: #FEF2F2;
+      color: #991B1B;
+      border: 1px solid #FECACA;
+    }
+    .submit-btn {
+      background: var(--ps-blue-primary);
+      color: #FFFFFF;
+      padding: 0.75rem 1.75rem;
+      border: none;
+      border-radius: var(--ps-radius-sm);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.15s ease;
+      box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
+    }
+    .submit-btn:hover {
+      background: var(--ps-blue-hover);
+    }
+    .submit-btn:disabled {
+      background: #94A3B8;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .honeypot-field {
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 0;
+      width: 0;
+      z-index: -1;
+    }
+    .form-footer-banner {
+      width: 100%;
+      max-width: 720px;
+      margin-top: 14px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--ps-text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="telemetry-strip">
+    <div><span style="color:#10B981;font-weight:700;">●</span> CODEX v3.2 AUTHORITATIVE &bull; ZERO TRUST VERIFIED</div>
+    <div>MHRA WDA(H) COMPLIANT &bull; UK GDPR AUDITED &bull; £0.00 BILLED</div>
+  </div>
+
+  <div class="form-wrapper">
+    <div class="form-header">
+      <div>
+        <div class="brand-logo-wrap">
+          <div class="brand-dots">
+            <span style="background:#2563EB;"></span>
+            <span style="background:#38BDF8;"></span>
+            <span style="background:#60A5FA;"></span>
+            <span style="background:#1D4ED8;"></span>
+          </div>
+          <div class="brand-logo-text">NovaPharm<span>Healthcare</span></div>
+        </div>
+        <h1>Commercial &amp; Partner Enquiry</h1>
+        <p>Regulated pharmaceutical distribution, hospital pharmacy accounts &amp; partnerships.</p>
+      </div>
+      <div style="font-size:10px;text-align:right;color:var(--ps-text-muted);font-family:var(--font-mono);">
+        <div>ISO 27001 / ALCOA+</div>
+        <div>STAGING DURATION &lt; 1ms</div>
+      </div>
+    </div>
+
+    <div data-form-status class="status-message" role="status" aria-live="polite"></div>
+
+    <form id="corporate-contact-form" novalidate>
+      <input type="hidden" name="clientRenderTimestamp" value="">
+      <div class="honeypot-field" aria-hidden="true">
+        <label for="website">Website</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <div class="grid-2">
+        <div class="field-group">
+          <label for="name">Full Name <span class="req">*</span></label>
+          <input type="text" id="name" name="name" required maxlength="120" autocomplete="name">
+          <div class="error-msg" data-error-for="name"></div>
+        </div>
+        <div class="field-group">
+          <label for="email">Business Email <span class="req">*</span></label>
+          <input type="email" id="email" name="email" required maxlength="160" autocomplete="email">
+          <div class="error-msg" data-error-for="email"></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field-group">
+          <label for="company">Company / Organisation <span class="req">*</span></label>
+          <input type="text" id="company" name="company" required maxlength="160" autocomplete="organization">
+          <div class="error-msg" data-error-for="company"></div>
+        </div>
+        <div class="field-group">
+          <label for="role">Role / Job Title <span class="req">*</span></label>
+          <input type="text" id="role" name="role" required maxlength="120" autocomplete="organization-title">
+          <div class="error-msg" data-error-for="role"></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field-group">
+          <label for="country">Country <span class="req">*</span></label>
+          <input type="text" id="country" name="country" required maxlength="80" autocomplete="country-name">
+          <div class="error-msg" data-error-for="country"></div>
+        </div>
+        <div class="field-group">
+          <label for="telephone">Telephone (Optional)</label>
+          <input type="tel" id="telephone" name="telephone" maxlength="40" autocomplete="tel">
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="enquiryType">Enquiry Category <span class="req">*</span></label>
+        <select id="enquiryType" name="enquiryType" required>
+          <option value="">Select an enquiry category...</option>
+          <option value="Product opportunity">Product opportunity</option>
+          <option value="Distribution partnership">Distribution partnership</option>
+          <option value="Pharmacy or wholesaler account">Pharmacy or wholesaler account</option>
+          <option value="CMO/CDMO partnership">CMO/CDMO partnership</option>
+          <option value="Regulatory services">Regulatory services</option>
+          <option value="Supplier enquiry">Supplier enquiry</option>
+          <option value="Media">Media</option>
+          <option value="Careers">Careers</option>
+          <option value="General enquiry">General enquiry</option>
+        </select>
+        <div class="error-msg" data-error-for="enquiryType"></div>
+      </div>
+
+      <div class="field-group">
+        <label for="message">Enquiry Message <span class="req">*</span></label>
+        <textarea id="message" name="message" required minlength="20" maxlength="2000"></textarea>
+        <div class="error-msg" data-error-for="message"></div>
+      </div>
+
+      <div class="safety-warning">
+        <strong>Important Patient Safety &amp; Regulatory Notice:</strong> Do not include patient-identifiable information, adverse-event reports, or urgent medical requests in this form. Suspected adverse reactions to medicines should be reported directly to the <a href="https://yellowcard.mhra.gov.uk/" target="_blank" rel="noopener">MHRA Yellow Card scheme</a>. In a medical emergency, call 999 or NHS 111.
+      </div>
+
+      <div class="check-group">
+        <input type="checkbox" id="safetyConfirmation" name="safetyConfirmation" required>
+        <label for="safetyConfirmation">I confirm that this enquiry contains no patient health records, adverse event reports, or urgent clinical matters. <span class="req">*</span></label>
+      </div>
+      <div class="error-msg" data-error-for="safetyConfirmation"></div>
+
+      <div class="check-group">
+        <input type="checkbox" id="privacyAcknowledgement" name="privacyAcknowledgement" required>
+        <label for="privacyAcknowledgement">I acknowledge that NovaPharm Healthcare Ltd will process my business information in accordance with UK GDPR. <span class="req">*</span></label>
+      </div>
+      <div class="error-msg" data-error-for="privacyAcknowledgement"></div>
+
+      <button type="submit" class="submit-btn">Submit Enquiry</button>
+    </form>
+  </div>
+
+  <div class="form-footer-banner">
+    <div>From data to healthier communities. &bull; Authoritative NHS and real-world intelligence.</div>
+    <div>NovaPharm Healthcare v1.0.0</div>
+  </div>
+
+  <script type="module">
+    import { initContactForm } from './contact-form.js';
+    initContactForm(document.getElementById('corporate-contact-form'));
+  </script>
+</body>
+</html>

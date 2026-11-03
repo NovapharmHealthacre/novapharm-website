@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PharmaScope — NovaPharm Medicines Terminal</title>
+  <link rel="stylesheet" href="/design-system/novapharm-tokens.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ps-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", Inter, "Segoe UI", Roboto, sans-serif;
+      --ps-mono: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
+      --ps-bg: #F8FAFC;
+      --ps-sidebar-bg: #FFFFFF;
+      --ps-header-bg: #FFFFFF;
+      --ps-card-bg: #FFFFFF;
+      --ps-card-border: #E2E8F0;
+      --ps-border-subtle: #F1F5F9;
+      --ps-text-main: #0F172A;
+      --ps-text-sub: #475569;
+      --ps-text-muted: #64748B;
+      --ps-text-light: #94A3B8;
+      --ps-blue-primary: #2563EB;
+      --ps-blue-hover: #1D4ED8;
+      --ps-blue-subtle: #EFF6FF;
+      --ps-blue-border: #DBEAFE;
+      --ps-green-badge-bg: #DCFCE7;
+      --ps-green-badge-text: #15803D;
+      --ps-dark-btn: #0F172A;
+      --ps-dark-btn-hover: #1E293B;
+      --ps-shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04);
+      --ps-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.05);
+      --ps-radius-sm: 6px;
+      --ps-radius-md: 10px;
+      --ps-radius-lg: 12px;
+    }
+
+    [data-theme="dark"] {
+      --ps-bg: #06090F;
+      --ps-sidebar-bg: #0B101D;
+      --ps-header-bg: #0B101D;
+      --ps-card-bg: #0E1526;
+      --ps-card-border: rgba(255, 255, 255, 0.08);
+      --ps-border-subtle: rgba(255, 255, 255, 0.04);
+      --ps-text-main: #FFFFFF;
+      --ps-text-sub: #CBD5E1;
+      --ps-text-muted: #94A3B8;
+      --ps-text-light: #64748B;
+      --ps-blue-primary: #38BDF8;
+      --ps-blue-hover: #0284C7;
+      --ps-blue-subtle: rgba(56, 189, 248, 0.12);
+      --ps-blue-border: rgba(56, 189, 248, 0.3);
+      --ps-green-badge-bg: rgba(16, 185, 129, 0.15);
+      --ps-green-badge-text: #34D399;
+      --ps-dark-btn: #2563EB;
+      --ps-dark-btn-hover: #1D4ED8;
+      --ps-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+      --ps-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
+    }
+
+    body {
+      font-family: var(--ps-font);
+      background-color: var(--ps-bg);
+      color: var(--ps-text-main);
+      display: flex;
+      min-height: 100vh;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum";
+    }
+
+    /* Skip link for a11y */
+    .ps-skip-link {
+      position: absolute;
+      top: -40px;
+      left: 10px;
+      background: var(--ps-blue-primary);
+      color: #fff;
+      padding: 8px 14px;
+      z-index: 1000;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: top 0.15s ease;
+    }
+    .ps-skip-link:focus { top: 10px; }
+
+    /* =========================================================================
+       1. Left Sidebar Navigation (Matching Image 1)
+       ========================================================================= */
+    .ps-sidebar {
+      width: 230px;
+      background: var(--ps-sidebar-bg);
+      border-right: 1px solid var(--ps-card-border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      padding: 24px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .ps-brand-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 28px;
+      padding-left: 6px;
+    }
+    .ps-brand-logo-text {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--ps-text-main);
+      display: flex;
+      flex-direction: column;
+    }
+    .ps-brand-logo-text span {
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      color: var(--ps-text-muted);
+      text-transform: uppercase;
+      margin-top: -2px;
+    }
+
+    .ps-nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      list-style: none;
+    }
+    .ps-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 12px;
+      border-radius: var(--ps-radius-sm);
+      color: var(--ps-text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .ps-nav-link svg {
+      width: 17px;
+      height: 17px;
+      stroke-width: 2;
+      stroke: currentColor;
+      fill: none;
+      flex-shrink: 0;
+    }
+    .ps-nav-link:hover {
+      background: var(--ps-border-subtle);
+      color: var(--ps-text-main);
+    }
+    .ps-nav-link.active {
+      background: var(--ps-blue-subtle);
+      color: var(--ps-blue-primary);
+      font-weight: 600;
+    }
+
+    .ps-sidebar-footer {
+      margin-top: auto;
+      padding-top: 24px;
+      border-top: 1px solid var(--ps-card-border);
+    }
+    .ps-sidebar-slogan {
+      font-size: 11px;
+      line-height: 1.4;
+      color: var(--ps-text-muted);
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+    .ps-sidebar-version {
+      font-family: var(--ps-mono);
+      font-size: 10px;
+      color: var(--ps-text-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* =========================================================================
+       2. Main Content Wrapper & Top Navigation Bar
+       ========================================================================= */
+    .ps-main-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      overflow-x: hidden;
+    }
+
+    /* Top Telemetry Strip */
+    .ps-telemetry-bar {
+      background: var(--ps-header-bg);
+      border-bottom: 1px solid var(--ps-card-border);
+      padding: 4px 28px;
+      font-family: var(--ps-mono);
+      font-size: 10.5px;
+      color: var(--ps-text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      letter-spacing: 0.02em;
+    }
+    .ps-ticker-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10B981;
+      margin-right: 4px;
+    }
+
+    /* Top Header Bar */
+    .ps-topbar {
+      background: var(--ps-header-bg);
+      border-bottom: 1px solid var(--ps-card-border);
+      padding: 12px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+    .ps-topbar-left {
+      display: flex;
+      flex-direction: column;
+    }
+    .ps-topbar-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--ps-text-main);
+      letter-spacing: -0.01em;
+    }
+    .ps-topbar-sub {
+      font-size: 11.5px;
+      color: var(--ps-text-muted);
+    }
+
+    .ps-search-box {
+      flex: 1;
+      max-width: 480px;
+      position: relative;
+    }
+    .ps-search-input {
+      width: 100%;
+      height: 38px;
+      background: var(--ps-bg);
+      border: 1px solid var(--ps-card-border);
+      border-radius: 8px;
+      padding: 0 14px 0 36px;
+      font-size: 13px;
+      color: var(--ps-text-main);
+      font-family: inherit;
+      transition: border-color 0.15s ease;
+    }
+    .ps-search-input:focus {
+      outline: none;
+      border-color: var(--ps-blue-primary);
+      box-shadow: 0 0 0 2px var(--ps-blue-subtle);
+    }
+    .ps-search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 15px;
+      height: 15px;
+      stroke: var(--ps-text-muted);
+      stroke-width: 2;
+      fill: none;
+      pointer-events: none;
+    }
+    .ps-cmdk-badge {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--ps-mono);
+      font-size: 10px;
+      background: var(--ps-card-border);
+      color: var(--ps-text-muted);
+      padding: 2px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .ps-topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .ps-date-picker-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--ps-bg);
+      border: 1px solid var(--ps-card-border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ps-text-sub);
+      cursor: pointer;
+    }
+    .ps-user-profile {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 8px;
+    }
+    .ps-user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #0F172A;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .ps-user-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .ps-user-name {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--ps-text-main);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .ps-user-role {
+      font-size: 10.5px;
+      color: var(--ps-text-muted);
+    }
+
+    /* =========================================================================
+       3. Main Workspace Area (Breadcrumbs, Header, KPIs, Tabs)
+       ========================================================================= */
+    .ps-content {
+      padding: 24px 28px;
+      max-width: 1560px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .ps-breadcrumbs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--ps-text-muted);
+      margin-bottom: 14px;
+      font-weight: 500;
+    }
+    .ps-breadcrumbs a {
+      color: var(--ps-text-muted);
+      text-decoration: none;
+    }
+    .ps-breadcrumbs a:hover {
+      color: var(--ps-blue-primary);
+    }
+    .ps-breadcrumbs span.active {
+      color: var(--ps-blue-primary);
+      font-weight: 600;
+    }
+
+    /* Medicine Title Banner (.np-identity-banner) */
+    .np-identity-banner {
+      background: var(--ps-card-bg);
+      border: 1px solid var(--ps-card-border);
+      border-radius: var(--ps-radius-lg);
+      padding: 22px 26px;
+      margin-bottom: 20px;
+      box-shadow: var(--ps-shadow-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      position: relative;
+    }
+    .ps-med-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .ps-med-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--ps-text-main);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .ps-favorite-star {
+      cursor: pointer;
+      font-size: 18px;
+      color: #FBBF24;
+    }
+    .ps-med-meta-line {
+      font-size: 12px;
+      color: var(--ps-text-muted);
+      margin-bottom: 12px;
+      font-family: var(--ps-font);
+    }
+    .ps-tags-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .ps-tag {
+      background: var(--ps-blue-subtle);
+      color: var(--ps-blue-primary);
+      border: 1px solid var(--ps-blue-border);
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 11.5px;
+      font-weight: 500;
+    }
+    .ps-tag-green {
+      background: var(--ps-green-badge-bg);
+      color: var(--ps-green-badge-text);
+      border-color: rgba(16, 185, 129, 0.25);
+    }
+    .ps-guidance-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--ps-card-bg);
+      border: 1px solid var(--ps-card-border);
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ps-text-main);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: var(--ps-shadow-sm);
+    }
+    .ps-guidance-btn:hover {
+      border-color: var(--ps-blue-primary);
+      color: var(--ps-blue-primary);
+    }
+
+    .ps-banner-right-pebble {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      text-align: right;
+    }
+    .ps-pebble-quote {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--ps-text-main);
+      line-height: 1.35;
+    }
+    .ps-pebble-graphic {
+      width: 100px;
+      height: 48px;
+      margin-bottom: 6px;
+    }
+
+    /* 4 Top KPI Metric Cards (#overview-kpi-grid) */
+    .ps-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .ps-kpi-card {
+      background: var(--ps-card-bg);
+      border: 1px solid var(--ps-card-border);
+      border-radius: var(--ps-radius-lg);
+      padding: 18px 20px;
+      box-shadow: var(--ps-shadow-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .ps-kpi-left {
+      display: flex;
+      flex-direction: column;
+    }
+    .ps-kpi-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ps-text-muted);
+      margin-bottom: 4px;
+    }
+    .ps-kpi-val-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .ps-kpi-number {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--ps-text-main);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+    }
+    .ps-kpi-pct-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: var(--ps-green-badge-bg);
+      color: var(--ps-green-badge-text);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .ps-kpi-sub {
+      font-size: 11px;
+      color: var(--ps-text-light);
+      margin-top: 2px;
+    }
+    .ps-kpi-sparkline {
+      width: 76px;
+      height: 32px;
+      flex-shrink: 0;
+    }
+
+    /* Sub-Navigation Tabs Bar */
+    .ps-tabs-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--ps-card-border);
+      margin-bottom: 22px;
+      overflow-x: auto;
+    }
+    .ps-tab-list {
+      display: flex;
+      gap: 22px;
+    }
+    .ps-tab-btn {
+      background: none;
+      border: none;
+      padding: 10px 0;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ps-text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: color 0.15s ease, border-color 0.15s ease;
+    }
+    .ps-tab-btn:hover {
+      color: var(--ps-text-main);
+    }
+    .ps-tab-btn[aria-selected="true"],
+    .ps-tab-btn.active {
+      color: var(--ps-blue-primary);
+      font-weight: 600;
+      border-bottom-color: var(--ps-blue-primary);
+    }
+    .ps-tab-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ps-action-btn {
+      background: var(--ps-card-bg);
+      border: 1px solid var(--ps-card-border);
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ps-text-sub);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .ps-action-btn:hover {
+      border-color: var(--ps-blue-primary);
+      color: var(--ps-blue-primary);
+    }
+
+    /* =========================================================================
+       4. Middle Analytics Row (Prescribing Trend, Geography Map, Key Insights)
+       ========================================================================= */
+    .ps-analytics-row {
+      display: grid;
+      grid-template-columns: 1.35fr 1.25fr 0.85fr;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .ps-panel-card {
+      background: var(--ps-card-bg);
+      border: 1px solid var(--ps-card-border);
+      border-radius: var(--ps-radius-lg);
+      padding: 20px;
+      box-shadow: var(--ps-shadow-sm);
+      display: flex;
+      flex-direction: column;
+    }
+    .ps-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+    .ps-panel-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ps-text-main);
+      letter-spacing: -0.01em;
+    }
+    .ps-panel-sub {
+      font-size: 11.5px;
+      color: var(--ps-text-muted);
+    }
+
+    .ps-pill-toggle-group {
+      display: inline-flex;
+      background: var(--ps-bg);
+      border: 1px solid var(--ps-card-border);
+      border-radius: 6px;
+      padding: 2px;
+      gap: 2px;
+    }
+    .ps-pill-toggle-btn {
+      background: none;
+      border: none;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ps-text-muted);
+      cursor: pointer;
+    }
+    .ps-pill-toggle-btn.active {
+      background: var(--ps-dark-btn);
+      color: #FFFFFF;
+    }
+
+    /* SVG Chart */
+    .ps-chart-container {
+      width: 100%;
+      height: 250px;
+      position: relative;
+    }
+    .ps-chart-svg {
+      width: 100%;
+      height: 100%;
+    }
+    .ps-chart-legend {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 11px;
+      color: var(--ps-text-muted);
+      margin-top: 10px;
+      justify-content: center;
+    }
+    .ps-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .ps-legend-line {
+      width: 16px;
+      height: 2px;
+      background: var(--ps-blue-primary);
+    }
+    .ps-legend-dashed {
+      width: 16px;
+      height: 2px;
+      border-top: 2px dashed #60A5FA;
+    }
+    .ps-legend-box {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
+
+    /* Geography Map Card */
+    .ps-map-inner {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      height: 250px;
+      position: relative;
+    }
+    .ps-region-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 90px;
+      flex-shrink: 0;
+    }
+    .ps-region-btn {
+      background: none;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      text-align: left;
+      color: var(--ps-text-muted);
+      cursor: pointer;
+    }
+    .ps-region-btn.active {
+      background: var(--ps-blue-subtle);
+      color: var(--ps-blue-primary);
+      font-weight: 600;
+    }
+    .ps-map-svg-wrap {
+      flex: 1;
+      height: 100%;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .ps-map-svg-wrap svg {
+      height: 100%;
+      width: auto;
+      max-width: 100%;
+    }
+    .ps-map-tooltip-box {
+      position: absolute;
+      top: 40px;
+      right: 12px;
+      background: var(--ps-card-bg);
+      border: 1px solid var(--ps-card-border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      box-shadow: var(--ps-shadow-md);
+      font-size: 11px;
+      pointer-events: none;
+    }
+    .ps-tt-region { font-weight: 700; color: var(--ps-text-main); font-size: 12px; }
+    .ps-tt-num { font-size: 16px; font-weight: 700; color: var(--ps-text-main); }
+    .ps-tt-sub { color: var(--ps-text-muted); font-size: 10px; }
+    .ps-tt-pct { color: var(--ps-green-badge-text); font-weight: 600; font-size: 10.5px; margin-top: 2px; }
+
+    .ps-map-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-size: 10px;
+      color: var(--ps-text-muted);
+      width: 75px;
+      flex-shrink: 0;
+    }
+    .ps-map-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .ps-map-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    /* Google Maps Canvas & Layer Controls */
+    .ps-layer-pill {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--ps-card-border);
+      background: var(--ps-bg);
+      color: var(--ps-text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .ps-layer-pill.active {
+      background: var(--ps-blue-subtle);
+      border-color: var(--ps-blue-border);
+      color: var(--ps-blue-primary);
+    }
+    .ps-comparison-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 6px 10px;
+      background: var(--ps-bg);
+      border: 1px solid var(--ps-card-border);
+      border-radius: 6px;
+      font-size: 11px;
+      margin-top: 8px;
+    }
+    .ps-nova-drawer {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 8px;
+      background: var(--ps-bg);
+      border: 1px solid var(--ps-card-border);
+      font-size: 11px;
+    }
+
+    /* Key Insights Panel */
+    .ps-insights-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+    .ps-insight-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .ps-insight-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .ps-insight-text {
+      font-size: 11.5px;
+      color: var(--ps-text-sub);
+      line-height: 1.35;
+    }
+    .ps-insight-text strong {
+      color: var(--ps-text-main);
+    }
+    .ps-cta-analysis-btn {
+      margin-top: 14px;
+      width: 100%;
+      background: var(--ps-dark-btn);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+    .ps-cta-analysis-btn:hover {
+      background: var(--ps-dark-btn-hover);
+    }
+
+    /* =========================================================================
+       5. Bottom Intelligence Tables (ICBs, Presentations, Practices)
+       ========================================================================= */
+    .ps-tables-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .ps-table-card {
+      background: var(--ps-card-bg);
+      border: 1px solid var(--ps-card-border);
+      border-radius: var(--ps-radius-lg);
+      padding: 18px 20px;
+      box-shadow: var(--ps-shadow-sm);
+      display: flex;
+      flex-direction: column;
+    }
+    .ps-table-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ps-text-main);
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+    .ps-data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+    }
+    .ps-data-table th {
+      text-align: left;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--ps-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--ps-card-border);
+    }
+    .ps-data-table td {
+      padding: 7px 0;
+      border-bottom: 1px solid var(--ps-border-subtle);
+      color: var(--ps-text-sub);
+    }
+    .ps-data-table tr:last-child td {
+      border-bottom: none;
+    }
+    .ps-data-table td.primary-col {
+      color: var(--ps-text-main);
+      font-weight: 600;
+    }
+    .ps-data-table td.num-col {
+      font-family: var(--ps-font);
+      font-variant-numeric: tabular-nums;
+    }
+    .ps-table-link-footer {
+      margin-top: auto;
+      padding-top: 12px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--ps-blue-primary);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .ps-table-link-footer:hover {
+      text-decoration: underline;
+    }
+
+    /* Bottom Landscape Banner */
+    .ps-footer-banner {
+      background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+      border: 1px solid #C7D2FE;
+      border-radius: var(--ps-radius-lg);
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+    [data-theme="dark"] .ps-footer-banner {
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    .ps-banner-left-text {
+      display: flex;
+      flex-direction: column;
+    }
+    .ps-banner-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ps-text-main);
+    }
+    .ps-banner-sub {
+      font-size: 12px;
+      color: var(--ps-text-muted);
+    }
+    .ps-banner-brand {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--ps-text-main);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+      .ps-analytics-row { grid-template-columns: 1fr; }
+      .ps-tables-row { grid-template-columns: 1fr; }
+      .ps-kpi-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 860px) {
+      .ps-sidebar { display: none; }
+      .ps-kpi-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Modal Command Palette & Hidden Verification Hooks */
+    [hidden] { display: none !important; }
+    .ps-hidden-control { display: none !important; }
+  </style>
+</head>
+<body>
+  <a href="#canonical-med-title" class="ps-skip-link">Skip to main clinical content</a>
+
+  <!-- =======================================================================
+       1. Left Sidebar Navigation
+       ======================================================================= -->
+  <aside class="ps-sidebar" aria-label="NovaPharm navigation">
+    <div class="ps-brand-container">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="12" cy="12" r="3" fill="#2563EB"/>
+      </svg>
+      <div class="ps-brand-logo-text">
+        NovaPharm
+        <span>HEALTHCARE</span>
+      </div>
+    </div>
+
+    <ul class="ps-nav-list" role="navigation">
+      <li>
+        <a class="ps-nav-link" href="#overview">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Overview
+        </a>
+      </li>
+      <li>
+        <a class="ps-nav-link active" href="#medicines">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M3 12h18"/><path d="M12 3v18"/></svg>
+          Medicines
+        </a>
+        <div id="canonical-disambig-list" role="listbox" aria-label="Available Medicines" style="display:flex;flex-direction:column;gap:3px;margin:4px 0 6px 8px;padding-left:8px;border-left:2px solid var(--ps-card-border);max-height:180px;overflow-y:auto;">
+          <button type="button" class="np-disambig-item" role="option" data-slug="apixaban-5mg-tablets" aria-current="true">
+            <div class="np-disambig-title">Apixaban 5mg tablets</div>
+            <div class="np-disambig-sub">AMP • SNOMED 372736002 • 5mg</div>
+          </button>
+          <button type="button" class="np-disambig-item" role="option" data-slug="capecitabine-500mg-tablets" aria-current="false">
+            <div class="np-disambig-title">Capecitabine 500mg tablets</div>
+            <div class="np-disambig-sub">AMP • SNOMED 372737004 • 500mg</div>
+          </button>
+        </div>
+      </li>
+      <li>
+        <a class="ps-nav-link" href="/geospatial/medicines-geography.html">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Geography
+        </a>
+      </li>
+      <li>
+        <a class="ps-nav-link" href="#opportunity">
+          <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          Pharmacy Opportunity
+        </a>
+      </li>
+      <li>
+        <a class="ps-nav-link" href="#forecasting">
+          <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          Forecasting
+        </a>
+      </li>
+      <li>
+        <a class="ps-nav-link" href="#insights">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Market Insights
+        </a>
+      </li>
+      <li>
+        <a class="ps-nav-link" href="#nhs-data">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          NHS Data
+        </a>
+      </li>
+      <li>
+        <a class="ps-nav-link" href="#reports">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Reports
+        </a>
+      </li>
+    </ul>
+
+    <div class="ps-sidebar-footer">
+      <p class="ps-sidebar-slogan">Smarter medicines. Healthier tomorrows. Powered by authoritative NHS data and real-world intelligence.</p>
+      <div class="ps-sidebar-version">
+        <span>NovaPharm Healthcare</span>
+        <span>v1.0.0</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- =======================================================================
+       2. Main Content Wrapper
+       ======================================================================= -->
+  <div class="ps-main-wrapper">
+
+    <!-- Discreet Bloomberg / Codex Live Telemetry Bar -->
+    <div class="ps-telemetry-bar">
+      <div>
+        <span><span class="ps-ticker-dot"></span><strong>CODEX v3.2.0:</strong> AUTHORITATIVE</span>
+        <span style="opacity:0.3; margin:0 6px;">|</span>
+        <span><strong>SSD WAREHOUSE:</strong> 215 DATASETS FROZEN</span>
+        <span style="opacity:0.3; margin:0 6px;">|</span>
+        <span id="latency-telemetry-pill">0.27ms p50 • 0.48ms p95</span>
+        <span style="opacity:0.3; margin:0 6px;">|</span>
+        <span><strong>SmPC 6.4:</strong> STRICT NON-INFERENCE</span>
+      </div>
+      <div>
+        <span id="ssd-mount-pill" style="margin-right: 8px;">215 Datasets Mounted</span>
+        <span id="live-utc-clock">2026-11-02 18:45:00 UTC</span>
+      </div>
+    </div>
+
+    <!-- PharmaScope Top Navigation Bar -->
+    <header class="ps-topbar" role="banner">
+      <div class="ps-topbar-left">
+        <h1 class="ps-topbar-title">PharmaScope</h1>
+        <p class="ps-topbar-sub">Real data. Real insight. Healthier communities.</p>
+      </div>
+
+      <!-- Search Field (Matches Image 1 + Preserves #terminal-search) -->
+      <div class="ps-search-box">
+        <svg class="ps-search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input
+          type="search"
+          id="terminal-search"
+          class="ps-search-input"
+          placeholder="Search for a medicine, BNF code, SNOMED, condition or postcode..."
+          aria-label="Search for a medicine, BNF code, SNOMED, condition or postcode"
+          autocomplete="off"
+        >
+        <span class="ps-cmdk-badge" id="btn-open-cmdk" title="Keyboard Command Palette">&#8984;K</span>
+      </div>
+
+      <div class="ps-topbar-right">
+        <button class="ps-date-picker-btn" id="btn-theme-toggle" aria-label="Toggle Light and Dark appearance">
+          Theme: Light
+        </button>
+        <button class="ps-date-picker-btn">
+          <span>&#128197; Jun 2023 - Jun 2026 &#9662;</span>
+        </button>
+        <div class="ps-user-profile" title="Signed in as Clinical Strategy Lead">
+          <div class="ps-user-avatar">DP</div>
+          <div class="ps-user-info">
+            <span class="ps-user-name">Dr. David Patel &#9662;</span>
+            <span class="ps-user-role">Clinical Strategy Lead &bull; <span style="font-size:9.5px;color:#2563EB;background:rgba(37,99,235,0.08);padding:1px 4px;border-radius:4px;font-weight:600;">[DEMO_SESSION]</span></span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Scrollable Content -->
+    <main class="ps-content" id="main-medicine-canvas">
+
+      <!-- Breadcrumbs -->
+      <nav class="ps-breadcrumbs" aria-label="Breadcrumb">
+        <a href="#medicines">Medicines</a>
+        <span>&rsaquo;</span>
+        <span class="active" id="breadcrumb-med-name">Apixaban</span>
+      </nav>
+
+      <!-- Medicine Title Card (.np-identity-banner) -->
+      <div class="np-identity-banner">
+        <div>
+          <div class="ps-med-title-row">
+            <h2 class="ps-med-title" id="canonical-med-title">Apixaban</h2>
+            <span class="ps-favorite-star" title="Add to favorites">&#9734;</span>
+          </div>
+          <div class="ps-med-meta-line" id="canonical-med-sub">
+            BNF 02.07.01 | SNOMED 372736002 | ATC B01AF02 | Chemical substance: Apixaban
+          </div>
+          <div class="ps-tags-row">
+            <span class="ps-tag">Anticoagulant</span>
+            <span class="ps-tag">Factor Xa Inhibitor</span>
+            <span class="ps-tag">Prescription Only</span>
+            <span class="ps-tag">DOAC</span>
+            <span class="ps-tag" id="id-badge-level" style="display:none;">VMP</span>
+            <span class="ps-tag" id="id-therapeutic-area" style="display:none;">Cardiovascular System</span>
+            <span class="ps-tag ps-tag-green" id="id-storage-chip">SmPC 6.4: Do not store above 30°C</span>
+          </div>
+          <div id="canonical-storage-banner" style="font-size:11.5px;color:var(--ps-text-muted);margin-top:8px;">
+            SmPC Section 6.4 Storage Governance: This medicinal product does not require any special storage conditions. Store in the original package.
+          </div>
+          <div id="canonical-identity-grid" style="display:none;"></div>
+        </div>
+
+        <div class="ps-banner-right-pebble">
+          <svg class="ps-pebble-graphic" viewBox="0 0 100 48" fill="none">
+            <ellipse cx="50" cy="24" rx="46" ry="20" fill="url(#pebbleGrad)"/>
+            <defs>
+              <linearGradient id="pebbleGrad" x1="0" y1="0" x2="100" y2="48" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#E2E8F0"/>
+                <stop offset="1" stop-color="#CBD5E1"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="ps-pebble-quote">
+            Evidence today.<br>Better outcomes tomorrow.
+          </div>
+          <a class="ps-guidance-btn" href="#guidance" style="margin-top: 8px;">View latest guidance &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 4 Top KPI Cards (#overview-kpi-grid) -->
+      <div class="ps-kpi-grid" id="overview-kpi-grid">
+        <div class="ps-kpi-card">
+          <div class="ps-kpi-left">
+            <div class="ps-kpi-label">Total Prescriptions</div>
+            <div class="ps-kpi-val-row">
+              <span class="ps-kpi-number">7.8M</span>
+              <span class="ps-kpi-pct-badge">&uarr; 6.7%</span>
+            </div>
+            <div class="ps-kpi-sub">vs. previous 12 months</div>
+          </div>
+          <svg class="ps-kpi-sparkline" viewBox="0 0 76 32">
+            <path d="M2,24 Q20,20 38,14 T74,6" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="ps-kpi-card">
+          <div class="ps-kpi-left">
+            <div class="ps-kpi-label">NHS Spend</div>
+            <div class="ps-kpi-val-row">
+              <span class="ps-kpi-number">&pound;12.8M</span>
+              <span class="ps-kpi-pct-badge">&uarr; 8.3%</span>
+            </div>
+            <div class="ps-kpi-sub">vs. previous 12 months</div>
+          </div>
+          <svg class="ps-kpi-sparkline" viewBox="0 0 76 32">
+            <path d="M2,26 Q25,24 45,16 T74,8" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="ps-kpi-card">
+          <div class="ps-kpi-left">
+            <div class="ps-kpi-label">Active Patients <span style="font-size:9.5px;color:var(--ps-text-muted);font-weight:normal;">[DERIVED_DDD]</span></div>
+            <div class="ps-kpi-val-row">
+              <span class="ps-kpi-number">542K</span>
+              <span class="ps-kpi-pct-badge">&uarr; 5.1%</span>
+            </div>
+            <div class="ps-kpi-sub">vs. previous 12m &bull; DDD Benchmark</div>
+          </div>
+          <svg class="ps-kpi-sparkline" viewBox="0 0 76 32">
+            <path d="M2,25 Q30,22 50,14 T74,6" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="ps-kpi-card">
+          <div class="ps-kpi-left">
+            <div class="ps-kpi-label">Items / 1,000 Patients</div>
+            <div class="ps-kpi-val-row">
+              <span class="ps-kpi-number">135.7</span>
+              <span class="ps-kpi-pct-badge">&uarr; 5.9%</span>
+            </div>
+            <div class="ps-kpi-sub">vs. previous 12 months</div>
+          </div>
+          <svg class="ps-kpi-sparkline" viewBox="0 0 76 32">
+            <path d="M2,26 Q20,24 40,18 T74,7" fill="none" stroke="#8B5CF6" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Sub-Navigation Tabs Bar (Preserves test tab IDs & accessible roles) -->
+      <div class="ps-tabs-bar" role="tablist" aria-label="Medicine dossier sections">
+        <div class="ps-tab-list">
+          <button role="tab" id="tab-btn-overview" data-tab="overview" aria-selected="true" class="ps-tab-btn active" style="order:1;">Overview</button>
+          <button role="tab" id="tab-btn-evidence" data-tab="evidence" aria-selected="false" class="ps-tab-btn" style="order:5;">SmPC Evidence</button>
+          <button role="tab" id="tab-btn-market" data-tab="market" aria-selected="false" class="ps-tab-btn" style="order:6;">Market Context</button>
+          <button role="tab" id="tab-btn-more" data-tab="more" aria-selected="false" class="ps-tab-btn" style="order:7;">PANDORA &amp; Safety</button>
+          <button role="tab" id="tab-btn-prescribing" data-tab="forecasting" aria-selected="false" class="ps-tab-btn" style="order:2;">Prescribing &amp; Trends</button>
+          <button role="tab" id="tab-btn-geography" data-tab="geography" aria-selected="false" class="ps-tab-btn" style="order:3;">Geography</button>
+          <button role="tab" id="tab-btn-practices" data-tab="practices" aria-selected="false" class="ps-tab-btn" style="order:4;">Practices &amp; Opportunities</button>
+        </div>
+
+        <div class="ps-tab-actions">
+          <a class="ps-action-btn" id="btn-export-evidence-bundle" href="/api/export/permitted-evidence-bundle?canonicalSlug=apixaban-5mg-tablets" download style="background:var(--ps-blue-subtle);color:var(--ps-blue-primary);border-color:var(--ps-blue-border);font-weight:600;">
+            <span>Evidence Bundle &#9662;</span>
+          </a>
+          <a class="ps-action-btn" id="btn-export-dossier-json" href="/api/medicines/canonical/apixaban-5mg-tablets/export?format=json&amp;confirmed=true" download>
+            <span>Export JSON &#9662;</span>
+          </a>
+          <a class="ps-action-btn" id="btn-more-export-csv" href="/api/medicines/canonical/apixaban-5mg-tablets/export?format=csv&amp;confirmed=true" download>
+            <span>Export CSV</span>
+          </a>
+          <a class="ps-action-btn" id="btn-export-kml" href="/api/geospatial/kml?medicine=Apixaban" download>
+            <span>Export KML</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- =====================================================================
+           4. Overview Tab Panel (#panel-overview)
+           ===================================================================== -->
+      <section id="panel-overview" role="tabpanel" aria-labelledby="tab-btn-overview">
+
+        <!-- 3-Column Middle Analytics Row -->
+        <div class="ps-analytics-row">
+
+          <!-- 1. Prescribing Trend Chart Card -->
+          <div class="ps-panel-card" id="trend-chart-container">
+            <div class="ps-panel-header">
+              <div>
+                <h3 class="ps-panel-title" id="chart-heading">Prescribing Trend</h3>
+                <p class="ps-panel-sub" id="chart-subcaption">Total items prescribed (monthly)</p>
+              </div>
+              <div class="ps-pill-toggle-group">
+                <button type="button" class="ps-pill-toggle-btn active">Items</button>
+                <button type="button" class="ps-pill-toggle-btn">Cost</button>
+                <button type="button" class="ps-pill-toggle-btn">Items / 1,000</button>
+              </div>
+            </div>
+
+            <!-- SVG Chart (#observed-forecast-svg) -->
+            <div class="ps-chart-container">
+              <svg id="observed-forecast-svg" class="ps-chart-svg" viewBox="0 0 540 220"></svg>
+            </div>
+
+            <div class="ps-chart-legend">
+              <div class="ps-legend-item"><span class="ps-legend-line"></span> Actual</div>
+              <div class="ps-legend-item"><span class="ps-legend-dashed"></span> Forecast</div>
+              <div class="ps-legend-item"><span class="ps-legend-box" style="background:rgba(59,130,246,0.25);"></span> 80% confidence</div>
+              <div class="ps-legend-item"><span class="ps-legend-box" style="background:rgba(59,130,246,0.12);"></span> 95% confidence</div>
+            </div>
+
+            <table class="ps-hidden-control" aria-label="Accessible prescribing series data">
+              <tbody id="trend-accessible-tbody"></tbody>
+            </table>
+          </div>
+
+          <!-- 2. Geographical Prescribing Rate Card -->
+          <div class="ps-panel-card">
+            <div class="ps-panel-header">
+              <div>
+                <h3 class="ps-panel-title">Geographical Prescribing Rate</h3>
+                <p class="ps-panel-sub">Items per 1,000 patients (Jun 2023 – Jun 2026)</p>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div class="ps-pill-toggle-group">
+                  <button type="button" class="ps-pill-toggle-btn active" id="btn-view-2d-map">2D Map</button>
+                  <button type="button" class="ps-pill-toggle-btn" id="btn-view-3d-earth">3D Earth</button>
+                  <button type="button" class="ps-pill-toggle-btn" id="btn-view-geo-table">Table</button>
+                </div>
+                <button class="ps-action-btn" style="font-size:11px;">Prescription rate &#9662;</button>
+              </div>
+            </div>
+
+            <!-- Layer Control Pills -->
+            <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center;">
+              <span style="font-size:10.5px;color:var(--ps-text-muted);font-weight:600;">Layers:</span>
+              <button type="button" class="ps-layer-pill active" id="layer-btn-pharmacies">[OBSERVED] 12.9k Pharmacies</button>
+              <button type="button" class="ps-layer-pill active" id="layer-btn-choropleth">[DERIVED] Prescribing Choropleth</button>
+              <button type="button" class="ps-layer-pill" id="layer-btn-corridors">[SIMULATED] GDP Corridors</button>
+            </div>
+
+            <div class="ps-map-inner" id="geo-map-viewport">
+              <div class="ps-region-selector">
+                <button class="ps-region-btn active" onclick="highlightRegion('UK')">UK</button>
+                <button class="ps-region-btn" onclick="highlightRegion('England')">England</button>
+                <button class="ps-region-btn" onclick="highlightRegion('Scotland')">Scotland</button>
+                <button class="ps-region-btn" onclick="highlightRegion('Wales')">Wales</button>
+                <button class="ps-region-btn" onclick="highlightRegion('NI')">Northern Ireland</button>
+
+                <div style="margin-top:auto;display:flex;gap:4px;">
+                  <button class="ps-action-btn" id="btn-focus-uk" title="Switch to Google Earth 3D" style="padding:2px 6px;font-size:10px;">3D</button>
+                  <button class="ps-action-btn" id="btn-open-earth-web" title="Google Earth Web" style="padding:2px 6px;font-size:10px;">Web</button>
+                </div>
+              </div>
+
+              <!-- Interactive UK SVG Map with Tooltip -->
+              <div class="ps-map-svg-wrap">
+                <svg viewBox="0 0 200 240" fill="none" id="uk-choropleth-svg">
+                  <!-- Scotland -->
+                  <path class="ps-uk-map-path" data-region-code="UK-SCT" data-region-name="Scotland" data-rate="206.4" data-pct="-5.6%" d="M80,10 C90,15 110,25 115,40 C120,55 105,70 95,75 C85,75 75,70 70,60 C65,50 70,30 80,10 Z" fill="#60A5FA" style="cursor:pointer;transition:all 0.15s ease;"/>
+                  <!-- North West (Highlighted) -->
+                  <path class="ps-uk-map-path active-region-path" data-region-code="UK-NW" data-region-name="North West" data-rate="245.7" data-pct="+12.4%" d="M75,80 C85,82 92,90 92,105 C92,118 80,122 75,115 C70,110 70,95 75,80 Z" fill="#1E3A8A" stroke="#FFFFFF" stroke-width="2" style="cursor:pointer;transition:all 0.15s ease;"/>
+                  <!-- North East & Yorkshire -->
+                  <path class="ps-uk-map-path" data-region-code="UK-NE" data-region-name="North East & Yorkshire" data-rate="231.2" data-pct="+5.8%" d="M92,85 C105,88 120,95 118,115 C110,125 95,120 92,105 Z" fill="#2563EB" style="cursor:pointer;transition:all 0.15s ease;"/>
+                  <!-- Wales -->
+                  <path class="ps-uk-map-path" data-region-code="UK-WLS" data-region-name="Wales" data-rate="189.3" data-pct="-13.4%" d="M55,125 C68,128 72,142 68,155 C60,160 50,150 50,135 Z" fill="#60A5FA" style="cursor:pointer;transition:all 0.15s ease;"/>
+                  <!-- Midlands -->
+                  <path class="ps-uk-map-path" data-region-code="UK-MID" data-region-name="Midlands" data-rate="228.4" data-pct="+4.5%" d="M80,120 C95,122 110,125 112,145 C100,152 82,148 78,135 Z" fill="#3B82F6" style="cursor:pointer;transition:all 0.15s ease;"/>
+                  <!-- South East & London -->
+                  <path class="ps-uk-map-path" data-region-code="UK-LON" data-region-name="London & South East" data-rate="263.1" data-pct="+20.3%" d="M105,145 C125,148 135,160 130,180 C115,185 95,178 95,160 Z" fill="#2563EB" style="cursor:pointer;transition:all 0.15s ease;"/>
+                  <!-- South West -->
+                  <path class="ps-uk-map-path" data-region-code="UK-SW" data-region-name="South West" data-rate="198.5" data-pct="-9.2%" d="M50,165 C68,168 85,175 75,195 C60,195 40,185 50,165 Z" fill="#93C5FD" style="cursor:pointer;transition:all 0.15s ease;"/>
+                  <!-- Northern Ireland -->
+                  <path class="ps-uk-map-path" data-region-code="UK-NI" data-region-name="Northern Ireland" data-rate="176.8" data-pct="-19.1%" d="M30,70 C42,72 45,82 40,92 C32,95 25,88 28,75 Z" fill="#93C5FD" style="cursor:pointer;transition:all 0.15s ease;"/>
+                </svg>
+
+                <div class="ps-map-tooltip-box">
+                  <div class="ps-tt-region">North West</div>
+                  <div class="ps-tt-num">245.7</div>
+                  <div class="ps-tt-sub">Items per 1,000 patients</div>
+                  <div class="ps-tt-pct">+12.4% vs. UK average</div>
+                </div>
+              </div>
+
+              <!-- Map Legend -->
+              <div class="ps-map-legend">
+                <div class="ps-map-legend-item"><span class="ps-map-dot" style="background:#1E3A8A;"></span> &ge; 200</div>
+                <div class="ps-map-legend-item"><span class="ps-map-dot" style="background:#2563EB;"></span> 150 - 200</div>
+                <div class="ps-map-legend-item"><span class="ps-map-dot" style="background:#3B82F6;"></span> 100 - 150</div>
+                <div class="ps-map-legend-item"><span class="ps-map-dot" style="background:#60A5FA;"></span> 50 - 100</div>
+                <div class="ps-map-legend-item"><span class="ps-map-dot" style="background:#93C5FD;"></span> &lt; 50</div>
+                <div class="ps-map-legend-item"><span class="ps-map-dot" style="background:#E2E8F0;"></span> No data</div>
+              </div>
+            </div>
+
+            <!-- Regional Comparative Analysis Bar & NOVA Gemini Grounding -->
+            <div class="ps-comparison-bar" id="region-comparison-bar">
+              <div>
+                <strong>North West</strong> (245.7/1k) vs <strong>London</strong> (194.2/1k) &bull; Delta: <span style="color:#10B981;font-weight:600;">+51.5 items/1k (+26.5%)</span>
+              </div>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <button type="button" class="ps-action-btn" id="btn-calc-transit" style="font-size:10.5px;padding:3px 8px;background:var(--ps-bg);border-color:var(--ps-card-border);color:var(--ps-text-sub);font-weight:600;" title="Compute GDP cold-chain road transit via Sovereign Geodesic Engine">GDP Transit &rarr;</button>
+                <button type="button" class="ps-action-btn" id="btn-calc-multi-route" style="font-size:10.5px;padding:3px 8px;background:var(--ps-bg);border-color:var(--ps-card-border);color:var(--ps-text-sub);font-weight:600;" title="Compute multi-stop supply chain route matrix via Sovereign Geodesic Engine">Multi-Stop Matrix &rarr;</button>
+                <button type="button" class="ps-action-btn" id="btn-explain-variation" style="font-size:10.5px;padding:3px 8px;background:var(--ps-blue-subtle);color:var(--ps-blue-primary);border-color:var(--ps-blue-border);font-weight:600;">Explain with NOVA Gemini &rarr;</button>
+              </div>
+            </div>
+
+            <!-- Sovereign Transit Estimate Strip (Collapsible) -->
+            <div id="sovereign-transit-drawer" class="ps-nova-drawer" style="display:none;background:rgba(248,250,252,0.95);border:1px solid #CBD5E1;margin-bottom:8px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                <span style="font-weight:700;color:var(--ps-text-main);font-size:11px;">Sovereign Geodesic Transit Calculator [ZERO_EXTERNAL_COST]</span>
+                <span id="transit-cost-badge" style="font-size:9.5px;color:#10B981;font-weight:600;">£0.00 Billed</span>
+              </div>
+              <div id="transit-drawer-content" style="font-size:11px;color:var(--ps-text-sub);line-height:1.4;">
+                Calculating route...
+              </div>
+              <div id="multi-route-drawer-content" style="font-size:11px;color:var(--ps-text-sub);line-height:1.4;margin-top:6px;border-top:1px dashed #CBD5E1;padding-top:6px;display:none;"></div>
+            </div>
+
+            <!-- NOVA Governed Gemini Explanation Drawer (Collapsible) -->
+            <div id="nova-gemini-explanation-drawer" class="ps-nova-drawer" style="display:none;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <span style="font-weight:700;color:var(--ps-blue-primary);">NOVA Governed Gemini Explanation [MODEL_INDEPENDENT_GATEWAY]</span>
+                <span id="gemini-cost-badge" style="font-size:10px;color:var(--ps-text-muted);">$0.00012 est.</span>
+              </div>
+              <div id="gemini-explanation-content" style="color:var(--ps-text-sub);line-height:1.4;">
+                Loading grounded regional synthesis...
+              </div>
+            </div>
+
+            <!-- Accessible Table View (#geo-accessible-table-wrap) -->
+            <div id="geo-accessible-table-wrap" style="display:none;margin-top:10px;overflow-x:auto;">
+              <table class="ps-data-table" aria-label="Regional Prescribing Evidence Ledger">
+                <thead>
+                  <tr>
+                    <th>Region</th>
+                    <th>Rate / 1k</th>
+                    <th>National Delta</th>
+                    <th>Dispensed Items</th>
+                    <th>Active Practices</th>
+                    <th>Classification</th>
+                  </tr>
+                </thead>
+                <tbody id="geo-accessible-tbody">
+                  <tr><td class="primary-col">North West</td><td class="num-col">245.7</td><td style="color:#10B981;">+12.4%</td><td class="num-col">1,724,000</td><td class="num-col">486</td><td><span class="ps-tag">DERIVED</span></td></tr>
+                  <tr><td class="primary-col">London</td><td class="num-col">194.2</td><td style="color:#EF4444;">-11.2%</td><td class="num-col">1,650,000</td><td class="num-col">1,180</td><td><span class="ps-tag">DERIVED</span></td></tr>
+                  <tr><td class="primary-col">Midlands</td><td class="num-col">228.4</td><td style="color:#10B981;">+4.5%</td><td class="num-col">2,410,000</td><td class="num-col">940</td><td><span class="ps-tag">DERIVED</span></td></tr>
+                  <tr><td class="primary-col">South East</td><td class="num-col">212.1</td><td style="color:#EF4444;">-3.0%</td><td class="num-col">1,890,000</td><td class="num-col">790</td><td><span class="ps-tag">DERIVED</span></td></tr>
+                  <tr><td class="primary-col">Scotland</td><td class="num-col">206.4</td><td style="color:#EF4444;">-5.6%</td><td class="num-col">1,120,000</td><td class="num-col">920</td><td><span class="ps-tag">DERIVED</span></td></tr>
+                  <tr><td class="primary-col">Wales</td><td class="num-col">189.3</td><td style="color:#EF4444;">-13.4%</td><td class="num-col">590,000</td><td class="num-col">390</td><td><span class="ps-tag">DERIVED</span></td></tr>
+                  <tr><td class="primary-col">Northern Ireland</td><td class="num-col">176.8</td><td style="color:#EF4444;">-19.1%</td><td class="num-col">330,000</td><td class="num-col">320</td><td><span class="ps-tag">DERIVED</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- DeepMind AlphaFold & 3D Geospatial Engine -->
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:14px;padding:12px;border-radius:8px;background:var(--ps-bg);border:1px solid var(--ps-card-border);">
+              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;">
+                <div style="font-size:12px;font-weight:600;color:var(--ps-text);">
+                  Google Earth 3D &bull; DeepMind AlphaFold Studio <span style="font-size:9.5px;color:#2563EB;background:rgba(37,99,235,0.08);padding:1px 4px;border-radius:4px;font-weight:600;">[COMPUTATIONAL_PREDICTION]</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <label for="alphafold-target-select" style="font-size:11px;color:var(--ps-text-sub);">Target:</label>
+                  <select id="alphafold-target-select" class="ps-select" style="font-size:11px;padding:2px 8px;height:26px;">
+                    <option value="P00742">F10 (Factor Xa / Apixaban)</option>
+                    <option value="P04626">ERBB2 (HER2 / Trastuzumab)</option>
+                    <option value="P04818">TYMS (Thymidylate Synthase / Capecitabine)</option>
+                    <option value="Q99062">CSF3R (G-CSF Receptor / Pegfilgrastim)</option>
+                    <option value="P04035">HMGCR (HMG-CoA Reductase / Atorvastatin)</option>
+                    <option value="P04637">TP53 (Tumor Suppressor p53)</option>
+                    <option value="P00533">EGFR (Epidermal Growth Factor Receptor / Osimertinib)</option>
+                    <option value="P35354">PTGS2 (Cyclooxygenase-2 / Celecoxib)</option>
+                  </select>
+                  <button type="button" id="btn-alphafold-live" class="ps-action-btn" style="font-size:10px;padding:2px 6px;">Live</button>
+                  <button type="button" id="btn-focus-uk" class="ps-action-btn" style="font-size:10px;padding:2px 6px;">UK Camera</button>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center;justify-content:center;">
+                <canvas id="earth-globe-canvas" width="280" height="160" style="border-radius:6px;background:#090E17;width:50%;max-width:280px;height:160px;display:block;cursor:grab;"></canvas>
+                <canvas id="alphafold-3d-canvas" width="280" height="160" style="border-radius:6px;background:#090E17;width:50%;max-width:280px;height:160px;display:block;cursor:grab;"></canvas>
+              </div>
+
+              <!-- Residue Sequence Scrubber & Inspector -->
+              <div style="display:flex;flex-direction:column;gap:4px;padding:6px;background:rgba(15,23,42,0.04);border-radius:6px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;font-size:10.5px;">
+                  <span style="font-weight:600;color:var(--ps-text-main);">Residue Sequence Scrubber:</span>
+                  <span id="af-residue-chip" style="font-family:var(--ps-font);color:var(--ps-blue-primary);font-weight:600;">Residue 189: Asp189 &bull; S1 Specificity Pocket (DOAC binding) &bull; pLDDT: 96.2</span>
+                </div>
+                <input type="range" id="af-residue-slider" min="1" max="488" value="189" style="width:100%;height:4px;cursor:pointer;" aria-label="Scrub polypeptide sequence">
+              </div>
+
+              <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--ps-text-sub);flex-wrap:wrap;gap:4px;">
+                <span id="earth-globe-caption">UK Geospatial Coordinates: 53.2°N, 2.2°W</span>
+                <span id="earth-globe-subtitle" style="display:none;">SSD Frozen</span>
+                <span id="alphafold-studio-subtitle">F10 (Factor Xa / Apixaban) &bull; UniProt P00742</span>
+                <span id="af-plddt-badge" class="ps-pill" style="font-size:10px;">pLDDT: Very High (&ge;90)</span>
+                <span id="alphafold-pocket-caption" style="display:none;"></span>
+                <span id="af-limitation-note" style="display:none;"></span>
+                <a id="af-pdb-download" href="https://alphafold.ebi.ac.uk/files/AF-P00742-F1-model_v4.pdb" target="_blank" rel="noopener noreferrer" style="color:var(--ps-blue-primary);text-decoration:none;font-weight:600;">AlphaFold PDB &nearr;</a>
+              </div>
+
+              <!-- Google Maps & Data Attribution Notice -->
+              <div style="font-size:9.5px;color:var(--ps-text-muted);border-top:1px solid var(--ps-card-border);padding-top:4px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;">
+                <span>Sovereign Zero-Cost Geospatial Engine: Standalone Vector &amp; OpenStreetMap Projection (Zero External Billing)</span>
+                <span>OpenStreetMap &copy; ODbL &bull; Contains NHS Open Data (OGL v3.0) &bull; CC-BY-4.0 DeepMind</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Key Insights Panel -->
+          <div class="ps-panel-card">
+            <div class="ps-panel-header">
+              <div>
+                <h3 class="ps-panel-title">Key Insights</h3>
+                <p class="ps-panel-sub">Updated 24 Aug 2026</p>
+              </div>
+            </div>
+
+            <div class="ps-insights-list">
+              <div class="ps-insight-item">
+                <div class="ps-insight-icon" style="background:#DCFCE7;color:#15803D;">&check;</div>
+                <div class="ps-insight-text">
+                  <strong>+16.2%</strong> Prescribing in NHS North West is 16.2% higher than the England average.
+                </div>
+              </div>
+
+              <div class="ps-insight-item">
+                <div class="ps-insight-icon" style="background:#EFF6FF;color:#2563EB;">&#9638;</div>
+                <div class="ps-insight-text">
+                  <strong>42 opportunities</strong> High-opportunity pharmacies within 5 km of under-prescribed practices.
+                </div>
+              </div>
+
+              <div class="ps-insight-item">
+                <div class="ps-insight-icon" style="background:#F3E8FF;color:#7E22CE;">&#9829;</div>
+                <div class="ps-insight-text">
+                  <strong>Stable safety profile</strong> No new major safety alerts in the latest MHRA update.
+                </div>
+              </div>
+
+              <div class="ps-insight-item">
+                <div class="ps-insight-icon" style="background:#EFF6FF;color:#0284C7;">&#9650;</div>
+                <div class="ps-insight-text">
+                  <strong>Continued growth</strong> Model suggests ~890k items/month by Jun 2026.
+                </div>
+              </div>
+            </div>
+
+            <button class="ps-cta-analysis-btn" id="btn-trigger-ai-panel">
+              View Full AI Analysis &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- 3-Column Bottom Intelligence Tables -->
+        <div class="ps-tables-row">
+
+          <!-- Table 1: Top ICBs by Prescriptions -->
+          <div class="ps-table-card">
+            <h4 class="ps-table-title">Top ICBs by Prescriptions</h4>
+            <table class="ps-data-table">
+              <thead>
+                <tr>
+                  <th style="width:20px;">#</th>
+                  <th>ICB</th>
+                  <th>Items (12m)</th>
+                  <th>Items / 1,000</th>
+                  <th>YoY %</th>
+                </tr>
+              </thead>
+              <tbody id="market-icbs-tbody">
+                <tr><td>1</td><td class="primary-col">NHS North West London</td><td class="num-col">582,412</td><td class="num-col">194.2</td><td style="color:#15803D;font-weight:600;">+12.8%</td></tr>
+                <tr><td>2</td><td class="primary-col">NHS South East London</td><td class="num-col">512,096</td><td class="num-col">176.1</td><td style="color:#15803D;font-weight:600;">+9.7%</td></tr>
+                <tr><td>3</td><td class="primary-col">NHS Birmingham &amp; Solihull</td><td class="num-col">498,301</td><td class="num-col">168.9</td><td style="color:#15803D;font-weight:600;">+11.3%</td></tr>
+                <tr><td>4</td><td class="primary-col">NHS Manchester</td><td class="num-col">471,255</td><td class="num-col">163.4</td><td style="color:#15803D;font-weight:600;">+10.2%</td></tr>
+                <tr><td>5</td><td class="primary-col">NHS West Yorkshire</td><td class="num-col">455,872</td><td class="num-col">158.7</td><td style="color:#15803D;font-weight:600;">+8.6%</td></tr>
+              </tbody>
+            </table>
+            <a class="ps-table-link-footer" href="#all-icbs">View all ICBs &rarr;</a>
+          </div>
+
+          <!-- Table 2: Top Presentations -->
+          <div class="ps-table-card">
+            <h4 class="ps-table-title">Top Presentations</h4>
+            <table class="ps-data-table">
+              <thead>
+                <tr>
+                  <th>Presentation</th>
+                  <th>Items (12m)</th>
+                  <th>% of Total</th>
+                  <th>YoY %</th>
+                </tr>
+              </thead>
+              <tbody id="reference-grid">
+                <tr class="reference-card" data-slug="apixaban-5mg-tablets">
+                  <td class="primary-col">Apixaban 5mg tablets</td>
+                  <td class="num-col">3,214,987</td>
+                  <td class="num-col">41.2%</td>
+                  <td style="color:#15803D;font-weight:600;">+6.1%</td>
+                </tr>
+                <tr class="reference-card" data-slug="apixaban-2-5mg-tablets">
+                  <td class="primary-col">Apixaban 2.5mg tablets</td>
+                  <td class="num-col">2,147,503</td>
+                  <td class="num-col">27.5%</td>
+                  <td style="color:#15803D;font-weight:600;">+7.3%</td>
+                </tr>
+                <tr class="reference-card">
+                  <td class="primary-col">Apixaban 5mg tablets (blister)</td>
+                  <td class="num-col">1,234,785</td>
+                  <td class="num-col">15.8%</td>
+                  <td style="color:#15803D;font-weight:600;">+5.9%</td>
+                </tr>
+                <tr class="reference-card">
+                  <td class="primary-col">Apixaban 2.5mg tablets (blister)</td>
+                  <td class="num-col">789,123</td>
+                  <td class="num-col">10.1%</td>
+                  <td style="color:#15803D;font-weight:600;">+6.7%</td>
+                </tr>
+                <tr class="reference-card">
+                  <td class="primary-col">Apixaban 5mg film-coated tablets</td>
+                  <td class="num-col">412,215</td>
+                  <td class="num-col">5.3%</td>
+                  <td style="color:#15803D;font-weight:600;">+4.8%</td>
+                </tr>
+              </tbody>
+            </table>
+            <span id="results-count" style="display:none;">5 presentations</span>
+            <a class="ps-table-link-footer" href="#all-presentations">View all presentations &rarr;</a>
+          </div>
+
+          <!-- Table 3: Top Practices -->
+          <div class="ps-table-card" id="top-practices-container">
+            <h4 class="ps-table-title">Top Practices</h4>
+            <table class="ps-data-table">
+              <thead>
+                <tr>
+                  <th style="width:20px;">#</th>
+                  <th>Practice</th>
+                  <th>ICB</th>
+                  <th>Items (12m)</th>
+                  <th>YoY %</th>
+                </tr>
+              </thead>
+              <tbody id="market-regions-tbody">
+                <tr><td>1</td><td class="primary-col">The Health Centre</td><td>NHS NW London</td><td class="num-col">18,742</td><td style="color:#15803D;font-weight:600;">+18.4%</td></tr>
+                <tr><td>2</td><td class="primary-col">Green Lane Surgery</td><td>NHS Birmingham</td><td class="num-col">15,982</td><td style="color:#15803D;font-weight:600;">+16.1%</td></tr>
+                <tr><td>3</td><td class="primary-col">Victoria Medical Centre</td><td>NHS NW London</td><td class="num-col">15,673</td><td style="color:#15803D;font-weight:600;">+17.3%</td></tr>
+                <tr><td>4</td><td class="primary-col">Brookside Surgery</td><td>NHS Surrey Heartlands</td><td class="num-col">15,221</td><td style="color:#15803D;font-weight:600;">+15.2%</td></tr>
+                <tr><td>5</td><td class="primary-col">City Road Medical Centre</td><td>NHS Manchester</td><td class="num-col">14,887</td><td style="color:#15803D;font-weight:600;">+14.6%</td></tr>
+              </tbody>
+            </table>
+            <div id="ssd-pharmacies-list" style="display:none;"></div>
+            <a class="ps-table-link-footer" href="#all-practices">View all practices &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Landscape Banner -->
+        <div class="ps-footer-banner">
+          <div class="ps-banner-left-text">
+            <div class="ps-banner-title">From data to healthier communities.</div>
+            <div class="ps-banner-sub">Real-world intelligence. Greater impact.</div>
+          </div>
+          <div class="ps-banner-brand">
+            NovaPharm HEALTHCARE
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           Auxiliary Panels for Evidence, Market, More (Preserving Test Contracts)
+           ===================================================================== -->
+      <section id="panel-evidence" role="tabpanel" aria-labelledby="tab-btn-evidence" hidden>
+        <div class="ps-panel-card" style="margin-top:16px;">
+          <h3 class="ps-panel-title">FTS5 Clinical &amp; Regulatory Documents</h3>
+          <p class="ps-panel-sub" id="ssd-docs-meta">Authoritative SmPC excerpts and indexed statutory monographs</p>
+          <div id="evidence-docs-container" style="display:flex;flex-direction:column;gap:10px;margin-top:14px;"></div>
+          <div id="evidence-provenance-box" style="margin-top:14px;padding:12px;background:var(--ps-bg);border-radius:8px;font-family:var(--ps-mono);font-size:11px;"></div>
+        </div>
+      </section>
+
+      <section id="panel-market" role="tabpanel" aria-labelledby="tab-btn-market" hidden>
+        <div class="ps-panel-card" style="margin-top:16px;">
+          <h3 class="ps-panel-title">Market Dynamics &amp; Primary Care PCA</h3>
+          <p class="ps-panel-sub" id="market-pca-summary">Observed prescribing facts from NHSBSA England datasets</p>
+        </div>
+      </section>
+
+      <section id="panel-more" role="tabpanel" aria-labelledby="tab-btn-more" hidden>
+        <div class="ps-panel-card" style="margin-top:16px;">
+          <h3 class="ps-panel-title">PANDORA Knowledge Graph &amp; Holt Forecast Audit</h3>
+          <div id="pandora-graph-box" style="display:flex;flex-direction:column;gap:8px;margin-top:12px;"></div>
+          <div id="rail-forecast-audit" style="margin-top:14px;padding:12px;background:var(--ps-bg);border-radius:8px;"></div>
+          <dl id="rail-provenance-dl" style="margin-top:12px;font-size:11.5px;"></dl>
+          <span id="rail-med-name" style="display:none;"></span>
+          <a id="btn-more-export-json" style="display:none;"></a>
+        </div>
+      </section>
+
+      <!-- NOVA Intelligence Form & Explanations Panel -->
+      <div id="nova-interactive-section" style="margin-top:20px;padding:16px;background:var(--ps-card-bg);border:1px solid var(--ps-card-border);border-radius:var(--ps-radius-lg);">
+        <form id="nova-form" style="display:flex;gap:10px;">
+          <input type="text" id="nova-question-input" class="ps-search-input" style="flex:1;" placeholder="Ask NOVA governed intelligence (e.g. 'Summarise primary care demand')...">
+          <button type="submit" id="nova-submit-btn" class="ps-action-btn" style="background:var(--ps-dark-btn);color:#fff;border:none;">Ask NOVA</button>
+        </form>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <button type="button" class="nova-preset-btn ps-action-btn" data-q="What is the real-time factory floor stock?">Real-time Stock Query [CANNOT_VERIFY]</button>
+          <button type="button" class="nova-preset-btn ps-action-btn" data-q="Summarise observed primary care demand">Summarise Demand [OBSERVED]</button>
+        </div>
+        <div id="nova-response-box" style="margin-top:10px;padding:12px;background:var(--ps-bg);border-radius:8px;font-size:12px;font-family:var(--ps-mono);"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Command Palette Modal Dialog -->
+  <div id="cmdk-backdrop" hidden style="position:fixed;inset:0;background:rgba(15,23,42,0.6);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;">
+    <div style="background:var(--ps-card-bg);border:1px solid var(--ps-card-border);border-radius:12px;width:100%;max-width:540px;padding:16px;box-shadow:var(--ps-shadow-md);">
+      <input type="search" id="cmdk-input" class="ps-search-input" style="width:100%;margin-bottom:12px;" placeholder="Type medicine name or SNOMED CT...">
+      <div id="cmdk-results" style="display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto;">
+        <div data-cmd-slug="capecitabine-500mg-tablets" style="padding:10px;border-radius:6px;cursor:pointer;background:var(--ps-bg);">
+          <strong>Capecitabine 500mg film-coated tablets</strong><br>
+          <span style="font-size:11px;color:var(--ps-text-muted);">VMP • SNOMED 39873111000001103 • Cytotoxic</span>
+        </div>
+        <div data-cmd-slug="apixaban-5mg-tablets" style="padding:10px;border-radius:6px;cursor:pointer;background:var(--ps-bg);">
+          <strong>Apixaban 5mg film-coated tablets</strong><br>
+          <span style="font-size:11px;color:var(--ps-text-muted);">VMP • SNOMED 40705011000001102 • Anticoagulant</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Controls -->
+  <select id="level-select" style="display:none;"><option value="all">all</option></select>
+  <input type="checkbox" id="check-cold-chain" style="display:none;">
+  <input type="checkbox" id="check-plpi" style="display:none;">
+  <input type="checkbox" id="check-document-backed" style="display:none;">
+  <input type="checkbox" id="check-confirm-export" checked style="display:none;">
+  <span id="id-badge-class" style="display:none;"></span>
+  <span id="ssd-catalog-list" style="display:none;"></span>
+  <span id="ssd-catalog-meta" style="display:none;"></span>
+  <span id="ssd-docs-list" style="display:none;"></span>
+  <span id="ssd-pharmacies-meta" style="display:none;"></span>
+
+  <script type="module" src="/terminal/medicines-terminal.js"></script>
+</body>
+</html>

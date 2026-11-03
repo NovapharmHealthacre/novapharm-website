@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NovaPharm Medicines Geography — Google Earth 3D &amp; Spatial Pharmaceutical Intelligence</title>
+  <link rel="stylesheet" href="../design-system/novapharm-tokens.css">
+  <style>
+    :root, [data-theme="light"] {
+      --bg-canvas: #F8FAFC;
+      --bg-surface: #FFFFFF;
+      --bg-card: #FFFFFF;
+      --bg-subtle: #F1F5F9;
+      --glass-border: #E2E8F0;
+      --glass-border-strong: #CBD5E1;
+      --glass-highlight: rgba(255, 255, 255, 0.8);
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --np-teal: #0D9488;
+      --np-blue: #2563EB;
+      --np-amber: #D97706;
+      --np-red: #DC2626;
+      --input-bg: #FFFFFF;
+      --btn-bg: #F1F5F9;
+      --btn-text: #0F172A;
+      --btn-border: #CBD5E1;
+      --th-bg: #F8FAFC;
+      --tr-hover: #F8FAFC;
+      --map-bg: radial-gradient(circle at 50% 45%, #EFF6FF 0%, #E2E8F0 82%);
+      --globe-ocean-start: #DBEAFE;
+      --globe-ocean-end: #BFDBFE;
+      --globe-land: #93C5FD;
+      --globe-stroke: #2563EB;
+      --path-land: #93C5FD;
+      --path-stroke: #1D4ED8;
+      --shadow-elevation: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+      --title-color: #0F172A;
+      --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+      --font-mono: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-canvas: #070d19;
+      --bg-surface: rgba(17, 26, 46, 0.78);
+      --bg-card: rgba(23, 35, 61, 0.74);
+      --bg-subtle: rgba(15, 23, 42, 0.55);
+      --glass-border: rgba(148, 163, 184, 0.18);
+      --glass-border-strong: rgba(148, 163, 184, 0.35);
+      --glass-highlight: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --np-teal: #14b8a6;
+      --np-blue: #38bdf8;
+      --np-amber: #f59e0b;
+      --np-red: #f43f5e;
+      --input-bg: rgba(7, 13, 25, 0.85);
+      --btn-bg: rgba(15, 23, 42, 0.8);
+      --btn-text: #f8fafc;
+      --btn-border: rgba(148, 163, 184, 0.18);
+      --th-bg: rgba(15, 23, 42, 0.65);
+      --tr-hover: rgba(56, 189, 248, 0.06);
+      --map-bg: radial-gradient(circle at 50% 45%, #122444 0%, #060b16 82%);
+      --globe-ocean-start: #173668;
+      --globe-ocean-end: #071124;
+      --globe-land: rgba(30, 58, 95, 0.85);
+      --globe-stroke: rgba(56, 189, 248, 0.35);
+      --path-land: #1e3a5f;
+      --path-stroke: #38bdf8;
+      --shadow-elevation: 0 28px 80px rgba(0, 0, 0, 0.55), inset 0 1px 0 var(--glass-highlight);
+      --title-color: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-canvas);
+      color: var(--text-primary);
+      line-height: 1.5;
+      padding: 1.5rem 1.25rem 3rem;
+      min-height: 100vh;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .top-telemetry-strip {
+      background: var(--bg-subtle);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 6px 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.85rem;
+      border-radius: 8px;
+      border: 1px solid var(--glass-border);
+    }
+    .telemetry-items {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .telemetry-items .dot-live { color: #10B981; font-weight: 700; }
+    .telemetry-items .sep { opacity: 0.35; }
+    .telemetry-clock {
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .brand-dots {
+      display: grid;
+      grid-template-columns: repeat(2, 6px);
+      grid-gap: 3px;
+      padding: 4px;
+    }
+    .brand-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      display: block;
+    }
+
+    .geo-container {
+      max-width: 1360px;
+      margin: 0 auto;
+      background: var(--bg-surface);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      box-shadow: var(--shadow-elevation);
+      overflow: hidden;
+    }
+    .geo-header {
+      padding: 1.25rem 1.75rem;
+      border-bottom: 1px solid var(--glass-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .geo-header h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--title-color);
+    }
+    .geo-header p {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+    .header-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .earth-btn {
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--btn-text);
+      background: var(--btn-bg);
+      border: 1px solid var(--btn-border);
+      transition: all 0.16s ease;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-family: var(--font-family);
+    }
+    .earth-btn:hover {
+      border-color: var(--glass-border-strong);
+      background: var(--bg-subtle);
+    }
+    .earth-btn.primary {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #ffffff;
+      border-color: transparent;
+    }
+    .control-panel {
+      padding: 1.15rem 1.75rem;
+      background: var(--bg-subtle);
+      border-bottom: 1px solid var(--glass-border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      align-items: center;
+    }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .control-group label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      font-family: var(--font-mono);
+    }
+    .control-select {
+      padding: 0.5rem 0.85rem;
+      font-size: 0.8125rem;
+      border: 1px solid var(--glass-border-strong);
+      border-radius: 6px;
+      background: var(--input-bg);
+      color: var(--text-primary);
+      min-width: 200px;
+      transition: border-color 0.15s ease;
+      font-family: var(--font-family);
+    }
+    .control-select:focus {
+      outline: none;
+      border-color: var(--np-blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+    .layer-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.35rem;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+    .layer-btn {
+      padding: 0.45rem 0.85rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border: 1px solid var(--glass-border-strong);
+      border-radius: 6px;
+      background: var(--btn-bg);
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 0.15s ease;
+      font-family: var(--font-family);
+    }
+    .layer-btn:hover {
+      color: var(--text-primary);
+    }
+    .layer-btn.active {
+      background: linear-gradient(135deg, #0d9488, #0284c7);
+      color: #fff;
+      border-color: transparent;
+    }
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 520px 1fr;
+      min-height: 540px;
+    }
+    @media (max-width: 980px) {
+      .layout-grid { grid-template-columns: 1fr; }
+    }
+    .map-pane {
+      background: var(--map-bg);
+      border-right: 1px solid var(--glass-border);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      gap: 0.65rem;
+    }
+    #geo-earth-canvas {
+      width: 100%;
+      height: 360px;
+      border-radius: 10px;
+      cursor: grab;
+      display: block;
+    }
+    #uk-map {
+      max-height: 150px;
+      opacity: 0.95;
+    }
+    .table-pane {
+      padding: 1.5rem 1.75rem;
+      overflow-x: auto;
+    }
+    .badge-observed { background: rgba(16, 185, 129, 0.12); color: #059669; border: 1px solid rgba(16, 185, 129, 0.3); }
+    [data-theme="dark"] .badge-observed { background: rgba(16, 185, 129, 0.22); color: #6ee7b7; }
+    .badge-forecast { background: rgba(37, 99, 235, 0.12); color: #2563eb; border: 1px solid rgba(37, 99, 235, 0.3); }
+    [data-theme="dark"] .badge-forecast { background: rgba(56, 189, 248, 0.22); color: #7dd3fc; }
+    .badge-simulated { background: rgba(217, 119, 6, 0.12); color: #d97706; border: 1px solid rgba(217, 119, 6, 0.3); }
+    [data-theme="dark"] .badge-simulated { background: rgba(245, 158, 11, 0.22); color: #fcd34d; }
+    .status-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.52rem;
+      border-radius: 4px;
+      display: inline-block;
+      font-family: var(--font-mono);
+      letter-spacing: 0.03em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      font-variant-numeric: tabular-nums;
+    }
+    th, td {
+      padding: 0.7rem 0.85rem;
+      text-align: left;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    th {
+      background: var(--th-bg);
+      font-weight: 700;
+      color: var(--text-muted);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-family: var(--font-mono);
+    }
+    tr:hover td {
+      background: var(--tr-hover);
+    }
+    .hash-tag {
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      color: var(--text-muted);
+    }
+    .legend-box {
+      width: 100%;
+      background: var(--bg-subtle);
+      border: 1px solid var(--glass-border);
+      border-radius: 6px;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.74rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+    .dot-hub { background: var(--np-teal); }
+    .dot-demand { background: var(--np-blue); }
+    .dot-risk { background: var(--np-red); }
+  </style>
+</head>
+<body>
+  <!-- Bloomberg Telemetry Strip -->
+  <div class="top-telemetry-strip">
+    <div class="telemetry-items">
+      <span><span class="dot-live">●</span> CODEX v3.2.0: AUTHORITATIVE</span>
+      <span class="sep">│</span>
+      <span>OGC KML 2.2 • RFC 7946 GeoJSON</span>
+      <span class="sep">│</span>
+      <span>215 DATASETS FROZEN</span>
+      <span class="sep">│</span>
+      <span>£0.00 ZERO-COST BILLED</span>
+    </div>
+    <div class="telemetry-clock">
+      <span id="geo-live-clock">2026-11-03 05:20:00 UTC</span>
+    </div>
+  </div>
+
+  <div class="geo-container" role="region" aria-label="NovaPharm Medicines Geography">
+    <div class="geo-header">
+      <div style="display: flex; align-items: center; gap: 0.85rem;">
+        <div class="brand-dots">
+          <span style="background:#2563EB;"></span>
+          <span style="background:#38BDF8;"></span>
+          <span style="background:#60A5FA;"></span>
+          <span style="background:#1D4ED8;"></span>
+        </div>
+        <div>
+          <h1>Medicines Geography — Google Earth 3D &amp; Spatial Engine</h1>
+          <p>ONS/NHS Registered Dispensaries [OBSERVED] • Simulated GDP Supply Corridors [SIMULATED] • OGC KML 2.2 &amp; RFC 7946 GeoJSON</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <a href="/terminal" class="earth-btn">&larr; Back to Medicines Terminal</a>
+        <button id="themeToggleBtn" type="button" class="earth-btn" aria-label="Toggle Light and Dark Mode">🌓 Mode</button>
+        <button id="btn-calc-transit" class="earth-btn" type="button" title="Compute GDP cold-chain road transit via Sovereign Geodesic Engine">GDP Transit &rarr;</button>
+        <button id="btn-calc-multi-route" class="earth-btn" type="button" title="Compute multi-stop supply chain route matrix via Sovereign Geodesic Engine">Multi-Stop Matrix &rarr;</button>
+        <button id="btn-geo-mode-2d" class="earth-btn" type="button">2D Map</button>
+        <button id="btn-geo-mode-3d" class="earth-btn primary" type="button">3D Earth</button>
+        <button id="btn-geo-mode-table" class="earth-btn" type="button">Evidence Table</button>
+        <a id="geo-kml-link" href="/api/geospatial/kml" download="novapharm-logistics-network.kml" class="earth-btn">Export KML 2.2</a>
+        <a id="geo-earth-web" href="https://earth.google.com/web/@53.15,-1.95,0a,880000d,35y,8h,46t,0r" target="_blank" rel="noopener noreferrer" class="earth-btn">Open Google Earth Web 3D &nearr;</a>
+      </div>
+    </div>
+
+    <div class="control-panel">
+      <div class="control-group">
+        <label for="medicine-select">Medicine Selection</label>
+        <select id="medicine-select" class="control-select">
+          <option value="all">All Medicines (Portfolio Aggregate)</option>
+          <option value="NP-APIX-5MG">Apixaban 5mg Film-Coated Tablets (Anticoagulant • Flagship)</option>
+          <option value="NP-ATORV-20MG">Atorvastatin 20mg Film-Coated Tablets (Cardiovascular • High Volume)</option>
+          <option value="NP-METF-500MG">Metformin 500mg Tablets (Antidiabetic • High Volume)</option>
+          <option value="NP-ONCO-500MG">Capecitabine 500mg Tablets (Oncology)</option>
+          <option value="NP-COLD-BIO-100U">Pegfilgrastim 6mg/0.6ml (Cold-Chain Biologic)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="region-select">UK Geographic Region</label>
+        <select id="region-select" class="control-select">
+          <option value="all">All UK Jurisdictions &amp; Regions</option>
+          <option value="UK-LON">London</option>
+          <option value="UK-SE">South East</option>
+          <option value="UK-MID">Midlands</option>
+          <option value="UK-NW">North West</option>
+          <option value="UK-YOR">Yorkshire and The Humber</option>
+          <option value="UK-SCT">Scotland</option>
+          <option value="UK-WLS">Wales</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="epistemic-select">Epistemic Status Filter</label>
+        <select id="epistemic-select" class="control-select">
+          <option value="all">All Epistemic Classes</option>
+          <option value="OBSERVED">OBSERVED — Verified Historical Census</option>
+          <option value="FORECAST">FORECAST — Predictive Models (95% CI)</option>
+          <option value="SIMULATED">SIMULATED — Scenario Stress Tests</option>
+        </select>
+      </div>
+
+      <div class="layer-tabs" role="tablist">
+        <button class="layer-btn active" data-layer="DEMAND_OBSERVATIONS" role="tab" aria-selected="true">Regional Demand &amp; Usage</button>
+        <button class="layer-btn" data-layer="SUPPLY_CHAIN_NETWORK" role="tab" aria-selected="false">GDP Supply Chain Network</button>
+        <button class="layer-btn" data-layer="COLD_CHAIN_RISK" role="tab" aria-selected="false">Environmental &amp; Cold-Chain Risk</button>
+      </div>
+    </div>
+
+    <!-- Sovereign Geodesic Transit & Multi-Stop Matrix Drawer (Collapsible) -->
+    <div id="sovereign-transit-drawer" style="display:none;padding:1rem 1.75rem;background:var(--bg-subtle);border-bottom:1px solid var(--glass-border);font-size:0.8125rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+        <span style="font-weight:700;color:var(--title-color);font-size:0.85rem;display:flex;align-items:center;gap:0.5rem;">
+          <span>Sovereign Geodesic Transit Calculator</span>
+          <span style="font-size:0.7rem;padding:2px 6px;border-radius:4px;background:rgba(16,185,129,0.12);color:#059669;font-weight:700;font-family:var(--font-mono);">[ZERO_EXTERNAL_COST]</span>
+        </span>
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+          <span id="transit-cost-badge" style="font-size:0.75rem;color:#10B981;font-weight:700;font-family:var(--font-mono);">&pound;0.00 Billed</span>
+          <button id="btn-close-transit-drawer" type="button" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.1rem;line-height:1;" aria-label="Close Transit Drawer">&times;</button>
+        </div>
+      </div>
+      <div id="transit-drawer-content" style="color:var(--text-secondary);line-height:1.5;">
+        Calculating route...
+      </div>
+      <div id="multi-route-drawer-content" style="color:var(--text-secondary);line-height:1.5;margin-top:0.75rem;border-top:1px dashed var(--glass-border-strong);padding-top:0.75rem;display:none;"></div>
+    </div>
+
+    <div class="layout-grid">
+      <!-- Interactive 3D Orthographic Google Earth Globe + Accessible 2D Vector SVG Overlay -->
+      <div class="map-pane" aria-hidden="true">
+        <canvas id="geo-earth-canvas" width="480" height="360"></canvas>
+        <svg id="uk-map" viewBox="0 0 400 500" width="100%" height="130">
+          <path id="uk-map-path" d="M 160 30 L 190 20 L 220 50 L 240 100 L 210 130 L 250 180 L 270 230 L 290 280 L 260 340 L 240 370 L 280 400 L 250 430 L 190 420 L 150 440 L 120 410 L 140 360 L 100 370 L 110 320 L 140 280 L 160 220 L 140 170 L 120 120 Z" fill="var(--path-land, #1e3a5f)" stroke="var(--path-stroke, #38bdf8)" stroke-width="2" />
+          <g id="map-markers"></g>
+        </svg>
+
+        <div class="legend-box">
+          <div class="legend-item"><div class="dot dot-hub"></div><span>Simulated Supply Node</span></div>
+          <div class="legend-item"><div class="dot dot-demand"></div><span>Observed ONS/NHS Node</span></div>
+          <div class="legend-item"><div class="dot dot-risk"></div><span>Cold-Chain Scenario Marker</span></div>
+        </div>
+      </div>
+
+      <!-- Accessible Tabular Fallback (WCAG 2.2 AA) -->
+      <div class="table-pane">
+        <h2 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem;">Tabular Geographic Evidence Ledger</h2>
+        <p id="table-summary" style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 1rem;">Loading spatial records...</p>
+        <table aria-label="Geographic pharmaceutical records">
+          <thead>
+            <tr>
+              <th scope="col">Region</th>
+              <th scope="col">Entity / Asset</th>
+              <th scope="col">Metric</th>
+              <th scope="col">Status</th>
+              <th scope="col">Confidence / CI</th>
+              <th scope="col">Provenance</th>
+            </tr>
+          </thead>
+          <tbody id="geo-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Sovereign Zero-Cost Geospatial Notice -->
+    <div style="padding:0.75rem 2rem;background:var(--bg-subtle);border-top:1px solid var(--glass-border);font-size:0.75rem;color:var(--text-muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;font-family:var(--font-mono);">
+      <span>Sovereign Zero-Cost Geospatial Engine: Standalone Vector &amp; OpenStreetMap Projection (&pound;0.00 External Billing)</span>
+      <span>OpenStreetMap &copy; ODbL &bull; Contains NHS Open Data (OGL v3.0) &bull; CC-BY-4.0 DeepMind</span>
+    </div>
+  </div>
+
+  <script type="module" src="/geospatial/medicines-geography.js"></script>
+</body>
+</html>

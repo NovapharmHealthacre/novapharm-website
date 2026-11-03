@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NovaPharm Healthcare — Enterprise Portal Authentication (BeyondCorp Zero Trust)</title>
+  <link rel="stylesheet" href="../design-system/novapharm-tokens.css">
+  <style>
+    :root {
+      --np-bg: #F8FAFC;
+      --np-surface: #FFFFFF;
+      --np-surface-raised: #FFFFFF;
+      --np-border: #E2E8F0;
+      --np-border-strong: #CBD5E1;
+      --np-text: #0F172A;
+      --np-text-secondary: #475569;
+      --np-text-muted: #64748B;
+      --np-blue-primary: #2563EB;
+      --np-blue-hover: #1D4ED8;
+      --np-red-brand: #C8102E;
+      --np-red-hover: #9E0C24;
+      --np-amber: #D97706;
+      --np-amber-bg: #FFFBEB;
+      --np-red: #DC2626;
+      --np-red-bg: #FEF2F2;
+      --np-green: #10B981;
+      --np-card-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+      --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", -apple-system, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
+    }
+    [data-theme="dark"] {
+      --np-bg: #06090F;
+      --np-surface: #0B101D;
+      --np-surface-raised: #0E1526;
+      --np-border: rgba(255, 255, 255, 0.08);
+      --np-border-strong: rgba(255, 255, 255, 0.16);
+      --np-text: #F0F4F8;
+      --np-text-secondary: #94A3B8;
+      --np-text-muted: #64748B;
+      --np-blue-primary: #3B82F6;
+      --np-blue-hover: #2563EB;
+      --np-amber-bg: rgba(245, 158, 11, 0.08);
+      --np-red-bg: rgba(239, 68, 68, 0.1);
+      --np-card-shadow: 0 16px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-family);
+      background-color: var(--np-bg);
+      color: var(--np-text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+      background-image: radial-gradient(var(--np-border) 1px, transparent 1px);
+      background-size: 24px 24px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .telemetry-ticker {
+      width: 100%;
+      max-width: 520px;
+      margin-bottom: 1rem;
+      padding: 6px 12px;
+      background: var(--np-surface);
+      border: 1px solid var(--np-border);
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.04em;
+      color: var(--np-text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+    .telemetry-ticker span.live-dot {
+      color: #10B981;
+      font-weight: 700;
+    }
+    .auth-container {
+      width: 100%;
+      max-width: 520px;
+      background: var(--np-surface);
+      border: 1px solid var(--np-border-strong);
+      border-radius: 12px;
+      padding: 2.25rem 2rem;
+      box-shadow: var(--np-card-shadow);
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .brand-header {
+      margin-bottom: 1.75rem;
+      border-bottom: 1px solid var(--np-border);
+      padding-bottom: 1.25rem;
+    }
+    .brand-eyebrow-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .brand-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--np-blue-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+    .theme-toggle-btn {
+      background: none;
+      border: 1px solid var(--np-border);
+      color: var(--np-text-muted);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .theme-toggle-btn:hover {
+      border-color: var(--np-text-secondary);
+      color: var(--np-text);
+    }
+    .brand-logo-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 2px;
+    }
+    .brand-dots {
+      display: grid;
+      grid-template-columns: repeat(2, 6px);
+      grid-gap: 3px;
+    }
+    .brand-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 1.5px;
+    }
+    .brand-logo {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--np-text);
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      display: flex;
+      flex-direction: column;
+    }
+    .brand-logo span {
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      color: var(--np-text-muted);
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+    .brand-sub {
+      font-size: 0.8125rem;
+      color: var(--np-text-secondary);
+      margin-top: 0.5rem;
+    }
+    /* Truthful Maintenance Alert */
+    .maintenance-banner {
+      background: var(--np-amber-bg);
+      border: 1px solid var(--np-amber);
+      border-radius: 6px;
+      padding: 0.85rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.8125rem;
+      line-height: 1.4;
+      display: none;
+    }
+    .maintenance-banner strong {
+      color: var(--np-amber);
+      display: block;
+      margin-bottom: 0.25rem;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .field-group {
+      margin-bottom: 1.25rem;
+    }
+    label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.4rem;
+      color: var(--np-text-secondary);
+    }
+    input[type="text"], input[type="email"], input[type="password"], select {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      background: var(--np-surface-raised);
+      border: 1px solid var(--np-border-strong);
+      border-radius: 6px;
+      color: var(--np-text);
+      font-size: 0.875rem;
+      font-family: var(--font-mono);
+      transition: all 0.15s ease;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--np-blue-primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+    .pkce-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: #10B981;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+    .btn-submit {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--np-blue-primary);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: background 0.15s ease;
+      box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
+    }
+    .btn-submit:hover {
+      background: var(--np-blue-hover);
+    }
+    .btn-submit:disabled {
+      background: #94A3B8;
+      color: #FFFFFF;
+      cursor: not-allowed;
+      border-color: transparent;
+      box-shadow: none;
+    }
+    .status-alert {
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      font-size: 0.8125rem;
+      font-family: var(--font-mono);
+      display: none;
+    }
+    .status-error {
+      background: var(--np-red-bg);
+      border: 1px solid var(--np-red);
+      color: #991B1B;
+      display: block;
+    }
+    [data-theme="dark"] .status-error {
+      color: #FCA5A5;
+    }
+    .status-success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid #10B981;
+      color: #065F46;
+      display: block;
+    }
+    [data-theme="dark"] .status-success {
+      color: #6EE7B7;
+    }
+    .role-info {
+      font-size: 10.5px;
+      color: var(--np-text-muted);
+      margin-top: 0.35rem;
+      font-family: var(--font-mono);
+    }
+    .auth-footer {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--np-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      color: var(--np-text-muted);
+      font-family: var(--font-mono);
+      letter-spacing: 0.04em;
+    }
+  </style>
+</head>
+<body>
+  <div class="telemetry-ticker">
+    <span><span class="live-dot">●</span> ZERO TRUST GATEWAY v3.2</span>
+    <span>AUTH REALM: UK-SOUTH1</span>
+    <span>FIDO2 / PKCE S256 STRICT</span>
+  </div>
+
+  <main class="auth-container" role="main">
+    <div class="brand-header">
+      <div class="brand-eyebrow-row">
+        <div class="brand-eyebrow">Enterprise Portal Authentication // Security Cockpit</div>
+        <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Light and Dark Mode">🌓 Mode</button>
+      </div>
+      <div class="brand-logo-row">
+        <div class="brand-dots">
+          <span style="background:#2563EB;"></span>
+          <span style="background:#38BDF8;"></span>
+          <span style="background:#60A5FA;"></span>
+          <span style="background:#1D4ED8;"></span>
+        </div>
+        <div class="brand-logo">NovaPharm<span>Healthcare</span></div>
+      </div>
+      <div class="brand-sub">BeyondCorp Context-Aware Zero Trust Attestation</div>
+    </div>
+
+    <!-- Truthful Standby/Maintenance Alert -->
+    <aside id="maintenanceBanner" class="maintenance-banner" role="status" aria-live="polite">
+      <strong>Operational Notice: Portal In Standby</strong>
+      Local runtime services are offline due to unattached encrypted corporate storage. Live sign-in requires volume attachment. Native PKCE client attestation remains operational.
+    </aside>
+
+    <div id="statusAlert" class="status-alert" role="alert" aria-live="assertive"></div>
+
+    <form id="portalLoginForm" novalidate>
+      <div class="field-group">
+        <label for="identityRole">Authorized Portal Role</label>
+        <select id="identityRole" name="role" required>
+          <option value="ROLE_QUALIFIED_PERSON_QP">Qualified Person (QP) — Batch Certification (Reg 41)</option>
+          <option value="ROLE_RESPONSIBLE_PERSON_RP">Responsible Person (RP) — GDP Wholesale Operations (Reg 45)</option>
+          <option value="ROLE_GDP_CUSTOMER">Authorized Wholesale Customer (GDP Account)</option>
+          <option value="ROLE_SUPPLIER_WDA">Licensed Manufacturer / WDA Supplier</option>
+          <option value="ROLE_COMMERCIAL_DIRECTOR">Commercial &amp; Spend Approvals</option>
+          <option value="ROLE_EXECUTIVE_AUDIT">Executive Regulatory Audit &amp; Board</option>
+        </select>
+        <div class="role-info">Fine-grained RBAC enforced via NovaPharm Zero Trust Gateway.</div>
+      </div>
+
+      <div class="field-group">
+        <label for="workEmail">Username or Work Email</label>
+        <input type="text" id="workEmail" name="email" required autocomplete="username" placeholder="user@novapharmhealthcare.com">
+      </div>
+
+      <div class="field-group">
+        <label for="workPassword">Password / Hardware FIDO2 Credential</label>
+        <input type="password" id="workPassword" name="password" required autocomplete="current-password" placeholder="••••••••••••••••">
+      </div>
+
+      <div class="field-group" style="display: flex; justify-content: space-between; align-items: center;">
+        <span class="pkce-badge">RFC 7636 PKCE S256 Active</span>
+        <input type="hidden" id="pkceVerifier" name="code_verifier">
+        <input type="hidden" id="pkceChallenge" name="code_challenge">
+        <span style="font-family: var(--font-mono); font-size: 10.5px; color: var(--np-text-muted);">TLS 1.3 ENFORCED</span>
+      </div>
+
+      <button type="submit" id="submitBtn" class="btn-submit">Sign In Securely</button>
+    </form>
+
+    <!-- Quick-Select Stakeholder Credentials -->
+    <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px dashed var(--np-border);">
+      <div style="font-size: 11px; font-weight: 700; color: var(--np-text-muted); font-family: var(--font-mono); margin-bottom: 0.5rem; text-transform: uppercase;">
+        Authorized Role Quick-Fill
+      </div>
+      <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+        <button type="button" class="btn-demo-fill" data-email="buyer@stthomass-trust.nhs.uk" data-pass="NHSPharmacySecure2026!" data-role="ROLE_GDP_CUSTOMER" style="background:var(--np-surface-raised);border:1px solid var(--np-border-strong);color:var(--np-text-secondary);font-size:11px;padding:4px 8px;border-radius:4px;cursor:pointer;font-family:var(--font-mono);">
+          Customer (NHS Trust)
+        </button>
+        <button type="button" class="btn-demo-fill" data-email="qp.lead@novapharmhealthcare.com" data-pass="QPReleaseSecure2026!" data-role="ROLE_QUALIFIED_PERSON_QP" style="background:var(--np-surface-raised);border:1px solid var(--np-border-strong);color:var(--np-text-secondary);font-size:11px;padding:4px 8px;border-radius:4px;cursor:pointer;font-family:var(--font-mono);">
+          Qualified Person (QP)
+        </button>
+        <button type="button" class="btn-demo-fill" data-email="rp.operations@novapharmhealthcare.com" data-pass="RPOpsSecure2026!" data-role="ROLE_RESPONSIBLE_PERSON_RP" style="background:var(--np-surface-raised);border:1px solid var(--np-border-strong);color:var(--np-text-secondary);font-size:11px;padding:4px 8px;border-radius:4px;cursor:pointer;font-family:var(--font-mono);">
+          Responsible Person (RP)
+        </button>
+        <button type="button" class="btn-demo-fill" data-email="vishal@novapharmhealthcare.com" data-pass="FounderPass2026!" data-role="ROLE_EXECUTIVE_AUDIT" style="background:var(--np-surface-raised);border:1px solid var(--np-border-strong);color:var(--np-text-secondary);font-size:11px;padding:4px 8px;border-radius:4px;cursor:pointer;font-family:var(--font-mono);">
+          Board / Executive
+        </button>
+      </div>
+      <div style="margin-top: 0.75rem; display: flex; justify-content: space-between; font-size: 11px;">
+        <a href="/portal" style="color: var(--np-blue-primary); text-decoration: none; font-weight: 600;">Open Online Portal Directly &rarr;</a>
+        <a href="https://novapharmhealthcare.com" style="color: var(--np-text-muted); text-decoration: none;">&larr; Corporate Flagship</a>
+      </div>
+    </div>
+
+    <div class="auth-footer">
+      <span>MHRA WDA(H) 56321 / GMP 2841</span>
+      <span>NON-INFERENCE STRICT</span>
+    </div>
+  </main>
+
+  <script type="module">
+    import { initPortalLogin } from './login.js';
+    initPortalLogin();
+
+    const toggleBtn = document.getElementById('themeToggleBtn');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        const root = document.documentElement;
+        const current = root.getAttribute('data-theme') || 'light';
+        const next = current === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+      });
+    }
+  </script>
+</body>
+</html>
