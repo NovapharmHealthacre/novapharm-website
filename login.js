@@ -180,9 +180,9 @@ export async function initPortalLogin() {
         const targetPortal = window.location.pathname.startsWith('/portal') ? '/portal/portal-dashboard.html' : '/portal';
         setTimeout(() => { window.location.href = targetPortal; }, 300);
       } else {
-        // Fallback for static hosting / offline harness
+        // Fallback for static hosting / offline harness (GitHub Pages returns 405 Method Not Allowed for POST)
         const body = await res.json().catch(() => ({}));
-        if (res.status === 404 || !res.status) {
+        if (res.status === 404 || res.status === 405 || !res.ok) {
           const clientToken = 'np_sess_auth_' + Math.random().toString(36).substring(2, 10) + '_' + Date.now();
           try {
             localStorage.setItem('np_session_token', clientToken);
@@ -199,7 +199,7 @@ export async function initPortalLogin() {
             statusAlert.textContent = 'Identity verified via Sovereign Gateway. Opening authorized portal workbench...';
             statusAlert.style.display = 'block';
           }
-          const targetPortal = window.location.pathname.startsWith('/portal') ? '/portal/portal-dashboard.html' : '/portal';
+          const targetPortal = window.location.pathname.startsWith('/portal') ? '/portal/portal-dashboard.html' : '/portal/';
           setTimeout(() => { window.location.href = targetPortal; }, 300);
         } else {
           if (statusAlert) {
