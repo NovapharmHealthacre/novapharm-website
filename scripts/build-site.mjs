@@ -8,6 +8,7 @@ await import("./normalise-visual-semantics.mjs");
 await import("./apply-owner-corrections.mjs");
 await import("./apply-pages-presentation-parity.mjs");
 await import("./apply-corporate-product-discipline.mjs");
+await import("./validate-contact-publication.mjs");
 await import("./enhance-seo-authority.mjs");
 await import("./reconcile-leadership-authority.mjs");
 await import("./reconcile-article-authority.mjs");
