@@ -30,7 +30,7 @@ concurrency:
 
 jobs:
   controlled:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.repository == 'NovapharmHealthacre/novapharm-website'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: aws-staging
