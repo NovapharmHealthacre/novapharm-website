@@ -40,6 +40,7 @@ jobs:
           node --test scripts/aws/contact-staging.test.mjs
           node scripts/aws/validate-portal-aws-identity.mjs
           node --test integrations/mongodb-atlas/staging-contact-store.test.mjs
+          node --test integrations/mongodb-atlas/staging-schema.test.mjs
       - name: Confirm deployed AWS staging health is NOT published as a live service
         shell: bash
         run: |
