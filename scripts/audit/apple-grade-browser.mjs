@@ -85,7 +85,7 @@ for(const [browserName,browserType] of browsers) {
             errors.push("contact: expected eight published numbered topic cards for source parity");
           } else {
             const luminance = (css) => {
-              const parts=String(css).match(/\\d+(?:\\.\\d+)?/g)?.slice(0,3).map(Number);
+              const parts=String(css).match(/\d+(?:\.\d+)?/g)?.slice(0,3).map(Number);
               if(!parts||parts.length!==3) return null;
               const lin=parts.map(x=>{const v=x/255;return v<=0.04045?v/12.92:((v+0.055)/1.055)**2.4;});
               return lin[0]*0.2126+lin[1]*0.7152+lin[2]*0.0722;
