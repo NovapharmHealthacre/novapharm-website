@@ -58,7 +58,7 @@ export class AwsRdsSqlProvider {
   async initialize() {
     const region = this.environment.AWS_REGION || this.environment.AWS_DEFAULT_REGION || "eu-north-1";
     if (region !== "eu-north-1") throw new Error("NovaPharm AWS SQL is restricted to project Region eu-north-1.");
-    if (!/^[a-zA-Z0-9-]+\\.[a-zA-Z0-9-]+\\.eu-north-1\\.rds\\.amazonaws\\.com$/.test(this.server)) {
+    if (!/^[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+\.eu-north-1\.rds\.amazonaws\.com$/.test(this.server)) {
       throw new Error("AWS_RDS_SQL_HOST must be a eu-north-1 RDS SQL Server hostname.");
     }
     if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(this.database) || !this.username || !this.password) {
