@@ -8,5 +8,5 @@ export default async function PortalPage({ params }: Readonly<{ params: Promise<
   const { slug = [] } = await params;
   const view = resolvePortalView(slug.length ? `/${slug.join("/")}/` : "/");
   if (!view) notFound();
-  return <PortalClient view={view} />;
+  return <PortalClient view={view} awsMode={process.env["NOVAPHARM_CLOUD_PLATFORM"] === "aws"} />;
 }
