@@ -48,15 +48,24 @@ export function ConciseHomePage() {
     <>
       <section className="pharma-home-hero">
         <div className="pharma-home-media" aria-hidden="true">
-          <Image
-            src="/assets/media/home/supply-network-hero.avif"
-            alt=""
-            fill
-            priority
-            fetchPriority="high"
-            sizes="100vw"
-            unoptimized
-          />
+          <picture>
+            <source
+              media="(min-width: 1200px)"
+              type="image/avif"
+              srcSet="/assets/media/home/supply-network-hero.avif"
+            />
+            <img
+              src="/assets/media/home/supply-network-hero-1200.jpg"
+              srcSet="/assets/media/home/supply-network-hero-1200.jpg 1200w, /assets/media/home/supply-network-hero.jpg 1672w"
+              sizes="100vw"
+              width={1672}
+              height={941}
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+              alt=""
+            />
+          </picture>
         </div>
         <div className="pharma-home-shade" aria-hidden="true" />
         <div className="shell pharma-home-grid">
