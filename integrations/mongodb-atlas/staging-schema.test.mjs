@@ -8,6 +8,16 @@ test("strict synthetic-only schema rejects real users by design", () => {
   assert.deepEqual(p.productionAccepted.enum, [false]);
   assert.equal(p.expiresAt.bsonType, "date");
   assert.match(p.email.pattern, /example/);
+  assert.equal(SYNTHETIC_CONTACT_SCHEMA.$jsonSchema.additionalProperties, false);
+  assert.deepEqual(p.notification.enum, ["disabled"]);
+  assert.deepEqual(p.schemaVersion.enum, [1]);
+  assert.match(p.name.pattern, /SYNTHETIC/);
+  assert.match(p.message.pattern, /SYNTHETIC DATA/);
+  assert.deepEqual(
+    [...SYNTHETIC_CONTACT_SCHEMA.$jsonSchema.required].sort(),
+    Object.keys(p).sort(),
+    "Every allowed synthetic receipt field is required; no unexpected document fields"
+  );
 });
 test("index migration only applies in staging and requires TTL", async () => {
   const commands = [];
