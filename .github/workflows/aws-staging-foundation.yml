@@ -60,7 +60,7 @@ jobs:
           set -euo pipefail
           account="$(aws sts get-caller-identity --query Account --output text)"
           test "$account" = "$EXPECTED_ACCOUNT"
-          test "$(aws configure get region || printf '%s' "$AWS_REGION")" = "eu-north-1"
+          test "$AWS_REGION" = "eu-north-1"
           aws cloudformation validate-template --template-body file://infra/aws/foundation.json --region eu-north-1
           aws freetier get-account-plan-state --region eu-north-1 --output json
           echo "AWS project identity and eu-north-1 validated. No data movement or DNS changes."
