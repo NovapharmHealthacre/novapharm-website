@@ -77,7 +77,7 @@ export async function forwardPlatformRequest(request: NextRequest, context: { pa
       signal: AbortSignal.timeout(15_000),
     });
   } catch {
-    return errorResponse("The secure enquiry service is temporarily unavailable. No information was submitted.", 503, "30");
+    return errorResponse("The secure enquiry service could not confirm delivery. Submission status could not be confirmed; please avoid resubmitting immediately.", 503, "30");
   }
 
   const responseHeaders = new Headers({
