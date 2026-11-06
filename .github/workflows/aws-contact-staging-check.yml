@@ -8,6 +8,7 @@ on:
       - 'scripts/aws/validate-contact-staging.mjs'
       - 'scripts/aws/contact-staging.test.mjs'
       - 'scripts/aws/validate-portal-aws-identity.mjs'
+      - 'integrations/mongodb-atlas/**'
       - '.github/workflows/aws-contact-staging-check.yml'
   push:
     branches: [codex/aws-contact-portal-acceptance-20261106]
@@ -17,6 +18,7 @@ on:
       - 'scripts/aws/validate-contact-staging.mjs'
       - 'scripts/aws/contact-staging.test.mjs'
       - 'scripts/aws/validate-portal-aws-identity.mjs'
+      - 'integrations/mongodb-atlas/**'
       - '.github/workflows/aws-contact-staging-check.yml'
 
 permissions:
@@ -37,6 +39,7 @@ jobs:
           node scripts/aws/validate-contact-staging.mjs
           node --test scripts/aws/contact-staging.test.mjs
           node scripts/aws/validate-portal-aws-identity.mjs
+          node --test integrations/mongodb-atlas/staging-contact-store.test.mjs
       - name: Confirm deployed AWS staging health is NOT published as a live service
         shell: bash
         run: |
