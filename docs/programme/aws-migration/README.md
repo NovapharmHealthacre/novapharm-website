@@ -1,3 +1,18 @@
+
+## Authenticated AWS as-built and external blockers | 6 November 2026
+
+- Active AWS new-experience Free plan: eu-north-1 project, USD 140 trial credit reported at latest read, expiring on 6 May 2027 according to account API. **Temporary development/staging only**, not a continuity guarantee for live regulated business.
+- `novapharm-staging-foundation` **CREATE_COMPLETE**: ECS cluster, six immutable scan-on-push ECR repositories, private versioned S3 document/quarantine buckets and CloudWatch log groups. **Zero ECS services and zero task definitions.**
+- `novapharm-contact-staging` **CREATE_COMPLETE**: Lambda/API Gateway/DynamoDB for **synthetic-only** enquiry testing. Authorised synthetic test returned a durable 201 receipt; anonymous public submission returns 403; no real data or delivery is accepted. Source and evidence in PR #91.
+- `novapharm-audit-staging` **CREATE_COMPLETE**: single-Region, first-copy management-event CloudTrail, encrypted versioned private S3 destination, 365-day lifecycle and logging enabled. At first audit read, only S3 folder markers had appeared; actual log-file/digest retrieval still needs acceptance. Candidate source and tests in this PR; issue #90 open.
+- `novapharm-staging-entra-p1-broker` Cognito Lite has no users or application clients, with admin-only signup and TOTP enabled for local identities. Owner-provided Microsoft Entra P1 MFA remains the workforce identity authority. OIDC provider, tenant/app registration, callback and role validation remain pending; no live portal login.
+- SES domain identity DKIM verification is pending in the current Microsoft-hosted authoritative DNS; AWS SES production access request returned **DENIED**. An SNS internal alert subscription exists but requires recipient email confirmation, and is not yet a verified notification service.
+- AWS role inspection exposed an **explicit AWS service-control-policy deny** on `iam:ListOpenIDConnectProviders`; therefore GitHub OIDC staging credentials cannot be asserted to exist. Resolve this restriction through the AWS new project account controls/support; do not bypass it with long-lived user keys.
+- CloudFormation validated `infra/aws/rds-sql-express-staging.json` as a *candidate only*: private SQL Server Express micro instance, encryption, managed master-secret, backups and deletion protection. **Not provisioned**, because costs, license/edition limits, deploy connectivity and schema acceptance remain unresolved. Source-level invariant tests are mandatory before any requested deployment.
+- `NovaPharm-Free-Trial-Guard-10USD` monthly budget and 80% actual spend notification are configured. Budget notifications are not a hard limit and may require recipient email confirmation. Check the account plan and credit reserve before any additional resources.
+
+**Public live evidence:** on 6 November 2026, corporate `/contact/` was HTTP 200 but email-only; managed `portal.novapharmhealthcare.com/portal/` returned HTTP 503; `api.novapharmhealthcare.com/api/health` returned HTTP 404. External GitHub run: https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/42220910949. Preserve the live Pages site; do not relabel staged sources as production or activate customer credentials.
+
 ## Free-plan database edition constraint (verified from AWS pricing eligibility, 6 November 2026)
 
 AWS currently lists Free-plan RDS access for `db.t3.micro` / `db.t4g.micro` and four engines, but **Microsoft SQL Server is explicitly restricted to SQL Server Express Edition**. See [AWS RDS Free Tier](https://aws.amazon.com/rds/free/). Do not interpret the availability of a new Free-plan AWS account as approval or eligibility for RDS SQL Server Standard or Enterprise, production instance sizes, multi-AZ, expensive storage, or licensed features.
@@ -17,7 +32,7 @@ AWS Free Tier billing APIs are queried in `us-east-1`; application regional reso
 **Date:** 6 November 2026  
 **Target:** AWS **new experience project** in **eu-north-1 (Stockholm)**.  
 **Source of truth:** current GitHub main + a reviewed, exact-SHA staging PR.  
-**Status:** AWS foundation authored; no verified AWS project credentials, paid plan, managed deployment, application cutover, or real database/document transfer in this review.
+**Status (verified 6 November 2026):** AWS Free account connection confirmed; private staging foundation, synthetic-only API/DynamoDB and CloudTrail management-event trail are deployed and verified as described below. No real contact form, production SQL database, ECS application service, Cognito-to-Entra federation, public portal, production domain cutover or customer-data migration has been accepted.
 
 ## Architecture and release boundaries
 
