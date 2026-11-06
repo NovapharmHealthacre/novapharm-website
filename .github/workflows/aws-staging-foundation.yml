@@ -1,0 +1,80 @@
+name: Controlled AWS staging foundation (manual only)
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: Exact reviewed 40-character main commit SHA
+        required: true
+        type: string
+      action:
+        description: Validate only or create reviewed staging foundation (may incur charges)
+        required: true
+        type: choice
+        options:
+          - preflight
+          - provision-staging
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: novapharm-aws-staging-foundation
+  cancel-in-progress: false
+
+jobs:
+  controlled:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: aws-staging
+    env:
+      AWS_REGION: eu-north-1
+      EXPECTED_SHA: ${{ inputs.expected_sha }}
+      EXPECTED_ACCOUNT: ${{ vars.AWS_PROJECT_ACCOUNT_ID }}
+      ROLE_TO_ASSUME: ${{ vars.AWS_GITHUB_STAGING_ROLE_ARN }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: main
+          fetch-depth: 1
+      - name: Verify exact main revision and configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          [[ "$EXPECTED_ACCOUNT" =~ ^[0-9]{12}$ ]]
+          [[ "$ROLE_TO_ASSUME" == "arn:aws:iam::${EXPECTED_ACCOUNT}:role/"* ]]
+          node scripts/aws/validate-migration-foundation.mjs
+      - name: Authenticate with project AWS via GitHub OIDC, no long-lived keys
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4.3.1
+        with:
+          aws-region: eu-north-1
+          role-to-assume: ${{ vars.AWS_GITHUB_STAGING_ROLE_ARN }}
+          role-session-name: novapharm-staging-foundation
+      - name: Verify project identity, Region and CloudFormation
+        shell: bash
+        run: |
+          set -euo pipefail
+          account="$(aws sts get-caller-identity --query Account --output text)"
+          test "$account" = "$EXPECTED_ACCOUNT"
+          test "$(aws configure get region || printf '%s' "$AWS_REGION")" = "eu-north-1"
+          aws cloudformation validate-template --template-body file://infra/aws/foundation.json --region eu-north-1
+          aws freetier get-account-plan-state --region eu-north-1 --output json
+          echo "AWS project identity and eu-north-1 validated. No data movement or DNS changes."
+      - name: Provision PRIVATE staging foundation only after GitHub environment approval
+        if: inputs.action == 'provision-staging'
+        shell: bash
+        run: |
+          set -euo pipefail
+          aws cloudformation deploy \
+            --template-file infra/aws/foundation.json \
+            --stack-name novapharm-staging-foundation \
+            --parameter-overrides Environment=staging \
+            --tags application=novapharm environment=staging managed-by=cloudformation \
+            --region eu-north-1 \
+            --no-fail-on-empty-changeset
+          aws cloudformation describe-stacks --stack-name novapharm-staging-foundation \
+            --region eu-north-1 --query 'Stacks[0].{Status:StackStatus,Id:StackId}' --output json
