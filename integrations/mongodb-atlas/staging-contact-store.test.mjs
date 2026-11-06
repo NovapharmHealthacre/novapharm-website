@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createSyntheticContactStore, validateSyntheticContact } from "./staging-contact-store.mjs";
+import { SYNTHETIC_CONTACT_SCHEMA } from "./staging-schema.mjs";
 
 const valid = {
   name: "SYNTHETIC-Atlas-test",
@@ -42,6 +43,11 @@ test("staging-only synthetic receipt is stored with 24-hour expiration", async (
   assert.equal(records[0].classification, "SYNTHETIC_ONLY");
   assert.equal(records[0].productionAccepted, false);
   assert.equal(records[0].expiresAt - records[0].createdAt, 86_400_000);
+  assert.deepEqual(
+    Object.keys(records[0]).sort(),
+    Object.keys(SYNTHETIC_CONTACT_SCHEMA.$jsonSchema.properties).sort(),
+    "The actual stored document must match the strict database field allowlist"
+  );
   assert.equal(await adapter.verify(receipt.id), true);
 });
 test("does not report a receipt when write acknowledgement is unavailable", async () => {
@@ -58,6 +64,9 @@ for (const [label, payload] of [
   ["missing consent", { ...valid, acceptedSafetyNotice: false }],
   ["unsafe message", { ...valid, message: "SYNTHETIC DATA <script>" }],
   ["bot honeypot", { ...valid, website: "spam.test" }],
+  ["unreviewed metadata", { ...valid, arbitraryMetadata: "should-not-be-stored" }],
+  ["production accepted flag", { ...valid, productionAccepted: true }],
+  ["patient identifier", { ...valid, patientId: "fake-patient-id" }],
 ]) {
   test("rejects " + label, () => assert.throws(() => validateSyntheticContact(payload)));
 }
