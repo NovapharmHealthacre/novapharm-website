@@ -47,6 +47,9 @@ jobs:
           node --test scripts/aws/check-free-plan-capabilities.test.mjs
           node scripts/aws/validate-staging-candidates.mjs
           node --test scripts/aws/validate-staging-candidates.test.mjs
+          node --check scripts/aws/validate-cloudtrail-staging.mjs
+          node scripts/aws/validate-cloudtrail-staging.mjs
+          node --test scripts/aws/validate-cloudtrail-staging.test.mjs
           node --check scripts/aws/verify-staging-foundation.mjs
           node --test scripts/aws/verify-staging-foundation.test.mjs
           bash -n scripts/aws/setup-agent-toolkit.sh
