@@ -37,3 +37,13 @@ Free-plan use is only permissible within its actual current limits and verified 
 7. Keep all DNS/prod and patient-identifiable data untouched until explicit acceptance.
 
 This document records AWS observations at the time of the session; it is **not** a claim of 100% production completion.
+
+## 6 November follow-up control inspection (read-only AWS calls)
+
+- Authenticated `DescribeStacks`: `novapharm-staging-foundation` remains `CREATE_COMPLETE`.
+- `DescribeRepositories`: **6/6 ECR repositories** have `scanOnPush=true`, `imageTagMutability=IMMUTABLE` and `AES256` encryption. This does **not** establish that any images were built, scanned or deployed.
+- `DescribeLogGroups`: **6/6 CloudWatch log groups** have `retentionInDays=30`. These are empty-capable log destinations, not evidence of production telemetry.
+- `DescribeTrails` in `eu-north-1`: **no configured CloudTrail trails returned**. This must remain an explicit account-level audit/incident-response gap. CloudTrail event history may provide limited default lookup, but does not substitute for a configured, governed, retained organizational audit trail.
+- `GetAccountPlanState`: **FREE / ACTIVE**, with US$100 remaining credits and expiry **2027-05-06** at observation time. Recheck immediately before every spend-capable operation.
+
+**Security disposition:** CloudTrail account logging, AWS budgets/alerts, least-privilege deployment IAM, runtime networking, identity, threat monitoring, backup recovery, and security incident routing remain **not production accepted**. Do not assume unavailable or premium AWS controls are enabled within the Free-plan trial. Do not create paid controls or modify permissions without reviewing current entitlement, price and rollback.
