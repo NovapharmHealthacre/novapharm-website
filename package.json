@@ -56,6 +56,7 @@
     "check:links": "node scripts/check-links.mjs",
     "syntax": "node scripts/check-syntax.mjs && node scripts/check-css.mjs",
     "security:scan": "node scripts/scan-secrets.mjs",
+    "aws:validate": "node scripts/aws/validate-migration-foundation.mjs && node --test scripts/aws/aws-migration.test.mjs",
     "supply-chain:validate": "node scripts/validate-supply-chain.mjs",
     "leadership:validate": "node scripts/programme/validate-leadership-titles.mjs && node scripts/programme/validate-leadership-media.mjs",
     "products:validate": "node scripts/programme/validate-products-experience.mjs",
