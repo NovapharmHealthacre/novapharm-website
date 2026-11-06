@@ -74,11 +74,14 @@ function inspect(path, response) {
   if(!/\<html\b[^>]*lang=/i.test(h)) issues.push("MISSING_LANG");
   if(missingAlt) issues.push("MISSING_IMAGE_ALT="+missingAlt);
   if(missingDimensions) issues.push("MISSING_IMAGE_DIMENSIONS="+missingDimensions);
+  const skipCandidates = [...h.matchAll(/<a\b[^>]*>[\s\S]*?<\/a>/gi)].map(x=>x[0]).filter(x=>/skip-link|Skip to content|#main/i.test(x)).slice(0,3).map(x=>x.slice(0,320));
+  const missingDimensionSources = images.filter(x=>!attr(x,"width")||!attr(x,"height")).map(x=>({src:attr(x,"src"),tag:x.slice(0,260)}));
+  const privacyCloudMentions = path==="/legal/privacy/" ? (h.match(/.{0,80}(?:Azure|AWS|Amazon Web Services).{0,160}/gi)||[]).slice(0,7) : [];
   const flags=[];
   if(path==="/contact/" && !/data-contact-form/i.test(h)) flags.push("PUBLIC_FORM_NOT_ACTIVE");
   if(path==="/legal/privacy/" && /Microsoft Azure is the approved target/i.test(h)) flags.push("PRIVACY_STILL_SAYS_AZURE");
   if(path==="/portal/" && /portal\.novapharmhealthcare\.com/i.test(h)) flags.push("PORTAL_IS_LINK_TO_SEPARATE_HOST_NOT_WORKING_SERVICE");
-  return {path,http:response.http,url:response.url,title,h1:heading,descLength:desc.length,canonical:attr(canonical||"","href"),imageCount:images.length,missingAlt,missingDimensions,usesPicture:/(<picture\b|srcset\s*=)/i.test(h),htmlBytes:Buffer.byteLength(h),issues,flags,headers:response.headers};
+  return {path,http:response.http,url:response.url,title,h1:heading,descLength:desc.length,canonical:attr(canonical||"","href"),imageCount:images.length,missingAlt,missingDimensions,missingDimensionSources,skipCandidates,privacyCloudMentions,usesPicture:/(<picture\b|srcset\s*=)/i.test(h),htmlBytes:Buffer.byteLength(h),issues,flags,headers:response.headers};
 }
 const observedAt = new Date().toISOString();
 const pages = await pool(paths,5,async path => inspect(path,await request(origin+path)));
@@ -116,5 +119,5 @@ const report=[
 ].join("\n")+"\n";
 await writeFile("audit/live/apple-grade-readonly.md",report);
 console.log("NOVAPHARM_AUDIT_JSON_START");
-console.log(JSON.stringify({observedAt,summary,services,critical:pages.filter(p=>p.issues.length||p.flags.length).map(p=>({path:p.path,http:p.http,issues:p.issues,flags:p.flags}))},null,2));
+console.log(JSON.stringify({observedAt,summary,services,critical:pages.filter(p=>p.issues.length||p.flags.length).map(p=>({path:p.path,http:p.http,issues:p.issues,flags:p.flags,skipCandidates:p.skipCandidates,missingDimSources:p.missingDimensionSources.slice(0,3),privacyCloudMentions:p.privacyCloudMentions}))},null,2));
 console.log("NOVAPHARM_AUDIT_JSON_END");
