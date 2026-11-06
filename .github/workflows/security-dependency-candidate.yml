@@ -5,6 +5,7 @@ on:
     branches: [codex/security-dependencies-20261106]
     paths:
       - '.github/workflows/security-dependency-candidate.yml'
+      - 'scripts/security/prepare-nov-2026-candidate.mjs'
   workflow_dispatch:
 
 permissions:
