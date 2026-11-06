@@ -145,16 +145,6 @@
         "VpcId": {
           "Ref": "Vpc"
         },
-        "SecurityGroupIngress": [
-          {
-            "IpProtocol": "tcp",
-            "FromPort": 1433,
-            "ToPort": 1433,
-            "SourceSecurityGroupId": {
-              "Ref": "ApiClientSecurityGroup"
-            }
-          }
-        ],
         "Tags": [
           {
             "Key": "environment",
@@ -211,6 +201,21 @@
             "Value": "synthetic-only"
           }
         ]
+      }
+    },
+    "DatabaseIngressFromApi": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "DatabaseSecurityGroup"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": 1433,
+        "ToPort": 1433,
+        "SourceSecurityGroupId": {
+          "Ref": "ApiClientSecurityGroup"
+        },
+        "Description": "Approved staging API tasks only"
       }
     }
   },
