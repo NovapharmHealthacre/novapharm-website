@@ -8,7 +8,6 @@ on:
       - 'scripts/aws/validate-contact-staging.mjs'
       - 'scripts/aws/contact-staging.test.mjs'
       - 'scripts/aws/validate-portal-aws-identity.mjs'
-      - 'scripts/aws/validate-portal-aws-identity.mjs'
       - '.github/workflows/aws-contact-staging-check.yml'
   push:
     branches: [codex/aws-contact-portal-acceptance-20261106]
@@ -17,6 +16,7 @@ on:
       - 'infra/aws/contact-synthetic-staging.yaml'
       - 'scripts/aws/validate-contact-staging.mjs'
       - 'scripts/aws/contact-staging.test.mjs'
+      - 'scripts/aws/validate-portal-aws-identity.mjs'
       - '.github/workflows/aws-contact-staging-check.yml'
 
 permissions:
