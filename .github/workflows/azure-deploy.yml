@@ -1,4 +1,4 @@
-name: Controlled unified Azure deployment
+name: LEGACY Azure deployment (suspended during AWS migration)
 
 on:
   workflow_dispatch:
@@ -38,7 +38,7 @@ concurrency:
 
 jobs:
   deploy:
-    if: inputs.target == 'staging' || github.ref == 'refs/heads/main'
+    if: false # Azure deploy retired during AWS migration; preserve workflow as rollback evidence only
     runs-on: ubuntu-latest
     timeout-minutes: 90
     environment: ${{ inputs.target == 'staging' && 'azure-staging' || 'azure-production' }}
