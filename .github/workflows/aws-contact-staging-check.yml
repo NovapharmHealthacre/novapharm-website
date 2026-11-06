@@ -7,6 +7,8 @@ on:
       - 'infra/aws/contact-synthetic-staging.yaml'
       - 'scripts/aws/validate-contact-staging.mjs'
       - 'scripts/aws/contact-staging.test.mjs'
+      - 'scripts/aws/validate-portal-aws-identity.mjs'
+      - 'scripts/aws/validate-portal-aws-identity.mjs'
       - '.github/workflows/aws-contact-staging-check.yml'
   push:
     branches: [codex/aws-contact-portal-acceptance-20261106]
@@ -34,6 +36,7 @@ jobs:
           node --check infra/aws/contact-synthetic/index.js
           node scripts/aws/validate-contact-staging.mjs
           node --test scripts/aws/contact-staging.test.mjs
+          node scripts/aws/validate-portal-aws-identity.mjs
       - name: Confirm deployed AWS staging health is NOT published as a live service
         shell: bash
         run: |
