@@ -42,3 +42,4 @@ jobs:
           node --check scripts/aws/validate-migration-foundation.mjs
           node scripts/aws/validate-migration-foundation.mjs
           node --test scripts/aws/aws-migration.test.mjs
+          node --test scripts/aws/check-free-plan.test.mjs
