@@ -44,6 +44,10 @@ A transactional email production-access request was submitted through `sesv2 Put
 
 Created AWS Budgets `NovaPharm-Free-Trial-Guard-10USD`: USD 10 monthly budget with 80% actual-spend notification, excluding credits from budget cost calculations. The recipient `vishal@novapharmhealthcare.com` must confirm AWS Budgets' subscriber verification email before receiving alerts. A budget is **not a hard spending cap**. Continue checking the AWS Free plan's remaining credit and expiry date.
 
+## AWS portal identity staging bridge
+
+Created Amazon Cognito **Lite** user pool `novapharm-staging-entra-p1-broker` (`eu-north-1_dZRAEzkYa`), configured administrator-created users only, no public self-registration, deletion protection enabled, and software-token TOTP MFA `ON` for any local accounts. **No user-pool app clients, identity providers, users, hosted login or portal traffic were enabled.** This is a staging trust-broker scaffold, not a replacement for the existing Microsoft Entra ID P1 workforce MFA. Third-party OIDC federation will require an Entra app registration (client ID and protected secret), issuer/tenant proof, Cognito redirect URI, minimal claims mapping, explicit app roles and negative login/tenant isolation tests. No Microsoft user accounts were migrated.
+
 ## Remaining production gates
 
 1. Keep **Microsoft Entra ID P1 MFA** as the workforce identity authority. Confirm the actual application/tenant registration, authorized OIDC issuer and audience, redirect URIs, JWKS signature verification, Conditional Access enforcement, group/app-role mappings and deny-path tests. The Azure App Service `x-ms-client-principal` header is intentionally not trusted on AWS.
