@@ -45,3 +45,4 @@ jobs:
           node --test scripts/aws/check-free-plan.test.mjs
           node scripts/aws/check-free-plan-capabilities.mjs
           node --test scripts/aws/check-free-plan-capabilities.test.mjs
+          bash -n scripts/aws/setup-agent-toolkit.sh
