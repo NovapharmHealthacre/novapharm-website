@@ -32,7 +32,7 @@ assert.equal(policy?.Effect, "Allow");
 assert.equal(policy?.Condition?.StringEquals?.["AWS:SourceArn"]?.["Fn::Sub"],
   "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${PublicDistribution}");
 assert.equal(cdn.DefaultCacheBehavior.FunctionAssociations[0].EventType, "viewer-request");
-assert.match(t.Resources.DirectoryIndexRewrite.Properties.FunctionCode, /index\\.html/);
+assert.match(t.Resources.DirectoryIndexRewrite.Properties.FunctionCode, /index\.html/);
 for (const resource of [bucket, distribution]) {
   const actualTags = new Set(resource.Properties.Tags.map(tag => tag.Key));
   for (const required of ["Project", "Environment", "Owner", "Application", "CostCentre", "DataClassification"]) {
