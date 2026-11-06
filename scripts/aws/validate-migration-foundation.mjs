@@ -32,6 +32,17 @@ for (const [name, policy] of [["DocumentBucket", "DocumentBucketTlsPolicy"], ["Q
 }
 assert(!Object.values(resources).some((r) => ["AWS::ECS::Service", "AWS::RDS::DBInstance", "AWS::Route53::RecordSet"].includes(r.Type)),
   "Foundation must not create unaccepted production services, databases, or DNS records");
+const stagingWorkflow = readFileSync(resolve(root, ".github/workflows/aws-staging-foundation.yml"), "utf8");
+assert(stagingWorkflow.includes("github.repository == 'NovapharmHealthacre/novapharm-website'"),
+  "AWS staging workflow must be tied to the reviewed GitHub repository; Enterprise transfers require new OIDC approval");
+assert(stagingWorkflow.includes("github.ref == 'refs/heads/main'"),
+  "AWS staging workflow must require the protected main ref");
+assert(stagingWorkflow.includes("environment: aws-staging"),
+  "AWS staging workflow requires explicit environment approval");
+assert(stagingWorkflow.includes("id-token: write") && stagingWorkflow.includes("configure-aws-credentials@"),
+  "AWS staging must use short-lived GitHub OIDC, not long-lived keys");
+assert(stagingWorkflow.includes("AWS_STAGING_SPEND_APPROVED"),
+  "AWS staging provisioning must remain gated on approved spend");
 const dispatch = readFileSync(resolve(root, ".github/workflows/managed-production-candidate.yml"), "utf8");
 assert(!dispatch.includes("gh workflow run azure-deploy.yml"), "Legacy Azure dispatch must be disabled");
 const database = readFileSync(resolve(root, "src/data/database.mjs"), "utf8");
