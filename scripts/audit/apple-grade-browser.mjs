@@ -48,6 +48,12 @@ for(const [browserName,browserType] of browsers) {
           const focusable=Array.from(document.querySelectorAll("button, a[href], input, select, textarea")).length;
           const meta=document.querySelector('meta[name="description"]')?.getAttribute("content")||"";
           const mobileNavButton=Array.from(document.querySelectorAll("button")).find(x=>/menu/i.test((x.textContent||"")+" "+(x.getAttribute("aria-label")||"")));
+          const contactTopicNumbers=Array.from(document.querySelectorAll(".topic > .num")).map(number=>({
+            text:(number.textContent||"").trim(),
+            foreground:getComputedStyle(number).color,
+            cardBackground:getComputedStyle(number.parentElement).backgroundColor,
+            fontSize:getComputedStyle(number).fontSize
+          }));
           const main=document.querySelector("main");
           const header=document.querySelector("header");
           const primary=document.querySelector("main h1")?.getBoundingClientRect();
@@ -59,6 +65,7 @@ for(const [browserName,browserType] of browsers) {
             mobileNavButtonPresent:!!mobileNavButton,
             mainPresent:!!main,headerPresent:!!header,
             heroH1BoundingRect:primary?{x:Math.round(primary.x),y:Math.round(primary.y),width:Math.round(primary.width),height:Math.round(primary.height)}:null,
+            contactTopicNumbers,
             imageCount:document.images.length,
             brokenVisibleImages:Array.from(document.images).filter(x=>{const rect=x.getBoundingClientRect();return rect.top<innerHeight&&rect.bottom>0&&x.complete&&x.naturalWidth===0}).map(x=>x.src.slice(0,150))
           };
@@ -69,6 +76,27 @@ for(const [browserName,browserType] of browsers) {
             const scan=await new AxeBuilder({page}).withTags(["wcag2a","wcag2aa","wcag21a","wcag21aa"]).analyze();
             axe={violations:scan.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.length,help:v.help,examples:v.nodes.slice(0,15).map(n=>({target:n.target,html:n.html.slice(0,220),summary:n.failureSummary?.slice(0,450),data:n.any?.[0]?.data??null}))})),incomplete:scan.incomplete.map(v=>({id:v.id,nodes:v.nodes.length})),error:null};
           }catch(e){axe.error=String(e).slice(0,400)}
+        }
+
+        // The published Pages contact is not the same component as the main Corporate Next app.
+        // Record its exact computed text/background contrast without editing the live page.
+        if(target.id==="contact") {
+          if(metrics.contactTopicNumbers?.length!==8) {
+            errors.push("contact: expected eight published numbered topic cards for source parity");
+          } else {
+            const luminance = (css) => {
+              const parts=String(css).match(/\\d+(?:\\.\\d+)?/g)?.slice(0,3).map(Number);
+              if(!parts||parts.length!==3) return null;
+              const lin=parts.map(x=>{const v=x/255;return v<=0.04045?v/12.92:((v+0.055)/1.055)**2.4;});
+              return lin[0]*0.2126+lin[1]*0.7152+lin[2]*0.0722;
+            };
+            for(const number of metrics.contactTopicNumbers) {
+              const fg=luminance(number.foreground),bg=luminance(number.cardBackground);
+              if(fg===null||bg===null){errors.push("contact contrast: unknown CSS colour "+number.text);continue;}
+              number.contrastRatio=Number(((Math.max(fg,bg)+0.05)/(Math.min(fg,bg)+0.05)).toFixed(3));
+              if(number.contrastRatio<4.5)errors.push("contact WCAG AA contrast below 4.5:1 for "+number.text+": "+number.contrastRatio);
+            }
+          }
         }
         const name=browserName+"-"+vp.id+"-"+target.id;
         let screenshot=null;
@@ -111,8 +139,9 @@ await writeFile(path.join(destination,"browser-forensics.md"),report);
 console.log("BROWSER_AUDIT_SUMMARY "+JSON.stringify({combinations:findings.length,overflows,broken,violations,failures:findings.filter(x=>x.fatal||x.loadError||x.status!==200).map(x=>({name:x.name,status:x.status,error:x.loadError||x.fatal}))}));
 const releaseBlocking = violations.filter(v=>v.impact==="critical"||v.impact==="serious");
 const routeFailures = findings.filter(x=>x.fatal||x.loadError||x.status!==200);
-if (releaseBlocking.length || routeFailures.length) {
-  console.error("BROWSER_FORENSIC_GATE_FAILED: " + releaseBlocking.length + " serious/critical automated WCAG violations across browser/page combinations, " + routeFailures.length + " broken routes. Evidence artifacts were saved before failing.");
+const contrastFailures = findings.filter(x=>(x.errors||[]).some(e=>e.startsWith("contact")));
+if (releaseBlocking.length || routeFailures.length || contrastFailures.length) {
+  console.error("BROWSER_FORENSIC_GATE_FAILED: " + releaseBlocking.length + " serious/critical automated WCAG violations across browser/page combinations, " + routeFailures.length + " broken routes, " + contrastFailures.length + " contact parity/contrast checks. Evidence artifacts were saved before failing.");
   process.exitCode = 1;
 }
 
