@@ -1,0 +1,42 @@
+name: Apple-grade browser forensic evidence
+
+on:
+  push:
+    branches: [codex/apple-grade-forensic-audit-20261106]
+    paths:
+      - scripts/audit/apple-grade-browser.mjs
+      - .github/workflows/apple-grade-browser.yml
+  pull_request:
+    paths:
+      - scripts/audit/apple-grade-browser.mjs
+      - .github/workflows/apple-grade-browser.yml
+
+permissions:
+  contents: read
+
+jobs:
+  public-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Validate read-only audit source
+        run: node --check scripts/audit/apple-grade-browser.mjs
+      - name: Install locked packages without lifecycle scripts
+        run: npm ci --ignore-scripts
+      - name: Install Chromium and WebKit
+        run: npx playwright install --with-deps chromium webkit
+      - name: Capture real public responsive browser and axe-core evidence
+        run: node scripts/audit/apple-grade-browser.mjs
+      - name: Upload screenshots, WCAG probes and measurable layout diagnostics
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: novapharm-apple-browser-forensic-screenshots
+          path: audit/live-browser/
+          retention-days: 30
+          if-no-files-found: warn
