@@ -96,6 +96,42 @@ for(const [browserName,browserType] of browsers) {
               number.contrastRatio=Number(((Math.max(fg,bg)+0.05)/(Math.min(fg,bg)+0.05)).toFixed(3));
               if(number.contrastRatio<4.5)errors.push("contact WCAG AA contrast below 4.5:1 for "+number.text+": "+number.contrastRatio);
             }
+            // Validate the actual hover and keyboard focus states, not only CSS constants.
+            const firstTopic=page.locator(".topic").first();
+            await firstTopic.hover();
+            await page.waitForTimeout(270);
+            const hover=await firstTopic.evaluate(el=>({
+              fg:getComputedStyle(el.querySelector(".num")).color,
+              bg:getComputedStyle(el).backgroundColor
+            }));
+            const hoverFg=luminance(hover.fg),hoverBg=luminance(hover.bg);
+            metrics.contactFirstTopicHover=hover;
+            if(hoverFg===null||hoverBg===null){
+              errors.push("contact hover colour cannot be parsed");
+            } else {
+              const ratio=(Math.max(hoverFg,hoverBg)+0.05)/(Math.min(hoverFg,hoverBg)+0.05);
+              metrics.contactFirstTopicHover.contrastRatio=Number(ratio.toFixed(3));
+              if(ratio<4.5)errors.push("contact hover contrast below 4.5:1");
+            }
+            await firstTopic.focus();
+            if(!await firstTopic.evaluate(el=>document.activeElement===el)){
+              errors.push("contact topic is not keyboard focusable");
+            } else {
+              await page.keyboard.press("Tab");
+              if(await firstTopic.evaluate(el=>document.activeElement===el)){
+                errors.push("contact keyboard Tab did not advance focus");
+              }
+              await page.keyboard.press("Shift+Tab");
+              const focus=await firstTopic.evaluate(el=>({
+                isFocused:document.activeElement===el,
+                outlineStyle:getComputedStyle(el).outlineStyle,
+                outlineWidth:getComputedStyle(el).outlineWidth
+              }));
+              metrics.contactFirstTopicKeyboardFocus=focus;
+              if(!focus.isFocused||focus.outlineStyle==="none"||parseFloat(focus.outlineWidth)<2){
+                errors.push("contact keyboard focus outline is missing or too thin");
+              }
+            }
           }
         }
         const name=browserName+"-"+vp.id+"-"+target.id;
