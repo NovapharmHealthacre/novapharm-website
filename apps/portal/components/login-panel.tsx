@@ -15,7 +15,7 @@ const accessTypes = [
 
 type AccessType = (typeof accessTypes)[number]["value"];
 
-export function LoginPanel() {
+export function LoginPanel({ awsMode = false }: Readonly<{ awsMode?: boolean }>) {
   const [accessType, setAccessType] = useState<AccessType>("customer");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
@@ -42,6 +42,29 @@ export function LoginPanel() {
 
   const entraEnabled = process.env["NEXT_PUBLIC_ENTRA_LOGIN_ENABLED"] === "true";
   const entraReturn = `/auth/entra-complete/?accessType=${accessType}`;
+
+  // On AWS, the Microsoft Entra OIDC trust chain must be proven before any
+  // login method is rendered. Showing a legacy password form would be unsafe.
+  if (awsMode) {
+    return <main className="login-layout">
+      <section className="login-context" aria-labelledby="portal-title">
+        <PortalBrand />
+        <div className="login-copy">
+          <p className="eyebrow">Secure workspace</p>
+          <h1 id="portal-title">Identity verification required.</h1>
+          <p>Your Microsoft Entra P1 MFA remains the identity authority for NovaPharm staff. The AWS federation and role-controlled session service have not yet passed production acceptance.</p>
+        </div>
+      </section>
+      <section className="login-panel" aria-labelledby="sign-in-title">
+        <div>
+          <p className="eyebrow">NovaPharm identity</p>
+          <h2 id="sign-in-title">Secure sign-in is not yet available.</h2>
+          <p className="muted" role="status">For your security, AWS does not accept the previous local-password login or the legacy Azure identity headers. No credentials are requested here until the approved Microsoft connection is operational.</p>
+          <p><a className="button primary" href="https://novapharmhealthcare.com/contact/">Contact NovaPharm</a></p>
+        </div>
+      </section>
+    </main>;
+  }
 
   return <main className="login-layout">
     <section className="login-context" aria-labelledby="portal-title">
