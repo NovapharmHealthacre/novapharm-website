@@ -1,0 +1,51 @@
+name: Phoenix isolated application regression matrix
+
+on:
+  pull_request:
+    paths:
+      - package.json
+      - package-lock.json
+      - apps/**/package.json
+      - .github/workflows/phoenix-application-regression.yml
+  push:
+    branches:
+      - codex/phoenix-security-remediation-20261106
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phoenix-apps-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          - corporate
+          - founder
+          - portal
+          - status
+          - technology
+          - api
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Exact lockfile install
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify no high/critical production advisories
+        run: npm audit --omit=dev --audit-level=high
+      - name: Lint, typecheck, test, validate and build individual app
+        env:
+          APP: ${{ matrix.app }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run check --workspace="@novapharm/${APP}"
