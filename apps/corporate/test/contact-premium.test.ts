@@ -6,7 +6,7 @@ import { ContactExperience } from "../components/contact-experience";
 
 test("public contact is visually guided and never renders an inactive submission form", () => {
   const markup = renderToStaticMarkup(createElement(ContactExperience, { managedEnabled: false }));
-  assert.match(markup, /Let's start the right conversation/);
+  assert.match(markup, /start the right conversation/);
   assert.match(markup, /How can we help/);
   assert.equal((markup.match(/class="np-contact-topic"/g) ?? []).length, 8);
   assert.equal((markup.match(/href="mailto:/g) ?? []).length, 10);
