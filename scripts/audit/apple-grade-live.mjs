@@ -61,7 +61,7 @@ function inspect(path, response) {
   const heading = [...h.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/gi)].map(m=>clean(m[1]));
   const images = [...h.matchAll(/<img\b[^>]*>/gi)].map(m=>m[0]);
   const missingAlt = images.filter(m=>!/\balt\s*=/.test(m)).length;
-  const missingDimensions = images.filter(m=>!attr(m,"width")||!attr(m,"height")).length;
+  const missingDimensions = images.filter(m=>(!attr(m,"width")||!attr(m,"height")) && !/data-nimg=["']fill["']/i.test(m)).length;
   const issues = [];
   if(response.http !== 200) issues.push("HTTP_NOT_200");
   if(!title) issues.push("MISSING_TITLE");
@@ -69,17 +69,17 @@ function inspect(path, response) {
   if(heading.length!==1) issues.push("H1_COUNT="+heading.length);
   if(!/<main\b/i.test(h)) issues.push("MISSING_MAIN");
   if(!/<nav\b/i.test(h)) issues.push("MISSING_NAV");
-  if(!/href=["']#main["']/i.test(h)) issues.push("MISSING_SKIP_LINK");
+  if(!/href=["']#(?:main|main-content)["']/i.test(h) || !/<main\b[^>]*\bid=["'](?:main|main-content)["']/i.test(h)) issues.push("MISSING_VALID_SKIP_LINK_TARGET");
   if(!attr(canonical||"","href")) issues.push("MISSING_CANONICAL");
   if(!/\<html\b[^>]*lang=/i.test(h)) issues.push("MISSING_LANG");
   if(missingAlt) issues.push("MISSING_IMAGE_ALT="+missingAlt);
   if(missingDimensions) issues.push("MISSING_IMAGE_DIMENSIONS="+missingDimensions);
   const skipCandidates = [...h.matchAll(/<a\b[^>]*>[\s\S]*?<\/a>/gi)].map(x=>x[0]).filter(x=>/skip-link|Skip to content|#main/i.test(x)).slice(0,3).map(x=>x.slice(0,320));
-  const missingDimensionSources = images.filter(x=>!attr(x,"width")||!attr(x,"height")).map(x=>({src:attr(x,"src"),tag:x.slice(0,260)}));
+  const missingDimensionSources = images.filter(x=>(!attr(x,"width")||!attr(x,"height"))&&!/data-nimg=["']fill["']/i.test(x)).map(x=>({src:attr(x,"src"),tag:x.slice(0,260)}));
   const privacyCloudMentions = path==="/legal/privacy/" ? (h.match(/.{0,80}(?:Azure|AWS|Amazon Web Services).{0,160}/gi)||[]).slice(0,7) : [];
   const flags=[];
   if(path==="/contact/" && !/data-contact-form/i.test(h)) flags.push("PUBLIC_FORM_NOT_ACTIVE");
-  if(path==="/legal/privacy/" && /Microsoft Azure is the approved target/i.test(h)) flags.push("PRIVACY_STILL_SAYS_AZURE");
+  if(path==="/legal/privacy/" && /Microsoft Azure/i.test(h)) flags.push("PRIVACY_MENTIONS_AZURE_CHECK_PROCESSOR_TRUTH");
   if(path==="/portal/" && /portal\.novapharmhealthcare\.com/i.test(h)) flags.push("PORTAL_IS_LINK_TO_SEPARATE_HOST_NOT_WORKING_SERVICE");
   return {path,http:response.http,url:response.url,title,h1:heading,descLength:desc.length,canonical:attr(canonical||"","href"),imageCount:images.length,missingAlt,missingDimensions,missingDimensionSources,skipCandidates,privacyCloudMentions,usesPicture:/(<picture\b|srcset\s*=)/i.test(h),htmlBytes:Buffer.byteLength(h),issues,flags,headers:response.headers};
 }
@@ -98,7 +98,7 @@ const summary = {
   managedPortalResponds200:services.find(s=>s.name==="portal")?.http===200,
   managedApiHealth200:services.find(s=>s.name==="api")?.http===200,
   awsStagingExplicitlyNotLive:services.find(s=>s.name==="aws-staging")?.stagingNotLive===true,
-  privacyStillReferencesAzure:pages.find(p=>p.path==="/legal/privacy/")?.flags.includes("PRIVACY_STILL_SAYS_AZURE")
+  privacyStillReferencesAzure:pages.find(p=>p.path==="/legal/privacy/")?.flags.includes("PRIVACY_MENTIONS_AZURE_CHECK_PROCESSOR_TRUTH")
 };
 const payload={observedAt,source:"public read-only GitHub runner, not a credentials test",summary,pages,services,
  limitations:["Does not measure LCP, INP or CLS.","Does not certify WCAG accessibility; only structural signals.","Cannot verify Entra MFA or real email receipt without a production transaction.","Does not copy Apple fonts or copyrighted assets."]};
