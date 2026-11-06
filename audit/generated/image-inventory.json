@@ -22,7 +22,7 @@
     "exactDuplicateGroups": 52,
     "perceptualDuplicateCandidateGroups": 183,
     "overPublicDeliveryFileCeiling": 0,
-    "lcpRelevantAssets": 192
+    "lcpRelevantAssets": 193
   },
   "assets": [
     {
@@ -3200,15 +3200,22 @@
       "focalPoint": null,
       "registeredAltText": "",
       "registeredCaption": "Editorial representation of regulated medicine movement, batch integrity and connected sourcing.",
-      "observedAltText": [],
+      "observedAltText": [
+        ""
+      ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
-      "observedLoading": [],
-      "observedFetchPriority": [],
-      "lcpRelevance": false,
-      "usageCount": 7,
-      "referenceCount": 12,
+      "observedLoading": [
+        "eager"
+      ],
+      "observedFetchPriority": [
+        "high"
+      ],
+      "lcpRelevance": true,
+      "usageCount": 8,
+      "referenceCount": 14,
       "usageFiles": [
+        "apps/corporate/components/concise-home.tsx",
         "creative-assets/asset-register.json",
         "creative-assets/visual-provenance.md",
         "scripts/apply-visual-refinement.mjs",
@@ -3250,7 +3257,9 @@
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
-      "observedLoading": [],
+      "observedLoading": [
+        "eager"
+      ],
       "observedFetchPriority": [
         "high"
       ],
@@ -3303,14 +3312,17 @@
         "assets/media/home/supply-network-hero-1200.jpg",
         "assets/media/home/supply-network-hero.avif"
       ],
-      "observedLoading": [],
+      "observedLoading": [
+        "eager"
+      ],
       "observedFetchPriority": [
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 20,
-      "referenceCount": 31,
+      "usageCount": 21,
+      "referenceCount": 32,
       "usageFiles": [
+        "apps/corporate/components/concise-home.tsx",
         "apps/corporate/lib/seo.ts",
         "creative-assets/8k-master-register.json",
         "creative-assets/asset-register.json",
