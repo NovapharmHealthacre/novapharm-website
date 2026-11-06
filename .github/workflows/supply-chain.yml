@@ -44,6 +44,8 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Verify the migration workspace lock
         run: pnpm install --lockfile-only --frozen-lockfile --ignore-scripts
+      - name: Audit production dependency graph under pnpm as well
+        run: pnpm audit --prod --audit-level high
       - name: Validate action pins, dependency licences and release governance
         run: npm run supply-chain:validate
       - name: Generate CycloneDX SBOM and checksum
