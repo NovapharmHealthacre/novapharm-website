@@ -99,3 +99,27 @@ AWS migration completion and public website completeness are separate acceptance
 - GitHub OIDC: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html
 - Amazon ECS task roles: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-iam-role-overview.html
 - RDS SQL Server: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_SQLServer.html
+
+## AWS Free-plan trial guardrails (November 2026)
+
+**Current owner direction:** use the existing AWS Free trial for *development, evaluation and isolated staging only*. Do **not** upgrade the account, provision an unapproved chargeable resource, or declare a permanent production cutover during the trial. This document does not establish the project's actual balance, remaining days, region entitlements or billing state: those must be read live from AWS after human browser authentication.
+
+**Official AWS references:**
+- https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_freetier_GetAccountPlanState.html
+- https://docs.aws.amazon.com/accounts/latest/reference/supported-services-sign-up-new.html
+- https://docs.aws.amazon.com/accounts/latest/reference/project-regions.html
+- https://docs.aws.amazon.com/us_en/awsaccountbilling/latest/aboutv2/free-tier.html
+
+The new experience's Free plan **lists** S3, CloudFront, CloudFormation, IAM, ECS, ECR, RDS, SES, CloudWatch, Secrets Manager, WAF and related services, but listing does not guarantee every feature, instance class or quota is available in this project. The official restrictions include **no AWS WAF on CloudFront in a selected-Region project** and **no Lambda@Edge**. Treat CloudFront edge WAF requirements as an unresolved architecture gate. Do not misrepresent the new experience as appropriate for every regulated healthcare workload; AWS advises customers needing regulated workloads or advanced network/security controls to use advanced features or advanced sign-up. No change to account plan is authorized here.
+
+The protected staging preflight invokes `aws freetier get-account-plan-state --region us-east-1` after verifying the authenticated AWS account ID and AWS workload Region. The fail-closed script checks response fields `accountId`, `accountPlanType=FREE`, `accountPlanStatus=ACTIVE`, USD credits, and plan expiry. It defaults to a **US$25 remaining-credit reserve** and **14-day expiry window** and never upgrades the project. Tests run under the AWS migration contract workflow. Credit eligibility does not remove the need for service quotas, pricing checks, an explicit deployment approval and restore/rollback planning. Credit balances are not an alternative to a spending-control policy.
+
+**Free-plan-aware acceptance stages:**
+
+1. Offline contract tests and static public-site analysis: no cloud resource creation.
+2. Owner-authenticated CLI and AWS profile setup: read-only identity, Free-plan state, quotas and verified limits.
+3. Exact-SHA, owner-approved trial staging resources inside the remaining credit allowance: no real patient data, live customer uploads, payment operations or regulatory submissions.
+4. Synthetic end-to-end test data, security negative testing, rollback, deployment artifact recording and monitoring.
+5. Production infrastructure approval **separately**, based on post-trial continuity, required security/regulated controls and a justified paid-capability decision. Existing GitHub Pages/Azure services remain unchanged until then.
+
+**Never** label a successful Free-plan guard as proof that AWS resources were actually deployed. The first real account validation must use an authenticated AWS session; the GitHub connector alone cannot grant AWS project access.
