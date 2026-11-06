@@ -75,6 +75,9 @@ function trustedIdentityBoundary(environment, trustedGateway) {
 }
 
 export function appServicePrincipalFromHeaders(headers, environment = process.env, { trustedGateway = false } = {}) {
+  // AWS does not provide Azure App Service's authenticated X-MS client-principal boundary.
+  // Never allow forwarded client-supplied headers to authenticate a portal session.
+  if (environment.NOVAPHARM_CLOUD_PLATFORM === "aws") return null;
   if (environment.ENTRA_AUTH_ENABLED !== "true" || !trustedIdentityBoundary(environment, trustedGateway)) return null;
   const principal = decodePrincipal(headerValue(headers, "x-ms-client-principal"));
   if (!principal) return null;
