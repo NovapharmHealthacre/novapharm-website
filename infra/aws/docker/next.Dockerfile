@@ -11,9 +11,9 @@ RUN case "$APP" in corporate|technology|founder|status|portal) ;; *) echo "Unsup
 
 FROM node:24-bookworm-slim AS runtime
 ARG APP
-ENV NODE_ENV=production HOSTNAME=0.0.0.0 PORT=3000
+ENV NODE_ENV=production HOSTNAME=0.0.0.0 PORT=3000 APP_NAME=${APP}
 WORKDIR /srv
 COPY --from=build /workspace/apps/${APP}/.next/standalone/ ./
 USER node
 EXPOSE 3000
-CMD ["/bin/sh", "-c", "exec node apps/${APP}/server.js"]
+CMD ["/bin/sh", "-c", "exec node apps/${APP_NAME}/server.js"]
