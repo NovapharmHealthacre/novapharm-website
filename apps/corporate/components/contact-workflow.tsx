@@ -24,13 +24,13 @@ function serverEnquiryType(selected: string): string {
   return selected;
 }
 
-function friendlyError(status: number, offline: boolean): string {
-  if (offline) return "You appear to be offline. Reconnect and try again.";
+function friendlyError(status: number, offline: boolean, submissionAttempted: boolean): string {
   if (status === 400 || status === 422) return "Please check the highlighted information and try again.";
   if (status === 403) return "The security check expired. Please refresh the page and try again.";
   if (status === 429) return "Too many submissions were received. Please wait before trying again.";
-  if (status === 202) return "The server did not provide a verifiable receipt. Your message may have reached it. Please avoid resubmitting immediately and use the verified email route if needed.";
-  return "The secure enquiry service cannot be reached right now. No information was submitted. Please try again later or use the verified email route.";
+  if (status === 202 || submissionAttempted) return "We could not verify whether your enquiry was received. Please avoid resubmitting immediately. Use the verified corporate email route to follow up if necessary.";
+  if (offline) return "You appear to be offline. Your enquiry was not sent by this form. Reconnect and try again.";
+  return "The secure enquiry service cannot be reached right now. Your enquiry was not sent by this form. Please try again later or use the verified email route.";
 }
 
 function referringHost(referrer: string): string {
@@ -59,6 +59,7 @@ export function ContactWorkflow() {
     if (!form.reportValidity()) return;
     setState("sending");
     setMessage("Submitting your enquiry securely.");
+    let submissionAttempted = false;
     try {
       const csrfResponse = await fetch(platformEndpoint("/security/csrf"), { credentials: "include", headers: { Accept: "application/json" } });
       const csrfPayload = await csrfResponse.json().catch(() => ({})) as { csrfToken?: string };
@@ -78,6 +79,7 @@ export function ContactWorkflow() {
           referringHost: referringHost(document.referrer),
         }),
       });
+      submissionAttempted = true;
       const response = await fetch(platformEndpoint("/contact"), {
         method: "POST",
         credentials: "include",
@@ -95,7 +97,7 @@ export function ContactWorkflow() {
       setMessage("Thank you. Your enquiry has been received and recorded securely.");
     } catch (error) {
       setState("error");
-      setMessage(friendlyError(Number((error as { status?: number }).status ?? 0), !navigator.onLine));
+      setMessage(friendlyError(Number((error as { status?: number }).status ?? 0), !navigator.onLine, submissionAttempted));
     } finally {
       window.setTimeout(() => statusRef.current?.focus(), 0);
     }
