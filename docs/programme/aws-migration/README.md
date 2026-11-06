@@ -1,3 +1,9 @@
+## Free-plan database edition constraint (verified from AWS pricing eligibility, 6 November 2026)
+
+AWS currently lists Free-plan RDS access for `db.t3.micro` / `db.t4g.micro` and four engines, but **Microsoft SQL Server is explicitly restricted to SQL Server Express Edition**. See [AWS RDS Free Tier](https://aws.amazon.com/rds/free/). Do not interpret the availability of a new Free-plan AWS account as approval or eligibility for RDS SQL Server Standard or Enterprise, production instance sizes, multi-AZ, expensive storage, or licensed features.
+
+Before any RDS candidate, perform a source-to-target edition/features assessment, confirm actual `eu-north-1` orderable engine/classes and account entitlements, and produce an estimated monthly credit draw. No database instance is provisioned in this PR. Keep current Azure SQL/data intact and recoverable. If the existing schema/workload exceeds SQL Server Express limits, report the blocker and propose a separately reviewed PostgreSQL migration or an explicitly owner-approved paid architecture; never silently swap database engines or upgrade billing.
+
 ## Free-plan project safety gate (6 November 2026)
 
 The existing `aws-staging-foundation.yml` staging workflow requires the account's **FREE/ACTIVE** plan state and project account identity before either preflight or provisioning can pass. `scripts/aws/check-free-plan.mjs` enforces an initial conservative reserve of at least USD 25 in remaining AWS credits and at least 14 days before trial expiration. If current AWS account access, Free Tier API permission, actual credits, expiration, account plan, or service availability cannot be verified, the run fails closed.
