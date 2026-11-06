@@ -50,7 +50,7 @@ jobs:
           exit 0
       - name: Bundle exact candidate manifests and locks
         run: |
-          cp --parents package.json package-lock.json pnpm-lock.yaml candidate/
+          cp --parents package.json package-lock.json pnpm-lock.yaml pnpm-workspace.yaml candidate/
           for app in corporate portal technology founder status; do
             cp --parents "apps/$app/package.json" candidate/
           done
@@ -69,3 +69,63 @@ jobs:
         run: |
           echo "::error::Security fixes are a candidate only. Remaining vulnerabilities require remediation before merge and production deployment."
           exit 1
+
+  publish-reviewed-candidate:
+    name: Commit audit-clean candidate to this isolated branch only
+    needs: generate
+    if: github.repository == 'NovapharmHealthacre/novapharm-website' && github.ref == 'refs/heads/codex/security-dependencies-20261106'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout exact source revision
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Prevent concurrent commits and wrong-branch updates
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/codex/security-dependencies-20261106"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          remote_sha="$(git ls-remote origin refs/heads/codex/security-dependencies-20261106 | cut -f1)"
+          test "$remote_sha" = "$GITHUB_SHA"
+      - name: Retrieve immutable zero-audit candidate artifact from this run
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: november-2026-dependency-remediation-candidate
+          path: candidate
+      - name: Apply exact manifests and lockfiles to isolated security branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(tr -d '\r\n' < candidate/audit-exit-code.txt)" = "0"
+          test "$(tr -d '\r\n' < candidate/source-sha.txt)" = "$GITHUB_SHA"
+          for file in package.json package-lock.json pnpm-lock.yaml pnpm-workspace.yaml; do
+            test -s "candidate/$file"
+            cp "candidate/$file" "$file"
+          done
+          for app in corporate portal technology founder status; do
+            test -s "candidate/apps/$app/package.json"
+            cp "candidate/apps/$app/package.json" "apps/$app/package.json"
+          done
+          npm ci --ignore-scripts
+          npm audit --omit=dev --audit-level=high
+          git diff --check
+      - name: Commit as reviewable candidate; never merge or deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json pnpm-lock.yaml pnpm-workspace.yaml \
+            apps/corporate/package.json apps/portal/package.json apps/technology/package.json \
+            apps/founder/package.json apps/status/package.json
+          if git diff --cached --quiet; then
+            echo "No dependency manifest changes to commit."
+            exit 1
+          fi
+          git commit -m "fix(security): update reviewed critical and high dependency families"
+          git push origin HEAD:refs/heads/codex/security-dependencies-20261106
