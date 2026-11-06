@@ -47,3 +47,17 @@ This document records AWS observations at the time of the session; it is **not**
 - `GetAccountPlanState`: **FREE / ACTIVE**, with US$100 remaining credits and expiry **2027-05-06** at observation time. Recheck immediately before every spend-capable operation.
 
 **Security disposition:** CloudTrail account logging, AWS budgets/alerts, least-privilege deployment IAM, runtime networking, identity, threat monitoring, backup recovery, and security incident routing remain **not production accepted**. Do not assume unavailable or premium AWS controls are enabled within the Free-plan trial. Do not create paid controls or modify permissions without reviewing current entitlement, price and rollback.
+
+## Superseding 6 November audit-trail observation (authenticated AWS recheck)
+
+**The earlier "no configured CloudTrail trail" line above was accurate at that earlier observation, but is now superseded.** It must not be used as the current state.
+
+- Authenticated AWS inventory in `eu-north-1` returned three `CREATE_COMPLETE` stacks: `novapharm-staging-foundation`, `novapharm-contact-staging`, and `novapharm-audit-staging`.
+- `DescribeTrails` now finds `novapharm-staging-audit`; `GetTrailStatus` confirms `IsLogging=true` and last observed delivery `2026-11-06T17:35:13Z`. Prior independent `ListObjectsV2` returned 31 CloudTrail objects in its private bucket, with log-file validation enabled.
+- This trail covers **eu-north-1 management events (read and write)**, not data events or all AWS regions. The protected bucket uses AES256 encryption, enabled versioning, all four public-access-block flags, and a 365-day staging lifecycle rule.
+- `ListServices` still returned **zero ECS services**. `DescribeLoadBalancers` and `DescribeDBInstances` returned zero active resources; `ListIdentityProviders` and `ListUserPoolClients` returned zero Cognito federation providers/clients.
+- `GetEmailIdentity` returned **not verified** and `DKIM=PENDING`. `GetAccount` returned **no SES production sending access**. These are independent production blockers.
+
+The static regression guard `scripts/aws/validate-cloudtrail-staging.mjs`, accompanying negative tests and the `AWS region-locked migration contract` workflow now check the reviewed staging CloudTrail configuration against unapproved expansion, disabled logging, altered encryption, public bucket policy and data-event cost changes. **The guard validates repository IaC only; it cannot certify real-time CloudTrail delivery, IAM negative tests, full regional coverage, budget approval, or production acceptance.**
+
+**Unresolved before Issue #90/#55 closure:** prove digest validation and recoverability, least-privilege denied access, operational alert routing, documented incident response, retained cost authority, and account-wide coverage appropriate to production. Do not change DNS, deploy application services, expand IAM, migrate regulated data, or incur further charges based on this documentation update.
