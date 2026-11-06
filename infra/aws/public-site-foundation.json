@@ -1,0 +1,262 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "NovaPharm AWS-first staging-only PUBLIC content distribution candidate. No custom domain, backend, data migration or production cutover.",
+  "Parameters": {
+    "Environment": {
+      "Type": "String",
+      "Default": "staging",
+      "AllowedValues": [
+        "development",
+        "staging"
+      ],
+      "Description": "Deliberately excludes production pending security and acceptance gates."
+    }
+  },
+  "Resources": {
+    "PublicArtifactBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "Id": "RetainNoncurrentVersions90Days",
+              "Status": "Enabled",
+              "NoncurrentVersionExpiration": {
+                "NoncurrentDays": 90
+              }
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "NovaPharm"
+          },
+          {
+            "Key": "Environment",
+            "Value": {
+              "Ref": "Environment"
+            }
+          },
+          {
+            "Key": "Owner",
+            "Value": "NovaPharm Healthcare Ltd"
+          },
+          {
+            "Key": "Application",
+            "Value": "Corporate Public Site"
+          },
+          {
+            "Key": "CostCentre",
+            "Value": "Digital"
+          },
+          {
+            "Key": "DataClassification",
+            "Value": "Public Corporate"
+          }
+        ]
+      }
+    },
+    "PublicOriginAccessControl": {
+      "Type": "AWS::CloudFront::OriginAccessControl",
+      "Properties": {
+        "OriginAccessControlConfig": {
+          "Name": {
+            "Fn::Sub": "${AWS::StackName}-public"
+          },
+          "Description": "Signed CloudFront-to-private-S3 requests",
+          "OriginAccessControlOriginType": "s3",
+          "SigningBehavior": "always",
+          "SigningProtocol": "sigv4"
+        }
+      }
+    },
+    "DirectoryIndexRewrite": {
+      "Type": "AWS::CloudFront::Function",
+      "Properties": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-paths"
+        },
+        "AutoPublish": true,
+        "FunctionConfig": {
+          "Comment": "Serve static /contact/ and extensionless routes from index.html",
+          "Runtime": "cloudfront-js-1.0"
+        },
+        "FunctionCode": "function handler(event) {\n  var request = event.request;\n  var uri = request.uri;\n  if (uri.slice(-1) === '/') {\n    request.uri = uri + 'index.html';\n  } else if (uri.substring(uri.lastIndexOf('/') + 1).indexOf('.') === -1) {\n    request.uri = uri + '/index.html';\n  }\n  return request;\n}\n"
+      }
+    },
+    "PublicDistribution": {
+      "Type": "AWS::CloudFront::Distribution",
+      "Properties": {
+        "DistributionConfig": {
+          "Enabled": true,
+          "Comment": "NovaPharm public-only AWS validation distribution. No managed contact or portal.",
+          "PriceClass": "PriceClass_100",
+          "HttpVersion": "http2",
+          "IPV6Enabled": true,
+          "DefaultRootObject": "index.html",
+          "Origins": [
+            {
+              "Id": "PrivatePublicArtifactOrigin",
+              "DomainName": {
+                "Fn::GetAtt": [
+                  "PublicArtifactBucket",
+                  "RegionalDomainName"
+                ]
+              },
+              "OriginAccessControlId": {
+                "Fn::GetAtt": [
+                  "PublicOriginAccessControl",
+                  "Id"
+                ]
+              },
+              "S3OriginConfig": {
+                "OriginAccessIdentity": ""
+              }
+            }
+          ],
+          "DefaultCacheBehavior": {
+            "TargetOriginId": "PrivatePublicArtifactOrigin",
+            "ViewerProtocolPolicy": "redirect-to-https",
+            "AllowedMethods": [
+              "GET",
+              "HEAD"
+            ],
+            "CachedMethods": [
+              "GET",
+              "HEAD"
+            ],
+            "Compress": true,
+            "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+            "ResponseHeadersPolicyId": "67f7725c-6f97-4210-82d7-5512b31e9d03",
+            "FunctionAssociations": [
+              {
+                "EventType": "viewer-request",
+                "FunctionARN": {
+                  "Fn::GetAtt": [
+                    "DirectoryIndexRewrite",
+                    "FunctionARN"
+                  ]
+                }
+              }
+            ]
+          },
+          "CustomErrorResponses": [
+            {
+              "ErrorCode": 403,
+              "ResponseCode": 404,
+              "ResponsePagePath": "/404.html",
+              "ErrorCachingMinTTL": 60
+            }
+          ],
+          "ViewerCertificate": {
+            "CloudFrontDefaultCertificate": true
+          }
+        },
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "NovaPharm"
+          },
+          {
+            "Key": "Environment",
+            "Value": {
+              "Ref": "Environment"
+            }
+          },
+          {
+            "Key": "Owner",
+            "Value": "NovaPharm Healthcare Ltd"
+          },
+          {
+            "Key": "Application",
+            "Value": "Corporate Public Site"
+          },
+          {
+            "Key": "CostCentre",
+            "Value": "Digital"
+          },
+          {
+            "Key": "DataClassification",
+            "Value": "Public Corporate"
+          }
+        ]
+      }
+    },
+    "PrivateBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "PublicArtifactBucket"
+        },
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "AllowOnlyThisCloudFrontDistribution",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "cloudfront.amazonaws.com"
+              },
+              "Action": "s3:GetObject",
+              "Resource": {
+                "Fn::Sub": "${PublicArtifactBucket.Arn}/*"
+              },
+              "Condition": {
+                "StringEquals": {
+                  "AWS:SourceArn": {
+                    "Fn::Sub": "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${PublicDistribution}"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "StagingDistributionDomain": {
+      "Description": "AWS-provided test hostname; production DNS unchanged.",
+      "Value": {
+        "Fn::GetAtt": [
+          "PublicDistribution",
+          "DomainName"
+        ]
+      }
+    },
+    "PrivateArtifactBucket": {
+      "Description": "Non-public deployment artifact bucket for approved PUBLIC_ONLY build.",
+      "Value": {
+        "Ref": "PublicArtifactBucket"
+      }
+    }
+  }
+}
