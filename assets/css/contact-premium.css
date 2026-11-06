@@ -1,0 +1,58 @@
+/* NovaPharm Contact — premium, accessible, privacy-first corporate routing.
+   Shared by the public static build and the managed Corporate application.
+   Independent of Apple trademarks, fonts or copyrighted UI assets. */
+.np-contact { --np-contact-ink: #1d1d1f; --np-contact-muted: #5f6168; --np-contact-line: #dcdde1; --np-contact-blue: #1559a8; --np-contact-soft: #f5f5f7; color: var(--np-contact-ink); background: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+.np-contact * { box-sizing: border-box; }
+.np-contact h1, .np-contact h2, .np-contact h3 { color: var(--np-contact-ink); font-family: inherit; font-weight: 650; line-height: 1.12; letter-spacing: -.035em; }
+.np-contact a { text-underline-offset: .2em; }
+.np-contact .np-contact-shell { width: min(1180px, calc(100% - 48px)); margin-inline: auto; }
+.np-contact-hero { padding: clamp(76px, 11vw, 146px) 0 clamp(64px, 8vw, 110px); background: var(--np-contact-soft); text-align: center; }
+.np-contact-kicker { display: block; margin: 0 0 18px; color: #53565c; font-size: 12px; font-weight: 710; letter-spacing: .1em; text-transform: uppercase; }
+.np-contact-hero h1 { max-width: 1000px; margin: 0 auto 20px; font-size: clamp(43px, 6.4vw, 80px); }
+.np-contact-lead { max-width: 690px; margin: 0 auto; color: #56585d; font-size: clamp(17px, 1.85vw, 22px); line-height: 1.5; }
+.np-contact-topics { padding: clamp(72px, 8vw, 116px) 0; }
+.np-contact-sectionhead { max-width: 710px; margin-bottom: 42px; }
+.np-contact-sectionhead h2 { margin: 0 0 14px; font-size: clamp(32px, 3.5vw, 49px); }
+.np-contact-sectionhead p { max-width: 630px; margin: 0; color: var(--np-contact-muted); font-size: 17px; line-height: 1.6; }
+.np-contact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.np-contact-topic { display: flex; flex-direction: column; min-height: 206px; gap: 13px; padding: clamp(24px, 3vw, 36px); color: inherit; background: var(--np-contact-soft); border: 1px solid transparent; border-radius: 20px; text-decoration: none; transition: transform 220ms ease, border-color 220ms ease, background 220ms ease; }
+.np-contact-topic:hover { transform: translateY(-3px); background: #fff; border-color: #cbd1d9; }
+.np-contact-topic:focus-visible { outline: 3px solid #1559a8; outline-offset: 4px; }
+.np-contact-topic strong { display: block; font-size: clamp(20px, 2.05vw, 27px); font-weight: 650; letter-spacing: -.025em; line-height: 1.2; }
+.np-contact-topic .np-contact-topic-copy { display: block; max-width: 40ch; color: #51545a; font-size: 15px; line-height: 1.55; }
+.np-contact-topic .np-contact-topic-action { display: inline-block; margin-top: auto; color: var(--np-contact-blue); font-weight: 650; font-size: 14px; }
+.np-contact-destination { padding: 80px 0 100px; background: #fff; border-top: 1px solid var(--np-contact-line); }
+.np-contact-destination-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(28px, 7vw, 98px); align-items: start; }
+.np-contact-destination h2 { margin: 0 0 16px; font-size: clamp(30px, 3.2vw, 44px); }
+.np-contact-destination p { font-size: 16px; line-height: 1.6; color: var(--np-contact-muted); }
+.np-contact-email-panel, .np-contact-form-panel { padding: clamp(26px, 4vw, 42px); background: var(--np-contact-soft); border-radius: 22px; }
+.np-contact-email-panel h3, .np-contact-form-panel h3 { margin: 0 0 12px; font-size: 27px; }
+.np-contact-email-panel p { margin-bottom: 26px; }
+.np-contact-primary { display: inline-flex; justify-content: center; align-items: center; min-height: 48px; padding: 12px 22px; border-radius: 100px; background: #1559a8; color: #fff!important; text-decoration: none; font-size: 15px; font-weight: 670; transition: background 160ms ease; }
+.np-contact-primary:hover { background: #104781; }
+.np-contact-primary:focus-visible { outline: 3px solid #1559a8; outline-offset: 4px; }
+.np-contact-email-address { display: block; overflow-wrap: anywhere; margin-top: 18px; font-size: 14px; }
+.np-contact-small { margin-top: 16px; font-size: 13px!important; color: #606369!important; }
+.np-contact-safety { padding: 32px 0 70px; background: #fff; border-top: 1px solid var(--np-contact-line); }
+.np-contact-safety-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(28px, 5vw, 70px); }
+.np-contact-safety h3 { margin: 0 0 13px; font-size: 21px; }
+.np-contact-safety p { margin: 0; font-size: 15px; line-height: 1.65; color: #555a60; }
+.np-contact-safety a { color: var(--np-contact-blue); }
+.np-contact-form-panel .contact-workflow { max-width: none; }
+.np-contact-form-panel .contact-form { display: grid; gap: 20px; }
+.np-contact-form-panel .field-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+.np-contact-form-panel .contact-form label { min-width: 0; }
+.np-contact-form-panel .contact-form label > span { display: block; margin: 0 0 7px; font-size: 14px; font-weight: 620; }
+.np-contact-form-panel .contact-form :is(input:not([type="checkbox"]), select, textarea) { display: block; width: 100%; min-height: 49px; padding: 12px 14px; border: 1px solid #aeb5bf; border-radius: 11px; background: #fff; color: #1d1d1f; font: inherit; font-size: 15px; }
+.np-contact-form-panel .contact-form textarea { min-height: 142px; resize: vertical; }
+.np-contact-form-panel .contact-form :is(input, select, textarea):focus-visible { border-color: #1559a8; outline: 3px solid rgba(21,89,168,.22); outline-offset: 1px; }
+.np-contact-form-panel .contact-form .check-row { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.5; }
+.np-contact-form-panel .contact-form .check-row input { margin-top: 4px; flex: 0 0 auto; }
+.np-contact-form-panel .contact-form .check-row span { display: inline; font-weight: 400; }
+.np-contact-form-panel .contact-form .button-primary { min-height: 48px; width: fit-content; padding: 10px 25px; border: 0; border-radius: 30px; background: #1559a8; color: #fff; cursor: pointer; }
+.np-contact-form-panel .contact-form .button-primary:disabled { opacity: .55; cursor: wait; }
+.np-contact-form-panel .form-status { margin-top: 12px; }
+.np-contact-form-panel .field-note { font-size: 13px; line-height: 1.55; color: #565a60; }
+@media (max-width: 850px) { .np-contact-grid, .np-contact-destination-layout { grid-template-columns: 1fr; } .np-contact-topic { min-height: 160px; } .np-contact-safety-grid { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .np-contact .np-contact-shell { width: calc(100% - 36px); } .np-contact-hero { padding-block: 75px 68px; } .np-contact-topics { padding-block: 66px; } .np-contact-grid { gap: 12px; } .np-contact-topic { padding: 24px; border-radius: 16px; } .np-contact-destination { padding-block: 64px; } .np-contact-email-panel, .np-contact-form-panel { border-radius: 18px; } .np-contact-form-panel .field-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .np-contact-topic, .np-contact-primary { transition: none; } .np-contact-topic:hover { transform: none; } }
