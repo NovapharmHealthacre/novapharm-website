@@ -21,8 +21,8 @@ function ModulePresentation({ module, subview }: Readonly<{ module: PortalModule
   return <div className={`${presentationClass} ${archetypeClass}`} data-module={module.code} data-presentation={archetype}><Dashboard module={module} subview={subview} /></div>;
 }
 
-export function PortalClient({ view }: Readonly<{ view: PortalView }>) {
-  if (view.kind === "login") return <LoginPanel />;
+export function PortalClient({ view, awsMode = false }: Readonly<{ view: PortalView; awsMode?: boolean }>) {
+  if (view.kind === "login") return <LoginPanel awsMode={awsMode} />;
   if (view.kind === "password-change") return <PasswordChange />;
   if (view.kind === "entra-complete") return <EntraComplete />;
   return <ModulePresentation module={view.module} subview={view.subview} />;
