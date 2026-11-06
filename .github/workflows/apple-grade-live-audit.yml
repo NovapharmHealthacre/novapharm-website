@@ -1,0 +1,37 @@
+name: Apple HIG-inspired read-only public website forensic audit
+
+on:
+  push:
+    branches: [codex/apple-grade-forensic-audit-20261106]
+    paths:
+      - scripts/audit/apple-grade-live.mjs
+      - .github/workflows/apple-grade-live-audit.yml
+  pull_request:
+    paths:
+      - scripts/audit/apple-grade-live.mjs
+      - .github/workflows/apple-grade-live-audit.yml
+
+permissions:
+  contents: read
+
+jobs:
+  public-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Verify audit source syntax
+        run: node --check scripts/audit/apple-grade-live.mjs
+      - name: Run public-only HTTPS forensic survey
+        run: node scripts/audit/apple-grade-live.mjs
+      - name: Archive inspectable evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: novapharm-apple-hig-forensic-httpevidence
+          path: audit/live/
+          retention-days: 30
+          if-no-files-found: warn
