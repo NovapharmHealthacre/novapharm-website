@@ -9,10 +9,13 @@ const DATABASE = "novapharm_staging";
 const COLLECTION = "contact_receipts_synthetic";
 const SUBJECT = /^SYNTHETIC[- ]/;
 const RESERVED_EMAIL = /^[a-z0-9._%+-]+@example\.(?:com|org|net)$/i;
+const ALLOWED_INPUT_KEYS = new Set(["name", "email", "company", "message", "enquiryType", "acceptedSafetyNotice"]);
 
 export function validateSyntheticContact(input) {
   if (!input || typeof input !== "object" || Array.isArray(input)) throw Error("Invalid synthetic payload");
-  if (Object.keys(input).length > 10 || input.website || input.honeypot) throw Error("Rejected synthetic-only input");
+  if (Object.keys(input).some(key => !ALLOWED_INPUT_KEYS.has(key))) {
+    throw Error("Unexpected synthetic-only input field");
+  }
   if (typeof input.name !== "string" || !SUBJECT.test(input.name) || input.name.length > 100) throw Error("Synthetic name required");
   if (typeof input.email !== "string" || !RESERVED_EMAIL.test(input.email) || input.email.length > 100) throw Error("Example-domain email required");
   if (input.company !== "NovaPharm QA") throw Error("Test company required");
