@@ -14,6 +14,11 @@ on:
         options:
           - preflight
           - provision-staging
+      confirm_spend_authorized:
+        description: Owner has approved potential AWS resource charges for staging
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -64,6 +69,17 @@ jobs:
           aws cloudformation validate-template --template-body file://infra/aws/foundation.json --region eu-north-1
           aws freetier get-account-plan-state --region eu-north-1 --output json
           echo "AWS project identity and eu-north-1 validated. No data movement or DNS changes."
+      - name: Enforce separate owner spend approval before provisioning
+        if: inputs.action == 'provision-staging'
+        env:
+          INPUT_SPEND_APPROVAL: ${{ inputs.confirm_spend_authorized }}
+          APPROVED_STAGING_SPEND: ${{ vars.AWS_STAGING_SPEND_APPROVED }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$INPUT_SPEND_APPROVAL" = "true"
+          test "$APPROVED_STAGING_SPEND" = "true"
+          echo "Owner-controlled staging spend gate verified."
       - name: Provision PRIVATE staging foundation only after GitHub environment approval
         if: inputs.action == 'provision-staging'
         shell: bash
