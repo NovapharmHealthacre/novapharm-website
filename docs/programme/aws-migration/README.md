@@ -47,7 +47,7 @@ Monitoring: ECS task logs feed CloudWatch Logs; filter PII, medicine records, cr
 4. Run `aws configure agent-toolkit --yes --region us-east-1 --profile novapharm-aws`; configure `AWS_MCP_PROXY_PROFILES=novapharm-aws` in each generated MCP entry without modifying unrelated entries; verify `aws agent-toolkit list-available-skills --region us-east-1 --profile novapharm-aws`.
 5. In the AWS project, create a GitHub OIDC IAM role restricted to the exact `NovapharmHealthacre/novapharm-website` repository and the `aws-staging` GitHub environment, with minimum CloudFormation/ECS/ECR/S3/CloudWatch permissions for the foundation. Trust only `token.actions.githubusercontent.com` with `aud=sts.amazonaws.com`. Set GitHub environment protection for `aws-staging`, with reviewers.
 6. Set GitHub **environment variables**, not credentials: `AWS_PROJECT_ACCOUNT_ID` (12 digits), `AWS_GITHUB_STAGING_ROLE_ARN` (the reviewed IAM role ARN). Do not store static AWS keys in secrets.
-7. Review CloudFormation costs, privacy, data classification, identity and ownership; invoke manual `aws-staging-foundation` preflight at reviewed main SHA. Only separately approve `provision-staging` if plan and budget allow.
+7. Review CloudFormation costs, privacy, data classification, identity and ownership; invoke manual `aws-staging-foundation` preflight at reviewed main SHA. Only separately approve `provision-staging` if plan and budget allow. Provisioning additionally requires the protected GitHub environment variable `AWS_STAGING_SPEND_APPROVED=true` and explicit `confirm_spend_authorized=true` input from the operator.
 
 **Never** run the foundation against production as part of this initial migration. The foundation itself does not launch containers or transfer business records.
 
