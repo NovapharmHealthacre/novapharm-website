@@ -1,0 +1,120 @@
+name: Publish approved public contact page to Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/release-contact-only.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: novapharm-contact-only-pages-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PAGES_ADMIN_TOKEN: ${{ secrets.PAGES_ADMIN_TOKEN }}
+    steps:
+      - name: Require owner-controlled token for a Pages-triggering commit
+        run: |
+          set -euo pipefail
+          if [ -z "$PAGES_ADMIN_TOKEN" ]; then
+            echo "::error::PAGES_ADMIN_TOKEN is not configured. GITHUB_TOKEN pushes do not trigger GitHub Pages branch builds. No production files have been changed."
+            exit 1
+          fi
+
+      - name: Check out accepted source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Configure Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Verify controlled source and build a public-only release
+        run: |
+          set -euo pipefail
+          node scripts/test-static-public-source-safety.mjs
+          npm ci --ignore-scripts
+          npm run build:public-only
+          npm run test:owner-corrections:public-only
+          npm run visual:validate
+          npm run visual:modules
+          node scripts/stage-pages-artifact.mjs _site
+          test "$(tr -d '\r\n' < _site/CNAME)" = "novapharmhealthcare.com"
+          grep -Fq 'class="np-contact-hero"' _site/contact/index.html
+          grep -Fq 'class="np-contact-grid"' _site/contact/index.html
+          grep -Fq 'This public information release does not collect or transmit enquiry details' _site/contact/index.html
+          grep -Fq 'mailto:vishal@novapharmhealthcare.com' _site/contact/index.html
+          ! grep -Eq '<form|data-contact-form' _site/contact/index.html
+          test -s _site/assets/css/novapharm.bundle.css
+          for asset in novapharm.js ai-search.js cookie-consent.js; do
+            test -s "_site/assets/js/$asset"
+          done
+
+      - name: Check out existing Pages branch without replacing other pages
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: gh-pages
+          path: published
+          token: ${{ secrets.PAGES_ADMIN_TOKEN }}
+          persist-credentials: true
+
+      - name: Copy ONLY contact page and its stylesheet and scripts
+        run: |
+          set -euo pipefail
+          test "$(tr -d '\r\n' < published/CNAME)" = "novapharmhealthcare.com"
+          mkdir -p published/contact published/assets/css published/assets/js
+          cp _site/contact/index.html published/contact/index.html
+          cp _site/assets/css/novapharm.bundle.css published/assets/css/novapharm.bundle.css
+          for asset in novapharm.js ai-search.js cookie-consent.js; do
+            cp "_site/assets/js/$asset" "published/assets/js/$asset"
+          done
+          RELEASE_SHA="$GITHUB_SHA" node --input-type=module -e '
+            import {readFileSync,writeFileSync} from "node:fs";
+            const p="published/contact/index.html";
+            const html=readFileSync(p,"utf8");
+            if (!html.includes("</head>")) throw new Error("Contact document head missing");
+            writeFileSync(p,html.replace("</head>",`<!-- novapharm-contact-source: ${process.env.RELEASE_SHA} --></head>`));
+          '
+          test -s published/contact/index.html
+          test -s published/assets/css/novapharm.bundle.css
+          grep -Fq "novapharm-contact-source: $GITHUB_SHA" published/contact/index.html
+          test -f published/index.html
+          test -f published/CNAME
+          git -C published status --short
+
+      - name: Commit scoped release to Pages source branch
+        run: |
+          set -euo pipefail
+          git -C published config user.name "NovaPharm Release Bot"
+          git -C published config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C published add -- contact/index.html assets/css/novapharm.bundle.css assets/js/novapharm.js assets/js/ai-search.js assets/js/cookie-consent.js
+          if git -C published diff --cached --quiet; then
+            echo "No public contact files changed."
+          else
+            git -C published commit -m "release(contact): verified public-only page from $GITHUB_SHA"
+            git -C published push origin HEAD:gh-pages
+          fi
+
+      - name: Confirm new public contact page on custom domain
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 48); do
+            if curl --fail --silent --show-error --location -H "Cache-Control: no-cache"               "https://novapharmhealthcare.com/contact/?release=$GITHUB_SHA-$attempt" > /tmp/public-contact.html; then
+              if grep -Fq "novapharm-contact-source: $GITHUB_SHA" /tmp/public-contact.html                 && grep -Fq 'class="np-contact-hero"' /tmp/public-contact.html                 && grep -Fq 'does not collect or transmit enquiry details' /tmp/public-contact.html                 && ! grep -Eq '<form|data-contact-form' /tmp/public-contact.html; then
+                echo "Published and verified safe contact page at https://novapharmhealthcare.com/contact/"
+                exit 0
+              fi
+            fi
+            sleep 10
+          done
+          echo "::error::Contact release was committed to gh-pages, but new content is not verified on the live domain. Check Pages DNS, build and CDN before claiming success."
+          exit 1
