@@ -163,6 +163,12 @@ p { max-width: 64ch; }
   overflow: hidden;
   background: var(--apple-soft);
 }
+.pharma-home-media picture,
+.pharma-home-media picture img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 .pharma-home-media img {
   object-fit: cover;
   object-position: center;
