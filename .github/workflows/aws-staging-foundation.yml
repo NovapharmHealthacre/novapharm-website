@@ -99,3 +99,14 @@ jobs:
             --no-fail-on-empty-changeset
           aws cloudformation describe-stacks --stack-name novapharm-staging-foundation \
             --region eu-north-1 --query 'Stacks[0].{Status:StackStatus,Id:StackId}' --output json
+      - name: Verify deployed resource controls read-only
+        if: inputs.action == 'provision-staging'
+        shell: bash
+        run: |
+          set -euo pipefail
+          aws cloudformation describe-stack-resources --stack-name novapharm-staging-foundation --region eu-north-1 > /tmp/novapharm-stack-resources.json
+          aws ecr describe-repositories --region eu-north-1 > /tmp/novapharm-repositories.json
+          aws logs describe-log-groups --log-group-name-prefix /novapharm/staging/ --region eu-north-1 > /tmp/novapharm-logs.json
+          aws ecs list-clusters --region eu-north-1 > /tmp/novapharm-clusters.json
+          node scripts/aws/verify-staging-foundation.mjs /tmp/novapharm-stack-resources.json /tmp/novapharm-repositories.json /tmp/novapharm-logs.json /tmp/novapharm-clusters.json
+          rm -f /tmp/novapharm-stack-resources.json /tmp/novapharm-repositories.json /tmp/novapharm-logs.json /tmp/novapharm-clusters.json
