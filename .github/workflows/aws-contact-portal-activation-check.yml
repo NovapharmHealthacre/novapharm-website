@@ -1,0 +1,63 @@
+name: AWS managed contact and secure portal evidence (read only)
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/aws/verify-contact-portal-activation.mjs'
+      - '.github/workflows/aws-contact-portal-activation-check.yml'
+  workflow_dispatch:
+    inputs:
+      public_origin:
+        description: Reviewed public corporate HTTPS origin
+        required: true
+        type: string
+      api_origin:
+        description: Reviewed managed API HTTPS origin
+        required: true
+        type: string
+      portal_origin:
+        description: Reviewed managed portal HTTPS origin
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Verify activation probe syntax without contacting live systems
+        run: node --check scripts/aws/verify-contact-portal-activation.mjs
+
+  inspect:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    environment: aws-staging
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Inspect verified origins, contact rendering, API readiness and anonymous denial
+        env:
+          PUBLIC_ORIGIN: ${{ inputs.public_origin }}
+          PUBLIC_API_ORIGIN: ${{ inputs.api_origin }}
+          PORTAL_ORIGIN: ${{ inputs.portal_origin }}
+        run: |
+          set -o pipefail
+          node scripts/aws/verify-contact-portal-activation.mjs 2>&1 | tee activation-evidence.json
+      - name: Archive read-only activation evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: aws-contact-portal-read-only-preflight
+          path: activation-evidence.json
+          if-no-files-found: warn
+          retention-days: 14
