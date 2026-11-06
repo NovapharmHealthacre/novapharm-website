@@ -1,3 +1,11 @@
+## Free-plan project safety gate (6 November 2026)
+
+The existing `aws-staging-foundation.yml` staging workflow requires the account's **FREE/ACTIVE** plan state and project account identity before either preflight or provisioning can pass. `scripts/aws/check-free-plan.mjs` enforces an initial conservative reserve of at least USD 25 in remaining AWS credits and at least 14 days before trial expiration. If current AWS account access, Free Tier API permission, actual credits, expiration, account plan, or service availability cannot be verified, the run fails closed.
+
+This is not a spending cap or a guarantee the plan supports ECS/ECR/RDS SQL Server. AWS Free plan expires after six months or consumed credits and is unsuitable as the sole permanent production system. Budget alerts are not a hard stop. Provisioning continues to require separate environment review and `AWS_STAGING_SPEND_APPROVED=true`. Do not upgrade to PAID automatically. Before deployment, obtain an exact regional price estimate and verify each service can be deployed under the account's current plan.
+
+AWS Free Tier billing APIs are queried in `us-east-1`; application regional resources stay in `eu-north-1`. The run intentionally does not print the raw Free Tier account response into the job log. Validate safety with `node --test scripts/aws/check-free-plan.test.mjs`.
+
 # NovaPharm | AWS migration and acceptance contract
 
 **Date:** 6 November 2026  
