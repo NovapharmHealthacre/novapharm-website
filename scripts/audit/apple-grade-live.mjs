@@ -1,4 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 
 /* Read-only: never submit a contact form, authenticate, or request private data. */
 const origin = "https://novapharmhealthcare.com";
@@ -28,7 +29,10 @@ async function request(url) {
     return { http: res.status, url: res.url, type, body, headers: {
       hsts: res.headers.get("strict-transport-security") || "",
       csp: res.headers.get("content-security-policy") || "",
-      nosniff: res.headers.get("x-content-type-options") || ""
+      nosniff: res.headers.get("x-content-type-options") || "",
+      server: res.headers.get("server") || "",
+      poweredBy: res.headers.get("x-powered-by") || "",
+      etag: res.headers.get("etag") || ""
     }};
   } catch (e) {
     return { http: 0, url, type: "", body: "", error: String(e) };
@@ -74,6 +78,16 @@ function inspect(path, response) {
   if(!/\<html\b[^>]*lang=/i.test(h)) issues.push("MISSING_LANG");
   if(missingAlt) issues.push("MISSING_IMAGE_ALT="+missingAlt);
   if(missingDimensions) issues.push("MISSING_IMAGE_DIMENSIONS="+missingDimensions);
+  // Public HTTP build fingerprint only. Does not collect cookies, tokens, or environment secrets.
+  // Compare these fingerprints with release artifacts to identify the actual deployed SHA.
+  const nextAssets = [...new Set([...h.matchAll(/\/_next\/static\/[^"\x27 <>\s?#]+/g)].map(m=>m[0]))].slice(0,32);
+  const nextBuildId = (h.match(/"buildId"\s*:\s*"([^"]{1,120})"/)||[])[1] || null;
+  const deploymentFingerprint = {
+    htmlSha256: createHash("sha256").update(h).digest("hex"),
+    nextBuildId, nextStaticAssets: nextAssets,
+    nextJsDetected: nextAssets.length>0 || /__next_f|__NEXT_DATA__/.test(h),
+    server: response.headers?.server || "", poweredBy: response.headers?.poweredBy || "", etag: response.headers?.etag || ""
+  };
   const skipCandidates = [...h.matchAll(/<a\b[^>]*>[\s\S]*?<\/a>/gi)].map(x=>x[0]).filter(x=>/skip-link|Skip to content|#main/i.test(x)).slice(0,3).map(x=>x.slice(0,320));
   const missingDimensionSources = images.filter(x=>(!attr(x,"width")||!attr(x,"height"))&&!/data-nimg=["']fill["']/i.test(x)).map(x=>({src:attr(x,"src"),tag:x.slice(0,260)}));
   const privacyCloudMentions = path==="/legal/privacy/" ? (h.match(/.{0,80}(?:Azure|AWS|Amazon Web Services).{0,160}/gi)||[]).slice(0,7) : [];
@@ -81,7 +95,7 @@ function inspect(path, response) {
   if(path==="/contact/" && !/data-contact-form/i.test(h)) flags.push("PUBLIC_FORM_NOT_ACTIVE");
   if(path==="/legal/privacy/" && /Microsoft Azure/i.test(h)) flags.push("PRIVACY_MENTIONS_AZURE_CHECK_PROCESSOR_TRUTH");
   if(path==="/portal/" && /portal\.novapharmhealthcare\.com/i.test(h)) flags.push("PORTAL_IS_LINK_TO_SEPARATE_HOST_NOT_WORKING_SERVICE");
-  return {path,http:response.http,url:response.url,title,h1:heading,descLength:desc.length,canonical:attr(canonical||"","href"),imageCount:images.length,missingAlt,missingDimensions,missingDimensionSources,skipCandidates,privacyCloudMentions,usesPicture:/(<picture\b|srcset\s*=)/i.test(h),htmlBytes:Buffer.byteLength(h),issues,flags,headers:response.headers};
+  return {path,http:response.http,url:response.url,title,h1:heading,descLength:desc.length,canonical:attr(canonical||"","href"),imageCount:images.length,missingAlt,missingDimensions,missingDimensionSources,skipCandidates,privacyCloudMentions,usesPicture:/(<picture\b|srcset\s*=)/i.test(h),htmlBytes:Buffer.byteLength(h),deploymentFingerprint,issues,flags,headers:response.headers};
 }
 const observedAt = new Date().toISOString();
 const pages = await pool(paths,5,async path => inspect(path,await request(origin+path)));
@@ -110,6 +124,14 @@ const report=[
   "Public read-only crawl; Apple HIG is a design comparator, not a template to copy.",
   "## Summary", ...Object.entries(summary).map(pair=>"- "+pair[0]+": "+pair[1]),
   "## Pages", "| Path | HTTP | H1 count | Images | Findings |", "| --- | ---: | ---: | ---: | --- |",table,
+  "## Public deployment fingerprints",
+  "Source parity is NOT established by a page hash. Compare asset hashes and serving origin to a real release artifact before fixing live CSS.",
+  ...pages.filter(p=>p.path==="/"||p.path==="/contact/"||p.path==="/legal/privacy/").map(p=>
+    "- "+p.path+": HTML SHA-256 "+p.deploymentFingerprint.htmlSha256+
+    "; build ID "+(p.deploymentFingerprint.nextBuildId||"not exposed")+
+    "; Next static assets "+JSON.stringify(p.deploymentFingerprint.nextStaticAssets.slice(0,12))+
+    "; origin hints "+JSON.stringify({server:p.deploymentFingerprint.server,poweredBy:p.deploymentFingerprint.poweredBy,etag:p.deploymentFingerprint.etag})
+  ),
   "## Managed service endpoints",...services.map(s=>"- "+s.name+": HTTP "+s.http+(s.error?" ("+s.error+")":"")),
   "## Limits",...payload.limitations.map(s=>"- "+s),
   "## Acceptance criteria","- Single primary CTA, clear hierarchy, original NovaPharm branding, responsive original imagery.",
