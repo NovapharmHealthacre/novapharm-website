@@ -9,6 +9,8 @@ on:
       - 'scripts/aws/contact-staging.test.mjs'
       - 'scripts/aws/validate-portal-aws-identity.mjs'
       - 'integrations/mongodb-atlas/**'
+      - 'infra/aws/entra-p1-cognito-federation-candidate.json'
+      - 'scripts/aws/entra-p1-federation.test.mjs'
       - '.github/workflows/aws-contact-staging-check.yml'
   push:
     branches: [codex/aws-contact-portal-acceptance-20261106]
@@ -19,6 +21,8 @@ on:
       - 'scripts/aws/contact-staging.test.mjs'
       - 'scripts/aws/validate-portal-aws-identity.mjs'
       - 'integrations/mongodb-atlas/**'
+      - 'infra/aws/entra-p1-cognito-federation-candidate.json'
+      - 'scripts/aws/entra-p1-federation.test.mjs'
       - '.github/workflows/aws-contact-staging-check.yml'
 
 permissions:
@@ -41,6 +45,7 @@ jobs:
           node scripts/aws/validate-portal-aws-identity.mjs
           node --test integrations/mongodb-atlas/staging-contact-store.test.mjs
           node --test integrations/mongodb-atlas/staging-schema.test.mjs
+          node --test scripts/aws/entra-p1-federation.test.mjs
       - name: Confirm deployed AWS staging health is NOT published as a live service
         shell: bash
         run: |
