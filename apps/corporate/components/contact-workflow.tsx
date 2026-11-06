@@ -29,6 +29,7 @@ function friendlyError(status: number, offline: boolean): string {
   if (status === 400 || status === 422) return "Please check the highlighted information and try again.";
   if (status === 403) return "The security check expired. Please refresh the page and try again.";
   if (status === 429) return "Too many submissions were received. Please wait before trying again.";
+  if (status === 202) return "The server did not provide a verifiable receipt. Your message may have reached it. Please avoid resubmitting immediately and use the verified email route if needed.";
   return "The secure enquiry service cannot be reached right now. No information was submitted. Please try again later or use the verified email route.";
 }
 
@@ -84,6 +85,10 @@ export function ContactWorkflow() {
         body: JSON.stringify(payload),
       });
       if (!response.ok) throw Object.assign(new Error("submission_failed"), { status: response.status });
+      const receipt = await response.json().catch(() => ({})) as { ok?: boolean; lead?: { id?: string | number } };
+      if (receipt.ok !== true || !receipt.lead?.id) {
+        throw Object.assign(new Error("receipt_unverified"), { status: 202 });
+      }
       form.reset();
       setDefaultType("");
       setState("success");
