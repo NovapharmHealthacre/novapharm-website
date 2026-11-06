@@ -45,4 +45,6 @@ jobs:
           node --test scripts/aws/check-free-plan.test.mjs
           node scripts/aws/check-free-plan-capabilities.mjs
           node --test scripts/aws/check-free-plan-capabilities.test.mjs
+          node --check scripts/aws/verify-staging-foundation.mjs
+          node --test scripts/aws/verify-staging-foundation.test.mjs
           bash -n scripts/aws/setup-agent-toolkit.sh
