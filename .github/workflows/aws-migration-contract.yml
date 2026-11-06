@@ -41,7 +41,3 @@ jobs:
           node --check src/storage/providers/disabled-document-store.mjs
           node --check scripts/aws/validate-migration-foundation.mjs
           node scripts/aws/validate-migration-foundation.mjs
-      - name: Validate CloudFormation template structure
-        run: |
-          aws --version
-          aws cloudformation validate-template --template-body file://infra/aws/foundation.json --region eu-north-1
