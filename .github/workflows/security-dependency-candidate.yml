@@ -1,0 +1,70 @@
+name: Security dependency candidate generation (no repository writes)
+
+on:
+  push:
+    branches: [codex/security-dependencies-20261106]
+    paths:
+      - '.github/workflows/security-dependency-candidate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    if: github.repository == 'NovapharmHealthacre/novapharm-website'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Prepare pinned security fixes in ephemeral runner only
+        run: |
+          mkdir -p candidate
+          node scripts/security/prepare-nov-2026-candidate.mjs | tee candidate/changes.json
+      - name: Regenerate npm dependency lock
+        run: |
+          set -o pipefail
+          npm install --package-lock-only --ignore-scripts --no-audit 2>&1 | tee candidate/npm-resolution.log
+      - name: Regenerate pnpm lockfile
+        run: |
+          set -o pipefail
+          npx --yes pnpm@11.9.0 install --lockfile-only --ignore-scripts --frozen-lockfile=false 2>&1 | tee candidate/pnpm-resolution.log
+      - name: Install exact regenerated npm dependencies
+        run: |
+          set -o pipefail
+          npm ci --ignore-scripts 2>&1 | tee candidate/npm-ci.log
+      - name: Record production dependency audit without bypassing blockers
+        id: audit
+        run: |
+          set +e
+          npm audit --omit=dev --audit-level=high --json > candidate/audit.json 2> candidate/audit-stderr.log
+          code=$?
+          printf '%s\n' "$code" > candidate/audit-exit-code.txt
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          echo "Audit exit status: $code (zero is required for release)"
+          exit 0
+      - name: Bundle exact candidate manifests and locks
+        run: |
+          cp --parents package.json package-lock.json pnpm-lock.yaml candidate/
+          for app in corporate portal technology founder status; do
+            cp --parents "apps/$app/package.json" candidate/
+          done
+          printf '%s\n' "$GITHUB_SHA" > candidate/source-sha.txt
+          (cd candidate && sha256sum package.json package-lock.json pnpm-lock.yaml > manifest-checksums.txt)
+      - name: Publish source-only candidate artifacts for forensic review
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: november-2026-dependency-remediation-candidate
+          path: candidate/
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Require zero high/critical audit findings
+        if: steps.audit.outputs.exit_code != '0'
+        run: |
+          echo "::error::Security fixes are a candidate only. Remaining vulnerabilities require remediation before merge and production deployment."
+          exit 1
