@@ -79,6 +79,15 @@ async function forward(request: NextRequest, context: { params: Promise<{ path: 
   const { path: segments } = await context.params;
   const path = segments.join("/");
   if (!isPermitted(path)) return Response.json({ error: "Portal gateway route is not available." }, { status: 404, headers: { "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow, noarchive" } });
+  // A Microsoft Entra P1 licence is not a deployed OIDC trust boundary.
+  // The Azure App Service principal mechanism and local-password bootstrap are
+  // deliberately unavailable on AWS until verified Cognito/Entra integration.
+  if (process.env["NOVAPHARM_CLOUD_PLATFORM"] === "aws" && /^auth\/(?:login|federated|change-password)$/.test(path)) {
+    return Response.json(
+      { error: "Microsoft Entra sign-in is not yet connected to this AWS portal. Please use the approved corporate contact route." },
+      { status: 503, headers: { "Cache-Control": "no-store", "Retry-After": "300", "X-Robots-Tag": "noindex, nofollow, noarchive" } },
+    );
+  }
 
   const target = new URL(`/api/${path}`, apiOrigin());
   target.search = request.nextUrl.search;
