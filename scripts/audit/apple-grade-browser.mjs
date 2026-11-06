@@ -109,3 +109,10 @@ const report=[
 ].join("\n")+"\n";
 await writeFile(path.join(destination,"browser-forensics.md"),report);
 console.log("BROWSER_AUDIT_SUMMARY "+JSON.stringify({combinations:findings.length,overflows,broken,violations,failures:findings.filter(x=>x.fatal||x.loadError||x.status!==200).map(x=>({name:x.name,status:x.status,error:x.loadError||x.fatal}))}));
+const releaseBlocking = violations.filter(v=>v.impact==="critical"||v.impact==="serious");
+const routeFailures = findings.filter(x=>x.fatal||x.loadError||x.status!==200);
+if (releaseBlocking.length || routeFailures.length) {
+  console.error("BROWSER_FORENSIC_GATE_FAILED: " + releaseBlocking.length + " serious/critical automated WCAG violations across browser/page combinations, " + routeFailures.length + " broken routes. Evidence artifacts were saved before failing.");
+  process.exitCode = 1;
+}
+
