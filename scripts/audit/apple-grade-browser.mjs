@@ -67,7 +67,7 @@ for(const [browserName,browserType] of browsers) {
         if(status===200) {
           try {
             const scan=await new AxeBuilder({page}).withTags(["wcag2a","wcag2aa","wcag21a","wcag21aa"]).analyze();
-            axe={violations:scan.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.length,help:v.help})),incomplete:scan.incomplete.map(v=>({id:v.id,nodes:v.nodes.length})),error:null};
+            axe={violations:scan.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.length,help:v.help,examples:v.nodes.slice(0,15).map(n=>({target:n.target,html:n.html.slice(0,220),summary:n.failureSummary?.slice(0,450),data:n.any?.[0]?.data??null}))})),incomplete:scan.incomplete.map(v=>({id:v.id,nodes:v.nodes.length})),error:null};
           }catch(e){axe.error=String(e).slice(0,400)}
         }
         const name=browserName+"-"+vp.id+"-"+target.id;
@@ -80,7 +80,7 @@ for(const [browserName,browserType] of browsers) {
         findings.push(record);
         console.log("BROWSER_AUDIT "+JSON.stringify({
           name,status,overflow:metrics.overflowPixels,skip:metrics.skipLinkTargetExists,
-          axeViolations:axe.violations.map(v=>v.id),errors:errors.slice(0,3),loadError
+          axeViolations:axe.violations.map(v=>({id:v.id,targets:v.examples?.map(e=>e.target).slice(0,10)})),errors:errors.slice(0,3),loadError
         }));
       }
       await page.close();await context.close();
