@@ -5,12 +5,19 @@ import { SqliteProvider } from "./providers/sqlite.mjs";
 
 const configuredProvider = String(process.env.DATABASE_PROVIDER || (process.env.AZURE_SQL_SERVER ? "azure-sql" : "sqlite")).trim().toLowerCase();
 const transactionContext = new AsyncLocalStorage();
+if (process.env.NOVAPHARM_CLOUD_PLATFORM === "aws" && process.env.NODE_ENV === "production" && configuredProvider !== "aws-rds-sql") {
+  throw new Error("AWS production API requires DATABASE_PROVIDER=aws-rds-sql. SQLite and Azure SQL are prohibited.");
+}
 
 async function createProvider() {
   if (configuredProvider === "sqlite") return new SqliteProvider(process.env);
   if (configuredProvider === "azure-sql") {
     const { AzureSqlProvider } = await import("./providers/azure-sql.mjs");
     return new AzureSqlProvider(process.env);
+  }
+  if (configuredProvider === "aws-rds-sql") {
+    const { AwsRdsSqlProvider } = await import("./providers/aws-rds-sql.mjs");
+    return new AwsRdsSqlProvider(process.env);
   }
   throw new Error(`Unsupported DATABASE_PROVIDER: ${configuredProvider}`);
 }
