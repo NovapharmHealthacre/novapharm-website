@@ -63,7 +63,7 @@ export function ContactExperience({ managedEnabled }: { readonly managedEnabled:
           ) : (
             <div id="contact-form" className="np-contact-email-panel">
               <h3>Send us an email.</h3>
-              <p>Our secure online form is not active on this public website. For non-confidential business enquiries, use the corporate email route. Your email application, not this website, handles sending.</p>
+              <p>Our secure online form is not active on this public website. This public website does not collect or transmit enquiry details. For non-confidential business enquiries, use the corporate email route. Your email application, not this website, handles sending.</p>
               <a className="np-contact-primary" href={`mailto:${emailAddress}?subject=NovaPharm%20business%20enquiry`}>Email NovaPharm</a>
               <a className="np-contact-email-address" href={`mailto:${emailAddress}`}>{emailAddress}</a>
               <p className="np-contact-small">Opening email does not confirm delivery. Do not attach confidential dossiers or patient records.</p>
