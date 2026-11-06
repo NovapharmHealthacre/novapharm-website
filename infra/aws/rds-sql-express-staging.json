@@ -1,0 +1,243 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Source-reviewed, NOT automatically deployed. NovaPharm private synthetic-only RDS SQL Server Express staging candidate in eu-north-1; costs and DB edition acceptance required.",
+  "Parameters": {
+    "Environment": {
+      "Type": "String",
+      "Default": "staging",
+      "AllowedValues": [
+        "staging"
+      ]
+    },
+    "DbClass": {
+      "Type": "String",
+      "Default": "db.t3.micro",
+      "AllowedValues": [
+        "db.t3.micro"
+      ]
+    },
+    "DbAllocatedGb": {
+      "Type": "Number",
+      "Default": 20,
+      "MinValue": 20,
+      "MaxValue": 20
+    }
+  },
+  "Rules": {
+    "RegionLock": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Equals": [
+              {
+                "Ref": "AWS::Region"
+              },
+              "eu-north-1"
+            ]
+          },
+          "AssertDescription": "NovaPharm workload region is eu-north-1."
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "Vpc": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.55.0.0/16",
+        "EnableDnsSupport": true,
+        "EnableDnsHostnames": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "novapharm-staging-db-vpc"
+          },
+          {
+            "Key": "environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "PrivateSubnetA": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc"
+        },
+        "CidrBlock": "10.55.10.0/24",
+        "AvailabilityZone": "eu-north-1a",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "novapharm-staging-db-private-a"
+          }
+        ]
+      }
+    },
+    "PrivateSubnetB": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc"
+        },
+        "CidrBlock": "10.55.11.0/24",
+        "AvailabilityZone": "eu-north-1b",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "novapharm-staging-db-private-b"
+          }
+        ]
+      }
+    },
+    "DatabaseSubnetGroup": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "Isolated NovaPharm staging private SQL Server subnets",
+        "SubnetIds": [
+          {
+            "Ref": "PrivateSubnetA"
+          },
+          {
+            "Ref": "PrivateSubnetB"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "ApiClientSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Staging API task identity group; no task enrolled until release",
+        "VpcId": {
+          "Ref": "Vpc"
+        },
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 1433,
+            "ToPort": 1433,
+            "DestinationSecurityGroupId": {
+              "Ref": "DatabaseSecurityGroup"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "DatabaseSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "SQL Server ingress from approved NovaPharm API security group only",
+        "VpcId": {
+          "Ref": "Vpc"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 1433,
+            "ToPort": 1433,
+            "SourceSecurityGroupId": {
+              "Ref": "ApiClientSecurityGroup"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "SqlExpressDatabase": {
+      "Type": "AWS::RDS::DBInstance",
+      "DeletionPolicy": "Snapshot",
+      "UpdateReplacePolicy": "Snapshot",
+      "Properties": {
+        "DBInstanceIdentifier": "novapharm-staging-sql-express",
+        "Engine": "sqlserver-ex",
+        "LicenseModel": "license-included",
+        "DBInstanceClass": {
+          "Ref": "DbClass"
+        },
+        "AllocatedStorage": {
+          "Ref": "DbAllocatedGb"
+        },
+        "StorageType": "gp3",
+        "StorageEncrypted": true,
+        "MasterUsername": "novapharm_admin",
+        "ManageMasterUserPassword": true,
+        "DBSubnetGroupName": {
+          "Ref": "DatabaseSubnetGroup"
+        },
+        "VPCSecurityGroups": [
+          {
+            "Ref": "DatabaseSecurityGroup"
+          }
+        ],
+        "PubliclyAccessible": false,
+        "MultiAZ": false,
+        "BackupRetentionPeriod": 7,
+        "CopyTagsToSnapshot": true,
+        "AutoMinorVersionUpgrade": true,
+        "DeletionProtection": true,
+        "EnablePerformanceInsights": false,
+        "EnableCloudwatchLogsExports": [],
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm"
+          },
+          {
+            "Key": "environment",
+            "Value": "staging"
+          },
+          {
+            "Key": "data-classification",
+            "Value": "synthetic-only"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "RdsEndpoint": {
+      "Description": "Private-only endpoint; never expose in browser",
+      "Value": {
+        "Fn::GetAtt": [
+          "SqlExpressDatabase",
+          "Endpoint.Address"
+        ]
+      }
+    },
+    "DatabaseSecurityGroupId": {
+      "Value": {
+        "Ref": "DatabaseSecurityGroup"
+      }
+    },
+    "ApiClientSecurityGroupId": {
+      "Value": {
+        "Ref": "ApiClientSecurityGroup"
+      }
+    },
+    "StagingVpcId": {
+      "Value": {
+        "Ref": "Vpc"
+      }
+    }
+  }
+}
