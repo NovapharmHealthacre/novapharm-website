@@ -66,7 +66,6 @@ const routeContracts = [
   ["partner-with-us/index.html", "npd-horizontal-steps"],
   ["technology/index.html", "npd-maturity npd-maturity-full"],
   ["news-insights/index.html", "Regulated-market thinking, written to be challenged."],
-  ["contact/index.html", "A qualified B2B contact route."],
 ];
 for (const [path, marker] of routeContracts) {
   const html = text(path);
@@ -77,6 +76,10 @@ for (const [path, marker] of routeContracts) {
 }
 
 const contact = text("contact/index.html");
+assert.match(contact, /class="np-contact(?:\s|")|class="np-contact-hero"/, "Contact must retain the current approved corporate design and hierarchy");
+assert.match(contact, /Let(?:&#x27;|&#39;|')s start the right conversation\./, "Contact must present the approved B2B enquiry journey");
+assert.match(contact, /Business enquiries only\./, "Contact must retain regulated-business scope");
+assert.match(contact, /yellowcard\.mhra\.gov\.uk/, "Contact must preserve the independent adverse-event reporting route");
 if (contact.includes('data-contact-form')) {
   if (!contact.includes('class="form-grid contact-form"') || !contact.includes("Your information is transmitted to the secure NovaPharm API")) {
     assert.fail("Managed contact presentation is missing its form or API-authority boundary");
