@@ -257,20 +257,29 @@ async function verifyInteractions(page: Page, engine: string): Promise<void> {
   assert.equal(await page.locator("details.mobile-menu").getAttribute("open"), null, `${engine}: mobile menu did not close after navigation`);
 
   await page.goto(`${baseUrl}/contact/`, { waitUntil: "domcontentloaded" });
-  await page.getByLabel("Full name").fill("Validation User");
-  await page.getByLabel("Business email").fill("validation@example.com");
-  await page.getByLabel("Company", { exact: true }).fill("Synthetic Validation Ltd");
-  await page.getByLabel("Role or job title").fill("Validation Lead");
-  await page.getByLabel("Country").fill("United Kingdom");
-  await page.getByLabel("Enquiry type").selectOption({ label: "General enquiry" });
-  await page.getByLabel("Message", { exact: true }).fill("Synthetic, non-confidential browser acceptance message for the corporate workflow.");
-  await page.getByLabel(/I confirm that this message/).check();
-  await page.getByLabel(/I have read the business-enquiry privacy information/).check();
-  await page.getByRole("button", { name: "Submit enquiry" }).click();
-  const failureMessage = page.getByText("The secure enquiry service cannot be reached right now. No information was submitted. Please try again later or use the verified email route.");
-  await failureMessage.waitFor({ state: "visible" });
-  assert.equal(await page.getByText("The string did not match the expected pattern.").count(), 0, `${engine}: raw browser error exposed`);
-  assert.equal(await page.getByRole("link", { name: "Use the verified corporate email route" }).count(), 1, `${engine}: verified fallback missing`);
+  assert.equal(await page.locator(".np-contact-topic").count(), 8, `${engine}: eight clearly routed contact choices are required`);
+  if (process.env.NOVAPHARM_MANAGED_CONTACT_VERIFIED === "true") {
+    await page.getByLabel("Full name").fill("Validation User");
+    await page.getByLabel("Business email").fill("validation@example.com");
+    await page.getByLabel("Company", { exact: true }).fill("Synthetic Validation Ltd");
+    await page.getByLabel("Role or job title").fill("Validation Lead");
+    await page.getByLabel("Country").fill("United Kingdom");
+    await page.getByLabel("Enquiry type").selectOption({ label: "General enquiry" });
+    await page.getByLabel("Message", { exact: true }).fill("Synthetic, non-confidential browser acceptance message for the corporate workflow.");
+    await page.getByLabel(/I confirm that this message/).check();
+    await page.getByLabel(/I have read the business-enquiry privacy information/).check();
+    await page.getByRole("button", { name: "Submit enquiry" }).click();
+    const failureMessage = page.getByText("The secure enquiry service cannot be reached right now. No information was submitted. Please try again later or use the verified email route.");
+    await failureMessage.waitFor({ state: "visible" });
+    assert.equal(await page.getByText("The string did not match the expected pattern.").count(), 0, `${engine}: raw browser error exposed`);
+    assert.equal(await page.getByRole("link", { name: "Use the verified corporate email route" }).count(), 1, `${engine}: verified fallback missing`);
+  } else {
+    assert.equal(await page.locator("form.contact-form").count(), 0, `${engine}: unverified contact service must not expose a submission form`);
+    const email = page.getByRole("link", { name: "Email NovaPharm" });
+    assert.equal(await email.count(), 1, `${engine}: business email fallback is missing`);
+    assert.match(await email.getAttribute("href") ?? "", /^mailto:vishal@novapharmhealthcare\.com\?subject=/);
+    assert.equal(await page.getByText("This public information release does not collect or transmit enquiry details.").count(), 1, `${engine}: public non-collection notice missing`);
+  }
 }
 
 async function expectHidden(locator: ReturnType<Page["locator"]>, message: string): Promise<void> {
