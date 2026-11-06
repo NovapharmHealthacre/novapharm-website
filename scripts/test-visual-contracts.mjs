@@ -79,7 +79,7 @@ const contact = text("contact/index.html");
 assert.match(contact, /class="np-contact(?:\s|")|class="np-contact-hero"/, "Contact must retain the current approved corporate design and hierarchy");
 assert.match(contact, /Let(?:&#x27;|&#39;|')s start the right conversation\./, "Contact must present the approved B2B enquiry journey");
 assert.match(contact, /Business enquiries only\./, "Contact must retain regulated-business scope");
-assert.match(contact, /yellowcard\.mhra\.gov\.uk/, "Contact must preserve the independent adverse-event reporting route");
+assert.ok(contact.includes('href="https://yellowcard.mhra.gov.uk/"'), "Contact must link to the exact independent MHRA Yellow Card reporting origin");
 if (contact.includes('data-contact-form')) {
   if (!contact.includes('class="form-grid contact-form"') || !contact.includes("Your information is transmitted to the secure NovaPharm API")) {
     assert.fail("Managed contact presentation is missing its form or API-authority boundary");
