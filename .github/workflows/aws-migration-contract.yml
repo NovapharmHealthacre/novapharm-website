@@ -41,3 +41,4 @@ jobs:
           node --check src/storage/providers/disabled-document-store.mjs
           node --check scripts/aws/validate-migration-foundation.mjs
           node scripts/aws/validate-migration-foundation.mjs
+          node --test scripts/aws/aws-migration.test.mjs
