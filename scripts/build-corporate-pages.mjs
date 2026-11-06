@@ -92,7 +92,8 @@ for (const file of files(output)) {
     writeFileSync(file, serialize(document));
     htmlCount += 1;
   }
-  records.push({ path: relative, bytes: statSync(file).size, sha256: digest(readFileSync(file)) });
+  const publishedBytes = readFileSync(file);
+  records.push({ path: relative, bytes: publishedBytes.byteLength, sha256: digest(publishedBytes) });
 }
 const approvedLogo = readFileSync(path.join(root, "assets/brand/novapharm-healthcare-logo.svg"));
 assert.equal(digest(readFileSync(path.join(output, "assets/brand/novapharm-healthcare-logo.svg"))), digest(approvedLogo));
