@@ -6,7 +6,7 @@ import nutraxinRegister from "@/data/nutraxin-product-register.json";
 import { oncologyContent } from "@/data/oncology";
 import type { CorporatePage, NarrativeSection } from "@/data/pages";
 import { leadership, partnerJourney, partnerTypes, productCategories, regulatorySections, servicePillars, sourcingPillars, technologyMaturity } from "@/data/site";
-import { ContactWorkflow } from "./contact-workflow";
+import { ContactExperience } from "./contact-experience";
 import { Breadcrumbs, FinalCta, Notice, PageHero, SectionHeading, StatusNotice } from "./ui";
 
 export interface Leader {
@@ -194,7 +194,9 @@ export function ArticlePage({ article }: { readonly article: Article }) {
 }
 
 function ContactPage() {
-  return <><PageHero eyebrow="Contact" title="Start a qualified B2B conversation." intro="Product, distribution, sourcing, CMO/CDMO, regulatory, media or careers enquiries. No patient or urgent medical information." image="/assets/media/modules/contact-qualified-enquiry.jpg" alt="Business professionals discussing a qualified pharmaceutical enquiry" /><section className="section"><div className="shell contact-layout"><div><SectionHeading kicker="Secure enquiry" title="Tell us what decision or opportunity you are assessing." intro="The managed workflow validates the request, records consent evidence and sends controlled notifications when the secure API is active." /><div className="contact-boundaries"><p><strong>Business only.</strong> NovaPharm does not accept patient orders or provide medical advice.</p><p><strong>Safety information.</strong> Use the MHRA Yellow Card service for suspected side effects; call 999 for emergencies.</p><p><strong>Confidential material.</strong> Do not upload a dossier, licence, patient record or commercially sensitive document through this general form.</p></div></div><ContactWorkflow /></div></section></>;
+  // Only an owner-verified managed deployment may expose the submission workflow.
+  // Public/static release defaults to an explicit, non-collecting email route.
+  return <ContactExperience managedEnabled={process.env.NOVAPHARM_MANAGED_CONTACT_VERIFIED === "true"} />;
 }
 
 function AccountPage() {

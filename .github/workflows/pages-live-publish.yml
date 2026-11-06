@@ -65,6 +65,10 @@ jobs:
           node scripts/stage-pages-artifact.mjs _site
           node scripts/check-links.mjs _site
           grep -Fq 'Medicine. Where it needs to be' _site/index.html
+          grep -Fq 'class="np-contact-hero"' _site/contact/index.html
+          grep -Fq 'class="np-contact-grid"' _site/contact/index.html
+          grep -Fq 'This public information release does not collect or transmit enquiry details' _site/contact/index.html
+          ! grep -Fq 'data-contact-form' _site/contact/index.html
           grep -Fq -- '--apple-pharma-public-contract: 3' _site/assets/css/novapharm.bundle.css
           grep -Fq 'body[data-page="home"]' _site/assets/css/novapharm.bundle.css
           grep -Fq 'regulatory-dossier-control' _site/regulatory-services/index.html
@@ -113,6 +117,10 @@ jobs:
           node scripts/stage-pages-artifact.mjs _site
           node scripts/check-links.mjs _site
           grep -Fq 'Medicine. Where it needs to be' _site/index.html
+          grep -Fq 'class="np-contact-hero"' _site/contact/index.html
+          grep -Fq 'class="np-contact-grid"' _site/contact/index.html
+          grep -Fq 'This public information release does not collect or transmit enquiry details' _site/contact/index.html
+          ! grep -Fq 'data-contact-form' _site/contact/index.html
           grep -Fq -- '--apple-pharma-public-contract: 3' _site/assets/css/novapharm.bundle.css
           grep -Fq 'body[data-page="home"]' _site/assets/css/novapharm.bundle.css
           grep -Fq 'regulatory-dossier-control' _site/regulatory-services/index.html
@@ -234,6 +242,8 @@ jobs:
               && ! grep -Fq 'data-ai-search-open' /tmp/live-home.html \
               && grep -Fq 'Prabhakar Vitthal Lahare' /tmp/live-cro.html \
               && ! grep -Fq 'oncology-editorial-gallery' /tmp/live-oncology.html \
+              && grep -Fq 'class="np-contact-hero"' /tmp/live-contact.html \
+              && grep -Fq 'class="np-contact-grid"' /tmp/live-contact.html \
               && grep -Fq 'does not collect or transmit enquiry details' /tmp/live-contact.html \
               && ! grep -Fq 'data-contact-form' /tmp/live-contact.html \
               && grep -Fq 'does not accept account applications or business documents' /tmp/live-account.html \
