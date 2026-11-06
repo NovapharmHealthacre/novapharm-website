@@ -67,7 +67,11 @@ jobs:
           test "$account" = "$EXPECTED_ACCOUNT"
           test "$AWS_REGION" = "eu-north-1"
           aws cloudformation validate-template --template-body file://infra/aws/foundation.json --region eu-north-1
-          aws freetier get-account-plan-state --region eu-north-1 --output json
+          # Free Tier is a separate global billing endpoint; AWS project workloads remain in eu-north-1.
+          # Fail closed on a PAID/expired plan or low/near-expiry credits. No upgrade is permitted.
+          aws freetier get-account-plan-state --region us-east-1 --output json > /tmp/novapharm-free-plan.json
+          node scripts/aws/check-free-plan.mjs /tmp/novapharm-free-plan.json
+          rm -f /tmp/novapharm-free-plan.json
           echo "AWS project identity and eu-north-1 validated. No data movement or DNS changes."
       - name: Enforce separate owner spend approval before provisioning
         if: inputs.action == 'provision-staging'
