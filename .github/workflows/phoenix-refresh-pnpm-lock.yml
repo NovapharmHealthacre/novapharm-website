@@ -6,6 +6,7 @@ on:
       - codex/phoenix-security-remediation-20261106
     paths:
       - .github/workflows/phoenix-refresh-pnpm-lock.yml
+      - pnpm-workspace.yaml
 
 permissions:
   contents: write
