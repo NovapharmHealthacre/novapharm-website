@@ -30,6 +30,8 @@ const bytes = readFileSync(resolve(source));
 const metadata = await sharp(bytes, { failOn: "error" }).metadata();
 assert.ok(metadata.width >= policy.master.minimumWidth && metadata.height >= policy.master.minimumHeight,
   `Native source is ${metadata.width}x${metadata.height}, not 8K; NO UPSCALING allowed`);
+assert.ok(["jpeg", "png", "tiff", "webp", "avif"].includes(metadata.format),
+  "Only actual native raster source files qualify as 8K; SVG-rendered or raw images do not");
 assert.ok(!metadata.hasAlpha, "8K source masters must be opaque imagery");
 assert.ok(!metadata.pages || metadata.pages === 1, "Multiframe sources are not accepted");
 const destination = resolve(outputDir);
