@@ -36,7 +36,7 @@ test("unreviewed wildcard S3 allow statement is rejected", () =>
     Sid: "AllowEveryone", Effect: "Allow", Principal: "*", Action: "s3:*", Resource: "*"
   }), /unreviewed audit bucket allow/));
 test("TLS deny removed is rejected", () =>
-  reject(t => t.Resources.AuditBucketPolicy.Properties.PolicyDocument.Statement[0].Effect = "Allow", /Allow !== Deny/));
+  reject(t => t.Resources.AuditBucketPolicy.Properties.PolicyDocument.Statement[0].Effect = "Allow", /'Allow' !== 'Deny'/));
 test("cross-account unrestricted CloudTrail writes rejected", () =>
   reject(t => delete t.Resources.AuditBucketPolicy.Properties.PolicyDocument.Statement[2].Condition.StringEquals["aws:SourceArn"], /source-ARN|Trail write permission/));
 test("disabled audit logging is rejected", () =>
