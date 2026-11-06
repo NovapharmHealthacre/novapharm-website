@@ -18,10 +18,12 @@ function updateManifest(relativePath, mutate) {
 updateManifest("package.json", (pkg) => {
   if (pkg.dependencies?.["@azure/identity"] !== "4.13.1") throw Error("Unexpected Azure Identity baseline, abort");
   pkg.dependencies["@azure/identity"] = "4.14.1";
+  pkg.dependencies["@azure/monitor-opentelemetry"] = "1.21.0";
+  pkg.devDependencies["js-yaml"] = "3.15.2";
   if (pkg.dependencies?.mssql === "12.6.0") pkg.dependencies.mssql = "12.7.0";
   if (pkg.devDependencies?.sharp === "0.35.3") pkg.devDependencies.sharp = "0.35.5";
-  if (pkg.overrides?.["next@16.2.12"] && !pkg.overrides?.["next@16.3.3"]) {
-    pkg.overrides["next@16.3.3"] = pkg.overrides["next@16.2.12"];
+  if (pkg.overrides?.["next@16.2.12"] && !pkg.overrides?.["next@16.4.5"]) {
+    pkg.overrides["next@16.4.5"] = pkg.overrides["next@16.2.12"];
     delete pkg.overrides["next@16.2.12"];
   }
   pkg.overrides["sharp"] = "0.35.5";
@@ -33,7 +35,7 @@ updateManifest("package.json", (pkg) => {
 for (const app of ["corporate", "portal", "technology", "founder", "status"]) {
   updateManifest(`apps/${app}/package.json`, (pkg) => {
     if (pkg.dependencies?.next !== "16.2.12") throw Error(`Unexpected Next.js baseline in ${app}, abort`);
-    pkg.dependencies.next = "16.3.3";
+    pkg.dependencies.next = "16.4.5";
     if (pkg.dependencies?.sharp === "0.35.3") pkg.dependencies.sharp = "0.35.5";
   });
 }
