@@ -8542,10 +8542,9 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 5,
-      "referenceCount": 10,
+      "usageCount": 4,
+      "referenceCount": 9,
       "usageFiles": [
-        "apps/corporate/components/page-renderer.tsx",
         "apps/corporate/data/pages.ts",
         "contact/index.html",
         "creative-assets/module-media-asset-register.json",
