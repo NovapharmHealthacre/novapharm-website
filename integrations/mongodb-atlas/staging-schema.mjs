@@ -6,9 +6,15 @@
 export const SYNTHETIC_CONTACT_SCHEMA = Object.freeze({
   $jsonSchema: {
     bsonType: "object",
-    required: ["_id", "classification", "environment", "createdAt", "expiresAt", "productionAccepted"],
+    required: ["_id", "name", "email", "company", "message", "enquiryType", "schemaVersion", "notification", "classification", "environment", "createdAt", "expiresAt", "productionAccepted"],
+    additionalProperties: false,
     properties: {
       _id: { bsonType: "string" },
+      name: { bsonType: "string", pattern: "^SYNTHETIC[- ]", maxLength: 100 },
+      message: { bsonType: "string", pattern: "SYNTHETIC DATA", maxLength: 1000 },
+      enquiryType: { bsonType: "string", maxLength: 80 },
+      schemaVersion: { enum: [1] },
+      notification: { enum: ["disabled"] },
       classification: { enum: ["SYNTHETIC_ONLY"] },
       environment: { enum: ["staging"] },
       createdAt: { bsonType: "date" },
