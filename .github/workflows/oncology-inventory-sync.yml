@@ -1,4 +1,5 @@
 name: Refresh governed Oncology image inventory (one-time candidate)
+# Regenerate after 2026-11-07 homepage baseline reconciliation
 
 on:
   push:
