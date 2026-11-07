@@ -1,4 +1,5 @@
 name: Inspect Next.js pre-render artifacts for GitHub Pages publication
+# Re-test native anchors after RSC prefetch removal
 on:
   push:
     branches: [ops/next-pages-publication-candidate-20261107]
