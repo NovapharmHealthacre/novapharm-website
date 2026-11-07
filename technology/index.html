@@ -100,7 +100,7 @@
       <figure class="npi-product-figure npi-dashboard-figure">
         <div class="npi-terminal npi-dash" data-medicines-terminal-preview role="region" aria-label="NovaPharm Intelligence Medicines Terminal interface preview using simulated sample metrics">
           <header class="npi-dash-topbar">
-            <div class="npi-dash-brand"><span class="npi-dash-brand-symbol" aria-hidden="true"><i></i><i></i><i></i></span><span>NovaPharm <strong>Intelligence</strong></span></div>
+            <div class="npi-dash-brand"><img class="npi-dash-approved-logo" src="/assets/brand/novapharm-intelligence-approved.svg" alt="Novapharm Intelligence" width="1950" height="337" decoding="async"></div>
             <nav class="npi-dash-global-tabs" tabindex="0" aria-label="Scrollable preview primary areas"><span>Overview</span><span>Evidence</span><span>Market</span><span class="is-selected">Geography</span><span>More</span></nav>
             <div class="npi-dash-quick-search">Search a medicine, substance or topic…</div>
             <span class="npi-dash-preview-tag">PRODUCT PREVIEW</span>
@@ -137,15 +137,15 @@
                   </div>
                   <div class="npi-dash-analytics-grid">
                     <article class="npi-dash-card npi-terminal-geography" aria-labelledby="npi-dash-map-heading">
-                      <div class="npi-dash-card-title"><div><h4 id="npi-dash-map-heading">Geography analysis</h4><p>Illustrative prescribing variation by region</p></div><span class="npi-dash-card-badge">SAMPLE</span></div>
+                      <div class="npi-dash-card-title"><div><h4 id="npi-dash-map-heading">Geography analysis</h4><p>ONS 2026 boundaries · simulated prescribing index</p></div><span class="npi-dash-card-badge">SAMPLE</span></div>
                       <div class="npi-dash-map-layout">
                         <div class="npi-dash-map-filters">
-                          <span class="npi-dash-filter-label">Geography</span><span class="npi-dash-filter-value">England regions</span>
+                          <span class="npi-dash-filter-label">Geography</span><span class="npi-dash-filter-value">Integrated Care Boards</span>
                           <span class="npi-dash-filter-label">Metric</span><span class="npi-dash-filter-value">Items per 1,000</span>
                           <span class="npi-dash-filter-label">Period</span><span class="npi-dash-filter-value">Jun 2026</span>
                           <div class="npi-dash-legend"><b>Illustrative index</b><span><i class="level-5"></i> Higher</span><span><i class="level-4"></i> Above average</span><span><i class="level-3"></i> Mid-range</span><span><i class="level-2"></i> Lower</span><span><i class="level-1"></i> No observation</span></div>
                         </div>
-                        <div class="npi-dash-map-display"><img src="/assets/media/technology/england-geography-concept.svg" alt="Stylised map-shaped regional illustration. Not a real NHS geography boundary map or measured prescription data." width="360" height="460" loading="lazy"><span>Indicative regional pattern · not to scale</span></div>
+                        <div class="npi-dash-map-display" data-npi-map><div class="npi-dash-real-map" data-npi-real-map role="img" aria-label="Map of England Integrated Care Board boundaries. Geographic boundaries sourced from ONS, while the blue shading is simulated and is not measured prescribing activity."><img src="/assets/media/technology/england-geography-concept.svg" alt="Fallback schematic map when official geographic boundary data cannot load; no measured prescribing data." width="360" height="460" loading="lazy"></div><span data-npi-map-status aria-live="polite">Loading April 2026 ONS boundary geometry · simulated colours</span></div>
                       </div>
                     </article>
                     <article class="npi-dash-card npi-dash-ranking" aria-labelledby="npi-dash-ranking-heading">
@@ -191,14 +191,14 @@
                     <li><span class="npi-dash-source-symbol"></span><div><b>Scottish Medicines Data</b><small>SCMD · coverage pending</small></div></li>
                     <li><span class="npi-dash-source-symbol"></span><div><b>Population denominators</b><small>ONS / NHS · pending validation</small></div></li></ul><p class="npi-dash-source-footer">Source freshness, rights and lineage are required before release.</p>
                   </div>
-                  <div class="npi-dash-card"><div class="npi-dash-card-title"><div><h4>Geography context</h4><p>England · demonstration scope</p></div></div><dl class="npi-dash-metadata"><div><dt>Geographic unit</dt><dd>Region</dd></div><div><dt>ICB breakdown</dt><dd>Planned</dd></div><div><dt>Comparability</dt><dd>Unresolved</dd></div><div><dt>Data period</dt><dd>Example only</dd></div></dl></div>
+                  <div class="npi-dash-card"><div class="npi-dash-card-title"><div><h4>Geography context</h4><p>England · demonstration scope</p></div></div><dl class="npi-dash-metadata"><div><dt>Geographic unit</dt><dd>ICB (map)</dd></div><div><dt>ICB boundaries</dt><dd>ONS · Apr 2026</dd></div><div><dt>Comparability</dt><dd>Unresolved</dd></div><div><dt>Data period</dt><dd>Example only</dd></div></dl></div>
                   <div class="npi-dash-card"><div class="npi-dash-card-title"><div><h4>About this view</h4><p>Evidence before inference</p></div></div><dl class="npi-dash-metadata"><div><dt>Observed fact</dt><dd>Not populated</dd></div><div><dt>Derived metric</dt><dd>Sample values</dd></div><div><dt>Model forecast</dt><dd>Not generated</dd></div><div><dt>Methodology</dt><dd>Under development</dd></div></dl><p class="npi-dash-source-footer">Source data and model results will appear only after validation.</p></div>
                 </aside>
               </div>
             </div>
           </div>
         </div>
-        <figcaption>Illustrative product experience using simulated figures and schematic geography. No live NHSBSA data, licence status, connected evidence, verified market rates, forecast or customer records are represented.</figcaption>
+        <figcaption>Illustrative product experience using simulated figures. Geographic boundaries are based on the April 2026 ONS Integrated Care Board boundary service (where available); map colours and all prescribing figures remain invented demonstration values, not observed NHSBSA data. No live licence status, forecasts or customer records are represented. <a href="https://www.data.gov.uk/dataset/93789291-7f03-4849-8fb6-97e0b22f3e87/integrated-care-boards-april-2026-boundaries-en-bgc" target="_blank" rel="noopener noreferrer">Boundary data: ONS, containing OS and ONS intellectual property rights</a>.</figcaption>
       </figure>
     </div>
   </section>

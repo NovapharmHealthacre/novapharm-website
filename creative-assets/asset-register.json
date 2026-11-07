@@ -33,6 +33,23 @@
       "ownerApproval": "owner-directed illustration for Technology page preview"
     },
     {
+      "path": "assets/brand/novapharm-intelligence-approved.svg",
+      "type": "owner-approved-product-wordmark",
+      "source": "Owner-supplied Novapharm Intelligence Complete Logo Kit 2026, 05_WEB/logo-primary.svg, 5 November 2026; simplified vector delivery derivative preserving approved blue arc, lettering, aspect ratio and palette",
+      "licence": "Owner-authorised NovaPharm Intelligence brand identity use; source rights controlled by NovaPharm Healthcare Ltd",
+      "generated": false,
+      "modified": true,
+      "dimensions": "SVG viewBox 0 0 1950 337",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "/technology/ Medicines Terminal product preview"
+      ],
+      "altText": "Novapharm Intelligence",
+      "caption": "Owner-approved Intelligence product wordmark; product demonstration only",
+      "technicalStatus": "source-kit-derived-web-vector",
+      "ownerApproval": "owner-directed website integration"
+    },
+    {
       "path": "assets/brand/novapharm-healthcare-logo.svg",
       "type": "official-logo",
       "source": "owner-supplied NovaPharm Healthcare Logo Asset Pack: 02_web/primary_transparent/novapharm-logo.svg",
