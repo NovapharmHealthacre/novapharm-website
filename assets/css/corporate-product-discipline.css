@@ -2045,6 +2045,29 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   }
 }
 
+/* Respect platform accessibility choices without changing normal brand presentation. */
+@media (prefers-reduced-transparency: reduce) {
+  .npd-header.site-header,
+  .npd-local-nav,
+  .npd-global-nav.site-nav {
+    background: #ffffff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --npd-text: #252b30;
+    --npd-muted: #394047;
+    --npd-line: #90979d;
+  }
+
+  .npd-footer-bottom {
+    font-size: 12px;
+  }
+}
+
 @media (forced-colors: active) {
   .npd-button,
   .npd-notice,
