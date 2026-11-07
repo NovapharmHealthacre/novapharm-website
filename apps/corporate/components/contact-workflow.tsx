@@ -104,26 +104,42 @@ export function ContactWorkflow() {
   }
 
   return (
-    <div className="contact-workflow">
-      <form className="contact-form" onSubmit={submit} noValidate={false}>
+    <div className="contact-workflow np-contact-managed">
+      <form className="contact-form np-contact-reference-form" onSubmit={submit}>
         <div className="honeypot" aria-hidden="true"><label htmlFor="website">Website</label><input id="website" name="website" tabIndex={-1} autoComplete="off" /></div>
-        <div className="field-grid">
-          <label><span>Full name</span><input name="name" autoComplete="name" maxLength={120} required /></label>
-          <label><span>Business email</span><input name="email" type="email" autoComplete="email" maxLength={160} required /></label>
-          <label><span>Company</span><input name="company" autoComplete="organization" maxLength={160} required /></label>
-          <label><span>Role or job title</span><input name="role" autoComplete="organization-title" maxLength={120} required /></label>
-          <label><span>Country</span><input name="country" autoComplete="country-name" maxLength={80} required /></label>
-          <label><span>Telephone <small>optional</small></span><input name="telephone" type="tel" autoComplete="tel" maxLength={40} /></label>
+        <div className="np-contact-reference-grid">
+          <label className="np-contact-reference-field"><span>Full name</span><input name="name" autoComplete="name" placeholder="Your name" maxLength={120} required /></label>
+          <label className="np-contact-reference-field"><span>Work email</span><input name="email" type="email" autoComplete="email" placeholder="name@company.com" maxLength={160} required /></label>
+          <label className="np-contact-reference-field"><span>Company</span><input name="company" autoComplete="organization" placeholder="Organisation name" maxLength={160} required /></label>
+          <label className="np-contact-reference-field"><span>Country / region</span><input name="country" autoComplete="country-name" placeholder="Select or enter a country" maxLength={80} required /></label>
         </div>
-        <label><span>Enquiry type</span><select name="enquiryType" value={defaultType} onChange={(event) => setDefaultType(event.target.value)} required><option value="">Select an enquiry</option>{enquiryTypes.map((type) => <option key={type}>{type}</option>)}</select></label>
-        <label><span>Message</span><textarea name="message" minLength={20} maxLength={2000} required aria-describedby="contact-safety-warning" /></label>
-        <p className="field-note" id="contact-safety-warning">Do not include patient-identifiable information, an adverse-event report or urgent medical information. Report suspected medicine side effects through the <a href="https://yellowcard.mhra.gov.uk/">MHRA Yellow Card service</a>. For emergencies call 999; for urgent NHS advice use 111.</p>
-        <label className="check-row"><input type="checkbox" name="safetyConfirmation" value="yes" required /><span>I confirm that this message contains no patient-identifiable information, adverse-event report or urgent medical information.</span></label>
-        <label className="check-row"><input type="checkbox" name="privacyAcknowledgement" value="yes" required /><span>I have read the <a href="/legal/privacy/#business-enquiries">business-enquiry privacy information</a>. This is not marketing consent.</span></label>
-        <button className="button button-primary" type="submit" disabled={state === "sending"}>{state === "sending" ? "Submitting..." : "Submit enquiry"}</button>
+        <div className="np-contact-reference-extra">
+          <label className="np-contact-reference-field"><span>Role or job title</span><input name="role" autoComplete="organization-title" placeholder="Your position" maxLength={120} required /></label>
+          <label className="np-contact-reference-field"><span>Telephone (optional)</span><input name="telephone" type="tel" autoComplete="tel" placeholder="+44 ..." maxLength={40} /></label>
+        </div>
+        <label className="np-contact-reference-field np-contact-reference-full"><span>What is your enquiry about?</span>
+          <select name="enquiryType" value={defaultType} onChange={(event) => setDefaultType(event.target.value)} required>
+            <option value="">Choose a topic</option>{enquiryTypes.map((type) => <option key={type} value={type}>{type}</option>)}
+          </select>
+        </label>
+        <label className="np-contact-reference-field np-contact-reference-full np-contact-reference-message"><span>Your message</span>
+          <textarea name="message" placeholder="Tell us a little about your enquiry." minLength={20} maxLength={2000} required aria-describedby="contact-safety-warning" />
+        </label>
+        <p className="np-contact-reference-warning" id="contact-safety-warning">
+          Do not include patient-identifiable information, adverse-event reports or urgent medical information.
+          Report suspected side effects through the <a href="https://yellowcard.mhra.gov.uk/">MHRA Yellow Card service</a>.
+        </p>
+        <div className="np-contact-reference-confirmations">
+          <label className="check-row"><input type="checkbox" name="safetyConfirmation" value="yes" required /><span>I confirm this message contains no patient-identifiable information, adverse-event report or urgent medical information.</span></label>
+          <label className="check-row"><input type="checkbox" name="privacyAcknowledgement" value="yes" required /><span>I have read the <a href="/legal/privacy/#business-enquiries">business-enquiry privacy notice</a>. This is not marketing consent.</span></label>
+        </div>
+        <div className="np-contact-reference-actions">
+          <p className="np-contact-reference-privacy">Your information will be used to respond to your enquiry, in accordance with our <a href="/legal/privacy/">privacy notice</a>.</p>
+          <button className="np-contact-reference-submit" type="submit" disabled={state === "sending"}>{state === "sending" ? "Submitting..." : "Send enquiry"}</button>
+        </div>
       </form>
-      <div className={`form-status form-status-${state}`} ref={statusRef} role="status" aria-live="polite" tabIndex={-1}>
-        <p>{message || "Your information is sent only to NovaPharm's secure server when you submit this form."}</p>
+      <div className={"np-contact-reference-status form-status form-status-" + state} ref={statusRef} role="status" aria-live="polite" tabIndex={-1}>
+        <p>{message || "Your enquiry is transmitted only to NovaPharm's verified secure API when you select Send enquiry."}</p>
       </div>
       {state === "error" ? <a className="verified-email" href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20business%20enquiry">Use the verified corporate email route</a> : null}
     </div>
