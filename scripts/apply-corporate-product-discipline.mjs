@@ -24,7 +24,8 @@ const esc = (value) => String(value ?? "").replace(/[&<>\"]/g, (character) => ({
 
 function globalSection(route) {
   if (route === "/" || route.startsWith("/about/") || route.startsWith("/leadership/") || route === "/about/" || route === "/partner-with-us/" || route === "/investor-information/" || route === "/careers/") return "company";
-  if (["/capabilities/", "/services/", "/regulatory-services/", "/cro/", "/technology/"].some((prefix) => route === prefix || route.startsWith(prefix))) return "capabilities";
+  if (route === "/technology/") return "intelligence";
+  if (["/capabilities/", "/services/", "/regulatory-services/", "/cro/"].some((prefix) => route === prefix || route.startsWith(prefix))) return "capabilities";
   if (route.startsWith("/oncology/")) return "oncology";
   if (route.startsWith("/products/") || route.startsWith("/product-portfolio/")) return "products";
   if (route.startsWith("/news-insights/")) return "insights";
@@ -38,23 +39,60 @@ const globalNavigation = [
   ["Capabilities", "/capabilities/", "capabilities"],
   ["Oncology", "/oncology/", "oncology"],
   ["Products", "/products/", "products"],
+  ["NovaPharm Intelligence", "/technology/", "intelligence"],
   ["Insights", "/news-insights/", "insights"],
   ["Contact", "/contact/", "contact"],
   ["Secure Portal", "/portal/", "portal"]
 ];
 
+// A single category-navigation contract across corporate pages. Navigation
+// remains usable as ordinary links without JavaScript.
+const megaNavigation = {
+  company: [
+    ["Explore", [["Company overview", "/about/"], ["Leadership", "/leadership/"], ["Governance", "/about/governance/"]]],
+    ["Work with NovaPharm", [["Partnerships", "/partner-with-us/"], ["Investor information", "/investor-information/"], ["Careers", "/careers/"]]],
+    ["More", [["Trust Centre", "/trust-centre/"], ["Contact", "/contact/"]]]
+  ],
+  capabilities: [
+    ["Explore", [["All capabilities", "/capabilities/"], ["Sourcing & market access", "/services/"], ["Regulatory & Quality", "/regulatory-services/"]]],
+    ["Specialist work", [["Clinical Research & CRO", "/cro/"], ["Oncology", "/oncology/"]]],
+    ["Technology", [["NovaPharm Intelligence", "/technology/"], ["Governance", "/about/governance/"]]]
+  ],
+  oncology: [
+    ["Explore oncology", [["Oncology overview", "/oncology/"], ["Strategic portfolio", "/products/strategic-portfolio/"]]],
+    ["Our approach", [["Regulatory & Quality", "/regulatory-services/"], ["Sourcing services", "/services/"]]],
+    ["Connect", [["Discuss an opportunity", "/contact/?enquiry=Oncology"]]]
+  ],
+  products: [
+    ["Explore products", [["Products overview", "/products/"], ["Nutraxin", "/products/nutraxin/"], ["Strategic portfolio", "/products/strategic-portfolio/"]]],
+    ["Discover", [["Oncology", "/oncology/"], ["Market access", "/services/"]]],
+    ["Partner", [["Distribution enquiries", "/contact/?enquiry=Distribution"], ["Business account", "/account-application/"]]]
+  ],
+  intelligence: [
+    ["Explore", [["NovaPharm Intelligence", "/technology/"], ["The Medicines Terminal", "/technology/#intelligence-platform"], ["NOVA & PANDORA", "/technology/#intelligence-ecosystem"]]],
+    ["Intelligence workspaces", [["Medicine identity", "/technology/#intelligence-workspaces"], ["Markets & geography", "/technology/#intelligence-platform"], ["Trends & forecasting", "/technology/#intelligence-platform"]]],
+    ["Discover", [["Evidence & trust", "/technology/#intelligence-trust"], ["Platform roadmap", "/technology/#intelligence-roadmap"]]]
+  ],
+  insights: [
+    ["Explore", [["Insights overview", "/news-insights/"], ["Supply-chain traceability", "/news-insights/batch-to-buyer-pharmaceutical-traceability/"]]],
+    ["Perspectives", [["Oncology forecasting", "/news-insights/oncology-supply-chain-demand-forecasting/"], ["GDP & quality systems", "/news-insights/gdp-qms-pharmaceutical-distribution-foundations/"]]],
+    ["More", [["PLPI strategy", "/news-insights/plpi-pharmaceutical-supply-resilience/"], ["Contact the team", "/contact/"]]]
+  ]
+};
+
 function header(route) {
   const current = globalSection(route);
-  return `<header class="site-header npd-header" data-site-header>
+  return `<header class="site-header npd-header" data-site-header data-mega-open="">
     <div class="container header-inner npd-header-inner">
       <a class="brand" href="/" aria-label="NovaPharm Healthcare home">
         <picture class="brand-logo"><source srcset="/assets/brand/novapharm-healthcare-logo.svg" type="image/svg+xml"><img src="/assets/brand/novapharm-healthcare-logo.png" alt="NovaPharm Healthcare" width="2048" height="258" fetchpriority="high" decoding="async"></picture>
       </a>
       <button class="nav-toggle npd-menu" type="button" aria-expanded="false" aria-controls="primary-navigation" data-nav-toggle><span data-menu-label>Menu</span><span class="sr-only">Open navigation</span></button>
       <nav class="site-nav npd-global-nav" id="primary-navigation" aria-label="Primary navigation" data-site-nav>
-        ${globalNavigation.map(([label, href, section]) => `<a href="${href}"${current === section ? ' aria-current="page"' : ""}>${label}</a>`).join("")}
+        ${globalNavigation.map(([label, href, section]) => `<a href="${href}"${current === section ? ' aria-current="page"' : ""}${megaNavigation[section] ? ` data-mega-trigger="${section}" aria-expanded="false" aria-controls="npd-mega-${section}"` : ""}>${label}</a>`).join("")}
       </nav>
     </div>
+    ${Object.entries(megaNavigation).map(([section, columns]) => `<div class="npd-mega" id="npd-mega-${section}" data-mega-panel="${section}" aria-hidden="true"><nav class="container npd-mega-inner" aria-label="${section === "intelligence" ? "NovaPharm Intelligence" : section} category navigation">${columns.map(([heading, links]) => `<div class="npd-mega-column"><p>${esc(heading)}</p>${links.map(([name, href], i) => `<a href="${href}"${i === 0 ? ' class="npd-mega-feature"' : ""}>${esc(name)}</a>`).join("")}</div>`).join("")}</nav></div>`).join("")}
   </header>`;
 }
 
@@ -150,11 +188,11 @@ function homeMain() {
             <a class="npd-apple-button" href="/about/">Explore NovaPharm</a>
             <a class="npd-apple-link" href="/partner-with-us/">Partner with us</a>
           </div>
-          <p class="npd-apple-status">Regulated wholesale supply has not commenced. Applicable authorisations and operating controls remain prerequisites to release.</p>
+
         </div>
         <figure class="npd-apple-hero-art">
           <picture><source srcset="/assets/media/home/supply-network-hero.avif" type="image/avif"><img src="/assets/media/home/supply-network-hero.jpg" alt="Illustrative pharmaceutical supply network visual" width="1672" height="941" fetchpriority="high" decoding="async"></picture>
-          <figcaption>Conceptual visual. Not a NovaPharm facility, inventory or active distribution operation.</figcaption>
+
         </figure>
       </div>
     </section>
@@ -175,7 +213,7 @@ function homeMain() {
         </div>
         <figure class="npd-apple-oncology-art">
           ${responsiveImage("/assets/media/products/oncology-vial-handling", "Representative controlled pharmaceutical laboratory handling")}
-          <figcaption>Representative scientific context. No NovaPharm facility, stock or approved programme is depicted.</figcaption>
+
         </figure>
       </div>
     </section>
@@ -240,7 +278,7 @@ function homeMain() {
         <aside class="npd-apple-regulatory-notice">
           <p class="npd-apple-eyebrow">CURRENT STATUS</p>
           <h3>Preparation, not permission.</h3>
-          <p>Regulated wholesale supply has not commenced. Commercial release remains subject to applicable authorisation, product-specific evidence and operating controls. PLPI activity requires the relevant licence.</p>
+          <p>Regulated supply will begin only after the required authorisations, product-specific permissions and quality controls are in place. PLPI activity requires the relevant licence.</p>
         </aside>
       </div>
     </section>
@@ -261,7 +299,7 @@ function homeMain() {
 
 function aboutMain() {
   return `<main id="main" class="npd-main">${hero({ route: "/about/", family: "company", eyebrow: "Company", title: "Built for decisions that must withstand scrutiny.", lead: "NovaPharm Healthcare is an active UK company developing a compliance-first B2B pharmaceutical model around sourcing, quality, regulatory readiness and controlled technology.", actionsHtml: actions("Meet the leadership", "/leadership/", "Review governance", "/about/governance/") })}
-  <section class="npd-section"><div class="container npd-split"><div>${sectionIntro("Our purpose", "Connect opportunity to the evidence required to act.", "NovaPharm exists to make sourcing, regulatory, quality and commercial dependencies visible before a product or partnership progresses.")}<dl class="npd-facts"><div><dt>Legal entity</dt><dd>NOVAPHARM HEALTHCARE LTD</dd></div><div><dt>Company number</dt><dd>16716501</dd></div><div><dt>Location</dt><dd>Feltham, England</dd></div><div><dt>Current status</dt><dd>Active company; regulated wholesale supply not commenced</dd></div></dl></div>${responsiveImage("/assets/media/modules/about-operating-model", "Professional reviewing controlled pharmaceutical operating information", { caption: "Representative business context; no current regulated operation is implied." })}</div></section>
+  <section class="npd-section"><div class="container npd-split"><div>${sectionIntro("Our purpose", "Connect opportunity to the evidence required to act.", "NovaPharm exists to make sourcing, regulatory, quality and commercial dependencies visible before a product or partnership progresses.")}<dl class="npd-facts"><div><dt>Legal entity</dt><dd>NOVAPHARM HEALTHCARE LTD</dd></div><div><dt>Company number</dt><dd>16716501</dd></div><div><dt>Location</dt><dd>Feltham, England</dd></div><div><dt>Current status</dt><dd>Active company; regulated wholesale supply not commenced</dd></div></dl></div>${responsiveImage("/assets/media/modules/about-operating-model", "Professional reviewing controlled pharmaceutical operating information", )}</div></section>
   <section class="npd-section npd-section-soft"><div class="container">${sectionIntro("Operating principles", "What remains true as NovaPharm develops.")}<ol class="npd-principles"><li><span>01</span><strong>Compliance before revenue.</strong><p>No commercial urgency overrides applicable permission or quality control.</p></li><li><span>02</span><strong>Evidence before claims.</strong><p>Public statements must be supported, scoped and reviewable.</p></li><li><span>03</span><strong>Quality across every partner.</strong><p>Outsourcing changes the operator, not NovaPharm's accountability for oversight.</p></li><li><span>04</span><strong>Human judgement over automation.</strong><p>Technology supports decisions; it does not create pharmaceutical authority.</p></li></ol></div></section>
   <section class="npd-section npd-final"><div class="container"><h2>Understand the people and controls behind the model.</h2>${actions("Leadership", "/leadership/", "Company governance", "/about/governance/")}</div></section></main>`;
 }
@@ -341,7 +379,7 @@ function oncologyMain() {
 function productsMain() {
   return `<main id="main" class="npd-main">${hero({ route: "/products/", family: "products", eyebrow: "Products", title: "Two portfolios. Two different decisions.", lead: "Nutraxin is presented as a verified catalogue-reference experience. The strategic pharmaceutical portfolio describes non-commerce opportunity priorities. Neither is a statement of current stock or permission to supply." })}
   <section class="npd-section npd-product-feature" id="food-supplement-portfolio-review" data-portfolio-priority="first"><div class="container npd-products-lead"><div>${sectionIntro("Nutraxin UK catalogue reference", "Food Supplement Portfolio Review", "Nineteen owner-supplied catalogue records are available for qualified B2B review with approved pack imagery and source-transcribed composition. Availability, price, stock, claims and regulatory acceptance are not asserted.")}<dl class="npd-inline-facts"><div><dt>References</dt><dd>19</dd></div><div><dt>Classification</dt><dd>Food supplements</dd></div><div><dt>Last reviewed</dt><dd>22 August 2026</dd></div></dl>${actions("Review the food supplement portfolio", "/products/nutraxin/", "Discuss a distribution opportunity", "/contact/?enquiry=Product%20opportunity")}</div>${productPicture(products[0], true, "(max-width: 720px) 84vw, 420px")}</div></section>
-  <section class="npd-section"><div class="container npd-split"><div>${sectionIntro("Strategic pharmaceutical portfolio", "Opportunity priorities, not a public product catalogue.", "Selected oncology, specialty, oral-liquid, generics and hard-to-source categories are assessed product by product. Rights, source, evidence, regulatory route, quality and commercial viability must be established separately.")}${actions("Review the strategic portfolio", "/products/strategic-portfolio/")}</div>${responsiveImage("/assets/media/modules/product-portfolio-evidence", "Team reviewing pharmaceutical portfolio evidence", { caption: "Representative portfolio-review context; no availability or facility ownership is implied." })}</div></section>
+  <section class="npd-section"><div class="container npd-split"><div>${sectionIntro("Strategic pharmaceutical portfolio", "Opportunity priorities, not a public product catalogue.", "Selected oncology, specialty, oral-liquid, generics and hard-to-source categories are assessed product by product. Rights, source, evidence, regulatory route, quality and commercial viability must be established separately.")}${actions("Review the strategic portfolio", "/products/strategic-portfolio/")}</div>${responsiveImage("/assets/media/modules/product-portfolio-evidence", "Team reviewing pharmaceutical portfolio evidence", )}</div></section>
   <section class="npd-section npd-section-soft"><div class="container">${sectionIntro("Product governance", "Visibility is not release.", "Every substantive product statement remains subject to the Claims Registry and its underlying evidence.")}<ol class="npd-horizontal-steps"><li><span>01</span><strong>Identity</strong></li><li><span>02</span><strong>Rights</strong></li><li><span>03</span><strong>Source</strong></li><li><span>04</span><strong>Regulatory scope</strong></li><li><span>05</span><strong>Quality and release</strong></li></ol></div></section></main>`;
 }
 
@@ -446,7 +484,7 @@ function replaceMain(html, main) {
 }
 
 function replaceChrome(html, route) {
-  html = html.replace(/<header class="site-header"[\s\S]*?<\/header>/, header(route));
+  html = html.replace(/<header\s+class="site-header(?:\s+[^"]*)?"[^>]*>[\s\S]*?<\/header>/, header(route));
   html = html.replace(/<footer class="site-footer"[\s\S]*?<\/footer>/, footer());
   html = html.replace(/<body([^>]*)>/, (_match, attributes) => {
     const governedAttributes = attributes
