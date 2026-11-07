@@ -398,3 +398,105 @@ body[data-page="technology"] .np-intelligence {
 .np-intelligence .npi-final .npi-kicker,
 .np-intelligence .npi-terminal-section .npi-kicker { color: #bd100b; }
 .np-intelligence .npi-terminal-search .npi-terminal-search-hint { color: #555b64; }
+
+
+/* Geography and trends are deliberately non-quantified previews until source approval. */
+.np-intelligence .npi-terminal-insights {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+.np-intelligence .npi-terminal-insight {
+  min-width: 0;
+  padding: 20px 18px 17px;
+  background: #fbfbfd;
+  border: 1px solid #e5e5ea;
+  border-radius: 13px;
+}
+.np-intelligence .npi-terminal-insight-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  color: #505660;
+  font-size: 10px;
+  font-weight: 660;
+}
+.np-intelligence .npi-terminal-insight-top small { font-size: 10px; font-weight: 500; color: #626974; }
+.np-intelligence .npi-terminal-insight h4 { margin-top: 14px; font-size: 16px; line-height: 1.22; color: #27282b; }
+.np-intelligence .npi-terminal-insight > p {
+  margin-top: 13px;
+  color: #555b65;
+  font-size: 11px;
+  line-height: 1.42;
+}
+.np-intelligence .npi-geography-visual {
+  height: 87px;
+  margin-top: 13px;
+  border: 1px solid #e2e5ea;
+  border-radius: 9px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1.25fr 1.5fr 1.3fr 1fr;
+  align-items: end;
+  gap: 3px;
+  padding: 13px 16px;
+  background: linear-gradient(140deg,#f5f8fc,#e8edf3);
+}
+.np-intelligence .npi-geography-visual span {
+  display: block;
+  background: linear-gradient(180deg,#b9c7d8,#d9e1e9);
+  border-radius: 18px 18px 6px 6px;
+  height: 44%;
+}
+.np-intelligence .npi-geography-visual span:nth-child(2) { height: 72%; }
+.np-intelligence .npi-geography-visual span:nth-child(3) { height: 55%; }
+.np-intelligence .npi-geography-visual span:nth-child(4) { height: 86%; }
+.np-intelligence .npi-geography-visual span:nth-child(5) { height: 36%; }
+.np-intelligence .npi-terminal-geography-regions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 12px;
+}
+.np-intelligence .npi-terminal-geography-regions span {
+  padding: 4px 7px;
+  font-size: 9px;
+  color: #3b434e;
+  background: #eff1f5;
+  border-radius: 99px;
+}
+.np-intelligence .npi-trend-visual {
+  height: 87px;
+  margin-top: 13px;
+  border-bottom: 1px solid #c8d2dd;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: 8px;
+  padding: 0 12px;
+  background: repeating-linear-gradient(to top, transparent 0, transparent 26px, #edf0f4 27px, #edf0f4 28px);
+}
+.np-intelligence .npi-trend-visual i {
+  display: block;
+  width: 11%;
+  height: 35%;
+  background: linear-gradient(180deg,#a2adba,#c1cad5);
+  border-radius: 5px 5px 0 0;
+}
+.np-intelligence .npi-trend-visual i:nth-child(2) { height: 43%; }
+.np-intelligence .npi-trend-visual i:nth-child(3) { height: 52%; }
+.np-intelligence .npi-trend-visual i:nth-child(4) { height: 46%; }
+.np-intelligence .npi-trend-visual i:nth-child(5) { height: 65%; }
+.np-intelligence .npi-trend-visual i:nth-child(6) { height: 71%; background: #c4d4e3; }
+.np-intelligence .npi-trend-visual i:nth-child(7) { height: 63%; background: #c4d4e3; }
+.np-intelligence .npi-trend-visual i:nth-child(8) { height: 84%; background: #c4d4e3; }
+.np-intelligence .npi-trend-key { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; margin-top: 10px; }
+.np-intelligence .npi-trend-key span { font-size: 10px; color: #535c66; }
+@media (max-width: 730px) {
+  .np-intelligence .npi-terminal-insights { grid-template-columns: 1fr; }
+}
+@media (prefers-contrast: more) {
+  .np-intelligence .npi-terminal-insight { border-color: #59616b; }
+}
