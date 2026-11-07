@@ -52,3 +52,9 @@ Contact production is separate: `infra/aws/contact-production.json` passed Cloud
 8. Establish a separate production pool, app-client, certificates, hostnames, approved role mappings and operational controls before permitting real customers. This candidate intentionally pins the **staging** user pool and cannot be marked production-ready simply by changing DNS.
 
 **Release gate:** Until steps 1–8 are independently tested, leave production feature flags OFF and #55 OPEN.
+
+## Logout boundary
+
+The protected API revokes `np_session` in its persistence store first. The portal then uses `/auth/end-session/` for Cognito identities instead of the obsolete Azure `/.auth/logout` path. That route deletes the browser session cookie, and redirects to the Cognito managed-logout endpoint **only if** `COGNITO_POST_LOGOUT_URL` is an exact HTTPS, application-origin homepage URL already recorded among the app client's Allowed sign-out URLs. Without that configuration, it returns to the application homepage after the backend revocation.
+
+Cognito managed logout does not automatically end the upstream Entra OIDC session; explicit Microsoft SSO logout and Conditional Access reauthentication requirements must be reviewed in the security acceptance test. See the [AWS logout documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/logout-endpoint.html).
