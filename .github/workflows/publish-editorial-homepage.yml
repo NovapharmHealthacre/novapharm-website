@@ -1,0 +1,221 @@
+name: Publish approved Next.js editorial homepage to Pages (scoped)
+on:
+  push:
+    branches: [ops/next-pages-publication-candidate-20261107]
+    paths:
+      - .github/workflows/publish-editorial-homepage.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: novapharm-scoped-homepage-publication
+  cancel-in-progress: false
+
+env:
+  RELEASE_SHA: 0beed7c1ebb66b5e464a938d30e7dc05ea3b1f26
+
+jobs:
+  publish-homepage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact approved main release
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Require approved main SHA and governed homepage source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$RELEASE_SHA"
+          grep -Fq 'npd-apple-nova-art' apps/corporate/components/concise-home.tsx
+          grep -Fq 'Regulated wholesale supply has not commenced' apps/corporate/components/concise-home.tsx
+          grep -Fq 'PLPI activity requires the relevant licence' apps/corporate/components/concise-home.tsx
+          test -f apps/corporate/app/homepage-editorial.css
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies and build public Next.js app
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts
+          npm run build --workspace @novapharm/corporate
+
+      - name: Render exact approved Next.js homepage
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd apps/corporate
+          PORT=3177 HOSTNAME=127.0.0.1 PUBLIC_INDEXABLE=true npm run start > "$RUNNER_TEMP/novapharm-home-node.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/novapharm-home-node.pid"
+          cd ../..
+          for attempt in $(seq 1 30); do
+            if curl -fsS --max-time 3 -o /dev/null http://127.0.0.1:3177/; then break; fi
+            sleep 2
+          done
+          curl -fsSL --retry 3 http://127.0.0.1:3177/ -o "$RUNNER_TEMP/novapharm-new-home.html"
+          export HOME_CSP_TARGET="$RUNNER_TEMP/novapharm-new-home.html"
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64, hashlib, re
+          import os
+
+          target = Path(os.environ["HOME_CSP_TARGET"])
+          html = target.read_text(encoding="utf-8")
+          assert "<head>" in html, "A complete Next.js HTML document is required"
+          assert 'http-equiv="Content-Security-Policy"' not in html, "Do not replace an existing CSP without review"
+          hashes = []
+          for attrs, body in re.findall(r'<script\b([^>]*)>(.*?)</script>', html, flags=re.I | re.S):
+              if re.search(r'\bsrc\s*=', attrs, re.I) or not body.strip():
+                  continue
+              if re.search(r'\btype\s*=\s*["\']application/ld\+json', attrs, re.I):
+                  continue
+              digest = base64.b64encode(hashlib.sha256(body.encode("utf-8")).digest()).decode("ascii")
+              hashes.append("'sha256-" + digest + "'")
+          assert hashes, "Next.js static hydration requires an explicit inline-script hash inventory"
+          policy = (
+              "default-src 'self'; script-src 'self' " + " ".join(sorted(set(hashes)))
+              + "; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; "
+              + "font-src 'self'; connect-src 'self'; object-src 'none'; "
+              + "base-uri 'self'; form-action 'none'; upgrade-insecure-requests"
+          )
+          html = html.replace("<head>", '<head><meta http-equiv="Content-Security-Policy" content="' + policy + '">', 1)
+          target.write_text(html, encoding="utf-8")
+          print("Preserved strict static-host CSP with", len(set(hashes)), "approved inline-script SHA-256 hashes")
+          PY
+          grep -Fq 'http-equiv="Content-Security-Policy"' "$RUNNER_TEMP/novapharm-new-home.html"
+          grep -Fq 'npd-apple-hero' "$RUNNER_TEMP/novapharm-new-home.html"
+          grep -Fq 'npd-apple-nova-art' "$RUNNER_TEMP/novapharm-new-home.html"
+          grep -Fq 'Regulated wholesale supply has not commenced' "$RUNNER_TEMP/novapharm-new-home.html"
+          test "$(grep -o 'npd-apple-product' "$RUNNER_TEMP/novapharm-new-home.html" | wc -l)" -ge 3
+          ! grep -Fq 'data-login-form' "$RUNNER_TEMP/novapharm-new-home.html"
+
+      - name: Compose isolated patch onto current gh-pages source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin gh-pages
+          pages_base="$(git rev-parse refs/remotes/origin/gh-pages)"
+          echo "PAGES_BASE=$pages_base" >> "$GITHUB_ENV"
+          git worktree add --detach "$RUNNER_TEMP/novapharm-publication" "$pages_base"
+          public="$RUNNER_TEMP/novapharm-publication"
+          test -f "$public/CNAME"
+          test "$(tr -d '\r\n' < "$public/CNAME")" = "novapharmhealthcare.com"
+          for image in             assets/media/home/supply-network-hero.avif             assets/media/home/supply-network-hero.jpg             assets/media/products/oncology-vial-handling.jpg             assets/media/products/nutraxin/vitamin-d3-120-tablets.png             assets/media/products/nutraxin/vitamin-c-1000mg-30-tablets.png             assets/media/products/nutraxin/collagen-gold-30-tablets.png; do
+            test -s "$public/$image" || { echo "Missing governed image $image"; exit 1; }
+          done
+          cp "$RUNNER_TEMP/novapharm-new-home.html" "$public/index.html"
+          while IFS= read -r -d '' file; do
+            relative="${file#apps/corporate/.next/static/}"
+            target="$public/_next/static/$relative"
+            mkdir -p "$(dirname "$target")"
+            if [ -f "$target" ] && ! cmp -s "$file" "$target"; then
+              echo "::error::Next chunk digest collision at $relative"
+              exit 1
+            fi
+            cp "$file" "$target"
+          done < <(find apps/corporate/.next/static -type f -print0)
+          cd "$public"
+          git status --short
+          git add -- index.html _next/static
+          while IFS= read -r changed; do
+            case "$changed" in
+              index.html|_next/static/*) ;;
+              *) echo "::error::Unexpected staged path: $changed"; exit 1 ;;
+            esac
+          done < <(git diff --cached --name-only)
+          test "$(git diff --cached --name-only | grep -Fx 'index.html')" = "index.html"
+
+      - name: Chromium and WebKit checks for the complete composed Pages tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx playwright install chromium webkit
+          python3 -m http.server 3188 --directory "$RUNNER_TEMP/novapharm-publication" --bind 127.0.0.1 > "$RUNNER_TEMP/novapharm-home-static.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/novapharm-home-static.pid"
+          for attempt in $(seq 1 12); do
+            if curl -fsS -o /dev/null http://127.0.0.1:3188/; then break; fi
+            sleep 1
+          done
+          node - <<'NODE'
+          const assert=require('node:assert/strict');
+          const {chromium,webkit}=require('playwright');
+          (async()=>{
+            for(const [engine,browserType] of [['chromium',chromium],['webkit',webkit]]){
+              const browser=await browserType.launch({headless:true});
+              for(const viewport of [{width:390,height:844},{width:1440,height:900}]){
+                const page=await browser.newPage({viewport});
+                const failures=[];
+                page.on('pageerror',e=>failures.push(e.message));
+                page.on('console',m=>{if(m.type()==='error')failures.push(m.text())});
+                page.on('response',r=>{if(r.status()>=400 && !r.request().isNavigationRequest())failures.push(r.status()+' '+r.url())});
+                page.on('requestfailed',r=>failures.push('network '+r.url()+' '+(r.failure()?.errorText||'')));
+                const response=await page.goto('http://127.0.0.1:3188/',{waitUntil:'networkidle',timeout:45000});
+                assert.equal(response.status(),200);
+                await page.evaluate(()=>scrollTo(0,document.body.scrollHeight));
+                await page.waitForTimeout(700);
+                const data=await page.evaluate(()=>({
+                  hero:!!document.querySelector('.npd-apple-hero'),
+                  nova:!!document.querySelector('.npd-apple-nova-art'),
+                  products:document.querySelectorAll('.npd-apple-product').length,
+                  heading:document.querySelectorAll('h1').length,
+                  overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1,
+                  brokenImages:[...document.images].filter(x=>x.complete && x.naturalWidth===0).map(x=>x.currentSrc),
+                  hasVisualStyle:getComputedStyle(document.querySelector('.npd-apple-hero')).backgroundImage!=='none',
+                  patientOrdering:/Buy now|Add to basket/.test(document.querySelector('main')?.innerText||'')
+                }));
+                console.log(JSON.stringify({engine,viewport,data,failures},null,2));
+                assert.equal(data.hero,true);
+                assert.equal(data.nova,true);
+                assert.equal(data.products,3);
+                assert.equal(data.heading,1);
+                assert.equal(data.overflow,false);
+                assert.equal(data.hasVisualStyle,true);
+                assert.equal(data.patientOrdering,false);
+                assert.deepEqual(data.brokenImages,[]);
+                assert.deepEqual(failures,[]);
+                const contact=await page.request.get('http://127.0.0.1:3188/contact/');
+                assert.equal(contact.status(),200,'Existing contact page must be preserved');
+                await page.close();
+              }
+              await browser.close();
+            }
+          })().catch(e=>{console.error(e);process.exitCode=1});
+          NODE
+
+      - name: Publish scoped patch without overwriting concurrent gh-pages updates
+        shell: bash
+        run: |
+          set -euo pipefail
+          public="$RUNNER_TEMP/novapharm-publication"
+          current="$(git ls-remote origin refs/heads/gh-pages | cut -f1)"
+          if [ "$current" != "$PAGES_BASE" ]; then
+            echo "::error::gh-pages changed concurrently; release must be reconciled and replayed"
+            exit 1
+          fi
+          cd "$public"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "release(home): publish approved Apple-inspired Next homepage only"
+          git push origin HEAD:refs/heads/gh-pages
+          echo "Published scoped homepage patch to gh-pages. Live custom-domain verification remains required."
+          git log -1 --format='%H %s'
+
+      - name: Upload proof of rendered and composed release
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: novapharm-editorial-homepage-release-evidence
+          path: |
+            ${{ runner.temp }}/novapharm-home-node.log
+            ${{ runner.temp }}/novapharm-home-static.log
+          retention-days: 7
