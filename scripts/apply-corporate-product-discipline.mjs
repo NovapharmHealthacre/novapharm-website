@@ -24,7 +24,8 @@ const esc = (value) => String(value ?? "").replace(/[&<>\"]/g, (character) => ({
 
 function globalSection(route) {
   if (route === "/" || route.startsWith("/about/") || route.startsWith("/leadership/") || route === "/about/" || route === "/partner-with-us/" || route === "/investor-information/" || route === "/careers/") return "company";
-  if (["/capabilities/", "/services/", "/regulatory-services/", "/cro/", "/technology/"].some((prefix) => route === prefix || route.startsWith(prefix))) return "capabilities";
+  if (route === "/technology/") return "intelligence";
+  if (["/capabilities/", "/services/", "/regulatory-services/", "/cro/"].some((prefix) => route === prefix || route.startsWith(prefix))) return "capabilities";
   if (route.startsWith("/oncology/")) return "oncology";
   if (route.startsWith("/products/") || route.startsWith("/product-portfolio/")) return "products";
   if (route.startsWith("/news-insights/")) return "insights";
@@ -38,24 +39,61 @@ const globalNavigation = [
   ["Capabilities", "/capabilities/", "capabilities"],
   ["Oncology", "/oncology/", "oncology"],
   ["Products", "/products/", "products"],
+  ["NovaPharm Intelligence", "/technology/", "intelligence"],
   ["Insights", "/news-insights/", "insights"],
   ["Contact", "/contact/", "contact"],
   ["Secure Portal", "/portal/", "portal"]
 ];
 
+// A single category-navigation contract across corporate pages. Navigation
+// remains usable as ordinary links without JavaScript.
+const megaNavigation = {
+  company: [
+    ["Explore", [["Company overview", "/about/"], ["Leadership", "/leadership/"], ["Governance", "/about/governance/"]]],
+    ["Work with NovaPharm", [["Partnerships", "/partner-with-us/"], ["Investor information", "/investor-information/"], ["Careers", "/careers/"]]],
+    ["More", [["Trust Centre", "/trust-centre/"], ["Contact", "/contact/"]]]
+  ],
+  capabilities: [
+    ["Explore", [["All capabilities", "/capabilities/"], ["Sourcing & market access", "/services/"], ["Regulatory & Quality", "/regulatory-services/"]]],
+    ["Specialist work", [["Clinical Research & CRO", "/cro/"], ["Oncology", "/oncology/"]]],
+    ["Technology", [["NovaPharm Intelligence", "/technology/"], ["Governance", "/about/governance/"]]]
+  ],
+  oncology: [
+    ["Explore oncology", [["Oncology overview", "/oncology/"], ["Strategic portfolio", "/products/strategic-portfolio/"]]],
+    ["Our approach", [["Regulatory & Quality", "/regulatory-services/"], ["Sourcing services", "/services/"]]],
+    ["Connect", [["Discuss an opportunity", "/contact/?enquiry=Oncology"]]]
+  ],
+  products: [
+    ["Explore products", [["Products overview", "/products/"], ["Nutraxin", "/products/nutraxin/"], ["Strategic portfolio", "/products/strategic-portfolio/"]]],
+    ["Discover", [["Oncology", "/oncology/"], ["Market access", "/services/"]]],
+    ["Partner", [["Distribution enquiries", "/contact/?enquiry=Distribution"], ["Business account", "/account-application/"]]]
+  ],
+  intelligence: [
+    ["Explore", [["NovaPharm Intelligence", "/technology/"], ["The Medicines Terminal", "/technology/#intelligence-platform"], ["NOVA & PANDORA", "/technology/#intelligence-ecosystem"]]],
+    ["Intelligence workspaces", [["Medicine identity", "/technology/#intelligence-workspaces"], ["Markets & geography", "/technology/#intelligence-platform"], ["Trends & forecasting", "/technology/#intelligence-platform"]]],
+    ["Discover", [["Evidence & trust", "/technology/#intelligence-trust"], ["Platform roadmap", "/technology/#intelligence-roadmap"]]]
+  ],
+  insights: [
+    ["Explore", [["Insights overview", "/news-insights/"], ["Supply-chain traceability", "/news-insights/batch-to-buyer-pharmaceutical-traceability/"]]],
+    ["Perspectives", [["Oncology forecasting", "/news-insights/oncology-supply-chain-demand-forecasting/"], ["GDP & quality systems", "/news-insights/gdp-qms-pharmaceutical-distribution-foundations/"]]],
+    ["More", [["PLPI strategy", "/news-insights/plpi-pharmaceutical-supply-resilience/"], ["Contact the team", "/contact/"]]]
+  ]
+};
+
 function header(route) {
   const current = globalSection(route);
-  return `<header class="site-header npd-header" data-site-header>
+  return \`<header class="site-header npd-header" data-site-header data-mega-open="">
     <div class="container header-inner npd-header-inner">
       <a class="brand" href="/" aria-label="NovaPharm Healthcare home">
         <picture class="brand-logo"><source srcset="/assets/brand/novapharm-healthcare-logo.svg" type="image/svg+xml"><img src="/assets/brand/novapharm-healthcare-logo.png" alt="NovaPharm Healthcare" width="2048" height="258" fetchpriority="high" decoding="async"></picture>
       </a>
       <button class="nav-toggle npd-menu" type="button" aria-expanded="false" aria-controls="primary-navigation" data-nav-toggle><span data-menu-label>Menu</span><span class="sr-only">Open navigation</span></button>
       <nav class="site-nav npd-global-nav" id="primary-navigation" aria-label="Primary navigation" data-site-nav>
-        ${globalNavigation.map(([label, href, section]) => `<a href="${href}"${current === section ? ' aria-current="page"' : ""}>${label}</a>`).join("")}
+        \${globalNavigation.map(([label, href, section]) => \`<a href="\${href}"\${current === section ? ' aria-current="page"' : ""}\${megaNavigation[section] ? \` data-mega-trigger="\${section}" aria-expanded="false" aria-controls="npd-mega-\${section}"\` : ""}>\${label}</a>\`).join("")}
       </nav>
     </div>
-  </header>`;
+    \${Object.entries(megaNavigation).map(([section, columns]) => \`<div class="npd-mega" id="npd-mega-\${section}" data-mega-panel="\${section}" aria-hidden="true"><nav class="container npd-mega-inner" aria-label="\${section === "intelligence" ? "NovaPharm Intelligence" : section} category navigation">\${columns.map(([heading, links]) => \`<div class="npd-mega-column"><p>\${esc(heading)}</p>\${links.map(([name, href], i) => \`<a href="\${href}"\${i === 0 ? ' class="npd-mega-feature"' : ""}>\${esc(name)}</a>\`).join("")}</div>\`).join("")}</nav></div>\`).join("")}
+  </header>\`;
 }
 
 function footer() {
@@ -150,11 +188,11 @@ function homeMain() {
             <a class="npd-apple-button" href="/about/">Explore NovaPharm</a>
             <a class="npd-apple-link" href="/partner-with-us/">Partner with us</a>
           </div>
-          <p class="npd-apple-status">Regulated wholesale supply has not commenced. Applicable authorisations and operating controls remain prerequisites to release.</p>
+
         </div>
         <figure class="npd-apple-hero-art">
           <picture><source srcset="/assets/media/home/supply-network-hero.avif" type="image/avif"><img src="/assets/media/home/supply-network-hero.jpg" alt="Illustrative pharmaceutical supply network visual" width="1672" height="941" fetchpriority="high" decoding="async"></picture>
-          <figcaption>Conceptual visual. Not a NovaPharm facility, inventory or active distribution operation.</figcaption>
+
         </figure>
       </div>
     </section>
@@ -175,7 +213,7 @@ function homeMain() {
         </div>
         <figure class="npd-apple-oncology-art">
           ${responsiveImage("/assets/media/products/oncology-vial-handling", "Representative controlled pharmaceutical laboratory handling")}
-          <figcaption>Representative scientific context. No NovaPharm facility, stock or approved programme is depicted.</figcaption>
+
         </figure>
       </div>
     </section>
@@ -240,7 +278,7 @@ function homeMain() {
         <aside class="npd-apple-regulatory-notice">
           <p class="npd-apple-eyebrow">CURRENT STATUS</p>
           <h3>Preparation, not permission.</h3>
-          <p>Regulated wholesale supply has not commenced. Commercial release remains subject to applicable authorisation, product-specific evidence and operating controls. PLPI activity requires the relevant licence.</p>
+          <p>Regulated supply will begin only after the required authorisations, product-specific permissions and quality controls are in place. PLPI activity requires the relevant licence.</p>
         </aside>
       </div>
     </section>
