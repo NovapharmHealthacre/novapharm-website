@@ -280,6 +280,28 @@ jobs:
           echo "The custom domain did not serve the complete corrected release within 12 minutes." >&2
           exit 1
 
+      - name: Confirm exact Intelligence navigation and Medicines Terminal on public domain
+        env:
+          LIVE_ORIGIN: https://novapharmhealthcare.com
+        run: |
+          set -euo pipefail
+          key="intelligence-${GITHUB_SHA}-$(date +%s)"
+          for attempt in $(seq 1 12); do
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/?${key}-${attempt}" > /tmp/intelligence-home.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/technology/?${key}-${attempt}" > /tmp/intelligence-technology.html || true
+            if grep -Fq 'data-mega-trigger="intelligence"' /tmp/intelligence-home.html \
+              && grep -Fq 'data-mega-panel="intelligence"' /tmp/intelligence-home.html \
+              && grep -Fq 'npi-terminal-geography' /tmp/intelligence-technology.html \
+              && grep -Fq 'npi-terminal-trends' /tmp/intelligence-technology.html \
+              && ! grep -Fq 'Conceptual visual. Not a NovaPharm facility, inventory or active distribution operation.' /tmp/intelligence-home.html; then
+              echo "Exact Intelligence navigation and geography/trends release verified at ${LIVE_ORIGIN}"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "PUBLIC RELEASE NOT CONFIRMED: custom domain does not serve the new Intelligence navigation and terminal modules" >&2
+          exit 1
+
       - name: Mark publication successful
         if: success()
         env:
