@@ -311,7 +311,7 @@ body[data-page="technology"] .np-intelligence {
   .np-intelligence .npi-provenance-list > div { grid-template-columns: 55px minmax(200px,.9fr) minmax(0,1.1fr); }
 }
 @media (max-width: 600px) {
-  .np-intelligence .npi-wrap { width: min(100% - 36px, 1200px); }
+  .np-intelligence .npi-wrap { width: min(1200px, calc(100% - 36px)); }
   .np-intelligence .npi-section { padding-block: 76px; }
   .np-intelligence .npi-kicker { font-size: .67rem; letter-spacing: .06em; }
   .np-intelligence .npi-hero { padding-block: 83px 34px; }
