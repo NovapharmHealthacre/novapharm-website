@@ -1,0 +1,42 @@
+name: Inspect Next.js pre-render artifacts for GitHub Pages publication
+on:
+  push:
+    branches: [ops/next-pages-publication-candidate-20261107]
+    paths:
+      - .github/workflows/inspect-next-pages-candidate.yml
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Build exact public Next.js application
+        run: npm run build --workspace @novapharm/corporate
+      - name: Inspect generated static and route content
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Next routes and HTML candidates:"
+          find apps/corporate/.next/server/app -type f -name '*.html' | sort | head -80
+          echo "Next static assets:"
+          find apps/corporate/.next/static -type f | wc -l
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'apps/corporate/.next/prerender-manifest.json';
+          const manifest = JSON.parse(fs.readFileSync(path,'utf8'));
+          const routes=Object.keys(manifest.routes||{});
+          console.log(JSON.stringify({manifestVersion:manifest.version,routeCount:routes.length,firstRoutes:routes.slice(0,70),dynamic: Object.keys(manifest.dynamicRoutes||{})},null,2));
+          const htmlPath='apps/corporate/.next/server/app/index.html';
+          if(fs.existsSync(htmlPath)){
+            const html=fs.readFileSync(htmlPath,'utf8');
+            console.log(JSON.stringify({rootHTML:true,bytes:html.length,containsEditorial:html.includes('npd-apple-hero'),containsNOVA:html.includes('NOVA'),hasNextScripts:html.includes('_next/static/')},null,2));
+          } else console.log('Root HTML not present at expected path');
+          NODE
+          test -s apps/corporate/.next/prerender-manifest.json
