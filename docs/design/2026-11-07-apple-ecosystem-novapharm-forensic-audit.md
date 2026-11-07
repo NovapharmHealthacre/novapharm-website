@@ -14,6 +14,18 @@
 4. Did **not** claim direct screenshots, HTTP uptime, accessibility-tree scans, Web Vitals, actual live form deliveries, authentication success, deployment provenance or security penetration testing from the indexed pages alone. These need test artifacts and operator evidence.
 5. The reference is Apple's quality of hierarchy, functionality and platform accessibility, **not** its exact appearance or ownership. NovaPharm's own brand, distinct visual assets and regulated operating status are retained.
 
+## 1A. Independent visual/browser evidence (6 November 2026)
+
+An existing GitHub Actions forensic run contains **20 real browser/viewport/page combinations** (Chromium + WebKit; desktop 1440×900 and mobile 390×844) covering Home, Products, Contact, Trust Centre and Privacy. Its retained screenshot and machine-readable bundle was recovered and inspected for this audit: [run 42242268484](https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/42242268484). A separate crawl recorded **23/23 sampled public routes HTTP 200**: [run 42240933719](https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/42240933719). These are dated observations, **not current-November-7 live re-tests**.
+
+- **Desktop visual:** large editorial hero with tablet/medical-pack imagery, high-contrast black/white/red hierarchy, restrained primary CTA pair, low-density three-column sourcing lanes, a batch-evidence image section and a distinct corporate footer. This confirms substantial Apple-like clarity is already present and should not be destroyed by a generic theme replacement.
+- **Mobile visual:** original one-column composition, readable hero text, defined CTA blocks, 390px card stacking and no captured document-level horizontal overflow. Consent presentation still occupies meaningful space over early content; check usable viewport, reading order, button targets and preference persistence rather than weakening cookie/privacy handling.
+- **Contact visual:** eight clear business-enquiry routing cards and an honest email-only fallback. Do **not** imply submissions are accepted by the website or that opening an email equals receipt.
+- **Automated accessibility finding in the original capture:** small topic numbers previously computed to contrast **4.31:1** (foreground `#70747a` over `#f5f5f7`), below 4.5:1 for ordinary text in several engine/viewport combinations. The subsequent separate hotfix #94 was reported as merged with exact-head browser evidence; require fresh-current rendered checks before reclassifying that issue as a new failure.
+- **Runtime observations at that time:** managed portal HTTP 503, managed API health HTTP 404 and public managed contact submission not enabled. These are not remedied by design CSS.
+- **Content/semantics follow-up:** the browser extraction of the homepage `h1` yielded an empty text value in the old screenshot JSON, although a large visible hero headline was rendered and the public static builder contains a textual `h1`. Verify the *actual published runtime* accessible heading name; do not assume a source fix is reflected in a different deployed build.
+- **Legal/privacy follow-up:** the old privacy capture mentioned Azure among potential processors while current infrastructure planning targets AWS; an accountable legal review should align the published processor wording with reality before future personal-data intake.
+
 ## 2. Current NovaPharm architecture: observed strengths
 
 - Public corporate page generation and Next.js managed corporate application are distinct products. Public artifact uses the `scripts/build-site.mjs` pipeline; managed app uses `apps/corporate`. A shared brand alone is not equivalent to production feature parity.
