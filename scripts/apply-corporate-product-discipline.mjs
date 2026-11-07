@@ -82,18 +82,18 @@ const megaNavigation = {
 
 function header(route) {
   const current = globalSection(route);
-  return \`<header class="site-header npd-header" data-site-header data-mega-open="">
+  return `<header class="site-header npd-header" data-site-header data-mega-open="">
     <div class="container header-inner npd-header-inner">
       <a class="brand" href="/" aria-label="NovaPharm Healthcare home">
         <picture class="brand-logo"><source srcset="/assets/brand/novapharm-healthcare-logo.svg" type="image/svg+xml"><img src="/assets/brand/novapharm-healthcare-logo.png" alt="NovaPharm Healthcare" width="2048" height="258" fetchpriority="high" decoding="async"></picture>
       </a>
       <button class="nav-toggle npd-menu" type="button" aria-expanded="false" aria-controls="primary-navigation" data-nav-toggle><span data-menu-label>Menu</span><span class="sr-only">Open navigation</span></button>
       <nav class="site-nav npd-global-nav" id="primary-navigation" aria-label="Primary navigation" data-site-nav>
-        \${globalNavigation.map(([label, href, section]) => \`<a href="\${href}"\${current === section ? ' aria-current="page"' : ""}\${megaNavigation[section] ? \` data-mega-trigger="\${section}" aria-expanded="false" aria-controls="npd-mega-\${section}"\` : ""}>\${label}</a>\`).join("")}
+        ${globalNavigation.map(([label, href, section]) => `<a href="${href}"${current === section ? ' aria-current="page"' : ""}${megaNavigation[section] ? ` data-mega-trigger="${section}" aria-expanded="false" aria-controls="npd-mega-${section}"` : ""}>${label}</a>`).join("")}
       </nav>
     </div>
-    \${Object.entries(megaNavigation).map(([section, columns]) => \`<div class="npd-mega" id="npd-mega-\${section}" data-mega-panel="\${section}" aria-hidden="true"><nav class="container npd-mega-inner" aria-label="\${section === "intelligence" ? "NovaPharm Intelligence" : section} category navigation">\${columns.map(([heading, links]) => \`<div class="npd-mega-column"><p>\${esc(heading)}</p>\${links.map(([name, href], i) => \`<a href="\${href}"\${i === 0 ? ' class="npd-mega-feature"' : ""}>\${esc(name)}</a>\`).join("")}</div>\`).join("")}</nav></div>\`).join("")}
-  </header>\`;
+    ${Object.entries(megaNavigation).map(([section, columns]) => `<div class="npd-mega" id="npd-mega-${section}" data-mega-panel="${section}" aria-hidden="true"><nav class="container npd-mega-inner" aria-label="${section === "intelligence" ? "NovaPharm Intelligence" : section} category navigation">${columns.map(([heading, links]) => `<div class="npd-mega-column"><p>${esc(heading)}</p>${links.map(([name, href], i) => `<a href="${href}"${i === 0 ? ' class="npd-mega-feature"' : ""}>${esc(name)}</a>`).join("")}</div>`).join("")}</nav></div>`).join("")}
+  </header>`;
 }
 
 function footer() {
