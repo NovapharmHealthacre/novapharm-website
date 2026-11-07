@@ -1,0 +1,377 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Real B2B enquiries only. NovaPharm AWS eu-north-1 contact reception, durable 30-day DynamoDB receipts, verified internal SNS email notices. No clinical uploads or portal authentication. Lambda concurrency uses account unreserved quota; HTTP API and DDB rate limiting enforce intake bounds.",
+  "Parameters": {
+    "RateSalt": {
+      "Type": "String",
+      "NoEcho": true,
+      "MinLength": 64,
+      "MaxLength": 64,
+      "AllowedPattern": "[0-9a-f]{64}",
+      "Description": "Per-deployment server-side rate-limit hash salt; never put in GitHub/client"
+    },
+    "ApprovedNotificationTopicArn": {
+      "Type": "String",
+      "Default": "arn:aws:sns:eu-north-1:250675045172:novapharm-staging-contact-receipt-alerts",
+      "AllowedValues": [
+        "arn:aws:sns:eu-north-1:250675045172:novapharm-staging-contact-receipt-alerts"
+      ],
+      "Description": "Existing confirmed internal email alert topic; only receipt metadata, no PII"
+    }
+  },
+  "Rules": {
+    "RegionLock": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Equals": [
+              {
+                "Ref": "AWS::Region"
+              },
+              "eu-north-1"
+            ]
+          },
+          "AssertDescription": "NovaPharm contact must only deploy in eu-north-1"
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "ContactInbox": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "TableName": "novapharm-production-contact-inbox",
+        "BillingMode": "PAY_PER_REQUEST",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "id",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+          }
+        ],
+        "SSESpecification": {
+          "SSEEnabled": true
+        },
+        "TimeToLiveSpecification": {
+          "AttributeName": "expiresAt",
+          "Enabled": true
+        },
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true
+        },
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm"
+          },
+          {
+            "Key": "environment",
+            "Value": "production"
+          },
+          {
+            "Key": "classification",
+            "Value": "business-contact-data"
+          }
+        ]
+      }
+    },
+    "LogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/novapharm-production-contact-intake",
+        "RetentionInDays": 7
+      }
+    },
+    "ExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "novapharm-production-contact-minimum",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem"
+                  ],
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "ContactInbox",
+                      "Arn"
+                    ]
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "sns:Publish"
+                  ],
+                  "Resource": {
+                    "Ref": "ApprovedNotificationTopicArn"
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::GetAtt": [
+                            "LogGroup",
+                            "Arn"
+                          ]
+                        },
+                        ":*"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm"
+          },
+          {
+            "Key": "environment",
+            "Value": "production"
+          }
+        ]
+      }
+    },
+    "Function": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": "novapharm-production-contact-intake",
+        "Runtime": "nodejs22.x",
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "ExecutionRole",
+            "Arn"
+          ]
+        },
+        "MemorySize": 128,
+        "Timeout": 10,
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": {
+              "Ref": "ContactInbox"
+            },
+            "INTAKE_RATE_SALT": {
+              "Ref": "RateSalt"
+            },
+            "NOTIFICATION_TOPIC_ARN": {
+              "Ref": "ApprovedNotificationTopicArn"
+            }
+          }
+        },
+        "Code": {
+          "ZipFile": "\"use strict\";\nconst { randomUUID, createHash } = require(\"node:crypto\");\nconst { DynamoDBClient, PutItemCommand, UpdateItemCommand } = require(\"@aws-sdk/client-dynamodb\");\nconst { SNSClient, PublishCommand } = require(\"@aws-sdk/client-sns\");\n\nconst region = process.env.AWS_REGION || \"eu-north-1\";\nconst ddb = new DynamoDBClient({ region });\nconst sns = new SNSClient({ region });\nconst allowedOrigins = new Set([\"https://novapharmhealthcare.com\", \"https://www.novapharmhealthcare.com\"]);\nconst topics = new Set([\n  \"Product opportunity\", \"Distribution partnership\", \"Pharmacy or wholesaler account\",\n  \"CMO/CDMO partnership\", \"Regulatory services\", \"Clinical development & CRO support\",\n  \"Oncology & specialist medicines\", \"Supplier enquiry\", \"Media\", \"Careers\", \"General enquiry\"\n]);\nconst allowedKeys = new Set([\n  \"name\", \"email\", \"company\", \"role\", \"country\", \"telephone\", \"enquiryType\", \"message\",\n  \"website\", \"safetyConfirmation\", \"privacyAcknowledgement\"\n]);\nconst noCache = { \"Content-Type\": \"application/json; charset=utf-8\", \"Cache-Control\": \"no-store\", \"X-Content-Type-Options\": \"nosniff\", \"X-Robots-Tag\": \"noindex, nofollow\" };\nfunction response(code, value, origin) {\n  return {\n    statusCode: code,\n    headers: { ...noCache, ...(allowedOrigins.has(origin) ? { \"Access-Control-Allow-Origin\": origin, Vary: \"Origin\" } : {}) },\n    body: JSON.stringify(value)\n  };\n}\nfunction text(value, max, min = 1) {\n  return typeof value === \"string\" && value.trim().length >= min && value.trim().length <= max\n    && !/[\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F]/.test(value);\n}\nfunction validate(body) {\n  if (!body || typeof body !== \"object\" || Array.isArray(body)) return false;\n  if (Object.keys(body).some(key => !allowedKeys.has(key))) return false;\n  if (body.website) return false;\n  if (!text(body.name, 120) || !text(body.email, 160) || !text(body.company, 160)) return false;\n  if (!text(body.role, 120) || !text(body.country, 80) || !text(body.message, 2000, 20)) return false;\n  if (body.telephone && !text(body.telephone, 40)) return false;\n  if (!/^[^\\s@<>]+@[^\\s@<>]+\\.[^\\s@<>]{2,}$/i.test(body.email.trim())) return false;\n  if (!topics.has(body.enquiryType)) return false;\n  if (body.safetyConfirmation !== \"yes\" || body.privacyAcknowledgement !== \"yes\") return false;\n  return true;\n}\nexports.handler = async (event) => {\n  const method = event.requestContext?.http?.method || event.httpMethod || \"\";\n  const path = event.rawPath || event.path || \"\";\n  const headers = Object.fromEntries(Object.entries(event.headers || {}).map(([k, v]) => [k.toLowerCase(), v]));\n  const origin = headers.origin || \"\";\n  if (method === \"GET\" && path === \"/health\") {\n    return response(200, { service: \"novapharm-contact-intake\", ready: true, environment: \"production\" }, origin);\n  }\n  if (method !== \"POST\" || path !== \"/contact\") return response(404, { error: \"Not found\" }, origin);\n  if (!allowedOrigins.has(origin)) return response(403, { error: \"Origin not permitted\" });\n  if (headers[\"x-novapharm-intake\"] !== \"v1\") return response(403, { error: \"Form request required\" }, origin);\n  if (!/^application\\/json(?:;|$)/i.test(headers[\"content-type\"] || \"\")) return response(415, { error: \"JSON content required\" }, origin);\n\n  let raw = event.isBase64Encoded ? Buffer.from(event.body || \"\", \"base64\").toString(\"utf8\") : String(event.body || \"\");\n  if (Buffer.byteLength(raw, \"utf8\") > 6500) return response(413, { error: \"Message too large\" }, origin);\n  let body;\n  try { body = JSON.parse(raw); } catch { return response(400, { error: \"Invalid request\" }, origin); }\n  if (!validate(body)) return response(422, { error: \"Please check the business enquiry fields and required confirmations\" }, origin);\n\n  const sourceIp = event.requestContext?.http?.sourceIp;\n  if (!sourceIp || !process.env.INTAKE_RATE_SALT || !process.env.TABLE_NAME || !process.env.NOTIFICATION_TOPIC_ARN) {\n    return response(503, { error: \"Secure enquiry service temporarily unavailable\" }, origin);\n  }\n  const now = Date.now();\n  const windowId = Math.floor(now / 600000);\n  const rateId = \"RATE#\" + createHash(\"sha256\").update(process.env.INTAKE_RATE_SALT + \":\" + sourceIp + \":\" + windowId).digest(\"hex\");\n  try {\n    await ddb.send(new UpdateItemCommand({\n      TableName: process.env.TABLE_NAME,\n      Key: { id: { S: rateId } },\n      UpdateExpression: \"SET #n = if_not_exists(#n, :zero) + :one, expiresAt = :ttl\",\n      ConditionExpression: \"attribute_not_exists(#n) OR #n < :limit\",\n      ExpressionAttributeNames: { \"#n\": \"requestCount\" },\n      ExpressionAttributeValues: {\n        \":zero\": { N: \"0\" }, \":one\": { N: \"1\" }, \":limit\": { N: \"4\" },\n        \":ttl\": { N: String(Math.floor(now / 1000) + 1200) }\n      }\n    }));\n  } catch (error) {\n    if (error.name === \"ConditionalCheckFailedException\") {\n      return response(429, { error: \"Too many requests. Please try again later.\" }, origin);\n    }\n    return response(503, { error: \"Secure enquiry service temporarily unavailable\" }, origin);\n  }\n\n  const id = randomUUID();\n  const createdAt = new Date(now).toISOString();\n  const clean = value => value.trim();\n  try {\n    await ddb.send(new PutItemCommand({\n      TableName: process.env.TABLE_NAME,\n      Item: {\n        id: { S: id },\n        classification: { S: \"B2B_BUSINESS_ENQUIRY\" },\n        name: { S: clean(body.name) },\n        email: { S: clean(body.email).toLowerCase() },\n        company: { S: clean(body.company) },\n        role: { S: clean(body.role) },\n        country: { S: clean(body.country) },\n        telephone: { S: clean(body.telephone || \"\") },\n        enquiryType: { S: body.enquiryType },\n        message: { S: clean(body.message) },\n        createdAt: { S: createdAt },\n        expiresAt: { N: String(Math.floor(now / 1000) + 30 * 86400) },\n        privacyAcknowledgedAt: { S: createdAt },\n        safetyConfirmedAt: { S: createdAt },\n        notificationStatus: { S: \"PENDING\" }\n      },\n      ConditionExpression: \"attribute_not_exists(id)\"\n    }));\n  } catch {\n    return response(503, { error: \"Enquiry could not be recorded. Please try again.\" }, origin);\n  }\n\n  let notificationAccepted = false;\n  try {\n    const publish = await sns.send(new PublishCommand({\n      TopicArn: process.env.NOTIFICATION_TOPIC_ARN,\n      Subject: \"NovaPharm new B2B enquiry\",\n      Message: \"NovaPharm received a B2B enquiry.\\nReference: \" + id + \"\\nTopic: \" +\n        body.enquiryType + \"\\nRecorded UTC: \" + createdAt +\n        \"\\nReview the private AWS contact inbox. This notification contains no sender details.\"\n    }));\n    notificationAccepted = Boolean(publish.MessageId);\n    if (notificationAccepted) {\n      await ddb.send(new UpdateItemCommand({\n        TableName: process.env.TABLE_NAME,\n        Key: { id: { S: id } },\n        UpdateExpression: \"SET notificationStatus = :sent, notificationAcceptedAt = :time\",\n        ExpressionAttributeValues: { \":sent\": { S: \"SNS_ACCEPTED\" }, \":time\": { S: new Date().toISOString() } }\n      }));\n    }\n  } catch {\n    // A stored enquiry is never represented as lost just because notification failed.\n    // The durable PENDING state is available for operator reconciliation.\n  }\n  return response(201, {\n    ok: true,\n    receiptId: id,\n    persisted: true,\n    notificationAccepted,\n    message: \"Your business enquiry has been recorded.\"\n  }, origin);\n};"
+        },
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm"
+          },
+          {
+            "Key": "environment",
+            "Value": "production"
+          }
+        ]
+      }
+    },
+    "HttpApi": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "novapharm-contact-production",
+        "ProtocolType": "HTTP",
+        "CorsConfiguration": {
+          "AllowOrigins": [
+            "https://novapharmhealthcare.com",
+            "https://www.novapharmhealthcare.com"
+          ],
+          "AllowMethods": [
+            "GET",
+            "POST",
+            "OPTIONS"
+          ],
+          "AllowHeaders": [
+            "content-type",
+            "x-novapharm-intake"
+          ],
+          "MaxAge": 300
+        }
+      }
+    },
+    "Integration": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "Function",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0"
+      }
+    },
+    "HealthRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /health",
+        "AuthorizationType": "NONE",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "Integration"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "ContactRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "POST /contact",
+        "AuthorizationType": "NONE",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "Integration"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "Stage": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "StageName": "$default",
+        "AutoDeploy": true,
+        "DefaultRouteSettings": {
+          "ThrottlingBurstLimit": 5,
+          "ThrottlingRateLimit": 2
+        }
+      }
+    },
+    "InvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "Function"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${HttpApi}/*/*"
+        }
+      }
+    },
+    "ErrorAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmDescription": "NovaPharm production contact intake Lambda error; inspect private logs, never send enquiry PII via SNS",
+        "AlarmName": "novapharm-production-contact-intake-errors",
+        "MetricName": "Errors",
+        "Namespace": "AWS/Lambda",
+        "Statistic": "Sum",
+        "Period": 300,
+        "EvaluationPeriods": 1,
+        "Threshold": 1,
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "Dimensions": [
+          {
+            "Name": "FunctionName",
+            "Value": {
+              "Ref": "Function"
+            }
+          }
+        ],
+        "TreatMissingData": "notBreaching",
+        "AlarmActions": [
+          {
+            "Ref": "ApprovedNotificationTopicArn"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "ContactApiOrigin": {
+      "Value": {
+        "Fn::GetAtt": [
+          "HttpApi",
+          "ApiEndpoint"
+        ]
+      },
+      "Description": "Direct HTTPS API Gateway origin; deploy public form only after end-to-end validation"
+    },
+    "ContactTable": {
+      "Value": {
+        "Ref": "ContactInbox"
+      }
+    },
+    "HealthPath": {
+      "Value": "/health"
+    },
+    "SubmitPath": {
+      "Value": "/contact"
+    }
+  }
+}

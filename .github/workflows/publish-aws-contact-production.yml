@@ -1,0 +1,144 @@
+name: Publish verified AWS-backed contact form
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: Exact approved main commit SHA
+        type: string
+        required: true
+      contact_api_origin:
+        description: Verified eu-north-1 AWS HTTP API origin, HTTPS without a path
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: novapharm-pages-contact-production
+  cancel-in-progress: false
+
+jobs:
+  build-and-verify:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exactly approved main
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Match independently reviewed commit
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Prove default public website is noncollecting
+        run: |
+          node scripts/test-static-public-source-safety.mjs
+          npm ci --ignore-scripts
+          npm run build:public-only
+          npm run test:owner-corrections:public-only
+          npm run validate:domain
+          node scripts/stage-pages-artifact.mjs _site
+          node scripts/check-links.mjs _site
+          test -s _site/assets/js/contact-production.js
+      - name: Validate deployed AWS API and record one synthetic business receipt
+        env:
+          CONTACT_ORIGIN: ${{ inputs.contact_api_origin }}
+        run: |
+          set -euo pipefail
+          [[ "$CONTACT_ORIGIN" =~ ^https://[a-z0-9]+\.execute-api\.eu-north-1\.amazonaws\.com$ ]] || exit 1
+          curl --fail --silent --show-error --max-time 15 \
+            -H "Cache-Control: no-cache" \
+            "$CONTACT_ORIGIN/health" -o /tmp/novapharm-contact-health.json
+          jq -e '.service == "novapharm-contact-intake" and .ready == true and .environment == "production"' /tmp/novapharm-contact-health.json
+          rejected=$(curl --silent --show-error --max-time 15 -o /tmp/novapharm-anon.json -w '%{http_code}' \
+            -X POST "$CONTACT_ORIGIN/contact" \
+            -H 'Content-Type: application/json' -d '{}' )
+          test "$rejected" = "403"
+          echo '{
+            "name":"SYNTHETIC-NOVAPHARM-QA",
+            "email":"synthetic@example.com",
+            "company":"NovaPharm QA",
+            "role":"Release acceptance",
+            "country":"United Kingdom",
+            "telephone":"",
+            "enquiryType":"General enquiry",
+            "message":"SYNTHETIC DATA. Verified AWS release acceptance for NovaPharm business enquiry route.",
+            "website":"",
+            "privacyAcknowledgement":"yes",
+            "safetyConfirmation":"yes"
+          }' > /tmp/novapharm-qa-input.json
+          outcome=$(curl --silent --show-error --max-time 15 -o /tmp/novapharm-qa-receipt.json -w '%{http_code}' \
+            -X POST "$CONTACT_ORIGIN/contact" \
+            -H 'Origin: https://novapharmhealthcare.com' \
+            -H 'Content-Type: application/json' \
+            -H 'X-Novapharm-Intake: v1' \
+            --data-binary @/tmp/novapharm-qa-input.json)
+          test "$outcome" = "201"
+          jq -e '.ok == true and .persisted == true and .notificationAccepted == true and (.receiptId | test("^[0-9a-f-]{36}$"))' /tmp/novapharm-qa-receipt.json
+          echo "Synthetic AWS durable storage and accepted notification confirmed."
+      - name: Activate contact on staged Pages artifact only
+        env:
+          NOVAPHARM_CONTACT_RELEASE_ACCEPTED: "yes"
+          NOVAPHARM_CONTACT_ARTIFACT_ROOT: "_site"
+          NOVAPHARM_CONTACT_API_ORIGIN: ${{ inputs.contact_api_origin }}
+        run: |
+          node scripts/activate-contact-intake.mjs
+          grep -Fq 'data-live-b2b-enquiry-form' _site/contact/index.html
+          grep -Fq 'data-live-contact-status' _site/contact/index.html
+          grep -Fq 'name="privacyAcknowledgement"' _site/contact/index.html
+          grep -Fq 'name="safetyConfirmation"' _site/contact/index.html
+          grep -Fq 'src="/assets/js/contact-production.js"' _site/contact/index.html
+          grep -Fq 'Secure online enquiry storage' _site/legal/privacy/index.html
+          ! grep -Fq 'data-email-enquiry-form' _site/contact/index.html
+          ! grep -Fq 'This public information release does not collect or transmit enquiry details' _site/contact/index.html
+          grep -Fq 'This public website never asks for a portal username, password or confidential company record' _site/portal/index.html
+          ! grep -Fq 'type="password"' _site/portal/index.html
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      - name: Upload exact verified Pages artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        with:
+          path: _site
+  deploy:
+    needs: build-and-verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.ship.outputs.page_url }}
+    steps:
+      - name: Publish verified Pages artifact
+        id: ship
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
+      - name: Verify customer contact form on NovaPharm domain without exposing portal login
+        env:
+          EXPECTED_ORIGIN: ${{ inputs.contact_api_origin }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 36); do
+            url="https://novapharmhealthcare.com/contact/?accepted-$GITHUB_SHA-$attempt-$(date +%s)"
+            if curl --fail --silent --show-error --location --max-time 15 -H "Cache-Control: no-cache" "$url" > /tmp/novapharm-live-contact.html; then
+              if grep -Fq 'data-live-b2b-enquiry-form' /tmp/novapharm-live-contact.html \
+                && grep -Fq "$EXPECTED_ORIGIN" /tmp/novapharm-live-contact.html \
+                && grep -Fq 'src="/assets/js/contact-production.js"' /tmp/novapharm-live-contact.html \
+                && ! grep -Fq 'data-email-enquiry-form' /tmp/novapharm-live-contact.html; then
+                curl --fail --silent --show-error --max-time 15 "https://novapharmhealthcare.com/assets/js/contact-production.js" | grep -Fq "data-live-b2b-enquiry-form"
+                echo "Public business contact form is online with verified AWS acceptance."
+                exit 0
+              fi
+            fi
+            sleep 10
+          done
+          echo "::error::Cutover not verified on customer domain. Treat release as FAILED and restore public-only artifact." >&2
+          exit 1
