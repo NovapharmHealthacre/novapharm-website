@@ -47,7 +47,7 @@ const build = read("scripts/build-site.mjs");
 
 for (const [name, html] of Object.entries(pages)) {
   requireText(html, 'class="npd-main', `${name} authored layout`);
-  requireText(html, name === "contact" ? 'class="np-contact-reference-hero"' : name === "home" ? 'class="npd-apple-hero"' : name === "oncology" ? 'class="npoc-hero"' : name === "technology" ? 'class="npi-hero"' : 'class="npd-hero', `${name} deliberate hero`);
+  requireText(html, name === "contact" ? 'class="np-contact-reference-hero"' : name === "home" ? 'class="npd-apple-hero"' : name === "oncology" ? 'class="npoc-hero"' : name === "technology" ? 'class="npi-hero"' : name === "nutraxin" ? 'class="nx-hero"' : 'class="npd-hero', `${name} deliberate hero`);
   requireText(html, "Regulated wholesale supply has not commenced", `${name} operating-status boundary`);
   requireText(html, 'class="npd-footer', `${name} institutional footer`);
   forbidText(html, "lucide", `${name} icon-free corporate presentation`);
@@ -73,7 +73,8 @@ for (const [name, html] of Object.entries(pages)) {
   [pages.products, "Food Supplement Portfolio Review", "Products priority portfolio"],
   [pages.products, 'href="/products/nutraxin/"', "Products canonical Nutraxin route"],
   [pages.products, 'href="/products/strategic-portfolio/"', "Products strategic route"],
-  [pages.nutraxin, 'class="npd-product-grid"', "Nutraxin product presentation"],
+  [pages.nutraxin, 'class="nx-product-grid"', "Nutraxin product-led category presentation"],
+  [pages.nutraxin, 'class="nx-featured-grid"', "Nutraxin featured product stage"],
   [pages.contact, "How can we help?", "Contact information hierarchy"],
   [pages.contact, 'class="np-contact-reference-form"', "Contact minimal reference form"],
   [leadership, "/assets/media/leadership/vishal-chakravarty-1200.jpg", "Vishal approved portrait"],
@@ -110,7 +111,7 @@ if (featuredProducts !== 3) failures.push(`Homepage products: expected 3 actual 
 const regulatoryStages = (pages.regulatory.match(/<ol class="npd-roadmap npd-roadmap-large">[\s\S]*?<\/ol>/)?.[0].match(/<li>/g) ?? []).length;
 if (regulatoryStages !== 7) failures.push(`Regulatory page: expected 7 governance stages, found ${regulatoryStages}.`);
 
-const nutraxinProducts = (pages.nutraxin.match(/class="npd-product-card/g) ?? []).length;
+const nutraxinProducts = (pages.nutraxin.match(/class="nx-product-card"/g) ?? []).length;
 if (nutraxinProducts !== 19) failures.push(`Nutraxin catalogue: expected 19 product cards, found ${nutraxinProducts}.`);
 
 const productFeaturePosition = pages.products.indexOf("Food Supplement Portfolio Review");
