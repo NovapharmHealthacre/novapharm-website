@@ -756,3 +756,40 @@ body[data-page="technology"] .np-intelligence {
   .np-intelligence .npi-dash-card { border:1px solid CanvasText; }
   .np-intelligence .npi-dash-side-item.is-selected { outline:2px solid Highlight; }
 }
+
+
+/* Verified mobile contrast: all secondary dashboard text meets 4.5:1 on its surface. */
+.np-intelligence .npi-dash :is(
+  .npi-dash-quick-search,
+  .npi-dash-menu-label,
+  .npi-dash-path,
+  .npi-dash-medicine-copy small,
+  .npi-dash-date,
+  .npi-dash-databar,
+  .npi-dash-annotation,
+  .npi-dash-kpi small,
+  .npi-dash-card-title p,
+  .npi-dash-card-badge,
+  .npi-dash-filter-label,
+  .npi-dash-legend span,
+  .npi-dash-map-display > span,
+  .npi-dash-ranking thead th,
+  .npi-dash-ranking tbody th,
+  .npi-dash-ranking tbody td,
+  .npi-dash-table-foot,
+  .npi-dash-chart-y,
+  .npi-dash-chart-axis,
+  .npi-dash-chart-key,
+  .npi-dash-chart-status,
+  .npi-dash-sources li small,
+  .npi-dash-source-footer,
+  .npi-dash-metadata dt,
+  .npi-dash-metadata dd,
+  .npi-dash-side-footer,
+  .npi-dash-side-footer span
+) { color:#48566f; }
+.np-intelligence .npi-dash :is(.npi-dash-global-tabs, .npi-dash-localtabs):focus-visible {
+  outline: 3px solid #0a66c2;
+  outline-offset: -3px;
+  border-radius: 4px;
+}
