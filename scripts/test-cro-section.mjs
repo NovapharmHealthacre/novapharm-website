@@ -38,7 +38,7 @@ assert.equal((cro.match(/class="[^"]*npd-faq[^"]*"[\s\S]*?<\/section>/)?.[0].mat
 for (const path of ["capabilities/index.html", "services/index.html", "regulatory-services/index.html", "technology/index.html"]) {
   assert.match(read(path), /href="\/cro\//, `${path} must link to the CRO route through local capability navigation`);
 }
-assert.match(read("contact/index.html"), /Clinical development and CRO/, "The approved B2B contact page must retain a visible clinical-development/CRO enquiry route.");
+assert.match(read("contact/index.html"), /Clinical development (?:and|&amp;) CRO(?: support)?/, "The approved B2B contact page must retain a visible clinical-development/CRO enquiry route.");
 assert.match(read("sitemap.xml"), /<loc>https:\/\/novapharmhealthcare\.com\/cro\/<\/loc>/);
 
 for (const base of ["cro-evidence-architecture", "cro-delivery-architecture"]) {
