@@ -8,6 +8,10 @@ on:
       - 'infra/aws/contact-production/**'
       - 'infra/aws/contact-production.json'
       - 'scripts/aws/contact-production.test.mjs'
+      - 'scripts/activate-contact-intake.mjs'
+      - 'scripts/contact-activation.test.mjs'
+      - 'assets/js/contact-production.js'
+      - 'scripts/build-site.mjs'
       - '.github/workflows/aws-contact-production-check.yml'
 
 permissions:
@@ -27,4 +31,5 @@ jobs:
       - name: Verify Lambda JavaScript and replay production security contracts
         run: |
           node --check infra/aws/contact-production/index.js
-          node --test scripts/aws/contact-production.test.mjs
+          node --check assets/js/contact-production.js
+          node --test scripts/aws/contact-production.test.mjs scripts/contact-activation.test.mjs
