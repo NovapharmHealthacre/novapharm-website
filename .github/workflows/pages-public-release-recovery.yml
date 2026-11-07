@@ -1,0 +1,325 @@
+name: Recover public GitHub Pages publication
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - .github/workflows/pages-public-release-recovery.yml
+      - assets/css/apple-pharma-public.css
+      - assets/css/homepage-editorial.css
+      - assets/css/oncology-editorial.css
+      - oncology/index.html
+      - apps/corporate/components/oncology-editorial.tsx
+      - apps/corporate/app/oncology-editorial.css
+      - scripts/apply-corporate-product-discipline.mjs
+      - portal/index.html
+      - contact/index.html
+      - account-application/index.html
+      - regulatory-services/index.html
+      - scripts/apply-pages-presentation-parity.mjs
+      - scripts/build-css-bundle.mjs
+      - scripts/build-site.mjs
+      - scripts/check-links.mjs
+      - scripts/stage-pages-artifact.mjs
+      - scripts/test-static-public-source-safety.mjs
+      - scripts/validate-module-media-sanity.mjs
+      - scripts/validate-visual-refinement.mjs
+      - package.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  statuses: write
+
+concurrency:
+  group: novapharm-github-pages-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  LIVE_ORIGIN: https://novapharmhealthcare.com
+  STATUS_CONTEXT: pages-live-publish
+
+jobs:
+  validate-release:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out proposed release
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Verify checked-in public source is default-deny
+        run: node scripts/test-static-public-source-safety.mjs
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build and validate the public artifact
+        run: |
+          npm run build:public-only
+          npm run test:owner-corrections:public-only
+          npm run validate:domain
+          node scripts/stage-pages-artifact.mjs _site
+          node scripts/check-links.mjs _site
+          grep -Fq 'Medicine. Where it needs to be' _site/index.html
+          grep -Fq 'class="npd-apple-hero"' _site/index.html
+          grep -Fq 'class="npd-apple-nova-art"' _site/index.html
+          grep -Fq 'class="np-contact-reference-hero"' _site/contact/index.html
+          grep -Fq 'data-email-enquiry-form' _site/contact/index.html
+          grep -Fq 'This public information release does not collect or transmit enquiry details' _site/contact/index.html
+          ! grep -Fq 'data-contact-form' _site/contact/index.html
+          grep -Fq -- '--apple-pharma-public-contract: 3' _site/assets/css/novapharm.bundle.css
+          grep -Fq 'body[data-page="home"]' _site/assets/css/novapharm.bundle.css
+          grep -Fq 'regulatory-dossier-control' _site/regulatory-services/index.html
+          grep -Fq 'Oncology demands' _site/oncology/index.html
+          grep -Fq 'class="npoc-hero"' _site/oncology/index.html
+          test -s _site/assets/css/oncology-editorial.css
+          grep -Fq '/assets/media/modules/regulatory-dossier-control.jpg' _site/regulatory-services/index.html
+          test "$(tr -d '\r\n' < _site/CNAME)" = "novapharmhealthcare.com"
+
+  build:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PAGES_ADMIN_TOKEN: ${{ secrets.PAGES_ADMIN_TOKEN }}
+    steps:
+      - name: Check out approved source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Mark publication pending
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            -f state=pending \
+            -f context="$STATUS_CONTEXT" \
+            -f description="Building the owner-approved public release" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >/dev/null
+
+      - name: Verify checked-in public source is default-deny
+        run: node scripts/test-static-public-source-safety.mjs
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build corrected public output
+        run: npm run build:public-only
+
+      - name: Validate owner corrections and public release artifact
+        run: |
+          npm run test:owner-corrections:public-only
+          npm run validate:domain
+          node scripts/stage-pages-artifact.mjs _site
+          node scripts/check-links.mjs _site
+          grep -Fq 'Medicine. Where it needs to be' _site/index.html
+          grep -Fq 'class="npd-apple-hero"' _site/index.html
+          grep -Fq 'class="npd-apple-nova-art"' _site/index.html
+          grep -Fq 'class="np-contact-reference-hero"' _site/contact/index.html
+          grep -Fq 'data-email-enquiry-form' _site/contact/index.html
+          grep -Fq 'This public information release does not collect or transmit enquiry details' _site/contact/index.html
+          ! grep -Fq 'data-contact-form' _site/contact/index.html
+          grep -Fq -- '--apple-pharma-public-contract: 3' _site/assets/css/novapharm.bundle.css
+          grep -Fq 'body[data-page="home"]' _site/assets/css/novapharm.bundle.css
+          grep -Fq 'regulatory-dossier-control' _site/regulatory-services/index.html
+          grep -Fq 'Oncology demands' _site/oncology/index.html
+          grep -Fq 'class="npoc-hero"' _site/oncology/index.html
+          test -s _site/assets/css/oncology-editorial.css
+          grep -Fq '/assets/media/modules/regulatory-dossier-control.jpg' _site/regulatory-services/index.html
+          test "$(tr -d '\r\n' < _site/CNAME)" = "novapharmhealthcare.com"
+
+      - name: Configure Pages with an administration token when available
+        if: env.PAGES_ADMIN_TOKEN != ''
+        env:
+          GH_TOKEN: ${{ env.PAGES_ADMIN_TOKEN }}
+        run: |
+          set -euo pipefail
+          if gh api "repos/$GITHUB_REPOSITORY/pages" >/dev/null 2>&1; then
+            gh api --method PUT "repos/$GITHUB_REPOSITORY/pages" --input - <<'JSON'
+          {
+            "build_type": "workflow",
+            "cname": "novapharmhealthcare.com",
+            "https_enforced": true
+          }
+          JSON
+          else
+            gh api --method POST "repos/$GITHUB_REPOSITORY/pages" --input - <<'JSON'
+          {
+            "build_type": "workflow"
+          }
+          JSON
+            gh api --method PUT "repos/$GITHUB_REPOSITORY/pages" --input - <<'JSON'
+          {
+            "build_type": "workflow",
+            "cname": "novapharmhealthcare.com",
+            "https_enforced": true
+          }
+          JSON
+          fi
+
+      - name: Configure GitHub Pages metadata
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+        with:
+          token: ${{ env.PAGES_ADMIN_TOKEN != '' && env.PAGES_ADMIN_TOKEN || github.token }}
+          enablement: ${{ env.PAGES_ADMIN_TOKEN != '' }}
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        with:
+          path: _site
+          retention-days: 1
+
+      - name: Mark publication failed before deployment
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            -f state=failure \
+            -f context="$STATUS_CONTEXT" \
+            -f description="Public release build or validation failed before deployment" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >/dev/null
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy the public artifact
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
+
+      - name: Verify the deployed Pages URL
+        env:
+          DEPLOYED_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          cache_key="release-${GITHUB_SHA}-$(date +%s)"
+          for attempt in $(seq 1 36); do
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "${DEPLOYED_URL}?${cache_key}-${attempt}" > /tmp/deployed-home.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "${DEPLOYED_URL%/}/assets/css/novapharm.bundle.css?${cache_key}-${attempt}" > /tmp/deployed-bundle.css || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "${DEPLOYED_URL%/}/regulatory-services/?${cache_key}-${attempt}" > /tmp/deployed-regulatory.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "${DEPLOYED_URL%/}/portal/?${cache_key}-${attempt}" > /tmp/deployed-portal.html || true
+            if grep -Fq 'Medicine. Where it needs to be' /tmp/deployed-home.html \
+              && grep -Fq 'class="npd-apple-hero"' /tmp/deployed-home.html \
+              && grep -Fq -- '--apple-pharma-public-contract: 3' /tmp/deployed-bundle.css \
+              && grep -Fq 'regulatory-dossier-control' /tmp/deployed-regulatory.html \
+              && ! grep -Fq 'data-ai-search-open' /tmp/deployed-home.html \
+              && grep -Fq 'This public website never asks for a portal username, password or confidential company record' /tmp/deployed-portal.html \
+              && ! grep -Fq 'data-login-form' /tmp/deployed-portal.html \
+              && ! grep -Fq 'type="password"' /tmp/deployed-portal.html; then
+              echo "GitHub Pages artifact is deployed at ${DEPLOYED_URL}."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "The Pages deployment URL did not serve the corrected release within six minutes." >&2
+          exit 1
+
+      - name: Verify the corrected release on the custom domain
+        run: |
+          set -euo pipefail
+          cache_key="release-${GITHUB_SHA}-$(date +%s)"
+          for attempt in $(seq 1 72); do
+            echo "Custom-domain verification attempt $attempt"
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' "$LIVE_ORIGIN/?${cache_key}-${attempt}" > /tmp/live-home.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/assets/css/novapharm.bundle.css?${cache_key}-${attempt}" > /tmp/live-bundle.css || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/regulatory-services/?${cache_key}-${attempt}" > /tmp/live-regulatory.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/cro/?${cache_key}-${attempt}" > /tmp/live-cro.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/oncology/?${cache_key}-${attempt}" > /tmp/live-oncology.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/contact/?${cache_key}-${attempt}" > /tmp/live-contact.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/account-application/?${cache_key}-${attempt}" > /tmp/live-account.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/portal/?${cache_key}-${attempt}" > /tmp/live-portal.html || true
+            search_status=$(curl --silent --output /dev/null --write-out '%{http_code}' --location "$LIVE_ORIGIN/search/?${cache_key}-${attempt}" || true)
+            ai_status=$(curl --silent --output /dev/null --write-out '%{http_code}' --location "$LIVE_ORIGIN/technology/ai-governance/?${cache_key}-${attempt}" || true)
+
+            if grep -Fq 'Medicine. Where it needs to be' /tmp/live-home.html \
+              && grep -Fq 'class="npd-apple-hero"' /tmp/live-home.html \
+              && grep -Fq -- '--apple-pharma-public-contract: 3' /tmp/live-bundle.css \
+              && grep -Fq 'regulatory-dossier-control' /tmp/live-regulatory.html \
+              && grep -Fq '/assets/media/modules/regulatory-dossier-control.jpg' /tmp/live-regulatory.html \
+              && ! grep -Fq 'data-ai-search-open' /tmp/live-home.html \
+              && grep -Fq 'Prabhakar Vitthal Lahare' /tmp/live-cro.html \
+              && grep -Fq 'Oncology demands' /tmp/live-oncology.html \
+              && grep -Fq 'class="npoc-hero"' /tmp/live-oncology.html \
+              && ! grep -Fq 'oncology-editorial-gallery' /tmp/live-oncology.html \
+              && grep -Fq 'class="np-contact-reference-hero"' /tmp/live-contact.html \
+              && grep -Fq 'data-email-enquiry-form' /tmp/live-contact.html \
+              && grep -Fq 'This public information release does not collect or transmit enquiry details' /tmp/live-contact.html \
+              && ! grep -Fq 'data-contact-form' /tmp/live-contact.html \
+              && grep -Fq 'does not accept account applications or business documents' /tmp/live-account.html \
+              && ! grep -Fq 'data-account-application' /tmp/live-account.html \
+              && grep -Fq 'This public website never asks for a portal username, password or confidential company record' /tmp/live-portal.html \
+              && ! grep -Fq 'data-login-form' /tmp/live-portal.html \
+              && [ "$search_status" = "404" ] \
+              && [ "$ai_status" = "404" ]; then
+              echo "The corrected scoped release, including the Regulatory dossier composition, is live at $LIVE_ORIGIN."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "The custom domain did not serve the complete corrected release within 12 minutes." >&2
+          exit 1
+
+      - name: Confirm exact Intelligence navigation and Medicines Terminal on public domain
+        env:
+          LIVE_ORIGIN: https://novapharmhealthcare.com
+        run: |
+          set -euo pipefail
+          key="intelligence-${GITHUB_SHA}-$(date +%s)"
+          for attempt in $(seq 1 12); do
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/?${key}-${attempt}" > /tmp/intelligence-home.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/technology/?${key}-${attempt}" > /tmp/intelligence-technology.html || true
+            if grep -Fq 'data-mega-trigger="intelligence"' /tmp/intelligence-home.html \
+              && grep -Fq 'data-mega-panel="intelligence"' /tmp/intelligence-home.html \
+              && grep -Fq 'npi-terminal-geography' /tmp/intelligence-technology.html \
+              && grep -Fq 'npi-terminal-trends' /tmp/intelligence-technology.html \
+              && ! grep -Fq 'Conceptual visual. Not a NovaPharm facility, inventory or active distribution operation.' /tmp/intelligence-home.html; then
+              echo "Exact Intelligence navigation and geography/trends release verified at ${LIVE_ORIGIN}"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "PUBLIC RELEASE NOT CONFIRMED: custom domain does not serve the new Intelligence navigation and terminal modules" >&2
+          exit 1
+
+      - name: Mark publication successful
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            -f state=success \
+            -f context="$STATUS_CONTEXT" \
+            -f description="Corrected scoped NovaPharm public release is live and verified" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >/dev/null
+
+      - name: Mark publication failed
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            -f state=failure \
+            -f context="$STATUS_CONTEXT" \
+            -f description="Pages artifact deployment or custom-domain verification failed" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >/dev/null

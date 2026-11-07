@@ -40,3 +40,4 @@ jobs:
           test "$(git ls-remote origin refs/heads/fix/technology-purpose-heading-contrast-20261107 | cut -f1)" = "$GITHUB_SHA"
           git commit -m "fix(evidence): regenerate validated image inventory for accessibility release"
           git push origin HEAD:refs/heads/fix/technology-purpose-heading-contrast-20261107
+# Reconcile merged-main image inventory at c3131fc1e3077c6e66732ffded2b2f4d9b3fec90
