@@ -10,7 +10,7 @@ concurrency:
   group: novapharm-gh-pages-oncology-scoped
   cancel-in-progress: false
 env:
-  RELEASE_SHA: f3b559e87fc90cb538d3158b4f20a1790b963dcc
+  RELEASE_SHA: 72f4454013dcc134281e78fa3e3a95f085388d72
 jobs:
   publish-oncology:
     runs-on: ubuntu-latest
@@ -19,7 +19,7 @@ jobs:
       - name: Check out exact owner-approved merged main release
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          ref: f3b559e87fc90cb538d3158b4f20a1790b963dcc
+          ref: 72f4454013dcc134281e78fa3e3a95f085388d72
           fetch-depth: 1
           persist-credentials: true
       - name: Require reviewed main SHA and approved Oncology source
@@ -43,6 +43,7 @@ jobs:
         run: |
           set -euo pipefail
           npm ci --ignore-scripts
+          node scripts/check-css.mjs
           npm run check --workspace @novapharm/corporate
       - name: Render approved Oncology route and preserve strict inline-script CSP
         shell: bash
