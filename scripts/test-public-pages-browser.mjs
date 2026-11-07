@@ -309,7 +309,9 @@ for (const [engineName, browserType] of engines) {
             axeRuns += 1;
             const serious = axe.violations.filter((item) => item.impact === "serious" || item.impact === "critical");
             assert.deepEqual(
-              serious.map((item) => `${item.id}: ${item.help}`),
+              serious.flatMap((item) => item.nodes.map((node) =>
+                `${item.id}: ${item.help} | target: ${node.target.join(", ")} | ${String(node.failureSummary ?? "").replace(/\\s+/g, " ").slice(0, 300)}`
+              )),
               [],
               `${engineName} ${viewport.name} ${route.path}: serious/critical accessibility violations`
             );
