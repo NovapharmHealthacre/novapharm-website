@@ -24,13 +24,12 @@ assert.match(css, /@media \(max-width:\s*360px\)/);
 assert.match(css, /@media \(prefers-reduced-motion:\s*reduce\)/);
 assert.match(css, /@media \(forced-colors:\s*active\)/);
 assert.match(css, /@media print/);
-assert.match(css, /@media \\(prefers-reduced-transparency:\\s*reduce\\)/, "corporate navigation must respect reduced transparency");
-assert.match(css, /@media \\(prefers-contrast:\\s*more\\)/, "corporate copy must respect increased contrast");
-assert.match(css, /-webkit-backdrop-filter:\\s*none;/, "reduced transparency must disable WebKit blur");
+assert.ok(css.includes("@media (prefers-reduced-transparency: reduce)"), "navigation respects reduced transparency");
+assert.ok(css.includes("@media (prefers-contrast: more)"), "copy respects increased contrast");
+assert.ok(css.includes("-webkit-backdrop-filter: none;"), "reduced transparency disables WebKit blur");
 const publicAppleCss = text("assets/css/apple-pharma-public.css");
-assert.match(publicAppleCss, /outline:\\s*3px solid #0a66c2;/, "keyboard focus must use a solid high-contrast outline");
-assert.doesNotMatch(publicAppleCss, /outline:\\s*3px solid rgba\\(180,\\s*35,\\s*46,\\s*0\\.36\\)/, "legacy translucent focus ring must not return");
-
+assert.ok(publicAppleCss.includes("outline: 3px solid #0a66c2;"), "keyboard focus uses a solid high-contrast outline");
+assert.ok(!publicAppleCss.includes("rgba(180, 35, 46, 0.36)"), "translucent focus ring must not return");
 assert.match(bundleCss, /--corporate-product-discipline-contract:\s*1/);
 assert.match(tokenCss, /--brand:\s*#E3120B;/, "the canonical identity red must remain Economist Red");
 assert.match(tokenCss, /--brand-text:\s*#B30E09;/, "small red foreground text needs the contrast-safe derivative");
