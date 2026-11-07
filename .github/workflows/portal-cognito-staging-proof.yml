@@ -1,4 +1,4 @@
-name: Cognito staging proof security contract
+name: Cognito workforce identity and backend session contract
 on:
   push:
     branches:
@@ -6,6 +6,9 @@ on:
   pull_request:
     paths:
       - apps/portal/**
+      - src/core/cognito-*.mjs
+      - src/core/portal-gateway-signature.mjs
+      - server.mjs
       - .github/workflows/portal-cognito-staging-proof.yml
 permissions:
   contents: read
@@ -24,11 +27,15 @@ jobs:
       - name: Install immutable dependencies
         run: npm ci --ignore-scripts
       - name: Run Cognito negative cryptographic tests first
-        run: node --test apps/portal/test/cognito-staging-auth.test.mjs
+        run: node --test apps/portal/test/cognito-staging-auth.test.mjs apps/portal/test/cognito-backend-integration.test.mjs
       - name: Validate entire portal type safety, lint, contracts, tests, and build
         run: npm run check --workspace=@novapharm/portal
-      - name: Confirm default-off public portal verification flag and no privileged session
+      - name: Confirm default-off production access and isolated Cognito assertion
         run: |
           grep -q 'COGNITO_STAGING_VERIFICATION_ENABLED !== "true"' apps/portal/lib/cognito-staging-auth.mjs
-          ! grep -Eq 'np_session|x-ms-client-principal' apps/portal/app/auth/callback/route.ts
-          ! grep -Eq 'np_session|x-ms-client-principal' apps/portal/app/auth/start/route.ts
+          grep -q 'COGNITO_PORTAL_SESSION_ENABLED !== "true"' apps/portal/lib/cognito-session-exchange.mjs
+          grep -q 'COGNITO_WORKFORCE_BACKEND_ENABLED !== "true"' src/core/cognito-approval.mjs
+          grep -q 'exchangeApprovedCognitoSession' apps/portal/app/auth/callback/route.ts
+          grep -q 'provisionApprovedCognitoWorkforceIdentity' server.mjs
+          ! grep -Eq 'x-ms-client-principal|\.auth/login/aad' apps/portal/app/auth/callback/route.ts
+          ! grep -Eq 'x-ms-client-principal|\.auth/login/aad' apps/portal/app/auth/start/route.ts
