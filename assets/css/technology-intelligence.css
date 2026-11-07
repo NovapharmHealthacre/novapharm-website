@@ -366,3 +366,19 @@ body[data-page="technology"] .np-intelligence {
 @media (prefers-reduced-motion: reduce) {
   .np-intelligence *, .np-intelligence *::before, .np-intelligence *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
 }
+
+/* WCAG AA correction: conceptual interface labels remain legible on white and pale surfaces. */
+.np-intelligence .npi-terminal :is(
+  .npi-terminal-sidebar-heading, .npi-terminal-sidebar-footer,
+  .npi-terminal-search, .npi-terminal-breadcrumb, .npi-concept-chip,
+  .npi-terminal-heading p, .npi-terminal-tabs span,
+  .npi-terminal-panel-head span, .npi-terminal-info-grid span,
+  .npi-terminal-bottom-row span, .npi-terminal-evidence > p:first-child,
+  .npi-terminal-evidence span, .npi-terminal-evidence small,
+  .npi-terminal-evidence .npi-rail-bottom,
+  .npi-terminal-environment
+) { color: #555b64; }
+.np-intelligence .npi-terminal-sidebar { color: #555b64; }
+.np-intelligence .npi-terminal-search strong { color: #292e36; }
+.np-intelligence .npi-terminal .npi-terminal-nav-active { color: #1d1d1f; }
+.np-intelligence .npi-terminal :is(.npi-terminal-tabs .active, .npi-terminal-heading h3) { color: #252a32; }
