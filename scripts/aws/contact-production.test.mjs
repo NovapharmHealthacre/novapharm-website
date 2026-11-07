@@ -78,7 +78,7 @@ test("reviewed handler equals inline AWS production template", () => {
   assert.equal(template.Resources.Function.Properties.Code.ZipFile, source);
   assert.equal(template.Resources.ContactInbox.Properties.TimeToLiveSpecification.Enabled, true);
   assert.equal(template.Resources.ContactInbox.Properties.PointInTimeRecoverySpecification.PointInTimeRecoveryEnabled, true);
-  assert.equal(template.Resources.Function.Properties.ReservedConcurrentExecutions, 2);
+  assert.equal(template.Resources.Function.Properties.ReservedConcurrentExecutions, undefined, "Do not violate small AWS account unreserved concurrency floor");
   assert.equal(template.Resources.Stage.Properties.DefaultRouteSettings.ThrottlingRateLimit, 2);
   assert.equal(template.Resources.HttpApi.Properties.CorsConfiguration.AllowOrigins.length, 2);
   assert.equal(template.Resources.ExecutionRole.Properties.Policies[0].PolicyDocument.Statement[0].Resource["Fn::GetAtt"][0], "ContactInbox");
