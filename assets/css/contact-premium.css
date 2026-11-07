@@ -3,7 +3,7 @@
    Independent of Apple trademarks, fonts or copyrighted UI assets. */
 .np-contact { --np-contact-ink: #1d1d1f; --np-contact-muted: #5f6168; --np-contact-line: #dcdde1; --np-contact-blue: #1559a8; --np-contact-soft: #f5f5f7; color: var(--np-contact-ink); background: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
 .np-contact * { box-sizing: border-box; }
-.np-contact h1, .np-contact h2, .np-contact h3 { color: var(--np-contact-ink); font-family: inherit; font-weight: 650; line-height: 1.12; letter-spacing: -.035em; }
+.np-contact h1, .np-contact h2, .np-contact h3 { color: var(--np-contact-ink); font-family: inherit; font-weight: 650; line-height: 1.12; letter-spacing: 0; }
 .np-contact a { text-underline-offset: .2em; }
 .np-contact .np-contact-shell { width: min(1180px, calc(100% - 48px)); margin-inline: auto; }
 .np-contact-hero { padding: clamp(76px, 11vw, 146px) 0 clamp(64px, 8vw, 110px); background: var(--np-contact-soft); text-align: center; }
@@ -18,7 +18,7 @@
 .np-contact-topic { display: flex; flex-direction: column; min-height: 206px; gap: 13px; padding: clamp(24px, 3vw, 36px); color: inherit; background: var(--np-contact-soft); border: 1px solid transparent; border-radius: 20px; text-decoration: none; transition: transform 220ms ease, border-color 220ms ease, background 220ms ease; }
 .np-contact-topic:hover { transform: translateY(-3px); background: #fff; border-color: #cbd1d9; }
 .np-contact-topic:focus-visible { outline: 3px solid #1559a8; outline-offset: 4px; }
-.np-contact-topic strong { display: block; font-size: clamp(20px, 2.05vw, 27px); font-weight: 650; letter-spacing: -.025em; line-height: 1.2; }
+.np-contact-topic strong { display: block; font-size: clamp(20px, 2.05vw, 27px); font-weight: 650; letter-spacing: 0; line-height: 1.2; }
 .np-contact-topic .np-contact-topic-copy { display: block; max-width: 40ch; color: #51545a; font-size: 15px; line-height: 1.55; }
 .np-contact-topic .np-contact-topic-action { display: inline-block; margin-top: auto; color: var(--np-contact-blue); font-weight: 650; font-size: 14px; }
 .np-contact-destination { padding: 80px 0 100px; background: #fff; border-top: 1px solid var(--np-contact-line); }

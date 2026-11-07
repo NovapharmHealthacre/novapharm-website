@@ -208,11 +208,27 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
 
   const screenshotDirectory = path.join(artifactRoot, "screenshots", engine, viewport.name);
   await fs.mkdir(screenshotDirectory, { recursive: true });
-  await page.screenshot({
-    path: path.join(screenshotDirectory, `${routeName(route)}.png`),
-    animations: "disabled",
-    fullPage: keyViewport,
-  });
+  // Chromium's screenshot protocol can transiently fail on a very large
+  // Next.js route while the CI renderer is under memory pressure. Retry the
+  // SAME full-page/viewport capture, without weakening evidence or hiding the
+  // ultimate failure. Other assertion errors still propagate normally.
+  let screenshotCaptured = false;
+  for (let attempt = 1; attempt <= 3 && !screenshotCaptured; attempt += 1) {
+    try {
+      await page.screenshot({
+        path: path.join(screenshotDirectory, `${routeName(route)}.png`),
+        animations: "disabled",
+        fullPage: keyViewport,
+        timeout: 20000,
+      });
+      screenshotCaptured = true;
+    } catch (error) {
+      if (attempt === 3 || !/captureScreenshot|Unable to capture screenshot/i.test(String(error))) throw error;
+      console.warn(`${engine} ${viewport.name} ${route}: transient screenshot failure on attempt ${attempt}; retrying the same capture`);
+      await page.waitForTimeout(500 * attempt);
+    }
+  }
+  assert.ok(screenshotCaptured, `${engine} ${route}: screenshot must be captured`);
   screenshots += 1;
 
   if (keyViewport) {

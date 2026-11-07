@@ -16,7 +16,9 @@ test("contact workflow exposes professional errors and no embedded credential", 
   const source = readFileSync(path.join(process.cwd(), "components/contact-workflow.tsx"), "utf8");
   assert.doesNotMatch(source, /string did not match the expected pattern/i);
   assert.doesNotMatch(source, /PORTAL_PASSWORD|BOOTSTRAP_ADMIN_PASSWORD|password\s*[:=]\s*["'][^"']+/i);
-  assert.match(source, /No information was submitted/);
+  assert.doesNotMatch(source, /No information was submitted/);
+  assert.match(source, /submissionAttempted/);
+  assert.match(source, /could not verify whether your enquiry was received/);
   assert.match(source, /X-CSRF-Token/);
   assert.match(source, /\/api\/platform/);
   assert.doesNotMatch(source, /NEXT_PUBLIC_API_ORIGIN/);
@@ -27,7 +29,8 @@ test("corporate gateway is narrow, same-origin and does not trust identity heade
   assert.match(source, /security\/csrf/);
   assert.match(source, /account-applications/);
   assert.match(source, /maximumRequestBytes/);
-  assert.match(source, /No information was submitted/);
+  assert.doesNotMatch(source, /No information was submitted/);
+  assert.match(source, /Submission status could not be confirmed/);
   assert.doesNotMatch(source, /x-ms-client-principal|authorization/i);
 });
 
