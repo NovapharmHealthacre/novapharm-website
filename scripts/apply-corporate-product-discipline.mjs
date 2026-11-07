@@ -144,7 +144,7 @@ function homeMain() {
       <div class="container npd-apple-hero-inner">
         <div class="npd-apple-hero-copy">
           <p class="npd-apple-eyebrow">NOVAPHARM HEALTHCARE</p>
-          <h1 id="home-title">Medicine.<br><span>Where it needs to be.</span></h1>
+          <h1 id="home-title" aria-label="Medicine. Where it needs to be.">Medicine.<br><span>Where it needs to be.</span></h1>
           <p class="npd-apple-lead">Connecting specialist medicines, market access and regulatory judgement through a more considered pharmaceutical model.</p>
           <div class="npd-apple-actions">
             <a class="npd-apple-button" href="/about/">Explore NovaPharm</a>
@@ -218,7 +218,7 @@ function homeMain() {
       <div class="container">
         <div class="npd-apple-section-lead">
           <p class="npd-apple-eyebrow">SOURCING &amp; MARKET ACCESS</p>
-          <h2 id="sourcing-title">Three routes.<br>One evidence standard.</h2>
+          <h2 id="sourcing-title" aria-label="Three routes. One evidence standard.">Three routes.<br>One evidence standard.</h2>
           <p>Commercial opportunity should never move faster than the permissions and quality evidence behind it.</p>
         </div>
         <div class="npd-apple-sourcing-grid">
