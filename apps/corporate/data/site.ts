@@ -450,8 +450,8 @@ export const pageMeta = Object.freeze({
     eyebrow: "Partners"
   },
   "technology": {
-    title: "Pharmaceutical Technology Platform | NovaPharm Healthcare",
-    description: "NovaPharm's API-first platform, portal, SharePoint, audit and integration architecture with clearly labelled live, in-development and planned capabilities.",
+    title: "NovaPharm Intelligence | Medicines, Evidence & Analytics",
+    description: "Discover NovaPharm Intelligence, the developing platform connecting medicine identity, evidence, pharmaceutical markets, forecasts and governed decisions. Explore NOVA, the Medicines Terminal and Project PANDORA.",
     eyebrow: "Technology"
   },
   "technology/ai-governance": {
