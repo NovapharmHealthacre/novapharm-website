@@ -47,7 +47,7 @@ const build = read("scripts/build-site.mjs");
 
 for (const [name, html] of Object.entries(pages)) {
   requireText(html, 'class="npd-main', `${name} authored layout`);
-  requireText(html, name === "contact" ? 'class="np-contact-reference-hero"' : name === "home" ? 'class="npd-apple-hero"' : name === "oncology" ? 'class="npoc-hero"' : 'class="npd-hero', `${name} deliberate hero`);
+  requireText(html, name === "contact" ? 'class="np-contact-reference-hero"' : name === "home" ? 'class="npd-apple-hero"' : name === "oncology" ? 'class="npoc-hero"' : name === "technology" ? 'class="npi-hero"' : 'class="npd-hero', `${name} deliberate hero`);
   requireText(html, "Regulated wholesale supply has not commenced", `${name} operating-status boundary`);
   requireText(html, 'class="npd-footer', `${name} institutional footer`);
   forbidText(html, "lucide", `${name} icon-free corporate presentation`);
@@ -68,7 +68,8 @@ for (const [name, html] of Object.entries(pages)) {
   [pages.services, 'class="npd-service-ledger"', "Services editorial ledger"],
   [pages.regulatory, 'class="npd-roadmap npd-roadmap-large"', "Regulatory full roadmap"],
   [pages.partners, 'class="npd-horizontal-steps"', "Partner qualification sequence"],
-  [pages.technology, 'class="npd-maturity npd-maturity-full"', "Technology maturity architecture"],
+  [pages.technology, 'class="npi-roadmap-grid"', "Intelligence product development roadmap"],
+  [pages.technology, 'class="npi-provenance-list"', "Intelligence evidence provenance taxonomy"],
   [pages.products, "Food Supplement Portfolio Review", "Products priority portfolio"],
   [pages.products, 'href="/products/nutraxin/"', "Products canonical Nutraxin route"],
   [pages.products, 'href="/products/strategic-portfolio/"', "Products strategic route"],
