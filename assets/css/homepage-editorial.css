@@ -1,0 +1,478 @@
+/*
+ * NovaPharm editorial homepage, 2026-11-07.
+ * Scoped to the homepage. Keep the clinical, product and secure-workspace
+ * design contracts unchanged. Uses system fonts, not proprietary Apple assets.
+ */
+body[data-page="home"] {
+  --nph-ink: #111113;
+  --nph-muted: #66666b;
+  --nph-silver: #f5f5f7;
+  --nph-line: #e7e7eb;
+  --nph-blue: #0066cc;
+  background: #fff;
+  color: var(--nph-ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+body[data-page="home"] .npd-apple-home { overflow: clip; }
+body[data-page="home"] .npd-apple-home :where(section, figure, article, aside) { min-width: 0; }
+body[data-page="home"] .npd-apple-home :where(h1, h2, h3) {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  color: var(--nph-ink);
+  font-weight: 650;
+  letter-spacing: -.045em;
+  text-transform: none;
+  text-wrap: balance;
+}
+body[data-page="home"] .npd-apple-home :where(p, h1, h2, h3) { margin-top: 0; }
+body[data-page="home"] .npd-apple-home :where(p) { text-wrap: pretty; }
+body[data-page="home"] .npd-header {
+  background: rgba(255,255,255,.88);
+  -webkit-backdrop-filter: saturate(160%) blur(18px);
+  backdrop-filter: saturate(160%) blur(18px);
+  border-bottom: 1px solid rgba(17,17,19,.06);
+  box-shadow: none;
+}
+body[data-page="home"] .npd-header .site-nav a {
+  font-size: .82rem;
+  font-weight: 500;
+  letter-spacing: -.005em;
+}
+body[data-page="home"] .npd-apple-eyebrow {
+  margin: 0 0 22px;
+  font-size: .72rem;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: .13em;
+  color: #6e6e73;
+}
+body[data-page="home"] .npd-apple-home :where(h2) {
+  font-size: clamp(2.65rem, 4.8vw, 5.5rem);
+  line-height: 1.08;
+}
+body[data-page="home"] .npd-apple-home :where(h3) {
+  font-size: clamp(1.3rem, 1.7vw, 1.9rem);
+  line-height: 1.18;
+}
+body[data-page="home"] .npd-apple-home :where(p):not(.npd-apple-eyebrow):not(.npd-apple-footnote):not(.npd-apple-status) {
+  line-height: 1.5;
+}
+body[data-page="home"] .npd-apple-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 34px;
+}
+body[data-page="home"] .npd-apple-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 13px 26px;
+  border: 1px solid #111113;
+  border-radius: 999px;
+  background: #111113;
+  color: #fff;
+  font-size: .94rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
+}
+body[data-page="home"] .npd-apple-button:hover {
+  background: #343438;
+  border-color: #343438;
+  color: #fff;
+  transform: translateY(-1px);
+}
+body[data-page="home"] .npd-apple-link,
+body[data-page="home"] .npd-apple-text-link {
+  color: var(--nph-blue);
+  font-weight: 600;
+  font-size: .98rem;
+  line-height: 1.5;
+  text-underline-offset: .28em;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+body[data-page="home"] .npd-apple-link:hover,
+body[data-page="home"] .npd-apple-text-link:hover {
+  color: #004f9d;
+  border-bottom-color: currentColor;
+}
+body[data-page="home"] .npd-apple-home a:focus-visible {
+  outline: 3px solid #0066cc;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+body[data-page="home"] .npd-apple-hero {
+  background: radial-gradient(ellipse at 74% 78%, #edf1f6 0%, #f9fafb 35%, #fff 70%);
+}
+body[data-page="home"] .npd-apple-hero-inner {
+  display: grid;
+  grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
+  align-items: center;
+  gap: clamp(36px, 5vw, 90px);
+  min-height: min(790px, calc(100svh - 70px));
+  padding-top: clamp(84px, 9vw, 138px);
+  padding-bottom: clamp(84px, 10vw, 146px);
+}
+body[data-page="home"] .npd-apple-hero-copy { max-width: 610px; }
+body[data-page="home"] .npd-apple-hero h1 {
+  margin: 0;
+  color: #0a0a0c;
+  font-size: clamp(3.5rem, 6.4vw, 6.7rem);
+  line-height: 1.005;
+  letter-spacing: -.066em;
+  font-weight: 700;
+}
+body[data-page="home"] .npd-apple-hero h1 span { color: #6e6e73; }
+body[data-page="home"] .npd-apple-lead {
+  margin: 30px 0 0;
+  max-width: 560px;
+  font-size: clamp(1.15rem, 1.45vw, 1.43rem);
+  color: #505056;
+  line-height: 1.48;
+}
+body[data-page="home"] .npd-apple-status {
+  margin: 36px 0 0;
+  max-width: 540px;
+  color: #6e6e73;
+  font-size: .82rem;
+  line-height: 1.55;
+}
+body[data-page="home"] .npd-apple-hero-art {
+  margin: 0;
+  align-self: center;
+  min-width: 0;
+}
+body[data-page="home"] .npd-apple-hero-art picture,
+body[data-page="home"] .npd-apple-hero-art img {
+  display: block;
+  width: 100%;
+}
+body[data-page="home"] .npd-apple-hero-art img {
+  aspect-ratio: 4/4.3;
+  max-height: 630px;
+  object-fit: cover;
+  object-position: 59% center;
+  border-radius: 30px;
+  background: #e9edf3;
+  box-shadow: 0 24px 65px rgba(35,47,60,.09);
+}
+body[data-page="home"] .npd-apple-hero-art figcaption,
+body[data-page="home"] .npd-apple-oncology-art figcaption {
+  margin-top: 12px;
+  color: #76767c;
+  font-size: .72rem;
+  line-height: 1.45;
+}
+body[data-page="home"] .npd-apple-center {
+  max-width: 860px;
+  text-align: center;
+  margin-inline: auto;
+}
+body[data-page="home"] .npd-apple-center > p:not(.npd-apple-eyebrow):not(.npd-apple-footnote) {
+  max-width: 750px;
+  margin: 24px auto 0;
+  color: #6e6e73;
+  font-size: clamp(1.05rem, 1.45vw, 1.35rem);
+}
+body[data-page="home"] .npd-apple-manifesto {
+  padding: clamp(100px, 13vw, 195px) 0;
+  background: #fff;
+}
+body[data-page="home"] .npd-apple-manifesto h2 {
+  max-width: 860px;
+  margin: 0 auto;
+  font-size: clamp(3rem, 5.6vw, 6.15rem);
+}
+body[data-page="home"] .npd-apple-oncology {
+  background: #080b11;
+  color: #f5f5f7;
+  padding: clamp(76px, 9vw, 148px) 0;
+}
+body[data-page="home"] .npd-apple-feature-grid {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: clamp(40px, 6vw, 100px);
+  align-items: center;
+}
+body[data-page="home"] .npd-apple-feature-copy { max-width: 570px; }
+body[data-page="home"] .npd-apple-feature-copy h2 { margin-bottom: 25px; }
+body[data-page="home"] .npd-apple-feature-copy > p:not(.npd-apple-eyebrow):not(.npd-apple-footnote) {
+  max-width: 510px;
+  margin-bottom: 30px;
+  color: #77777c;
+  font-size: clamp(1.05rem, 1.5vw, 1.32rem);
+}
+body[data-page="home"] .npd-apple-oncology .npd-apple-eyebrow { color: #b3b3bd; }
+body[data-page="home"] .npd-apple-oncology :where(h2) { color: #fff; }
+body[data-page="home"] .npd-apple-oncology .npd-apple-feature-copy > p:not(.npd-apple-eyebrow) {
+  color: #bbbcc5;
+}
+body[data-page="home"] .npd-apple-oncology .npd-apple-text-link { color: #7cb7ff; }
+body[data-page="home"] .npd-apple-oncology-art { margin: 0; }
+body[data-page="home"] .npd-apple-oncology-art picture,
+body[data-page="home"] .npd-apple-oncology-art img { display: block; width: 100%; }
+body[data-page="home"] .npd-apple-oncology-art img {
+  aspect-ratio: 1.18;
+  object-fit: cover;
+  border-radius: 26px;
+  background: #111820;
+}
+body[data-page="home"] .npd-apple-oncology-art figcaption { color: #9296a1; }
+body[data-page="home"] .npd-apple-products {
+  padding: clamp(92px, 11vw, 170px) 0 clamp(80px, 9vw, 130px);
+  background: var(--nph-silver);
+}
+body[data-page="home"] .npd-apple-product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(12px, 1.6vw, 24px);
+  margin-top: clamp(44px, 6vw, 78px);
+}
+body[data-page="home"] .npd-apple-product {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(24px, 3vw, 42px) clamp(14px, 2vw, 30px) 36px;
+  min-width: 0;
+  min-height: 425px;
+  background: #fff;
+  border-radius: 24px;
+  color: #161618;
+  text-decoration: none;
+  text-align: center;
+  transition: transform .2s ease;
+}
+body[data-page="home"] .npd-apple-product:hover { transform: translateY(-4px); }
+body[data-page="home"] .npd-apple-product picture {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  flex: 1;
+  min-height: 230px;
+}
+body[data-page="home"] .npd-apple-product picture img {
+  width: min(100%, 245px);
+  height: 245px;
+  max-width: 100%;
+  object-fit: contain;
+}
+body[data-page="home"] .npd-apple-product strong {
+  display: block;
+  margin-top: 25px;
+  font-size: 1.06rem;
+  font-weight: 650;
+  line-height: 1.35;
+}
+body[data-page="home"] .npd-apple-product span {
+  display: block;
+  margin-top: 8px;
+  color: #74747a;
+  font-size: .87rem;
+}
+body[data-page="home"] .npd-apple-product-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 26px;
+  margin-top: 38px;
+}
+body[data-page="home"] .npd-apple-footnote {
+  color: #76767d;
+  font-size: .78rem;
+  line-height: 1.55;
+}
+body[data-page="home"] .npd-apple-products > .container > .npd-apple-footnote {
+  max-width: 760px;
+  margin: 26px auto 0;
+  text-align: center;
+}
+body[data-page="home"] .npd-apple-intelligence {
+  padding: clamp(92px, 10vw, 170px) 0;
+  background: #fff;
+}
+body[data-page="home"] .npd-apple-intelligence .npd-apple-footnote {
+  margin-top: 30px;
+  max-width: 510px;
+}
+body[data-page="home"] .npd-apple-nova-art {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 540px;
+  padding: clamp(30px, 4vw, 60px);
+  border-radius: 30px;
+  background: radial-gradient(circle at 76% 23%, #263447, #111821 38%, #090c11 80%);
+  box-shadow: 0 25px 75px rgba(11,19,28,.14);
+  color: #fff;
+  overflow: hidden;
+}
+body[data-page="home"] .npd-apple-nova-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  color: #8e9bb0;
+  font-size: .68rem;
+  letter-spacing: .14em;
+  font-weight: 600;
+}
+body[data-page="home"] .npd-apple-nova-wordmark {
+  font-size: clamp(5.6rem, 10vw, 10rem);
+  font-weight: 690;
+  line-height: 1.1;
+  letter-spacing: -.09em;
+  white-space: nowrap;
+}
+body[data-page="home"] .npd-apple-nova-wordmark span { color: #72aaff; }
+body[data-page="home"] .npd-apple-nova-art > p {
+  margin: 0;
+  font-size: clamp(1.12rem, 1.55vw, 1.48rem);
+  color: #d7dfeb;
+}
+body[data-page="home"] .npd-apple-nova-divider {
+  height: 1px;
+  background: rgba(255,255,255,.18);
+  margin-top: clamp(50px, 7vw, 110px);
+}
+body[data-page="home"] .npd-apple-nova-taxonomy {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 18px;
+  color: #a9b7c8;
+  font-size: .74rem;
+}
+body[data-page="home"] .npd-apple-sourcing {
+  padding: clamp(96px, 11vw, 170px) 0;
+  background: #fff;
+}
+body[data-page="home"] .npd-apple-section-lead {
+  max-width: 790px;
+  margin-bottom: clamp(45px, 5vw, 76px);
+}
+body[data-page="home"] .npd-apple-section-lead > p:not(.npd-apple-eyebrow) {
+  max-width: 650px;
+  margin-top: 24px;
+  color: #6e6e73;
+  font-size: 1.2rem;
+}
+body[data-page="home"] .npd-apple-sourcing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  border-top: 1px solid #d2d2d7;
+  margin-bottom: 40px;
+}
+body[data-page="home"] .npd-apple-sourcing-grid article {
+  padding: 32px 35px 44px 0;
+  border-right: 1px solid #e7e7eb;
+}
+body[data-page="home"] .npd-apple-sourcing-grid article + article { padding-left: 35px; }
+body[data-page="home"] .npd-apple-sourcing-grid article:last-child { border-right: 0; }
+body[data-page="home"] .npd-apple-sourcing-grid article > span {
+  font-size: .86rem;
+  color: #8a8a91;
+}
+body[data-page="home"] .npd-apple-sourcing-grid h3 { margin: 26px 0 16px; }
+body[data-page="home"] .npd-apple-sourcing-grid p { color: #6e6e73; font-size: .98rem; }
+body[data-page="home"] .npd-apple-governance {
+  padding: clamp(90px, 10vw, 150px) 0;
+  background: #f5f5f7;
+}
+body[data-page="home"] .npd-apple-governance-grid {
+  display: grid;
+  grid-template-columns: minmax(0,1.05fr) minmax(0,.95fr);
+  align-items: center;
+  gap: clamp(40px, 7vw, 110px);
+}
+body[data-page="home"] .npd-apple-governance-grid > div > p:not(.npd-apple-eyebrow) {
+  max-width: 580px;
+  margin: 24px 0 28px;
+  font-size: 1.16rem;
+  color: #66666b;
+}
+body[data-page="home"] .npd-apple-regulatory-notice {
+  background: #fff;
+  border: 1px solid #ebebee;
+  border-radius: 28px;
+  padding: clamp(30px, 4vw, 55px);
+}
+body[data-page="home"] .npd-apple-regulatory-notice h3 { margin: 0 0 21px; }
+body[data-page="home"] .npd-apple-regulatory-notice p:last-child { color: #66666b; }
+body[data-page="home"] .npd-apple-contact {
+  padding: clamp(120px, 15vw, 215px) 0;
+  text-align: center;
+  background: #fff;
+}
+body[data-page="home"] .npd-apple-contact .npd-apple-actions-centered { justify-content: center; }
+body[data-page="home"] .npd-apple-contact .npd-apple-footnote {
+  max-width: 660px;
+  margin: 40px auto 0;
+}
+@media (max-width: 1000px) {
+  body[data-page="home"] .npd-apple-hero-inner { min-height: 0; }
+  body[data-page="home"] .npd-apple-hero h1 { font-size: clamp(3.4rem, 6vw, 5rem); }
+  body[data-page="home"] .npd-apple-nova-art { min-height: 450px; }
+}
+@media (max-width: 800px) {
+  body[data-page="home"] .npd-apple-hero-inner,
+  body[data-page="home"] .npd-apple-feature-grid,
+  body[data-page="home"] .npd-apple-governance-grid {
+    grid-template-columns: minmax(0,1fr);
+  }
+  body[data-page="home"] .npd-apple-hero-inner { padding-top: 72px; padding-bottom: 80px; gap: 48px; }
+  body[data-page="home"] .npd-apple-hero-copy { max-width: 700px; }
+  body[data-page="home"] .npd-apple-hero-art img { aspect-ratio: 16/10; max-height: 440px; }
+  body[data-page="home"] .npd-apple-oncology .npd-apple-oncology-art { max-width: 730px; }
+  body[data-page="home"] .npd-apple-product { min-height: 350px; }
+  body[data-page="home"] .npd-apple-product picture { min-height: 185px; }
+  body[data-page="home"] .npd-apple-product picture img { height: 185px; }
+}
+@media (max-width: 600px) {
+  body[data-page="home"] .npd-apple-hero h1 { font-size: clamp(3rem, 11vw, 4.1rem); letter-spacing: -.06em; }
+  body[data-page="home"] .npd-apple-home h2 { font-size: clamp(2.5rem, 10vw, 3.7rem); }
+  body[data-page="home"] .npd-apple-eyebrow { margin-bottom: 17px; font-size: .66rem; }
+  body[data-page="home"] .npd-apple-hero-inner { padding-top: 60px; padding-bottom: 70px; }
+  body[data-page="home"] .npd-apple-lead { margin-top: 24px; }
+  body[data-page="home"] .npd-apple-actions { align-items: flex-start; gap: 17px; }
+  body[data-page="home"] .npd-apple-button { min-height: 44px; }
+  body[data-page="home"] .npd-apple-hero-art img { aspect-ratio: 4/3; border-radius: 22px; }
+  body[data-page="home"] .npd-apple-product-grid { grid-template-columns: 1fr; gap: 12px; }
+  body[data-page="home"] .npd-apple-product { min-height: 340px; padding-top: 22px; }
+  body[data-page="home"] .npd-apple-product picture { min-height: 205px; }
+  body[data-page="home"] .npd-apple-product picture img { height: 205px; }
+  body[data-page="home"] .npd-apple-nova-art { min-height: 390px; padding: 26px; border-radius: 20px; }
+  body[data-page="home"] .npd-apple-nova-wordmark { font-size: clamp(4.8rem, 16vw, 7rem); }
+  body[data-page="home"] .npd-apple-nova-taxonomy { justify-content: flex-start; }
+  body[data-page="home"] .npd-apple-sourcing-grid { grid-template-columns: 1fr; }
+  body[data-page="home"] .npd-apple-sourcing-grid article,
+  body[data-page="home"] .npd-apple-sourcing-grid article + article {
+    border-right: 0;
+    border-bottom: 1px solid #e7e7eb;
+    padding: 28px 0;
+  }
+  body[data-page="home"] .npd-apple-sourcing-grid article:last-child { border-bottom: 0; }
+  body[data-page="home"] .npd-apple-product-links { flex-direction: column; align-items: center; gap: 13px; }
+  body[data-page="home"] .npd-apple-contact .npd-apple-actions { justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-page="home"] .npd-apple-home *,
+  body[data-page="home"] .npd-apple-home *::before,
+  body[data-page="home"] .npd-apple-home *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media print {
+  body[data-page="home"] .npd-apple-home section { background: #fff !important; color: #000 !important; padding-block: 30px; }
+  body[data-page="home"] .npd-apple-home h2 { color: #000 !important; }
+  body[data-page="home"] .npd-apple-nova-art { display: none; }
+  body[data-page="home"] .npd-apple-product-grid { grid-template-columns: repeat(3,1fr); }
+}
