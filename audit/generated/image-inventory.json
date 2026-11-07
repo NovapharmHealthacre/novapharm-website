@@ -7036,9 +7036,7 @@
       "observedAltText": [
         "Professional reviewing controlled pharmaceutical operating information"
       ],
-      "observedCaptions": [
-        "Representative business context; no current regulated operation is implied."
-      ],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/about-operating-model-960.avif",
         "assets/media/modules/about-operating-model-960.jpg",
@@ -7092,9 +7090,7 @@
       "observedAltText": [
         "Professional reviewing controlled pharmaceutical operating information"
       ],
-      "observedCaptions": [
-        "Representative business context; no current regulated operation is implied."
-      ],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/about-operating-model-960.avif",
         "assets/media/modules/about-operating-model-960.jpg",
@@ -7148,9 +7144,7 @@
       "observedAltText": [
         "Professional reviewing controlled pharmaceutical operating information"
       ],
-      "observedCaptions": [
-        "Representative business context; no current regulated operation is implied."
-      ],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/about-operating-model-960.avif",
         "assets/media/modules/about-operating-model-960.jpg",
@@ -7204,9 +7198,7 @@
       "observedAltText": [
         "Professional reviewing controlled pharmaceutical operating information"
       ],
-      "observedCaptions": [
-        "Representative business context; no current regulated operation is implied."
-      ],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/about-operating-model-960.avif",
         "assets/media/modules/about-operating-model-960.jpg",
@@ -7260,9 +7252,7 @@
       "observedAltText": [
         "Professional reviewing controlled pharmaceutical operating information"
       ],
-      "observedCaptions": [
-        "Representative business context; no current regulated operation is implied."
-      ],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/about-operating-model-960.avif",
         "assets/media/modules/about-operating-model-960.jpg",
@@ -7320,9 +7310,7 @@
       "observedAltText": [
         "Professional reviewing controlled pharmaceutical operating information"
       ],
-      "observedCaptions": [
-        "Representative business context; no current regulated operation is implied."
-      ],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/about-operating-model-960.avif",
         "assets/media/modules/about-operating-model-960.jpg",
@@ -10229,9 +10217,7 @@
       "observedAltText": [
         "Team reviewing pharmaceutical portfolio evidence"
       ],
-      "observedCaptions": [
-        "Representative portfolio-review context; no availability or facility ownership is implied."
-      ],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/product-portfolio-evidence-960.avif",
         "assets/media/modules/product-portfolio-evidence-960.jpg",
@@ -10285,9 +10271,7 @@
       "observedAltText": [
         "Team reviewing pharmaceutical portfolio evidence"
       ],
-      "observedCaptions": [
-        "Representative portfolio-review context; no availability or facility ownership is implied."
-      ],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/product-portfolio-evidence-960.avif",
         "assets/media/modules/product-portfolio-evidence-960.jpg",
@@ -10341,9 +10325,7 @@
       "observedAltText": [
         "Team reviewing pharmaceutical portfolio evidence"
       ],
-      "observedCaptions": [
-        "Representative portfolio-review context; no availability or facility ownership is implied."
-      ],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/product-portfolio-evidence-960.avif",
         "assets/media/modules/product-portfolio-evidence-960.jpg",
@@ -10397,9 +10379,7 @@
       "observedAltText": [
         "Team reviewing pharmaceutical portfolio evidence"
       ],
-      "observedCaptions": [
-        "Representative portfolio-review context; no availability or facility ownership is implied."
-      ],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/product-portfolio-evidence-960.avif",
         "assets/media/modules/product-portfolio-evidence-960.jpg",
@@ -10453,9 +10433,7 @@
       "observedAltText": [
         "Team reviewing pharmaceutical portfolio evidence"
       ],
-      "observedCaptions": [
-        "Representative portfolio-review context; no availability or facility ownership is implied."
-      ],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/product-portfolio-evidence-960.avif",
         "assets/media/modules/product-portfolio-evidence-960.jpg",
@@ -10514,9 +10492,7 @@
       "observedAltText": [
         "Team reviewing pharmaceutical portfolio evidence"
       ],
-      "observedCaptions": [
-        "Representative portfolio-review context; no availability or facility ownership is implied."
-      ],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/product-portfolio-evidence-960.avif",
         "assets/media/modules/product-portfolio-evidence-960.jpg",
@@ -12208,12 +12184,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/artoflex-90-tablets/index.html",
-        "products/nutraxin/index.html"
+        "products/nutraxin/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -12256,12 +12233,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/artoflex-90-tablets/index.html",
-        "products/nutraxin/index.html"
+        "products/nutraxin/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-068",
@@ -12304,12 +12282,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/artoflex-90-tablets/index.html",
-        "products/nutraxin/index.html"
+        "products/nutraxin/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-069",
@@ -12352,12 +12331,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/artoflex-90-tablets/index.html",
-        "products/nutraxin/index.html"
+        "products/nutraxin/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-068",
@@ -12400,14 +12380,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 13,
+      "usageCount": 6,
+      "referenceCount": 14,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/artoflex-90-tablets/index.html",
         "products/nutraxin/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-069",
@@ -12450,12 +12431,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/collagen-complex-90-tablets/index.html",
-        "products/nutraxin/index.html"
+        "products/nutraxin/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-070",
@@ -12498,12 +12480,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/collagen-complex-90-tablets/index.html",
-        "products/nutraxin/index.html"
+        "products/nutraxin/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-071",
@@ -12546,12 +12529,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/collagen-complex-90-tablets/index.html",
-        "products/nutraxin/index.html"
+        "products/nutraxin/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-070",
@@ -12594,12 +12578,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/collagen-complex-90-tablets/index.html",
-        "products/nutraxin/index.html"
+        "products/nutraxin/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-071",
@@ -12642,14 +12627,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 13,
+      "usageCount": 6,
+      "referenceCount": 14,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/collagen-complex-90-tablets/index.html",
         "products/nutraxin/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-070",
@@ -12692,12 +12678,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/collagen-gold-30-sachets/index.html",
-        "products/nutraxin/index.html"
+        "products/nutraxin/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-072",
@@ -12740,12 +12727,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/collagen-gold-30-sachets/index.html",
-        "products/nutraxin/index.html"
+        "products/nutraxin/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-073",
@@ -12788,12 +12776,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/collagen-gold-30-sachets/index.html",
-        "products/nutraxin/index.html"
+        "products/nutraxin/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-072",
@@ -12836,12 +12825,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/collagen-gold-30-sachets/index.html",
-        "products/nutraxin/index.html"
+        "products/nutraxin/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-073",
@@ -12884,14 +12874,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 13,
+      "usageCount": 6,
+      "referenceCount": 14,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/collagen-gold-30-sachets/index.html",
         "products/nutraxin/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-072",
@@ -12934,13 +12925,14 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 9,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
-        "products/nutraxin/index.html"
+        "products/nutraxin/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -12983,13 +12975,14 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 9,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
-        "products/nutraxin/index.html"
+        "products/nutraxin/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-074",
@@ -13032,13 +13025,14 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 9,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
-        "products/nutraxin/index.html"
+        "products/nutraxin/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-075",
@@ -13081,13 +13075,14 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 9,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
-        "products/nutraxin/index.html"
+        "products/nutraxin/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-074",
@@ -13130,15 +13125,16 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 15,
+      "usageCount": 7,
+      "referenceCount": 20,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
         "products/nutraxin/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-075",
@@ -13181,12 +13177,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/l-carnitine-60-tablets/index.html"
+        "products/nutraxin/l-carnitine-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-076",
@@ -13229,12 +13226,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/l-carnitine-60-tablets/index.html"
+        "products/nutraxin/l-carnitine-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-077",
@@ -13277,12 +13275,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/l-carnitine-60-tablets/index.html"
+        "products/nutraxin/l-carnitine-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-076",
@@ -13325,12 +13324,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/l-carnitine-60-tablets/index.html"
+        "products/nutraxin/l-carnitine-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-077",
@@ -13373,14 +13373,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 13,
+      "usageCount": 6,
+      "referenceCount": 14,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/l-carnitine-60-tablets/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -13423,12 +13424,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 8,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/magnesium-complex-60-tablets/index.html"
+        "products/nutraxin/magnesium-complex-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-078",
@@ -13471,12 +13473,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 8,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/magnesium-complex-60-tablets/index.html"
+        "products/nutraxin/magnesium-complex-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-079",
@@ -13519,12 +13522,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 8,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/magnesium-complex-60-tablets/index.html"
+        "products/nutraxin/magnesium-complex-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-078",
@@ -13567,12 +13571,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 8,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/magnesium-complex-60-tablets/index.html"
+        "products/nutraxin/magnesium-complex-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-079",
@@ -13615,14 +13620,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 13,
+      "usageCount": 6,
+      "referenceCount": 18,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/magnesium-complex-60-tablets/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-078",
@@ -13665,12 +13671,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/magnesium-daily-60-tablets/index.html"
+        "products/nutraxin/magnesium-daily-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-080",
@@ -13713,12 +13720,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/magnesium-daily-60-tablets/index.html"
+        "products/nutraxin/magnesium-daily-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-080",
@@ -13761,12 +13769,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/magnesium-daily-60-tablets/index.html"
+        "products/nutraxin/magnesium-daily-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-080",
@@ -13809,12 +13818,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/magnesium-daily-60-tablets/index.html"
+        "products/nutraxin/magnesium-daily-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-080",
@@ -13857,14 +13867,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 13,
+      "usageCount": 6,
+      "referenceCount": 14,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/magnesium-daily-60-tablets/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-080",
@@ -13896,7 +13907,8 @@
       "registeredAltText": "Nutraxin Men's Multivitamin Complex box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Men"
+        "Nutraxin Men",
+        "Nutraxin Men&#39;s Multivitamin Complex box and 60-tablet bottle"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
@@ -13907,12 +13919,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/mens-multivitamin-complex-60-tablets/index.html"
+        "products/nutraxin/mens-multivitamin-complex-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -13944,7 +13957,8 @@
       "registeredAltText": "Nutraxin Men's Multivitamin Complex box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Men"
+        "Nutraxin Men",
+        "Nutraxin Men&#39;s Multivitamin Complex box and 60-tablet bottle"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
@@ -13955,12 +13969,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/mens-multivitamin-complex-60-tablets/index.html"
+        "products/nutraxin/mens-multivitamin-complex-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-081",
@@ -13992,7 +14007,8 @@
       "registeredAltText": "Nutraxin Men's Multivitamin Complex box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Men"
+        "Nutraxin Men",
+        "Nutraxin Men&#39;s Multivitamin Complex box and 60-tablet bottle"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
@@ -14003,12 +14019,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/mens-multivitamin-complex-60-tablets/index.html"
+        "products/nutraxin/mens-multivitamin-complex-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-082",
@@ -14040,7 +14057,8 @@
       "registeredAltText": "Nutraxin Men's Multivitamin Complex box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Men"
+        "Nutraxin Men",
+        "Nutraxin Men&#39;s Multivitamin Complex box and 60-tablet bottle"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
@@ -14051,12 +14069,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/mens-multivitamin-complex-60-tablets/index.html"
+        "products/nutraxin/mens-multivitamin-complex-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-081",
@@ -14088,7 +14107,8 @@
       "registeredAltText": "Nutraxin Men's Multivitamin Complex box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Men"
+        "Nutraxin Men",
+        "Nutraxin Men&#39;s Multivitamin Complex box and 60-tablet bottle"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
@@ -14099,14 +14119,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 13,
+      "usageCount": 6,
+      "referenceCount": 14,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/mens-multivitamin-complex-60-tablets/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-082",
@@ -14149,12 +14170,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/multivitamin-mineral-energy-60-tablets/index.html"
+        "products/nutraxin/multivitamin-mineral-energy-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -14197,12 +14219,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/multivitamin-mineral-energy-60-tablets/index.html"
+        "products/nutraxin/multivitamin-mineral-energy-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-083",
@@ -14245,12 +14268,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/multivitamin-mineral-energy-60-tablets/index.html"
+        "products/nutraxin/multivitamin-mineral-energy-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-084",
@@ -14293,12 +14317,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/multivitamin-mineral-energy-60-tablets/index.html"
+        "products/nutraxin/multivitamin-mineral-energy-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-083",
@@ -14341,14 +14366,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 13,
+      "usageCount": 6,
+      "referenceCount": 14,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/multivitamin-mineral-energy-60-tablets/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-084",
@@ -14391,12 +14417,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-b12-60-sublingual-tablets/index.html"
+        "products/nutraxin/vitamin-b12-60-sublingual-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-085",
@@ -14439,12 +14466,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-b12-60-sublingual-tablets/index.html"
+        "products/nutraxin/vitamin-b12-60-sublingual-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -14487,12 +14515,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-b12-60-sublingual-tablets/index.html"
+        "products/nutraxin/vitamin-b12-60-sublingual-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-085",
@@ -14535,12 +14564,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-b12-60-sublingual-tablets/index.html"
+        "products/nutraxin/vitamin-b12-60-sublingual-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -14583,14 +14613,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 13,
+      "usageCount": 6,
+      "referenceCount": 14,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-b12-60-sublingual-tablets/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-085",
@@ -14633,13 +14664,14 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-c-1000mg-30-tablets/index.html"
+        "products/nutraxin/vitamin-c-1000mg-30-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-086",
@@ -14682,13 +14714,14 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-c-1000mg-30-tablets/index.html"
+        "products/nutraxin/vitamin-c-1000mg-30-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-087",
@@ -14731,13 +14764,14 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-c-1000mg-30-tablets/index.html"
+        "products/nutraxin/vitamin-c-1000mg-30-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-086",
@@ -14780,13 +14814,14 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-c-1000mg-30-tablets/index.html"
+        "products/nutraxin/vitamin-c-1000mg-30-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-087",
@@ -14829,15 +14864,16 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 15,
+      "usageCount": 7,
+      "referenceCount": 16,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-c-1000mg-30-tablets/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-086",
@@ -14880,12 +14916,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-c-500mg-chewable-30-tablets/index.html"
+        "products/nutraxin/vitamin-c-500mg-chewable-30-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -14928,12 +14965,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-c-500mg-chewable-30-tablets/index.html"
+        "products/nutraxin/vitamin-c-500mg-chewable-30-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -14976,12 +15014,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-c-500mg-chewable-30-tablets/index.html"
+        "products/nutraxin/vitamin-c-500mg-chewable-30-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-088",
@@ -15024,12 +15063,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-c-500mg-chewable-30-tablets/index.html"
+        "products/nutraxin/vitamin-c-500mg-chewable-30-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -15072,14 +15112,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 13,
+      "usageCount": 6,
+      "referenceCount": 14,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-c-500mg-chewable-30-tablets/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-088",
@@ -15122,14 +15163,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 5,
+      "usageCount": 6,
+      "referenceCount": 8,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/index.html",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-d3-120-tablets/index.html"
+        "products/nutraxin/vitamin-d3-120-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -15172,14 +15214,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 5,
+      "usageCount": 6,
+      "referenceCount": 8,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/index.html",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-d3-120-tablets/index.html"
+        "products/nutraxin/vitamin-d3-120-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-089",
@@ -15222,14 +15265,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 5,
+      "usageCount": 6,
+      "referenceCount": 8,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/index.html",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-d3-120-tablets/index.html"
+        "products/nutraxin/vitamin-d3-120-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-090",
@@ -15272,8 +15316,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 7,
-      "referenceCount": 7,
+      "usageCount": 8,
+      "referenceCount": 10,
       "usageFiles": [
         "apps/corporate/components/concise-specialist-pages.tsx",
         "apps/corporate/components/page-renderer.tsx",
@@ -15281,7 +15325,8 @@
         "index.html",
         "products/index.html",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-d3-120-tablets/index.html"
+        "products/nutraxin/vitamin-d3-120-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-089",
@@ -15324,8 +15369,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 8,
-      "referenceCount": 26,
+      "usageCount": 9,
+      "referenceCount": 29,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
@@ -15334,7 +15379,8 @@
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
         "scripts/reconcile-social-authority.mjs",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-090",
@@ -15377,12 +15423,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-d3-k2-120-tablets/index.html"
+        "products/nutraxin/vitamin-d3-k2-120-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -15425,12 +15472,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-d3-k2-120-tablets/index.html"
+        "products/nutraxin/vitamin-d3-k2-120-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-091",
@@ -15473,12 +15521,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-d3-k2-120-tablets/index.html"
+        "products/nutraxin/vitamin-d3-k2-120-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-090",
@@ -15521,12 +15570,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-d3-k2-120-tablets/index.html"
+        "products/nutraxin/vitamin-d3-k2-120-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-091",
@@ -15569,14 +15619,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 13,
+      "usageCount": 6,
+      "referenceCount": 14,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d3-k2-120-tablets/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-090",
@@ -15619,12 +15670,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-d3-k2-spray-30ml/index.html"
+        "products/nutraxin/vitamin-d3-k2-spray-30ml/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -15667,12 +15719,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-d3-k2-spray-30ml/index.html"
+        "products/nutraxin/vitamin-d3-k2-spray-30ml/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-092",
@@ -15715,12 +15768,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-d3-k2-spray-30ml/index.html"
+        "products/nutraxin/vitamin-d3-k2-spray-30ml/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-093",
@@ -15763,12 +15817,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-d3-k2-spray-30ml/index.html"
+        "products/nutraxin/vitamin-d3-k2-spray-30ml/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-092",
@@ -15811,14 +15866,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 13,
+      "usageCount": 6,
+      "referenceCount": 14,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d3-k2-spray-30ml/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-093",
@@ -15861,12 +15917,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-d3-spray-30ml/index.html"
+        "products/nutraxin/vitamin-d3-spray-30ml/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-094",
@@ -15909,12 +15966,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-d3-spray-30ml/index.html"
+        "products/nutraxin/vitamin-d3-spray-30ml/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-095",
@@ -15957,12 +16015,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-d3-spray-30ml/index.html"
+        "products/nutraxin/vitamin-d3-spray-30ml/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-094",
@@ -16005,12 +16064,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-d3-spray-30ml/index.html"
+        "products/nutraxin/vitamin-d3-spray-30ml/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-095",
@@ -16053,14 +16113,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 13,
+      "usageCount": 6,
+      "referenceCount": 14,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d3-spray-30ml/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-094",
@@ -16103,12 +16164,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-max-15-effervescent-tablets/index.html"
+        "products/nutraxin/vitamin-max-15-effervescent-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-096",
@@ -16151,12 +16213,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-max-15-effervescent-tablets/index.html"
+        "products/nutraxin/vitamin-max-15-effervescent-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-097",
@@ -16199,12 +16262,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-max-15-effervescent-tablets/index.html"
+        "products/nutraxin/vitamin-max-15-effervescent-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-096",
@@ -16247,12 +16311,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-max-15-effervescent-tablets/index.html"
+        "products/nutraxin/vitamin-max-15-effervescent-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-097",
@@ -16295,14 +16360,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 13,
+      "usageCount": 6,
+      "referenceCount": 14,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-max-15-effervescent-tablets/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-096",
@@ -16345,12 +16411,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 6,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-max-60-tablets/index.html"
+        "products/nutraxin/vitamin-max-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -16393,12 +16460,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 6,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-max-60-tablets/index.html"
+        "products/nutraxin/vitamin-max-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-098",
@@ -16441,12 +16509,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 6,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-max-60-tablets/index.html"
+        "products/nutraxin/vitamin-max-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-099",
@@ -16489,12 +16558,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 6,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/vitamin-max-60-tablets/index.html"
+        "products/nutraxin/vitamin-max-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-098",
@@ -16537,14 +16607,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 13,
+      "usageCount": 6,
+      "referenceCount": 16,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-max-60-tablets/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-099",
@@ -16576,7 +16647,8 @@
       "registeredAltText": "Nutraxin Women's Multivitamin Complex box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Women"
+        "Nutraxin Women",
+        "Nutraxin Women&#39;s Multivitamin Complex box and 60-tablet bottle"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
@@ -16587,12 +16659,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/womens-multivitamin-complex-60-tablets/index.html"
+        "products/nutraxin/womens-multivitamin-complex-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-100",
@@ -16624,7 +16697,8 @@
       "registeredAltText": "Nutraxin Women's Multivitamin Complex box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Women"
+        "Nutraxin Women",
+        "Nutraxin Women&#39;s Multivitamin Complex box and 60-tablet bottle"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
@@ -16635,12 +16709,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/womens-multivitamin-complex-60-tablets/index.html"
+        "products/nutraxin/womens-multivitamin-complex-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-081",
@@ -16672,7 +16747,8 @@
       "registeredAltText": "Nutraxin Women's Multivitamin Complex box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Women"
+        "Nutraxin Women",
+        "Nutraxin Women&#39;s Multivitamin Complex box and 60-tablet bottle"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
@@ -16683,12 +16759,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/womens-multivitamin-complex-60-tablets/index.html"
+        "products/nutraxin/womens-multivitamin-complex-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-100",
@@ -16720,7 +16797,8 @@
       "registeredAltText": "Nutraxin Women's Multivitamin Complex box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Women"
+        "Nutraxin Women",
+        "Nutraxin Women&#39;s Multivitamin Complex box and 60-tablet bottle"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
@@ -16731,12 +16809,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
-        "products/nutraxin/womens-multivitamin-complex-60-tablets/index.html"
+        "products/nutraxin/womens-multivitamin-complex-60-tablets/index.html",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-081",
@@ -16768,7 +16847,8 @@
       "registeredAltText": "Nutraxin Women's Multivitamin Complex box and 60-tablet bottle",
       "registeredCaption": "Pack artwork does not assert NovaPharm ownership, stock, approval or availability",
       "observedAltText": [
-        "Nutraxin Women"
+        "Nutraxin Women",
+        "Nutraxin Women&#39;s Multivitamin Complex box and 60-tablet bottle"
       ],
       "observedCaptions": [],
       "responsiveDerivatives": [],
@@ -16779,14 +16859,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 13,
+      "usageCount": 6,
+      "referenceCount": 14,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/womens-multivitamin-complex-60-tablets/index.html",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-100",
@@ -19421,12 +19502,8 @@
       },
       "registeredAltText": "Secure operations workstation with layered system diagrams, identity reader and protected package",
       "registeredCaption": "Representative platform architecture; capability status is stated in the adjacent content",
-      "observedAltText": [
-        "Professional reviewing controlled pharmaceutical technology records"
-      ],
-      "observedCaptions": [
-        "Representative technology context; no live customer or operational data is shown."
-      ],
+      "observedAltText": [],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/stories/technology-control-architecture-960.avif",
         "assets/media/stories/technology-control-architecture-960.jpg",
@@ -19435,16 +19512,13 @@
         "assets/media/stories/technology-control-architecture.jpg",
         "assets/media/stories/technology-control-architecture.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "creative-assets/module-media-asset-register.json",
-        "technology/index.html"
+        "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-117",
@@ -19478,12 +19552,8 @@
       },
       "registeredAltText": "Secure operations workstation with layered system diagrams, identity reader and protected package",
       "registeredCaption": "Representative platform architecture; capability status is stated in the adjacent content",
-      "observedAltText": [
-        "Professional reviewing controlled pharmaceutical technology records"
-      ],
-      "observedCaptions": [
-        "Representative technology context; no live customer or operational data is shown."
-      ],
+      "observedAltText": [],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/stories/technology-control-architecture-960.avif",
         "assets/media/stories/technology-control-architecture-960.jpg",
@@ -19492,16 +19562,13 @@
         "assets/media/stories/technology-control-architecture.jpg",
         "assets/media/stories/technology-control-architecture.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "creative-assets/module-media-asset-register.json",
-        "technology/index.html"
+        "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-117",
@@ -19535,12 +19602,8 @@
       },
       "registeredAltText": "Secure operations workstation with layered system diagrams, identity reader and protected package",
       "registeredCaption": "Representative platform architecture; capability status is stated in the adjacent content",
-      "observedAltText": [
-        "Professional reviewing controlled pharmaceutical technology records"
-      ],
-      "observedCaptions": [
-        "Representative technology context; no live customer or operational data is shown."
-      ],
+      "observedAltText": [],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/stories/technology-control-architecture-960.avif",
         "assets/media/stories/technology-control-architecture-960.jpg",
@@ -19549,16 +19612,13 @@
         "assets/media/stories/technology-control-architecture.jpg",
         "assets/media/stories/technology-control-architecture.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "creative-assets/module-media-asset-register.json",
-        "technology/index.html"
+        "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-118",
@@ -19592,12 +19652,8 @@
       },
       "registeredAltText": "Secure operations workstation with layered system diagrams, identity reader and protected package",
       "registeredCaption": "Representative platform architecture; capability status is stated in the adjacent content",
-      "observedAltText": [
-        "Professional reviewing controlled pharmaceutical technology records"
-      ],
-      "observedCaptions": [
-        "Representative technology context; no live customer or operational data is shown."
-      ],
+      "observedAltText": [],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/stories/technology-control-architecture-960.avif",
         "assets/media/stories/technology-control-architecture-960.jpg",
@@ -19606,16 +19662,13 @@
         "assets/media/stories/technology-control-architecture.jpg",
         "assets/media/stories/technology-control-architecture.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "creative-assets/module-media-asset-register.json",
-        "technology/index.html"
+        "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -19649,12 +19702,8 @@
       },
       "registeredAltText": "Secure operations workstation with layered system diagrams, identity reader and protected package",
       "registeredCaption": "Representative platform architecture; capability status is stated in the adjacent content",
-      "observedAltText": [
-        "Professional reviewing controlled pharmaceutical technology records"
-      ],
-      "observedCaptions": [
-        "Representative technology context; no live customer or operational data is shown."
-      ],
+      "observedAltText": [],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/stories/technology-control-architecture-960.avif",
         "assets/media/stories/technology-control-architecture-960.jpg",
@@ -19663,20 +19712,17 @@
         "assets/media/stories/technology-control-architecture.jpg",
         "assets/media/stories/technology-control-architecture.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 6,
-      "referenceCount": 7,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
         "apps/corporate/components/page-renderer.tsx",
         "creative-assets/8k-master-register.json",
         "creative-assets/module-media-asset-register.json",
         "scripts/test-visual-contracts.mjs",
-        "sitemap-images.xml",
-        "technology/index.html"
+        "sitemap-images.xml"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-117",
@@ -19710,12 +19756,8 @@
       },
       "registeredAltText": "Secure operations workstation with layered system diagrams, identity reader and protected package",
       "registeredCaption": "Representative platform architecture; capability status is stated in the adjacent content",
-      "observedAltText": [
-        "Professional reviewing controlled pharmaceutical technology records"
-      ],
-      "observedCaptions": [
-        "Representative technology context; no live customer or operational data is shown."
-      ],
+      "observedAltText": [],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/stories/technology-control-architecture-960.avif",
         "assets/media/stories/technology-control-architecture-960.jpg",
@@ -19724,16 +19766,13 @@
         "assets/media/stories/technology-control-architecture.jpg",
         "assets/media/stories/technology-control-architecture.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "creative-assets/module-media-asset-register.json",
-        "technology/index.html"
+        "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-118",
