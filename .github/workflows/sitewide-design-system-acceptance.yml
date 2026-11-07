@@ -1,0 +1,61 @@
+name: Corporate sitewide design system acceptance
+on:
+  pull_request:
+    paths:
+      - apps/corporate/**
+      - .github/workflows/sitewide-design-system-acceptance.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: corporate-design-system-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  audit-all-routes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Chromium browser
+        run: npx playwright install chromium
+      - name: Compile Next.js corporate app
+        run: npm run build --workspace @novapharm/corporate
+      - name: Serve exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd apps/corporate
+          PORT=3178 HOSTNAME=127.0.0.1 PUBLIC_INDEXABLE=false npm run start > "${{ runner.temp }}/nph-design-server.log" 2>&1 &
+          echo $! > "${{ runner.temp }}/nph-design-server.pid"
+          cd ../..
+          for n in $(seq 1 35); do
+            if curl -fsS --max-time 3 http://127.0.0.1:3178/ -o /dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat "${{ runner.temp }}/nph-design-server.log"
+          exit 1
+      - name: Inspect all public routes across desktop and mobile
+        shell: bash
+        run: |
+          cd apps/corporate
+          SITEWIDE_BASE_URL=http://127.0.0.1:3178 npx tsx test/sitewide-design-audit.ts
+      - name: Upload route audit and screenshots
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: novapharm-corporate-design-system-audit
+          path: |
+            artifacts/corporate-design-system
+            ${{ runner.temp }}/nph-design-server.log
+          if-no-files-found: warn
+          retention-days: 7

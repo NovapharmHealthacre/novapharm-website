@@ -1,0 +1,510 @@
+/*
+ * NOVAPHARM / PUBLIC CORPORATE DESIGN SYSTEM
+ * Unified across the Next.js corporate estate. Source: Nov 2026 editorial homepage.
+ * Inspiration: Apple's hierarchy, clarity, rhythm and accessibility.
+ * Identity: NovaPharm's own imagery, logo and carefully restrained red accent.
+ * Intentionally does not target managed portal/authentication interfaces.
+ */
+:root {
+  --nph-canvas: #ffffff;
+  --nph-silver: #f5f5f7;
+  --nph-ink: #111113;
+  --nph-body: #424248;
+  --nph-muted: #595961;
+  --nph-line: #d9d9df;
+  --nph-link: #0066cc;
+  --nph-accent: #b51c1a;
+  --nph-deep: #0a101a;
+  --nph-radius: 22px;
+  --nph-max: 1240px;
+  --nph-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --ink: var(--nph-ink);
+  --text: var(--nph-body);
+  --muted: var(--nph-muted);
+  --line: var(--nph-line);
+  --soft: var(--nph-silver);
+  --white: var(--nph-canvas);
+  --navy: var(--nph-deep);
+  --red: var(--nph-accent);
+  --red-dark: #a01412;
+  --focus: var(--nph-link);
+  --apple-ink: var(--nph-ink);
+  --apple-muted: var(--nph-muted);
+  --apple-line: var(--nph-line);
+  --apple-soft: var(--nph-silver);
+  --apple-white: var(--nph-canvas);
+  --pharma-red: var(--nph-accent);
+  --pharma-red-dark: #a01412;
+  --header: 64px;
+  --shell: var(--nph-max);
+  --shadow: 0 18px 58px rgba(12, 20, 34, .08);
+}
+
+html { scroll-padding-top: calc(var(--header) + 24px); }
+body, button, input, select, textarea {
+  font-family: var(--nph-system);
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  color: var(--nph-body);
+  background: var(--nph-canvas);
+  font-size: 16px;
+  line-height: 1.62;
+  letter-spacing: 0;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--nph-system);
+  letter-spacing: 0;
+  font-weight: 650;
+  line-height: 1.09;
+  color: var(--nph-ink);
+  text-wrap: balance;
+}
+h1 { font-size: clamp(2.75rem, 6vw, 5.75rem); }
+h2 { font-size: clamp(2.2rem, 4.5vw, 4.7rem); }
+h3 { font-size: clamp(1.2rem, 2vw, 1.8rem); }
+p { max-width: 68ch; }
+a { text-underline-offset: .24em; }
+.shell { width: min(calc(100% - 48px), var(--nph-max)); }
+.section { padding-block: clamp(84px, 10vw, 146px); }
+.section-soft {
+  background: var(--nph-silver);
+  border-color: transparent;
+}
+.section-dark { background: var(--nph-deep); }
+.section-dark :is(h1,h2,h3) { color: #fff; }
+.section-dark p { color: #d0d5df; }
+.eyebrow, .pharma-kicker {
+  color: #6a6a70;
+  font-family: var(--nph-system);
+  font-size: .72rem;
+  line-height: 1.45;
+  letter-spacing: .1em;
+  font-weight: 650;
+}
+.editorial-number, .service-index, .step-number, .section-number {
+  color: var(--nph-muted);
+  font-size: .79rem;
+  font-weight: 650;
+  letter-spacing: .06em;
+}
+.section-heading { max-width: 800px; margin-bottom: clamp(36px, 5vw, 72px); }
+.section-heading h2 { margin-bottom: 20px; }
+.section-heading p { font-size: clamp(1.04rem, 1.55vw, 1.2rem); line-height: 1.53; color: var(--nph-muted); }
+
+.site-header {
+  height: var(--header);
+  background: rgba(255, 255, 255, .9);
+  -webkit-backdrop-filter: saturate(160%) blur(18px);
+  backdrop-filter: saturate(160%) blur(18px);
+  border-bottom: 1px solid rgba(17, 17, 19, .08);
+  box-shadow: none;
+}
+.header-inner { grid-template-columns: 190px minmax(0, 1fr) auto; gap: clamp(12px, 2vw, 30px); }
+.brand { width: 175px; height: auto; min-height: 38px; }
+.desktop-nav { gap: clamp(12px, 1.5vw, 26px); }
+.desktop-nav a {
+  color: #2a2a2e;
+  font-size: .79rem;
+  font-weight: 550;
+  letter-spacing: 0;
+  padding-block: 14px;
+}
+.desktop-nav a::after { height: 1px; bottom: 7px; background: var(--nph-accent); }
+.mobile-menu summary {
+  border-radius: 999px;
+  border-color: var(--nph-line);
+  background: #fff;
+  font-weight: 600;
+}
+.mobile-menu nav {
+  box-shadow: 0 28px 54px rgba(14, 20, 32, .12);
+  border-bottom: 1px solid var(--nph-line);
+  padding-inline: max(24px, calc((100vw - var(--nph-max))/2));
+}
+.mobile-menu nav a {
+  min-height: 52px;
+  color: var(--nph-ink);
+  font-size: 1rem;
+  font-weight: 550;
+  border-color: var(--nph-line);
+}
+.mobile-menu nav a:hover { color: var(--nph-link); }
+.mobile-menu nav a:focus-visible { background: var(--nph-silver); }
+
+.button,
+.button-primary,
+.button-light,
+.button-quiet,
+.button-ghost {
+  min-height: 46px;
+  padding: 11px 24px;
+  border-radius: 999px;
+  font-family: var(--nph-system);
+  font-size: .91rem;
+  font-weight: 610;
+  line-height: 1.25;
+  letter-spacing: 0;
+  box-shadow: none;
+}
+.button-primary {
+  background: var(--nph-ink);
+  border-color: var(--nph-ink);
+  color: #fff;
+}
+.button-primary:hover {
+  background: #343438;
+  border-color: #343438;
+  color: #fff;
+}
+.button-light,
+.button-quiet {
+  background: #fff;
+  color: var(--nph-ink);
+  border: 1px solid var(--nph-line);
+}
+.button-light:hover, .button-quiet:hover { background: var(--nph-silver); border-color: #97979f; }
+.text-link, .text-link-light, .pharma-focus-grid a {
+  color: var(--nph-link);
+  text-decoration: none;
+  font-weight: 590;
+  letter-spacing: 0;
+}
+.text-link:hover, .text-link-light:hover { text-decoration: underline; }
+.text-link-light { color: #a8cdff; }
+.action-row { gap: 18px; margin-top: 30px; }
+:focus-visible { outline-color: var(--nph-link); }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline-offset: 4px; }
+@media (hover: hover) {
+  .button:hover { transform: translateY(-1px); }
+}
+
+/* The one page family gets one responsive editorial hero language. */
+.page-hero {
+  min-height: clamp(500px, 58vw, 700px);
+  background: #fbfbfc;
+  border-bottom: 1px solid #ededf0;
+  align-items: center;
+}
+.page-hero-media { object-position: center center; }
+.page-hero-shade {
+  background: linear-gradient(90deg, rgba(255,255,255,.99) 0%, rgba(255,255,255,.97) 32%, rgba(255,255,255,.78) 53%, rgba(255,255,255,.08) 94%);
+}
+.page-hero-copy {
+  padding-block: clamp(78px, 9vw, 135px);
+}
+.page-hero-copy .breadcrumbs { margin-bottom: clamp(28px, 4vw, 48px); }
+.page-hero-copy h1 {
+  max-width: 1000px;
+  margin-bottom: 26px;
+  font-size: clamp(3rem, 6vw, 6.1rem);
+  line-height: 1.045;
+  letter-spacing: 0;
+}
+.page-hero-copy > p {
+  max-width: 640px;
+  color: #52525b;
+  font-size: clamp(1.09rem, 1.6vw, 1.33rem);
+  line-height: 1.52;
+}
+.page-hero-dark { background: var(--nph-deep); color: #fff; }
+.page-hero-dark h1 { color: #fff; }
+.page-hero-dark .page-hero-copy > p { color: #d1d9e2; }
+.page-hero-dark .page-hero-shade { background: linear-gradient(90deg,rgba(7,13,22,.96),rgba(7,13,22,.78) 48%,rgba(7,13,22,.1)); }
+.breadcrumbs {
+  align-items: center;
+  gap: 9px;
+  color: #676772;
+  font-size: .8rem;
+  line-height: 1.5;
+}
+.breadcrumbs a { color: #50505b; }
+.breadcrumbs a:hover { color: var(--nph-link); }
+
+/* Consistent content rhythm across company, capability, governance and policy pages. */
+.narrative-grid { gap: clamp(36px, 6vw, 100px); }
+.narrative-grid h2 { max-width: 720px; }
+.narrative-grid .editorial-number { margin-bottom: 26px; }
+.prose, .article-body, .policy-body { line-height: 1.73; }
+.prose p { color: var(--nph-body); margin-bottom: 1.4em; }
+.check-list li { color: var(--nph-body); padding-block: 15px; border-color: var(--nph-line); }
+.check-list svg, .caveat svg, .legal-grid svg { display: none; }
+.check-list li { display: list-item; padding-left: 0; }
+.check-list { list-style: none; }
+.check-list li::before { content: ""; display: inline-block; width: 5px; height: 5px; margin: 0 12px 3px 0; border-radius: 50%; background: var(--nph-muted); }
+.source-note, .caveat { color: var(--nph-muted); }
+
+/* Cards: consistent 20px radius, light border, no gratuitous shadow. */
+:is(.leader-card, .article-card, .service-grid article, .regulatory-grid article,
+    .principle-grid article, .lane-grid article, .process-grid li,
+    .formulation-grid article, .product-grid article, .catalogue-grid article,
+    .ecosystem-grid article, .legal-grid > a, .technology-stages article,
+    .maturity-grid article, .partner-preview-grid > div) {
+  border: 1px solid #e7e7ec;
+  border-radius: var(--nph-radius);
+  background: #fff;
+  overflow: hidden;
+  box-shadow: none;
+}
+:is(.service-grid, .regulatory-grid, .principle-grid, .lane-grid,
+    .process-grid, .maturity-grid, .partner-preview-grid, .legal-grid,
+    .catalogue-grid, .formulation-grid, .ecosystem-grid) {
+  gap: clamp(14px, 2vw, 24px);
+  border: none;
+  background: transparent;
+}
+:is(.leader-grid, .article-grid, .product-grid) { gap: clamp(14px, 2vw, 24px); }
+.article-card:hover .article-card-media img,
+.leader-card:hover .leader-media img { transform: scale(1.015); }
+.article-card-copy, .leader-copy, .product-copy { padding: clamp(22px, 2.8vw, 34px); }
+.article-card h3, .leader-card h3 { font-size: clamp(1.24rem, 1.8vw, 1.65rem); }
+.article-meta, .leader-governance, .leader-copy > p:not(.leader-title) { color: var(--nph-muted); }
+.leader-copy strong, .legal-grid strong { color: var(--nph-link); font-weight: 600; }
+.portrait-placeholder strong { font-family: var(--nph-system); font-weight: 650; }
+.product-grid article { min-height: 310px; }
+.product-media { min-height: 310px; background: #f8f8fa; }
+.product-media img { object-fit: contain; }
+.portfolio-priority {
+  background: var(--nph-silver);
+  border-color: transparent;
+}
+.portfolio-priority-copy h2 { font-size: clamp(2.7rem, 5vw, 5.15rem); }
+.portfolio-priority-facts { border-color: #d7d7dd; }
+.portfolio-priority-links a { color: var(--nph-link); }
+
+/* Specific page families share the same underlying typography and spacing. */
+.nutraxin-product-hero { background: #fafafb; }
+.nutraxin-product-hero h1 { font-size: clamp(2.9rem, 5vw, 5.15rem); }
+.nutraxin-product-copy p { color: var(--nph-body); }
+.nutraxin-product-media { border-radius: var(--nph-radius); background: #fff; }
+.product-reference-grid { gap: clamp(24px, 4vw, 54px); }
+.product-reference-table { border-color: var(--nph-line); }
+.article-hero { min-height: clamp(570px, 75vh, 760px); }
+.article-hero-copy { padding-bottom: clamp(56px, 7vw, 105px); }
+.article-hero h1 { max-width: 990px; font-size: clamp(2.95rem, 5.6vw, 5.8rem); }
+.article-lead { font-family: var(--nph-system); font-size: clamp(1.15rem, 1.7vw, 1.45rem); font-weight: 540; }
+.article-body h2, .policy-body h2 { font-size: clamp(1.8rem, 3vw, 2.8rem); }
+.article-aside, .policy-layout > nav { border-color: var(--nph-line); }
+.article-aside a, .policy-layout a { color: var(--nph-link); }
+.article-disclaimer { border-left-width: 2px; border-radius: 0 12px 12px 0; }
+.profile-hero { background: var(--nph-deep); }
+.profile-copy h1 { font-size: clamp(3rem, 5.8vw, 5.5rem); color: #fff; }
+.profile-copy > p { color: #d5d9e2; }
+.profile-hero .governance-badge { border-radius: 999px; font-weight: 580; }
+.policy-meta { background: var(--nph-deep); }
+.policy-layout { gap: clamp(32px, 5vw, 80px); }
+.policy-body > section { margin-bottom: clamp(40px, 5vw, 72px); }
+.legal-grid h2 { margin-top: 14px; font-size: clamp(1.4rem, 2vw, 2rem); }
+.legal-grid > a { min-height: 225px; }
+.legal-grid > a:hover { border-color: #c5c5cd; }
+.technology-stages > section { gap: clamp(24px, 4vw, 48px); }
+.technology-stages h2 { font-size: clamp(1.7rem, 2.7vw, 2.55rem); }
+.technology-stages article { padding: clamp(24px, 3vw, 38px); }
+
+/* Status remains explicit, and truthful information must not be hidden. */
+.status-notice {
+  border: 1px solid #dadae1;
+  border-left: 2px solid #777782;
+  border-radius: 0 16px 16px 0;
+  background: #fafafa;
+  box-shadow: none;
+  padding: clamp(20px, 3vw, 30px);
+}
+.status-notice-regulatory { border-left-color: var(--nph-accent); }
+.status-notice-warning { border-left-color: #a26200; background: #fffbf4; }
+.status-notice-error { border-left-color: #a81922; background: #fff7f7; }
+.status-notice-success { border-left-color: #17754a; background: #f4fbf7; }
+.status-notice p { color: var(--nph-body); }
+.status-chip, .maturity-label { border-radius: 999px; font-weight: 600; letter-spacing: .02em; }
+.scope-boundary, .caveat { background: var(--nph-silver); border-color: var(--nph-line); border-radius: 14px; }
+
+/* Inputs: native accessibility, non-decorative content. Contact's reference design
+   retains its own intentionally scoped form styles and behaviours. */
+input:not([type="checkbox"]):not([type="radio"]),
+select, textarea {
+  border: 1px solid #a2a2aa;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--nph-ink);
+  min-height: 46px;
+  padding-inline: 14px;
+  font-family: var(--nph-system);
+}
+:is(input, select, textarea):focus { border-color: var(--nph-link); box-shadow: 0 0 0 2px rgba(0,102,204,.13); }
+:is(input, select, textarea):disabled { color: #62626c; background: #f5f5f7; }
+input::placeholder, textarea::placeholder { color: #6e6e76; }
+
+/* A closing conversation should not become a full-screen brand advertisement. */
+.final-cta {
+  background: var(--nph-silver);
+  color: var(--nph-ink);
+  padding-block: clamp(88px, 11vw, 158px);
+}
+.final-cta-inner { gap: clamp(24px, 4vw, 55px); }
+.final-cta h2 { color: var(--nph-ink); font-size: clamp(2.3rem, 4.25vw, 4.8rem); }
+.final-cta .eyebrow { color: var(--nph-muted); }
+.final-cta .button-primary { background: var(--nph-ink); color: #fff; }
+.final-cta .button-light { border-color: #c9c9d0; }
+
+/* Shared chrome: quiet silver footer, readable navigation, no inverted logo. */
+.site-footer {
+  background: var(--nph-silver);
+  color: var(--nph-muted);
+  border-top: 1px solid #e6e6ea;
+}
+.footer-primary { gap: clamp(25px, 4vw, 60px); padding-block: clamp(55px, 7vw, 95px); }
+.footer-brand p { color: #595961; }
+.footer-status { border-left: 2px solid #b51c1a; padding-left: 16px; }
+.brand-footer { filter: none; }
+.footer-primary nav strong { color: var(--nph-ink); font-size: .84rem; font-weight: 650; }
+.footer-primary nav a, .footer-button {
+  color: #515159;
+  font-size: .82rem;
+  font-weight: 500;
+  text-decoration: none;
+  line-height: 1.7;
+}
+.footer-primary nav a:hover, .footer-button:hover { color: var(--nph-link); text-decoration: underline; }
+.footer-secondary { border-top: 1px solid #dcdce2; padding-block: 24px; }
+.footer-secondary p { color: #64646d; }
+.cookie-banner {
+  border: 1px solid #e2e2e8;
+  border-radius: 18px;
+  box-shadow: 0 22px 62px rgba(20,26,35,.16);
+}
+
+/* The previously approved bespoke homepage/contact art direction remains intact.
+   Do not impose a second page hero or card layout on those experiences. */
+.nph-editorial-home .npd-apple-hero h1 { font-weight: 700; }
+.nph-editorial-home .npd-apple-oncology :is(h2,h3) { color: #fff; }
+.np-contact-reference { --nph-radius: 18px; }
+
+/* Responsive: preserve readable headlines and single-column hierarchy. */
+@media (max-width: 1050px) {
+  .desktop-nav { gap: 12px; }
+  .header-inner { grid-template-columns: 180px minmax(0,1fr) auto; }
+}
+@media (max-width: 980px) {
+  .header-inner { grid-template-columns: minmax(0,1fr) auto; }
+  .desktop-nav { display: none; }
+  .mobile-menu { display: block; }
+}
+@media (max-width: 760px) {
+  .shell { width: min(calc(100% - 36px), var(--nph-max)); }
+  .section { padding-block: clamp(68px, 12vw, 104px); }
+  .page-hero { min-height: auto; }
+  .page-hero-copy { padding-block: 74px 85px; }
+  .page-hero-copy h1 { font-size: clamp(2.65rem, 10.7vw, 4.2rem); }
+  .page-hero-copy > p { font-size: 1.06rem; }
+  .page-hero-shade {
+    background: linear-gradient(0deg, rgba(255,255,255,.99) 0%, rgba(255,255,255,.97) 45%, rgba(255,255,255,.73) 78%, rgba(255,255,255,.2));
+  }
+  .site-footer .footer-primary { gap: 30px; }
+  .final-cta-inner { grid-template-columns: minmax(0,1fr); }
+  .page-hero-copy h1, .article-hero h1, .profile-copy h1 { overflow-wrap: break-word; }
+}
+@media (max-width: 520px) {
+  .shell { width: min(calc(100% - 32px), var(--nph-max)); }
+  h1 { font-size: clamp(2.5rem, 10.5vw, 3.6rem); }
+  h2 { font-size: clamp(2.1rem, 8.5vw, 3.1rem); }
+  .button { max-width: 100%; white-space: normal; text-align: center; }
+  .page-hero-copy h1 { font-size: clamp(2.5rem, 11vw, 3.5rem); }
+  .article-hero h1, .profile-copy h1 { font-size: clamp(2.45rem, 10vw, 3.45rem); }
+  .breadcrumbs { margin-bottom: 25px; }
+  .footer-primary nav a, .footer-button { display: inline-flex; align-items: center; min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .site-header *, .site-footer *, .section *, .page-hero *,
+  .article-hero *, .profile-hero *, .final-cta * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media print {
+  .site-header { position: static; }
+  .final-cta { background: #fff; }
+  .site-footer { background: #fff; }
+  .status-notice { border: 1px solid #777; }
+}
+
+
+/* Human-reviewed screenshot QA: cookie choices must remain visible without
+   covering the majority of a medicine page or contact form on mobile. */
+.cookie-banner {
+  left: auto;
+  right: 24px;
+  bottom: 24px;
+  width: min(580px, calc(100% - 48px));
+  max-width: 580px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 13px;
+  padding: 19px 22px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.98);
+  box-shadow: 0 18px 54px rgba(15, 22, 34, .15);
+}
+.cookie-banner strong { font-size: .97rem; font-weight: 650; }
+.cookie-banner p { margin-top: 3px; max-width: 58ch; font-size: .79rem; line-height: 1.48; color: #585860; }
+.cookie-actions { display: flex; justify-content: flex-start; align-items: center; gap: 8px; }
+.cookie-actions .button {
+  min-height: 42px;
+  padding: 9px 17px;
+  font-size: .78rem;
+  line-height: 1.3;
+  text-align: center;
+}
+.cookie-actions .button-quiet { color: var(--nph-link); border-color: transparent; background: transparent; }
+
+/* Oncology's separate editorial route participates in the same fixed header
+   and touch-first subnavigation grammar. No icons or arbitrary overflow. */
+.npoc-page .npoc-subnav { top: var(--header); }
+.npoc-page .npoc-subnav a { min-height: 44px; }
+@media (max-width: 760px) {
+  .npoc-page .npoc-subnav { top: auto; }
+  .npoc-page .npoc-subnav .container > div {
+    max-width: 100%;
+    white-space: nowrap;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .npoc-page .npoc-subnav .container > div::-webkit-scrollbar { display: none; }
+  .npoc-page .npoc-subnav a { scroll-snap-align: start; min-height: 44px; }
+}
+@media (max-width: 620px) {
+  .cookie-banner {
+    left: 12px;
+    right: 12px;
+    bottom: 10px;
+    width: auto;
+    max-width: none;
+    gap: 9px;
+    padding: 15px 16px;
+    border-radius: 18px;
+  }
+  .cookie-banner strong { font-size: .91rem; }
+  .cookie-banner p { font-size: .75rem; line-height: 1.42; }
+  .cookie-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 6px 8px;
+  }
+  .cookie-actions .button {
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 7px;
+    font-size: .75rem;
+    white-space: normal;
+  }
+  .cookie-actions .button:last-child {
+    grid-column: 1 / -1;
+    min-height: 44px;
+    color: var(--nph-link);
+    background: transparent;
+    border: 0;
+    text-decoration: underline;
+  }
+}

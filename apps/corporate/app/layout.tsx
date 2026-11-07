@@ -7,6 +7,7 @@ import "../../../assets/css/contact-premium.css";
 import "./print.css";
 import "./homepage-editorial.css";
 import "./oncology-editorial.css";
+import "./design-system.css";
 import { CookieControls } from "@/components/cookie-controls";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
