@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { generateKeyPairSync, sign } from "node:crypto";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import { reviewedCognitoWorkforceApproval } from "../../../src/core/cognito-approval.mjs";
 import { COGNITO_STAGING_CLIENT_ID, COGNITO_STAGING_ISSUER, verifyCognitoWorkforceIdToken } from "../../../src/core/cognito-id-token.mjs";
@@ -114,4 +115,16 @@ test("no implicit Cognito workforce authorisation by email, customer role or mis
   assert.equal(reviewedCognitoWorkforceApproval(subject, email, {
     ...approved, COGNITO_WORKFORCE_APPROVALS_JSON: "not JSON"
   }), null);
+});
+
+test("Cognito sign-out revokes app sessions and avoids legacy Azure endpoint", () => {
+  const root = new URL("../", import.meta.url);
+  const dashboard = readFileSync(new URL("components/dashboard.tsx", root), "utf8");
+  const route = readFileSync(new URL("app/auth/end-session/route.ts", root), "utf8");
+  const backend = readFileSync(new URL("../../../server.mjs", import.meta.url), "utf8");
+  assert.match(backend, /cognitoLogout: session\?\.identityProvider === "entra-workforce-cognito"/);
+  assert.match(dashboard, /cognitoLogout \? "\/auth\/end-session\/"/);
+  assert.match(route, /COGNITO_POST_LOGOUT_URL/);
+  assert.match(route, /logout\.searchParams\.set\("logout_uri", allowed\)/);
+  assert.match(route, /response\.cookies\.set\("np_session", ""/);
 });
