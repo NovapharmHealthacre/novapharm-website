@@ -228,7 +228,7 @@ body[data-page="technology"] .np-intelligence {
 .np-intelligence .npi-purpose { background: #fff; }
 .np-intelligence .npi-purpose-inner { max-width: 1100px; }
 .np-intelligence .npi-purpose h2 { color: var(--npi-ink); font-size: clamp(2.7rem, 6.1vw, 6rem); line-height: 1.08; font-weight: 650; }
-.np-intelligence .npi-purpose h2 span { color: #a0a0a6; }
+.np-intelligence .npi-purpose h2 span { color: #66666d; }
 .np-intelligence .npi-purpose-inner > p:nth-last-child(2) { max-width: 760px; margin-top: 32px; color: var(--npi-copy); font-size: clamp(1.12rem, 1.8vw, 1.42rem); line-height: 1.56; }
 .np-intelligence .npi-purpose-line { margin-top: 34px; color: var(--npi-red); font-size: .98rem; font-weight: 700; }
 
