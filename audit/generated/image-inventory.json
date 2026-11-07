@@ -3248,7 +3248,9 @@
       "observedAltText": [
         ""
       ],
-      "observedCaptions": [],
+      "observedCaptions": [
+        "Conceptual visual. Not a NovaPharm facility, inventory or active distribution operation."
+      ],
       "responsiveDerivatives": [],
       "observedLoading": [],
       "observedFetchPriority": [
@@ -3298,7 +3300,9 @@
       "observedAltText": [
         ""
       ],
-      "observedCaptions": [],
+      "observedCaptions": [
+        "Conceptual visual. Not a NovaPharm facility, inventory or active distribution operation."
+      ],
       "responsiveDerivatives": [
         "assets/media/home/supply-network-hero-1200.jpg",
         "assets/media/home/supply-network-hero.avif"
@@ -3308,9 +3312,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 20,
-      "referenceCount": 31,
+      "usageCount": 21,
+      "referenceCount": 32,
       "usageFiles": [
+        "apps/corporate/components/concise-home.tsx",
         "apps/corporate/lib/seo.ts",
         "creative-assets/8k-master-register.json",
         "creative-assets/asset-register.json",
@@ -16819,6 +16824,7 @@
       ],
       "observedCaptions": [
         "Representative scientific context. No NovaPharm facility or active programme is depicted.",
+        "Representative scientific context. No NovaPharm facility, stock or approved programme is depicted.",
         "Representative scientific context; it does not depict a NovaPharm facility, product or active programme."
       ],
       "responsiveDerivatives": [],
@@ -16827,9 +16833,10 @@
       ],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
+        "apps/corporate/components/concise-home.tsx",
         "creative-assets/image-asset-register.json",
         "index.html",
         "oncology/index.html"
@@ -16919,6 +16926,7 @@
       ],
       "observedCaptions": [
         "Representative scientific context. No NovaPharm facility or active programme is depicted.",
+        "Representative scientific context. No NovaPharm facility, stock or approved programme is depicted.",
         "Representative scientific context; it does not depict a NovaPharm facility, product or active programme."
       ],
       "responsiveDerivatives": [],
@@ -16927,9 +16935,10 @@
       ],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
+        "apps/corporate/components/concise-home.tsx",
         "creative-assets/image-asset-register.json",
         "index.html",
         "oncology/index.html"
@@ -16969,6 +16978,7 @@
       ],
       "observedCaptions": [
         "Representative scientific context. No NovaPharm facility or active programme is depicted.",
+        "Representative scientific context. No NovaPharm facility, stock or approved programme is depicted.",
         "Representative scientific context; it does not depict a NovaPharm facility, product or active programme."
       ],
       "responsiveDerivatives": [
@@ -16981,9 +16991,10 @@
       ],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 5,
-      "referenceCount": 6,
+      "usageCount": 6,
+      "referenceCount": 7,
       "usageFiles": [
+        "apps/corporate/components/concise-home.tsx",
         "creative-assets/image-asset-register.json",
         "docs/oncology-media-provenance.json",
         "index.html",
@@ -17025,6 +17036,7 @@
       ],
       "observedCaptions": [
         "Representative scientific context. No NovaPharm facility or active programme is depicted.",
+        "Representative scientific context. No NovaPharm facility, stock or approved programme is depicted.",
         "Representative scientific context; it does not depict a NovaPharm facility, product or active programme."
       ],
       "responsiveDerivatives": [
@@ -17037,9 +17049,10 @@
       ],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 14,
-      "referenceCount": 25,
+      "usageCount": 15,
+      "referenceCount": 26,
       "usageFiles": [
+        "apps/corporate/components/concise-home.tsx",
         "apps/corporate/components/concise-specialist-pages.tsx",
         "apps/corporate/components/page-renderer.tsx",
         "apps/corporate/data/pages.ts",
@@ -17090,6 +17103,7 @@
       ],
       "observedCaptions": [
         "Representative scientific context. No NovaPharm facility or active programme is depicted.",
+        "Representative scientific context. No NovaPharm facility, stock or approved programme is depicted.",
         "Representative scientific context; it does not depict a NovaPharm facility, product or active programme."
       ],
       "responsiveDerivatives": [
@@ -17102,9 +17116,10 @@
       ],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
+        "apps/corporate/components/concise-home.tsx",
         "creative-assets/image-asset-register.json",
         "docs/oncology-media-provenance.json",
         "index.html",
@@ -18093,10 +18108,9 @@
       ],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 7,
-      "referenceCount": 9,
+      "usageCount": 6,
+      "referenceCount": 8,
       "usageFiles": [
-        "apps/corporate/components/concise-home.tsx",
         "apps/corporate/components/page-renderer.tsx",
         "creative-assets/module-media-asset-register.json",
         "regulatory-services/index.html",
