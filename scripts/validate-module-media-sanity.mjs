@@ -106,7 +106,7 @@ const authoredModuleContracts = new Map([
   ["partners", ["npd-main", "npd-partner-editorial", "npd-horizontal-steps"]],
   ["technology", ["npd-main", "npd-maturity npd-maturity-full", "technology-control-architecture"]],
   ["insights", ["npd-main", "npd-insight-lead", "npd-insight-list"]],
-  ["contact", ["npd-main", "np-contact-destination-layout", "How can we help?"]],
+  ["contact", ["npd-main", "np-contact-reference-form", "How can we help?"]],
   ["account", ["npd-main", "npd-account-stages", "An account is approved through evidence"]]
 ]);
 

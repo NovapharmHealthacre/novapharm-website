@@ -5,20 +5,27 @@ import { getPlatformCapabilities, resolvePlatformMode } from "../src/core/platfo
 
 const html = readFileSync(resolve("contact/index.html"), "utf8");
 const publicForms = getPlatformCapabilities(resolvePlatformMode()).publicForms;
-assert.match(html, /<main id="main" class="npd-main np-contact">/, "Contact template was not published");
-assert.match(html, /Let's start the right conversation\./);
-assert.equal((html.match(/class="np-contact-topic"/g) ?? []).length, 8, "All eight contact routes must remain available");
-assert.match(html, /yellowcard\.mhra\.gov\.uk/, "Required pharmaceutical safety routing is missing");
-assert.match(html, /legal\/privacy\//, "Privacy notice must remain linked");
+assert.match(html, /<main id="main" class="npd-main np-contact np-contact-reference">/);
+assert.match(html, /Let&#39;s talk\./);
+assert.match(html, /How can we help\?/);
+assert.match(html, /np-contact-reference-form/);
+assert.match(html, /np-contact-reference-footer/);
+assert.match(html, /yellowcard\.mhra\.gov\.uk/);
+assert.match(html, /legal\/privacy\//);
+
 if (publicForms) {
-  assert.match(html, /<form class="form-grid contact-form/, "Managed build must retain the server-controlled form");
+  assert.match(html, /<form class="form-grid contact-form np-contact-reference-form"/, "Managed build must retain the governed form");
   assert.match(html, /name="privacyAcknowledgement"/);
   assert.match(html, /name="safetyConfirmation"/);
-  assert.match(html, /enquiry=Product%20opportunity#contact-form/);
+  assert.doesNotMatch(html, /data-email-enquiry-form/, "Managed form cannot silently fall back to email-only mode");
 } else {
-  assert.doesNotMatch(html, /<form\b[^>]*data-contact-form/i, "Public-only release must never collect data");
-  assert.doesNotMatch(html, /<form class="form-grid contact-form/i, "Public-only release may not pretend to submit enquiries");
-  assert.match(html, /href="mailto:vishal@novapharmhealthcare\.com/);
-  assert.match(html, /secure online form is not active/i);
+  assert.match(html, /data-email-enquiry-form/, "Public-only page must have the email-draft interaction");
+  assert.match(html, /action="mailto:vishal@novapharmhealthcare\.com"/);
+  assert.match(html, /name="enquiryType"/);
+  assert.match(html, /name="country"/);
+  assert.match(html, /This public information release does not collect or transmit enquiry details/);
+  assert.match(html, /src="\/assets\/js\/contact-email-draft\.js"/);
+  assert.doesNotMatch(html, /data-contact-form|data-file-upload/);
+  assert.doesNotMatch(html, /action="\/api\/|type="file"/);
 }
-console.log(`Contact publication verified: eight routes; ${publicForms ? "managed form" : "public email-only"} mode.`);
+console.log("Contact publication verified: compact reference design; " + (publicForms ? "managed API" : "email composition only") + " mode.");

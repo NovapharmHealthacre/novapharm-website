@@ -95,17 +95,27 @@ for (const [path, marker] of routeContracts) {
 }
 
 const contact = text("contact/index.html");
-assert.match(contact, /class="np-contact(?:\s|")|class="np-contact-hero"/, "Contact must retain the current approved corporate design and hierarchy");
-assert.match(contact, /Let(?:&#x27;|&#39;|')s start the right conversation\./, "Contact must present the approved B2B enquiry journey");
-assert.match(contact, /Business enquiries only\./, "Contact must retain regulated-business scope");
-assert.ok(contact.includes('href="https://yellowcard.mhra.gov.uk/"'), "Contact must link to the exact independent MHRA Yellow Card reporting origin");
-if (contact.includes('data-contact-form')) {
-  if (!contact.includes('class="form-grid contact-form"') || !contact.includes("Your information is transmitted to the secure NovaPharm API")) {
-    assert.fail("Managed contact presentation is missing its form or API-authority boundary");
-  }
-} else if (!contact.includes("This public information release does not collect or transmit enquiry details.") || !contact.includes("mailto:vishal@novapharmhealthcare.com")) {
-  assert.fail("PUBLIC_ONLY contact presentation is missing its non-collection notice or verified fallback");
+assert.match(contact, /class="npd-main np-contact np-contact-reference"/, "Contact retains the approved standalone presentation");
+assert.match(contact, /Let&#39;s talk\./, "Contact has the reference's direct headline");
+assert.match(contact, /How can we help\?/, "Contact has the reference form heading");
+assert.match(contact, /class="np-contact-reference-grid"/, "Contact fields have the reference two-column grid");
+assert.match(contact, /class="np-contact-reference-footer"/, "Contact has a restrained legal footer");
+assert.match(contact, /Business enquiries only\./, "Contact retains regulated-business scope");
+assert.match(contact, /yellowcard\.mhra\.gov\.uk/, "Contact preserves MHRA safety routing");
+assert.match(contact, /legal\/privacy\//);
+if (contact.includes("data-contact-form")) {
+  assert.match(contact, /name="privacyAcknowledgement"/);
+  assert.match(contact, /name="safetyConfirmation"/);
+} else {
+  assert.match(contact, /data-email-enquiry-form/, "Public contact should open only an email draft");
+  assert.match(contact, /action="mailto:vishal@novapharmhealthcare\.com"/);
+  assert.match(contact, /This public information release does not collect or transmit enquiry details/);
+  assert.doesNotMatch(contact, /data-contact-form|data-file-upload|action="\/api\//);
 }
+const contactCss = text("assets/css/contact-premium.css");
+assert.match(contactCss, /np-contact-reference-hero/);
+assert.match(contactCss, /np-contact-reference-submit/);
+assert.match(contactCss, /@media \(max-width: 700px\)/);
 
 const products = text("products/index.html");
 const priorityPosition = products.indexOf("Food Supplement Portfolio Review");

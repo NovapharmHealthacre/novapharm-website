@@ -22,8 +22,9 @@ const contracts = [
     ],
     forbidden: [
       "data-contact-form",
-      "<form",
-      "data-file-upload"
+      "data-file-upload",
+      'type="file"',
+      'action="/api'
     ]
   },
   {
@@ -55,6 +56,28 @@ for (const contract of contracts) {
       failures.push(`${contract.path}: forbidden operational surface present: ${forbidden}`);
     }
   }
+}
+
+// The sole permitted public interaction is an email-client draft. Neither this
+// markup nor its optional JS enhancement may submit to the website or persist
+// entered contact details. Old checked-in public-only output is also safe.
+const publicContact = readFileSync("contact/index.html", "utf8");
+if (publicContact.includes("data-email-enquiry-form")) {
+  if ((publicContact.match(/<form\b/gi) ?? []).length !== 1) {
+    failures.push("contact/index.html: only one local email-draft form may appear");
+  }
+  if (!/<form\b[^>]*data-email-enquiry-form[^>]*action="mailto:vishal@novapharmhealthcare\.com"[^>]*method="post"/.test(publicContact)) {
+    failures.push("contact/index.html: email form must use the approved mailto action, never HTTP");
+  }
+  if (!publicContact.includes('src="/assets/js/contact-email-draft.js"')) {
+    failures.push("contact/index.html: the explicit email-only enhancement is missing");
+  }
+  const draftScript = readFileSync("assets/js/contact-email-draft.js", "utf8");
+  if (/\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage/.test(draftScript)) {
+    failures.push("assets/js/contact-email-draft.js: network or persistent storage API is forbidden");
+  }
+} else if (/<form\b/i.test(publicContact)) {
+  failures.push("contact/index.html: unexpected non-email public form");
 }
 
 if (failures.length) {
