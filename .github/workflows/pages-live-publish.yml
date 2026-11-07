@@ -65,8 +65,8 @@ jobs:
           node scripts/stage-pages-artifact.mjs _site
           node scripts/check-links.mjs _site
           grep -Fq 'Medicine. Where it needs to be' _site/index.html
-          grep -Fq 'class="np-contact-hero"' _site/contact/index.html
-          grep -Fq 'class="np-contact-grid"' _site/contact/index.html
+          grep -Fq 'class="np-contact-reference-hero"' _site/contact/index.html
+          grep -Fq 'data-email-enquiry-form' _site/contact/index.html
           grep -Fq 'This public information release does not collect or transmit enquiry details' _site/contact/index.html
           ! grep -Fq 'data-contact-form' _site/contact/index.html
           grep -Fq -- '--apple-pharma-public-contract: 3' _site/assets/css/novapharm.bundle.css
@@ -117,8 +117,8 @@ jobs:
           node scripts/stage-pages-artifact.mjs _site
           node scripts/check-links.mjs _site
           grep -Fq 'Medicine. Where it needs to be' _site/index.html
-          grep -Fq 'class="np-contact-hero"' _site/contact/index.html
-          grep -Fq 'class="np-contact-grid"' _site/contact/index.html
+          grep -Fq 'class="np-contact-reference-hero"' _site/contact/index.html
+          grep -Fq 'data-email-enquiry-form' _site/contact/index.html
           grep -Fq 'This public information release does not collect or transmit enquiry details' _site/contact/index.html
           ! grep -Fq 'data-contact-form' _site/contact/index.html
           grep -Fq -- '--apple-pharma-public-contract: 3' _site/assets/css/novapharm.bundle.css
