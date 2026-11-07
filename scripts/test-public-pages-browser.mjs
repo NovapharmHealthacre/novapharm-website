@@ -186,6 +186,18 @@ for (const [engineName, browserType] of engines) {
             assert.ok(bodyText.includes(route.required), `${engineName} ${viewport.name} ${route.path}: required page marker missing`);
 
             await assertLayout(page, `${engineName} ${viewport.name} ${route.path}`);
+            if (route.name === "home" && viewport.name !== "tablet-768") {
+              await page.emulateMedia({ contrast: "more" });
+              const contrastState = await page.evaluate(() => ({
+                requested: matchMedia("(prefers-contrast: more)").matches,
+                divider: getComputedStyle(document.documentElement).getPropertyValue("--npd-line").trim()
+              }));
+              assert.ok(contrastState.requested, `${engineName} ${viewport.name}: high-contrast preference not emulated`);
+              assert.equal(contrastState.divider.toLowerCase(), "#858c93",
+                `${engineName} ${viewport.name}: increased-contrast divider token was not applied`);
+              await page.emulateMedia({ contrast: "no-preference" });
+            }
+
             assert.deepEqual(failedResources, [], `${engineName} ${viewport.name} ${route.path}: failed subresources`);
             assert.deepEqual(consoleErrors, [], `${engineName} ${viewport.name} ${route.path}: console errors`);
 
