@@ -3,7 +3,8 @@ import { navigation } from "@/data/site";
 import { Brand } from "./brand";
 import { MobileNavigation } from "./mobile-navigation";
 
-const portalOrigin = process.env.PORTAL_ORIGIN ?? "https://portal.novapharmhealthcare.com";
+// Until an owner-verified managed portal origin is configured, route to the public, credential-free entry page.
+const portalOrigin = process.env.PORTAL_ORIGIN ?? "/portal/";
 
 export function SiteHeader() {
   return (
