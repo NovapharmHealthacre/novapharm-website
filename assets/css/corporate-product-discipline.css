@@ -2323,3 +2323,8 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   .npd-header .npd-mega { background: #fff; backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
 @media print { .npd-mega { display: none !important; } }
+
+/* External Nutraxin catalogue references: publisher information, not NovaPharm stock or sale. */
+.npd-product-detail .npd-publisher-action {margin-top:18px;font-size:.89rem;line-height:1.5}
+.npd-product-detail .npd-publisher-action a {display:inline-block;color:#3f4248;text-decoration:underline;text-underline-offset:3px;font-weight:600}
+.npd-product-detail .npd-publisher-action p {font-size:.76rem;color:#62656a;max-width:50ch;margin:9px 0 0}

@@ -7,6 +7,24 @@ const root = resolve(process.cwd());
 const siteUrl = "https://novapharmhealthcare.com";
 const register = validateNutraxinRegister({ repositoryRoot: root }).register;
 const products = [...register.products].sort((a, b) => a.catalogueOrder - b.catalogueOrder);
+const officialNutraxinReferences = JSON.parse(readFileSync(join(root, "apps/corporate/data/nutraxin-uk-links.json"), "utf8")).products;
+const expectedNutraxinSlugs = new Set(products.map((product) => product.slug));
+if (Object.keys(officialNutraxinReferences).length !== expectedNutraxinSlugs.size ||
+    Object.keys(officialNutraxinReferences).some((slug) => !expectedNutraxinSlugs.has(slug))) {
+  throw new Error("Nutraxin external publisher references must map exactly to the 19 catalogue slugs.");
+}
+function nutraxinOfficialReference(slug) {
+  if (!Object.hasOwn(officialNutraxinReferences, slug)) throw new Error(`Missing publisher mapping for ${slug}`);
+  const href = officialNutraxinReferences[slug];
+  if (href === null) return '<span class="npd-publisher-unavailable">Official Nutraxin UK product detail temporarily unavailable.</span>';
+  const url = new URL(href);
+  if (url.protocol !== "https:" || url.hostname !== "nutraxin.uk.com" ||
+      !url.pathname.startsWith("/product/") || url.username || url.password || url.search || url.hash) {
+    throw new Error(`Unsafe Nutraxin publisher destination for ${slug}`);
+  }
+  return `<a class="npd-publisher-link" href="${href}" target="_blank" rel="noopener noreferrer external" aria-label="Open product information on Nutraxin UK (external website)">Know more on Nutraxin UK</a>`;
+}
+
 const articles = readdirSync(join(root, "src/content/insights"))
   .filter((file) => file.endsWith(".json"))
   .map((file) => JSON.parse(readFileSync(join(root, "src/content/insights", file), "utf8")))
@@ -384,12 +402,22 @@ function productsMain() {
 }
 
 function nutraxinMain() {
-  return read("src/content/nutraxin-showcase.html");
+  const original = read("src/content/nutraxin-showcase.html");
+  const seen = new Set();
+  const rendered = original.replace(/<a class="nx-product-card" href="[^"]+" data-nx-product-slug="([a-z0-9-]+)">[\s\S]*?[<][/]a>/gu, (card, slug) => {
+    if (seen.has(slug)) throw new Error(`Duplicate Nutraxin card ${slug}`);
+    seen.add(slug);
+    return `<div class="nx-product-card-shell">${card}<div class="nx-product-publisher">${nutraxinOfficialReference(slug)}</div></div>`;
+  });
+  if (seen.size !== products.length || [...seen].some((slug) => !expectedNutraxinSlugs.has(slug))) {
+    throw new Error(`Expected all ${products.length} Nutraxin catalogue cards; found ${seen.size}`);
+  }
+  return rendered;
 }
 
 function nutraxinProductMain(product) {
   const evidence = product.notes?.length ? "Composition review required" : "Catalogue transcription reviewed";
-  return `<main id="main" class="npd-main npd-product-detail">${localNavigation("products", `/products/nutraxin/${product.slug}/`)}<nav class="npd-breadcrumb" aria-label="Breadcrumb"><div class="container"><a href="/products/">Products</a><a href="/products/nutraxin/">Nutraxin</a><span aria-current="page">${esc(product.name)}</span></div></nav><section class="npd-product-hero"><div class="container npd-product-hero-grid"><div class="npd-product-visual">${productPicture(product, true, "(max-width: 720px) 86vw, 520px")}</div><div class="npd-product-copy"><p class="npd-eyebrow">${esc(product.range)}</p><h1>${esc(product.name)}</h1><p class="npd-product-pack">${esc(product.packSize)}</p><dl class="npd-product-meta"><div><dt>Dosage form</dt><dd>${esc(product.dosageForm)}</dd></div><div><dt>Catalogue source</dt><dd>Nutraxin UK catalogue, page ${product.cataloguePage}</dd></div><div><dt>Evidence status</dt><dd>${evidence}</dd></div></dl>${actions("Discuss this reference", `/contact/?enquiry=Product%20opportunity&product=${encodeURIComponent(product.name)}`)}</div></div></section><section class="npd-section npd-section-soft"><div class="container npd-product-evidence"><div>${sectionIntro("Catalogue composition", "Source-transcribed product information.", "The values below reproduce the supplied catalogue record and are not a substitute for approved labelling.")}<dl class="npd-composition">${product.formulation.map((item) => `<div><dt>${esc(item.name)}</dt><dd>${esc(item.amount)}</dd></div>`).join("")}</dl></div><div>${notice("regulatory", "Important product status", "This page does not assert current UK availability, price, stock, a permitted health claim, regulatory acceptance or medicinal status.")}${product.notes?.length ? notice("warning", "Source review note", product.notes.map(esc).join(" ")) : ""}</div></div></section><section class="npd-section npd-final"><div class="container"><h2>Continue the portfolio review.</h2>${actions("All Nutraxin references", "/products/nutraxin/", "Strategic portfolio", "/products/strategic-portfolio/")}</div></section></main>`;
+  return `<main id="main" class="npd-main npd-product-detail">${localNavigation("products", `/products/nutraxin/${product.slug}/`)}<nav class="npd-breadcrumb" aria-label="Breadcrumb"><div class="container"><a href="/products/">Products</a><a href="/products/nutraxin/">Nutraxin</a><span aria-current="page">${esc(product.name)}</span></div></nav><section class="npd-product-hero"><div class="container npd-product-hero-grid"><div class="npd-product-visual">${productPicture(product, true, "(max-width: 720px) 86vw, 520px")}</div><div class="npd-product-copy"><p class="npd-eyebrow">${esc(product.range)}</p><h1>${esc(product.name)}</h1><p class="npd-product-pack">${esc(product.packSize)}</p><dl class="npd-product-meta"><div><dt>Dosage form</dt><dd>${esc(product.dosageForm)}</dd></div><div><dt>Catalogue source</dt><dd>Nutraxin UK catalogue, page ${product.cataloguePage}</dd></div><div><dt>Evidence status</dt><dd>${evidence}</dd></div></dl>${actions("Discuss this reference", `/contact/?enquiry=Product%20opportunity&product=${encodeURIComponent(product.name)}`)}<div class="npd-publisher-action">${nutraxinOfficialReference(product.slug)}<p>External publisher information. Pack details, claims and availability require separate verification.</p></div></div></div></section><section class="npd-section npd-section-soft"><div class="container npd-product-evidence"><div>${sectionIntro("Catalogue composition", "Source-transcribed product information.", "The values below reproduce the supplied catalogue record and are not a substitute for approved labelling.")}<dl class="npd-composition">${product.formulation.map((item) => `<div><dt>${esc(item.name)}</dt><dd>${esc(item.amount)}</dd></div>`).join("")}</dl></div><div>${notice("regulatory", "Important product status", "This page does not assert current UK availability, price, stock, a permitted health claim, regulatory acceptance or medicinal status.")}${product.notes?.length ? notice("warning", "Source review note", product.notes.map(esc).join(" ")) : ""}</div></div></section><section class="npd-section npd-final"><div class="container"><h2>Continue the portfolio review.</h2>${actions("All Nutraxin references", "/products/nutraxin/", "Strategic portfolio", "/products/strategic-portfolio/")}</div></section></main>`;
 }
 
 function strategicPortfolioMain() {

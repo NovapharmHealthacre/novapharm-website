@@ -581,3 +581,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--focus); box-shad
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
+
+/* Third-party Nutraxin publisher references: distinct from NovaPharm availability. */
+.nutraxin-know-more { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: .5rem; margin-top: 10px; }
+.nutraxin-link-publisher { color: var(--muted); font-size: .73rem; font-weight: 500; text-decoration: none; }
+.nutraxin-product-copy .source-note { margin-top: 10px; max-width: 48ch; color: var(--muted); font-size: .81rem; line-height: 1.55; }

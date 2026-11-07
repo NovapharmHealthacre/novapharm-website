@@ -7,6 +7,7 @@ import { oncologyContent } from "@/data/oncology";
 import type { CorporatePage, NarrativeSection } from "@/data/pages";
 import { leadership, partnerJourney, partnerTypes, productCategories, regulatorySections, servicePillars, sourcingPillars, technologyMaturity } from "@/data/site";
 import { ContactExperience } from "./contact-experience";
+import { NutraxinKnowMore } from "./nutraxin-know-more";
 import { Breadcrumbs, FinalCta, Notice, PageHero, SectionHeading, StatusNotice } from "./ui";
 
 export interface Leader {
@@ -318,6 +319,8 @@ export function NutraxinProductPage({ product }: { readonly product: NutraxinPro
           <h1>{product.name}</h1>
           <p>{product.packSize} · {product.dosageForm}</p>
           <p className="product-reference-status">Catalogue reference · B2B evaluation only · Availability not asserted</p>
+          <NutraxinKnowMore slug={product.slug} name={product.name} />
+          <p className="source-note">External Nutraxin UK product information. Pack details, approved labelling and availability must be confirmed separately.</p>
         </div>
         <div className="nutraxin-product-media">
           <Image src={`/assets/media/products/nutraxin/${product.imageBase}-800.webp`} alt={product.altText} fill priority sizes="(max-width: 760px) 92vw, 48vw" />
