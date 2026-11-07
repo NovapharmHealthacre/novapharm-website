@@ -47,22 +47,28 @@ assert.match(bundleCss, /--corporate-product-discipline-contract:\s*1/);
 assert.match(tokenCss, /--brand:\s*#E3120B;/, "the canonical identity red must remain Economist Red");
 assert.match(tokenCss, /--brand-text:\s*#B30E09;/, "small red foreground text needs the contrast-safe derivative");
 
+const homepageCss = text("assets/css/homepage-editorial.css");
+assert.match(homepageCss, /\.npd-apple-hero/);
+assert.match(homepageCss, /@media \(max-width: 600px\)/, "new homepage must have responsive mobile art direction");
+assert.match(homepageCss, /prefers-reduced-motion: reduce/, "editorial motion must respect accessibility preferences");
+assert.match(bundleCss, /Source: homepage-editorial.css/, "homepage styles must ship inside the production CSS bundle");
+
 const home = text("index.html");
-assert.match(home, /<main id="main" class="npd-main npd-home">/);
-assert.match(home, /Medicine\. Where it needs to be\./);
+assert.match(home, /<main id="main" class="npd-main npd-home npd-apple-home">/);
+assert.match(home, /Medicine\.<br><span>Where it needs to be\.<\/span>/);
 assert.match(home, /supply-network-hero\.avif/);
 assert.match(home, /supply-network-hero\.jpg/);
-assert.match(home, /Three routes\. One evidence standard\./);
-assert.equal((home.match(/<ol class="npd-numbered-grid">[\s\S]*?<\/ol>/)?.[0].match(/<li>/g) ?? []).length, 3, "homepage must present three sourcing routes");
-assert.equal((home.match(/<ol class="npd-roadmap">[\s\S]*?<\/ol>/)?.[0].match(/<li>/g) ?? []).length, 7, "homepage must present seven regulatory stages");
-assert.match(home, /Continuity begins before a product moves\./);
-assert.match(home, /Nineteen catalogue references\. Presented as products, governed as evidence\./);
-assert.equal((home.match(/<div class="npd-product-stage">[\s\S]*?<\/div><\/div><\/section>/)?.[0].match(/href="\/products\/nutraxin\//g) ?? []).length, 3, "homepage must stage three real product references");
-assert.match(home, /Use the smallest system that preserves control\./);
-assert.match(home, /Different organisations\. One disciplined route into partnership\./);
-assert.match(home, /Bring the opportunity\. We will start with the evidence\./);
+assert.match(home, /Three routes\.<br>One evidence standard\./);
+assert.equal((home.match(/<div class="npd-apple-sourcing-grid">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) ?? []).length, 3, "homepage must present three evidence-gated sourcing routes");
+assert.equal((home.match(/<div class="npd-apple-product-grid">[\s\S]*?<\/div>/)?.[0].match(/class="npd-apple-product"/g) ?? []).length, 3, "homepage must stage three authentic catalogue product references");
+assert.match(home, /Specialist medicines\.<br>Uncompromising standards\./, "oncology must have its own editorial chapter");
+assert.match(home, /NOVA<span>\.<\/span>/, "NOVA concept should have an authored product-identity treatment");
+assert.match(home, /In development\. The adjacent graphic is an artistic concept/, "NOVA must not be presented as live");
+assert.match(home, /class="npd-apple-regulatory-notice"/, "regulated-state boundary must remain visible");
 assert.match(home, /Regulated wholesale supply has not commenced/);
-assert.doesNotMatch(home, /<video|hero-cinematic-layer|data-motion-toggle|data-ai-search-open|nav-search|ai-search-dialog/);
+assert.match(home, /PLPI activity requires the relevant licence/);
+assert.match(home, /Let's build something meaningful\./);
+assert.doesNotMatch(home, /<svg|lucide|<video|hero-cinematic-layer|data-motion-toggle|data-ai-search-open|nav-search|ai-search-dialog/);
 
 const expectedNavigation = [
   ["Company", "/about/"],

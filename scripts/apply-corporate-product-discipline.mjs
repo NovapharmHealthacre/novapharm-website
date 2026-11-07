@@ -139,23 +139,123 @@ function productPicture(product, eager = false, sizes = "(max-width: 720px) 84vw
 
 function homeMain() {
   const featured = [products[0], products[4], products[13]];
-  return `<main id="main" class="npd-main npd-home">
-    ${hero({
-      eyebrow: "NovaPharm Healthcare",
-      title: "Medicine. Where it needs to be.",
-      lead: "Qualified sourcing, regulatory readiness and controlled B2B supply-chain development for the UK pharmaceutical market.",
-      actionsHtml: actions("Explore NovaPharm", "/about/", "Discuss an opportunity", "/contact/"),
-      media: `<div class="npd-hero-background" aria-hidden="true"><picture><source srcset="/assets/media/home/supply-network-hero.avif" type="image/avif"><img src="/assets/media/home/supply-network-hero.jpg" alt="" width="1672" height="941" fetchpriority="high" decoding="async"></picture></div>`,
-      boundary: "Conceptual supply-chain visual. No NovaPharm facility, vehicle, inventory or current distribution activity is depicted."
-    })}
-    <section class="npd-section npd-statement"><div class="container"><p class="npd-eyebrow">Why NovaPharm</p><h2>Pharmaceutical opportunity should move no faster than the evidence behind it.</h2><p>NovaPharm is building a B2B model that connects product rights, qualified sources, regulatory scope, quality governance and commercial judgement before release.</p></div></section>
-    <section class="npd-section"><div class="container">${sectionIntro("Sourcing strategy", "Three routes. One evidence standard.", "Each route is assessed independently. None bypasses product-specific rights, quality or regulatory review.")}<ol class="npd-numbered-grid"><li><span>01</span><h3>Direct GMP partnerships</h3><p>Qualified manufacturer relationships supported by technical assessment, vendor qualification and appropriate agreements.</p></li><li><span>02</span><h3>Product-specific PLPI</h3><p>Evidence-led assessment of suitable opportunities, subject to the applicable MHRA route and continuing obligations.</p></li><li><span>03</span><h3>European sourcing</h3><p>Diversified authorised supply routes reviewed for licence standing, quality, provenance and continuity.</p></li></ol></div></section>
-    <section class="npd-section npd-section-soft"><div class="container npd-regulatory-layout"><div>${sectionIntro("Regulatory foundation", "Permission, quality and product responsibility must align before release.", "The pathway makes sequence and accountability visible without suggesting that an application or approval has already been granted.")}${notice("regulatory", "Current status", "Regulated wholesale supply has not commenced. Commercial release remains subject to applicable authorisation, product evidence and operating controls.")}</div><ol class="npd-roadmap"><li><span>01</span><strong>WDA(H) application readiness</strong></li><li><span>02</span><strong>Product-specific PLPI assessment</strong></li><li><span>03</span><strong>QMS and SOP governance</strong></li><li><span>04</span><strong>GDP and vendor oversight</strong></li><li><span>05</span><strong>Pharmacovigilance and recall readiness</strong></li><li><span>06</span><strong>Batch and document integrity</strong></li><li><span>07</span><strong>Commercial release only after applicable authorisation</strong></li></ol></div></section>
-    <section class="npd-section npd-media-section"><div class="container npd-split">${responsiveImage("/assets/media/products/oncology-vial-handling", "Controlled laboratory handling used as representative oncology context", { caption: "Representative scientific context. No NovaPharm facility or active programme is depicted." })}<div>${sectionIntro("Oncology", "Continuity begins before a product moves.", "Formulation, evidence, source, condition control and accountable hand-offs need to be considered as one system.")}${actions("Explore oncology", "/oncology/")}</div></div></section>
-    <section class="npd-section npd-product-feature"><div class="container"><div class="npd-product-feature-head">${sectionIntro("Nutraxin", "Nineteen catalogue references. Presented as products, governed as evidence.", "Approved pack imagery and source-transcribed composition support qualified B2B review. Availability, price, stock and claims are not asserted.")}${actions("Review Nutraxin", "/products/nutraxin/")}</div><div class="npd-product-stage">${featured.map((product) => `<a href="/products/nutraxin/${product.slug}/">${productPicture(product)}<span>${esc(product.name)}</span><small>${esc(product.packSize)}</small></a>`).join("")}</div></div></section>
-    <section class="npd-section"><div class="container">${sectionIntro("Technology", "Use the smallest system that preserves control.", "NovaPharm separates what is live, what is in development and what remains planned.")}<div class="npd-maturity"><div><span>Live</span><h3>Public corporate platform</h3><p>Approved public information, entity records and governed publication controls.</p></div><div><span>In development</span><h3>Managed workflows</h3><p>Secure account, document and role-based services requiring production authority.</p></div><div><span>Planned</span><h3>Data-assisted operations</h3><p>Future forecasting and traceability capabilities subject to governed data and validation.</p></div></div>${actions("Review technology", "/technology/")}</div></section>
-    <section class="npd-section npd-section-soft"><div class="container npd-partner-editorial"><div>${sectionIntro("Qualified collaboration", "Different organisations. One disciplined route into partnership.", "NovaPharm is designed for evidence-led conversations with organisations that can establish their role, authority and intended scope.")}${actions("Explore partnerships", "/partner-with-us/")}</div><ul><li>GMP manufacturers and CMO/CDMOs</li><li>Product and dossier owners</li><li>Marketing-authorisation holders</li><li>Authorised pharmaceutical wholesalers</li><li>Pharmacies and hospital procurement teams</li><li>Quality, regulatory, logistics and technology specialists</li></ul></div></section>
-    <section class="npd-section npd-final"><div class="container"><p class="npd-eyebrow">Qualified conversations</p><h2>Bring the opportunity. We will start with the evidence.</h2>${actions("Contact NovaPharm", "/contact/", "Open a business account", "/account-application/")}<p class="npd-disclosure">B2B only. A conversation, enquiry or application does not confirm approval, availability or permission to supply.</p></div></section>
+  return `<main id="main" class="npd-main npd-home npd-apple-home">
+    <section class="npd-apple-hero" aria-labelledby="home-title">
+      <div class="container npd-apple-hero-inner">
+        <div class="npd-apple-hero-copy">
+          <p class="npd-apple-eyebrow">NOVAPHARM HEALTHCARE</p>
+          <h1 id="home-title" aria-label="Medicine. Where it needs to be.">Medicine.<br><span>Where it needs to be.</span></h1>
+          <p class="npd-apple-lead">Connecting specialist medicines, market access and regulatory judgement through a more considered pharmaceutical model.</p>
+          <div class="npd-apple-actions">
+            <a class="npd-apple-button" href="/about/">Explore NovaPharm</a>
+            <a class="npd-apple-link" href="/partner-with-us/">Partner with us</a>
+          </div>
+          <p class="npd-apple-status">Regulated wholesale supply has not commenced. Applicable authorisations and operating controls remain prerequisites to release.</p>
+        </div>
+        <figure class="npd-apple-hero-art">
+          <picture><source srcset="/assets/media/home/supply-network-hero.avif" type="image/avif"><img src="/assets/media/home/supply-network-hero.jpg" alt="Illustrative pharmaceutical supply network visual" width="1672" height="941" fetchpriority="high" decoding="async"></picture>
+          <figcaption>Conceptual visual. Not a NovaPharm facility, inventory or active distribution operation.</figcaption>
+        </figure>
+      </div>
+    </section>
+    <section class="npd-apple-manifesto" aria-labelledby="purpose-title">
+      <div class="container npd-apple-center">
+        <p class="npd-apple-eyebrow">WHY NOVAPHARM</p>
+        <h2 id="purpose-title">Better access begins with better decisions.</h2>
+        <p>Medicine is already moving. The questions that matter are where it needs to go, what evidence supports it, and what permissions make responsible access possible.</p>
+      </div>
+    </section>
+    <section class="npd-apple-oncology" aria-labelledby="oncology-title">
+      <div class="container npd-apple-feature-grid">
+        <div class="npd-apple-feature-copy">
+          <p class="npd-apple-eyebrow">ONCOLOGY &amp; SPECIALIST MEDICINES</p>
+          <h2 id="oncology-title">Specialist medicines.<br>Uncompromising standards.</h2>
+          <p>Every opportunity is evaluated against formulation, supply continuity, source quality and product-specific regulatory evidence.</p>
+          <a class="npd-apple-text-link" href="/oncology/">Explore oncology</a>
+        </div>
+        <figure class="npd-apple-oncology-art">
+          ${responsiveImage("/assets/media/products/oncology-vial-handling", "Representative controlled pharmaceutical laboratory handling")}
+          <figcaption>Representative scientific context. No NovaPharm facility, stock or approved programme is depicted.</figcaption>
+        </figure>
+      </div>
+    </section>
+    <section class="npd-apple-products" aria-labelledby="products-title">
+      <div class="container">
+        <div class="npd-apple-center">
+          <p class="npd-apple-eyebrow">NUTRAXIN &amp; PORTFOLIO</p>
+          <h2 id="products-title">Thoughtfully selected.<br>Carefully presented.</h2>
+          <p>Explore approved catalogue imagery for Nutraxin and the strategic categories NovaPharm is evaluating.</p>
+        </div>
+        <div class="npd-apple-product-grid">
+          ${featured.map((product) => `<a class="npd-apple-product" href="/products/nutraxin/${product.slug}/">${productPicture(product)}<strong>${esc(product.name)}</strong><span>${esc(product.packSize)}</span></a>`).join("")}
+        </div>
+        <div class="npd-apple-product-links">
+          <a class="npd-apple-text-link" href="/products/nutraxin/">Explore Nutraxin</a>
+          <a class="npd-apple-text-link" href="/products/strategic-portfolio/">Strategic pharmaceutical portfolio</a>
+        </div>
+        <p class="npd-apple-footnote">Catalogue information is for qualified review. Pricing, stock, medicinal status and supply availability are not asserted.</p>
+      </div>
+    </section>
+    <section class="npd-apple-intelligence" aria-labelledby="intelligence-title">
+      <div class="container npd-apple-feature-grid">
+        <div class="npd-apple-feature-copy">
+          <p class="npd-apple-eyebrow">NOVAPHARM INTELLIGENCE</p>
+          <h2 id="intelligence-title">Understand the medicine.<br>Understand the market.</h2>
+          <p>We are building a governed intelligence experience to connect medicines, evidence, market information and explainable analysis.</p>
+          <a class="npd-apple-text-link" href="/technology/">Explore our technology direction</a>
+          <p class="npd-apple-footnote">In development. The adjacent graphic is an artistic concept, not a working interface or validated forecast.</p>
+        </div>
+        <div class="npd-apple-nova-art" role="img" aria-label="Conceptual typographic preview for NOVA, the medicines intelligence experience under development">
+          <div class="npd-apple-nova-top"><span>NOVAPHARM INTELLIGENCE</span><span>CONCEPT</span></div>
+          <div class="npd-apple-nova-wordmark">NOVA<span>.</span></div>
+          <p>The living intelligence of medicine.</p>
+          <div class="npd-apple-nova-divider"></div>
+          <div class="npd-apple-nova-taxonomy"><span>Medicines</span><span>Evidence</span><span>Markets</span><span>Decisions</span></div>
+        </div>
+      </div>
+    </section>
+    <section class="npd-apple-sourcing" aria-labelledby="sourcing-title">
+      <div class="container">
+        <div class="npd-apple-section-lead">
+          <p class="npd-apple-eyebrow">SOURCING &amp; MARKET ACCESS</p>
+          <h2 id="sourcing-title" aria-label="Three routes. One evidence standard.">Three routes.<br>One evidence standard.</h2>
+          <p>Commercial opportunity should never move faster than the permissions and quality evidence behind it.</p>
+        </div>
+        <div class="npd-apple-sourcing-grid">
+          <article><span>01</span><h3>Direct GMP partnerships</h3><p>Qualified manufacturer relationships with controlled technical and quality review.</p></article>
+          <article><span>02</span><h3>Product-specific PLPI</h3><p>Evidence-led assessment of appropriate MHRA parallel-import pathways and obligations.</p></article>
+          <article><span>03</span><h3>European sourcing</h3><p>Potential authorised routes reviewed for rights, licence standing, provenance and continuity.</p></article>
+        </div>
+        <a class="npd-apple-text-link" href="/capabilities/">Explore capabilities</a>
+      </div>
+    </section>
+    <section class="npd-apple-governance" aria-labelledby="governance-title">
+      <div class="container npd-apple-governance-grid">
+        <div>
+          <p class="npd-apple-eyebrow">QUALITY &amp; REGULATORY FOUNDATION</p>
+          <h2 id="governance-title">Built for trust.<br>Designed for scrutiny.</h2>
+          <p>Product rights, WDA(H) readiness, GDP controls, vendor oversight and traceable records must align before any regulated release.</p>
+          <a class="npd-apple-text-link" href="/regulatory-services/">Regulatory &amp; quality</a>
+        </div>
+        <aside class="npd-apple-regulatory-notice">
+          <p class="npd-apple-eyebrow">CURRENT STATUS</p>
+          <h3>Preparation, not permission.</h3>
+          <p>Regulated wholesale supply has not commenced. Commercial release remains subject to applicable authorisation, product-specific evidence and operating controls. PLPI activity requires the relevant licence.</p>
+        </aside>
+      </div>
+    </section>
+    <section class="npd-apple-contact" aria-labelledby="contact-title">
+      <div class="container npd-apple-center">
+        <p class="npd-apple-eyebrow">QUALIFIED PARTNERSHIPS</p>
+        <h2 id="contact-title">Let's build something meaningful.</h2>
+        <p>For manufacturers, product owners, authorised supply partners and organisations pursuing better market access.</p>
+        <div class="npd-apple-actions npd-apple-actions-centered">
+          <a class="npd-apple-button" href="/contact/" data-cta-id="contact-novapharm">Contact NovaPharm</a>
+          <a class="npd-apple-link" href="/partner-with-us/" data-cta-id="explore-partnerships">Partnerships</a>
+        </div>
+        <p class="npd-apple-footnote">Qualified B2B information only. An enquiry does not confirm authorisation, availability or permission to supply.</p>
+      </div>
+    </section>
   </main>`;
 }
 

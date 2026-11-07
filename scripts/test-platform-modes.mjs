@@ -42,7 +42,15 @@ try {
   const sitemap = read("sitemap.xml");
 
   for (const [name, html] of [["portal", portal], ["contact", contact], ["account application", account]]) {
-    assert.doesNotMatch(html, /<form\b/i, `${name} must not contain a form in PUBLIC_ONLY mode`);
+    if (name === "contact") {
+      const openingTags = [...html.matchAll(/<form\b[^>]*>/gi)].map(([tag]) => tag);
+      assert.equal(openingTags.length, 1, "PUBLIC_ONLY contact must contain exactly one email-draft form");
+      assert.match(openingTags[0], /\bdata-email-enquiry-form\b/, "PUBLIC_ONLY contact may only use the email-draft workflow");
+      assert.match(openingTags[0], /\baction=["']mailto:vishal@novapharmhealthcare\.com["']/i, "PUBLIC_ONLY contact email draft must target the verified corporate address");
+      assert.doesNotMatch(openingTags[0], /\baction=["'](?:https?:|\/api\/)/i, "PUBLIC_ONLY contact must not submit data to an API");
+    } else {
+      assert.doesNotMatch(html, /<form\b/i, `${name} must not contain a form in PUBLIC_ONLY mode`);
+    }
     assert.doesNotMatch(html, /type=["'](?:password|file)["']/i, `${name} must not collect credentials or files`);
     assert.doesNotMatch(html, /data-(?:login-form|contact-form|account-application)/i, `${name} must not expose server controls`);
   }

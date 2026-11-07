@@ -101,7 +101,7 @@
   font-weight: 720;
   font-size: clamp(47px, 5.1vw, 70px);
   line-height: 1.08;
-  letter-spacing: -0.055em;
+  letter-spacing: 0;
 }
 .np-contact-reference-hero p {
   margin: 20px auto 0;
@@ -110,7 +110,7 @@
   font-size: clamp(18px, 2vw, 23px);
   font-weight: 400;
   line-height: 1.34;
-  letter-spacing: -0.022em;
+  letter-spacing: 0;
 }
 .np-contact-reference-content { padding: 0 0 55px; background: #fff; }
 .np-contact-reference-heading { margin: 0 0 25px; }
@@ -120,7 +120,7 @@
   font-family: inherit;
   font-size: clamp(23px, 2.1vw, 26px);
   font-weight: 690;
-  letter-spacing: -0.035em;
+  letter-spacing: 0;
   line-height: 1.25;
 }
 .np-contact-reference-heading p {
@@ -312,7 +312,7 @@
   font-family: inherit;
   color: #1d1d1f;
   font-size: 19px;
-  letter-spacing: -0.03em;
+  letter-spacing: 0;
   line-height: 1.4;
 }
 .np-contact-reference-footer p,
