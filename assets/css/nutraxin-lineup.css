@@ -1,0 +1,312 @@
+/*
+ * Nutraxin product-led showcase | NovaPharm Healthcare
+ * Inspired by Apple's disciplined product photography, spacing and editorial hierarchy.
+ * No third-party fonts, logos, layouts, scripts or imagery.
+ * Only affects the dedicated .nx-collection page.
+ */
+.nx-collection {
+  --nx-ink: #1d1d1f;
+  --nx-secondary: #444448;
+  --nx-muted: #646469;
+  --nx-silver: #f5f5f7;
+  --nx-cloud: #fbfbfd;
+  --nx-stroke: #e7e7eb;
+  --nx-brand: #d91c16;
+  --nx-brand-hover: #b5140e;
+  background:#fff;
+  color:var(--nx-ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-feature-settings:"kern";
+  -webkit-font-smoothing:antialiased;
+  overflow:clip;
+  width:100%;
+  line-height:1.5;
+}
+.nx-collection *, .nx-collection *::before, .nx-collection *::after {box-sizing:border-box}
+.nx-collection :is(h1,h2,h3,p,figure) {margin:0}
+.nx-collection :is(h1,h2,h3) {
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  letter-spacing:-.04em;
+  line-height:1.075;
+  font-weight:670;
+  text-wrap:balance;
+}
+.nx-collection a {text-decoration:none; color:inherit}
+.nx-collection a:focus-visible {outline:3px solid #0564c1; outline-offset:5px; border-radius:6px}
+.nx-collection .nx-wrap {width:min(1210px,calc(100% - 60px));margin-inline:auto}
+.nx-collection .nx-eyebrow {
+  color:var(--nx-brand);
+  font-size:.72rem;
+  font-weight:760;
+  letter-spacing:.12em;
+  line-height:1.4;
+  text-transform:uppercase;
+}
+.nx-collection .nx-section {padding-block:clamp(86px,9.5vw,140px)}
+.nx-collection :is(.nx-section-heading,.nx-range-heading) h2 {
+  font-size:clamp(2.85rem,5.3vw,5.2rem);
+}
+.nx-collection .nx-section-heading {max-width:850px;margin-bottom:46px}
+.nx-collection .nx-section-heading h2 {margin-top:12px}
+.nx-collection .nx-section-heading > p:last-child {
+  margin-top:21px;
+  color:var(--nx-muted);
+  font-size:clamp(1.03rem,1.5vw,1.24rem);
+  line-height:1.58;
+  max-width:670px;
+}
+.nx-collection .nx-local-nav {
+  position:sticky; top:0; z-index:20;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:saturate(180%) blur(18px);
+  -webkit-backdrop-filter:saturate(180%) blur(18px);
+  border-bottom:1px solid rgba(30,30,35,.11);
+}
+.nx-collection .nx-local-nav .nx-wrap {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  min-height:58px;
+  gap:25px;
+}
+.nx-collection .nx-local-title {font-size:.99rem;font-weight:750;letter-spacing:-.02em}
+.nx-collection .nx-local-links {display:flex;align-items:center;gap:30px}
+.nx-collection .nx-local-links a {font-size:.77rem; font-weight:560;color:#434347;white-space:nowrap}
+.nx-collection .nx-local-links a:hover {color:var(--nx-brand)}
+.nx-collection [id^="nx-"] {scroll-margin-top:78px}
+.nx-collection .nx-button {
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:999px;padding:13px 25px;
+  border:1px solid transparent;
+  min-height:47px;
+  font-size:.89rem;font-weight:650;line-height:1.35;
+  transition:background-color .18s ease,border-color .18s ease,transform .18s ease;
+}
+.nx-collection .nx-button-primary {background:var(--nx-brand);color:#fff}
+.nx-collection .nx-button-primary:hover {background:var(--nx-brand-hover);color:#fff}
+.nx-collection .nx-button-quiet {background:#fff;border-color:#c8c8cf;color:var(--nx-ink)}
+.nx-collection .nx-button-quiet:hover {background:var(--nx-silver)}
+.nx-collection .nx-link {display:inline-block;color:#b5140e;font-size:.9rem;font-weight:660}
+.nx-collection a:hover .nx-link,.nx-collection .nx-link:hover {text-decoration:underline;text-underline-offset:5px}
+
+.nx-collection .nx-hero {
+  background:linear-gradient(180deg,#fff 0%,#fcfcfe 48%,#f2f3f6 100%);
+  overflow:hidden;
+  text-align:center;
+  padding-top:clamp(85px,10vw,147px);
+  padding-bottom:52px;
+}
+.nx-collection .nx-hero-inner {display:flex;flex-direction:column;align-items:center}
+.nx-collection .nx-hero h1 {
+  font-size:clamp(4.5rem,9vw,9rem);
+  line-height:.985;
+  letter-spacing:-.064em;
+  font-weight:690;
+  margin-top:18px;
+}
+.nx-collection .nx-hero-subtitle {
+  font-size:clamp(1.45rem,2.55vw,2.5rem);
+  font-weight:610;
+  letter-spacing:-.025em;
+  margin-top:20px;
+  color:#49494f;
+}
+.nx-collection .nx-hero-description {
+  color:var(--nx-muted);
+  font-size:clamp(1.05rem,1.6vw,1.28rem);
+  line-height:1.55;
+  max-width:675px;
+  margin-top:22px;
+}
+.nx-collection .nx-hero-actions {display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:30px}
+.nx-collection .nx-hero-packs {
+  display:flex;align-items:flex-end;justify-content:center;gap:clamp(0px,2vw,45px);
+  width:100%;
+  margin-top:clamp(68px,9vw,118px);
+  min-height:330px;
+}
+.nx-collection .nx-hero-pack {display:flex;justify-content:center;align-items:flex-end;flex:1 1 0;max-width:315px}
+.nx-collection .nx-hero-pack-2 {transform:translateY(-12px);max-width:355px}
+.nx-collection .nx-picture {display:block;width:100%;height:100%}
+.nx-collection .nx-picture img {display:block;width:100%;height:100%;object-fit:contain;object-position:center;max-width:100%;color:transparent}
+.nx-collection .nx-hero-pack .nx-picture {width:100%;height:clamp(205px,29vw,400px)}
+.nx-collection .nx-hero-pack .nx-picture img {filter:drop-shadow(0 18px 20px rgba(24,26,32,.09))}
+.nx-collection .nx-hero-caption {font-size:.78rem;color:#5d5d63;max-width:640px;margin-top:30px;line-height:1.65}
+
+.nx-collection .nx-featured {background:#fff}
+.nx-collection .nx-featured-grid {
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:19px;
+}
+.nx-collection .nx-featured-card {
+  display:flex;flex-direction:column;justify-content:space-between;
+  min-height:585px;overflow:hidden;
+  border-radius:22px;
+  background:var(--nx-silver);
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.nx-collection .nx-featured-card:nth-child(2) {background:#f3f1ef}
+.nx-collection .nx-featured-card:nth-child(3) {background:#f1f2f4}
+.nx-collection .nx-featured-card:hover {transform:translateY(-3px);box-shadow:0 16px 44px rgba(20,20,23,.075)}
+.nx-collection .nx-featured-copy {padding:35px 32px 0;min-height:230px;display:flex;flex-direction:column}
+.nx-collection .nx-featured-copy > span {color:var(--nx-brand);font-size:.72rem;font-weight:750;letter-spacing:.09em}
+.nx-collection .nx-featured-copy h3 {font-size:clamp(1.65rem,2.6vw,2.75rem);margin-top:18px;line-height:1.12}
+.nx-collection .nx-featured-copy p {color:#6a6a70;margin-top:12px;font-size:.94rem}
+.nx-collection .nx-featured-copy strong {color:var(--nx-brand-hover);font-size:.85rem;margin-top:auto;padding-top:22px;font-weight:650}
+.nx-collection .nx-featured-image {height:315px;padding:0 20px 8px;display:flex;align-items:flex-end}
+.nx-collection .nx-featured-image .nx-picture {height:100%;width:100%}
+.nx-collection .nx-featured-image .nx-picture img {filter:drop-shadow(0 16px 18px rgba(26,26,29,.065))}
+
+.nx-collection .nx-statement {background:#111216;color:#fff}
+.nx-collection .nx-statement .nx-eyebrow {color:#ff9b96}
+.nx-collection .nx-statement h2 {
+  color:#fff;
+  font-size:clamp(3.5rem,7.3vw,7.3rem);
+  margin-top:19px;
+  letter-spacing:-.06em;
+}
+.nx-collection .nx-statement > .nx-wrap > p:last-child {
+  max-width:740px;
+  color:#c0c0c8;
+  margin-top:26px;
+  font-size:clamp(1.1rem,1.8vw,1.4rem);
+  line-height:1.55;
+}
+
+.nx-collection .nx-range-intro {background:#fff;padding-bottom:60px}
+.nx-collection .nx-range-intro .nx-section-heading {margin-bottom:31px}
+.nx-collection .nx-range-links {display:flex;gap:10px;flex-wrap:wrap}
+.nx-collection .nx-range-links a {
+  padding:12px 19px;
+  border-radius:100px;
+  border:1px solid #dedee3;
+  font-size:.85rem;
+  font-weight:610;
+  color:#343437;
+  background:var(--nx-cloud);
+}
+.nx-collection .nx-range-links a:hover {border-color:#919197;background:#fff;color:#1d1d1f}
+.nx-collection .nx-range-section {padding:48px 0 90px;background:#fff}
+.nx-collection .nx-range-section:nth-of-type(even) {background:var(--nx-cloud)}
+.nx-collection .nx-range-heading {
+  display:flex;align-items:end;justify-content:space-between;
+  gap:24px;margin-bottom:37px;
+}
+.nx-collection .nx-range-index {font-size:.72rem;letter-spacing:.11em;color:#5d5d64;font-weight:760;margin-bottom:13px}
+.nx-collection .nx-range-heading h2 {font-size:clamp(2.75rem,4.7vw,4.85rem)}
+.nx-collection .nx-range-count {font-size:.85rem;font-weight:610;color:#66666c;white-space:nowrap;padding-bottom:7px}
+.nx-collection .nx-product-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.nx-collection .nx-product-card {display:flex;flex-direction:column;min-width:0;border-radius:16px;overflow:hidden;transition:transform .18s ease}
+.nx-collection .nx-product-card:hover {transform:translateY(-3px)}
+.nx-collection .nx-product-visual {
+  width:100%;aspect-ratio:1.0;
+  padding:clamp(12px,2.6vw,37px);
+  background:var(--nx-silver);
+  border-radius:15px;
+  display:flex;justify-content:center;align-items:center;
+  overflow:hidden;
+}
+.nx-collection .nx-range-section:nth-of-type(even) .nx-product-visual {background:#f0f0f3}
+.nx-collection .nx-product-visual .nx-picture {height:100%;max-height:320px}
+.nx-collection .nx-product-visual img {transition:transform .25s ease;filter:drop-shadow(0 11px 13px rgba(20,20,25,.045))}
+.nx-collection .nx-product-card:hover .nx-product-visual img {transform:scale(1.045)}
+.nx-collection .nx-product-copy {padding:22px 8px 24px}
+.nx-collection .nx-product-category {
+  display:block;
+  color:var(--nx-brand-hover);
+  font-size:.72rem;
+  font-weight:720;
+  letter-spacing:.035em;
+}
+.nx-collection .nx-product-copy h3 {
+  font-size:clamp(1.25rem,1.75vw,1.65rem);
+  font-weight:660;
+  line-height:1.22;
+  margin-top:9px;
+}
+.nx-collection .nx-product-copy p {color:var(--nx-muted);font-size:.91rem;margin-top:9px}
+.nx-collection .nx-product-copy .nx-link {margin-top:16px;font-size:.88rem}
+
+.nx-collection .nx-detail {background:var(--nx-silver)}
+.nx-collection .nx-detail-layout {display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(40px,7vw,125px);align-items:center}
+.nx-collection .nx-detail h2,.nx-collection .nx-boundary h2 {font-size:clamp(2.8rem,5.2vw,5.5rem);margin-top:16px}
+.nx-collection .nx-detail-layout > div:first-child > p:not(.nx-eyebrow) {font-size:1.12rem;color:var(--nx-muted);line-height:1.58;max-width:620px;margin-top:26px}
+.nx-collection .nx-detail .nx-link {margin-top:25px}
+.nx-collection .nx-detail-panels {border-top:1px solid #cccbd1}
+.nx-collection .nx-detail-panels > div {display:flex;align-items:center;gap:30px;padding:21px 0;border-bottom:1px solid #cccbd1}
+.nx-collection .nx-detail-panels span {font-weight:690;font-size:clamp(2.7rem,4.5vw,4.9rem);line-height:1;letter-spacing:-.06em;min-width:88px}
+.nx-collection .nx-detail-panels p {font-size:.95rem;color:var(--nx-muted);line-height:1.4}
+
+.nx-collection .nx-boundary {background:#fff}
+.nx-collection .nx-boundary .nx-wrap {max-width:950px}
+.nx-collection .nx-boundary h2 {max-width:820px}
+.nx-collection .nx-boundary p:not(.nx-eyebrow) {color:#505057;font-size:1rem;line-height:1.7;max-width:840px;margin-top:23px}
+.nx-collection .nx-boundary-actions {margin-top:37px;display:flex;flex-wrap:wrap;gap:11px}
+
+@media(max-width:1080px) {
+  .nx-collection .nx-featured-grid {gap:13px}
+  .nx-collection .nx-featured-card {min-height:520px}
+  .nx-collection .nx-featured-copy {padding:28px 25px 0}
+  .nx-collection .nx-featured-image {height:270px}
+}
+@media(max-width:820px) {
+  .nx-collection .nx-product-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+  .nx-collection .nx-featured-grid {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .nx-collection .nx-featured-card:last-child {grid-column:span 2;flex-direction:row;min-height:400px;align-items:center}
+  .nx-collection .nx-featured-card:last-child .nx-featured-copy {flex:1 1 54%;min-height:280px}
+  .nx-collection .nx-featured-card:last-child .nx-featured-image {flex:1 1 46%;height:370px}
+  .nx-collection .nx-detail-layout {grid-template-columns:1fr;gap:36px}
+  .nx-collection .nx-hero-pack .nx-picture {height:clamp(200px,31vw,300px)}
+}
+@media(max-width:600px) {
+  .nx-collection .nx-wrap {width:calc(100% - 36px)}
+  .nx-collection .nx-local-nav .nx-wrap {display:flex;align-items:center;flex-wrap:wrap;gap:3px;padding-block:12px}
+  .nx-collection .nx-local-links {display:flex;overflow-x:auto;scrollbar-width:none;width:100%;gap:23px;padding-top:8px}
+  .nx-collection .nx-local-links a {font-size:.75rem}
+  .nx-collection .nx-hero {padding-top:78px;padding-bottom:42px}
+  .nx-collection .nx-hero h1 {font-size:clamp(3.5rem,14vw,5.2rem);letter-spacing:-.057em}
+  .nx-collection .nx-hero-subtitle {font-size:1.45rem}
+  .nx-collection .nx-hero-description {font-size:1rem}
+  .nx-collection .nx-hero-actions {flex-direction:column;width:100%;margin-top:24px}
+  .nx-collection .nx-hero-actions .nx-button {width:100%}
+  .nx-collection .nx-hero-packs {margin-top:62px;gap:0;min-height:0;align-items:flex-end}
+  .nx-collection .nx-hero-pack {width:33.33%;flex:1 1 33.33%}
+  .nx-collection .nx-hero-pack-2 {transform:translateY(-9px)}
+  .nx-collection .nx-hero-pack .nx-picture {height:clamp(135px,47vw,215px)}
+  .nx-collection .nx-hero-caption {font-size:.71rem}
+  .nx-collection .nx-section {padding-block:77px}
+  .nx-collection .nx-section-heading h2 {font-size:clamp(2.5rem,10.6vw,3.7rem)}
+  .nx-collection .nx-section-heading {margin-bottom:33px}
+  .nx-collection .nx-featured-grid {grid-template-columns:1fr;gap:15px}
+  .nx-collection .nx-featured-card {min-height:515px;border-radius:16px}
+  .nx-collection .nx-featured-card:last-child {grid-column:auto;flex-direction:column;align-items:stretch;min-height:515px}
+  .nx-collection .nx-featured-card:last-child .nx-featured-copy {min-height:225px}
+  .nx-collection .nx-featured-card:last-child .nx-featured-image {height:265px;flex:0 0 265px}
+  .nx-collection .nx-featured-copy {min-height:210px;padding:29px 27px 0}
+  .nx-collection .nx-featured-copy h3 {font-size:2rem}
+  .nx-collection .nx-featured-image {height:295px}
+  .nx-collection .nx-statement h2 {font-size:clamp(3rem,11.9vw,4.5rem)}
+  .nx-collection .nx-range-intro {padding-bottom:38px}
+  .nx-collection .nx-range-heading {align-items:flex-start;display:block;margin-bottom:25px}
+  .nx-collection .nx-range-heading h2 {font-size:clamp(2.5rem,9.4vw,4rem)}
+  .nx-collection .nx-range-count {display:block;margin-top:12px}
+  .nx-collection .nx-range-section {padding-block:30px 62px}
+  .nx-collection .nx-product-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .nx-collection .nx-product-visual {aspect-ratio:.95;padding:9px;border-radius:11px}
+  .nx-collection .nx-product-copy {padding:16px 1px 25px}
+  .nx-collection .nx-product-category {font-size:.64rem}
+  .nx-collection .nx-product-copy h3 {font-size:clamp(1rem,4.2vw,1.3rem);line-height:1.22}
+  .nx-collection .nx-product-copy p {font-size:.79rem;line-height:1.45}
+  .nx-collection .nx-product-copy .nx-link {font-size:.81rem;margin-top:12px}
+  .nx-collection .nx-detail h2,.nx-collection .nx-boundary h2 {font-size:clamp(2.5rem,10.1vw,3.65rem)}
+  .nx-collection .nx-detail-panels span {min-width:75px}
+  .nx-collection .nx-boundary-actions {flex-direction:column}
+  .nx-collection .nx-boundary-actions .nx-button {width:100%}
+}
+@media(max-width:355px) {
+  .nx-collection .nx-product-grid {grid-template-columns:1fr}
+  .nx-collection .nx-product-copy h3 {font-size:1.25rem}
+  .nx-collection .nx-range-links a {padding:10px 12px;font-size:.79rem}
+}
+@media(prefers-reduced-motion:reduce) {
+  .nx-collection * {transition:none!important;animation:none!important;scroll-behavior:auto!important}
+}
