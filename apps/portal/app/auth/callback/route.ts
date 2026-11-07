@@ -1,8 +1,8 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { exchangeStagingCode, readStagingTransaction, stagingCognitoSettings, verifyStagingIdentity } from "../../../lib/cognito-staging-auth.mjs";
-import { exchangeApprovedCognitoSession } from "../../../lib/cognito-session-exchange.mjs";
 import { landingRouteForAccess } from "../../../data/routes";
+import { exchangeApprovedCognitoSession } from "../../../lib/cognito-session-exchange.mjs";
+import { exchangeStagingCode, readStagingTransaction, stagingCognitoSettings, verifyStagingIdentity } from "../../../lib/cognito-staging-auth.mjs";
 
 export const dynamic = "force-dynamic";
 
