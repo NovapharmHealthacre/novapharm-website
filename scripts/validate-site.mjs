@@ -453,7 +453,7 @@ for (const label of ["Public company platform", "Managed application architectur
 }
 
 const oncologyPage = source("oncology/index.html");
-for (const marker of ["Continuity is designed before supply begins.", "Five dependencies that should be visible early.", "A temperature range alone is not a control system.", "Preserve context through each accountable hand-off."]) {
+for (const marker of ["Oncology demands<br>more than supply.", "Every detail<br>matters.", "Six connected decisions.", "Complexity deserves precision.", "The next conversation starts here."]) {
   if (!oncologyPage.includes(marker)) fail(`oncology page is missing ${marker}`);
 }
 if (!oncologyPage.includes("does not provide medical advice, direct patient services or a guarantee of product authorisation")) fail("oncology page is missing its public capability boundary");
