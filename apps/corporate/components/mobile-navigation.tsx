@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -46,7 +45,7 @@ export function MobileNavigation({ items, portalOrigin }: MobileNavigationProps)
         {open ? "Close" : "Menu"}
       </summary>
       <nav aria-label="Mobile navigation">
-        {items.map(([label, href]) => href === "/portal/" ? <a key={href} href={portalOrigin} rel="nofollow" onClick={close}>{label}</a> : <Link key={href} href={href} onClick={close}>{label}</Link>)}
+        {items.map(([label, href]) => href === "/portal/" ? <a key={href} href={portalOrigin} rel="nofollow" onClick={close}>{label}</a> : <a key={href} href={href} onClick={close}>{label}</a>)}
       </nav>
     </details>
   );
