@@ -178,7 +178,8 @@ if (!home.includes("Medicine. Where it needs to be")) fail("Homepage is missing 
 
 const contact = text("contact/index.html");
 if (platformCapabilities.publicForms && !contact.includes("data-contact-form")) fail("Contact enquiry form hook is missing");
-if (!platformCapabilities.publicForms && (contact.includes("data-contact-form") || contact.includes("<form"))) fail("PUBLIC_ONLY contact page exposes a server-dependent form");
+if (!platformCapabilities.publicForms && contact.includes("data-contact-form")) fail("PUBLIC_ONLY contact page exposes server-side intake");
+if (!platformCapabilities.publicForms && contact.includes("<form") && (!contact.includes("data-email-enquiry-form") || !contact.includes('action="mailto:vishal@novapharmhealthcare.com"'))) fail("PUBLIC_ONLY contact page has an unapproved non-email form");
 if (!platformCapabilities.publicForms && !contact.includes("does not collect or transmit enquiry details")) fail("PUBLIC_ONLY contact page is missing the non-collection notice");
 if (!text("assets/js/novapharm.js").includes('request("/api/contact"')) fail("Contact form API submission path is missing");
 
