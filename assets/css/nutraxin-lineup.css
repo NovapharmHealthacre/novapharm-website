@@ -310,3 +310,10 @@
 @media(prefers-reduced-motion:reduce) {
   .nx-collection * {transition:none!important;animation:none!important;scroll-behavior:auto!important}
 }
+
+/* Official publisher links remain separate from the catalogue card’s internal detail link. */
+.nx-collection .nx-product-card-shell {display:flex;flex-direction:column;min-width:0}
+.nx-collection .nx-product-card-shell > .nx-product-card {flex:1}
+.nx-collection .nx-product-publisher {padding:8px 12px 16px;min-height:38px;font-size:.76rem;line-height:1.5}
+.nx-collection .nx-product-publisher a {color:#45454a;text-decoration:underline;text-underline-offset:3px}
+.nx-collection .nx-product-publisher .npd-publisher-unavailable {color:#66666d}
