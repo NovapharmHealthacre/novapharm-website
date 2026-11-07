@@ -24,6 +24,25 @@ assert.match(css, /@media \(max-width:\s*360px\)/);
 assert.match(css, /@media \(prefers-reduced-motion:\s*reduce\)/);
 assert.match(css, /@media \(forced-colors:\s*active\)/);
 assert.match(css, /@media print/);
+assert.ok(css.includes("@media (prefers-reduced-transparency: reduce)"), "navigation respects reduced transparency");
+assert.ok(css.includes("@media (prefers-contrast: more)"), "copy respects increased contrast");
+assert.ok(css.includes("-webkit-backdrop-filter: none;"), "reduced transparency disables WebKit blur");
+const publicAppleCss = text("assets/css/apple-pharma-public.css");
+assert.ok(publicAppleCss.includes("outline: 3px solid #0a66c2;"), "keyboard focus uses a solid high-contrast outline");
+assert.ok(!publicAppleCss.includes("rgba(180, 35, 46, 0.36)"), "translucent focus ring must not return");
+
+function contrastOnWhite(hex) {
+  assert.match(hex, /^#[0-9a-f]{6}$/i);
+  const channels = [1, 3, 5].map((offset) => Number.parseInt(hex.slice(offset, offset + 2), 16) / 255);
+  const linear = channels.map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+  const luminance = linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722;
+  return 1.05 / (luminance + 0.05);
+}
+const focusColor = publicAppleCss.split("outline: 3px solid ")[1]?.slice(0, 7);
+const highContrastDivider = css.split("--npd-line: ").at(-1)?.slice(0, 7);
+assert.ok(contrastOnWhite(focusColor) >= 3, "keyboard-focus outline must have at least 3:1 contrast on white");
+assert.ok(contrastOnWhite(highContrastDivider) >= 3, "high-contrast nontext divider must have at least 3:1 contrast on white");
+
 assert.match(bundleCss, /--corporate-product-discipline-contract:\s*1/);
 assert.match(tokenCss, /--brand:\s*#E3120B;/, "the canonical identity red must remain Economist Red");
 assert.match(tokenCss, /--brand-text:\s*#B30E09;/, "small red foreground text needs the contrast-safe derivative");
