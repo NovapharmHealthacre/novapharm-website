@@ -48,13 +48,102 @@ function loginPage() {
 
 function publicOnlyPortalPage() {
   const configuredPortalOrigin = process.env.PUBLIC_PORTAL_ORIGIN;
-  let portalAction = "";
+  let page = `<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#f7f9ff">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'unsafe-inline'; img-src 'self'; connect-src 'none'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
+<title>Secure Portal | NovaPharm Healthcare</title>
+<meta name="description" content="NovaPharm Secure Portal access for verified partners, suppliers and authorised organisations. Login credentials are not accepted on the public website.">
+<link rel="canonical" href="https://novapharmhealthcare.com/portal/">
+<link rel="icon" type="image/svg+xml" href="/assets/brand/favicon.svg">
+<style>
+:root{--ink:#1d1d1f;--muted:#5b6472;--line:#d6dce8;--blue:#005fe8}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;color:var(--ink)}
+body{min-height:100svh;background:linear-gradient(140deg,#fdfdff,#f3f6fe 50%,#fafbff);overflow-x:hidden}
+a{color:inherit}
+a:focus-visible{outline:3px solid var(--blue);outline-offset:4px}
+.skip{position:absolute;left:16px;top:-65px;z-index:10;background:#fff;padding:12px 18px}
+.skip:focus{top:8px}
+.portal-landing{position:relative;isolation:isolate;min-height:100svh;display:flex;flex-direction:column;overflow:hidden}
+.portal-landing:before{content:"";position:absolute;z-index:-1;left:-24%;bottom:-35%;width:min(75vw,1050px);height:min(70vw,760px);border-radius:50%;pointer-events:none;transform:rotate(-18deg);background:radial-gradient(ellipse at 63% 31%,rgba(255,255,255,.86),transparent 50%),radial-gradient(ellipse at 53% 62%,rgba(168,194,248,.39),rgba(216,230,255,.32) 48%,transparent 76%);box-shadow:inset 0 2px 4px rgba(255,255,255,.9)}
+.header{min-height:72px;padding:0 clamp(22px,7vw,112px);display:flex;align-items:center;justify-content:space-between;gap:24px;border-bottom:1px solid rgba(177,190,214,.42);background:rgba(255,255,255,.42)}
+.logo{display:inline-flex;max-width:min(290px,60vw)}
+.logo img{display:block;width:clamp(205px,19vw,288px);height:auto}
+.header nav,.footer nav{display:flex;gap:clamp(18px,2.7vw,42px);align-items:center}
+.header nav a,.footer nav a{text-decoration:none;font-size:13px}
+.header nav a:hover,.footer nav a:hover,.links a:hover{text-decoration:underline}
+.content{width:min(1390px,calc(100% - 80px));flex:1;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(390px,.88fr);gap:clamp(60px,9vw,145px);align-items:center;margin:0 auto;padding:clamp(48px,6vw,86px) clamp(0px,2vw,28px) clamp(60px,7vw,90px)}
+.copy{max-width:710px}
+.kicker{font-size:18px;color:#56606e;margin:0 0 34px}
+.copy h1{margin:0;font-size:clamp(45px,4.1vw,65px);font-weight:730;letter-spacing:-.053em;line-height:1.04}
+.lead{margin:21px 0 0;max-width:620px;font-size:clamp(19px,1.7vw,24px);letter-spacing:-.014em;line-height:1.38;color:var(--muted)}
+.details{margin-top:clamp(45px,6vw,72px);max-width:610px}
+.details p{margin:0;padding:16px 0;border-top:1px solid rgba(177,190,214,.5);font-size:15px;line-height:1.5;color:#5d6675}
+.details strong{color:#252b36}
+.card{width:100%;max-width:570px;justify-self:end;padding:clamp(28px,3.6vw,58px);border-radius:30px;border:1px solid rgba(255,255,255,.97);background:rgba(255,255,255,.87);box-shadow:0 18px 55px rgba(36,54,90,.10),0 2px 10px rgba(36,54,90,.04);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.card h2{margin:0;font-size:clamp(30px,2.7vw,40px);font-weight:710;letter-spacing:-.04em}
+.card>p{margin:10px 0 25px;color:var(--muted);font-size:17px;line-height:1.5}
+.preview-group{margin:0 0 17px}
+.preview-group strong{display:block;margin-bottom:8px;font-size:14px;font-weight:540}
+.preview-field{display:flex;align-items:center;width:100%;min-height:52px;border:1px solid #c8cedb;border-radius:13px;background:rgba(255,255,255,.6);padding:12px 16px;color:#717b8a;font-size:15px}
+.primary{display:flex;align-items:center;justify-content:center;min-height:52px;margin-top:28px;padding:11px 18px;background:var(--blue);border-radius:14px;color:#fff;text-align:center;font-size:16px;font-weight:620;text-decoration:none}
+.primary:hover{background:#004cbb}
+.notice{margin-top:17px;padding:15px 0 0;border-top:1px solid var(--line);color:#505e70;font-size:13px;line-height:1.55}
+.notice strong{color:#242e3c}
+.links{display:flex;justify-content:center;flex-wrap:wrap;gap:24px;margin-top:24px}
+.links a{font-size:13px;color:#0354bf;text-decoration:none}
+.footer{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:17px clamp(22px,7vw,112px);border-top:1px solid rgba(177,190,214,.4);background:rgba(255,255,255,.36);font-size:12px;color:#606a77}
+.footer nav a{color:inherit;font-size:12px}
+@media(max-width:980px){.content{width:min(670px,calc(100% - 36px));grid-template-columns:minmax(0,1fr);gap:36px;padding:65px 0 52px}.kicker{margin-bottom:18px}.details{margin-top:28px}.card{justify-self:center;max-width:670px}}
+@media(max-width:600px){.header{min-height:64px;padding-inline:18px}.logo img{width:min(210px,55vw)}.header nav{gap:12px}.header nav a{font-size:11px}.header nav a:nth-child(2){display:none}.content{padding:50px 0 40px;gap:29px}.copy h1{font-size:clamp(39px,9vw,50px)}.lead{font-size:18px}.details p{font-size:13px;padding-block:12px}.card{padding:29px 21px;border-radius:24px}.footer{flex-direction:column;align-items:flex-start;padding:19px 18px;gap:12px}}
+@media(prefers-reduced-transparency:reduce){.card,.header,.footer{background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none}}
+@media(prefers-contrast:more){:root{--muted:#404c5c;--line:#8996a8}.card{border-color:#8996a8}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="portal-landing">
+<a class="skip" href="#portal-main">Skip to portal information</a>
+<header class="header">
+<a class="logo" href="/" aria-label="NovaPharm Healthcare home"><img src="/assets/brand/novapharm-healthcare-logo.svg" width="2048" height="258" alt="NovaPharm Healthcare"></a>
+<nav aria-label="Corporate navigation"><a href="/about/">Company</a><a href="/products/">Products</a><a href="/contact/">Support</a></nav>
+</header>
+<main class="content" id="portal-main">
+<section class="copy" aria-labelledby="portal-heading">
+<p class="kicker">Secure Portal</p>
+<h1 id="portal-heading">Sign in to the<br>NovaPharm Portal.</h1>
+<p class="lead">A secure workspace for partners, suppliers and regulated accounts.</p>
+<div class="details">
+<p><strong>Verified access.</strong> Workspaces are restricted to authorised organisations.</p>
+<p><strong>Controlled information.</strong> Orders and regulatory files are available only through verified permissions.</p>
+</div>
+</section>
+<section class="card" aria-labelledby="portal-card-title">
+<h2 id="portal-card-title">Welcome back.</h2>
+<p>Sign in to access your account.</p>
+<div class="preview-group" aria-hidden="true"><strong>Work email</strong><div class="preview-field">Available in the managed portal</div></div>
+<div class="preview-group" aria-hidden="true"><strong>Password</strong><div class="preview-field">Sign-in is not enabled on this website</div></div>
+<a class="primary" href="/contact/?enquiry=Portal%20access">Request secure access</a>
+<div class="notice"><strong>Public-site security notice.</strong> This public website never asks for a portal username, password or confidential company record. Sign in only at the verified portal address provided directly by NovaPharm. No credentials are collected here.</div>
+<div class="links"><a href="/contact/">Contact support</a><a href="/">Return to NovaPharm</a></div>
+</section>
+</main>
+<footer class="footer"><span>NovaPharm Healthcare Ltd · United Kingdom</span><nav aria-label="Legal"><a href="/legal/privacy/">Privacy</a><a href="/legal/terms/">Terms</a><a href="/trust-centre/">Security</a></nav></footer>
+</div>
+</body>
+</html>`;
   if (configuredPortalOrigin) {
     const portalUrl = new URL(configuredPortalOrigin);
     if (portalUrl.protocol !== "https:") throw new Error("PUBLIC_PORTAL_ORIGIN must use HTTPS.");
-    portalAction = `<a class="btn btn-primary" href="${portalUrl.toString()}">Continue to the managed portal</a>`;
+    page = page.replace('href="/contact/?enquiry=Portal%20access">Request secure access', `href="${portalUrl.toString()}">Continue to the managed portal`);
   }
-  return `<!DOCTYPE html><html lang="en-GB">${privateHead("Portal Security | NovaPharm Healthcare")}<body class="login-page"><main class="login-panel locked-panel"><a class="login-logo" href="/" aria-label="NovaPharm Healthcare home">${brandPicture({ width: 320, height: 40, eager: true })}</a><span class="section-kicker">Public information release</span><h1>Use only the managed NovaPharm portal.</h1><p>This public website never asks for a portal username, password or confidential company record. Authorised customers, employees and board members should use only the secure portal address issued directly by NovaPharm.</p>${portalAction}<div class="alert">No login, account, document or board information is processed on this static public host.</div><a class="btn btn-outline" href="/">Return to the corporate website</a><button class="inline-link-button portal-cookie-settings" type="button" data-cookie-settings>Cookie settings</button></main></body></html>`;
+  return page;
 }
 
 function entraCompletePage() {
