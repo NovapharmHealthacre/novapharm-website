@@ -404,7 +404,7 @@ function productsMain() {
 function nutraxinMain() {
   const original = read("src/content/nutraxin-showcase.html");
   const seen = new Set();
-  const rendered = original.replace(/(<a class="nx-product-card" href="\\/products\\/nutraxin\\/([a-z0-9-]+)\\/" data-nx-product-slug="\\2">[\\s\\S]*?<\\/a>)/gu, (card, _full, slug) => {
+  const rendered = original.replace(/<a class="nx-product-card" href="[^"]+" data-nx-product-slug="([a-z0-9-]+)">[\s\S]*?[<][/]a>/gu, (card, slug) => {
     if (seen.has(slug)) throw new Error(`Duplicate Nutraxin card ${slug}`);
     seen.add(slug);
     return `<div class="nx-product-card-shell">${card}<div class="nx-product-publisher">${nutraxinOfficialReference(slug)}</div></div>`;
