@@ -1,0 +1,230 @@
+name: Publish approved Oncology Next.js route to live Pages (scoped)
+on:
+  push:
+    branches: [ops/oncology-publication-20261107]
+    paths:
+      - .github/workflows/publish-oncology-live-20261107.yml
+permissions:
+  contents: write
+concurrency:
+  group: novapharm-gh-pages-oncology-scoped
+  cancel-in-progress: false
+env:
+  RELEASE_SHA: f3b559e87fc90cb538d3158b4f20a1790b963dcc
+jobs:
+  publish-oncology:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out exact owner-approved merged main release
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: f3b559e87fc90cb538d3158b4f20a1790b963dcc
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Require reviewed main SHA and approved Oncology source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$RELEASE_SHA"
+          grep -Fq 'data-oncology-design="editorial-v2"' apps/corporate/components/oncology-editorial.tsx
+          grep -Fq 'Oncology demands' apps/corporate/components/oncology-editorial.tsx
+          grep -Fq 'Regulated wholesale supply has not commenced' apps/corporate/components/oncology-editorial.tsx
+          test -s apps/corporate/app/oncology-editorial.css
+          test -s oncology/index.html
+          test -s audit/generated/image-inventory.json
+      - name: Use Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Build the actual production Next.js renderer
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts
+          npm run check --workspace @novapharm/corporate
+      - name: Render approved Oncology route and preserve strict inline-script CSP
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd apps/corporate
+          PORT=3177 HOSTNAME=127.0.0.1 PUBLIC_INDEXABLE=true npm run start > "$RUNNER_TEMP/novapharm-oncology-node.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/novapharm-oncology-node.pid"
+          cd ../..
+          for attempt in $(seq 1 36); do
+            if curl -fsS --max-time 3 -o /dev/null http://127.0.0.1:3177/oncology/; then break; fi
+            sleep 2
+          done
+          curl -fsSL --retry 3 http://127.0.0.1:3177/oncology/ -o "$RUNNER_TEMP/novapharm-oncology.html"
+          export ONCOLOGY_CSP_TARGET="$RUNNER_TEMP/novapharm-oncology.html"
+          python3 - <<'PY'
+          from pathlib import Path
+          import os, re, hashlib, base64
+          target=Path(os.environ["ONCOLOGY_CSP_TARGET"])
+          html=target.read_text(encoding="utf-8")
+          assert "<head>" in html
+          assert 'http-equiv="Content-Security-Policy"' not in html
+          assert 'data-oncology-design="editorial-v2"' in html
+          assert "Oncology demands" in html
+          assert "Regulated wholesale supply has not commenced" in html
+          assert '<h1' in html and html.count("<h1") == 1
+          assert 'oncology-vial-handling.jpg' in html
+          hashes=[]
+          for attrs, body in re.findall(r'<script\b([^>]*)>(.*?)</script>',html,flags=re.I|re.S):
+              if re.search(r'\bsrc\s*=',attrs,re.I) or not body.strip():
+                  continue
+              if re.search(r'\btype\s*=\s*["\']application/ld\+json',attrs,re.I):
+                  continue
+              digest=base64.b64encode(hashlib.sha256(body.encode("utf-8")).digest()).decode("ascii")
+              hashes.append("'sha256-"+digest+"'")
+          assert hashes, "Next.js hydration scripts need explicit CSP hash inventory"
+          policy=("default-src 'self'; script-src 'self' "+" ".join(sorted(set(hashes)))+
+                  "; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; "+
+                  "font-src 'self'; connect-src 'self'; object-src 'none'; "+
+                  "base-uri 'self'; form-action 'none'; upgrade-insecure-requests")
+          html=html.replace("<head>",'<head><meta http-equiv="Content-Security-Policy" content="'+policy+'">',1)
+          target.write_text(html,encoding="utf-8")
+          print("CSP hashes",len(set(hashes)),"Oncology page bytes",len(html))
+          PY
+          grep -Fq 'http-equiv="Content-Security-Policy"' "$RUNNER_TEMP/novapharm-oncology.html"
+          grep -Fq 'data-oncology-design="editorial-v2"' "$RUNNER_TEMP/novapharm-oncology.html"
+      - name: Compose Oncology-only patch onto existing public gh-pages tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin gh-pages
+          base="$(git rev-parse refs/remotes/origin/gh-pages)"
+          echo "PAGES_BASE=$base" >> "$GITHUB_ENV"
+          public="$RUNNER_TEMP/novapharm-oncology-publication"
+          git worktree add --detach "$public" "$base"
+          test -s "$public/index.html"
+          test "$(tr -d '\r\n' < "$public/CNAME")" = novapharmhealthcare.com
+          sha256sum "$public/index.html" > "$RUNNER_TEMP/original-home-sha256.txt"
+          test -s "$public/assets/media/products/oncology-vial-handling.jpg"
+          test -s "$public/assets/media/products/oncology-vial-handling-960.avif"
+          test -s "$public/assets/media/products/oncology-vial-handling-960.webp"
+          mkdir -p "$public/oncology"
+          cp "$RUNNER_TEMP/novapharm-oncology.html" "$public/oncology/index.html"
+          while IFS= read -r -d '' file; do
+            relative="$(realpath --relative-to=apps/corporate/.next/static "$file")"
+            destination="$public/_next/static/$relative"
+            mkdir -p "$(dirname "$destination")"
+            if [ -f "$destination" ] && ! cmp -s "$file" "$destination"; then
+              echo "::error::Existing immutable Next chunk collision: $relative"
+              exit 1
+            fi
+            cp "$file" "$destination"
+          done < <(find apps/corporate/.next/static -type f -print0)
+          sha256sum -c "$RUNNER_TEMP/original-home-sha256.txt"
+          cd "$public"
+          git add -- oncology/index.html _next/static
+          while IFS= read -r changed; do
+            case "$changed" in
+              oncology/index.html|_next/static/*) ;;
+              *) echo "::error::Unexpected staged file $changed"; exit 1 ;;
+            esac
+          done < <(git diff --cached --name-only)
+          git diff --cached --name-only | grep -Fx 'oncology/index.html'
+          ! git diff --cached --name-only | grep -Fx 'index.html'
+      - name: Browser-verify the complete composed static Pages tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx playwright install chromium
+          python3 -m http.server 3188 --directory "$RUNNER_TEMP/novapharm-oncology-publication" --bind 127.0.0.1 > "$RUNNER_TEMP/novapharm-oncology-static.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/novapharm-oncology-static.pid"
+          for attempt in $(seq 1 18); do
+            if curl -fsS -o /dev/null http://127.0.0.1:3188/oncology/; then break; fi
+            sleep 1
+          done
+          node - <<'NODE'
+          const assert=require('node:assert/strict');
+          const {chromium}=require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            try{
+              for(const viewport of [{width:390,height:844},{width:1440,height:900}]){
+                const page=await browser.newPage({viewport,reducedMotion:'reduce'});
+                const failures=[];
+                page.on('pageerror',e=>failures.push(e.message));
+                page.on('console',m=>{if(m.type()==='error')failures.push(m.text())});
+                page.on('response',r=>{if(r.status()>=400 && !r.request().isNavigationRequest())failures.push(r.status()+' '+r.url())});
+                page.on('requestfailed',r=>failures.push('network '+r.url()+' '+(r.failure()?.errorText||'')));
+                const response=await page.goto('http://127.0.0.1:3188/oncology/',{waitUntil:'networkidle',timeout:45000});
+                assert.equal(response.status(),200);
+                await page.evaluate(()=>scrollTo(0,document.body.scrollHeight));
+                await page.waitForTimeout(450);
+                const data=await page.evaluate(()=>({
+                  hasDesign:!!document.querySelector('[data-oncology-design="editorial-v2"]'),
+                  hero:!!document.querySelector('.npoc-hero'),
+                  heading:document.querySelectorAll('h1').length,
+                  axes:document.querySelectorAll('.npoc-evidence-list li').length,
+                  programmes:document.querySelectorAll('.npoc-programme-list details').length,
+                  faq:document.querySelectorAll('.npoc-faq-list details').length,
+                  overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1,
+                  broken:[...document.images].filter(x=>x.complete && x.naturalWidth===0).map(x=>x.currentSrc||x.src),
+                  heroColor:getComputedStyle(document.querySelector('.npoc-hero')).backgroundColor,
+                  text:document.querySelector('main')?.innerText||''
+                }));
+                assert.equal(data.hasDesign,true);
+                assert.equal(data.hero,true);
+                assert.equal(data.heading,1);
+                assert.equal(data.axes,6);
+                assert.equal(data.programmes,4);
+                assert.equal(data.faq,6);
+                assert.equal(data.overflow,false);
+                assert.deepEqual(data.broken,[]);
+                assert.notEqual(data.heroColor,'rgba(0, 0, 0, 0)');
+                assert.ok(data.text.includes('Regulated wholesale supply has not commenced'));
+                assert.ok(!/Buy now|Add to basket/.test(data.text));
+                assert.deepEqual(failures,[]);
+                const contact=await page.request.get('http://127.0.0.1:3188/contact/');
+                const home=await page.request.get('http://127.0.0.1:3188/');
+                assert.equal(contact.status(),200);
+                assert.equal(home.status(),200);
+                console.log('Oncology composed Pages accepted',viewport.width,'pixels');
+                await page.close();
+              }
+            }finally{await browser.close();}
+          })().catch(e=>{console.error(e);process.exitCode=1});
+          NODE
+      - name: Publish scoped Oncology patch with no concurrent overwrite
+        shell: bash
+        run: |
+          set -euo pipefail
+          current="$(git ls-remote origin refs/heads/gh-pages | cut -f1)"
+          test "$current" = "$PAGES_BASE" || { echo "::error::gh-pages advanced concurrently"; exit 1; }
+          cd "$RUNNER_TEMP/novapharm-oncology-publication"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "release(oncology): publish approved Apple-inspired live Oncology route"
+          git push origin HEAD:refs/heads/gh-pages
+          git log -1 --format='%H %s'
+      - name: Verify live canonical Oncology route
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://novapharmhealthcare.com/oncology/"
+          for attempt in $(seq 1 36); do
+            curl -fsSL --max-time 15 -H 'Cache-Control: no-cache' "$url?release=$RELEASE_SHA-$attempt" > "$RUNNER_TEMP/novapharm-live-oncology.html" || true
+            if grep -Fq 'data-oncology-design="editorial-v2"' "$RUNNER_TEMP/novapharm-live-oncology.html" \
+              && grep -Fq 'Oncology demands' "$RUNNER_TEMP/novapharm-live-oncology.html" \
+              && grep -Fq 'Regulated wholesale supply has not commenced' "$RUNNER_TEMP/novapharm-live-oncology.html"; then
+              echo "Oncology route verified live at $url"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::Live custom domain still serves a different Oncology release"
+          exit 1
+      - name: Upload publication diagnostics
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: oncology-live-publication-evidence
+          path: |
+            ${{ runner.temp }}/novapharm-oncology-node.log
+            ${{ runner.temp }}/novapharm-oncology-static.log
+            ${{ runner.temp }}/novapharm-live-oncology.html
+          retention-days: 7
