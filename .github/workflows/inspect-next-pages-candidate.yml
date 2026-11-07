@@ -57,6 +57,36 @@ jobs:
           cp -a apps/corporate/.next/static/. /tmp/novapharm-next-snapshot/_next/static/
           cp -a apps/corporate/public/. /tmp/novapharm-next-snapshot/
           curl -fsSL http://127.0.0.1:3177/ -o /tmp/novapharm-next-snapshot/index.html
+          export HOME_CSP_TARGET=/tmp/novapharm-next-snapshot/index.html
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64, hashlib, re
+          import os
+
+          target = Path(os.environ["HOME_CSP_TARGET"])
+          html = target.read_text(encoding="utf-8")
+          assert "<head>" in html, "A complete Next.js HTML document is required"
+          assert 'http-equiv="Content-Security-Policy"' not in html, "Do not replace an existing CSP without review"
+          hashes = []
+          for attrs, body in re.findall(r'<script\b([^>]*)>(.*?)</script>', html, flags=re.I | re.S):
+              if re.search(r'\bsrc\s*=', attrs, re.I) or not body.strip():
+                  continue
+              if re.search(r'\btype\s*=\s*["\']application/ld\+json', attrs, re.I):
+                  continue
+              digest = base64.b64encode(hashlib.sha256(body.encode("utf-8")).digest()).decode("ascii")
+              hashes.append("'sha256-" + digest + "'")
+          assert hashes, "Next.js static hydration requires an explicit inline-script hash inventory"
+          policy = (
+              "default-src 'self'; script-src 'self' " + " ".join(sorted(set(hashes)))
+              + "; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; "
+              + "font-src 'self'; connect-src 'self'; object-src 'none'; "
+              + "base-uri 'self'; form-action 'none'; upgrade-insecure-requests"
+          )
+          html = html.replace("<head>", '<head><meta http-equiv="Content-Security-Policy" content="' + policy + '">', 1)
+          target.write_text(html, encoding="utf-8")
+          print("Preserved strict static-host CSP with", len(set(hashes)), "approved inline-script SHA-256 hashes")
+          PY
+          grep -Fq 'http-equiv="Content-Security-Policy"' /tmp/novapharm-next-snapshot/index.html
           curl -fsSL http://127.0.0.1:3177/contact/ -o /tmp/novapharm-next-snapshot/contact/index.html
           test -s /tmp/novapharm-next-snapshot/index.html
           grep -Fq 'npd-apple-hero' /tmp/novapharm-next-snapshot/index.html
