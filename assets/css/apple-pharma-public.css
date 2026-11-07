@@ -417,8 +417,9 @@ body[data-page="home"] .final-cta h2 { max-width: 840px; }
   color: var(--np-text);
 }
 
-:focus-visible {
-  outline: 3px solid rgba(180, 35, 46, 0.36);
+/* High-contrast keyboard focus: never rely on a translucent outline against white. */
+:where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 3px solid #0a66c2;
   outline-offset: 3px;
 }
 
