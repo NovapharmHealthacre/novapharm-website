@@ -7,6 +7,8 @@ on:
     paths:
       - .github/workflows/pages-live-publish.yml
       - assets/css/apple-pharma-public.css
+      - assets/css/homepage-editorial.css
+      - scripts/apply-corporate-product-discipline.mjs
       - portal/index.html
       - contact/index.html
       - account-application/index.html
@@ -65,6 +67,8 @@ jobs:
           node scripts/stage-pages-artifact.mjs _site
           node scripts/check-links.mjs _site
           grep -Fq 'Medicine. Where it needs to be' _site/index.html
+          grep -Fq 'class="npd-apple-hero"' _site/index.html
+          grep -Fq 'class="npd-apple-nova-art"' _site/index.html
           grep -Fq 'class="np-contact-reference-hero"' _site/contact/index.html
           grep -Fq 'data-email-enquiry-form' _site/contact/index.html
           grep -Fq 'This public information release does not collect or transmit enquiry details' _site/contact/index.html
@@ -117,6 +121,8 @@ jobs:
           node scripts/stage-pages-artifact.mjs _site
           node scripts/check-links.mjs _site
           grep -Fq 'Medicine. Where it needs to be' _site/index.html
+          grep -Fq 'class="npd-apple-hero"' _site/index.html
+          grep -Fq 'class="npd-apple-nova-art"' _site/index.html
           grep -Fq 'class="np-contact-reference-hero"' _site/contact/index.html
           grep -Fq 'data-email-enquiry-form' _site/contact/index.html
           grep -Fq 'This public information release does not collect or transmit enquiry details' _site/contact/index.html
@@ -204,6 +210,7 @@ jobs:
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "${DEPLOYED_URL%/}/regulatory-services/?${cache_key}-${attempt}" > /tmp/deployed-regulatory.html || true
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "${DEPLOYED_URL%/}/portal/?${cache_key}-${attempt}" > /tmp/deployed-portal.html || true
             if grep -Fq 'Medicine. Where it needs to be' /tmp/deployed-home.html \
+              && grep -Fq 'class="npd-apple-hero"' /tmp/deployed-home.html \
               && grep -Fq -- '--apple-pharma-public-contract: 3' /tmp/deployed-bundle.css \
               && grep -Fq 'regulatory-dossier-control' /tmp/deployed-regulatory.html \
               && ! grep -Fq 'data-ai-search-open' /tmp/deployed-home.html \
@@ -236,6 +243,7 @@ jobs:
             ai_status=$(curl --silent --output /dev/null --write-out '%{http_code}' --location "$LIVE_ORIGIN/technology/ai-governance/?${cache_key}-${attempt}" || true)
 
             if grep -Fq 'Medicine. Where it needs to be' /tmp/live-home.html \
+              && grep -Fq 'class="npd-apple-hero"' /tmp/live-home.html \
               && grep -Fq -- '--apple-pharma-public-contract: 3' /tmp/live-bundle.css \
               && grep -Fq 'regulatory-dossier-control' /tmp/live-regulatory.html \
               && grep -Fq '/assets/media/modules/regulatory-dossier-control.jpg' /tmp/live-regulatory.html \
