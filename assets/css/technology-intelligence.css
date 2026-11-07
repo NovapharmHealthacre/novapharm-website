@@ -803,7 +803,7 @@ body[data-page="technology"] .np-intelligence {
 .np-intelligence .npi-dash-content { background:#f7f9fc; }
 .np-intelligence .npi-dash-kpi, .np-intelligence .npi-dash-card { background:#fff; border:1px solid #e4e9f1; box-shadow:0 4px 20px rgba(21,43,82,.035); }
 .np-intelligence .npi-dash-card { border-radius:13px; }
-.np-intelligence .npi-dash-kpi strong { letter-spacing:-.035em; }
+.np-intelligence .npi-dash-kpi strong { letter-spacing: 0; }
 .np-intelligence .npi-dash-map-layout { align-items:stretch; min-height:375px; }
 .np-intelligence .npi-dash-map-display { gap:9px; min-height:355px; position:relative; }
 .np-intelligence .npi-dash-real-map { width:100%; max-width:380px; min-height:330px; display:grid; align-items:center; justify-items:center; }
