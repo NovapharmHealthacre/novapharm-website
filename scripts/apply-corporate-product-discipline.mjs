@@ -261,31 +261,52 @@ function insightsMain() {
 function contactMain(existingHtml) {
   const managedForm = existingHtml.match(/<form class="form-grid contact-form[\s\S]*?<\/form>/)?.[0] || "";
   const managedEnabled = Boolean(managedForm);
-  const topics = [
-    ["Product and dossier opportunities", "Introduce a product, dossier or market-entry programme.", "Product opportunity"],
-    ["Distribution partnerships", "Discuss UK distribution and qualified supply routes.", "Distribution partnership"],
-    ["Oncology and specialist medicines", "Explore a specialist portfolio or continuity requirement.", "Oncology & specialist medicines"],
-    ["Manufacturing and CMO/CDMO", "Discuss manufacturing, technology transfer or supply partnerships.", "CMO/CDMO partnership"],
-    ["Regulatory and quality", "Explore regulatory intelligence, evidence and compliance support.", "Regulatory services"],
-    ["Clinical development and CRO", "Discuss a development, research or clinical-services brief.", "Clinical development & CRO support"],
-    ["Pharmacies and wholesale accounts", "Start a qualified business-account conversation.", "Pharmacy or wholesaler account"],
-    ["General, supplier, media and careers", "Reach the appropriate NovaPharm team for another business request.", "General enquiry"]
-  ];
-  const cards = topics.map(([title, description, category]) => {
-    const href = managedEnabled
-      ? `/contact/?enquiry=${encodeURIComponent(category)}#contact-form`
-      : `mailto:vishal@novapharmhealthcare.com?subject=${encodeURIComponent(`NovaPharm | ${category}`)}`;
-    return `<a class="np-contact-topic" href="${esc(href)}"><strong>${esc(title)}</strong><span class="np-contact-topic-copy">${esc(description)}</span><span class="np-contact-topic-action">${managedEnabled ? "Go to secure form" : "Open business email"}</span></a>`;
-  }).join("");
+  const options = [
+    "Product opportunity", "Distribution partnership", "Oncology & specialist medicines",
+    "CMO/CDMO partnership", "Regulatory services", "Clinical development & CRO support",
+    "Pharmacy or wholesaler account", "Supplier enquiry", "Media", "Careers", "General enquiry"
+  ].map((topic) => '<option value="' + esc(topic) + '">' + esc(topic) + '</option>').join("");
+  const draft = [
+    '<form class="np-contact-reference-form" data-email-enquiry-form action="mailto:vishal@novapharmhealthcare.com" method="post" enctype="text/plain">',
+    '<div class="np-contact-reference-grid">',
+    '<label class="np-contact-reference-field"><span>Full name</span><input name="name" autocomplete="name" placeholder="Your name" maxlength="120" required></label>',
+    '<label class="np-contact-reference-field"><span>Work email</span><input type="email" name="email" autocomplete="email" placeholder="name@company.com" maxlength="160" required></label>',
+    '<label class="np-contact-reference-field"><span>Company</span><input name="company" autocomplete="organization" placeholder="Organisation name" maxlength="160" required></label>',
+    '<label class="np-contact-reference-field"><span>Country / region</span><input name="country" autocomplete="country-name" placeholder="Select or enter a country" maxlength="80" required></label>',
+    '</div>',
+    '<label class="np-contact-reference-field np-contact-reference-full"><span>What is your enquiry about?</span><select name="enquiryType" required><option value="" disabled selected>Choose a topic</option>', options, '</select></label>',
+    '<label class="np-contact-reference-field np-contact-reference-full np-contact-reference-message"><span>Your message</span><textarea name="message" placeholder="Tell us a little about your enquiry." minlength="20" maxlength="850" required></textarea></label>',
+    '<div class="np-contact-reference-actions"><div>',
+    '<p class="np-contact-reference-privacy">Your information will be used to respond to your enquiry, in accordance with our <a href="/legal/privacy/">privacy notice</a>.</p>',
+    '<p class="np-contact-reference-mode">This website does not submit enquiries. Opening your email draft does not confirm delivery. Please do not include confidential dossiers or patient information.</p>',
+    '</div><button type="submit" class="np-contact-reference-submit">Open email draft</button></div>',
+    '</form>',
+    '<p class="np-contact-reference-status" data-email-draft-status role="status" aria-live="polite">This public information release does not collect or transmit enquiry details. Your email application handles sending.</p>'
+  ].join("");
   const control = managedEnabled
-    ? `<div id="contact-form" class="np-contact-form-panel"><h3>Tell us about your enquiry.</h3><p>Your message is submitted only when the managed service is available. Please do not include confidential documents.</p>${managedForm}</div>`
-    : `<div id="contact-form" class="np-contact-email-panel"><h3>Send us an email.</h3><p>Our secure online form is not active on this public website. This public information release does not collect or transmit enquiry details. For non-confidential business enquiries, use the corporate email route. Your email application, not this website, handles sending.</p><a class="np-contact-primary" href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20business%20enquiry">Email NovaPharm</a><a class="np-contact-email-address" href="mailto:vishal@novapharmhealthcare.com">vishal@novapharmhealthcare.com</a><p class="np-contact-small">Opening email does not confirm delivery. Do not attach confidential dossiers or patient records.</p></div>`;
-  return `<main id="main" class="npd-main np-contact">
-    <section class="np-contact-hero"><div class="np-contact-shell"><span class="np-contact-kicker">NovaPharm Healthcare / Contact</span><h1>Let's start the right conversation.</h1><p class="np-contact-lead">Choose the area that best matches your business enquiry. We will start with the opportunity and the evidence needed to assess it.</p></div></section>
-    <section class="np-contact-topics" aria-labelledby="np-contact-topics-heading"><div class="np-contact-shell"><div class="np-contact-sectionhead"><span class="np-contact-kicker">01 / Your enquiry</span><h2 id="np-contact-topics-heading">How can we help?</h2><p>Find the right route in one step. Every conversation begins with clarity, confidentiality and appropriate regulatory boundaries.</p></div><div class="np-contact-grid">${cards}</div></div></section>
-    <section class="np-contact-destination" aria-labelledby="np-contact-route-heading"><div class="np-contact-shell np-contact-destination-layout"><div><span class="np-contact-kicker">02 / Get in touch</span><h2 id="np-contact-route-heading">A direct way to connect.</h2><p>Tell us your organisation, the market or opportunity, and what decision you need to make. Share sensitive technical or commercial files only through a separately verified secure channel.</p><p><a href="/legal/privacy/">Read the privacy notice</a></p></div>${control}</div></section>
-    <section class="np-contact-safety" aria-label="Important communication boundaries"><div class="np-contact-shell np-contact-safety-grid"><div><h3>Business enquiries only.</h3><p>NovaPharm does not sell medicines to patients or provide individual medical advice through this channel. An enquiry does not establish a supply commitment or regulatory approval.</p></div><div><h3>Not a medical or safety channel.</h3><p>Do not provide patient-identifiable information or adverse-event details. Report suspected medicine side effects using the <a href="https://yellowcard.mhra.gov.uk/">MHRA Yellow Card service</a>. For UK emergencies call 999; NHS 111 provides urgent advice.</p></div></div></section>
-  </main>`;
+    ? '<div class="np-contact-managed">' + managedForm.replace('class="form-grid contact-form"', 'class="form-grid contact-form np-contact-reference-form"') + '</div>'
+    : draft;
+  return [
+    '<main id="main" class="npd-main np-contact np-contact-reference">',
+    '<section class="np-contact-reference-hero" aria-labelledby="contact-heading"><div class="np-contact-reference-shell">',
+    '<span class="np-contact-reference-kicker">Contact NovaPharm</span>',
+    '<h1 id="contact-heading">Let&#39;s talk.</h1>',
+    '<p>Big ideas begin with a conversation.<br>Tell us what you&#39;re working on.</p>',
+    '</div></section>',
+    '<section class="np-contact-reference-content" aria-labelledby="contact-help-heading"><div class="np-contact-reference-shell">',
+    '<header class="np-contact-reference-heading"><h2 id="contact-help-heading">How can we help?</h2>',
+    '<p>Share a few details and we&#39;ll direct your enquiry to the right team.</p></header>',
+    control,
+    '</div></section>',
+    '<aside class="np-contact-reference-safety" aria-label="Important communication boundaries"><div class="np-contact-reference-shell">',
+    '<p>Business enquiries only. This is not a medical or patient-ordering channel. Do not send patient-identifiable information, adverse-event reports or urgent medical details. Report suspected side effects through the <a href="https://yellowcard.mhra.gov.uk/">MHRA Yellow Card service</a>. For UK emergencies call 999 or seek NHS 111 advice.</p>',
+    '</div></aside>',
+    '<footer class="np-contact-reference-footer"><div class="np-contact-reference-shell np-contact-reference-footer-inner"><div>',
+    '<strong>Medicine. Where it needs to be.</strong>',
+    '<p>NovaPharm Healthcare Ltd · United Kingdom</p><small>Regulated wholesale supply has not commenced.</small>',
+    '</div><nav aria-label="Contact footer"><a href="/about/">Company</a><a href="/legal/privacy/">Privacy</a><a href="/legal/terms/">Terms</a><a href="/legal/accessibility/">Accessibility</a></nav></div></footer>',
+    '</main>'
+  ].join("");
 }
 function accountMain(existingHtml) {
   const managedForm = existingHtml.match(/<form class="form-grid application-form[\s\S]*?<\/form>/)?.[0] || "";
