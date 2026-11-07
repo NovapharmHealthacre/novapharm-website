@@ -192,8 +192,10 @@ if (login.includes("data-login-form")) {
   assert.match(login, /Credentials and portal permissions are verified server-side\./);
   assert.match(login, /autocomplete="current-password"/);
 } else {
-  assert.match(login, /Use only the managed NovaPharm portal\./);
-  assert.match(login, /No login, account, document or board information is processed on this static public host\./);
+  assert.match(login, /Sign in to the<\\br>NovaPharm Portal\\./);
+  assert.match(login, /This public website never asks for a portal username, password or confidential company record/);
+  assert.match(login, /Request secure access/);
+  assert.match(login, /class="card"/);
   assert.doesNotMatch(login, /<input|<form/);
 }
 
