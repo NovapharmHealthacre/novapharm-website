@@ -1,0 +1,176 @@
+/*
+ * NovaPharm Oncology | active Next.js route styling.
+ * Scoped to .npoc-page to avoid changes to the existing homepage or portal.
+ * Uses licensed representative photography and system fonts.
+ */
+.npoc-page{--oc-ink:#1d1d1f;--oc-text:#515158;--oc-line:#d5d5db;--oc-red:#e3120b;--oc-dark:#0a1725;background:#fff;color:var(--oc-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif}
+.npoc-page .container{width:min(calc(100% - 96px),1200px);margin-inline:auto}
+.npoc-page :is(h1,h2,h3){font-family:inherit;font-weight:650;letter-spacing:-.045em;text-wrap:balance}
+.npoc-page :is(p,li){text-wrap:pretty}
+.npoc-page :is(a,summary):focus-visible{outline:3px solid #0a66c2;outline-offset:4px}
+.npoc-page .npoc-subnav{position:sticky;top:56px;z-index:80;border-bottom:1px solid rgba(0,0,0,.09);background:rgba(255,255,255,.94);-webkit-backdrop-filter:saturate(170%) blur(16px);backdrop-filter:saturate(170%) blur(16px)}
+.npoc-page .npoc-subnav .container{min-height:52px;display:flex;align-items:center;justify-content:space-between;gap:28px}
+.npoc-page .npoc-subnav strong{font-weight:700;color:var(--oc-ink);font-size:14px;white-space:nowrap}
+.npoc-page .npoc-subnav .container>div{display:flex;align-items:center;gap:clamp(14px,2.3vw,34px)}
+.npoc-page .npoc-subnav a{display:block;padding:13px 0;color:#47474e;font-size:12px;font-weight:590;text-decoration:none;white-space:nowrap}
+.npoc-page .npoc-subnav a:hover{color:#a00d09}
+.npoc-page .npoc-hero{position:relative;isolation:isolate;display:flex;align-items:center;min-height:clamp(650px,77svh,850px);background:#0a1725;overflow:hidden}
+.npoc-page .npoc-hero-visual,.npoc-page .npoc-hero-visual picture,.npoc-page .npoc-hero-visual img{position:absolute;inset:0;width:100%;height:100%}
+.npoc-page .npoc-hero-visual img{object-fit:cover;object-position:69% 48%;filter:saturate(.78) contrast(1.08) brightness(.79)}
+.npoc-page .npoc-hero-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,16,27,.98) 0%,rgba(6,16,27,.93) 30%,rgba(6,16,27,.71) 50%,rgba(6,16,27,.14) 82%,rgba(6,16,27,.24) 100%),linear-gradient(0deg,rgba(6,16,27,.52),transparent 28%);pointer-events:none}
+.npoc-page .npoc-hero-content{position:relative;z-index:1;padding-block:116px 143px}
+.npoc-page .npoc-hero-copy{width:min(100%,810px)}
+.npoc-page .npoc-eyebrow{margin:0 0 24px;font-size:12px;line-height:1.4;font-weight:740;letter-spacing:.13em;color:#991a16;text-transform:uppercase}
+.npoc-page .npoc-hero .npoc-eyebrow,.npoc-page .npoc-governance .npoc-eyebrow{color:#ffa9a5}
+.npoc-page .npoc-hero h1{max-width:950px;margin:0 0 25px;font-size:clamp(56px,6.6vw,96px);line-height:1.02;font-weight:650;color:#fff}
+.npoc-page .npoc-hero-lead{margin:0 0 13px;color:#f8fafc;font-size:clamp(20px,2.2vw,26px);line-height:1.4;font-weight:570}
+.npoc-page .npoc-hero-detail{max-width:550px;margin:0;color:#dce4ec;font-size:clamp(16px,1.6vw,19px);line-height:1.6}
+.npoc-page .npoc-actions{display:flex;align-items:center;flex-wrap:wrap;gap:13px;margin-top:34px}
+.npoc-page .npoc-button{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:11px 24px;border:1px solid transparent;border-radius:999px;font-size:14px;font-weight:620;line-height:1.35;text-align:center;text-decoration:none;transition:background-color .2s ease,color .2s ease,border-color .2s ease,transform .2s ease}
+.npoc-page .npoc-button:hover{transform:translateY(-1px)}
+.npoc-page .npoc-button-primary{background:#e3120b;border-color:#e3120b;color:#fff}
+.npoc-page .npoc-button-primary:hover{background:#b30e09;border-color:#b30e09;color:#fff}
+.npoc-page .npoc-button-light{background:transparent;border-color:rgba(255,255,255,.65);color:#fff}
+.npoc-page .npoc-button-light:hover{background:rgba(255,255,255,.12);color:#fff}
+.npoc-page .npoc-button-outline{background:transparent;border-color:#9999a1;color:var(--oc-ink)}
+.npoc-page .npoc-button-outline:hover{background:#fff;border-color:#1d1d1f;color:var(--oc-ink)}
+.npoc-page .npoc-image-note{position:absolute;right:max(48px,calc((100% - 1200px)/2));bottom:23px;z-index:1;max-width:400px;text-align:right;color:#d9e0e7;font-size:11px;line-height:1.55}
+.npoc-page .npoc-status{background:#fff;border-bottom:1px solid #e8e8ed}
+.npoc-page .npoc-status>.container{min-height:95px;display:flex;align-items:center;gap:22px;padding-block:20px}
+.npoc-page .npoc-status strong{flex:none;color:var(--oc-ink);font-size:13px;font-weight:680;white-space:nowrap}
+.npoc-page .npoc-status p{flex:1;margin:0;font-size:12px;line-height:1.6;color:#55555d}
+.npoc-page .npoc-status a{flex:none;font-size:12px;font-weight:650;color:#ad0e09;text-decoration:underline;text-underline-offset:3px}
+.npoc-page .npoc-section{padding-block:clamp(88px,9vw,146px);scroll-margin-top:118px}
+.npoc-page .npoc-narrow{max-width:900px}
+.npoc-page .npoc-introduction{background:#fff}
+.npoc-page .npoc-introduction h2{margin:0 0 36px;color:var(--oc-ink);font-size:clamp(68px,9vw,130px);line-height:.98;font-weight:675}
+.npoc-page .npoc-intro-lead{max-width:800px;color:var(--oc-ink);font-size:clamp(24px,2.8vw,34px);line-height:1.32;font-weight:530}
+.npoc-page .npoc-intro-support{max-width:720px;margin:22px 0 0;font-size:18px;line-height:1.65;color:#606067}
+.npoc-page .npoc-evidence{background:#f5f5f7}
+.npoc-page .npoc-section-heading{max-width:910px;margin-bottom:55px}
+.npoc-page .npoc-section-heading h2,.npoc-page .npoc-faq h2,.npoc-page .npoc-enquiry h2{margin:0 0 23px;color:var(--oc-ink);font-size:clamp(44px,5.3vw,76px);line-height:1.075;font-weight:650}
+.npoc-page .npoc-section-heading>p:last-child,.npoc-page .npoc-faq-layout>div:first-child>p:last-child{max-width:690px;margin:0;color:#5b5b62;font-size:clamp(17px,1.75vw,20px);line-height:1.62}
+.npoc-page .npoc-evidence-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 64px;list-style:none;margin:0;padding:0}
+.npoc-page .npoc-evidence-list li{display:grid;grid-template-columns:37px 1fr;gap:15px;border-top:1px solid #cfcfd5;padding-block:31px 41px}
+.npoc-page .npoc-index,.npoc-page .npoc-pathway li>span{font-variant-numeric:tabular-nums;font-size:13px;line-height:1.6;font-weight:730;color:#9d100b}
+.npoc-page .npoc-evidence-list .npoc-eyebrow{margin-bottom:7px}
+.npoc-page .npoc-evidence-list h3{margin:0 0 11px;color:var(--oc-ink);font-size:clamp(23px,2.4vw,31px);line-height:1.17}
+.npoc-page .npoc-evidence-list p:last-child{max-width:465px;margin:0;color:#55555d;font-size:16px;line-height:1.65}
+.npoc-page .npoc-programmes{background:#fff}
+.npoc-page .npoc-programme-layout{display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr);align-items:start;gap:58px}
+.npoc-page .npoc-programme-list{border-top:1px solid var(--oc-line)}
+.npoc-page .npoc-programme-list details,.npoc-page .npoc-faq-list details{border-bottom:1px solid var(--oc-line)}
+.npoc-page .npoc-programme-list summary{display:grid;grid-template-columns:32px 1fr 18px;align-items:center;gap:15px;min-height:92px;padding-block:19px;color:var(--oc-ink);font-size:clamp(19px,2vw,25px);line-height:1.25;font-weight:650;letter-spacing:-.02em;cursor:pointer;list-style:none}
+.npoc-page summary::-webkit-details-marker{display:none}
+.npoc-page .npoc-disclosure{display:inline-block;width:11px;height:11px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);transition:transform .18s ease}
+.npoc-page details[open]>summary .npoc-disclosure{transform:rotate(225deg)}
+.npoc-page .npoc-programme-body{padding:0 25px 29px 47px}
+.npoc-page .npoc-programme-body h3{margin:0 0 10px;font-size:19px;line-height:1.4}
+.npoc-page .npoc-programme-body p{font-size:15px;line-height:1.65;color:#55555d}
+.npoc-page .npoc-programme-body ul{margin:20px 0 0;padding-left:18px;color:#4f4f56;font-size:14px;line-height:1.7}
+.npoc-page .npoc-programme-body li{margin:5px 0}
+.npoc-page .npoc-programme-image{position:sticky;top:145px;margin:0}
+.npoc-page .npoc-editorial-panel{min-height:630px;display:flex;flex-direction:column;justify-content:center;gap:22px;padding:clamp(30px,4vw,64px);background:#0a1725;color:#fff;border-radius:24px}
+.npoc-page .npoc-editorial-panel .npoc-eyebrow{color:#ffa9a5;margin:0}
+.npoc-page .npoc-panel-headline{margin:0;color:#fff;font-size:clamp(45px,5vw,73px);letter-spacing:-.05em;line-height:1.05;font-weight:630}
+.npoc-page .npoc-panel-support{color:#d9e2ea;font-size:19px;line-height:1.5}
+.npoc-page .npoc-panel-footer{border-top:1px solid #617081;margin:30px 0 0;padding-top:22px;color:#c5d0d9;font-size:14px;line-height:1.6}
+.npoc-page .npoc-governance{background:#0a1725;color:#e5e8ec}
+.npoc-page .npoc-governance .npoc-section-heading h2{color:#fff}
+.npoc-page .npoc-governance .npoc-section-heading>p:last-child{color:#ccd5dc}
+.npoc-page .npoc-pathway{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:17px;list-style:none;margin:55px 0;padding:0}
+.npoc-page .npoc-pathway li{display:flex;flex-direction:column;gap:15px;padding-top:22px;border-top:1px solid #74808a}
+.npoc-page .npoc-pathway li>span{color:#ffaba7}
+.npoc-page .npoc-pathway strong{color:#fff;font-size:18px;line-height:1.35;font-weight:630}
+.npoc-page .npoc-matrix{border-top:1px solid #73808d;border-bottom:1px solid #73808d}
+.npoc-page .npoc-matrix summary{display:flex;justify-content:space-between;align-items:center;gap:18px;min-height:70px;color:#fff;font-size:17px;font-weight:620;cursor:pointer;list-style:none}
+.npoc-page .npoc-table-scroll{max-width:100%;overflow-x:auto;padding:12px 0 26px}
+.npoc-page .npoc-matrix table{width:100%;min-width:795px;border-collapse:collapse;color:#dbe3ea;font-size:13px;line-height:1.5;text-align:left}
+.npoc-page .npoc-matrix caption{text-align:left;margin-bottom:14px;color:#cfdae2;font-size:13px}
+.npoc-page .npoc-matrix :is(td,th){padding:15px 16px 15px 0;vertical-align:top;border-bottom:1px solid #394a59}
+.npoc-page .npoc-matrix th,.npoc-page .npoc-matrix td:first-child{color:#fff;font-weight:650}
+.npoc-page .npoc-boundary{margin:29px 0 0;color:#c8d1da;font-size:13px;line-height:1.65}
+.npoc-page .npoc-faq{background:#fff}
+.npoc-page .npoc-faq-layout{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:70px}
+.npoc-page .npoc-faq-list{border-top:1px solid var(--oc-line)}
+.npoc-page .npoc-faq-list summary{position:relative;padding:24px 30px 24px 0;color:var(--oc-ink);font-size:18px;line-height:1.42;font-weight:620;cursor:pointer;list-style:none}
+.npoc-page .npoc-faq-list summary::after{content:"+";position:absolute;right:0;top:21px;color:#66666e;font-size:25px;font-weight:400}
+.npoc-page .npoc-faq-list details[open] summary::after{content:"−"}
+.npoc-page .npoc-faq-list p{margin:-3px 0 25px;padding-right:25px;color:#55555c;font-size:15px;line-height:1.7}
+.npoc-page .npoc-enquiry{background:#f5f5f7;text-align:center}
+.npoc-page .npoc-enquiry .npoc-narrow{max-width:850px}
+.npoc-page .npoc-enquiry h2{font-size:clamp(50px,6vw,82px)}
+.npoc-page .npoc-enquiry .npoc-narrow>p:not(.npoc-eyebrow):not(.npoc-enquiry-note){color:#55555d;font-size:19px;line-height:1.65}
+.npoc-page .npoc-enquiry .npoc-actions{justify-content:center}
+.npoc-page .npoc-enquiry-note{max-width:750px;margin:28px auto 0;color:#606068;font-size:12px;line-height:1.65}
+@media(max-width:1020px){
+ .npoc-page .npoc-programme-layout{gap:34px}
+ .npoc-page .npoc-faq-layout{grid-template-columns:1fr;gap:38px}
+ .npoc-page .npoc-status>.container{flex-wrap:wrap;gap:8px 16px}
+ .npoc-page .npoc-status p{flex:1 1 65%}
+}
+@media(max-width:760px){
+ .npoc-page .container{width:min(calc(100% - 40px),1200px)}
+ .npoc-page .npoc-subnav{position:relative;top:auto;-webkit-backdrop-filter:none;backdrop-filter:none}
+ .npoc-page .npoc-subnav .container{display:flex;flex-direction:column;align-items:stretch;gap:0;padding-block:10px}
+ .npoc-page .npoc-subnav .container>div{gap:24px;overflow-x:auto;scrollbar-width:thin}
+ .npoc-page .npoc-subnav a{padding:9px 0}
+ .npoc-page .npoc-hero{min-height:700px;align-items:end}
+ .npoc-page .npoc-hero-visual img{object-position:66% 35%}
+ .npoc-page .npoc-hero-shade{background:linear-gradient(0deg,rgba(6,16,27,.99) 0%,rgba(6,16,27,.93) 38%,rgba(6,16,27,.57) 70%,rgba(6,16,27,.24) 100%)}
+ .npoc-page .npoc-hero-content{padding-block:228px 118px}
+ .npoc-page .npoc-hero h1{font-size:clamp(46px,10.5vw,68px)}
+ .npoc-page .npoc-hero-lead{font-size:20px}
+ .npoc-page .npoc-hero-detail{font-size:16px}
+ .npoc-page .npoc-image-note{left:20px;right:20px;bottom:11px;max-width:none;text-align:left;font-size:10px}
+ .npoc-page .npoc-status>.container{flex-direction:column;align-items:flex-start;gap:9px;padding-block:20px}
+ .npoc-page .npoc-status p{flex:auto}
+ .npoc-page .npoc-section{padding-block:88px}
+ .npoc-page .npoc-introduction h2{font-size:clamp(57px,12vw,82px)}
+ .npoc-page .npoc-intro-lead{font-size:24px}
+ .npoc-page .npoc-intro-support{font-size:16px}
+ .npoc-page .npoc-section-heading{margin-bottom:37px}
+ .npoc-page .npoc-section-heading h2,.npoc-page .npoc-faq h2,.npoc-page .npoc-enquiry h2{font-size:clamp(39px,8.2vw,56px)}
+ .npoc-page .npoc-evidence-list{grid-template-columns:1fr}
+ .npoc-page .npoc-evidence-list li{padding-block:25px 29px}
+ .npoc-page .npoc-programme-layout{grid-template-columns:1fr;gap:40px}
+ .npoc-page .npoc-programme-image{position:static}
+ .npoc-page .npoc-editorial-panel{min-height:420px}
+ .npoc-page .npoc-pathway{grid-template-columns:repeat(2,minmax(0,1fr));gap:25px 18px;margin-block:40px}
+ .npoc-page .npoc-pathway strong{font-size:16px}
+}
+@media(max-width:420px){
+ .npoc-page .container{width:min(calc(100% - 32px),1200px)}
+ .npoc-page .npoc-hero{min-height:720px}
+ .npoc-page .npoc-hero h1{font-size:clamp(43px,10.5vw,51px)}
+ .npoc-page .npoc-actions{align-items:stretch}
+ .npoc-page .npoc-button{width:100%}
+ .npoc-page .npoc-pathway{grid-template-columns:1fr}
+ .npoc-page .npoc-programme-list summary{grid-template-columns:25px 1fr 14px;gap:10px}
+ .npoc-page .npoc-programme-body{padding-left:35px;padding-right:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ .npoc-page *,.npoc-page *::before,.npoc-page *::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation:none!important}
+}
+@media(prefers-reduced-transparency:reduce){
+ .npoc-page .npoc-subnav{background:#fff;-webkit-backdrop-filter:none;backdrop-filter:none}
+}
+@media(prefers-contrast:more){
+ .npoc-page .npoc-status p,.npoc-page .npoc-enquiry-note{color:#222}
+ .npoc-page .npoc-button-outline{border-color:#111}
+}
+@media(forced-colors:active){
+ .npoc-page .npoc-hero,.npoc-page .npoc-governance{background:Canvas;color:CanvasText}
+ .npoc-page .npoc-hero h1,.npoc-page .npoc-governance h2,.npoc-page .npoc-pathway strong{color:CanvasText}
+ .npoc-page .npoc-hero-shade{display:none}
+ .npoc-page .npoc-button{forced-color-adjust:auto;border:1px solid ButtonText}
+}
+@media print{
+ .npoc-page .npoc-subnav,.npoc-page .npoc-hero-visual,.npoc-page .npoc-hero-shade,.npoc-page .npoc-actions{display:none!important}
+ .npoc-page .npoc-hero{min-height:0;color:#000;background:#fff}
+ .npoc-page .npoc-hero h1{color:#000}
+ .npoc-page .npoc-section{padding-block:26px}
+ .npoc-page .npoc-editorial-panel{min-height:0;padding:20px;background:#fff;color:#000}
+}
+
+/* Route owns its typography and section layout inside the shared Next.js shell. */

@@ -125,15 +125,16 @@ async function scrollThroughPage(page: Page): Promise<void> {
 }
 
 async function waitForImages(page: Page, engine: string, route: string): Promise<void> {
-  // A responsive picture can retain a hidden fallback <img> at certain breakpoints.
-  // Browsers may intentionally never request those hidden lazy images; do not attempt
-  // to scroll them into view or misclassify non-rendered assets as failed images.
+  // Hidden responsive variants are intentionally not loaded at this viewport.
+  // Continue asserting all broken visible images in verifyPage.
   const images = page.locator("img");
-  const imageCount = await images.count();
-  for (let index = 0; index < imageCount; index += 1) {
+  for (let index = 0; index < await images.count(); index += 1) {
     const image = images.nth(index);
-    if (!(await image.isVisible())) continue;
-    if (!(await image.evaluate((element) => (element as HTMLImageElement).complete))) {
+    const pendingVisibleImage = await image.evaluate((element) => {
+      const img = element as HTMLImageElement;
+      return !img.complete && img.getClientRects().length > 0 && getComputedStyle(img).visibility !== "hidden";
+    });
+    if (pendingVisibleImage) {
       await image.scrollIntoViewIfNeeded();
       await page.waitForTimeout(25);
     }
@@ -143,9 +144,7 @@ async function waitForImages(page: Page, engine: string, route: string): Promise
   while (Date.now() < deadline) {
     const complete = await page.evaluate(() => {
       for (const image of document.images) {
-        const style = getComputedStyle(image);
-        if (image.getClientRects().length === 0 || style.visibility === "hidden" || style.visibility === "collapse") continue;
-        if (!image.complete) return false;
+        if (image.getClientRects().length > 0 && getComputedStyle(image).visibility !== "hidden" && !image.complete) return false;
       }
       return true;
     });
@@ -154,14 +153,11 @@ async function waitForImages(page: Page, engine: string, route: string): Promise
   }
   const pending = await page.evaluate(() =>
     [...document.images]
-      .filter((image) => {
-        const style = getComputedStyle(image);
-        return image.getClientRects().length > 0 && style.visibility !== "hidden" && style.visibility !== "collapse" && !image.complete;
-      })
+      .filter((image) => image.getClientRects().length > 0 && getComputedStyle(image).visibility !== "hidden" && !image.complete)
       .slice(0, 8)
       .map((image) => image.currentSrc || image.src),
   );
-  throw new Error(`${engine} ${route}: rendered responsive images did not settle within the acceptance window: ${pending.join(" | ")}`);
+  throw new Error(`${engine} ${route}: responsive images did not settle within the acceptance window: ${pending.join(" | ")}`);
 }
 
 async function verifyPage(page: Page, engine: string, viewport: (typeof viewports)[number], route: string): Promise<void> {

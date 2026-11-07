@@ -415,8 +415,8 @@ export const pageMeta = Object.freeze({
     eyebrow: "Clinical Research & CRO Support"
   },
   "oncology": {
-    title: "Oncology Supply Continuity and Readiness | NovaPharm Healthcare",
-    description: "Explore NovaPharm's evidence-led B2B oncology continuity model across formulation, sourcing, quality, temperature governance, regulatory readiness and controlled market access.",
+    title: "Oncology | Evidence-led Specialist Medicines | NovaPharm Healthcare",
+    description: "Explore NovaPharm's evidence-led B2B oncology model across product identity, quality, qualified sourcing, regulatory readiness and accountable decisions.",
     eyebrow: "Oncology continuity"
   },
   "product-portfolio": {

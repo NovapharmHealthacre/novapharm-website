@@ -165,7 +165,19 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
   }
   const screenshotDirectory = path.join(artifactRoot, engine, viewport.name);
   await fs.mkdir(screenshotDirectory, { recursive: true });
-  await page.screenshot({ path: path.join(screenshotDirectory, `${routeName(route)}.png`), animations: "disabled" });
+  const screenshotPath = path.join(screenshotDirectory, `${routeName(route)}.png`);
+  // Chromium can reject a single capture under concurrent CI browser load.
+  // Retry only the capture; persistent failures still block release.
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      await page.screenshot({ path: screenshotPath, animations: "disabled", timeout: 30_000 });
+      break;
+    } catch (error) {
+      if (attempt === 3) throw error;
+      console.warn(`${engine} ${viewport.name} ${route}: transient screenshot failure on attempt ${attempt}`);
+      await page.waitForTimeout(500 * attempt);
+    }
+  }
   screenshots += 1;
   if (viewport.name === "desktop-1440" || viewport.name === "mobile-390") {
     const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
