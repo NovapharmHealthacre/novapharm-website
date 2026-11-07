@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import nutraxinRegister from "@/data/nutraxin-product-register.json";
 
 const sourcingRoutes = [
@@ -20,8 +19,8 @@ export function ConciseHomePage() {
             <h1 id="nph-home-title" aria-label="Medicine. Where it needs to be.">Medicine.<br /><span>Where it needs to be.</span></h1>
             <p className="npd-apple-lead">Connecting specialist medicines, market access and regulatory judgement through a more considered pharmaceutical model.</p>
             <div className="npd-apple-actions">
-              <Link className="npd-apple-button" href="/about/">Explore NovaPharm</Link>
-              <Link className="npd-apple-link" href="/partner-with-us/">Partner with us</Link>
+              <a className="npd-apple-button" href="/about/">Explore NovaPharm</a>
+              <a className="npd-apple-link" href="/partner-with-us/">Partner with us</a>
             </div>
             <p className="npd-apple-status">Regulated wholesale supply has not commenced. Applicable authorisations and operating controls remain prerequisites to release.</p>
           </div>
@@ -49,7 +48,7 @@ export function ConciseHomePage() {
             <p className="npd-apple-eyebrow">ONCOLOGY &amp; SPECIALIST MEDICINES</p>
             <h2 id="nph-oncology-title">Specialist medicines.<br />Uncompromising standards.</h2>
             <p>Every opportunity is evaluated against formulation, supply continuity, source quality and product-specific regulatory evidence.</p>
-            <Link className="npd-apple-text-link" href="/oncology/">Explore oncology</Link>
+            <a className="npd-apple-text-link" href="/oncology/">Explore oncology</a>
           </div>
           <figure className="npd-apple-oncology-art">
             <picture>
@@ -71,7 +70,7 @@ export function ConciseHomePage() {
           </div>
           <div className="npd-apple-product-grid">
             {featured.map((product) => (
-              <Link className="npd-apple-product" href={"/products/nutraxin/" + product.slug + "/"} key={product.slug}>
+              <a className="npd-apple-product" href={"/products/nutraxin/" + product.slug + "/"} key={product.slug}>
                 <picture>
                   <source srcSet={"/assets/media/products/nutraxin/" + product.imageBase + "-480.avif 480w, /assets/media/products/nutraxin/" + product.imageBase + "-800.avif 800w"} sizes="(max-width: 600px) 70vw, 25vw" type="image/avif" />
                   <source srcSet={"/assets/media/products/nutraxin/" + product.imageBase + "-480.webp 480w, /assets/media/products/nutraxin/" + product.imageBase + "-800.webp 800w"} sizes="(max-width: 600px) 70vw, 25vw" type="image/webp" />
@@ -79,12 +78,12 @@ export function ConciseHomePage() {
                 </picture>
                 <strong>{product.name}</strong>
                 <span>{product.packSize}</span>
-              </Link>
+              </a>
             ))}
           </div>
           <div className="npd-apple-product-links">
-            <Link className="npd-apple-text-link" href="/products/nutraxin/">Explore Nutraxin</Link>
-            <Link className="npd-apple-text-link" href="/products/strategic-portfolio/">Strategic pharmaceutical portfolio</Link>
+            <a className="npd-apple-text-link" href="/products/nutraxin/">Explore Nutraxin</a>
+            <a className="npd-apple-text-link" href="/products/strategic-portfolio/">Strategic pharmaceutical portfolio</a>
           </div>
           <p className="npd-apple-footnote">Catalogue information is for qualified review. Pricing, stock, medicinal status and supply availability are not asserted.</p>
         </div>
@@ -96,7 +95,7 @@ export function ConciseHomePage() {
             <p className="npd-apple-eyebrow">NOVAPHARM INTELLIGENCE</p>
             <h2 id="nph-intelligence-title">Understand the medicine.<br />Understand the market.</h2>
             <p>We are building a governed intelligence experience to connect medicines, evidence, market information and explainable analysis.</p>
-            <Link className="npd-apple-text-link" href="/technology/">Explore our technology direction</Link>
+            <a className="npd-apple-text-link" href="/technology/">Explore our technology direction</a>
             <p className="npd-apple-footnote">In development. The adjacent graphic is an artistic concept, not a working interface or validated forecast.</p>
           </div>
           <div className="npd-apple-nova-art" role="img" aria-label="Conceptual typographic preview for NOVA, the medicines intelligence experience under development">
@@ -125,7 +124,7 @@ export function ConciseHomePage() {
               </article>
             ))}
           </div>
-          <Link className="npd-apple-text-link" href="/capabilities/">Explore capabilities</Link>
+          <a className="npd-apple-text-link" href="/capabilities/">Explore capabilities</a>
         </div>
       </section>
 
@@ -135,7 +134,7 @@ export function ConciseHomePage() {
             <p className="npd-apple-eyebrow">QUALITY &amp; REGULATORY FOUNDATION</p>
             <h2 id="nph-governance-title">Built for trust.<br />Designed for scrutiny.</h2>
             <p>Product rights, WDA(H) readiness, GDP controls, vendor oversight and traceable records must align before any regulated release.</p>
-            <Link className="npd-apple-text-link" href="/regulatory-services/">Regulatory &amp; quality</Link>
+            <a className="npd-apple-text-link" href="/regulatory-services/">Regulatory &amp; quality</a>
           </div>
           <aside className="npd-apple-regulatory-notice">
             <p className="npd-apple-eyebrow">CURRENT STATUS</p>
@@ -151,8 +150,8 @@ export function ConciseHomePage() {
           <h2 id="nph-contact-title">Let&apos;s build something meaningful.</h2>
           <p>For manufacturers, product owners, authorised supply partners and organisations pursuing better market access.</p>
           <div className="npd-apple-actions npd-apple-actions-centered">
-            <Link className="npd-apple-button" href="/contact/">Contact NovaPharm</Link>
-            <Link className="npd-apple-link" href="/partner-with-us/">Partnerships</Link>
+            <a className="npd-apple-button" href="/contact/">Contact NovaPharm</a>
+            <a className="npd-apple-link" href="/partner-with-us/">Partnerships</a>
           </div>
           <p className="npd-apple-footnote">Qualified B2B information only. An enquiry does not confirm authorisation, availability or permission to supply.</p>
         </div>
