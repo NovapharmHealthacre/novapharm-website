@@ -195,8 +195,8 @@
   border: 0;
   box-shadow: none;
 }
-.np-contact-reference .np-contact-reference-field :is(input, textarea)::placeholder { color: #777982; opacity: 1; }
-.np-contact-reference .np-contact-reference-field select:invalid { color: #777982; }
+.np-contact-reference .np-contact-reference-field :is(input, textarea)::placeholder { color: #62646a; opacity: 1; }
+.np-contact-reference .np-contact-reference-field select:invalid { color: #62646a; }
 .np-contact-reference .np-contact-reference-full { margin-top: 18px; }
 .np-contact-reference .np-contact-reference-message {
   min-height: 132px;
@@ -256,7 +256,9 @@
   line-height: 1.5;
 }
 .np-contact-reference .np-contact-reference-mode { margin-top: 5px; }
-.np-contact-reference .np-contact-reference-actions a { color: #465d81; text-underline-offset: .15em; }
+.np-contact-reference .np-contact-reference-actions a,
+.np-contact-reference .np-contact-reference-safety a,
+.np-contact-reference .np-contact-reference-confirmations a { color: #465d81; text-decoration: underline; text-underline-offset: .15em; }
 .np-contact-reference .np-contact-reference-submit {
   flex: 0 0 auto;
   width: 160px;
@@ -317,7 +319,7 @@
 .np-contact-reference-footer small {
   display: block;
   margin: 4px 0 0;
-  color: #72747a;
+  color: #62646a;
   font-size: 12px;
   line-height: 1.5;
 }
