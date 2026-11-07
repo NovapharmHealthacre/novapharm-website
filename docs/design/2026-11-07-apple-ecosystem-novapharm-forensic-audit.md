@@ -74,7 +74,8 @@ An existing GitHub Actions forensic run contains **20 real browser/viewport/page
 1. `assets/css/apple-pharma-public.css` changes the global translucent focus style to a solid blue high-contrast outline on keyboard-focusable controls. No fonts, trademarks, assets or app routing changed.
 2. `assets/css/corporate-product-discipline.css` adds `prefers-reduced-transparency: reduce` for opaque, unblurred corporate nav surfaces, plus `prefers-contrast: more` for stronger text/dividers and readable legal-footer text. Default styles are unchanged.
 3. `scripts/test-visual-contracts.mjs` adds assertions that prevent regression of keyboard focus and these accessibility media preferences.
-4. All changes are review-branch only until exact-head CI, public artifact checks and controlled owner-approved live publication pass.
+4. `scripts/test-public-pages-browser.mjs` exercises Chromium and WebKit at 390px and 1440px using Playwright's `contrast: more` emulation. It asserts the new high-contrast divider token in the actual rendered CSS, then restores normal contrast for the existing browser checks.
+5. All changes are review-branch only until exact-head CI, public artifact checks and controlled owner-approved live publication pass.
 
 ## 6. Required acceptance (fail closed)
 
