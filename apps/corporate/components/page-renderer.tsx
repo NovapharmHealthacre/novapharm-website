@@ -133,7 +133,177 @@ function ProductsPage() {
 }
 
 function NutraxinPage() {
-  return <><PageHero eyebrow="Nutraxin catalogue" title="Product references for qualified B2B evaluation." intro="Approved pack imagery and source-transcribed composition details, without an assertion of UK availability, permitted claims or a supply agreement." /><section className="section"><div className="shell"><Notice label="Catalogue evidence boundary" variant="regulatory">Brand ownership, UK regulatory status, composition compliance, permitted nutrition or health claims, labelling, pricing and availability require owner and market review before any commercial use.</Notice><div className="catalogue-grid">{nutraxinRegister.products.map((product, index) => <article key={product.id}><Link className="catalogue-media" href={`/products/nutraxin/${product.slug}/`} aria-label={`Review ${product.name}`}><Image src={`/assets/media/products/nutraxin/${product.imageBase}-800.webp`} alt={product.altText} fill sizes="(max-width: 640px) 92vw, (max-width: 1024px) 44vw, 300px" priority={index < 2} /></Link><div className="catalogue-copy"><span className="eyebrow">{product.range}</span><h2><Link href={`/products/nutraxin/${product.slug}/`}>{product.name}</Link></h2><p>{product.packSize} · {product.dosageForm}</p><dl>{product.formulation.map((line) => <div key={`${line.name}-${line.amount}`}><dt>{line.name}</dt><dd>{line.amount}</dd></div>)}</dl><small>{product.servingText}. Source catalogue page {product.cataloguePage}.</small><Link className="text-link" href={`/products/nutraxin/${product.slug}/`}>Review product reference</Link><NutraxinKnowMore slug={product.slug} name={product.name} /></div></article>)}</div></div></section><FinalCta title="Discuss a qualified nutraceutical portfolio review." /></>;
+  const products = [...nutraxinRegister.products].sort((a, b) => a.catalogueOrder - b.catalogueOrder);
+  const ranges = [...new Set(products.map((product) => product.range))];
+  const rangeId = (range: string) => range.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-$/, "");
+  const productUrl = (product: NutraxinProduct) => `/products/nutraxin/${product.slug}/`;
+  const picture = (product: NutraxinProduct, priority = false) => (
+    <span className="nx-picture">
+      <Image
+        src={`/assets/media/products/nutraxin/${product.imageBase}-800.webp`}
+        alt={product.altText}
+        width={700}
+        height={700}
+        sizes="(max-width: 720px) 90vw, (max-width: 1100px) 40vw, 320px"
+        priority={priority}
+      />
+    </span>
+  );
+  const featured = [
+    products.find((product) => product.slug === "vitamin-max-60-tablets"),
+    products.find((product) => product.slug === "magnesium-complex-60-tablets"),
+    products.find((product) => product.slug === "collagen-gold-30-tablets"),
+  ].filter((product): product is NutraxinProduct => Boolean(product));
+
+  return (
+    <div className="nx-collection">
+      <nav className="nx-local-nav" aria-label="Nutraxin product navigation">
+        <div className="nx-wrap">
+          <a className="nx-local-title" href="#nx-top">Nutraxin</a>
+          <div className="nx-local-links">
+            <a href="#nx-featured">Highlights</a>
+            <a href="#nx-range-overview">Explore the range</a>
+            <a href="#nx-catalogue-notes">Catalogue information</a>
+          </div>
+        </div>
+      </nav>
+      <section id="nx-top" className="nx-hero" aria-labelledby="nx-title">
+        <div className="nx-wrap nx-hero-inner">
+          <p className="nx-eyebrow">NUTRAXIN / PRODUCT COLLECTION</p>
+          <h1 id="nx-title">Meet Nutraxin.</h1>
+          <p className="nx-hero-subtitle">A closer look at the collection.</p>
+          <p className="nx-hero-description">
+            Explore 19 product references across six ranges, each presented with its original pack imagery and detailed catalogue information.
+          </p>
+          <div className="nx-hero-actions">
+            <a className="nx-button nx-button-primary" href="#nx-range-overview">Explore the range</a>
+            <Link className="nx-button nx-button-quiet" href="/contact/?enquiry=Nutraxin%20portfolio">Discuss the portfolio</Link>
+          </div>
+          <div className="nx-hero-packs" aria-label="Selected Nutraxin pack references">
+            {[products[0], products[8], products[13]].map((product, index) => (
+              <Link className={`nx-hero-pack nx-hero-pack-${index + 1}`} key={product.id} href={productUrl(product)} aria-label={`View ${product.name}`}>
+                {picture(product, index === 0)}
+              </Link>
+            ))}
+          </div>
+          <p className="nx-hero-caption">
+            Pack imagery is from the owner-supplied catalogue. Products are shown for qualified B2B reference, not as an offer for immediate sale.
+          </p>
+        </div>
+      </section>
+      <section id="nx-featured" className="nx-section nx-featured" aria-labelledby="nx-featured-title">
+        <div className="nx-wrap">
+          <header className="nx-section-heading">
+            <p className="nx-eyebrow">SELECTED REFERENCES</p>
+            <h2 id="nx-featured-title">Explore the highlights.</h2>
+            <p>Individual products, given room to speak for themselves.</p>
+          </header>
+          <div className="nx-featured-grid">
+            {featured.map((product, index) => (
+              <Link className={`nx-featured-card nx-featured-${index + 1}`} key={product.id} href={productUrl(product)}>
+                <div className="nx-featured-copy">
+                  <span>{product.range}</span>
+                  <h3>{product.name}</h3>
+                  <p>{product.packSize}</p>
+                  <strong>Take a closer look</strong>
+                </div>
+                <div className="nx-featured-image">{picture(product)}</div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+      <section className="nx-statement nx-section" aria-labelledby="nx-statement-title">
+        <div className="nx-wrap">
+          <p className="nx-eyebrow">THE COLLECTION</p>
+          <h2 id="nx-statement-title">Every product, up close.</h2>
+          <p>Precise product names. Original pack imagery. Straightforward information. A clearer way to explore the range.</p>
+        </div>
+      </section>
+      <section id="nx-range-overview" className="nx-range-intro nx-section" aria-labelledby="nx-range-title">
+        <div className="nx-wrap">
+          <header className="nx-section-heading">
+            <p className="nx-eyebrow">ALL PRODUCT REFERENCES</p>
+            <h2 id="nx-range-title">Find your range.</h2>
+            <p>Browse by category and review each product&apos;s pack size, format and source-transcribed composition on its dedicated page.</p>
+          </header>
+          <nav className="nx-range-links" aria-label="Jump to Nutraxin product ranges">
+            {ranges.map((range) => (
+              <a href={`#nx-${rangeId(range)}`} key={range}>{range}</a>
+            ))}
+          </nav>
+        </div>
+      </section>
+      {ranges.map((range, rangeIndex) => {
+        const rangeProducts = products.filter((product) => product.range === range);
+        return (
+          <section
+            className={`nx-range-section nx-range-section-${rangeIndex + 1}`}
+            id={`nx-${rangeId(range)}`}
+            aria-labelledby={`nx-range-heading-${rangeIndex + 1}`}
+            key={range}
+          >
+            <div className="nx-wrap">
+              <header className="nx-range-heading">
+                <div>
+                  <p className="nx-range-index">THE RANGE / {String(rangeIndex + 1).padStart(2, "0")}</p>
+                  <h2 id={`nx-range-heading-${rangeIndex + 1}`}>{range}</h2>
+                </div>
+                <span className="nx-range-count">{rangeProducts.length} {rangeProducts.length === 1 ? "reference" : "references"}</span>
+              </header>
+              <div className="nx-product-grid">
+                {rangeProducts.map((product) => (
+                  <Link className="nx-product-card" key={product.id} href={productUrl(product)} data-nx-product-slug={product.slug}>
+                    <div className="nx-product-visual">{picture(product)}</div>
+                    <div className="nx-product-copy">
+                      <span className="nx-product-category">{product.range}</span>
+                      <h3>{product.name}</h3>
+                      <p>{product.packSize} · {product.dosageForm}</p>
+                      <span className="nx-link">View product</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      })}
+      <section className="nx-section nx-detail" aria-labelledby="nx-detail-title">
+        <div className="nx-wrap nx-detail-layout">
+          <div>
+            <p className="nx-eyebrow">LOOK CLOSER</p>
+            <h2 id="nx-detail-title">More than a picture.</h2>
+            <p>
+              The product detail pages contain sourced composition data, pack sizes and available documentation notes.
+              Exact wording, claims and regulatory status are subject to market-specific verification.
+            </p>
+            <Link href="/contact/?enquiry=Nutraxin%20product%20information" className="nx-link">Discuss product documentation</Link>
+          </div>
+          <div className="nx-detail-panels">
+            <div><span>19</span><p>Owner-supplied product references</p></div>
+            <div><span>06</span><p>Distinct catalogue ranges</p></div>
+            <div><span>01</span><p>Consistent presentation and evidence standard</p></div>
+          </div>
+        </div>
+      </section>
+      <section className="nx-section nx-boundary" id="nx-catalogue-notes" aria-labelledby="nx-notes-title">
+        <div className="nx-wrap">
+          <p className="nx-eyebrow">CATALOGUE INFORMATION</p>
+          <h2 id="nx-notes-title">Clear presentation. Clear status.</h2>
+          <p>{nutraxinRegister.controls.warning}</p>
+          <p>
+            These pages are a qualified B2B catalogue reference, not a consumer store. They do not assert current UK stock,
+            pricing, accepted health claims, product authorisation or an offer of regulated supply. Composition is transcribed
+            from the owner-supplied source and should be checked against final product labelling.
+          </p>
+          <div className="nx-boundary-actions">
+            <Link href="/contact/?enquiry=Nutraxin%20distribution" className="nx-button nx-button-primary">Discuss a distribution opportunity</Link>
+            <Link href="/products/" className="nx-button nx-button-quiet">All products</Link>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
 }
 
 export function NutraxinProductPage({ product }: { readonly product: NutraxinProduct }) {
