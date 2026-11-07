@@ -554,7 +554,7 @@ async function runEngine(engine: string, browserType: BrowserType): Promise<void
 
     for (const viewport of interactionOnly ? [] : viewports) {
       const anonymous = await browser.newContext(contextOptions(viewport));
-      await inspectSystemPage(anonymous, engine, viewport, "/", 200, "One governed entry point. Four precise access boundaries.", "login");
+      await inspectSystemPage(anonymous, engine, viewport, "/", 200, "Sign in to the NovaPharm Portal.", "login");
       await anonymous.close();
 
       for (const area of areas) {
