@@ -24,11 +24,12 @@ function mac(key, payload) {
   return createHmac("sha256", key).update(payload).digest("base64url");
 }
 
-export function createStagingTransaction(config, now = Date.now()) {
+export function createStagingTransaction(config, now = Date.now(), accessType = "employee") {
+  if (!["employee", "board", "admin"].includes(accessType)) throw new Error("Unapproved workforce workspace.");
   const state = randomBytes(32).toString("base64url");
   const nonce = randomBytes(32).toString("base64url");
   const verifier = randomBytes(48).toString("base64url");
-  const payload = Buffer.from(JSON.stringify({ state, nonce, verifier, createdAt: now })).toString("base64url");
+  const payload = Buffer.from(JSON.stringify({ state, nonce, verifier, accessType, createdAt: now })).toString("base64url");
   const url = new URL("/oauth2/authorize", config.domain);
   for (const [key, value] of Object.entries({
     response_type: "code", client_id: config.clientId, redirect_uri: config.callback,
@@ -49,7 +50,8 @@ export function readStagingTransaction(cookieValue, state, config, now = Date.no
     const data = JSON.parse(Buffer.from(bits[0], "base64url").toString("utf8"));
     if (data.state !== state || !Number.isSafeInteger(data.createdAt) || data.createdAt > now || now - data.createdAt > fiveMinutes) return null;
     if (!/^[A-Za-z0-9_-]{32,100}$/.test(data.nonce) || !/^[A-Za-z0-9_-]{43,128}$/.test(data.verifier)) return null;
-    return Object.freeze({ nonce: data.nonce, verifier: data.verifier });
+    if (!["employee", "board", "admin"].includes(data.accessType)) return null;
+    return Object.freeze({ nonce: data.nonce, verifier: data.verifier, accessType: data.accessType });
   } catch {
     return null;
   }
