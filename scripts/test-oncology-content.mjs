@@ -38,6 +38,7 @@ assert.equal((html.match(/class="npoc-programme-list"[\s\S]*?<\/div><figure/)?.[
 assert.equal((html.match(/class="npoc-pathway"[\s\S]*?<\/ol>/)?.[0].match(/<li>/g) ?? []).length, 5, "Five accountable hand-offs");
 assert.equal((html.match(/<tbody>[\s\S]*?<\/tbody>/)?.[0].match(/<tr>/g) ?? []).length, 6, "Six readiness-matrix rows");
 assert.equal((html.match(/class="npoc-faq-list"[\s\S]*?<\/div><\/div><\/section>/)?.[0].match(/<details/g) ?? []).length, 6, "Six public FAQs");
+assert.equal((html.match(/<meta property="og:image" content=/g) ?? []).length, 1, "Only one authoritative Oncology social preview");
 assert.match(html, /id="scope-boundary"/);
 assert.match(html, /id="oncology-faqs"/);
 assert.match(html, /href="\/contact\/\?enquiry=Oncology%20%26%20specialist%20medicines"/);
