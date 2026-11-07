@@ -7,44 +7,64 @@ import { navigation, pageMeta } from "../src/content/site-content.mjs";
 import { visibleTextFromHtml } from "./lib/html-text.mjs";
 
 const root = resolve(process.cwd());
-const html = readFileSync(join(root, "oncology/index.html"), "utf8");
+const source = (path) => readFileSync(join(root,path), "utf8");
+const html = source("oncology/index.html");
 const visible = visibleTextFromHtml(html);
+const css = source("assets/css/oncology-editorial.css");
 
-assert.deepEqual(navigation.find(([, href]) => href === "/oncology/"), ["Oncology", "/oncology/"]);
+assert.deepEqual(navigation.find(([, href]) => href === "/oncology/"), ["Oncology","/oncology/"]);
 assert.ok(pageMeta.oncology?.title.includes("Oncology"));
-assert.equal(oncologyContent.continuityAxes.length, 6);
-assert.equal(oncologyContent.formulations.length, 4);
-assert.equal(oncologyContent.readiness.length, 6);
-assert.equal(oncologyContent.temperatureControls.length, 5);
-assert.equal(oncologyContent.continuityStages.length, 7);
-assert.equal(oncologyContent.partners.length, 5);
-assert.equal(oncologyContent.faqs.length, 6);
-assert.equal(oncologyContent.sources.length, 7);
+for (const [name,count] of [
+  ["continuityAxes",6],["formulations",4],["readiness",6],["temperatureControls",5],
+  ["continuityStages",7],["partners",5],["faqs",6],["sources",7]
+]) assert.equal(oncologyContent[name].length, count, name);
 
 for (const phrase of [
-  "Continuity is designed before supply begins.",
-  "Can the evidence, product and accountable parties remain aligned through every hand-off?",
-  "Five dependencies that should be visible early.",
-  "A temperature range alone is not a control system.",
-  "Preserve context through each accountable hand-off.",
-  "NovaPharm does not provide medical advice, direct patient services or a guarantee of product authorisation",
+  "Oncology demands<br>more than supply.",
+  "Every detail<br>matters.",
+  "Six connected decisions.",
+  "Complexity deserves precision.",
+  "The pathway is only as strong as its evidence.",
+  "The next conversation starts here.",
+  "Regulated wholesale supply has not commenced",
+  "does not provide medical advice, direct patient services or a guarantee of product authorisation",
+  "Representative scientific photography.",
+  "The contact page prepares an email draft; it does not submit or store enquiries."
 ]) assert.ok(html.includes(phrase), phrase);
 
-assert.ok(visible.split(/\s+/).length >= 400, "Oncology page must remain concise but substantive");
-assert.equal((html.match(/class="npd-service-ledger"[\s\S]*?<\/ol>/)?.[0].match(/<li>/g) ?? []).length, 5);
-assert.equal((html.match(/class="npd-horizontal-steps"[\s\S]*?<\/ol>/)?.[0].match(/<li>/g) ?? []).length, 5);
-assert.match(html, /Representative scientific context; it does not depict a NovaPharm facility, product or active programme\./);
-assert.doesNotMatch(html, /<svg|oncology-editorial-gallery|Formulation and Complexity Navigator|Oncology Product-Readiness Matrix/);
+assert.ok(visible.split(/\s+/).length >= 700, "Oncology page requires substantive, evidence-led B2B content");
+assert.equal((html.match(/class="npoc-evidence-list"[\s\S]*?<\/ol>/)?.[0].match(/<li>/g) ?? []).length, 6, "Six evidence areas");
+assert.equal((html.match(/class="npoc-programme-list"[\s\S]*?<\/div><aside/)?.[0].match(/<details/g) ?? []).length, 4, "Four expandable programme categories");
+assert.equal((html.match(/class="npoc-pathway"[\s\S]*?<\/ol>/)?.[0].match(/<li>/g) ?? []).length, 5, "Five accountable hand-offs");
+assert.equal((html.match(/<tbody>[\s\S]*?<\/tbody>/)?.[0].match(/<tr>/g) ?? []).length, 6, "Six readiness-matrix rows");
+assert.equal((html.match(/class="npoc-faq-list"[\s\S]*?<\/div><\/div><\/section>/)?.[0].match(/<details/g) ?? []).length, 6, "Six public FAQs");
+assert.equal((html.match(/<meta property="og:image" content=/g) ?? []).length, 1, "Only one authoritative Oncology social preview");
+assert.match(html, /id="scope-boundary"/);
+assert.match(html, /id="oncology-faqs"/);
+assert.match(html, /href="\/contact\/\?enquiry=Oncology%20%26%20specialist%20medicines"/);
+assert.match(html, /href="\/assets\/css\/oncology-editorial\.css"/);
+assert.match(html, /<img[^>]+oncology-vial-handling\.jpg[^>]+fetchpriority="high"/);
+assert.match(css, /body\[data-page="oncology"\]/);
+assert.match(css, /@media\(max-width:760px\)/);
+assert.match(css, /@media\(prefers-reduced-motion:reduce\)/);
+assert.match(css, /@media\(forced-colors:active\)/);
+assert.match(css, /@media print/);
+assert.doesNotMatch(html, /<svg|lucide|doodle|oncology-editorial-gallery|Formulation and Complexity Navigator|Oncology Product-Readiness Matrix/);
 assert.doesNotMatch(html, /"@type":"(?:Drug|MedicalTherapy|MedicalStudy|ClinicalTrial)"/);
+for (const extension of ["avif","webp","jpg"]) {
+  assert.ok(existsSync(join(root, "assets/media/products", "oncology-vial-handling."+extension)), "Main hero asset missing");
 
-const provenance = JSON.parse(readFileSync(join(root, "docs/oncology-media-provenance.json"), "utf8"));
+}
+assert.doesNotMatch(html, /specialty-pharmacy-handling/, "Retired specialist media must not be used on public page");
+assert.match(html, /class="npoc-programme-image npoc-editorial-panel"/);
+
+const provenance = JSON.parse(source("docs/oncology-media-provenance.json"));
 for (const asset of provenance.assets) {
   for (const derivative of asset.derivatives) {
     const path = join(root, derivative.path);
     assert.ok(existsSync(path), derivative.path);
     const checksum = createHash("sha256").update(readFileSync(path)).digest("hex");
-    assert.equal(checksum, derivative.sha256, `${derivative.path} checksum`);
+    assert.equal(checksum, derivative.sha256, derivative.path+" checksum");
   }
 }
-
-console.log(`Oncology content passed: ${visible.split(/\s+/).length} visible words, concise authored hierarchy, five readiness dependencies, five accountable hand-offs and truthful evidence boundaries.`);
+console.log("Oncology editorial contract passed: six axes, four programmes, six gated readiness rows, six FAQs, responsive scoped CSS and truthful regulatory boundaries.");

@@ -354,8 +354,17 @@ for (const file of publicPages) {
   if (!html.includes('/assets/brand/novapharm-healthcare-logo.png')) fail(`${file} does not include the approved PNG fallback or social image`);
   if (!html.includes('alt="NovaPharm Healthcare"')) fail(`${file} is missing the approved logo alternative text`);
   if (html.includes('/assets/Novapharm-logo.svg')) fail(`${file} references the retired logo path`);
-  if (!html.includes(`property="og:image" content="${siteUrl}/assets/brand/novapharm-open-graph-1200x630-white.jpg"`)) fail(`${file} does not retain the approved default social identity image`);
-  if (!html.includes('property="og:image:width" content="1200"') || !html.includes('property="og:image:height" content="630"')) fail(`${file} has incorrect social identity dimensions`);
+  // Oncology uses a uniquely governed scientific preview rather than the generic
+  // brand card. All other routes retain their existing identity-card contract.
+  const oncologySocial = file === "oncology/index.html";
+  const socialImage = oncologySocial
+    ? `${siteUrl}/assets/media/products/${"oncology-vial-handling"}.jpg`
+    : `${siteUrl}/assets/brand/novapharm-open-graph-1200x630-white.jpg`;
+  const socialWidth = oncologySocial ? 1600 : 1200;
+  const socialHeight = oncologySocial ? 900 : 630;
+  if (!html.includes(`property="og:image" content="${socialImage}"`)) fail(`${file} does not retain its approved social preview image`);
+  if (!html.includes(`property="og:image:width" content="${socialWidth}"`) || !html.includes(`property="og:image:height" content="${socialHeight}"`)) fail(`${file} has incorrect approved social preview dimensions`);
+  if (oncologySocial && (html.match(/<meta property="og:image" content=/g) ?? []).length !== 1) fail(`${file} must expose exactly one authoritative social image`);
   if (!html.includes('/assets/brand/favicon.svg') || !html.includes('/assets/brand/apple-touch-icon.png')) fail(`${file} is missing approved small-format identity metadata`);
   if (/\b(?:undefined|lorem ipsum|placeholder content)\b/i.test(html)) fail(`${file} contains unfinished content`);
   if (/The string did not match the expected pattern|Secure portal backend is not active on this static host yet/i.test(html)) fail(`${file} contains a retired technical error message`);
@@ -453,7 +462,7 @@ for (const label of ["Public company platform", "Managed application architectur
 }
 
 const oncologyPage = source("oncology/index.html");
-for (const marker of ["Continuity is designed before supply begins.", "Five dependencies that should be visible early.", "A temperature range alone is not a control system.", "Preserve context through each accountable hand-off."]) {
+for (const marker of ["Oncology demands<br>more than supply.", "Every detail<br>matters.", "Six connected decisions.", "Complexity deserves precision.", "The next conversation starts here."]) {
   if (!oncologyPage.includes(marker)) fail(`oncology page is missing ${marker}`);
 }
 if (!oncologyPage.includes("does not provide medical advice, direct patient services or a guarantee of product authorisation")) fail("oncology page is missing its public capability boundary");

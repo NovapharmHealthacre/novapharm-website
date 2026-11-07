@@ -202,12 +202,13 @@ for (const [engineName, browserType] of engines) {
       await inspectPage(page, { ...baseContext, page: "oncology" }, {
         route: "/oncology/",
         selectors: [
-          { selector: ".oncology-hero", count: 1 },
-          { selector: ".oncology-editorial-gallery", count: 1 },
-          { selector: ".oncology-editorial-grid figure", count: 3 }
+          { selector: ".npoc-hero", count: 1 },
+          { selector: ".npoc-evidence-list > li", count: 6 },
+          { selector: ".npoc-programme-list details", count: 4 },
+          { selector: ".npoc-faq-list details", count: 6 }
         ],
         forbidden: ["[data-ai-search-open]", ".ai-search-dialog", ".oncology-ai-roadmap"],
-        text: ["Oncology continuity starts before supply.", "Product, formulation and controlled handling must be read together."]
+        text: ["Complexity deserves precision.", "The next conversation starts here."]
       });
 
       await inspectPage(page, { ...baseContext, page: "cro" }, {

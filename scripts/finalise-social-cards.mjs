@@ -58,6 +58,18 @@ for (const item of register) {
   let html = readFileSync(pagePath, "utf8");
   const block = `<!-- page-specific-social-start -->\n  <meta property="og:image" content="${next.absoluteUrl}">\n  <meta property="og:image:secure_url" content="${next.absoluteUrl}">\n  <meta property="og:image:type" content="${next.type}">\n  <meta property="og:image:width" content="${next.width}">\n  <meta property="og:image:height" content="${next.height}">\n  <meta property="og:image:alt" content="${escapeAttribute(next.alt)}">\n  <!-- page-specific-social-end -->`;
   html = html.replace(/<!-- page-specific-social-start -->[\s\S]*?<!-- page-specific-social-end -->/, block);
+  // The legacy Oncology shell also carried a generic OG image outside the
+  // governed per-page social block. Keep only the authoritative route image.
+  if (item.route === "/oncology/") {
+    const blockEnd = "<!-- page-specific-social-end -->";
+    const begin = html.indexOf(blockEnd);
+    const end = html.indexOf("</head>", begin);
+    if (begin < 0 || end < begin) throw new Error("Oncology social block boundary missing.");
+    const before = html.slice(0, begin + blockEnd.length);
+    const after = html.slice(begin + blockEnd.length, end)
+      .replace(/^[ \t]*<meta property="og:image(?::(?:secure_url|type|width|height|alt))?" content="[^"]*">[ \t]*\r?\n?/gm, "");
+    html = before + after + html.slice(end);
+  }
   html = html.replace(/<meta name="twitter:card" content="[^"]+">/, '<meta name="twitter:card" content="summary_large_image">');
   html = html.replace(/<meta name="twitter:image" content="[^"]+">/, `<meta name="twitter:image" content="${next.absoluteUrl}">`);
   html = html.replace(/<meta name="twitter:image:alt" content="[^"]+">/, `<meta name="twitter:image:alt" content="${escapeAttribute(next.alt)}">`);
