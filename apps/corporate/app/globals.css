@@ -64,6 +64,9 @@ small { font-size: 0.78rem; }
 .mobile-menu summary::-webkit-details-marker { display: none; }
 .mobile-menu nav { position: fixed; top: var(--header); left: 0; right: 0; max-height: calc(100vh - var(--header)); overflow-y: auto; background: var(--white); border-top: 1px solid var(--line); box-shadow: var(--shadow); padding: 20px 32px 32px; }
 .mobile-menu nav a { display: flex; align-items: center; justify-content: space-between; min-height: 48px; border-bottom: 1px solid var(--line); color: var(--ink); font-weight: 700; text-decoration: none; }
+/* Clear keyboard and pointer feedback for mobile navigation without changing its structure. */
+.mobile-menu nav a:hover { color: var(--red-dark); }
+.mobile-menu nav a:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; background: var(--soft); }
 
 .home-hero { position: relative; min-height: min(760px, calc(100svh - 106px)); display: grid; align-items: end; overflow: hidden; background: var(--navy); }
 .home-hero-media { object-fit: cover; object-position: center 52%; }
