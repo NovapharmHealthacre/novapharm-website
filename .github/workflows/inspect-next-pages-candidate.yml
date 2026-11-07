@@ -40,3 +40,63 @@ jobs:
           } else console.log('Root HTML not present at expected path');
           NODE
           test -s apps/corporate/.next/prerender-manifest.json
+      - name: Serve Next standalone and snapshot two public routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd apps/corporate
+          PORT=3177 HOSTNAME=127.0.0.1 PUBLIC_INDEXABLE=true npm run start >/tmp/novapharm-next-live.log 2>&1 &
+          echo $! >/tmp/novapharm-next.pid
+          cd ../..
+          for attempt in $(seq 1 30); do
+            if curl -fsS -o /dev/null http://127.0.0.1:3177/; then break; fi
+            sleep 2
+          done
+          mkdir -p /tmp/novapharm-next-snapshot/_next/static /tmp/novapharm-next-snapshot/contact
+          cp -a apps/corporate/.next/static/. /tmp/novapharm-next-snapshot/_next/static/
+          cp -a apps/corporate/public/. /tmp/novapharm-next-snapshot/
+          curl -fsSL http://127.0.0.1:3177/ -o /tmp/novapharm-next-snapshot/index.html
+          curl -fsSL http://127.0.0.1:3177/contact/ -o /tmp/novapharm-next-snapshot/contact/index.html
+          test -s /tmp/novapharm-next-snapshot/index.html
+          grep -Fq 'npd-apple-hero' /tmp/novapharm-next-snapshot/index.html
+          grep -Fq 'npd-apple-nova-art' /tmp/novapharm-next-snapshot/index.html
+          ! grep -Fq 'data-login-form' /tmp/novapharm-next-snapshot/index.html
+          python3 -m http.server 3188 --directory /tmp/novapharm-next-snapshot --bind 127.0.0.1 >/tmp/novapharm-static.log 2>&1 &
+          echo $! >/tmp/novapharm-static.pid
+      - name: Browser-test extracted GitHub Pages candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx playwright install chromium
+          node - <<'NODE'
+          const { chromium } = require('playwright');
+          (async () => {
+            const b = await chromium.launch({headless:true});
+            const page = await b.newPage({viewport:{width:390,height:844}});
+            const errors = [];
+            page.on('pageerror',error=>errors.push(error.message));
+            page.on('console',message=>{if(message.type()==='error')errors.push(message.text())});
+            const response=await page.goto('http://127.0.0.1:3188/',{waitUntil:'networkidle',timeout:30000});
+            await page.waitForTimeout(1500);
+            const data=await page.evaluate(()=>({
+              heading:document.querySelector('h1')?.textContent,
+              editorial:!!document.querySelector('.npd-apple-hero'),
+              nova:!!document.querySelector('.npd-apple-nova-art'),
+              cssLoaded:getComputedStyle(document.querySelector('.npd-apple-hero')).backgroundColor,
+              overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1,
+              brokenImages:[...document.images].filter(x=>x.complete && x.naturalWidth===0).map(x=>x.currentSrc)
+            }));
+            console.log(JSON.stringify({status:response?.status(),data,errors},null,2));
+            await b.close();
+            if(response?.status()!==200 || !data.editorial || !data.nova || data.overflow || data.brokenImages.length || errors.length)process.exitCode=1;
+          })().catch(e=>{console.error(e);process.exitCode=1});
+          NODE
+      - name: Preserve candidate metadata
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: next-pages-publication-probe
+          path: |
+            /tmp/novapharm-next-live.log
+            /tmp/novapharm-static.log
+          retention-days: 3
