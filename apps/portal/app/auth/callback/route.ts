@@ -1,6 +1,8 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { exchangeStagingCode, readStagingTransaction, stagingCognitoSettings, verifyStagingIdentity } from "../../../lib/cognito-staging-auth.mjs";
+import { exchangeApprovedCognitoSession } from "../../../lib/cognito-session-exchange.mjs";
+import { landingRouteForAccess } from "../../../data/routes";
 
 export const dynamic = "force-dynamic";
 
@@ -37,7 +39,33 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     if (!tx) return finish("Authentication request expired or was not recognised", 401);
     const token = await exchangeStagingCode(settings, params.get("code"), tx.verifier);
     await verifyStagingIdentity(settings, token, tx.nonce);
-    return finish("Microsoft identity verified for staging", 200);
+    if (process.env["COGNITO_PORTAL_SESSION_ENABLED"] !== "true") {
+      return finish("Microsoft identity verified for staging", 200);
+    }
+    const approved = await exchangeApprovedCognitoSession({
+      token,
+      identityNonce: tx.nonce,
+      accessType: tx.accessType,
+    });
+    if (approved.accessType !== tx.accessType) return finish("Unapproved portal role", 403);
+    const redirect = NextResponse.redirect(new URL(landingRouteForAccess(tx.accessType), request.url), 302);
+    redirect.cookies.set("np_session", approved.session, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 28800,
+    });
+    redirect.cookies.set("np_cognito_staging_tx", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/auth/",
+      maxAge: 0,
+    });
+    redirect.headers.set("Cache-Control", "no-store");
+    redirect.headers.set("Referrer-Policy", "no-referrer");
+    return redirect;
   } catch {
     return finish("Microsoft identity could not be verified", 401);
   }
