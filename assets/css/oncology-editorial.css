@@ -5,7 +5,7 @@
  */
 body[data-page="oncology"] .npoc-page{--oc-ink:#1d1d1f;--oc-text:#515158;--oc-line:#d5d5db;--oc-red:#e3120b;--oc-dark:#0a1725;background:#fff;color:var(--oc-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif}
 body[data-page="oncology"] .npoc-page .container{width:min(calc(100% - 96px),1200px);margin-inline:auto}
-body[data-page="oncology"] .npoc-page :is(h1,h2,h3){font-family:inherit;font-weight:650;letter-spacing:-.045em;text-wrap:balance}
+body[data-page="oncology"] .npoc-page :is(h1,h2,h3){font-family:inherit;font-weight:650;letter-spacing:0;text-wrap:balance}
 body[data-page="oncology"] .npoc-page :is(p,li){text-wrap:pretty}
 body[data-page="oncology"] .npoc-page :is(a,summary):focus-visible{outline:3px solid #0a66c2;outline-offset:4px}
 body[data-page="oncology"] .npoc-subnav{position:sticky;top:56px;z-index:80;border-bottom:1px solid rgba(0,0,0,.09);background:rgba(255,255,255,.94);-webkit-backdrop-filter:saturate(170%) blur(16px);backdrop-filter:saturate(170%) blur(16px)}
@@ -60,7 +60,7 @@ body[data-page="oncology"] .npoc-programmes{background:#fff}
 body[data-page="oncology"] .npoc-programme-layout{display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr);align-items:start;gap:58px}
 body[data-page="oncology"] .npoc-programme-list{border-top:1px solid var(--oc-line)}
 body[data-page="oncology"] .npoc-programme-list details,body[data-page="oncology"] .npoc-faq-list details{border-bottom:1px solid var(--oc-line)}
-body[data-page="oncology"] .npoc-programme-list summary{display:grid;grid-template-columns:32px 1fr 18px;align-items:center;gap:15px;min-height:92px;padding-block:19px;color:var(--oc-ink);font-size:clamp(19px,2vw,25px);line-height:1.25;font-weight:650;letter-spacing:-.02em;cursor:pointer;list-style:none}
+body[data-page="oncology"] .npoc-programme-list summary{display:grid;grid-template-columns:32px 1fr 18px;align-items:center;gap:15px;min-height:92px;padding-block:19px;color:var(--oc-ink);font-size:clamp(19px,2vw,25px);line-height:1.25;font-weight:650;letter-spacing:0;cursor:pointer;list-style:none}
 body[data-page="oncology"] .npoc-page summary::-webkit-details-marker{display:none}
 body[data-page="oncology"] .npoc-disclosure{display:inline-block;width:11px;height:11px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);transition:transform .18s ease}
 body[data-page="oncology"] details[open]>summary .npoc-disclosure{transform:rotate(225deg)}
@@ -72,7 +72,7 @@ body[data-page="oncology"] .npoc-programme-body li{margin:5px 0}
 body[data-page="oncology"] .npoc-programme-image{position:sticky;top:145px;margin:0}
 body[data-page="oncology"] .npoc-editorial-panel{min-height:630px;display:flex;flex-direction:column;justify-content:center;gap:22px;padding:clamp(30px,4vw,64px);background:#0a1725;color:#fff;border-radius:24px}
 body[data-page="oncology"] .npoc-editorial-panel .npoc-eyebrow{color:#ffa9a5;margin:0}
-body[data-page="oncology"] .npoc-panel-headline{margin:0;color:#fff;font-size:clamp(45px,5vw,73px);letter-spacing:-.05em;line-height:1.05;font-weight:630}
+body[data-page="oncology"] .npoc-panel-headline{margin:0;color:#fff;font-size:clamp(45px,5vw,73px);letter-spacing:0;line-height:1.05;font-weight:630}
 body[data-page="oncology"] .npoc-panel-support{color:#d9e2ea;font-size:19px;line-height:1.5}
 body[data-page="oncology"] .npoc-panel-footer{border-top:1px solid #617081;margin:30px 0 0;padding-top:22px;color:#c5d0d9;font-size:14px;line-height:1.6}
 body[data-page="oncology"] .npoc-governance{background:#0a1725;color:#e5e8ec}
