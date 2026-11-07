@@ -2237,3 +2237,89 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
     font-size: 7pt;
   }
 }
+
+
+/* 2026-11 Apple-inspired NovaPharm global navigation; no third-party assets. */
+@media (min-width: 1181px) {
+  .npd-header.site-header { overflow: visible; }
+  .npd-header-inner.header-inner,
+  body[data-page="home"] .npd-header-inner.header-inner { gap: 16px; }
+  .npd-header .brand { width: 171px; }
+  .npd-global-nav.site-nav { gap: 0; }
+  .npd-global-nav.site-nav > a:not(.btn),
+  body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
+    min-height: var(--npd-header);
+    padding: 0 clamp(5px, .55vw, 9px);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    color: #303034;
+    transition: color 160ms ease;
+  }
+  .npd-global-nav.site-nav > a:last-child {
+    margin: 0;
+    border-left: none;
+    padding-left: clamp(5px, .55vw, 9px);
+    font-weight: 540;
+  }
+  .npd-global-nav.site-nav > a:hover,
+  .npd-global-nav.site-nav > a[aria-expanded="true"] { color: #b30e09; }
+  .npd-global-nav.site-nav > a[aria-current="page"]::after { height: 0; }
+  .npd-mega {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: none;
+    z-index: 1001;
+    padding: 45px 0 64px;
+    background: rgba(250,250,252,.99);
+    border-top: 1px solid #f1f1f3;
+    border-bottom: 1px solid #e1e1e5;
+    box-shadow: 0 28px 46px rgba(13,17,23,.11);
+    -webkit-backdrop-filter: saturate(160%) blur(16px);
+    backdrop-filter: saturate(160%) blur(16px);
+  }
+  .npd-mega.is-open { display: block; }
+  .npd-mega-inner {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    align-items: start;
+    gap: clamp(28px, 5vw, 85px);
+    max-width: 1020px;
+  }
+  .npd-mega-column { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
+  .npd-mega-column > p {
+    margin: 0 0 16px;
+    color: #77777c;
+    font-size: 12px;
+    line-height: 1.25;
+    font-weight: 500;
+  }
+  .npd-mega-column a {
+    display: block;
+    width: fit-content;
+    color: #1d1d1f;
+    font-size: 14px;
+    line-height: 1.4;
+    font-weight: 540;
+    text-decoration: none;
+  }
+  .npd-mega-column:first-child a {
+    font-size: clamp(21px, 2.25vw, 27px);
+    line-height: 1.25;
+    font-weight: 620;
+  }
+  .npd-mega-column a:hover,
+  .npd-mega-column a:focus-visible { color: #bd100b; }
+}
+@media (max-width: 1180px) {
+  .npd-header .npd-mega { display: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .npd-global-nav.site-nav > a { transition: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .npd-header .npd-mega { background: #fff; backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+@media print { .npd-mega { display: none !important; } }
