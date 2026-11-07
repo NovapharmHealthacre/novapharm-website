@@ -825,3 +825,6 @@ body[data-page="technology"] .np-intelligence {
   .np-intelligence .npi-dash-map-display { min-height:300px; }
 }
 @media(prefers-reduced-motion:reduce) { .np-intelligence .npi-dash-real-map path { transition:none; } }
+
+/* Public preview source citation must be identifiable without colour alone. */
+.np-intelligence .npi-dashboard-figure figcaption a { text-decoration:underline; text-decoration-thickness:1.25px; text-underline-offset:3px; }
