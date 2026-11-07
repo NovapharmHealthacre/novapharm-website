@@ -29,6 +29,69 @@ if (navToggle && siteNav) {
   });
 }
 
+
+/* Desktop category navigation: ordinary anchor links remain the no-JS fallback. */
+const megaHeader = document.querySelector("[data-site-header]");
+if (megaHeader) {
+  const triggers = [...megaHeader.querySelectorAll("[data-mega-trigger]")];
+  const panels = [...megaHeader.querySelectorAll("[data-mega-panel]")];
+  const desktop = window.matchMedia("(min-width: 1181px)");
+  let activeTrigger = null;
+  const closeMega = () => {
+    megaHeader.dataset.megaOpen = "";
+    triggers.forEach((trigger) => trigger.setAttribute("aria-expanded", "false"));
+    panels.forEach((panel) => {
+      panel.classList.remove("is-open");
+      panel.setAttribute("aria-hidden", "true");
+    });
+    activeTrigger = null;
+  };
+  const openMega = (trigger) => {
+    if (!desktop.matches) return closeMega();
+    const section = trigger.dataset.megaTrigger;
+    const selectedPanel = panels.find((panel) => panel.dataset.megaPanel === section);
+    if (!selectedPanel) return closeMega();
+    closeMega();
+    activeTrigger = trigger;
+    megaHeader.dataset.megaOpen = section;
+    trigger.setAttribute("aria-expanded", "true");
+    selectedPanel.classList.add("is-open");
+    selectedPanel.setAttribute("aria-hidden", "false");
+  };
+  triggers.forEach((trigger) => {
+    trigger.addEventListener("pointerenter", () => openMega(trigger));
+    trigger.addEventListener("focus", () => openMega(trigger));
+    trigger.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowDown" || !desktop.matches) return;
+      event.preventDefault();
+      openMega(trigger);
+      const panel = panels.find((candidate) => candidate.dataset.megaPanel === trigger.dataset.megaTrigger);
+      panel?.querySelector("a")?.focus();
+    });
+  });
+  megaHeader.addEventListener("pointerleave", closeMega);
+  megaHeader.addEventListener("click", (event) => {
+    if (event.target.closest(".npd-mega a")) closeMega();
+  });
+  document.addEventListener("pointerdown", (event) => {
+    if (!megaHeader.contains(event.target)) closeMega();
+  });
+  document.addEventListener("focusin", (event) => {
+    if (!megaHeader.contains(event.target)) closeMega();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || !megaHeader.dataset.megaOpen) return;
+    const previouslyActive = activeTrigger;
+    closeMega();
+    if (event.target.closest(".npd-mega")) {
+      previouslyActive?.focus({ preventScroll: true });
+      closeMega();
+    }
+    event.preventDefault();
+  });
+  window.addEventListener("resize", closeMega);
+}
+
 const siteHeader = document.querySelector("[data-site-header]");
 if (siteHeader) {
   const updateHeader = () => siteHeader.setAttribute("data-scrolled", String(window.scrollY > 12));
