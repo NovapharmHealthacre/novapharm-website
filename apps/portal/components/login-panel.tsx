@@ -80,7 +80,7 @@ export function LoginPanel() {
         </fieldset>
         <form className="login-form np-portal-entry-form" onSubmit={submit}>
           <label htmlFor="username">Work email</label>
-          <input id="username" name="username" type="text" inputMode="email" aria-label="Username or business email"
+          <input id="username" name="username" type="text" inputMode="email" aria-label="Work email (Username or business email)"
             autoComplete="username" placeholder="name@company.com" required maxLength={160} />
           <label htmlFor="password">Password</label>
           <input id="password" name="password" type="password" autoComplete="current-password"
