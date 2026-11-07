@@ -139,7 +139,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx playwright install chromium webkit
+          npx playwright install --with-deps chromium webkit
           python3 -m http.server 3188 --directory "$RUNNER_TEMP/novapharm-publication" --bind 127.0.0.1 > "$RUNNER_TEMP/novapharm-home-static.log" 2>&1 &
           echo $! > "$RUNNER_TEMP/novapharm-home-static.pid"
           for attempt in $(seq 1 12); do
