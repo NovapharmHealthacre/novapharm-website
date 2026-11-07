@@ -22,7 +22,7 @@
     "exactDuplicateGroups": 52,
     "perceptualDuplicateCandidateGroups": 183,
     "overPublicDeliveryFileCeiling": 0,
-    "lcpRelevantAssets": 192
+    "lcpRelevantAssets": 198
   },
   "assets": [
     {
@@ -1596,8 +1596,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 68,
-      "referenceCount": 209,
+      "usageCount": 67,
+      "referenceCount": 207,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -1633,7 +1633,6 @@
         "news-insights/oncology-supply-chain-demand-forecasting/index.html",
         "news-insights/plpi-pharmaceutical-supply-resilience/index.html",
         "news-insights/three-pillar-pharmaceutical-sourcing-model/index.html",
-        "oncology/index.html",
         "partner-with-us/index.html",
         "products/index.html",
         "products/nutraxin/artoflex-90-tablets/index.html",
@@ -16819,28 +16818,30 @@
       "registeredAltText": null,
       "registeredCaption": null,
       "observedAltText": [
-        "Controlled laboratory handling used as representative oncology context",
-        "Controlled vial handling in a laboratory setting"
+        "",
+        "Controlled laboratory handling used as representative oncology context"
       ],
       "observedCaptions": [
         "Representative scientific context. No NovaPharm facility or active programme is depicted.",
-        "Representative scientific context. No NovaPharm facility, stock or approved programme is depicted.",
-        "Representative scientific context; it does not depict a NovaPharm facility, product or active programme."
+        "Representative scientific context. No NovaPharm facility, stock or approved programme is depicted."
       ],
       "responsiveDerivatives": [],
       "observedLoading": [
         "lazy"
       ],
-      "observedFetchPriority": [],
-      "lcpRelevance": false,
-      "usageCount": 5,
-      "referenceCount": 5,
+      "observedFetchPriority": [
+        "high"
+      ],
+      "lcpRelevance": true,
+      "usageCount": 6,
+      "referenceCount": 6,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
         "apps/corporate/components/oncology-editorial.tsx",
         "creative-assets/image-asset-register.json",
         "index.html",
-        "oncology/index.html"
+        "oncology/index.html",
+        "scripts/apply-corporate-product-discipline.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-101",
@@ -16872,25 +16873,27 @@
       "registeredAltText": null,
       "registeredCaption": null,
       "observedAltText": [
-        "Controlled laboratory handling used as representative oncology context",
-        "Controlled vial handling in a laboratory setting"
+        "",
+        "Controlled laboratory handling used as representative oncology context"
       ],
       "observedCaptions": [
-        "Representative scientific context. No NovaPharm facility or active programme is depicted.",
-        "Representative scientific context; it does not depict a NovaPharm facility, product or active programme."
+        "Representative scientific context. No NovaPharm facility or active programme is depicted."
       ],
       "responsiveDerivatives": [],
       "observedLoading": [
         "lazy"
       ],
-      "observedFetchPriority": [],
-      "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "observedFetchPriority": [
+        "high"
+      ],
+      "lcpRelevance": true,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "creative-assets/image-asset-register.json",
         "index.html",
-        "oncology/index.html"
+        "oncology/index.html",
+        "scripts/apply-corporate-product-discipline.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-101",
@@ -16922,28 +16925,30 @@
       "registeredAltText": null,
       "registeredCaption": null,
       "observedAltText": [
-        "Controlled laboratory handling used as representative oncology context",
-        "Controlled vial handling in a laboratory setting"
+        "",
+        "Controlled laboratory handling used as representative oncology context"
       ],
       "observedCaptions": [
         "Representative scientific context. No NovaPharm facility or active programme is depicted.",
-        "Representative scientific context. No NovaPharm facility, stock or approved programme is depicted.",
-        "Representative scientific context; it does not depict a NovaPharm facility, product or active programme."
+        "Representative scientific context. No NovaPharm facility, stock or approved programme is depicted."
       ],
       "responsiveDerivatives": [],
       "observedLoading": [
         "lazy"
       ],
-      "observedFetchPriority": [],
-      "lcpRelevance": false,
-      "usageCount": 5,
-      "referenceCount": 5,
+      "observedFetchPriority": [
+        "high"
+      ],
+      "lcpRelevance": true,
+      "usageCount": 6,
+      "referenceCount": 6,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
         "apps/corporate/components/oncology-editorial.tsx",
         "creative-assets/image-asset-register.json",
         "index.html",
-        "oncology/index.html"
+        "oncology/index.html",
+        "scripts/apply-corporate-product-discipline.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-102",
@@ -16975,13 +16980,12 @@
       "registeredAltText": "Gloved laboratory professional using a pipette to handle a vial in a controlled scientific setting",
       "registeredCaption": "Representative stock image; not a NovaPharm product, facility or efficacy claim.",
       "observedAltText": [
-        "Controlled laboratory handling used as representative oncology context",
-        "Controlled vial handling in a laboratory setting"
+        "",
+        "Controlled laboratory handling used as representative oncology context"
       ],
       "observedCaptions": [
         "Representative scientific context. No NovaPharm facility or active programme is depicted.",
-        "Representative scientific context. No NovaPharm facility, stock or approved programme is depicted.",
-        "Representative scientific context; it does not depict a NovaPharm facility, product or active programme."
+        "Representative scientific context. No NovaPharm facility, stock or approved programme is depicted."
       ],
       "responsiveDerivatives": [
         "assets/media/products/oncology-vial-handling.avif",
@@ -16991,10 +16995,12 @@
       "observedLoading": [
         "lazy"
       ],
-      "observedFetchPriority": [],
-      "lcpRelevance": false,
-      "usageCount": 7,
-      "referenceCount": 8,
+      "observedFetchPriority": [
+        "high"
+      ],
+      "lcpRelevance": true,
+      "usageCount": 8,
+      "referenceCount": 9,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
         "apps/corporate/components/oncology-editorial.tsx",
@@ -17002,6 +17008,7 @@
         "docs/oncology-media-provenance.json",
         "index.html",
         "oncology/index.html",
+        "scripts/apply-corporate-product-discipline.mjs",
         "scripts/build-public-pages.mjs"
       ],
       "exactDuplicateGroup": null,
@@ -17034,13 +17041,12 @@
       "registeredAltText": "Gloved laboratory professional using a pipette to handle a vial in a controlled scientific setting",
       "registeredCaption": "Representative stock image; not a NovaPharm product, facility or efficacy claim.",
       "observedAltText": [
-        "Controlled laboratory handling used as representative oncology context",
-        "Controlled vial handling in a laboratory setting"
+        "",
+        "Controlled laboratory handling used as representative oncology context"
       ],
       "observedCaptions": [
         "Representative scientific context. No NovaPharm facility or active programme is depicted.",
-        "Representative scientific context. No NovaPharm facility, stock or approved programme is depicted.",
-        "Representative scientific context; it does not depict a NovaPharm facility, product or active programme."
+        "Representative scientific context. No NovaPharm facility, stock or approved programme is depicted."
       ],
       "responsiveDerivatives": [
         "assets/media/products/oncology-vial-handling.avif",
@@ -17050,10 +17056,12 @@
       "observedLoading": [
         "lazy"
       ],
-      "observedFetchPriority": [],
-      "lcpRelevance": false,
-      "usageCount": 16,
-      "referenceCount": 27,
+      "observedFetchPriority": [
+        "high"
+      ],
+      "lcpRelevance": true,
+      "usageCount": 17,
+      "referenceCount": 29,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
         "apps/corporate/components/concise-specialist-pages.tsx",
@@ -17067,6 +17075,7 @@
         "oncology/index.html",
         "packages/design-system/workbench/build.tsx",
         "packages/design-system/workbench/index.html",
+        "scripts/apply-corporate-product-discipline.mjs",
         "scripts/finalise-social-cards.mjs",
         "scripts/reconcile-social-authority.mjs",
         "seo/generated/social-image-register.json",
@@ -17102,13 +17111,12 @@
       "registeredAltText": "Gloved laboratory professional using a pipette to handle a vial in a controlled scientific setting",
       "registeredCaption": "Representative stock image; not a NovaPharm product, facility or efficacy claim.",
       "observedAltText": [
-        "Controlled laboratory handling used as representative oncology context",
-        "Controlled vial handling in a laboratory setting"
+        "",
+        "Controlled laboratory handling used as representative oncology context"
       ],
       "observedCaptions": [
         "Representative scientific context. No NovaPharm facility or active programme is depicted.",
-        "Representative scientific context. No NovaPharm facility, stock or approved programme is depicted.",
-        "Representative scientific context; it does not depict a NovaPharm facility, product or active programme."
+        "Representative scientific context. No NovaPharm facility, stock or approved programme is depicted."
       ],
       "responsiveDerivatives": [
         "assets/media/products/oncology-vial-handling.avif",
@@ -17118,17 +17126,20 @@
       "observedLoading": [
         "lazy"
       ],
-      "observedFetchPriority": [],
-      "lcpRelevance": false,
-      "usageCount": 6,
-      "referenceCount": 6,
+      "observedFetchPriority": [
+        "high"
+      ],
+      "lcpRelevance": true,
+      "usageCount": 7,
+      "referenceCount": 7,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
         "apps/corporate/components/oncology-editorial.tsx",
         "creative-assets/image-asset-register.json",
         "docs/oncology-media-provenance.json",
         "index.html",
-        "oncology/index.html"
+        "oncology/index.html",
+        "scripts/apply-corporate-product-discipline.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-102",
