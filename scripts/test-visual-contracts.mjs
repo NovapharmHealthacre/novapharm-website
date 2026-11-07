@@ -192,7 +192,7 @@ if (login.includes("data-login-form")) {
   assert.match(login, /Credentials and portal permissions are verified server-side\./);
   assert.match(login, /autocomplete="current-password"/);
 } else {
-  assert.match(login, /Sign in to the<\\br>NovaPharm Portal\\./);
+  assert.ok(login.includes("Sign in to the<br>NovaPharm Portal."), "Approved portal heading must render");
   assert.match(login, /This public website never asks for a portal username, password or confidential company record/);
   assert.match(login, /Request secure access/);
   assert.match(login, /class="card"/);
