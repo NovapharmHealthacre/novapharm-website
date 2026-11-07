@@ -382,3 +382,19 @@ body[data-page="technology"] .np-intelligence {
 .np-intelligence .npi-terminal-search strong { color: #292e36; }
 .np-intelligence .npi-terminal .npi-terminal-nav-active { color: #1d1d1f; }
 .np-intelligence .npi-terminal :is(.npi-terminal-tabs .active, .npi-terminal-heading h3) { color: #252a32; }
+
+/* WCAG AA: small public captions and metadata on light section backgrounds. */
+.np-intelligence .npi-product-figure figcaption,
+.np-intelligence .npi-workspace-disclosure,
+.np-intelligence .npi-family-index,
+.np-intelligence .npi-roadmap-note,
+.np-intelligence .npi-final-note,
+.np-intelligence .npi-roadmap .npi-kicker,
+.np-intelligence .npi-product-family .npi-kicker,
+.np-intelligence .npi-final .npi-kicker,
+.np-intelligence .npi-terminal-section .npi-kicker { color: #5d6068; }
+.np-intelligence .npi-roadmap .npi-kicker,
+.np-intelligence .npi-product-family .npi-kicker,
+.np-intelligence .npi-final .npi-kicker,
+.np-intelligence .npi-terminal-section .npi-kicker { color: #bd100b; }
+.np-intelligence .npi-terminal-search .npi-terminal-search-hint { color: #555b64; }
