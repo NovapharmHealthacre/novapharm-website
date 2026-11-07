@@ -9,7 +9,7 @@
     "dev": "next dev",
     "build": "npm run sync:assets && next build && node ../../scripts/prepare-next-standalone.mjs corporate assets/brand/novapharm-healthcare-logo.svg",
     "start": "node .next/standalone/apps/corporate/server.js",
-    "lint": "biome check app components data lib scripts test next.config.ts proxy.ts",
+    "lint": "biome check --max-diagnostics=200 app components data lib scripts test next.config.ts proxy.ts",
     "typecheck": "next typegen && tsc --noEmit",
     "pretest": "npm run sync:assets",
     "test": "tsx --test test/*.test.ts",
