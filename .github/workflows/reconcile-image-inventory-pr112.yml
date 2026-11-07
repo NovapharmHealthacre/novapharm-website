@@ -1,0 +1,40 @@
+name: Reconcile image inventory for Nutraxin PR
+on:
+  push:
+    branches: [feat/nutraxin-publisher-19links-current-main-20261107]
+    paths:
+      - .github/workflows/reconcile-image-inventory-pr112.yml
+permissions:
+  contents: write
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - run: npm ci --ignore-scripts
+      - name: Generate and validate governed inventory
+        run: |
+          npm run images:inventory
+          npm run images:inventory:validate
+          git diff --check
+      - name: Commit only validated inventory to PR branch
+        run: |
+          set -euo pipefail
+          git add audit/generated/image-inventory.json
+          if git diff --cached --quiet; then
+            echo "Inventory already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          test "$(git ls-remote origin refs/heads/feat/nutraxin-publisher-19links-current-main-20261107 | cut -f1)" = "$GITHUB_SHA"
+          git commit -m "fix(evidence): regenerate image inventory for Nutraxin references"
+          git push origin HEAD:refs/heads/feat/nutraxin-publisher-19links-current-main-20261107
