@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import { all, audit, insertIgnore, nowIso, one, transaction } from "../data/database.mjs";
+import { all, audit, insertIgnore, nowIso, one, run, transaction } from "../data/database.mjs";
 import { portalGatewaySignatureMatches, validPortalGatewaySecret } from "./portal-gateway-signature.mjs";
 import { verifyCognitoWorkforceIdToken } from "./cognito-id-token.mjs";
 import { reviewedCognitoWorkforceApproval } from "./cognito-approval.mjs";
@@ -43,6 +43,7 @@ export async function verifyCognitoGatewayAssertion(request, environment = proce
     expires_at: expiresAt, consumed_at: acceptedAt
   }, ["token_hash"]);
   if (!inserted.changes) return null;
+  await run("DELETE FROM security_replay_tokens WHERE expires_at < ?", acceptedAt);
   return Object.freeze({ identity, approval, accessType });
 }
 
