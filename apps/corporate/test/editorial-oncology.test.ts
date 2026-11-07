@@ -43,8 +43,8 @@ test("Oncology product safety, governance, imagery and progressive disclosure ar
   assert.doesNotMatch(component, /<svg|lucide|oncology-editorial-gallery|specialty-pharmacy-handling|data-login-form|Buy now|In stock/i);
   assert.match(component, /oncology-vial-handling-960\.avif/);
   for (const format of ["jpg","webp","avif"]) {
-    const media = path.join(root, "../../assets/media/products", "oncology-vial-handling." + format);
-    assert.ok(existsSync(media), "Missing governed image asset: " + media);
+    const media = path.join(root, "../../assets/media/products", `oncology-vial-handling.${format}`);
+    assert.ok(existsSync(media), `Missing governed image asset: ${media}`);
   }
   assert.match(component, /href=\{enquiry\}/);
   assert.match(component, /mailto:vishal@novapharmhealthcare\.com/);
