@@ -56,7 +56,15 @@ assert.ok(source.includes('npi-terminal-geography'), "Geography preview is missi
 assert.ok(source.includes('npi-terminal-trends'), "Trend preview is missing");
 assert.ok(published.includes('npi-terminal-geography'), "Published geography preview is missing");
 assert.ok(published.includes('npi-terminal-trends'), "Published trends preview is missing");
-assert.ok(styles.includes(".npi-terminal-insights"), "Responsive geography/trend styling is missing");
+assert.ok(styles.includes(".npi-dash-analytics-grid"), "Responsive analytical dashboard styling is missing");
+assert.ok(styles.includes(".npi-dash-brand-symbol"), "Proprietary Intelligence branding is missing");
+assert.ok(source.includes("data-medicines-terminal-preview"), "Owner-approved demo dashboard must be present");
+assert.ok(source.includes("simulated figures") && published.includes("simulated figures"), "Both sources must disclose illustrative data");
+assert.ok(published.includes('src="/assets/js/medicines-terminal-preview.js"'), "Local sample chart script must load");
+assert.ok(materialiser.includes('src="/assets/js/medicines-terminal-preview.js"'), "Site generator must preserve chart interaction");
+assert.ok(read("assets/js/medicines-terminal-preview.js").includes("const series"), "Sample chart implementation is missing");
+assert.ok(source.includes("england-geography-concept.svg"), "Schematic regional illustration is missing");
+assert.ok(!read("assets/js/medicines-terminal-preview.js").match(/\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage/), "Example chart must not communicate or retain records");
 assert.ok(read("assets/css/novapharm.bundle.css").includes(".npd-mega.is-open"), "Global nav styling was not bundled");
 assert.ok(materialiser.includes('data-mega-trigger'), "Generated chrome must retain category triggers");
 
