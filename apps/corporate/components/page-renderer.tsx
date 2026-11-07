@@ -178,7 +178,7 @@ function NutraxinPage() {
             <a className="nx-button nx-button-primary" href="#nx-range-overview">Explore the range</a>
             <Link className="nx-button nx-button-quiet" href="/contact/?enquiry=Nutraxin%20portfolio">Discuss the portfolio</Link>
           </div>
-          <div className="nx-hero-packs" role="group" aria-label="Selected Nutraxin pack references">
+          <div className="nx-hero-packs">
             {[products[0], products[8], products[13]].map((product, index) => (
               <Link className={`nx-hero-pack nx-hero-pack-${index + 1}`} key={product.id} href={productUrl(product)} aria-label={`View ${product.name}`}>
                 {picture(product, index === 0)}
