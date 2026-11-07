@@ -28,6 +28,8 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Run Cognito negative cryptographic tests first
         run: node --test apps/portal/test/cognito-staging-auth.test.mjs apps/portal/test/cognito-backend-integration.test.mjs
+      - name: Test isolated SQLite role provisioning and session revocation
+        run: node --test scripts/aws/cognito-backend.test.mjs
       - name: Validate entire portal type safety, lint, contracts, tests, and build
         run: npm run check --workspace=@novapharm/portal
       - name: Confirm default-off production access and isolated Cognito assertion
