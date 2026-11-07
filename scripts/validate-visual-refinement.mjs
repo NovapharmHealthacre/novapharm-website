@@ -47,7 +47,7 @@ const build = read("scripts/build-site.mjs");
 
 for (const [name, html] of Object.entries(pages)) {
   requireText(html, 'class="npd-main', `${name} authored layout`);
-  requireText(html, name === "contact" ? 'class="np-contact-hero"' : name === "home" ? 'class="npd-apple-hero"' : 'class="npd-hero', `${name} deliberate hero`);
+  requireText(html, name === "contact" ? 'class="np-contact-reference-hero"' : name === "home" ? 'class="npd-apple-hero"' : 'class="npd-hero', `${name} deliberate hero`);
   requireText(html, "Regulated wholesale supply has not commenced", `${name} operating-status boundary`);
   requireText(html, 'class="npd-footer', `${name} institutional footer`);
   forbidText(html, "lucide", `${name} icon-free corporate presentation`);
@@ -74,7 +74,7 @@ for (const [name, html] of Object.entries(pages)) {
   [pages.products, 'href="/products/strategic-portfolio/"', "Products strategic route"],
   [pages.nutraxin, 'class="npd-product-grid"', "Nutraxin product presentation"],
   [pages.contact, "How can we help?", "Contact information hierarchy"],
-  [pages.contact, 'class="np-contact-grid"', "Contact topic routing"],
+  [pages.contact, 'class="np-contact-reference-form"', "Contact minimal reference form"],
   [leadership, "/assets/media/leadership/vishal-chakravarty-1200.jpg", "Vishal approved portrait"],
   [leadership, "/assets/media/leadership/prabhakar-lahare-960.jpg", "Prabhakar approved portrait"],
   [leadership, "/assets/media/leadership/girish-achliya-960.jpg", "Girish approved portrait"],
@@ -136,4 +136,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Visual refinement validation passed: Apple-inspired editorial homepage, 3 real catalogue products, 3 sourcing routes, regulatory-page governance, icon-free navigation and operational boundaries verified.");
+console.log("Visual refinement validation passed: authored corporate hierarchy, real-product presentation, seven-stage regulatory pathway, icon-free navigation, responsive contracts and regulatory boundaries verified.");
