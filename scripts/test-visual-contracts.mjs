@@ -138,7 +138,7 @@ assert.doesNotMatch(products, /£|\bGBP\b|Add to basket|Buy now|In stock/);
 const register = JSON.parse(text("apps/corporate/data/nutraxin-product-register.json"));
 assert.equal(register.products.length, 19);
 const nutraxin = text("products/nutraxin/index.html");
-assert.equal((nutraxin.match(/class="npd-product-card/g) ?? []).length, 19);
+assert.equal((nutraxin.match(/class="nx-product-card"/g) ?? []).length, 19);
 for (const product of register.products) {
   const route = `products/nutraxin/${product.slug}/index.html`;
   assert.ok(existsSync(join(root, route)), `${route} must exist`);
