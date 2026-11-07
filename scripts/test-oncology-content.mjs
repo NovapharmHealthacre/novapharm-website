@@ -53,9 +53,10 @@ assert.doesNotMatch(html, /<svg|lucide|doodle|oncology-editorial-gallery|Formula
 assert.doesNotMatch(html, /"@type":"(?:Drug|MedicalTherapy|MedicalStudy|ClinicalTrial)"/);
 for (const extension of ["avif","webp","jpg"]) {
   assert.ok(existsSync(join(root, "assets/media/products", "oncology-vial-handling."+extension)), "Main hero asset missing");
-  assert.ok(existsSync(join(root, "assets/media/products", "specialty-pharmacy-handling."+extension)), "Editorial asset missing");
+
 }
-assert.doesNotMatch(html, /specialty-pharmacy-handling-960\./, "Do not reference missing image variants");
+assert.doesNotMatch(html, /specialty-pharmacy-handling/, "Retired specialist media must not be used on public page");
+assert.match(html, /class="npoc-programme-image npoc-editorial-panel"/);
 
 const provenance = JSON.parse(source("docs/oncology-media-provenance.json"));
 for (const asset of provenance.assets) {
