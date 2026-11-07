@@ -40,7 +40,7 @@ test("authorisation request pins Entra, PKCE, state and nonce; tampering and exp
   assert.equal(url.searchParams.get("code_challenge_method"), "S256");
   assert.equal(url.searchParams.get("state"), tx.state);
   assert.equal(url.searchParams.get("nonce"), tx.nonce);
-  assert.deepEqual(readStagingTransaction(tx.cookieValue, tx.state, config, 1000123), { nonce: tx.nonce, verifier: tx.verifier });
+  assert.deepEqual(readStagingTransaction(tx.cookieValue, tx.state, config, 1000123), { nonce: tx.nonce, verifier: tx.verifier, accessType: "employee" });
   assert.equal(readStagingTransaction(tx.cookieValue, "invalid", config, 1000123), null);
   const [payload, signature] = tx.cookieValue.split(".");
   const changed = payload + "." + (signature.startsWith("A") ? "B" : "A") + signature.slice(1);
@@ -95,12 +95,14 @@ test("RSA signature, Entra federation, issuer, audience, nonce and expiry are al
   await assert.rejects(verifyStagingIdentity(config, makeToken(good, forged), nonce, jwks, now));
 });
 
-test("verification routes issue no NovaPharm session and do not trust Azure proxy headers", () => {
+test("OAuth identity proof has an opt-in backend session gate and does not trust Azure headers", () => {
   const start = readFileSync(new URL("../app/auth/start/route.ts", import.meta.url), "utf8");
   const callback = readFileSync(new URL("../app/auth/callback/route.ts", import.meta.url), "utf8");
   assert.match(start, /httpOnly:\s*true/);
   assert.match(start, /sameSite:\s*"lax"/);
   assert.match(callback, /verifyStagingIdentity/);
   assert.match(callback, /never issues an application session/);
-  assert.doesNotMatch(start + callback, /np_session|x-ms-client-principal|auth\/federated/);
+  assert.match(callback, /COGNITO_PORTAL_SESSION_ENABLED/);
+  assert.match(callback, /exchangeApprovedCognitoSession/);
+  assert.doesNotMatch(start + callback, /x-ms-client-principal|auth\/federated/);
 });
