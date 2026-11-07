@@ -2,6 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { all, audit, insertIgnore, nowIso, one, transaction } from "../data/database.mjs";
 import { portalGatewaySignatureMatches, validPortalGatewaySecret } from "./portal-gateway-signature.mjs";
 import { verifyCognitoWorkforceIdToken } from "./cognito-id-token.mjs";
+import { reviewedCognitoWorkforceApproval } from "./cognito-approval.mjs";
 
 const allowedScopes = new Set(["employee", "board", "admin"]);
 const maxAgeMs = 60_000;
@@ -11,18 +12,6 @@ function header(request, name) {
   return Array.isArray(value) ? value[0] : String(value ?? "");
 }
 
-export function reviewedCognitoWorkforceApproval(subject, email, environment = process.env) {
-  if (environment.COGNITO_WORKFORCE_BACKEND_ENABLED !== "true") return null;
-  if (typeof subject !== "string" || !/^[A-Za-z0-9_-]{6,128}$/.test(subject)) return null;
-  let approvals;
-  try { approvals = JSON.parse(environment.COGNITO_WORKFORCE_APPROVALS_JSON || ""); } catch { return null; }
-  if (!approvals || Array.isArray(approvals) || typeof approvals !== "object") return null;
-  const approved = Object.hasOwn(approvals, subject) ? approvals[subject] : null;
-  if (!approved || typeof approved !== "object" || Array.isArray(approved) || !allowedScopes.has(approved.scope)) return null;
-  if (typeof approved.expectedEmail !== "string" || approved.expectedEmail.toLowerCase() !== email ||
-      !/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]{2,}$/.test(email)) return null;
-  return Object.freeze({ scope: approved.scope, expectedEmail: email });
-}
 
 export async function verifyCognitoGatewayAssertion(request, environment = process.env, verifyIdToken = verifyCognitoWorkforceIdToken) {
   if (environment.COGNITO_WORKFORCE_BACKEND_ENABLED !== "true") return null;
