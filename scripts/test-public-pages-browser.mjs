@@ -8,6 +8,7 @@ const baseUrl = process.env.PUBLIC_PAGES_BASE_URL ?? "http://127.0.0.1:4310";
 const artifactRoot = path.resolve(process.env.PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT ?? "artifacts/public-pages-browser");
 const routes = [
   { path: "/", name: "home", required: "Medicine. Where it needs to be" },
+  { path: "/contact/", name: "contact", required: "How can we help?" },
   { path: "/leadership/", name: "leadership", required: "Chief Scientific Officer" },
   { path: "/leadership/girish-achliya/", name: "leadership-girish", required: "Chief Scientific Officer" },
   { path: "/regulatory-services/", name: "regulatory-roadmap", required: "No regulated supply before the required permissions." },
@@ -188,6 +189,18 @@ for (const [engineName, browserType] of engines) {
             await assertLayout(page, `${engineName} ${viewport.name} ${route.path}`);
             assert.deepEqual(failedResources, [], `${engineName} ${viewport.name} ${route.path}: failed subresources`);
             assert.deepEqual(consoleErrors, [], `${engineName} ${viewport.name} ${route.path}: console errors`);
+
+            if (route.name === "contact") {
+              const draft = page.locator("form[data-email-enquiry-form]");
+              assert.equal(await draft.count(), 1, engineName + " " + viewport.name + ": public contact must have exactly one local email draft");
+              assert.equal(await draft.getAttribute("action"), "mailto:vishal@novapharmhealthcare.com");
+              assert.equal(await page.locator("form[data-contact-form]").count(), 0, "public page must not expose managed intake");
+              assert.equal(await draft.locator('input[name="name"]').count(), 1);
+              assert.equal(await draft.locator('input[name="country"]').count(), 1);
+              assert.equal(await draft.locator('select[name="enquiryType"]').count(), 1);
+              assert.equal(await draft.locator('textarea[name="message"]').count(), 1);
+              assert.ok(await page.locator(".np-contact-reference-footer").isVisible(), "contact's compact footer must be visible");
+            }
 
             if (route.name === "leadership" || route.name === "leadership-girish") {
               assert.equal(bodyText.includes("Chief Technical Director"), false, `${engineName} ${viewport.name} ${route.path}: superseded Dr Girish title is visible`);
