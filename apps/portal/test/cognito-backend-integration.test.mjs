@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import { generateKeyPairSync, sign } from "node:crypto";
 import test from "node:test";
-import { verifyCognitoWorkforceIdToken, COGNITO_STAGING_ISSUER, COGNITO_STAGING_CLIENT_ID } from "../../../src/core/cognito-id-token.mjs";
-import { portalGatewaySignatureMatches } from "../../../src/core/portal-gateway-signature.mjs";
 import { reviewedCognitoWorkforceApproval } from "../../../src/core/cognito-approval.mjs";
+import { COGNITO_STAGING_CLIENT_ID, COGNITO_STAGING_ISSUER, verifyCognitoWorkforceIdToken } from "../../../src/core/cognito-id-token.mjs";
+import { portalGatewaySignatureMatches } from "../../../src/core/portal-gateway-signature.mjs";
 import { exchangeApprovedCognitoSession } from "../lib/cognito-session-exchange.mjs";
 
 const env = {
