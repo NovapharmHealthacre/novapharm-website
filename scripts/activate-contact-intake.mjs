@@ -50,8 +50,10 @@ export function activatePrivacyHtml(html) {
 
 if (process.env.NOVAPHARM_CONTACT_RELEASE_ACCEPTED === "yes") {
   const origin = String(process.env.NOVAPHARM_CONTACT_API_ORIGIN || "").trim();
-  const contactPath = resolve("contact/index.html");
-  const privacyPath = resolve("legal/privacy/index.html");
+  const artifactRoot = process.env.NOVAPHARM_CONTACT_ARTIFACT_ROOT || ".";
+  if (![".", "_site"].includes(artifactRoot)) throw Error("Contact release root must be project source or validated Pages artifact");
+  const contactPath = resolve(artifactRoot, "contact/index.html");
+  const privacyPath = resolve(artifactRoot, "legal/privacy/index.html");
   const contact = readFileSync(contactPath, "utf8");
   const notice = readFileSync(privacyPath, "utf8");
   const nextContact = activateContactHtml(contact, origin);
