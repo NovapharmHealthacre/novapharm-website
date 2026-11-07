@@ -346,12 +346,7 @@ function productsMain() {
 }
 
 function nutraxinMain() {
-  const ranges = [...new Set(products.map((product) => product.range))];
-  return `<main id="main" class="npd-main">${hero({ route: "/products/nutraxin/", family: "products", eyebrow: "Nutraxin", title: "A catalogue designed around the product itself.", lead: "Nineteen owner-supplied food supplement references are presented for qualified B2B review. This is not a consumer shop, an availability statement or an authorised claims library." })}
-  <section class="npd-section npd-section-soft npd-compact-section"><div class="container npd-catalogue-status"><div><strong>19 catalogue references</strong><span>Six product ranges</span><span>No public price or stock</span></div>${notice("regulatory", "Catalogue status", esc(register.controls.warning))}</div></section>
-  <nav class="npd-range-nav" aria-label="Nutraxin ranges"><div class="container">${ranges.map((range) => `<a href="#${range.toLowerCase().replace(/[^a-z0-9]+/g, "-")}">${esc(range)}</a>`).join("")}</div></nav>
-  ${ranges.map((range, rangeIndex) => { const rangeProducts = products.filter((product) => product.range === range); return `<section class="npd-section npd-catalogue-range" id="${range.toLowerCase().replace(/[^a-z0-9]+/g, "-")}"><div class="container"><header><p class="npd-eyebrow">Range ${String(rangeIndex + 1).padStart(2, "0")}</p><h2>${esc(range)}</h2><span>${rangeProducts.length} ${rangeProducts.length === 1 ? "reference" : "references"}</span></header><div class="npd-product-grid">${rangeProducts.map((product, productIndex) => `<a class="npd-product-card" href="/products/nutraxin/${product.slug}/">${productPicture(product, rangeIndex === 0 && productIndex === 0)}<div><p>${esc(product.range)}</p><h3>${esc(product.name)}</h3><span>${esc(product.packSize)}</span><strong>Review product</strong></div></a>`).join("")}</div></div></section>`; }).join("")}
-  <section class="npd-section npd-final"><div class="container"><h2>A catalogue reference is the start of review, not a release decision.</h2>${actions("Discuss the Nutraxin portfolio", "/contact/?enquiry=Product%20opportunity", "Return to Products", "/products/")}<p class="npd-disclosure">Approved labelling, rights, source, regulatory classification, claims, commercial terms and availability require separate confirmation.</p></div></section></main>`;
+  return read("src/content/nutraxin-showcase.html");
 }
 
 function nutraxinProductMain(product) {
@@ -514,6 +509,9 @@ function materialize(relative, route, main, metadata = null, template = null) {
       html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/oncology-editorial.css">\n</head>');
     }
   }
+  if (route === "/products/nutraxin/" && !html.includes('href="/assets/css/nutraxin-lineup.css"')) {
+    html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/nutraxin-lineup.css">\n</head>');
+  }
   if (route === "/technology/" && !html.includes('href="/assets/css/technology-intelligence.css"')) {
     html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/technology-intelligence.css">\n</head>');
   }
@@ -544,8 +542,8 @@ materialize("products/index.html", "/products/", productsMain(), {
   description: "Review NovaPharm's Nutraxin food supplement catalogue reference and non-commerce strategic pharmaceutical opportunity portfolio."
 }, productsTemplate);
 materialize("products/nutraxin/index.html", "/products/nutraxin/", nutraxinMain(), {
-  title: "Nutraxin Food Supplement Catalogue | NovaPharm Healthcare",
-  description: "Review 19 owner-supplied Nutraxin catalogue references with approved pack imagery and source-transcribed composition details for qualified B2B evaluation."
+  title: "Nutraxin Collection | Explore the Product Range | NovaPharm",
+  description: "Discover Nutraxin's 19 owner-supplied product references across six ranges, with original pack imagery and product details for qualified B2B catalogue evaluation."
 }, nutraxinTemplate);
 materialize("products/strategic-portfolio/index.html", "/products/strategic-portfolio/", strategicPortfolioMain(), {
   title: "Strategic Pharmaceutical Portfolio | NovaPharm Healthcare",
