@@ -48,7 +48,7 @@
     "intelligence:python:test": "python3 -m unittest tooling/python/test_pharmacy_workbook.py",
     "docs:enterprise": "node scripts/generate-enterprise-portal-docs.mjs",
     "prepare:release": "npm run build",
-    "validate": "node scripts/validate-owner-site.mjs && npm run seo:validate && node scripts/check-links.mjs && node scripts/validate-app.mjs && node scripts/validate-domain.mjs && node scripts/audit-public-claims.mjs",
+    "validate": "node scripts/validate-owner-site.mjs && npm run seo:validate && node scripts/check-links.mjs && node scripts/validate-app.mjs && node scripts/validate-domain.mjs && node scripts/audit-public-claims.mjs && npm run test:technology-page",
     "validate:site": "node scripts/validate-owner-site.mjs",
     "validate:app": "node scripts/validate-app.mjs",
     "validate:domain": "node scripts/validate-domain.mjs",
@@ -144,7 +144,8 @@
     "apps:check": "npm run founder:check && npm run technology:check && npm run corporate:check && npm run api:check && npm run portal:check && npm run status:check",
     "azure:package": "node scripts/package-unified-estate.mjs",
     "azure:test-artifacts": "node scripts/test-unified-release-artifacts.mjs",
-    "azure:validate-topology": "node scripts/validate-unified-estate-infrastructure.mjs"
+    "azure:validate-topology": "node scripts/validate-unified-estate-infrastructure.mjs",
+    "test:technology-page": "node scripts/test-intelligence-technology-page.mjs"
   },
   "engines": {
     "node": "24.x",

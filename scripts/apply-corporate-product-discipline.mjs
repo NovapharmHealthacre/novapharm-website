@@ -376,7 +376,7 @@ function partnersMain() {
 }
 
 function technologyMain() {
-  return `<main id="main" class="npd-main">${hero({ route: "/technology/", family: "capabilities", eyebrow: "Technology", title: "Control first. Automation only where it earns trust.", lead: "NovaPharm uses technology to preserve approved information, authority, decision history and secure workflow boundaries. Capability maturity is stated plainly.", actionsHtml: actions("Review the Trust Centre", "/trust-centre/") })}<section class="npd-section"><div class="container">${sectionIntro("Maturity", "One source of truth for what exists today.")}<div class="npd-maturity npd-maturity-full"><div><span>Live</span><h2>Public company platform</h2><p>Responsive corporate publication, structured entity information, public evidence and release controls.</p></div><div><span>Repository complete</span><h2>Managed application architecture</h2><p>Corporate, API, portal, status and supporting infrastructure code subject to environment activation and exact-SHA acceptance.</p></div><div><span>External verification pending</span><h2>Production identity and data services</h2><p>Entra, SQL, Blob, email, malware scanning and protected operational authority require production evidence.</p></div><div><span>Planned</span><h2>Forecasting and advanced traceability</h2><p>Future capabilities require governed source data, validation, monitoring and accountable human ownership.</p></div></div></div></section><section class="npd-section npd-section-soft"><div class="container npd-split"><div>${sectionIntro("Evidence architecture", "Records should explain what happened, who was authorised and which version supported the decision.", "Public content remains separate from protected customer, product, document and operational data.")}${notice("information", "No faux dashboard", "The public website does not display synthetic operational metrics as though they were production data.")}</div>${responsiveImage("/assets/media/stories/technology-control-architecture", "Professional reviewing controlled pharmaceutical technology records", { caption: "Representative technology context; no live customer or operational data is shown." })}</div></section></main>`;
+  return read("src/content/technology-intelligence.html");
 }
 
 function insightsMain() {
@@ -513,6 +513,9 @@ function materialize(relative, route, main, metadata = null, template = null) {
     if (!html.includes('href="/assets/css/oncology-editorial.css"')) {
       html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/oncology-editorial.css">\n</head>');
     }
+  }
+  if (route === "/technology/" && !html.includes('href="/assets/css/technology-intelligence.css"')) {
+    html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/technology-intelligence.css">\n</head>');
   }
   if (route === "/contact/" && html.includes("data-email-enquiry-form")) {
     html = html.replace("</body>", '<script src="/assets/js/contact-email-draft.js" defer></script></body>');
