@@ -27,7 +27,6 @@ assert.ok(script.includes('href="/assets/css/nutraxin-lineup.css"'),"Site build 
 assert.ok(css.includes("@media(max-width:600px)"),"Mobile display rules required");
 assert.ok(css.includes("prefers-reduced-motion:reduce"),"Respect reduced-motion user preference");
 assert.ok(master.includes("not a consumer store"),"B2B status requires explicit disclosure");
-assert.ok(master.includes("No" ) || master.includes("not a consumer store"));
 assert.ok(!/<button\b|<form\b|\bAdd to basket\b|\bBuy now\b|\bIn stock\b|\b£\d+/i.test(master),"Do not fake a commercial storefront");
 assert.ok(!/lucide|<svg\b|<i\b|emoji/gi.test(master),"Use typography rather than generic UI icons");
 const slugs = [...master.matchAll(/data-nx-product-slug="([^"]+)"/g)].map(m=>m[1]);
@@ -36,7 +35,7 @@ for(const product of products) {
   assert.ok(slugs.includes(product.slug),"Missing catalogue product "+product.slug);
   assert.ok(master.includes('/products/nutraxin/'+product.slug+'/'),"Missing canonical product detail route "+product.slug);
   assert.ok(master.includes('/assets/media/products/nutraxin/'+product.imageBase+'-800.avif'),"Missing optimised pack media "+product.slug);
-  for(const extension of ["png","-480.avif","-800.avif","-480.webp","-800.webp"]) {
+  for(const extension of [".png","-480.avif","-800.avif","-480.webp","-800.webp"]) {
     const file='assets/media/products/nutraxin/'+product.imageBase+(extension.startsWith(".")?extension:extension);
     assert.ok(existsSync(resolve(root,file)),"Missing image "+file);
   }
