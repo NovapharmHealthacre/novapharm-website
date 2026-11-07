@@ -1,0 +1,143 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "CANDIDATE ONLY. NovaPharm staging Microsoft Entra P1 single-tenant OIDC federation to AWS Cognito. Requires actual Entra app registration, secret, callback runtime and security acceptance BEFORE deployment. No public sign-in authorized.",
+  "Parameters": {
+    "EntraTenantId": {
+      "Type": "String",
+      "Description": "Verified Microsoft Entra tenant GUID from admin center",
+      "AllowedPattern": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+    },
+    "EntraClientId": {
+      "Type": "String",
+      "Description": "Verified single-tenant Microsoft Entra web app Client ID",
+      "AllowedPattern": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+    },
+    "PoolId": {
+      "Type": "String",
+      "Default": "eu-north-1_dZRAEzkYa",
+      "AllowedValues": [
+        "eu-north-1_dZRAEzkYa"
+      ]
+    },
+    "PortalCallback": {
+      "Type": "String",
+      "Default": "https://portal.novapharmhealthcare.com/auth/callback",
+      "AllowedValues": [
+        "https://portal.novapharmhealthcare.com/auth/callback"
+      ]
+    },
+    "PortalSignout": {
+      "Type": "String",
+      "Default": "https://portal.novapharmhealthcare.com/auth/logout",
+      "AllowedValues": [
+        "https://portal.novapharmhealthcare.com/auth/logout"
+      ]
+    }
+  },
+  "Rules": {
+    "RegionLock": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Equals": [
+              {
+                "Ref": "AWS::Region"
+              },
+              "eu-north-1"
+            ]
+          },
+          "AssertDescription": "Identity broker may only be configured in eu-north-1."
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "EntraP1IdentityProvider": {
+      "Type": "AWS::Cognito::UserPoolIdentityProvider",
+      "Properties": {
+        "UserPoolId": {
+          "Ref": "PoolId"
+        },
+        "ProviderName": "EntraP1",
+        "ProviderType": "OIDC",
+        "ProviderDetails": {
+          "client_id": {
+            "Ref": "EntraClientId"
+          },
+          "client_secret": "{{resolve:secretsmanager:novapharm/staging/entra-p1-oidc:SecretString:client_secret}}",
+          "oidc_issuer": {
+            "Fn::Sub": "https://login.microsoftonline.com/${EntraTenantId}/v2.0"
+          },
+          "authorize_scopes": "openid email profile",
+          "attributes_request_method": "GET"
+        },
+        "AttributeMapping": {
+          "email": "email",
+          "name": "name"
+        }
+      }
+    },
+    "EntraOnlyPortalClient": {
+      "Type": "AWS::Cognito::UserPoolClient",
+      "DependsOn": [
+        "EntraP1IdentityProvider"
+      ],
+      "Properties": {
+        "UserPoolId": {
+          "Ref": "PoolId"
+        },
+        "ClientName": "novapharm-staging-entra-p1-only",
+        "GenerateSecret": false,
+        "SupportedIdentityProviders": [
+          "EntraP1"
+        ],
+        "AllowedOAuthFlows": [
+          "code"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": [
+          "openid",
+          "email",
+          "profile"
+        ],
+        "CallbackURLs": [
+          {
+            "Ref": "PortalCallback"
+          }
+        ],
+        "LogoutURLs": [
+          {
+            "Ref": "PortalSignout"
+          }
+        ],
+        "PreventUserExistenceErrors": "ENABLED",
+        "EnableTokenRevocation": true,
+        "AccessTokenValidity": 30,
+        "IdTokenValidity": 30,
+        "RefreshTokenValidity": 1,
+        "TokenValidityUnits": {
+          "AccessToken": "minutes",
+          "IdToken": "minutes",
+          "RefreshToken": "days"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "UserPoolId": {
+      "Value": {
+        "Ref": "PoolId"
+      }
+    },
+    "CognitoClientId": {
+      "Description": "Generated client ID, not a secret. No production users allowed until backend OIDC session/role enforcement is verified.",
+      "Value": {
+        "Ref": "EntraOnlyPortalClient"
+      }
+    },
+    "MicrosoftEntraRedirect": {
+      "Description": "Add this web redirect URI in single-tenant Entra application registration before deploying this template.",
+      "Value": "https://novapharm-staging-250675045172.auth.eu-north-1.amazoncognito.com/oauth2/idpresponse"
+    }
+  }
+}
