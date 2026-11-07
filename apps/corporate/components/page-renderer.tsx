@@ -7,6 +7,7 @@ import { oncologyContent } from "@/data/oncology";
 import type { CorporatePage, NarrativeSection } from "@/data/pages";
 import { leadership, partnerJourney, partnerTypes, productCategories, regulatorySections, servicePillars, sourcingPillars, technologyMaturity } from "@/data/site";
 import { ContactExperience } from "./contact-experience";
+import { NutraxinKnowMore } from "./nutraxin-know-more";
 import { Breadcrumbs, FinalCta, Notice, PageHero, SectionHeading, StatusNotice } from "./ui";
 
 export interface Leader {
@@ -132,7 +133,7 @@ function ProductsPage() {
 }
 
 function NutraxinPage() {
-  return <><PageHero eyebrow="Nutraxin catalogue" title="Product references for qualified B2B evaluation." intro="Approved pack imagery and source-transcribed composition details, without an assertion of UK availability, permitted claims or a supply agreement." /><section className="section"><div className="shell"><Notice label="Catalogue evidence boundary" variant="regulatory">Brand ownership, UK regulatory status, composition compliance, permitted nutrition or health claims, labelling, pricing and availability require owner and market review before any commercial use.</Notice><div className="catalogue-grid">{nutraxinRegister.products.map((product, index) => <article key={product.id}><Link className="catalogue-media" href={`/products/nutraxin/${product.slug}/`} aria-label={`Review ${product.name}`}><Image src={`/assets/media/products/nutraxin/${product.imageBase}-800.webp`} alt={product.altText} fill sizes="(max-width: 640px) 92vw, (max-width: 1024px) 44vw, 300px" priority={index < 2} /></Link><div className="catalogue-copy"><span className="eyebrow">{product.range}</span><h2><Link href={`/products/nutraxin/${product.slug}/`}>{product.name}</Link></h2><p>{product.packSize} · {product.dosageForm}</p><dl>{product.formulation.map((line) => <div key={`${line.name}-${line.amount}`}><dt>{line.name}</dt><dd>{line.amount}</dd></div>)}</dl><small>{product.servingText}. Source catalogue page {product.cataloguePage}.</small><Link className="text-link" href={`/products/nutraxin/${product.slug}/`}>Review product reference</Link></div></article>)}</div></div></section><FinalCta title="Discuss a qualified nutraceutical portfolio review." /></>;
+  return <><PageHero eyebrow="Nutraxin catalogue" title="Product references for qualified B2B evaluation." intro="Approved pack imagery and source-transcribed composition details, without an assertion of UK availability, permitted claims or a supply agreement." /><section className="section"><div className="shell"><Notice label="Catalogue evidence boundary" variant="regulatory">Brand ownership, UK regulatory status, composition compliance, permitted nutrition or health claims, labelling, pricing and availability require owner and market review before any commercial use.</Notice><div className="catalogue-grid">{nutraxinRegister.products.map((product, index) => <article key={product.id}><Link className="catalogue-media" href={`/products/nutraxin/${product.slug}/`} aria-label={`Review ${product.name}`}><Image src={`/assets/media/products/nutraxin/${product.imageBase}-800.webp`} alt={product.altText} fill sizes="(max-width: 640px) 92vw, (max-width: 1024px) 44vw, 300px" priority={index < 2} /></Link><div className="catalogue-copy"><span className="eyebrow">{product.range}</span><h2><Link href={`/products/nutraxin/${product.slug}/`}>{product.name}</Link></h2><p>{product.packSize} · {product.dosageForm}</p><dl>{product.formulation.map((line) => <div key={`${line.name}-${line.amount}`}><dt>{line.name}</dt><dd>{line.amount}</dd></div>)}</dl><small>{product.servingText}. Source catalogue page {product.cataloguePage}.</small><Link className="text-link" href={`/products/nutraxin/${product.slug}/`}>Review product reference</Link><NutraxinKnowMore slug={product.slug} name={product.name} /></div></article>)}</div></div></section><FinalCta title="Discuss a qualified nutraceutical portfolio review." /></>;
 }
 
 export function NutraxinProductPage({ product }: { readonly product: NutraxinProduct }) {
@@ -148,6 +149,8 @@ export function NutraxinProductPage({ product }: { readonly product: NutraxinPro
           <h1>{product.name}</h1>
           <p>{product.packSize} · {product.dosageForm}</p>
           <p className="product-reference-status">Catalogue reference · B2B evaluation only · Availability not asserted</p>
+          <NutraxinKnowMore slug={product.slug} name={product.name} />
+          <p className="source-note">External Nutraxin UK product information. Pack details, approved labelling and availability must be confirmed separately.</p>
         </div>
         <div className="nutraxin-product-media">
           <Image src={`/assets/media/products/nutraxin/${product.imageBase}-800.webp`} alt={product.altText} fill priority sizes="(max-width: 760px) 92vw, 48vw" />
