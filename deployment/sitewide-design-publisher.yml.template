@@ -1,0 +1,182 @@
+name: Publish governed NovaPharm corporate design system (scoped)
+on:
+  push:
+    branches: [ops/sitewide-design-publication-20261107]
+    paths:
+      - .github/workflows/publish-sitewide-design.yml
+permissions:
+  contents: write
+concurrency:
+  group: novapharm-public-pages-css-release
+  cancel-in-progress: false
+env:
+  RELEASE_SHA: APPROVED_SOURCE_SHA
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact reviewed corporate main source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Verify source, permissions and disclosure scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$RELEASE_SHA"
+          grep -Fq 'import "./design-system.css";' apps/corporate/app/layout.tsx
+          grep -Fq -- '--nph-ink:' apps/corporate/app/design-system.css
+          grep -Fq -- '.cookie-banner' apps/corporate/app/design-system.css
+          grep -Fq -- 'prefers-reduced-motion' apps/corporate/app/design-system.css
+      - name: Node.js 24 and locked test dependencies
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Compose asset and HTML link patch without replacing existing page content
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin gh-pages
+          pages_sha="$(git rev-parse refs/remotes/origin/gh-pages)"
+          echo "PAGES_SHA=$pages_sha" >> "$GITHUB_ENV"
+          git worktree add --detach "$RUNNER_TEMP/nph-pages-candidate" "$pages_sha"
+          public="$RUNNER_TEMP/nph-pages-candidate"
+          test -f "$public/.nojekyll"
+          test "$(tr -d '\r\n' < "$public/CNAME")" = "novapharmhealthcare.com"
+          mkdir -p "$public/assets/css"
+          cp apps/corporate/app/design-system.css "$public/assets/css/novapharm-unified-20261107.css"
+          export PUBLIC_ROOT="$public"
+          python3 - <<'PY'
+          from pathlib import Path
+          import os
+          root=Path(os.environ["PUBLIC_ROOT"])
+          marker='data-novapharm-design-system="2026-11-07"'
+          tag='<link rel="stylesheet" href="/assets/css/novapharm-unified-20261107.css" '+marker+'>'
+          htmls=sorted(root.rglob("*.html"))
+          count=0
+          for file in htmls:
+              if ".git" in file.parts: continue
+              html=file.read_text(encoding="utf-8")
+              if "</head>" not in html:
+                  print("No HEAD (unchanged):",file.relative_to(root))
+                  continue
+              if marker in html:
+                  raise SystemExit("Existing design marker requires explicit reconciliation: "+str(file))
+              html=html.replace("</head>",tag+"</head>",1)
+              file.write_text(html,encoding="utf-8")
+              count+=1
+          if count < 65: raise SystemExit("Unexpected route coverage: only "+str(count)+" pages received CSS")
+          for path in ["index.html","oncology/index.html","contact/index.html","products/index.html","legal/privacy/index.html","technology/index.html"]:
+              if marker not in (root/path).read_text(encoding="utf-8"):
+                  raise SystemExit("Critical page missed: "+path)
+          print("Added common CSS last in HEAD to",count,"public HTML files")
+          PY
+          cd "$public"
+          git add -- assets/css/novapharm-unified-20261107.css
+          git add -- '*.html'
+          git diff --cached --check
+          git diff --cached --name-only | while read -r file; do
+            case "$file" in
+              assets/css/novapharm-unified-20261107.css|*.html) ;;
+              *) echo "::error::Unexpected staged change $file"; exit 1 ;;
+            esac
+          done
+          test "$(git diff --cached --name-only | wc -l)" -ge 66
+      - name: Validate complete Pages snapshot on Chromium desktop and mobile
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx playwright install chromium
+          python3 -m http.server 3189 --directory "$RUNNER_TEMP/nph-pages-candidate" --bind 127.0.0.1 > "$RUNNER_TEMP/nph-pages-server.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/nph-pages-server.pid"
+          for attempt in $(seq 1 30); do
+            if curl -fsS --max-time 4 http://127.0.0.1:3189/ -o /dev/null; then break; fi
+            sleep 1
+          done
+          mkdir -p "$RUNNER_TEMP/sitewide-design-proof"
+          node - <<'NODE'
+          const assert=require('node:assert/strict');
+          const {chromium}=require('playwright');
+          const paths=['/','/about/','/capabilities/','/oncology/','/services/','/regulatory-services/','/cro/','/products/','/products/nutraxin/','/products/nutraxin/vitamin-d3-120-tablets/','/technology/','/leadership/','/news-insights/','/contact/','/legal/privacy/','/account-application/'];
+          const fs=require('fs');
+          const base='http://127.0.0.1:3189';
+          const report=[];
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            try {
+              for(const viewport of [{width:390,height:844},{width:1440,height:900}]) {
+                const ctx=await browser.newContext({viewport,reducedMotion:'reduce'});
+                try {
+                  for(const route of paths){
+                    const page=await ctx.newPage();
+                    const response=await page.goto(base+route,{waitUntil:'domcontentloaded',timeout:30000});
+                    assert.equal(response?.status(),200,'route '+route);
+                    await page.waitForTimeout(150);
+                    const record=await page.evaluate(()=>{
+                      const doc=document.documentElement;
+                      const style=getComputedStyle(doc);
+                      const body=getComputedStyle(document.body);
+                      const banner=document.querySelector('.cookie-banner');
+                      return {
+                        title:document.title,
+                        h1:document.querySelectorAll('h1').length,
+                        hasHeader:!!document.querySelector('.site-header'),
+                        hasFooter:!!document.querySelector('.site-footer'),
+                        cssToken:style.getPropertyValue('--nph-ink').trim(),
+                        hasCSS:[...document.querySelectorAll('link[rel="stylesheet"]')].some(e=>e.href.includes('novapharm-unified-20261107.css')),
+                        font:body.fontFamily,
+                        overflow:doc.scrollWidth>doc.clientWidth+1,
+                        bannerHeight:banner?Math.round(banner.getBoundingClientRect().height):0,
+                        brokenImages:[...document.images].filter(x=>x.complete&&x.naturalWidth===0).map(x=>x.currentSrc)
+                      };
+                    });
+                    assert.equal(record.h1,1,'H1 '+route);
+                    assert.ok(record.hasHeader && record.hasFooter,'shell '+route);
+                    assert.equal(record.cssToken,'#111113','design tokens '+route);
+                    assert.equal(record.hasCSS,true,'CSS link '+route);
+                    assert.ok(record.font.includes('apple-system'),'font '+route);
+                    assert.equal(record.overflow,false,'overflow '+route);
+                    assert.deepEqual(record.brokenImages,[],'media '+route);
+                    if(viewport.width===390 && record.bannerHeight>0)assert.ok(record.bannerHeight<=260,'oversized cookie consent '+route+' '+record.bannerHeight);
+                    report.push({route,viewport:viewport.width,...record});
+                    if(['/','/contact/','/oncology/','/products/','/technology/'].includes(route)){
+                      const file=process.env.RUNNER_TEMP+'/sitewide-design-proof/'+(route==='/'?'home':route.slice(1,-1))+'-'+viewport.width+'.png';
+                      await page.screenshot({path:file,fullPage:true,animations:'disabled'});
+                    }
+                    await page.close();
+                  }
+                } finally { await ctx.close(); }
+              }
+            } finally { await browser.close(); }
+            fs.writeFileSync(process.env.RUNNER_TEMP+'/sitewide-design-proof/acceptance.json',JSON.stringify({source:'Pages composited release',checks:report.length,records:report},null,2));
+            console.log('Passed',report.length,'static Pages checks,',paths.length,'representative routes across mobile/desktop');
+          })().catch(e=>{console.error(e);process.exitCode=1});
+          NODE
+      - name: Publish scoped CSS without racing other live releases
+        shell: bash
+        run: |
+          set -euo pipefail
+          current="$(git ls-remote origin refs/heads/gh-pages | cut -f1)"
+          test "$current" = "$PAGES_SHA" || { echo "::error::Live gh-pages moved; rebase and retry required"; exit 1; }
+          cd "$RUNNER_TEMP/nph-pages-candidate"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "release(design): unify NovaPharm visual system across all public pages"
+          git push origin HEAD:refs/heads/gh-pages
+          git log -1 --format='%H %s'
+      - name: Upload rendered design release evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: novapharm-live-sitewide-design-proof
+          path: |
+            ${{ runner.temp }}/sitewide-design-proof
+            ${{ runner.temp }}/nph-pages-server.log
+          retention-days: 7
+          if-no-files-found: warn
