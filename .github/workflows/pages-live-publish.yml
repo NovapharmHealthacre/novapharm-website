@@ -35,7 +35,7 @@ permissions:
   statuses: write
 
 concurrency:
-  group: novapharm-github-pages-${{ github.event_name }}-${{ github.ref }}
+  group: ${{ github.event_name == 'pull_request' && format('novapharm-pages-pr-{0}', github.head_ref) || 'novapharm-pages-production' }}
   cancel-in-progress: false
 
 env:
@@ -112,6 +112,24 @@ jobs:
             -f description="Building the owner-approved public release" \
             -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >/dev/null
 
+      - name: Prevent silent downgrade of a verified live contact service
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The normal build is explicitly PUBLIC_ONLY. Do not overwrite a
+          # separately approved AWS-backed contact release on GitHub Pages.
+          url="$LIVE_ORIGIN/contact/?publication-guard=$GITHUB_SHA-$GITHUB_RUN_ID"
+          curl --fail --silent --show-error --location --retry 2 --retry-delay 2 \
+            --max-time 20 -H 'Cache-Control: no-cache, no-store, max-age=0' \
+            "$url" -o /tmp/novapharm-existing-contact.html
+          if grep -Fq 'data-live-b2b-enquiry-form' /tmp/novapharm-existing-contact.html; then
+            echo "::error::Live AWS-backed contact is active. This PUBLIC_ONLY job would silently disable it. Publish through the independently verified AWS-backed contact workflow instead."
+            exit 1
+          fi
+          if ! grep -Fq 'This public information release does not collect or transmit enquiry details' /tmp/novapharm-existing-contact.html; then
+            echo "::error::Existing contact release state is unknown. Refusing to overwrite without explicit release verification."
+            exit 1
+          fi
       - name: Verify checked-in public source is default-deny
         run: node scripts/test-static-public-source-safety.mjs
 
