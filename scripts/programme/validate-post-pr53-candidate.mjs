@@ -196,11 +196,13 @@ const homepageSource = read("apps/corporate/components/concise-home.tsx");
 const homepageArtifact = read("index.html");
 const regulatoryArtifact = read("regulatory-services/index.html");
 for (const [marker, label] of [
-  ["pharma-home-shade", "directional hero contrast layer"],
-  ["Conceptual supply-chain visual. No NovaPharm facility, vehicle, inventory or current distribution activity is depicted.", "conceptual hero truth boundary"],
-  ["Evidence travels with the batch.", "Batch Integrity editorial heading"],
-  ["Representative traceability composition. It is not a NovaPharm facility, product or active batch record.", "Batch Integrity media boundary"],
-  ["Regulated wholesale supply has not commenced.", "regulated-wholesale status boundary"]
+  ["npd-apple-hero-art", "intentional editorial hero and image composition"],
+  ["Conceptual visual. Not a NovaPharm facility, inventory or active distribution operation.", "conceptual hero truth boundary"],
+  ["Specialist medicines.", "specialist oncology editorial heading"],
+  ["Representative scientific context. No NovaPharm facility, stock or approved programme is depicted.", "specialist visual truth boundary"],
+  ["In development. The adjacent graphic is an artistic concept", "NOVA not-live maturity disclosure"],
+  ["Regulated wholesale supply has not commenced.", "regulated-wholesale status boundary"],
+  ["PLPI activity requires the relevant licence.", "product-specific regulatory permission boundary"]
 ]) {
   requireText(homepageSource, marker, `Corporate React homepage ${label}`);
 }
