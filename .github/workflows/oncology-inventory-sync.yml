@@ -25,6 +25,11 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci --ignore-scripts
+      - name: Reconcile candidate branch before regenerating inventory
+        run: |
+          test "${GITHUB_REF_NAME}" = 'codex/oncology-apple-editorial-20261107'
+          git fetch origin codex/oncology-apple-editorial-20261107
+          git rebase origin/codex/oncology-apple-editorial-20261107
       - name: Regenerate complete provenance-based inventory without relaxing checks
         run: npm run images:inventory
       - name: Verify generated manifest
