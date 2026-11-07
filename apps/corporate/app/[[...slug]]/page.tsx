@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { ConciseHomePage } from "@/components/concise-home";
-import { OncologyEditorialPage } from "@/components/oncology-editorial";
 import {
   ConciseCroPage,
   ConciseProductsPage,
@@ -9,6 +8,7 @@ import {
   ConciseServicesPage,
 } from "@/components/concise-specialist-pages";
 import { JsonLd } from "@/components/json-ld";
+import { OncologyEditorialPage } from "@/components/oncology-editorial";
 import { ArticlePage, CorporatePageRenderer, type NutraxinProduct, NutraxinProductPage, PersonPage } from "@/components/page-renderer";
 import { articleBySlug, articles } from "@/data/articles";
 import { conciseCorporatePage } from "@/data/concise-pages";
