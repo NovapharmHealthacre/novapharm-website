@@ -3,6 +3,7 @@ import { generateKeyPairSync, sign } from "node:crypto";
 import test from "node:test";
 import { verifyCognitoWorkforceIdToken, COGNITO_STAGING_ISSUER, COGNITO_STAGING_CLIENT_ID } from "../../../src/core/cognito-id-token.mjs";
 import { portalGatewaySignatureMatches } from "../../../src/core/portal-gateway-signature.mjs";
+import { reviewedCognitoWorkforceApproval } from "../../../src/core/cognito-approval.mjs";
 import { exchangeApprovedCognitoSession } from "../lib/cognito-session-exchange.mjs";
 
 const env = {
@@ -95,4 +96,22 @@ test("backend JWT validation rejects wrong tenant, audience, forgery and provide
   ]) await assert.rejects(verifyCognitoWorkforceIdToken(jwt(claims), { nonce: identityNonce, now, fetchImplementation: remote }));
   const attacker = generateKeyPairSync("rsa", { modulusLength: 2048 }).privateKey;
   await assert.rejects(verifyCognitoWorkforceIdToken(jwt(valid, attacker), { nonce: identityNonce, now, fetchImplementation: remote }));
+});
+
+test("no implicit Cognito workforce authorisation by email, customer role or missing approval", () => {
+  const subject = "01020304-0506-0708-0900-abcdef012345";
+  const email = "team@novapharmhealthcare.com";
+  const approved = { COGNITO_WORKFORCE_BACKEND_ENABLED: "true", COGNITO_WORKFORCE_APPROVALS_JSON: JSON.stringify({
+    [subject]: { scope: "employee", expectedEmail: email }
+  }) };
+  assert.deepEqual(reviewedCognitoWorkforceApproval(subject, email, approved), { scope: "employee", expectedEmail: email });
+  assert.equal(reviewedCognitoWorkforceApproval(subject, email, { ...approved, COGNITO_WORKFORCE_BACKEND_ENABLED: "false" }), null);
+  assert.equal(reviewedCognitoWorkforceApproval("attacker-subject", email, approved), null);
+  assert.equal(reviewedCognitoWorkforceApproval(subject, "attacker@example.com", approved), null);
+  assert.equal(reviewedCognitoWorkforceApproval(subject, email, {
+    ...approved, COGNITO_WORKFORCE_APPROVALS_JSON: JSON.stringify({ [subject]: { scope: "customer", expectedEmail: email } })
+  }), null);
+  assert.equal(reviewedCognitoWorkforceApproval(subject, email, {
+    ...approved, COGNITO_WORKFORCE_APPROVALS_JSON: "not JSON"
+  }), null);
 });
