@@ -183,7 +183,7 @@ export function OncologyEditorialPage() {
           <details className="npoc-matrix">
             <summary>Explore the full readiness matrix<span className="npoc-disclosure" aria-hidden="true" /></summary>
             {/* biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users can scroll the wide evidence table. */}
-            <div className="npoc-table-scroll" tabIndex={0} role="region" aria-label="Scrollable oncology readiness matrix">
+            <section className="npoc-table-scroll" tabIndex={0} aria-label="Scrollable oncology readiness matrix">
               <table>
                 <caption>Six readiness dimensions, required evidence and stop conditions</caption>
                 <thead><tr>
@@ -201,7 +201,7 @@ export function OncologyEditorialPage() {
                   </tr>
                 ))}</tbody>
               </table>
-            </div>
+            </section>
           </details>
           <p className="npoc-boundary">
             NovaPharm does not provide medical advice, direct patient services or a
