@@ -242,9 +242,9 @@ jobs:
               && ! grep -Fq 'data-ai-search-open' /tmp/live-home.html \
               && grep -Fq 'Prabhakar Vitthal Lahare' /tmp/live-cro.html \
               && ! grep -Fq 'oncology-editorial-gallery' /tmp/live-oncology.html \
-              && grep -Fq 'class="np-contact-hero"' /tmp/live-contact.html \
-              && grep -Fq 'class="np-contact-grid"' /tmp/live-contact.html \
-              && grep -Fq 'does not collect or transmit enquiry details' /tmp/live-contact.html \
+              && grep -Fq 'class="np-contact-reference-hero"' /tmp/live-contact.html \
+              && grep -Fq 'data-email-enquiry-form' /tmp/live-contact.html \
+              && grep -Fq 'This public information release does not collect or transmit enquiry details' /tmp/live-contact.html \
               && ! grep -Fq 'data-contact-form' /tmp/live-contact.html \
               && grep -Fq 'does not accept account applications or business documents' /tmp/live-account.html \
               && ! grep -Fq 'data-account-application' /tmp/live-account.html \
