@@ -75,12 +75,15 @@ const expectedNavigation = [
   ["Capabilities", "/capabilities/"],
   ["Oncology", "/oncology/"],
   ["Products", "/products/"],
+  ["NovaPharm Intelligence", "/technology/"],
   ["Insights", "/news-insights/"],
   ["Contact", "/contact/"],
   ["Secure Portal", "/portal/"],
 ];
 for (const [label, href] of expectedNavigation) assert.match(home, new RegExp(`<a href="${href.replaceAll("/", "\\/")}"[^>]*>${label}<\\/a>`));
 assert.match(home, /<span data-menu-label>Menu<\/span>/, "mobile navigation must use the visible word Menu");
+assert.match(home, /data-mega-trigger="intelligence"/, "global header must expose Intelligence navigation");
+assert.match(home, /data-mega-panel="intelligence"/, "Intelligence navigation must offer contextual destinations");
 
 const routeContracts = [
   ["capabilities/index.html", "The right route depends on the evidence already in place."],
@@ -89,7 +92,7 @@ const routeContracts = [
   ["cro/index.html", "Define the programme before assembling the delivery model."],
   ["oncology/index.html", "Oncology demands<br>more than supply."],
   ["partner-with-us/index.html", "npd-horizontal-steps"],
-  ["technology/index.html", "npd-maturity npd-maturity-full"],
+  ["technology/index.html", "npi-terminal-insights"],
   ["news-insights/index.html", "Regulated-market thinking, written to be challenged."],
 ];
 for (const [path, marker] of routeContracts) {
