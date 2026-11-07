@@ -22,10 +22,23 @@ assert.equal((master.match(/class="nx-range-section nx-range-section-/g)||[]).le
 assert.equal((master.match(/<h1\b/g)||[]).length,1,"One page title");
 assert.equal((master.match(/<main\b/g)||[]).length,1,"One main landmark");
 assert.equal((master.match(/<section\b/g)||[]).length,(master.match(/<\/section>/g)||[]).length,"Balanced page sections");
-assert.ok(page.includes(master),"Generated published page must match the master layout");
+const cardPattern = /<a class="nx-product-card" href="[^"]+" data-nx-product-slug="([a-z0-9-]+)">[\\s\\S]*?[<][/]a>/gu;
+const originalCards = [...master.matchAll(cardPattern)];
+const publishedCards = [...page.matchAll(cardPattern)];
+assert.equal(originalCards.length, 19, "Approved original Nutraxin catalogue has exactly 19 cards");
+assert.equal(publishedCards.length, 19, "Published Nutraxin catalogue preserves all 19 cards");
+for (let index = 0; index < originalCards.length; index++) {
+  assert.equal(publishedCards[index][0], originalCards[index][0], "Published Nutraxin card content must remain byte-for-byte identical to the approved master");
+  const publishedWrapper = `<div class="nx-product-card-shell">${originalCards[index][0]}<div class="nx-product-publisher">`;
+  assert.ok(page.includes(publishedWrapper), "Published Nutraxin card must have its approved publisher evidence wrapper");
+}
+assert.equal((page.match(/class="nx-product-card-shell"/g) || []).length, 19, "Exactly one publisher wrapper per approved catalogue card");
+assert.equal((page.match(/class="nx-product-publisher"/g) || []).length, 19, "Exactly one publisher evidence reference per product");
+assert.ok(page.includes(master.slice(0, master.indexOf('<a class="nx-product-card"'))), "Published introduction must preserve the approved master layout");
 assert.ok(page.includes('href="/assets/css/nutraxin-lineup.css"'),"Scoped CSS must load");
-assert.ok(script.includes('return read("src/content/nutraxin-showcase.html")'),"Site build must preserve the master layout");
+assert.ok(script.includes('const original = read("src/content/nutraxin-showcase.html")'),"Site build must preserve the master layout");
 assert.ok(script.includes('href="/assets/css/nutraxin-lineup.css"'),"Site build must preserve the scoped stylesheet");
+assert.ok(script.includes('<div class="nx-product-card-shell">\${card}<div class="nx-product-publisher">'), "Site build must preserve official publisher evidence alongside every original card");
 assert.ok(corporateRenderer.includes('className="nx-featured-grid"'),"Next.js source must include the same highlights section");
 assert.ok(corporateRenderer.includes('className="nx-product-grid"'),"Next.js source must include product cards");
 assert.ok(corporateRenderer.includes('ranges.map((range, rangeIndex)'),"Next.js source must render all six ranges");
