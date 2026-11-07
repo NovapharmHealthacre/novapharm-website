@@ -391,7 +391,28 @@ function materialize(relative, route, main, metadata = null, template = null) {
   html = replaceChrome(html, route);
   if (metadata) html = setMetadata(html, { route, ...metadata });
   if (route === "/oncology/") {
-    html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/oncology-editorial.css">\n</head>');
+    const title = "Oncology | Evidence-led Specialist Medicines | NovaPharm Healthcare";
+    const description = "Explore NovaPharm's evidence-led B2B oncology model across product identity, quality, qualified sourcing, regulatory readiness and accountable decisions.";
+    html = html
+      .replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(title)}</title>`)
+      .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${esc(description)}">`)
+      .replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${esc(title)}">`)
+      .replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${esc(description)}">`)
+      .replace(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${esc(title)}">`)
+      .replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${esc(description)}">`)
+      .replace(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g, (original, raw) => {
+        const schema = JSON.parse(raw);
+        if (schema["@type"] === "WebPage") {
+          schema.name = title;
+          schema.description = description;
+          schema.dateModified = "2026-11-07";
+          return `<script type="application/ld+json">${JSON.stringify(schema)}</script>`;
+        }
+        return original;
+      });
+    if (!html.includes('href="/assets/css/oncology-editorial.css"')) {
+      html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/oncology-editorial.css">\n</head>');
+    }
   }
   if (route === "/contact/" && html.includes("data-email-enquiry-form")) {
     html = html.replace("</body>", '<script src="/assets/js/contact-email-draft.js" defer></script></body>');
@@ -414,7 +435,7 @@ materialize("capabilities/index.html", "/capabilities/", capabilitiesMain(), {
 materialize("services/index.html", "/services/", servicesMain());
 materialize("regulatory-services/index.html", "/regulatory-services/", regulatoryMain());
 materialize("cro/index.html", "/cro/", croMain());
-materialize("oncology/index.html", "/oncology/", oncologyMain(), { title: "Oncology | Evidence-led Specialist Medicines | NovaPharm Healthcare", description: "Explore NovaPharm\'s evidence-led B2B oncology model across product identity, quality, qualified sourcing, regulatory readiness and accountable decisions." });
+materialize("oncology/index.html", "/oncology/", oncologyMain());
 materialize("products/index.html", "/products/", productsMain(), {
   title: "Products | NovaPharm Healthcare",
   description: "Review NovaPharm's Nutraxin food supplement catalogue reference and non-commerce strategic pharmaceutical opportunity portfolio."
