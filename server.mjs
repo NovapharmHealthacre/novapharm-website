@@ -733,7 +733,7 @@ export async function handleRequest(request, response) {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
       const session = await getSession(request);
       if (session) await revokePersistentSession(session.id);
-      json(response, 200, { ok: true, federatedLogout: Boolean(session?.identityProvider?.startsWith("entra-")) }, { "Set-Cookie": cookie("np_session", "", { maxAge: 0 }) });
+      json(response, 200, { ok: true, federatedLogout: Boolean(session?.identityProvider?.startsWith("entra-")), cognitoLogout: session?.identityProvider === "entra-workforce-cognito" }, { "Set-Cookie": cookie("np_session", "", { maxAge: 0 }) });
       return;
     }
 
