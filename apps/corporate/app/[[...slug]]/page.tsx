@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { ConciseHomePage } from "@/components/concise-home";
+import { OncologyEditorialPage } from "@/components/oncology-editorial";
 import {
   ConciseCroPage,
-  ConciseOncologyPage,
   ConciseProductsPage,
   ConciseRegulatoryPage,
   ConciseServicesPage,
@@ -122,7 +122,7 @@ export default async function CorporateRoute({ params }: RouteProps) {
       content = <ConciseCroPage />;
       break;
     case "oncology":
-      content = <ConciseOncologyPage />;
+      content = <OncologyEditorialPage />;
       break;
     case "products":
       content = <ConciseProductsPage />;
