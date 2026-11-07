@@ -362,6 +362,9 @@ function materialize(relative, route, main, metadata = null, template = null) {
   html = replaceMain(html, main);
   html = replaceChrome(html, route);
   if (metadata) html = setMetadata(html, { route, ...metadata });
+  if (route === "/contact/" && html.includes("data-email-enquiry-form")) {
+    html = html.replace("</body>", '<script src="/assets/js/contact-email-draft.js" defer></script></body>');
+  }
   write(relative, html);
 }
 
