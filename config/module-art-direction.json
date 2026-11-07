@@ -21,7 +21,11 @@
     "height": 900,
     "responsiveWidth": 960,
     "responsiveHeight": 540,
-    "formats": ["avif", "webp", "jpg"]
+    "formats": [
+      "avif",
+      "webp",
+      "jpg"
+    ]
   },
   "assets": [
     {
@@ -31,10 +35,15 @@
       "subject": "Governed pharmaceutical supply network with global route context",
       "alt": "",
       "caption": "Governed pharmaceutical supply network visual",
-      "focalPoint": { "desktop": "70% 50%", "mobile": "68% 50%" },
+      "focalPoint": {
+        "desktop": "70% 50%",
+        "mobile": "68% 50%"
+      },
       "maxReuse": 1,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/"]
+      "allowedRoutes": [
+        "/"
+      ]
     },
     {
       "id": "about-operating-model",
@@ -44,10 +53,15 @@
       "subject": "Executive and quality review of operating-model evidence",
       "alt": "Executive and quality professionals reviewing pharmaceutical operating-model records and neutral product samples",
       "caption": "Representative operating-model review",
-      "focalPoint": { "desktop": "66% 50%", "mobile": "72% 50%" },
+      "focalPoint": {
+        "desktop": "66% 50%",
+        "mobile": "72% 50%"
+      },
       "maxReuse": 1,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/about/"]
+      "allowedRoutes": [
+        "/about/"
+      ]
     },
     {
       "id": "company-corporate-structure",
@@ -57,10 +71,15 @@
       "subject": "Corporate structure and controlled legal records",
       "alt": "Corporate professionals arranging an organisation structure beside controlled records and neutral pharmaceutical packaging",
       "caption": "Representative corporate-structure review",
-      "focalPoint": { "desktop": "69% 52%", "mobile": "73% 50%" },
+      "focalPoint": {
+        "desktop": "69% 52%",
+        "mobile": "73% 50%"
+      },
       "maxReuse": 1,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/about/company/"]
+      "allowedRoutes": [
+        "/about/company/"
+      ]
     },
     {
       "id": "governance-quality-oversight",
@@ -70,10 +89,15 @@
       "subject": "Board and quality oversight of risk and evidence",
       "alt": "Senior professionals reviewing a pharmaceutical risk matrix, audit records and neutral sample packaging",
       "caption": "Representative governance and quality oversight",
-      "focalPoint": { "desktop": "70% 48%", "mobile": "72% 48%" },
+      "focalPoint": {
+        "desktop": "70% 48%",
+        "mobile": "72% 48%"
+      },
       "maxReuse": 1,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/about/governance/"]
+      "allowedRoutes": [
+        "/about/governance/"
+      ]
     },
     {
       "id": "services-connected-execution",
@@ -83,10 +107,16 @@
       "subject": "Cross-functional pharmaceutical launch-readiness review",
       "alt": "Scientific, quality and commercial professionals reviewing a pharmaceutical launch-readiness workflow",
       "caption": "Representative cross-functional service delivery",
-      "focalPoint": { "desktop": "72% 48%", "mobile": "73% 50%" },
+      "focalPoint": {
+        "desktop": "72% 48%",
+        "mobile": "73% 50%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/services/", "/capabilities/"]
+      "allowedRoutes": [
+        "/services/",
+        "/capabilities/"
+      ]
     },
     {
       "id": "regulatory-dossier-control",
@@ -96,10 +126,15 @@
       "subject": "Regulatory dossier and controlled review sequence",
       "alt": "Regulatory professionals reviewing a version-controlled dossier and neutral pharmaceutical packaging",
       "caption": "Representative regulatory-readiness review; no approval is implied",
-      "focalPoint": { "desktop": "70% 50%", "mobile": "73% 50%" },
+      "focalPoint": {
+        "desktop": "70% 50%",
+        "mobile": "73% 50%"
+      },
       "maxReuse": 1,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/regulatory-services/"]
+      "allowedRoutes": [
+        "/regulatory-services/"
+      ]
     },
     {
       "id": "product-oncology-vial",
@@ -109,10 +144,16 @@
       "subject": "Controlled scientific handling of a vial",
       "alt": "Gloved laboratory professional using a pipette to handle a vial in a controlled scientific setting",
       "caption": "Representative product-assessment context; not a NovaPharm product or facility",
-      "focalPoint": { "desktop": "52% 48%", "mobile": "58% 50%" },
+      "focalPoint": {
+        "desktop": "52% 48%",
+        "mobile": "58% 50%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/", "/oncology/"]
+      "allowedRoutes": [
+        "/",
+        "/oncology/"
+      ]
     },
     {
       "id": "product-portfolio-evidence",
@@ -122,10 +163,15 @@
       "subject": "Evidence-led review of representative pharmaceutical dosage formats",
       "alt": "Unbranded vials, oral-liquid bottle, blister packs, neutral cartons, labels and a quality dossier arranged for portfolio review",
       "caption": "Representative portfolio evidence; no marketed NovaPharm product, stock or facility is implied",
-      "focalPoint": { "desktop": "70% 50%", "mobile": "74% 50%" },
+      "focalPoint": {
+        "desktop": "70% 50%",
+        "mobile": "74% 50%"
+      },
       "maxReuse": 1,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/products/"]
+      "allowedRoutes": [
+        "/products/"
+      ]
     },
     {
       "id": "product-oral-liquid-formulation",
@@ -135,10 +181,16 @@
       "subject": "Controlled oral-liquid formulation analysis",
       "alt": "Gloved laboratory professional holding an amber glass bottle during liquid analysis",
       "caption": "Representative formulation context; not a NovaPharm laboratory or marketed product",
-      "focalPoint": { "desktop": "52% 48%", "mobile": "56% 50%" },
+      "focalPoint": {
+        "desktop": "52% 48%",
+        "mobile": "56% 50%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "contentImage",
-      "allowedRoutes": ["/product-portfolio/", "/oncology/"],
+      "allowedRoutes": [
+        "/product-portfolio/",
+        "/oncology/"
+      ],
       "publicationStatus": "retired",
       "retirementReason": "Removed from the concise canonical Products and Oncology presentation; retained as a governed, non-published source asset."
     },
@@ -150,10 +202,16 @@
       "subject": "Condition-sensitive specialist product analysis",
       "alt": "Gloved laboratory professional using a multichannel pipette during controlled sample analysis",
       "caption": "Representative controlled scientific handling; no facility ownership or active service is implied",
-      "focalPoint": { "desktop": "50% 48%", "mobile": "55% 50%" },
+      "focalPoint": {
+        "desktop": "50% 48%",
+        "mobile": "55% 50%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "contentImage",
-      "allowedRoutes": ["/product-portfolio/", "/oncology/"],
+      "allowedRoutes": [
+        "/product-portfolio/",
+        "/oncology/"
+      ],
       "publicationStatus": "retired",
       "retirementReason": "Removed from the concise canonical Products and Oncology presentation; retained as a governed, non-published source asset."
     },
@@ -165,10 +223,15 @@
       "subject": "Neutral medicine packaging and blister review",
       "alt": "Hand holding unbranded medicine blister packs against a clean blue background",
       "caption": "Representative packaging; no licence ownership, stock or availability is implied",
-      "focalPoint": { "desktop": "50% 50%", "mobile": "55% 50%" },
+      "focalPoint": {
+        "desktop": "50% 50%",
+        "mobile": "55% 50%"
+      },
       "maxReuse": 1,
       "structuredDataRelationship": "contentImage",
-      "allowedRoutes": ["/product-portfolio/"],
+      "allowedRoutes": [
+        "/product-portfolio/"
+      ],
       "publicationStatus": "retired",
       "retirementReason": "Removed when the legacy Product Portfolio route became a noindex compatibility redirect; retained as a governed, non-published source asset."
     },
@@ -180,10 +243,16 @@
       "subject": "Supplier and product-partner qualification meeting",
       "alt": "Pharmaceutical quality, technical and commercial professionals reviewing a partner capability dossier",
       "caption": "Representative qualification discussion; no current partnership is implied",
-      "focalPoint": { "desktop": "72% 48%", "mobile": "74% 50%" },
+      "focalPoint": {
+        "desktop": "72% 48%",
+        "mobile": "74% 50%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/partner-with-us/", "/#partner-ecosystem"]
+      "allowedRoutes": [
+        "/partner-with-us/",
+        "/#partner-ecosystem"
+      ]
     },
     {
       "id": "technology-traceability",
@@ -193,10 +262,16 @@
       "subject": "Secure batch identity, scanning and temperature evidence",
       "alt": "Unbranded medicine carton, barcode scanner, temperature logger and secure transport case in a controlled digital workflow",
       "caption": "Representative traceability architecture; external integrations remain subject to implementation",
-      "focalPoint": { "desktop": "72% 54%", "mobile": "74% 55%" },
+      "focalPoint": {
+        "desktop": "72% 54%",
+        "mobile": "74% 55%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/technology/", "/#partner-ecosystem"]
+      "allowedRoutes": [
+        "/technology/",
+        "/#partner-ecosystem"
+      ]
     },
     {
       "id": "insights-evidence-editorial",
@@ -206,10 +281,16 @@
       "subject": "Primary-source pharmaceutical research and editorial review",
       "alt": "Researcher reviewing primary sources and evidence for a pharmaceutical insight article",
       "caption": "Evidence-led editorial research",
-      "focalPoint": { "desktop": "72% 50%", "mobile": "74% 52%" },
+      "focalPoint": {
+        "desktop": "72% 50%",
+        "mobile": "74% 52%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/news-insights/", "/technology/ai-governance/"]
+      "allowedRoutes": [
+        "/news-insights/",
+        "/technology/ai-governance/"
+      ]
     },
     {
       "id": "contact-qualified-enquiry",
@@ -219,10 +300,16 @@
       "subject": "Focused pharmaceutical business consultation",
       "alt": "Two professionals discussing a pharmaceutical business opportunity in a private meeting",
       "caption": "Representative qualified business enquiry",
-      "focalPoint": { "desktop": "72% 48%", "mobile": "74% 50%" },
+      "focalPoint": {
+        "desktop": "72% 48%",
+        "mobile": "74% 50%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/contact/", "/#partner-ecosystem"]
+      "allowedRoutes": [
+        "/contact/",
+        "/#partner-ecosystem"
+      ]
     },
     {
       "id": "investors-capital-readiness",
@@ -232,10 +319,15 @@
       "subject": "Strategy, governance and capital-readiness review",
       "alt": "Senior professionals reviewing pharmaceutical strategy, risks and staged milestones",
       "caption": "Representative strategy and capital-readiness review; no financial achievement is implied",
-      "focalPoint": { "desktop": "73% 50%", "mobile": "75% 50%" },
+      "focalPoint": {
+        "desktop": "73% 50%",
+        "mobile": "75% 50%"
+      },
       "maxReuse": 1,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/investor-information/"]
+      "allowedRoutes": [
+        "/investor-information/"
+      ]
     },
     {
       "id": "careers-specialist-team",
@@ -245,10 +337,15 @@
       "subject": "Multidisciplinary pharmaceutical capability team",
       "alt": "Scientific, quality, operations and commercial professionals collaborating around a controlled work plan",
       "caption": "Representative multidisciplinary pharmaceutical work",
-      "focalPoint": { "desktop": "72% 49%", "mobile": "73% 50%" },
+      "focalPoint": {
+        "desktop": "72% 49%",
+        "mobile": "73% 50%"
+      },
       "maxReuse": 1,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/careers/"]
+      "allowedRoutes": [
+        "/careers/"
+      ]
     },
     {
       "id": "account-controlled-onboarding",
@@ -258,10 +355,16 @@
       "subject": "Company account due diligence and controlled onboarding",
       "alt": "Compliance professional and applicant reviewing company, responsible-person and document requirements",
       "caption": "Representative business-account review; submission does not create or approve an account",
-      "focalPoint": { "desktop": "73% 50%", "mobile": "75% 52%" },
+      "focalPoint": {
+        "desktop": "73% 50%",
+        "mobile": "75% 52%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/account-application/", "/#partner-ecosystem"]
+      "allowedRoutes": [
+        "/account-application/",
+        "/#partner-ecosystem"
+      ]
     },
     {
       "id": "legal-policy-governance",
@@ -271,10 +374,15 @@
       "subject": "Version-controlled privacy, accessibility and policy records",
       "alt": "Version-controlled policy binders, privacy document wallet and accessibility review cards",
       "caption": "Representative policy governance; legal approval is not implied",
-      "focalPoint": { "desktop": "72% 52%", "mobile": "74% 52%" },
+      "focalPoint": {
+        "desktop": "72% 52%",
+        "mobile": "74% 52%"
+      },
       "maxReuse": 1,
       "structuredDataRelationship": "primaryImageOfPage",
-      "allowedRoutes": ["/legal/"]
+      "allowedRoutes": [
+        "/legal/"
+      ]
     },
     {
       "id": "services-launch-readiness",
@@ -284,10 +392,15 @@
       "subject": "Controlled assessment-to-fulfilment evidence",
       "alt": "Gloved specialists checking neutral packaging, temperature evidence, route planning and launch-readiness records",
       "caption": "Representative service workflow",
-      "focalPoint": { "desktop": "58% 50%", "mobile": "66% 50%" },
+      "focalPoint": {
+        "desktop": "58% 50%",
+        "mobile": "66% 50%"
+      },
       "maxReuse": 1,
       "structuredDataRelationship": "contentImage",
-      "allowedRoutes": ["/services/"],
+      "allowedRoutes": [
+        "/services/"
+      ],
       "publicationStatus": "retired",
       "retirementReason": "Removed during the concise Services editorial redesign to avoid an unnecessary second photographic composition."
     },
@@ -299,10 +412,16 @@
       "subject": "Batch identity, tamper evidence and document continuity",
       "alt": "Quality specialist scanning neutral batch packaging beside temperature, sample and document records",
       "caption": "Representative batch-integrity controls; no product approval or availability is implied",
-      "focalPoint": { "desktop": "54% 48%", "mobile": "52% 48%" },
+      "focalPoint": {
+        "desktop": "54% 48%",
+        "mobile": "52% 48%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "contentImage",
-      "allowedRoutes": ["/regulatory-services/", "/#batch-integrity"]
+      "allowedRoutes": [
+        "/regulatory-services/",
+        "/#batch-integrity"
+      ]
     },
     {
       "id": "partners-due-diligence",
@@ -312,10 +431,16 @@
       "subject": "Supplier due diligence, capability and route evidence",
       "alt": "Professionals comparing a supplier dossier, neutral packaging, risk cards and route evidence",
       "caption": "Representative due diligence; no current partner relationship is implied",
-      "focalPoint": { "desktop": "52% 50%", "mobile": "55% 50%" },
+      "focalPoint": {
+        "desktop": "52% 50%",
+        "mobile": "55% 50%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "contentImage",
-      "allowedRoutes": ["/about/", "/partner-with-us/"],
+      "allowedRoutes": [
+        "/about/",
+        "/partner-with-us/"
+      ],
       "publicationStatus": "retired",
       "retirementReason": "Removed during the collaboration-ecosystem redesign to avoid generic due-diligence meeting imagery."
     },
@@ -327,10 +452,18 @@
       "subject": "Role-bound architecture, secure records and document controls",
       "alt": "Secure operations workstation with layered system diagrams, identity reader and protected package",
       "caption": "Representative platform architecture; capability status is stated in the adjacent content",
-      "focalPoint": { "desktop": "58% 48%", "mobile": "60% 48%" },
+      "focalPoint": {
+        "desktop": "58% 48%",
+        "mobile": "60% 48%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "contentImage",
-      "allowedRoutes": ["/partner-with-us/", "/technology/"]
+      "allowedRoutes": [
+        "/partner-with-us/",
+        "/technology/"
+      ],
+      "publicationStatus": "retired",
+      "retirementReason": "The source-controlled Technology page now uses the Medicines Terminal interface concept, not the former representative architecture photograph. Retained as a governed, non-published asset."
     },
     {
       "id": "sourcing-direct-gmp",
@@ -340,10 +473,16 @@
       "subject": "Technical qualification of a representative manufacturing partner",
       "alt": "Quality and manufacturing specialists reviewing a pharmaceutical filling line and process dossier",
       "caption": "Representative third-party manufacturing context; no facility ownership or current partnership is implied",
-      "focalPoint": { "desktop": "58% 50%", "mobile": "54% 50%" },
+      "focalPoint": {
+        "desktop": "58% 50%",
+        "mobile": "54% 50%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "contentImage",
-      "allowedRoutes": ["/#three-pillar-sourcing", "/partner-with-us/"],
+      "allowedRoutes": [
+        "/#three-pillar-sourcing",
+        "/partner-with-us/"
+      ],
       "publicationStatus": "retired",
       "retirementReason": "Removed when the three sourcing routes became a concise evidence-led sequence rather than three image cards."
     },
@@ -355,10 +494,16 @@
       "subject": "Product-specific pack and dossier assessment before a PLPI application",
       "alt": "Regulatory specialist comparing neutral European and UK packaging mock-ups with a product dossier",
       "caption": "Representative assessment; no PLPI application or licence grant is implied",
-      "focalPoint": { "desktop": "52% 50%", "mobile": "52% 50%" },
+      "focalPoint": {
+        "desktop": "52% 50%",
+        "mobile": "52% 50%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "contentImage",
-      "allowedRoutes": ["/#three-pillar-sourcing", "/partner-with-us/"],
+      "allowedRoutes": [
+        "/#three-pillar-sourcing",
+        "/partner-with-us/"
+      ],
       "publicationStatus": "retired",
       "retirementReason": "Removed when the three sourcing routes became a concise evidence-led sequence rather than three image cards."
     },
@@ -370,10 +515,16 @@
       "subject": "Temperature-aware European sourcing-route planning",
       "alt": "Logistics and quality professionals reviewing a European route beside insulated transport packaging",
       "caption": "Representative network planning; no current warehouse, route or supply operation is implied",
-      "focalPoint": { "desktop": "58% 50%", "mobile": "62% 50%" },
+      "focalPoint": {
+        "desktop": "58% 50%",
+        "mobile": "62% 50%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "contentImage",
-      "allowedRoutes": ["/#three-pillar-sourcing", "/partner-with-us/"],
+      "allowedRoutes": [
+        "/#three-pillar-sourcing",
+        "/partner-with-us/"
+      ],
       "publicationStatus": "retired",
       "retirementReason": "Removed when the three sourcing routes became a concise evidence-led sequence rather than three image cards."
     },
@@ -385,10 +536,16 @@
       "subject": "Batch-to-buyer evidence continuity",
       "alt": "Serial scan, batch record, temperature logger and receiving checks aligned around a sealed transport tote",
       "caption": "Evidence continuity from batch record to controlled receipt",
-      "focalPoint": { "desktop": "52% 50%", "mobile": "55% 50%" },
+      "focalPoint": {
+        "desktop": "52% 50%",
+        "mobile": "55% 50%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "articleImage",
-      "allowedRoutes": ["/news-insights/", "/news-insights/batch-to-buyer-pharmaceutical-traceability/"]
+      "allowedRoutes": [
+        "/news-insights/",
+        "/news-insights/batch-to-buyer-pharmaceutical-traceability/"
+      ]
     },
     {
       "id": "insight-compliance-first",
@@ -398,10 +555,16 @@
       "subject": "Quality release gate before distribution",
       "alt": "Quality professional reviewing evidence while neutral cartons remain behind a controlled release gate",
       "caption": "Representative release control; NovaPharm regulated wholesale supply has not commenced and remains subject to applicable authorisation",
-      "focalPoint": { "desktop": "54% 50%", "mobile": "58% 50%" },
+      "focalPoint": {
+        "desktop": "54% 50%",
+        "mobile": "58% 50%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "articleImage",
-      "allowedRoutes": ["/news-insights/", "/news-insights/compliance-first-pharmaceutical-distribution-uk/"]
+      "allowedRoutes": [
+        "/news-insights/",
+        "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
+      ]
     },
     {
       "id": "insight-gdp-qms",
@@ -411,10 +574,16 @@
       "subject": "Quality-system foundations and evidence architecture",
       "alt": "Quality professionals arranging training, supplier, deviation, temperature, recall and document-control records",
       "caption": "Representative QMS architecture; certification or operational compliance is not implied",
-      "focalPoint": { "desktop": "52% 50%", "mobile": "54% 50%" },
+      "focalPoint": {
+        "desktop": "52% 50%",
+        "mobile": "54% 50%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "articleImage",
-      "allowedRoutes": ["/news-insights/", "/news-insights/gdp-qms-pharmaceutical-distribution-foundations/"]
+      "allowedRoutes": [
+        "/news-insights/",
+        "/news-insights/gdp-qms-pharmaceutical-distribution-foundations/"
+      ]
     },
     {
       "id": "insight-oncology-forecasting",
@@ -424,10 +593,16 @@
       "subject": "Oncology supply uncertainty, lead time and expiry planning",
       "alt": "Supply specialists reviewing demand scenarios, lead times, expiry windows and neutral vial trays",
       "caption": "Representative oncology supply planning; no NovaPharm product availability is implied",
-      "focalPoint": { "desktop": "54% 50%", "mobile": "58% 50%" },
+      "focalPoint": {
+        "desktop": "54% 50%",
+        "mobile": "58% 50%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "articleImage",
-      "allowedRoutes": ["/news-insights/", "/news-insights/oncology-supply-chain-demand-forecasting/"]
+      "allowedRoutes": [
+        "/news-insights/",
+        "/news-insights/oncology-supply-chain-demand-forecasting/"
+      ]
     },
     {
       "id": "insight-plpi-resilience",
@@ -437,10 +612,16 @@
       "subject": "Unresolved product-specific route and evidence assessment",
       "alt": "Specialist comparing two neutral packaging mock-ups beside blank evidence and pathway cards",
       "caption": "Representative opportunity assessment; no PLPI application, licence or supply is implied",
-      "focalPoint": { "desktop": "54% 50%", "mobile": "58% 50%" },
+      "focalPoint": {
+        "desktop": "54% 50%",
+        "mobile": "58% 50%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "articleImage",
-      "allowedRoutes": ["/news-insights/", "/news-insights/plpi-pharmaceutical-supply-resilience/"]
+      "allowedRoutes": [
+        "/news-insights/",
+        "/news-insights/plpi-pharmaceutical-supply-resilience/"
+      ]
     },
     {
       "id": "insight-three-pillar",
@@ -450,49 +631,321 @@
       "subject": "Three sourcing evidence routes converging on one decision",
       "alt": "Three specialists bringing manufacturing, dossier and European-route evidence toward one governed decision point",
       "caption": "Representative sourcing-model analysis; no current supply route or partnership is implied",
-      "focalPoint": { "desktop": "52% 50%", "mobile": "54% 50%" },
+      "focalPoint": {
+        "desktop": "52% 50%",
+        "mobile": "54% 50%"
+      },
       "maxReuse": 2,
       "structuredDataRelationship": "articleImage",
-      "allowedRoutes": ["/news-insights/", "/news-insights/three-pillar-pharmaceutical-sourcing-model/"]
+      "allowedRoutes": [
+        "/news-insights/",
+        "/news-insights/three-pillar-pharmaceutical-sourcing-model/"
+      ]
     }
   ],
   "modules": [
-    { "id": "home", "path": "index.html", "route": "/", "purpose": "Corporate positioning and governed supply-network overview", "label": "Corporate network", "heroAsset": "home-supply-network", "signals": ["Regulatory sequence", "Qualified sourcing", "Evidence continuity", "Controlled access"] },
-    { "id": "about", "path": "about/index.html", "route": "/about/", "purpose": "Operating model and company positioning", "label": "Operating model", "heroAsset": "about-operating-model", "signals": ["Evidence", "Optionality", "Accountability", "Resilience"] },
-    { "id": "company", "path": "about/company/index.html", "route": "/about/company/", "purpose": "Legal identity, structure and operating status", "label": "Corporate structure", "heroAsset": "company-corporate-structure", "signals": ["Legal identity", "Business model", "Operating status", "Governance"] },
-    { "id": "governance", "path": "about/governance/index.html", "route": "/about/governance/", "purpose": "Governance, claims and accountability", "label": "Governance control", "heroAsset": "governance-quality-oversight", "signals": ["Board", "Quality", "Claims", "Audit trail"] },
-    { "id": "leadership", "path": "leadership/index.html", "route": "/leadership/", "purpose": "Leadership accountability", "label": "Leadership accountability", "heroType": "approved-portraits", "signals": ["Strategy", "Operations", "Science", "Quality"] },
-    { "id": "services", "path": "services/index.html", "route": "/services/", "purpose": "Connected pharmaceutical service delivery", "label": "Connected execution", "heroAsset": "services-connected-execution", "signals": ["Assess", "Qualify", "Control", "Fulfil"] },
-    { "id": "regulatory", "path": "regulatory-services/index.html", "route": "/regulatory-services/", "purpose": "Regulatory readiness and release controls", "label": "Regulatory control", "heroAsset": "regulatory-dossier-control", "secondaryAsset": "regulatory-batch-integrity", "signals": ["Authorisation", "QMS", "GDP", "Release gate"] },
-    { "id": "products", "path": "products/index.html", "route": "/products/", "purpose": "Product-category and opportunity architecture", "label": "Portfolio architecture", "heroAsset": "product-portfolio-evidence", "signals": ["Nutraxin", "Oncology", "Specialty", "Opportunity review"] },
-    { "id": "partners", "path": "partner-with-us/index.html", "route": "/partner-with-us/", "purpose": "Partner qualification and collaboration routes", "label": "Partner qualification", "heroAsset": "partners-qualification", "signals": ["Capability", "Licence", "Evidence", "Governance"] },
-    { "id": "technology", "path": "technology/index.html", "route": "/technology/", "purpose": "Controlled data, traceability and workflow architecture", "label": "Digital control plane", "heroAsset": "technology-traceability", "secondaryAsset": "technology-control-architecture", "signals": ["Identity", "Traceability", "Workflow", "Auditability"] },
-    { "id": "insights", "path": "news-insights/index.html", "route": "/news-insights/", "purpose": "Evidence-led pharmaceutical editorial authority", "label": "Evidence-led insight", "heroAsset": "insights-evidence-editorial", "signals": ["Primary sources", "Expert review", "Material updates", "Clear scope"] },
-    { "id": "contact", "path": "contact/index.html", "route": "/contact/", "purpose": "Qualified B2B enquiry", "label": "Qualified enquiry", "heroAsset": "contact-qualified-enquiry", "signals": ["Context", "Capability", "Evidence", "Next step"] },
-    { "id": "investors", "path": "investor-information/index.html", "route": "/investor-information/", "purpose": "Strategy, governance and investment readiness", "label": "Investment readiness", "heroAsset": "investors-capital-readiness", "signals": ["Strategy", "Governance", "Capital discipline", "Milestones"] },
-    { "id": "careers", "path": "careers/index.html", "route": "/careers/", "purpose": "Specialist capability and future team development", "label": "Specialist capability", "heroAsset": "careers-specialist-team", "signals": ["Scientific", "Regulatory", "Operational", "Digital"] },
-    { "id": "account", "path": "account-application/index.html", "route": "/account-application/", "purpose": "Controlled business-account onboarding", "label": "Controlled onboarding", "heroAsset": "account-controlled-onboarding", "signals": ["Company", "Responsible person", "GDP evidence", "Approval"] },
-    { "id": "legal", "path": "legal/index.html", "route": "/legal/", "purpose": "Legal, privacy and policy architecture", "label": "Policy architecture", "heroAsset": "legal-policy-governance", "signals": ["Privacy", "Terms", "Accessibility", "Corrections"] }
+    {
+      "id": "home",
+      "path": "index.html",
+      "route": "/",
+      "purpose": "Corporate positioning and governed supply-network overview",
+      "label": "Corporate network",
+      "heroAsset": "home-supply-network",
+      "signals": [
+        "Regulatory sequence",
+        "Qualified sourcing",
+        "Evidence continuity",
+        "Controlled access"
+      ]
+    },
+    {
+      "id": "about",
+      "path": "about/index.html",
+      "route": "/about/",
+      "purpose": "Operating model and company positioning",
+      "label": "Operating model",
+      "heroAsset": "about-operating-model",
+      "signals": [
+        "Evidence",
+        "Optionality",
+        "Accountability",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "company",
+      "path": "about/company/index.html",
+      "route": "/about/company/",
+      "purpose": "Legal identity, structure and operating status",
+      "label": "Corporate structure",
+      "heroAsset": "company-corporate-structure",
+      "signals": [
+        "Legal identity",
+        "Business model",
+        "Operating status",
+        "Governance"
+      ]
+    },
+    {
+      "id": "governance",
+      "path": "about/governance/index.html",
+      "route": "/about/governance/",
+      "purpose": "Governance, claims and accountability",
+      "label": "Governance control",
+      "heroAsset": "governance-quality-oversight",
+      "signals": [
+        "Board",
+        "Quality",
+        "Claims",
+        "Audit trail"
+      ]
+    },
+    {
+      "id": "leadership",
+      "path": "leadership/index.html",
+      "route": "/leadership/",
+      "purpose": "Leadership accountability",
+      "label": "Leadership accountability",
+      "heroType": "approved-portraits",
+      "signals": [
+        "Strategy",
+        "Operations",
+        "Science",
+        "Quality"
+      ]
+    },
+    {
+      "id": "services",
+      "path": "services/index.html",
+      "route": "/services/",
+      "purpose": "Connected pharmaceutical service delivery",
+      "label": "Connected execution",
+      "heroAsset": "services-connected-execution",
+      "signals": [
+        "Assess",
+        "Qualify",
+        "Control",
+        "Fulfil"
+      ]
+    },
+    {
+      "id": "regulatory",
+      "path": "regulatory-services/index.html",
+      "route": "/regulatory-services/",
+      "purpose": "Regulatory readiness and release controls",
+      "label": "Regulatory control",
+      "heroAsset": "regulatory-dossier-control",
+      "secondaryAsset": "regulatory-batch-integrity",
+      "signals": [
+        "Authorisation",
+        "QMS",
+        "GDP",
+        "Release gate"
+      ]
+    },
+    {
+      "id": "products",
+      "path": "products/index.html",
+      "route": "/products/",
+      "purpose": "Product-category and opportunity architecture",
+      "label": "Portfolio architecture",
+      "heroAsset": "product-portfolio-evidence",
+      "signals": [
+        "Nutraxin",
+        "Oncology",
+        "Specialty",
+        "Opportunity review"
+      ]
+    },
+    {
+      "id": "partners",
+      "path": "partner-with-us/index.html",
+      "route": "/partner-with-us/",
+      "purpose": "Partner qualification and collaboration routes",
+      "label": "Partner qualification",
+      "heroAsset": "partners-qualification",
+      "signals": [
+        "Capability",
+        "Licence",
+        "Evidence",
+        "Governance"
+      ]
+    },
+    {
+      "id": "technology",
+      "path": "technology/index.html",
+      "route": "/technology/",
+      "purpose": "Controlled data, traceability and workflow architecture",
+      "label": "Digital control plane",
+      "heroAsset": "technology-traceability",
+      "secondaryAsset": "technology-control-architecture",
+      "signals": [
+        "Identity",
+        "Traceability",
+        "Workflow",
+        "Auditability"
+      ]
+    },
+    {
+      "id": "insights",
+      "path": "news-insights/index.html",
+      "route": "/news-insights/",
+      "purpose": "Evidence-led pharmaceutical editorial authority",
+      "label": "Evidence-led insight",
+      "heroAsset": "insights-evidence-editorial",
+      "signals": [
+        "Primary sources",
+        "Expert review",
+        "Material updates",
+        "Clear scope"
+      ]
+    },
+    {
+      "id": "contact",
+      "path": "contact/index.html",
+      "route": "/contact/",
+      "purpose": "Qualified B2B enquiry",
+      "label": "Qualified enquiry",
+      "heroAsset": "contact-qualified-enquiry",
+      "signals": [
+        "Context",
+        "Capability",
+        "Evidence",
+        "Next step"
+      ]
+    },
+    {
+      "id": "investors",
+      "path": "investor-information/index.html",
+      "route": "/investor-information/",
+      "purpose": "Strategy, governance and investment readiness",
+      "label": "Investment readiness",
+      "heroAsset": "investors-capital-readiness",
+      "signals": [
+        "Strategy",
+        "Governance",
+        "Capital discipline",
+        "Milestones"
+      ]
+    },
+    {
+      "id": "careers",
+      "path": "careers/index.html",
+      "route": "/careers/",
+      "purpose": "Specialist capability and future team development",
+      "label": "Specialist capability",
+      "heroAsset": "careers-specialist-team",
+      "signals": [
+        "Scientific",
+        "Regulatory",
+        "Operational",
+        "Digital"
+      ]
+    },
+    {
+      "id": "account",
+      "path": "account-application/index.html",
+      "route": "/account-application/",
+      "purpose": "Controlled business-account onboarding",
+      "label": "Controlled onboarding",
+      "heroAsset": "account-controlled-onboarding",
+      "signals": [
+        "Company",
+        "Responsible person",
+        "GDP evidence",
+        "Approval"
+      ]
+    },
+    {
+      "id": "legal",
+      "path": "legal/index.html",
+      "route": "/legal/",
+      "purpose": "Legal, privacy and policy architecture",
+      "label": "Policy architecture",
+      "heroAsset": "legal-policy-governance",
+      "signals": [
+        "Privacy",
+        "Terms",
+        "Accessibility",
+        "Corrections"
+      ]
+    }
   ],
   "homepageStories": {
     "sourcing": [
-      { "asset": "sourcing-direct-gmp", "number": "01", "status": "Partner development", "title": "Direct GMP partnerships", "text": "Direct relationships with qualified pharmaceutical manufacturers, supported by technical assessment, vendor qualification and quality agreements." },
-      { "asset": "sourcing-plpi-assessment", "number": "02", "status": "Regulatory preparation", "title": "Product-specific PLPI pathways", "text": "Assessment of appropriate EEA-authorised medicines for UK parallel-import pathways, subject to product-specific applications and MHRA approval." },
-      { "asset": "sourcing-european-network", "number": "03", "status": "Network development", "title": "European buying network", "text": "A proposed network of qualified manufacturers, authorised distributors and licensed wholesalers across selected European markets." }
+      {
+        "asset": "sourcing-direct-gmp",
+        "number": "01",
+        "status": "Partner development",
+        "title": "Direct GMP partnerships",
+        "text": "Direct relationships with qualified pharmaceutical manufacturers, supported by technical assessment, vendor qualification and quality agreements."
+      },
+      {
+        "asset": "sourcing-plpi-assessment",
+        "number": "02",
+        "status": "Regulatory preparation",
+        "title": "Product-specific PLPI pathways",
+        "text": "Assessment of appropriate EEA-authorised medicines for UK parallel-import pathways, subject to product-specific applications and MHRA approval."
+      },
+      {
+        "asset": "sourcing-european-network",
+        "number": "03",
+        "status": "Network development",
+        "title": "European buying network",
+        "text": "A proposed network of qualified manufacturers, authorised distributors and licensed wholesalers across selected European markets."
+      }
     ],
     "partnerPathways": [
-      { "asset": "services-connected-execution", "number": "01", "title": "Manufacturing and development", "text": "GMP manufacturers, CMO and CDMO organisations, product owners and dossier holders." },
-      { "asset": "partners-qualification", "number": "02", "title": "Authorised sourcing", "text": "European and UK licensed wholesalers assessed through defined qualification controls." },
-      { "asset": "account-controlled-onboarding", "number": "03", "title": "Market access", "text": "Pharmacy groups, hospital procurement and qualified account pathways, subject to applicable authorisation." },
-      { "asset": "technology-traceability", "number": "04", "title": "Enabling infrastructure", "text": "Logistics, quality, regulatory, data and technology specialists." }
+      {
+        "asset": "services-connected-execution",
+        "number": "01",
+        "title": "Manufacturing and development",
+        "text": "GMP manufacturers, CMO and CDMO organisations, product owners and dossier holders."
+      },
+      {
+        "asset": "partners-qualification",
+        "number": "02",
+        "title": "Authorised sourcing",
+        "text": "European and UK licensed wholesalers assessed through defined qualification controls."
+      },
+      {
+        "asset": "account-controlled-onboarding",
+        "number": "03",
+        "title": "Market access",
+        "text": "Pharmacy groups, hospital procurement and qualified account pathways, subject to applicable authorisation."
+      },
+      {
+        "asset": "technology-traceability",
+        "number": "04",
+        "title": "Enabling infrastructure",
+        "text": "Logistics, quality, regulatory, data and technology specialists."
+      }
     ]
   },
   "insights": [
-    { "slug": "batch-to-buyer-pharmaceutical-traceability", "asset": "insight-batch-to-buyer" },
-    { "slug": "compliance-first-pharmaceutical-distribution-uk", "asset": "insight-compliance-first" },
-    { "slug": "gdp-qms-pharmaceutical-distribution-foundations", "asset": "insight-gdp-qms" },
-    { "slug": "oncology-supply-chain-demand-forecasting", "asset": "insight-oncology-forecasting" },
-    { "slug": "plpi-pharmaceutical-supply-resilience", "asset": "insight-plpi-resilience" },
-    { "slug": "three-pillar-pharmaceutical-sourcing-model", "asset": "insight-three-pillar" }
+    {
+      "slug": "batch-to-buyer-pharmaceutical-traceability",
+      "asset": "insight-batch-to-buyer"
+    },
+    {
+      "slug": "compliance-first-pharmaceutical-distribution-uk",
+      "asset": "insight-compliance-first"
+    },
+    {
+      "slug": "gdp-qms-pharmaceutical-distribution-foundations",
+      "asset": "insight-gdp-qms"
+    },
+    {
+      "slug": "oncology-supply-chain-demand-forecasting",
+      "asset": "insight-oncology-forecasting"
+    },
+    {
+      "slug": "plpi-pharmaceutical-supply-resilience",
+      "asset": "insight-plpi-resilience"
+    },
+    {
+      "slug": "three-pillar-pharmaceutical-sourcing-model",
+      "asset": "insight-three-pillar"
+    }
   ]
 }
