@@ -127,7 +127,7 @@ jobs:
                         title:document.title,
                         h1:document.querySelectorAll('h1').length,
                         hasHeader:!!document.querySelector('.site-header'),
-                        hasFooter:!!document.querySelector('.site-footer'),
+                        hasFooter:!!document.querySelector('.site-footer, .ref-footer'),
                         cssToken:style.getPropertyValue('--nph-ink').trim(),
                         hasCSS:[...document.querySelectorAll('link[rel="stylesheet"]')].some(e=>e.href.includes('novapharm-unified-20261107.css')),
                         font:body.fontFamily,
