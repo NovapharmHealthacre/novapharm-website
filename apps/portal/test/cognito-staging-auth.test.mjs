@@ -3,10 +3,10 @@ import { generateKeyPairSync, sign } from "node:crypto";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import {
-  stagingCognitoSettings,
   createStagingTransaction,
-  readStagingTransaction,
   exchangeStagingCode,
+  readStagingTransaction,
+  stagingCognitoSettings,
   verifyStagingIdentity
 } from "../lib/cognito-staging-auth.mjs";
 
