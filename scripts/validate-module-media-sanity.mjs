@@ -104,7 +104,7 @@ const authoredModuleContracts = new Map([
   ["regulatory", ["npd-main", "npd-roadmap npd-roadmap-large", "regulatory-batch-integrity"]],
   ["products", ["npd-main", "Food Supplement Portfolio Review", "npd-products-lead", "product-portfolio-evidence"]],
   ["partners", ["npd-main", "npd-partner-editorial", "npd-horizontal-steps"]],
-  ["technology", ["npd-main", "npd-maturity npd-maturity-full", "technology-control-architecture"]],
+  ["technology", ["npd-main", "npi-terminal", "npi-roadmap-grid", "npi-provenance-list"]],
   ["insights", ["npd-main", "npd-insight-lead", "npd-insight-list"]],
   ["contact", ["npd-main", "np-contact-reference-form", "How can we help?"]],
   ["account", ["npd-main", "npd-account-stages", "An account is approved through evidence"]]
@@ -143,14 +143,14 @@ for (const [path, assetId] of [
   ["capabilities/index.html", "services-connected-execution"],
   ["regulatory-services/index.html", "regulatory-batch-integrity"],
   ["products/index.html", "product-portfolio-evidence"],
-  ["technology/index.html", "technology-control-architecture"]
 ]) {
   assert.ok(read(path).includes(assets.get(assetId).base), `${path} must include its approved contextual photography`);
 }
 assert.doesNotMatch(read("services/index.html"), /services-launch-readiness/, "Services must not restore the retired second photographic composition");
 assert.doesNotMatch(read("partner-with-us/index.html"), /partners-due-diligence/, "Partners must not restore generic due-diligence meeting imagery");
 assert.match(read("regulatory-services/index.html"), /npd-roadmap npd-roadmap-large/, "Regulatory must use the seven-stage control sequence");
-assert.match(read("technology/index.html"), /npd-maturity npd-maturity-full/, "Technology must expose the governed maturity architecture");
+assert.match(read("technology/index.html"), /npi-roadmap-grid/, "Technology must explain development maturity");
+assert.match(read("technology/index.html"), /npi-terminal/, "Technology must provide an explicit illustrative Medicines Terminal");
 assert.match(read("leadership/index.html"), /module-portrait-composition/, "Leadership must use approved portraits");
 assert.match(read("products/index.html"), /npd-product-picture/, "Products must retain approved category-specific product media");
 assert.doesNotMatch(read("index.html"), /partner-ecosystem-grid/, "Homepage must not retain the generic repeated partner grid");
