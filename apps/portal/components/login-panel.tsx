@@ -41,6 +41,7 @@ export function LoginPanel() {
   }
 
   const workforceVerification = process.env.NEXT_PUBLIC_COGNITO_STAGING_VERIFICATION_ENABLED === "true" && accessType !== "customer";
+  const workforceSessionEnabled = workforceVerification && process.env.NEXT_PUBLIC_COGNITO_PORTAL_SESSION_ENABLED === "true";
 
   return <main className="login-layout">
     <section className="login-context" aria-labelledby="portal-title">
@@ -65,14 +66,14 @@ export function LoginPanel() {
           <Icon aria-hidden="true" /><span>{label}</span>
         </label>)}
       </fieldset>
-      {workforceVerification ? <p className="security-note">Microsoft workforce identity can be verified in staging. Protected portal access remains disabled until the server-authorised session and role gates are deployed.</p> : <form className="login-form" onSubmit={submit}>
+      {workforceVerification ? <p className="security-note">{workforceSessionEnabled ? "Microsoft sign-in requires an individually approved workforce account and server-enforced access scope." : "Microsoft identity can be verified in staging; protected portal access remains disabled until the production acceptance gates pass."}</p> : <form className="login-form" onSubmit={submit}>
         <label htmlFor="username">Username or business email</label>
         <input id="username" name="username" autoComplete="username" required maxLength={160} />
         <label htmlFor="password">Password</label>
         <input id="password" name="password" type="password" autoComplete="current-password" required maxLength={256} />
         <button className="button primary" type="submit" disabled={busy}>{busy ? "Signing in…" : "Sign in securely"}</button>
       </form>}
-      {workforceVerification ? <a className="button microsoft" href="/auth/start/">Verify Microsoft identity (staging only)</a> : null}
+      {workforceVerification ? <a className="button microsoft" href={`/auth/start/?accessType=${accessType}`}>{workforceSessionEnabled ? "Continue with Microsoft" : "Verify Microsoft identity (staging only)"}</a> : null}
       <p className="form-status" aria-live="polite">{status}</p>
       <p className="security-note"><ShieldCheck aria-hidden="true" /> Credentials are verified by the protected server. Passwords are never stored in this browser.</p>
     </section>
