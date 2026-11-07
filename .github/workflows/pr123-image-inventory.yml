@@ -43,3 +43,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "chore(intelligence): update governed image inventory for approved logo and preview"
           git push origin HEAD:refs/heads/feat/intelligence-official-brand-real-ons-boundaries-20261107
+
+# Rerun after registered owner-supplied wordmark provenance.
