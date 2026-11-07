@@ -111,7 +111,7 @@ a:focus-visible{outline:3px solid var(--blue);outline-offset:4px}
 <div class="portal-landing">
 <a class="skip" href="#portal-main">Skip to portal information</a>
 <header class="header">
-<a class="logo" href="/" aria-label="NovaPharm Healthcare home"><img src="/assets/brand/novapharm-healthcare-logo.svg" width="2048" height="258" alt="NovaPharm Healthcare"></a>
+<a class="logo" href="/" aria-label="NovaPharm Healthcare home"><img src="/assets/brand/novapharm-healthcare-logo.png" width="2048" height="258" alt="NovaPharm Healthcare"></a>
 <nav aria-label="Corporate navigation"><a href="/about/">Company</a><a href="/products/">Products</a><a href="/contact/">Support</a></nav>
 </header>
 <main class="content" id="portal-main">
