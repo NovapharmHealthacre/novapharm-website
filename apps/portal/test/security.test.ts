@@ -60,3 +60,19 @@ test("legacy portal clients use fixed application-owned destinations", () => {
   assert.doesNotMatch(clients, /\.redirectTo|logoutUrl/);
   assert.match(clients, /portalLandingRoute|post_logout_redirect_uri/);
 });
+
+test("secure login keeps server authentication while removing decorative icons", () => {
+  const login = source("components/login-panel.tsx");
+  const appearance = source("app/apple-pharma-portal.css");
+  assert.match(login, /className="np-portal-entry"/);
+  assert.match(login, /Welcome back\./);
+  assert.match(login, /protectedMutation/);
+  assert.match(login, /landingRouteForAccess/);
+  assert.match(login, /NEXT_PUBLIC_ENTRA_LOGIN_ENABLED/);
+  assert.match(login, /name="accessType"/);
+  assert.match(login, /autoComplete="current-password"/);
+  assert.doesNotMatch(login, /lucide-react|<svg|localStorage|sessionStorage/);
+  assert.match(appearance, /\.np-portal-entry-main/);
+  assert.match(appearance, /prefers-reduced-transparency/);
+  assert.match(appearance, /prefers-contrast: more/);
+});
