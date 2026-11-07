@@ -32,71 +32,108 @@
         <h2 id="npi-terminal-title">One medicine.<br>One connected view.</h2>
         <p>A professional workspace designed to put identity, evidence, geography, forecasting and commercial context around the medicine you're studying.</p>
       </div>
-      <figure class="npi-product-figure">
-        <div class="npi-terminal" aria-label="Illustrative desktop Medicines Terminal interface">
-          <div class="npi-terminal-top">
-            <span class="npi-terminal-wordmark">NOVAPHARM <b>INTELLIGENCE</b></span>
-            <span class="npi-terminal-environment">INTERFACE CONCEPT</span>
-          </div>
-          <div class="npi-terminal-body">
-            <aside class="npi-terminal-sidebar" aria-label="Illustrative product navigation">
-              <div class="npi-terminal-sidebar-heading">WORKSPACE</div>
-              <div class="npi-terminal-nav-active">Search</div>
-              <div>Medicine overview</div>
-              <div>Evidence</div>
-              <div>Market &amp; geography</div>
-              <div>Trends &amp; forecasting</div>
-              <div>Signals</div>
-              <div>Portfolio</div>
-              <div>Reports</div>
-              <div class="npi-terminal-sidebar-footer">NOVA / RESEARCH CONCEPT</div>
+      <figure class="npi-product-figure npi-dashboard-figure">
+        <div class="npi-terminal npi-dash" data-medicines-terminal-preview role="region" aria-label="NovaPharm Intelligence Medicines Terminal interface preview using simulated sample metrics">
+          <header class="npi-dash-topbar">
+            <div class="npi-dash-brand"><span class="npi-dash-brand-symbol" aria-hidden="true"><i></i><i></i><i></i></span><span>NovaPharm <strong>Intelligence</strong></span></div>
+            <nav class="npi-dash-global-tabs" tabindex="0" aria-label="Scrollable preview primary areas"><span>Overview</span><span>Evidence</span><span>Market</span><span class="is-selected">Geography</span><span>More</span></nav>
+            <div class="npi-dash-quick-search">Search a medicine, substance or topic…</div>
+            <span class="npi-dash-preview-tag">PRODUCT PREVIEW</span>
+          </header>
+          <div class="npi-dash-shell">
+            <aside class="npi-dash-sidebar" aria-label="Example application navigation">
+              <p class="npi-dash-menu-label">WORKSPACE</p>
+              <div class="npi-dash-side-item">Home</div>
+              <div class="npi-dash-side-item is-selected">Medicines</div>
+              <div class="npi-dash-side-item">Geography</div>
+              <div class="npi-dash-side-item">Organisations</div>
+              <div class="npi-dash-side-item">Suppliers</div>
+              <div class="npi-dash-side-item">Regulatory</div>
+              <div class="npi-dash-side-item">Reports</div>
+              <div class="npi-dash-side-item">Saved views</div>
+              <div class="npi-dash-side-footer">THE MEDICINES TERMINAL<br><span>Workspace concept</span></div>
             </aside>
-            <div class="npi-terminal-centre">
-              <div class="npi-terminal-search"><span>Search a medicine</span><strong>Apixaban</strong><span class="npi-terminal-search-hint">Concept example</span></div>
-              <div class="npi-terminal-breadcrumb">MEDICINE / OVERVIEW</div>
-              <div class="npi-terminal-heading"><div><h3>Apixaban</h3><p>Medicine identity workspace</p></div><span class="npi-concept-chip">DEMONSTRATION</span></div>
-              <div class="npi-terminal-tabs"><span class="active">OVERVIEW</span><span>EVIDENCE</span><span>MARKET</span><span>MORE</span></div>
-              <div class="npi-terminal-panel">
-                <div class="npi-terminal-panel-head"><h4>Identity &amp; mapping</h4><span>Source validation required</span></div>
-                <div class="npi-terminal-info-grid">
-                  <div><span>Medicine terminology</span><strong>VTM / VMP / AMP</strong></div>
-                  <div><span>Classification</span><strong>ATC / BNF</strong></div>
-                  <div><span>Jurisdiction</span><strong>UK / EU contexts</strong></div>
-                  <div><span>Evidence state</span><strong>Unresolved until verified</strong></div>
+            <div class="npi-dash-content">
+              <div class="npi-dash-path"><span>Medicines</span><span aria-hidden="true">›</span><b>Salamol</b><span aria-hidden="true">›</span><span>Geography</span></div>
+              <div class="npi-dash-medicine">
+                <div class="npi-dash-inhaler-art" aria-hidden="true"><span class="npi-dash-inhaler-body"></span><span class="npi-dash-inhaler-mouthpiece"></span></div>
+                <div class="npi-dash-medicine-copy"><div class="npi-dash-name-row"><h3>Salamol</h3><span class="npi-dash-pill">Example medicine</span></div><p>Salbutamol · Inhalation presentation</p><small>Medicine identity / UK context · Reference record pending source validation</small></div>
+                <div class="npi-dash-medicine-action">Save to watchlist <span>+</span></div>
+              </div>
+              <div class="npi-dash-localtabs" role="group" tabindex="0" aria-label="Scrollable medicine preview sections"><span>Overview</span><span>Evidence</span><span>Market</span><span class="is-selected">Geography</span><span>Supply</span><span>Regulatory</span><span class="npi-dash-date">Example period · Jun 2026</span></div>
+              <div class="npi-dash-databar"><span class="npi-dash-demo-dot"></span> Sample data view <span aria-hidden="true">·</span> Demonstration figures, not live NHSBSA statistics <span class="npi-dash-annotation">PROVENANCE BEFORE PREDICTION</span></div>
+              <div class="npi-dash-body">
+                <div class="npi-dash-primary">
+                  <div class="npi-dash-kpis">
+                    <article class="npi-dash-kpi"><p>Items prescribed</p><strong>2.4M</strong><small>Illustrative England total</small></article>
+                    <article class="npi-dash-kpi"><p>Items per 1,000 patients</p><strong>42.1</strong><small>Illustrative normalised metric</small></article>
+                    <article class="npi-dash-kpi"><p>Highest example region</p><strong class="npi-dash-region-name">North East</strong><small>78.4 per 1,000 · sample</small></article>
+                    <article class="npi-dash-kpi"><p>Lowest example region</p><strong class="npi-dash-region-name">South West</strong><small>24.7 per 1,000 · sample</small></article>
+                  </div>
+                  <div class="npi-dash-analytics-grid">
+                    <article class="npi-dash-card npi-terminal-geography" aria-labelledby="npi-dash-map-heading">
+                      <div class="npi-dash-card-title"><div><h4 id="npi-dash-map-heading">Geography analysis</h4><p>Illustrative prescribing variation by region</p></div><span class="npi-dash-card-badge">SAMPLE</span></div>
+                      <div class="npi-dash-map-layout">
+                        <div class="npi-dash-map-filters">
+                          <span class="npi-dash-filter-label">Geography</span><span class="npi-dash-filter-value">England regions</span>
+                          <span class="npi-dash-filter-label">Metric</span><span class="npi-dash-filter-value">Items per 1,000</span>
+                          <span class="npi-dash-filter-label">Period</span><span class="npi-dash-filter-value">Jun 2026</span>
+                          <div class="npi-dash-legend"><b>Illustrative index</b><span><i class="level-5"></i> Higher</span><span><i class="level-4"></i> Above average</span><span><i class="level-3"></i> Mid-range</span><span><i class="level-2"></i> Lower</span><span><i class="level-1"></i> No observation</span></div>
+                        </div>
+                        <div class="npi-dash-map-display"><img src="/assets/media/technology/england-geography-concept.svg" alt="Stylised map-shaped regional illustration. Not a real NHS geography boundary map or measured prescription data." width="360" height="460" loading="lazy"><span>Indicative regional pattern · not to scale</span></div>
+                      </div>
+                    </article>
+                    <article class="npi-dash-card npi-dash-ranking" aria-labelledby="npi-dash-ranking-heading">
+                      <div class="npi-dash-card-title"><div><h4 id="npi-dash-ranking-heading">Regional comparison</h4><p>Illustrative example rates</p></div><span class="npi-dash-card-badge">SAMPLE</span></div>
+                      <table><thead><tr><th scope="col">Region</th><th scope="col">Items / 1,000</th><th scope="col">Index</th></tr></thead><tbody>
+                        <tr><th scope="row">North East</th><td>78.4</td><td><span class="npi-dash-table-meter"><i class="npi-dash-w88"></i></span></td></tr>
+                        <tr><th scope="row">North West</th><td>69.2</td><td><span class="npi-dash-table-meter"><i class="npi-dash-w78"></i></span></td></tr>
+                        <tr><th scope="row">Yorkshire</th><td>61.8</td><td><span class="npi-dash-table-meter"><i class="npi-dash-w70"></i></span></td></tr>
+                        <tr><th scope="row">West Midlands</th><td>54.6</td><td><span class="npi-dash-table-meter"><i class="npi-dash-w62"></i></span></td></tr>
+                        <tr><th scope="row">East Midlands</th><td>51.3</td><td><span class="npi-dash-table-meter"><i class="npi-dash-w58"></i></span></td></tr>
+                        <tr><th scope="row">East of England</th><td>43.6</td><td><span class="npi-dash-table-meter"><i class="npi-dash-w49"></i></span></td></tr>
+                        <tr><th scope="row">London</th><td>39.2</td><td><span class="npi-dash-table-meter"><i class="npi-dash-w44"></i></span></td></tr>
+                        <tr><th scope="row">South East</th><td>31.5</td><td><span class="npi-dash-table-meter"><i class="npi-dash-w36"></i></span></td></tr>
+                        <tr><th scope="row">South West</th><td>24.7</td><td><span class="npi-dash-table-meter"><i class="npi-dash-w28"></i></span></td></tr>
+                      </tbody></table>
+                      <p class="npi-dash-table-foot">Sample comparison only. Production views will use dated, source-linked geographies and methods.</p>
+                    </article>
+                  </div>
+                  <div class="npi-dash-bottom-grid">
+                    <article class="npi-dash-card npi-terminal-trends" aria-labelledby="npi-dash-trends-heading">
+                      <div class="npi-dash-card-title"><div><h4 id="npi-dash-trends-heading">Trends by region</h4><p>Illustrative 12-period series · index, not actual prescriptions</p></div><span class="npi-dash-card-badge">SAMPLE</span></div>
+                      <div class="npi-dash-chart-container"><div class="npi-dash-chart-y"><span>100</span><span>75</span><span>50</span><span>25</span><span>0</span></div><canvas class="npi-dash-chart" data-npi-chart width="700" height="230" aria-label="Synthetic trend illustration for North East, Midlands, London and South West; no live values"></canvas></div>
+                      <div class="npi-dash-chart-axis"><span>Jul '25</span><span>Oct '25</span><span>Jan '26</span><span>Apr '26</span><span>Jun '26</span></div>
+                      <div class="npi-dash-chart-key"><span><i class="npi-series-one"></i> North East</span><span><i class="npi-series-two"></i> Midlands</span><span><i class="npi-series-three"></i> London</span><span><i class="npi-series-four"></i> South West</span></div>
+                    </article>
+                    <article class="npi-dash-card npi-dash-compare" aria-labelledby="npi-dash-compare-heading">
+                      <div class="npi-dash-card-title"><div><h4 id="npi-dash-compare-heading">Compare regions</h4><p>Choose series to highlight</p></div></div>
+                      <div class="npi-dash-compare-options" role="group" aria-label="Select sample trend series">
+                        <label><input type="checkbox" data-npi-series="0" checked> North East</label>
+                        <label><input type="checkbox" data-npi-series="1" checked> Midlands</label>
+                        <label><input type="checkbox" data-npi-series="2" checked> London</label>
+                        <label><input type="checkbox" data-npi-series="3" checked> South West</label>
+                      </div>
+                      <button class="npi-dash-update" type="button" data-npi-update>Update preview chart</button>
+                      <span class="npi-dash-chart-status" data-npi-status aria-live="polite">Four synthetic series shown</span>
+                    </article>
+                  </div>
                 </div>
-              </div>
-              <div class="npi-terminal-bottom-row">
-                <div><span>Observed market</span><strong>Awaiting validated sources</strong></div>
-                <div><span>Forecast</span><strong>No model output shown</strong></div>
-              </div>
-              <div class="npi-terminal-insights" aria-label="Geography and trend design previews">
-                <section class="npi-terminal-insight npi-terminal-geography" aria-labelledby="npi-geography-title">
-                  <div class="npi-terminal-insight-top"><span>MARKET / GEOGRAPHY</span><small>Source mapping</small></div>
-                  <h4 id="npi-geography-title">Where the medicine matters.</h4>
-                  <div class="npi-geography-visual" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
-                  <div class="npi-terminal-geography-regions"><span>United Kingdom</span><span>European Union</span><span>Other markets</span></div>
-                  <p>Jurisdiction-aware demand, access and supply views.</p>
-                </section>
-                <section class="npi-terminal-insight npi-terminal-trends" aria-labelledby="npi-trends-title">
-                  <div class="npi-terminal-insight-top"><span>MARKET / TRENDS</span><small>Preview layout</small></div>
-                  <h4 id="npi-trends-title">See the direction, with context.</h4>
-                  <div class="npi-trend-visual" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-                  <div class="npi-trend-key"><span>Observed history</span><span>Forecast intervals</span></div>
-                  <p>Source-linked historical series and validation-ready forecasts.</p>
-                </section>
+                <aside class="npi-dash-evidence" aria-label="Evidence and contextual source information">
+                  <div class="npi-dash-card npi-dash-sources"><div class="npi-dash-card-title"><div><h4>Evidence &amp; sources</h4><p>Governed source register</p></div></div>
+                    <ul><li><span class="npi-dash-source-symbol"></span><div><b>Electronic Prescribing Data</b><small>NHSBSA · connection not active</small></div></li>
+                    <li><span class="npi-dash-source-symbol"></span><div><b>Prescription Cost Analysis</b><small>NHSBSA · connection not active</small></div></li>
+                    <li><span class="npi-dash-source-symbol"></span><div><b>Scottish Medicines Data</b><small>SCMD · coverage pending</small></div></li>
+                    <li><span class="npi-dash-source-symbol"></span><div><b>Population denominators</b><small>ONS / NHS · pending validation</small></div></li></ul><p class="npi-dash-source-footer">Source freshness, rights and lineage are required before release.</p>
+                  </div>
+                  <div class="npi-dash-card"><div class="npi-dash-card-title"><div><h4>Geography context</h4><p>England · demonstration scope</p></div></div><dl class="npi-dash-metadata"><div><dt>Geographic unit</dt><dd>Region</dd></div><div><dt>ICB breakdown</dt><dd>Planned</dd></div><div><dt>Comparability</dt><dd>Unresolved</dd></div><div><dt>Data period</dt><dd>Example only</dd></div></dl></div>
+                  <div class="npi-dash-card"><div class="npi-dash-card-title"><div><h4>About this view</h4><p>Evidence before inference</p></div></div><dl class="npi-dash-metadata"><div><dt>Observed fact</dt><dd>Not populated</dd></div><div><dt>Derived metric</dt><dd>Sample values</dd></div><div><dt>Model forecast</dt><dd>Not generated</dd></div><div><dt>Methodology</dt><dd>Under development</dd></div></dl><p class="npi-dash-source-footer">Source data and model results will appear only after validation.</p></div>
+                </aside>
               </div>
             </div>
-            <aside class="npi-terminal-evidence" aria-label="Illustrative evidence rail">
-              <p>EVIDENCE RAIL</p>
-              <h4>Know what supports the view.</h4>
-              <div><span>Observed fact</span><strong>Primary-source record</strong><small>Verification required</small></div>
-              <div><span>Derived metric</span><strong>Methodology &amp; lineage</strong><small>Not populated</small></div>
-              <div><span>Model forecast</span><strong>Version &amp; uncertainty</strong><small>Not available</small></div>
-              <p class="npi-rail-bottom">PROVENANCE BEFORE PREDICTION</p>
-            </aside>
           </div>
         </div>
-        <figcaption>Illustrative interface. Geography, trends and forecasts will require validated source data and model governance before production use.</figcaption>
+        <figcaption>Illustrative product experience using simulated figures and schematic geography. No live NHSBSA data, licence status, connected evidence, verified market rates, forecast or customer records are represented.</figcaption>
       </figure>
     </div>
   </section>

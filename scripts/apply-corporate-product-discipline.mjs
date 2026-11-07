@@ -553,6 +553,9 @@ function materialize(relative, route, main, metadata = null, template = null) {
   if (route === "/technology/" && !html.includes('href="/assets/css/technology-intelligence.css"')) {
     html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/technology-intelligence.css">\n</head>');
   }
+  if (route === "/technology/" && !html.includes('src="/assets/js/medicines-terminal-preview.js"')) {
+    html = html.replace("</body>", '<script src="/assets/js/medicines-terminal-preview.js" defer></script></body>');
+  }
   if (route === "/contact/" && html.includes("data-email-enquiry-form")) {
     html = html.replace("</body>", '<script src="/assets/js/contact-email-draft.js" defer></script></body>');
   }
