@@ -10,7 +10,7 @@ export function stagingCognitoSettings(env = process.env) {
   const clientId = env.COGNITO_CLIENT_ID || "";
   const clientSecret = env.COGNITO_CLIENT_SECRET || "";
   const transactionKey = env.COGNITO_TRANSACTION_KEY || "";
-  if (domain.protocol !== "https:" || !/^[a-z0-9-]+\.auth\.eu-north-1\.amazoncognito\.com$/.test(domain.hostname) ||
+  if (domain.protocol !== "https:" || domain.hostname !== "novapharm-staging-250675045172.auth.eu-north-1.amazoncognito.com" ||
     domain.pathname !== "/" || domain.search || domain.hash || domain.username || domain.password) throw new Error("Unapproved staging Cognito domain.");
   if (!/^[a-z0-9]{20,40}$/.test(clientId) || clientSecret.length < 20 || transactionKey.length < 32) throw new Error("Cognito server credentials not configured.");
   if (callback.pathname !== "/auth/callback/" || callback.search || callback.hash || callback.username || callback.password) throw new Error("The callback must be the application-owned callback route.");
