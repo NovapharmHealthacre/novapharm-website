@@ -1,0 +1,48 @@
+name: Reconcile Next homepage image ledger (temporary isolated candidate)
+on:
+  push:
+    branches: [feat/live-next-apple-homepage-20261107]
+    paths:
+      - .github/workflows/next-home-image-ledger-candidate.yml
+permissions:
+  contents: write
+concurrency:
+  group: next-home-image-ledger-candidate
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: true
+      - name: Use Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Regenerate governed image inventory from all registered assets
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts
+          npm run images:inventory
+          npm run images:inventory:validate
+          git diff --check
+          git diff --stat -- audit/generated/image-inventory.json
+      - name: Commit exact generated ledger on candidate branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/feat/live-next-apple-homepage-20261107"
+          test "$(git ls-remote origin refs/heads/feat/live-next-apple-homepage-20261107 | cut -f1)" = "$GITHUB_SHA"
+          git add audit/generated/image-inventory.json
+          if git diff --cached --quiet; then
+            echo "No ledger update required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix(evidence): reconcile image inventory with Next editorial homepage"
+          git push origin HEAD:refs/heads/feat/live-next-apple-homepage-20261107
