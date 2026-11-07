@@ -1,15 +1,18 @@
 {
   "publisher": "Nutraxin UK",
   "catalogueUrl": "https://nutraxin.uk.com/products/",
-  "verifiedOn": "2026-10-01",
+  "verifiedOn": "2026-11-07",
   "scope": "Product-information destinations, not stock, sale, regulatory or approved-label verification. Pack sizes may vary on the publisher site.",
+  "unavailableProductNotes": {
+    "vitamin-c-500mg-chewable-30-tablets": "The official linked Nutraxin UK product page returned HTTP 404 on 2026-11-07. No verified product-specific substitute is available; catalogue pack and dosage require independent confirmation."
+  },
   "products": {
     "vitamin-d3-120-tablets": "https://nutraxin.uk.com/product/vitamin-d3-k2-tablet/",
     "vitamin-d3-spray-30ml": "https://nutraxin.uk.com/product/vitamin-d3-k2-sprayy/",
     "vitamin-d3-k2-120-tablets": "https://nutraxin.uk.com/product/vitamin-d3-k2-tablet-2/",
     "vitamin-d3-k2-spray-30ml": "https://nutraxin.uk.com/product/vitamin-d3-k2-spray/",
     "vitamin-c-1000mg-30-tablets": "https://nutraxin.uk.com/product/vitamin-c-1000-mg-tablet/",
-    "vitamin-c-500mg-chewable-30-tablets": "https://nutraxin.uk.com/product/vitamin-c-chewable-tablets/",
+    "vitamin-c-500mg-chewable-30-tablets": null,
     "vitamin-max-60-tablets": "https://nutraxin.uk.com/product/vitamin-max-c-d-zinc/",
     "vitamin-max-15-effervescent-tablets": "https://nutraxin.uk.com/product/effervescent-vitamin-c-d-zinc/",
     "magnesium-complex-60-tablets": "https://nutraxin.uk.com/product/magnesium-complex/",
