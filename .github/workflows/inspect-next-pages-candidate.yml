@@ -74,7 +74,10 @@ jobs:
             const b = await chromium.launch({headless:true});
             const page = await b.newPage({viewport:{width:390,height:844}});
             const errors = [];
+            const failedResources = [];
             page.on('pageerror',error=>errors.push(error.message));
+            page.on('response',response=>{if(response.status()>=400)failedResources.push(response.status()+' '+response.url())});
+            page.on('requestfailed',request=>failedResources.push('network '+request.url()+' '+(request.failure()?.errorText||'')));
             page.on('console',message=>{if(message.type()==='error')errors.push(message.text())});
             const response=await page.goto('http://127.0.0.1:3188/',{waitUntil:'networkidle',timeout:30000});
             await page.waitForTimeout(1500);
@@ -86,7 +89,7 @@ jobs:
               overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1,
               brokenImages:[...document.images].filter(x=>x.complete && x.naturalWidth===0).map(x=>x.currentSrc)
             }));
-            console.log(JSON.stringify({status:response?.status(),data,errors},null,2));
+            console.log(JSON.stringify({status:response?.status(),data,errors,failedResources},null,2));
             await b.close();
             if(response?.status()!==200 || !data.editorial || !data.nova || data.overflow || data.brokenImages.length || errors.length)process.exitCode=1;
           })().catch(e=>{console.error(e);process.exitCode=1});
