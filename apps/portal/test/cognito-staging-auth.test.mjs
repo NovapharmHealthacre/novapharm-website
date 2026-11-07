@@ -42,7 +42,8 @@ test("authorisation request pins Entra, PKCE, state and nonce; tampering and exp
   assert.equal(url.searchParams.get("nonce"), tx.nonce);
   assert.deepEqual(readStagingTransaction(tx.cookieValue, tx.state, config, 1000123), { nonce: tx.nonce, verifier: tx.verifier });
   assert.equal(readStagingTransaction(tx.cookieValue, "invalid", config, 1000123), null);
-  const changed = tx.cookieValue.slice(0, -1) + (tx.cookieValue.endsWith("Q") ? "R" : "Q");
+  const [payload, signature] = tx.cookieValue.split(".");
+  const changed = payload + "." + (signature.startsWith("A") ? "B" : "A") + signature.slice(1);
   assert.equal(readStagingTransaction(changed, tx.state, config, 1000123), null);
   assert.equal(readStagingTransaction(tx.cookieValue, tx.state, config, 1300001), null);
 });
