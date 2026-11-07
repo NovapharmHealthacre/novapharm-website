@@ -63,6 +63,14 @@ jobs:
           for file in htmls:
               if ".git" in file.parts: continue
               html=file.read_text(encoding="utf-8")
+              # The independently authored Contact page permits inline CSS only.
+              # Allow same-origin CSS while preserving script-src 'none' and mailto-only forms.
+              if file.relative_to(root).as_posix() == "contact/index.html":
+                  if "style-src 'unsafe-inline'" not in html:
+                      raise SystemExit("Contact CSP changed; review required")
+                  if "script-src 'none'" not in html or "form-action mailto:" not in html:
+                      raise SystemExit("Contact security and email-draft boundary changed")
+                  html=html.replace("style-src 'unsafe-inline'","style-src 'self' 'unsafe-inline'",1)
               if "</head>" not in html:
                   print("No HEAD (unchanged):",file.relative_to(root))
                   continue
