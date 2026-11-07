@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Real B2B enquiries only. NovaPharm AWS eu-north-1 contact reception, durable 30-day DynamoDB receipts, verified internal SNS email notices. No clinical uploads or portal authentication.",
+  "Description": "Real B2B enquiries only. NovaPharm AWS eu-north-1 contact reception, durable 30-day DynamoDB receipts, verified internal SNS email notices. No clinical uploads or portal authentication. Lambda concurrency uses account unreserved quota; HTTP API and DDB rate limiting enforce intake bounds.",
   "Parameters": {
     "RateSalt": {
       "Type": "String",
@@ -187,7 +187,6 @@
         },
         "MemorySize": 128,
         "Timeout": 10,
-        "ReservedConcurrentExecutions": 2,
         "Environment": {
           "Variables": {
             "TABLE_NAME": {
