@@ -310,7 +310,7 @@ for (const [engineName, browserType] of engines) {
             const serious = axe.violations.filter((item) => item.impact === "serious" || item.impact === "critical");
             assert.deepEqual(
               serious.flatMap((item) => item.nodes.map((node) =>
-                `${item.id}: ${item.help} | target: ${node.target.join(", ")} | ${String(node.failureSummary ?? "").replace(/\\s+/g, " ").slice(0, 300)}`
+                `${item.id}: ${item.help} | target: ${node.target.join(", ")} | ${String(node.failureSummary ?? "").replace(/\s+/g, " ").slice(0, 300)}`
               )),
               [],
               `${engineName} ${viewport.name} ${route.path}: serious/critical accessibility violations`
