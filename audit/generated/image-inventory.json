@@ -10,14 +10,16 @@
     "Null semantic or provenance fields are explicit gaps, not inferred approvals."
   ],
   "summary": {
-    "trackedAssetCount": 802,
+    "trackedAssetCount": 803,
     "byClassification": {
-      "KEEP": 802
+      "KEEP": 802,
+      "NEEDS_PROVENANCE": 1
     },
     "byProvenanceStatus": {
       "registered": 592,
       "registered-identical-delivery-copy": 12,
-      "repository-generated-test-evidence": 198
+      "repository-generated-test-evidence": 198,
+      "unregistered-physical-asset": 1
     },
     "exactDuplicateGroups": 52,
     "perceptualDuplicateCandidateGroups": 183,
@@ -1522,6 +1524,47 @@
         "trust-centre/index.html"
       ],
       "exactDuplicateGroup": "exact-010",
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/brand/novapharm-intelligence-approved.svg",
+      "canonicalDeliveryPath": "assets/brand/novapharm-intelligence-approved.svg",
+      "format": "svg",
+      "bytes": 4238,
+      "width": 1950,
+      "height": 337,
+      "aspectRatio": 5.78635,
+      "sha256": "23cbd363a838ae76aecc127b541c1371f9c4aef4c97d8d3157ea94ddb47383c9",
+      "perceptualHash": null,
+      "classification": "NEEDS_PROVENANCE",
+      "provenanceStatus": "unregistered-physical-asset",
+      "source": null,
+      "licence": null,
+      "reviewStatus": null,
+      "technicalStatus": null,
+      "provenanceRecord": null,
+      "semanticPurpose": null,
+      "routes": [],
+      "focalPoint": null,
+      "registeredAltText": null,
+      "registeredCaption": null,
+      "observedAltText": [],
+      "observedCaptions": [
+        "Illustrative product experience using simulated figures. Geographic boundaries are based on the April 2026 ONS Integrated Care Board boundary service (where available); map colours and all prescribing figures remain invented demonstration values, not observed NHSBSA data. No live licence status, forecasts or customer records are represented. Boundary data: ONS, containing OS and ONS intellectual property rights ."
+      ],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 3,
+      "referenceCount": 3,
+      "usageFiles": [
+        "scripts/test-intelligence-technology-page.mjs",
+        "src/content/technology-intelligence.html",
+        "technology/index.html"
+      ],
+      "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
@@ -19805,7 +19848,7 @@
       "registeredCaption": "Non-quantitative concept artwork; regional boundaries and colours are not measurements.",
       "observedAltText": [],
       "observedCaptions": [
-        "Illustrative product experience using simulated figures and schematic geography. No live NHSBSA data, licence status, connected evidence, verified market rates, forecast or customer records are represented."
+        "Illustrative product experience using simulated figures. Geographic boundaries are based on the April 2026 ONS Integrated Care Board boundary service (where available); map colours and all prescribing figures remain invented demonstration values, not observed NHSBSA data. No live licence status, forecasts or customer records are represented. Boundary data: ONS, containing OS and ONS intellectual property rights ."
       ],
       "responsiveDerivatives": [],
       "observedLoading": [],
