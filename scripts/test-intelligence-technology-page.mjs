@@ -42,4 +42,22 @@ assert.ok(styles.includes("@media (prefers-reduced-motion: reduce)"));
 assert.ok(!source.includes("Apple logo"), "Avoid use of third-party brand assets");
 assert.ok(!source.includes("data-contact-form"), "Public product page must not impersonate a working submission form");
 assert.ok(!/(\d+(?:\.\d+)?%)\s*(accuracy|forecast|uptime)/i.test(source), "Unverified metrics must not be displayed");
+
+for (const document of [
+  "index.html", "about/index.html", "capabilities/index.html",
+  "products/index.html", "news-insights/index.html", "technology/index.html"
+]) {
+  const html = read(document);
+  assert.ok(html.includes('data-mega-trigger="intelligence"'), document + " must link Intelligence in global navigation");
+  assert.ok(html.includes('data-mega-panel="intelligence"'), document + " must contain Intelligence category navigation");
+  assert.ok(html.includes('href="/technology/"'), document + " must link the actual Technology route");
+}
+assert.ok(source.includes('npi-terminal-geography'), "Geography preview is missing");
+assert.ok(source.includes('npi-terminal-trends'), "Trend preview is missing");
+assert.ok(published.includes('npi-terminal-geography'), "Published geography preview is missing");
+assert.ok(published.includes('npi-terminal-trends'), "Published trends preview is missing");
+assert.ok(styles.includes(".npi-terminal-insights"), "Responsive geography/trend styling is missing");
+assert.ok(read("assets/css/novapharm.bundle.css").includes(".npd-mega.is-open"), "Global nav styling was not bundled");
+assert.ok(materialiser.includes('data-mega-trigger'), "Generated chrome must retain category triggers");
+
 console.log("NovaPharm Intelligence Technology page: source, public output, disclosures, CSS and build integration verified.");

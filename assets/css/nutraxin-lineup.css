@@ -26,7 +26,7 @@
 .nx-collection :is(h1,h2,h3,p,figure) {margin:0}
 .nx-collection :is(h1,h2,h3) {
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
-  letter-spacing:-.04em;
+  letter-spacing: 0;
   line-height:1.075;
   font-weight:670;
   text-wrap:balance;
@@ -69,7 +69,7 @@
   min-height:58px;
   gap:25px;
 }
-.nx-collection .nx-local-title {font-size:.99rem;font-weight:750;letter-spacing:-.02em}
+.nx-collection .nx-local-title {font-size:.99rem;font-weight:750;letter-spacing: 0}
 .nx-collection .nx-local-links {display:flex;align-items:center;gap:30px}
 .nx-collection .nx-local-links a {font-size:.77rem; font-weight:560;color:#434347;white-space:nowrap}
 .nx-collection .nx-local-links a:hover {color:var(--nx-brand)}
@@ -100,14 +100,14 @@
 .nx-collection .nx-hero h1 {
   font-size:clamp(4.5rem,9vw,9rem);
   line-height:.985;
-  letter-spacing:-.064em;
+  letter-spacing: 0;
   font-weight:690;
   margin-top:18px;
 }
 .nx-collection .nx-hero-subtitle {
   font-size:clamp(1.45rem,2.55vw,2.5rem);
   font-weight:610;
-  letter-spacing:-.025em;
+  letter-spacing: 0;
   margin-top:20px;
   color:#49494f;
 }
@@ -162,7 +162,7 @@
   color:#fff;
   font-size:clamp(3.5rem,7.3vw,7.3rem);
   margin-top:19px;
-  letter-spacing:-.06em;
+  letter-spacing: 0;
 }
 .nx-collection .nx-statement > .nx-wrap > p:last-child {
   max-width:740px;
@@ -233,7 +233,7 @@
 .nx-collection .nx-detail .nx-link {margin-top:25px}
 .nx-collection .nx-detail-panels {border-top:1px solid #cccbd1}
 .nx-collection .nx-detail-panels > div {display:flex;align-items:center;gap:30px;padding:21px 0;border-bottom:1px solid #cccbd1}
-.nx-collection .nx-detail-panels span {font-weight:690;font-size:clamp(2.7rem,4.5vw,4.9rem);line-height:1;letter-spacing:-.06em;min-width:88px}
+.nx-collection .nx-detail-panels span {font-weight:690;font-size:clamp(2.7rem,4.5vw,4.9rem);line-height:1;letter-spacing: 0;min-width:88px}
 .nx-collection .nx-detail-panels p {font-size:.95rem;color:var(--nx-muted);line-height:1.4}
 
 .nx-collection .nx-boundary {background:#fff}
@@ -263,7 +263,7 @@
   .nx-collection .nx-local-links {display:flex;overflow-x:auto;scrollbar-width:none;width:100%;gap:23px;padding-top:8px}
   .nx-collection .nx-local-links a {font-size:.75rem}
   .nx-collection .nx-hero {padding-top:78px;padding-bottom:42px}
-  .nx-collection .nx-hero h1 {font-size:clamp(3.5rem,14vw,5.2rem);letter-spacing:-.057em}
+  .nx-collection .nx-hero h1 {font-size:clamp(3.5rem,14vw,5.2rem);letter-spacing: 0}
   .nx-collection .nx-hero-subtitle {font-size:1.45rem}
   .nx-collection .nx-hero-description {font-size:1rem}
   .nx-collection .nx-hero-actions {flex-direction:column;width:100%;margin-top:24px}

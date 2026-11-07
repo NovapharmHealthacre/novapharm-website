@@ -457,8 +457,25 @@ if (!/does not imply/i.test(nishitaProfile)) fail("Dr Nishita Trivedi profile mu
 if (/Dr Nishita Trivedi[^<]{0,100}(?:statutory director|Director &|Director,)/i.test(nishitaProfile)) fail("Dr Nishita Trivedi is incorrectly presented as a director");
 
 const technologyPage = source("technology/index.html");
-for (const label of ["Public company platform", "Managed application architecture", "Production identity and data services", "Forecasting and advanced traceability"]) {
-  if (!technologyPage.includes(label)) fail(`technology page is missing ${label}`);
+for (const marker of [
+  "NovaPharm Intelligence",
+  "The Medicines Terminal",
+  "npi-terminal-geography",
+  "npi-terminal-trends",
+  "Identity &amp; mapping",
+  "Evidence &amp; regulation",
+  "Forecasts &amp; signals",
+  "Observed fact",
+  "Derived metric",
+  "Model forecast",
+  "Commercial assumption",
+  "Recommendation"
+]) {
+  if (!technologyPage.includes(marker)) fail(`technology page is missing ${marker}`);
+}
+if (!technologyPage.includes("Product in development.")) fail("technology page must disclose product development status");
+if (/(?:data-live-market|data-production-forecast|data-private-customer-record)/i.test(technologyPage)) {
+  fail("technology concept must not imply live market data, an operational model, or private customer records");
 }
 
 const oncologyPage = source("oncology/index.html");
