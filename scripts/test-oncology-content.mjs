@@ -34,7 +34,7 @@ for (const phrase of [
 
 assert.ok(visible.split(/\s+/).length >= 700, "Oncology page requires substantive, evidence-led B2B content");
 assert.equal((html.match(/class="npoc-evidence-list"[\s\S]*?<\/ol>/)?.[0].match(/<li>/g) ?? []).length, 6, "Six evidence areas");
-assert.equal((html.match(/class="npoc-programme-list"[\s\S]*?<\/div><figure/)?.[0].match(/<details/g) ?? []).length, 4, "Four expandable programme categories");
+assert.equal((html.match(/class="npoc-programme-list"[\s\S]*?<\/div><aside/)?.[0].match(/<details/g) ?? []).length, 4, "Four expandable programme categories");
 assert.equal((html.match(/class="npoc-pathway"[\s\S]*?<\/ol>/)?.[0].match(/<li>/g) ?? []).length, 5, "Five accountable hand-offs");
 assert.equal((html.match(/<tbody>[\s\S]*?<\/tbody>/)?.[0].match(/<tr>/g) ?? []).length, 6, "Six readiness-matrix rows");
 assert.equal((html.match(/class="npoc-faq-list"[\s\S]*?<\/div><\/div><\/section>/)?.[0].match(/<details/g) ?? []).length, 6, "Six public FAQs");
