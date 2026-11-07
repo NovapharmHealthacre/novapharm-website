@@ -12,14 +12,12 @@
   "summary": {
     "trackedAssetCount": 803,
     "byClassification": {
-      "KEEP": 802,
-      "NEEDS_PROVENANCE": 1
+      "KEEP": 803
     },
     "byProvenanceStatus": {
-      "registered": 592,
+      "registered": 593,
       "registered-identical-delivery-copy": 12,
-      "repository-generated-test-evidence": 198,
-      "unregistered-physical-asset": 1
+      "repository-generated-test-evidence": 198
     },
     "exactDuplicateGroups": 52,
     "perceptualDuplicateCandidateGroups": 183,
@@ -1537,18 +1535,20 @@
       "aspectRatio": 5.78635,
       "sha256": "23cbd363a838ae76aecc127b541c1371f9c4aef4c97d8d3157ea94ddb47383c9",
       "perceptualHash": null,
-      "classification": "NEEDS_PROVENANCE",
-      "provenanceStatus": "unregistered-physical-asset",
-      "source": null,
-      "licence": null,
-      "reviewStatus": null,
-      "technicalStatus": null,
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Owner-supplied Novapharm Intelligence Complete Logo Kit 2026, 05_WEB/logo-primary.svg, 5 November 2026; simplified vector delivery derivative preserving approved blue arc, lettering, aspect ratio and palette",
+      "licence": "Owner-authorised NovaPharm Intelligence brand identity use; source rights controlled by NovaPharm Healthcare Ltd",
+      "reviewStatus": "owner-directed website integration",
+      "technicalStatus": "source-kit-derived-web-vector",
       "provenanceRecord": null,
-      "semanticPurpose": null,
-      "routes": [],
+      "semanticPurpose": "owner-approved-product-wordmark",
+      "routes": [
+        "/technology/ Medicines Terminal product preview"
+      ],
       "focalPoint": null,
-      "registeredAltText": null,
-      "registeredCaption": null,
+      "registeredAltText": "Novapharm Intelligence",
+      "registeredCaption": "Owner-approved Intelligence product wordmark; product demonstration only",
       "observedAltText": [],
       "observedCaptions": [
         "Illustrative product experience using simulated figures. Geographic boundaries are based on the April 2026 ONS Integrated Care Board boundary service (where available); map colours and all prescribing figures remain invented demonstration values, not observed NHSBSA data. No live licence status, forecasts or customer records are represented. Boundary data: ONS, containing OS and ONS intellectual property rights ."
@@ -1557,9 +1557,10 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
+        "creative-assets/asset-register.json",
         "scripts/test-intelligence-technology-page.mjs",
         "src/content/technology-intelligence.html",
         "technology/index.html"
