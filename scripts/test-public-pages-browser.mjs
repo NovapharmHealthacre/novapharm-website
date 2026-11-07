@@ -9,6 +9,7 @@ const artifactRoot = path.resolve(process.env.PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT
 const routes = [
   { path: "/", name: "home", required: "Medicine. Where it needs to be" },
   { path: "/contact/", name: "contact", required: "How can we help?" },
+  { path: "/portal/", name: "portal-entry", required: "Welcome back." },
   { path: "/leadership/", name: "leadership", required: "Chief Scientific Officer" },
   { path: "/leadership/girish-achliya/", name: "leadership-girish", required: "Chief Scientific Officer" },
   { path: "/regulatory-services/", name: "regulatory-roadmap", required: "No regulated supply before the required permissions." },
@@ -201,6 +202,17 @@ for (const [engineName, browserType] of engines) {
 
             assert.deepEqual(failedResources, [], `${engineName} ${viewport.name} ${route.path}: failed subresources`);
             assert.deepEqual(consoleErrors, [], `${engineName} ${viewport.name} ${route.path}: console errors`);
+
+            if (route.name === "portal-entry") {
+              assert.equal(await page.getByRole("heading", { level: 1, name: "Sign in to the NovaPharm Portal." }).count(), 1,
+                `${engineName} ${viewport.name}: approved portal entrance heading must be present`);
+              assert.equal(await page.locator("input, form").count(), 0,
+                `${engineName} ${viewport.name}: public portal must not accept credentials`);
+              assert.equal(await page.locator('a[href="/contact/?enquiry=Portal%20access"]').count(), 1,
+                `${engineName} ${viewport.name}: verify safe public access request`);
+              assert.ok(await page.locator(".card").isVisible(),
+                `${engineName} ${viewport.name}: portal entrance card must be visible`);
+            }
 
             if (route.name === "contact") {
               const draft = page.locator("form[data-email-enquiry-form]");
