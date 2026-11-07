@@ -47,7 +47,7 @@ const build = read("scripts/build-site.mjs");
 
 for (const [name, html] of Object.entries(pages)) {
   requireText(html, 'class="npd-main', `${name} authored layout`);
-  requireText(html, name === "contact" ? 'class="np-contact-hero"' : 'class="npd-hero', `${name} deliberate hero`);
+  requireText(html, name === "contact" ? 'class="np-contact-hero"' : name === "home" ? 'class="npd-apple-hero"' : 'class="npd-hero', `${name} deliberate hero`);
   requireText(html, "Regulated wholesale supply has not commenced", `${name} operating-status boundary`);
   requireText(html, 'class="npd-footer', `${name} institutional footer`);
   forbidText(html, "lucide", `${name} icon-free corporate presentation`);
@@ -59,9 +59,12 @@ for (const [name, html] of Object.entries(pages)) {
 [
   [pages.home, "Medicine. Where it needs to be.", "Homepage single proposition"],
   [pages.home, "Three routes. One evidence standard.", "Homepage sourcing hierarchy"],
-  [pages.home, 'class="npd-roadmap"', "Homepage seven-stage regulatory path"],
-  [pages.home, "Nineteen catalogue references. Presented as products, governed as evidence.", "Homepage real-product presentation"],
-  [pages.home, 'class="npd-product-stage"', "Homepage large packshot stage"],
+  [pages.home, 'class="npd-apple-hero"', "Homepage premium editorial hero"],
+  [pages.home, 'class="npd-apple-oncology"', "Homepage specialist-medicine visual chapter"],
+  [pages.home, 'class="npd-apple-product-grid"', "Homepage evidence-governed real-product gallery"],
+  [pages.home, 'class="npd-apple-nova-art"', "Homepage NOVA explicitly conceptual showcase"],
+  [pages.home, 'class="npd-apple-regulatory-notice"', "Homepage operating-authority boundary"],
+  [pages.home, "In development. The adjacent graphic is an artistic concept", "Homepage transparent technology maturity"],
   [pages.services, 'class="npd-service-ledger"', "Services editorial ledger"],
   [pages.regulatory, 'class="npd-roadmap npd-roadmap-large"', "Regulatory full roadmap"],
   [pages.partners, 'class="npd-horizontal-steps"', "Partner qualification sequence"],
@@ -99,8 +102,12 @@ if (pages.contact.includes('data-contact-form')) {
   requireText(pages.contact, "mailto:vishal@novapharmhealthcare.com", "Public contact verified fallback");
 }
 
-const roadmapStages = (pages.home.match(/<ol class="npd-roadmap">[\s\S]*?<\/ol>/)?.[0].match(/<li>/g) ?? []).length;
-if (roadmapStages !== 7) failures.push(`Homepage regulatory path: expected 7 stages, found ${roadmapStages}.`);
+const sourcingRoutes = (pages.home.match(/<div class="npd-apple-sourcing-grid">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) ?? []).length;
+if (sourcingRoutes !== 3) failures.push(`Homepage sourcing: expected 3 evidence-gated routes, found ${sourcingRoutes}.`);
+const featuredProducts = (pages.home.match(/<div class="npd-apple-product-grid">[\s\S]*?<\/div>/)?.[0].match(/class="npd-apple-product"/g) ?? []).length;
+if (featuredProducts !== 3) failures.push(`Homepage products: expected 3 actual catalogue references, found ${featuredProducts}.`);
+const regulatoryStages = (pages.regulatory.match(/<ol class="npd-roadmap npd-roadmap-large">[\s\S]*?<\/ol>/)?.[0].match(/<li>/g) ?? []).length;
+if (regulatoryStages !== 7) failures.push(`Regulatory page: expected 7 governance stages, found ${regulatoryStages}.`);
 
 const nutraxinProducts = (pages.nutraxin.match(/class="npd-product-card/g) ?? []).length;
 if (nutraxinProducts !== 19) failures.push(`Nutraxin catalogue: expected 19 product cards, found ${nutraxinProducts}.`);
@@ -122,11 +129,11 @@ for (const prohibited of [
 }
 
 if (pages.home.includes("<video")) failures.push("Homepage hero: video is not authorised until a measured, accessible production asset justifies its cost.");
-if ((pages.home.match(/<section/g) ?? []).length < 9) failures.push("Homepage narrative is missing one or more required product-disciplined sections.");
+if ((pages.home.match(/<section/g) ?? []).length < 8) failures.push("Homepage narrative is missing one or more required editorial chapters.");
 
 if (failures.length) {
   console.error("Visual refinement validation failed:\n- " + failures.join("\n- "));
   process.exit(1);
 }
 
-console.log("Visual refinement validation passed: authored corporate hierarchy, real-product presentation, seven-stage regulatory pathway, icon-free navigation, responsive contracts and regulatory boundaries verified.");
+console.log("Visual refinement validation passed: Apple-inspired editorial homepage, 3 real catalogue products, 3 sourcing routes, regulatory-page governance, icon-free navigation and operational boundaries verified.");
