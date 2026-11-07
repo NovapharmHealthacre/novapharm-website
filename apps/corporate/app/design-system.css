@@ -411,7 +411,7 @@ input::placeholder, textarea::placeholder { color: #6e6e76; }
   .page-hero-copy h1 { font-size: clamp(2.5rem, 11vw, 3.5rem); }
   .article-hero h1, .profile-copy h1 { font-size: clamp(2.45rem, 10vw, 3.45rem); }
   .breadcrumbs { margin-bottom: 25px; }
-  .footer-primary nav a, .footer-button { min-height: 30px; }
+  .footer-primary nav a, .footer-button { display: inline-flex; align-items: center; min-height: 44px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -501,7 +501,7 @@ input::placeholder, textarea::placeholder { color: #6e6e76; }
   }
   .cookie-actions .button:last-child {
     grid-column: 1 / -1;
-    min-height: 34px;
+    min-height: 44px;
     color: var(--nph-link);
     background: transparent;
     border: 0;
