@@ -133,32 +133,42 @@ class PortalSecurityTests(unittest.TestCase):
     def test_server_reprices_tiers_and_never_accepts_binding_order(self):
         payload = {"request_id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
                    "lines": [
-                       {"sku": "NUT-UK-VD3-T120", "quantity": 24},
+                       {"sku": "NUT-UK-VD3-T120", "quantity": 48},
                        {"sku": "NUT-UK-MGCX-T60", "quantity": 48},
                    ]}
         answer = PORTAL.submit(self.event("/api/order-requests", "POST", payload), {"sub": "test-sub"})
         self.assertEqual(answer["statusCode"], 201)
         body = json.loads(answer["body"])
-        self.assertEqual(body["net_total_pence"], 24*1000 + 48*900)
+        self.assertEqual(body["net_total_pence"], 48*900 + 48*900)
         self.assertFalse(body["financially_binding"])
         self.assertFalse(body["inventory_reserved"])
         self.assertFalse(body["vat_invoice_created"])
         self.assertEqual(len(DDB.items), 1)
 
-    def test_less_than_24_units_has_no_approved_net_total(self):
+    def test_below_48_moq_is_rejected(self):
         payload = {"request_id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
-                   "lines": [{"sku": "NUT-UK-VD3-T120", "quantity": 1}]}
+                   "lines": [{"sku": "NUT-UK-VD3-T120", "quantity": 47}]}
         body = json.loads(PORTAL.submit(self.event("/api/order-requests", "POST", payload), {"sub": "test-sub"})["body"])
-        self.assertIsNone(body["net_total_pence"])
+        self.assertEqual(body["error"], "invalid_quantity")
+
+    def test_large_10000_unit_b2b_request_is_nonbinding(self):
+        payload = {"request_id": "bbbbbbbb-cccc-4ddd-8eee-ffffffffffff",
+                   "lines": [{"sku": "NUT-UK-VD3-T120", "quantity": 10000}]}
+        response = PORTAL.submit(self.event("/api/order-requests", "POST", payload), {"sub": "test-sub"})
+        self.assertEqual(response["statusCode"], 201)
+        body = json.loads(response["body"])
+        self.assertEqual(body["net_total_pence"], 10000*900)
+        self.assertFalse(body["financially_binding"])
+        self.assertFalse(body["inventory_reserved"])
 
     def test_bad_sku_quantity_duplication_and_csrf_fail_closed(self):
         bad_lines = [
             [{"sku": "FAKE-SKU", "quantity": 24}],
             [{"sku": "NUT-UK-VD3-T120", "quantity": 0}],
-            [{"sku": "NUT-UK-VD3-T120", "quantity": 1000}],
+            [{"sku": "NUT-UK-VD3-T120", "quantity": 10001}],
             [{"sku": "NUT-UK-VD3-T120", "quantity": 24.5}],
             [{"sku": "NUT-UK-VD3-T120", "quantity": True}],
-            [{"sku": "NUT-UK-VD3-T120", "quantity": 24},
+            [{"sku": "NUT-UK-VD3-T120", "quantity": 48},
              {"sku": "NUT-UK-VD3-T120", "quantity": 48}],
         ]
         for lines in bad_lines:
@@ -169,7 +179,7 @@ class PortalSecurityTests(unittest.TestCase):
                     400,
                 )
         valid = {"request_id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
-                 "lines": [{"sku": "NUT-UK-VD3-T120", "quantity": 24}]}
+                 "lines": [{"sku": "NUT-UK-VD3-T120", "quantity": 48}]}
         self.assertEqual(PORTAL.submit(self.event("/api/order-requests", "POST", valid, "https://evil.invalid"), {"sub": "test-sub"})["statusCode"], 403)
         self.assertEqual(DDB.items, [])
 
@@ -211,14 +221,14 @@ class PortalSecurityTests(unittest.TestCase):
         PORTAL.ALERT_TOPIC = "arn:aws:sns:eu-north-1:example:test"
         try:
             original = {"request_id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
-                        "lines": [{"sku": "NUT-UK-VD3-T120", "quantity": 24}]}
+                        "lines": [{"sku": "NUT-UK-VD3-T120", "quantity": 48}]}
             first = PORTAL.submit(self.event("/api/order-requests", "POST", original), {"sub": "test-sub"})
             replay = PORTAL.submit(self.event("/api/order-requests", "POST", original), {"sub": "test-sub"})
             self.assertEqual(first["statusCode"], 201)
             self.assertEqual(replay["statusCode"], 201)
             first_body, replay_body = json.loads(first["body"]), json.loads(replay["body"])
             self.assertEqual(first_body["receipt_id"], replay_body["receipt_id"])
-            self.assertEqual(replay_body["net_total_pence"], 24000)
+            self.assertEqual(replay_body["net_total_pence"], 43200)
             self.assertEqual(len(table.items), 1)
             self.assertEqual(len(alert.sent), 1, "A duplicate submission must not re-alert staff")
             self.assertNotIn("net_total_pence", alert.sent[0]["Message"])
