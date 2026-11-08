@@ -2,11 +2,6 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "NovaPharm secure portal staging task-definition only. No ECS service, no ALB and no inbound public traffic. Smoke task must be stopped after acceptance.",
   "Parameters": {
-    "ImageCommit": {
-      "Type": "String",
-      "Default": "15fb532daf261711c466ed4282ad469350040d93",
-      "AllowedPattern": "[0-9a-f]{40}"
-    },
     "VpcId": {
       "Type": "AWS::EC2::VPC::Id",
       "Default": "vpc-0204c52aacc926b8b"
@@ -134,9 +129,7 @@
           {
             "Name": "portal",
             "Essential": true,
-            "Image": {
-              "Fn::Sub": "250675045172.dkr.ecr.eu-north-1.amazonaws.com/novapharm/staging/portal:${ImageCommit}"
-            },
+            "Image": "250675045172.dkr.ecr.eu-north-1.amazonaws.com/novapharm/staging/portal@sha256:4c2f0fa0b3e7f29496e368671bc8a764f239c3e689f8c0f471236721f4db3508",
             "PortMappings": [
               {
                 "ContainerPort": 4303,
@@ -203,6 +196,9 @@
       "Value": {
         "Ref": "PortalSecurityGroup"
       }
+    },
+    "ImageDigest": {
+      "Value": "sha256:4c2f0fa0b3e7f29496e368671bc8a764f239c3e689f8c0f471236721f4db3508"
     }
   }
 }
