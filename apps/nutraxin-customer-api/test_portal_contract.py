@@ -198,7 +198,7 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertEqual(len(DDB.items), 1)
 
     def test_provisional_uk_delivery_charge_is_zero_and_cost_is_seller_absorbed(self):
-        self.assertIn("Indicative UK delivery charge", PORTAL.PAGE)
+        self.assertIn("indicative UK delivery charge", PORTAL.PAGE)
         self.assertIn("Indicative UK delivery charge: £0", PORTAL.APP)
         payload = {"request_id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
                    "lines": [{"sku": "NUT-UK-VD3-T120", "quantity": 1}]}
@@ -257,7 +257,8 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertEqual(body["indicative_vat_pence"], 8640)
         self.assertEqual(body["indicative_gross_total_pence"], 51840)
         self.assertEqual(body["vat_charged_pence"], 0)
-        self.assertTrue(body["shipping_excluded"])
+        self.assertEqual(body["shipping_charge_pence"], 0)
+        self.assertTrue(body["uk_delivery_cost_absorbed_by_seller"])
         self.assertFalse(body["vat_invoice_created"])
         self.assertFalse(body["financially_binding"])
         self.assertFalse(body["inventory_reserved"])
