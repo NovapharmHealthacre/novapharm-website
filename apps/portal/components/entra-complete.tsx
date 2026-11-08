@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { destinationAfterPortalLogin } from "../data/nutraxin-order-intent";
 import { isPortalAccessType, landingRouteForAccess } from "../data/routes";
 import { professionalError, protectedMutation } from "../lib/gateway";
-import { destinationAfterPortalLogin } from "../data/nutraxin-order-intent";
 import { PortalBrand } from "./portal-brand";
 
 export function EntraComplete() {
