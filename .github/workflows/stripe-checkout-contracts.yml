@@ -12,6 +12,7 @@ on:
       - 'scripts/test-commerce-margin-policy.mjs'
       - 'src/core/payments/stripe-refund-policy.mjs'
       - 'scripts/test-stripe-refund-policy.mjs'
+      - 'scripts/test-commerce-payment-lifecycle.mjs'
       - '.github/workflows/stripe-checkout-contracts.yml'
   workflow_dispatch:
 permissions:
@@ -28,4 +29,4 @@ jobs:
         with:
           node-version: '24'
       - name: Verify Stripe fail-closed contracts without network or secrets
-        run: node --test scripts/test-stripe-gateway.mjs scripts/test-payment-ledger.mjs scripts/test-stripe-merchant-readiness.mjs scripts/test-commerce-margin-policy.mjs scripts/test-stripe-refund-policy.mjs
+        run: node --test scripts/test-stripe-gateway.mjs scripts/test-payment-ledger.mjs scripts/test-stripe-merchant-readiness.mjs scripts/test-commerce-margin-policy.mjs scripts/test-stripe-refund-policy.mjs scripts/test-commerce-payment-lifecycle.mjs
