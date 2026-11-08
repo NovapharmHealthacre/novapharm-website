@@ -14,6 +14,7 @@ test("portal staging smoke cannot expose a public listener or customer identity"
   assert.equal(task.Cpu, "512");
   assert.equal(task.Memory, "1024");
   assert.equal(container.Name, "portal");
+  assert.ok(container.Environment.some(x => x.Name === "HOSTNAME" && x.Value === "0.0.0.0"), "Next.js must bind to loopback and task ENI");
   assert.match(container.Image, /@sha256:[0-9a-f]{64}$/);
   assert.ok(container.HealthCheck.Command.some(v => v.includes("127.0.0.1:4303")));
   assert.ok(!Object.values(template.Resources).some(v => v.Type === "AWS::ECS::Service" || v.Type === "AWS::ElasticLoadBalancingV2::LoadBalancer"));
