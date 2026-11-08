@@ -504,7 +504,7 @@ class PortalSecurityTests(unittest.TestCase):
             self.assertNotEqual(statement["Resource"], "*")
         self.assertEqual(template["Resources"]["AppFunction"]["Properties"]["Code"]["ZipFile"].strip(),
                          (ROOT / "apps/nutraxin-customer-api/index.py").read_text().strip())
-        self.assertIn("OFF", template["Outputs"]["CommercialCheckoutStatus"]["Value"])
+        self.assertIn("LIVE UK SELF-SERVICE", template["Outputs"]["CommercialCheckoutStatus"]["Value"])
 
 if __name__ == "__main__":
     unittest.main()
