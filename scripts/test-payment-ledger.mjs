@@ -6,11 +6,11 @@ import test from "node:test";
 const sql = readFileSync(new URL("../src/core/payments/payment-ledger-reference.sql", import.meta.url), "utf8");
 function database() { const db = new DatabaseSync(":memory:"); db.exec(sql); return db; }
 function addAttempt(db, id, orderId, state = "created", gross = 2592, currency = "GBP") {
-  db.prepare(\`INSERT INTO payment_attempts (
+  db.prepare(`INSERT INTO payment_attempts (
     id, order_id, customer_id, quote_version, amount_minor, currency,
     destination_country, livemode, state, reserved_stock_reference,
     quote_expires_at, created_at, updated_at
-  ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)\`).run(
+  ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
     id, orderId, "cust_demo_123", "quote_v1", gross, currency, "GB", 0,
     state, "reserve_demo_123", "2026-12-01T00:00:00Z",
     "2026-11-08T12:00:00Z", "2026-11-08T12:00:00Z"
@@ -30,9 +30,9 @@ test("one collectable checkout per order; failed/expired attempt permits retry",
 test("provider event ids are durable and unique, and require an existing attempt", () => {
   const db = database();
   addAttempt(db, "attempt_1", "ord_1");
-  const record = (eventId, attemptId = "attempt_1") => db.prepare(\`INSERT INTO payment_provider_events
+  const record = (eventId, attemptId = "attempt_1") => db.prepare(`INSERT INTO payment_provider_events
     (event_id,provider,attempt_id,event_type,received_at,state_before,state_after,
-     processing_status,payload_sha256) VALUES (?,?,?,?,?,?,?,?,?)\`).run(
+     processing_status,payload_sha256) VALUES (?,?,?,?,?,?,?,?,?)`).run(
     eventId, "stripe", attemptId, "checkout.session.completed",
     "2026-11-08T12:00:00Z", "checkout_pending", "paid", "applied", "a".repeat(64)
   );
