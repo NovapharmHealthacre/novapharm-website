@@ -34,7 +34,7 @@ export function buildQuoteRequestURL(lines) {
 }
 
 const form = typeof document !== "undefined" ? document.querySelector("[data-nutraxin-order-request]") : null;
-if (form instanceof HTMLFormElement) {
+if (typeof HTMLFormElement !== "undefined" && form instanceof HTMLFormElement) {
   const rows = [...form.querySelectorAll("[data-nutraxin-line]")];
   const feedback = form.querySelector("[data-nutraxin-order-feedback]");
   const fields = rows.map((row) => ({
