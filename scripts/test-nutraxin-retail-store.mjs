@@ -63,10 +63,10 @@ test("public guide prices match all 19 owner-approved 48-tier references plus ro
 
 test("tampered, repeated and out-of-range Bag entries are ignored",()=>{
  const sku=catalogue.products[0].sku;
- assert.deepEqual(safeBasket([{sku,quantity:1},{sku,quantity:3},{sku:"NOT_REAL",quantity:1},{sku,quantity:999},{sku:catalogue.products[1].sku,quantity:2}],catalogue.products),[{sku,quantity:1},{sku:catalogue.products[1].sku,quantity:2}]);
+ assert.deepEqual(safeBasket([{sku,quantity:1},{sku,quantity:3},{sku:"NOT_REAL",quantity:1},{sku,quantity:10001},{sku:catalogue.products[1].sku,quantity:2}],catalogue.products),[{sku,quantity:1},{sku:catalogue.products[1].sku,quantity:2}]);
  assert.deepEqual(safeBasket([{sku,quantity:"2"},{sku,quantity:0},{sku,quantity:1.2}],catalogue.products),[]);
  assert.deepEqual(safeBasket(null,catalogue.products),[]);
- assert.equal(MAX_PER_SKU,99);
+ assert.equal(MAX_PER_SKU,10000);
 });
 test("owner-authorized indicative price displays while payment authority remains off",()=>{
  const item=catalogue.products[0];
