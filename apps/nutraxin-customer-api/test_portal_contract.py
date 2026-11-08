@@ -339,6 +339,65 @@ class PortalSecurityTests(unittest.TestCase):
         finally:
             PORTAL.TABLE, PORTAL.SNS, PORTAL.ALERT_TOPIC = previous_table, previous_sns, previous_topic
 
+    def test_production_checkout_stays_customer_approved_and_server_only(self):
+        import io
+
+        self.assertIn("Pay securely", PORTAL.APP)
+        self.assertIn("APPROVED_FOR_PAYMENT", PORTAL.APP)
+        self.assertIn("/checkout", PORTAL.APP)
+        self.assertNotIn("rk_live_", PORTAL.APP)
+        self.assertIn("PRODUCTION_CHECKOUT_FUNCTION", PORTAL.__dict__)
+        template = json.loads((ROOT / "infra/aws/nutraxin-customer-staging-stack.json").read_text())
+        env = template["Resources"]["AppFunction"]["Properties"]["Environment"]["Variables"]
+        self.assertEqual(env["PRODUCTION_CHECKOUT_FUNCTION"],
+                         "novapharm-production-nutraxin-approved-checkout")
+        role = template["Resources"]["AppRole"]["Properties"]["Policies"][0]["PolicyDocument"]["Statement"]
+        scope = next(x for x in role if "lambda:InvokeFunction" in x["Action"])
+        self.assertIn("novapharm-production-nutraxin-approved-checkout",
+                      json.dumps(scope["Resource"]))
+        self.assertNotIn("secretsmanager:GetSecretValue",
+                         json.dumps(role))
+
+        class ApprovedQuoteTable:
+            def __init__(self, status):
+                self.status = status
+            def get_item(self, **kw):
+                return {"Item": {"receipt_id":"NUT-aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+                                 "status":self.status}}
+        class FakeWorker:
+            def __init__(self):
+                self.calls = []
+            def invoke(self, **kw):
+                self.calls.append(kw)
+                return {"Payload":io.BytesIO(json.dumps({"statusCode":200,
+                    "body":json.dumps({"checkoutUrl":"https://checkout.stripe.com/c/pay_example"})}).encode())}
+
+        receipt = "NUT-aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
+        event = self.event("/api/order-requests/" + receipt + "/checkout", "POST")
+        old_table,old_worker,old_name = PORTAL.TABLE,PORTAL.CHECKOUT_LAMBDA,PORTAL.PRODUCTION_CHECKOUT_FUNCTION
+        worker = FakeWorker()
+        PORTAL.CHECKOUT_LAMBDA = worker
+        PORTAL.PRODUCTION_CHECKOUT_FUNCTION = "synthetic"
+        try:
+            PORTAL.TABLE = ApprovedQuoteTable("PENDING_MANUAL_CONFIRMATION")
+            blocked = PORTAL.start_approved_payment(event,{"sub":"synthetic_customer"},receipt)
+            self.assertEqual(blocked["statusCode"],409)
+            self.assertEqual(len(worker.calls),0)
+            PORTAL.TABLE = ApprovedQuoteTable("APPROVED_FOR_PAYMENT")
+            bad = self.event("/api/order-requests/" + receipt + "/checkout", "POST",
+                             origin="https://malicious.invalid")
+            self.assertEqual(PORTAL.start_approved_payment(bad,{"sub":"synthetic_customer"},receipt)["statusCode"],403)
+            self.assertEqual(len(worker.calls),0)
+            good = PORTAL.start_approved_payment(event,{"sub":"synthetic_customer"},receipt)
+            self.assertEqual(good["statusCode"],200)
+            self.assertEqual(len(worker.calls),1)
+            source = json.loads(worker.calls[0]["Payload"].decode())
+            self.assertEqual(set(source),{"action","orderId","subject"})
+            self.assertNotIn("price", source)
+            self.assertNotIn("vat", source)
+        finally:
+            PORTAL.TABLE,PORTAL.CHECKOUT_LAMBDA,PORTAL.PRODUCTION_CHECKOUT_FUNCTION = old_table,old_worker,old_name
+
     def test_iac_scope_and_separate_private_price_store(self):
         template = json.loads((ROOT / "infra/aws/nutraxin-customer-staging-stack.json").read_text())
         role = template["Resources"]["AppRole"]["Properties"]
