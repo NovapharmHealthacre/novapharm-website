@@ -3,7 +3,7 @@
  * Retail checkout remains fail-closed until a trusted server creates a priced, verified order.
  */
 export const BAG_KEY = "novapharm.nutraxin.public-bag.v1";
-export const MAX_PER_SKU = 99;
+export const MAX_PER_SKU = 10000;
 const CATALOGUE_URL = "/assets/data/nutraxin-retail-catalogue.json";
 const PORTAL_ORIGIN = "https://portal.novapharmhealthcare.com";
 const BAG_URL = "/products/nutraxin/bag/";
@@ -158,18 +158,24 @@ function runStore(data) {
           const pack = make("p", "nx-bag-pack", p.pack);
           const price = make("p", "nx-bag-price", productPriceLabel(p, data));
           const label = make("label", null, "Quantity");
-          const select = make("select");
-          select.setAttribute("aria-label", "Quantity for " + p.name);
-          for (let i = 1; i <= MAX_PER_SKU; i++) {
-            const opt = make("option", null, String(i));
-            opt.value = String(i); opt.selected = i === line.quantity;
-            select.append(opt);
-          }
-          select.addEventListener("change", () => {
-            bag = bag.map((v) => v.sku === p.sku ? { sku: p.sku, quantity: Number(select.value) } : v);
+          const quantityInput = make("input");
+          quantityInput.type = "number";
+          quantityInput.min = "1";
+          quantityInput.max = String(MAX_PER_SKU);
+          quantityInput.step = "1";
+          quantityInput.inputMode = "numeric";
+          quantityInput.value = String(line.quantity);
+          quantityInput.setAttribute("aria-label", "Quantity for " + p.name);
+          quantityInput.addEventListener("change", () => {
+            const quantity = Number(quantityInput.value);
+            if (!Number.isSafeInteger(quantity) || quantity < 1 || quantity > MAX_PER_SKU) {
+              quantityInput.value = String(line.quantity);
+              return;
+            }
+            bag = bag.map((v) => v.sku === p.sku ? { sku: p.sku, quantity } : v);
             saveBag(bag); updateNav(); render();
           });
-          label.append(select);
+          label.append(quantityInput);
           const remove = make("button", "nx-bag-remove", "Remove");
           remove.type = "button";
           remove.addEventListener("click", () => {
