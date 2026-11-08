@@ -173,6 +173,8 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertIn("cognito-idp:AdminGetUser", cognito_statement["Action"])
         for statement in sensitive:
             self.assertNotEqual(statement["Resource"], "*")
+        self.assertEqual(template["Resources"]["AppFunction"]["Properties"]["Code"]["ZipFile"].strip(),
+                         (ROOT / "apps/nutraxin-customer-api/index.py").read_text().strip())
         self.assertIn("DISABLED", template["Outputs"]["CommercialCheckoutStatus"]["Value"])
 
 if __name__ == "__main__":
