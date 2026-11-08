@@ -23,4 +23,13 @@ Release state: **pre-commerce handoff only**. No public sale, price, checkout, p
 - Prove login, Entra/Cognito federation where appropriate, account activation, tenancy isolation, audit trail, secure CSRF and rate limits, operational monitoring, email notifications, failed payment and rollback.
 - Pass production smoke tests with real approved customer credentials and written launch approval.
 
+## 8 November UK VAT and public-release status
+
+- HMRC VAT Notice 701/14 section 4.2 and VFOOD1960 support 20% standard-rated UK VAT for vitamin/mineral supplements and dietary supplements not normally eaten as food.
+- `src/core/uk-vat.mjs` calculates tax-exclusive GBP line values in integer pence, rounds per line and refuses unknown VAT classifications and non-GB destinations; `scripts/test-uk-vat.mjs` provides explicit checks.
+- `src/core/domain-service.mjs` rejects attempted Nutraxin order submission even if its lifecycle flags are misconfigured; the generic order service's existing zero-tax path must not be used for Nutraxin.
+- The static GitHub Pages product detail generator now shows a responsible business account CTA, without public pricing or a false Buy Now claim.
+- The Next.js product/account journey is built but gated: the public account button routes to an application until `NOVAPHARM_CUSTOMER_PORTAL_ACTIVE=true` **and** `PORTAL_ORIGIN=https://portal.novapharmhealthcare.com`. Both require separately verified production infrastructure.
+- In AWS eu-north-1, the authenticated portal found in the accessible account was a staging-private ECS service; no independent public production customer portal/checkout endpoint was confirmed at this review.
+
 The existing `docs/products/nutraxin-commerce-readiness.md` commerce gate remains in force. **Do not ship a Buy button or claim that orders can be placed until all applicable gates are closed.**
