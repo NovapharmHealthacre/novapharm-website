@@ -160,6 +160,30 @@ class PortalSecurityTests(unittest.TestCase):
         body = json.loads(PORTAL.submit(self.event("/api/order-requests", "POST", payload), {"sub": "test-sub"})["body"])
         self.assertEqual(body["error"], "invalid_quantity")
 
+    def test_illustrative_20pct_vat_is_server_reconciled_and_not_charged(self):
+        self.assertEqual(PORTAL.illustrative_uk_vat_pence(0), 0)
+        self.assertEqual(PORTAL.illustrative_uk_vat_pence(101), 20)
+        self.assertEqual(PORTAL.illustrative_uk_vat_pence(103), 21)
+        self.assertEqual(PORTAL.illustrative_uk_vat_pence(43200), 8640)
+        self.assertRaises(ValueError, PORTAL.illustrative_uk_vat_pence, -1)
+        payload = {"request_id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+                   "lines": [{"sku": "NUT-UK-VD3-T120", "quantity": 48}]}
+        response = PORTAL.submit(self.event("/api/order-requests", "POST", payload),
+                                 {"sub": "test-sub"})
+        self.assertEqual(response["statusCode"], 201)
+        body = json.loads(response["body"])
+        self.assertEqual(body["net_total_pence"], 43200)
+        self.assertEqual(body["illustrative_uk_vat_rate_bps"], 2000)
+        self.assertEqual(body["indicative_vat_pence"], 8640)
+        self.assertEqual(body["indicative_gross_total_pence"], 51840)
+        self.assertEqual(body["vat_charged_pence"], 0)
+        self.assertTrue(body["shipping_excluded"])
+        self.assertFalse(body["vat_invoice_created"])
+        self.assertFalse(body["financially_binding"])
+        self.assertFalse(body["inventory_reserved"])
+        self.assertEqual(DDB.items[0]["indicative_vat_pence"], 8640)
+        self.assertEqual(DDB.items[0]["vat_charged_pence"], 0)
+
     def test_large_10000_unit_b2b_request_is_nonbinding(self):
         payload = {"request_id": "bbbbbbbb-cccc-4ddd-8eee-ffffffffffff",
                    "lines": [{"sku": "NUT-UK-VD3-T120", "quantity": 10000}]}

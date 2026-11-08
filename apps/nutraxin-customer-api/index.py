@@ -87,7 +87,7 @@ async function renderHistory(){
  }
 }
 async function init(){try{const session=await read("/api/session");if(!session.authenticated){show("signed-out");return;}if(!session.approved){$("pending-email").textContent="Signed in as "+session.email+".";show("pending");return;}const cat=await read("/api/catalogue");$("welcome").textContent="Signed in as "+session.email+".";render(cat.products);show("approved");void renderHistory();}catch(e){$("signed-out").append(node("p","fine","Could not load your secure account. Please retry sign-in."));}}
-$("order-form").addEventListener("submit",async function(event){event.preventDefault();const lines=[...$("products").querySelectorAll("input")].filter(i=>Number(i.value)>0).map(i=>({sku:i.name,quantity:Number(i.value)}));if(!lines.length){$("message").textContent="Select at least one product and quantity.";return;}const button=$("send");button.disabled=true;$("message").textContent="Submitting your request securely…";try{const r=await fetch("/api/order-requests",{method:"POST",credentials:"same-origin",cache:"no-store",headers:{"Content-Type":"application/json"},body:JSON.stringify({lines:lines,request_id:crypto.randomUUID()})});const data=await r.json();if(!r.ok||!data.receipt_id)throw new Error(data.error||"No receipt confirmed.");$("message").textContent="Request received: "+data.receipt_id+". NovaPharm will confirm stock, prices, VAT, delivery and terms before accepting any order.";button.disabled=false;void renderHistory();}catch(e){$("message").textContent="Submission not confirmed. "+(e.message||"Please retry.");button.disabled=false;}});
+$("order-form").addEventListener("submit",async function(event){event.preventDefault();const lines=[...$("products").querySelectorAll("input")].filter(i=>Number(i.value)>0).map(i=>({sku:i.name,quantity:Number(i.value)}));if(!lines.length){$("message").textContent="Select at least one product and quantity.";return;}const button=$("send");button.disabled=true;$("message").textContent="Submitting your request securely…";try{const r=await fetch("/api/order-requests",{method:"POST",credentials:"same-origin",cache:"no-store",headers:{"Content-Type":"application/json"},body:JSON.stringify({lines:lines,request_id:crypto.randomUUID()})});const data=await r.json();if(!r.ok||!data.receipt_id)throw new Error(data.error||"No receipt confirmed.");$("message").textContent="Request received: "+data.receipt_id+". Provisional products "+money(data.net_total_pence)+" + illustrative UK VAT at 20% "+money(data.indicative_vat_pence)+" = "+money(data.indicative_gross_total_pence)+". Shipping excluded. No payment taken or VAT charged; NovaPharm will confirm availability and terms.";button.disabled=false;void renderHistory();}catch(e){$("message").textContent="Submission not confirmed. "+(e.message||"Please retry.");button.disabled=false;}});
 init();
 })();"""
 
@@ -234,6 +234,12 @@ def logout(event):
     return redirect("https://"+COGNITO_DOMAIN+"/logout?"+query,
         [cookie("__Host-np_session","",0)])
 
+def illustrative_uk_vat_pence(net_pence):
+    """Illustrative standard rate; not a tax charge or VAT invoice."""
+    if type(net_pence) is not int or net_pence < 0:
+        raise ValueError("A valid net subtotal in GBP pence is required")
+    return (net_pence * 20 + 50) // 100
+
 def submit(event,user):
     if (event.get("headers") or {}).get("origin","")!=request_base(event):return error(403,"invalid_origin")
     if event.get("isBase64Encoded"):return error(400,"invalid_payload")
@@ -275,7 +281,12 @@ def submit(event,user):
     order={"pk":"USER#"+user["sub"],"sk":"RQ#"+request_id,"receipt_id":receipt,
         "created_at":now(),"expires_at":now()+30*86400,"status":"PENDING_MANUAL_CONFIRMATION",
         "financially_binding":False,"vat_invoice_created":False,"inventory_reserved":False,
-        "currency":"GBP","net_total_pence":net_total if all_priced else None,"request_hash":request_hash,"lines":accepted}
+        "currency":"GBP","net_total_pence":net_total if all_priced else None,
+        "illustrative_uk_vat_rate_bps":2000,
+        "indicative_vat_pence":illustrative_uk_vat_pence(net_total) if all_priced else None,
+        "indicative_gross_total_pence":net_total+illustrative_uk_vat_pence(net_total) if all_priced else None,
+        "vat_charged_pence":0,"shipping_excluded":True,
+        "request_hash":request_hash,"lines":accepted}
     created=False
     try:
         TABLE.put_item(Item=order,ConditionExpression="attribute_not_exists(pk)")
@@ -298,10 +309,15 @@ def submit(event,user):
         except ClientError as exc:
             print("staff_alert_failed",exc.response.get("Error",{}).get("Code","sns_error"))
     total=order.get("net_total_pence")
+    net=int(total) if total is not None else None
+    vat=illustrative_uk_vat_pence(net) if net is not None else None
     return reply(201,{"receipt_id":order["receipt_id"],"status":order["status"],
         "financially_binding":False,"inventory_reserved":False,
-        "vat_invoice_created":False,"net_total_pence":int(total) if total is not None else None,
-        "notice":"This request awaits NovaPharm review. Prices, UK VAT, inventory and delivery require confirmation."})
+        "vat_invoice_created":False,"vat_charged_pence":0,"shipping_excluded":True,
+        "net_total_pence":net,"illustrative_uk_vat_rate_bps":2000,
+        "indicative_vat_pence":vat,
+        "indicative_gross_total_pence":net+vat if net is not None else None,
+        "notice":"This is a non-binding quote. The 20% UK VAT figure is illustrative, not a tax charge. Confirm stock, actual VAT treatment and shipping before payment."})
 
 def handler(event,context):
     method=(event.get("requestContext",{}).get("http",{}).get("method") or "GET").upper()
