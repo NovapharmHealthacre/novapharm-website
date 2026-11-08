@@ -33,10 +33,13 @@ ALERT_TOPIC = os.environ.get("ORDER_ALERT_TOPIC_ARN", "")
 SNS = boto3.client("sns", region_name=REGION) if ALERT_TOPIC else None
 PRODUCTION_CHECKOUT_FUNCTION = os.environ.get("PRODUCTION_CHECKOUT_FUNCTION", "")
 CHECKOUT_LAMBDA = boto3.client("lambda", region_name=REGION) if PRODUCTION_CHECKOUT_FUNCTION else None
+DIRECT_SHOP_PAYMENTS_ENABLED = os.environ.get("DIRECT_SHOP_PAYMENTS_ENABLED", "false") == "true"
+PAYMENT_LEDGER_TABLE = os.environ.get("PAYMENT_LEDGER_TABLE", "")
+PAYMENT_DDB = boto3.client("dynamodb", region_name=REGION) if DIRECT_SHOP_PAYMENTS_ENABLED and PAYMENT_LEDGER_TABLE else None
 
 PAGE = """<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nutraxin | Customer Account | NovaPharm Healthcare</title><meta name="robots" content="noindex,nofollow"><style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#18181b;background:#f5f5f7;font-synthesis:none}*{box-sizing:border-box}body{margin:0}nav{background:rgba(252,252,253,.94);border-bottom:1px solid #e6e6e9}nav div{max-width:1120px;margin:auto;padding:19px 24px;display:flex;justify-content:space-between;gap:16px;align-items:center}nav a{color:inherit;text-decoration:none;font-size:14px}nav b{letter-spacing:.06em;font-size:13px}main{max-width:920px;margin:auto;padding:80px 24px 100px}.eyebrow{font-size:12px;font-weight:700;color:#6e737d;letter-spacing:.08em;text-transform:uppercase}h1{font-size:clamp(42px,7vw,76px);line-height:1.06;letter-spacing:-.035em;margin:15px 0 20px}h2{font-size:26px;letter-spacing:-.02em;margin:0 0 14px}.lead{font-size:clamp(18px,2.5vw,23px);line-height:1.5;color:#5a6069;max-width:760px}.card{border:1px solid #e3e4e8;background:#fff;border-radius:23px;padding:30px;margin-top:32px}.fine{color:#717681;font-size:13px;line-height:1.65}.button{border:0;border-radius:999px;background:#0071e3;color:#fff;font-size:15px;font-weight:600;padding:14px 22px;display:inline-block;text-decoration:none;cursor:pointer}.button:disabled{background:#a5b1c2;cursor:not-allowed}.quiet{background:#eeeef2;color:#20232a}.row{display:grid;grid-template-columns:minmax(0,1fr) 115px;gap:24px;align-items:center;padding:18px 0;border-bottom:1px solid #e5e5e9}.name{font-weight:640;font-size:16px}.pack{display:block;color:#707580;font-size:13px;margin-top:4px}.price{display:block;color:#34363b;font-size:13px;margin-top:4px}.qty{border:1px solid #cbd0d8;border-radius:10px;background:#fcfcfd;padding:12px;width:100%;font:inherit;text-align:center}.actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:24px}.business-option{border-top:1px solid #e3e4e8;margin-top:30px;padding-top:22px}.business-option h3{font-size:18px;letter-spacing:-.02em;margin:0 0 8px}.business-option a{font-size:14px;color:#0066cc}.retail-shop{margin-top:60px}.retail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin:24px 0}.retail-card{background:#fff;padding:18px;border-radius:18px;border:1px solid #e3e4e8}.retail-card img{width:100%;aspect-ratio:1;object-fit:contain}.retail-card h3{font-size:15px;line-height:1.4;margin:12px 0 4px;min-height:2.8em}.retail-card p{margin:6px 0}.retail-card button{font-size:13px;padding:10px 14px;margin-top:10px}.retail-card a{font-size:13px;color:#0066cc}.retail-card .retail-muted{color:#737985;font-size:12px}.bag-summary{border:1px solid #e3e4e8;border-radius:18px;background:white;padding:22px}.bag-summary button{border:0;background:none;color:#0066cc;padding:4px;cursor:pointer;font:inherit;text-decoration:underline}.hide{display:none}#message{margin-top:18px;line-height:1.6;font-size:14px}a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #0071e3;outline-offset:3px}@media(max-width:580px){main{padding:55px 18px}.card{padding:22px 18px;border-radius:18px}.row{grid-template-columns:minmax(0,1fr) 85px;gap:14px}.name{font-size:14px}}
-</style><script defer src="/app.js"></script></head><body><nav><div><a href="https://novapharmhealthcare.com/products/nutraxin/"><b>NOVAPHARM / NUTRAXIN</b></a><a href="https://novapharmhealthcare.com/">NovaPharm Healthcare</a></div></nav><main><p class="eyebrow">NUTRAXIN / CUSTOMER ACCOUNT</p><h1>Welcome to Nutraxin.</h1><p class="lead">Explore the collection, sign in to your account and return whenever you like. Personal shopping and business trading are separate experiences.</p><section class="card" id="signed-out"><h2>Your Nutraxin account.</h2><p>Browse the product collection without registering. Sign in when you want to manage your account. You do not need a business account for personal shopping.</p><div class="actions"><a class="button" href="https://novapharmhealthcare.com/products/nutraxin/">Browse the collection</a><a class="button quiet" href="/login">Sign in or create account</a></div></section><section class="card hide" id="pending"><h2>Your account is ready.</h2><p id="pending-email"></p><p>Your email is verified. Personal shoppers do not need business approval to explore Nutraxin. Retail prices, delivery and payment checkout are being prepared; no purchase or payment can be completed from this page yet.</p><div class="actions"><a class="button" href="https://novapharmhealthcare.com/products/nutraxin/">Explore Nutraxin products</a><form action="/logout" method="post"><button type="submit" class="button quiet">Sign out</button></form></div><div class="business-option"><h3>Buying for a pharmacy or wholesale business?</h3><p class="fine">Only trade accounts need additional checks before private wholesale prices and business order requests are available.</p><a href="https://novapharmhealthcare.com/account-application/">Apply for business access</a></div></section><section id="approved" class="card hide"><h2>Your verified business account.</h2><p class="fine">Business account access is separate from Nutraxin retail shopping. You can also <a href="https://novapharmhealthcare.com/products/nutraxin/">browse the public collection</a>.</p><h3>Prepare a business order request.</h3><p id="welcome"></p><p class="fine">Minimum 1 unit per selected product; you may request up to 10,000 units per SKU. The existing 48-unit reference price applies to every quantity from 1 to 10,000. This is an order request, not proof of 10,000 units physically in stock. The prices shown are provisional B2B net prices for the stated quantity tiers. All products and availability remain subject to NovaPharm confirmation. This is not a binding order or a request for payment. VAT treatment, shipping and terms will be confirmed separately.</p><form id="order-form"><div id="products"></div><p id="indicative-totals" class="fine" aria-live="polite">Select product quantities to see an illustrative 20% UK VAT estimate. The indicative UK delivery charge is £0; fulfilment costs are absorbed by NovaPharm within the existing price assumption. This is not a VAT invoice or a request for payment.</p><div class="actions"><button class="button" type="submit" id="send">Submit order request</button><a class="button quiet" href="https://novapharmhealthcare.com/products/nutraxin/">Browse products</a></div><p id="message" role="status" aria-live="polite"></p></form><section aria-labelledby="request-history-heading"><h3 id="request-history-heading">Your requests</h3><p class="fine" id="history-status" role="status">Loading recent requests…</p><div id="request-history"></div></section><form action="/logout" method="post"><button class="button quiet" type="submit">Sign out</button></form></section><section class="retail-shop" aria-labelledby="retail-shop-title"><p class="eyebrow">NUTRAXIN / THE COLLECTION</p><h2 id="retail-shop-title">Explore and save your favourites.</h2><p class="fine">Choose products for your bag. Retail prices, availability and checkout are not yet active. A saved bag is not an order.</p><div class="retail-grid" id="retail-grid"><p>Loading the collection...</p></div><div class="bag-summary"><h3>Your bag</h3><p role="status" id="retail-bag-status">Your bag is empty.</p><ol id="retail-bag-items"></ol><button type="button" id="retail-bag-clear">Clear bag</button><p class="fine">Checkout is currently unavailable; no payment is collected or stock reserved.</p></div></section><p class="fine">NovaPharm Healthcare Ltd, United Kingdom. No payment cards are collected. Customer accounts do not automatically confer trading approval. <a href="https://novapharmhealthcare.com/legal/privacy/">Privacy</a>.</p></main></body></html>"""
+</style><script defer src="/app.js"></script></head><body><nav><div><a href="https://novapharmhealthcare.com/products/nutraxin/"><b>NOVAPHARM / NUTRAXIN</b></a><a href="https://novapharmhealthcare.com/">NovaPharm Healthcare</a></div></nav><main><p class="eyebrow">NUTRAXIN / CUSTOMER ACCOUNT</p><h1>Welcome to Nutraxin.</h1><p class="lead">Explore the collection, sign in to your account and return whenever you like. Personal shopping and business trading are separate experiences.</p><section class="card" id="signed-out"><h2>Your Nutraxin account.</h2><p>Browse the product collection without registering. Sign in when you want to manage your account. You do not need a business account for personal shopping.</p><div class="actions"><a class="button" href="https://novapharmhealthcare.com/products/nutraxin/">Browse the collection</a><a class="button quiet" href="/login">Sign in or create account</a></div></section><section class="card hide" id="pending"><h2>Your account is ready.</h2><p id="pending-email"></p><p>Your email is verified. Personal shoppers do not need business approval to explore Nutraxin. Your personal Nutraxin account can browse the retail collection below. Sign in and accept the terms to access secure checkout when order processing is enabled. Business account approval is not required for personal shopping.</p><div class="actions"><a class="button" href="https://novapharmhealthcare.com/products/nutraxin/">Explore Nutraxin products</a><form action="/logout" method="post"><button type="submit" class="button quiet">Sign out</button></form></div><div class="business-option"><h3>Buying for a pharmacy or wholesale business?</h3><p class="fine">Only trade accounts need additional checks before private wholesale prices and business order requests are available.</p><a href="https://novapharmhealthcare.com/account-application/">Apply for business access</a></div></section><section id="approved" class="card hide"><h2>Your verified business account.</h2><p class="fine">Business account access is separate from Nutraxin retail shopping. You can also <a href="https://novapharmhealthcare.com/products/nutraxin/">browse the public collection</a>.</p><h3>Prepare a business order request.</h3><p id="welcome"></p><p class="fine">Minimum 1 unit per selected product; you may request up to 10,000 units per SKU. The existing 48-unit reference price applies to every quantity from 1 to 10,000. This is an order request, not proof of 10,000 units physically in stock. The prices shown are provisional B2B net prices for the stated quantity tiers. All products and availability remain subject to NovaPharm confirmation. This is not a binding order or a request for payment. VAT treatment, shipping and terms will be confirmed separately.</p><form id="order-form"><div id="products"></div><p id="indicative-totals" class="fine" aria-live="polite">Select product quantities to see an illustrative 20% UK VAT estimate. The indicative UK delivery charge is £0; fulfilment costs are absorbed by NovaPharm within the existing price assumption. This is not a VAT invoice or a request for payment.</p><div class="actions"><button class="button" type="submit" id="send">Submit order request</button><a class="button quiet" href="https://novapharmhealthcare.com/products/nutraxin/">Browse products</a></div><p id="message" role="status" aria-live="polite"></p></form><section aria-labelledby="request-history-heading"><h3 id="request-history-heading">Your requests</h3><p class="fine" id="history-status" role="status">Loading recent requests…</p><div id="request-history"></div></section><form action="/logout" method="post"><button class="button quiet" type="submit">Sign out</button></form></section><section class="retail-shop" aria-labelledby="retail-shop-title"><p class="eyebrow">NUTRAXIN / THE COLLECTION</p><h2 id="retail-shop-title">Explore and save your favourites.</h2><p class="fine">Choose products for your bag. Retail prices use the existing owner-approved 48-unit reference price for every quantity. The displayed price includes 20% UK VAT under NovaPharm’s selected standard-rate policy; UK delivery adds £0. UK consumer delivery is due without undue delay, normally within 30 days, subject to any different agreed delivery period.</p><div class="retail-grid" id="retail-grid"><p>Loading the collection...</p></div><div class="bag-summary"><h3>Your bag</h3><p role="status" id="retail-bag-status">Your bag is empty.</p><ol id="retail-bag-items"></ol><button type="button" id="retail-bag-clear">Clear bag</button><p class="fine">Product price includes the owner-selected 20% UK VAT rate and £0 additional UK delivery. NovaPharm commits to supply from stock or manufacturer fulfilment; physical stock is not represented as reserved. You may cancel or seek a refund in accordance with UK consumer law and the published terms.</p><label class="fine"><input type="checkbox" id="retail-terms-accept"> I agree to the <a href="https://novapharmhealthcare.com/legal/terms/">terms of sale</a>, the UK delivery period of up to 30 days unless agreed otherwise, and payment through Stripe.</label><p id="retail-checkout-message" class="fine" role="status" aria-live="polite"></p><button id="retail-checkout" type="button" class="button" disabled>Continue to secure payment</button></div></section><p class="fine">NovaPharm Healthcare Ltd, United Kingdom. Payment cards are entered only into Stripe-hosted Checkout. Trade access remains separately approved. <a href="https://novapharmhealthcare.com/legal/privacy/">Privacy</a>.</p></main></body></html>"""
 
 APP = """(function(){"use strict";
 const $=id=>document.getElementById(id);
@@ -103,34 +106,46 @@ async function renderHistory(){
   status.textContent="Request history is temporarily unavailable. Please try again later.";
  }
 }
-async function init(){try{const session=await read("/api/session");if(!session.authenticated){show("signed-out");return;}if(!session.approved){$("pending-email").textContent="Signed in as "+session.email+".";show("pending");return;}const cat=await read("/api/catalogue");$("welcome").textContent="Signed in as "+session.email+".";render(cat.products);show("approved");void renderHistory();}catch(e){$("signed-out").append(node("p","fine","Could not load your secure account. Please retry sign-in."));}}
+async function init(){try{const session=await read("/api/session");retailAuthenticated=!!session.authenticated;if(!session.authenticated){show("signed-out");return;}if(!session.approved){$("pending-email").textContent="Signed in as "+session.email+".";show("pending");return;}const cat=await read("/api/catalogue");$("welcome").textContent="Signed in as "+session.email+".";render(cat.products);show("approved");void renderHistory();}catch(e){$("signed-out").append(node("p","fine","Could not load your secure account. Please retry sign-in."));}}
 $("order-form").addEventListener("submit",async function(event){event.preventDefault();const lines=[...$("products").querySelectorAll("input")].filter(i=>Number(i.value)>0).map(i=>({sku:i.name,quantity:Number(i.value)}));if(!lines.length){$("message").textContent="Select at least one product and quantity.";return;}const button=$("send");button.disabled=true;$("message").textContent="Submitting your request securely…";try{const r=await fetch("/api/order-requests",{method:"POST",credentials:"same-origin",cache:"no-store",headers:{"Content-Type":"application/json"},body:JSON.stringify({lines:lines,request_id:crypto.randomUUID()})});const data=await r.json();if(!r.ok||!data.receipt_id)throw new Error(data.error||"No receipt confirmed.");$("message").textContent="Request received: "+data.receipt_id+". Provisional products "+money(data.net_total_pence)+" + illustrative UK VAT at 20% "+money(data.indicative_vat_pence)+" = "+money(data.indicative_gross_total_pence)+". Indicative UK delivery charge £0 (included in the existing price model). No payment taken or VAT charged; NovaPharm will confirm availability and terms.";button.disabled=false;void renderHistory();}catch(e){$("message").textContent="Submission not confirmed. "+(e.message||"Please retry.");button.disabled=false;}});
 // A saved bag is a local selection, not a paid or accepted order.
 const retailStorageKey="novapharm.nutraxin.bag.v1";
-const retailBag=new Map();let retailProducts=[];
-function retailLoad(){try{const data=JSON.parse(localStorage.getItem(retailStorageKey)||"[]");if(Array.isArray(data))for(const item of data){if(typeof item?.sku==="string"&&Number.isSafeInteger(item.quantity)&&item.quantity>=1&&item.quantity<=99)retailBag.set(item.sku,item.quantity);}}catch{}}
+const retailBag=new Map();let retailProducts=[];let retailCheckoutEnabled=false;let retailAuthenticated=false;
+function retailLoad(){try{const data=JSON.parse(localStorage.getItem(retailStorageKey)||"[]");if(Array.isArray(data))for(const item of data){if(typeof item?.sku==="string"&&Number.isSafeInteger(item.quantity)&&item.quantity>=1&&item.quantity<=10000)retailBag.set(item.sku,item.quantity);}}catch{}}
 function retailPersist(){try{localStorage.setItem(retailStorageKey,JSON.stringify([...retailBag].map(([sku,quantity])=>({sku,quantity}))));}catch{}}
 function retailSummary(){
  const valid=new Set(retailProducts.map(p=>p.sku));
  for(const sku of [...retailBag.keys()])if(!valid.has(sku))retailBag.delete(sku);
  const list=$("retail-bag-items");list.replaceChildren();let total=0;
- for(const product of retailProducts){const count=retailBag.get(product.sku)||0;if(!count)continue;total+=count;list.append(node("li",null,product.name+" — "+count+" unit"+(count===1?"":"s")));}
- $("retail-bag-status").textContent=total?total+" item"+(total===1?"":"s")+" saved. Prices and checkout are not yet enabled.":"Your bag is empty.";
+ let basketGross=0;
+ for(const product of retailProducts){
+  const count=retailBag.get(product.sku)||0;if(!count)continue;
+  total+=count;
+  basketGross+=count*Number(product.retail_price_pence||0);
+  const li=node("li");
+  li.append(node("span",null,product.name+" · "+money(count*Number(product.retail_price_pence||0))+" · "));
+  const qty=node("input","qty");qty.type="number";qty.min="0";qty.max="10000";qty.step="1";qty.value=String(count);
+  qty.setAttribute("aria-label","Bag quantity for "+product.name);
+  qty.addEventListener("change",()=>{const n=Number(qty.value);if(!Number.isSafeInteger(n)||n<0||n>10000){qty.value=String(count);return;}if(n===0)retailBag.delete(product.sku);else retailBag.set(product.sku,n);retailSummary();});
+  li.append(qty);list.append(li);
+ }
+ $("retail-bag-status").textContent=total?total+" unit"+(total===1?"":"s")+" in your bag. Indicative total "+money(basketGross)+" including 20% UK VAT and £0 additional UK delivery.":"Your bag is empty.";
+ $("retail-checkout").disabled=!retailCheckoutEnabled||!total;
  retailPersist();
 }
 async function retailCollection(){
  const host=$("retail-grid");
  try{
   const data=await read("/api/retail/catalogue");
-  if(!Array.isArray(data.products)||data.products.length!==19||data.checkout_enabled!==false||data.public_retail_prices_approved!==false)throw new Error("Retail catalogue not ready");
+  if(!Array.isArray(data.products)||data.products.length!==19||data.public_retail_prices_approved!==true)throw new Error("Retail catalogue not ready");retailCheckoutEnabled=data.checkout_enabled===true;
   retailProducts=data.products;host.replaceChildren();
   for(const product of retailProducts){
    if(typeof product.sku!=="string"||typeof product.name!=="string"||typeof product.slug!=="string"||!/^[a-z0-9-]+$/.test(product.slug))continue;
    const card=node("article","retail-card"),picture=node("img");picture.src="https://novapharmhealthcare.com/assets/media/products/nutraxin/"+product.slug+".png";picture.alt=product.name+" pack";picture.loading="lazy";picture.width=180;picture.height=180;
-   const name=node("h3",null,product.name),pack=node("p","retail-muted",product.pack),price=node("p","retail-muted","Retail price pending confirmation");
+   const name=node("h3",null,product.name),pack=node("p","retail-muted",product.pack),price=node("p","retail-muted",money(product.retail_price_pence)+" per unit incl. 20% UK VAT. UK delivery included.");
    const detail=node("a",null,"Product details");detail.href="https://novapharmhealthcare.com/products/nutraxin/"+product.slug+"/";
    const add=node("button","button quiet","Add to bag");add.type="button";
-   add.addEventListener("click",()=>{retailBag.set(product.sku,Math.min(99,(retailBag.get(product.sku)||0)+1));retailSummary();});
+   add.addEventListener("click",()=>{retailBag.set(product.sku,Math.min(10000,(retailBag.get(product.sku)||0)+1));retailSummary();});
    const actions=node("div","actions");actions.append(add,detail);card.append(picture,name,pack,price,actions);host.append(card);
   }
   retailSummary();
@@ -138,6 +153,34 @@ async function retailCollection(){
 }
 retailLoad();
 $("retail-bag-clear").addEventListener("click",()=>{retailBag.clear();retailSummary();});
+$("retail-checkout").addEventListener("click",async()=>{
+ const status=$("retail-checkout-message"),button=$("retail-checkout");
+ if(!retailAuthenticated){status.textContent="Sign in to continue securely. Your bag will remain saved.";window.location.assign("/login");return;}
+ if(!retailCheckoutEnabled){status.textContent="Secure checkout is not active for this collection.";return;}
+ if(!$("retail-terms-accept").checked){status.textContent="Review and accept the UK delivery and sale terms before paying.";return;}
+ const lines=[...retailBag].map(([sku,quantity])=>({sku,quantity}));
+ if(!lines.length){status.textContent="Add a Nutraxin product first.";return;}
+ button.disabled=true;status.textContent="Calculating your final total and opening Stripe Checkout…";
+ try{
+  const oldId=localStorage.getItem("novapharm.nutraxin.current.checkout.id")||"";
+  const requestId=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(oldId)?oldId:crypto.randomUUID();
+  localStorage.setItem("novapharm.nutraxin.current.checkout.id",requestId);
+  const r=await fetch("/api/retail/checkout",{method:"POST",credentials:"same-origin",cache:"no-store",headers:{"Content-Type":"application/json"},body:JSON.stringify({request_id:requestId,lines,accept_terms:true})});
+  const data=await r.json();
+  if(!r.ok||typeof data.checkoutUrl!=="string"||!data.checkoutUrl.startsWith("https://checkout.stripe.com/"))throw new Error(data.error||"Payment is unavailable for this basket.");
+  window.location.assign(data.checkoutUrl);
+ }catch(e){status.textContent="Could not open payment: "+(e.message||"Please retry.");button.disabled=false;}
+});
+const returnQuery=new URLSearchParams(window.location.search);
+if(returnQuery.get("checkout")==="return"&&returnQuery.get("order_id")){
+ const ref=returnQuery.get("order_id");
+ if(/^NUT-[0-9a-f-]{36}$/.test(ref)){
+  read("/api/retail/order-status/"+encodeURIComponent(ref)).then(data=>{
+   $("retail-checkout-message").textContent=data.status==="PAID"?"Payment received for order "+ref+".":"Stripe has returned your order "+ref+". Payment confirmation is being processed.";
+   if(data.status==="PAID"){retailBag.clear();retailPersist();localStorage.removeItem("novapharm.nutraxin.current.checkout.id");retailSummary();}
+  }).catch(()=>{$("retail-checkout-message").textContent="Your payment status is not yet available. Please check with NovaPharm before trying another card.";});
+ }
+}
 void retailCollection();
 init();
 })();"""
@@ -442,12 +485,17 @@ def handler(event,context):
     if method=="GET" and path=="/auth/callback":return callback(event)
     if method=="POST" and path=="/logout":return logout(event)
     if method=="GET" and path=="/api/retail/catalogue":
-        # Public catalogue data only; personal shoppers never need wholesale approval.
-        # Do not expose the private B2B quotation register as consumer retail prices.
-        return reply(200,{"currency":"GBP","public_retail_prices_approved":False,
-            "checkout_enabled":False,"payment_collection_enabled":False,
+        # Owner approved use of the existing 48-unit tier for consumer pricing.
+        # Catalogue prices are public; no supplier cost data is exposed.
+        prices = checkout_source()
+        return reply(200,{"currency":"GBP","public_retail_prices_approved":True,
+            "checkout_enabled":DIRECT_SHOP_PAYMENTS_ENABLED,
+            "payment_collection_enabled":DIRECT_SHOP_PAYMENTS_ENABLED,
+            "vat_rate_bps":2000,"uk_delivery_charge_pence":0,
             "products":[{"sku":sku,"name":item[0],"pack":item[1],"slug":PUBLIC_SLUGS[sku],
-                "retail_price_pence":None,"sale_status":"not_offered"}
+                "retail_net_price_pence":int(prices[sku]["qty48_price_pence"]),
+                "retail_price_pence":int(prices[sku]["qty48_price_pence"]) + illustrative_uk_vat_pence(int(prices[sku]["qty48_price_pence"])),
+                "sale_status":"owner_approved_price"}
                 for sku,item in PRODUCTS.items()]})
     if method=="GET" and path=="/health":
         return reply(200,{"status":"staging_healthy","binding_orders":False})
@@ -458,6 +506,10 @@ def handler(event,context):
             return reply(200,{"authenticated":True,"approved":approved(customer["username"]),
                 "email":customer.get("email","")})
         if not customer:return error(401,"login_required")
+        if method=="POST" and path=="/api/retail/checkout":
+            return retail_checkout(event,customer)
+        if method=="GET" and re.fullmatch(r"/api/retail/order-status/NUT-[0-9a-f-]{36}",path):
+            return retail_order_status(event,customer,path.rsplit("/",1)[-1])
         if not approved(customer["username"]):return error(403,"business_qualification_required")
         if method=="GET" and path=="/api/catalogue":
             prices=checkout_source()
