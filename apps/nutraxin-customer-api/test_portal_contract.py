@@ -124,6 +124,22 @@ class PortalSecurityTests(unittest.TestCase):
         scopes = params["scope"][0].split()
         self.assertEqual(set(scopes), {"openid", "email", "profile", "aws.cognito.signin.user.admin"})
 
+    def test_retail_bag_and_catalogue_do_not_enable_sale(self):
+        response=PORTAL.handler(self.event("/api/retail/catalogue"), None)
+        self.assertEqual(response["statusCode"], 200)
+        payload=json.loads(response["body"])
+        self.assertFalse(payload["checkout_enabled"])
+        self.assertFalse(payload["payment_collection_enabled"])
+        self.assertEqual(set(p["sku"] for p in payload["products"]), set(PORTAL.PRODUCTS))
+        self.assertEqual(set(p["slug"] for p in payload["products"]), set(PORTAL.PUBLIC_SLUGS.values()))
+        self.assertTrue(all(p["retail_price_pence"] is None for p in payload["products"]))
+        self.assertTrue(all(p["sale_status"]=="not_offered" for p in payload["products"]))
+        self.assertIn("A saved bag is not an order.", PORTAL.PAGE)
+        self.assertIn("retailStorageKey", PORTAL.APP)
+        self.assertIn("Add to bag", PORTAL.APP)
+        self.assertNotIn("qty48_price_pence", response["body"])
+        self.assertEqual(PORTAL.handler(self.event("/api/catalogue"), None)["statusCode"], 401)
+
     def test_personal_account_does_not_require_trade_approval(self):
         self.assertIn("Your account is ready.", PORTAL.PAGE)
         self.assertIn("Personal shoppers do not need business approval", PORTAL.PAGE)
