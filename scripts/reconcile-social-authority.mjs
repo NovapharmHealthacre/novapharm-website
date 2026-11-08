@@ -125,6 +125,9 @@ if (existsSync(nutraxinProductDirectory)) {
     if (entry.isDirectory() && existsSync(join(nutraxinProductDirectory, entry.name, "index.html"))) {
       const file = `products/nutraxin/${entry.name}/index.html`;
       files.push(file);
+      // This is a quotation-request interface, not a catalogue product pack.
+      // It uses the corporate social image rather than an invented SKU image.
+      if (entry.name === "order-request") continue;
       routeImages.set(`/products/nutraxin/${entry.name}/`, {
         url: `/assets/media/products/nutraxin/${entry.name}.png`,
         type: "image/png",
