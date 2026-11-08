@@ -65,6 +65,7 @@ async function audit() {
               return {
                 title:document.title, h1s:h1s.length,h1Text:h1s[0]?.textContent?.trim()??"",
                 header:!!header,footer:!!footer,logo:!!document.querySelector('header img[alt="NovaPharm Healthcare"]'),
+                intelligenceNav:!!document.querySelector('header .desktop-nav a[href="/technology/"]'),
                 navHeight:header?Math.round(header.getBoundingClientRect().height):0,
                 font:body.fontFamily,inkToken:root.getPropertyValue("--nph-ink").trim(),
                 surfaceToken:root.getPropertyValue("--nph-silver").trim(),
@@ -91,6 +92,7 @@ async function audit() {
             const faults:string[]=[];
             if(data.h1s!==1)faults.push("H1 count: "+data.h1s);
             if(!data.header||!data.footer||!data.logo)faults.push("Missing shared header/footer/brand");
+            if(!data.intelligenceNav)faults.push("Primary navigation missing NovaPharm Intelligence");
             if(data.scrollWidth>data.width+1)faults.push("Horizontal overflow: "+data.scrollWidth+"px");
             if(data.headlineBounds && (data.headlineBounds.left < -1 || data.headlineBounds.right > data.width+2)) {
               faults.push("Primary heading extends outside viewport: "+JSON.stringify(data.headlineBounds));
