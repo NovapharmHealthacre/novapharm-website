@@ -3,12 +3,12 @@
 import { adminModules, customerModules, employeeModules, executiveModules, type PortalArea, type PortalModule } from "@novapharm/portal-contracts";
 import { Activity, ArrowUpRight, LogOut, Menu, RefreshCw, Search, ShieldCheck, X } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
+import { nutraxinProductForSelection } from "../data/nutraxin-order-intent";
 import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { areaLabels, areaLandingRoutes, areaScopes } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError, protectedMutation } from "../lib/gateway";
 import { MedicinesIntelligence } from "./medicines-intelligence";
 import { PortalBrand } from "./portal-brand";
-import { nutraxinProductForSelection } from "../data/nutraxin-order-intent";
 
 type Metric = Readonly<{ key: string; label: string; value: number; format?: string; href?: string | null }>;
 type Column = readonly [string, string, string?];
