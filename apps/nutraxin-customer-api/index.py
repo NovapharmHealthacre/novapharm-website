@@ -703,9 +703,10 @@ def handler(event,context):
         # Owner approved use of the existing 48-unit tier for consumer pricing.
         # Catalogue prices are public; no supplier cost data is exposed.
         prices = checkout_source()
+        ready=retail_readiness()
         return reply(200,{"currency":"GBP","public_retail_prices_approved":True,
-            "checkout_enabled":DIRECT_SHOP_PAYMENTS_ENABLED,
-            "payment_collection_enabled":DIRECT_SHOP_PAYMENTS_ENABLED,
+            "checkout_enabled":ready,
+            "payment_collection_enabled":ready,
             "vat_rate_bps":2000,"uk_delivery_charge_pence":0,
             "products":[{"sku":sku,"name":item[0],"pack":item[1],"slug":PUBLIC_SLUGS[sku],
                 "retail_net_price_pence":int(prices[sku]["qty48_price_pence"]),
@@ -713,7 +714,7 @@ def handler(event,context):
                 "sale_status":"owner_approved_price"}
                 for sku,item in PRODUCTS.items()]})
     if method=="GET" and path=="/health":
-        return reply(200,{"status":"staging_healthy","binding_orders":False})
+        return reply(200,{"status":"staging_healthy","binding_orders":retail_readiness()})
     if path in ("/api/retail/readiness","/api/retail/checkout") and method=="OPTIONS":
         if retail_origin(event)!="https://novapharmhealthcare.com":
             return error(403,"invalid_origin")
