@@ -5,6 +5,8 @@ on:
       - 'deployment/aws/Dockerfile.portal'
       - 'infra/aws/portal-codebuild-staging.json'
       - 'scripts/aws/portal-codebuild-staging.test.mjs'
+      - 'infra/aws/portal-task-staging.json'
+      - 'scripts/aws/portal-task-staging.test.mjs'
       - '.github/workflows/aws-portal-container-build.yml'
       - 'apps/portal/**'
       - 'packages/**'
@@ -22,7 +24,7 @@ jobs:
       - name: Check out exact proposed source
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: Validate AWS image build contract
-        run: node --test scripts/aws/portal-codebuild-staging.test.mjs
+        run: node --test scripts/aws/portal-codebuild-staging.test.mjs scripts/aws/portal-task-staging.test.mjs
       - name: Build Next.js portal into a non-root OCI image
         run: docker build --pull --file deployment/aws/Dockerfile.portal --tag novapharm-portal:staging-smoke .
       - name: Smoke-test the real packaged application without cloud credentials
