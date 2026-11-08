@@ -6,7 +6,7 @@
 export const NUTRAXIN_SKUS = Object.freeze(["NUT-UK-VD3-T120","NUT-UK-VD3-S30","NUT-UK-VD3K2-T120","NUT-UK-VD3K2-S30","NUT-UK-VC1000-T30","NUT-UK-VC500-C30","NUT-UK-VMAX-T60","NUT-UK-VMAX-E15","NUT-UK-MGCX-T60","NUT-UK-MGDL-T60","NUT-UK-MVE-T60","NUT-UK-MVW-T60","NUT-UK-MVM-T60","NUT-UK-CG-T30","NUT-UK-CG-S30","NUT-UK-CCX-T90","NUT-UK-ART-T90","NUT-UK-LCAR-T60","NUT-UK-B12-SL60"]);
 const allowed = new Set(NUTRAXIN_SKUS);
 const MAX_LINES = 19;
-const MAX_UNITS_PER_LINE = 999;
+const MAX_UNITS_PER_LINE = 10000;
 
 export function encodeBasketLines(lines) {
   if (!Array.isArray(lines) || lines.length < 1 || lines.length > MAX_LINES) {
@@ -17,7 +17,7 @@ export function encodeBasketLines(lines) {
     const sku = String(line?.sku ?? "");
     const qty = Number(line?.quantity);
     if (!allowed.has(sku) || seen.has(sku) || !Number.isSafeInteger(qty) || qty < 1 || qty > MAX_UNITS_PER_LINE) {
-      throw new TypeError("Check every selected product and quantity (1 to 999).");
+      throw new TypeError("Check every selected product and quantity (1 to 10,000).");
     }
     seen.add(sku);
     return `${sku}:${qty}`;
