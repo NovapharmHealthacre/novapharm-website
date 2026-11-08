@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "2026-11-08-staging-only",
+  "description": "Reviewed real AWS Cognito workforce IdP claim mapping and MongoDB Atlas evidence namespaces. This manifest contains no credentials and does not activate production.",
+  "region": "eu-north-1",
+  "awsAccountId": "250675045172",
+  "workforceEntra": {
+    "userPoolId": "eu-north-1_dZRAEzkYa",
+    "userPoolName": "novapharm-staging-entra-p1-broker",
+    "clientId": "26al3v0so11731c1l1hglfa8d1",
+    "providerName": "EntraP1",
+    "oidcIssuer": "https://login.microsoftonline.com/08811bc1-2d20-4fbb-bcb3-f02011e53b60/v2.0",
+    "expectedMapping": {
+      "username": "sub",
+      "email": "email",
+      "name": "name"
+    },
+    "hostedDomain": "novapharm-staging-250675045172.auth.eu-north-1.amazoncognito.com",
+    "hostedDomainStatus": "ACTIVE",
+    "currentCallbackUrls": [
+      "http://localhost:4303/auth/callback/"
+    ],
+    "requiresApprovedHttpsCallback": true,
+    "requiresSignedSubjectAllowlist": true,
+    "requiresEmailClaimFromEntra": true,
+    "realEntraMfaVerified": false,
+    "productionSessionsApproved": false,
+    "customerIdentitiesAllowed": false,
+    "appRuntimeDeployed": false,
+    "dataBackendSessionPersistenceVerified": false,
+    "ownerNextAction": "Enable email optional claim and verify Entra Conditional Access MFA with a named approved test user; provision owned HTTPS portal route before adding any HTTPS redirect URI"
+  },
+  "mongodb": {
+    "projectId": "6aede4d2bedcc3f04ecc6eb5",
+    "cluster": "novapharm-staging",
+    "cloudProvider": "AWS",
+    "region": "EU_NORTH_1",
+    "tier": "FREE",
+    "database": "novapharm_staging",
+    "collections": {
+      "evidence": "nova_medicine_evidence_staging",
+      "ingestionRuns": "nova_ingestion_runs_staging"
+    },
+    "indexes": {
+      "evidence": [
+        {
+          "name": "workspace_medicine_observed_at",
+          "keys": {
+            "workspace_id": 1,
+            "medicine_identity": 1,
+            "observed_at": -1
+          }
+        },
+        {
+          "name": "workspace_source_provenance",
+          "keys": {
+            "workspace_id": 1,
+            "source_id": 1,
+            "source_version": 1
+          }
+        }
+      ],
+      "ingestionRuns": [
+        {
+          "name": "workspace_pipeline_started_at",
+          "keys": {
+            "workspace_id": 1,
+            "pipeline_id": 1,
+            "started_at": -1
+          }
+        }
+      ]
+    },
+    "dataCountAtCreation": {
+      "evidence": 0,
+      "ingestionRuns": 0
+    },
+    "productionSourceOfTruth": false,
+    "customerPiiAllowed": false,
+    "openInternetAllowlistPermitted": false,
+    "databaseUserRole": "readWrite on novapharm_staging only",
+    "applicationNetworkConnectionVerified": false,
+    "applicationDriverInstalled": false,
+    "productionBackupsAndRestoreAccepted": false,
+    "currentSqlPortalDatabaseReplaced": false,
+    "ownerNextAction": "Approve a fixed egress and costed production-grade Atlas networking/backup plan before connecting an application runtime"
+  }
+}
