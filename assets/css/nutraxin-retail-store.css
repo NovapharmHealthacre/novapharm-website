@@ -12,7 +12,7 @@
 .nx-store-add:focus-visible,.nx-store-bag-button:focus-visible,.nx-store-qty:focus-visible,.nx-shop-bag a:focus-visible,.nx-store-bag-link:focus-visible{outline:3px solid #0071e3;outline-offset:3px}
 .nx-store-bag-link{display:inline-flex;align-items:center;text-decoration:none;color:#0066cc;font-size:14px;font-weight:550;min-height:44px}
 .nx-store-card-footer{display:flex;gap:7px 12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:15px 16px 20px;border-top:1px solid #eeeef0;background:#fff;border-radius:0 0 18px 18px}
-.nx-store-card-footer .nx-store-price{font-size:15px;font-weight:650;margin:0}
+.nx-store-card-footer .nx-store-price{font-size:15px;font-weight:650;margin:0}.nx-store-vat-note{font-size:11px;line-height:1.35;color:#6e6e73;margin:5px 0 0}.nx-store-panel .nx-store-price{font-variant-numeric:tabular-nums}
 .nx-store-card-footer .nx-store-add{padding:10px 18px;min-height:40px;font-size:13px}
 .nx-product-card-shell:has(.nx-store-card-footer){overflow:hidden;border-radius:20px}
 .nx-product-card-shell .nx-product-card{border-bottom-left-radius:0;border-bottom-right-radius:0}
