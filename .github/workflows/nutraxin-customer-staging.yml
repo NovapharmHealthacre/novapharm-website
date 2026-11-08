@@ -1,0 +1,39 @@
+name: Nutraxin customer identity and order-request acceptance
+on:
+  pull_request:
+    paths:
+      - "apps/nutraxin-customer-api/**"
+      - "infra/aws/nutraxin-customer-staging-stack.json"
+      - ".github/workflows/nutraxin-customer-staging.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  secure-customer-quote-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Validate Python source
+        run: python3 -m py_compile apps/nutraxin-customer-api/index.py apps/nutraxin-customer-api/test_portal_contract.py
+      - name: Verify authorization, pricing and fail-closed order semantics
+        run: python3 -m unittest discover -s apps/nutraxin-customer-api -p 'test_*.py' -v
+      - name: Verify IaC parses and has no hardcoded selling prices
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("infra/aws/nutraxin-customer-staging-stack.json")
+          x = json.loads(p.read_text())
+          assert x["Resources"]["HttpApi"]["Properties"]["ProtocolType"] == "HTTP"
+          role = x["Resources"]["AppRole"]["Properties"]
+          assert "Policies" in role
+          source = x["Resources"]["AppFunction"]["Properties"]["Code"]["ZipFile"]
+          assert source == Path("apps/nutraxin-customer-api/index.py").read_text()
+          assert "supplier_purchase_24plus_gbp" not in source
+          assert "PAY_PER_REQUEST" == x["Resources"]["CustomerTable"]["Properties"]["BillingMode"]
+          print("Nutraxin non-binding B2B customer portal contract passed")
+          PY
