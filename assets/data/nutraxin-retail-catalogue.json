@@ -1,9 +1,9 @@
 {
-  "version": "2026-11-08-retail-preview-v1",
+  "version": "2026-11-08-owner-authorized-indicative-public-prices-v2",
   "currency": "GBP",
   "checkout_enabled": false,
   "payment_collection_enabled": false,
-  "price_authority": "not_yet_verified_for_consumer_sale",
+  "price_authority": "owner_authorized_provisional_public_display",
   "delivery_verified": false,
   "products": [
     {
@@ -13,7 +13,7 @@
       "pack": "120 tablets",
       "range": "Vitamin D",
       "image": "/assets/media/products/nutraxin/vitamin-d3-120-tablets-480.avif",
-      "retail_price_pence": null,
+      "retail_price_pence": 1547,
       "available_to_sell": false
     },
     {
@@ -23,7 +23,7 @@
       "pack": "30 ml",
       "range": "Vitamin D",
       "image": "/assets/media/products/nutraxin/vitamin-d3-spray-30ml-480.avif",
-      "retail_price_pence": null,
+      "retail_price_pence": 1547,
       "available_to_sell": false
     },
     {
@@ -33,7 +33,7 @@
       "pack": "120 tablets",
       "range": "Vitamin D",
       "image": "/assets/media/products/nutraxin/vitamin-d3-k2-120-tablets-480.avif",
-      "retail_price_pence": null,
+      "retail_price_pence": 1838,
       "available_to_sell": false
     },
     {
@@ -43,7 +43,7 @@
       "pack": "30 ml",
       "range": "Vitamin D",
       "image": "/assets/media/products/nutraxin/vitamin-d3-k2-spray-30ml-480.avif",
-      "retail_price_pence": null,
+      "retail_price_pence": 1838,
       "available_to_sell": false
     },
     {
@@ -53,7 +53,7 @@
       "pack": "30 tablets",
       "range": "Vitamin C",
       "image": "/assets/media/products/nutraxin/vitamin-c-1000mg-30-tablets-480.avif",
-      "retail_price_pence": null,
+      "retail_price_pence": 1547,
       "available_to_sell": false
     },
     {
@@ -63,7 +63,7 @@
       "pack": "30 chewable tablets",
       "range": "Vitamin C",
       "image": "/assets/media/products/nutraxin/vitamin-c-500mg-chewable-30-tablets-480.avif",
-      "retail_price_pence": null,
+      "retail_price_pence": 1838,
       "available_to_sell": false
     },
     {
@@ -73,7 +73,7 @@
       "pack": "60 tablets",
       "range": "Vitamin C",
       "image": "/assets/media/products/nutraxin/vitamin-max-60-tablets-480.avif",
-      "retail_price_pence": null,
+      "retail_price_pence": 1838,
       "available_to_sell": false
     },
     {
@@ -83,7 +83,7 @@
       "pack": "15 effervescent tablets",
       "range": "Vitamin C",
       "image": "/assets/media/products/nutraxin/vitamin-max-15-effervescent-tablets-480.avif",
-      "retail_price_pence": null,
+      "retail_price_pence": 1936,
       "available_to_sell": false
     },
     {
@@ -93,7 +93,7 @@
       "pack": "60 tablets",
       "range": "Magnesium",
       "image": "/assets/media/products/nutraxin/magnesium-complex-60-tablets-480.avif",
-      "retail_price_pence": null,
+      "retail_price_pence": 1838,
       "available_to_sell": false
     },
     {
@@ -103,7 +103,7 @@
       "pack": "60 tablets",
       "range": "Magnesium",
       "image": "/assets/media/products/nutraxin/magnesium-daily-60-tablets-480.avif",
-      "retail_price_pence": null,
+      "retail_price_pence": 1838,
       "available_to_sell": false
     },
     {
@@ -113,7 +113,7 @@
       "pack": "60 tablets",
       "range": "Multivitamin and mineral",
       "image": "/assets/media/products/nutraxin/multivitamin-mineral-energy-60-tablets-480.avif",
-      "retail_price_pence": null,
+      "retail_price_pence": 2032,
       "available_to_sell": false
     },
     {
@@ -123,7 +123,7 @@
       "pack": "60 tablets",
       "range": "Multivitamin and mineral",
       "image": "/assets/media/products/nutraxin/womens-multivitamin-complex-60-tablets-480.avif",
-      "retail_price_pence": null,
+      "retail_price_pence": 2226,
       "available_to_sell": false
     },
     {
@@ -133,7 +133,7 @@
       "pack": "60 tablets",
       "range": "Multivitamin and mineral",
       "image": "/assets/media/products/nutraxin/mens-multivitamin-complex-60-tablets-480.avif",
-      "retail_price_pence": null,
+      "retail_price_pence": 2226,
       "available_to_sell": false
     },
     {
@@ -143,7 +143,7 @@
       "pack": "30 tablets",
       "range": "Collagen",
       "image": "/assets/media/products/nutraxin/collagen-gold-30-tablets-480.avif",
-      "retail_price_pence": null,
+      "retail_price_pence": 1936,
       "available_to_sell": false
     },
     {
@@ -153,7 +153,7 @@
       "pack": "30 sachets",
       "range": "Collagen",
       "image": "/assets/media/products/nutraxin/collagen-gold-30-sachets-480.avif",
-      "retail_price_pence": null,
+      "retail_price_pence": 3542,
       "available_to_sell": false
     },
     {
@@ -163,7 +163,7 @@
       "pack": "90 tablets",
       "range": "Collagen",
       "image": "/assets/media/products/nutraxin/collagen-complex-90-tablets-480.avif",
-      "retail_price_pence": null,
+      "retail_price_pence": 2808,
       "available_to_sell": false
     },
     {
@@ -173,7 +173,7 @@
       "pack": "90 tablets",
       "range": "Additional support",
       "image": "/assets/media/products/nutraxin/artoflex-90-tablets-480.avif",
-      "retail_price_pence": null,
+      "retail_price_pence": 2323,
       "available_to_sell": false
     },
     {
@@ -183,7 +183,7 @@
       "pack": "60 tablets",
       "range": "Additional support",
       "image": "/assets/media/products/nutraxin/l-carnitine-60-tablets-480.avif",
-      "retail_price_pence": null,
+      "retail_price_pence": 1644,
       "available_to_sell": false
     },
     {
@@ -193,8 +193,16 @@
       "pack": "60 sublingual tablets",
       "range": "Additional support",
       "image": "/assets/media/products/nutraxin/vitamin-b12-60-sublingual-tablets-480.avif",
-      "retail_price_pence": null,
+      "retail_price_pence": 1547,
       "available_to_sell": false
     }
-  ]
+  ],
+  "price_display_status": "indicative_not_binding",
+  "vat_estimate_rate_percent": 20,
+  "price_includes_estimated_uk_vat": true,
+  "price_note": "Indicative UK price includes estimated 20% VAT and seller-funded standard UK delivery (£0 extra). Final VAT registration and carrier service are not yet verified. Checkout remains disabled.",
+  "source_record": "owner_approved_provisional_19_sku_48_unit_reference_2026-11-08_v5",
+  "price_model_note": "Target 25% after-tax profit margin under unverified supplier, fulfilment and tax assumptions; not a guaranteed realised margin.",
+  "provisional_uk_delivery_charge_pence": 0,
+  "provisional_uk_delivery_cost_seller_funded": true
 }
