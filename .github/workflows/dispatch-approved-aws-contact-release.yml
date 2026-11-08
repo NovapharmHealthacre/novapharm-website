@@ -1,0 +1,45 @@
+name: Dispatch verified AWS contact go-live
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/dispatch-approved-aws-contact-release.yml'
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: novapharm-contact-dispatch-once
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verify AWS contact candidate is already activated
+        env:
+          CONTACT_ORIGIN: https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --retry 3 --retry-delay 2 --max-time 15 \
+            -H 'Cache-Control: no-cache' "$CONTACT_ORIGIN/health" > /tmp/contact-health.json
+          jq -e '.service == "novapharm-contact-intake" and .environment == "production" and .ready == true and .acceptingPublicSubmissions == true' /tmp/contact-health.json
+          echo 'Confirmed AWS contact intake is enabled. No real enquiry data was read.'
+      - name: Dispatch independently verified exact-SHA contact release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ github.sha }}
+          CONTACT_ORIGIN: https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
+          gh workflow run publish-aws-contact-production.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f expected_sha="$EXPECTED_SHA" \
+            -f contact_api_origin="$CONTACT_ORIGIN"
+          echo "Published release job dispatched for ${EXPECTED_SHA}; only its independent synthetic acceptance may update GitHub Pages."
