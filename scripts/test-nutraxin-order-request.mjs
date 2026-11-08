@@ -39,7 +39,7 @@ test("order-request allowlist exactly matches canonical 19-product register", ()
   assert.equal(register.products.length, 19);
   assert.deepEqual([...NUTRAXIN_SKUS].sort(), register.products.map(p => p.sku).sort());
   assert.match(generator, /function nutraxinOrderRequestMain\(\)/);
-  assert.match(generator, /nutraxin-order-request\/index\.html/);
+  assert.match(generator, /products\/nutraxin\/order-request\/index\.html/);
   assert.match(generator, /nx-order-line/);
   assert.match(generator, /nutraxin-order-request\.js/);
 });
