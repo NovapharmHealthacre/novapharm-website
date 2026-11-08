@@ -1,0 +1,47 @@
+name: Nutraxin durable payment-ledger infrastructure validation
+on:
+  pull_request:
+    paths:
+      - "infra/aws/nutraxin-production-payment-ledger.json"
+      - "docs/payments/nutraxin-production-ledger.md"
+      - ".github/workflows/nutraxin-payment-ledger.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate-storage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify payment data safety and default-deny activation
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          template=json.loads(Path("infra/aws/nutraxin-production-payment-ledger.json").read_text())
+          assert template["Outputs"]["CheckoutActivated"]["Value"]=="false"
+          resources=template["Resources"]
+          assert len(resources)==2
+          names=set()
+          for resource in resources.values():
+              assert resource["Type"]=="AWS::DynamoDB::Table"
+              assert resource["DeletionPolicy"]=="Retain"
+              assert resource["UpdateReplacePolicy"]=="Retain"
+              p=resource["Properties"]
+              assert p["BillingMode"]=="PAY_PER_REQUEST"
+              assert p["DeletionProtectionEnabled"] is True
+              assert p["PointInTimeRecoverySpecification"]["PointInTimeRecoveryEnabled"] is True
+              assert p["SSESpecification"]["SSEEnabled"] is True
+              assert p["KeySchema"]==[
+                  {"AttributeName":"pk","KeyType":"HASH"},
+                  {"AttributeName":"sk","KeyType":"RANGE"}]
+              assert p["TableName"].startswith("novapharm-production-nutraxin-payment-")
+              names.add(p["TableName"])
+          assert len(names)==2
+          assert not any(x in resources for x in ("AWS::IAM::Role","AWS::Lambda::Function","AWS::ApiGatewayV2::Route"))
+          print("Protected production persistence validated; no live checkout or public access")
+          PY
