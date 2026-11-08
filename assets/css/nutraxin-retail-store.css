@@ -1,0 +1,48 @@
+/* Nutraxin direct-to-consumer storefront. Typographic Apple-inspired UX, not Apple assets. */
+.nx-store-panel,.nx-store-card-footer,.nx-shop-bag{--nx-ink:#1d1d1f;--nx-muted:#6e6e73;--nx-blue:#0071e3;color:var(--nx-ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.nx-store-panel{border-top:1px solid #e5e5e8;padding-top:24px;margin:28px 0 26px;max-width:520px}
+.nx-store-kicker{color:var(--nx-muted);font-size:12px;font-weight:650;letter-spacing:.08em;text-transform:uppercase}
+.nx-store-price{font-size:clamp(24px,3vw,34px);font-weight:670;letter-spacing:-.035em;margin:9px 0 8px}
+.nx-store-note{font-size:13px;color:var(--nx-muted);line-height:1.55;margin:0 0 18px}
+.nx-store-options{display:flex;gap:11px;align-items:center;flex-wrap:wrap}
+.nx-store-qty-label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--nx-muted)}
+.nx-store-qty{min-width:76px;max-width:98px;padding:11px 12px;border:1px solid #d2d2d7;border-radius:12px;font:inherit;font-size:16px;color:var(--nx-ink);background:#fff}
+.nx-store-add,.nx-store-bag-button{appearance:none;border:0;border-radius:980px;padding:14px 24px;font-size:14px;font-weight:650;line-height:1.2;background:var(--nx-blue);color:#fff;cursor:pointer;min-height:44px}
+.nx-store-add:hover,.nx-store-bag-button:hover{background:#0077ed}
+.nx-store-add:focus-visible,.nx-store-bag-button:focus-visible,.nx-store-qty:focus-visible,.nx-shop-bag a:focus-visible,.nx-store-bag-link:focus-visible{outline:3px solid #0071e3;outline-offset:3px}
+.nx-store-bag-link{display:inline-flex;align-items:center;text-decoration:none;color:#0066cc;font-size:14px;font-weight:550;min-height:44px}
+.nx-store-card-footer{display:flex;gap:7px 12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:15px 16px 20px;border-top:1px solid #eeeef0;background:#fff;border-radius:0 0 18px 18px}
+.nx-store-card-footer .nx-store-price{font-size:15px;font-weight:650;margin:0}
+.nx-store-card-footer .nx-store-add{padding:10px 18px;min-height:40px;font-size:13px}
+.nx-product-card-shell:has(.nx-store-card-footer){overflow:hidden;border-radius:20px}
+.nx-product-card-shell .nx-product-card{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.nx-store-topbar{max-width:1120px;margin:0 auto;padding:12px 24px;display:flex;justify-content:flex-end;gap:25px;border-bottom:1px solid #e9e9ed}
+.nx-store-topbar a{color:#1d1d1f;font-size:13px;text-decoration:none}
+.nx-store-topbar a:hover{text-decoration:underline}
+.nx-shop-bag{max-width:1080px;margin:0 auto;padding:74px 24px 110px}
+.nx-shop-bag .nx-shop-eyebrow{font-size:12px;font-weight:700;letter-spacing:.1em;color:#6e6e73;text-transform:uppercase}
+.nx-shop-bag h1{font-size:clamp(40px,6vw,68px);letter-spacing:-.045em;line-height:1.08;margin:10px 0 16px}
+.nx-shop-bag .nx-shop-intro{font-size:18px;line-height:1.5;color:#6e6e73;max-width:620px;margin:0 0 40px}
+.nx-bag-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,.8fr);gap:42px}
+.nx-bag-item{display:grid;grid-template-columns:96px 1fr;gap:20px;padding:26px 0;border-top:1px solid #e5e5ea}
+.nx-bag-item img{width:96px;height:96px;object-fit:contain}
+.nx-bag-item h2{font-size:20px;letter-spacing:-.02em;margin:0 0 6px}
+.nx-bag-item .nx-bag-pack,.nx-bag-item .nx-bag-price{font-size:14px;color:#6e6e73;margin:5px 0 10px}
+.nx-bag-item label{font-size:13px;color:#6e6e73;margin-right:10px}
+.nx-bag-item select{border:1px solid #d2d2d7;background:#fff;padding:9px 16px;border-radius:10px;font:inherit}
+.nx-bag-remove{appearance:none;border:0;background:none;padding:10px 0;color:#0066cc;cursor:pointer;font:inherit;font-size:14px}
+.nx-bag-summary{background:#f5f5f7;border-radius:24px;padding:28px;height:max-content}
+.nx-bag-summary h2{margin:0 0 24px;font-size:24px;letter-spacing:-.025em}
+.nx-bag-summary dl{margin:0;padding:0}
+.nx-bag-summary dl div{display:flex;align-items:center;justify-content:space-between;padding:11px 0;gap:12px;border-bottom:1px solid #dfdfe2;font-size:14px}
+.nx-bag-summary dt{color:#6e6e73}.nx-bag-summary dd{margin:0;text-align:right;font-weight:600}
+.nx-bag-summary .nx-bag-total{font-size:19px;font-weight:700;border-top:1px solid #d2d2d7;margin-top:16px;padding-top:22px}
+.nx-bag-summary .nx-store-bag-button{display:block;width:100%;margin-top:23px;text-align:center}
+.nx-store-bag-button[disabled]{background:#d2d2d7;color:#555;cursor:not-allowed}
+.nx-bag-summary .nx-store-note{margin-top:15px}
+.nx-bag-empty{background:#f5f5f7;padding:32px;border-radius:19px;color:#6e6e73}
+.nx-store-toast{position:fixed;z-index:1000;right:22px;bottom:22px;max-width:310px;padding:16px 22px;border-radius:15px;background:#1d1d1f;color:#fff;box-shadow:0 10px 28px rgba(0,0,0,.18);font-size:14px}
+.nx-shop-bag .nx-shop-link{color:#0066cc;text-decoration:none}
+.nx-shop-bag .nx-shop-link:hover{text-decoration:underline}
+@media(max-width:760px){.nx-bag-grid{grid-template-columns:1fr;gap:20px}.nx-shop-bag{padding:46px 20px 70px}.nx-bag-summary{padding:22px}.nx-store-topbar{padding:10px 18px}.nx-store-card-footer{padding:13px}.nx-store-panel{margin-top:20px}.nx-store-toast{left:20px;right:20px;bottom:18px;max-width:none}}
+@media(prefers-reduced-motion:reduce){.nx-store-add,.nx-store-bag-button{transition:none}}
