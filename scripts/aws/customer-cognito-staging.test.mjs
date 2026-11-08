@@ -31,7 +31,7 @@ test("authentication requires verified email, strong password, TOTP option and l
   assert.equal(policy.RequireUppercase, true);
   assert.equal(policy.RequireNumbers, true);
   assert.equal(policy.RequireSymbols, true);
-  assert.equal(pool.SoftwareTokenMfaConfiguration.Enabled, true);
+  assert.deepEqual(pool.EnabledMfas, ["SOFTWARE_TOKEN_MFA"]);
   assert.deepEqual(client.WriteAttributes, ["email"]);
   assert.deepEqual(client.ReadAttributes, ["email","email_verified"]);
 });
