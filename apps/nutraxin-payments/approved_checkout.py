@@ -84,9 +84,14 @@ def details(order, order_id, subject):
     for field in ("sellerApprovalReference", "deliveryQuoteReference",
                   "taxAssessmentReference", "fulfilmentApprovalReference"):
         reference(order, field)
-    for field in ("approvedForPayment", "stockReserved", "taxAndShippingVerified",
+    for field in ("approvedForPayment", "taxAndShippingVerified",
                   "customerAcceptedTerms", "commerciallyApproved"):
         confirmed(order, field)
+    # Owner-approved manufacturer fulfilment commitment is not a claim that
+    # physical warehouse units have been reserved.
+    if order.get("stockReserved") != {"BOOL": True}:
+        confirmed(order, "sellerProductionCommitment")
+        confirmed(order, "buyerAcceptsThirtyDayDelivery")
     raw_expiry = (order or {}).get("expiresAtUnix", {}).get("N", "")
     if not isinstance(raw_expiry, str) or not re.fullmatch(r"[1-9][0-9]{9,12}", raw_expiry):
         raise NotReady("Approved order has an invalid expiry")
@@ -140,7 +145,10 @@ def stripe_session(order, attempt):
         "mode": "payment", "payment_method_types[0]": "card",
         "client_reference_id": order["orderId"],
         "billing_address_collection": "required",
-        "success_url": SUCCESS_ORIGIN + "/?checkout=return&session_id={CHECKOUT_SESSION_ID}",
+        "shipping_address_collection[allowed_countries][0]": "GB",
+        "phone_number_collection[enabled]": "true",
+        "metadata[delivery_charge_minor]": "0",
+        "success_url": SUCCESS_ORIGIN + "/?checkout=return&session_id={CHECKOUT_SESSION_ID}&order_id=" + urllib.parse.quote(order["orderId"]),
         "cancel_url": SUCCESS_ORIGIN + "/?checkout=cancelled",
         "automatic_tax[enabled]": "false",
         "metadata[order_id]": order["orderId"],

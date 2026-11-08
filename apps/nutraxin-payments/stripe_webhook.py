@@ -121,7 +121,18 @@ def record_once(event, payment):
              "paymentAttemptId": {"S": payment["attemptId"]},
              "status": {"S": "PENDING_REVIEW"},
              "createdAt": {"N": str(int(time.time()))}},
-             "ConditionExpression": "attribute_not_exists(pk)"}}
+             "ConditionExpression": "attribute_not_exists(pk)"}},
+        {"Update": {"TableName": LEDGER,
+             "Key": {"pk": {"S": "ORDER#" + payment["orderId"]},
+                     "sk": {"S": "SUMMARY"}},
+             "UpdateExpression": "SET #status = :updated, lastStripeEventId = :event",
+             "ConditionExpression": "#status = :checkoutOpen AND stripeSessionId = :session",
+             "ExpressionAttributeNames": {"#status": "status"},
+             "ExpressionAttributeValues": {
+                  ":checkoutOpen": {"S": "CHECKOUT_OPEN"},
+                  ":updated": {"S": "PAID" if payment["action"] == "PAID" else "PAYMENT_FAILED"},
+                  ":event": {"S": payment["eventId"]},
+                  ":session": {"S": payment["sessionId"]}}}}
     ]
     try:
         ddb.transact_write_items(TransactItems=writes)

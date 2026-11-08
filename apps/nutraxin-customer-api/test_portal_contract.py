@@ -47,6 +47,7 @@ class DummySSM:
             "schema": "novapharm.nutraxin.provisional_b2b_prices.v1",
             "status": "owner_approved_provisional_for_authenticated_quotation_only",
             "binding_checkout_enabled": False,
+            "model_assumptions": {"uk_delivery_charge_pence": 0, "uk_delivery_cost_borne_by_seller": True},
             "lines": [
                 {"sku": sku, "qty24_price_pence": 1000, "qty48_price_pence": 900}
                 for sku in PORTAL.PRODUCTS
@@ -133,9 +134,9 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertFalse(payload["payment_collection_enabled"])
         self.assertEqual(set(p["sku"] for p in payload["products"]), set(PORTAL.PRODUCTS))
         self.assertEqual(set(p["slug"] for p in payload["products"]), set(PORTAL.PUBLIC_SLUGS.values()))
-        self.assertTrue(all(p["retail_price_pence"] is None for p in payload["products"]))
-        self.assertTrue(all(p["sale_status"]=="not_offered" for p in payload["products"]))
-        self.assertIn("A saved bag is not an order.", PORTAL.PAGE)
+        self.assertTrue(all(p["retail_price_pence"] == 1080 for p in payload["products"]))
+        self.assertTrue(all(p["sale_status"]=="owner_approved_price" for p in payload["products"]))
+        self.assertIn("Continue to secure payment", PORTAL.PAGE)
         self.assertIn("retailStorageKey", PORTAL.APP)
         self.assertIn("Add to bag", PORTAL.APP)
         self.assertNotIn("qty48_price_pence", response["body"])
@@ -143,17 +144,17 @@ class PortalSecurityTests(unittest.TestCase):
 
     def test_personal_account_does_not_require_trade_approval(self):
         self.assertIn("Your account is ready.", PORTAL.PAGE)
-        self.assertIn("Personal shoppers do not need business approval", PORTAL.PAGE)
+        self.assertIn("Business account approval is not required for personal shopping", PORTAL.PAGE)
         self.assertNotIn("Business verification required.", PORTAL.PAGE)
         self.assertIn("Apply for business access", PORTAL.PAGE)
         response = PORTAL.handler(self.event("/api/retail/catalogue"), None)
         self.assertEqual(response["statusCode"], 200)
         payload = json.loads(response["body"])
-        self.assertFalse(payload["public_retail_prices_approved"])
+        self.assertTrue(payload["public_retail_prices_approved"])
         self.assertFalse(payload["checkout_enabled"])
         self.assertEqual(len(payload["products"]), 19)
-        self.assertTrue(all(p["retail_price_pence"] is None for p in payload["products"]))
-        self.assertTrue(all(p["sale_status"] == "not_offered" for p in payload["products"]))
+        self.assertTrue(all(p["retail_price_pence"] == 1080 for p in payload["products"]))
+        self.assertTrue(all(p["sale_status"] == "owner_approved_price" for p in payload["products"]))
         self.assertNotIn("qty48_price_pence", response["body"])
         self.assertEqual(PORTAL.handler(self.event("/api/catalogue"), None)["statusCode"], 401)
 
@@ -415,19 +416,90 @@ class PortalSecurityTests(unittest.TestCase):
         finally:
             PORTAL.TABLE,PORTAL.CHECKOUT_LAMBDA,PORTAL.PRODUCTION_CHECKOUT_FUNCTION = old_table,old_worker,old_name
 
+    def test_owner_self_service_checkout_prices_on_server_and_never_reserves_fake_stock(self):
+        import io
+
+        class PaymentDB:
+            def __init__(self): self.records = {}
+            def put_item(self, **kw):
+                item = kw["Item"]
+                key = item["pk"]["S"]
+                if key in self.records:
+                    class Error(Exception): pass
+                    exc=Error("duplicate")
+                    exc.response={"Error":{"Code":"ConditionalCheckFailedException"}}
+                    raise exc
+                self.records[key]=item
+            def get_item(self, **kw):
+                return {"Item":self.records.get(kw["Key"]["pk"]["S"])}
+        class Worker:
+            def __init__(self): self.calls=[]
+            def invoke(self, **kw):
+                self.calls.append(kw)
+                return {"Payload": io.BytesIO(json.dumps({"statusCode":200,
+                    "body":json.dumps({"checkoutUrl":"https://checkout.stripe.com/c/pay_synthetic"})}).encode())}
+
+        ledger=PaymentDB();worker=Worker()
+        old=(PORTAL.PAYMENT_DDB,PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED,PORTAL.CHECKOUT_LAMBDA,PORTAL.PRODUCTION_CHECKOUT_FUNCTION)
+        PORTAL.PAYMENT_DDB=ledger
+        PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED=True
+        PORTAL.CHECKOUT_LAMBDA=worker
+        PORTAL.PRODUCTION_CHECKOUT_FUNCTION="synthetic-worker"
+        req={"request_id":"aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+             "accept_terms":True,
+             "lines":[{"sku":"NUT-UK-VD3-T120","quantity":1}]}
+        event=self.event("/api/retail/checkout","POST",req)
+        customer={"sub":"test-sub","username":"test-user"}
+        try:
+            rejected=PORTAL.retail_checkout(self.event("/api/retail/checkout","POST",
+                          {**req,"accept_terms":False}),customer)
+            self.assertEqual(rejected["statusCode"],400)
+            self.assertEqual(ledger.records,{})
+            accepted=PORTAL.retail_checkout(event,customer)
+            self.assertEqual(accepted["statusCode"],200)
+            self.assertEqual(len(worker.calls),1)
+            payload=json.loads(accepted["body"])
+            self.assertEqual(payload["orderId"],"NUT-"+req["request_id"])
+            record=ledger.records["ORDER#"+payload["orderId"]]
+            self.assertEqual(record["productNetMinor"]["N"],"900")
+            self.assertEqual(record["taxMinor"]["N"],"180")
+            self.assertEqual(record["shippingGrossMinor"]["N"],"0")
+            self.assertEqual(record["totalGrossMinor"]["N"],"1080")
+            self.assertEqual(record["stockReserved"]["BOOL"],False)
+            self.assertEqual(record["sellerProductionCommitment"]["BOOL"],True)
+            self.assertEqual(record["buyerAcceptsThirtyDayDelivery"]["BOOL"],True)
+            self.assertEqual(record["customerSub"]["S"],"test-sub")
+            self.assertEqual(record["approvedForPayment"]["BOOL"],True)
+            self.assertNotIn("secret",json.dumps(record).lower())
+            COGNITO.verified_email=False
+            denied=PORTAL.retail_checkout(self.event("/api/retail/checkout","POST",
+                   {**req,"request_id":"bbbbbbbb-bbbb-4ccc-8ddd-eeeeeeeeeeee"}),customer)
+            self.assertEqual(denied["statusCode"],403)
+            self.assertEqual(len(ledger.records),1)
+        finally:
+            PORTAL.PAYMENT_DDB,PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED,PORTAL.CHECKOUT_LAMBDA,PORTAL.PRODUCTION_CHECKOUT_FUNCTION=old
+            COGNITO.verified_email=True
+
+    def test_retail_checkout_is_disabled_by_default_for_all_visitors(self):
+        self.assertFalse(PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED)
+        self.assertIn('id="retail-checkout"',PORTAL.PAGE)
+        self.assertTrue(callable(PORTAL.retail_checkout))
+        self.assertIn('DIRECT_SHOP_PAYMENTS_ENABLED',PORTAL.__dict__)
+        self.assertEqual(PORTAL.retail_checkout(self.event("/api/retail/checkout","POST"), {"sub":"test-sub","username":"test-user"})["statusCode"],503)
+
     def test_iac_scope_and_separate_private_price_store(self):
         template = json.loads((ROOT / "infra/aws/nutraxin-customer-staging-stack.json").read_text())
         role = template["Resources"]["AppRole"]["Properties"]
         statements = role["Policies"][0]["PolicyDocument"]["Statement"]
         sensitive = [s for s in statements if any(x in json.dumps(s["Action"]) for x in ("ssm:GetParameter", "dynamodb:PutItem", "cognito-idp:AdminListGroupsForUser"))]
-        self.assertEqual(len(sensitive), 3)
+        self.assertEqual(len(sensitive), 4)
         cognito_statement = next(s for s in statements if "cognito-idp:AdminListGroupsForUser" in s["Action"])
         self.assertIn("cognito-idp:AdminGetUser", cognito_statement["Action"])
         for statement in sensitive:
             self.assertNotEqual(statement["Resource"], "*")
         self.assertEqual(template["Resources"]["AppFunction"]["Properties"]["Code"]["ZipFile"].strip(),
                          (ROOT / "apps/nutraxin-customer-api/index.py").read_text().strip())
-        self.assertIn("DISABLED", template["Outputs"]["CommercialCheckoutStatus"]["Value"])
+        self.assertIn("OFF", template["Outputs"]["CommercialCheckoutStatus"]["Value"])
 
 if __name__ == "__main__":
     unittest.main()
