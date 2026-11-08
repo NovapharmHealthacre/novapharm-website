@@ -26,8 +26,11 @@ export function validatePaymentActivation({ enabled = false, mode, liveApproved 
   if (enabled !== true) throw blocked("Payments are disabled until production commerce approval.");
   if (mode !== "test" && mode !== "live") throw blocked("Payment mode must be explicitly test or live.");
   if (mode === "live" && liveApproved !== true) throw blocked("Live payments require a separate sign-off.");
-  const keyPrefix = mode === "live" ? "sk_live_" : "sk_test_";
-  if (typeof secretKey !== "string" || !secretKey.startsWith(keyPrefix) || secretKey.length < 16) {
+  // Stripe restricted keys are preferred for least-privilege production access.
+  // Both rk_ and sk_ are server-side secrets; public pk_ keys must never pass.
+  const allowedPrefixes = mode === "live" ? ["rk_live_", "sk_live_"] : ["rk_test_", "sk_test_"];
+  if (typeof secretKey !== "string" ||
+      !allowedPrefixes.some(prefix => secretKey.startsWith(prefix)) || secretKey.length < 16) {
     throw blocked("Correctly scoped server-side Stripe credentials are required.");
   }
   if (typeof webhookSecret !== "string" || !webhookSecret.startsWith("whsec_") || webhookSecret.length < 12) {
