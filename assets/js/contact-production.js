@@ -18,6 +18,21 @@ if (form instanceof HTMLFormElement) {
       const match = [...topic.options].find(option => option.value.toLowerCase() === requestedType.toLowerCase());
       if (match) topic.value = match.value;
     }
+    // Product details arrive only as public, non-sensitive URL hints. They
+    // prefill a customer-controlled enquiry, never an order or a price.
+    // Treat URL content as untrusted and insert it only using input.value.
+    const intent = new URLSearchParams(location.search);
+    const productName = intent.get("product") || "";
+    const sku = intent.get("sku") || "";
+    const messageField = form.elements.namedItem("message");
+    if (messageField instanceof HTMLTextAreaElement
+        && !messageField.value.trim()
+        && productName.length > 0 && productName.length <= 160
+        && !/[<>\\u0000-\\u001f\\u007f]/u.test(productName)) {
+      const validSku = /^NUT-UK-[A-Z0-9-]{3,48}$/u.test(sku) ? sku : "";
+      const reference = validSku ? ` (SKU: ${validSku})` : "";
+      messageField.value = `I would like to discuss a qualified NovaPharm business account and future purchasing for ${productName}${reference}.\\n\\nThis is a non-binding business enquiry, not an order or a request to pay.`;
+    }
     form.addEventListener("submit", async event => {
       event.preventDefault();
       if (submit?.disabled || !form.reportValidity()) return;
