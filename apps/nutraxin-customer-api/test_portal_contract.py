@@ -124,6 +124,22 @@ class PortalSecurityTests(unittest.TestCase):
         scopes = params["scope"][0].split()
         self.assertEqual(set(scopes), {"openid", "email", "profile", "aws.cognito.signin.user.admin"})
 
+    def test_personal_account_does_not_require_trade_approval(self):
+        self.assertIn("Your account is ready.", PORTAL.PAGE)
+        self.assertIn("Personal shoppers do not need business approval", PORTAL.PAGE)
+        self.assertNotIn("Business verification required.", PORTAL.PAGE)
+        self.assertIn("Apply for business access", PORTAL.PAGE)
+        response = PORTAL.handler(self.event("/api/retail/catalogue"), None)
+        self.assertEqual(response["statusCode"], 200)
+        payload = json.loads(response["body"])
+        self.assertFalse(payload["public_retail_prices_approved"])
+        self.assertFalse(payload["checkout_enabled"])
+        self.assertEqual(len(payload["products"]), 19)
+        self.assertTrue(all(p["retail_price_pence"] is None for p in payload["products"]))
+        self.assertTrue(all(p["sale_status"] == "not_offered" for p in payload["products"]))
+        self.assertNotIn("qty48_price_pence", response["body"])
+        self.assertEqual(PORTAL.handler(self.event("/api/catalogue"), None)["statusCode"], 401)
+
     def test_public_prices_and_order_requests_require_login(self):
         for route in ("/api/catalogue", "/api/order-requests"):
             result = PORTAL.handler(self.event(route), None)
