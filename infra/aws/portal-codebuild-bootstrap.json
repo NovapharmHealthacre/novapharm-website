@@ -1,0 +1,150 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "One-time public GitHub immutable-SHA bootstrap to staging ECR only. Use approved CodeConnections pipeline for ongoing automation. No production deployment.",
+  "Parameters": {
+    "ExpectedSha": {
+      "Type": "String",
+      "Default": "15fb532daf261711c466ed4282ad469350040d93",
+      "AllowedPattern": "[0-9a-f]{40}"
+    }
+  },
+  "Resources": {
+    "BuildLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/codebuild/novapharm-staging-portal-bootstrap",
+        "RetentionInDays": 7
+      }
+    },
+    "BuildRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "codebuild.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "StagingPortalBootstrapImageOnly",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecr:GetAuthorizationToken"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecr:BatchCheckLayerAvailability",
+                    "ecr:InitiateLayerUpload",
+                    "ecr:UploadLayerPart",
+                    "ecr:CompleteLayerUpload",
+                    "ecr:PutImage"
+                  ],
+                  "Resource": "arn:aws:ecr:eu-north-1:250675045172:repository/novapharm/staging/portal"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "${BuildLogGroup.Arn}:*"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "BootstrapProject": {
+      "Type": "AWS::CodeBuild::Project",
+      "Properties": {
+        "Name": "novapharm-staging-portal-bootstrap",
+        "ServiceRole": {
+          "Fn::GetAtt": [
+            "BuildRole",
+            "Arn"
+          ]
+        },
+        "Source": {
+          "Type": "NO_SOURCE",
+          "BuildSpec": "version: 0.2\nenv:\n  shell: bash\nphases:\n  pre_build:\n    commands:\n      - 'set -euo pipefail'\n      - '[[ \"$EXPECTED_SHA\" =~ ^[0-9a-f]{40}$ ]] || exit 1'\n      - 'git clone --no-checkout --filter=blob:none --branch codex/cognito-staging-verify-fail-closed-20261107 https://github.com/NovapharmHealthacre/novapharm-website.git source'\n      - 'cd source && git checkout --detach \"$EXPECTED_SHA\" && test \"$(git rev-parse HEAD)\" = \"$EXPECTED_SHA\"'\n      - 'aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 250675045172.dkr.ecr.eu-north-1.amazonaws.com'\n  build:\n    commands:\n      - 'cd source'\n      - 'docker build --pull -f deployment/aws/Dockerfile.portal --tag 250675045172.dkr.ecr.eu-north-1.amazonaws.com/novapharm/staging/portal:$EXPECTED_SHA .'\n      - 'docker push 250675045172.dkr.ecr.eu-north-1.amazonaws.com/novapharm/staging/portal:$EXPECTED_SHA'\n  post_build:\n    commands:\n      - 'echo \"Only a staging image was built; production access, sessions, DNS and identity remain disabled.\"'\n"
+        },
+        "Artifacts": {
+          "Type": "NO_ARTIFACTS"
+        },
+        "Environment": {
+          "Type": "LINUX_CONTAINER",
+          "Image": "aws/codebuild/standard:7.0",
+          "ComputeType": "BUILD_GENERAL1_MEDIUM",
+          "PrivilegedMode": true,
+          "EnvironmentVariables": [
+            {
+              "Name": "EXPECTED_SHA",
+              "Type": "PLAINTEXT",
+              "Value": {
+                "Ref": "ExpectedSha"
+              }
+            }
+          ]
+        },
+        "LogsConfig": {
+          "CloudWatchLogs": {
+            "Status": "ENABLED",
+            "GroupName": {
+              "Ref": "BuildLogGroup"
+            }
+          }
+        },
+        "TimeoutInMinutes": 30,
+        "QueuedTimeoutInMinutes": 30,
+        "ConcurrentBuildLimit": 1,
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm"
+          },
+          {
+            "Key": "environment",
+            "Value": "staging"
+          },
+          {
+            "Key": "bootstrap",
+            "Value": "one-shot"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "ProjectName": {
+      "Value": {
+        "Ref": "BootstrapProject"
+      }
+    },
+    "PinnedSha": {
+      "Value": {
+        "Ref": "ExpectedSha"
+      }
+    }
+  }
+}
