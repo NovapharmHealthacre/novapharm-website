@@ -40,6 +40,22 @@ test("25% margin is calculated on complete landed cost including delivery and ha
   assert.equal(JSON.stringify(quote).includes("landedUnitCostMinor"), false);
   assert.equal(JSON.stringify(quote).includes("availableToPromise"), false);
 });
+test("private quote accepts 10,000-unit authorised fulfilment, but rejects 10,001", () => {
+  const b = good();
+  const line = {...b.approvedCostLines[0],
+    quantity:10000,availableToPromise:10000,landedUnitCostMinor:100};
+  const base = {...b,approvedCostLines:[line],
+    taxAssessment:{...b.taxAssessment,netMinor:1333868,lineTaxMinor:[0,0],totalTaxMinor:0}};
+  const quote=calculateMarginQuote(base);
+  assert.equal(quote.lines[0].quantity,10000);
+  assert.equal(quote.netMinor,1333868);
+  assert.equal(quote.grossMinor,1333868);
+  assert.equal(quote.status,"quote_candidate_not_payment_authorisation");
+  assert.throws(()=>calculateMarginQuote({...base,approvedCostLines:[
+    {...line,quantity:10001,availableToPromise:10001}
+  ]}),/quantity/);
+});
+
 test("international tax cannot be inferred from selected country or zero-rating assumption", () => {
   const original = good();
   for (const destinationCountry of ["DE", "US", "IN", "FR", "IE"]) {
