@@ -154,11 +154,33 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertFalse(body["vat_invoice_created"])
         self.assertEqual(len(DDB.items), 1)
 
-    def test_below_48_moq_is_rejected(self):
-        payload = {"request_id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
-                   "lines": [{"sku": "NUT-UK-VD3-T120", "quantity": 47}]}
-        body = json.loads(PORTAL.submit(self.event("/api/order-requests", "POST", payload), {"sub": "test-sub"})["body"])
-        self.assertEqual(body["error"], "invalid_quantity")
+    def test_minimum_one_unit_and_48_reference_price_for_every_quantity(self):
+        # The owner explicitly approves the existing 48-unit-tier unit price
+        # for every requested quantity, including a single unit.
+        self.assertIn("Minimum 1 unit per selected product", PORTAL.PAGE)
+        self.assertIn("48-unit reference price applies to all quantities", PORTAL.APP)
+        self.assertIn('input.min="0"', PORTAL.APP)  # zero deselects a SKU
+        self.assertIn('input.max="10000"', PORTAL.APP)
+        self.assertNotIn("Quotation required", PORTAL.APP)
+        for quantity in (1, 2, 23, 24, 47, 48, 10000):
+            with self.subTest(quantity=quantity):
+                DDB.items.clear()
+                payload = {"request_id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+                           "lines": [{"sku": "NUT-UK-VD3-T120", "quantity": quantity}]}
+                response = PORTAL.submit(
+                    self.event("/api/order-requests", "POST", payload), {"sub": "test-sub"})
+                self.assertEqual(response["statusCode"], 201)
+                body = json.loads(response["body"])
+                self.assertEqual(body["net_total_pence"], quantity*900)
+                self.assertEqual(body["indicative_vat_pence"],
+                                 PORTAL.illustrative_uk_vat_pence(quantity*900))
+                self.assertEqual(DDB.items[0]["lines"][0]["unit_net_pence"], 900)
+                self.assertEqual(DDB.items[0]["lines"][0]["tier"], 48)
+                self.assertEqual(
+                    DDB.items[0]["lines"][0]["price_basis"],
+                    "48_unit_reference_applied_to_all_quantities_1_to_10000")
+                self.assertFalse(body["financially_binding"])
+                self.assertEqual(body["vat_charged_pence"], 0)
 
     def test_illustrative_20pct_vat_is_server_reconciled_and_not_charged(self):
         self.assertEqual(PORTAL.illustrative_uk_vat_pence(0), 0)
