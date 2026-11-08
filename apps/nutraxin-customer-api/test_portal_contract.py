@@ -235,7 +235,7 @@ class PortalSecurityTests(unittest.TestCase):
             self.assertNotIn("email", alert.sent[0]["Message"])
             self.assertEqual(json.loads(alert.sent[0]["Message"])["customer_sub"], "test-sub")
             changed = {"request_id": original["request_id"],
-                       "lines": [{"sku": "NUT-UK-VD3-T120", "quantity": 48}]}
+                       "lines": [{"sku": "NUT-UK-VD3-T120", "quantity": 96}]}
             conflict = PORTAL.submit(self.event("/api/order-requests", "POST", changed), {"sub": "test-sub"})
             self.assertEqual(conflict["statusCode"], 409)
             self.assertEqual(len(alert.sent), 1)
