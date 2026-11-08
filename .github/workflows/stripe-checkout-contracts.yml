@@ -4,6 +4,8 @@ on:
     paths:
       - 'src/core/payments/stripe-checkout.mjs'
       - 'scripts/test-stripe-gateway.mjs'
+      - 'src/core/payments/payment-ledger-reference.sql'
+      - 'scripts/test-payment-ledger.mjs'
       - '.github/workflows/stripe-checkout-contracts.yml'
   workflow_dispatch:
 permissions:
@@ -20,4 +22,4 @@ jobs:
         with:
           node-version: '24'
       - name: Verify Stripe fail-closed contracts without network or secrets
-        run: node --test scripts/test-stripe-gateway.mjs
+        run: node --test scripts/test-stripe-gateway.mjs scripts/test-payment-ledger.mjs
