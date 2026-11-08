@@ -35,8 +35,12 @@ export function catalogueIsSafe(data) {
 }
 
 export function publicPrice(product, data) {
-  if (data?.price_authority !== "approved_consumer_retail" ||
-      !Number.isSafeInteger(product?.retail_price_pence) || product.retail_price_pence < 1) return null;
+  // Explicit owner-authorised guide display is separate from payment authorisation.
+  const viewable = data?.price_authority === "approved_consumer_retail" ||
+    (data?.price_authority === "owner_authorized_provisional_public_display" &&
+      data?.checkout_enabled === false && data?.payment_collection_enabled === false &&
+      data?.price_includes_estimated_uk_vat === true && data?.vat_estimate_rate_percent === 20);
+  if (!viewable || !Number.isSafeInteger(product?.retail_price_pence) || product.retail_price_pence < 1) return null;
   return product.retail_price_pence;
 }
 
@@ -79,7 +83,7 @@ function count(items) { return items.reduce((sum, item) => sum + item.quantity, 
 function productUrl(product) { return SHOP_URL + product.slug + "/"; }
 function productPriceLabel(product, data) {
   const pence = publicPrice(product, data);
-  return pence === null ? "Retail price to be confirmed" : formatGBP(pence);
+  return pence === null ? "Price pending" : formatGBP(pence);
 }
 function toast(message) {
   const old = document.querySelector(".nx-store-toast");
@@ -176,17 +180,19 @@ function runStore(data) {
         }
         const subtotalMinor = basketSubtotal(bag, data);
         const ready = !!(data.checkout_enabled === true && data.payment_collection_enabled === true &&
+          data.price_authority === "approved_consumer_retail" &&
           data.delivery_verified === true && bag.length > 0 && subtotalMinor !== null &&
           bag.every(({sku}) => productMap.get(sku)?.available_to_sell === true));
-        subtotal.textContent = subtotalMinor === null ? "Pending" : formatGBP(subtotalMinor);
-        shipping.textContent = "Calculated at checkout";
-        tax.textContent = "Verified at checkout";
-        grand.textContent = ready ? "Calculated at secure checkout" : "Not available";
+        const indicative = data.price_authority === "owner_authorized_provisional_public_display";
+        subtotal.textContent = subtotalMinor === null ? "Pending" : (indicative ? "Guide " : "") + formatGBP(subtotalMinor);
+        shipping.textContent = ready ? "Calculated at checkout" : "Not confirmed";
+        tax.textContent = indicative ? "Estimated 20% VAT included" : "Verified at checkout";
+        grand.textContent = ready ? "Calculated at secure checkout" : "Pending delivery";
         checkout.disabled = !ready;
         checkout.textContent = ready ? "Continue to secure checkout" : "Checkout not available yet";
         explanation.textContent = ready
           ? "Your order will be repriced and checked by NovaPharm's secure payment server before any charge."
-          : "Your selections are saved only in this browser. Prices, stock, delivery and payment must be verified before purchase. No order is placed.";
+          : "Your selections are saved in this browser. Guide prices include estimated 20% UK VAT; delivery, tax registration and stock must be verified before checkout. No order is placed.";
         checkout.onclick = async () => {
           if (!ready) return;
           checkout.disabled = true;
@@ -215,11 +221,14 @@ function runStore(data) {
       const p = slugMap.get(link?.dataset.nxProductSlug);
       if (!p) continue;
       const footer = make("div", "nx-store-card-footer");
+      const priceWrap = make("div");
       const price = make("span", "nx-store-price", productPriceLabel(p, data));
+      const tax = make("p", "nx-store-vat-note", "Guide price · estimated VAT included");
+      priceWrap.append(price, tax);
       const add = make("button", "nx-store-add", "Add to Bag");
       add.type = "button";
       add.addEventListener("click", () => put(p.sku, 1));
-      footer.append(price, add);
+      footer.append(priceWrap, add);
       shell.append(footer);
     }
   } else {
@@ -231,7 +240,7 @@ function runStore(data) {
       panel.setAttribute("aria-label", "Nutraxin shopping options");
       panel.append(make("p", "nx-store-kicker", "Nutraxin / Retail"));
       panel.append(make("p", "nx-store-price", productPriceLabel(p, data)));
-      panel.append(make("p", "nx-store-note", "Save to your bag. No payment or order is created until checkout is approved."));
+      panel.append(make("p", "nx-store-note", "Indicative price including estimated 20% UK VAT. Save to your bag; delivery and payment checkout are not yet available."));
       const options = make("div", "nx-store-options");
       const label = make("label", "nx-store-qty-label", "Quantity");
       const quantity = make("select", "nx-store-qty");
