@@ -8,6 +8,8 @@ on:
       - 'scripts/test-payment-ledger.mjs'
       - 'src/core/payments/stripe-merchant-readiness.mjs'
       - 'scripts/test-stripe-merchant-readiness.mjs'
+      - 'src/core/payments/commerce-margin-policy.mjs'
+      - 'scripts/test-commerce-margin-policy.mjs'
       - '.github/workflows/stripe-checkout-contracts.yml'
   workflow_dispatch:
 permissions:
@@ -24,4 +26,4 @@ jobs:
         with:
           node-version: '24'
       - name: Verify Stripe fail-closed contracts without network or secrets
-        run: node --test scripts/test-stripe-gateway.mjs scripts/test-payment-ledger.mjs scripts/test-stripe-merchant-readiness.mjs
+        run: node --test scripts/test-stripe-gateway.mjs scripts/test-payment-ledger.mjs scripts/test-stripe-merchant-readiness.mjs scripts/test-commerce-margin-policy.mjs
