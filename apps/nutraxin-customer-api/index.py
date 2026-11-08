@@ -192,7 +192,7 @@ def login(event):
     TABLE.put_item(Item={"pk":"TXN#"+h(state),"sk":"META","verifier":verifier,"expires_at":now()+600},
         ConditionExpression="attribute_not_exists(pk)")
     query=urllib.parse.urlencode({"response_type":"code","client_id":CLIENT_ID,
-        "redirect_uri":request_base(event)+"/auth/callback","scope":"openid email profile",
+        "redirect_uri":request_base(event)+"/auth/callback","scope":"openid email profile aws.cognito.signin.user.admin",
         "state":state,"code_challenge":challenge,"code_challenge_method":"S256"})
     destination="https://"+COGNITO_DOMAIN+"/oauth2/authorize?"+query
     return redirect(destination,[cookie("__Host-np_txn",state,600)])
@@ -214,7 +214,13 @@ def callback(event):
         with urllib.request.urlopen(req,timeout=10) as response:
             token=json.loads(response.read(32768).decode())
         principal=COGNITO.get_user(AccessToken=token["access_token"])
-    except Exception:
+    except Exception as exc:
+        # Log only the exception class and provider error code, never tokens or PII.
+        if isinstance(exc, ClientError):
+            kind=exc.response.get("Error",{}).get("Code","cognito_error")
+        else:
+            kind=getattr(exc,"code",type(exc).__name__)
+        print("auth_exchange_failed",str(kind)[:60])
         return error(401,"auth_exchange_failed")
     attributes={x["Name"]:x["Value"] for x in principal.get("UserAttributes",[])}
     if attributes.get("email_verified")!="true" or not attributes.get("sub"):
