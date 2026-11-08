@@ -9,7 +9,7 @@ export function NutraxinOrderAccess({ sku, name }: Readonly<{ sku: string; name:
       <h2>Selected for your account.</h2>
       <p>Continue securely with <strong>{name}</strong>. Your product selection will be carried through sign-in to your customer workspace.</p>
       <div className="nutraxin-order-access-actions">
-        <Link className="nutraxin-order-primary" href={intent}>Continue to customer account</Link>
+        <a className="nutraxin-order-primary" href={intent}>Continue to customer account</a>
         <Link className="nutraxin-order-secondary" href="/account-application/">New business customer?</Link>
       </div>
       <p className="nutraxin-order-access-note">Order submission and checkout are not enabled. Product eligibility, approved account status, stock, pricing, VAT and delivery terms must be verified before an order can be placed.</p>
