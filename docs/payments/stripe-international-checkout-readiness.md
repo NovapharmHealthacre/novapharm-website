@@ -53,3 +53,19 @@ Never put these in GitHub code, static pages, browser storage or app bundles. Th
 Provider references: https://docs.stripe.com/payments/checkout ; https://docs.stripe.com/webhooks/signature ; https://stripe.com/legal/restricted-businesses .
 
 Existing customer account staging foundation: https://github.com/NovapharmHealthacre/novapharm-website/pull/140 . Nutraxin order-request PR #137 remains non-binding.
+
+## Commercial pricing, supply and international tax evidence (8 November 2026)
+
+- The AWS Nutraxin customer API implements Cognito-backed login, verified-email checks, staff approval, private pricing visibility and idempotent NON-BINDING B2B requests. The 19-SKU SSM secret contains provisional customer selling prices in 24+ and 48+ tiers, but NO cost-of-goods values from which to prove a 25% gross margin. Do not overwrite tiers or enable binding checkout without a private cost register and price approval.
+- Owner reports manufacturing capacity at all quantities. Production capacity is not the same as available-to-promise warehouse stock, batch/expiry status and a customer-accepted production lead time. The commerce-margin-policy module requires either verified ready stock or staff-approved manufacture-to-order with the customer's explicit acceptance of lead time.
+- Outlook's Polar Speed correspondence identifies inbound handling charges (December 2025), but not a current destination- and basket-specific final-mile shipping quote for UK delivery or exports. Such a quote requires destination, weight, cartons, service, pick/pack, applicable surcharges, expiry and carrier confirmation. The calculator refuses to guess.
+- Target 25% gross margin, rather than 25% markup, is calculated on trusted landed costs with sale price = ceiling((goods + delivery + handling cost) / 0.75), before tax. Profit after card fees, returns and other overhead must be assessed by finance. No private costs are included in this repository.
+- Country selection does not establish the VAT, GST, sales-tax or zero-rated treatment. The correct amount depends on product classification, tax registration, location, customer, shipping and import/export terms. Stripe Tax remains pending and there are zero recorded tax registrations as of the last connected account check. A confirmed tax amount for the exact quote is mandatory.
+- Live Stripe merchant charges and payouts are enabled, but no approved production secret, public authenticated backend, stock reservation, signed webhook delivery, production payment ledger or verified tax/fulfilment mechanism exists. No live charges until these gates pass.
+
+## Synthetic end-to-end tests
+
+- scripts/test-commerce-margin-policy.mjs: margin arithmetic, stock vs manufactured-to-order, international tax assessment and current delivery evidence.
+- scripts/test-stripe-refund-policy.mjs: exact refund charge, merchant-mode and payment identity matching.
+- scripts/test-commerce-payment-lifecycle.mjs: private synthetic cost -> checked quote -> Stripe-hosted session mock -> signed payment event -> unique ledger -> signed partial-refund event.
+- These do NOT create or refund real Stripe transactions and do not substitute for test-mode 3-D Secure, failed payments, retries, dispute, bank payout, tax invoice, and production rollback testing.
