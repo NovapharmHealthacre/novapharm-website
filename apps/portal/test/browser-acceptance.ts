@@ -167,8 +167,21 @@ async function verifyAuthenticationBoundaries(browser: Browser, engine: string):
 async function capture(page: Page, engine: string, viewport: string, name: string, fullPage: boolean): Promise<void> {
   const directory = path.join(artifactRoot, "screenshots", engine, viewport);
   await fs.mkdir(directory, { recursive: true });
-  await page.screenshot({ path: path.join(directory, `${name}.png`), animations: "disabled", fullPage });
-  screenshots += 1;
+  const screenshotPath = path.join(directory, `${name}.png`);
+  // Chromium can intermittently reject a screenshot after a large visual
+  // matrix. Keep exact screenshot coverage and fail if a bounded retry fails.
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      await page.screenshot({ path: screenshotPath, animations: "disabled", fullPage });
+      screenshots += 1;
+      return;
+    } catch (error) {
+      const transientCaptureFailure = /Unable to capture screenshot/.test(String(error));
+      if (!transientCaptureFailure || attempt === 3) throw error;
+      console.warn(`${engine} ${viewport} ${name}: screenshot capture retry ${attempt}/3`);
+      await page.waitForTimeout(attempt * 400);
+    }
+  }
 }
 
 async function settleAtViewportTop(page: Page): Promise<void> {

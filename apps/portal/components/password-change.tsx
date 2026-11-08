@@ -2,6 +2,7 @@
 
 import { ShieldCheck } from "lucide-react";
 import { type FormEvent, useState } from "react";
+import { destinationAfterPortalLogin } from "../data/nutraxin-order-intent";
 import { isPortalAccessType, landingRouteForAccess } from "../data/routes";
 import { professionalError, protectedMutation } from "../lib/gateway";
 import { PortalBrand } from "./portal-brand";
@@ -30,7 +31,7 @@ export function PasswordChange() {
       });
       if (!isPortalAccessType(result.accessType)) throw new Error("The authorised portal area could not be verified after the password change.");
       setStatus("Password updated. Your other sessions have been signed out.");
-      window.location.replace(landingRouteForAccess(result.accessType));
+      window.location.replace(destinationAfterPortalLogin(result.accessType, window.location.search, landingRouteForAccess(result.accessType)));
     } catch (error) {
       setStatus(professionalError(error));
     } finally {

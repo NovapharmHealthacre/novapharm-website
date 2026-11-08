@@ -9,6 +9,7 @@ import "./homepage-editorial.css";
 import "./oncology-editorial.css";
 import "./design-system.css";
 import "../../../assets/css/nutraxin-lineup.css";
+import "../../../assets/css/nutraxin-order-access.css";
 import { CookieControls } from "@/components/cookie-controls";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";

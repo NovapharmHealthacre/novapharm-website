@@ -20,7 +20,7 @@ Decision: commerce controls remain disabled
 | Product sale approval | Owner, legal and regulatory approval for the specific UK sales model | Not supplied |
 | Price authority | Approved price source, currency, effective date and customer/consumer scope | Deliberately withheld; owner asked to hold price-dependent work |
 | Inventory authority | Live governed stock source and release/availability semantics | Not connected |
-| Tax and VAT | Approved tax treatment and invoice requirements | Not approved |
+| Tax and VAT | HMRC VAT Notice 701/14 §4.2 and VFOOD1960: standard-rated supplements generally attract 20% UK VAT. Confirm every SKU's classification, NovaPharm's VAT registration and invoice authority before release. | UK standard-rate arithmetic implemented and tested; seller registration, product approval and live invoicing remain unverified |
 | Delivery | Territories, service levels, charges, cut-offs, restricted goods and fulfilment authority | Not approved |
 | Payment | Approved merchant and processor, credentials, PCI boundary and webhook design | No provider authorised |
 | Terms and returns | Approved consumer/B2B terms, cancellation, return, refund and complaint process | Not approved |

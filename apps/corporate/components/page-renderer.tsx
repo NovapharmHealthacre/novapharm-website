@@ -8,6 +8,7 @@ import type { CorporatePage, NarrativeSection } from "@/data/pages";
 import { leadership, partnerJourney, partnerTypes, productCategories, regulatorySections, servicePillars, sourcingPillars, technologyMaturity } from "@/data/site";
 import { ContactExperience } from "./contact-experience";
 import { NutraxinKnowMore } from "./nutraxin-know-more";
+import { NutraxinOrderAccess } from "./nutraxin-order-access";
 import { Breadcrumbs, FinalCta, Notice, PageHero, SectionHeading, StatusNotice } from "./ui";
 
 export interface Leader {
@@ -178,6 +179,7 @@ function NutraxinPage() {
           <div className="nx-hero-actions">
             <a className="nx-button nx-button-primary" href="#nx-range-overview">Explore the range</a>
             <Link className="nx-button nx-button-quiet" href="/contact/?enquiry=Nutraxin%20portfolio">Discuss the portfolio</Link>
+            <Link className="nx-button nx-button-quiet" href="/account-application/">Business ordering access</Link>
           </div>
           <div className="nx-hero-packs">
             {[products[0], products[8], products[13]].map((product, index) => (
@@ -327,6 +329,7 @@ export function NutraxinProductPage({ product }: { readonly product: NutraxinPro
         </div>
       </div>
     </section>
+    <section className="section nutraxin-order-section"><div className="shell"><NutraxinOrderAccess sku={product.sku} name={product.name} /></div></section>
     <section className="section">
       <div className="shell product-reference-grid">
         <div>
