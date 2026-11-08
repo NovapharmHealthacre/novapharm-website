@@ -8,6 +8,7 @@ import { areaLabels, areaLandingRoutes, areaScopes } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError, protectedMutation } from "../lib/gateway";
 import { MedicinesIntelligence } from "./medicines-intelligence";
 import { PortalBrand } from "./portal-brand";
+import { nutraxinProductForSelection } from "../data/nutraxin-order-intent";
 
 type Metric = Readonly<{ key: string; label: string; value: number; format?: string; href?: string | null }>;
 type Column = readonly [string, string, string?];
@@ -163,6 +164,8 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
     />;
   }
 
+  const selectedNutraxinProduct = typeof window !== "undefined" && module.code === "customer.products"
+    ? nutraxinProductForSelection(window.location.search) : null;
   const navigation = modulesByArea[module.area];
   return <main className="workspace-shell">
     <aside className={menuOpen ? "workspace-sidebar open" : "workspace-sidebar"}>
@@ -175,6 +178,16 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
       <header className="workspace-topbar"><button className="menu-button" type="button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu aria-hidden="true" /></button><search><form className="portal-search" onSubmit={search}><Search aria-hidden="true" /><label className="sr-only" htmlFor="portal-search">Search authorised records</label><input id="portal-search" name="query" placeholder="Search" autoComplete="off" /><button type="submit">Search</button>{searchOpen ? <div className="search-results"><button className="search-close" type="button" aria-label="Close search results" onClick={() => setSearchOpen(false)}><X aria-hidden="true" /></button>{searchResults.length ? searchResults.map((result) => <a key={`${result.type}-${result.reference}`} href={result.route}><strong>{result.title}</strong><span>{result.type} · {result.reference}{result.status ? ` · ${readable(result.status)}` : ""}</span></a>) : <p>No authorised records found.</p>}</div> : null}</form></search><div className="user-summary"><span>{user?.displayName ?? "Secure user"}</span><small>{user ? readable(user.accessType) : "Verifying"}</small><button type="button" onClick={logout} aria-label="Sign out"><LogOut aria-hidden="true" /></button></div></header>
       <div className="workspace-content">
         <header className="module-heading"><div><p className="eyebrow">{areaLabels[module.area]} / {module.releaseClassificationLabel}</p><h1>{module.title}</h1><p>{module.purpose}</p></div><button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data"><RefreshCw aria-hidden="true" /><span>Refresh</span></button></header>
+        {user && snapshot && selectedNutraxinProduct ? <section className="nutraxin-selection-panel" aria-labelledby="nutraxin-selection-title">
+          <p className="nutraxin-selection-kicker">NUTRAXIN / SELECTED PRODUCT</p>
+          <h2 id="nutraxin-selection-title">{selectedNutraxinProduct.name}</h2>
+          <p>{selectedNutraxinProduct.packSize} · {selectedNutraxinProduct.sku}</p>
+          <p>Your selection has been carried securely to your customer workspace. Checkout is not enabled until commercial pricing, verified stock, tax, fulfilment and product eligibility are approved.</p>
+          <div className="nutraxin-selection-actions">
+            <a href={`https://novapharmhealthcare.com/products/nutraxin/${selectedNutraxinProduct.slug}/`}>Review product details</a>
+            <a href="/portal/account/">Your business account</a>
+          </div>
+        </section> : null}
         {user ? <AreaSwitcher user={user} /> : null}
         <p className="workflow-status" aria-live="polite">{status}</p>
         {loading ? <div className="loading-state"><Activity aria-hidden="true" /><span>Loading authorised records…</span></div> : null}
