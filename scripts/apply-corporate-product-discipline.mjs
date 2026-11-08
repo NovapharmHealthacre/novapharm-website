@@ -60,7 +60,7 @@ const globalNavigation = [
   ["NovaPharm Intelligence", "/technology/", "intelligence"],
   ["Insights", "/news-insights/", "insights"],
   ["Contact", "/contact/", "contact"],
-  ["Secure Portal", "/portal/", "portal"]
+  ["Secure Portal", "https://portal.novapharmhealthcare.com/", "portal"]
 ];
 
 // A single category-navigation contract across corporate pages. Navigation
@@ -125,7 +125,7 @@ function footer() {
         <div><h2>Company</h2><a href="/about/">Overview</a><a href="/leadership/">Leadership</a><a href="/about/governance/">Governance</a><a href="/partner-with-us/">Partners</a><a href="/investor-information/">Investors</a><a href="/careers/">Careers</a></div>
         <div><h2>Capabilities</h2><a href="/services/">Services</a><a href="/regulatory-services/">Regulatory &amp; Quality</a><a href="/cro/">Clinical Research &amp; CRO</a><a href="/technology/">Technology</a></div>
         <div><h2>Products</h2><a href="/products/nutraxin/">Nutraxin</a><a href="/products/strategic-portfolio/">Strategic portfolio</a><a href="/contact/?enquiry=Product%20opportunity">Discuss an opportunity</a></div>
-        <div><h2>Connect</h2><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">Open a business account</a><a href="/portal/">Secure Portal</a><a href="/trust-centre/">Trust centre</a></div>
+        <div><h2>Connect</h2><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">Open a business account</a><a href="https://portal.novapharmhealthcare.com/">Secure Portal</a><a href="/trust-centre/">Trust centre</a></div>
       </div>
       <div class="npd-footer-legal"><a href="/legal/privacy/">Privacy</a><a href="/legal/cookies/">Cookies</a><a href="/legal/terms/">Terms</a><a href="/legal/accessibility/">Accessibility</a><button class="footer-link-button" type="button" data-cookie-settings>Cookie settings</button></div>
       <div class="npd-footer-notices">

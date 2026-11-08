@@ -140,9 +140,9 @@ function header(slug = "") {
         <span class="nav-toggle-lines" aria-hidden="true"><i></i><i></i></span><span class="sr-only">Open navigation</span>
       </button>
       <nav class="site-nav" id="primary-navigation" aria-label="Primary navigation" data-site-nav>
-        ${navigation.map(([label, href]) => `<a href="${href}"${current && href === routePath(current) ? ' aria-current="page"' : ""}>${esc(label)}</a>`).join("")}
+        ${navigation.map(([label, href]) => `<a href="${href === "/portal/" ? "https://portal.novapharmhealthcare.com/" : href}"${current && href === routePath(current) ? ' aria-current="page"' : ""}>${esc(label)}</a>`).join("")}
         <a class="nav-search" href="/search/" data-ai-search-open>Search <kbd>Ctrl K</kbd></a>
-        <a class="nav-portal" href="/portal/">Secure portal</a>
+        <a class="nav-portal" href="https://portal.novapharmhealthcare.com/">Secure portal</a>
         <a class="btn btn-primary nav-cta" href="/account-application/">Open an account</a>
       </nav>
     </div>
@@ -160,7 +160,7 @@ function footer() {
         </div>
         <div><h3>Company</h3><a href="/about/company/">Company</a><a href="/leadership/">Leadership</a><a href="/about/governance/">Governance</a><a href="/investor-information/">Investors</a><a href="/careers/">Careers</a></div>
         <div><h3>Capabilities</h3><a href="/services/">Services</a><a href="/regulatory-services/">Regulatory</a><a href="/cro/">Clinical Research & CRO</a><a href="/oncology/">Oncology continuity</a><a href="/product-portfolio/">Products</a><a href="/partner-with-us/">Partners</a><a href="/technology/">Technology</a></div>
-        <div><h3>Connect</h3><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">Open an account</a><a href="/portal/">Secure portal</a><a href="/feed.xml">Insights feed</a></div>
+        <div><h3>Connect</h3><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">Open an account</a><a href="https://portal.novapharmhealthcare.com/">Secure portal</a><a href="/feed.xml">Insights feed</a></div>
         <div><h3>Legal</h3><a href="/trust-centre/">Trust centre</a><a href="/legal/privacy/">Privacy</a><a href="/legal/cookies/">Cookies</a><a href="/legal/terms/">Terms</a><a href="/legal/accessibility/">Accessibility</a><a href="/legal/modern-slavery/">Modern slavery</a><a href="/legal/environment-carbon/">Environment and carbon</a><button class="footer-link-button" type="button" data-cookie-settings>Cookie settings</button></div>
       </div>
       <div class="footer-notices">
