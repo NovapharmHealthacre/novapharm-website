@@ -45,7 +45,8 @@ assert.ok(corporateRenderer.includes('ranges.map((range, rangeIndex)'),"Next.js 
 assert.ok(corporateLayout.includes('import "../../../assets/css/nutraxin-lineup.css";'),"Next.js build must import the shared scoped styles");
 assert.ok(css.includes("@media(max-width:600px)"),"Mobile display rules required");
 assert.ok(css.includes("prefers-reduced-motion:reduce"),"Respect reduced-motion user preference");
-assert.ok(master.includes("not a consumer store"),"B2B status requires explicit disclosure");
+assert.ok(master.includes("No payment is taken while checkout is unavailable"),"Checkout must remain fail-closed until approved");
+assert.ok(master.includes('href="/products/nutraxin/bag/">View Bag'),"The collection links to its public Bag");
 assert.ok(!/<button\b|<form\b|\bAdd to basket\b|\bBuy now\b|\bIn stock\b|\b£\d+/i.test(master),"Do not fake a commercial storefront");
 assert.ok(!/lucide|<svg\b|<i\b|emoji/gi.test(master),"Use typography rather than generic UI icons");
 const slugs = [...master.matchAll(/data-nx-product-slug="([^"]+)"/g)].map(m=>m[1]);
