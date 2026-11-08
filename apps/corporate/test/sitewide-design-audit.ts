@@ -132,7 +132,7 @@ async function audit() {
     "The existing cross-engine axe acceptance remains a separate gate."
   ];
   await writeFile(artifactDir+"/summary.md",md.join("\n")+"\n");
-  console.log(JSON.stringify({routes:routes.length,checks:routes.length*2,findings:findings.length,first:findings.slice(0,24)},null,2));
+  console.log(JSON.stringify({routes:routes.length,checks:routes.length*viewports.length,findings:findings.length,first:findings.slice(0,24)},null,2));
   if(findings.length)process.exitCode=1;
 }
 audit().catch(e=>{console.error(e);process.exitCode=1});
