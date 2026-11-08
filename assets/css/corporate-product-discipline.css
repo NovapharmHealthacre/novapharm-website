@@ -12,7 +12,7 @@
   --npd-system: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --npd-container: 1200px;
   --npd-copy: 720px;
-  --npd-header: 64px;
+  --npd-header: 56px;
   --font: var(--npd-system);
   --serif: var(--npd-system);
   --container: var(--npd-container);
@@ -1751,7 +1751,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 
 @media (max-width: 600px) {
   :root {
-    --npd-header: 60px;
+    --npd-header: 54px;
   }
 
   .container {
