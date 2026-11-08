@@ -23,5 +23,5 @@ test("build role is restricted to the staging ECR repo and exact GitHub source",
   assert.equal(auth.Condition.StringEquals["codeconnections:ProviderAction"], "GitPull");
   const ecr = role.find(s => Array.isArray(s.Action) && s.Action.includes("ecr:PutImage"));
   assert.equal(ecr.Resource, "arn:aws:ecr:eu-north-1:250675045172:repository/novapharm/staging/portal");
-  assert.ok(!role.some(s => s.Action === "*" || s.Resource === "*" && s.Action !== "ecr:GetAuthorizationToken"));
+  assert.ok(role.every(s => s.Action !== "*" && (s.Resource !== "*" || (Array.isArray(s.Action) && s.Action.length === 1 && s.Action[0] === "ecr:GetAuthorizationToken"))));
 });
