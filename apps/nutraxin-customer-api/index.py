@@ -29,6 +29,8 @@ APPROVED_GROUP = "nutraxin-approved-business-customer"
 TABLE = boto3.resource("dynamodb", region_name=REGION).Table(os.environ["DDB_TABLE"])
 COGNITO = boto3.client("cognito-idp", region_name=REGION)
 SSM = boto3.client("ssm", region_name=REGION)
+ALERT_TOPIC = os.environ.get("ORDER_ALERT_TOPIC_ARN", "")
+SNS = boto3.client("sns", region_name=REGION) if ALERT_TOPIC else None
 
 PAGE = """<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nutraxin Business Ordering | NovaPharm Healthcare</title><meta name="robots" content="noindex,nofollow"><style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#18181b;background:#f5f5f7;font-synthesis:none}*{box-sizing:border-box}body{margin:0}nav{background:rgba(252,252,253,.94);border-bottom:1px solid #e6e6e9}nav div{max-width:1120px;margin:auto;padding:19px 24px;display:flex;justify-content:space-between;gap:16px;align-items:center}nav a{color:inherit;text-decoration:none;font-size:14px}nav b{letter-spacing:.06em;font-size:13px}main{max-width:920px;margin:auto;padding:80px 24px 100px}.eyebrow{font-size:12px;font-weight:700;color:#6e737d;letter-spacing:.08em;text-transform:uppercase}h1{font-size:clamp(42px,7vw,76px);line-height:1.06;letter-spacing:-.035em;margin:15px 0 20px}h2{font-size:26px;letter-spacing:-.02em;margin:0 0 14px}.lead{font-size:clamp(18px,2.5vw,23px);line-height:1.5;color:#5a6069;max-width:760px}.card{border:1px solid #e3e4e8;background:#fff;border-radius:23px;padding:30px;margin-top:32px}.fine{color:#717681;font-size:13px;line-height:1.65}.button{border:0;border-radius:999px;background:#0071e3;color:#fff;font-size:15px;font-weight:600;padding:14px 22px;display:inline-block;text-decoration:none;cursor:pointer}.button:disabled{background:#a5b1c2;cursor:not-allowed}.quiet{background:#eeeef2;color:#20232a}.row{display:grid;grid-template-columns:minmax(0,1fr) 115px;gap:24px;align-items:center;padding:18px 0;border-bottom:1px solid #e5e5e9}.name{font-weight:640;font-size:16px}.pack{display:block;color:#707580;font-size:13px;margin-top:4px}.price{display:block;color:#34363b;font-size:13px;margin-top:4px}.qty{border:1px solid #cbd0d8;border-radius:10px;background:#fcfcfd;padding:12px;width:100%;font:inherit;text-align:center}.actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:24px}.hide{display:none}#message{margin-top:18px;line-height:1.6;font-size:14px}a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #0071e3;outline-offset:3px}@media(max-width:580px){main{padding:55px 18px}.card{padding:22px 18px;border-radius:18px}.row{grid-template-columns:minmax(0,1fr) 85px;gap:14px}.name{font-size:14px}}
@@ -198,7 +200,7 @@ def submit(event,user):
     except ValueError:return error(400,"invalid_json")
     request_id=data.get("request_id","")
     lines=data.get("lines")
-    if not isinstance(request_id,str) or not re.fullmatch(r"[0-9a-f-]{36}",request_id):
+    if not isinstance(request_id,str) or not re.fullmatch(r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}",request_id):
         return error(400,"invalid_request_id")
     if not isinstance(lines,list) or not 1<=len(lines)<=19:return error(400,"invalid_lines")
     prices=checkout_source()
@@ -223,21 +225,39 @@ def submit(event,user):
         else:net_total+=subtotal
         accepted.append({"sku":sku,"quantity":qty,"tier":tier,
             "unit_net_pence":unit,"line_net_pence":subtotal})
+    # Bind an idempotency key to the canonical basket, not merely the ID.
+    canonical_lines=sorted((item["sku"],item["quantity"]) for item in accepted)
+    request_hash=hashlib.sha256(json.dumps(canonical_lines,separators=(",",":")).encode()).hexdigest()
     receipt="NUT-"+request_id
     order={"pk":"USER#"+user["sub"],"sk":"RQ#"+request_id,"receipt_id":receipt,
         "created_at":now(),"expires_at":now()+30*86400,"status":"PENDING_MANUAL_CONFIRMATION",
         "financially_binding":False,"vat_invoice_created":False,"inventory_reserved":False,
-        "currency":"GBP","net_total_pence":net_total if all_priced else None,"lines":accepted}
+        "currency":"GBP","net_total_pence":net_total if all_priced else None,"request_hash":request_hash,"lines":accepted}
+    created=False
     try:
         TABLE.put_item(Item=order,ConditionExpression="attribute_not_exists(pk)")
+        created=True
     except ClientError as exc:
         if exc.response["Error"]["Code"]!="ConditionalCheckFailedException":raise
-        previous=TABLE.get_item(Key={"pk":order["pk"],"sk":order["sk"]}).get("Item")
+        previous=TABLE.get_item(Key={"pk":order["pk"],"sk":order["sk"]},ConsistentRead=True).get("Item")
         if not previous:return error(409,"duplicate_request")
+        if previous.get("request_hash")!=request_hash:
+            return error(409,"request_id_reused_with_different_basket")
         order=previous
+    # A duplicate request does not produce another staff notification.
+    # The request stays durably recorded even if SNS is temporarily unavailable.
+    if created and SNS is not None:
+        try:
+            SNS.publish(TopicArn=ALERT_TOPIC,
+                Subject="NovaPharm: New Nutraxin B2B quotation request",
+                Message=json.dumps({"event":"NUTRAXIN_QUOTATION_REQUEST","receipt_id":receipt,
+                    "sku_count":len(accepted),"requires_manual_confirmation":True}))
+        except ClientError as exc:
+            print("staff_alert_failed",exc.response.get("Error",{}).get("Code","sns_error"))
+    total=order.get("net_total_pence")
     return reply(201,{"receipt_id":order["receipt_id"],"status":order["status"],
         "financially_binding":False,"inventory_reserved":False,
-        "vat_invoice_created":False,"net_total_pence":order.get("net_total_pence"),
+        "vat_invoice_created":False,"net_total_pence":int(total) if total is not None else None,
         "notice":"This request awaits NovaPharm review. Prices, UK VAT, inventory and delivery require confirmation."})
 
 def handler(event,context):
