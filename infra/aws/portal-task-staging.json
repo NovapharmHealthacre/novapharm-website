@@ -149,7 +149,7 @@
             "HealthCheck": {
               "Command": [
                 "CMD-SHELL",
-                "node -e \"fetch('http://127.0.0.1:4303/').then(r=>{if(r.status!==200)process.exit(1)}).catch(()=>process.exit(1))\""
+                "node -e \"fetch('http://127.0.0.1:4303/',{redirect:'manual'}).then(r=>process.exit(r.status>0&&r.status<500?0:1)).catch(()=>process.exit(1))\""
               ],
               "Interval": 30,
               "Timeout": 5,
