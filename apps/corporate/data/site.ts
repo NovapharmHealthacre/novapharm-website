@@ -22,6 +22,7 @@ export const navigation = Object.freeze([
   ["Capabilities", "/capabilities/"],
   ["Oncology", "/oncology/"],
   ["Products", "/products/"],
+  ["NovaPharm Intelligence", "/technology/"],
   ["Insights", "/news-insights/"],
   ["Contact", "/contact/"],
   ["Secure Portal", "/portal/"]
