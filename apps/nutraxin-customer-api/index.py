@@ -117,13 +117,15 @@ function retailSummary(){
  const valid=new Set(retailProducts.map(p=>p.sku));
  for(const sku of [...retailBag.keys()])if(!valid.has(sku))retailBag.delete(sku);
  const list=$("retail-bag-items");list.replaceChildren();let total=0;
- let basketGross=0;
+ let basketGross=0,basketNet=0;
  for(const product of retailProducts){
   const count=retailBag.get(product.sku)||0;if(!count)continue;
   total+=count;
-  basketGross+=count*Number(product.retail_price_pence||0);
+  const previousGross=basketGross;
+  basketNet+=count*Number(product.retail_net_price_pence||0);
+  basketGross=Math.round(basketNet*1.2);
   const li=node("li");
-  li.append(node("span",null,product.name+" · "+money(count*Number(product.retail_price_pence||0))+" · "));
+  li.append(node("span",null,product.name+" · "+money(basketGross-previousGross)+" · "));
   const qty=node("input","qty");qty.type="number";qty.min="0";qty.max="10000";qty.step="1";qty.value=String(count);
   qty.setAttribute("aria-label","Bag quantity for "+product.name);
   qty.addEventListener("change",()=>{const n=Number(qty.value);if(!Number.isSafeInteger(n)||n<0||n>10000){qty.value=String(count);return;}if(n===0)retailBag.delete(product.sku);else retailBag.set(product.sku,n);retailSummary();});
