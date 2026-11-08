@@ -126,11 +126,13 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
 
   async function logout() {
     let federatedLogout = false;
+    let cognitoLogout = false;
     try {
-      const result = await protectedMutation<{ federatedLogout: boolean }>("auth/logout", {});
+      const result = await protectedMutation<{ federatedLogout: boolean; cognitoLogout?: boolean }>("auth/logout", {});
       federatedLogout = result.federatedLogout === true;
+      cognitoLogout = result.cognitoLogout === true;
     } finally {
-      window.location.replace(federatedLogout ? "/.auth/logout?post_logout_redirect_uri=/" : "/");
+      window.location.replace(cognitoLogout ? "/auth/end-session/" : federatedLogout ? "/.auth/logout?post_logout_redirect_uri=/" : "/");
     }
   }
 
