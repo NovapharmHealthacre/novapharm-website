@@ -251,7 +251,7 @@ def submit(event,user):
             SNS.publish(TopicArn=ALERT_TOPIC,
                 Subject="NovaPharm: New Nutraxin B2B quotation request",
                 Message=json.dumps({"event":"NUTRAXIN_QUOTATION_REQUEST","receipt_id":receipt,
-                    "sku_count":len(accepted),"requires_manual_confirmation":True}))
+                    "customer_sub":user["sub"],"sku_count":len(accepted),"requires_manual_confirmation":True}))
         except ClientError as exc:
             print("staff_alert_failed",exc.response.get("Error",{}).get("Code","sns_error"))
     total=order.get("net_total_pence")
