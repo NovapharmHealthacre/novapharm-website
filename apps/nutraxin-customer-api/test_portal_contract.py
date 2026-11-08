@@ -97,6 +97,14 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertIn("https://novapharmhealthcare.com/account-application/", PORTAL.PAGE)
         self.assertNotIn("contact/?enquiry=Pharmacy", PORTAL.PAGE)
 
+    def test_customer_dashboard_shows_only_authenticated_request_history(self):
+        self.assertIn('id="request-history"', PORTAL.PAGE)
+        self.assertIn('id="history-status"', PORTAL.PAGE)
+        self.assertIn('read("/api/order-requests")', PORTAL.APP)
+        self.assertIn('host.replaceChildren()', PORTAL.APP)
+        self.assertIn('void renderHistory()', PORTAL.APP)
+        self.assertNotIn("innerHTML", PORTAL.APP)
+
     def test_public_prices_and_order_requests_require_login(self):
         for route in ("/api/catalogue", "/api/order-requests"):
             result = PORTAL.handler(self.event(route), None)
