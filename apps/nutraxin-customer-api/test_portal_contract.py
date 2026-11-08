@@ -97,6 +97,15 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertIn("https://novapharmhealthcare.com/account-application/", PORTAL.PAGE)
         self.assertNotIn("contact/?enquiry=Pharmacy", PORTAL.PAGE)
 
+    def test_20_percent_uk_vat_is_illustrative_and_never_collected(self):
+        self.assertIn('id="indicative-totals"', PORTAL.PAGE)
+        self.assertIn("indicativeVatRateBps=2000", PORTAL.APP)
+        self.assertIn("estimatedVatPence(netPence)", PORTAL.APP)
+        self.assertIn("netPence+estimatedVat", PORTAL.APP)
+        self.assertIn("not a VAT invoice", PORTAL.APP)
+        self.assertIn("Excludes shipping", PORTAL.APP)
+        self.assertNotIn("stripe.com", PORTAL.APP)
+
     def test_customer_dashboard_shows_only_authenticated_request_history(self):
         self.assertIn('id="request-history"', PORTAL.PAGE)
         self.assertIn('id="history-status"', PORTAL.PAGE)
