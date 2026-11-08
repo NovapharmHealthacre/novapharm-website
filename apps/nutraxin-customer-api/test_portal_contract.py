@@ -103,7 +103,7 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertIn("estimatedVatPence(netPence)", PORTAL.APP)
         self.assertIn("netPence+estimatedVat", PORTAL.APP)
         self.assertIn("not a VAT invoice", PORTAL.APP)
-        self.assertIn("Excludes shipping", PORTAL.APP)
+        self.assertIn("Indicative UK delivery charge: £0", PORTAL.APP)
         self.assertNotIn("api.stripe.com", PORTAL.APP)
         self.assertNotIn("rk_live_", PORTAL.APP)
 
@@ -197,6 +197,21 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertFalse(body["vat_invoice_created"])
         self.assertEqual(len(DDB.items), 1)
 
+    def test_provisional_uk_delivery_charge_is_zero_and_cost_is_seller_absorbed(self):
+        self.assertIn("indicative UK delivery charge", PORTAL.PAGE)
+        self.assertIn("Indicative UK delivery charge: £0", PORTAL.APP)
+        payload = {"request_id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+                   "lines": [{"sku": "NUT-UK-VD3-T120", "quantity": 1}]}
+        response = PORTAL.submit(self.event("/api/order-requests", "POST", payload),
+                                 {"sub": "test-sub"})
+        self.assertEqual(response["statusCode"], 201)
+        data = json.loads(response["body"])
+        self.assertEqual(data["shipping_charge_pence"], 0)
+        self.assertTrue(data["uk_delivery_cost_absorbed_by_seller"])
+        self.assertEqual(DDB.items[0]["shipping_charge_pence"], 0)
+        self.assertFalse(data["financially_binding"])
+        self.assertFalse(data["inventory_reserved"])
+
     def test_minimum_one_unit_and_48_reference_price_for_every_quantity(self):
         # The owner explicitly approves the existing 48-unit-tier unit price
         # for every requested quantity, including a single unit.
@@ -242,7 +257,8 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertEqual(body["indicative_vat_pence"], 8640)
         self.assertEqual(body["indicative_gross_total_pence"], 51840)
         self.assertEqual(body["vat_charged_pence"], 0)
-        self.assertTrue(body["shipping_excluded"])
+        self.assertEqual(body["shipping_charge_pence"], 0)
+        self.assertTrue(body["uk_delivery_cost_absorbed_by_seller"])
         self.assertFalse(body["vat_invoice_created"])
         self.assertFalse(body["financially_binding"])
         self.assertFalse(body["inventory_reserved"])
