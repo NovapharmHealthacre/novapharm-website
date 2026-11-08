@@ -87,7 +87,10 @@ def details(order, order_id, subject):
     for field in ("approvedForPayment", "stockReserved", "taxAndShippingVerified",
                   "customerAcceptedTerms", "commerciallyApproved"):
         confirmed(order, field)
-    expires = number(order, "expiresAtUnix")
+    raw_expiry = (order or {}).get("expiresAtUnix", {}).get("N", "")
+    if not isinstance(raw_expiry, str) or not re.fullmatch(r"[1-9][0-9]{9,12}", raw_expiry):
+        raise NotReady("Approved order has an invalid expiry")
+    expires = int(raw_expiry)
     if expires <= int(time.time()) or expires > int(time.time()) + 31 * 86400:
         raise NotReady("Approved order has expired or has invalid expiry")
     product_net = number(order, "productNetMinor")
