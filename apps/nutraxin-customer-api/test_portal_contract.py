@@ -114,6 +114,16 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertIn('void renderHistory()', PORTAL.APP)
         self.assertNotIn("innerHTML", PORTAL.APP)
 
+    def test_oauth_scope_allows_cognito_get_user_after_verified_email(self):
+        from urllib.parse import urlsplit, parse_qs
+        response = PORTAL.login(self.event("/login"))
+        self.assertEqual(response["statusCode"], 302)
+        params = parse_qs(urlsplit(response["headers"]["location"]).query)
+        self.assertEqual(params["response_type"], ["code"])
+        self.assertEqual(params["code_challenge_method"], ["S256"])
+        scopes = params["scope"][0].split()
+        self.assertEqual(set(scopes), {"openid", "email", "profile", "aws.cognito.signin.user.admin"})
+
     def test_public_prices_and_order_requests_require_login(self):
         for route in ("/api/catalogue", "/api/order-requests"):
             result = PORTAL.handler(self.event(route), None)
