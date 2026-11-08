@@ -213,6 +213,7 @@ class PortalSecurityTests(unittest.TestCase):
             self.assertEqual(len(alert.sent), 1, "A duplicate submission must not re-alert staff")
             self.assertNotIn("net_total_pence", alert.sent[0]["Message"])
             self.assertNotIn("email", alert.sent[0]["Message"])
+            self.assertEqual(json.loads(alert.sent[0]["Message"])["customer_sub"], "test-sub")
             changed = {"request_id": original["request_id"],
                        "lines": [{"sku": "NUT-UK-VD3-T120", "quantity": 48}]}
             conflict = PORTAL.submit(self.event("/api/order-requests", "POST", changed), {"sub": "test-sub"})
