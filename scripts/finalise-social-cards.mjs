@@ -73,8 +73,11 @@ for (const item of register) {
   const before = html.slice(0, start).replace(obsoleteImageTag, "");
   const after = html.slice(end + endMarker.length, headEnd).replace(obsoleteImageTag, "");
   html = before + socialBlock + after + html.slice(headEnd);
+  // Parse only the fixed, known Open Graph metadata grammar. No
+  // dynamically compiled regex or untrusted pattern interpolation.
+  const imageTags = [...html.matchAll(/<meta property="(og:image(?::(?:secure_url|type|width|height|alt))?)" content="([^"]*)">/g)];
   for (const property of ["og:image", "og:image:secure_url", "og:image:type", "og:image:width", "og:image:height", "og:image:alt"]) {
-    const count = [...html.matchAll(new RegExp('<meta property="' + property + '" content="[^"]*">', "g"))].length;
+    const count = imageTags.filter(match => match[1] === property).length;
     if (count !== 1) throw new Error(item.route + ": expected one " + property + " tag, got " + count);
   }
   html = html.replace(/<meta name="twitter:card" content="[^"]+">/, '<meta name="twitter:card" content="summary_large_image">');
