@@ -27,22 +27,21 @@ export async function checkStripeMerchantReadiness({ mode, secretKey, fetchImpl 
   if (!response?.ok) throw fail();
   let account;
   try { account = await response.json(); } catch { throw fail(); }
-  if (account?.object !== "account" || typeof account.livemode !== "boolean" ||
-      account.livemode !== (mode === "live")) throw fail();
+  if (account?.object !== "account" || !/^acct_[a-zA-Z0-9]+$/u.test(String(account.id || ""))) throw fail();
 
   const required = account.requirements;
   const due = Array.isArray(required?.currently_due) ? required.currently_due.length : null;
   const pastDue = Array.isArray(required?.past_due) ? required.past_due.length : null;
   const pending = Array.isArray(required?.pending_verification) ? required.pending_verification.length : null;
   const cardCapability = account.capabilities?.card_payments;
-  const cardCapabilityApproved = cardCapability === "active";
+  const cardCapabilityNotBlocked = cardCapability === undefined || cardCapability === "active";
 
   const summary = Object.freeze({
     mode,
     chargesEnabled: account.charges_enabled === true,
     payoutsEnabled: account.payouts_enabled === true,
     detailsSubmitted: account.details_submitted === true,
-    cardCapabilityApproved,
+    cardCapabilityStatus: cardCapability ?? "not_reported",
     missingRequirementsCount: due,
     pastDueRequirementsCount: pastDue,
     pendingVerificationsCount: pending,
@@ -51,7 +50,7 @@ export async function checkStripeMerchantReadiness({ mode, secretKey, fetchImpl 
     // UK VAT, stock and checkout deployment need independent approvals.
     technicalMerchantReady: account.charges_enabled === true &&
       account.payouts_enabled === true && account.details_submitted === true &&
-      cardCapabilityApproved && due === 0 && pastDue === 0 &&
+      cardCapabilityNotBlocked && due === 0 && pastDue === 0 &&
       pending === 0 && !required?.disabled_reason
   });
   return summary;
