@@ -19,6 +19,11 @@ The new src/core/payments/stripe-checkout.mjs offers:
 
 **Deliberately no public API endpoint** is wired by this PR, because the production customer identity, trusted order ledger, stock reservation, VAT registration confirmation, processor approvals and secure portal routing remain unverified. No user's ability to send arbitrary price or approval flags should permit charging a card.
 
+
+## Durable payment ledger reference
+
+`src/core/payments/payment-ledger-reference.sql` is a **review-only** SQL specification, not an applied production migration. `scripts/test-payment-ledger.mjs` verifies unique provider event IDs, one collectable attempt per order, permitted retries after failed/expired attempts, and rejection of wrong-currency and invalid-state records. This is not sufficient to launch an endpoint: the production database migration, atomic reservation, tenant isolation, CAS updates and transactional outbox must still be reviewed and deployed before any customer funds can be accepted.
+
 ## Steps before live payment activation
 
 1. NovaPharm Healthcare Ltd opens a Stripe UK merchant account and confirms legal entity, bank payouts, beneficial ownership, chargeback/refund handling and approved merchant category. **Pharmaceuticals and regulated medical products are restricted categories.** Confirm written approval for applicable product types. Nutraxin food supplement labels and claims also need eligibility review.
