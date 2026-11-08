@@ -1,9 +1,10 @@
 "use client";
 
 import { Building2, KeyRound, ShieldCheck, Users } from "lucide-react";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { isPortalAccessType, landingRouteForAccess } from "../data/routes";
 import { professionalError, protectedMutation } from "../lib/gateway";
+import { destinationAfterPortalLogin, validatedNutraxinIntentQuery } from "../data/nutraxin-order-intent";
 import { PortalBrand } from "./portal-brand";
 
 const accessTypes = [
@@ -19,6 +20,8 @@ export function LoginPanel() {
   const [accessType, setAccessType] = useState<AccessType>("customer");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
+  const [selectionQuery, setSelectionQuery] = useState("");
+  useEffect(() => setSelectionQuery(validatedNutraxinIntentQuery(window.location.search)), []);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -32,7 +35,8 @@ export function LoginPanel() {
         accessType,
       });
       if (!isPortalAccessType(result.accessType) || result.accessType !== accessType) throw new Error("The authorised portal area did not match the requested workspace.");
-      window.location.assign(result.mustChangePassword ? "/portal/change-password/" : landingRouteForAccess(result.accessType));
+      const selection = validatedNutraxinIntentQuery(window.location.search);
+      window.location.assign(result.mustChangePassword ? `/portal/change-password/${selection}` : destinationAfterPortalLogin(result.accessType, selection, landingRouteForAccess(result.accessType)));
     } catch (error) {
       setStatus(professionalError(error));
     } finally {
@@ -41,7 +45,7 @@ export function LoginPanel() {
   }
 
   const entraEnabled = process.env["NEXT_PUBLIC_ENTRA_LOGIN_ENABLED"] === "true";
-  const entraReturn = `/auth/entra-complete/?accessType=${accessType}`;
+  const entraReturn = `/auth/entra-complete/?accessType=${accessType}${accessType === "customer" && selectionQuery ? `&${selectionQuery.slice(1)}` : ""}`;
 
   return <main className="login-layout">
     <section className="login-context" aria-labelledby="portal-title">
@@ -66,6 +70,7 @@ export function LoginPanel() {
           <Icon aria-hidden="true" /><span>{label}</span>
         </label>)}
       </fieldset>
+      {accessType === "customer" && selectionQuery ? <p className="order-intent-login-note">Your selected Nutraxin product will be ready to review in your customer workspace after sign-in.</p> : null}
       <form className="login-form" onSubmit={submit}>
         <label htmlFor="username">Username or business email</label>
         <input id="username" name="username" autoComplete="username" required maxLength={160} />
