@@ -200,7 +200,9 @@
   "price_display_status": "indicative_not_binding",
   "vat_estimate_rate_percent": 20,
   "price_includes_estimated_uk_vat": true,
-  "price_note": "Guide price includes estimated 20% UK VAT. Delivery and final VAT status are unverified. No purchase is possible until checkout activation.",
-  "source_record": "owner_approved_provisional_19_sku_48_unit_reference_2026-11-08_v4",
-  "price_model_note": "Target 25% after-tax profit margin under unverified supplier, fulfilment and tax assumptions; not a guaranteed realised margin."
+  "price_note": "Indicative UK price includes estimated 20% VAT and seller-funded standard UK delivery (£0 extra). Final VAT registration and carrier service are not yet verified. Checkout remains disabled.",
+  "source_record": "owner_approved_provisional_19_sku_48_unit_reference_2026-11-08_v5",
+  "price_model_note": "Target 25% after-tax profit margin under unverified supplier, fulfilment and tax assumptions; not a guaranteed realised margin.",
+  "provisional_uk_delivery_charge_pence": 0,
+  "provisional_uk_delivery_cost_seller_funded": true
 }
