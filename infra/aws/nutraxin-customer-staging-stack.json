@@ -122,7 +122,8 @@
                 {
                   "Effect": "Allow",
                   "Action": [
-                    "cognito-idp:AdminListGroupsForUser"
+                    "cognito-idp:AdminListGroupsForUser",
+                    "cognito-idp:AdminGetUser"
                   ],
                   "Resource": "arn:aws:cognito-idp:eu-north-1:250675045172:userpool/eu-north-1_r2wjyxgqy"
                 },
