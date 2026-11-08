@@ -42,11 +42,18 @@ class DummyCognito:
         return {"Groups": [{"GroupName": x} for x in self.groups]}
 
 class DummySSM:
+    authorized=False
     def get_parameter(self, **kw):
         payload = {
             "schema": "novapharm.nutraxin.provisional_b2b_prices.v1",
             "status": "owner_approved_provisional_for_authenticated_quotation_only",
             "binding_checkout_enabled": False,
+            "retail_sales_authorised": self.authorized,
+            "vat_registration_verified": self.authorized,
+            "food_business_registration_verified": self.authorized,
+            "consumer_terms_verified": self.authorized,
+            "manufacturer_fulfilment_commitment_verified": self.authorized,
+            "stock_currently_verified": self.authorized,
             "model_assumptions": {"uk_delivery_charge_pence": 0, "uk_delivery_cost_borne_by_seller": True},
             "lines": [
                 {"sku": sku, "qty24_price_pence": 1000, "qty48_price_pence": 900}
@@ -81,6 +88,7 @@ class PortalSecurityTests(unittest.TestCase):
         COGNITO.enabled = True
         COGNITO.user_status = "CONFIRMED"
         COGNITO.verified_email = True
+        PORTAL.SSM.authorized = False
 
     def event(self, path, method="GET", body=None, origin="https://portal.example.invalid"):
         e = {"version": "2.0", "rawPath": path, "requestContext": {"http": {"method": method}},
@@ -416,6 +424,54 @@ class PortalSecurityTests(unittest.TestCase):
         finally:
             PORTAL.TABLE,PORTAL.CHECKOUT_LAMBDA,PORTAL.PRODUCTION_CHECKOUT_FUNCTION = old_table,old_worker,old_name
 
+    def test_retail_sale_requires_verified_evidence_even_with_payment_switch_on(self):
+        old=(PORTAL.PAYMENT_DDB, PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED,PORTAL.CHECKOUT_LAMBDA)
+        try:
+            PORTAL.PAYMENT_DDB=object()
+            PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED=True
+            PORTAL.CHECKOUT_LAMBDA=object()
+            self.assertFalse(PORTAL.retail_readiness())
+            valid=PORTAL.SSM.get_parameter()["Parameter"]["Value"]
+            self.assertFalse(PORTAL.retail_sale_authorised(json.loads(valid)))
+            for name in ("retail_sales_authorised","vat_registration_verified",
+                         "food_business_registration_verified","consumer_terms_verified",
+                         "manufacturer_fulfilment_commitment_verified","stock_currently_verified"):
+                all_flags={k:True for k in ("retail_sales_authorised","vat_registration_verified",
+                         "food_business_registration_verified","consumer_terms_verified",
+                         "manufacturer_fulfilment_commitment_verified","stock_currently_verified")}
+                all_flags.pop(name)
+                all_flags["model_assumptions"]={"uk_delivery_charge_pence":0,"uk_delivery_cost_borne_by_seller":True}
+                self.assertFalse(PORTAL.retail_sale_authorised(all_flags), name)
+        finally:
+            PORTAL.PAYMENT_DDB,PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED,PORTAL.CHECKOUT_LAMBDA=old
+
+    def test_nutraxin_public_site_credentials_cors_and_preflight(self):
+        e=self.event("/api/retail/checkout","OPTIONS",origin="https://novapharmhealthcare.com")
+        r=PORTAL.handler(e,None)
+        self.assertEqual(r["statusCode"],204)
+        self.assertEqual(r["headers"]["access-control-allow-origin"],"https://novapharmhealthcare.com")
+        self.assertEqual(r["headers"]["access-control-allow-credentials"],"true")
+        malicious=self.event("/api/retail/checkout","OPTIONS",origin="https://malicious.invalid")
+        self.assertEqual(PORTAL.handler(malicious,None)["statusCode"],403)
+        no_login=self.event("/api/retail/checkout","POST",{"lines":[]},origin="https://novapharmhealthcare.com")
+        r=PORTAL.handler(no_login,None)
+        self.assertEqual(r["statusCode"],401)
+        self.assertIn("access-control-allow-origin",r["headers"])
+        status=PORTAL.handler(self.event("/api/retail/readiness","GET",origin="https://novapharmhealthcare.com"),None)
+        self.assertEqual(status["statusCode"],200)
+        self.assertFalse(json.loads(status["body"])["checkout_ready"])
+
+    def test_login_return_destination_is_fixed_and_allowlisted(self):
+        event=self.event("/login")
+        event["queryStringParameters"]={"next":"bag"}
+        response=PORTAL.login(event)
+        self.assertEqual(response["statusCode"],302)
+        self.assertEqual(DDB.items[-1]["return_to"],"https://novapharmhealthcare.com/products/nutraxin/bag/")
+        bad=self.event("/login")
+        bad["queryStringParameters"]={"next":"https://malicious.invalid"}
+        PORTAL.login(bad)
+        self.assertEqual(DDB.items[-1]["return_to"],"")
+
     def test_owner_self_service_checkout_prices_on_server_and_never_reserves_fake_stock(self):
         import io
 
@@ -445,6 +501,7 @@ class PortalSecurityTests(unittest.TestCase):
         PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED=True
         PORTAL.CHECKOUT_LAMBDA=worker
         PORTAL.PRODUCTION_CHECKOUT_FUNCTION="synthetic-worker"
+        PORTAL.SSM.authorized=True
         req={"request_id":"aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
              "accept_terms":True,
              "lines":[{"sku":"NUT-UK-VD3-T120","quantity":1}]}
@@ -479,6 +536,7 @@ class PortalSecurityTests(unittest.TestCase):
         finally:
             PORTAL.PAYMENT_DDB,PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED,PORTAL.CHECKOUT_LAMBDA,PORTAL.PRODUCTION_CHECKOUT_FUNCTION=old
             COGNITO.verified_email=True
+            PORTAL.SSM.authorized=False
 
     def test_retail_checkout_is_disabled_by_default_for_all_visitors(self):
         self.assertFalse(PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED)
