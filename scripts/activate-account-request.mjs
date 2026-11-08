@@ -12,13 +12,13 @@ export function activateAccountRequestHtml(html, origin) {
       !html.includes('This public information release does not accept account applications or business documents')) {
     throw Error("Account request public source safety markers missing; refuse activation");
   }
-  const live = \`<div class="npd-managed-control npd-account-request-panel">
+  const live = `<div class="npd-managed-control npd-account-request-panel">
   <div class="npd-account-request-heading">
     <p class="npd-eyebrow">01 / Request access</p>
     <h2>Start with your business.</h2>
     <p>A simple first step. Tell us who you are, receive a reference and let our team review eligibility. No password, payment or licence upload is requested here.</p>
   </div>
-  <form data-live-account-request-form data-api-origin="\${origin}" autocomplete="on">
+  <form data-live-account-request-form data-api-origin="${origin}" autocomplete="on">
     <div class="npd-account-request-grid">
       <label>Full name<input name="name" type="text" autocomplete="name" minlength="2" maxlength="120" required></label>
       <label>Business email<input name="email" type="email" autocomplete="email" maxlength="160" required></label>
@@ -42,7 +42,7 @@ export function activateAccountRequestHtml(html, origin) {
   </form>
   <p class="npd-account-request-footnote">Submissions are stored in NovaPharm's encrypted AWS business enquiry inbox for up to 30 days. A request does not activate a trading account, establish credit terms, authorise regulated-medicine supply or permit ordering. Following review, eligible applicants will be invited to complete secure verification and account activation.</p>
   <p class="npd-account-request-footnote"><a href="/portal/">Already have an approved account? Secure Portal</a></p>
-</div>\`;
+</div>`;
   const revised = html.slice(0, start) + live + html.slice(end + "</div>".length);
   const out = revised
     .replace("An account is approved through evidence, not created by a public form.", "Your NovaPharm account starts here.")
