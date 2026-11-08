@@ -144,6 +144,10 @@
               {
                 "Name": "PORT",
                 "Value": "4303"
+              },
+              {
+                "Name": "HOSTNAME",
+                "Value": "0.0.0.0"
               }
             ],
             "HealthCheck": {
