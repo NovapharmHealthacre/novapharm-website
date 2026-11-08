@@ -1,0 +1,82 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "NovaPharm customer approval ledger foundation. Encrypted AWS DynamoDB staging storage, no public API or user access. Prevents self-service customer verification from automatically activating regulated trading.",
+  "Resources": {
+    "CustomerAccountLedger": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "TableName": "novapharm-staging-customer-approval-ledger",
+        "BillingMode": "PAY_PER_REQUEST",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "sk",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "pk",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "sk",
+            "KeyType": "RANGE"
+          }
+        ],
+        "SSESpecification": {
+          "SSEEnabled": true
+        },
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true
+        },
+        "DeletionProtectionEnabled": true,
+        "TimeToLiveSpecification": {
+          "AttributeName": "expiresAt",
+          "Enabled": true
+        },
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm"
+          },
+          {
+            "Key": "environment",
+            "Value": "staging"
+          },
+          {
+            "Key": "dataClassification",
+            "Value": "synthetic-only"
+          },
+          {
+            "Key": "access",
+            "Value": "private-default-deny"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "TableName": {
+      "Value": {
+        "Ref": "CustomerAccountLedger"
+      }
+    },
+    "TableArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "CustomerAccountLedger",
+          "Arn"
+        ]
+      }
+    },
+    "ActivationPolicy": {
+      "Value": "No customer access, no public API or writers provisioned; requires authenticated API and manual approval implementation"
+    }
+  }
+}
