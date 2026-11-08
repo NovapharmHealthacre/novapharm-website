@@ -102,13 +102,16 @@ class WebhookTests(unittest.TestCase):
         self.assertTrue(WH.record_once(event(),details))
         self.assertEqual(len(DDB.transacted),1)
         writes=DDB.transacted[0]
-        self.assertEqual(len(writes),3)
+        self.assertEqual(len(writes),4)
         self.assertEqual(writes[0]["Put"]["TableName"],"synthetic-ledger")
         self.assertEqual(writes[1]["Update"]["TableName"],"synthetic-ledger")
         self.assertEqual(writes[2]["Put"]["TableName"],"synthetic-outbox")
         self.assertEqual(writes[2]["Put"]["Item"]["status"]["S"],"PENDING_REVIEW")
         self.assertIn("attribute_not_exists(pk)",writes[0]["Put"]["ConditionExpression"])
         self.assertIn("paymentStatus = :pending",writes[1]["Update"]["ConditionExpression"])
+        self.assertEqual(writes[3]["Update"]["TableName"],"synthetic-ledger")
+        self.assertEqual(writes[3]["Update"]["ExpressionAttributeValues"][":updated"]["S"],"PAID")
+        self.assertIn("stripeSessionId = :session",writes[3]["Update"]["ConditionExpression"])
 
     def test_handler_does_not_accept_unsigned_or_non_post(self):
         self.assertEqual(WH.handler({"requestContext":{"http":{"method":"GET"}}},None)["statusCode"],405)
