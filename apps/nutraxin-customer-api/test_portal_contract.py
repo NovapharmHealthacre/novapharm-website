@@ -163,6 +163,64 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertEqual(PORTAL.submit(self.event("/api/order-requests", "POST", valid, "https://evil.invalid"), {"sub": "test-sub"})["statusCode"], 403)
         self.assertEqual(DDB.items, [])
 
+    def test_idempotent_receipt_stays_stable_and_staff_notified_once(self):
+        from decimal import Decimal
+
+        class DuplicateAwareTable:
+            def __init__(self):
+                self.items = {}
+
+            def put_item(self, **kwargs):
+                item = kwargs["Item"]
+                key = (item["pk"], item["sk"])
+                if key in self.items:
+                    error = PORTAL.ClientError("duplicate")
+                    error.response = {"Error": {"Code": "ConditionalCheckFailedException"}}
+                    raise error
+                self.items[key] = item
+
+            def get_item(self, **kwargs):
+                key = (kwargs["Key"]["pk"], kwargs["Key"]["sk"])
+                saved = dict(self.items[key])
+                if saved.get("net_total_pence") is not None:
+                    saved["net_total_pence"] = Decimal(saved["net_total_pence"])
+                return {"Item": saved}
+
+        class AlertRecorder:
+            def __init__(self):
+                self.sent = []
+            def publish(self, **kwargs):
+                self.sent.append(kwargs)
+                return {"MessageId": "test-msg"}
+
+        table = DuplicateAwareTable()
+        alert = AlertRecorder()
+        previous_table, previous_sns, previous_topic = PORTAL.TABLE, PORTAL.SNS, PORTAL.ALERT_TOPIC
+        PORTAL.TABLE = table
+        PORTAL.SNS = alert
+        PORTAL.ALERT_TOPIC = "arn:aws:sns:eu-north-1:example:test"
+        try:
+            original = {"request_id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+                        "lines": [{"sku": "NUT-UK-VD3-T120", "quantity": 24}]}
+            first = PORTAL.submit(self.event("/api/order-requests", "POST", original), {"sub": "test-sub"})
+            replay = PORTAL.submit(self.event("/api/order-requests", "POST", original), {"sub": "test-sub"})
+            self.assertEqual(first["statusCode"], 201)
+            self.assertEqual(replay["statusCode"], 201)
+            first_body, replay_body = json.loads(first["body"]), json.loads(replay["body"])
+            self.assertEqual(first_body["receipt_id"], replay_body["receipt_id"])
+            self.assertEqual(replay_body["net_total_pence"], 24000)
+            self.assertEqual(len(table.items), 1)
+            self.assertEqual(len(alert.sent), 1, "A duplicate submission must not re-alert staff")
+            self.assertNotIn("net_total_pence", alert.sent[0]["Message"])
+            self.assertNotIn("email", alert.sent[0]["Message"])
+            changed = {"request_id": original["request_id"],
+                       "lines": [{"sku": "NUT-UK-VD3-T120", "quantity": 48}]}
+            conflict = PORTAL.submit(self.event("/api/order-requests", "POST", changed), {"sub": "test-sub"})
+            self.assertEqual(conflict["statusCode"], 409)
+            self.assertEqual(len(alert.sent), 1)
+        finally:
+            PORTAL.TABLE, PORTAL.SNS, PORTAL.ALERT_TOPIC = previous_table, previous_sns, previous_topic
+
     def test_iac_scope_and_separate_private_price_store(self):
         template = json.loads((ROOT / "infra/aws/nutraxin-customer-staging-stack.json").read_text())
         role = template["Resources"]["AppRole"]["Properties"]
