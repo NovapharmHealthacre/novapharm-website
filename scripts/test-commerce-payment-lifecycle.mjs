@@ -67,18 +67,18 @@ test("synthetic UK quote to hosted checkout, verified payment, refund and exactl
   const sql=readFileSync(new URL("../src/core/payments/payment-ledger-reference.sql",import.meta.url),"utf8");
   const db=new DatabaseSync(":memory:");
   db.exec(sql);
-  db.prepare(\`INSERT INTO payment_attempts
+  db.prepare(`INSERT INTO payment_attempts
     (id,order_id,customer_id,quote_version,amount_minor,currency,destination_country,
       livemode,state,stripe_session_id,reserved_stock_reference,quote_expires_at,created_at,updated_at)
-    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)\`).run(
+    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
     approvedOrder.paymentAttemptId,approvedOrder.orderId,approvedOrder.customerId,approvedOrder.quoteVersion,
     3841,"GBP","GB",0,"checkout_pending",session.sessionId,
     "synthetic-reservation-123",new Date(nowMs+600000).toISOString(),
     new Date(nowMs).toISOString(),new Date(nowMs).toISOString());
   const savePaymentEvent=()=>{
-    db.prepare(\`INSERT INTO payment_provider_events
+    db.prepare(`INSERT INTO payment_provider_events
       (event_id,provider,attempt_id,event_type,received_at,state_before,state_after,processing_status,payload_sha256)
-      VALUES(?,?,?,?,?,?,?,?,?)\`).run(orderPaid.id,"stripe",approvedOrder.paymentAttemptId,orderPaid.type,
+      VALUES(?,?,?,?,?,?,?,?,?)`).run(orderPaid.id,"stripe",approvedOrder.paymentAttemptId,orderPaid.type,
       new Date(nowMs).toISOString(),"checkout_pending","paid","applied","a".repeat(64));
   };
   savePaymentEvent();
