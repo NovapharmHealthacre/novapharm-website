@@ -94,6 +94,8 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertNotIn("supplier_purchase", PORTAL.PAGE)
         self.assertNotIn("supplier_purchase", PORTAL.APP)
         self.assertIn("not a binding order", PORTAL.PAGE.lower())
+        self.assertIn("https://novapharmhealthcare.com/account-application/", PORTAL.PAGE)
+        self.assertNotIn("contact/?enquiry=Pharmacy", PORTAL.PAGE)
 
     def test_public_prices_and_order_requests_require_login(self):
         for route in ("/api/catalogue", "/api/order-requests"):
