@@ -15,6 +15,9 @@ os.environ.update({
     "BASE_URL": "https://portal.example.invalid",
     "PRICES_PARAMETER": "/synthetic",
     "DDB_TABLE": "synthetic",
+    "DIRECT_SHOP_PAYMENTS_ENABLED": "true",
+    "PAYMENT_LEDGER_TABLE": "synthetic-payment-ledger",
+    "PRODUCTION_CHECKOUT_FUNCTION": "synthetic-private-checkout",
 })
 
 class DummyTable:
@@ -130,14 +133,16 @@ class PortalSecurityTests(unittest.TestCase):
         response=PORTAL.handler(self.event("/api/retail/catalogue"), None)
         self.assertEqual(response["statusCode"], 200)
         payload=json.loads(response["body"])
-        self.assertFalse(payload["checkout_enabled"])
-        self.assertFalse(payload["payment_collection_enabled"])
+        self.assertTrue(payload["checkout_enabled"])
+        self.assertTrue(payload["payment_collection_enabled"])
         self.assertEqual(set(p["sku"] for p in payload["products"]), set(PORTAL.PRODUCTS))
         self.assertEqual(set(p["slug"] for p in payload["products"]), set(PORTAL.PUBLIC_SLUGS.values()))
         self.assertTrue(all(p["retail_price_pence"] == 1080 for p in payload["products"]))
         self.assertTrue(all(p["sale_status"]=="owner_approved_price" for p in payload["products"]))
         self.assertIn("Continue to secure payment", PORTAL.PAGE)
         self.assertIn("retailStorageKey", PORTAL.APP)
+        self.assertIn("basketNet+=count*Number(product.retail_net_price_pence||0)",PORTAL.APP)
+        self.assertIn("basketGross=Math.round(basketNet*1.2)",PORTAL.APP)
         self.assertIn("Add to bag", PORTAL.APP)
         self.assertNotIn("qty48_price_pence", response["body"])
         self.assertEqual(PORTAL.handler(self.event("/api/catalogue"), None)["statusCode"], 401)
@@ -151,7 +156,7 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertEqual(response["statusCode"], 200)
         payload = json.loads(response["body"])
         self.assertTrue(payload["public_retail_prices_approved"])
-        self.assertFalse(payload["checkout_enabled"])
+        self.assertTrue(payload["checkout_enabled"])
         self.assertEqual(len(payload["products"]), 19)
         self.assertTrue(all(p["retail_price_pence"] == 1080 for p in payload["products"]))
         self.assertTrue(all(p["sale_status"] == "owner_approved_price" for p in payload["products"]))
@@ -480,12 +485,12 @@ class PortalSecurityTests(unittest.TestCase):
             PORTAL.PAYMENT_DDB,PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED,PORTAL.CHECKOUT_LAMBDA,PORTAL.PRODUCTION_CHECKOUT_FUNCTION=old
             COGNITO.verified_email=True
 
-    def test_retail_checkout_is_disabled_by_default_for_all_visitors(self):
-        self.assertFalse(PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED)
+    def test_retail_checkout_rejects_anonymous_and_requires_verified_account(self):
+        self.assertTrue(PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED)
         self.assertIn('id="retail-checkout"',PORTAL.PAGE)
         self.assertTrue(callable(PORTAL.retail_checkout))
         self.assertIn('DIRECT_SHOP_PAYMENTS_ENABLED',PORTAL.__dict__)
-        self.assertEqual(PORTAL.retail_checkout(self.event("/api/retail/checkout","POST"), {"sub":"test-sub","username":"test-user"})["statusCode"],503)
+        self.assertEqual(PORTAL.handler(self.event("/api/retail/checkout","POST"),None)["statusCode"],401)
 
     def test_iac_scope_and_separate_private_price_store(self):
         template = json.loads((ROOT / "infra/aws/nutraxin-customer-staging-stack.json").read_text())
