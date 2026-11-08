@@ -78,7 +78,7 @@ const expectedNavigation = [
   ["NovaPharm Intelligence", "/technology/"],
   ["Insights", "/news-insights/"],
   ["Contact", "/contact/"],
-  ["Secure Portal", "/portal/"],
+  ["Secure Portal", "https://portal.novapharmhealthcare.com/"],
 ];
 for (const [label, href] of expectedNavigation) assert.match(home, new RegExp(`<a href="${href.replaceAll("/", "\\/")}"[^>]*>${label}<\\/a>`));
 assert.match(home, /<span data-menu-label>Menu<\/span>/, "mobile navigation must use the visible word Menu");
