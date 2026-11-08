@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { isPortalAccessType, landingRouteForAccess } from "../data/routes";
 import { professionalError, protectedMutation } from "../lib/gateway";
+import { destinationAfterPortalLogin } from "../data/nutraxin-order-intent";
 import { PortalBrand } from "./portal-brand";
 
 export function EntraComplete() {
@@ -14,7 +15,7 @@ export function EntraComplete() {
     protectedMutation<{ accessType: string }>("auth/federated", { accessType })
       .then((result) => {
         if (!isPortalAccessType(result.accessType) || result.accessType !== accessType) throw new Error("The authorised portal area did not match the requested workspace.");
-        window.location.replace(landingRouteForAccess(result.accessType));
+        window.location.replace(destinationAfterPortalLogin(result.accessType, window.location.search, landingRouteForAccess(result.accessType)));
       })
       .catch((error) => setStatus(professionalError(error)));
   }, []);
