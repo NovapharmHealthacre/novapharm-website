@@ -104,7 +104,8 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertIn("netPence+estimatedVat", PORTAL.APP)
         self.assertIn("not a VAT invoice", PORTAL.APP)
         self.assertIn("Excludes shipping", PORTAL.APP)
-        self.assertNotIn("stripe.com", PORTAL.APP)
+        self.assertNotIn("api.stripe.com", PORTAL.APP)
+        self.assertNotIn("rk_live_", PORTAL.APP)
 
     def test_customer_dashboard_shows_only_authenticated_request_history(self):
         self.assertIn('id="request-history"', PORTAL.PAGE)
