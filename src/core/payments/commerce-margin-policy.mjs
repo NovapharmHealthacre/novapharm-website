@@ -53,7 +53,7 @@ export function calculateMarginQuote({
     if (typeof row?.sku !== "string" || !SKU.test(row.sku) || seen.has(row.sku)) stop("Invalid or repeated SKU.");
     seen.add(row.sku);
     if (typeof row.name !== "string" || row.name.trim().length < 2 || row.name.length > 120) stop("Approved product name is required.");
-    if (!Number.isSafeInteger(row.quantity) || row.quantity < 1 || row.quantity > 999) stop("Order quantity is invalid.");
+    if (!Number.isSafeInteger(row.quantity) || row.quantity < 1 || row.quantity > 10000) stop("Order quantity is invalid.");
     if (row.sourceApproved !== true || row.commerciallyEligible !== true ||
         typeof row.costVersion !== "string" || row.costVersion.length < 4) {
       stop("Price and product eligibility must be confirmed from private authoritative sources.");
