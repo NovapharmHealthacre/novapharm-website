@@ -32,7 +32,7 @@ if (form instanceof HTMLFormElement) {
     const orderLines = rawBasket && rawBasket.length <= 1250 ? rawBasket.split(",") : [];
     const seenOrderSkus = new Set();
     const basketValid = orderLines.length > 0 && orderLines.length <= 19 && orderLines.every((line) => {
-      const match = /^(NUT-UK-[A-Z0-9-]{3,48}):([1-9][0-9]{0,2})$/u.exec(line);
+      const match = /^(NUT-UK-[A-Z0-9-]{3,48}):([1-9][0-9]{0,3}|10000)$/u.exec(line);
       if (!match || seenOrderSkus.has(match[1])) return false;
       seenOrderSkus.add(match[1]);
       return true;
