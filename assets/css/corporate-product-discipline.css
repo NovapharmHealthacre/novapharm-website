@@ -1491,8 +1491,8 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-footer-notices p {
   margin: 10px 0;
   color: var(--npd-muted);
-  font-size: 11px;
-  line-height: 1.45;
+  font-size: 12px;
+  line-height: 1.55;
 }
 
 .npd-footer-bottom {
@@ -1503,7 +1503,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   padding-top: 18px;
   border-top: 1px solid var(--npd-line);
   color: var(--npd-muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .npd-footer-bottom a {
@@ -2007,6 +2007,11 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px 20px;
+  }
+  .npd-footer-legal :where(a, button) {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
   }
 
   .npd-footer-bottom {
