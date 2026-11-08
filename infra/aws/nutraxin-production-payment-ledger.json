@@ -1,0 +1,132 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "NovaPharm Nutraxin production payment persistence foundations only; no charge initiation, access grants, webhook or Stripe key injection.",
+  "Resources": {
+    "PaymentLedger": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "TableName": "novapharm-production-nutraxin-payment-ledger",
+        "BillingMode": "PAY_PER_REQUEST",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "sk",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "pk",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "sk",
+            "KeyType": "RANGE"
+          }
+        ],
+        "SSESpecification": {
+          "SSEEnabled": true
+        },
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true
+        },
+        "DeletionProtectionEnabled": true,
+        "Tags": [
+          {
+            "Key": "Product",
+            "Value": "Nutraxin"
+          },
+          {
+            "Key": "Environment",
+            "Value": "production"
+          },
+          {
+            "Key": "DataClassification",
+            "Value": "Confidential"
+          },
+          {
+            "Key": "CheckoutEnabled",
+            "Value": "false"
+          }
+        ]
+      }
+    },
+    "PaymentOutbox": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "TableName": "novapharm-production-nutraxin-payment-outbox",
+        "BillingMode": "PAY_PER_REQUEST",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "sk",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "pk",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "sk",
+            "KeyType": "RANGE"
+          }
+        ],
+        "SSESpecification": {
+          "SSEEnabled": true
+        },
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true
+        },
+        "DeletionProtectionEnabled": true,
+        "Tags": [
+          {
+            "Key": "Product",
+            "Value": "Nutraxin"
+          },
+          {
+            "Key": "Environment",
+            "Value": "production"
+          },
+          {
+            "Key": "DataClassification",
+            "Value": "Confidential"
+          },
+          {
+            "Key": "CheckoutEnabled",
+            "Value": "false"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "PaymentLedgerTableName": {
+      "Value": {
+        "Ref": "PaymentLedger"
+      },
+      "Description": "Private order, payment attempt and signed-event idempotency records. No application access configured."
+    },
+    "PaymentOutboxTableName": {
+      "Value": {
+        "Ref": "PaymentOutbox"
+      },
+      "Description": "Private durable post-payment operations queue. No consumer configured."
+    },
+    "CheckoutActivated": {
+      "Value": "false",
+      "Description": "Deployment creates storage only. Live customer payments are disabled."
+    }
+  }
+}
