@@ -518,7 +518,7 @@ def retail_sale_authorised(pricing):
             pricing.get("food_business_registration_verified") is True and
             pricing.get("consumer_terms_verified") is True and
             pricing.get("manufacturer_fulfilment_commitment_verified") is True and
-            pricing.get("stock_currently_verified") is True and
+            pricing.get("uk_dispatch_service_verified") is True and
             assumptions.get("uk_delivery_charge_pence")==0 and
             assumptions.get("uk_delivery_cost_borne_by_seller") is True)
 
