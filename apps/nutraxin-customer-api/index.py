@@ -62,7 +62,7 @@ function updateIndicativeTotals(){
   $("indicative-totals").textContent="Select 1 to 10,000 units per product to view provisional totals. UK VAT at 20% is illustrative only.";return;
  }
  const estimatedVat=estimatedVatPence(netPence);
- $("indicative-totals").textContent="Provisional product subtotal: "+money(netPence)+" (ex VAT). Illustrative UK VAT at 20% (only if legally applicable): "+money(estimatedVat)+". Provisional total: "+money(netPence+estimatedVat)+". Indicative UK delivery charge: £0. NovaPharm absorbs fulfilment costs within the existing price model. Not a VAT invoice, binding offer or payment request.";
+ $("indicative-totals").textContent="Provisional product subtotal: "+money(netPence)+" (ex VAT). Illustrative UK VAT at 20% (only if legally applicable): "+money(estimatedVat)+". Provisional total: "+money(netPence+estimatedVat)+". Indicative UK delivery charge: £0. NovaPharm absorbs fulfilment costs within the existing price model. This is not a VAT invoice, binding offer or payment request.";
 }
 async function read(path){const r=await fetch(path,{credentials:"same-origin",cache:"no-store"});if(!r.ok)throw new Error("Request could not be completed ("+r.status+").");return r.json();}
 function node(tag,className,text){const e=document.createElement(tag);if(className)e.className=className;if(text!==undefined)e.textContent=text;return e;}
