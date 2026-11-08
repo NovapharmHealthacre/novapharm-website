@@ -25,8 +25,30 @@ if (form instanceof HTMLFormElement) {
     const productName = intent.get("product") || "";
     const sku = intent.get("sku") || "";
     const messageField = form.elements.namedItem("message");
+    // Basket hints contain SKU and requested units only. Validate length,
+    // syntax, duplicates and quantity before touching the visible enquiry.
+    // They must not be interpreted as confirmed or priced orders.
+    const rawBasket = intent.get("basket") || "";
+    const orderLines = rawBasket && rawBasket.length <= 1250 ? rawBasket.split(",") : [];
+    const seenOrderSkus = new Set();
+    const basketValid = orderLines.length > 0 && orderLines.length <= 19 && orderLines.every((line) => {
+      const match = /^(NUT-UK-[A-Z0-9-]{3,48}):([1-9][0-9]{0,2})$/u.exec(line);
+      if (!match || seenOrderSkus.has(match[1])) return false;
+      seenOrderSkus.add(match[1]);
+      return true;
+    });
     if (messageField instanceof HTMLTextAreaElement
         && !messageField.value.trim()
+        && basketValid) {
+      const items = orderLines.map((line) => {
+        const [productSku, count] = line.split(":");
+        return `- ${productSku}: ${count} units`;
+      });
+      messageField.value = `Please review this preliminary Nutraxin business purchase request and provide a formal quotation, subject to customer qualification, current availability, approved selling prices, delivery costs, UK VAT status and applicable terms.\\n\\n${items.join("\\n")}\\n\\nThis is a non-binding quotation request, not a confirmed order. No payment is authorised.`;
+    }
+    if (messageField instanceof HTMLTextAreaElement
+        && !messageField.value.trim()
+        && !rawBasket
         && productName.length > 0 && productName.length <= 160
         && !/[<>\u0000-\u001f\u007f]/u.test(productName)) {
       const validSku = /^NUT-UK-[A-Z0-9-]{3,48}$/u.test(sku) ? sku : "";
