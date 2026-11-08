@@ -22,7 +22,9 @@ const showcase = new Set([
   "/legal/", "/legal/privacy/", "/account-application/"
 ]);
 const viewports = [
+  { name: "compact-320", width: 320, height: 720 },
   { name: "mobile-390", width: 390, height: 844 },
+  { name: "tablet-768", width: 768, height: 1024 },
   { name: "desktop-1440", width: 1440, height: 900 }
 ];
 type Finding = { route: string; viewport: string; detail: string };
@@ -69,13 +71,36 @@ async function audit() {
                 width:document.documentElement.clientWidth,scrollWidth:document.documentElement.scrollWidth,
                 legal:document.body.textContent?.includes("Regulated wholesale supply has not commenced")??false,
                 mainLength:document.querySelector("main")?.textContent?.trim().length??0,
-                brokenImages:[...document.images].filter(x=>x.complete&&x.naturalWidth===0).map(x=>x.currentSrc)
+                brokenImages:[...document.images].filter(x=>x.complete&&x.naturalWidth===0).map(x=>x.currentSrc),
+                // Inspect the rendered heading and actual controls, not only the
+                // document scroll width (which can hide clipped content).
+                headlineBounds: (() => {
+                  const heading = document.querySelector("main h1");
+                  if (!heading) return null;
+                  const box = heading.getBoundingClientRect();
+                  const css = getComputedStyle(heading);
+                  return { left:box.left,right:box.right,top:box.top,width:box.width,
+                    fontSize:parseFloat(css.fontSize),lineHeight:parseFloat(css.lineHeight) };
+                })(),
+                compactControls:[...document.querySelectorAll('main :is(a.button, a.npd-button, button[type="submit"], input[type="submit"])')]
+                  .filter(el=>{const css=getComputedStyle(el);return css.display!=="none"&&css.visibility!=="hidden"})
+                  .map(el=>{const box=el.getBoundingClientRect();return {label:(el.textContent||el.getAttribute("aria-label")||"").trim().slice(0,70),width:box.width,height:box.height}})
+                  .filter(item=>item.width>0&&item.height>0&&(item.width<40||item.height<40))
               };
             });
             const faults:string[]=[];
             if(data.h1s!==1)faults.push("H1 count: "+data.h1s);
             if(!data.header||!data.footer||!data.logo)faults.push("Missing shared header/footer/brand");
             if(data.scrollWidth>data.width+1)faults.push("Horizontal overflow: "+data.scrollWidth+"px");
+            if(data.headlineBounds && (data.headlineBounds.left < -1 || data.headlineBounds.right > data.width+2)) {
+              faults.push("Primary heading extends outside viewport: "+JSON.stringify(data.headlineBounds));
+            }
+            if(vp.width<=390 && data.headlineBounds && data.headlineBounds.fontSize<28) {
+              faults.push("Mobile H1 is unexpectedly small: "+data.headlineBounds.fontSize+"px");
+            }
+            if(vp.width<=390 && data.compactControls.length) {
+              faults.push("Primary interactive controls have undersized hit areas: "+JSON.stringify(data.compactControls.slice(0,5)));
+            }
             if(!data.font.includes("apple-system"))faults.push("Unexpected font: "+data.font);
             if(!data.inkToken||!data.surfaceToken)faults.push("Missing shared design tokens");
             if(data.navHeight<58||data.navHeight>80)faults.push("Inconsistent header: "+data.navHeight);
@@ -97,7 +122,7 @@ async function audit() {
   await writeFile(artifactDir+"/sitewide-audit.json",JSON.stringify({routeCount:routes.length,viewports:viewports.map(x=>x.name),findings,records},null,2)+"\n");
   const md=[
     "# NovaPharm public corporate design-system acceptance",
-    "All "+routes.length+" unique routes checked at mobile and desktop widths.",
+    "All "+routes.length+" unique routes checked across compact mobile, mobile, tablet and desktop widths.",
     "Findings: "+findings.length,
     "",
     "| Route | Viewport | Finding |",
