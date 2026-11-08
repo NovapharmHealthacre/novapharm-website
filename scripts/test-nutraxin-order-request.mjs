@@ -51,6 +51,9 @@ test("basket preserves exact SKU, quantity, and secure enquiry routing", () => {
   ];
   const expected = `${NUTRAXIN_SKUS[0]}:10,${NUTRAXIN_SKUS[8]}:48`;
   assert.equal(encodeBasketLines(sample), expected);
+  assert.equal(encodeBasketLines([{ sku: NUTRAXIN_SKUS[0], quantity: 1 }]), `${NUTRAXIN_SKUS[0]}:1`);
+  assert.equal(encodeBasketLines([{ sku: NUTRAXIN_SKUS[0], quantity: 10000 }]), `${NUTRAXIN_SKUS[0]}:10000`);
+  assert.match(generator, /max="10000"/);
   const u = new URL(buildQuoteRequestURL(sample), "https://novapharmhealthcare.com");
   assert.equal(u.pathname, "/contact/");
   assert.equal(u.searchParams.get("basket"), expected);
@@ -65,7 +68,7 @@ test("basket preserves exact SKU, quantity, and secure enquiry routing", () => {
 });
 
 test("all 19 SKU quantities fit into B2B message safety limit", () => {
-  const url = buildQuoteRequestURL(NUTRAXIN_SKUS.map(sku => ({ sku, quantity: 999 })));
+  const url = buildQuoteRequestURL(NUTRAXIN_SKUS.map(sku => ({ sku, quantity: 100010 })));
   const message = prefillContact(new URL(url, "https://novapharmhealthcare.com").search).message;
   assert.ok(message.length >= 20 && message.length <= 2000);
   assert.equal(message.split(" units").length - 1, 19);
