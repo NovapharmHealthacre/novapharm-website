@@ -185,14 +185,16 @@ function runStore(data) {
           bag.every(({sku}) => productMap.get(sku)?.available_to_sell === true));
         const indicative = data.price_authority === "owner_authorized_provisional_public_display";
         subtotal.textContent = subtotalMinor === null ? "Pending" : (indicative ? "Guide " : "") + formatGBP(subtotalMinor);
-        shipping.textContent = ready ? "Calculated at checkout" : "Not confirmed";
+        const ukDeliveryIncluded = indicative && data.provisional_uk_delivery_charge_pence === 0 &&
+          data.provisional_uk_delivery_cost_seller_funded === true;
+        shipping.textContent = ready ? "Calculated at checkout" : (ukDeliveryIncluded ? "Guide £0.00 · UK only" : "Not confirmed");
         tax.textContent = indicative ? "Estimated 20% VAT included" : "Verified at checkout";
-        grand.textContent = ready ? "Calculated at secure checkout" : "Pending delivery";
+        grand.textContent = ready ? "Calculated at secure checkout" : (ukDeliveryIncluded && subtotalMinor !== null ? "Guide " + formatGBP(subtotalMinor) : "Pending delivery");
         checkout.disabled = !ready;
         checkout.textContent = ready ? "Continue to secure checkout" : "Checkout not available yet";
         explanation.textContent = ready
           ? "Your order will be repriced and checked by NovaPharm's secure payment server before any charge."
-          : "Your selections are saved in this browser. Guide prices include estimated 20% UK VAT; delivery, tax registration and stock must be verified before checkout. No order is placed.";
+          : "Your selections are saved in this browser. Guide prices include estimated 20% UK VAT and £0 additional UK delivery (seller-funded). Carrier service, VAT registration and stock remain unverified. No order is placed.";
         checkout.onclick = async () => {
           if (!ready) return;
           checkout.disabled = true;
