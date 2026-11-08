@@ -1,0 +1,208 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "NovaPharm secure portal staging task-definition only. No ECS service, no ALB and no inbound public traffic. Smoke task must be stopped after acceptance.",
+  "Parameters": {
+    "ImageCommit": {
+      "Type": "String",
+      "Default": "15fb532daf261711c466ed4282ad469350040d93",
+      "AllowedPattern": "[0-9a-f]{40}"
+    },
+    "VpcId": {
+      "Type": "AWS::EC2::VPC::Id",
+      "Default": "vpc-0204c52aacc926b8b"
+    }
+  },
+  "Resources": {
+    "PortalLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/ecs/novapharm-portal-bootstrap",
+        "RetentionInDays": 7
+      }
+    },
+    "PortalSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Private/no-ingress portal smoke task with outbound TLS only",
+        "VpcId": {
+          "Ref": "VpcId"
+        },
+        "SecurityGroupIngress": [],
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "CidrIp": "0.0.0.0/0",
+            "Description": "TLS-only ECR and CloudWatch access"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm"
+          },
+          {
+            "Key": "environment",
+            "Value": "staging"
+          },
+          {
+            "Key": "inboundAccess",
+            "Value": "none"
+          }
+        ]
+      }
+    },
+    "PortalExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "ecs-tasks.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "PortalEcsEcrAndLogsOnly",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecr:GetAuthorizationToken"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecr:BatchGetImage",
+                    "ecr:BatchCheckLayerAvailability",
+                    "ecr:GetDownloadUrlForLayer"
+                  ],
+                  "Resource": "arn:aws:ecr:eu-north-1:250675045172:repository/novapharm/staging/portal"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "${PortalLogGroup.Arn}:*"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "PortalTaskDefinition": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "Family": "novapharm-staging-portal-smoke",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE"
+        ],
+        "Cpu": "512",
+        "Memory": "1024",
+        "RuntimePlatform": {
+          "CpuArchitecture": "X86_64",
+          "OperatingSystemFamily": "LINUX"
+        },
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "PortalExecutionRole",
+            "Arn"
+          ]
+        },
+        "ContainerDefinitions": [
+          {
+            "Name": "portal",
+            "Essential": true,
+            "Image": {
+              "Fn::Sub": "250675045172.dkr.ecr.eu-north-1.amazonaws.com/novapharm/staging/portal:${ImageCommit}"
+            },
+            "PortMappings": [
+              {
+                "ContainerPort": 4303,
+                "Protocol": "tcp"
+              }
+            ],
+            "Environment": [
+              {
+                "Name": "NODE_ENV",
+                "Value": "production"
+              },
+              {
+                "Name": "PORT",
+                "Value": "4303"
+              }
+            ],
+            "HealthCheck": {
+              "Command": [
+                "CMD-SHELL",
+                "node -e \"fetch('http://127.0.0.1:4303/').then(r=>{if(r.status!==200)process.exit(1)}).catch(()=>process.exit(1))\""
+              ],
+              "Interval": 30,
+              "Timeout": 5,
+              "Retries": 3,
+              "StartPeriod": 45
+            },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "PortalLogGroup"
+                },
+                "awslogs-region": "eu-north-1",
+                "awslogs-stream-prefix": "portal",
+                "mode": "blocking"
+              }
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm"
+          },
+          {
+            "Key": "environment",
+            "Value": "staging"
+          },
+          {
+            "Key": "data-classification",
+            "Value": "synthetic-only"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "TaskDefinitionArn": {
+      "Value": {
+        "Ref": "PortalTaskDefinition"
+      }
+    },
+    "NoIngressSecurityGroupId": {
+      "Value": {
+        "Ref": "PortalSecurityGroup"
+      }
+    }
+  }
+}
