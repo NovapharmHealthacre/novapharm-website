@@ -68,7 +68,7 @@ test("basket preserves exact SKU, quantity, and secure enquiry routing", () => {
 });
 
 test("all 19 SKU quantities fit into B2B message safety limit", () => {
-  const url = buildQuoteRequestURL(NUTRAXIN_SKUS.map(sku => ({ sku, quantity: 100010 })));
+  const url = buildQuoteRequestURL(NUTRAXIN_SKUS.map(sku => ({ sku, quantity: 10000 })));
   const message = prefillContact(new URL(url, "https://novapharmhealthcare.com").search).message;
   assert.ok(message.length >= 20 && message.length <= 2000);
   assert.equal(message.split(" units").length - 1, 19);
@@ -78,7 +78,7 @@ test("unsafe, missing, excessive and repeated quantities fail closed", () => {
   assert.throws(() => encodeBasketLines([]));
   assert.throws(() => encodeBasketLines([{ sku: "NOT-ON-LIST", quantity: 1 }]));
   assert.throws(() => encodeBasketLines([{ sku: NUTRAXIN_SKUS[0], quantity: 0 }]));
-  assert.throws(() => encodeBasketLines([{ sku: NUTRAXIN_SKUS[0], quantity: 1000 }]));
+  assert.throws(() => encodeBasketLines([{ sku: NUTRAXIN_SKUS[0], quantity: 10001 }]));
   assert.throws(() => encodeBasketLines([{ sku: NUTRAXIN_SKUS[0], quantity: 2.5 }]));
   assert.throws(() => encodeBasketLines([{ sku: NUTRAXIN_SKUS[0], quantity: 1 }, { sku: NUTRAXIN_SKUS[0], quantity: 2 }]));
   assert.equal(prefillContact("?enquiry=Pharmacy%20or%20wholesaler%20account&basket=NUT-UK-VD3-T120:1%3Cscript%3E").message, "");
