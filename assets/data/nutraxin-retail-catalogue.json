@@ -1,0 +1,200 @@
+{
+  "version": "2026-11-08-retail-preview-v1",
+  "currency": "GBP",
+  "checkout_enabled": false,
+  "payment_collection_enabled": false,
+  "price_authority": "not_yet_verified_for_consumer_sale",
+  "delivery_verified": false,
+  "products": [
+    {
+      "sku": "NUT-UK-VD3-T120",
+      "name": "Nutraxin Vitamin D3",
+      "slug": "vitamin-d3-120-tablets",
+      "pack": "120 tablets",
+      "range": "Vitamin D",
+      "image": "/assets/media/products/nutraxin/vitamin-d3-120-tablets-480.avif",
+      "retail_price_pence": null,
+      "available_to_sell": false
+    },
+    {
+      "sku": "NUT-UK-VD3-S30",
+      "name": "Nutraxin Vitamin D3 Spray",
+      "slug": "vitamin-d3-spray-30ml",
+      "pack": "30 ml",
+      "range": "Vitamin D",
+      "image": "/assets/media/products/nutraxin/vitamin-d3-spray-30ml-480.avif",
+      "retail_price_pence": null,
+      "available_to_sell": false
+    },
+    {
+      "sku": "NUT-UK-VD3K2-T120",
+      "name": "Nutraxin Vitamin D3 + K2",
+      "slug": "vitamin-d3-k2-120-tablets",
+      "pack": "120 tablets",
+      "range": "Vitamin D",
+      "image": "/assets/media/products/nutraxin/vitamin-d3-k2-120-tablets-480.avif",
+      "retail_price_pence": null,
+      "available_to_sell": false
+    },
+    {
+      "sku": "NUT-UK-VD3K2-S30",
+      "name": "Nutraxin Vitamin D3 + K2 Spray",
+      "slug": "vitamin-d3-k2-spray-30ml",
+      "pack": "30 ml",
+      "range": "Vitamin D",
+      "image": "/assets/media/products/nutraxin/vitamin-d3-k2-spray-30ml-480.avif",
+      "retail_price_pence": null,
+      "available_to_sell": false
+    },
+    {
+      "sku": "NUT-UK-VC1000-T30",
+      "name": "Nutraxin Vitamin C 1000 mg",
+      "slug": "vitamin-c-1000mg-30-tablets",
+      "pack": "30 tablets",
+      "range": "Vitamin C",
+      "image": "/assets/media/products/nutraxin/vitamin-c-1000mg-30-tablets-480.avif",
+      "retail_price_pence": null,
+      "available_to_sell": false
+    },
+    {
+      "sku": "NUT-UK-VC500-C30",
+      "name": "Nutraxin Vitamin C 500 mg Chewable",
+      "slug": "vitamin-c-500mg-chewable-30-tablets",
+      "pack": "30 chewable tablets",
+      "range": "Vitamin C",
+      "image": "/assets/media/products/nutraxin/vitamin-c-500mg-chewable-30-tablets-480.avif",
+      "retail_price_pence": null,
+      "available_to_sell": false
+    },
+    {
+      "sku": "NUT-UK-VMAX-T60",
+      "name": "Nutraxin Vitamin MAX C + D + Zinc",
+      "slug": "vitamin-max-60-tablets",
+      "pack": "60 tablets",
+      "range": "Vitamin C",
+      "image": "/assets/media/products/nutraxin/vitamin-max-60-tablets-480.avif",
+      "retail_price_pence": null,
+      "available_to_sell": false
+    },
+    {
+      "sku": "NUT-UK-VMAX-E15",
+      "name": "Nutraxin Vitamin MAX C + D + Zinc Effervescent",
+      "slug": "vitamin-max-15-effervescent-tablets",
+      "pack": "15 effervescent tablets",
+      "range": "Vitamin C",
+      "image": "/assets/media/products/nutraxin/vitamin-max-15-effervescent-tablets-480.avif",
+      "retail_price_pence": null,
+      "available_to_sell": false
+    },
+    {
+      "sku": "NUT-UK-MGCX-T60",
+      "name": "Nutraxin Magnesium Complex + Vitamin B6",
+      "slug": "magnesium-complex-60-tablets",
+      "pack": "60 tablets",
+      "range": "Magnesium",
+      "image": "/assets/media/products/nutraxin/magnesium-complex-60-tablets-480.avif",
+      "retail_price_pence": null,
+      "available_to_sell": false
+    },
+    {
+      "sku": "NUT-UK-MGDL-T60",
+      "name": "Nutraxin Magnesium Daily",
+      "slug": "magnesium-daily-60-tablets",
+      "pack": "60 tablets",
+      "range": "Magnesium",
+      "image": "/assets/media/products/nutraxin/magnesium-daily-60-tablets-480.avif",
+      "retail_price_pence": null,
+      "available_to_sell": false
+    },
+    {
+      "sku": "NUT-UK-MVE-T60",
+      "name": "Nutraxin Multivitamin Mineral Energy",
+      "slug": "multivitamin-mineral-energy-60-tablets",
+      "pack": "60 tablets",
+      "range": "Multivitamin and mineral",
+      "image": "/assets/media/products/nutraxin/multivitamin-mineral-energy-60-tablets-480.avif",
+      "retail_price_pence": null,
+      "available_to_sell": false
+    },
+    {
+      "sku": "NUT-UK-MVW-T60",
+      "name": "Nutraxin Women's Multivitamin Complex",
+      "slug": "womens-multivitamin-complex-60-tablets",
+      "pack": "60 tablets",
+      "range": "Multivitamin and mineral",
+      "image": "/assets/media/products/nutraxin/womens-multivitamin-complex-60-tablets-480.avif",
+      "retail_price_pence": null,
+      "available_to_sell": false
+    },
+    {
+      "sku": "NUT-UK-MVM-T60",
+      "name": "Nutraxin Men's Multivitamin Complex",
+      "slug": "mens-multivitamin-complex-60-tablets",
+      "pack": "60 tablets",
+      "range": "Multivitamin and mineral",
+      "image": "/assets/media/products/nutraxin/mens-multivitamin-complex-60-tablets-480.avif",
+      "retail_price_pence": null,
+      "available_to_sell": false
+    },
+    {
+      "sku": "NUT-UK-CG-T30",
+      "name": "Nutraxin Gold Quality Collagen",
+      "slug": "collagen-gold-30-tablets",
+      "pack": "30 tablets",
+      "range": "Collagen",
+      "image": "/assets/media/products/nutraxin/collagen-gold-30-tablets-480.avif",
+      "retail_price_pence": null,
+      "available_to_sell": false
+    },
+    {
+      "sku": "NUT-UK-CG-S30",
+      "name": "Nutraxin Gold Quality Collagen Sachets",
+      "slug": "collagen-gold-30-sachets",
+      "pack": "30 sachets",
+      "range": "Collagen",
+      "image": "/assets/media/products/nutraxin/collagen-gold-30-sachets-480.avif",
+      "retail_price_pence": null,
+      "available_to_sell": false
+    },
+    {
+      "sku": "NUT-UK-CCX-T90",
+      "name": "Nutraxin Collagen Complex",
+      "slug": "collagen-complex-90-tablets",
+      "pack": "90 tablets",
+      "range": "Collagen",
+      "image": "/assets/media/products/nutraxin/collagen-complex-90-tablets-480.avif",
+      "retail_price_pence": null,
+      "available_to_sell": false
+    },
+    {
+      "sku": "NUT-UK-ART-T90",
+      "name": "Nutraxin Artoflex",
+      "slug": "artoflex-90-tablets",
+      "pack": "90 tablets",
+      "range": "Additional support",
+      "image": "/assets/media/products/nutraxin/artoflex-90-tablets-480.avif",
+      "retail_price_pence": null,
+      "available_to_sell": false
+    },
+    {
+      "sku": "NUT-UK-LCAR-T60",
+      "name": "Nutraxin L-Carnitine 700 mg",
+      "slug": "l-carnitine-60-tablets",
+      "pack": "60 tablets",
+      "range": "Additional support",
+      "image": "/assets/media/products/nutraxin/l-carnitine-60-tablets-480.avif",
+      "retail_price_pence": null,
+      "available_to_sell": false
+    },
+    {
+      "sku": "NUT-UK-B12-SL60",
+      "name": "Nutraxin Vitamin B12 Methylcobalamin",
+      "slug": "vitamin-b12-60-sublingual-tablets",
+      "pack": "60 sublingual tablets",
+      "range": "Additional support",
+      "image": "/assets/media/products/nutraxin/vitamin-b12-60-sublingual-tablets-480.avif",
+      "retail_price_pence": null,
+      "available_to_sell": false
+    }
+  ]
+}

@@ -286,3 +286,12 @@ if (contactForm) {
     }
   });
 }
+
+// Nutraxin consumer storefront loads only on its public collection and detail routes.
+// The static bag cannot authorise payments: the server verifies all commercial data.
+if (window.location.pathname.startsWith("/products/nutraxin/") &&
+    !window.location.pathname.startsWith("/products/nutraxin/order-request/")) {
+  void import("/assets/js/nutraxin-retail-store.js").catch(() => {
+    // Static catalogue remains available if shopping enhancement cannot load.
+  });
+}

@@ -415,6 +415,25 @@ function nutraxinMain() {
   return rendered;
 }
 
+function nutraxinBagMain() {
+  return `<main id="main" class="npd-main nx-shop-bag" data-nx-public-bag>
+    <p class="nx-shop-eyebrow">NUTRAXIN / YOUR BAG</p>
+    <h1>Your Bag.</h1>
+    <p class="nx-shop-intro">Review your Nutraxin selections in one place. Nothing is ordered until secure checkout has been independently activated.</p>
+    <div class="nx-bag-grid">
+      <section aria-label="Items in your bag"><div data-nx-bag-items><p class="nx-bag-empty">Loading your saved selections...</p></div><a href="/products/nutraxin/" class="nx-shop-link">Continue shopping</a></section>
+      <aside class="nx-bag-summary" aria-label="Order summary"><h2>Bag summary</h2><dl>
+        <div><dt>Products</dt><dd data-nx-bag-subtotal>Pending</dd></div>
+        <div><dt>Delivery</dt><dd data-nx-bag-delivery>Calculated at checkout</dd></div>
+        <div><dt>Taxes</dt><dd data-nx-bag-tax>Verified at checkout</dd></div>
+        <div class="nx-bag-total"><dt>Estimated total</dt><dd data-nx-bag-total>Not available</dd></div>
+      </dl><button type="button" class="nx-store-bag-button" data-nx-checkout disabled>Checkout not available yet</button>
+      <p class="nx-store-note" role="status" data-nx-checkout-note>Payment checkout is unavailable until public prices, stock, delivery, tax and merchant order processing are approved. No payment will be taken.</p>
+      <a class="nx-shop-link" href="/products/nutraxin/">Back to products</a></aside>
+    </div>
+  </main>`;
+}
+
 function nutraxinOrderRequestMain() {
   const lines = products.map((product) => `<div class="nx-order-line" data-nutraxin-line="${esc(product.sku)}"><label for="nx-qty-${esc(product.sku)}"><span class="nx-order-name">${esc(product.name)}</span><span class="nx-order-pack">${esc(product.packSize)}</span></label><input id="nx-qty-${esc(product.sku)}" type="number" min="0" max="10000" step="1" value="0" inputmode="numeric" aria-label="Requested units: ${esc(product.name)}"></div>`).join("");
   return `<main id="main" class="npd-main nx-order">${localNavigation("products", "/products/nutraxin/order-request/")}<section class="nx-order-wrap"><p class="nx-order-eyebrow">NUTRAXIN / QUALIFIED BUSINESS ACCOUNTS</p><h1>Prepare your order request.</h1><p class="nx-order-lead">Select the Nutraxin products and quantities you would like NovaPharm to quote.</p><p class="nx-order-disclosure">This is a non-binding request for a quotation, not a purchase or accepted order. Product availability, customer qualification, compliance, prices, delivery and any applicable VAT must be confirmed by NovaPharm before an order can be accepted. No payment is requested.</p><form data-nutraxin-order-request><div class="nx-order-tablehead"><span>Product reference</span><span>Units requested</span></div>${lines}<p class="nx-order-fineprint">Continue to the secure business enquiry form to provide your company details and submit this request. No financial information is collected here.</p><div class="nx-order-actions"><button type="submit" class="nx-order-submit">Continue to business enquiry</button><a class="nx-order-back" href="/products/nutraxin/">Return to collection</a></div><p class="nx-order-feedback" role="status" aria-live="polite" data-nutraxin-order-feedback>Select a product and enter a quantity to prepare your enquiry.</p><noscript><p>To request a quotation without JavaScript, <a href="/contact/?enquiry=Pharmacy%20or%20wholesaler%20account">contact our business team</a> with the requested products and quantities.</p></noscript></form></section></main>`;
@@ -623,6 +642,11 @@ materialize("products/nutraxin/index.html", "/products/nutraxin/", nutraxinMain(
   title: "Nutraxin Collection | Explore the Product Range | NovaPharm",
   description: "Discover Nutraxin's 19 owner-supplied product references across six ranges, with original pack imagery and product details for qualified B2B catalogue evaluation."
 }, nutraxinTemplate);
+materialize("products/nutraxin/bag/index.html", "/products/nutraxin/bag/", nutraxinBagMain(), {
+  title: "Your Bag | Nutraxin | NovaPharm Healthcare",
+  description: "Review your saved Nutraxin product selections before secure checkout becomes available.",
+  robots: "noindex, follow"
+}, nutraxinTemplate);
 materialize("products/nutraxin/order-request/index.html", "/products/nutraxin/order-request/", nutraxinOrderRequestMain(), {
   title: "Nutraxin Business Order Request | NovaPharm Healthcare",
   description: "Prepare a product and quantity request for a non-binding NovaPharm Nutraxin business quotation. No prices, stock or orders are guaranteed.",
@@ -697,7 +721,7 @@ for (const relative of [
   "index.html", "about/index.html", "capabilities/index.html", "services/index.html", "regulatory-services/index.html",
   "cro/index.html", "oncology/index.html", "products/index.html", "products/nutraxin/index.html",
   "products/strategic-portfolio/index.html", "partner-with-us/index.html", "technology/index.html", "news-insights/index.html",
-  "contact/index.html", "account-application/index.html", "products/nutraxin/order-request/index.html"
+  "contact/index.html", "account-application/index.html", "products/nutraxin/order-request/index.html", "products/nutraxin/bag/index.html"
 ]) {
   const html = read(relative);
   if (/<svg\b/i.test(html)) throw new Error(`Corporate product-discipline route contains an inline SVG illustration: ${relative}`);
