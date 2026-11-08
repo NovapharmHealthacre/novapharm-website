@@ -22,7 +22,7 @@ test("only a cryptographically verified, paid and exact refund event may reconci
   const nowMs=Date.parse("2026-11-08T12:00:00Z");
   const timestamp=Math.floor(nowMs/1000);
   const secret="whsec_local_test_12345";
-  const rawBody=JSON.stringify({id:"evt_refund_test",type:"refund.updated",data:{object:refund}});
+  const rawBody=JSON.stringify({id:"evt_ref123123",type:"refund.updated",data:{object:refund}});
   const signatureHeader="t="+timestamp+",v1="+createHmac("sha256",secret).update(timestamp+"."+rawBody).digest("hex");
   const event=verifyStripeWebhook({rawBody,signatureHeader,webhookSecret:secret,nowMs});
   assert.equal(reconcileStripeRefundEvent(event,attempt,storedRefund).action,"record_verified_refund");
@@ -34,7 +34,7 @@ test("only a cryptographically verified, paid and exact refund event may reconci
   assert.throws(() => reconcileStripeRefundEvent(event,attempt,{...storedRefund,orderId:"someone_else"}));
 });
 test("refund pending/failed are not settled and out-of-order updates cannot undo succeeded",() => {
-  const ev=(status,type="refund.updated")=>({id:"evt_test_456",type,data:{object:{...refund,status}}});
+  const ev=(status,type="refund.updated")=>({id:"evt_test456",type,data:{object:{...refund,status}}});
   assert.equal(reconcileStripeRefundEvent(ev("pending"),attempt,storedRefund).action,"record_refund_pending");
   assert.equal(reconcileStripeRefundEvent(ev("failed"),attempt,storedRefund).action,"flag_refund_failure");
   assert.equal(reconcileStripeRefundEvent(ev("succeeded"),attempt,{...storedRefund,status:"succeeded"}).action,"record_verified_refund");
