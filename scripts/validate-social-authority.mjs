@@ -37,6 +37,16 @@ if (!failures) {
     const html = read(page);
     if (!html.includes("<!-- page-specific-social-start -->") || !html.includes(`content="${item.absoluteUrl}"`)) fail(`${page} does not materialise its registered social image`);
     if (!html.includes(`name="twitter:image" content="${item.absoluteUrl}"`)) fail(`${page} Twitter image does not match the register`);
+    // Each canonical page must advertise one unambiguous preview, never a
+    // second generic brand card competing with its route-specific artwork.
+    const imageTags = [...html.matchAll(/<meta property="(og:image(?::(?:secure_url|type|width|height|alt))?)" content="([^"]*)">/g)];
+    for (const property of ["og:image", "og:image:secure_url", "og:image:type", "og:image:width", "og:image:height", "og:image:alt"]) {
+      const values = imageTags.filter(match => match[1] === property).map(match => match[2]);
+      if (values.length !== 1) fail(`${page} has ${values.length} ${property} tags; exactly one is required`);
+      if (property === "og:image" && values[0] !== item.absoluteUrl) fail(`${page} does not use its registered primary image`);
+      if (property === "og:image:secure_url" && values[0] !== item.absoluteUrl) fail(`${page} has a mismatched secure image URL`);
+    }
+
   }
 
   for (const page of structured) {
