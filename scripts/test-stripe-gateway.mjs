@@ -26,6 +26,18 @@ test("default deny, explicit provider test/live credential boundaries", () => {
   assert.throws(() => validatePaymentActivation({ ...activation, webhookSecret: "" }), /webhook/);
   assert.throws(() => validatePaymentActivation({ ...activation, secretKey: "sk_live_mismatch" }), /credentials/);
   assert.deepEqual(validatePaymentActivation(activation), { mode: "test" });
+  assert.deepEqual(validatePaymentActivation({
+    ...activation, secretKey: "rk_test_synthetic_restricted_key"
+  }), { mode: "test" });
+  assert.deepEqual(validatePaymentActivation({
+    ...activation, mode: "live", liveApproved: true, secretKey: "rk_live_synthetic_restricted_key"
+  }), { mode: "live" });
+  for (const secretKey of ["pk_live_browser_only_not_secret", "rk_live_wrong_environment_key"]) {
+    assert.throws(() => validatePaymentActivation({ ...activation, secretKey }), /credentials/);
+  }
+  assert.throws(() => validatePaymentActivation({
+    ...activation, mode: "live", liveApproved: true, secretKey: "rk_test_wrong_environment_key"
+  }), /credentials/);
 });
 
 test("only a verified GBP order produces fixed safe hosted checkout parameters", () => {
