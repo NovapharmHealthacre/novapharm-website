@@ -36,9 +36,6 @@
           }
         },
         "MfaConfiguration": "OPTIONAL",
-        "SoftwareTokenMfaConfiguration": {
-          "Enabled": true
-        },
         "AccountRecoverySetting": {
           "RecoveryMechanisms": [
             {
@@ -54,7 +51,10 @@
           "identity": "customer-only",
           "activation": "disabled",
           "dataClassification": "synthetic-only"
-        }
+        },
+        "EnabledMfas": [
+          "SOFTWARE_TOKEN_MFA"
+        ]
       }
     },
     "CustomerStagingClient": {
