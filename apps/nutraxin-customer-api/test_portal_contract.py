@@ -53,7 +53,7 @@ class DummySSM:
             "food_business_registration_verified": self.authorized,
             "consumer_terms_verified": self.authorized,
             "manufacturer_fulfilment_commitment_verified": self.authorized,
-            "stock_currently_verified": self.authorized,
+            "uk_dispatch_service_verified": self.authorized,
             "model_assumptions": {"uk_delivery_charge_pence": 0, "uk_delivery_cost_borne_by_seller": True},
             "lines": [
                 {"sku": sku, "qty24_price_pence": 1000, "qty48_price_pence": 900}
@@ -435,10 +435,10 @@ class PortalSecurityTests(unittest.TestCase):
             self.assertFalse(PORTAL.retail_sale_authorised(json.loads(valid)))
             for name in ("retail_sales_authorised","vat_registration_verified",
                          "food_business_registration_verified","consumer_terms_verified",
-                         "manufacturer_fulfilment_commitment_verified","stock_currently_verified"):
+                         "manufacturer_fulfilment_commitment_verified","uk_dispatch_service_verified"):
                 all_flags={k:True for k in ("retail_sales_authorised","vat_registration_verified",
                          "food_business_registration_verified","consumer_terms_verified",
-                         "manufacturer_fulfilment_commitment_verified","stock_currently_verified")}
+                         "manufacturer_fulfilment_commitment_verified","uk_dispatch_service_verified")}
                 all_flags.pop(name)
                 all_flags["model_assumptions"]={"uk_delivery_charge_pence":0,"uk_delivery_cost_borne_by_seller":True}
                 self.assertFalse(PORTAL.retail_sale_authorised(all_flags), name)
