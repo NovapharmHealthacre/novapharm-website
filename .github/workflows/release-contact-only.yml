@@ -1,10 +1,6 @@
 name: Publish approved public contact page to Pages
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/release-contact-only.yml
   workflow_dispatch:
 
 permissions:

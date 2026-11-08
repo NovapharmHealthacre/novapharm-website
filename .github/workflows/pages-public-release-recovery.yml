@@ -1,8 +1,6 @@
 name: Recover public GitHub Pages publication
 
 on:
-  push:
-    branches: [main]
   pull_request:
     paths:
       - .github/workflows/pages-public-release-recovery.yml
