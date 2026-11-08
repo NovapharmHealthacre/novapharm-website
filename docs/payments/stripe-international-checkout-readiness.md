@@ -24,6 +24,12 @@ The new src/core/payments/stripe-checkout.mjs offers:
 
 `src/core/payments/payment-ledger-reference.sql` is a **review-only** SQL specification, not an applied production migration. `scripts/test-payment-ledger.mjs` verifies unique provider event IDs, one collectable attempt per order, permitted retries after failed/expired attempts, and rejection of wrong-currency and invalid-state records. This is not sufficient to launch an endpoint: the production database migration, atomic reservation, tenant isolation, CAS updates and transactional outbox must still be reviewed and deployed before any customer funds can be accepted.
 
+## Merchant registration status (8 November 2026)
+
+Owner-provided Stripe screenshots confirm a NovaPharm account dashboard and a connected GBP payout destination. Earlier screenshots show unfinished/invalid director verification. This is **registration, not independently verified live merchant activation**. No complete bank details or identity documents are recorded in this repository.
+
+`src/core/payments/stripe-merchant-readiness.mjs` uses an authorised *server-side* Stripe secret key to read `/v1/account`, producing only non-sensitive capability/status booleans. It checks `charges_enabled`, `payouts_enabled`, `details_submitted`, reported card capability status and outstanding/pending verification requirements. A `pk_live_` publishable key cannot be used for the check. The test suite uses mocks and no real secrets. Do not run this against production or enable live checkout until Stripe merchant category, commercial order/stock/tax and payout eligibility are approved.
+
 ## Steps before live payment activation
 
 1. NovaPharm Healthcare Ltd opens a Stripe UK merchant account and confirms legal entity, bank payouts, beneficial ownership, chargeback/refund handling and approved merchant category. **Pharmaceuticals and regulated medical products are restricted categories.** Confirm written approval for applicable product types. Nutraxin food supplement labels and claims also need eligibility review.
