@@ -32,6 +32,12 @@ class DummyTable:
 
 class DummyCognito:
     groups = []
+    enabled = True
+    user_status = "CONFIRMED"
+    verified_email = True
+    def admin_get_user(self, **kw):
+        return {"Enabled": self.enabled, "UserStatus": self.user_status,
+                "UserAttributes": [{"Name": "email_verified", "Value": "true" if self.verified_email else "false"}]}
     def admin_list_groups_for_user(self, **kw):
         return {"Groups": [{"GroupName": x} for x in self.groups]}
 
@@ -71,6 +77,9 @@ class PortalSecurityTests(unittest.TestCase):
     def setUp(self):
         DDB.items.clear()
         COGNITO.groups = []
+        COGNITO.enabled = True
+        COGNITO.user_status = "CONFIRMED"
+        COGNITO.verified_email = True
 
     def event(self, path, method="GET", body=None, origin="https://portal.example.invalid"):
         e = {"version": "2.0", "rawPath": path, "requestContext": {"http": {"method": method}},
@@ -95,6 +104,21 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertFalse(PORTAL.approved("test-cognito-user"))
         COGNITO.groups = [PORTAL.APPROVED_GROUP]
         self.assertTrue(PORTAL.approved("test-cognito-user"))
+
+    def test_disabled_unconfirmed_or_unverified_customer_never_approves(self):
+        COGNITO.groups = [PORTAL.APPROVED_GROUP]
+        self.assertTrue(PORTAL.approved("synthetic-user"))
+        COGNITO.enabled = False
+        self.assertFalse(PORTAL.approved("synthetic-user"))
+        COGNITO.enabled = True
+        COGNITO.user_status = "RESET_REQUIRED"
+        self.assertFalse(PORTAL.approved("synthetic-user"))
+        COGNITO.user_status = "CONFIRMED"
+        COGNITO.verified_email = False
+        self.assertFalse(PORTAL.approved("synthetic-user"))
+        COGNITO.verified_email = True
+        COGNITO.groups = []
+        self.assertFalse(PORTAL.approved("synthetic-user"))
 
     def test_server_reprices_tiers_and_never_accepts_binding_order(self):
         payload = {"request_id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
@@ -145,6 +169,8 @@ class PortalSecurityTests(unittest.TestCase):
         statements = role["Policies"][0]["PolicyDocument"]["Statement"]
         sensitive = [s for s in statements if any(x in json.dumps(s["Action"]) for x in ("ssm:GetParameter", "dynamodb:PutItem", "cognito-idp:AdminListGroupsForUser"))]
         self.assertEqual(len(sensitive), 3)
+        cognito_statement = next(s for s in statements if "cognito-idp:AdminListGroupsForUser" in s["Action"])
+        self.assertIn("cognito-idp:AdminGetUser", cognito_statement["Action"])
         for statement in sensitive:
             self.assertNotEqual(statement["Resource"], "*")
         self.assertIn("DISABLED", template["Outputs"]["CommercialCheckoutStatus"]["Value"])
