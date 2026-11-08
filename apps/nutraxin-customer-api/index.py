@@ -88,6 +88,40 @@ async function renderHistory(){
 }
 async function init(){try{const session=await read("/api/session");if(!session.authenticated){show("signed-out");return;}if(!session.approved){$("pending-email").textContent="Signed in as "+session.email+".";show("pending");return;}const cat=await read("/api/catalogue");$("welcome").textContent="Signed in as "+session.email+".";render(cat.products);show("approved");void renderHistory();}catch(e){$("signed-out").append(node("p","fine","Could not load your secure account. Please retry sign-in."));}}
 $("order-form").addEventListener("submit",async function(event){event.preventDefault();const lines=[...$("products").querySelectorAll("input")].filter(i=>Number(i.value)>0).map(i=>({sku:i.name,quantity:Number(i.value)}));if(!lines.length){$("message").textContent="Select at least one product and quantity.";return;}const button=$("send");button.disabled=true;$("message").textContent="Submitting your request securely…";try{const r=await fetch("/api/order-requests",{method:"POST",credentials:"same-origin",cache:"no-store",headers:{"Content-Type":"application/json"},body:JSON.stringify({lines:lines,request_id:crypto.randomUUID()})});const data=await r.json();if(!r.ok||!data.receipt_id)throw new Error(data.error||"No receipt confirmed.");$("message").textContent="Request received: "+data.receipt_id+". Provisional products "+money(data.net_total_pence)+" + illustrative UK VAT at 20% "+money(data.indicative_vat_pence)+" = "+money(data.indicative_gross_total_pence)+". Shipping excluded. No payment taken or VAT charged; NovaPharm will confirm availability and terms.";button.disabled=false;void renderHistory();}catch(e){$("message").textContent="Submission not confirmed. "+(e.message||"Please retry.");button.disabled=false;}});
+// A saved bag is a local selection, not a paid or accepted order.
+const retailStorageKey="novapharm.nutraxin.bag.v1";
+const retailBag=new Map();let retailProducts=[];
+function retailLoad(){try{const data=JSON.parse(localStorage.getItem(retailStorageKey)||"[]");if(Array.isArray(data))for(const item of data){if(typeof item?.sku==="string"&&Number.isSafeInteger(item.quantity)&&item.quantity>=1&&item.quantity<=99)retailBag.set(item.sku,item.quantity);}}catch{}}
+function retailPersist(){try{localStorage.setItem(retailStorageKey,JSON.stringify([...retailBag].map(([sku,quantity])=>({sku,quantity}))));}catch{}}
+function retailSummary(){
+ const valid=new Set(retailProducts.map(p=>p.sku));
+ for(const sku of [...retailBag.keys()])if(!valid.has(sku))retailBag.delete(sku);
+ const list=$("retail-bag-items");list.replaceChildren();let total=0;
+ for(const product of retailProducts){const count=retailBag.get(product.sku)||0;if(!count)continue;total+=count;list.append(node("li",null,product.name+" — "+count+" unit"+(count===1?"":"s")));}
+ $("retail-bag-status").textContent=total?total+" item"+(total===1?"":"s")+" saved. Prices and checkout are not yet enabled.":"Your bag is empty.";
+ retailPersist();
+}
+async function retailCollection(){
+ const host=$("retail-grid");
+ try{
+  const data=await read("/api/retail/catalogue");
+  if(!Array.isArray(data.products)||data.products.length!==19||data.checkout_enabled!==false||data.public_retail_prices_approved!==false)throw new Error("Retail catalogue not ready");
+  retailProducts=data.products;host.replaceChildren();
+  for(const product of retailProducts){
+   if(typeof product.sku!=="string"||typeof product.name!=="string"||typeof product.slug!=="string"||!/^[a-z0-9-]+$/.test(product.slug))continue;
+   const card=node("article","retail-card"),picture=node("img");picture.src="https://novapharmhealthcare.com/assets/media/products/nutraxin/"+product.slug+".png";picture.alt=product.name+" pack";picture.loading="lazy";picture.width=180;picture.height=180;
+   const name=node("h3",null,product.name),pack=node("p","retail-muted",product.pack),price=node("p","retail-muted","Retail price pending confirmation");
+   const detail=node("a",null,"Product details");detail.href="https://novapharmhealthcare.com/products/nutraxin/"+product.slug+"/";
+   const add=node("button","button quiet","Add to bag");add.type="button";
+   add.addEventListener("click",()=>{retailBag.set(product.sku,Math.min(99,(retailBag.get(product.sku)||0)+1));retailSummary();});
+   const actions=node("div","actions");actions.append(add,detail);card.append(picture,name,pack,price,actions);host.append(card);
+  }
+  retailSummary();
+ }catch{host.replaceChildren(node("p","fine","The collection is temporarily unavailable. Browse the product pages on the main website."));}
+}
+retailLoad();
+$("retail-bag-clear").addEventListener("click",()=>{retailBag.clear();retailSummary();});
+void retailCollection();
 init();
 })();"""
 
