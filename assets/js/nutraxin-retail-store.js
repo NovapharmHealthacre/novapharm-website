@@ -5,6 +5,7 @@
 export const BAG_KEY = "novapharm.nutraxin.public-bag.v1";
 export const MAX_PER_SKU = 99;
 const CATALOGUE_URL = "/assets/data/nutraxin-retail-catalogue.json";
+const PORTAL_ORIGIN = "https://portal.novapharmhealthcare.com";
 const BAG_URL = "/products/nutraxin/bag/";
 const SHOP_URL = "/products/nutraxin/";
 
@@ -35,8 +36,12 @@ export function catalogueIsSafe(data) {
 }
 
 export function publicPrice(product, data) {
-  if (data?.price_authority !== "approved_consumer_retail" ||
-      !Number.isSafeInteger(product?.retail_price_pence) || product.retail_price_pence < 1) return null;
+  // Explicit owner-authorised guide display is separate from payment authorisation.
+  const viewable = data?.price_authority === "approved_consumer_retail" ||
+    (data?.price_authority === "owner_authorized_provisional_public_display" &&
+      data?.checkout_enabled === false && data?.payment_collection_enabled === false &&
+      data?.price_includes_estimated_uk_vat === true && data?.vat_estimate_rate_percent === 20);
+  if (!viewable || !Number.isSafeInteger(product?.retail_price_pence) || product.retail_price_pence < 1) return null;
   return product.retail_price_pence;
 }
 
@@ -79,7 +84,7 @@ function count(items) { return items.reduce((sum, item) => sum + item.quantity, 
 function productUrl(product) { return SHOP_URL + product.slug + "/"; }
 function productPriceLabel(product, data) {
   const pence = publicPrice(product, data);
-  return pence === null ? "Retail price to be confirmed" : formatGBP(pence);
+  return pence === null ? "Price pending" : formatGBP(pence);
 }
 function toast(message) {
   const old = document.querySelector(".nx-store-toast");
@@ -100,6 +105,7 @@ function installStyle() {
 
 function runStore(data) {
   let bag = loadBag(data);
+  let approvedRelease = false;
   const productMap = new Map(data.products.map((p) => [p.sku, p]));
   const slugMap = new Map(data.products.map((p) => [p.slug, p]));
   const updateNav = () => {
@@ -175,30 +181,49 @@ function runStore(data) {
           list.append(item);
         }
         const subtotalMinor = basketSubtotal(bag, data);
-        const ready = !!(data.checkout_enabled === true && data.payment_collection_enabled === true &&
-          data.delivery_verified === true && bag.length > 0 && subtotalMinor !== null &&
-          bag.every(({sku}) => productMap.get(sku)?.available_to_sell === true));
-        subtotal.textContent = subtotalMinor === null ? "Pending" : formatGBP(subtotalMinor);
-        shipping.textContent = "Calculated at checkout";
-        tax.textContent = "Verified at checkout";
-        grand.textContent = ready ? "Calculated at secure checkout" : "Not available";
+        const ready = !!(approvedRelease && bag.length > 0 && subtotalMinor !== null);
+        // A public catalogue flag or browser price NEVER authorises a charge; the
+        // server independently verifies all release evidence and recalculates totals.
+        const indicative = data.price_authority === "owner_authorized_provisional_public_display";
+        subtotal.textContent = subtotalMinor === null ? "Pending" : (indicative ? "Guide " : "") + formatGBP(subtotalMinor);
+        const ukDeliveryIncluded = indicative && data.provisional_uk_delivery_charge_pence === 0 &&
+          data.provisional_uk_delivery_cost_seller_funded === true;
+        shipping.textContent = ready ? "Calculated at checkout" : (ukDeliveryIncluded ? "Guide £0.00 · UK only" : "Not confirmed");
+        tax.textContent = indicative ? "Estimated 20% VAT included" : "Verified at checkout";
+        grand.textContent = ready ? "Calculated at secure checkout" : (ukDeliveryIncluded && subtotalMinor !== null ? "Guide " + formatGBP(subtotalMinor) : "Pending delivery");
         checkout.disabled = !ready;
         checkout.textContent = ready ? "Continue to secure checkout" : "Checkout not available yet";
         explanation.textContent = ready
           ? "Your order will be repriced and checked by NovaPharm's secure payment server before any charge."
-          : "Your selections are saved only in this browser. Prices, stock, delivery and payment must be verified before purchase. No order is placed.";
+          : "Your selections are saved in this browser. Guide prices include estimated 20% UK VAT and £0 additional UK delivery (seller-funded). Carrier service, VAT registration and stock remain unverified. No order is placed.";
         checkout.onclick = async () => {
           if (!ready) return;
+          const terms = container.querySelector("[data-nx-consumer-terms]");
+          if (!terms || !terms.checked) {
+            explanation.textContent = "Accept the UK consumer and manufacturer delivery terms before checkout.";
+            return;
+          }
           checkout.disabled = true;
           explanation.textContent = "Verifying your order securely…";
           try {
-            const response = await fetch("https://portal.novapharmhealthcare.com/api/retail/checkout", {
-              method: "POST", credentials: "omit", headers: { "content-type": "application/json" },
-              body: JSON.stringify({ lines: bag }), cache: "no-store"
+            const basketId = JSON.stringify([...bag].sort((a,b)=>a.sku.localeCompare(b.sku)));
+            let stored;
+            try { stored = JSON.parse(sessionStorage.getItem("np-retail-checkout-attempt") || "null"); }
+            catch { stored = null; }
+            const requestId = stored?.basket === basketId && /^[0-9a-f-]{36}$/.test(stored?.id || "")
+              ? stored.id : crypto.randomUUID();
+            try { sessionStorage.setItem("np-retail-checkout-attempt",JSON.stringify({basket:basketId,id:requestId})); } catch {}
+            const response = await fetch(PORTAL_ORIGIN + "/api/retail/checkout", {
+              method: "POST", credentials: "include", headers: { "content-type": "application/json" },
+              body: JSON.stringify({ request_id:requestId, lines:bag, accept_terms:true }), cache: "no-store"
             });
-            if (!response.ok) throw new Error("Checkout is unavailable");
+            if (response.status === 401) {
+              window.location.assign(PORTAL_ORIGIN + "/login?next=bag");
+              return;
+            }
+            if (!response.ok) throw new Error("Checkout has not been activated for this basket.");
             const result = await response.json();
-            const url = new URL(result.url || "");
+            const url = new URL(result.checkoutUrl || "");
             if (url.protocol !== "https:" || url.hostname !== "checkout.stripe.com") throw new Error("Invalid payment destination");
             window.location.assign(url.href);
           } catch {
@@ -208,6 +233,17 @@ function runStore(data) {
         };
       };
       render();
+      // Cross-origin status is an exact-origin, credentialed, read-only boolean.
+      // It can enable the UX only when the private AWS release gates pass.
+      void (async () => {
+        try {
+          const r=await fetch(PORTAL_ORIGIN + "/api/retail/readiness",
+            {credentials:"include",cache:"no-store",mode:"cors"});
+          const v=r.ok?await r.json():null;
+          approvedRelease = v?.checkout_ready === true && v?.payment_collection_active === true;
+        } catch { approvedRelease=false; }
+        render();
+      })();
     }
   } else if (path === SHOP_URL || path === SHOP_URL.slice(0, -1)) {
     for (const shell of document.querySelectorAll(".nx-product-card-shell")) {
@@ -215,11 +251,14 @@ function runStore(data) {
       const p = slugMap.get(link?.dataset.nxProductSlug);
       if (!p) continue;
       const footer = make("div", "nx-store-card-footer");
+      const priceWrap = make("div");
       const price = make("span", "nx-store-price", productPriceLabel(p, data));
+      const tax = make("p", "nx-store-vat-note", "Guide price · estimated VAT included");
+      priceWrap.append(price, tax);
       const add = make("button", "nx-store-add", "Add to Bag");
       add.type = "button";
       add.addEventListener("click", () => put(p.sku, 1));
-      footer.append(price, add);
+      footer.append(priceWrap, add);
       shell.append(footer);
     }
   } else {
@@ -231,7 +270,7 @@ function runStore(data) {
       panel.setAttribute("aria-label", "Nutraxin shopping options");
       panel.append(make("p", "nx-store-kicker", "Nutraxin / Retail"));
       panel.append(make("p", "nx-store-price", productPriceLabel(p, data)));
-      panel.append(make("p", "nx-store-note", "Save to your bag. No payment or order is created until checkout is approved."));
+      panel.append(make("p", "nx-store-note", "Indicative price including estimated 20% UK VAT. Save to your bag; delivery and payment checkout are not yet available."));
       const options = make("div", "nx-store-options");
       const label = make("label", "nx-store-qty-label", "Quantity");
       const quantity = make("select", "nx-store-qty");
