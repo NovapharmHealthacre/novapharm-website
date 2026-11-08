@@ -120,8 +120,20 @@ def session(event):
     return doc
 
 def approved(username):
-    response=COGNITO.admin_list_groups_for_user(Username=username,UserPoolId=POOL_ID,Limit=60)
-    return APPROVED_GROUP in {g["GroupName"] for g in response.get("Groups",[])}
+    # Approval membership alone is not enough. A disabled, deleted or
+    # unverified identity must lose private pricing and requests immediately,
+    # even when an opaque browser session has not yet expired.
+    try:
+        principal=COGNITO.admin_get_user(Username=username,UserPoolId=POOL_ID)
+        attributes={x["Name"]:x["Value"] for x in principal.get("UserAttributes",[])}
+        if (principal.get("Enabled") is not True or
+            principal.get("UserStatus")!="CONFIRMED" or
+            attributes.get("email_verified")!="true"):
+            return False
+        response=COGNITO.admin_list_groups_for_user(Username=username,UserPoolId=POOL_ID,Limit=60)
+        return APPROVED_GROUP in {g["GroupName"] for g in response.get("Groups",[])}
+    except ClientError:
+        return False
 
 def request_base(event):
     host=(event.get("headers") or {}).get("host","")
