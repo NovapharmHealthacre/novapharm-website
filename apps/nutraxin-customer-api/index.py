@@ -16,6 +16,7 @@ import urllib.parse
 import urllib.request
 
 import boto3
+from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 
 REGION = "eu-north-1"
@@ -251,7 +252,7 @@ def handler(event,context):
         if method=="POST" and path=="/api/order-requests":
             return submit(event,customer)
         if method=="GET" and path=="/api/order-requests":
-            response=TABLE.query(KeyConditionExpression=boto3.dynamodb.conditions.Key("pk").eq("USER#"+customer["sub"]),
+            response=TABLE.query(KeyConditionExpression=Key("pk").eq("USER#"+customer["sub"]),
                 Limit=20,ScanIndexForward=False)
             return reply(200,{"requests":[{"receipt_id":o.get("receipt_id"),"status":o.get("status"),
                 "created_at":int(o.get("created_at",0)),"financially_binding":False}
