@@ -97,7 +97,7 @@ test("only signed provider paid session is posted once to server order ledger",a
   await assert.rejects(acceptSignedCheckoutWebhook({...sign(paymentEvent("paid",100)),
     webhookSecret:activation.webhookSecret,store}),/match/);
   await assert.rejects(acceptSignedCheckoutWebhook({...event,
-    signatureHeader:event.signatureHeader.replace(/.$/,"0"),
+    signatureHeader:event.signatureHeader.split(",")[0]+",v1="+"0".repeat(64),
     webhookSecret:activation.webhookSecret,store}),/signature/);
 });
 test("cannot return Stripe checkout URL if durable session persistence fails",async()=>{
