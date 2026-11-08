@@ -144,7 +144,7 @@ class PortalSecurityTests(unittest.TestCase):
 
     def test_personal_account_does_not_require_trade_approval(self):
         self.assertIn("Your account is ready.", PORTAL.PAGE)
-        self.assertIn("Personal shoppers do not need business approval", PORTAL.PAGE)
+        self.assertIn("Business account approval is not required for personal shopping", PORTAL.PAGE)
         self.assertNotIn("Business verification required.", PORTAL.PAGE)
         self.assertIn("Apply for business access", PORTAL.PAGE)
         response = PORTAL.handler(self.event("/api/retail/catalogue"), None)
@@ -483,9 +483,9 @@ class PortalSecurityTests(unittest.TestCase):
     def test_retail_checkout_is_disabled_by_default_for_all_visitors(self):
         self.assertFalse(PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED)
         self.assertIn('id="retail-checkout"',PORTAL.PAGE)
-        self.assertIn("retail_checkout(event,customer)",PORTAL.__dict__["handler"].__code__.co_consts if False else PORTAL.__dict__["retail_checkout"].__code__.co_names if False else "retail_checkout(event,customer)")
+        self.assertTrue(callable(PORTAL.retail_checkout))
         self.assertIn('DIRECT_SHOP_PAYMENTS_ENABLED',PORTAL.__dict__)
-        self.assertIn('DIRECT_SHOP_PAYMENTS_ENABLED', PORTAL.__dict__["handler"].__code__.co_names)
+        self.assertEqual(PORTAL.retail_checkout(self.event("/api/retail/checkout","POST"), {"sub":"test-sub","username":"test-user"})["statusCode"],503)
 
     def test_iac_scope_and_separate_private_price_store(self):
         template = json.loads((ROOT / "infra/aws/nutraxin-customer-staging-stack.json").read_text())
