@@ -2,9 +2,9 @@
 
 import { Building2, KeyRound, ShieldCheck, Users } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
+import { destinationAfterPortalLogin, validatedNutraxinIntentQuery } from "../data/nutraxin-order-intent";
 import { isPortalAccessType, landingRouteForAccess } from "../data/routes";
 import { professionalError, protectedMutation } from "../lib/gateway";
-import { destinationAfterPortalLogin, validatedNutraxinIntentQuery } from "../data/nutraxin-order-intent";
 import { PortalBrand } from "./portal-brand";
 
 const accessTypes = [
