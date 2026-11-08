@@ -123,14 +123,19 @@ def approved(username):
     response=COGNITO.admin_list_groups_for_user(Username=username,UserPoolId=POOL_ID,Limit=60)
     return APPROVED_GROUP in {g["GroupName"] for g in response.get("Groups",[])}
 
-def login():
+def request_base(event):
+    host=(event.get("headers") or {}).get("host","")
+    trusted={urllib.parse.urlsplit(BASE_URL).netloc,"portal.novapharmhealthcare.com"}
+    return "https://"+host if host in trusted else BASE_URL
+
+def login(event):
     state=secrets.token_urlsafe(32)
     verifier=secrets.token_urlsafe(48)
     challenge=base64.urlsafe_b64encode(hashlib.sha256(verifier.encode()).digest()).decode().rstrip("=")
     TABLE.put_item(Item={"pk":"TXN#"+h(state),"sk":"META","verifier":verifier,"expires_at":now()+600},
         ConditionExpression="attribute_not_exists(pk)")
     query=urllib.parse.urlencode({"response_type":"code","client_id":CLIENT_ID,
-        "redirect_uri":BASE_URL+"/auth/callback","scope":"openid email profile",
+        "redirect_uri":request_base(event)+"/auth/callback","scope":"openid email profile",
         "state":state,"code_challenge":challenge,"code_challenge_method":"S256"})
     destination="https://"+COGNITO_DOMAIN+"/oauth2/authorize?"+query
     return redirect(destination,[cookie("__Host-np_txn",state,600)])
@@ -145,7 +150,7 @@ def callback(event):
     old=TABLE.delete_item(Key={"pk":"TXN#"+h(state),"sk":"META"},ReturnValues="ALL_OLD").get("Attributes")
     if not old or int(old.get("expires_at",0))<=now():return error(400,"expired_or_reused_auth_state")
     values=urllib.parse.urlencode({"grant_type":"authorization_code","client_id":CLIENT_ID,
-        "code":code,"redirect_uri":BASE_URL+"/auth/callback","code_verifier":old["verifier"]}).encode()
+        "code":code,"redirect_uri":request_base(event)+"/auth/callback","code_verifier":old["verifier"]}).encode()
     req=urllib.request.Request("https://"+COGNITO_DOMAIN+"/oauth2/token",data=values,
         headers={"content-type":"application/x-www-form-urlencoded"},method="POST")
     try:
@@ -162,18 +167,18 @@ def callback(event):
         "sub":attributes["sub"],"username":principal["Username"],
         "email":attributes.get("email",""),"expires_at":now()+3600},
         ConditionExpression="attribute_not_exists(pk)")
-    return redirect(BASE_URL+"/",[cookie("__Host-np_session",handle,3600),cookie("__Host-np_txn","",0)])
+    return redirect(request_base(event)+"/",[cookie("__Host-np_session",handle,3600),cookie("__Host-np_txn","",0)])
 
 def logout(event):
-    if (event.get("headers") or {}).get("origin","")!=BASE_URL:return error(403,"invalid_origin")
+    if (event.get("headers") or {}).get("origin","")!=request_base(event):return error(403,"invalid_origin")
     raw=cookies(event).get("__Host-np_session","")
     if raw:TABLE.delete_item(Key={"pk":"SESSION#"+h(raw),"sk":"META"})
-    query=urllib.parse.urlencode({"client_id":CLIENT_ID,"logout_uri":BASE_URL+"/"})
+    query=urllib.parse.urlencode({"client_id":CLIENT_ID,"logout_uri":request_base(event)+"/"})
     return redirect("https://"+COGNITO_DOMAIN+"/logout?"+query,
         [cookie("__Host-np_session","",0)])
 
 def submit(event,user):
-    if (event.get("headers") or {}).get("origin","")!=BASE_URL:return error(403,"invalid_origin")
+    if (event.get("headers") or {}).get("origin","")!=request_base(event):return error(403,"invalid_origin")
     if event.get("isBase64Encoded"):return error(400,"invalid_payload")
     raw=event.get("body") or ""
     if len(raw)>4096:return error(413,"request_too_large")
@@ -228,7 +233,7 @@ def handler(event,context):
     path=event.get("rawPath") or "/"
     if method=="GET" and path=="/":return reply(200,PAGE,"text/html; charset=utf-8")
     if method=="GET" and path=="/app.js":return reply(200,APP,"text/javascript; charset=utf-8")
-    if method=="GET" and path=="/login":return login()
+    if method=="GET" and path=="/login":return login(event)
     if method=="GET" and path=="/auth/callback":return callback(event)
     if method=="POST" and path=="/logout":return logout(event)
     if method=="GET" and path=="/health":
