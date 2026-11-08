@@ -305,7 +305,11 @@ def login(event):
     state=secrets.token_urlsafe(32)
     verifier=secrets.token_urlsafe(48)
     challenge=base64.urlsafe_b64encode(hashlib.sha256(verifier.encode()).digest()).decode().rstrip("=")
-    TABLE.put_item(Item={"pk":"TXN#"+h(state),"sk":"META","verifier":verifier,"expires_at":now()+600},
+    # Only this fixed shopping path may be used as a post-login return destination.
+    next_path=(event.get("queryStringParameters") or {}).get("next","")
+    return_to="https://novapharmhealthcare.com/products/nutraxin/bag/" if next_path=="bag" else ""
+    TABLE.put_item(Item={"pk":"TXN#"+h(state),"sk":"META","verifier":verifier,
+        "return_to":return_to,"expires_at":now()+600},
         ConditionExpression="attribute_not_exists(pk)")
     query=urllib.parse.urlencode({"response_type":"code","client_id":CLIENT_ID,
         "redirect_uri":request_base(event)+"/auth/callback","scope":"openid email profile aws.cognito.signin.user.admin",
@@ -346,7 +350,8 @@ def callback(event):
         "sub":attributes["sub"],"username":principal["Username"],
         "email":attributes.get("email",""),"expires_at":now()+3600},
         ConditionExpression="attribute_not_exists(pk)")
-    return redirect(request_base(event)+"/",[cookie("__Host-np_session",handle,3600),cookie("__Host-np_txn","",0)])
+    return redirect(old.get("return_to") or request_base(event)+"/",
+        [cookie("__Host-np_session",handle,3600),cookie("__Host-np_txn","",0)])
 
 def logout(event):
     if (event.get("headers") or {}).get("origin","")!=request_base(event):return error(403,"invalid_origin")
@@ -489,6 +494,44 @@ def verified_personal_account(username):
         return False
 
 
+def retail_origin(event):
+    headers=event.get("headers") or {}
+    return next((str(v) for k,v in headers.items() if str(k).lower()=="origin"),"")
+
+def retail_cors(event, response):
+    if retail_origin(event)=="https://novapharmhealthcare.com":
+        headers=response.setdefault("headers",{})
+        headers.update({"access-control-allow-origin":"https://novapharmhealthcare.com",
+                        "access-control-allow-credentials":"true",
+                        "access-control-allow-methods":"GET,POST,OPTIONS",
+                        "access-control-allow-headers":"content-type",
+                        "vary":"Origin"})
+    return response
+
+def retail_sale_authorised(pricing):
+    # A provisional B2B price alone cannot authorise binding consumer payment.
+    if not isinstance(pricing,dict):
+        return False
+    assumptions=pricing.get("model_assumptions") or {}
+    return (pricing.get("retail_sales_authorised") is True and
+            pricing.get("vat_registration_verified") is True and
+            pricing.get("food_business_registration_verified") is True and
+            pricing.get("consumer_terms_verified") is True and
+            pricing.get("manufacturer_fulfilment_commitment_verified") is True and
+            pricing.get("stock_currently_verified") is True and
+            assumptions.get("uk_delivery_charge_pence")==0 and
+            assumptions.get("uk_delivery_cost_borne_by_seller") is True)
+
+def retail_readiness():
+    if not DIRECT_SHOP_PAYMENTS_ENABLED or PAYMENT_DDB is None or CHECKOUT_LAMBDA is None:
+        return False
+    try:
+        pricing=json.loads(SSM.get_parameter(Name=PRICES_PARAMETER,WithDecryption=True)["Parameter"]["Value"])
+        return retail_sale_authorised(pricing) and len(pricing.get("lines",[]))==19
+    except (ClientError,ValueError,TypeError,KeyError):
+        return False
+
+
 def retail_order_status(event, customer, receipt_id):
     if not PAYMENT_DDB or not DIRECT_SHOP_PAYMENTS_ENABLED:
         return error(503, "checkout_not_active")
@@ -515,7 +558,8 @@ def retail_checkout(event, customer):
     # decision does not represent physical warehouse stock as reserved.
     if not DIRECT_SHOP_PAYMENTS_ENABLED or PAYMENT_DDB is None or CHECKOUT_LAMBDA is None:
         return error(503, "checkout_not_active")
-    if (event.get("headers") or {}).get("origin", "") != request_base(event):
+    origin=retail_origin(event)
+    if origin not in (request_base(event),"https://novapharmhealthcare.com"):
         return error(403, "invalid_origin")
     if not verified_personal_account(customer["username"]):
         return error(403, "verified_email_required")
@@ -547,6 +591,8 @@ def retail_checkout(event, customer):
             return error(503, "uk_delivery_policy_unavailable")
         if pricing.get("binding_checkout_enabled") is not False:
             return error(503, "private_quote_policy_changed")
+        if not retail_sale_authorised(pricing):
+            return error(409, "retail_sale_release_evidence_missing")
         price_by_sku = {item["sku"]: int(item["qty48_price_pence"]) for item in pricing.get("lines", [])}
     except (ClientError, KeyError, ValueError, TypeError):
         return error(503, "owner_price_policy_unavailable")
@@ -668,6 +714,18 @@ def handler(event,context):
                 for sku,item in PRODUCTS.items()]})
     if method=="GET" and path=="/health":
         return reply(200,{"status":"staging_healthy","binding_orders":False})
+    if path in ("/api/retail/readiness","/api/retail/checkout") and method=="OPTIONS":
+        if retail_origin(event)!="https://novapharmhealthcare.com":
+            return error(403,"invalid_origin")
+        return retail_cors(event,reply(204,""))
+    if method=="GET" and path=="/api/retail/readiness":
+        ready=retail_readiness()
+        return retail_cors(event,reply(200,{"checkout_ready":ready,"payment_collection_active":ready}))
+    if method=="POST" and path=="/api/retail/checkout":
+        customer=session(event)
+        if not customer:
+            return retail_cors(event,error(401,"login_required"))
+        return retail_cors(event,retail_checkout(event,customer))
     if path.startswith("/api/"):
         customer=session(event)
         if method=="GET" and path=="/api/session":
