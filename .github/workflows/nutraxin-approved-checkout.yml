@@ -1,0 +1,30 @@
+name: Nutraxin authorised production Checkout security and portal tests
+on:
+  pull_request:
+    paths:
+      - "apps/nutraxin-payments/approved_checkout.py"
+      - "apps/nutraxin-payments/test_approved_checkout.py"
+      - "apps/nutraxin-customer-api/**"
+      - "infra/aws/nutraxin-approved-checkout-production.json"
+      - "infra/aws/nutraxin-customer-staging-stack.json"
+      - "docs/payments/nutraxin-production-checkout.md"
+      - ".github/workflows/nutraxin-approved-checkout.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-approved-checkout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Compile Python
+        run: python3 -m py_compile apps/nutraxin-payments/approved_checkout.py apps/nutraxin-customer-api/index.py
+      - name: Approved order security
+        run: python3 -m unittest discover -s apps/nutraxin-payments -p 'test_approved_checkout.py' -v
+      - name: Portal security
+        run: python3 -m unittest discover -s apps/nutraxin-customer-api -p 'test_portal_contract.py' -v
+      - name: Stripe webhook security
+        run: python3 -m unittest discover -s apps/nutraxin-payments -p 'test_stripe_webhook.py' -v

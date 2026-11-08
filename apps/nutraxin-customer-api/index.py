@@ -31,6 +31,8 @@ COGNITO = boto3.client("cognito-idp", region_name=REGION)
 SSM = boto3.client("ssm", region_name=REGION)
 ALERT_TOPIC = os.environ.get("ORDER_ALERT_TOPIC_ARN", "")
 SNS = boto3.client("sns", region_name=REGION) if ALERT_TOPIC else None
+PRODUCTION_CHECKOUT_FUNCTION = os.environ.get("PRODUCTION_CHECKOUT_FUNCTION", "")
+CHECKOUT_LAMBDA = boto3.client("lambda", region_name=REGION) if PRODUCTION_CHECKOUT_FUNCTION else None
 
 PAGE = """<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nutraxin | Customer Account | NovaPharm Healthcare</title><meta name="robots" content="noindex,nofollow"><style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#18181b;background:#f5f5f7;font-synthesis:none}*{box-sizing:border-box}body{margin:0}nav{background:rgba(252,252,253,.94);border-bottom:1px solid #e6e6e9}nav div{max-width:1120px;margin:auto;padding:19px 24px;display:flex;justify-content:space-between;gap:16px;align-items:center}nav a{color:inherit;text-decoration:none;font-size:14px}nav b{letter-spacing:.06em;font-size:13px}main{max-width:920px;margin:auto;padding:80px 24px 100px}.eyebrow{font-size:12px;font-weight:700;color:#6e737d;letter-spacing:.08em;text-transform:uppercase}h1{font-size:clamp(42px,7vw,76px);line-height:1.06;letter-spacing:-.035em;margin:15px 0 20px}h2{font-size:26px;letter-spacing:-.02em;margin:0 0 14px}.lead{font-size:clamp(18px,2.5vw,23px);line-height:1.5;color:#5a6069;max-width:760px}.card{border:1px solid #e3e4e8;background:#fff;border-radius:23px;padding:30px;margin-top:32px}.fine{color:#717681;font-size:13px;line-height:1.65}.button{border:0;border-radius:999px;background:#0071e3;color:#fff;font-size:15px;font-weight:600;padding:14px 22px;display:inline-block;text-decoration:none;cursor:pointer}.button:disabled{background:#a5b1c2;cursor:not-allowed}.quiet{background:#eeeef2;color:#20232a}.row{display:grid;grid-template-columns:minmax(0,1fr) 115px;gap:24px;align-items:center;padding:18px 0;border-bottom:1px solid #e5e5e9}.name{font-weight:640;font-size:16px}.pack{display:block;color:#707580;font-size:13px;margin-top:4px}.price{display:block;color:#34363b;font-size:13px;margin-top:4px}.qty{border:1px solid #cbd0d8;border-radius:10px;background:#fcfcfd;padding:12px;width:100%;font:inherit;text-align:center}.actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:24px}.business-option{border-top:1px solid #e3e4e8;margin-top:30px;padding-top:22px}.business-option h3{font-size:18px;letter-spacing:-.02em;margin:0 0 8px}.business-option a{font-size:14px;color:#0066cc}.retail-shop{margin-top:60px}.retail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin:24px 0}.retail-card{background:#fff;padding:18px;border-radius:18px;border:1px solid #e3e4e8}.retail-card img{width:100%;aspect-ratio:1;object-fit:contain}.retail-card h3{font-size:15px;line-height:1.4;margin:12px 0 4px;min-height:2.8em}.retail-card p{margin:6px 0}.retail-card button{font-size:13px;padding:10px 14px;margin-top:10px}.retail-card a{font-size:13px;color:#0066cc}.retail-card .retail-muted{color:#737985;font-size:12px}.bag-summary{border:1px solid #e3e4e8;border-radius:18px;background:white;padding:22px}.bag-summary button{border:0;background:none;color:#0066cc;padding:4px;cursor:pointer;font:inherit;text-decoration:underline}.hide{display:none}#message{margin-top:18px;line-height:1.6;font-size:14px}a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #0071e3;outline-offset:3px}@media(max-width:580px){main{padding:55px 18px}.card{padding:22px 18px;border-radius:18px}.row{grid-template-columns:minmax(0,1fr) 85px;gap:14px}.name{font-size:14px}}
@@ -72,7 +74,7 @@ async function renderHistory(){
   const data=await read("/api/order-requests");
   const items=Array.isArray(data.requests)?data.requests.slice(0,20):[];
   if(!items.length){status.textContent="No requests yet.";return;}
-  status.textContent="Your most recent non-binding requests. Details remain subject to NovaPharm review.";
+  status.textContent="Purchase requests are reviewed by NovaPharm. Secure payment is offered only after a final order, delivery and taxes have been approved.";
   for(const item of items){
    const line=node("div","row");
    const information=node("div");
@@ -80,7 +82,22 @@ async function renderHistory(){
    const stamp=Number(item.created_at||0);
    const date=stamp>0?new Date(stamp*1000).toLocaleDateString("en-GB"):"Date unavailable";
    const label=node("span","pack",date+" · "+String(item.status||"Awaiting review").replaceAll("_"," ").toLowerCase());
-   information.append(reference,label);line.append(information);host.append(line);
+   information.append(reference,label);line.append(information);
+   if(item.status==="APPROVED_FOR_PAYMENT"&&typeof item.receipt_id==="string"){
+    const pay=node("button","button","Pay securely");pay.type="button";pay.setAttribute("aria-label","Pay approved order "+item.receipt_id);
+    pay.addEventListener("click",async()=>{
+     pay.disabled=true;status.textContent="Opening secure payment for your approved order…";
+     try{
+      const orderId=String(item.receipt_id);
+      const r=await fetch("/api/order-requests/"+encodeURIComponent(orderId)+"/checkout",{method:"POST",credentials:"same-origin",cache:"no-store",headers:{"Content-Type":"application/json"},body:""});
+      const data=await r.json();
+      if(!r.ok||typeof data.checkoutUrl!=="string"||!data.checkoutUrl.startsWith("https://checkout.stripe.com/"))throw new Error("Your final order is not yet available for payment.");
+      window.location.assign(data.checkoutUrl);
+     }catch(e){status.textContent=e.message||"Checkout unavailable. Please contact NovaPharm.";pay.disabled=false;}
+    });
+    line.append(pay);
+   }
+   host.append(line);
   }
  } catch {
   status.textContent="Request history is temporarily unavailable. Please try again later.";
@@ -382,6 +399,40 @@ def submit(event,user):
         "indicative_gross_total_pence":net+vat if net is not None else None,
         "notice":"This is a non-binding quote. The 20% UK VAT figure is illustrative, not a tax charge. Confirm stock, actual VAT treatment and shipping before payment."})
 
+def start_approved_payment(event, customer, receipt_id):
+    # Same-origin, authenticated approved-business action. No browser prices.
+    if (event.get("headers") or {}).get("origin", "") != request_base(event):
+        return error(403, "invalid_origin")
+    if event.get("body") not in (None, "") or event.get("isBase64Encoded"):
+        return error(400, "invalid_checkout_payload")
+    if not CHECKOUT_LAMBDA or not PRODUCTION_CHECKOUT_FUNCTION:
+        return error(503, "checkout_not_configured")
+    if not re.fullmatch(r"NUT-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}", receipt_id):
+        return error(400, "invalid_order_reference")
+    quote_id = receipt_id[4:]
+    quote = TABLE.get_item(Key={"pk":"USER#" + customer["sub"], "sk":"RQ#" + quote_id},
+                           ConsistentRead=True).get("Item")
+    if (not quote or quote.get("receipt_id") != receipt_id or
+        quote.get("status") != "APPROVED_FOR_PAYMENT"):
+        return error(409, "awaiting_approved_final_order")
+    payload = {"action":"start_approved_checkout","orderId":receipt_id,"subject":customer["sub"]}
+    try:
+        invoked = CHECKOUT_LAMBDA.invoke(
+            FunctionName=PRODUCTION_CHECKOUT_FUNCTION,
+            InvocationType="RequestResponse",
+            Payload=json.dumps(payload).encode("utf-8"))
+        if invoked.get("FunctionError"):
+            return error(503, "checkout_service_unavailable")
+        returned = json.loads(invoked["Payload"].read().decode("utf-8"))
+        status = returned.get("statusCode")
+        body = json.loads(returned.get("body") or "{}")
+        url = body.get("checkoutUrl", "")
+        if status != 200 or not isinstance(url, str) or not url.startswith("https://checkout.stripe.com/"):
+            return error(409 if status in (400, 403, 404, 409) else 503, "approved_checkout_unavailable")
+        return reply(200, {"checkoutUrl": url, "orderId":receipt_id})
+    except (ClientError, ValueError, TypeError, KeyError):
+        return error(503, "checkout_service_unavailable")
+
 def handler(event,context):
     method=(event.get("requestContext",{}).get("http",{}).get("method") or "GET").upper()
     path=event.get("rawPath") or "/"
@@ -417,6 +468,8 @@ def handler(event,context):
                   "price_basis":"48_unit_reference_applied_to_all_quantities_1_to_10000",
                   "price_48_net_pence":int(prices[sku]["qty48_price_pence"])}
                   for sku in PRODUCTS]})
+        if method=="POST" and re.fullmatch(r"/api/order-requests/NUT-[0-9a-f-]{36}/checkout",path):
+            return start_approved_payment(event,customer,path.split("/")[-2])
         if method=="POST" and path=="/api/order-requests":
             return submit(event,customer)
         if method=="GET" and path=="/api/order-requests":
