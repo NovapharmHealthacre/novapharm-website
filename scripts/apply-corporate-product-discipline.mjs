@@ -412,7 +412,7 @@ function nutraxinMain() {
   if (seen.size !== products.length || [...seen].some((slug) => !expectedNutraxinSlugs.has(slug))) {
     throw new Error(`Expected all ${products.length} Nutraxin catalogue cards; found ${seen.size}`);
   }
-  return rendered.replace('<div class="nx-hero-actions">', '<div class="nx-hero-actions"><a class="nx-button nx-button-quiet" href="/products/nutraxin/order-request/">Prepare an order request</a>');
+  return rendered;
 }
 
 function nutraxinOrderRequestMain() {
