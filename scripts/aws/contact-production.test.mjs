@@ -19,7 +19,7 @@ const valid = {
   safetyConfirmation: "yes",
   privacyAcknowledgement: "yes"
 };
-function harness({ failingStorage = false, failingNotice = false, blockedRate = false } = {}) {
+function harness({ failingStorage = false, failingNotice = false, blockedRate = false, active = true } = {}) {
   const writes = [];
   const notifications = [];
   class DynamoDBClient {
@@ -58,6 +58,7 @@ function harness({ failingStorage = false, failingNotice = false, blockedRate = 
     exports, Buffer, Date,
     process: { env: {
       AWS_REGION: "eu-north-1",
+      CONTACT_INTAKE_ENABLED: active ? "true" : "false",
       TABLE_NAME: "novapharm-production-contact-inbox",
       INTAKE_RATE_SALT: "a".repeat(64),
       NOTIFICATION_TOPIC_ARN: "arn:aws:sns:eu-north-1:250675045172:novapharm-staging-contact-receipt-alerts"
@@ -77,6 +78,9 @@ function request(payload = valid, headers = {}) {
 test("reviewed handler equals inline AWS production template", () => {
   assert.equal(template.Resources.Function.Properties.Code.ZipFile, source);
   assert.equal(template.Resources.ContactInbox.Properties.TimeToLiveSpecification.Enabled, true);
+  assert.equal(template.Parameters.ContactIntakeEnabled.Default, "false");
+  assert.deepEqual(template.Parameters.ContactIntakeEnabled.AllowedValues, ["false", "true"]);
+  assert.deepEqual(template.Resources.Function.Properties.Environment.Variables.CONTACT_INTAKE_ENABLED, { Ref: "ContactIntakeEnabled" });
   assert.equal(template.Resources.ContactInbox.Properties.PointInTimeRecoverySpecification.PointInTimeRecoveryEnabled, true);
   assert.equal(template.Resources.Function.Properties.ReservedConcurrentExecutions, undefined, "Do not violate small AWS account unreserved concurrency floor");
   assert.equal(template.Resources.Stage.Properties.DefaultRouteSettings.ThrottlingRateLimit, 2);
@@ -143,4 +147,16 @@ test("notification outage preserves durable receipt without claiming delivery", 
   assert.equal(x.statusCode, 201);
   assert.equal(JSON.parse(x.body).notificationAccepted, false);
   assert.equal(writes.some(x => x.type === "PutItem"), true);
+});
+
+test("inactive contact intake fails closed before any DynamoDB or SNS action", async () => {
+  const { handler, writes, notifications } = harness({ active: false });
+  const health = await handler({ rawPath: "/health", requestContext: { http: { method: "GET" } }, headers: {} });
+  assert.equal(health.statusCode, 200);
+  assert.equal(JSON.parse(health.body).ready, false);
+  assert.equal(JSON.parse(health.body).acceptingPublicSubmissions, false);
+  const response = await handler(request());
+  assert.equal(response.statusCode, 503);
+  assert.deepEqual(writes, []);
+  assert.deepEqual(notifications, []);
 });
