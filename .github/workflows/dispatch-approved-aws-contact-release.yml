@@ -3,8 +3,6 @@ name: Dispatch verified AWS contact go-live
 on:
   push:
     branches: [main]
-    paths:
-      - '.github/workflows/dispatch-approved-aws-contact-release.yml'
 
 permissions:
   actions: write
