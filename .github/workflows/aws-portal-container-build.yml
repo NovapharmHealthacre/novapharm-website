@@ -1,0 +1,43 @@
+name: AWS staging portal container build and fail-closed smoke
+on:
+  pull_request:
+    paths:
+      - 'deployment/aws/Dockerfile.portal'
+      - '.github/workflows/aws-portal-container-build.yml'
+      - 'apps/portal/**'
+      - 'packages/**'
+      - 'scripts/prepare-next-standalone.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out exact proposed source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Build Next.js portal into a non-root OCI image
+        run: docker build --pull --file deployment/aws/Dockerfile.portal --tag novapharm-portal:staging-smoke .
+      - name: Smoke-test the real packaged application without cloud credentials
+        run: |
+          set -euo pipefail
+          cid=$(docker run --detach --publish 127.0.0.1:4303:4303 novapharm-portal:staging-smoke)
+          trap 'docker stop "$cid" >/dev/null 2>&1 || true' EXIT
+          for attempt in $(seq 1 45); do
+            if curl --silent --show-error --max-time 5 \
+              -o /tmp/portal-home.html -D /tmp/portal-response.headers \
+              http://127.0.0.1:4303/; then
+              if grep -Eq '^HTTP/1.[01] 200|^HTTP/2 200' /tmp/portal-response.headers; then
+                break
+              fi
+            fi
+            sleep 2
+          done
+          grep -Eiq '^HTTP/1.[01] 200|^HTTP/2 200' /tmp/portal-response.headers
+          grep -Eiq 'novapharm' /tmp/portal-home.html
+          ! grep -Eiq 'client_secret=|access_token=|id_token=' /tmp/portal-home.html
+          echo 'Next.js portal container booted and served a safe anonymous entry page.'
+          echo 'This is a staging-only smoke test, not proof of Entra MFA or AWS production.'
