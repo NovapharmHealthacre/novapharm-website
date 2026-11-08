@@ -179,7 +179,7 @@ function NutraxinPage() {
           <div className="nx-hero-actions">
             <a className="nx-button nx-button-primary" href="#nx-range-overview">Explore the range</a>
             <Link className="nx-button nx-button-quiet" href="/contact/?enquiry=Nutraxin%20portfolio">Discuss the portfolio</Link>
-            <Link className="nx-button nx-button-quiet" href="/account-application/">Business ordering access</Link>
+            <Link className="nx-button nx-button-quiet" href="/contact/?enquiry=Pharmacy%20or%20wholesaler%20account">Business ordering access</Link>
           </div>
           <div className="nx-hero-packs">
             {[products[0], products[8], products[13]].map((product, index) => (
