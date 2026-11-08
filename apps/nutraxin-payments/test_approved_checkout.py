@@ -107,6 +107,20 @@ class PaymentContracts(unittest.TestCase):
         self.assertEqual(v["totalGrossMinor"],12600)
         self.assertEqual(v["lines"][0]["quantity"],1)
 
+    def test_owner_manufacture_to_order_commitment_without_fake_stock_reservation(self):
+        order=approved_record()
+        order["stockReserved"]={"BOOL":False}
+        order["sellerProductionCommitment"]={"BOOL":True}
+        order["buyerAcceptsThirtyDayDelivery"]={"BOOL":True}
+        valid=CHECKOUT.details(order,order["orderId"]["S"],"customer_123456")
+        self.assertEqual(valid["totalGrossMinor"],12600)
+        invalid=dict(order);invalid["sellerProductionCommitment"]={"BOOL":False}
+        with self.assertRaises(CHECKOUT.NotReady):
+            CHECKOUT.details(invalid,order["orderId"]["S"],"customer_123456")
+        invalid=dict(order);invalid["buyerAcceptsThirtyDayDelivery"]={"BOOL":False}
+        with self.assertRaises(CHECKOUT.NotReady):
+            CHECKOUT.details(invalid,order["orderId"]["S"],"customer_123456")
+
     def test_session_reservation_and_durable_mapping_never_trust_browser(self):
         r=approved_record()
         order_id=r["orderId"]["S"]
