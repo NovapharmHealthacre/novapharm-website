@@ -1,0 +1,33 @@
+name: Customer account request AWS intake safety
+on:
+  pull_request:
+    paths:
+      - 'scripts/activate-account-request.mjs'
+      - 'scripts/activate-contact-intake.mjs'
+      - 'scripts/test-account-request-intake.mjs'
+      - 'assets/js/account-request-production.js'
+      - 'assets/css/account-request.css'
+      - 'account-application/**'
+      - 'portal/index.html'
+      - '.github/workflows/publish-aws-contact-production.yml'
+      - '.github/workflows/customer-account-request.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-account-request-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout candidate
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Validate public source never collects login credentials
+        run: node scripts/test-static-public-source-safety.mjs
+      - name: Validate account release transformation and receipt-only JavaScript
+        run: |
+          node --check scripts/activate-account-request.mjs
+          node --check scripts/activate-contact-intake.mjs
+          node --check assets/js/account-request-production.js
+          node --test scripts/test-account-request-intake.mjs

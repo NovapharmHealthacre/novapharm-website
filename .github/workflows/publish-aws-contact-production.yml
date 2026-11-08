@@ -44,6 +44,7 @@ jobs:
       - name: Prove default public website is noncollecting
         run: |
           node scripts/test-static-public-source-safety.mjs
+          node --test scripts/test-account-request-intake.mjs
           npm ci --ignore-scripts
           npm run build:public-only
           npm run test:owner-corrections:public-only
@@ -51,6 +52,8 @@ jobs:
           node scripts/stage-pages-artifact.mjs _site
           node scripts/check-links.mjs _site
           test -s _site/assets/js/contact-production.js
+          test -s _site/assets/js/account-request-production.js
+          test -s _site/assets/css/account-request.css
       - name: Validate deployed AWS API and record one synthetic business receipt
         env:
           CONTACT_ORIGIN: ${{ inputs.contact_api_origin }}
@@ -100,6 +103,14 @@ jobs:
           grep -Fq 'name="safetyConfirmation"' _site/contact/index.html
           grep -Fq 'src="/assets/js/contact-production.js"' _site/contact/index.html
           grep -Fq 'Secure online enquiry storage' _site/legal/privacy/index.html
+          grep -Fq 'data-live-account-request-form' _site/account-application/index.html
+          grep -Fq 'data-account-request-status' _site/account-application/index.html
+          grep -Fq "data-api-origin=\"$NOVAPHARM_CONTACT_API_ORIGIN\"" _site/account-application/index.html
+          grep -Fq 'src="/assets/js/account-request-production.js"' _site/account-application/index.html
+          grep -Fq 'name="privacyAcknowledgement"' _site/account-application/index.html
+          grep -Fq 'name="safetyConfirmation"' _site/account-application/index.html
+          ! grep -Fq 'type="password"' _site/account-application/index.html
+          ! grep -Fq 'type="file"' _site/account-application/index.html
           ! grep -Fq 'data-email-enquiry-form' _site/contact/index.html
           ! grep -Fq 'This public information release does not collect or transmit enquiry details' _site/contact/index.html
           grep -Fq 'This public website never asks for a portal username, password or confidential company record' _site/portal/index.html
@@ -134,7 +145,15 @@ jobs:
                 && grep -Fq 'src="/assets/js/contact-production.js"' /tmp/novapharm-live-contact.html \
                 && ! grep -Fq 'data-email-enquiry-form' /tmp/novapharm-live-contact.html; then
                 curl --fail --silent --show-error --max-time 15 "https://novapharmhealthcare.com/assets/js/contact-production.js" | grep -Fq "data-live-b2b-enquiry-form"
-                echo "Public business contact form is online with verified AWS acceptance."
+                curl --fail --silent --show-error --location --max-time 15 -H "Cache-Control: no-cache" \
+                  "https://novapharmhealthcare.com/account-application/?accepted-$GITHUB_SHA-$attempt-$(date +%s)" > /tmp/novapharm-live-account.html
+                grep -Fq 'data-live-account-request-form' /tmp/novapharm-live-account.html
+                grep -Fq "$EXPECTED_ORIGIN" /tmp/novapharm-live-account.html
+                grep -Fq 'src="/assets/js/account-request-production.js"' /tmp/novapharm-live-account.html
+                ! grep -Fq 'type="password"' /tmp/novapharm-live-account.html
+                curl --fail --silent --show-error --max-time 15 \
+                  "https://novapharmhealthcare.com/assets/js/account-request-production.js" | grep -Fq 'data-live-account-request-form'
+                echo "Public business contact and receipt-only account-request forms are online after verified AWS acceptance."
                 exit 0
               fi
             fi

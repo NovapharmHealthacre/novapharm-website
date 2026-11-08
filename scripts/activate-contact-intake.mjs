@@ -1,3 +1,4 @@
+import { activateAccountRequestHtml } from "./activate-account-request.mjs";
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
@@ -44,7 +45,7 @@ export function activateContactHtml(html, origin) {
 export function activatePrivacyHtml(html) {
   const anchor = '<section id="business-enquiries"><h2>3. Business enquiries</h2>';
   if (!html.includes(anchor)) throw Error("Privacy notice business-enquiries section missing");
-  const disclosure = '<p><strong>Secure online enquiry storage.</strong> Business-enquiry submissions made through the NovaPharm contact page are processed by NovaPharm in an encrypted AWS DynamoDB inbox in the EU North (Stockholm) region, with automatic expiry scheduled for 30 days after receipt, subject to backup and legal retention limitations. A minimal reference-only internal notification is sent to the approved NovaPharm mailbox; the alert contains no sender name, email address or message. This contact route is for non-clinical business information only, and is not a patient, adverse-event or emergency reporting system.</p>';
+  const disclosure = '<p><strong>Secure online enquiry storage.</strong> Business-enquiry and account-interest submissions made through the NovaPharm contact and business-account-request pages are processed by NovaPharm in an encrypted AWS DynamoDB inbox in the EU North (Stockholm) region, with automatic expiry scheduled for 30 days after receipt, subject to backup and legal retention limitations. A minimal reference-only internal notification is sent to the approved NovaPharm mailbox; the alert contains no sender name, email address or message. This contact route is for non-clinical business information only, and is not a patient, adverse-event or emergency reporting system.</p>';
   return html.replace(anchor, anchor + disclosure);
 }
 
@@ -54,13 +55,17 @@ if (process.env.NOVAPHARM_CONTACT_RELEASE_ACCEPTED === "yes") {
   if (![".", "_site"].includes(artifactRoot)) throw Error("Contact release root must be project source or validated Pages artifact");
   const contactPath = resolve(artifactRoot, "contact/index.html");
   const privacyPath = resolve(artifactRoot, "legal/privacy/index.html");
+  const accountPath = resolve(artifactRoot, "account-application/index.html");
   const contact = readFileSync(contactPath, "utf8");
   const notice = readFileSync(privacyPath, "utf8");
+  const account = readFileSync(accountPath, "utf8");
   const nextContact = activateContactHtml(contact, origin);
   const nextPrivacy = activatePrivacyHtml(notice);
+  const nextAccount = activateAccountRequestHtml(account, origin);
   writeFileSync(contactPath, nextContact);
   writeFileSync(privacyPath, nextPrivacy);
-  console.log("Published production B2B contact view after explicit, verified acceptance gate.");
+  writeFileSync(accountPath, nextAccount);
+  console.log("Published verified B2B contact and business account request views after explicit AWS acceptance gate.");
 } else {
   console.log("B2B contact activation gate not met: retaining email-only public source.");
 }
