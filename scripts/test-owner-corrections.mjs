@@ -172,7 +172,8 @@ for (const sitemap of ["sitemap.xml", "sitemap-images.xml", "sitemap-insights.xm
 
 const home = text("index.html");
 if (home.includes("nav-search")) fail("Homepage navigation still contains the removed search control");
-if (!home.includes("/portal/")) fail("Homepage no longer links to Secure portal");
+if (!home.includes('<a href="https://portal.novapharmhealthcare.com/">Secure Portal</a>')) fail("Homepage Secure Portal navigation does not target the hosted customer portal");
+if (home.includes('<a href="/portal/">Secure Portal</a>')) fail("Homepage still routes Secure Portal navigation to the static holding page");
 if (!home.includes("/account-application/")) fail("Homepage no longer links to Open an account");
 if (!home.includes("Medicine. Where it needs to be")) fail("Homepage is missing the owner-approved hero title.");
 
