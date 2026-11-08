@@ -44,7 +44,7 @@ if (form instanceof HTMLFormElement) {
         const [productSku, count] = line.split(":");
         return `- ${productSku}: ${count} units`;
       });
-      messageField.value = `Please review this preliminary Nutraxin business purchase request and provide a formal quotation, subject to customer qualification, current availability, approved selling prices, delivery costs, UK VAT status and applicable terms.\\n\\n${items.join("\\n")}\\n\\nThis is a non-binding quotation request, not a confirmed order. No payment is authorised.`;
+      messageField.value = `Please review this preliminary Nutraxin business purchase request and provide a formal quotation, subject to customer qualification, current availability, approved selling prices, delivery costs, UK VAT status and applicable terms.\n\n${items.join("\n")}\n\nThis is a non-binding quotation request, not a confirmed order. No payment is authorised.`;
     }
     if (messageField instanceof HTMLTextAreaElement
         && !messageField.value.trim()
