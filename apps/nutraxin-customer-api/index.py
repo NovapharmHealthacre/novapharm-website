@@ -476,6 +476,175 @@ def start_approved_payment(event, customer, receipt_id):
     except (ClientError, ValueError, TypeError, KeyError):
         return error(503, "checkout_service_unavailable")
 
+def verified_personal_account(username):
+    # Retail customers require verified email and a usable account, not a B2B
+    # qualification group. Always recheck that the Cognito user is enabled.
+    try:
+        principal = COGNITO.admin_get_user(Username=username, UserPoolId=POOL_ID)
+        attributes = {x["Name"]: x["Value"] for x in principal.get("UserAttributes", [])}
+        return (principal.get("Enabled") is True and
+                principal.get("UserStatus") == "CONFIRMED" and
+                attributes.get("email_verified") == "true")
+    except ClientError:
+        return False
+
+
+def retail_order_status(event, customer, receipt_id):
+    if not PAYMENT_DDB or not DIRECT_SHOP_PAYMENTS_ENABLED:
+        return error(503, "checkout_not_active")
+    if not verified_personal_account(customer["username"]):
+        return error(403, "verified_email_required")
+    if not re.fullmatch(r"NUT-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}", receipt_id):
+        return error(400, "invalid_order_reference")
+    try:
+        result = PAYMENT_DDB.get_item(TableName=PAYMENT_LEDGER_TABLE,
+                Key={"pk":{"S":"ORDER#"+receipt_id},"sk":{"S":"SUMMARY"}},
+                ConsistentRead=True).get("Item")
+    except ClientError:
+        return error(503, "order_status_unavailable")
+    if not result or result.get("customerSub") != {"S": customer["sub"]}:
+        return error(404, "order_not_found")
+    status = result.get("status", {}).get("S", "AWAITING_STRIPE")
+    return reply(200, {"orderId": receipt_id, "status": status,
+                       "paid": status == "PAID"})
+
+
+def retail_checkout(event, customer):
+    # Merchant owner authorised the existing 48-unit-tier price for 1-10000
+    # units, 20% UK VAT and no separately charged UK shipping. This business
+    # decision does not represent physical warehouse stock as reserved.
+    if not DIRECT_SHOP_PAYMENTS_ENABLED or PAYMENT_DDB is None or CHECKOUT_LAMBDA is None:
+        return error(503, "checkout_not_active")
+    if (event.get("headers") or {}).get("origin", "") != request_base(event):
+        return error(403, "invalid_origin")
+    if not verified_personal_account(customer["username"]):
+        return error(403, "verified_email_required")
+    if event.get("isBase64Encoded"):
+        return error(400, "invalid_payload")
+    raw = event.get("body") or ""
+    if len(raw) > 4096:
+        return error(413, "basket_too_large")
+    try:
+        body = json.loads(raw)
+        request_id = body.get("request_id")
+        lines = body.get("lines")
+        accepts = body.get("accept_terms")
+    except (ValueError, AttributeError):
+        return error(400, "invalid_basket")
+    if accepts is not True:
+        return error(400, "delivery_and_sale_terms_required")
+    if not isinstance(request_id, str) or not re.fullmatch(
+        r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}", request_id):
+        return error(400, "invalid_request_id")
+    if not isinstance(lines, list) or not 1 <= len(lines) <= 19:
+        return error(400, "invalid_order_lines")
+    try:
+        pricing = json.loads(SSM.get_parameter(Name=PRICES_PARAMETER,WithDecryption=True)["Parameter"]["Value"])
+        if pricing.get("status") != "owner_approved_provisional_for_authenticated_quotation_only":
+            return error(503, "owner_price_policy_unavailable")
+        assumptions = pricing.get("model_assumptions", {})
+        if assumptions.get("uk_delivery_charge_pence") != 0 or assumptions.get("uk_delivery_cost_borne_by_seller") is not True:
+            return error(503, "uk_delivery_policy_unavailable")
+        if pricing.get("binding_checkout_enabled") is not False:
+            return error(503, "private_quote_policy_changed")
+        price_by_sku = {item["sku"]: int(item["qty48_price_pence"]) for item in pricing.get("lines", [])}
+    except (ClientError, KeyError, ValueError, TypeError):
+        return error(503, "owner_price_policy_unavailable")
+    if set(price_by_sku) != set(PRODUCTS):
+        return error(503, "incomplete_retail_catalogue")
+    seen = set()
+    ordered = []
+    net = 0
+    gross = 0
+    for line in lines:
+        if not isinstance(line, dict):
+            return error(400, "invalid_order_line")
+        sku = line.get("sku")
+        quantity = line.get("quantity")
+        if (not isinstance(sku, str) or sku not in price_by_sku or sku in seen or
+            type(quantity) is not int or not 1 <= quantity <= 10000):
+            return error(400, "invalid_sku_or_quantity")
+        seen.add(sku)
+        unit = price_by_sku[sku]
+        if unit <= 0 or unit > 99999999:
+            return error(503, "invalid_seller_price")
+        previous_gross = gross
+        net += unit * quantity
+        gross = (net * 120 + 50) // 100
+        if gross > 99999999:
+            return error(422, "basket_exceeds_stripe_payment_limit")
+        ordered.append({"sku": sku, "quantity": quantity,
+                        "name": PRODUCTS[sku][0] + " (UK VAT included)",
+                        "grossMinor": gross - previous_gross})
+    tax = gross - net
+    if tax < 0 or gross != net + tax:
+        return error(503, "failed_total_reconciliation")
+    basket_hash = hashlib.sha256(json.dumps(
+        sorted((item["sku"], item["quantity"]) for item in ordered),
+        separators=(",", ":")).encode()).hexdigest()
+    receipt = "NUT-" + request_id
+    quote_version = "ownerprice_v5_" + basket_hash[:24]
+    item = {
+        "pk": {"S": "ORDER#" + receipt}, "sk": {"S": "SUMMARY"},
+        "orderId": {"S": receipt}, "customerSub": {"S": customer["sub"]},
+        "customerId": {"S": customer["sub"]},
+        "status": {"S": "APPROVED_FOR_PAYMENT"},
+        "currency": {"S": "GBP"}, "destinationCountry": {"S": "GB"},
+        "quoteVersion": {"S": quote_version},
+        "basketHash": {"S": basket_hash},
+        "sellerApprovalReference": {"S": "owner_direct_sale_20261108"},
+        "deliveryQuoteReference": {"S": "owner_uk_delivery_included_20261108"},
+        "taxAssessmentReference": {"S": "owner_uk_supplement_vat20_20261108"},
+        "fulfilmentApprovalReference": {"S": "owner_manufacturer_supply_20261108"},
+        "approvedForPayment": {"BOOL": True},
+        "stockReserved": {"BOOL": False},
+        "sellerProductionCommitment": {"BOOL": True},
+        "buyerAcceptsThirtyDayDelivery": {"BOOL": True},
+        "taxAndShippingVerified": {"BOOL": True},
+        "customerAcceptedTerms": {"BOOL": True},
+        "commerciallyApproved": {"BOOL": True},
+        "expiresAtUnix": {"N": str(now() + 1800)},
+        "productNetMinor": {"N": str(net)},
+        "taxMinor": {"N": str(tax)},
+        "shippingGrossMinor": {"N": "0"},
+        "totalGrossMinor": {"N": str(gross)},
+        "approvedLinesJson": {"S": json.dumps(ordered, separators=(",", ":"))},
+        "ownerCommercialPolicy": {"S": "nutraxin_uk_direct_v1"}
+    }
+    try:
+        PAYMENT_DDB.put_item(TableName=PAYMENT_LEDGER_TABLE, Item=item,
+                            ConditionExpression="attribute_not_exists(pk)")
+    except ClientError as exc:
+        if exc.response.get("Error", {}).get("Code") != "ConditionalCheckFailedException":
+            return error(503, "order_creation_unavailable")
+        try:
+            prior = PAYMENT_DDB.get_item(TableName=PAYMENT_LEDGER_TABLE,
+                      Key={"pk": {"S": "ORDER#" + receipt}, "sk": {"S": "SUMMARY"}},
+                      ConsistentRead=True).get("Item")
+        except ClientError:
+            return error(503, "order_creation_unavailable")
+        if (not prior or prior.get("customerSub") != item["customerSub"] or
+            prior.get("basketHash") != item["basketHash"] or
+            prior.get("quoteVersion") != item["quoteVersion"]):
+            return error(409, "request_id_already_used")
+        if prior.get("status", {}).get("S") == "PAID":
+            return reply(200, {"orderId": receipt, "status": "PAID", "already_paid": True})
+    payload = {"action": "start_approved_checkout", "orderId": receipt, "subject": customer["sub"]}
+    try:
+        response = CHECKOUT_LAMBDA.invoke(FunctionName=PRODUCTION_CHECKOUT_FUNCTION,
+                      InvocationType="RequestResponse",
+                      Payload=json.dumps(payload).encode("utf-8"))
+        if response.get("FunctionError"):
+            return error(503, "stripe_checkout_unavailable")
+        wrapped = json.loads(response["Payload"].read().decode("utf-8"))
+        checkout = json.loads(wrapped.get("body") or "{}")
+        url = checkout.get("checkoutUrl")
+        if wrapped.get("statusCode") == 200 and isinstance(url, str) and url.startswith("https://checkout.stripe.com/"):
+            return reply(200, {"orderId": receipt, "checkoutUrl": url})
+        return error(503, "stripe_checkout_unavailable")
+    except (ClientError, ValueError, TypeError, KeyError):
+        return error(503, "stripe_checkout_unavailable")
+
 def handler(event,context):
     method=(event.get("requestContext",{}).get("http",{}).get("method") or "GET").upper()
     path=event.get("rawPath") or "/"
