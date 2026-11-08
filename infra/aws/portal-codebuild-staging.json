@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "NovaPharm AWS staging-only portal image builder. Requires approved CodeConnections GitHub App. Never deploys a portal, customer login or production DNS.",
+  "Description": "NovaPharm staging-only portal image builder with independently scoped CodeConnections token access. No deployment, customer login or production DNS.",
   "Parameters": {
     "GitHubConnectionArn": {
       "Type": "String",
@@ -69,6 +69,14 @@
                   "Resource": {
                     "Fn::Sub": "${BuildLogGroup.Arn}:*"
                   }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "codeconnections:GetConnection",
+                    "codeconnections:GetConnectionToken"
+                  ],
+                  "Resource": "arn:aws:codeconnections:eu-north-1:250675045172:connection/84ae9bf2-6dbb-427a-9605-57fadb0ef2fd"
                 },
                 {
                   "Effect": "Allow",
