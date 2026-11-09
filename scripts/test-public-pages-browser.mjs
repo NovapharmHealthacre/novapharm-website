@@ -152,6 +152,38 @@ async function assertLayout(page, label) {
   assert.deepEqual(layout.midWordBreaks, [], `${label}: headings wrap inside a word`);
 }
 
+async function assertFooterHeadings(page, label) {
+  const footer = await page.evaluate(() => {
+    const root = document.querySelector("footer.npd-footer.site-footer");
+    if (!root || getComputedStyle(root).display === "none") return null;
+    const headings = [...root.querySelectorAll(".npd-footer-top h2")];
+    const sizes = headings.map((node) => Number.parseFloat(getComputedStyle(node).fontSize));
+    const overflow = headings.filter((node) => {
+      const parent = node.parentElement.getBoundingClientRect();
+      const box = node.getBoundingClientRect();
+      return box.left < parent.left - 1 || box.right > parent.right + 1;
+    }).map((node) => node.textContent.trim());
+    const overlaps = [];
+    for (let i = 0; i < headings.length; i += 1) {
+      for (let j = i + 1; j < headings.length; j += 1) {
+        const a = headings[i].getBoundingClientRect();
+        const b = headings[j].getBoundingClientRect();
+        if (a.right > b.left + 1 && b.right > a.left + 1 &&
+            a.bottom > b.top + 1 && b.bottom > a.top + 1) {
+          overlaps.push([headings[i].textContent.trim(), headings[j].textContent.trim()]);
+        }
+      }
+    }
+    return { count: headings.length, sizes, overflow, overlaps };
+  });
+  if (!footer) return; // Contact has a separate, intentionally compact footer.
+  assert.equal(footer.count, 4, `${label}: expected four corporate footer headings`);
+  assert.ok(footer.sizes.every((size) => size >= 12 && size <= 16),
+    `${label}: footer headings must use compact typography, got ${footer.sizes}`);
+  assert.deepEqual(footer.overflow, [], `${label}: footer heading escaped its column`);
+  assert.deepEqual(footer.overlaps, [], `${label}: corporate footer headings overlap`);
+}
+
 for (const [engineName, browserType] of engines) {
   const browser = await browserType.launch({ headless: true });
   try {
@@ -187,6 +219,7 @@ for (const [engineName, browserType] of engines) {
             assert.ok(bodyText.includes(route.required), `${engineName} ${viewport.name} ${route.path}: required page marker missing`);
 
             await assertLayout(page, `${engineName} ${viewport.name} ${route.path}`);
+            await assertFooterHeadings(page, `${engineName} ${viewport.name} ${route.path}`);
             if (route.name === "home" && viewport.name !== "tablet-768") {
               await page.emulateMedia({ contrast: "more" });
               const contrastState = await page.evaluate(() => ({

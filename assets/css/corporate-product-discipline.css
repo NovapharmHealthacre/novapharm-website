@@ -1441,11 +1441,16 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   font-size: 14px;
 }
 
-.npd-footer-top h2 {
+.npd-footer.site-footer .npd-footer-top h2 {
   margin: 4px 0 18px;
   color: var(--npd-ink);
+  font-family: var(--npd-system);
   font-size: 13px;
   font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0;
+  text-wrap: wrap;
+  overflow-wrap: normal;
 }
 
 .npd-footer-top div > a,
