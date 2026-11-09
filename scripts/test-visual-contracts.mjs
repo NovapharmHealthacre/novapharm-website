@@ -30,11 +30,11 @@ assert.ok(css.includes("-webkit-backdrop-filter: none;"), "reduced transparency 
 const publicAppleCss = text("assets/css/apple-pharma-public.css");
 assert.ok(publicAppleCss.includes("outline: 3px solid #0a66c2;"), "keyboard focus uses a solid high-contrast outline");
 assert.ok(!publicAppleCss.includes("rgba(180, 35, 46, 0.36)"), "translucent focus ring must not return");
-assert.doesNotMatch(publicAppleCss, /body\\[data-page="home"\\]\\s+h[1-4]\\b/,
+assert.doesNotMatch(publicAppleCss, /body\[data-page="home"\]\s+h[1-4]\b/,
   "homepage heading scale must stay inside main, not bleed into the footer");
-assert.match(publicAppleCss, /body\\[data-page="home"\\] main h2/,
+assert.match(publicAppleCss, /body\[data-page="home"\] main h2/,
   "homepage editorial section headings must still receive their approved scale");
-assert.match(css, /\\.npd-footer\\.site-footer \\.npd-footer-top h2\\s*\\{[^}]*font-size:\\s*13px/s,
+assert.match(css, /\.npd-footer\.site-footer \.npd-footer-top h2\s*\{[^}]*font-size:\s*13px/s,
   "shared footer typography requires an explicitly scoped heading override");
 
 function contrastOnWhite(hex) {
