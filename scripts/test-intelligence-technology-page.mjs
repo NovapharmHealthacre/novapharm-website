@@ -76,6 +76,8 @@ assert.ok(materialiser.includes('data-mega-trigger'), "Generated chrome must ret
 
 
 assert.ok(source.includes('id="intelligence-research"') && published.includes('id="intelligence-research"'), "The public research entry must survive materialisation");
+assert.ok(source.includes("English Prescribing Data") && published.includes("Secondary Care Medicines Data"), "EPD and SCMD must use the correct NHSBSA terminology");
+assert.ok(!source.includes("Scottish Medicines Data") && !published.includes("Electronic Prescribing Data"), "Incorrect dataset terminology must not regress");
 assert.ok(source.includes('data-npi-query') && published.includes('data-npi-query'), "Medicine research input must be present");
 assert.ok(source.includes('data-npi-results-list') && published.includes('data-npi-results-list'), "Accessible official-source results must be present");
 assert.ok(published.includes('src="/assets/js/intelligence-research-launcher.js"'), "Published research script must load");
