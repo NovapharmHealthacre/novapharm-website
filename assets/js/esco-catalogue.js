@@ -115,6 +115,7 @@ if (root) {
     }
     if (readyToggle) {
       readyToggle.disabled = readyPrices.size === 0;
+      if (readyPrices.size && new URLSearchParams(window.location.search).get("availability") === "ready") readyToggle.checked = true;
       readyToggle.title = readyPrices.size
         ? "Show only products currently available for secure card checkout"
         : "No products currently available for immediate card checkout";
