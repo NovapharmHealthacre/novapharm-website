@@ -1,0 +1,470 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "NovaPharm Intelligence protected read-only API (candidate)",
+    "version": "0.1.0",
+    "description": "Draft implementation contract for existing authorised BNF medicine identity, NHSBSA EPD/PCA observations and UK nearby healthcare organisations. These routes remain session and board/admin scope protected. No global coverage, forecast, NOVA AI or production deployment is asserted."
+  },
+  "servers": [
+    {
+      "url": "/api/v1/intelligence",
+      "description": "Authenticated API server only; not the public GitHub Pages site"
+    }
+  ],
+  "security": [
+    {
+      "portalSession": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Medicine identity"
+    },
+    {
+      "name": "Observed market"
+    },
+    {
+      "name": "Geography"
+    }
+  ],
+  "paths": {
+    "/medicines/search": {
+      "get": {
+        "tags": [
+          "Medicine identity"
+        ],
+        "operationId": "searchMedicinesV1",
+        "summary": "Search the currently ingested BNF identity catalogue",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current identity matches, not verified demand",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MedicineSearch"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/medicines/{medicineId}": {
+      "get": {
+        "tags": [
+          "Medicine identity"
+        ],
+        "operationId": "medicineDetailV1",
+        "summary": "Show canonical record and code history for a scoped identity",
+        "parameters": [
+          {
+            "name": "medicineId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^medicine-[a-f0-9]{32}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Medicine identity record including aliases, code history and source limitations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "required": [
+                    "medicine",
+                    "aliases",
+                    "codeHistory",
+                    "analyticalAvailability",
+                    "limitations"
+                  ],
+                  "properties": {
+                    "medicine": {
+                      "type": "object"
+                    },
+                    "aliases": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "codeHistory": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "analyticalAvailability": {
+                      "type": "object"
+                    },
+                    "limitations": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/markets/observations": {
+      "get": {
+        "tags": [
+          "Observed market"
+        ],
+        "operationId": "medicineObservationsV1",
+        "summary": "Query accepted EPD/PCA observations without imputing missing data",
+        "parameters": [
+          {
+            "name": "dataset",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "epd",
+                "pca"
+              ]
+            }
+          },
+          {
+            "name": "medicineId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Source-dependent analytical result; dataState must be inspected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "dataState",
+                    "rows",
+                    "series",
+                    "limitations"
+                  ],
+                  "properties": {
+                    "dataState": {
+                      "type": "string",
+                      "enum": [
+                        "accepted_facts",
+                        "no_matching_facts",
+                        "source_not_ingested"
+                      ]
+                    },
+                    "rows": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "series": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "limitations": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/geographies/nearby": {
+      "get": {
+        "tags": [
+          "Geography"
+        ],
+        "operationId": "nearbyHealthcareV1",
+        "summary": "Search postcode-scoped pharmacy and practice records",
+        "parameters": [
+          {
+            "name": "postcode",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "radiusKm",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Source-backed nearby organizations subject to existing source limitations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "portalSession": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "np_session",
+        "description": "Existing authenticated portal session, with server-side board/admin scope enforcement."
+      }
+    },
+    "schemas": {
+      "MedicineSearch": {
+        "type": "object",
+        "required": [
+          "query",
+          "source",
+          "demandFactsIncluded",
+          "results"
+        ],
+        "properties": {
+          "query": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "sourcePeriod": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "demandFactsIncluded": {
+            "const": false
+          },
+          "dataFreshness": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "medicineId",
+                "canonicalName",
+                "identityStatus"
+              ],
+              "properties": {
+                "medicineId": {
+                  "type": "string"
+                },
+                "canonicalName": {
+                  "type": "string"
+                },
+                "identityStatus": {
+                  "const": "bnf_current_identity_only"
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "HTTP 400",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "error"
+              ],
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "HTTP 401",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "error"
+              ],
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "HTTP 403",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "error"
+              ],
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "RateLimited": {
+        "description": "HTTP 429",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "error"
+              ],
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "HTTP 404",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "error"
+              ],
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        }
+      }
+    }
+  }
+}
