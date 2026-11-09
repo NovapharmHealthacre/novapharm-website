@@ -31,7 +31,8 @@ const publicFiles = [
   ...indexablePageMeta.map((slug) => slug ? `${slug}/index.html` : "index.html"),
   ...leadership.map((person) => `leadership/${person.slug}/index.html`),
   ...articles.map((article) => `news-insights/${article.slug}/index.html`),
-  ...nutraxinProducts.map((product) => `products/nutraxin/${product.slug}/index.html`)
+  ...nutraxinProducts.map((product) => `products/nutraxin/${product.slug}/index.html`),
+  "products/esco/index.html"
 ].filter((file) => !retiredPublicFiles.has(file));
 const files = [...new Set(publicFiles)];
 const records = [];
@@ -75,7 +76,7 @@ for (const file of files) {
   if (!schemaText.includes(WEBSITE_ID)) fail(`${file} is not connected to the canonical WebSite entity`);
   if (!schemas.some((schema) => {
     const types = Array.isArray(schema["@type"]) ? schema["@type"] : [schema["@type"]];
-    return ["WebPage", "ProfilePage", "AboutPage", "ContactPage", "Article", "BlogPosting"].some((type) => types.includes(type));
+    return ["WebPage", "CollectionPage", "ProfilePage", "AboutPage", "ContactPage", "Article", "BlogPosting"].some((type) => types.includes(type));
   })) fail(`${file} lacks an appropriate page entity`);
 
   for (const image of html.matchAll(/<img\b[^>]*>/gi)) {
