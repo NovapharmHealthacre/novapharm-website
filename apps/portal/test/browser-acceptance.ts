@@ -444,7 +444,7 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
         results: [{ medicineId: validationMedicineId, canonicalName: "Repository validation medicine", presentationCode: "0208020Z0AAACAC", productName: "Validation medicine", productCode: "0208020Z0AA", chemicalSubstance: "Validation substance", chemicalSubstanceCode: "0208020Z0", identityStatus: "bnf_current_identity_only" }],
         dataFreshness: "2026-08-24T00:00:00.000Z",
       } : requestUrl.pathname.endsWith("/analytics") ? {
-        query: { dataset: "epd", metric: "items", page: 1, pageSize: 50 }, source: "Repository validation fixture", sourcePeriods: ["2026-06"], dataState: "accepted_facts",
+        query: { dataset: "epd", metric: "items", page: 1, pageSize: 50, sortBy: requestUrl.searchParams.get("sortBy") || "month_key", sortDirection: requestUrl.searchParams.get("sortDirection") || "desc" }, source: "Repository validation fixture", sourcePeriods: ["2026-06"], dataState: "accepted_facts",
         rows: [{ month_key: "2026-06", medicine_id: validationMedicineId, canonical_name: "Repository validation medicine", practice_code: "A00001", practice_name: "Repository validation practice", practice_postcode: "SW1A 2AA", icb_code: "Q00", icb_name: "Repository validation ICB", region_code: "Y00", region_name: "Repository validation region", items: 12, quantity: 24, nic: 36, actual_cost: 30, registered_population: 1200, metric_value: 12 }],
         series: [{ month_key: "2026-06", items: 12, quantity: 24, nic: 36, actual_cost: 30, metric_value: 12 }],
         summary: { totalItems: 12, totalQuantity: 24, totalNic: 36, totalActualCost: 30, practiceCount: 1, geographyCount: 1, latestItemsPer1000: 10, firstMonth: "2026-06", latestMonth: "2026-06", sourceCutoffAt: "2026-07-31T00:00:00.000Z" },
@@ -475,6 +475,8 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     await page.getByLabel("Region").fill("Repository validation region");
     await page.getByRole("button", { name: "Reset filters", exact: true }).click();
     assert.equal(await page.getByLabel("Region").inputValue(), "", `${engine}: one-action filter reset did not clear the grouped filters`);
+    await page.getByLabel("Table order").selectOption("items");
+    await page.getByLabel("Sort direction").selectOption("desc");
     await page.getByLabel("Start month").fill("2026-06");
     await page.getByLabel("End month").fill("2026-06");
     await page.getByRole("button", { name: "Run governed query", exact: true }).click();
@@ -483,6 +485,7 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     assert.equal(await page.getByText("No governed intelligence data loaded", { exact: true }).count(), 0, `${engine}: stale empty-source state remained after accepted analytics loaded`);
     await page.getByText("One accepted period is available", { exact: true }).waitFor();
     assert.equal(await page.getByRole("heading", { name: "Accepted analytical rows", exact: true }).count(), 1, `${engine}: accepted analytical rows did not render`);
+    await page.getByText(/Server-sorted by items \(desc\)/).waitFor();
     assert.equal(await page.getByText("999", { exact: true }).count(), 0, `${engine}: a validation-sample sentinel leaked into rendered analytics`);
     const evidenceGates = page.locator("details").filter({ hasText: "Regulatory, patent and SPC evidence" });
     assert.equal(await evidenceGates.getAttribute("open"), null, `${engine}: optional evidence gates were not initially collapsed`);
