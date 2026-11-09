@@ -25,6 +25,23 @@ if (form instanceof HTMLFormElement) {
     const productName = intent.get("product") || "";
     const sku = intent.get("sku") || "";
     const messageField = form.elements.namedItem("message");
+    // Strictly enumerated, non-sensitive subscription proposal interests.
+    // No URL-supplied price or entitlements are accepted, and this does not
+    // create a paid subscription or customer account.
+    const requestedIntelligencePlan = intent.get("intelligencePlan") || "";
+    const intelligencePlans = Object.freeze({
+      starter: "Starter",
+      professional: "Professional",
+      enterprise: "Enterprise"
+    });
+    if (messageField instanceof HTMLTextAreaElement
+        && !messageField.value.trim()
+        && Object.hasOwn(intelligencePlans, requestedIntelligencePlan)
+        && !intent.has("basket") && !intent.has("quote") && !intent.has("product")) {
+      messageField.value = "NovaPharm Intelligence " + intelligencePlans[requestedIntelligencePlan] +
+        " proposal request.\\n\\nPlease confirm product availability, the proposed scope, user entitlements, data-source licensing, regional price and tax treatment, and commercial terms before any purchase or account activation. This is a non-binding business enquiry.";
+    }
+
     // ESCO quote-list hints are untrusted. Accept only model-independent
     // catalogue IDs and safe quantities; no buyer-provided HTML or pricing.
     const rawEscoQuote = intent.get("quote") || "";
