@@ -48,7 +48,8 @@ export function buildMerchantReviewRows(data = catalogue) {
       merchant_release_approval: "",
       checkout_status: "AWAITING_INDIVIDUAL_APPROVAL",
       customer_order_request_available: "YES",
-      immediate_live_card_checkout_approved: "NO"
+      current_live_checkout_status: "VERIFY_AGAINST_PROTECTED_SSM_POLICY",
+      additional_live_card_checkout_approved_by_this_matrix: "NO"
     };
   }));
   if (result.length !== 373 || ids.size !== 373) throw new Error("ESCO review matrix incomplete");
