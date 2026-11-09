@@ -198,7 +198,7 @@ def checkout(event):
             "cancel_url": STORE_ORIGIN + "/products/esco/bag/?checkout=cancelled",
             "metadata[brand]": "ESCO", "metadata[order_id]": order_id,
             "metadata[basket_hash]": basket_hash,
-            "integration_identifier": "novapharm-esco-" + secrets.token_hex(4)}
+            "integration_identifier": "novapharm-esco-" + "".join(chr(97 + int(ch, 16)) for ch in hashlib.sha256(request_id.encode()).hexdigest()[:8])}
         for i, row in enumerate(lines):
             params["line_items[%d][price]" % i] = approved[row["id"]]["stripe_price_id"]
             params["line_items[%d][quantity]" % i] = row["quantity"]
@@ -301,6 +301,25 @@ def webhook(event):
     except (ClientError, KeyError, ValueError, TypeError):
         return fail(503, "payment_ledger_unavailable")
 
+def order_status(event, order_id):
+    headers = {str(k).lower(): str(v) for k, v in (event.get("headers") or {}).items()}
+    if headers.get("origin") not in ALLOWED_ORIGINS:
+        return fail(403, "invalid_origin")
+    if not isinstance(order_id, str) or not UUID4.fullmatch(order_id.removeprefix("ESCO-")):
+        return fail(400, "invalid_order_id")
+    try:
+        found = aws("dynamodb").get_item(
+            TableName=ORDERS_TABLE,
+            Key={"pk": {"S": "ORDER#" + order_id}, "sk": {"S": "SUMMARY"}},
+            ConsistentRead=True).get("Item")
+    except ClientError:
+        return fail(503, "order_status_unavailable")
+    if not found or found.get("brand") != {"S": "ESCO"}:
+        return fail(404, "order_not_found")
+    state = found.get("state", {}).get("S", "PROCESSING")
+    return respond(200, {"orderId": order_id, "status": state if state in
+        ("PAID", "PAYMENT_FAILED", "CHECKOUT_OPEN") else "PROCESSING", "paid": state == "PAID"})
+
 def handler(event, context=None):
     path = event.get("rawPath") or "/"
     method = (event.get("requestContext") or {}).get("http", {}).get("method", "GET")
@@ -318,6 +337,8 @@ def handler(event, context=None):
         except (ClientError, KeyError, ValueError, TypeError):
             return respond(200, {"checkout_ready": False, "approved_catalogue_ids": [],
                 "currency": "GBP", "payment_collection_active": False})
+    if method == "GET" and path.startswith("/status/"):
+        return order_status(event, path.removeprefix("/status/"))
     if method == "POST" and path == "/checkout":
         return checkout(event)
     if method == "POST" and path == "/stripe/webhook":
