@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { portalModules, visiblePortalModules } from "@novapharm/portal-contracts";
-import { areaLandingRoutes, isPortalAccessType, landingRouteForAccess, medicinesIntelligenceSubviews, normalisePortalPath, resolvePortalView } from "../data/routes";
 import { intelligenceWorkspaceCatalogue, intelligenceWorkspaceSlugs } from "../data/intelligence-workspaces";
+import { areaLandingRoutes, isPortalAccessType, landingRouteForAccess, medicinesIntelligenceSubviews, normalisePortalPath, resolvePortalView } from "../data/routes";
 
 test("only release-visible governed modules resolve through the component portal", () => {
   for (const module of portalModules) {
@@ -62,7 +62,7 @@ test("all 22 canonical workspaces resolve to the existing protected executive mo
       assert.equal(view.module.code, "executive.nhs-data");
       assert.equal(view.subview, workspace.slug);
     }
-    assert.equal(workspace.requirements.length >= 2, true, workspace.title + " must document an evidence boundary");
+    assert.equal(workspace.requirements.length >= 2, true, `${workspace.title} must document an evidence boundary`);
     assert.ok(workspace.state === "gated" || workspace.state === "existing-read-only");
   }
   assert.equal(resolvePortalView("/portal/executive-platform/medicines-intelligence/admin/"), null);
