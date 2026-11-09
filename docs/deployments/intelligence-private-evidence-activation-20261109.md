@@ -2,11 +2,11 @@
 
 **9 November 2026. Status: NOT VERIFIED LIVE.**
 
-The public Technology page is a product preview, not the authorised Medicines Terminal. The separately deployed https://portal.novapharmhealthcare.com/ must pass the live gate before any customer account, subscription, source record or NOVA inference is described as operational.
+The public Technology page is a product preview, not the authorised Medicines Terminal. The **proposed, separate** Medicines Terminal address is https://intelligence.novapharmhealthcare.com/. This is a future release target, **not a deployed or verified DNS/HTTPS service**. It must pass the live gate before any customer account, subscription, source record or NOVA inference is described as operational. The existing https://portal.novapharmhealthcare.com/ currently serves Nutraxin customer accounts and must not be replaced, redirected or treated as an Intelligence deployment.
 
 ## Anonymous checks must fail closed
 
-The production activation workflow must resolve portal DNS and obtain an HTTPS protected response bearing X-Robots-Tag: noindex. It must issue unauthenticated GET requests to each route:
+The production activation workflow must resolve the dedicated Intelligence hostname in DNS and obtain an HTTPS protected response bearing X-Robots-Tag: noindex. It must issue unauthenticated GET requests to each route:
 
 - /gateway/v1/intelligence/regulatory/us/fda-labels?drug=apixaban
 - /gateway/v1/intelligence/evidence/us/clinical-trials?intervention=apixaban
