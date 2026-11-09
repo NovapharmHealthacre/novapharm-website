@@ -7,6 +7,7 @@ const BAG_KEY = "novapharm-esco-quote-list-v1";
 const itemsRoot = document.querySelector("[data-esco-bag-items]");
 const totalNode = document.querySelector("[data-esco-bag-total]");
 const send = document.querySelector("[data-esco-bag-quote]");
+const itemCountNode = document.querySelector("[data-esco-bag-count]");
 const checkoutButton = document.querySelector("[data-esco-card-checkout]");
 const termsCheckbox = document.querySelector("[data-esco-payment-terms]");
 const checkoutNote = document.querySelector("#esco-payment-note");
@@ -115,12 +116,17 @@ function node(tag, content, classname = "") {
 async function init() {
   if (!itemsRoot || !send || !totalNode) return;
   itemsRoot.replaceChildren(node("p", "Loading your Bag…", "esco-bag-message"));
-  const [catalogueResponse, pricesResponse] = await Promise.all([
+  const [catalogueResponse, pricesResponse, photosResponse] = await Promise.all([
+    fetch("/assets/data/esco-catalogue.json", { credentials: "omit", cache: "no-store" }),
+    fetch("/assets/data/esco-uk-guide-prices.json", { credentials: "omit", cache: "no-store" }),
+    fetch("/assets/data/esco-model-photo-map.json", { credentials: "omit", cache: "no-store" })
     fetch("/assets/data/esco-catalogue.json", { credentials: "omit", cache: "no-store" }),
     fetch("/assets/data/esco-uk-guide-prices.json", { credentials: "omit", cache: "no-store" })
   ]);
   if (!catalogueResponse.ok || !pricesResponse.ok) throw new Error("The ESCO catalogue could not load");
-  const [catalogue, priceData] = await Promise.all([catalogueResponse.json(), pricesResponse.json()]);
+  const [catalogue, priceData, photos] = await Promise.all([
+    catalogueResponse.json(), pricesResponse.json(), photosResponse.ok ? photosResponse.json() : Promise.resolve({images:{}})
+  ]);
   if (catalogue?.entriesTotal !== 373 || priceData?.entriesTotal !== 373 ||
       priceData?.checkoutEnabled !== false || priceData?.paymentCollectionEnabled !== false ||
       priceData?.requestQuoteOnly !== true) throw new Error("This Bag cannot verify safe ESCO catalogue authority");
@@ -128,33 +134,78 @@ async function init() {
   const known = new Map(all.map(p => [p.id, p]));
   if (known.size !== 373) throw new Error("Duplicate catalogue item");
   let state = loadBag().filter(item => known.has(item.id) && Number.isFinite(priceData.guidePrices?.[item.id]?.guidePriceExVatGbp));
+  function productImage(id, product) {
+    const manufacturer = photos?.images?.[id];
+    if (manufacturer?.model === product.model &&
+        /^\/assets\/media\/esco\/esco-p[0-9]{2}-image[0-9]{2}\.webp$/.test(manufacturer.path)) {
+      return {src: manufacturer.path, alt: "Catalogue photograph associated with " + product.name,
+        note: "Supplier catalogue photo · exact variant to confirm"};
+    }
+    const illustration = priceData?.visualPreviews?.[id];
+    if (typeof illustration === "string" &&
+        /^\/assets\/media\/esco\/previews\/esco-cat-[0-9]{4}\.svg$/.test(illustration)) {
+      return {src:illustration, alt:"Illustrative product preview for " + product.name,
+        note:"Product illustration · not an exact supplier photograph"};
+    }
+    return null;
+  }
   function render() {
     itemsRoot.replaceChildren();
     if (!state.length) itemsRoot.append(node("p", "Your Bag is empty. Explore the ESCO range to add products.", "esco-bag-message"));
     let pennies = 0;
+    let unitCount = 0;
     for (const item of state) {
       const p = known.get(item.id);
       const guide = priceData.guidePrices[item.id];
       const unitPennies = Math.round(guide.guidePriceExVatGbp * 100);
-      pennies += unitPennies * item.quantity;
+      const linePennies = unitPennies * item.quantity;
+      pennies += linePennies;
+      unitCount += item.quantity;
       const article = document.createElement("article");
-      article.className = "esco-bag-row";
-      const text = document.createElement("div");
-      text.append(node("strong", p.name), node("p", item.id + " · " + (p.model || "Variant to confirm"), "esco-bag-meta"),
-        node("p", GBP.format(unitPennies / 100) + " guide per unit · ex VAT", "esco-bag-meta"));
-      const controls = document.createElement("div");
-      controls.className = "esco-bag-row-controls";
-      const label = node("label", "Quantity");
-      const qty = document.createElement("input");
-      qty.type = "number"; qty.min = "1"; qty.max = "1000"; qty.step = "1"; qty.value = String(item.quantity);
-      qty.dataset.escoBagQty = item.id; qty.setAttribute("aria-label", "Quantity for " + p.name);
+      article.className = "esco-bag-row esco-shopping-item";
+      const pictureInfo = productImage(item.id, p);
+      const pictureBox = node("div", "", "esco-shopping-picture");
+      if (pictureInfo) {
+        const pic = document.createElement("img");
+        pic.src = pictureInfo.src; pic.alt = pictureInfo.alt;
+        pic.loading = "lazy"; pic.decoding = "async";
+        pic.width = 220; pic.height = 186;
+        pictureBox.append(pic);
+      } else {
+        pictureBox.append(node("span", "ESCO", "esco-shopping-image-fallback"));
+      }
+      const content = node("div", "", "esco-shopping-product");
+      content.append(
+        node("h3", p.name, "esco-shopping-product-name"),
+        node("p", (p.model ? "ESCO " + p.model : "Model to confirm") + " · " + item.id, "esco-shopping-model"),
+        node("p", pictureInfo?.note || "Exact product imagery to be confirmed", "esco-shopping-provenance"),
+        node("p", "Guide " + GBP.format(unitPennies / 100) + " per unit · ex VAT", "esco-shopping-unitprice")
+      );
+      const controls = node("div", "", "esco-bag-row-controls");
+      const label = node("label", "Quantity", "esco-shopping-qty-label");
+      const qty = document.createElement("select");
+      const choices = new Set([1,2,3,4,5,6,7,8,9,10,12,24,48,100,250,500,1000,item.quantity]);
+      for(const n of [...choices].sort((a,b)=>a-b)) {
+        const opt = document.createElement("option");
+        opt.value = String(n); opt.textContent = String(n);
+        if (n === item.quantity) opt.selected = true;
+        qty.append(opt);
+      }
+      qty.dataset.escoBagQty = item.id;
+      qty.setAttribute("aria-label", "Quantity of " + p.name);
       label.append(qty);
-      const remove = node("button", "Remove");
+      const remove = node("button", "Remove", "esco-shopping-remove");
       remove.type = "button"; remove.dataset.escoBagRemove = item.id;
+      remove.setAttribute("aria-label", "Remove " + p.name + " from your Bag");
       controls.append(label, remove);
-      article.append(text, controls);
+      const linePrice = node("div", "", "esco-shopping-line");
+      linePrice.append(node("strong", GBP.format(linePennies / 100), "esco-shopping-line-total"),
+        node("small", "Guide total · ex VAT", "esco-shopping-line-note"));
+      content.append(controls);
+      article.append(pictureBox,content,linePrice);
       itemsRoot.append(article);
     }
+    if (itemCountNode) itemCountNode.textContent = unitCount + (unitCount === 1 ? " item" : " items");
     totalNode.textContent = GBP.format(pennies / 100);
     const lines = state.map((item) => item.id + " qty " + item.quantity);
     const quote = "ESCO Anand UK quotation request (catalogue 2026). Items: " + lines.join("; ") +
