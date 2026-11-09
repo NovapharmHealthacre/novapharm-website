@@ -18,8 +18,14 @@ test("all protected intelligence evidence endpoints are rejected without a live 
 });
 
 test("HTTPS ingress rejects public/indexable production portal responses", () => {
-  assert.match(source, /https:\/\/intelligence\.novapharmhealthcare\.com/u);
-  assert.doesNotMatch(source, /https:\/\/portal\.novapharmhealthcare\.com/u, "Nutraxin customer hostname is a separate application");
+  assert.match(source, /^\s*(?:portal|origin)="https:\/\/intelligence\.novapharmhealthcare\.com"$/mu);
+  assert.match(source, /^\s*host="intelligence\.novapharmhealthcare\.com"$/mu);
+  // Validate the actual shell assignments, rather than matching a URL substring.
+  const assignments = [...source.matchAll(/^\s*(?:portal|origin)="([^"]+)"$/gmu)].map((match) => match[1]);
+  assert.deepEqual(assignments, [
+    "https://intelligence.novapharmhealthcare.com",
+    "https://intelligence.novapharmhealthcare.com",
+  ]);
   assert.match(source, /NUTRAXIN \/ CUSTOMER ACCOUNT\|Welcome to Nutraxin/u);
   assert.match(source, /getent ahostsv4/u);
   assert.match(source, /\^x-robots-tag:\.\*noindex/iu);
