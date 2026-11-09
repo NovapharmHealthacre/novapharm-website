@@ -117,13 +117,19 @@
       "Value": {
         "Ref": "NutraxinConsumerPool"
       },
-      "Description": "Consumer-only identity; NEVER workforce auth"
+      "Description": "Consumer-only identity; NEVER workforce auth",
+      "Export": {
+        "Name": "novapharm-nutraxin-consumer-user-pool-id"
+      }
     },
     "UserPoolClientId": {
       "Value": {
         "Ref": "NutraxinConsumerWeb"
       },
-      "Description": "Public PKCE client ID, no secret"
+      "Description": "Public PKCE client ID, no secret",
+      "Export": {
+        "Name": "novapharm-nutraxin-consumer-client-id"
+      }
     },
     "CognitoDomain": {
       "Value": "novapharm-nutraxin-production-250675045172.auth.eu-north-1.amazoncognito.com"
