@@ -20,3 +20,18 @@ test("category imagery identifies authentic illustrative sources, not verified o
  assert.ok(data.categories.every(x=>x.representativeImage.startsWith("esco-") && x.representativeImage.endsWith(".webp") && x.illustrationOnly === true));
  assert.ok(entries.every(x=>x.photoVerified===false));
 });
+
+test("ESCO has a 12-item quotation list with contact-form prefill but no payment capture",()=>{
+  const builder=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
+  const interaction=readFileSync("assets/js/esco-catalogue.js","utf8");
+  const contact=readFileSync("assets/js/novapharm.js","utf8");
+  const fallback=readFileSync("assets/js/contact-email-draft.js","utf8");
+  assert.match(builder,/data-esco-add/);
+  assert.match(builder,/data-esco-quote-items/);
+  assert.match(builder,/Request a quotation/);
+  assert.match(interaction,/const MAX_ITEMS = 12/);
+  assert.match(interaction,/quote=/);
+  assert.match(contact,/quoteMessage.*startsWith/);
+  assert.match(fallback,/quoteMessage.*startsWith/);
+  assert.doesNotMatch(builder,/payment_collection_enabled|buy now|checkoutEnabled: true/);
+});
