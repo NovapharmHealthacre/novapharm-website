@@ -145,6 +145,13 @@ for (const sitemap of ["sitemap.xml", "sitemap-insights.xml", "sitemap-images.xm
   if (!robots.includes(`Sitemap: ${SITE_URL}/${sitemap}`)) fail(`robots.txt does not reference ${sitemap}`);
 }
 
+const escoCollection = source("products/esco/index.html");
+const escoSchemas = parseSchemas(escoCollection, "products/esco/index.html");
+const escoEntity = escoSchemas.find((schema) => schema["@type"] === "CollectionPage");
+if (escoEntity?.url !== `${SITE_URL}/products/esco/` || escoEntity?.mainEntity?.numberOfItems !== 373) fail("ESCO collection discovery schema must describe exactly the 373 public references");
+if (escoSchemas.some((schema) => ["Product", "Offer"].includes(schema["@type"]))) fail("ESCO collection cannot claim merchant Product/Offer availability");
+if (escoCollection.includes(`hreflang="en-GB" href="${SITE_URL}/products/"`)) fail("ESCO language alternate must not point to the generic Products overview");
+if (!escoCollection.includes('name="twitter:description" content="373 ESCO Anand')) fail("ESCO social metadata must not inherit the Products overview description");
 const sitemap = source("sitemap.xml");
 for (const record of records) if (!sitemap.includes(`<loc>${record.canonical}</loc>`)) fail(`sitemap.xml omits ${record.route}`);
 if (publicOnly) {
