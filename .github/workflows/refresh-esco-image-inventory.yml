@@ -1,0 +1,62 @@
+name: Refresh ESCO source-media inventory (controlled PR branch)
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/programme/generate-image-inventory.mjs'
+      - 'assets/data/esco-model-photo-map.json'
+      - 'scripts/esco-merchandising.mjs'
+      - '.github/workflows/refresh-esco-image-inventory.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-reviewed-ledger:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'feat/esco-customer-bag-guides-visuals-20261109'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out owner-approved ESCO feature branch
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.head_ref }}
+          persist-credentials: true
+      - name: Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install repository tools
+        run: npm ci --ignore-scripts
+      - name: Recompute authoritative repository source-media inventory
+        run: |
+          set -euo pipefail
+          npm run images:inventory
+          npm run images:inventory:validate
+          node - <<'JS'
+          const fs=require('fs');
+          const report=JSON.parse(fs.readFileSync('audit/generated/image-inventory.json','utf8'));
+          const src=report.assets.filter(x=>/^assets\/media\/esco\/esco-p[0-9]{2}-image[0-9]{2}\.webp$/.test(x.path));
+          if(src.length!==61 || !src.every(x=>x.provenanceStatus==='registered' && /rights pending/.test(x.technicalStatus||'')))
+            throw new Error('ESCO 61 model-matched photos must be provenance-registered with unresolved usage rights');
+          if(report.assets.some(x=>/^assets\/media\/esco\/previews\//.test(x.path)))
+            throw new Error('Concept illustrations must not be counted as manufacturer photographs');
+          console.log('Verified source media provenance:',src.length);
+          JS
+      - name: Commit only the regenerated snapshot to the same feature branch
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+          test "$HEAD_REF" = 'feat/esco-customer-bag-guides-visuals-20261109'
+          if git diff --quiet -- audit/generated/image-inventory.json; then
+            echo 'Authoritative inventory is already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add audit/generated/image-inventory.json
+          git commit -m 'audit(esco): refresh authoritative source-image provenance snapshot'
+          git push origin "HEAD:refs/heads/$HEAD_REF"
