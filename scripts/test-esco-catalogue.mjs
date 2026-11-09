@@ -49,3 +49,22 @@ test("all indexed product cards display transparently labelled supplier category
   assert.match(css,/:is\(\.esco-category-image,\.esco-product-art\)\[data-esco-photo/);
   assert.equal((css.match(/:is\(\.esco-category-image,\.esco-product-art\)\[data-esco-photo=/g)||[]).length,12);
 });
+
+test("61 ESCO model-matched photos exist as distinct catalogue-derived WebP assets",()=>{
+  const fs=readFileSync;
+  const images=JSON.parse(fs("assets/data/esco-model-photo-map.json","utf8"));
+  assert.equal(images.mappedImagesCount,61);
+  assert.equal(Object.keys(images.images).length,61);
+  const byId=new Map(entries.map(e=>[e.id,e]));
+  for (const [id,img] of Object.entries(images.images)) {
+    assert.equal(img.model,byId.get(id)?.model);
+    assert.equal(img.variantConfirmed,false);
+    assert.equal(img.rightsConfirmed,false);
+    assert.match(img.path,/^[/]assets[/]media[/]esco[/]esco-p[0-9]{2}-image[0-9]{2}[.]webp$/);
+    assert.ok(fs("." + img.path).length>200,"Missing source image: "+img.path);
+  }
+  const generator=fs("scripts/apply-esco-catalogue.mjs","utf8");
+  assert.match(generator,/productPicture\(p, category\)/);
+  assert.match(generator,/Model-matched ESCO catalogue photo/);
+  assert.match(generator,/Supplier category image/);
+});
