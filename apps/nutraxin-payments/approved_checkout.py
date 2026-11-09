@@ -139,7 +139,12 @@ def details(order, order_id, subject):
 
 def stripe_session(order, attempt):
     secret = sm.get_secret_value(SecretId=KEY_ID).get("SecretString", "")
-    if not isinstance(secret, str) or not secret.startswith(("rk_live_", "sk_live_")) or len(secret) < 20:
+    # AWS Secrets Manager may contain a pasted trailing line break. Remove only
+    # CR/LF suffixes; never alter the actual Stripe token or log its contents.
+    if isinstance(secret, str):
+        secret = secret.rstrip("\r\n")
+    if (not isinstance(secret, str) or len(secret) < 20 or
+        not re.fullmatch(r"(?:rk|sk)_live_[A-Za-z0-9_]+", secret)):
         raise NotReady("Stripe live restricted credentials are unavailable")
     form = {
         "mode": "payment", "payment_method_types[0]": "card",
