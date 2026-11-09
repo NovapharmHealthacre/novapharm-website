@@ -44,7 +44,9 @@ export function LoginPanel() {
     }
   }
 
-  const entraEnabled = process.env["NEXT_PUBLIC_ENTRA_LOGIN_ENABLED"] === "true";
+  const workforceVerification = process.env.NEXT_PUBLIC_COGNITO_STAGING_VERIFICATION_ENABLED === "true" && accessType !== "customer";
+  const workforceSessionEnabled = workforceVerification && process.env.NEXT_PUBLIC_COGNITO_PORTAL_SESSION_ENABLED === "true";
+  const entraEnabled = !workforceVerification && process.env["NEXT_PUBLIC_ENTRA_LOGIN_ENABLED"] === "true";
   const entraReturn = `/auth/entra-complete/?accessType=${accessType}${accessType === "customer" && selectionQuery ? `&${selectionQuery.slice(1)}` : ""}`;
 
   return <main className="login-layout">
@@ -71,13 +73,14 @@ export function LoginPanel() {
         </label>)}
       </fieldset>
       {accessType === "customer" && selectionQuery ? <p className="order-intent-login-note">Your selected Nutraxin product will be ready to review in your customer workspace after sign-in.</p> : null}
-      <form className="login-form" onSubmit={submit}>
+      {workforceVerification ? <p className="security-note">{workforceSessionEnabled ? "Microsoft sign-in requires an individually approved workforce account and server-enforced access scope." : "Microsoft identity can be verified in staging; protected portal access remains disabled until the production acceptance gates pass."}</p> : <form className="login-form" onSubmit={submit}>
         <label htmlFor="username">Username or business email</label>
         <input id="username" name="username" autoComplete="username" required maxLength={160} />
         <label htmlFor="password">Password</label>
         <input id="password" name="password" type="password" autoComplete="current-password" required maxLength={256} />
         <button className="button primary" type="submit" disabled={busy}>{busy ? "Signing in…" : "Sign in securely"}</button>
-      </form>
+      </form>}
+      {workforceVerification ? <a className="button microsoft" href={`/auth/start/?accessType=${accessType}`}>{workforceSessionEnabled ? "Continue with Microsoft" : "Verify Microsoft identity (staging only)"}</a> : null}
       {entraEnabled ? <a className="button microsoft" href={`/.auth/login/aad?post_login_redirect_uri=${encodeURIComponent(entraReturn)}`}><ShieldCheck aria-hidden="true" />Continue with Microsoft</a> : null}
       <p className="form-status" aria-live="polite">{status}</p>
       <p className="security-note"><ShieldCheck aria-hidden="true" /> Credentials are verified by the protected server. Passwords are never stored in this browser.</p>

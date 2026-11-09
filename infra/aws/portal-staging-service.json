@@ -1,0 +1,107 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "NovaPharm governed private ECS portal staging service. No load balancer or internet listener. Desired count defaults zero; explicit bounded synthetic smoke only, not production activation.",
+  "Parameters": {
+    "ClusterName": {
+      "Type": "String",
+      "Default": "novapharm-staging",
+      "AllowedPattern": "^[a-zA-Z0-9_/-]+$"
+    },
+    "TaskDefinitionArn": {
+      "Type": "String",
+      "Default": "arn:aws:ecs:eu-north-1:250675045172:task-definition/novapharm-staging-portal-smoke:3",
+      "AllowedPattern": "^arn:aws:ecs:eu-north-1:250675045172:task-definition/novapharm-staging-portal-smoke:[0-9]+$"
+    },
+    "PortalSecurityGroupId": {
+      "Type": "AWS::EC2::SecurityGroup::Id",
+      "Default": "sg-0fb5b6eb4fee5e2f6"
+    },
+    "SubnetIds": {
+      "Type": "List<AWS::EC2::Subnet::Id>",
+      "Default": "subnet-0d0075b73d121af4d,subnet-069d08d7c7676a045"
+    },
+    "DesiredCount": {
+      "Type": "Number",
+      "Default": 0,
+      "MinValue": 0,
+      "MaxValue": 1,
+      "Description": "Zero unless executing a time-bounded, supervised private smoke test"
+    }
+  },
+  "Resources": {
+    "PrivatePortalService": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "ServiceName": "novapharm-staging-portal-private",
+        "Cluster": {
+          "Ref": "ClusterName"
+        },
+        "TaskDefinition": {
+          "Ref": "TaskDefinitionArn"
+        },
+        "LaunchType": "FARGATE",
+        "PlatformVersion": "LATEST",
+        "DesiredCount": {
+          "Ref": "DesiredCount"
+        },
+        "SchedulingStrategy": "REPLICA",
+        "EnableExecuteCommand": false,
+        "EnableECSManagedTags": true,
+        "PropagateTags": "SERVICE",
+        "DeploymentConfiguration": {
+          "DeploymentCircuitBreaker": {
+            "Enable": true,
+            "Rollback": true
+          },
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 100
+        },
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "ENABLED",
+            "SecurityGroups": [
+              {
+                "Ref": "PortalSecurityGroupId"
+              }
+            ],
+            "Subnets": {
+              "Ref": "SubnetIds"
+            }
+          }
+        },
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm"
+          },
+          {
+            "Key": "environment",
+            "Value": "staging"
+          },
+          {
+            "Key": "exposure",
+            "Value": "no-ingress"
+          },
+          {
+            "Key": "data-classification",
+            "Value": "synthetic-only"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "ServiceName": {
+      "Description": "Private zero-by-default staging service; no publicly accessible endpoint",
+      "Value": {
+        "Fn::GetAtt": [
+          "PrivatePortalService",
+          "Name"
+        ]
+      }
+    },
+    "ActivationState": {
+      "Value": "staging-only; default desired-count zero; no ALB or customer credentials"
+    }
+  }
+}

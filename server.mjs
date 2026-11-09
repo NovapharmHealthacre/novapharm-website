@@ -78,6 +78,7 @@ import { emailIntegrationStatus, emailNotificationPreview, emailQueueStatus, pro
 import { documentStorageStatus } from "./src/storage/document-store.mjs";
 import { appServicePrincipalFromHeaders, provisionFederatedIdentity } from "./src/core/entra-identity.mjs";
 import { verifyPortalGatewayIdentity } from "./src/core/portal-gateway-identity.mjs";
+import { verifyCognitoGatewayAssertion, provisionApprovedCognitoWorkforceIdentity } from "./src/core/cognito-portal-identity.mjs";
 import { isResolvedSecret, isUnresolvedSecretReference } from "./src/core/secret-value.mjs";
 import { hasSharePointCredentials } from "./src/integrations/sharepoint/graph-client.mjs";
 import { executeInternalAiReview, internalAiGatewayStatus } from "./src/core/ai/ai-gateway.mjs";
@@ -668,6 +669,30 @@ export async function handleRequest(request, response) {
       return;
     }
 
+    if (pathname === "/api/auth/cognito" && request.method === "POST") {
+      // Server-only Cognito exchange. The signed assertion, independently verified JWT,
+      // exact subject-specific approval and replay protection are all mandatory.
+      if (!await rateLimit(request, "cognito-login", 8, 15 * 60 * 1000)) {
+        return json(response, 429, { error: "Too many sign-in attempts." });
+      }
+      let verified;
+      try { verified = await verifyCognitoGatewayAssertion(request); } catch { verified = null; }
+      if (!verified) return json(response, 401, { error: "Cognito identity could not be verified." });
+      const body = await readBody(request);
+      if (!body || body.accessType !== verified.accessType) {
+        return json(response, 403, { error: "Requested portal scope was not approved." });
+      }
+      const user = await provisionApprovedCognitoWorkforceIdentity(verified);
+      if (!user || !hasScope(user, [verified.accessType])) {
+        return json(response, 403, { error: "This identity has not been approved for this portal." });
+      }
+      const sessionCookie = await createSession(user, verified.accessType);
+      json(response, 200, { ok: true, accessType: verified.accessType }, {
+        "Set-Cookie": cookie("np_session", sessionCookie, { maxAge: Math.floor(sessionTtlMs / 1000) })
+      });
+      return;
+    }
+
     if (pathname === "/api/auth/federated" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
       if (!await rateLimit(request, "federated-login", 12, 15 * 60 * 1000)) return json(response, 429, { error: "Too many sign-in attempts. Try again later." });
@@ -711,7 +736,7 @@ export async function handleRequest(request, response) {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
       const session = await getSession(request);
       if (session) await revokePersistentSession(session.id);
-      json(response, 200, { ok: true, federatedLogout: Boolean(session?.identityProvider?.startsWith("entra-")) }, { "Set-Cookie": cookie("np_session", "", { maxAge: 0 }) });
+      json(response, 200, { ok: true, federatedLogout: Boolean(session?.identityProvider?.startsWith("entra-")), cognitoLogout: session?.identityProvider === "entra-workforce-cognito" }, { "Set-Cookie": cookie("np_session", "", { maxAge: 0 }) });
       return;
     }
 
