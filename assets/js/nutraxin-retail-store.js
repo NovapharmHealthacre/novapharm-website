@@ -111,6 +111,8 @@ function installStyle() {
 function runStore(data) {
   let bag = loadBag(data);
   let approvedRelease = false;
+  let confirmedOrder = "";
+  let awaitingOrder = "";
   const productMap = new Map(data.products.map((p) => [p.sku, p]));
   const slugMap = new Map(data.products.map((p) => [p.slug, p]));
   const updateNav = () => {
@@ -192,7 +194,7 @@ function runStore(data) {
           list.append(item);
         }
         const subtotalMinor = basketSubtotal(bag, data);
-        const ready = !!(approvedRelease && bag.length > 0 && subtotalMinor !== null);
+        const ready = !!(approvedRelease && bag.length > 0 && subtotalMinor !== null && !confirmedOrder && !awaitingOrder);
         // A public catalogue flag or browser price NEVER authorises a charge; the
         // server independently verifies all release evidence and recalculates totals.
         const indicative = data.price_authority === "owner_authorized_provisional_public_display";
@@ -203,8 +205,12 @@ function runStore(data) {
         tax.textContent = "20% UK VAT included";
         grand.textContent = subtotalMinor === null ? "Not available" : formatGBP(subtotalMinor);
         checkout.disabled = !ready;
-        checkout.textContent = ready ? "Continue as guest" : "Checkout not available yet";
-        explanation.textContent = ready
+        checkout.textContent = confirmedOrder ? "Payment confirmed" : awaitingOrder ? "Payment pending" : ready ? "Continue as guest" : "Checkout not available yet";
+        explanation.textContent = confirmedOrder
+          ? "Payment confirmed for order " + confirmedOrder + ". NovaPharm will process your order."
+          : awaitingOrder
+          ? "Payment status is being verified for order " + awaitingOrder + ". Please do not attempt another payment for this order."
+          : ready
           ? "Continue as a guest. Stripe will collect your email, UK delivery details and payment. NovaPharm independently verifies the order total and payment before fulfilment."
           : "Your Bag is saved. Checkout is temporarily unavailable; no card details are collected here.";
         checkout.onclick = async () => {
@@ -249,15 +255,20 @@ function runStore(data) {
             const r = await fetch(CHECKOUT_API_ORIGIN + "/status/" + encodeURIComponent(returnedOrder),{mode:"cors",credentials:"omit",cache:"no-store"});
             const result = r.ok ? await r.json() : null;
             if (result?.paid === true) {
-              explanation.textContent = "Payment confirmed. Your order reference is " + returnedOrder + ". NovaPharm will process your order.";
+              confirmedOrder = returnedOrder;
+              awaitingOrder = "";
               bag=[];saveBag(bag);updateNav();
               try {sessionStorage.removeItem("np-retail-checkout-attempt");}catch{}
-              checkout.disabled=true;checkout.textContent="Payment confirmed";
+              render();
               return;
             }
-            explanation.textContent = "Stripe checkout returned. Awaiting confirmed payment status for " + returnedOrder + ". Do not pay a second time.";
+            awaitingOrder = returnedOrder;
+            render();
             if(attempt < 3) window.setTimeout(()=>status(attempt+1),3000);
-          } catch { explanation.textContent = "Payment status is temporarily unavailable. Keep your order reference: "+returnedOrder; }
+          } catch {
+            awaitingOrder = returnedOrder;
+            render();
+          }
         };
         void status();
       }
