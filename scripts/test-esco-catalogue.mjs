@@ -160,7 +160,7 @@ test("all 373 ESCO products link to an evidence-labelled customer detail and saf
   assert.match(detail,/PHOTO_PATH\.test/);
   assert.match(detail,/PREVIEW_PATH\.test/);
   assert.match(detail,/guide\.priceApprovedForCheckout !== false/);
-  assert.match(detail,/guides\.checkoutEnabled !== false/);
+  assert.match(detail,/guides\?\.checkoutEnabled !== false/);
   assert.match(detail,/MAX_LINES = 12/);
   assert.match(detail,/MAX_QTY = 1000/);
   assert.match(detail,/localStorage\.setItem/);
