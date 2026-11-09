@@ -119,7 +119,7 @@ def mark(order_id, event_id, status, message_id=None):
         ExpressionAttributeValues=values)
 
 def send_receipt(address, order_id, amount):
-    amount_gbp = "£" + format(amount / 100, ".2f")
+    amount_gbp = "GBP " + format(amount / 100, ".2f")
     subject = "Your NovaPharm Nutraxin payment confirmation"
     body = ("Thank you for your Nutraxin order.\n\n"
             "Your payment has been confirmed.\n"
