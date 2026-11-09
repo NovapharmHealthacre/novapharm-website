@@ -357,4 +357,5 @@ jobs:
           }
           node scripts/indexnow.mjs --submit \
             https://novapharmhealthcare.com/products/ \
-            https://novapharmhealthcare.com/products/nutraxin/
+            https://novapharmhealthcare.com/products/nutraxin/ \
+            https://novapharmhealthcare.com/products/esco/

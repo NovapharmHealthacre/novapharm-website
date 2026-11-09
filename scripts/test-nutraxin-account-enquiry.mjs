@@ -39,7 +39,8 @@ function renderEnquiry(search, existingMessage = "") {
 
 test("all 19 Nutraxin SKUs have a safe product-specific business enquiry entry", () => {
   assert.equal(catalogue.products.length, 19);
-  assert.match(publisher, /Request business ordering access/);
+  assert.match(publisher, /Shop the Nutraxin collection/, "Product detail prioritises consumer shopping");
+  assert.match(publisher, /Enquire about a business account/, "Business customer SKU-specific enquiry remains available");
   assert.match(publisher, /enquiry=Pharmacy%20or%20wholesaler%20account&product=/);
   assert.match(publisher, /encodeURIComponent\(product\.sku\)/);
   for (const product of catalogue.products) {
