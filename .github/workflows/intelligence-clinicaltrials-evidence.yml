@@ -1,0 +1,45 @@
+name: Governed clinical study evidence acceptance
+
+on:
+  push:
+    paths:
+      - 'src/core/regulatory/clinicaltrials-studies.mjs'
+      - 'scripts/test-clinicaltrials-studies.mjs'
+      - 'server.mjs'
+      - 'apps/portal/app/gateway/[...path]/route.ts'
+      - 'apps/portal/components/clinical-trials-discovery.tsx'
+      - 'apps/portal/components/medicines-intelligence.tsx'
+      - 'apps/portal/test/security.test.ts'
+      - '.github/workflows/intelligence-clinicaltrials-evidence.yml'
+  pull_request:
+    paths:
+      - 'src/core/regulatory/clinicaltrials-studies.mjs'
+      - 'scripts/test-clinicaltrials-studies.mjs'
+      - 'server.mjs'
+      - 'apps/portal/app/gateway/[...path]/route.ts'
+      - 'apps/portal/components/clinical-trials-discovery.tsx'
+      - 'apps/portal/components/medicines-intelligence.tsx'
+      - 'apps/portal/test/security.test.ts'
+      - '.github/workflows/intelligence-clinicaltrials-evidence.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  registry-source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install pinned dependencies
+        run: npm ci
+      - name: Test NIH v2 source projection, security boundary and abstention
+        run: node --test scripts/test-clinicaltrials-studies.mjs
+      - name: Verify private portal types, routes and security contract
+        run: npm run portal:check
+      - name: Keep data-rights and production acceptance ledger unresolved
+        run: npm run intelligence:requirements:validate
