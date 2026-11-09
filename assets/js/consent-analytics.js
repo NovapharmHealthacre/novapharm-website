@@ -67,12 +67,28 @@ function initialiseAnalytics() {
     if (!started) {
       window.dataLayer = window.dataLayer || [];
       window.gtag = function () { window.dataLayer.push(arguments); };
+      // Basic Consent Mode: the provider script is not fetched before consent.
+      // When it is fetched, deny every storage/advertising purpose by default.
+      window.gtag("consent", "default", {
+        analytics_storage: "denied",
+        ad_storage: "denied",
+        ad_user_data: "denied",
+        ad_personalization: "denied"
+      });
+      window.gtag("consent", "update", {
+        analytics_storage: "granted",
+        ad_storage: "denied",
+        ad_user_data: "denied",
+        ad_personalization: "denied"
+      });
       window.gtag("js", new Date());
       window.gtag("config", id, {
         send_page_view: false,
         allow_google_signals: false,
         allow_ad_personalization_signals: false,
-        page_location: pageLocation
+        cookie_expires: 90 * 24 * 60 * 60,
+        page_location: pageLocation,
+        page_referrer: ""
       });
       const script = document.createElement("script");
       script.async = true;
