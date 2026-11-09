@@ -31,6 +31,60 @@ test("NOVA requires independent server-authorised evidence before making any pro
   await assert.rejects(() => provider.complete({ system: "", prompt: "Review.", sourceManifest: manifest }), (error) => error.code === "nova_input_rejected");
 });
 
+test("NOVA rejects malformed, duplicate or excessive source identifiers before external requests", async () => {
+  let requests = 0;
+  const provider = createOpenAiZdrProvider({
+    ...approved,
+    fetchImplementation: async () => {
+      requests += 1;
+      throw Error("Invalid evidence must never reach an external service");
+    },
+  });
+  const rejectedIds = [
+    [" "],
+    [42],
+    ["ok", "ok"],
+    ["bad id with spaces"],
+    Array.from({ length: 17 }, (_, index) => `source-${index}`),
+  ];
+  for (const sourceIds of rejectedIds) {
+    await assert.rejects(
+      () => provider.complete({
+        system: "Use only approved sources.",
+        prompt: "Compare evidence.",
+        sourceManifest: { ...manifest, sourceIds },
+      }),
+      (error) => error.code === "nova_source_rights_not_approved",
+    );
+  }
+  assert.equal(requests, 0);
+});
+
+test("NOVA rejects credential-like prompt content before provider egress", async () => {
+  let requests = 0;
+  const provider = createOpenAiZdrProvider({
+    ...approved,
+    fetchImplementation: async () => { requests += 1; throw Error("No credential egress"); },
+  });
+  await assert.rejects(
+    () => provider.complete({
+      system: "Review source.",
+      prompt: "Please include api_key=synthetic-never-send in your explanation.",
+      sourceManifest: manifest,
+    }),
+    (error) => error.code === "nova_sensitive_input_rejected",
+  );
+  await assert.rejects(
+    () => provider.complete({
+      system: "password: synthetic-secret",
+      prompt: "Review the source.",
+      sourceManifest: manifest,
+    }),
+    (error) => error.code === "nova_sensitive_input_rejected",
+  );
+  assert.equal(requests, 0);
+});
+
 test("NOVA EU Responses request is bounded, stateless, tool-free and never stored", async () => {
   let requestCount = 0;
   const provider = createOpenAiZdrProvider({
