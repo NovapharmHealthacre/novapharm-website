@@ -462,7 +462,7 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
       };
       if (requestUrl.pathname.endsWith("/analytics") && requestUrl.searchParams.get("startMonth") === "2026-05") {
         const evidence = response as Extract<typeof response, { series: { month_key: string }[] }>;
-        const previous = { ...evidence.rows[0], month_key: "2026-05", items: 8, quantity: 16, nic: 24, actual_cost: 20, metric_value: 8 };
+        const previous = { ...evidence.rows[0]!, month_key: "2026-05", items: 8, quantity: 16, nic: 24, actual_cost: 20, metric_value: 8 };
         evidence.rows = [previous, ...evidence.rows];
         evidence.series = [previous, ...evidence.series];
         evidence.sourcePeriods = ["2026-05", "2026-06"];
