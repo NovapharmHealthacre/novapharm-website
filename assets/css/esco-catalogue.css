@@ -121,12 +121,12 @@
   border-radius:10px;display:grid;place-items:center;color:transparent;font-size:0}
 .esco-mini-bag-icon::before{content:"";position:absolute;top:-10px;left:15px;width:13px;
   height:13px;border:2px solid #1d1d1f;border-bottom:0;border-radius:10px 10px 0 0}
-.esco-mini-bag-intro strong{display:block;font-size:1.25rem;font-weight:650;color:#1d1d1f;letter-spacing:-.035em}
+.esco-mini-bag-intro strong{display:block;font-size:1.25rem;font-weight:650;color:#1d1d1f;letter-spacing:0}
 .esco-mini-bag-intro .esco-mini-bag-count{display:inline-block;margin-top:4px;font-size:.85rem;color:#53535a}
 .esco-mini-bag-intro p{max-width:380px;margin:7px 0 0;font-size:.8rem;color:#73737a;line-height:1.45}
 .esco-mini-bag-value{display:flex;flex-direction:column;text-align:right;gap:2px;min-width:140px}
 .esco-mini-bag-value>span{font-size:.76rem;color:#64646b}
-.esco-mini-bag-value>strong{font-size:1.55rem;color:#1d1d1f;letter-spacing:-.05em;line-height:1.3}
+.esco-mini-bag-value>strong{font-size:1.55rem;color:#1d1d1f;letter-spacing:0;line-height:1.3}
 .esco-mini-bag-value>small{font-size:.68rem;color:#80808a;max-width:195px;line-height:1.35}
 .esco-page .esco-shop-mini-bag .esco-quote-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
 .esco-page .esco-shop-mini-bag .esco-btn{min-height:45px;background:#0071e3;border:1px solid #0071e3;
@@ -142,7 +142,7 @@
 
 .esco-shop-bag .esco-bag-hero{padding:72px 0 44px;background:#fff;border-bottom:1px solid #e5e5e7}
 .esco-shop-bag .esco-bag-hero h1{font-size:clamp(3rem,5.8vw,5rem);
-  letter-spacing:-.06em;line-height:1.08;margin:12px 0 14px;color:#1d1d1f}
+  letter-spacing:0;line-height:1.08;margin:12px 0 14px;color:#1d1d1f}
 .esco-shop-bag .esco-bag-hero p:not(.esco-eyebrow){font-size:clamp(1rem,1.55vw,1.2rem);
   line-height:1.55;max-width:730px;color:#6e6e73;margin:0}
 .esco-shop-bag .esco-bag-section{background:#f5f5f7;padding:55px 0 80px}
@@ -152,7 +152,7 @@
   box-shadow:0 8px 24px rgba(0,0,0,.025);padding:30px 34px}
 .esco-shop-bag .esco-bag-title-row{display:flex;justify-content:space-between;align-items:baseline;gap:15px;
   padding-bottom:14px;border-bottom:1px solid #e5e5e7}
-.esco-shop-bag .esco-bag-title-row h2{font-size:1.5rem;letter-spacing:-.04em;margin:0;color:#1d1d1f}
+.esco-shop-bag .esco-bag-title-row h2{font-size:1.5rem;letter-spacing:0;margin:0;color:#1d1d1f}
 .esco-shop-bag .esco-bag-title-row>span{font-size:.9rem;color:#6e6e73}
 .esco-shop-bag .esco-shopping-item{
   display:grid;grid-template-columns:156px minmax(0,1fr) auto;align-items:start;gap:24px;
@@ -165,12 +165,12 @@
   mix-blend-mode:multiply;padding:10px}
 .esco-shop-bag .esco-shopping-image-fallback{font-size:.9rem;font-weight:700;color:#a4a4aa;letter-spacing:.12em}
 .esco-shop-bag .esco-shopping-product-name{margin:2px 0 6px;line-height:1.25;
-  font-size:clamp(1.14rem,1.9vw,1.45rem);font-weight:650;letter-spacing:-.035em;color:#1d1d1f}
+  font-size:clamp(1.14rem,1.9vw,1.45rem);font-weight:650;letter-spacing:0;color:#1d1d1f}
 .esco-shop-bag .esco-shopping-model{margin:0 0 9px;color:#52525a;font-size:.87rem}
 .esco-shop-bag .esco-shopping-provenance{margin:0 0 9px;color:#86868b;font-size:.72rem;line-height:1.4}
 .esco-shop-bag .esco-shopping-unitprice{margin:0;color:#52525a;font-size:.82rem;line-height:1.45}
 .esco-shop-bag .esco-shopping-line{display:flex;flex-direction:column;text-align:right;gap:4px;min-width:102px}
-.esco-shop-bag .esco-shopping-line-total{font-size:1.18rem;color:#1d1d1f;letter-spacing:-.03em}
+.esco-shop-bag .esco-shopping-line-total{font-size:1.18rem;color:#1d1d1f;letter-spacing:0}
 .esco-shop-bag .esco-shopping-line-note{font-size:.69rem;color:#86868b;line-height:1.35}
 .esco-shop-bag .esco-bag-row-controls{margin-top:15px;display:flex;align-items:center;gap:22px}
 .esco-shop-bag .esco-shopping-qty-label{display:inline-flex;align-items:center;gap:10px;font-size:.82rem;color:#515158}
@@ -184,13 +184,13 @@
 .esco-shop-bag .esco-continue-shopping:hover{text-decoration:underline}
 .esco-shop-bag .esco-bag-checkout{position:sticky;top:102px}
 .esco-shop-bag .esco-bag-checkout>.esco-eyebrow{margin:0 0 7px;color:#6e6e73;letter-spacing:.14em;font-size:.68rem}
-.esco-shop-bag .esco-bag-checkout h2{font-size:1.55rem;letter-spacing:-.04em;color:#1d1d1f;margin:0 0 22px}
+.esco-shop-bag .esco-bag-checkout h2{font-size:1.55rem;letter-spacing:0;color:#1d1d1f;margin:0 0 22px}
 .esco-shop-bag .esco-bag-totals{margin:0;padding:0}
 .esco-shop-bag .esco-bag-totals>div{display:flex;gap:16px;justify-content:space-between;
   align-items:baseline;padding:11px 0;border-bottom:1px solid #ececf0}
 .esco-shop-bag .esco-bag-totals dt{color:#56565e;font-size:.86rem}
 .esco-shop-bag .esco-bag-totals dd{margin:0;color:#1d1d1f;font-size:.86rem;text-align:right}
-.esco-shop-bag .esco-bag-totals>div:first-child dd{font-size:1.25rem;font-weight:650;letter-spacing:-.035em}
+.esco-shop-bag .esco-bag-totals>div:first-child dd{font-size:1.25rem;font-weight:650;letter-spacing:0}
 .esco-shop-bag .esco-bag-estimate{display:flex;justify-content:space-between;gap:8px;padding:16px 0 6px;align-items:center}
 .esco-shop-bag .esco-bag-estimate span{color:#1d1d1f;font-size:.95rem;font-weight:600}
 .esco-shop-bag .esco-bag-estimate small{color:#86868b;font-size:.7rem;text-align:right}
