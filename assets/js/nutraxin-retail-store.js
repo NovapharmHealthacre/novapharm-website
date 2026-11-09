@@ -203,9 +203,9 @@ function runStore(data) {
         tax.textContent = "20% UK VAT included";
         grand.textContent = subtotalMinor === null ? "Not available" : formatGBP(subtotalMinor);
         checkout.disabled = !ready;
-        checkout.textContent = ready ? "Continue to secure checkout" : "Checkout not available yet";
+        checkout.textContent = ready ? "Continue as guest" : "Checkout not available yet";
         explanation.textContent = ready
-          ? "Your order total includes UK VAT at 20% and £0 additional UK delivery. Payment is securely processed by Stripe. Manufacturer fulfilment is arranged after payment."
+          ? "Continue as a guest. Stripe will collect your email, UK delivery details and payment. NovaPharm independently verifies the order total and payment before fulfilment."
           : "Your Bag is saved. Checkout is temporarily unavailable; no card details are collected here.";
         checkout.onclick = async () => {
           if (!ready) return;
