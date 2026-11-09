@@ -58,17 +58,27 @@ for (const item of register) {
   let html = readFileSync(pagePath, "utf8");
   const block = `<!-- page-specific-social-start -->\n  <meta property="og:image" content="${next.absoluteUrl}">\n  <meta property="og:image:secure_url" content="${next.absoluteUrl}">\n  <meta property="og:image:type" content="${next.type}">\n  <meta property="og:image:width" content="${next.width}">\n  <meta property="og:image:height" content="${next.height}">\n  <meta property="og:image:alt" content="${escapeAttribute(next.alt)}">\n  <!-- page-specific-social-end -->`;
   html = html.replace(/<!-- page-specific-social-start -->[\s\S]*?<!-- page-specific-social-end -->/, block);
-  // The legacy Oncology shell also carried a generic OG image outside the
-  // governed per-page social block. Keep only the authoritative route image.
-  if (item.route === "/oncology/") {
-    const blockEnd = "<!-- page-specific-social-end -->";
-    const begin = html.indexOf(blockEnd);
-    const end = html.indexOf("</head>", begin);
-    if (begin < 0 || end < begin) throw new Error("Oncology social block boundary missing.");
-    const before = html.slice(0, begin + blockEnd.length);
-    const after = html.slice(begin + blockEnd.length, end)
-      .replace(/^[ \t]*<meta property="og:image(?::(?:secure_url|type|width|height|alt))?" content="[^"]*">[ \t]*\r?\n?/gm, "");
-    html = before + after + html.slice(end);
+  // Guarantee one authoritative social image on EVERY public route. Legacy
+  // templates can add a generic brand image before or after the route block.
+  const startMarker = "<!-- page-specific-social-start -->";
+  const endMarker = "<!-- page-specific-social-end -->";
+  const start = html.indexOf(startMarker);
+  const end = html.indexOf(endMarker, start);
+  const headEnd = html.indexOf("</head>");
+  if (start < 0 || end < start || headEnd < end) {
+    throw new Error("Governed route-specific social metadata boundaries missing: " + item.route);
+  }
+  const socialBlock = html.slice(start, end + endMarker.length);
+  const obsoleteImageTag = /<meta\s+property="og:image(?::(?:secure_url|type|width|height|alt))?"\s+content="[^"]*"\s*\/?>/gi;
+  const before = html.slice(0, start).replace(obsoleteImageTag, "");
+  const after = html.slice(end + endMarker.length, headEnd).replace(obsoleteImageTag, "");
+  html = before + socialBlock + after + html.slice(headEnd);
+  // Parse only the fixed, known Open Graph metadata grammar. No
+  // dynamically compiled regex or untrusted pattern interpolation.
+  const imageTags = [...html.matchAll(/<meta property="(og:image(?::(?:secure_url|type|width|height|alt))?)" content="([^"]*)">/g)];
+  for (const property of ["og:image", "og:image:secure_url", "og:image:type", "og:image:width", "og:image:height", "og:image:alt"]) {
+    const count = imageTags.filter(match => match[1] === property).length;
+    if (count !== 1) throw new Error(item.route + ": expected one " + property + " tag, got " + count);
   }
   html = html.replace(/<meta name="twitter:card" content="[^"]+">/, '<meta name="twitter:card" content="summary_large_image">');
   html = html.replace(/<meta name="twitter:image" content="[^"]+">/, `<meta name="twitter:image" content="${next.absoluteUrl}">`);
