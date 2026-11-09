@@ -1,9 +1,9 @@
 {
-  "version": "2026-11-08-owner-authorized-indicative-public-prices-v2",
+  "version": "2026-11-09-products-only-owner-approved-live-retail",
   "currency": "GBP",
-  "checkout_enabled": false,
-  "payment_collection_enabled": false,
-  "price_authority": "owner_authorized_provisional_public_display",
+  "checkout_enabled": true,
+  "payment_collection_enabled": true,
+  "price_authority": "approved_consumer_retail",
   "delivery_verified": false,
   "products": [
     {
@@ -14,7 +14,9 @@
       "range": "Vitamin D",
       "image": "/assets/media/products/nutraxin/vitamin-d3-120-tablets-480.avif",
       "retail_price_pence": 1547,
-      "available_to_sell": false
+      "available_to_sell": false,
+      "retail_net_pence": 1289,
+      "ordering_enabled": true
     },
     {
       "sku": "NUT-UK-VD3-S30",
@@ -24,7 +26,9 @@
       "range": "Vitamin D",
       "image": "/assets/media/products/nutraxin/vitamin-d3-spray-30ml-480.avif",
       "retail_price_pence": 1547,
-      "available_to_sell": false
+      "available_to_sell": false,
+      "retail_net_pence": 1289,
+      "ordering_enabled": true
     },
     {
       "sku": "NUT-UK-VD3K2-T120",
@@ -34,7 +38,9 @@
       "range": "Vitamin D",
       "image": "/assets/media/products/nutraxin/vitamin-d3-k2-120-tablets-480.avif",
       "retail_price_pence": 1838,
-      "available_to_sell": false
+      "available_to_sell": false,
+      "retail_net_pence": 1532,
+      "ordering_enabled": true
     },
     {
       "sku": "NUT-UK-VD3K2-S30",
@@ -44,7 +50,9 @@
       "range": "Vitamin D",
       "image": "/assets/media/products/nutraxin/vitamin-d3-k2-spray-30ml-480.avif",
       "retail_price_pence": 1838,
-      "available_to_sell": false
+      "available_to_sell": false,
+      "retail_net_pence": 1532,
+      "ordering_enabled": true
     },
     {
       "sku": "NUT-UK-VC1000-T30",
@@ -54,7 +62,9 @@
       "range": "Vitamin C",
       "image": "/assets/media/products/nutraxin/vitamin-c-1000mg-30-tablets-480.avif",
       "retail_price_pence": 1547,
-      "available_to_sell": false
+      "available_to_sell": false,
+      "retail_net_pence": 1289,
+      "ordering_enabled": true
     },
     {
       "sku": "NUT-UK-VC500-C30",
@@ -64,7 +74,9 @@
       "range": "Vitamin C",
       "image": "/assets/media/products/nutraxin/vitamin-c-500mg-chewable-30-tablets-480.avif",
       "retail_price_pence": 1838,
-      "available_to_sell": false
+      "available_to_sell": false,
+      "retail_net_pence": 1532,
+      "ordering_enabled": true
     },
     {
       "sku": "NUT-UK-VMAX-T60",
@@ -74,7 +86,9 @@
       "range": "Vitamin C",
       "image": "/assets/media/products/nutraxin/vitamin-max-60-tablets-480.avif",
       "retail_price_pence": 1838,
-      "available_to_sell": false
+      "available_to_sell": false,
+      "retail_net_pence": 1532,
+      "ordering_enabled": true
     },
     {
       "sku": "NUT-UK-VMAX-E15",
@@ -84,7 +98,9 @@
       "range": "Vitamin C",
       "image": "/assets/media/products/nutraxin/vitamin-max-15-effervescent-tablets-480.avif",
       "retail_price_pence": 1936,
-      "available_to_sell": false
+      "available_to_sell": false,
+      "retail_net_pence": 1613,
+      "ordering_enabled": true
     },
     {
       "sku": "NUT-UK-MGCX-T60",
@@ -94,7 +110,9 @@
       "range": "Magnesium",
       "image": "/assets/media/products/nutraxin/magnesium-complex-60-tablets-480.avif",
       "retail_price_pence": 1838,
-      "available_to_sell": false
+      "available_to_sell": false,
+      "retail_net_pence": 1532,
+      "ordering_enabled": true
     },
     {
       "sku": "NUT-UK-MGDL-T60",
@@ -104,7 +122,9 @@
       "range": "Magnesium",
       "image": "/assets/media/products/nutraxin/magnesium-daily-60-tablets-480.avif",
       "retail_price_pence": 1838,
-      "available_to_sell": false
+      "available_to_sell": false,
+      "retail_net_pence": 1532,
+      "ordering_enabled": true
     },
     {
       "sku": "NUT-UK-MVE-T60",
@@ -114,7 +134,9 @@
       "range": "Multivitamin and mineral",
       "image": "/assets/media/products/nutraxin/multivitamin-mineral-energy-60-tablets-480.avif",
       "retail_price_pence": 2032,
-      "available_to_sell": false
+      "available_to_sell": false,
+      "retail_net_pence": 1693,
+      "ordering_enabled": true
     },
     {
       "sku": "NUT-UK-MVW-T60",
@@ -124,7 +146,9 @@
       "range": "Multivitamin and mineral",
       "image": "/assets/media/products/nutraxin/womens-multivitamin-complex-60-tablets-480.avif",
       "retail_price_pence": 2226,
-      "available_to_sell": false
+      "available_to_sell": false,
+      "retail_net_pence": 1855,
+      "ordering_enabled": true
     },
     {
       "sku": "NUT-UK-MVM-T60",
@@ -134,7 +158,9 @@
       "range": "Multivitamin and mineral",
       "image": "/assets/media/products/nutraxin/mens-multivitamin-complex-60-tablets-480.avif",
       "retail_price_pence": 2226,
-      "available_to_sell": false
+      "available_to_sell": false,
+      "retail_net_pence": 1855,
+      "ordering_enabled": true
     },
     {
       "sku": "NUT-UK-CG-T30",
@@ -144,7 +170,9 @@
       "range": "Collagen",
       "image": "/assets/media/products/nutraxin/collagen-gold-30-tablets-480.avif",
       "retail_price_pence": 1936,
-      "available_to_sell": false
+      "available_to_sell": false,
+      "retail_net_pence": 1613,
+      "ordering_enabled": true
     },
     {
       "sku": "NUT-UK-CG-S30",
@@ -154,7 +182,9 @@
       "range": "Collagen",
       "image": "/assets/media/products/nutraxin/collagen-gold-30-sachets-480.avif",
       "retail_price_pence": 3542,
-      "available_to_sell": false
+      "available_to_sell": false,
+      "retail_net_pence": 2952,
+      "ordering_enabled": true
     },
     {
       "sku": "NUT-UK-CCX-T90",
@@ -164,7 +194,9 @@
       "range": "Collagen",
       "image": "/assets/media/products/nutraxin/collagen-complex-90-tablets-480.avif",
       "retail_price_pence": 2808,
-      "available_to_sell": false
+      "available_to_sell": false,
+      "retail_net_pence": 2340,
+      "ordering_enabled": true
     },
     {
       "sku": "NUT-UK-ART-T90",
@@ -174,7 +206,9 @@
       "range": "Additional support",
       "image": "/assets/media/products/nutraxin/artoflex-90-tablets-480.avif",
       "retail_price_pence": 2323,
-      "available_to_sell": false
+      "available_to_sell": false,
+      "retail_net_pence": 1936,
+      "ordering_enabled": true
     },
     {
       "sku": "NUT-UK-LCAR-T60",
@@ -184,7 +218,9 @@
       "range": "Additional support",
       "image": "/assets/media/products/nutraxin/l-carnitine-60-tablets-480.avif",
       "retail_price_pence": 1644,
-      "available_to_sell": false
+      "available_to_sell": false,
+      "retail_net_pence": 1370,
+      "ordering_enabled": true
     },
     {
       "sku": "NUT-UK-B12-SL60",
@@ -194,15 +230,18 @@
       "range": "Additional support",
       "image": "/assets/media/products/nutraxin/vitamin-b12-60-sublingual-tablets-480.avif",
       "retail_price_pence": 1547,
-      "available_to_sell": false
+      "available_to_sell": false,
+      "retail_net_pence": 1289,
+      "ordering_enabled": true
     }
   ],
-  "price_display_status": "indicative_not_binding",
+  "price_display_status": "owner_approved_uk_consumer_prices",
   "vat_estimate_rate_percent": 20,
   "price_includes_estimated_uk_vat": true,
-  "price_note": "Indicative UK price includes estimated 20% VAT and seller-funded standard UK delivery (£0 extra). Final VAT registration and carrier service are not yet verified. Checkout remains disabled.",
+  "price_note": "Owner-approved UK retail unit prices including VAT at 20%. Standard UK delivery adds £0. Fulfilment is arranged by the seller; physical warehouse stock is not represented as reserved.",
   "source_record": "owner_approved_provisional_19_sku_48_unit_reference_2026-11-08_v5",
-  "price_model_note": "Target 25% after-tax profit margin under unverified supplier, fulfilment and tax assumptions; not a guaranteed realised margin.",
+  "price_model_note": "Owner selected the existing 48-unit reference price for every quantity 1-10,000; actual supplier, fulfilment and retained-margin assumptions remain subject to commercial reconciliation.",
   "provisional_uk_delivery_charge_pence": 0,
-  "provisional_uk_delivery_cost_seller_funded": true
+  "provisional_uk_delivery_cost_seller_funded": true,
+  "fulfilment_policy": "manufacturer_commitment_no_fictitious_reserved_stock"
 }
