@@ -6,6 +6,7 @@ import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError } from "../lib/gateway";
 import styles from "./medicines-intelligence.module.css";
 import { PharmaScopeBrand } from "./pharmascope-brand";
+import { UsFdaLabelDiscovery } from "./us-fda-label-discovery";
 
 type Metric = Readonly<{ key: string; label: string; value: number; format?: string }>;
 type Column = readonly [string, string, string?];
@@ -642,6 +643,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   else if (current === "prescribers" || current === "observed-market") central = <section className={styles.routeWorkspace}><header><p className={styles.stateLabel}>Source-separated analysis</p><h1>Prescriber intelligence</h1><p>Select a governed medicine identity through the global search, then query accepted EPD facts. An empty result remains empty.</p></header><PlatformOverview analytics={analytics} detail={detail} headingLevel={2} snapshot={snapshot} /></section>;
   else if (current === "forecasts") central = <UnavailableEvidence title="Forecasts" statement="No forecast is displayed because an identity catalogue is not a demand history and cannot support a truthful forecast by itself." requirements={["Leakage-safe historical fact series", "Recorded training and feature cutoffs", "Backtests against accepted baselines", "Uncertainty intervals and owner acceptance"]} />;
   else if (current === "opportunities") central = <UnavailableEvidence title="Commercial opportunities" statement="No pharmacy or medicine is ranked without measured demand, distance, uncertainty and approved commercial evidence." requirements={["Accepted demand facts", "Governed medicine-to-pharmacy eligibility rules", "Versioned transparent score components", "Commercial and Regulatory approval"]} />;
+  else if (current === "regulatory-intelligence") central = <UsFdaLabelDiscovery />;
   else if (current === "campaigns") central = <UnavailableEvidence title="Campaigns" statement="No outreach campaign is active. Imported business contacts are marketing-ineligible by default and are not exposed in this view." requirements={["Lawful-purpose and channel review", "Contact evidence and suppression controls", "Human-approved content and target snapshot", "Audited delivery integration"]} />;
   else {
     const workspace = intelligenceWorkspaceBySlug.get(current);
