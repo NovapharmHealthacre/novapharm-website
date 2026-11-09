@@ -43,6 +43,7 @@ class DummyCognito:
 
 class DummySSM:
     authorized=False
+    unit_price_pence=900
     def get_parameter(self, **kw):
         payload = {
             "schema": "novapharm.nutraxin.provisional_b2b_prices.v1",
@@ -56,7 +57,7 @@ class DummySSM:
             "uk_dispatch_service_verified": self.authorized,
             "model_assumptions": {"uk_delivery_charge_pence": 0, "uk_delivery_cost_borne_by_seller": True},
             "lines": [
-                {"sku": sku, "qty24_price_pence": 1000, "qty48_price_pence": 900}
+                {"sku": sku, "qty24_price_pence": 1000, "qty48_price_pence": self.unit_price_pence}
                 for sku in PORTAL.PRODUCTS
             ],
         }
@@ -89,6 +90,7 @@ class PortalSecurityTests(unittest.TestCase):
         COGNITO.user_status = "CONFIRMED"
         COGNITO.verified_email = True
         PORTAL.SSM.authorized = False
+        PORTAL.SSM.unit_price_pence = 900
 
     def event(self, path, method="GET", body=None, origin="https://portal.example.invalid"):
         e = {"version": "2.0", "rawPath": path, "requestContext": {"http": {"method": method}},
@@ -484,6 +486,48 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertIn("line_gross = unit_gross * quantity",source)
         self.assertIn('"grossMinor": line_gross',source)
         self.assertNotIn("gross = (net * 120 + 50) // 100",source)
+
+    def test_live_checkout_contract_uses_exact_vat_inclusive_unit_price_at_quantity_3(self):
+        # In-memory authenticated/approved test, never creates a Stripe charge.
+        import io
+        class TestLedger:
+            item=None
+            def put_item(self, **kw):
+                self.item=kw["Item"]
+            def get_item(self, **kw):
+                return {"Item":self.item}
+        class TestWorker:
+            def invoke(self, **kw):
+                return {"Payload":io.BytesIO(json.dumps({
+                    "statusCode":200,"body":json.dumps({"checkoutUrl":"https://checkout.stripe.com/c/synthetic_no_charge"})
+                }).encode())}
+        previous=(PORTAL.PAYMENT_DDB,PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED,PORTAL.CHECKOUT_LAMBDA,
+                  PORTAL.PRODUCTION_CHECKOUT_FUNCTION)
+        ledger=TestLedger()
+        PORTAL.PAYMENT_DDB=ledger
+        PORTAL.CHECKOUT_LAMBDA=TestWorker()
+        PORTAL.PRODUCTION_CHECKOUT_FUNCTION="synthetic-worker"
+        PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED=True
+        PORTAL.SSM.authorized=True
+        PORTAL.SSM.unit_price_pence=1289
+        try:
+            request={"request_id":"aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+                     "accept_terms":True,"lines":[{"sku":"NUT-UK-VD3-T120","quantity":3}]}
+            response=PORTAL.retail_checkout(self.event("/api/retail/checkout","POST",request),
+                                            {"sub":"synthetic-customer","username":"synthetic-user"})
+            self.assertEqual(response["statusCode"],200,response["body"])
+            saved=ledger.item
+            self.assertEqual(saved["productNetMinor"]["N"],"3867")
+            self.assertEqual(saved["taxMinor"]["N"],"774")
+            self.assertEqual(saved["shippingGrossMinor"]["N"],"0")
+            self.assertEqual(saved["totalGrossMinor"]["N"],"4641")
+            lines=json.loads(saved["approvedLinesJson"]["S"])
+            self.assertEqual(lines[0]["quantity"],3)
+            self.assertEqual(lines[0]["grossMinor"],4641)
+        finally:
+            PORTAL.PAYMENT_DDB,PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED,PORTAL.CHECKOUT_LAMBDA,PORTAL.PRODUCTION_CHECKOUT_FUNCTION=previous
+            PORTAL.SSM.authorized=False
+            PORTAL.SSM.unit_price_pence=900
 
     def test_owner_self_service_checkout_prices_on_server_and_never_reserves_fake_stock(self):
         import io
