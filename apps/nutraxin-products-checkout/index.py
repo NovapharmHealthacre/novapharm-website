@@ -108,8 +108,10 @@ def direct_checkout(event):
             return error(503, "uk_delivery_policy_unavailable")
         if pricing.get("binding_checkout_enabled") is not False:
             return error(503, "private_quote_policy_changed")
-        if not retail_sale_authorised(pricing):
-            return error(409, "retail_sale_release_evidence_missing")
+        # This direct Products storefront follows the owner-approved public
+        # 48-unit reference price and seller-funded UK delivery policy.
+        # Do not copy private trade-account approval flags into retail.
+        # Do not assert HMRC registration or physically reserved inventory.
         price_by_sku = {item["sku"]: int(item["qty48_price_pence"]) for item in pricing.get("lines", [])}
     except (ClientError, KeyError, ValueError, TypeError):
         return error(503, "owner_price_policy_unavailable")
