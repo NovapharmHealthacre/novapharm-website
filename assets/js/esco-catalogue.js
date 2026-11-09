@@ -239,7 +239,9 @@ if (root) {
     if (add && root.contains(add)) {
       const id = add.dataset.escoAdd;
       if (known.has(id) && (state.has(id) || state.size < MAX_ITEMS)) {
+        const firstAddition = !state.has(id);
         state.set(id, state.get(id) || 1); persist(); render();
+        if (firstAddition) window.dispatchEvent(new CustomEvent("novapharm:marketing-event", { detail: { event: "add_to_cart" } }));
         notify((known.get(id)?.name || "Product") + " added to your Bag.");
         if (dialog?.open) dialog.close();
         if (state.size === MAX_ITEMS) add.title = "Up to 12 products per Bag";
