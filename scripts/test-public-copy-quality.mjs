@@ -92,6 +92,15 @@ if (existsSync(accountRoute)) {
   }
 }
 
+// A hero disclosure should state its provenance once, not repeat itself.
+const nutraxinCollectionRoute = join(root, "products", "nutraxin", "index.html");
+if (existsSync(nutraxinCollectionRoute)) {
+  const nutraxinHtml = readFileSync(nutraxinCollectionRoute, "utf8");
+  if (nutraxinHtml.includes("Pack imagery is from the owner-supplied catalogue. Pack photography")) {
+    failures.push("products/nutraxin/index.html: redundant hero photo provenance copy");
+  }
+}
+
 if (!existsSync(join(root, "index.html")) || files.length < 55) {
   failures.push("Public route inventory is unexpectedly incomplete: " + files.length + " HTML pages");
 }
