@@ -74,6 +74,45 @@ class PaymentContracts(unittest.TestCase):
         FAKE_DB.items.clear()
         FAKE_DB.writes.clear()
 
+    def test_live_secret_trailing_crlf_normalized_and_bad_key_rejected(self):
+        previous_secrets=CHECKOUT.sm
+        previous_open=CHECKOUT.urllib.request.urlopen
+        synthetic="rk_" + "live_" + "synthetic_header_contract"
+        requests=[]
+        class PastedSecret:
+            def get_secret_value(self, **kw):
+                return {"SecretString":synthetic+"\\r\\n"}
+        class FakeResponse:
+            def __enter__(self):return self
+            def __exit__(self,*args):return False
+            def read(self,n):
+                return json.dumps({"id":"cs_live_"+"a"*18,
+                    "url":"https://checkout.stripe.com/c/pay_synthetic",
+                    "livemode":True,"mode":"payment","currency":"gbp",
+                    "amount_total":12600}).encode()
+        def fake_open(req,timeout=12):
+            requests.append(req)
+            self.assertEqual(req.get_header("Authorization"),"Bearer "+synthetic)
+            return FakeResponse()
+        CHECKOUT.sm=PastedSecret()
+        CHECKOUT.urllib.request.urlopen=fake_open
+        try:
+            record=approved_record()
+            quote=CHECKOUT.details(record,record["orderId"]["S"],"customer_123456")
+            session=CHECKOUT.stripe_session(quote,"attempt_synthetic")
+            self.assertEqual(session["amount_total"],12600)
+            self.assertEqual(len(requests),1)
+            class MalformedSecret:
+                def get_secret_value(self, **kw):
+                    return {"SecretString":synthetic+" invalid"}
+            CHECKOUT.sm=MalformedSecret()
+            with self.assertRaises(CHECKOUT.NotReady):
+                CHECKOUT.stripe_session(quote,"attempt_synthetic")
+            self.assertEqual(len(requests),1)
+        finally:
+            CHECKOUT.sm=previous_secrets
+            CHECKOUT.urllib.request.urlopen=previous_open
+
     def test_no_unapproved_quote_can_charge(self):
         order=approved_record()
         for field in ("approvedForPayment","stockReserved","taxAndShippingVerified",
