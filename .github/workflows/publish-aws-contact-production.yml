@@ -144,7 +144,7 @@ jobs:
     steps:
       - name: Publish verified Pages artifact
         id: ship
-        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
       - name: Verify customer contact form on NovaPharm domain without exposing portal login
         env:
           EXPECTED_ORIGIN: ${{ github.event_name == 'push' && 'https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com' || inputs.contact_api_origin }}
