@@ -160,8 +160,15 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
   const unexpectedErrors = expectedStatus === 404 ? consoleErrors.filter((message) => !message.includes("status of 404")) : consoleErrors;
   assert.deepEqual(unexpectedErrors, [], `${engine} ${route}: browser console errors`);
   if (route === "/" && viewport.name === "desktop-1440") {
-    const canvasDataLength = await page.locator("canvas").evaluate((canvas) => (canvas as HTMLCanvasElement).toDataURL().length);
-    assert.ok(canvasDataLength > 1_000, `${engine}: hero canvas is blank`);
+    // NetworkCanvas hydrates asynchronously; networkidle is not a React paint boundary.
+    // Require a real, nonblank raster at the correct size in each engine.
+    await page.waitForFunction(() => {
+      const canvas = document.querySelector<HTMLCanvasElement>(".network-canvas canvas");
+      if (!canvas || canvas.width < 100 || canvas.height < 100) return false;
+      return canvas.toDataURL().length > 1_000;
+    }, null, { timeout: 12_000, polling: 250 }).catch(() => {
+      throw new Error(`${engine}: hero canvas did not paint an actual desktop raster within 12 seconds`);
+    });
   }
   const screenshotDirectory = path.join(artifactRoot, engine, viewport.name);
   await fs.mkdir(screenshotDirectory, { recursive: true });
