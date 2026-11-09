@@ -1,6 +1,15 @@
 name: Publish verified AWS-backed contact form
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'products/nutraxin/**'
+      - 'src/content/nutraxin-showcase.html'
+      - 'assets/js/nutraxin-retail-store.js'
+      - 'assets/data/nutraxin-retail-catalogue.json'
+      - 'scripts/apply-corporate-product-discipline.mjs'
+      - '.github/workflows/publish-aws-contact-production.yml'
   workflow_dispatch:
     inputs:
       expected_sha:
@@ -31,7 +40,7 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: Match independently reviewed commit
         env:
-          EXPECTED_SHA: ${{ inputs.expected_sha }}
+          EXPECTED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
         run: |
           set -euo pipefail
           [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
@@ -56,7 +65,7 @@ jobs:
           test -s _site/assets/css/account-request.css
       - name: Validate deployed AWS API and record one synthetic business receipt
         env:
-          CONTACT_ORIGIN: ${{ inputs.contact_api_origin }}
+          CONTACT_ORIGIN: ${{ github.event_name == 'push' && 'https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com' || inputs.contact_api_origin }}
         run: |
           set -euo pipefail
           [[ "$CONTACT_ORIGIN" =~ ^https://[a-z0-9]+\.execute-api\.eu-north-1\.amazonaws\.com$ ]] || exit 1
@@ -94,7 +103,7 @@ jobs:
         env:
           NOVAPHARM_CONTACT_RELEASE_ACCEPTED: "yes"
           NOVAPHARM_CONTACT_ARTIFACT_ROOT: "_site"
-          NOVAPHARM_CONTACT_API_ORIGIN: ${{ inputs.contact_api_origin }}
+          NOVAPHARM_CONTACT_API_ORIGIN: ${{ github.event_name == 'push' && 'https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com' || inputs.contact_api_origin }}
         run: |
           node scripts/activate-contact-intake.mjs
           grep -Fq 'data-live-b2b-enquiry-form' _site/contact/index.html
@@ -134,7 +143,7 @@ jobs:
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
       - name: Verify customer contact form on NovaPharm domain without exposing portal login
         env:
-          EXPECTED_ORIGIN: ${{ inputs.contact_api_origin }}
+          EXPECTED_ORIGIN: ${{ github.event_name == 'push' && 'https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com' || inputs.contact_api_origin }}
         run: |
           set -euo pipefail
           for attempt in $(seq 1 36); do
