@@ -76,6 +76,22 @@ for (const file of files) {
   const typos = [...knownMisspellings].filter(word => words.has(word));
   if (typos.length) failures.push(route + ": suspected spelling mistake(s): " + typos.join(", "));
 }
+// A page may pass copy and link checks yet omit a major product family.
+// Keep the controlled B2B account journey aligned with the public products hub.
+const accountRoute = join(root, "account-application", "index.html");
+if (existsSync(accountRoute)) {
+  const accountHtml = readFileSync(accountRoute, "utf8");
+  const productNavigation = accountHtml.match(/id="npd-mega-products"[\\s\\S]*?<\\/nav><\\/div>/)?.[0] ?? "";
+  const productFooter = accountHtml.match(/<div><h2>Products<\\/h2>[\\s\\S]*?<\\/div>/)?.[0] ?? "";
+  const escoLink = 'href="/products/esco/"';
+  if (!productNavigation.includes(escoLink)) {
+    failures.push("account-application/index.html: ESCO collection missing from product navigation");
+  }
+  if (!productFooter.includes(escoLink)) {
+    failures.push("account-application/index.html: ESCO collection missing from product footer");
+  }
+}
+
 if (!existsSync(join(root, "index.html")) || files.length < 55) {
   failures.push("Public route inventory is unexpectedly incomplete: " + files.length + " HTML pages");
 }
