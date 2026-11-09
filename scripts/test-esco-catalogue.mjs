@@ -46,6 +46,6 @@ test("all indexed product cards display transparently labelled supplier category
   assert.match(builder,/category\.representativeImage/);
   assert.match(builder,/not a verified individual product photograph/);
   assert.match(builder,/exact variant to be confirmed/);
-  assert.match(css,/\.esco-product-art\[data-esco-photo/);
+  assert.match(css,/:is\(\.esco-category-image,\.esco-product-art\)\[data-esco-photo/);
   assert.equal((css.match(/:is\(\.esco-category-image,\.esco-product-art\)\[data-esco-photo=/g)||[]).length,12);
 });
