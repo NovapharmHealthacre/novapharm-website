@@ -350,8 +350,10 @@ for (const file of [...new Set(publicFiles)]) {
   let html = readFileSync(join(root, file), "utf8").replaceAll("#organisation", "#organization");
   html = enhanceJsonLd(html, route, article, leader);
   html = insertHeadSignals(html, canonical, article, leader);
-  html = addEditorialTrust(html, article);
+  // Keep the editorial trust notice last: the downstream authorship reconciler
+  // replaces its terminal section, so the native share link must precede it.
   html = addNativeArticleShare(html, article, canonical);
+  html = addEditorialTrust(html, article);
   html = addLegalEditorialStandards(html, route);
   html = addFooterEditorialLink(html);
   html = addAttributionSignals(html);
