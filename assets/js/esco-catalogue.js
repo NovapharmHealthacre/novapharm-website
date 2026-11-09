@@ -233,6 +233,7 @@ if (root) {
     const details = event.target.closest("[data-esco-details]");
     if (details && root.contains(details)) {
       openProductDetails(details.dataset.escoDetails);
+      window.dispatchEvent(new CustomEvent("novapharm:marketing-event", { detail: { event: "view_item" } }));
       return;
     }
     const add = event.target.closest("[data-esco-add]");
@@ -254,7 +255,10 @@ if (root) {
     const remove = event.target.closest("[data-esco-remove]");
     if (remove && root.contains(remove)) { state.delete(remove.dataset.escoRemove); persist(); render(); return; }
     if (event.target.closest("[data-esco-clear-quote]")) { state.clear(); persist(); render(); return; }
-    if (event.target.closest("[data-esco-send-quote]") && state.size === 0) event.preventDefault();
+    if (event.target.closest("[data-esco-send-quote]")) {
+      if (state.size === 0) event.preventDefault();
+      else window.dispatchEvent(new CustomEvent("novapharm:marketing-event", { detail: { event: "cta_click", ctaId: "esco-request-quote" } }));
+    }
   });
   root.addEventListener("change", (event) => {
     const el = event.target.closest("[data-esco-qty]");
