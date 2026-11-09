@@ -153,3 +153,12 @@ test("Pages build generator preserves the canonical Nutraxin Bag journey",()=>{
  assert.match(generated,/Guest checkout available/);
  assert.match(generated,/nx-purchase-progress/);
 });
+
+test("products-only checkout role uses the exact payment-worker Lambda ARN",()=> {
+ const infra=JSON.parse(readFileSync("infra/aws/nutraxin-products-checkout-api.json","utf8"));
+ const statements=infra.Resources.ShopRole.Properties.Policies[0].PolicyDocument.Statement;
+ const invoke=statements.find(s=>s.Action==="lambda:InvokeFunction");
+ assert.ok(invoke,"Private Stripe checkout invocation permission is required");
+ assert.deepEqual(invoke.Resource,{"Fn::Sub":"arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:novapharm-production-nutraxin-approved-checkout"});
+ assert.equal(JSON.stringify(infra).includes(":function/novapharm-production-nutraxin-approved-checkout"),false,"Slash-delimited function ARNs must not be reintroduced");
+});
