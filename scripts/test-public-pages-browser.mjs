@@ -417,6 +417,73 @@ for (const [engineName, browserType] of engines) {
         await context.close();
       }
     }
+
+    // Screenshot-reported ESCO regressions: hero photos/caption and details
+    // must never physically intersect, including in Safari/WebKit.
+    for (const viewport of [
+      { name:"esco-mobile-390", width:390, height:844 },
+      { name:"esco-tablet-768", width:768, height:1024 },
+      { name:"esco-desktop-1440", width:1440, height:900 }
+    ]) {
+      const context = await browser.newContext({
+        baseURL:baseUrl,
+        viewport:{width:viewport.width,height:viewport.height},
+        locale:"en-GB",
+        reducedMotion:"reduce",
+        colorScheme:"light"
+      });
+      const page = await context.newPage();
+      try {
+        const response = await page.goto("/products/esco/", { waitUntil:"networkidle", timeout:30_000 });
+        assert.equal(response?.status(), 200, `${engineName} ${viewport.name}: ESCO page unavailable`);
+        await dismissConsent(page);
+        await page.locator(".esco-hero-showcase-image").first().waitFor({state:"visible"});
+        const intersects = await page.evaluate(() => {
+          const rect = node => node?.getBoundingClientRect();
+          const intersection = (a,b) => a && b &&
+            a.right > b.left + 1 && b.right > a.left + 1 &&
+            a.bottom > b.top + 1 && b.bottom > a.top + 1;
+          const hero = document.querySelector(".esco-hero-showcase");
+          const [bed,crutches] = hero.querySelectorAll(".esco-hero-showcase-image");
+          const note = hero.querySelector(":scope > p");
+          return {
+            imageOverlap:intersection(rect(bed),rect(crutches)),
+            noteOverlapsBed:intersection(rect(note),rect(bed)),
+            noteOverlapsCrutches:intersection(rect(note),rect(crutches)),
+            horizontalOverflow:document.documentElement.scrollWidth > document.documentElement.clientWidth + 2
+          };
+        });
+        assert.equal(intersects.imageOverlap,false,`${engineName} ${viewport.name}: ESCO hero product photographs overlap`);
+        assert.equal(intersects.noteOverlapsBed,false,`${engineName} ${viewport.name}: ESCO hero caption overlaps bed`);
+        assert.equal(intersects.noteOverlapsCrutches,false,`${engineName} ${viewport.name}: ESCO hero caption overlaps crutches`);
+        assert.equal(intersects.horizontalOverflow,false,`${engineName} ${viewport.name}: ESCO hero overflows viewport`);
+        const directory = path.join(artifactRoot,engineName,viewport.name);
+        await mkdir(directory,{recursive:true});
+        await page.locator(".esco-hero").screenshot({path:path.join(directory,"esco-hero.png"),animations:"disabled"});
+        await page.locator("[data-esco-details]").first().click();
+        const dialog = page.locator("dialog.esco-product-dialog");
+        await dialog.waitFor({state:"visible"});
+        const layout = await page.evaluate(() => {
+          const dialog = document.querySelector("dialog.esco-product-dialog");
+          const picture = dialog.querySelector(".esco-dialog-picture").getBoundingClientRect();
+          const copy = dialog.querySelector(".esco-dialog-copy").getBoundingClientRect();
+          const intersects = picture.right > copy.left + 1 && copy.right > picture.left + 1 &&
+            picture.bottom > copy.top + 1 && copy.bottom > picture.top + 1;
+          return { intersects, overflow:dialog.scrollWidth > dialog.clientWidth + 2,
+            pictureWidth:picture.width, copyWidth:copy.width };
+        });
+        assert.equal(layout.intersects,false,`${engineName} ${viewport.name}: ESCO detail image collides with text`);
+        assert.equal(layout.overflow,false,`${engineName} ${viewport.name}: ESCO dialog overflows horizontally`);
+        assert.ok(layout.pictureWidth > 80 && layout.copyWidth > 80,`${engineName} ${viewport.name}: ESCO dialog collapsed`);
+        await dialog.screenshot({path:path.join(directory,"esco-details.png"),animations:"disabled"});
+        screenshots += 2;
+        geometryRuns += 1;
+      } finally {
+        await page.close();
+        await context.close();
+      }
+    }
+
   } finally {
     await browser.close();
   }
