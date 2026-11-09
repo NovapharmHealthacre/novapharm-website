@@ -952,6 +952,8 @@ body[data-page="technology"] .np-intelligence {
 .np-intelligence .npi-plan-billing { min-height: 43px; color: #61616a; font-size: .81rem; line-height: 1.4; margin: 10px 0 0; }
 .np-intelligence .npi-plan-cta { display: flex; justify-content: center; align-items: center; text-align: center; border: 1px solid #1d1d1f; border-radius: 999px; color: #fff; background: #1d1d1f; padding: 13px 20px; min-height: 48px; font-size: .9rem; font-weight: 650; margin-top: 21px; transition: background-color .15s ease,box-shadow .15s ease; }
 .np-intelligence .npi-plan-cta:hover { color: #fff; background: #414149; }
+.np-intelligence .npi-plan-email { display: block; width: fit-content; color: #005aaa; font-size: .79rem; margin: 11px auto 0; text-decoration: underline; text-underline-offset: 3px; }
+.np-intelligence .npi-plan-email:hover { color: #00417f; }
 .np-intelligence .npi-plan-featured .npi-plan-cta { background: #0071e3; border-color: #0071e3; }
 .np-intelligence .npi-plan-featured .npi-plan-cta:hover { background: #005bbb; }
 .np-intelligence .npi-plan-enterprise .npi-plan-cta { background: #fff; color: #1d1d1f; border-color: #929299; }
