@@ -54,6 +54,7 @@ import {
 import { medicineIdentityDetail, nearbyHealthcareOrganisations, queryMedicineAnalytics, searchMedicines } from "./src/core/medicines-intelligence-service.mjs";
 import { intelligenceReleaseReadiness } from "./src/core/intelligence-release-readiness.mjs";
 import { searchOpenFdaLabels } from "./src/core/regulatory/openfda-labels.mjs";
+import { searchClinicalTrialsStudies } from "./src/core/regulatory/clinicaltrials-studies.mjs";
 import {
   changePassword,
   consumeRateLimit,
@@ -975,6 +976,14 @@ export async function handleRequest(request, response) {
       const session = await scopedAuthentication(request, response, ["board"]);
       if (!session) return;
       json(response, 200, await searchOpenFdaLabels(url.searchParams.get("drug") || "", enterpriseContext(session)));
+      return;
+    }
+
+    if (pathname === "/api/v1/intelligence/evidence/us/clinical-trials" && request.method === "GET") {
+      if (!await rateLimit(request, "clinical-trials-registry-discovery", 10, 60 * 1000)) return json(response, 429, { error: "Too many clinical registry queries. Try again shortly." });
+      const session = await scopedAuthentication(request, response, ["board"]);
+      if (!session) return;
+      json(response, 200, await searchClinicalTrialsStudies(url.searchParams.get("intervention") || "", enterpriseContext(session)));
       return;
     }
 
