@@ -158,9 +158,9 @@ for (const [label, markup] of [["source", source], ["published", published]]) {
   assert.ok(markup.includes("₹3,50,000"), label + " custom enterprise indication must not be hidden");
   assert.ok(markup.includes("not live subscriptions"), label + " must disclose product activation boundary");
   assert.ok(markup.includes("No payment will be collected here"), label + " must not imply production checkout");
-  assert.ok(markup.includes('href="/contact/?enquiry=NovaPharm%20Intelligence%20Starter'), label + " Starter must use qualified contact flow");
-  assert.ok(markup.includes('href="/contact/?enquiry=NovaPharm%20Intelligence%20Professional'), label + " Professional must use qualified contact flow");
-  assert.ok(markup.includes('href="/contact/?enquiry=NovaPharm%20Intelligence%20Enterprise'), label + " Enterprise must use qualified contact flow");
+  assert.ok(markup.includes('href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20Intelligence%20Starter'), label + " Starter must retain its tier in a working corporate email enquiry");
+  assert.ok(markup.includes('href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20Intelligence%20Professional'), label + " Professional must retain its tier in a working corporate email enquiry");
+  assert.ok(markup.includes('href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20Intelligence%20Enterprise'), label + " Enterprise must retain its tier in a working corporate email enquiry");
   assert.ok(!markup.includes('href="https://checkout.stripe.com'), label + " must not activate unverified checkout");
 }
 assert.ok(published.includes('src="/assets/js/intelligence-pricing.js"'), "Pricing module must be in the materialised site");
