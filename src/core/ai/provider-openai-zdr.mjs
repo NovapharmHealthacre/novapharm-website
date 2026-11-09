@@ -1,4 +1,8 @@
+import { redactSecrets } from "./redaction-service.mjs";
+
 const APPROVED_EU_ENDPOINT = "https://eu.api.openai.com";
+const MAX_EVIDENCE_SOURCES = 16;
+const SOURCE_ID_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._:/-]{0,127}$/u;
 const MAX_INPUT_CHARS = 14000;
 const MAX_OUTPUT_TOKENS = 380;
 
@@ -42,7 +46,10 @@ export function createOpenAiZdrProvider({
         sourceManifest.externalAiRightsApproved !== true ||
         sourceManifest.humanReviewRequired !== true ||
         !Array.isArray(sourceManifest.sourceIds) ||
-        sourceManifest.sourceIds.length === 0
+        sourceManifest.sourceIds.length === 0 ||
+        sourceManifest.sourceIds.length > MAX_EVIDENCE_SOURCES ||
+        sourceManifest.sourceIds.some((id) => typeof id !== "string" || !SOURCE_ID_PATTERN.test(id)) ||
+        new Set(sourceManifest.sourceIds).size !== sourceManifest.sourceIds.length
       ) {
         throw blocked("nova_source_rights_not_approved", "Server-verified evidence and external-AI use rights are required.", 403);
       }
@@ -50,6 +57,9 @@ export function createOpenAiZdrProvider({
       const input = String(prompt ?? "").trim();
       if (!instructions || !input || instructions.length > 3000 || input.length > MAX_INPUT_CHARS) {
         throw blocked("nova_input_rejected", "NOVA requires bounded, reviewed instructions and evidence.", 400);
+      }
+      if (redactSecrets(instructions) !== instructions || redactSecrets(input) !== input) {
+        throw blocked("nova_sensitive_input_rejected", "Potential credentials must be removed in the authorised server workflow before any model request.", 403);
       }
       let upstream;
       try {
