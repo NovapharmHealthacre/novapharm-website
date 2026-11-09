@@ -1,0 +1,45 @@
+name: Rebuild authoritative media provenance on review branch
+on:
+  push:
+    branches:
+      - fix/intelligence-authoritative-image-provenance-20261109
+    paths:
+      - '.github/workflows/reconcile-authoritative-image-inventory.yml'
+permissions:
+  contents: write
+jobs:
+  rebuild-inventory:
+    if: github.repository == 'NovapharmHealthacre/novapharm-website' && github.ref == 'refs/heads/fix/intelligence-authoritative-image-provenance-20261109'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: true
+          ref: fix/intelligence-authoritative-image-provenance-20261109
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install pinned dependencies
+        run: npm ci --ignore-scripts
+      - name: Generate full media provenance
+        run: npm run images:inventory
+      - name: Commit only the verified generated register
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- audit/generated/image-inventory.json; then
+            echo "Inventory already matches this checked-out tree"
+            exit 0
+          fi
+          if [ -n "$(git diff --name-only -- . ':(exclude)audit/generated/image-inventory.json')" ]; then
+            echo "::error::Inventory generation modified unexpected tracked files"
+            exit 1
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- audit/generated/image-inventory.json
+          git commit -m 'chore(audit): reconcile image inventory to current repository tree'
+          git push origin HEAD:fix/intelligence-authoritative-image-provenance-20261109
+          echo 'New inventory committed for PR review; no production deployment triggered'
