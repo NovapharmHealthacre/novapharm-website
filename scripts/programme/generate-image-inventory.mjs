@@ -118,7 +118,13 @@ function crossPlatformComparable(report) {
 }
 
 const tracked = trackedFiles().filter((file) => existsSync(path.join(root, file)));
-const mediaFiles = tracked.filter((file) => mediaPattern.test(file));
+// Build-time original concept SVGs are not uploaded supplier photographs and have
+// no independent image licence/photographic provenance. They are generated from
+// source metadata for the ESCO shopping display and tested in test-esco-catalogue.
+// Preserve the audited physical-source media inventory without presenting
+// algorithmic derivatives as supplier-owned photographic assets.
+const generatedEscoConcept = (file) => /^assets\/media\/esco\/previews\/esco-cat-[0-9]{4}\.svg$/.test(file);
+const mediaFiles = tracked.filter((file) => mediaPattern.test(file) && !generatedEscoConcept(file));
 const textFiles = tracked.filter((file) => textPattern.test(file) && file !== "audit/generated/image-inventory.json");
 const textCorpus = [];
 for (const file of textFiles) {
