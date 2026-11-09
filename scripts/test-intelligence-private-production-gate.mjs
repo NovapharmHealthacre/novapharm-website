@@ -18,7 +18,9 @@ test("all protected intelligence evidence endpoints are rejected without a live 
 });
 
 test("HTTPS ingress rejects public/indexable production portal responses", () => {
-  assert.match(source, /https:\/\/portal\.novapharmhealthcare\.com/u);
+  assert.match(source, /https:\/\/intelligence\.novapharmhealthcare\.com/u);
+  assert.doesNotMatch(source, /https:\/\/portal\.novapharmhealthcare\.com/u, "Nutraxin customer hostname is a separate application");
+  assert.match(source, /NUTRAXIN \/ CUSTOMER ACCOUNT\|Welcome to Nutraxin/u);
   assert.match(source, /getent ahostsv4/u);
   assert.match(source, /\^x-robots-tag:\.\*noindex/iu);
   assert.match(source, /No resource was created|X-Robots-Tag: noindex|noindex/u);
