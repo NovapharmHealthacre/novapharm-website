@@ -264,8 +264,8 @@ jobs:
               "https://novapharmhealthcare.com/products/nutraxin/?marketing-$GITHUB_SHA-$attempt-$(date +%s)" \
               -o /tmp/novapharm-live-organic.html; then
               if grep -Fq 'Nutraxin UK Supplements | Explore 19 Products | NovaPharm' /tmp/novapharm-live-organic.html \
-                 && grep -Fq 'name="novapharm-ga4-id" content="G-897L1VS8BX"' /tmp/novapharm-live-organic.html
-                 && grep -Fq '/assets/js/consent-analytics.js' /tmp/novapharm-live-organic.html
+                 && grep -Fq 'name="novapharm-ga4-id" content="G-897L1VS8BX"' /tmp/novapharm-live-organic.html \
+                 && grep -Fq '/assets/js/consent-analytics.js' /tmp/novapharm-live-organic.html \
                  && ! grep -Fq 'www.googletagmanager.com' /tmp/novapharm-live-organic.html; then
                 curl --fail --silent --show-error --max-time 15 \
                   "https://novapharmhealthcare.com/assets/js/consent-analytics.js" \
