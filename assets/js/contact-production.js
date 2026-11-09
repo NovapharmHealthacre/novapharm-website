@@ -25,6 +25,21 @@ if (form instanceof HTMLFormElement) {
     const productName = intent.get("product") || "";
     const sku = intent.get("sku") || "";
     const messageField = form.elements.namedItem("message");
+    // ESCO quote-list hints are untrusted. Accept only model-independent
+    // catalogue IDs and safe quantities; no buyer-provided HTML or pricing.
+    const rawEscoQuote = intent.get("quote") || "";
+    if (messageField instanceof HTMLTextAreaElement && !messageField.value.trim()
+        && rawEscoQuote.startsWith("ESCO Anand UK quotation request")
+        && rawEscoQuote.length <= 850
+        && !/[<>\u0000-\u001f\u007f]/u.test(rawEscoQuote)) {
+      const items = [...rawEscoQuote.matchAll(/\b(ESCO-CAT-\d{4}) qty ([1-9][0-9]{0,2}|1000)\b/gu)];
+      const unique = new Set(items.map((item) => item[1]));
+      if (items.length > 0 && items.length <= 12 && unique.size === items.length) {
+        messageField.value = "ESCO Anand 2026 catalogue: request for a non-binding UK procurement quotation.\n\n" +
+          items.map((item) => "- " + item[1] + ": " + item[2] + " units").join("\n") +
+          "\n\nPlease confirm the precise product variants, UK market compliance, delivered prices excluding and including applicable VAT, and lead times. This is not an order or an instruction to collect payment.";
+      }
+    }
     // Basket hints contain SKU and requested units only. Validate length,
     // syntax, duplicates and quantity before touching the visible enquiry.
     // They must not be interpreted as confirmed or priced orders.
