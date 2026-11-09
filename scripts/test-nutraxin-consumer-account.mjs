@@ -75,6 +75,17 @@ test("authenticated idempotent retries reconcile DynamoDB transaction conflicts"
  assert.match(src,/prior\.get\("basketHash"\) != item\["basketHash"\]/);
 });
 
+test("private account panel is revealed only after server-verified identity and order authorization",()=>{
+ const js=read("assets/js/nutraxin-consumer-account.js");
+ const method=js.slice(js.indexOf("async function showAuthenticated"),js.indexOf("async function init"));
+ assert.ok(method.includes('const me=await accountRequest(config,"/account/me",v.accessToken)'));
+ assert.ok(method.includes('me?.email_verified!==true'));
+ assert.ok(method.includes('orders=await accountRequest(config,"/account/orders",v.accessToken)'));
+ assert.ok(method.indexOf('const me=await accountRequest') < method.indexOf('document.querySelector("[data-nx-account-private]").hidden=false'));
+ assert.ok(method.indexOf('if(!loadSession())throw') < method.indexOf('document.querySelector("[data-nx-account-private]").hidden=false'));
+ assert.match(js,/document\.querySelector\("\[data-nx-account-public\]"\)\.hidden=false;\s*document\.querySelector\("\[data-nx-account-private\]"\)\.hidden=true;/);
+});
+
 test("server Python remains parsable without importing boto3",()=>{
  const python=spawnSync("python3",["-c","import ast,sys;ast.parse(sys.stdin.read())"],{input:src,encoding:"utf8"});
  assert.equal(python.status,0,python.stderr||"Python syntax failure");
