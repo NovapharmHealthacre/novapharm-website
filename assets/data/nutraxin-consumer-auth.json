@@ -1,6 +1,6 @@
 {
-  "enabled": false,
-  "release_status": "identity-created; production-checkout-api-and-email-acceptance-pending",
+  "enabled": true,
+  "release_status": "limited-consumer-onboarding-cognito-default-verified-email-production-acceptance-open",
   "region": "eu-north-1",
   "cognito_domain": "novapharm-nutraxin-production-250675045172.auth.eu-north-1.amazoncognito.com",
   "client_id": "4dcl7m8et6k6c599e2f75rq0vs",
