@@ -153,3 +153,14 @@ test("Pages build generator preserves the canonical Nutraxin Bag journey",()=>{
  assert.match(generated,/Guest checkout available/);
  assert.match(generated,/nx-purchase-progress/);
 });
+
+test("Stripe worker strips pasted CR/LF only and rejects malformed live secret without disclosure",()=>{
+ const code=readFileSync("apps/nutraxin-payments/approved_checkout.py","utf8");
+ const stack=JSON.parse(readFileSync("infra/aws/nutraxin-approved-checkout-production.json","utf8"));
+ const inline=stack.Resources.CheckoutFunction.Properties.Code.ZipFile;
+ assert.equal(inline,code,"deployed CloudFormation inline worker must match source exactly");
+ assert.ok(code.includes('secret = secret.rstrip("\\r\\n")'),"Pasted trailing CR/LF must be normalized before authorization header");
+ assert.match(code,/re\.fullmatch\(r"\(\?:rk\|sk\)_live_\[A-Za-z0-9_\]\+"/);
+ assert.ok(code.includes("Stripe live restricted credentials are unavailable"));
+ assert.ok(!code.includes("print(secret)"));
+});
