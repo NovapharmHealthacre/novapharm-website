@@ -14,7 +14,7 @@ for (const item of entries) {
   if (!item.name || !item.subcategory || !Number.isInteger(item.sourceIndexPage)) throw Error('Unresolved ESCO catalogue row');
   if (item.priceGbp !== null || item.sellable !== false) throw Error('Unverified ESCO item must not have public prices or sellable flag');
 }
-const contact = (item) => '/contact/?enquiry=' + encodeURIComponent('ESCO Anand: ' + item.name + (item.model ? ' (' + item.model + ')' : ''));
+const contact = (item) => '/contact/?enquiry=Distribution%20partnership&quote=' + encodeURIComponent('ESCO Anand UK quotation request (catalogue 2026). Items: ' + item.id + ' qty 1. Please confirm variant, UK compliance, total delivered price and lead time.');
 const sections = data.categories.map((category, i) => {
   const subs = [...new Set(category.entries.map((item) => item.subcategory))];
   const groups = subs.map((sub) => {
