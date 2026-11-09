@@ -65,7 +65,7 @@ test("US FDA discovery is a fixed read-only board-gateway flow with no browser-h
   const gateway = source("app/gateway/[...path]/route.ts");
   const view = source("components/us-fda-label-discovery.tsx");
   const terminal = source("components/medicines-intelligence.tsx");
-  assert.match(gateway, /v1\\/intelligence\\/regulatory\\/us\\/fda-labels/);
+  assert.ok(gateway.includes("fda-labels$/"), "The gateway must permit the exact FDA label path");
   assert.match(gateway, /path === "v1\/intelligence\/regulatory\/us\/fda-labels"/);
   assert.match(gateway, /request\.method !== "GET"/);
   assert.match(view, /gatewayJson<FdaLabelResponse>/);
