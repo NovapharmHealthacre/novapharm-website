@@ -9,6 +9,7 @@ on:
       - 'assets/js/nutraxin-retail-store.js'
       - 'assets/data/nutraxin-retail-catalogue.json'
       - 'scripts/apply-corporate-product-discipline.mjs'
+      - 'scripts/stage-pages-artifact.mjs'
       - '.github/workflows/publish-aws-contact-production.yml'
   workflow_dispatch:
     inputs:
@@ -61,6 +62,7 @@ jobs:
           npm run test:cookies
           npm run validate:domain
           node scripts/stage-pages-artifact.mjs _site
+          test "$(tr -d '\r\n' < _site/da125ceca8032e01fc98782c388f894f.txt)" = 'da125ceca8032e01fc98782c388f894f'
           grep -Fq 'Simple from start to finish.' _site/products/nutraxin/bag/index.html
           grep -Fq 'Guest checkout available' _site/products/nutraxin/bag/index.html
           grep -Fq 'Nutraxin UK Supplements | Explore 19 Products | NovaPharm' _site/products/nutraxin/index.html
