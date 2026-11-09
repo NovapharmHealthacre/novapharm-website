@@ -29,7 +29,9 @@ test("ESCO has a 12-item quotation list with contact-form prefill but no payment
   const fallback=readFileSync("assets/js/contact-email-draft.js","utf8");
   assert.match(builder,/data-esco-add/);
   assert.match(builder,/data-esco-quote-items/);
-  assert.match(builder,/Request a quotation/);
+  assert.match(builder,/Request final quote/);
+  assert.match(builder,/products\/esco\/bag\/index.html/);
+  assert.match(builder,/data-esco-bag-items/);
   assert.match(interaction,/const MAX_ITEMS = 12/);
   assert.match(interaction,/quote=/);
   assert.match(contact,/quoteMessage.*startsWith/);
@@ -39,15 +41,47 @@ test("ESCO has a 12-item quotation list with contact-form prefill but no payment
   assert.doesNotMatch(builder,/payment_collection_enabled|buy now|checkoutEnabled: true/);
 });
 
-test("all indexed product cards display transparently labelled supplier category imagery",()=>{
+test("all 373 ESCO entries have product-specific, accurately labelled concept previews",async()=>{
+  const {makeProductIllustration,guideFor}=await import("./esco-merchandising.mjs");
   const builder=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
   const css=readFileSync("assets/css/esco-catalogue.css","utf8");
-  assert.match(builder,/class="esco-product-art"/);
-  assert.match(builder,/category\.representativeImage/);
-  assert.match(builder,/not a verified individual product photograph/);
-  assert.match(builder,/exact variant to be confirmed/);
+  const ids=new Set();
+  for(const category of data.categories)for(const p of category.entries){
+    const item={...p,category:category.name};
+    const graphic=makeProductIllustration(item);
+    const guide=guideFor(item);
+    assert.ok(graphic.includes("Concept illustration for "));
+    assert.ok(graphic.includes(p.name.replace(/[—–]/g,"-").slice(0,8)) || graphic.includes(p.name.split(" ")[0]));
+    assert.match(graphic,/<svg xmlns=/);
+    assert.ok(guide.guidePriceExVatGbp>0);
+    assert.equal(guide.checkoutEligible,false);
+    assert.equal(guide.priceApprovedForCheckout,false);
+    assert.equal(guide.grossMarginGuaranteed,false);
+    assert.equal(guide.supplierUnitCostKnown,false);
+    ids.add(p.id);
+  }
+  assert.equal(ids.size,373);
+  assert.match(builder,/buildMerchandising\(entries\)/);
+  assert.match(builder,/esco-product-concept/);
+  assert.match(builder,/merchandising\.guidePrices\[p\.id\]/);
+  assert.match(builder,/Product-specific concept/);
+  assert.match(css,/\.esco-product-concept/);
   assert.match(css,/:is\(\.esco-category-image,\.esco-product-art\)\[data-esco-photo/);
   assert.equal((css.match(/:is\(\.esco-category-image,\.esco-product-art\)\[data-esco-photo=/g)||[]).length,12);
+});
+
+test("consumer Bag shows estimates, retains quote flow and never solicits or processes card payments",()=>{
+  const generator=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
+  const interaction=readFileSync("assets/js/esco-catalogue.js","utf8");
+  const bag=readFileSync("assets/js/esco-bag.js","utf8");
+  assert.match(generator,/data-esco-subtotal/);
+  assert.match(generator,/data-esco-bag-quote/);
+  assert.match(generator,/data-esco-card-checkout disabled/);
+  assert.match(generator,/UK guide/);
+  assert.match(interaction,/guidePence/);
+  assert.match(bag,/MAX_ITEMS = 12/);
+  assert.match(bag,/requestQuoteOnly !== true/);
+  assert.doesNotMatch(bag,/Stripe\(|checkout\.sessions\.create|client_secret|cardNumber/);
 });
 
 test("61 ESCO model-matched photos exist as distinct catalogue-derived WebP assets",()=>{
@@ -66,5 +100,6 @@ test("61 ESCO model-matched photos exist as distinct catalogue-derived WebP asse
   const generator=fs("scripts/apply-esco-catalogue.mjs","utf8");
   assert.match(generator,/productPicture\(p, category\)/);
   assert.match(generator,/Model-matched ESCO catalogue photo/);
-  assert.match(generator,/Supplier category image/);
+  assert.match(generator,/Source catalogue photo/);
+  assert.match(generator,/Original product concept/);
 });
