@@ -19,6 +19,11 @@ export function analyticsBrand(pathname) {
   return "healthcare";
 }
 
+export function analyticsPagePath(pathname) {
+  const path = String(pathname || "/");
+  if (/^\/products\/nutraxin\/(?!bag\/|order-request\/|checkout\/)[a-z0-9-]+\/$/.test(path)) return "/products/nutraxin/product/";
+  return path;
+}
 const EVENT_NAMES = new Set(["cta_click", "view_item", "add_to_cart", "begin_checkout"]);
 
 export function sanitiseMarketingEvent(detail, pathname) {
@@ -51,7 +56,7 @@ function initialiseAnalytics() {
   if (!validGa4Id(id) || !publicAnalyticsRoute(location.pathname)) return;
   let started = false;
   let allowed = false;
-  const pageLocation = location.origin + location.pathname;
+  const pageLocation = location.origin + analyticsPagePath(location.pathname);
   const send = (event, parameters = {}) => {
     if (!allowed || !started || !analyticsConsent()) return;
     window.gtag("event", event, {
@@ -67,20 +72,45 @@ function initialiseAnalytics() {
     if (!started) {
       window.dataLayer = window.dataLayer || [];
       window.gtag = function () { window.dataLayer.push(arguments); };
+      // Basic Consent Mode: the provider script is not fetched before consent.
+      // When it is fetched, deny every storage/advertising purpose by default.
+      window.gtag("consent", "default", {
+        analytics_storage: "denied",
+        ad_storage: "denied",
+        ad_user_data: "denied",
+        ad_personalization: "denied"
+      });
+      window.gtag("consent", "update", {
+        analytics_storage: "granted",
+        ad_storage: "denied",
+        ad_user_data: "denied",
+        ad_personalization: "denied"
+      });
       window.gtag("js", new Date());
       window.gtag("config", id, {
         send_page_view: false,
         allow_google_signals: false,
         allow_ad_personalization_signals: false,
-        page_location: pageLocation
+        cookie_expires: 90 * 24 * 60 * 60,
+        page_location: pageLocation,
+        page_referrer: ""
       });
       const script = document.createElement("script");
       script.async = true;
       script.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(id);
       document.head.append(script);
       started = true;
+    } else {
+      // A visitor can withdraw consent and subsequently grant it again.
+      // Re-enable analytics storage only on that new affirmative choice.
+      window.gtag("consent", "update", {
+        analytics_storage: "granted",
+        ad_storage: "denied",
+        ad_user_data: "denied",
+        ad_personalization: "denied"
+      });
     }
-    send("page_view", { page_title: document.title });
+    send("page_view", { page_title: location.pathname.startsWith("/products/nutraxin/") ? "Nutraxin product information" : document.title });
     if (/^\/products\/nutraxin\/(?!bag\/|order-request\/)[a-z0-9-]+\/$/.test(location.pathname)) {
       send("view_item", { item_category: "food_supplements" });
     }

@@ -7,6 +7,12 @@ on:
       - "src/seo/**"
       - "scripts/build-site.mjs"
       - "scripts/enhance-seo-authority.mjs"
+      - "scripts/validate-public-sitemaps.py"
+      - "assets/js/consent-analytics.js"
+      - "assets/js/cookie-consent.js"
+      - "scripts/test-consent-analytics.mjs"
+      - "legal/cookies/index.html"
+      - "legal/privacy/index.html"
       - "scripts/test-native-organic-marketing.mjs"
       - "docs/marketing/**"
       - "scripts/reconcile-leadership-authority.mjs"
@@ -53,6 +59,12 @@ jobs:
 
       - name: Verify £0 native LinkedIn launch and public share links
         run: node scripts/test-native-organic-marketing.mjs
+
+      - name: Validate canonical Google and Bing XML sitemaps
+        run: python3 scripts/validate-public-sitemaps.py
+
+      - name: Verify GA4 consent and privacy notices
+        run: node scripts/test-consent-analytics.mjs
 
       - name: Validate SEO, GEO, entities and discovery
         id: seo_validation

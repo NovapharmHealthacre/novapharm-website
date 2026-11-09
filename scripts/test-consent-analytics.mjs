@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { validGa4Id, publicAnalyticsRoute, analyticsBrand, sanitiseMarketingEvent } from "../assets/js/consent-analytics.js";
+import { validGa4Id, publicAnalyticsRoute, analyticsBrand, sanitiseMarketingEvent, analyticsPagePath } from "../assets/js/consent-analytics.js";
 
 assert.equal(validGa4Id("G-ABCD123456"), true);
 for (const invalid of ["", "G-", "UA-123456", "G-ABC<script>", "G-abc123"]) {
@@ -38,10 +38,31 @@ assert.match(source, /novapharm:consent/);
 assert.match(source, /ga-disable-/);
 assert.match(source, /eraseGaCookies/);
 assert.match(source, /send_page_view: false/);
+assert.match(source, /"consent", "default"/);
+assert.match(source, /"consent", "update"/);
+assert.match(source, /analytics_storage: "denied"/);
+assert.match(source, /analytics_storage: "granted"/);
+assert.match(source, /cookie_expires: 90 \* 24 \* 60 \* 60/);
+assert.match(source, /page_referrer: ""/);
 assert.match(generator, /PUBLIC_ANALYTICS_PRIVACY_APPROVED/);
 assert.match(generator, /PUBLIC_GA4_MEASUREMENT_ID/);
 assert.match(store, /emitRetailFunnelEvent\("add_to_cart"\)/);
 assert.match(store, /emitRetailFunnelEvent\("begin_checkout"\)/);
 assert.match(source, /send\("view_item", \{ item_category: "food_supplements" \}\)/);
-assert.doesNotMatch(readFileSync("index.html", "utf8"), /<meta name="novapharm-ga4-id"/, "Production source must remain inactive until owner-controlled provider and privacy approval");
+const sourcePage = readFileSync("index.html", "utf8");
+if (sourcePage.includes('<meta name="novapharm-ga4-id"')) {
+  assert.match(sourcePage, /G-897L1VS8BX/);
+  assert.match(sourcePage, /src="\/assets\/js\/consent-analytics\.js"/);
+  for (const route of ["contact/index.html", "portal/index.html", "legal/cookies/index.html", "legal/privacy/index.html"]) {
+    assert.doesNotMatch(readFileSync(route, "utf8"), /<meta name="novapharm-ga4-id"/, "Private/legal route tracked: " + route);
+  }
+}
+assert.equal(analyticsPagePath("/products/nutraxin/vitamin-d3-120-tablets/"), "/products/nutraxin/product/");
+assert.equal(analyticsPagePath("/products/nutraxin/bag/"), "/products/nutraxin/bag/");
+assert.match(readFileSync("assets/js/cookie-consent.js", "utf8"), /Google Analytics 4/);
+assert.match(readFileSync("legal/cookies/index.html", "utf8"), /Google Analytics 4/);
+assert.match(readFileSync("legal/privacy/index.html", "utf8"), /optional-website-analytics/);
+assert.match(generator, /G-897L1VS8BX/, "Use the confirmed public NovaPharm Analytics web stream, not a portfolio stream");
+assert.match(generator, /PUBLIC_ANALYTICS_PRIVACY_APPROVED/);
+
 console.log("Consent analytics tests passed: GA4 disabled by default, sensitive routes excluded, coarse events only and no synthetic conversions.");
