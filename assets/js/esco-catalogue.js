@@ -180,12 +180,68 @@ if (root) {
       button.setAttribute("aria-label",(selected?"In Bag: ":"Add to Bag: ") + (known.get(button.dataset.escoAdd)?.name || "ESCO product"));
     }
   }
+
+  let notificationTimer;
+  function notify(message) {
+    if (!feedback) return;
+    feedback.textContent = message;
+    feedback.classList.add("is-visible");
+    clearTimeout(notificationTimer);
+    notificationTimer = setTimeout(() => feedback.classList.remove("is-visible"), 2600);
+  }
+  function openProductDetails(id) {
+    const card = root.querySelector('[data-esco-catalogue-id="' + id + '"]');
+    if (!dialog || !card || !known.has(id)) return;
+    const picture = dialog.querySelector("[data-esco-dialog-picture]");
+    const source = card.querySelector(".esco-product-visual");
+    if (picture && source) picture.replaceChildren(source.cloneNode(true));
+    const title = dialog.querySelector("[data-esco-dialog-title]");
+    const model = dialog.querySelector("[data-esco-dialog-model]");
+    const price = dialog.querySelector("[data-esco-dialog-price]");
+    const provenance = dialog.querySelector("[data-esco-dialog-provenance]");
+    const add = dialog.querySelector("[data-esco-dialog-add]");
+    const item = known.get(id);
+    if (title) title.textContent = item.name;
+    if (model) model.textContent = (item.model || "Model to confirm") + " · " + card.dataset.escoCategory;
+    if (price) price.textContent = (readyPrices.has(id) ? "UK delivered " : "UK guide ") +
+      GBP.format((readyPrices.get(id) ?? item.guidePence) / 100) +
+      (readyPrices.has(id) ? " ex VAT · secure checkout available" : " ex VAT · indicative");
+    if (provenance) provenance.textContent =
+      card.querySelector(".esco-product-art-caption")?.textContent?.trim() ||
+      "Product imagery is illustrative; specification to confirm";
+    if (add) { add.dataset.escoAdd = id; add.textContent = state.has(id) ? "In your Bag" : "Add to Bag"; }
+    if (typeof dialog.showModal === "function") dialog.showModal();
+    else dialog.setAttribute("open","");
+    dialogClose?.focus();
+  }
+  dialogClose?.addEventListener("click",() => dialog?.close());
+  dialog?.addEventListener("click",event => { if (event.target === dialog) dialog.close(); });
   root.addEventListener("click", (event) => {
+    const jump = event.target.closest("[data-esco-spotlight-jump]");
+    if (jump && root.contains(jump)) {
+      event.preventDefault();
+      const id = jump.dataset.escoSpotlightJump;
+      if (input) input.value = id;
+      if (filter) filter.value = "";
+      if (readyToggle) readyToggle.checked = false;
+      apply();
+      const target = root.querySelector('[data-esco-catalogue-id="' + id + '"]');
+      target?.scrollIntoView({behavior:"smooth",block:"center"});
+      target?.querySelector("[data-esco-details]")?.focus({preventScroll:true});
+      return;
+    }
+    const details = event.target.closest("[data-esco-details]");
+    if (details && root.contains(details)) {
+      openProductDetails(details.dataset.escoDetails);
+      return;
+    }
     const add = event.target.closest("[data-esco-add]");
     if (add && root.contains(add)) {
       const id = add.dataset.escoAdd;
       if (known.has(id) && (state.has(id) || state.size < MAX_ITEMS)) {
         state.set(id, state.get(id) || 1); persist(); render();
+        notify((known.get(id)?.name || "Product") + " added to your Bag.");
+        if (dialog?.open) dialog.close();
         if (state.size === MAX_ITEMS) add.title = "Up to 12 products per Bag";
       } else if (known.has(id)) {
         const countNode = root.querySelector("[data-esco-quote-count]");
@@ -207,4 +263,5 @@ if (root) {
     persist(); render();
   });
   render();
+  syncShopAvailability().catch(() => { /* Catalogue remains available for enquiry. */ });
 }
