@@ -1,5 +1,5 @@
 import { type PortalArea, type PortalModule, portalModuleByCode, visiblePortalModules } from "@novapharm/portal-contracts";
-import { intelligenceWorkspaceSlugs, type IntelligenceWorkspaceSlug } from "./intelligence-workspaces";
+import { type IntelligenceWorkspaceSlug, intelligenceWorkspaceSlugs } from "./intelligence-workspaces";
 
 export type PortalView =
   | Readonly<{ kind: "login" }>
