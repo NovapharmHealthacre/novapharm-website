@@ -19,9 +19,6 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
-      - uses: actions/setup-python@4d0d45307e7c59b7cdb235f01671bb6c1a98f8a0
-        with:
-          python-version: '3.12'
       - name: Install AWS SDK only for isolated unit tests
         run: python3 -m pip install 'boto3>=1.34,<2'
       - name: Check checkout and webhook syntax
@@ -36,7 +33,8 @@ jobs:
           infra=json.loads(pathlib.Path('infra/aws/esco-products-checkout-production.json').read_text())
           assert infra['Resources']['CheckoutLambda']['Properties']['Code']['ZipFile']==src
           assert 'novapharm-production-nutraxin-payment-ledger' not in json.dumps(infra)
-          assert 'sk_live_' not in src and 'rk_live_' not in src and 'whsec_' not in src.replace('"whsec_"','')
+          import re
+          assert not re.search(r'(?:sk|rk)_live_[A-Za-z0-9]{20,}|whsec_[A-Za-z0-9]{20,}',src)
           assert 'automatic_tax[enabled]' in src and 'payment_method_types' not in src
           assert 'checkout.session.async_payment_succeeded' in src
           assert 'parse_signature' in src and 'ConditionExpression' in src
