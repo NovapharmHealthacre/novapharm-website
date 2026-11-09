@@ -82,7 +82,7 @@ const accountRoute = join(root, "account-application", "index.html");
 if (existsSync(accountRoute)) {
   const accountHtml = readFileSync(accountRoute, "utf8");
   const productNavigation = accountHtml.match(/id="npd-mega-products"[\s\S]*?<\/nav><\/div>/)?.[0] ?? "";
-  const productFooter = accountHtml.match(/<div><h2>Products<\\/h2>[\s\S]*?<\/div>/)?.[0] ?? "";
+  const productFooter = accountHtml.match(/<div><h2>Products<\/h2>[\s\S]*?<\/div>/)?.[0] ?? "";
   const escoLink = 'href="/products/esco/"';
   if (!productNavigation.includes(escoLink)) {
     failures.push("account-application/index.html: ESCO collection missing from product navigation");
