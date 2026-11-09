@@ -1,17 +1,17 @@
 .shell {
-  --mi-ink: #111820;
-  --mi-muted: #5d6876;
-  --mi-line: #dfe4ea;
-  --mi-soft: #f5f7f9;
+  --mi-ink: #1d1d1f;
+  --mi-muted: #515861;
+  --mi-line: #e5e5e8;
+  --mi-soft: #f5f5f7;
   --mi-surface: #ffffff;
-  --mi-navy: #071525;
-  --mi-navy-raised: #0d2035;
-  --mi-blue: #3159d8;
-  --mi-blue-dark: #2446b5;
+  --mi-navy: #161a20;
+  --mi-navy-raised: #20252d;
+  --mi-blue: #0066cc;
+  --mi-blue-dark: #0057b7;
   --mi-red: #e3120b;
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 218px minmax(0, 1fr);
+  grid-template-columns: 232px minmax(0, 1fr);
   color: var(--mi-ink);
   background: var(--mi-soft);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
@@ -47,12 +47,12 @@
   overflow-y: auto;
   color: #f8fafc;
   background: var(--mi-navy);
-  border-right: 1px solid #1b2d42;
+  border-right: 1px solid #252b33;
 }
 
 .brand {
   padding: 23px 18px 19px;
-  border-bottom: 1px solid #1b2d42;
+  border-bottom: 1px solid #252b33;
 }
 
 .brand :global(.pharmascope-brand) {
@@ -122,25 +122,25 @@
   display: flex;
   align-items: center;
   border: 0;
-  border-radius: 4px;
-  padding: 8px 10px;
+  border-radius: 9px;
+  padding: 8px 11px;
   color: #d8e1eb;
   text-decoration: none;
-  font-size: 0.76rem;
-  font-weight: 560;
+  font-size: 0.82rem;
+  font-weight: 550;
   line-height: 1.35;
 }
 
 .sidebar .navigation a:hover {
   color: #fff;
-  background: #122941;
+  background: #292f38;
 }
 
 .sidebar .navigation a[aria-current="page"] {
   border: 0;
   color: #fff;
-  background: #284cbd;
-  box-shadow: inset 2px 0 #89a0ff;
+  background: #303b49;
+  box-shadow: inset 3px 0 #7eb6ff;
 }
 
 .sidebarFoot {
@@ -183,15 +183,16 @@
   position: sticky;
   top: 0;
   z-index: 20;
-  min-height: 62px;
+  min-height: 66px;
   display: grid;
   grid-template-columns: minmax(280px, 680px) minmax(0, 1fr);
   align-items: center;
   gap: 24px;
   padding: 10px clamp(18px, 2.25vw, 34px);
   border-bottom: 1px solid var(--mi-line);
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: saturate(140%) blur(14px);
+  background: rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: saturate(155%) blur(18px);
+  backdrop-filter: saturate(155%) blur(18px);
 }
 
 .mobileMenu {
@@ -212,21 +213,21 @@
   min-width: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  border: 1px solid #cfd6df;
-  border-radius: 5px;
+  border: 1px solid #d0d2d6;
+  border-radius: 11px;
   background: #fff;
 }
 
 .search form:focus-within {
   border-color: var(--mi-blue);
-  box-shadow: 0 0 0 3px rgba(49, 89, 216, 0.14);
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.17);
 }
 
 .search input {
   min-width: 0;
-  min-height: 40px;
+  min-height: 44px;
   border: 0;
-  padding: 8px 13px;
+  padding: 10px 14px;
   color: var(--mi-ink);
   background: transparent;
   font-size: 0.78rem;
@@ -288,9 +289,9 @@
   margin: 0;
   overflow-y: auto;
   border: 1px solid #ccd4de;
-  border-radius: 6px;
+  border-radius: 13px;
   background: #fff;
-  box-shadow: 0 18px 45px rgba(7, 21, 37, 0.16);
+  box-shadow: 0 20px 55px rgba(18, 22, 28, 0.16);
 }
 
 .searchResults > header {
@@ -434,8 +435,8 @@
 .shell .dataContext span {
   padding: 3px 7px;
   border: 1px solid #d7dde5;
-  border-radius: 3px;
-  color: #4d5967;
+  border-radius: 6px;
+  color: #44505c;
   background: #f7f8fa;
   font-size: 0.62rem;
   font-weight: 650;
@@ -444,10 +445,10 @@
 .workspaceGrid {
   min-width: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 276px;
+  grid-template-columns: minmax(0, 1fr) 296px;
   align-items: start;
-  gap: 12px;
-  padding: 12px;
+  gap: 16px;
+  padding: 16px;
 }
 
 .central,
@@ -469,7 +470,7 @@
 .routeWorkspace,
 .unavailable {
   border: 1px solid var(--mi-line);
-  border-radius: 6px;
+  border-radius: 12px;
   background: #fff;
 }
 
@@ -1783,5 +1784,31 @@
   .chartAxis,
   .chartGrid {
     stroke: CanvasText;
+  }
+}
+
+/* System-inspired focus and motion polish. Every state remains navigable without animation. */
+.shell .navigation a:focus-visible,
+.shell .search input:focus-visible,
+.shell .search form button:focus-visible,
+.shell .topActions button:focus-visible,
+.shell .mobileMenu:focus-visible {
+  outline: 3px solid #7bb7fb;
+  outline-offset: 3px;
+}
+
+.shell .navigation a {
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.shell .searchResults li button:focus-visible {
+  outline: 3px solid #0066cc;
+  outline-offset: -3px;
+  background: #f3f8ff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell .navigation a {
+    transition: none;
   }
 }
