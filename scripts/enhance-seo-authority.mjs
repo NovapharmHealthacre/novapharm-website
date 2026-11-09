@@ -356,7 +356,7 @@ for (const file of [...new Set(publicFiles)]) {
   // A plain measurement ID never activates analytics by itself.
   if (analyticsApproved && /^G-[A-Z0-9]{6,18}$/.test(measurementId)
       && !/^\/(?:contact|account-application|portal|legal)\//.test(route)
-      && !/^\/products\/nutraxin\/order-request\//.test(route)) {
+      && !/^\/products\/nutraxin\/(?:order-request|checkout|account|confirmation)\//.test(route)) {
     html = html.replace("</head>", `  <meta name="novapharm-ga4-id" content="${measurementId}">\n</head>`);
     if (!html.includes('/assets/js/consent-analytics.js')) {
       html = html.replace("</body>", '<script type="module" src="/assets/js/consent-analytics.js"></script>\n</body>');
