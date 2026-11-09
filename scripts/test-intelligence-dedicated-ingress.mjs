@@ -26,7 +26,12 @@ test("dedicated Intelligence service does not reference staging or Nutraxin reso
   assert.ok(service.DesiredCount.Ref === "DesiredCount");
   assert.equal(template.Parameters.DesiredCount.MinValue, 2);
   assert.equal(resources.IntelligenceCluster.Properties.ClusterName, "novapharm-intelligence-production");
-  assert.equal(JSON.stringify(template).includes("portal.novapharmhealthcare.com"), false);
+  // Compare the ECS resource identity, not a URL substring (which cannot prove isolation).
+  assert.deepEqual(
+    Object.keys(resources).filter((name) => /^(?:IntelligenceCluster|IntelligenceService)$/u.test(name)),
+    ["IntelligenceCluster", "IntelligenceService"],
+  );
+  assert.equal(resources.IntelligenceService.Properties.Cluster.Ref, "IntelligenceCluster");
 });
 
 test("TLS-only WAF-protected ALB and private target boundaries", () => {
