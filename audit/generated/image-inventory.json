@@ -1647,8 +1647,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 68,
-      "referenceCount": 208,
+      "usageCount": 69,
+      "referenceCount": 211,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -1686,6 +1686,7 @@
         "news-insights/three-pillar-pharmaceutical-sourcing-model/index.html",
         "partner-with-us/index.html",
         "products/index.html",
+        "products/nutraxin/account/index.html",
         "products/nutraxin/artoflex-90-tablets/index.html",
         "products/nutraxin/bag/index.html",
         "products/nutraxin/collagen-complex-90-tablets/index.html",
