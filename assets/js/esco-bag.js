@@ -12,6 +12,18 @@ const checkoutButton = document.querySelector("[data-esco-card-checkout]");
 const termsCheckbox = document.querySelector("[data-esco-payment-terms]");
 const checkoutNote = document.querySelector("#esco-payment-note");
 const checkoutResult = document.querySelector("[data-esco-checkout-status]");
+const termsLabel = termsCheckbox?.closest(".esco-payment-terms");
+if (checkoutNote && termsLabel) termsLabel.before(checkoutNote);
+const readyShopLink = (() => {
+  if (!checkoutNote) return null;
+  const link = document.createElement("a");
+  link.className = "esco-ready-shop-link";
+  link.href = "/products/esco/?availability=ready#esco-catalogue";
+  link.textContent = "Browse products ready for secure checkout ›";
+  link.hidden = true;
+  checkoutNote.after(link);
+  return link;
+})();
 const ESCO_PAYMENT_CONFIG = "/assets/data/esco-checkout-config.json";
 let checkoutApiOrigin = "";
 let approvedCatalogIds = new Set();
@@ -45,11 +57,27 @@ async function configurePayment() {
 }
 function renderPaymentEligibility(lines) {
   if (!checkoutButton || !termsCheckbox) return;
-  const approved = paymentServiceReady && lines.length > 0 && lines.every(item => approvedCatalogIds.has(item.id));
-  checkoutButton.disabled = !approved || !termsCheckbox.checked || sendingPayment;
-  if (checkoutNote) checkoutNote.textContent = approved
-    ? "These prices include UK delivery, excluding VAT. Stripe confirms the final VAT and total before your card is charged."
-    : "Card checkout is available only for individually approved, UK-saleable items. Your Bag can still be submitted for a confirmed quotation.";
+  const eligible = paymentServiceReady && lines.length > 0 &&
+    lines.every(item => approvedCatalogIds.has(item.id) && approvedUnitPricesPence.has(item.id));
+  const quoteOnly = paymentServiceReady
+    ? lines.filter(item => !approvedCatalogIds.has(item.id) || !approvedUnitPricesPence.has(item.id))
+    : [];
+  checkoutButton.disabled = !eligible || !termsCheckbox.checked || sendingPayment;
+  if (checkoutNote) {
+    if (!paymentServiceReady) {
+      checkoutNote.textContent = "Secure card checkout could not be confirmed right now. Your selection is saved; request a confirmed quote or try again later.";
+    } else if (lines.length === 0) {
+      checkoutNote.textContent = "Add a product marked Ready to order to see a fixed UK delivered price and continue to Stripe.";
+    } else if (quoteOnly.length) {
+      const codes = quoteOnly.map(item => item.id).join(", ");
+      checkoutNote.textContent = quoteOnly.length + (quoteOnly.length === 1
+        ? " product in your Bag requires a confirmed quote (" : " products in your Bag require a confirmed quote (") +
+        codes + "). These catalogue guide prices are not payable prices. Secure checkout is available for products marked Ready to order.";
+    } else {
+      checkoutNote.textContent = "These prices include UK delivery, excluding VAT. Stripe confirms the final VAT and total before your card is charged.";
+    }
+  }
+  if (readyShopLink) readyShopLink.hidden = !paymentServiceReady || quoteOnly.length === 0;
 }
 async function startCheckout(lines) {
   if (sendingPayment || !checkoutApiOrigin || !paymentServiceReady || !termsCheckbox?.checked ||

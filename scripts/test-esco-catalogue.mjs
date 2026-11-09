@@ -241,3 +241,30 @@ test("ESCO editorial collection keeps 373 models, accessible details and the exi
  assert.match(css,/@media\(max-width:520px\)/);
  assert.doesNotMatch(js,/sk_live_[A-Za-z0-9]{16,}|rk_live_[A-Za-z0-9]{16,}|whsec_[A-Za-z0-9]{16,}/);
 });
+
+
+test("ESCO hero and product details stay in separate responsive grid tracks",()=>{
+ const css=readFileSync("assets/css/esco-catalogue.css","utf8");
+ const generator=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
+ assert.match(css,/ESCO layout hardening: product-led hero/);
+ assert.match(css,/\.esco-storefront \.esco-hero-showcase\s*\{\s*display:grid/);
+ assert.match(css,/\.esco-storefront \.esco-hero-showcase-image,[\s\S]*?position:relative;/);
+ assert.match(css,/\.esco-storefront \.esco-hero-showcase>p\s*\{[\s\S]*?position:static;/);
+ assert.match(css,/\.esco-storefront \.esco-dialog-content\s*\{\s*display:grid;/);
+ assert.match(css,/\.esco-storefront \.esco-dialog-picture,[\s\S]*?min-width:0;/);
+ assert.match(css,/\.esco-storefront \.esco-dialog-picture \.esco-product-art-caption\s*\{\s*position:static;/);
+ assert.match(css,/@media\(max-width:800px\)/);
+ assert.match(generator,/data-esco-product-dialog/);
+});
+
+test("ESCO Bag explains quote-only selections without authorising guide-price charges",()=>{
+ const bag=readFileSync("assets/js/esco-bag.js","utf8");
+ const shop=readFileSync("assets/js/esco-catalogue.js","utf8");
+ assert.match(bag,/lines\.every\(item => approvedCatalogIds\.has\(item\.id\) && approvedUnitPricesPence\.has\(item\.id\)\)/);
+ assert.match(bag,/quoteOnly = paymentServiceReady/);
+ assert.match(bag,/catalogue guide prices are not payable prices/i);
+ assert.match(bag,/\/products\/esco\/\?availability=ready#esco-catalogue/);
+ assert.match(shop,/get\("availability"\) === "ready"/);
+ assert.match(bag,/checkoutApiOrigin \+ "\/checkout"/);
+ assert.doesNotMatch(bag,/sk_live_[A-Za-z0-9]{16,}|rk_live_[A-Za-z0-9]{16,}|whsec_[A-Za-z0-9]{16,}/);
+});
