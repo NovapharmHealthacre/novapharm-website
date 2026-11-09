@@ -1,0 +1,56 @@
+name: Verify NovaPharm Intelligence live Technology release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/intelligence-live-smoke.yml'
+      - 'src/content/technology-intelligence.html'
+      - 'technology/index.html'
+      - 'assets/css/technology-intelligence.css'
+      - 'assets/js/intelligence-research-launcher.js'
+      - 'scripts/apply-corporate-product-discipline.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-intelligence-live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Confirm exact research page, assets and protected-business contact
+        shell: bash
+        run: |
+          set -euo pipefail
+          origin="https://novapharmhealthcare.com"
+          for attempt in $(seq 1 15); do
+            key="intelligence-${GITHUB_SHA}-${GITHUB_RUN_ID}-${attempt}-$(date +%s)"
+            curl --fail --silent --show-error --location --max-time 15 \
+              -H 'Cache-Control: no-cache, no-store, max-age=0' \
+              "$origin/technology/?$key" -o /tmp/novapharm-technology-live.html || true
+            curl --fail --silent --show-error --location --max-time 15 \
+              -H 'Cache-Control: no-cache, no-store, max-age=0' \
+              "$origin/assets/js/intelligence-research-launcher.js?$key" -o /tmp/novapharm-intelligence-live.js || true
+            curl --fail --silent --show-error --location --max-time 15 \
+              -H 'Cache-Control: no-cache, no-store, max-age=0' \
+              "$origin/assets/css/technology-intelligence.css?$key" -o /tmp/novapharm-intelligence-live.css || true
+            curl --fail --silent --show-error --location --max-time 15 \
+              -H 'Cache-Control: no-cache, no-store, max-age=0' \
+              "$origin/contact/?$key" -o /tmp/novapharm-contact-live.html || true
+            if grep -Fq 'id="intelligence-research"' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'data-npi-research-form' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'src="/assets/js/intelligence-research-launcher.js"' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'Search a medicine' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'Official-source links only' /tmp/novapharm-intelligence-live.js \
+              && grep -Fq '.npi-research-form' /tmp/novapharm-intelligence-live.css \
+              && grep -Fq 'data-live-b2b-enquiry-form' /tmp/novapharm-contact-live.html \
+              && ! grep -Fq 'data-email-enquiry-form' /tmp/novapharm-contact-live.html; then
+              echo "Live Technology research HTML, launcher, responsive stylesheet and AWS-backed Contact passed."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::Live Technology and Contact parity not established. Do not claim Intelligence public release verified." >&2
+          exit 1
