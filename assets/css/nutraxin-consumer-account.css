@@ -3,15 +3,15 @@
 *{box-sizing:border-box}body{margin:0;font-size:16px;line-height:1.5}a{color:inherit}
 .nx-account-nav{background:#fff;border-bottom:1px solid #e7e7e9}
 .nx-account-nav-inner{display:flex;align-items:center;justify-content:space-between;gap:18px;max-width:1120px;margin:auto;padding:18px 28px}
-.nx-account-brand{text-decoration:none;font-size:18px;font-weight:650;letter-spacing:-.035em}
+.nx-account-brand{text-decoration:none;font-size:18px;font-weight:650;letter-spacing:normal}
 .nx-account-nav-links{display:flex;gap:25px}.nx-account-nav-links a{font-size:13px;text-decoration:none;color:#4b4b50}
 .nx-account-nav-links a:focus-visible,.nx-account-link:focus-visible,.nx-account-button:focus-visible{outline:3px solid #b5b5be;outline-offset:4px}
 .nx-account-main{max-width:720px;padding:86px 28px 108px;margin:auto;text-align:center}
 .nx-account-eyebrow{text-transform:uppercase;letter-spacing:.16em;font-size:11px;font-weight:700;color:#8f1820;margin:0 0 16px}
-.nx-account-main h1{font-weight:650;font-size:clamp(40px,7vw,66px);letter-spacing:-.055em;line-height:1.05;margin:0 0 22px}
-.nx-account-intro{font-size:19px;line-height:1.6;letter-spacing:-.015em;color:#56565c;margin:0 auto 40px;max-width:540px}
+.nx-account-main h1{font-weight:650;font-size:clamp(40px,7vw,66px);letter-spacing:normal;line-height:1.05;margin:0 0 22px}
+.nx-account-intro{font-size:19px;line-height:1.6;letter-spacing:normal;color:#56565c;margin:0 auto 40px;max-width:540px}
 .nx-account-panel{border:1px solid #e6e6e9;border-radius:24px;background:#fff;box-shadow:0 20px 65px rgba(13,13,22,.06);padding:44px 40px;text-align:left}
-.nx-account-panel h2{font-size:25px;line-height:1.2;letter-spacing:-.035em;margin:0 0 12px}
+.nx-account-panel h2{font-size:25px;line-height:1.2;letter-spacing:normal;margin:0 0 12px}
 .nx-account-panel p{color:#5e5e62;font-size:15px;margin:0 0 20px}
 .nx-account-actions{display:flex;gap:12px;flex-wrap:wrap;margin:25px 0 15px}
 .nx-account-button{border:1px solid #161617;border-radius:999px;padding:12px 22px;background:#161617;color:#fff;font:inherit;font-size:14px;font-weight:650;cursor:pointer;min-height:48px}
