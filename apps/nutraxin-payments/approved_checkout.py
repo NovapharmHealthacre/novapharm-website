@@ -182,7 +182,7 @@ def stripe_session(order, attempt):
         except (ValueError, UnicodeError):
             api_error = {}
         def safe_identifier(value):
-            return value if isinstance(value, str) and re.fullmatch(r"[A-Za-z0-9_.\\[\\]-]{1,80}", value) else "unavailable"
+            return value if isinstance(value, str) and re.fullmatch(r"[A-Za-z0-9_.\[\]-]{1,80}", value) else "unavailable"
         print("stripe_checkout_http_rejected", int(exc.code),
               safe_identifier(api_error.get("type")), safe_identifier(api_error.get("code")),
               safe_identifier(api_error.get("param")))
