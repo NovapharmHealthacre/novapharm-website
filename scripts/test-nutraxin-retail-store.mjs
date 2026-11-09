@@ -102,14 +102,16 @@ test("the review page uses the Products-only API and never the customer portal",
  assert.match(html,/aria-current="step"/);
  assert.match(html,/Your Bag/);
  assert.match(html,/Guest checkout available/);
- assert.match(html,/Verified customer account creation and saved order history are not yet enabled/);
+ assert.match(html,/Sign in or create your Nutraxin account/);
+ assert.match(html,/Account access activates only after verified email/);
  const styles=readFileSync("assets/css/nutraxin-retail-store.css","utf8");
  assert.match(styles,/nx-checkout-identity/);
  const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
  assert.match(js,/Continue as guest/);
  assert.match(js,/credentials: "omit"/);
  assert.equal(js.includes("PORTAL_ORIGIN"), false, "Nutraxin checkout must not use a portal destination constant");
- assert.ok(js.includes('CHECKOUT_API_ORIGIN + "/checkout"'), "Checkout uses the dedicated Products API");
+ assert.ok(js.includes('const target=accountToken?"/account/checkout":"/checkout"'), "Checkout uses the Products-only API for both verified customer and guest");
+ assert.match(js,/credentials: "omit"/);
  const stripeReturnHandler=js.split('const returnedOrder = query.get("order_id");')[1]?.split('// Products-site readiness')[0];
  assert.ok(stripeReturnHandler,"Checkout return handler exists");
  assert.equal(stripeReturnHandler.includes("explanation.textContent"),false,"Stripe return must update UI through render, not stale scoped variables");
