@@ -360,7 +360,7 @@ for (const file of publicPages) {
   if (html.includes('/assets/Novapharm-logo.svg')) fail(`${file} references the retired logo path`);
   // The build produces governed, route-specific social cards. Validate the
   // actual authority register rather than the retired generic brand-card rule.
-  const socialRoute = file === "index.html" ? "/" : `/${file.replace(/index\\.html$/, "")}`;
+  const socialRoute = file === "index.html" ? "/" : `/${file.replace(/index\.html$/, "")}`;
   const socialEntry = socialImagesByRoute.get(socialRoute);
   if (!socialEntry) {
     fail(`${file} has no approved social preview in the authority register`);
@@ -379,7 +379,7 @@ for (const file of publicPages) {
       fail(`${file} has incorrect registered social preview dimensions`);
     }
     for (const property of ["og:image", "og:image:secure_url", "og:image:type", "og:image:width", "og:image:height", "og:image:alt"]) {
-      if ((html.match(new RegExp(`<meta property="${property}" content=`, "g")) ?? []).length !== 1) {
+      if (html.split(`<meta property="${property}" content=`).length - 1 !== 1) {
         fail(`${file} must expose exactly one ${property} social preview tag`);
       }
     }
