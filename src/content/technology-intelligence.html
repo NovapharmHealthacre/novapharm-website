@@ -3,6 +3,7 @@
     <div class="container">
       <strong>NovaPharm Intelligence</strong>
       <div>
+        <a href="#intelligence-research">Research</a>
         <a href="#intelligence-platform">Platform</a>
         <a href="#intelligence-workspaces">Workspaces</a>
         <a href="#intelligence-trust">Trust &amp; evidence</a>
@@ -17,12 +18,54 @@
       <h1 id="npi-title">Medicine is complex.<br><span>Understanding it shouldn't be.</span></h1>
       <p class="npi-hero-intro">Medicines, evidence and analytics. One connected intelligence platform being built to turn fragmented pharmaceutical information into a governed view of identity, market context, opportunity and decision-making.</p>
       <div class="npi-actions">
-        <a href="#intelligence-platform" class="npi-button npi-button-primary">Explore the platform</a>
+        <a href="#intelligence-research" class="npi-button npi-button-primary">Search a medicine</a>
         <a href="/contact/?enquiry=Intelligence%20partnership" class="npi-button npi-button-secondary">Discuss a partnership</a>
       </div>
       <p class="npi-status-line"><span>Product in development.</span> Explore the design direction for the Medicines Terminal.</p>
     </div>
     <div class="npi-hero-bottom" aria-hidden="true">THE LIVING INTELLIGENCE OF MEDICINE</div>
+  </section>
+
+  <section id="intelligence-research" class="npi-section npi-research" aria-labelledby="npi-research-title">
+    <div class="npi-wrap">
+      <div class="npi-section-heading">
+        <p class="npi-kicker">RESEARCH ENTRY</p>
+        <h2 id="npi-research-title">Search a medicine.<br>Start with the evidence.</h2>
+        <p>Choose a market and research area to reach relevant official scientific and regulatory sources. This public research entry does not impersonate the protected Medicines Terminal.</p>
+      </div>
+      <div class="npi-research-panel" data-npi-research>
+        <form class="npi-research-form" data-npi-research-form>
+          <div class="npi-research-field npi-research-query">
+            <label for="npi-research-medicine">Medicine or substance</label>
+            <input id="npi-research-medicine" data-npi-query name="medicine" type="search" placeholder="e.g. apixaban" minlength="2" maxlength="120" autocomplete="off" spellcheck="false" required>
+          </div>
+          <div class="npi-research-field">
+            <label for="npi-research-market">Market</label>
+            <select id="npi-research-market" data-npi-market name="market">
+              <option value="GB">United Kingdom</option><option value="US">United States</option><option value="EU">European Union</option><option value="IN">India</option><option value="CA">Canada</option><option value="AU">Australia</option><option value="ALL">Global research</option>
+            </select>
+          </div>
+          <div class="npi-research-field">
+            <label for="npi-research-focus">Research area</label>
+            <select id="npi-research-focus" data-npi-focus name="focus">
+              <option value="identity">Medicine identity</option><option value="evidence">Scientific evidence</option><option value="regulatory">Regulatory information</option><option value="trials">Clinical trials</option><option value="market">Observed market data</option>
+            </select>
+          </div>
+          <button class="npi-button npi-button-primary npi-research-submit" type="submit">Find official sources</button>
+        </form>
+        <p class="npi-research-privacy">No login required. Searches are prepared in your browser and shared with an external official provider only if you open its link. Do not enter patient details, confidential documents or personal health information.</p>
+        <p class="npi-research-status" data-npi-research-status role="status" aria-live="polite">Select a medicine, market and research area.</p>
+        <div class="npi-research-results" data-npi-results hidden>
+          <h3>Official source destinations</h3>
+          <ul class="npi-research-list" data-npi-results-list></ul>
+          <p>Source links are not live NovaPharm API integrations or verified medicine matches. Always verify the current source record, date, jurisdiction and limitations.</p>
+        </div>
+      </div>
+      <div class="npi-research-footer">
+        <p><strong>Professional Medicines Terminal</strong><br>Canonical identity, governed analytics, NOVA and private commercial data remain in the authorised workspace and require production verification.</p>
+        <a href="https://portal.novapharmhealthcare.com/" rel="noopener noreferrer">Authorised workspace login</a>
+      </div>
+    </div>
   </section>
 
   <section id="intelligence-platform" class="npi-section npi-terminal-section" aria-labelledby="npi-terminal-title">
@@ -37,7 +80,7 @@
           <header class="npi-dash-topbar">
             <div class="npi-dash-brand"><img class="npi-dash-approved-logo" src="/assets/brand/novapharm-intelligence-approved.svg" alt="Novapharm Intelligence" width="1950" height="337" decoding="async"></div>
             <nav class="npi-dash-global-tabs" tabindex="0" aria-label="Scrollable preview primary areas"><span>Overview</span><span>Evidence</span><span>Market</span><span class="is-selected">Geography</span><span>More</span></nav>
-            <div class="npi-dash-quick-search">Search a medicine, substance or topic…</div>
+            <a class="npi-dash-quick-search" href="#intelligence-research">Search a medicine, substance or topic…</a>
             <span class="npi-dash-preview-tag">PRODUCT PREVIEW</span>
           </header>
           <div class="npi-dash-shell">
