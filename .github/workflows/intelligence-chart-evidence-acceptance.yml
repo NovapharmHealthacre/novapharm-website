@@ -1,0 +1,25 @@
+name: Medicines observed trend evidence acceptance
+on:
+  pull_request:
+    paths:
+      - 'apps/portal/components/medicines-intelligence.tsx'
+      - 'apps/portal/test/browser-acceptance.ts'
+      - '.github/workflows/intelligence-chart-evidence-acceptance.yml'
+permissions:
+  contents: read
+jobs:
+  typed-source-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install exact dependencies
+        run: npm ci
+      - name: Validate source-attributed charts, Next.js portal types, routes and tests
+        run: npm run portal:check
+      - name: Confirm observed data remains separate from forecasts in the medicines ledger
+        run: npm run intelligence:requirements:validate
