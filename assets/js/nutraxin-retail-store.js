@@ -108,6 +108,13 @@ function installStyle() {
   document.head.append(link);
 }
 
+function emitRetailFunnelEvent(name) {
+  // Only coarse events: no SKU, basket, order, price or personal information.
+  window.dispatchEvent(new CustomEvent("novapharm:marketing-event", {
+    detail: { event: name }
+  }));
+}
+
 function runStore(data) {
   let bag = loadBag(data);
   let approvedRelease = false;
@@ -125,6 +132,7 @@ function runStore(data) {
     saveBag(bag);
     updateNav();
     toast("Added to bag. Review your selection when you're ready.");
+    emitRetailFunnelEvent("add_to_cart");
   };
   const top = document.querySelector("main");
   if (!top) return;
@@ -239,6 +247,7 @@ function runStore(data) {
             const result = await response.json();
             const url = new URL(result.checkoutUrl || "");
             if (url.protocol !== "https:" || url.hostname !== "checkout.stripe.com") throw new Error("Invalid payment destination");
+            emitRetailFunnelEvent("begin_checkout");
             window.location.assign(url.href);
           } catch {
             explanation.textContent = "Checkout is not available. No payment was taken. Your bag is still saved.";
@@ -308,6 +317,7 @@ function runStore(data) {
     const p = slugMap.get(slug);
     const copy = document.querySelector(".npd-product-copy");
     if (p && copy) {
+      emitRetailFunnelEvent("view_item");
       const panel = make("section", "nx-store-panel");
       panel.setAttribute("aria-label", "Nutraxin shopping options");
       panel.append(make("p", "nx-store-kicker", "Nutraxin / Retail"));
