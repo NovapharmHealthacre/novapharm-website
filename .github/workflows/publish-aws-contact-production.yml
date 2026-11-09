@@ -16,6 +16,8 @@ on:
       - 'scripts/build-site.mjs'
       - 'assets/data/nutraxin-retail-catalogue.json'
       - 'scripts/apply-corporate-product-discipline.mjs'
+      - 'scripts/enhance-seo-authority.mjs'
+      - 'scripts/test-native-organic-marketing.mjs'
       - 'scripts/stage-pages-artifact.mjs'
       - '.github/workflows/publish-aws-contact-production.yml'
   workflow_dispatch:
@@ -64,6 +66,7 @@ jobs:
           node --test scripts/test-account-request-intake.mjs
           npm ci --ignore-scripts
           npm run build:public-only
+          node scripts/test-native-organic-marketing.mjs
           npm run test:owner-corrections:public-only
           node --test scripts/test-nutraxin-retail-store.mjs
           npm run test:cookies
