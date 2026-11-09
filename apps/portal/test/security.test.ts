@@ -88,3 +88,20 @@ test("Intelligence release readiness is only available through exact read-only p
   assert.ok(server.includes('scopedAuthentication(request, response, ["board"])'));
   assert.equal(gateway.includes("intelligence\\/.*"), false, "No catch-all intelligence route may be exposed");
 });
+
+test("ClinicalTrials.gov study lookup stays board-only, GET-only and source-attributed", () => {
+  const gateway = source("app/gateway/[...path]/route.ts");
+  const server = source("../../server.mjs");
+  const view = source("components/clinical-trials-discovery.tsx");
+  const terminal = source("components/medicines-intelligence.tsx");
+  assert.ok(gateway.includes("clinical-trials$/"), "Only the exact ClinicalTrials route is allowed");
+  assert.ok(gateway.includes('path === "v1/intelligence/evidence/us/clinical-trials"'), "Non-GET requests must be denied");
+  assert.ok(server.includes('pathname === "/api/v1/intelligence/evidence/us/clinical-trials"'));
+  assert.ok(server.includes('searchClinicalTrialsStudies(url.searchParams.get("intervention")'));
+  assert.match(server, /scopedAuthentication\(request, response, \["board"\]\)/);
+  assert.match(view, /gatewayJson<StudyResponse>/);
+  assert.match(view, /result\.sourceId/);
+  assert.match(terminal, /current === "evidence"/);
+  assert.doesNotMatch(view, /localStorage|sessionStorage|OPENAI_API_KEY|NHS_DOHS_API_KEY/);
+  assert.doesNotMatch(view, /fetch\("https:\/\/clinicaltrials\.gov\/api/);
+});
