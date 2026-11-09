@@ -7,6 +7,13 @@ on:
       - "src/seo/**"
       - "scripts/build-site.mjs"
       - "scripts/enhance-seo-authority.mjs"
+      - "scripts/validate-public-sitemaps.py"
+      - "assets/js/consent-analytics.js"
+      - "assets/js/cookie-consent.js"
+      - "scripts/test-consent-analytics.mjs"
+      - "legal/cookies/index.html"
+      - "legal/privacy/index.html"
+      - "docs/marketing/**"
       - "scripts/reconcile-leadership-authority.mjs"
       - "scripts/reconcile-article-authority.mjs"
       - "scripts/reconcile-social-authority.mjs"
@@ -48,6 +55,12 @@ jobs:
 
       - name: Build public authority system
         run: npm run build:public-only
+
+      - name: Validate current Google and Bing canonical XML sitemaps
+        run: python3 scripts/validate-public-sitemaps.py
+
+      - name: Verify consent-gated GA4 readiness and policy disclosure
+        run: node scripts/test-consent-analytics.mjs
 
       - name: Validate SEO, GEO, entities and discovery
         id: seo_validation
