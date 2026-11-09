@@ -14,7 +14,7 @@ export const company = Object.freeze({
   summary: "An active UK-based, compliance-first and technology-enabled B2B pharmaceutical company developing regulated trading, sourcing and wholesale distribution capabilities for oncology, specialty and licensed medicines.",
   purpose: "NovaPharm combines regulatory intelligence, diversified sourcing, quality-led distribution planning and digital supply-chain infrastructure to improve medicine availability, resilience, transparency and operational efficiency.",
   regulatoryNotice: "NovaPharm Healthcare is active in corporate, product, partnership and commercial-development work. Regulated wholesale supply has not commenced and will begin only after the required MHRA authorisations and applicable operating controls are in place. Product-specific parallel-import activity remains subject to the grant and maintenance of the relevant PLPI licence.",
-  medicalDisclaimer: "This website is for corporate and qualified B2B information only. NovaPharm does not provide medical advice, sell medicines to patients or invite patient orders. Product and regulatory information is not a substitute for advice from a healthcare professional or the relevant competent authority."
+  medicalDisclaimer: "Corporate pharmaceutical information is intended for qualified B2B audiences. Nutraxin food supplements have a separate consumer shopping journey in Products, subject to UK product and checkout terms. NovaPharm does not provide medical advice or sell medicines to patients. Product and regulatory information is not a substitute for advice from a healthcare professional or the relevant competent authority."
 });
 
 export const navigation = Object.freeze([
