@@ -173,7 +173,12 @@ def stripe_session(order, attempt):
     try:
         with urllib.request.urlopen(req, timeout=12) as resp:
             session = json.loads(resp.read(131072))
-    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, ValueError):
+    except urllib.error.HTTPError as exc:
+        # Status only. Never log the request, restricted key, or Stripe response body.
+        print("stripe_checkout_http_rejected", int(exc.code))
+        raise NotReady("Stripe could not create an approved Checkout session")
+    except (urllib.error.URLError, TimeoutError, ValueError):
+        print("stripe_checkout_transport_or_parse_unavailable")
         raise NotReady("Stripe could not create an approved Checkout session")
     url = session.get("url")
     if (not SESSION.fullmatch(str(session.get("id", ""))) or
