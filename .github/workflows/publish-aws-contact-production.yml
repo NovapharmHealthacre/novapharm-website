@@ -307,7 +307,7 @@ jobs:
           curl --fail --silent --show-error --max-time 15 \
             "https://novapharmhealthcare.com/assets/data/esco-checkout-config.json?release-$GITHUB_SHA" \
             -o /tmp/novapharm-live-esco-checkout-config.json
-          node -e "const x=require('/tmp/novapharm-live-esco-checkout-config.json');if(x.enabled!==true||x.public_guide_prices_authorize_payment!==false||!/^https:\/\/[a-z0-9]+\\.execute-api\\.eu-north-1\\.amazonaws\\.com$/.test(x.api_origin))process.exit(1)"
+          node -e "const x=require('/tmp/novapharm-live-esco-checkout-config.json');if(x.enabled!==true||x.public_guide_prices_authorize_payment!==false||!/^https:\/\/[a-z0-9]+\.execute-api\.eu-north-1\.amazonaws\.com$/.test(x.api_origin))process.exit(1)"
           curl --fail --silent --show-error --max-time 20 \
             -H 'Origin: https://novapharmhealthcare.com' \
             "https://vflz5z5jfc.execute-api.eu-north-1.amazonaws.com/readiness" \
