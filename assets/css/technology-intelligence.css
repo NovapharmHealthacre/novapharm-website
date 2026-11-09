@@ -924,3 +924,58 @@ body[data-page="technology"] .np-intelligence {
 @media (prefers-reduced-motion: reduce) {
   .np-intelligence .npi-research :is(a,button,input,select) { transition: none; }
 }
+
+
+/* NovaPharm Intelligence pricing: scope and activation are always explicit. */
+.np-intelligence .npi-pricing-intro .npi-kicker { color: #9c261c; } /* Minimum AA contrast on #f5f5f7 */
+.np-intelligence .npi-pricing { background: #f5f5f7; }
+.np-intelligence .npi-pricing-intro { max-width: 840px; margin: 0 auto 48px; text-align: center; }
+.np-intelligence .npi-pricing-intro h2 { font-size: clamp(2.8rem, 5.4vw, 5.35rem); line-height: 1.07; letter-spacing:0; font-weight: 680; }
+.np-intelligence .npi-pricing-intro > p:not(.npi-kicker) { color: #515157; font-size: clamp(1rem, 1.7vw, 1.19rem); line-height: 1.55; margin: 17px auto 0; max-width: 660px; }
+.np-intelligence .npi-pricing-intro .npi-pricing-release { background: #fff; border: 1px solid #dedee2; border-radius: 11px; color: #424247; font-size: .91rem; padding: 15px 20px; max-width: 810px; }
+.np-intelligence .npi-pricing-release strong { color: #1d1d1f; }
+.np-intelligence .npi-billing-switch { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 3px; border-radius: 999px; background: #e6e6e9; padding: 4px; margin-top: 30px; }
+.np-intelligence .npi-billing-switch button { appearance: none; border: 0; border-radius: 999px; background: transparent; color: #434347; font: inherit; font-size: .88rem; font-weight: 640; min-height: 43px; padding: 10px 20px; cursor: pointer; }
+.np-intelligence .npi-billing-switch button.is-selected { background: #fff; box-shadow: 0 2px 9px #13151b1a; color: #1d1d1f; }
+.np-intelligence .npi-billing-switch button span { color: #245e9e; font-size: .76rem; }
+.np-intelligence .npi-billing-switch button:focus-visible { outline: 3px solid #0066cc; outline-offset: 3px; }
+.np-intelligence .npi-pricing-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 18px; align-items: stretch; }
+.np-intelligence .npi-plan { display: flex; flex-direction: column; min-width: 0; border: 1px solid #dedee1; border-radius: 22px; padding: clamp(24px,2.8vw,36px); background: #fff; box-shadow: 0 12px 28px #1b1b2510; }
+.np-intelligence .npi-plan-featured { border: 1.5px solid #007aff; box-shadow: 0 14px 35px #007aff1b; background: linear-gradient(165deg,#fafdff 0%,#f0f5ff 48%,#fff 100%); }
+.np-intelligence .npi-plan-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; }
+.np-intelligence .npi-plan-heading h3 { color: #1d1d1f; font-size: clamp(1.65rem, 2.1vw, 2.15rem); letter-spacing:0; font-weight: 680; }
+.np-intelligence .npi-plan-tag { display: inline-flex; font-size: .69rem; font-weight: 700; color: #075da8; border-radius: 999px; background: #dceafe; padding: 6px 10px; }
+.np-intelligence .npi-plan-description { min-height: 82px; margin-top: 12px; color: #5b5b62; font-size: .96rem; line-height: 1.52; }
+.np-intelligence .npi-plan-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; margin-top: 30px; color: #1d1d1f; }
+.np-intelligence .npi-plan-price strong { font-size: clamp(2rem, 3vw, 2.9rem); line-height: 1.15; font-weight: 690; letter-spacing:0; }
+.np-intelligence .npi-plan-price span { font-size: .89rem; color: #61616a; }
+.np-intelligence .npi-plan-custom strong { font-size: clamp(1.85rem,2.6vw,2.45rem); }
+.np-intelligence .npi-plan-billing { min-height: 43px; color: #61616a; font-size: .81rem; line-height: 1.4; margin: 10px 0 0; }
+.np-intelligence .npi-plan-cta { display: flex; justify-content: center; align-items: center; text-align: center; border: 1px solid #1d1d1f; border-radius: 999px; color: #fff; background: #1d1d1f; padding: 13px 20px; min-height: 48px; font-size: .9rem; font-weight: 650; margin-top: 21px; transition: background-color .15s ease,box-shadow .15s ease; }
+.np-intelligence .npi-plan-cta:hover { color: #fff; background: #414149; }
+.np-intelligence .npi-plan-email { display: block; width: fit-content; color: #005aaa; font-size: .79rem; margin: 11px auto 0; text-decoration: underline; text-underline-offset: 3px; }
+.np-intelligence .npi-plan-email:hover { color: #00417f; }
+.np-intelligence .npi-plan-featured .npi-plan-cta { background: #0071e3; border-color: #0071e3; }
+.np-intelligence .npi-plan-featured .npi-plan-cta:hover { background: #005bbb; }
+.np-intelligence .npi-plan-enterprise .npi-plan-cta { background: #fff; color: #1d1d1f; border-color: #929299; }
+.np-intelligence .npi-plan-enterprise .npi-plan-cta:hover { background: #f5f5f7; color: #1d1d1f; }
+.np-intelligence .npi-plan-features { display: grid; gap: 16px; margin: 33px 0 0; padding: 0; list-style: none; }
+.np-intelligence .npi-plan-features li { color: #37373d; font-size: .89rem; line-height: 1.5; padding-left: 27px; position: relative; }
+.np-intelligence .npi-plan-features li::before { content: '✓'; display: inline-flex; position: absolute; left: 0; top: 0; color: #4c4c51; font-weight: 760; }
+.np-intelligence .npi-plan-featured .npi-plan-features li::before { color: #0071e3; }
+.np-intelligence .npi-plan-scope { margin-top: auto; padding-top: 30px; color: #6e6e73; font-size: .79rem; line-height: 1.46; }
+.np-intelligence .npi-pricing-footnote { color: #66666c; font-size: .83rem; text-align: center; max-width: 1000px; line-height: 1.6; margin: 30px auto 0; }
+.np-intelligence .npi-pricing-footnote + .npi-pricing-footnote { margin-top: 13px; }
+.np-intelligence .npi-pricing-footnote a { color: #005aaa; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 1020px) {
+  .np-intelligence .npi-pricing-grid { grid-template-columns: minmax(0,1fr); max-width: 660px; margin-inline: auto; }
+  .np-intelligence .npi-plan-description,.np-intelligence .npi-plan-billing { min-height: 0; }
+  .np-intelligence .npi-plan { padding: clamp(25px,4vw,40px); }
+}
+@media (max-width: 540px) {
+  .np-intelligence .npi-pricing-intro { margin-bottom: 27px; }
+  .np-intelligence .npi-plan { border-radius: 17px; }
+  .np-intelligence .npi-plan-features { gap: 13px; }
+  .np-intelligence .npi-billing-switch button { padding-inline: 13px; }
+}
+@media (prefers-reduced-motion: reduce) { .np-intelligence .npi-plan-cta { transition: none; } }
