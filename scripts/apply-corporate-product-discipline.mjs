@@ -82,7 +82,7 @@ const megaNavigation = {
     ["Connect", [["Discuss an opportunity", "/contact/?enquiry=Oncology"]]]
   ],
   products: [
-    ["Explore products", [["Products overview", "/products/"], ["Nutraxin", "/products/nutraxin/"], ["Strategic portfolio", "/products/strategic-portfolio/"]]],
+    ["Explore products", [["Products overview", "/products/"], ["Nutraxin", "/products/nutraxin/"], ["ESCO Anand", "/products/esco/"], ["Strategic portfolio", "/products/strategic-portfolio/"]]],
     ["Discover", [["Oncology", "/oncology/"], ["Market access", "/services/"]]],
     ["Partner", [["Distribution enquiries", "/contact/?enquiry=Distribution"], ["Business account", "/account-application/"]]]
   ],

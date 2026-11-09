@@ -246,6 +246,12 @@ if (contactForm) {
     const option = [...enquirySelect.options].find((candidate) => candidate.value.toLowerCase() === requestedEnquiry.toLowerCase());
     if (option) enquirySelect.value = option.value;
   }
+  const quoteMessage = new URLSearchParams(window.location.search).get("quote");
+  const messageField = contactForm.elements.message;
+  if (quoteMessage?.startsWith("ESCO Anand UK quotation request") && quoteMessage.length <= 850 &&
+      messageField instanceof HTMLTextAreaElement && !messageField.value) {
+    messageField.value = quoteMessage;
+  }
 
   contactForm.addEventListener("submit", async (event) => {
     event.preventDefault();
