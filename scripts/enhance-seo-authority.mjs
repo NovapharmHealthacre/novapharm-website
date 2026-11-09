@@ -345,7 +345,8 @@ for (const file of [...new Set(publicFiles)]) {
   html = addLegalEditorialStandards(html, route);
   html = addFooterEditorialLink(html);
   html = addAttributionSignals(html);
-  const measurementId = process.env.PUBLIC_GA4_MEASUREMENT_ID || "";
+  // Public, owner-supplied GA4 web-stream ID. Never activates by itself.
+  const measurementId = process.env.PUBLIC_GA4_MEASUREMENT_ID || "G-897L1VS8BX";
   const analyticsApproved = process.env.PUBLIC_ANALYTICS_PRIVACY_APPROVED === "true";
   if (analyticsApproved && measurementId && !/^G-[A-Z0-9]{6,18}$/.test(measurementId)) {
     throw new Error("Approved GA4 measurement identifier is invalid.");
