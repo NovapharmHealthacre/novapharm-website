@@ -4,10 +4,10 @@ import { type FormEvent, type ReactNode, useEffect, useId, useRef, useState } fr
 import { intelligenceWorkspaceBySlug, intelligenceWorkspaceCatalogue, intelligenceWorkspaceGroups } from "../data/intelligence-workspaces";
 import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError } from "../lib/gateway";
+import { ClinicalTrialsDiscovery } from "./clinical-trials-discovery";
 import styles from "./medicines-intelligence.module.css";
 import { PharmaScopeBrand } from "./pharmascope-brand";
 import { UsFdaLabelDiscovery } from "./us-fda-label-discovery";
-import { ClinicalTrialsDiscovery } from "./clinical-trials-discovery";
 
 type Metric = Readonly<{ key: string; label: string; value: number; format?: string }>;
 type Column = readonly [string, string, string?];
