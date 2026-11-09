@@ -124,7 +124,7 @@ function footer() {
         </div>
         <div><h2>Company</h2><a href="/about/">Overview</a><a href="/leadership/">Leadership</a><a href="/about/governance/">Governance</a><a href="/partner-with-us/">Partners</a><a href="/investor-information/">Investors</a><a href="/careers/">Careers</a></div>
         <div><h2>Capabilities</h2><a href="/services/">Services</a><a href="/regulatory-services/">Regulatory &amp; Quality</a><a href="/cro/">Clinical Research &amp; CRO</a><a href="/technology/">Technology</a></div>
-        <div><h2>Products</h2><a href="/products/nutraxin/">Nutraxin</a><a href="/products/strategic-portfolio/">Strategic portfolio</a><a href="/contact/?enquiry=Product%20opportunity">Discuss an opportunity</a></div>
+        <div><h2>Products</h2><a href="/products/nutraxin/">Nutraxin</a><a href="/products/esco/">ESCO Anand</a><a href="/products/strategic-portfolio/">Strategic portfolio</a><a href="/contact/?enquiry=Product%20opportunity">Discuss an opportunity</a></div>
         <div><h2>Connect</h2><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">Open a business account</a><a href="https://portal.novapharmhealthcare.com/">Secure Portal</a><a href="/trust-centre/">Trust centre</a></div>
       </div>
       <div class="npd-footer-legal"><a href="/legal/privacy/">Privacy</a><a href="/legal/cookies/">Cookies</a><a href="/legal/terms/">Terms</a><a href="/legal/accessibility/">Accessibility</a><button class="footer-link-button" type="button" data-cookie-settings>Cookie settings</button></div>
@@ -147,7 +147,7 @@ const localFamilies = {
     ["Clinical Research & CRO", "/cro/"], ["Technology", "/technology/"]
   ],
   products: [
-    ["Overview", "/products/"], ["Nutraxin", "/products/nutraxin/"],
+    ["Overview", "/products/"], ["Nutraxin", "/products/nutraxin/"], ["ESCO Anand", "/products/esco/"],
     ["Strategic Pharmaceutical Portfolio", "/products/strategic-portfolio/"]
   ]
 };
@@ -395,7 +395,7 @@ function oncologyMain() {
 }
 
 function productsMain() {
-  return `<main id="main" class="npd-main">${hero({ route: "/products/", family: "products", eyebrow: "Products", title: "Two portfolios. Two different decisions.", lead: "Nutraxin is presented as a verified catalogue-reference experience. The strategic pharmaceutical portfolio describes non-commerce opportunity priorities. Neither is a statement of current stock or permission to supply." })}
+  return `<main id="main" class="npd-main">${hero({ route: "/products/", family: "products", eyebrow: "Products", title: "Three collections. Distinct decisions.", lead: "Explore Nutraxin wellness, ESCO Anand healthcare equipment, and our strategic pharmaceutical priorities. Product-specific availability, pricing and UK regulatory permission are assessed independently." })}
   <section class="npd-section npd-product-feature" id="food-supplement-portfolio-review" data-portfolio-priority="first"><div class="container npd-products-lead"><div>${sectionIntro("Nutraxin UK catalogue reference", "Food Supplement Portfolio Review", "Nineteen owner-supplied catalogue records are available for qualified B2B review with approved pack imagery and source-transcribed composition. Availability, price, stock, claims and regulatory acceptance are not asserted.")}<dl class="npd-inline-facts"><div><dt>References</dt><dd>19</dd></div><div><dt>Classification</dt><dd>Food supplements</dd></div><div><dt>Last reviewed</dt><dd>22 August 2026</dd></div></dl>${actions("Review the food supplement portfolio", "/products/nutraxin/", "Discuss a distribution opportunity", "/contact/?enquiry=Product%20opportunity")}</div>${productPicture(products[0], true, "(max-width: 720px) 84vw, 420px")}</div></section>
   <section class="npd-section"><div class="container npd-split"><div>${sectionIntro("Strategic pharmaceutical portfolio", "Opportunity priorities, not a public product catalogue.", "Selected oncology, specialty, oral-liquid, generics and hard-to-source categories are assessed product by product. Rights, source, evidence, regulatory route, quality and commercial viability must be established separately.")}${actions("Review the strategic portfolio", "/products/strategic-portfolio/")}</div>${responsiveImage("/assets/media/modules/product-portfolio-evidence", "Team reviewing pharmaceutical portfolio evidence", )}</div></section>
   <section class="npd-section npd-section-soft"><div class="container">${sectionIntro("Product governance", "Visibility is not release.", "Every substantive product statement remains subject to the Claims Registry and its underlying evidence.")}<ol class="npd-horizontal-steps"><li><span>01</span><strong>Identity</strong></li><li><span>02</span><strong>Rights</strong></li><li><span>03</span><strong>Source</strong></li><li><span>04</span><strong>Regulatory scope</strong></li><li><span>05</span><strong>Quality and release</strong></li></ol></div></section></main>`;
