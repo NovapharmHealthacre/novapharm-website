@@ -319,6 +319,35 @@ try {
   assert.equal(chemicalAnalytics.breakdowns.presentations.length, 2);
   assert.deepEqual(chemicalAnalytics.reconciliation, { applicable: true, tableTotal: 30, seriesTotal: 30, reconciles: true, seriesTruncated: false });
 
+  // Server-side sorting happens across the full accepted fact set before pagination.
+  const sortedHighest = await service.queryMedicineAnalytics({
+    dataset: "epd", metric: "items", chemicalSubstanceCode: "0208020Z0",
+    sortBy: "items", sortDirection: "desc", page: 1, pageSize: 1,
+  }, context);
+  const sortedNextPage = await service.queryMedicineAnalytics({
+    dataset: "epd", metric: "items", chemicalSubstanceCode: "0208020Z0",
+    sortBy: "items", sortDirection: "desc", page: 2, pageSize: 1,
+  }, context);
+  const sortedLowest = await service.queryMedicineAnalytics({
+    dataset: "epd", metric: "items", chemicalSubstanceCode: "0208020Z0",
+    sortBy: "items", sortDirection: "asc", page: 1, pageSize: 1,
+  }, context);
+  assert.equal(sortedHighest.rows[0].items, 18);
+  assert.equal(sortedNextPage.rows[0].items, 12);
+  assert.equal(sortedLowest.rows[0].items, 12);
+  assert.equal(sortedHighest.pagination.totalRows, 2);
+  assert.equal(sortedHighest.query.sortBy, "items");
+  assert.equal(sortedHighest.query.sortDirection, "desc");
+  assert.deepEqual(sortedHighest.series, chemicalAnalytics.series, "Changing table sort must not re-rank chronological chart data.");
+  await assert.rejects(
+    () => service.queryMedicineAnalytics({ dataset: "epd", chemicalSubstanceCode: "0208020Z0", sortBy: "items; DROP TABLE dim_medicine", sortDirection: "asc" }, context),
+    (error) => error.statusCode === 400,
+  );
+  await assert.rejects(
+    () => service.queryMedicineAnalytics({ dataset: "epd", chemicalSubstanceCode: "0208020Z0", sortBy: "items", sortDirection: "descending" }, context),
+    (error) => error.statusCode === 400,
+  );
+
   const chemicalRateAnalytics = await service.queryMedicineAnalytics({
     dataset: "epd", metric: "items_per_1000", chemicalSubstanceCode: "0208020Z0",
     startMonth: "2026-06", endMonth: "2026-06", page: 1, pageSize: 25,

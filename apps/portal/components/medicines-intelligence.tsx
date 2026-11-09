@@ -87,7 +87,7 @@ type AnalyticsSummary = Readonly<{
 }>;
 
 type AnalyticsResponse = Readonly<{
-  query: Readonly<{ dataset: "epd" | "pca"; metric: string; page: number; pageSize: number }>;
+  query: Readonly<{ dataset: "epd" | "pca"; metric: string; page: number; pageSize: number; sortBy: string; sortDirection: "asc" | "desc" }>;
   source: string;
   sourcePeriods: readonly string[];
   dataState: "accepted_facts" | "no_matching_facts" | "source_not_ingested";
@@ -118,6 +118,8 @@ type NearbyResponse = Readonly<{
 type AnalyticsFilters = Readonly<{
   dataset: "epd" | "pca";
   metric: string;
+  sortBy: string;
+  sortDirection: string;
   startMonth: string;
   endMonth: string;
   region: string;
@@ -147,6 +149,8 @@ const navigationGroups = intelligenceWorkspaceGroups.map((group) => ({
 const emptyFilters: AnalyticsFilters = {
   dataset: "epd",
   metric: "items",
+  sortBy: "month_key",
+  sortDirection: "desc",
   startMonth: "",
   endMonth: "",
   region: "",
@@ -270,10 +274,13 @@ function MetricPanel({ label, value, context, kind = "number" }: Readonly<{ labe
   </article>;
 }
 
-function TrendChart({ metric, rows }: Readonly<{ metric: string; rows: readonly Record<string, unknown>[] }>) {
+function TrendChart({ metric, rows, source }: Readonly<{ metric: string; rows: readonly Record<string, unknown>[]; source: string }>) {
+  const displayValue = (value: number) => metric === "nic" || metric === "actual_cost"
+    ? new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 2 }).format(value)
+    : new Intl.NumberFormat("en-GB", { maximumFractionDigits: 2 }).format(value);
   const points = rows.map((row) => ({ label: String(row["month_key"] ?? ""), value: Number(row["metric_value"] ?? 0) })).filter((row) => Number.isFinite(row.value));
   if (!points.length) return <div className={styles.designedEmpty}><strong>No accepted trend is available</strong><p>Complete a governed non-sample source ingest, then run a medicine query.</p></div>;
-  if (points.length === 1) return <div className={styles.designedEmpty}><strong>One accepted period is available</strong><p>{points[0]?.label}: {new Intl.NumberFormat("en-GB", { maximumFractionDigits: 2 }).format(points[0]?.value ?? 0)} {display(metric).toLocaleLowerCase("en-GB")}. A trend requires at least two accepted periods.</p></div>;
+  if (points.length === 1) return <div className={styles.designedEmpty}><strong>One accepted period is available</strong><p>{points[0]?.label}: {displayValue(points[0]?.value ?? 0)} {display(metric).toLocaleLowerCase("en-GB")}. A trend requires at least two accepted periods.</p><p>Source: {source}. Forecasts are not inferred from one observed period.</p></div>;
   const width = 640;
   const height = 220;
   const inset = 24;
@@ -294,7 +301,16 @@ function TrendChart({ metric, rows }: Readonly<{ metric: string; rows: readonly 
       <line x1={inset} x2={width - inset} y1={height / 2} y2={height / 2} className={styles.chartGrid} />
       <polyline points={polyline} className={styles.chartLine} />
     </svg>
-    <figcaption><span>{points[0]?.label}</span><span>{points.at(-1)?.label}</span></figcaption>
+    <figcaption><span>{points[0]?.label} to {points.at(-1)?.label}</span><span>Observed {display(metric)} range: {displayValue(min)} to {displayValue(max)}</span><span>Source: {source}</span></figcaption>
+    <details className={styles.advancedFilters}>
+      <summary>View {points.length} accepted monthly values in a table</summary>
+      <div className={styles.tableRegion}>
+        <table aria-label={`Accepted monthly ${display(metric)} data from ${source}`}>
+          <thead><tr><th scope="col">Reporting month</th><th scope="col">{display(metric)}</th></tr></thead>
+          <tbody>{points.map((point) => <tr key={point.label}><th scope="row">{point.label}</th><td>{displayValue(point.value)}</td></tr>)}</tbody>
+        </table>
+      </div>
+    </details>
   </figure>;
 }
 
@@ -366,7 +382,7 @@ function AnalyticsDashboard({ analytics, detail }: Readonly<{ analytics: Analyti
   };
   const rawSection: DataSection | null = analytics ? {
     title: "Accepted analytical rows",
-    description: `${analytics.pagination.totalRows.toLocaleString("en-GB")} rows matched. Page ${analytics.pagination.page.toLocaleString("en-GB")} of ${Math.max(analytics.pagination.totalPages, 1).toLocaleString("en-GB")}.`,
+    description: `${analytics.pagination.totalRows.toLocaleString("en-GB")} rows matched. Page ${analytics.pagination.page.toLocaleString("en-GB")} of ${Math.max(analytics.pagination.totalPages, 1).toLocaleString("en-GB")}. Server-sorted by ${analytics.query.sortBy.replaceAll("_", " ")} (${analytics.query.sortDirection}).`,
     columns: analytics.query.dataset === "epd" ? epdColumns : pcaColumns,
     rows: analytics.rows,
     emptyState: analytics.dataState === "source_not_ingested" ? "This source has not completed a governed non-sample ingest." : "No accepted facts matched every active filter.",
@@ -382,7 +398,7 @@ function AnalyticsDashboard({ analytics, detail }: Readonly<{ analytics: Analyti
     <section className={styles.analysisGrid}>
       <section className={styles.analysisPanel}>
         <header className={styles.analysisHeader}><h3>Prescribing trend</h3><span>{display(metricName)}</span></header>
-        <TrendChart metric={metricName} rows={analytics?.series ?? []} />
+        <TrendChart metric={metricName} rows={analytics?.series ?? []} source={analytics?.source ?? "Source not ingested"} />
         <p className={styles.sourceLine}>{analytics?.source ?? "English Prescribing Dataset source not ingested"}</p>
       </section>
       <section className={styles.analysisPanel}>
@@ -478,6 +494,10 @@ function FilterRail({ analytics, busy, detail, filters, onChange, onReset, onRun
     <fieldset disabled={busy || !detail}><legend className={styles.srOnly}>Core medicine intelligence filters</legend>
       <label>Dataset<select name="dataset" value={filters.dataset} onChange={(event) => onChange("dataset", event.currentTarget.value)}><option value="epd">English prescribing</option><option value="pca">Community dispensing</option></select></label>
       <label>Measure<select name="metric" value={filters.metric} onChange={(event) => onChange("metric", event.currentTarget.value)}><option value="items">Items</option><option value="quantity">Quantity</option><option value="nic">Net ingredient cost</option><option value="actual_cost">Actual cost</option>{filters.dataset === "epd" ? <option value="items_per_1000">Items per 1,000 patients</option> : null}</select></label>
+      <div className={styles.dateFields}>
+        <label>Table order<select name="sortBy" value={filters.sortBy} onChange={(event) => onChange("sortBy", event.currentTarget.value)}><option value="month_key">Month</option><option value="canonical_name">Medicine name</option><option value="metric_value">Selected metric</option><option value="items">Items</option><option value="quantity">Quantity</option><option value="nic">Net ingredient cost</option><option value="actual_cost">Actual cost</option></select></label>
+        <label>Sort direction<select name="sortDirection" value={filters.sortDirection} onChange={(event) => onChange("sortDirection", event.currentTarget.value)}><option value="desc">High to low / newest first</option><option value="asc">Low to high / oldest first</option></select></label>
+      </div>
       <div className={styles.dateFields}><label>Start month<input name="startMonth" type="month" value={filters.startMonth} onChange={(event) => onChange("startMonth", event.currentTarget.value)} /></label><label>End month<input name="endMonth" type="month" value={filters.endMonth} onChange={(event) => onChange("endMonth", event.currentTarget.value)} /></label></div>
       <details className={`${styles.advancedFilters} intelligence-filter-disclosure`}><summary>Filters</summary><div>
         <label>Region<input name="region" type="text" maxLength={160} autoComplete="off" value={filters.region} onChange={(event) => onChange("region", event.currentTarget.value)} /></label>
