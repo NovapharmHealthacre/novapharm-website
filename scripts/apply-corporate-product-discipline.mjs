@@ -201,7 +201,7 @@ function homeMain() {
         <div class="npd-apple-hero-copy">
           <p class="npd-apple-eyebrow">NOVAPHARM HEALTHCARE</p>
           <h1 id="home-title" aria-label="Medicine. Where it needs to be.">Medicine.<br><span>Where it needs to be.</span></h1>
-          <p class="npd-apple-lead">Connecting specialist medicines, market access and regulatory judgement through a more considered pharmaceutical model.</p>
+          <p class="npd-apple-lead">Medicine matters. So does every decision that brings it closer to people. We are developing a UK-led approach to specialist medicines, market access and responsible supply.</p>
           <div class="npd-apple-actions">
             <a class="npd-apple-button" href="/about/">Explore NovaPharm</a>
             <a class="npd-apple-link" href="/partner-with-us/">Partner with us</a>
