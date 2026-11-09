@@ -161,6 +161,12 @@ for (const file of [...new Set(files)]) {
     html = html.replace(/\s*<!-- page-specific-social-start -->[\s\S]*?<!-- page-specific-social-end -->/g, "");
     const social = `\n  <!-- page-specific-social-start -->\n  <meta property="og:image" content="${absolute}">\n  <meta property="og:image:secure_url" content="${absolute}">\n  <meta property="og:image:type" content="${image.type}">\n  <meta property="og:image:width" content="${image.width}">\n  <meta property="og:image:height" content="${image.height}">\n  <meta property="og:image:alt" content="${image.alt.replaceAll('"', '&quot;')}">\n  <!-- page-specific-social-end -->`;
     html = html.replace(/<meta property="og:image" content="https:\/\/novapharmhealthcare\.com\/assets\/brand\/novapharm-open-graph-1200x630-white\.jpg">/, social);
+    // Rebuilds are intentionally idempotent. The preceding build may have
+    // removed a legacy fallback OG tag after finalising one canonical image.
+    // Keep the route-specific block even when its fallback has been removed.
+    if (!html.includes("<!-- page-specific-social-start -->")) {
+      html = html.replace("</head>", `${social}\n</head>`);
+    }
     html = html.replace(/<meta name="twitter:image" content="[^"]+">/, `<meta name="twitter:image" content="${absolute}">`);
     html = html.replace(/<meta name="twitter:image:alt" content="[^"]+">/, `<meta name="twitter:image:alt" content="${image.alt.replaceAll('"', '&quot;')}">`);
 
