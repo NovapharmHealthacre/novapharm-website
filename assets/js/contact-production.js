@@ -39,7 +39,7 @@ if (form instanceof HTMLFormElement) {
         && Object.hasOwn(intelligencePlans, requestedIntelligencePlan)
         && !intent.has("basket") && !intent.has("quote") && !intent.has("product")) {
       messageField.value = "NovaPharm Intelligence " + intelligencePlans[requestedIntelligencePlan] +
-        " proposal request.\\n\\nPlease confirm product availability, the proposed scope, user entitlements, data-source licensing, regional price and tax treatment, and commercial terms before any purchase or account activation. This is a non-binding business enquiry.";
+        " proposal request.\n\nPlease confirm product availability, the proposed scope, user entitlements, data-source licensing, regional price and tax treatment, and commercial terms before any purchase or account activation. This is a non-binding business enquiry.";
     }
 
     // ESCO quote-list hints are untrusted. Accept only model-independent
