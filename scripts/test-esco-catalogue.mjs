@@ -214,6 +214,9 @@ test("ESCO editorial collection keeps 373 models, accessible details and the exi
  assert.match(generator,/ESCO-CAT-0048/);
  assert.match(generator,/esco-category-grid/);
  assert.match(generator,/data-esco-catalogue-id/);
+ assert.match(generator,/data-esco-subcategory/);
+ assert.match(generator,/const cards = category\.entries\.filter/);
+ assert.match(generator,/\)\.join\(\x27\x27\);\s*return `<h4 class="esco-subcat"/);
  assert.match(generator,/data-esco-ready-only disabled/);
  assert.match(generator,/data-esco-reset-filters/);
  assert.match(generator,/data-esco-product-dialog/);
