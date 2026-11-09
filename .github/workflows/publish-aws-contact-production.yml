@@ -85,6 +85,14 @@ jobs:
           grep -Fq 'class="nx-purchase-progress"' _site/products/nutraxin/bag/index.html
           node scripts/check-links.mjs _site
           test -s _site/assets/js/contact-production.js
+          grep -Fq 'id="intelligence-pricing"' _site/technology/index.html
+          grep -Fq 'data-npi-plan="starter" data-monthly-inr="24999"' _site/technology/index.html
+          grep -Fq 'data-npi-plan="professional" data-monthly-inr="89999"' _site/technology/index.html
+          grep -Fq 'data-npi-plan="enterprise"' _site/technology/index.html
+          grep -Fq 'src="/assets/js/intelligence-pricing.js"' _site/technology/index.html
+          grep -Fq 'intelligencePlan' _site/assets/js/contact-production.js
+          test -s _site/assets/js/intelligence-pricing.js
+          test -s _site/assets/css/technology-intelligence.css
           test -s _site/assets/js/account-request-production.js
           test -s _site/assets/css/account-request.css
       - name: Validate deployed AWS API and record one synthetic business receipt
@@ -241,6 +249,34 @@ jobs:
             sleep 5
           done
           echo "::error::ESCO catalogue not verified on production custom domain." >&2
+          exit 1
+
+      - name: Verify NovaPharm Intelligence three-plan pricing and live contact path
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 18); do
+            key="intelligence-pricing-$GITHUB_SHA-$attempt-$(date +%s)"
+            if curl --fail --silent --show-error --location --max-time 15 -H "Cache-Control: no-cache, no-store" \
+              "https://novapharmhealthcare.com/technology/?$key" -o /tmp/novapharm-live-pricing.html; then
+              if grep -Fq 'id="intelligence-pricing"' /tmp/novapharm-live-pricing.html \
+                && grep -Fq 'data-npi-plan="starter" data-monthly-inr="24999"' /tmp/novapharm-live-pricing.html \
+                && grep -Fq 'data-npi-plan="professional" data-monthly-inr="89999"' /tmp/novapharm-live-pricing.html \
+                && grep -Fq 'data-npi-plan="enterprise"' /tmp/novapharm-live-pricing.html \
+                && grep -Fq 'intelligencePlan=professional' /tmp/novapharm-live-pricing.html \
+                && grep -Fq 'src="/assets/js/intelligence-pricing.js"' /tmp/novapharm-live-pricing.html; then
+                curl --fail --silent --show-error --max-time 15 \
+                  "https://novapharmhealthcare.com/assets/js/intelligence-pricing.js" -o /tmp/novapharm-live-pricing.js
+                curl --fail --silent --show-error --max-time 15 \
+                  "https://novapharmhealthcare.com/assets/js/contact-production.js" -o /tmp/novapharm-live-contact-script.js
+                grep -Fq 'data-npi-billing' /tmp/novapharm-live-pricing.js
+                grep -Fq 'requestedIntelligencePlan' /tmp/novapharm-live-contact-script.js
+                echo "Three proposed Intelligence plans, billing selector and qualified contact routing are live on the public site."
+                exit 0
+              fi
+            fi
+            sleep 5
+          done
+          echo "::error::Proposed NovaPharm Intelligence pricing and contact form bridge not verified on the custom domain."
           exit 1
 
       - name: Verify live organic search title and privacy-gated analytics asset
