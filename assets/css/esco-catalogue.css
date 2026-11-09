@@ -117,13 +117,13 @@
 .esco-detail-picture img[hidden]{display:none}
 .esco-detail-image-note{font-size:.76rem;line-height:1.65;color:#59687c;margin:12px 4px 0}
 .esco-detail-info{padding:14px 0 0}
-.esco-detail-info h1{font-size:clamp(2.4rem,4vw,4.7rem);line-height:1.035;letter-spacing:-.042em;font-weight:680;margin:12px 0 18px;color:#141c26}
+.esco-detail-info h1{font-size:clamp(2.4rem,4vw,4.7rem);line-height:1.035;letter-spacing:normal;font-weight:680;margin:12px 0 18px;color:#141c26}
 .esco-detail-category{font-size:.89rem;color:#626f7c;margin:12px 0 3px}
 .esco-detail-model{font-size:1.08rem;color:#3d4a57}
 .esco-detail-reference{font-size:.78rem;color:#637287;margin:8px 0 29px}
 .esco-detail-price{display:flex;flex-direction:column;gap:5px;border-top:1px solid #e4e9ee;border-bottom:1px solid #e4e9ee;padding:22px 0 24px;margin:10px 0 29px}
 .esco-detail-price span{color:#647182;font-size:.9rem}
-.esco-detail-price strong{font-size:clamp(2.2rem,3.6vw,3.4rem);font-weight:650;color:#152135;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+.esco-detail-price strong{font-size:clamp(2.2rem,3.6vw,3.4rem);font-weight:650;color:#152135;letter-spacing:normal;font-variant-numeric:tabular-nums}
 .esco-detail-price small{font-size:.79rem;color:#677587;line-height:1.55}
 .esco-detail-purchase{display:grid;grid-template-columns:90px 1fr;align-items:center;gap:12px}
 .esco-detail-purchase label{font-size:.92rem;font-weight:600;color:#384654}
@@ -133,7 +133,7 @@
 .esco-detail-status{font-size:.84rem;line-height:1.5;color:#39546d;margin:17px 0 14px;min-height:24px}
 .esco-detail-status[data-error=true]{color:#ad2632}
 .esco-detail-disclosure{margin:36px 0 0;padding:24px;background:#f7f9fc;border-radius:18px}
-.esco-detail-disclosure h2{font-size:1.05rem;letter-spacing:-.01em;margin:0 0 10px;color:#1c2a39}
+.esco-detail-disclosure h2{font-size:1.05rem;letter-spacing:normal;margin:0 0 10px;color:#1c2a39}
 .esco-detail-disclosure p{font-size:.82rem;color:#5c6978;line-height:1.75;margin:0}
 @media(max-width:780px){.esco-detail-section{padding:10px 0 60px}.esco-detail-layout{grid-template-columns:1fr;gap:20px}.esco-detail-visual{position:static}.esco-detail-picture{min-height:290px;padding:22px}.esco-detail-info{padding-top:0}.esco-detail-info h1{font-size:clamp(2.35rem,9vw,3.65rem)}.esco-detail-breadcrumb{margin-bottom:25px}}
 @media(prefers-reduced-motion:reduce){.esco-image-link:hover .esco-product-image{transition:none}}
