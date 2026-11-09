@@ -15,6 +15,7 @@ const checkoutResult = document.querySelector("[data-esco-checkout-status]");
 const ESCO_PAYMENT_CONFIG = "/assets/data/esco-checkout-config.json";
 let checkoutApiOrigin = "";
 let approvedCatalogIds = new Set();
+let approvedUnitPricesPence = new Map();
 let paymentServiceReady = false;
 let sendingPayment = false;
 function checkoutStatus(text) {
@@ -36,14 +37,18 @@ async function configurePayment() {
   if (readiness?.checkout_ready !== true || readiness?.payment_collection_active !== true ||
       !Array.isArray(readiness?.approved_catalogue_ids)) return;
   approvedCatalogIds = new Set(readiness.approved_catalogue_ids.filter(id=>/^ESCO-CAT-[0-9]{4}$/.test(id)));
-  paymentServiceReady = approvedCatalogIds.size > 0;
+  const serverPrices = readiness.approved_unit_prices_pence || {};
+  approvedUnitPricesPence = new Map([...approvedCatalogIds].filter(id=>
+    Number.isSafeInteger(serverPrices[id]) && serverPrices[id]>0 && serverPrices[id]<=99999999
+  ).map(id=>[id,serverPrices[id]]));
+  paymentServiceReady = approvedCatalogIds.size > 0 && approvedUnitPricesPence.size === approvedCatalogIds.size;
 }
 function renderPaymentEligibility(lines) {
   if (!checkoutButton || !termsCheckbox) return;
   const approved = paymentServiceReady && lines.length > 0 && lines.every(item => approvedCatalogIds.has(item.id));
   checkoutButton.disabled = !approved || !termsCheckbox.checked || sendingPayment;
   if (checkoutNote) checkoutNote.textContent = approved
-    ? "Secure card checkout is available for these approved items. Final VAT and delivery details are confirmed before payment."
+    ? "These prices include UK delivery, excluding VAT. Stripe confirms the final VAT and total before your card is charged."
     : "Card checkout is available only for individually approved, UK-saleable items. Your Bag can still be submitted for a confirmed quotation.";
 }
 async function startCheckout(lines) {
@@ -155,7 +160,8 @@ async function init() {
     for (const item of state) {
       const p = known.get(item.id);
       const guide = priceData.guidePrices[item.id];
-      const unitPennies = Math.round(guide.guidePriceExVatGbp * 100);
+      const approvedPrice = paymentServiceReady && approvedCatalogIds.has(item.id) ? approvedUnitPricesPence.get(item.id) : null;
+      const unitPennies = approvedPrice ?? Math.round(guide.guidePriceExVatGbp * 100);
       const linePennies = unitPennies * item.quantity;
       pennies += linePennies;
       unitCount += item.quantity;
@@ -177,7 +183,7 @@ async function init() {
         node("h3", p.name, "esco-shopping-product-name"),
         node("p", (p.model ? "ESCO " + p.model : "Model to confirm") + " · " + item.id, "esco-shopping-model"),
         node("p", pictureInfo?.note || "Exact product imagery to be confirmed", "esco-shopping-provenance"),
-        node("p", "Guide " + GBP.format(unitPennies / 100) + " per unit · ex VAT", "esco-shopping-unitprice")
+        node("p", (approvedPrice ? "UK delivered price " : "Guide ") + GBP.format(unitPennies / 100) + " per unit · ex VAT", "esco-shopping-unitprice")
       );
       const controls = node("div", "", "esco-bag-row-controls");
       const label = node("label", "Quantity", "esco-shopping-qty-label");
@@ -198,13 +204,27 @@ async function init() {
       controls.append(label, remove);
       const linePrice = node("div", "", "esco-shopping-line");
       linePrice.append(node("strong", GBP.format(linePennies / 100), "esco-shopping-line-total"),
-        node("small", "Guide total · ex VAT", "esco-shopping-line-note"));
+        node("small", approvedPrice ? "UK delivery included · ex VAT" : "Guide total · ex VAT", "esco-shopping-line-note"));
       content.append(controls);
       article.append(pictureBox,content,linePrice);
       itemsRoot.append(article);
     }
     if (itemCountNode) itemCountNode.textContent = unitCount + (unitCount === 1 ? " item" : " items");
     totalNode.textContent = GBP.format(pennies / 100);
+    const allPayable = paymentServiceReady && state.length>0 &&
+      state.every(item=>approvedCatalogIds.has(item.id) && approvedUnitPricesPence.has(item.id));
+    const summaryTitle = document.querySelector(".esco-bag-totals dt");
+    const deliverySummary = document.querySelector(".esco-bag-totals>div:nth-child(2) dd");
+    const estimateTitle = document.querySelector(".esco-bag-estimate span");
+    const estimateNote = document.querySelector(".esco-bag-estimate small");
+    const financialNote = document.querySelector(".esco-bag-financial-note");
+    if (summaryTitle) summaryTitle.textContent = allPayable ? "Order subtotal" : "Estimated subtotal";
+    if (deliverySummary) deliverySummary.textContent = allPayable ? "Included" : "Calculated on approval";
+    if (estimateTitle) estimateTitle.textContent = allPayable ? "UK delivered prices" : "Guide estimate";
+    if (estimateNote) estimateNote.textContent = allPayable ? "Ex VAT · final tax shown at Stripe" : "Ex VAT · Not yet a payable total";
+    if (financialNote) financialNote.textContent = allPayable
+      ? "Your selected items have fixed UK delivered prices. Stripe calculates applicable VAT and displays the final amount before payment."
+      : "Catalogue guide prices are not a binding offer. Your final order total, applicable VAT and delivery are confirmed before payment.";
     const lines = state.map((item) => item.id + " qty " + item.quantity);
     const quote = "ESCO Anand UK quotation request (catalogue 2026). Items: " + lines.join("; ") +
       ". Please confirm exact variant, UK compliance, selling price, applicable VAT, delivery and lead time.";
