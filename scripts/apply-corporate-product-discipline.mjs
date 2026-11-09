@@ -648,7 +648,7 @@ materialize("regulatory-services/index.html", "/regulatory-services/", regulator
 materialize("cro/index.html", "/cro/", croMain());
 materialize("oncology/index.html", "/oncology/", oncologyMain());
 materialize("products/index.html", "/products/", productsMain(), {
-  title: "Products | NovaPharm Healthcare",
+  title: "Products | Nutraxin & Pharmaceutical Portfolio | NovaPharm",
   description: "Explore NovaPharm's Nutraxin food supplement collection and separate strategic pharmaceutical portfolio. Consumer browsing and regulated B2B opportunities follow distinct routes."
 }, productsTemplate);
 materialize("products/nutraxin/index.html", "/products/nutraxin/", nutraxinMain(), {
