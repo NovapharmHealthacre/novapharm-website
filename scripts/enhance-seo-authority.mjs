@@ -345,6 +345,22 @@ for (const file of [...new Set(publicFiles)]) {
   html = addLegalEditorialStandards(html, route);
   html = addFooterEditorialLink(html);
   html = addAttributionSignals(html);
+  const measurementId = process.env.PUBLIC_GA4_MEASUREMENT_ID || "";
+  const analyticsApproved = process.env.PUBLIC_ANALYTICS_PRIVACY_APPROVED === "true";
+  if (analyticsApproved && measurementId && !/^G-[A-Z0-9]{6,18}$/.test(measurementId)) {
+    throw new Error("Approved GA4 measurement identifier is invalid.");
+  }
+  // Provider activation requires an owner-controlled GA4 property, updated
+  // privacy notice and explicit privacy-approval flag in the build environment.
+  // A plain measurement ID never activates analytics by itself.
+  if (analyticsApproved && /^G-[A-Z0-9]{6,18}$/.test(measurementId)
+      && !/^\/(?:contact|account-application|portal|legal)\//.test(route)
+      && !/^\/products\/nutraxin\/order-request\//.test(route)) {
+    html = html.replace("</head>", `  <meta name="novapharm-ga4-id" content="${measurementId}">\n</head>`);
+    if (!html.includes('/assets/js/consent-analytics.js')) {
+      html = html.replace("</body>", '<script type="module" src="/assets/js/consent-analytics.js"></script>\n</body>');
+    }
+  }
   write(file, html);
 
   const title = textContent(extract(html, /<title>([\s\S]*?)<\/title>/i));
