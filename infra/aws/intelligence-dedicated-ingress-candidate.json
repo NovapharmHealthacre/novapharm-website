@@ -76,12 +76,10 @@
         "SecurityGroupEgress": [
           {
             "IpProtocol": "tcp",
-            "FromPort": 4303,
-            "ToPort": 4303,
-            "DestinationSecurityGroupId": {
-              "Ref": "IntelligenceTaskSecurityGroup"
-            },
-            "Description": "Only the private Fargate portal"
+            "FromPort": 9,
+            "ToPort": 9,
+            "CidrIp": "192.0.2.1/32",
+            "Description": "Non-routable placeholder avoids AWS allow-all default; actual egress is explicit SG-to-SG port 4303"
           }
         ],
         "Tags": [
@@ -104,17 +102,7 @@
         "VpcId": {
           "Ref": "VpcId"
         },
-        "SecurityGroupIngress": [
-          {
-            "IpProtocol": "tcp",
-            "FromPort": 4303,
-            "ToPort": 4303,
-            "SourceSecurityGroupId": {
-              "Ref": "IntelligenceAlbSecurityGroup"
-            },
-            "Description": "Dedicated ALB target traffic only"
-          }
-        ],
+        "SecurityGroupIngress": [],
         "SecurityGroupEgress": [
           {
             "IpProtocol": "tcp",
@@ -344,7 +332,9 @@
       "Type": "AWS::ECS::Service",
       "Condition": "ActivateAfterApproval",
       "DependsOn": [
-        "IntelligenceHttpsListener"
+        "IntelligenceHttpsListener",
+        "IntelligenceAlbToTaskEgress",
+        "IntelligenceTaskFromAlbIngress"
       ],
       "Properties": {
         "ServiceName": "novapharm-intelligence-terminal",
@@ -427,6 +417,38 @@
             }
           }
         ]
+      }
+    },
+    "IntelligenceAlbToTaskEgress": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Condition": "ActivateAfterApproval",
+      "Properties": {
+        "GroupId": {
+          "Ref": "IntelligenceAlbSecurityGroup"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": 4303,
+        "ToPort": 4303,
+        "DestinationSecurityGroupId": {
+          "Ref": "IntelligenceTaskSecurityGroup"
+        },
+        "Description": "Only application ALB to approved private Fargate tasks"
+      }
+    },
+    "IntelligenceTaskFromAlbIngress": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Condition": "ActivateAfterApproval",
+      "Properties": {
+        "GroupId": {
+          "Ref": "IntelligenceTaskSecurityGroup"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": 4303,
+        "ToPort": 4303,
+        "SourceSecurityGroupId": {
+          "Ref": "IntelligenceAlbSecurityGroup"
+        },
+        "Description": "Only approved Intelligence ALB may reach private Fargate"
       }
     }
   },
