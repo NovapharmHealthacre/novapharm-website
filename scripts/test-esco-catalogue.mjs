@@ -140,3 +140,25 @@ test("owner-declared 10000 per catalogue reference is planning stock, not verifi
   assert.match(builder,/warehouse-verified available stock/);
   assert.match(builder,/No payment is taken until the exact order is approved/);
 });
+
+test("ESCO payment button only enables from protected server readiness, never from guide prices or owner stock",()=>{
+  const builder=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
+  const bag=readFileSync("assets/js/esco-bag.js","utf8");
+  const config=JSON.parse(readFileSync("assets/data/esco-checkout-config.json","utf8"));
+  assert.equal(config.enabled,true);
+  assert.equal(config.public_guide_prices_authorize_payment,false);
+  assert.equal(config.payment_eligibility_from_server_only,true);
+  assert.match(config.api_origin,/^https:\/\/[a-z0-9]+\.execute-api\.eu-north-1\.amazonaws\.com$/);
+  assert.match(builder,/data-esco-card-checkout disabled/);
+  assert.match(builder,/data-esco-payment-terms/);
+  assert.match(builder,/data-esco-checkout-status/);
+  assert.match(bag,/paymentServiceReady/);
+  assert.match(bag,/approvedCatalogIds/);
+  assert.match(bag,/checkout_ready !== true/);
+  assert.match(bag,/payment_collection_active !== true/);
+  assert.match(bag,/termsCheckbox\.checked/);
+  assert.match(bag,/checkoutApiOrigin \+ "\/checkout"/);
+  assert.match(bag,/redirect\.hostname !== "checkout\.stripe\.com"/);
+  assert.match(bag,/info\.paid === true && info\.status === "PAID"/);
+  assert.doesNotMatch(bag,/sk_live_[A-Za-z0-9]{16,}|rk_live_[A-Za-z0-9]{16,}|whsec_[A-Za-z0-9]{16,}/);
+});

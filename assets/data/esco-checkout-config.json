@@ -1,0 +1,8 @@
+{
+  "version": "esco-checkout-server-gated-2026-11-09",
+  "enabled": true,
+  "api_origin": "https://vflz5z5jfc.execute-api.eu-north-1.amazonaws.com",
+  "presentation": "Stripe-hosted payment for individually approved SKU variants only",
+  "public_guide_prices_authorize_payment": false,
+  "payment_eligibility_from_server_only": true
+}
