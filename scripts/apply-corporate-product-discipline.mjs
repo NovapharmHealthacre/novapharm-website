@@ -648,16 +648,16 @@ materialize("regulatory-services/index.html", "/regulatory-services/", regulator
 materialize("cro/index.html", "/cro/", croMain());
 materialize("oncology/index.html", "/oncology/", oncologyMain());
 materialize("products/index.html", "/products/", productsMain(), {
-  title: "Products | NovaPharm Healthcare",
-  description: "Review NovaPharm's Nutraxin food supplement catalogue reference and non-commerce strategic pharmaceutical opportunity portfolio."
+  title: "Products | Nutraxin & Pharmaceutical Portfolio | NovaPharm",
+  description: "Explore NovaPharm's Nutraxin food supplement collection and separate strategic pharmaceutical portfolio. Consumer browsing and regulated B2B opportunities follow distinct routes."
 }, productsTemplate);
 materialize("products/nutraxin/index.html", "/products/nutraxin/", nutraxinMain(), {
-  title: "Nutraxin Collection | Explore the Product Range | NovaPharm",
-  description: "Discover Nutraxin's 19 owner-supplied product references across six ranges, with original pack imagery and product details for qualified B2B catalogue evaluation."
+  title: "Nutraxin UK Supplements | Explore 19 Products | NovaPharm",
+  description: "Discover 19 Nutraxin food supplements across six ranges. Explore original pack images, clear product details and build your Bag on the NovaPharm website."
 }, nutraxinTemplate);
 materialize("products/nutraxin/bag/index.html", "/products/nutraxin/bag/", nutraxinBagMain(), {
   title: "Your Bag | Nutraxin | NovaPharm Healthcare",
-  description: "Review your saved Nutraxin product selections before secure checkout becomes available.",
+  description: "Review your Nutraxin Bag, quantities, VAT and delivery information before choosing the next checkout step.",
   robots: "noindex, follow"
 }, nutraxinTemplate);
 materialize("products/nutraxin/order-request/index.html", "/products/nutraxin/order-request/", nutraxinOrderRequestMain(), {

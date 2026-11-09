@@ -426,14 +426,14 @@ export const pageMeta = Object.freeze({
     eyebrow: "Products"
   },
   "products": {
-    title: "Food Supplements and Strategic Pharmaceutical Portfolio | NovaPharm",
-    description: "Review NovaPharm's Nutraxin UK food supplement catalogue reference and strategic B2B pharmaceutical categories, with availability, claims and authorisation boundaries stated clearly.",
+    title: "Products | Nutraxin & Pharmaceutical Portfolio | NovaPharm",
+    description: "Explore NovaPharm's Nutraxin food supplement collection and separate strategic pharmaceutical portfolio. Consumer browsing and regulated B2B opportunities follow distinct routes.",
     eyebrow: "Products"
   },
   "products/nutraxin": {
-    title: "Nutraxin UK Food Supplement Catalogue | NovaPharm Healthcare",
-    description: "Review 19 Nutraxin food supplement catalogue references with pack imagery and source-transcribed composition details for qualified B2B evaluation; availability, claims and regulatory status are not asserted.",
-    eyebrow: "Nutraxin catalogue"
+    title: "Nutraxin UK Supplements | Explore 19 Products | NovaPharm",
+    description: "Discover 19 Nutraxin food supplements across six ranges. Explore original pack images, clear product details and build your Bag on the NovaPharm website.",
+    eyebrow: "Nutraxin collection"
   },
   "products/strategic-portfolio": {
     title: "Strategic Pharmaceutical Portfolio | NovaPharm Healthcare",
