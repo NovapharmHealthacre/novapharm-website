@@ -248,7 +248,10 @@ async function init() {
     state = state.map(item => item.id === input.dataset.escoBagQty ? { ...item, quantity: qty } : item);
     render();
   });
-  send.addEventListener("click", event => { if (!state.length) event.preventDefault(); });
+  send.addEventListener("click", event => {
+    if (!state.length) event.preventDefault();
+    else window.dispatchEvent(new CustomEvent("novapharm:marketing-event", { detail: { event: "cta_click", ctaId: "esco-bag-request-quote" } }));
+  });
   if (termsCheckbox) termsCheckbox.addEventListener("change", () => renderPaymentEligibility(state));
   if (checkoutButton) checkoutButton.addEventListener("click", () => startCheckout(state));
   await configurePayment().catch(()=>{ paymentServiceReady=false; });
