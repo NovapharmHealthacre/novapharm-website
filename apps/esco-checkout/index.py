@@ -92,7 +92,14 @@ def eligible(item):
         return False
     if cost * 4 > amount * 3:  # 25% margin on ex-VAT revenue, never a 25% markup.
         return False
-    return bool(PRICE_ID.fullmatch(str(item.get("stripe_price_id", ""))) and
+    pricing_mode = item.get("pricing_mode", "precreated")
+    tax_code = str(item.get("stripe_tax_code", ""))
+    price_configured = (pricing_mode == "approved_inline" and
+        bool(re.fullmatch(r"txcd_[0-9]{8}", tax_code)) and
+        item.get("price_includes_gb_delivery") is True) or (
+        pricing_mode == "precreated" and
+        bool(PRICE_ID.fullmatch(str(item.get("stripe_price_id", "")))))
+    return bool(price_configured and
         isinstance(item.get("name"), str) and 2 <= len(item["name"]) <= 180 and
         item.get("currency") == "gbp" and item.get("tax_behavior") == "exclusive")
 
@@ -119,6 +126,12 @@ def verified_stripe_prices(lines, approved, key):
     subtotal = 0
     for line in lines:
         record = approved[line["id"]]
+        if record.get("pricing_mode") == "approved_inline":
+            # The private SKU approval record is the price authority. The client is not.
+            subtotal += record["unit_price_pence"] * line["quantity"]
+            if subtotal > MAX_SUBTOTAL:
+                raise ValueError("basket exceeds limit")
+            continue
         price = stripe_request("GET", "prices/" + record["stripe_price_id"], key)
         if (price.get("id") != record["stripe_price_id"] or price.get("active") is not True or
             price.get("currency") != "gbp" or price.get("unit_amount") != record["unit_price_pence"] or
@@ -210,7 +223,17 @@ def checkout(event):
             "metadata[basket_hash]": basket_hash,
             "integration_identifier": "novapharm-esco-" + "".join(chr(97 + int(ch, 16)) for ch in hashlib.sha256(request_id.encode()).hexdigest()[:8])}
         for i, row in enumerate(lines):
-            params["line_items[%d][price]" % i] = approved[row["id"]]["stripe_price_id"]
+            record = approved[row["id"]]
+            if record.get("pricing_mode") == "approved_inline":
+                prefix = "line_items[%d][price_data]" % i
+                params[prefix + "[currency]"] = "gbp"
+                params[prefix + "[unit_amount]"] = record["unit_price_pence"]
+                params[prefix + "[tax_behavior]"] = "exclusive"
+                params[prefix + "[product_data][name]"] = record["name"]
+                params[prefix + "[product_data][tax_code]"] = record["stripe_tax_code"]
+                params[prefix + "[product_data][metadata][catalogue_id]"] = row["id"]
+            else:
+                params["line_items[%d][price]" % i] = record["stripe_price_id"]
             params["line_items[%d][quantity]" % i] = row["quantity"]
         created = stripe_request("POST", "checkout/sessions", api_key,
                                  params=params, idempotency="esco-" + request_id)
