@@ -60,3 +60,18 @@ test("legacy portal clients use fixed application-owned destinations", () => {
   assert.doesNotMatch(clients, /\.redirectTo|logoutUrl/);
   assert.match(clients, /portalLandingRoute|post_logout_redirect_uri/);
 });
+
+test("US FDA discovery is a fixed read-only board-gateway flow with no browser-held API keys", () => {
+  const gateway = source("app/gateway/[...path]/route.ts");
+  const view = source("components/us-fda-label-discovery.tsx");
+  const terminal = source("components/medicines-intelligence.tsx");
+  assert.ok(gateway.includes("fda-labels$/"), "The gateway must permit the exact FDA label path");
+  assert.match(gateway, /path === "v1\/intelligence\/regulatory\/us\/fda-labels"/);
+  assert.match(gateway, /request\.method !== "GET"/);
+  assert.match(view, /gatewayJson<FdaLabelResponse>/);
+  assert.match(view, /source\.dataState|source\.records/);
+  assert.match(view, /medical|regulatory/i);
+  assert.match(terminal, /current === "regulatory-intelligence"/);
+  assert.doesNotMatch(view, /OPENFDA_API_KEY|api_key|localStorage|sessionStorage/);
+  assert.doesNotMatch(view, /fetch\("https:\/\/api\.fda\.gov/);
+});

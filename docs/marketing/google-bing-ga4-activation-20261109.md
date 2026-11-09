@@ -35,3 +35,9 @@ Deployment checks:
 - Record the exact protected publishing workflow SHA and live-domain/browser evidence before calling GA4 production live.
 
 This task is **£0 paid media**. The pending external account actions require authenticated control in the Google/Bing interfaces, not GitHub code or a paid connector.
+
+## Owner-directed consent-only live build (9 November 2026)
+
+The owner directed production activation of the verified public GA4 stream ID `G-897L1VS8BX`. The protected publisher builds consent-gated measurement only on allowed public routes. The Google script does not appear in initial HTML and is fetched only after the visitor affirmatively chooses Analytics. Contact, customer account, portal and legal pages remain excluded. Product-detail path and title are generalised to avoid sharing specific supplement interests. No paid advertising or Google Ads identifiers are used.
+
+A successful release is evidence of deployed technical controls, NOT proof of a formal independent legal review, Google account-level retention/transfer settings, live Realtime/DebugView receipt or authenticated GSC/Bing sitemap submissions. These remain explicitly separately verifiable.

@@ -10,6 +10,10 @@ on:
       - 'assets/js/contact-production.js'
       - 'assets/js/esco-catalogue.js'
       - 'scripts/apply-esco-catalogue.mjs'
+      - 'assets/css/esco-catalogue.css'
+      - 'assets/data/esco-catalogue.json'
+      - 'scripts/test-esco-catalogue.mjs'
+      - 'scripts/build-site.mjs'
       - 'assets/data/nutraxin-retail-catalogue.json'
       - 'scripts/apply-corporate-product-discipline.mjs'
       - 'scripts/stage-pages-artifact.mjs'
@@ -65,7 +69,7 @@ jobs:
           node scripts/test-static-public-source-safety.mjs
           node --test scripts/test-account-request-intake.mjs
           npm ci --ignore-scripts
-          npm run build:public-only
+          PUBLIC_ANALYTICS_PRIVACY_APPROVED=true PUBLIC_GA4_MEASUREMENT_ID=G-897L1VS8BX npm run build:public-only
           python3 scripts/validate-public-sitemaps.py
           npm run test:owner-corrections:public-only
           node --test scripts/test-nutraxin-retail-store.mjs
@@ -83,7 +87,13 @@ jobs:
           grep -Fq 'Simple from start to finish.' _site/products/nutraxin/bag/index.html
           grep -Fq 'Guest checkout available' _site/products/nutraxin/bag/index.html
           grep -Fq 'Nutraxin UK Supplements | Explore 19 Products | NovaPharm' _site/products/nutraxin/index.html
-          ! grep -Fq 'novapharm-ga4-id' _site/products/nutraxin/index.html
+          grep -Fq 'name="novapharm-ga4-id" content="G-897L1VS8BX"' _site/products/nutraxin/index.html
+          grep -Fq '/assets/js/consent-analytics.js' _site/products/nutraxin/index.html
+          ! grep -Fq 'www.googletagmanager.com' _site/products/nutraxin/index.html
+          ! grep -Fq 'novapharm-ga4-id' _site/contact/index.html
+          ! grep -Fq 'novapharm-ga4-id' _site/portal/index.html
+          ! grep -Fq 'novapharm-ga4-id' _site/legal/cookies/index.html
+          grep -Fq 'Google Analytics 4' _site/legal/cookies/index.html
           test -s _site/assets/js/consent-analytics.js
           grep -Fq 'class="nx-purchase-progress"' _site/products/nutraxin/bag/index.html
           node scripts/check-links.mjs _site
@@ -254,12 +264,19 @@ jobs:
               "https://novapharmhealthcare.com/products/nutraxin/?marketing-$GITHUB_SHA-$attempt-$(date +%s)" \
               -o /tmp/novapharm-live-organic.html; then
               if grep -Fq 'Nutraxin UK Supplements | Explore 19 Products | NovaPharm' /tmp/novapharm-live-organic.html \
-                 && ! grep -Fq 'novapharm-ga4-id' /tmp/novapharm-live-organic.html; then
+                 && grep -Fq 'name="novapharm-ga4-id" content="G-897L1VS8BX"' /tmp/novapharm-live-organic.html
+                 && grep -Fq '/assets/js/consent-analytics.js' /tmp/novapharm-live-organic.html
+                 && ! grep -Fq 'www.googletagmanager.com' /tmp/novapharm-live-organic.html; then
                 curl --fail --silent --show-error --max-time 15 \
                   "https://novapharmhealthcare.com/assets/js/consent-analytics.js" \
                   -o /tmp/novapharm-live-analytics.js
                 grep -Fq 'novapharm:consent' /tmp/novapharm-live-analytics.js
-                echo "Nutraxin organic metadata deployed; GA4 remains inactive pending owner property and privacy approval."
+                grep -Fq 'analyticsConsent()' /tmp/novapharm-live-analytics.js
+                curl --fail --silent --show-error --location --max-time 15 "https://novapharmhealthcare.com/contact/?ga4-$GITHUB_SHA-$attempt" -o /tmp/novapharm-live-analytics-contact.html
+                ! grep -Fq 'novapharm-ga4-id' /tmp/novapharm-live-analytics-contact.html
+                curl --fail --silent --show-error --location --max-time 15 "https://novapharmhealthcare.com/legal/cookies/?ga4-$GITHUB_SHA-$attempt" -o /tmp/novapharm-live-cookie-notice.html
+                grep -Fq 'Google Analytics 4' /tmp/novapharm-live-cookie-notice.html
+                echo "Consent-gated NovaPharm GA4 public tag verified; no tag on Contact or legal routes."
                 exit 0
               fi
             fi

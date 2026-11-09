@@ -1,0 +1,36 @@
+name: Probe Intelligence Azure production candidate safely
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/intelligence-azure-candidate-whatif.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  dispatch-reviewed-whatif:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Dispatch existing no-change Azure production-candidate validation
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          sha=$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')
+          [[ "$sha" =~ ^[a-f0-9]{40}$ ]] || { echo "::error::Could not identify current immutable main SHA."; exit 1; }
+          gh workflow run azure-deploy.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f target=production-candidate \
+            -f action=what-if \
+            -f expected_sha="$sha" \
+            -f run_schema_migrations=false
+          echo "Dispatched exact-head Azure production-candidate WHAT-IF for $sha."
+          echo "This action cannot provision resources, run migrations, deploy apps, bind DNS, activate NOVA or swap slots."
+          echo "Azure environment approval, OIDC and owner-controlled variables remain enforced inside azure-deploy.yml."

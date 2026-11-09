@@ -19,6 +19,11 @@ export function analyticsBrand(pathname) {
   return "healthcare";
 }
 
+export function analyticsPagePath(pathname) {
+  const path = String(pathname || "/");
+  if (/^\/products\/nutraxin\/(?!bag\/|order-request\/|checkout\/)[a-z0-9-]+\/$/.test(path)) return "/products/nutraxin/product/";
+  return path;
+}
 const EVENT_NAMES = new Set(["cta_click", "view_item", "add_to_cart", "begin_checkout"]);
 
 export function sanitiseMarketingEvent(detail, pathname) {
@@ -51,7 +56,7 @@ function initialiseAnalytics() {
   if (!validGa4Id(id) || !publicAnalyticsRoute(location.pathname)) return;
   let started = false;
   let allowed = false;
-  const pageLocation = location.origin + location.pathname;
+  const pageLocation = location.origin + analyticsPagePath(location.pathname);
   const send = (event, parameters = {}) => {
     if (!allowed || !started || !analyticsConsent()) return;
     window.gtag("event", event, {
@@ -105,7 +110,7 @@ function initialiseAnalytics() {
         ad_personalization: "denied"
       });
     }
-    send("page_view", { page_title: document.title });
+    send("page_view", { page_title: location.pathname.startsWith("/products/nutraxin/") ? "Nutraxin product information" : document.title });
     if (/^\/products\/nutraxin\/(?!bag\/|order-request\/)[a-z0-9-]+\/$/.test(location.pathname)) {
       send("view_item", { item_category: "food_supplements" });
     }

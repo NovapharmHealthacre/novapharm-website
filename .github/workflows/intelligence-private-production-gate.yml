@@ -1,0 +1,70 @@
+name: Verify private Medicines Terminal production activation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/intelligence-private-production-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-private-production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Resolve production portal and check HTTPS ingress
+        shell: bash
+        run: |
+          set -euo pipefail
+          portal="https://portal.novapharmhealthcare.com"
+          host="portal.novapharmhealthcare.com"
+          if ! getent ahostsv4 "$host" >/tmp/novapharm-private-addresses.txt; then
+            echo "::error::Private production DNS has not resolved from the acceptance runner. G0 deployment blocked."
+            exit 1
+          fi
+          status=$(curl --silent --show-error --max-time 20 --connect-timeout 8 \
+            -D /tmp/novapharm-private-headers -o /tmp/novapharm-private-index \
+            -w '%{http_code}' "$portal/" || true)
+          if ! [[ "$status" =~ ^(200|302|303|307|308)$ ]]; then
+            echo "::error::Private Medicines Terminal is not serving a valid HTTPS application response (HTTP $status)."
+            exit 1
+          fi
+          if ! tr -d '\r' </tmp/novapharm-private-headers | grep -qi '^x-robots-tag:.*noindex'; then
+            echo "::error::Private Medicines Terminal response does not declare X-Robots-Tag: noindex."
+            exit 1
+          fi
+          echo "Private HTTPS ingress responded with a protected noindex page (HTTP $status)."
+
+      - name: Reject unauthenticated live FDA and intelligence readiness requests
+        shell: bash
+        run: |
+          set -euo pipefail
+          origin="https://portal.novapharmhealthcare.com"
+          for route in \
+            '/gateway/v1/intelligence/regulatory/us/fda-labels?drug=apixaban' \
+            '/gateway/v1/intelligence/readiness'; do
+            status=$(curl --silent --show-error --max-time 20 --connect-timeout 8 \
+              -D /tmp/novapharm-private-api-headers -o /tmp/novapharm-private-api-response \
+              -w '%{http_code}' "$origin$route" || true)
+            if [ "$status" = "200" ]; then
+              echo "::error::Unauthenticated Intelligence API returned HTTP 200; potential exposure must be reviewed."
+              exit 1
+            fi
+            if ! [[ "$status" =~ ^(401|403)$ ]]; then
+              echo "::error::Intelligence API must return explicit HTTP 401 or 403 to an unauthenticated request; found HTTP $status. Production binding not accepted."
+              exit 1
+            fi
+            if ! tr -d '\r' </tmp/novapharm-private-api-headers | grep -qi '^cache-control:.*no-store'; then
+              echo "::error::Private intelligence API must set Cache-Control: no-store."
+              exit 1
+            fi
+          done
+          echo "Unauthenticated private API boundaries and no-store caching verified."
+
+      - name: Record scope of proof
+        run: |
+          echo "HTTPS + unauthenticated boundaries verified only."
+          echo "Production acceptance still requires a credentialed board session, tenant isolation, accepted real source data, NOVA model rights, forecast backtests, observability and rollback."
