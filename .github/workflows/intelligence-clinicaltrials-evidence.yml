@@ -1,22 +1,24 @@
 name: Governed clinical study evidence acceptance
 
-on:
+"on":
   push:
+    branches: [main]
     paths:
       - 'src/core/regulatory/clinicaltrials-studies.mjs'
       - 'scripts/test-clinicaltrials-studies.mjs'
       - 'server.mjs'
-      - 'apps/portal/app/gateway/[...path]/route.ts'
+      - 'apps/portal/app/gateway/**'
       - 'apps/portal/components/clinical-trials-discovery.tsx'
       - 'apps/portal/components/medicines-intelligence.tsx'
       - 'apps/portal/test/security.test.ts'
       - '.github/workflows/intelligence-clinicaltrials-evidence.yml'
+  workflow_dispatch:
   pull_request:
     paths:
       - 'src/core/regulatory/clinicaltrials-studies.mjs'
       - 'scripts/test-clinicaltrials-studies.mjs'
       - 'server.mjs'
-      - 'apps/portal/app/gateway/[...path]/route.ts'
+      - 'apps/portal/app/gateway/**'
       - 'apps/portal/components/clinical-trials-discovery.tsx'
       - 'apps/portal/components/medicines-intelligence.tsx'
       - 'apps/portal/test/security.test.ts'
