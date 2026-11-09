@@ -260,7 +260,7 @@ for (const [engineName, browserType] of engines) {
               assert.ok((await pubmed.getAttribute("href"))?.includes("term=apixaban"), "Search terms must be URL encoded for official providers");
               assert.equal(await pubmed.getAttribute("rel"), "noopener noreferrer", "External source links must be isolated");
               assert.equal(new URL(page.url()).pathname, "/technology/", "Research submission must remain on the NovaPharm page");
-              assert.equal(await page.locator('a[href="https://portal.novapharmhealthcare.com/"]').count(), 0, "Intelligence research must not link to the Nutraxin portal");
+              assert.equal(await page.locator('#intelligence-research a[href="https://portal.novapharmhealthcare.com/"]').count(), 0, "Intelligence research must not link to the Nutraxin portal");
               await assertLayout(page, `${engineName} ${viewport.name} research results`);
             }
 
