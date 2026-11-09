@@ -159,7 +159,9 @@ class PaymentContracts(unittest.TestCase):
         policy=json.dumps(resources["CheckoutRole"]["Properties"]["Policies"])
         self.assertIn("secretsmanager:GetSecretValue",policy)
         self.assertNotIn("secretsmanager:PutSecretValue",policy)
-        self.assertNotIn("dynamodb:PutItem",policy)
+        ledger_actions=resources["CheckoutRole"]["Properties"]["Policies"][0]["PolicyDocument"]["Statement"][2]["Action"]
+        self.assertEqual(set(ledger_actions),{"dynamodb:GetItem","dynamodb:PutItem","dynamodb:UpdateItem"})
+        self.assertNotIn("dynamodb:TransactWriteItems",policy)
 
 if __name__=="__main__":
     unittest.main()

@@ -21,7 +21,7 @@ from botocore.exceptions import ClientError
 REGION = os.environ.get("AWS_REGION", "eu-north-1")
 LEDGER = os.environ["PAYMENT_LEDGER_TABLE"]
 KEY_ID = os.environ["STRIPE_API_KEY_SECRET_ID"]
-SUCCESS_ORIGIN = "https://portal.novapharmhealthcare.com"
+SUCCESS_ORIGIN = "https://novapharmhealthcare.com"
 MAX_PENCE = 99_999_999
 ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{5,99}$")
 SESSION = re.compile(r"^cs_live_[A-Za-z0-9]+$")
@@ -148,8 +148,8 @@ def stripe_session(order, attempt):
         "shipping_address_collection[allowed_countries][0]": "GB",
         "phone_number_collection[enabled]": "true",
         "metadata[delivery_charge_minor]": "0",
-        "success_url": SUCCESS_ORIGIN + "/?checkout=return&session_id={CHECKOUT_SESSION_ID}&order_id=" + urllib.parse.quote(order["orderId"]),
-        "cancel_url": SUCCESS_ORIGIN + "/?checkout=cancelled",
+        "success_url": SUCCESS_ORIGIN + "/products/nutraxin/bag/?checkout=return&session_id={CHECKOUT_SESSION_ID}&order_id=" + urllib.parse.quote(order["orderId"]),
+        "cancel_url": SUCCESS_ORIGIN + "/products/nutraxin/bag/?checkout=cancelled",
         "automatic_tax[enabled]": "false",
         "metadata[order_id]": order["orderId"],
         "metadata[customer_id]": order["customerId"],

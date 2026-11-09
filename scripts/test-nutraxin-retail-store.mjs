@@ -18,16 +18,18 @@ test("public Nutraxin retail catalogue matches all governed 19 SKUs and canonica
   assert.equal(publicEntry.name,item.name);
   assert.ok(Number.isSafeInteger(publicEntry.retail_price_pence) && publicEntry.retail_price_pence > 0);
   assert.equal(publicEntry.available_to_sell,false);
+  assert.equal(publicEntry.ordering_enabled,true);
+  assert.equal(Math.round(publicEntry.retail_net_pence*1.2),publicEntry.retail_price_pence);
  }
- assert.equal(catalogue.checkout_enabled,false);
- assert.equal(catalogue.payment_collection_enabled,false);
- assert.equal(catalogue.price_authority,"owner_authorized_provisional_public_display");
+ assert.equal(catalogue.checkout_enabled,true);
+ assert.equal(catalogue.payment_collection_enabled,true);
+ assert.equal(catalogue.price_authority,"approved_consumer_retail");
  assert.equal(catalogue.price_includes_estimated_uk_vat,true);
  assert.equal(catalogue.vat_estimate_rate_percent,20);
  assert.equal(catalogue.delivery_verified,false);
  assert.equal(catalogue.provisional_uk_delivery_charge_pence,0);
  assert.equal(catalogue.provisional_uk_delivery_cost_seller_funded,true);
- assert.match(catalogue.source_record,/_v5$/);
+ assert.match(catalogue.source_record,/_v6$/);
 });
 test("public guide prices match all 19 owner-approved 48-tier references plus rounded 20% estimated UK VAT",()=>{
  const expected={
@@ -55,9 +57,9 @@ test("public guide prices match all 19 owner-approved 48-tier references plus ro
  for(const item of catalogue.products){
   assert.equal(item.retail_price_pence,expected[item.sku],item.sku);
  }
- assert.equal(catalogue.price_display_status,"indicative_not_binding");
- assert.equal(catalogue.checkout_enabled,false);
- assert.equal(catalogue.payment_collection_enabled,false);
+ assert.equal(catalogue.price_display_status,"owner_approved_uk_consumer_prices");
+ assert.equal(catalogue.checkout_enabled,true);
+ assert.equal(catalogue.payment_collection_enabled,true);
  assert.equal(catalogue.products.some(x=>x.available_to_sell),false);
 });
 
@@ -68,13 +70,13 @@ test("tampered, repeated and out-of-range Bag entries are ignored",()=>{
  assert.deepEqual(safeBasket(null,catalogue.products),[]);
  assert.equal(MAX_PER_SKU,10000);
 });
-test("owner-authorized indicative price displays while payment authority remains off",()=>{
+test("owner-authorized chargeable price displays only under approved retail policy",()=>{
  const item=catalogue.products[0];
  assert.equal(publicPrice(item,catalogue),1547);
  assert.equal(publicPrice({...item,retail_price_pence:999},catalogue),999);
  assert.equal(publicPrice(item,{...catalogue,price_authority:"not_yet_verified_for_consumer_sale"}),null);
- assert.equal(publicPrice(item,{...catalogue,checkout_enabled:true}),null);
- assert.equal(publicPrice(item,{...catalogue,price_includes_estimated_uk_vat:false}),null);
+ assert.equal(publicPrice(item,{...catalogue,payment_collection_enabled:false}),null);
+ assert.equal(publicPrice(item,{...catalogue,price_authority:"owner_authorized_provisional_public_display",checkout_enabled:true}),null);
  const approved={...catalogue,price_authority:"approved_consumer_retail"};
  assert.equal(publicPrice({...item,retail_price_pence:999},approved),999);
  assert.equal(publicPrice({...item,retail_price_pence:-2},approved),null);
@@ -85,22 +87,56 @@ test("owner-authorized indicative price displays while payment authority remains
  assert.match(storefront,/data.payment_collection_enabled === true/);
 });
 test("when approved, the Bag subtotal is correctly calculated in integer pence",()=>{
- const products=catalogue.products.map((p,i)=>({...p,retail_price_pence:i===0?1234:i===1?2299:null}));
+ const products=catalogue.products.map((p,i)=>({...p,retail_price_pence:i===0?1234:i===1?2299:null,retail_net_pence:i===0?1028:i===1?1916:null}));
  const approved={...catalogue,price_authority:"approved_consumer_retail",products};
- assert.equal(basketSubtotal([{sku:products[0].sku,quantity:2},{sku:products[1].sku,quantity:1}],approved),4767);
+ assert.equal(basketSubtotal([{sku:products[0].sku,quantity:2},{sku:products[1].sku,quantity:1}],approved),4766);
  assert.equal(basketSubtotal([{sku:products[2].sku,quantity:1}],approved),null);
  assert.equal(basketSubtotal([{sku:"NOT_REAL",quantity:1}],approved),null);
 });
-test("the review page has no payment-ready claim before authorisation",()=>{
+test("the review page uses the Products-only API and never the customer portal",()=>{
  const html=readFileSync("products/nutraxin/bag/index.html","utf8");
  assert.match(html,/data-nx-public-bag/);
  assert.match(html,/data-nx-checkout disabled/);
  assert.match(html,/data-nx-consumer-terms/);
+ assert.match(html,/class="nx-purchase-progress"/);
+ assert.match(html,/aria-current="step"/);
+ assert.match(html,/Your Bag/);
+ assert.match(html,/Guest checkout available/);
+ assert.match(html,/Verified customer account creation and saved order history are not yet enabled/);
+ const styles=readFileSync("assets/css/nutraxin-retail-store.css","utf8");
+ assert.match(styles,/nx-checkout-identity/);
  const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
- assert.match(js,/credentials: "include"/);
+ assert.match(js,/Continue as guest/);
+ assert.match(js,/credentials: "omit"/);
+ assert.equal(js.includes("PORTAL_ORIGIN"), false, "Nutraxin checkout must not use a portal destination constant");
+ assert.ok(js.includes('CHECKOUT_API_ORIGIN + "/checkout"'), "Checkout uses the dedicated Products API");
+ const stripeReturnHandler=js.split('const returnedOrder = query.get("order_id");')[1]?.split('// Products-site readiness')[0];
+ assert.ok(stripeReturnHandler,"Checkout return handler exists");
+ assert.equal(stripeReturnHandler.includes("explanation.textContent"),false,"Stripe return must update UI through render, not stale scoped variables");
+ assert.equal(stripeReturnHandler.includes("checkout.disabled"),false,"Stripe return cannot access a checkout button outside its scope");
+ assert.ok(stripeReturnHandler.includes("confirmedOrder = returnedOrder"),"Paid webhook state persists during render");
+ assert.ok(stripeReturnHandler.includes("awaitingOrder = returnedOrder"),"Pending payment is not exposed as a fresh checkout");
+ assert.match(js,/\/checkout/);
  assert.match(js,/v?.checkout_ready === true/);
  assert.match(js,/result.checkoutUrl/);
  assert.match(js,/accept_terms:true/);
- assert.match(html,/No payment will be taken/);
+ assert.match(html,/data-nx-public-bag/);
  assert.doesNotMatch(html,/\bsk_live_|\bwhsec_/);
+});
+
+test("production Stripe IAM allows underlying transactional PutItem and UpdateItem on exact tables",()=>{
+ const checkout=JSON.parse(readFileSync("infra/aws/nutraxin-approved-checkout-production.json","utf8"));
+ const webhook=JSON.parse(readFileSync("infra/aws/nutraxin-stripe-webhook-production.json","utf8"));
+ const checkoutPolicy=checkout.Resources.CheckoutRole.Properties.Policies[0].PolicyDocument.Statement;
+ const ledgerGrant=checkoutPolicy.find(s=>Array.isArray(s.Action)&&s.Action.includes("dynamodb:PutItem"));
+ assert.deepEqual(ledgerGrant.Action,["dynamodb:GetItem","dynamodb:PutItem","dynamodb:UpdateItem"]);
+ assert.match(JSON.stringify(ledgerGrant.Resource),/novapharm-production-nutraxin-payment-ledger/);
+ const webhookPolicy=webhook.Resources.WebhookRole.Properties.Policies[0].PolicyDocument.Statement;
+ const ledgerWebhookGrant=webhookPolicy.find(s=>Array.isArray(s.Action)&&s.Action.includes("dynamodb:UpdateItem"));
+ const outboxWebhookGrant=webhookPolicy.find(s=>Array.isArray(s.Action)&&s.Action.length===1&&s.Action[0]==="dynamodb:PutItem");
+ assert.deepEqual(ledgerWebhookGrant.Action,["dynamodb:GetItem","dynamodb:PutItem","dynamodb:UpdateItem"]);
+ assert.match(JSON.stringify(ledgerWebhookGrant.Resource),/novapharm-production-nutraxin-payment-ledger/);
+ assert.match(JSON.stringify(outboxWebhookGrant.Resource),/novapharm-production-nutraxin-payment-outbox/);
+ assert.equal(JSON.stringify(checkoutPolicy).includes("dynamodb:TransactWriteItems"),false);
+ assert.equal(JSON.stringify(webhookPolicy).includes("dynamodb:TransactWriteItems"),false);
 });
