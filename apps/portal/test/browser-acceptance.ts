@@ -527,6 +527,46 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
       }
       await inspectLayout(page, `${engine} medicines-intelligence ${subview}`);
     }
+    await page.route("**/gateway/v1/intelligence/regulatory/us/fda-labels**", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          query: "apixaban",
+          sourceId: "us.fda.openfda-labels",
+          publisher: "US Food and Drug Administration",
+          jurisdiction: "United States",
+          retrievedAt: "2026-11-09T09:00:00Z",
+          recordType: "published-drug-label",
+          dataState: "public_source_observations",
+          records: [{
+            recordId: "example-source-record",
+            setId: "example-source-set",
+            effectiveDate: "20261015",
+            genericNames: ["Apixaban"],
+            brandNames: ["Example label brand"],
+            applicationNumbers: ["NDA012345"],
+            productTypes: ["HUMAN PRESCRIPTION DRUG"],
+          }],
+          truncated: false,
+          limitations: ["A source label record is not proof of marketing approval."],
+        }),
+      });
+    });
+    const regulatoryResponse = await page.goto(
+      portalOrigin + "/portal/executive-platform/medicines-intelligence/regulatory-intelligence/",
+      { waitUntil: "domcontentloaded" },
+    );
+    assert.equal(regulatoryResponse?.status(), 200, engine + ": Regulatory Intelligence route did not resolve");
+    await page.getByRole("heading", { name: "Official drug-label records." }).waitFor();
+    await page.getByLabel("Generic medicine name").fill("apixaban");
+    await page.getByRole("button", { name: "Search FDA labels" }).click();
+    await page.getByRole("heading", { name: "Observed source records" }).waitFor();
+    await page.getByText("Example label brand", { exact: true }).waitFor();
+    await page.getByText("A source label record is not proof of marketing approval.", { exact: true }).waitFor();
+    await inspectLayout(page, engine + " medicines-intelligence us-regulatory-labels");
+    await page.unroute("**/gateway/v1/intelligence/regulatory/us/fda-labels**");
+
     const rejectedSubview = await page.goto(`${portalOrigin}/portal/executive-platform/medicines-intelligence/unapproved-view/`, { waitUntil: "domcontentloaded" });
     assert.equal(rejectedSubview?.status(), 404, `${engine}: unapproved Medicines Intelligence child route did not fail closed`);
 
