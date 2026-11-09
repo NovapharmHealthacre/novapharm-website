@@ -95,6 +95,15 @@ function initialiseAnalytics() {
       script.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(id);
       document.head.append(script);
       started = true;
+    } else {
+      // A visitor can withdraw consent and subsequently grant it again.
+      // Re-enable analytics storage only on that new affirmative choice.
+      window.gtag("consent", "update", {
+        analytics_storage: "granted",
+        ad_storage: "denied",
+        ad_user_data: "denied",
+        ad_personalization: "denied"
+      });
     }
     send("page_view", { page_title: document.title });
     if (/^\/products\/nutraxin\/(?!bag\/|order-request\/)[a-z0-9-]+\/$/.test(location.pathname)) {
