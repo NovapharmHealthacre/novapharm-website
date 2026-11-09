@@ -15,6 +15,7 @@ export function publicAnalyticsRoute(pathname) {
 
 export function analyticsBrand(pathname) {
   if (String(pathname).startsWith("/products/nutraxin/")) return "nutraxin";
+  if (String(pathname).startsWith("/products/esco/")) return "esco";
   if (String(pathname).startsWith("/technology/")) return "intelligence";
   return "healthcare";
 }
