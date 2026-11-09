@@ -83,3 +83,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "fix(evidence): reconcile governed image inventory after release changes"
           git push origin HEAD:refs/heads/feat/nutraxin-consumer-account-products-20261109
+
+# isolated-nutraxin-inventory-run: final candidate after identity wiring
