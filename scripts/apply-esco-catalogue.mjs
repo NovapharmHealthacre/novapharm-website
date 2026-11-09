@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 const root = resolve(process.cwd());
 const data = JSON.parse(readFileSync('assets/data/esco-catalogue.json', 'utf8'));
+const imageManifest = JSON.parse(readFileSync('assets/data/esco-model-photo-map.json', 'utf8'));
 const read = (file) => readFileSync(file, 'utf8');
 const write = (file, body) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, body); };
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -13,6 +14,18 @@ if (new Set(entries.map((p) => p.id)).size !== entries.length) throw Error('Dupl
 for (const item of entries) {
   if (!item.name || !item.subcategory || !Number.isInteger(item.sourceIndexPage)) throw Error('Unresolved ESCO catalogue row');
   if (item.priceGbp !== null || item.sellable !== false) throw Error('Unverified ESCO item must not have public prices or sellable flag');
+}
+const productPicture = (p, category) => {
+  const img = imageManifest.images[p.id];
+  if (img && img.model === p.model && /^\\/assets\\/media\\/esco\\/esco-p\\d{2}-image\\d{2}\\.webp$/.test(img.path)) {
+    return `<img class="esco-product-image" src="${esc(img.path)}" width="480" height="480" loading="lazy" decoding="async" alt="ESCO catalogue photograph labelled ${esc(p.model)} for ${esc(p.name)}"><span class="esco-product-art-caption">Model-matched ESCO catalogue photo · supplied variant may differ</span>`;
+  }
+  return `${productPicture(p, category)}`;
+};
+if (imageManifest.mappedImagesCount !== 61 || Object.keys(imageManifest.images).length !== 61) throw Error('ESCO source photo manifest count mismatch');
+for (const [id, image] of Object.entries(imageManifest.images)) {
+  const item = entries.find((p) => p.id === id);
+  if (!item || !item.model || item.model !== image.model) throw Error('ESCO image-to-model identity unresolved: ' + id);
 }
 const contact = (item) => '/contact/?enquiry=Distribution%20partnership&quote=' + encodeURIComponent('ESCO Anand UK quotation request (catalogue 2026). Items: ' + item.id + ' qty 1. Please confirm variant, UK compliance, total delivered price and lead time.');
 const sections = data.categories.map((category, i) => {
