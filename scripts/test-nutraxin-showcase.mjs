@@ -48,8 +48,11 @@ assert.ok(corporateRenderer.includes('ranges.map((range, rangeIndex)'),"Next.js 
 assert.ok(corporateLayout.includes('import "../../../assets/css/nutraxin-lineup.css";'),"Next.js build must import the shared scoped styles");
 assert.ok(css.includes("@media(max-width:600px)"),"Mobile display rules required");
 assert.ok(css.includes("prefers-reduced-motion:reduce"),"Respect reduced-motion user preference");
-assert.ok(master.includes("No payment is taken while checkout is unavailable"),"Checkout must remain fail-closed until approved");
-assert.ok(master.includes('href="/products/nutraxin/bag/">View Bag'),"The collection links to its public Bag");
+const checkoutRuntime = read("assets/js/nutraxin-retail-store.js");
+assert.ok(checkoutRuntime.includes("checkout.disabled = !ready"), "Checkout must remain disabled unless the verified AWS readiness gates pass");
+assert.ok(checkoutRuntime.includes("v?.checkout_ready === true && v?.payment_collection_active === true"), "Checkout must require server-confirmed active payment collection");
+assert.ok(master.includes("The final customer total is calculated by NovaPharm"), "The storefront must describe server-authorised totals");
+assert.ok(!master.includes("https://portal.novapharmhealthcare.com/"),"The Products shopping journey must never redirect customers to the business portal");
 assert.ok(!/<button\b|<form\b|\bAdd to basket\b|\bBuy now\b|\bIn stock\b|\b£\d+/i.test(master),"Do not fake a commercial storefront");
 assert.ok(!/lucide|<svg\b|<i\b|emoji/gi.test(master),"Use typography rather than generic UI icons");
 const slugs = [...master.matchAll(/data-nx-product-slug="([^"]+)"/g)].map(m=>m[1]);
