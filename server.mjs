@@ -53,6 +53,7 @@ import {
 } from "./src/core/enterprise-domain-service.mjs";
 import { medicineIdentityDetail, nearbyHealthcareOrganisations, queryMedicineAnalytics, searchMedicines } from "./src/core/medicines-intelligence-service.mjs";
 import { intelligenceReleaseReadiness } from "./src/core/intelligence-release-readiness.mjs";
+import { searchOpenFdaLabels } from "./src/core/regulatory/openfda-labels.mjs";
 import {
   changePassword,
   consumeRateLimit,
@@ -966,6 +967,14 @@ export async function handleRequest(request, response) {
       const session = await authenticated(request, response);
       if (!session) return;
       json(response, 200, await enterpriseModuleSnapshot(enterpriseModuleMatch[1], enterpriseContext(session)));
+      return;
+    }
+
+    if (pathname === "/api/v1/intelligence/regulatory/us/fda-labels" && request.method === "GET") {
+      if (!await rateLimit(request, "openfda-label-discovery", 10, 60 * 1000)) return json(response, 429, { error: "Too many FDA source queries. Try again shortly." });
+      const session = await scopedAuthentication(request, response, ["board"]);
+      if (!session) return;
+      json(response, 200, await searchOpenFdaLabels(url.searchParams.get("drug") || "", enterpriseContext(session)));
       return;
     }
 

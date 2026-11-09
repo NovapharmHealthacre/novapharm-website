@@ -60,7 +60,8 @@ try {
     "/api/v1/intelligence/medicines/medicine-0123456789abcdef0123456789abcdef",
     "/api/v1/intelligence/markets/observations?dataset=epd",
     "/api/v1/intelligence/geographies/nearby?postcode=SW1A%202AA",
-    "/api/v1/intelligence/readiness"
+    "/api/v1/intelligence/readiness",
+    "/api/v1/intelligence/regulatory/us/fda-labels?drug=apixaban"
   ]) {
     const response = await invoke(route);
     assert.equal(response.statusCode, 401, route + " must reject anonymous requests");
