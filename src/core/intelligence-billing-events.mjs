@@ -22,13 +22,15 @@ function validInternalIdentity(value) {
  * A signed webhook is not an entitlement grant. A caller must obtain mapping
  * from an independently authenticated durable billing ledger, not from the
  * payload's metadata, email, public pricing card or customer-submitted JSON.
+ * Also compare that subscription mapping against the independently verified
+ * customer-ownership ledger. A signed Stripe event cannot identify a tenant.
  *
  * Returns a redacted, immutable event for a future atomic idempotent queue.
  * No live endpoint, payment creation, ledger write, access grant or customer
  * account mutation occurs in this module.
  */
 export function verifyIntelligenceBillingEvent({
-  rawBody, signatureHeader, webhookSecret, expectedLiveMode, trustedMapping, nowMs = Date.now(),
+  rawBody, signatureHeader, webhookSecret, expectedLiveMode, trustedMapping, trustedOwner, nowMs = Date.now(),
 } = {}) {
   if (typeof expectedLiveMode !== "boolean") throw reject("billing_mode_not_approved");
   const event = verifyStripeWebhook({ rawBody, signatureHeader, webhookSecret, nowMs });
@@ -57,7 +59,13 @@ export function verifyIntelligenceBillingEvent({
       !validInternalIdentity(trustedMapping.tenantId) ||
       !validInternalIdentity(trustedMapping.subject) ||
       trustedMapping.stripeCustomerId !== stripeCustomerId ||
-      trustedMapping.stripeSubscriptionId !== stripeSubscriptionId) {
+      trustedMapping.stripeSubscriptionId !== stripeSubscriptionId ||
+      trustedOwner?.verifiedServerSide !== true ||
+      !validInternalIdentity(trustedOwner.tenantId) ||
+      !validInternalIdentity(trustedOwner.subject) ||
+      trustedOwner.tenantId !== trustedMapping.tenantId ||
+      trustedOwner.subject !== trustedMapping.subject ||
+      trustedOwner.stripeCustomerId !== stripeCustomerId) {
     throw reject("billing_tenant_mapping_unverified");
   }
 
