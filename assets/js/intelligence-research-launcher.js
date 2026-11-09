@@ -35,6 +35,18 @@
   const allowedMarkets = new Set(["GB", "US", "EU", "IN", "CA", "AU", "ALL"]);
   const allowedFocuses = new Set(["identity", "evidence", "regulatory", "trials", "market"]);
 
+  // A changed query or selection invalidates previously prepared source links.
+  // This also covers native form validation blocking a subsequent submit event.
+  for (const field of [queryInput, marketInput, focusInput]) {
+    for (const eventName of ["input", "change"]) {
+      field.addEventListener(eventName, () => {
+        results.hidden = true;
+        list.replaceChildren();
+        status.textContent = "Selection changed. Choose Find official sources to update results.";
+      });
+    }
+  }
+
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const medicine = String(queryInput.value || "").normalize("NFKC").trim().replace(/\s+/g, " ");
