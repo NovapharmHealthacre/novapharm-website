@@ -8,7 +8,8 @@ test("all 373 ESCO references have a merchant review record with no invented cle
   assert.equal(new Set(rows.map(x => x.catalogue_id)).size, 373);
   assert.equal(new Set(rows.map(x => x.category)).size, 12);
   assert.ok(rows.every(x => x.customer_order_request_available === "YES"));
-  assert.ok(rows.every(x => x.immediate_live_card_checkout_approved === "NO"));
+  assert.ok(rows.every(x => x.current_live_checkout_status === "VERIFY_AGAINST_PROTECTED_SSM_POLICY"));
+  assert.ok(rows.every(x => x.additional_live_card_checkout_approved_by_this_matrix === "NO"));
   assert.ok(rows.every(x => x.checkout_status === "AWAITING_INDIVIDUAL_APPROVAL"));
   assert.ok(rows.every(x => !x.approved_stripe_tax_code && !x.merchant_release_approval));
   assert.ok(rows.every(x => !x.warehouse_allocatable_units && !x.resolved_saleable_variant));
