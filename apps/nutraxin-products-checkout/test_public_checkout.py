@@ -35,6 +35,7 @@ class FakeSSM:
         return {"Parameter":{"Value":json.dumps({
             "status":"owner_approved_provisional_for_authenticated_quotation_only",
             "binding_checkout_enabled":False,
+            "owner_retail_sale_authorised":True,
             "model_assumptions":{
                 "uk_delivery_charge_pence":0,
                 "uk_delivery_cost_borne_by_seller":True
