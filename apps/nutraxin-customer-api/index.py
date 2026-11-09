@@ -614,14 +614,18 @@ def retail_checkout(event, customer):
         unit = price_by_sku[sku]
         if unit <= 0 or unit > 99999999:
             return error(503, "invalid_seller_price")
-        previous_gross = gross
+        # The displayed public price is rounded per unit, VAT included.
+        # Apply exactly that unit price to each quantity. Rounding only the
+        # basket aggregate can disagree with the customer's Bag by pennies.
+        unit_gross = unit + illustrative_uk_vat_pence(unit)
+        line_gross = unit_gross * quantity
         net += unit * quantity
-        gross = (net * 120 + 50) // 100
+        gross += line_gross
         if gross > 99999999:
             return error(422, "basket_exceeds_stripe_payment_limit")
         ordered.append({"sku": sku, "quantity": quantity,
                         "name": PRODUCTS[sku][0] + " (UK VAT included)",
-                        "grossMinor": gross - previous_gross})
+                        "grossMinor": line_gross})
     tax = gross - net
     if tax < 0 or gross != net + tax:
         return error(503, "failed_total_reconciliation")
