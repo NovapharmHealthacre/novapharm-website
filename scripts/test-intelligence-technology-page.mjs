@@ -179,7 +179,7 @@ assert.ok(contactIntake.includes('!intent.has("basket") && !intent.has("quote") 
 assert.ok(contactIntake.includes("non-binding business enquiry"), "Intelligence tier must remain an enquiry, not a chargeable order");
 assert.ok(!contactIntake.includes("window.open"), "Plan intake must never silently open new windows");
 
-assert.ok(!/XMLHttpRequest|sendBeacon|localStorage|sessionStorage|document\\.cookie|innerHTML|fetch\\(/.test(pricingScript), "Plan selector must not store or transmit prospect data");
+assert.ok(!/XMLHttpRequest|sendBeacon|localStorage|sessionStorage|document[.]cookie|innerHTML|fetch[(]/.test(pricingScript), "Plan selector must not store or transmit prospect data");
 const priceElement = () => ({ textContent: "" });
 function pricedCard(monthly, annual) {
   const elements = {
