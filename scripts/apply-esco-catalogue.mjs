@@ -81,6 +81,10 @@ esco = esco.replace(/<meta name="description" content="[^"]*">/, '<meta name="de
 esco = esco.replace(/<link rel="canonical" href="[^"]*">/, '<link rel="canonical" href="https://novapharmhealthcare.com/products/esco/">');
 esco = esco.replace(/<meta property="og:url" content="[^"]*">/, '<meta property="og:url" content="https://novapharmhealthcare.com/products/esco/">');
 esco = esco.replace(/<meta property="og:title" content="[^"]*">/, '<meta property="og:title" content="ESCO Anand | Healthcare Product Catalogue | NovaPharm">');
+esco = esco.replace(/<meta property="og:description" content="[^"]*">/, '<meta property="og:description" content="Explore 373 ESCO Anand hospital, surgical and laboratory catalogue references for UK procurement enquiries. Specifications and availability are confirmed individually.">');
+esco = esco.replace(/<meta name="twitter:title" content="[^"]*">/, '<meta name="twitter:title" content="ESCO Anand | Healthcare Product Catalogue | NovaPharm">');
+esco = esco.replace(/<meta name="twitter:description" content="[^"]*">/, '<meta name="twitter:description" content="373 ESCO Anand catalogue references across twelve healthcare ranges. Enquire with NovaPharm for model-specific UK procurement details.">');
+esco = esco.replace(/<link rel="alternate" hreflang="(en-GB|x-default)" href="[^"]*">/g, (_, lang) => `<link rel="alternate" hreflang="${lang}" href="https://novapharmhealthcare.com/products/esco/">`);
 esco = esco.replace('</head>', '<link rel="stylesheet" href="/assets/css/esco-catalogue.css">\n</head>');
 esco = esco.replace('</body>', '<script type="module" src="/assets/js/esco-catalogue.js"></script>\n</body>');
 // The template starts as /products/. Remove its inherited Products WebPage
