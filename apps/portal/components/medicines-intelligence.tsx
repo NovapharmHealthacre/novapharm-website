@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, type ReactNode, useId, useState } from "react";
+import { type FormEvent, type ReactNode, useEffect, useId, useRef, useState } from "react";
 import { intelligenceWorkspaceBySlug, intelligenceWorkspaceCatalogue, intelligenceWorkspaceGroups } from "../data/intelligence-workspaces";
 import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError } from "../lib/gateway";
@@ -548,6 +548,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     ? [...navigationGroups, { label: "Additional governed tools", items: [[current, legacyTitle, `${baseRoute}${current}/`] as const] }]
     : navigationGroups;
   const searchId = useId();
+  const searchFieldRef = useRef<HTMLInputElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [searchResponse, setSearchResponse] = useState<SearchResponse | null>(null);
@@ -557,6 +558,20 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   const [searchStatus, setSearchStatus] = useState("");
   const [analyticsStatus, setAnalyticsStatus] = useState("");
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    function handleSearchShortcut(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        searchFieldRef.current?.focus();
+      }
+      if (event.key === "Escape" && document.activeElement === searchFieldRef.current) {
+        setSearchResponse(null);
+      }
+    }
+    window.addEventListener("keydown", handleSearchShortcut);
+    return () => window.removeEventListener("keydown", handleSearchShortcut);
+  }, []);
 
   function changeFilter(key: keyof AnalyticsFilters, value: string) {
     setFilters((currentFilters) => {
@@ -662,7 +677,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     <section className={styles.product}>
       <header className={`${styles.topbar} medicine-search-workspace`}>
         <button className={styles.mobileMenu} type="button" onClick={() => setMenuOpen(true)}>Navigation</button>
-        <search className={styles.search}><form onSubmit={searchMedicine}><label className={styles.srOnly} htmlFor={searchId}>Medicine name, brand or code</label><input id={searchId} name="medicine" type="search" minLength={2} maxLength={120} autoComplete="off" spellCheck={false} placeholder="Search medicine, BNF, SNOMED, dm+d, brand or supplier" required /><button type="submit" disabled={busy}>Search</button></form>
+        <search className={styles.search}><form onSubmit={searchMedicine}><label className={styles.srOnly} htmlFor={searchId}>Medicine name, brand or code</label><input ref={searchFieldRef} id={searchId} aria-keyshortcuts="Meta+K Control+K" title="Search medicines (⌘K / Ctrl+K)" name="medicine" type="search" minLength={2} maxLength={120} autoComplete="off" spellCheck={false} placeholder="Search medicine, BNF, SNOMED, dm+d, brand or supplier" required /><button type="submit" disabled={busy}>Search</button></form>
           {searchResponse ? <section className={`${styles.searchResults} medicine-search-results`} aria-label="Medicine search results"><header><h2>Current identity matches</h2><p>{searchResponse.source}{searchResponse.sourcePeriod ? `, ${searchResponse.sourcePeriod}` : ""}</p></header>{searchResponse.results.length ? <ul>{searchResponse.results.map((result) => <li key={result.medicineId}><button type="button" onClick={() => void selectMedicine(result.medicineId)} disabled={busy}><strong>{result.canonicalName}</strong><span>{result.presentationCode || "BNF presentation code not recorded"}{result.chemicalSubstance ? ` | ${result.chemicalSubstance}` : ""}</span></button></li>)}</ul> : <p>No current BNF identity matched. Try a generic, brand, product or BNF code.</p>}</section> : null}
         </search>
         <div className={styles.topActions}><span>Latest accepted period</span><button type="button" onClick={() => setFiltersOpen(true)}>Filters</button><button className="icon-command" type="button" onClick={() => void onRefresh()} disabled={loading}>Refresh</button><button type="button" aria-label="Sign out" onClick={() => void onLogout()}>Sign out</button></div>
