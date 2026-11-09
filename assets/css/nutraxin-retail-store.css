@@ -44,5 +44,23 @@
 .nx-store-toast{position:fixed;z-index:1000;right:22px;bottom:22px;max-width:310px;padding:16px 22px;border-radius:15px;background:#1d1d1f;color:#fff;box-shadow:0 10px 28px rgba(0,0,0,.18);font-size:14px}
 .nx-shop-bag .nx-shop-link{color:#0066cc;text-decoration:none}
 .nx-shop-bag .nx-shop-link:hover{text-decoration:underline}.nx-store-consumer-terms{display:flex;gap:11px;align-items:flex-start;font-size:12px;line-height:1.55;color:#515154;margin-top:20px}.nx-store-consumer-terms input{accent-color:#0071e3;width:19px;height:19px;flex:none;margin:0}.nx-store-consumer-terms a{color:#0066cc}
+/* Unified Nutraxin checkout journey: typography and spacing follow the corporate design system. */
+.nx-purchase-progress{margin:0 0 34px;padding:0 0 23px;border-bottom:1px solid #e7e7ed}
+.nx-purchase-progress ol{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;list-style:none;margin:0;padding:0}
+.nx-purchase-progress li{display:flex;align-items:center;gap:12px;min-width:0;color:#86868b;font-size:13px}
+.nx-purchase-progress li span{display:grid;place-items:center;width:35px;height:35px;flex:0 0 35px;border:1px solid #d2d2d7;border-radius:50%;font-size:11px;font-weight:650;letter-spacing:.03em}
+.nx-purchase-progress li strong{font-weight:550;letter-spacing:-.01em}
+.nx-purchase-progress li.is-current{color:#1d1d1f}
+.nx-purchase-progress li.is-current span{background:#1d1d1f;color:#fff;border-color:#1d1d1f}
+.nx-checkout-identity{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(220px,.7fr);align-items:center;gap:30px;background:#f5f5f7;border-radius:24px;padding:29px 34px;margin-bottom:42px}
+.nx-checkout-identity h2{font-size:clamp(22px,3vw,32px);line-height:1.18;letter-spacing:-.035em;margin:7px 0 11px;font-weight:650}
+.nx-checkout-identity p:not(.nx-shop-eyebrow){font-size:14px;color:#6e6e73;line-height:1.65;margin:0;max-width:560px}
+.nx-checkout-identity .nx-shop-eyebrow{margin:0}
+.nx-checkout-identity-meta{border-left:1px solid #d2d2d7;padding-left:24px;display:flex;flex-direction:column;gap:7px}
+.nx-checkout-identity-meta strong{font-size:15px;font-weight:650;color:#1d1d1f}
+.nx-checkout-identity-meta span{font-size:12px;color:#6e6e73;line-height:1.55}
+@media(max-width:760px){.nx-purchase-progress{margin-bottom:25px}.nx-purchase-progress ol{gap:8px}.nx-purchase-progress li{flex-direction:column;align-items:flex-start;gap:7px;font-size:11px}.nx-purchase-progress li span{width:29px;height:29px;flex-basis:29px}.nx-checkout-identity{grid-template-columns:1fr;gap:16px;padding:23px;margin-bottom:25px}.nx-checkout-identity-meta{border-left:0;border-top:1px solid #d2d2d7;padding-left:0;padding-top:15px}}
+@media(max-width:380px){.nx-purchase-progress li{font-size:10px;word-break:normal}.nx-purchase-progress ol{gap:5px}}
+
 @media(max-width:760px){.nx-bag-grid{grid-template-columns:1fr;gap:20px}.nx-shop-bag{padding:46px 20px 70px}.nx-bag-summary{padding:22px}.nx-store-topbar{padding:10px 18px}.nx-store-card-footer{padding:13px}.nx-store-panel{margin-top:20px}.nx-store-toast{left:20px;right:20px;bottom:18px;max-width:none}}
 @media(prefers-reduced-motion:reduce){.nx-store-add,.nx-store-bag-button{transition:none}}
