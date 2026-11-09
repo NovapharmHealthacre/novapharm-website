@@ -930,7 +930,7 @@ body[data-page="technology"] .np-intelligence {
 .np-intelligence .npi-pricing-intro .npi-kicker { color: #9c261c; } /* Minimum AA contrast on #f5f5f7 */
 .np-intelligence .npi-pricing { background: #f5f5f7; }
 .np-intelligence .npi-pricing-intro { max-width: 840px; margin: 0 auto 48px; text-align: center; }
-.np-intelligence .npi-pricing-intro h2 { font-size: clamp(2.8rem, 5.4vw, 5.35rem); line-height: 1.07; letter-spacing: -.046em; font-weight: 680; }
+.np-intelligence .npi-pricing-intro h2 { font-size: clamp(2.8rem, 5.4vw, 5.35rem); line-height: 1.07; letter-spacing:0; font-weight: 680; }
 .np-intelligence .npi-pricing-intro > p:not(.npi-kicker) { color: #515157; font-size: clamp(1rem, 1.7vw, 1.19rem); line-height: 1.55; margin: 17px auto 0; max-width: 660px; }
 .np-intelligence .npi-pricing-intro .npi-pricing-release { background: #fff; border: 1px solid #dedee2; border-radius: 11px; color: #424247; font-size: .91rem; padding: 15px 20px; max-width: 810px; }
 .np-intelligence .npi-pricing-release strong { color: #1d1d1f; }
@@ -943,11 +943,11 @@ body[data-page="technology"] .np-intelligence {
 .np-intelligence .npi-plan { display: flex; flex-direction: column; min-width: 0; border: 1px solid #dedee1; border-radius: 22px; padding: clamp(24px,2.8vw,36px); background: #fff; box-shadow: 0 12px 28px #1b1b2510; }
 .np-intelligence .npi-plan-featured { border: 1.5px solid #007aff; box-shadow: 0 14px 35px #007aff1b; background: linear-gradient(165deg,#fafdff 0%,#f0f5ff 48%,#fff 100%); }
 .np-intelligence .npi-plan-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; }
-.np-intelligence .npi-plan-heading h3 { color: #1d1d1f; font-size: clamp(1.65rem, 2.1vw, 2.15rem); letter-spacing: -.027em; font-weight: 680; }
+.np-intelligence .npi-plan-heading h3 { color: #1d1d1f; font-size: clamp(1.65rem, 2.1vw, 2.15rem); letter-spacing:0; font-weight: 680; }
 .np-intelligence .npi-plan-tag { display: inline-flex; font-size: .69rem; font-weight: 700; color: #075da8; border-radius: 999px; background: #dceafe; padding: 6px 10px; }
 .np-intelligence .npi-plan-description { min-height: 82px; margin-top: 12px; color: #5b5b62; font-size: .96rem; line-height: 1.52; }
 .np-intelligence .npi-plan-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; margin-top: 30px; color: #1d1d1f; }
-.np-intelligence .npi-plan-price strong { font-size: clamp(2rem, 3vw, 2.9rem); line-height: 1.15; font-weight: 690; letter-spacing: -.035em; }
+.np-intelligence .npi-plan-price strong { font-size: clamp(2rem, 3vw, 2.9rem); line-height: 1.15; font-weight: 690; letter-spacing:0; }
 .np-intelligence .npi-plan-price span { font-size: .89rem; color: #61616a; }
 .np-intelligence .npi-plan-custom strong { font-size: clamp(1.85rem,2.6vw,2.45rem); }
 .np-intelligence .npi-plan-billing { min-height: 43px; color: #61616a; font-size: .81rem; line-height: 1.4; margin: 10px 0 0; }
