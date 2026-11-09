@@ -25,6 +25,7 @@ test("ESCO has a 12-item quotation list with contact-form prefill but no payment
   const builder=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
   const interaction=readFileSync("assets/js/esco-catalogue.js","utf8");
   const contact=readFileSync("assets/js/novapharm.js","utf8");
+  const productionContact=readFileSync("assets/js/contact-production.js","utf8");
   const fallback=readFileSync("assets/js/contact-email-draft.js","utf8");
   assert.match(builder,/data-esco-add/);
   assert.match(builder,/data-esco-quote-items/);
@@ -32,6 +33,8 @@ test("ESCO has a 12-item quotation list with contact-form prefill but no payment
   assert.match(interaction,/const MAX_ITEMS = 12/);
   assert.match(interaction,/quote=/);
   assert.match(contact,/quoteMessage.*startsWith/);
+  assert.match(productionContact,/rawEscoQuote/);
+  assert.match(productionContact,/items.length <= 12/);
   assert.match(fallback,/quoteMessage.*startsWith/);
   assert.doesNotMatch(builder,/payment_collection_enabled|buy now|checkoutEnabled: true/);
 });
