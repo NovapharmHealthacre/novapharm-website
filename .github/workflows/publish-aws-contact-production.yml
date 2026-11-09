@@ -13,6 +13,12 @@ on:
       - 'assets/data/nutraxin-retail-catalogue.json'
       - 'scripts/apply-corporate-product-discipline.mjs'
       - 'scripts/stage-pages-artifact.mjs'
+      - 'scripts/enhance-seo-authority.mjs'
+      - 'scripts/validate-public-sitemaps.py'
+      - 'assets/js/cookie-consent.js'
+      - 'assets/js/consent-analytics.js'
+      - 'legal/cookies/index.html'
+      - 'legal/privacy/index.html'
       - '.github/workflows/publish-aws-contact-production.yml'
   workflow_dispatch:
     inputs:
@@ -60,6 +66,7 @@ jobs:
           node --test scripts/test-account-request-intake.mjs
           npm ci --ignore-scripts
           npm run build:public-only
+          python3 scripts/validate-public-sitemaps.py
           npm run test:owner-corrections:public-only
           node --test scripts/test-nutraxin-retail-store.mjs
           npm run test:cookies
