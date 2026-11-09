@@ -136,5 +136,12 @@ assert.equal(research("<script>alert(1)</script>", "US", "evidence")[0].children
 assert.equal(research("a", "GB", "regulatory").length, 0, "Too-short medicine search must fail closed");
 assert.equal(controls["[data-npi-results]"].hidden, true, "Invalid search must clear results");
 assert.equal(research("apixaban", "IN", "market").length, 0, "Unavailable market facts must not be fabricated");
+assert.equal(research("apixaban", "US", "evidence").length, 1, "Research result must be prepared");
+controls["[data-npi-query]"].listeners.input();
+assert.equal(controls["[data-npi-results]"].hidden, true, "A changed medicine input must hide stale results");
+assert.equal(controls["[data-npi-results-list]"].children.length, 0, "A changed query must remove previously prepared links");
+assert.equal(research("apixaban", "GB", "regulatory").length, 2, "UK regulatory sources must be available");
+controls["[data-npi-market]"].listeners.change();
+assert.equal(controls["[data-npi-results-list]"].children.length, 0, "Changing market must clear stale source links");
 
 console.log("NovaPharm Intelligence Technology page: source, public output, disclosures, CSS and build integration verified.");
