@@ -64,7 +64,7 @@
                   "Effect": "Allow",
                   "Action": "lambda:InvokeFunction",
                   "Resource": {
-                    "Fn::Sub": "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function/novapharm-production-nutraxin-approved-checkout"
+                    "Fn::Sub": "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:novapharm-production-nutraxin-approved-checkout"
                   }
                 }
               ]
