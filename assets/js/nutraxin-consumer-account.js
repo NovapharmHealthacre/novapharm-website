@@ -131,6 +131,7 @@ async function init(){
   status("Customer sign-in is not activated yet. You can continue shopping and use guest checkout.");
   signIn.disabled=true;signUp.disabled=true;return;
  }
+ signIn.disabled=false;signUp.disabled=false;
  signIn.onclick=()=>{void beginLogin(config,"signin").catch(()=>status("Unable to start sign-in."));};
  signUp.onclick=()=>{void beginLogin(config,"signup").catch(()=>status("Unable to start registration."));};
  signOut.onclick=()=>{
