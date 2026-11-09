@@ -11,6 +11,12 @@ if (emailDraft) {
     const match = [...topic.options].find((option) => option.value.toLowerCase() === requestedTopic.toLowerCase());
     if (match) topic.value = match.value;
   }
+  const quoteMessage = new URLSearchParams(window.location.search).get("quote");
+  const messageField = emailDraft.elements.namedItem("message");
+  if (quoteMessage?.startsWith("ESCO Anand UK quotation request") && quoteMessage.length <= 850 &&
+      messageField instanceof HTMLTextAreaElement && !messageField.value) {
+    messageField.value = quoteMessage;
+  }
 
   emailDraft.addEventListener("submit", (event) => {
     event.preventDefault();
