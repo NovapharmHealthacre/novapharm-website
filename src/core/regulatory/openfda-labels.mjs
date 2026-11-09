@@ -53,13 +53,15 @@ export async function searchOpenFdaLabels(drugName, context, options = {}) {
   requestUrl.searchParams.set("search", `openfda.generic_name:"${query}"`);
   requestUrl.searchParams.set("limit", String(MAX_RESULTS));
   const apiKey = options.apiKey ?? process.env.OPENFDA_API_KEY;
-  if (apiKey) requestUrl.searchParams.set("api_key", String(apiKey));
+  const headers = { Accept: "application/json" };
+  // Basic-auth username avoids placing a secret into request URLs or source manifests.
+  if (apiKey) headers.Authorization = `Basic ${Buffer.from(`${String(apiKey)}:`).toString("base64")}`;
   const fetchImpl = options.fetchImpl ?? fetch;
   let response;
   try {
     response = await fetchImpl(requestUrl.toString(), {
       method: "GET",
-      headers: { Accept: "application/json" },
+      headers,
       signal: AbortSignal.timeout(8000),
       redirect: "error",
     });
