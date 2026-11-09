@@ -10,6 +10,8 @@ on:
       - 'assets/js/contact-production.js'
       - 'assets/js/esco-catalogue.js'
       - 'scripts/apply-esco-catalogue.mjs'
+      - 'scripts/esco-merchandising.mjs'
+      - 'assets/js/esco-bag.js'
       - 'assets/css/esco-catalogue.css'
       - 'assets/data/esco-catalogue.json'
       - 'scripts/test-esco-catalogue.mjs'
@@ -81,6 +83,14 @@ jobs:
           node --test scripts/test-esco-catalogue.mjs
           grep -Fq 'data-esco-catalogue' _site/products/esco/index.html
           grep -Fq 'data-esco-quote-items' _site/products/esco/index.html
+          grep -Fq 'data-esco-bag-items' _site/products/esco/bag/index.html
+          grep -Fq 'data-esco-card-checkout disabled' _site/products/esco/bag/index.html
+          grep -Fq 'UK guide' _site/products/esco/index.html
+          test -s _site/assets/data/esco-uk-guide-prices.json
+          test -s _site/assets/js/esco-bag.js
+          test -s _site/assets/media/esco/previews/esco-cat-0373.svg
+          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('_site/assets/data/esco-uk-guide-prices.json','utf8'));if(x.entriesTotal!==373||x.checkoutEnabled||x.paymentCollectionEnabled||!x.requestQuoteOnly||Object.keys(x.guidePrices).length!==373||Object.keys(x.visualPreviews).length!==373)process.exit(1)"
+
           grep -Fq 'ESCO Anand' _site/products/index.html
           test -s _site/assets/css/esco-catalogue.css
           test -s _site/assets/js/esco-catalogue.js

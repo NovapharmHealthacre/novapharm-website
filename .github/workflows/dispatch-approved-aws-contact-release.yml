@@ -31,7 +31,7 @@ jobs:
           # workflow under GitHub's one-pending-concurrency rule.
           while IFS= read -r changed; do
             case "$changed" in
-              products/nutraxin/*|src/content/nutraxin-showcase.html|assets/js/nutraxin-retail-store.js|assets/js/contact-production.js|assets/js/esco-catalogue.js|assets/css/esco-catalogue.css|assets/data/esco-catalogue.json|scripts/apply-esco-catalogue.mjs|scripts/test-esco-catalogue.mjs|scripts/build-site.mjs|assets/data/nutraxin-retail-catalogue.json|scripts/apply-corporate-product-discipline.mjs|scripts/stage-pages-artifact.mjs|.github/workflows/publish-aws-contact-production.yml)
+              products/nutraxin/*|src/content/nutraxin-showcase.html|assets/js/nutraxin-retail-store.js|assets/js/contact-production.js|assets/js/esco-catalogue.js|assets/js/esco-bag.js|scripts/esco-merchandising.mjs|assets/css/esco-catalogue.css|assets/data/esco-catalogue.json|scripts/apply-esco-catalogue.mjs|scripts/test-esco-catalogue.mjs|scripts/build-site.mjs|assets/data/nutraxin-retail-catalogue.json|scripts/apply-corporate-product-discipline.mjs|scripts/stage-pages-artifact.mjs|.github/workflows/publish-aws-contact-production.yml)
                 echo "skip=true" >> "$GITHUB_OUTPUT"
                 echo "Dedicated contact publisher handles this commit. Not dispatching a duplicate."
                 exit 0
