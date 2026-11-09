@@ -416,10 +416,23 @@ function nutraxinMain() {
 }
 
 function nutraxinBagMain() {
+  // Authoritative public Bag markup. Keep in sync with the commerce release test.
   return `<main id="main" class="npd-main nx-shop-bag" data-nx-public-bag>
     <p class="nx-shop-eyebrow">NUTRAXIN / YOUR BAG</p>
     <h1>Your Bag.</h1>
-    <p class="nx-shop-intro">Review your selected Nutraxin essentials. Your total includes 20% UK VAT and UK delivery. Continue to Stripe for secure payment.</p>
+    <p class="nx-shop-intro">One simple checkout. Review your selection, enter your details, pay securely and receive your order confirmation.</p>
+    <nav class="nx-purchase-progress" aria-label="Order journey">
+      <ol>
+        <li class="is-current" aria-current="step"><span>01</span><strong>Your Bag</strong></li>
+        <li><span>02</span><strong>Details</strong></li>
+        <li><span>03</span><strong>Payment</strong></li>
+        <li><span>04</span><strong>Confirmation</strong></li>
+      </ol>
+    </nav>
+    <div class="nx-checkout-identity" aria-labelledby="nx-checkout-identity-title">
+      <div><p class="nx-shop-eyebrow">YOUR CHECKOUT</p><h2 id="nx-checkout-identity-title">Simple from start to finish.</h2><p>You can complete your purchase as a guest. Your email and UK delivery address are collected securely during checkout, without a separate business portal.</p></div>
+      <div class="nx-checkout-identity-meta"><strong>Guest checkout available</strong><span>Verified customer account creation and saved order history are not yet enabled.</span></div>
+    </div>
     <div class="nx-bag-grid">
       <section aria-label="Items in your bag"><div data-nx-bag-items><p class="nx-bag-empty">Loading your saved selections...</p></div><a href="/products/nutraxin/" class="nx-shop-link">Continue shopping</a></section>
       <aside class="nx-bag-summary" aria-label="Order summary"><h2>Bag summary</h2><dl>

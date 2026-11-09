@@ -57,8 +57,12 @@ jobs:
           npm ci --ignore-scripts
           npm run build:public-only
           npm run test:owner-corrections:public-only
+          node --test scripts/test-nutraxin-retail-store.mjs
           npm run validate:domain
           node scripts/stage-pages-artifact.mjs _site
+          grep -Fq 'Simple from start to finish.' _site/products/nutraxin/bag/index.html
+          grep -Fq 'Guest checkout available' _site/products/nutraxin/bag/index.html
+          grep -Fq 'class="nx-purchase-progress"' _site/products/nutraxin/bag/index.html
           node scripts/check-links.mjs _site
           test -s _site/assets/js/contact-production.js
           test -s _site/assets/js/account-request-production.js
@@ -171,4 +175,27 @@ jobs:
             sleep 10
           done
           echo "::error::Cutover not verified on customer domain. Treat release as FAILED and restore public-only artifact." >&2
+          exit 1
+
+      - name: Verify unified Nutraxin Bag on the live domain
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 18); do
+            url="https://novapharmhealthcare.com/products/nutraxin/bag/?release-$GITHUB_SHA-$attempt-$(date +%s)"
+            if curl --fail --silent --show-error --location --max-time 15 -H "Cache-Control: no-cache" "$url" -o /tmp/novapharm-live-bag.html; then
+              if grep -Fq 'Simple from start to finish.' /tmp/novapharm-live-bag.html \
+                && grep -Fq 'Guest checkout available' /tmp/novapharm-live-bag.html \
+                && grep -Fq 'class="nx-purchase-progress"' /tmp/novapharm-live-bag.html; then
+                curl --fail --silent --show-error --location --max-time 15 \
+                  "https://novapharmhealthcare.com/assets/js/nutraxin-retail-store.js" \
+                  -o /tmp/novapharm-live-shopping.js
+                grep -Fq 'CHECKOUT_API_ORIGIN' /tmp/novapharm-live-shopping.js
+                grep -Fq 'Continue as guest' /tmp/novapharm-live-shopping.js
+                echo "Live Nutraxin guest checkout journey matches approved Pages artifact."
+                exit 0
+              fi
+            fi
+            sleep 5
+          done
+          echo "::error::Live Nutraxin Bag did not match the approved Apple-style release." >&2
           exit 1
