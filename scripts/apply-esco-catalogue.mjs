@@ -75,7 +75,7 @@ bagPage=bagPage.replace('</body>','<script type="module" src="/assets/js/esco-ba
 write('products/esco/bag/index.html',bagPage);
 if (!sourcePage.includes('<main id="main"')) throw Error('No valid Products page available as ESCO template');
 let esco = sourcePage.replace(/<main\b[^>]*\bid="main"[^>]*>[\s\S]*?<\/main>/, main);
-if (!esco.includes('<main id="main" class="npd-main esco-page">')) throw Error('Could not materialise ESCO collection');
+if (!esco.includes('<main id="main" class="npd-main esco-page esco-storefront" data-esco-catalogue>')) throw Error('Could not materialise ESCO collection');
 esco = esco.replace(/<title>[^<]*<\/title>/, '<title>ESCO Anand | Hospital, Surgical and Laboratory Products | NovaPharm</title>');
 esco = esco.replace(/<meta name="description" content="[^"]*">/, '<meta name="description" content="Browse the ESCO Anand 2026 range: 373 hospital, surgical and laboratory catalogue entries. Qualified UK procurement quotations from NovaPharm.">');
 esco = esco.replace(/<link rel="canonical" href="[^"]*">/, '<link rel="canonical" href="https://novapharmhealthcare.com/products/esco/">');
