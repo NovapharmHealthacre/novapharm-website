@@ -80,6 +80,9 @@ const requiredPublicPaths = [
   "contact/index.html",
   "portal/index.html",
   "products/index.html",
+  "products/esco/index.html",
+  "assets/css/esco-catalogue.css",
+  "assets/js/esco-catalogue.js",
   "products/nutraxin/index.html",
   "products/strategic-portfolio/index.html",
   "trust-centre/index.html"

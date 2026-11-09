@@ -62,6 +62,12 @@ jobs:
           npm run test:cookies
           npm run validate:domain
           node scripts/stage-pages-artifact.mjs _site
+          node --test scripts/test-esco-catalogue.mjs
+          grep -Fq 'data-esco-catalogue' _site/products/esco/index.html
+          grep -Fq 'data-esco-quote-items' _site/products/esco/index.html
+          grep -Fq 'ESCO Anand' _site/products/index.html
+          test -s _site/assets/css/esco-catalogue.css
+          test -s _site/assets/js/esco-catalogue.js
           test "$(tr -d '\r\n' < _site/da125ceca8032e01fc98782c388f894f.txt)" = 'da125ceca8032e01fc98782c388f894f'
           grep -Fq 'Simple from start to finish.' _site/products/nutraxin/bag/index.html
           grep -Fq 'Guest checkout available' _site/products/nutraxin/bag/index.html
@@ -204,6 +210,29 @@ jobs:
             sleep 5
           done
           echo "::error::Live Nutraxin Bag did not match the approved Apple-style release." >&2
+          exit 1
+
+      - name: Verify ESCO Anand catalogue and quotation list on live custom domain
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 18); do
+            url="https://novapharmhealthcare.com/products/esco/?release-$GITHUB_SHA-$attempt-$(date +%s)"
+            if curl --fail --silent --show-error --location --max-time 15 -H "Cache-Control: no-cache, no-store" "$url" -o /tmp/novapharm-live-esco.html; then
+              if grep -Fq 'data-esco-catalogue' /tmp/novapharm-live-esco.html \
+                && grep -Fq 'data-esco-quote-items' /tmp/novapharm-live-esco.html \
+                && grep -Fq 'ESCO-CAT-0373' /tmp/novapharm-live-esco.html \
+                && grep -Fq '373 catalogue entries' /tmp/novapharm-live-esco.html; then
+                curl --fail --silent --show-error --max-time 15 "https://novapharmhealthcare.com/assets/js/esco-catalogue.js" -o /tmp/novapharm-live-esco.js
+                grep -Fq 'MAX_ITEMS = 12' /tmp/novapharm-live-esco.js
+                curl --fail --silent --show-error --max-time 15 "https://novapharmhealthcare.com/assets/css/esco-catalogue.css" -o /tmp/novapharm-live-esco.css
+                grep -Fq '.esco-category-image' /tmp/novapharm-live-esco.css
+                echo "ESCO Anand 373-entry collection, responsive category assets and quotation list live on production domain."
+                exit 0
+              fi
+            fi
+            sleep 5
+          done
+          echo "::error::ESCO catalogue not verified on production custom domain." >&2
           exit 1
 
       - name: Verify live organic search title and privacy-gated analytics asset
