@@ -180,7 +180,7 @@ test("ESCO v2 is a visual shopping Bag, not an inline quotation table",()=>{
   assert.match(bag,/data-esco-bag-qty/);
   assert.match(bag,/productImage/);
   assert.match(bag,/esco-model-photo-map\.json/);
-  assert.match(bag,/priceData\.visualPreviews/);
+  assert.match(bag,/priceData\?\.visualPreviews/);
   assert.match(bag,/paymentServiceReady/);
   assert.match(bag,/checkoutApiOrigin/);
   assert.match(css,/esco-shop-mini-bag/);
