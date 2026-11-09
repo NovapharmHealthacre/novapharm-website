@@ -6,6 +6,11 @@ import { leadership, pageMeta } from "../src/content/site-content.mjs";
 const root = resolve(process.cwd());
 const siteUrl = "https://novapharmhealthcare.com";
 const nutraxinProducts = JSON.parse(readFileSync(join(root, "apps/corporate/data/nutraxin-product-register.json"), "utf8")).products;
+const socialRegisterPath = join(root, "seo/generated/social-image-register.json");
+const socialRegister = existsSync(socialRegisterPath)
+  ? new Map(JSON.parse(readFileSync(socialRegisterPath, "utf8")).map((entry) => [entry.route, entry]))
+  : new Map();
+
 const publicPages = [
   "index.html",
   "about/index.html",
@@ -354,17 +359,36 @@ for (const file of publicPages) {
   if (!html.includes('/assets/brand/novapharm-healthcare-logo.png')) fail(`${file} does not include the approved PNG fallback or social image`);
   if (!html.includes('alt="NovaPharm Healthcare"')) fail(`${file} is missing the approved logo alternative text`);
   if (html.includes('/assets/Novapharm-logo.svg')) fail(`${file} references the retired logo path`);
-  // Oncology uses a uniquely governed scientific preview rather than the generic
-  // brand card. All other routes retain their existing identity-card contract.
-  const oncologySocial = file === "oncology/index.html";
-  const socialImage = oncologySocial
-    ? `${siteUrl}/assets/media/products/${"oncology-vial-handling"}.jpg`
-    : `${siteUrl}/assets/brand/novapharm-open-graph-1200x630-white.jpg`;
-  const socialWidth = oncologySocial ? 1600 : 1200;
-  const socialHeight = oncologySocial ? 900 : 630;
-  if (!html.includes(`property="og:image" content="${socialImage}"`)) fail(`${file} does not retain its approved social preview image`);
-  if (!html.includes(`property="og:image:width" content="${socialWidth}"`) || !html.includes(`property="og:image:height" content="${socialHeight}"`)) fail(`${file} has incorrect approved social preview dimensions`);
-  if (oncologySocial && (html.match(/<meta property="og:image" content=/g) ?? []).length !== 1) fail(`${file} must expose exactly one authoritative social image`);
+  // The generated social-image register is the authoritative route-specific
+  // contract. The former generic card remains a governed fallback asset,
+  // but must not override route-specific imagery and metadata.
+  const fallbackSocialAsset = "assets/brand/novapharm-open-graph-1200x630-white.jpg";
+  if (!existsSync(join(root, fallbackSocialAsset))) fail("Approved fallback social card is missing");
+  const socialRoute = file === "index.html" ? "/" : `/${file.replace(/index\\.html$/u, "")}`;
+  const registeredSocial = socialRegister.get(socialRoute);
+  if (!registeredSocial) {
+    fail(`${file} has no registered social preview`);
+  } else {
+    const expected = {
+      "og:image": registeredSocial.absoluteUrl,
+      "og:image:secure_url": registeredSocial.absoluteUrl,
+      "og:image:type": registeredSocial.type,
+      "og:image:width": String(registeredSocial.width),
+      "og:image:height": String(registeredSocial.height),
+      "og:image:alt": registeredSocial.alt
+    };
+    const imageTags = [...html.matchAll(/<meta\\s+property="(og:image(?::(?:secure_url|type|width|height|alt))?)"\\s+content="([^"]*)"\\s*\\/?>/g)];
+    for (const [property, value] of Object.entries(expected)) {
+      const matches = imageTags.filter((match) => match[1] === property);
+      if (matches.length !== 1) fail(`${file} must expose exactly one ${property} tag (found ${matches.length})`);
+      if (matches[0]?.[2] !== value.replaceAll("&", "&amp;").replaceAll('"', "&quot;")) {
+        fail(`${file} has ${property} inconsistent with its approved social register`);
+      }
+    }
+    if (!html.includes(`name="twitter:image" content="${registeredSocial.absoluteUrl}"`)) {
+      fail(`${file} Twitter image must match the registered social card`);
+    }
+  }
   if (!html.includes('/assets/brand/favicon.svg') || !html.includes('/assets/brand/apple-touch-icon.png')) fail(`${file} is missing approved small-format identity metadata`);
   if (/\b(?:undefined|lorem ipsum|placeholder content)\b/i.test(html)) fail(`${file} contains unfinished content`);
   if (/The string did not match the expected pattern|Secure portal backend is not active on this static host yet/i.test(html)) fail(`${file} contains a retired technical error message`);
