@@ -1,0 +1,23 @@
+name: Intelligence dedicated production ingress contract
+
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/intelligence-dedicated-ingress-candidate.json'
+      - 'scripts/test-intelligence-dedicated-ingress.mjs'
+      - '.github/workflows/intelligence-dedicated-ingress-contract.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  fail-closed-infrastructure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Validate zero-by-default infrastructure, private tenancy and TLS boundaries
+        run: node --test scripts/test-intelligence-dedicated-ingress.mjs
