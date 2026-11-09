@@ -66,6 +66,7 @@ export function decideIntelligenceEntitlement({ principal, grant, feature, usage
   if (!release || release.verifiedServerSide !== true || !Array.isArray(release.productionApprovedFeatures) || !release.productionApprovedFeatures.includes(feature)) return deny("feature_not_production_approved");
 
   if (typeof release.sourceRightsApproved !== "boolean" || release.sourceRightsApproved !== true) return deny("source_rights_unapproved");
+  if (usage?.verifiedServerSide !== true || usage.tenantId !== principal.tenantId || usage.subject !== principal.subject) return deny("usage_not_authoritative");
   if (typeof usage?.period !== "string" || !monthKey(usage.period) || usage.period !== now.slice(0, 7)) return deny("usage_period_not_current");
   if (!Number.isSafeInteger(usage.searchCount) || usage.searchCount < 0) return deny("usage_not_authoritative");
 
