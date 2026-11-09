@@ -239,7 +239,7 @@
   "vat_estimate_rate_percent": 20,
   "price_includes_estimated_uk_vat": true,
   "price_note": "Owner-approved UK retail unit prices including VAT at 20%. Standard UK delivery adds £0. Fulfilment is arranged by the seller; physical warehouse stock is not represented as reserved.",
-  "source_record": "owner_approved_provisional_19_sku_48_unit_reference_2026-11-08_v5",
+  "source_record": "owner_approved_provisional_19_sku_48_unit_reference_2026-11-08_v6",
   "price_model_note": "Owner selected the existing 48-unit reference price for every quantity 1-10,000; actual supplier, fulfilment and retained-margin assumptions remain subject to commercial reconciliation.",
   "provisional_uk_delivery_charge_pence": 0,
   "provisional_uk_delivery_cost_seller_funded": true,
