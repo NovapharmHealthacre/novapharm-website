@@ -87,6 +87,42 @@ class CheckoutSecurity(unittest.TestCase):
         self.assertNotIn('request.get("unit_price_pence")',source)
         self.assertNotIn('request.get("tax_code")',source)
 
+    def test_merchant_attested_price_mode_is_explicit_and_fail_closed(self):
+        pilot = fixture("medical_device")
+        pilot.update({
+            "commercial_basis": "owner_authorised_estimate",
+            "owner_authorised_release": True,
+            "owner_accepts_unverified_landed_cost": True,
+            "regulatory_evidence_basis": "merchant_attestation",
+            "pricing_mode": "approved_inline",
+            "price_includes_gb_delivery": True,
+            "outbound_delivery_budget_pence": 800,
+            "processing_fee_budget_pence": 270,
+            "storage_budget_pence": 100,
+            "supplier_inbound_cost_ceiling_pence": 6330,
+            "stripe_tax_code": "txcd_32080003",
+            "actual_variable_cost_pence": None,
+            "supplier_cost_verified": False,
+            "mhra_registration_verified": True,
+            "conformity_documents_verified": True,
+            "uk_responsible_person_verified": True})
+        pilot.pop("stripe_price_id")
+        self.assertTrue(mod.eligible(pilot))
+        for name, val in [
+            ("owner_authorised_release", False),
+            ("owner_accepts_unverified_landed_cost", False),
+            ("regulatory_evidence_basis", "inferred"),
+            ("manufacturer_supply_authorised", False),
+            ("variants_resolved", False),
+            ("mhra_registration_verified", False),
+            ("tax_classification_verified", False),
+            ("price_includes_gb_delivery", False),
+            ("stripe_tax_code", "invalid"),
+            ("supplier_inbound_cost_ceiling_pence", 6331),
+            ("stock_allocatable_verified", False)]:
+            self.assertFalse(mod.eligible(dict(pilot, **{name: val})), name)
+        self.assertFalse(mod.eligible(dict(pilot, available_to_promise_units=10001)))
+
     def test_unapproved_catalogue_has_no_checkout(self):
         with patch.object(mod, "policy", return_value={"enabled":False,
                 "webhook_verified":False, "approved_skus":{}}):
