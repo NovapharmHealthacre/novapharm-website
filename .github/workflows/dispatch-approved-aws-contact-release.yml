@@ -17,7 +17,28 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
+      - name: Checkout exact merge to inspect publisher trigger paths
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Avoid a duplicate release for a directly published commit
+        id: publisher
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The dedicated contact publisher already runs on these main paths.
+          # A second dispatch for the same commit replaces the pending
+          # workflow under GitHub's one-pending-concurrency rule.
+          while IFS= read -r changed; do
+            case "$changed" in
+              products/nutraxin/*|src/content/nutraxin-showcase.html|assets/js/nutraxin-retail-store.js|assets/js/contact-production.js|assets/js/esco-catalogue.js|assets/css/esco-catalogue.css|assets/data/esco-catalogue.json|scripts/apply-esco-catalogue.mjs|scripts/test-esco-catalogue.mjs|scripts/build-site.mjs|assets/data/nutraxin-retail-catalogue.json|scripts/apply-corporate-product-discipline.mjs|scripts/stage-pages-artifact.mjs|.github/workflows/publish-aws-contact-production.yml)
+                echo "skip=true" >> "$GITHUB_OUTPUT"
+                echo "Dedicated contact publisher handles this commit. Not dispatching a duplicate."
+                exit 0
+                ;;
+            esac
+          done < <(git diff --name-only "$GITHUB_SHA^1" "$GITHUB_SHA")
+          echo "skip=false" >> "$GITHUB_OUTPUT"
       - name: Verify AWS contact candidate is already activated
+        if: steps.publisher.outputs.skip != 'true'
         env:
           CONTACT_ORIGIN: https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com
         run: |
@@ -27,6 +48,7 @@ jobs:
           jq -e '.service == "novapharm-contact-intake" and .environment == "production" and .ready == true and .acceptingPublicSubmissions == true' /tmp/contact-health.json
           echo 'Confirmed AWS contact intake is enabled. No real enquiry data was read.'
       - name: Dispatch independently verified exact-SHA contact release
+        if: steps.publisher.outputs.skip != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           EXPECTED_SHA: ${{ github.sha }}
