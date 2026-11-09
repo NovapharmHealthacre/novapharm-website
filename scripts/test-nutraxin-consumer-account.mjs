@@ -65,6 +65,16 @@ test("account orders are server-owned and never rely on browser-selected identit
  assert.match(bag,/sessionStorage\.removeItem\(ACCOUNT_SESSION_KEY\)/);
  assert.ok(!bag.includes("PORTAL_ORIGIN"));
 });
+test("authenticated idempotent retries reconcile DynamoDB transaction conflicts",()=>{
+ const src=read("apps/nutraxin-products-checkout/index.py");
+ const cf=JSON.parse(read("infra/aws/nutraxin-products-checkout-api.json")).Resources.ShopLambda.Properties.Code.ZipFile;
+ assert.equal(src,cf);
+ assert.match(src,/code not in \("ConditionalCheckFailedException", "TransactionCanceledException"\)/);
+ assert.match(src,/if not prior:\s*return error\(503, "order_creation_unavailable"\)/);
+ assert.match(src,/prior\.get\("customerSub"\) != item\["customerSub"\]/);
+ assert.match(src,/prior\.get\("basketHash"\) != item\["basketHash"\]/);
+});
+
 test("server Python remains parsable without importing boto3",()=>{
  const python=spawnSync("python3",["-c","import ast,sys;ast.parse(sys.stdin.read())"],{input:src,encoding:"utf8"});
  assert.equal(python.status,0,python.stderr||"Python syntax failure");
