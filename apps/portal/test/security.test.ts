@@ -81,10 +81,10 @@ test("Intelligence release readiness is only available through exact read-only p
   const gateway = source("app/gateway/[...path]/route.ts");
   const server = source("../../server.mjs");
   assert.ok(gateway.includes("intelligence\\/readiness$/"), "Only the exact readiness path can pass the BFF");
-  assert.match(gateway, /path === "v1\\/intelligence\\/readiness"/);
-  assert.match(gateway, /request\\.method !== "GET"/);
-  assert.match(gateway, /Cache-Control.*no-store/);
-  assert.match(server, /pathname === "\/api\/v1\/intelligence\/readiness"/);
-  assert.match(server, /scopedAuthentication\(request, response, \["board"\]\)/);
-  assert.doesNotMatch(gateway, /\/\^v1\\\/intelligence\\\/.\+\$/);
+  assert.ok(gateway.includes('path === "v1/intelligence/readiness"'));
+  assert.ok(gateway.includes('request.method !== "GET"'));
+  assert.ok(gateway.includes('"Cache-Control": "no-store"'));
+  assert.ok(server.includes('pathname === "/api/v1/intelligence/readiness"'));
+  assert.ok(server.includes('scopedAuthentication(request, response, ["board"])'));
+  assert.equal(gateway.includes("intelligence\\/.*"), false, "No catch-all intelligence route may be exposed");
 });
