@@ -830,6 +830,9 @@ body[data-page="technology"] .np-intelligence {
 .np-intelligence .npi-dashboard-figure figcaption a { text-decoration:underline; text-decoration-thickness:1.25px; text-underline-offset:3px; }
 
 /* Working public research entry. Official-source links only; no synthetic analytical results. */
+/* AA contrast on the soft research surface. */
+.np-intelligence .npi-research .npi-kicker { color: #bd100b; }
+
 .np-intelligence .npi-research { background: #f5f5f7; padding-block: clamp(80px, 9vw, 124px); }
 .np-intelligence .npi-research .npi-section-heading { margin-bottom: 38px; }
 .np-intelligence .npi-research-panel {
