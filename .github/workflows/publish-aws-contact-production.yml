@@ -57,8 +57,12 @@ jobs:
           npm ci --ignore-scripts
           npm run build:public-only
           npm run test:owner-corrections:public-only
+          node --test scripts/test-nutraxin-retail-store.mjs
           npm run validate:domain
           node scripts/stage-pages-artifact.mjs _site
+          grep -Fq 'Simple from start to finish.' _site/products/nutraxin/bag/index.html
+          grep -Fq 'Guest checkout available' _site/products/nutraxin/bag/index.html
+          grep -Fq 'class="nx-purchase-progress"' _site/products/nutraxin/bag/index.html
           node scripts/check-links.mjs _site
           test -s _site/assets/js/contact-production.js
           test -s _site/assets/js/account-request-production.js
