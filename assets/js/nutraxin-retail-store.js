@@ -37,7 +37,7 @@ export function catalogueIsSafe(data) {
 
 export function publicPrice(product, data) {
   // Explicit owner-authorised guide display is separate from payment authorisation.
-  const viewable = data?.price_authority === "approved_consumer_retail" ||
+  const viewable = (data?.price_authority === "approved_consumer_retail" && data.payment_collection_enabled === true) ||
     (data?.price_authority === "owner_authorized_provisional_public_display" &&
       data?.checkout_enabled === false && data?.payment_collection_enabled === false &&
       data?.price_includes_estimated_uk_vat === true && data?.vat_estimate_rate_percent === 20);
