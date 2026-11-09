@@ -74,10 +74,10 @@ body[data-page="home"] .site-nav > button {
 body[data-page="home"] .site-nav > a:not(.btn):hover,
 body[data-page="home"] .site-nav > a:not(.btn):focus-visible { color: var(--np-red); }
 
-body[data-page="home"] h1,
-body[data-page="home"] h2,
-body[data-page="home"] h3,
-body[data-page="home"] h4 {
+body[data-page="home"] main h1,
+body[data-page="home"] main h2,
+body[data-page="home"] main h3,
+body[data-page="home"] main h4 {
   color: var(--np-ink);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   font-weight: 600;
@@ -87,9 +87,9 @@ body[data-page="home"] h4 {
   text-wrap: balance;
 }
 
-body[data-page="home"] h1 { font-size: clamp(3rem, 6vw, 5.6rem); line-height: 1.02; }
-body[data-page="home"] h2 { font-size: clamp(2.15rem, 4.3vw, 4rem); line-height: 1.06; }
-body[data-page="home"] h3 { font-size: clamp(1.25rem, 2.1vw, 1.7rem); line-height: 1.14; }
+body[data-page="home"] main h1 { font-size: clamp(3rem, 6vw, 5.6rem); line-height: 1.02; }
+body[data-page="home"] main h2 { font-size: clamp(2.15rem, 4.3vw, 4rem); line-height: 1.06; }
+body[data-page="home"] main h3 { font-size: clamp(1.25rem, 2.1vw, 1.7rem); line-height: 1.14; }
 body[data-page="home"] p { text-wrap: pretty; }
 
 body[data-page="home"] .pharma-kicker {
@@ -431,8 +431,8 @@ body[data-page="home"] .final-cta h2 { max-width: 840px; }
 }
 
 @media (max-width: 720px) {
-  body[data-page="home"] h1 { font-size: clamp(2.7rem, 13vw, 4rem); }
-  body[data-page="home"] h2 { font-size: clamp(2rem, 9vw, 3rem); }
+  body[data-page="home"] main h1 { font-size: clamp(2.7rem, 13vw, 4rem); }
+  body[data-page="home"] main h2 { font-size: clamp(2rem, 9vw, 3rem); }
   body[data-page="home"] .pharma-home-hero { min-height: 700px; }
   body[data-page="home"] .pharma-home-grid { padding-block: 70px 34px; }
   body[data-page="home"] .pharma-home-copy { align-self: end; }
