@@ -235,6 +235,35 @@ for (const [engineName, browserType] of engines) {
             assert.deepEqual(failedResources, [], `${engineName} ${viewport.name} ${route.path}: failed subresources`);
             assert.deepEqual(consoleErrors, [], `${engineName} ${viewport.name} ${route.path}: console errors`);
 
+            if (route.name === "technology") {
+              const medicineField = page.locator("[data-npi-query]");
+              const marketField = page.locator("[data-npi-market]");
+              const focusField = page.locator("[data-npi-focus]");
+              const resultsPanel = page.locator("[data-npi-results]");
+              const sourceRows = page.locator("[data-npi-results-list] li");
+              const findSources = page.getByRole("button", { name: "Find official sources" });
+              assert.equal(await medicineField.count(), 1, "The medicine research field must exist");
+              await medicineField.fill("apixaban");
+              await marketField.selectOption("GB");
+              await focusField.selectOption("regulatory");
+              await findSources.click();
+              assert.equal(await resultsPanel.isVisible(), true, "Submitting a valid query must reveal research sources");
+              assert.equal(await sourceRows.count(), 2, "UK regulatory research must show approved MHRA and NICE sources");
+              assert.equal(await page.locator('[data-npi-results-list] a[href^="https://products.mhra.gov.uk/"]').count(), 1, "Official MHRA link must be prepared");
+              await marketField.selectOption("US");
+              assert.equal(await resultsPanel.isVisible(), false, "Switching markets must hide stale results");
+              assert.equal(await sourceRows.count(), 0, "Switching markets must clear previous links");
+              await focusField.selectOption("evidence");
+              await findSources.click();
+              assert.equal(await sourceRows.count(), 1, "US evidence research must show one PubMed link");
+              const pubmed = page.locator('[data-npi-results-list] a[href^="https://pubmed.ncbi.nlm.nih.gov/"]');
+              assert.ok((await pubmed.getAttribute("href"))?.includes("term=apixaban"), "Search terms must be URL encoded for official providers");
+              assert.equal(await pubmed.getAttribute("rel"), "noopener noreferrer", "External source links must be isolated");
+              assert.equal(new URL(page.url()).pathname, "/technology/", "Research submission must remain on the NovaPharm page");
+              assert.equal(await page.locator('#intelligence-research a[href="https://portal.novapharmhealthcare.com/"]').count(), 0, "Intelligence research must not link to the Nutraxin portal");
+              await assertLayout(page, `${engineName} ${viewport.name} research results`);
+            }
+
             if (route.name === "contact") {
               const draft = page.locator("form[data-email-enquiry-form]");
               assert.equal(await draft.count(), 1, engineName + " " + viewport.name + ": public contact must have exactly one local email draft");

@@ -1,0 +1,30 @@
+name: Intelligence research entry acceptance
+
+on:
+  pull_request:
+    paths:
+      - "src/content/technology-intelligence.html"
+      - "technology/index.html"
+      - "assets/css/technology-intelligence.css"
+      - "assets/js/intelligence-research-launcher.js"
+      - "scripts/apply-corporate-product-discipline.mjs"
+      - "scripts/test-intelligence-technology-page.mjs"
+      - ".github/workflows/intelligence-research-acceptance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Check public research JS syntax
+        run: node --check assets/js/intelligence-research-launcher.js
+      - name: Run Technology page source, privacy and behaviour contracts
+        run: node scripts/test-intelligence-technology-page.mjs
