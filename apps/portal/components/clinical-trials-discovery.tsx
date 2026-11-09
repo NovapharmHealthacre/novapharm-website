@@ -51,7 +51,7 @@ export function ClinicalTrialsDiscovery() {
     setStatus("Checking the ClinicalTrials.gov public registry.");
     try {
       const source = await gatewayJson<StudyResponse>(
-        "v1/intelligence/evidence/us/clinical-trials?intervention=" + encodeURIComponent(term),
+        `v1/intelligence/evidence/us/clinical-trials?intervention=${encodeURIComponent(term)}`,
       );
       setResult(source);
       setStatus(source.dataState === "no_source_matches"
