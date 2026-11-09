@@ -42,6 +42,6 @@ assert.match(generator, /PUBLIC_ANALYTICS_PRIVACY_APPROVED/);
 assert.match(generator, /PUBLIC_GA4_MEASUREMENT_ID/);
 assert.match(store, /emitRetailFunnelEvent\("add_to_cart"\)/);
 assert.match(store, /emitRetailFunnelEvent\("begin_checkout"\)/);
-assert.match(store, /emitRetailFunnelEvent\("view_item"\)/);
+assert.match(source, /send\("view_item", \{ item_category: "food_supplements" \}\)/);
 assert.doesNotMatch(readFileSync("index.html", "utf8"), /<meta name="novapharm-ga4-id"/, "Production source must remain inactive until owner-controlled provider and privacy approval");
 console.log("Consent analytics tests passed: GA4 disabled by default, sensitive routes excluded, coarse events only and no synthetic conversions.");
