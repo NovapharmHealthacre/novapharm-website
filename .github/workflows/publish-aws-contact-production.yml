@@ -144,7 +144,8 @@ jobs:
                 && grep -Fq "$EXPECTED_ORIGIN" /tmp/novapharm-live-contact.html \
                 && grep -Fq 'src="/assets/js/contact-production.js"' /tmp/novapharm-live-contact.html \
                 && ! grep -Fq 'data-email-enquiry-form' /tmp/novapharm-live-contact.html; then
-                curl --fail --silent --show-error --max-time 15 "https://novapharmhealthcare.com/assets/js/contact-production.js" | grep -Fq "data-live-b2b-enquiry-form"
+                curl --fail --silent --show-error --max-time 15 -o /tmp/novapharm-live-contact.js "https://novapharmhealthcare.com/assets/js/contact-production.js"
+                grep -Fq "data-live-b2b-enquiry-form" /tmp/novapharm-live-contact.js
                 curl --fail --silent --show-error --location --max-time 15 -H "Cache-Control: no-cache" \
                   "https://novapharmhealthcare.com/account-application/?accepted-$GITHUB_SHA-$attempt-$(date +%s)" > /tmp/novapharm-live-account.html
                 grep -Fq 'data-live-account-request-form' /tmp/novapharm-live-account.html
@@ -152,7 +153,8 @@ jobs:
                 grep -Fq 'src="/assets/js/account-request-production.js"' /tmp/novapharm-live-account.html
                 ! grep -Fq 'type="password"' /tmp/novapharm-live-account.html
                 curl --fail --silent --show-error --max-time 15 \
-                  "https://novapharmhealthcare.com/assets/js/account-request-production.js" | grep -Fq 'data-live-account-request-form'
+                  -o /tmp/novapharm-live-account.js "https://novapharmhealthcare.com/assets/js/account-request-production.js"
+                grep -Fq 'data-live-account-request-form' /tmp/novapharm-live-account.js
                 echo "Public business contact and receipt-only account-request forms are online after verified AWS acceptance."
                 exit 0
               fi
