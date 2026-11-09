@@ -27,7 +27,7 @@ class FakeDB:
 
 class FakeSecrets:
     def get_secret_value(self, **kwargs):
-        return {"SecretString":"rk_live_synthetic_restricted_key_for_contracts"}
+        return {"SecretString":"rk_live_synthetic_restricted_key_for_contracts\n"}
 
 FAKE_DB=FakeDB()
 boto=types.ModuleType("boto3")
@@ -149,6 +149,37 @@ class PaymentContracts(unittest.TestCase):
             "orderId":"NUT-aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
             "subject":"customer_123456"},None)["statusCode"],404)
         self.assertEqual(FAKE_DB.writes,[])
+
+    def test_stripe_live_secret_trailing_newline_is_not_sent_in_authorization(self):
+        order = approved_record()
+        approved = CHECKOUT.details(order, order["orderId"]["S"], "customer_123456")
+        session = {"id": "cs_live_" + "a" * 20,
+                   "url": "https://checkout.stripe.com/c/pay_synthetic",
+                   "livemode": True, "mode": "payment",
+                   "currency": "gbp", "amount_total": 12600}
+        original = CHECKOUT.urllib.request.urlopen
+
+        class FakeResponse:
+            status = 200
+            def __enter__(self):
+                return self
+            def __exit__(self, exc_type, exc_value, traceback):
+                return False
+            def read(self, maximum):
+                return json.dumps(session).encode("utf-8")
+
+        def fake_open(request, timeout):
+            self.assertEqual(request.get_header("Authorization"),
+                             "Bearer rk_live_synthetic_restricted_key_for_contracts")
+            self.assertEqual(timeout, 12)
+            return FakeResponse()
+
+        CHECKOUT.urllib.request.urlopen = fake_open
+        try:
+            created = CHECKOUT.stripe_session(approved, "a123456789012345678")
+            self.assertEqual(created["id"], session["id"])
+        finally:
+            CHECKOUT.urllib.request.urlopen = original
 
     def test_private_lambda_template_does_not_create_public_charge_endpoint(self):
         source=(ROOT/"apps/nutraxin-payments/approved_checkout.py").read_text()
