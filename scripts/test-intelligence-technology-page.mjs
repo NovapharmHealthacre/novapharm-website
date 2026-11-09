@@ -76,6 +76,8 @@ assert.ok(materialiser.includes('data-mega-trigger'), "Generated chrome must ret
 
 
 assert.ok(source.includes('id="intelligence-research"') && published.includes('id="intelligence-research"'), "The public research entry must survive materialisation");
+assert.ok(!source.includes('href="https://portal.novapharmhealthcare.com/"') && !published.includes('href="https://portal.novapharmhealthcare.com/"'), "Research must not redirect to the Nutraxin customer portal");
+assert.ok(source.includes('npi-research-access-status') && published.includes('npi-research-access-status'), "Private terminal access must be represented honestly");
 assert.ok(source.includes("English Prescribing Data") && published.includes("Secondary Care Medicines Data"), "EPD and SCMD must use the correct NHSBSA terminology");
 assert.ok(!source.includes("Scottish Medicines Data") && !published.includes("Electronic Prescribing Data"), "Incorrect dataset terminology must not regress");
 assert.ok(source.includes('data-npi-query') && published.includes('data-npi-query'), "Medicine research input must be present");
