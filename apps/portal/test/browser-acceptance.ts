@@ -460,6 +460,15 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
         aliases: [], codeHistory: [], hierarchy: [{ code: "02", name: "Repository validation chapter", level: "2", validFrom: "2026-06-01", validTo: null }],
         analyticalAvailability: { epd: true, pca: false, scmd: false, forecast: false }, limitations: ["Repository validation fixture only; no production identity is asserted."],
       };
+      if (requestUrl.pathname.endsWith("/analytics") && requestUrl.searchParams.get("startMonth") === "2026-05" && "series" in response) {
+        const previous = { ...response.rows[0], month_key: "2026-05", items: 8, quantity: 16, nic: 24, actual_cost: 20, metric_value: 8 };
+        response.rows = [previous, ...response.rows];
+        response.series = [previous, ...response.series];
+        response.sourcePeriods = ["2026-05", "2026-06"];
+        response.summary = { ...response.summary, totalItems: 20, totalQuantity: 40, totalNic: 60, totalActualCost: 50, firstMonth: "2026-05" };
+        response.pagination = { ...response.pagination, totalRows: 2 };
+        response.reconciliation = { ...response.reconciliation, tableTotal: 20, seriesTotal: 20 };
+      }
       await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
     });
     await page.getByLabel("Medicine name, brand or code").fill("Repository validation medicine");
@@ -504,6 +513,16 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     await page.setViewportSize({ width: desktopViewport.width, height: desktopViewport.height });
     await settleAtViewportTop(page);
     await captureInteractionState(page, engine, desktopViewport, "interaction.medicines-analytics");
+    await page.getByLabel("Start month").fill("2026-05");
+    await page.getByRole("button", { name: "Run governed query", exact: true }).click();
+    await page.getByText("View 2 accepted monthly values in a table", { exact: true }).waitFor();
+    await page.getByText("View 2 accepted monthly values in a table", { exact: true }).click();
+    const trendData = page.getByRole("table", { name: "Accepted monthly items data from Repository validation fixture" });
+    await trendData.getByRole("rowheader", { name: "2026-05" }).waitFor();
+    await trendData.getByRole("rowheader", { name: "2026-06" }).waitFor();
+    assert.equal(await trendData.locator("tbody tr").count(), 2, `${engine}: accepted trend table must match two source periods`);
+    await page.getByText("Observed items range: 8 to 12", { exact: true }).waitFor();
+
     await page.unroute("**/gateway/enterprise/medicines/**");
 
     const intelligenceViews = [
