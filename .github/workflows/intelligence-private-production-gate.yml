@@ -15,12 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Resolve production portal and check HTTPS ingress
+      - name: Resolve dedicated Intelligence HTTPS ingress without touching Nutraxin
         shell: bash
         run: |
           set -euo pipefail
-          portal="https://portal.novapharmhealthcare.com"
-          host="portal.novapharmhealthcare.com"
+          portal="https://intelligence.novapharmhealthcare.com"
+          host="intelligence.novapharmhealthcare.com"
           if ! getent ahostsv4 "$host" >/tmp/novapharm-private-addresses.txt; then
             echo "::error::Private production DNS has not resolved from the acceptance runner. G0 deployment blocked."
             exit 1
@@ -32,17 +32,21 @@ jobs:
             echo "::error::Private Medicines Terminal is not serving a valid HTTPS application response (HTTP $status)."
             exit 1
           fi
+          if grep -Eqi 'NUTRAXIN / CUSTOMER ACCOUNT|Welcome to Nutraxin' /tmp/novapharm-private-index; then
+            echo "::error::Intelligence ingress is serving the separate Nutraxin account; refusing cross-product release."
+            exit 1
+          fi
           if ! tr -d '\r' </tmp/novapharm-private-headers | grep -qi '^x-robots-tag:.*noindex'; then
             echo "::error::Private Medicines Terminal response does not declare X-Robots-Tag: noindex."
             exit 1
           fi
           echo "Private HTTPS ingress responded with a protected noindex page (HTTP $status)."
 
-      - name: Reject unauthenticated live FDA and intelligence readiness requests
+      - name: Reject unauthenticated live FDA, clinical trials and intelligence readiness requests
         shell: bash
         run: |
           set -euo pipefail
-          origin="https://portal.novapharmhealthcare.com"
+          origin="https://intelligence.novapharmhealthcare.com"
           for route in \
             '/gateway/v1/intelligence/regulatory/us/fda-labels?drug=apixaban' \
             '/gateway/v1/intelligence/evidence/us/clinical-trials?intervention=apixaban' \
