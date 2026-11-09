@@ -78,7 +78,7 @@
     "test:azure-sql-migrations": "node scripts/validate-azure-sql-migrations.mjs",
     "test:enterprise-migrations": "node scripts/test-enterprise-migrations.mjs",
     "test:enterprise-portal": "node scripts/test-enterprise-portal.mjs",
-    "test:medicines-intelligence": "node scripts/test-medicines-intelligence-service.mjs && node scripts/test-intelligence-v1-api.mjs && node scripts/test-intelligence-readiness.mjs",
+    "test:medicines-intelligence": "node scripts/test-medicines-intelligence-service.mjs && node scripts/test-intelligence-v1-api.mjs && node scripts/test-intelligence-readiness.mjs && node scripts/test-openfda-labels.mjs",
     "test:medicines-bulk-ingestion": "node scripts/test-medicines-bulk-ingestion.mjs",
     "test:browser-validation-preparation": "node scripts/test-browser-validation-preparation.mjs",
     "test:entra-identity": "node scripts/test-entra-identity.mjs",
