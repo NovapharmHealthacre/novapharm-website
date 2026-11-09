@@ -57,6 +57,36 @@ class CheckoutSecurity(unittest.TestCase):
             with self.assertRaises(ValueError):
                 mod.secret("esco-test-secret")
 
+    def test_inline_price_only_for_privately_approved_delivery_inclusive_sku(self):
+        record = fixture()
+        del record["stripe_price_id"]
+        record["pricing_mode"] = "approved_inline"
+        record["price_includes_gb_delivery"] = True
+        self.assertTrue(mod.eligible(record))
+        self.assertFalse(mod.eligible(dict(record, price_includes_gb_delivery=False)))
+        self.assertFalse(mod.eligible(dict(record, stripe_tax_code="")))
+        self.assertFalse(mod.eligible(dict(record, stripe_tax_code="txcd_invalid")))
+        self.assertFalse(mod.eligible(dict(record, tax_classification_verified=False)))
+        self.assertFalse(mod.eligible(dict(record, supplier_cost_verified=False)))
+        self.assertFalse(mod.eligible(dict(record, available_to_promise_units=0)))
+        self.assertFalse(mod.eligible(dict(record, actual_variable_cost_pence=7501)))
+        self.assertFalse(mod.eligible(dict(record, regulatory_type="medical_device")))
+        with patch.object(mod, "stripe_request", side_effect=AssertionError("no Stripe product lookup should occur")):
+            subtotal=mod.verified_stripe_prices(
+                [{"id":"ESCO-CAT-0003","quantity":2}],{"ESCO-CAT-0003":record},"rk_live_synthetic_not_real")
+            self.assertEqual(subtotal,20000)
+
+    def test_inline_price_params_only_from_server_config(self):
+        source = MODULE.read_text()
+        self.assertIn('record["unit_price_pence"]',source)
+        self.assertIn('record["stripe_tax_code"]',source)
+        self.assertIn('record["name"]',source)
+        self.assertIn('"line_items[%d][price_data]" % i',source)
+        self.assertIn('"[product_data][tax_code]"',source)
+        self.assertIn('item.get("price_includes_gb_delivery") is True',source)
+        self.assertNotIn('request.get("unit_price_pence")',source)
+        self.assertNotIn('request.get("tax_code")',source)
+
     def test_unapproved_catalogue_has_no_checkout(self):
         with patch.object(mod, "policy", return_value={"enabled":False,
                 "webhook_verified":False, "approved_skus":{}}):
