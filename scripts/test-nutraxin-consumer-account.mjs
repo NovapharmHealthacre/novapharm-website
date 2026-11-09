@@ -23,11 +23,11 @@ test("consumer identities use a separate verified-email pool and product callbac
  assert.equal(client.EnableTokenRevocation,true);
  assert.equal(prod.Resources.NutraxinConsumerPool.DeletionPolicy,"Retain");
 });
-test("Products account enables only after a verified release, with OAuth code+PKCE",()=>{
+test("Products account uses verified-email Cognito code+PKCE during limited rollout",()=>{
  const config=JSON.parse(read("assets/data/nutraxin-consumer-auth.json"));
  const js=read("assets/js/nutraxin-consumer-account.js");
  const html=read("products/nutraxin/account/index.html");
- assert.equal(config.enabled,false);
+ assert.equal(config.enabled,true);
  assert.equal(config.account_url,"https://novapharmhealthcare.com/products/nutraxin/account/");
  assert.match(js,/code_challenge_method","S256"/);
  assert.match(js,/grant_type:"authorization_code"/);

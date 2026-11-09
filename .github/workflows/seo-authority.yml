@@ -13,6 +13,7 @@ on:
       - "scripts/test-consent-analytics.mjs"
       - "legal/cookies/index.html"
       - "legal/privacy/index.html"
+      - "scripts/test-native-organic-marketing.mjs"
       - "docs/marketing/**"
       - "scripts/reconcile-leadership-authority.mjs"
       - "scripts/reconcile-article-authority.mjs"
@@ -56,10 +57,13 @@ jobs:
       - name: Build public authority system
         run: npm run build:public-only
 
-      - name: Validate current Google and Bing canonical XML sitemaps
+      - name: Verify £0 native LinkedIn launch and public share links
+        run: node scripts/test-native-organic-marketing.mjs
+
+      - name: Validate canonical Google and Bing XML sitemaps
         run: python3 scripts/validate-public-sitemaps.py
 
-      - name: Verify consent-gated GA4 readiness and policy disclosure
+      - name: Verify GA4 consent and privacy notices
         run: node scripts/test-consent-analytics.mjs
 
       - name: Validate SEO, GEO, entities and discovery

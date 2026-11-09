@@ -16,8 +16,9 @@ on:
       - 'scripts/build-site.mjs'
       - 'assets/data/nutraxin-retail-catalogue.json'
       - 'scripts/apply-corporate-product-discipline.mjs'
-      - 'scripts/stage-pages-artifact.mjs'
       - 'scripts/enhance-seo-authority.mjs'
+      - 'scripts/test-native-organic-marketing.mjs'
+      - 'scripts/stage-pages-artifact.mjs'
       - 'scripts/validate-public-sitemaps.py'
       - 'assets/js/cookie-consent.js'
       - 'assets/js/consent-analytics.js'
@@ -71,6 +72,7 @@ jobs:
           npm ci --ignore-scripts
           PUBLIC_ANALYTICS_PRIVACY_APPROVED=true PUBLIC_GA4_MEASUREMENT_ID=G-897L1VS8BX npm run build:public-only
           python3 scripts/validate-public-sitemaps.py
+          node scripts/test-native-organic-marketing.mjs
           npm run test:owner-corrections:public-only
           node --test scripts/test-nutraxin-retail-store.mjs
           npm run test:cookies
@@ -276,7 +278,7 @@ jobs:
                 ! grep -Fq 'novapharm-ga4-id' /tmp/novapharm-live-analytics-contact.html
                 curl --fail --silent --show-error --location --max-time 15 "https://novapharmhealthcare.com/legal/cookies/?ga4-$GITHUB_SHA-$attempt" -o /tmp/novapharm-live-cookie-notice.html
                 grep -Fq 'Google Analytics 4' /tmp/novapharm-live-cookie-notice.html
-                echo "Consent-gated NovaPharm GA4 public tag verified; no tag on Contact or legal routes."
+                echo "Consented NovaPharm GA4 public tag verified; no tag on Contact or legal routes."
                 exit 0
               fi
             fi
