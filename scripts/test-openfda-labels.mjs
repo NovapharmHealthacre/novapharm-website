@@ -34,6 +34,7 @@ test("FDA query is fixed-host read-only and outputs minimal source-labelled reco
     assert.equal(parsed.pathname, "/drug/label.json");
     assert.equal(parsed.searchParams.get("search"), 'openfda.generic_name:"apixaban"');
     assert.equal(parsed.searchParams.get("limit"), "5");
+    assert.equal(parsed.searchParams.has("api_key"), false, "API credentials must not be placed in a URL");
     assert.equal(options.method, "GET");
     assert.equal(options.redirect, "error");
     assert.equal(options.headers.Accept, "application/json");
