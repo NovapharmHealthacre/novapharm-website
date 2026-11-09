@@ -7,6 +7,9 @@ on:
       - 'products/nutraxin/**'
       - 'src/content/nutraxin-showcase.html'
       - 'assets/js/nutraxin-retail-store.js'
+      - 'assets/js/contact-production.js'
+      - 'assets/js/esco-catalogue.js'
+      - 'scripts/apply-esco-catalogue.mjs'
       - 'assets/data/nutraxin-retail-catalogue.json'
       - 'scripts/apply-corporate-product-discipline.mjs'
       - 'scripts/stage-pages-artifact.mjs'
@@ -68,6 +71,7 @@ jobs:
           grep -Fq 'ESCO Anand' _site/products/index.html
           test -s _site/assets/css/esco-catalogue.css
           test -s _site/assets/js/esco-catalogue.js
+          grep -Fq 'ESCO Anand UK quotation request' _site/assets/js/contact-production.js
           test "$(tr -d '\r\n' < _site/da125ceca8032e01fc98782c388f894f.txt)" = 'da125ceca8032e01fc98782c388f894f'
           grep -Fq 'Simple from start to finish.' _site/products/nutraxin/bag/index.html
           grep -Fq 'Guest checkout available' _site/products/nutraxin/bag/index.html
