@@ -123,3 +123,20 @@ test("the review page uses the Products-only API and never the customer portal",
  assert.match(html,/data-nx-public-bag/);
  assert.doesNotMatch(html,/\bsk_live_|\bwhsec_/);
 });
+
+test("production Stripe IAM allows underlying transactional PutItem and UpdateItem on exact tables",()=>{
+ const checkout=JSON.parse(readFileSync("infra/aws/nutraxin-approved-checkout-production.json","utf8"));
+ const webhook=JSON.parse(readFileSync("infra/aws/nutraxin-stripe-webhook-production.json","utf8"));
+ const checkoutPolicy=checkout.Resources.CheckoutRole.Properties.Policies[0].PolicyDocument.Statement;
+ const ledgerGrant=checkoutPolicy.find(s=>Array.isArray(s.Action)&&s.Action.includes("dynamodb:PutItem"));
+ assert.deepEqual(ledgerGrant.Action,["dynamodb:GetItem","dynamodb:PutItem","dynamodb:UpdateItem"]);
+ assert.match(JSON.stringify(ledgerGrant.Resource),/novapharm-production-nutraxin-payment-ledger/);
+ const webhookPolicy=webhook.Resources.WebhookRole.Properties.Policies[0].PolicyDocument.Statement;
+ const ledgerWebhookGrant=webhookPolicy.find(s=>Array.isArray(s.Action)&&s.Action.includes("dynamodb:UpdateItem"));
+ const outboxWebhookGrant=webhookPolicy.find(s=>Array.isArray(s.Action)&&s.Action.length===1&&s.Action[0]==="dynamodb:PutItem");
+ assert.deepEqual(ledgerWebhookGrant.Action,["dynamodb:GetItem","dynamodb:PutItem","dynamodb:UpdateItem"]);
+ assert.match(JSON.stringify(ledgerWebhookGrant.Resource),/novapharm-production-nutraxin-payment-ledger/);
+ assert.match(JSON.stringify(outboxWebhookGrant.Resource),/novapharm-production-nutraxin-payment-outbox/);
+ assert.equal(JSON.stringify(checkoutPolicy).includes("dynamodb:TransactWriteItems"),false);
+ assert.equal(JSON.stringify(webhookPolicy).includes("dynamodb:TransactWriteItems"),false);
+});
