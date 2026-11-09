@@ -52,6 +52,19 @@ test("FDA query is fixed-host read-only and outputs minimal source-labelled reco
   assert.equal(JSON.stringify(result).includes("approvalStatus"), false);
 });
 
+test("optional FDA API key is sent only by HTTPS header, never reflected in source output or URLs", async () => {
+  const key = "mock-fda-credential";
+  const result = await searchOpenFdaLabels("apixaban", board, {
+    apiKey: key,
+    fetchImpl: async (url, options) => {
+      assert.equal(new URL(url).searchParams.has("api_key"), false);
+      assert.equal(options.headers.Authorization, `Basic ${Buffer.from(`${key}:`).toString("base64")}`);
+      return { ok: true, status: 200, json: async () => sourcePayload };
+    },
+  });
+  assert.equal(JSON.stringify(result).includes(key), false);
+});
+
 test("FDA request rejects search grammar injection and handles official empty and unavailable states", async () => {
   await assert.rejects(() => searchOpenFdaLabels('apixaban" OR user:admin', board), (error) => error.statusCode === 400);
   const missing = await searchOpenFdaLabels("apixaban", board, { fetchImpl: async () => ({ status: 404, ok: false }) });
