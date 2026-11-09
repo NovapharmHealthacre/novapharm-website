@@ -55,8 +55,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 80,
-      "referenceCount": 84,
+      "usageCount": 81,
+      "referenceCount": 85,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -108,6 +108,7 @@
         "portal/index.html",
         "products/index.html",
         "products/nutraxin/artoflex-90-tablets/index.html",
+        "products/nutraxin/bag/index.html",
         "products/nutraxin/collagen-complex-90-tablets/index.html",
         "products/nutraxin/collagen-gold-30-sachets/index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
@@ -811,8 +812,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 72,
-      "referenceCount": 74,
+      "usageCount": 73,
+      "referenceCount": 75,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -856,6 +857,7 @@
         "portal/index.html",
         "products/index.html",
         "products/nutraxin/artoflex-90-tablets/index.html",
+        "products/nutraxin/bag/index.html",
         "products/nutraxin/collagen-complex-90-tablets/index.html",
         "products/nutraxin/collagen-gold-30-sachets/index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
@@ -1087,8 +1089,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 73,
-      "referenceCount": 75,
+      "usageCount": 74,
+      "referenceCount": 76,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -1133,6 +1135,7 @@
         "portal/index.html",
         "products/index.html",
         "products/nutraxin/artoflex-90-tablets/index.html",
+        "products/nutraxin/bag/index.html",
         "products/nutraxin/collagen-complex-90-tablets/index.html",
         "products/nutraxin/collagen-gold-30-sachets/index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
@@ -1285,8 +1288,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 82,
-      "referenceCount": 208,
+      "usageCount": 83,
+      "referenceCount": 210,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -1332,6 +1335,7 @@
         "portal/index.html",
         "products/index.html",
         "products/nutraxin/artoflex-90-tablets/index.html",
+        "products/nutraxin/bag/index.html",
         "products/nutraxin/collagen-complex-90-tablets/index.html",
         "products/nutraxin/collagen-gold-30-sachets/index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
@@ -1424,8 +1428,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 93,
-      "referenceCount": 200,
+      "usageCount": 94,
+      "referenceCount": 202,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -1488,6 +1492,7 @@
         "portal/index.html",
         "products/index.html",
         "products/nutraxin/artoflex-90-tablets/index.html",
+        "products/nutraxin/bag/index.html",
         "products/nutraxin/collagen-complex-90-tablets/index.html",
         "products/nutraxin/collagen-gold-30-sachets/index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
@@ -1640,8 +1645,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 67,
-      "referenceCount": 207,
+      "usageCount": 68,
+      "referenceCount": 208,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -1680,6 +1685,7 @@
         "partner-with-us/index.html",
         "products/index.html",
         "products/nutraxin/artoflex-90-tablets/index.html",
+        "products/nutraxin/bag/index.html",
         "products/nutraxin/collagen-complex-90-tablets/index.html",
         "products/nutraxin/collagen-gold-30-sachets/index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
@@ -2157,8 +2163,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 65,
-      "referenceCount": 65,
+      "usageCount": 66,
+      "referenceCount": 66,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -2197,6 +2203,7 @@
         "partner-with-us/index.html",
         "products/index.html",
         "products/nutraxin/artoflex-90-tablets/index.html",
+        "products/nutraxin/bag/index.html",
         "products/nutraxin/collagen-complex-90-tablets/index.html",
         "products/nutraxin/collagen-gold-30-sachets/index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
@@ -12229,9 +12236,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
+        "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/artoflex-90-tablets/index.html",
         "products/nutraxin/index.html",
@@ -12476,9 +12484,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
+        "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/collagen-complex-90-tablets/index.html",
         "products/nutraxin/index.html",
@@ -12723,9 +12732,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
+        "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/collagen-gold-30-sachets/index.html",
         "products/nutraxin/index.html",
@@ -12970,9 +12980,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 9,
+      "usageCount": 6,
+      "referenceCount": 10,
       "usageFiles": [
+        "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
@@ -13222,9 +13233,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
+        "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/l-carnitine-60-tablets/index.html",
@@ -13469,9 +13481,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 8,
+      "usageCount": 5,
+      "referenceCount": 9,
       "usageFiles": [
+        "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/magnesium-complex-60-tablets/index.html",
@@ -13716,9 +13729,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
+        "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/magnesium-daily-60-tablets/index.html",
@@ -13964,9 +13978,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
+        "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/mens-multivitamin-complex-60-tablets/index.html",
@@ -14215,9 +14230,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
+        "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/multivitamin-mineral-energy-60-tablets/index.html",
@@ -14462,9 +14478,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
+        "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-b12-60-sublingual-tablets/index.html",
@@ -14709,9 +14726,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 5,
+      "usageCount": 6,
+      "referenceCount": 6,
       "usageFiles": [
+        "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/nutraxin/index.html",
@@ -14961,9 +14979,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
+        "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-c-500mg-chewable-30-tablets/index.html",
@@ -15208,9 +15227,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 8,
+      "usageCount": 7,
+      "referenceCount": 9,
       "usageFiles": [
+        "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/index.html",
@@ -15414,12 +15434,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 9,
-      "referenceCount": 29,
+      "usageCount": 10,
+      "referenceCount": 32,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/index.html",
+        "products/nutraxin/bag/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
         "scripts/reconcile-social-authority.mjs",
@@ -15468,9 +15489,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
+        "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d3-k2-120-tablets/index.html",
@@ -15715,9 +15737,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
+        "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d3-k2-spray-30ml/index.html",
@@ -15962,9 +15985,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
+        "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d3-spray-30ml/index.html",
@@ -16209,9 +16233,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
+        "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-max-15-effervescent-tablets/index.html",
@@ -16456,9 +16481,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 6,
+      "usageCount": 5,
+      "referenceCount": 7,
       "usageFiles": [
+        "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-max-60-tablets/index.html",
@@ -16704,9 +16730,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
+        "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/womens-multivitamin-complex-60-tablets/index.html",

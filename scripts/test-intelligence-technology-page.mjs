@@ -11,7 +11,7 @@ const materialiser = read("scripts/apply-corporate-product-discipline.mjs");
 const metadata = read("src/content/site-content.mjs");
 
 const required = [
-  "NOVAPHARM INTELLIGENCE", "Medicine is complex.",
+  "NOVAPHARM INTELLIGENCE", "Medicine is complex.", "The industry doesn't lack data. It lacks connection.",
   "The Medicines Terminal", "NOVA", "PANDORA",
   "Medicine identity", "Evidence &amp; regulation", "Market &amp; geography",
   "Forecasts &amp; signals", "Supply, pricing &amp; tenders",
