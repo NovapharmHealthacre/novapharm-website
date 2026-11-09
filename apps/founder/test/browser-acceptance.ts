@@ -135,6 +135,22 @@ function routeName(route: string): string {
   return route === "/" ? "home" : route.replace(/^\//, "").replace(/\/$/, "").replaceAll("/", "--");
 }
 
+async function captureVerifiedScreenshot(page: Page, targetPath: string): Promise<void> {
+  // Some WebKit/Chromium runners fail the screenshot protocol before producing
+  // a raster. Retry only that transient capture error, never a failed assertion.
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      const png = await page.screenshot({ path: targetPath, animations: "disabled", timeout: 15_000 });
+      assert.ok(png.length > 1_000, "Founder browser screenshot must contain a real PNG raster");
+      return;
+    } catch (error) {
+      const captureProtocolError = /Page\.captureScreenshot|Unable to capture screenshot/u.test(String(error));
+      if (!captureProtocolError || attempt === 3) throw error;
+      await page.waitForTimeout(attempt * 300);
+    }
+  }
+}
+
 async function verifyPage(
   page: Page,
   engine: string,
@@ -187,7 +203,7 @@ async function verifyPage(
 
   const screenshotDirectory = path.join(artifactRoot, engine, viewport.name);
   await fs.mkdir(screenshotDirectory, { recursive: true });
-  await page.screenshot({ path: path.join(screenshotDirectory, `${routeName(route)}.png`), animations: "disabled" });
+  await captureVerifiedScreenshot(page, path.join(screenshotDirectory, `${routeName(route)}.png`));
   screenshots += 1;
 
   if (viewport.name === "desktop-1440" || viewport.name === "mobile-390") {
