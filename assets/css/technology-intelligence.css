@@ -927,6 +927,7 @@ body[data-page="technology"] .np-intelligence {
 
 
 /* NovaPharm Intelligence pricing: scope and activation are always explicit. */
+.np-intelligence .npi-pricing-intro .npi-kicker { color: #9c261c; } /* Minimum AA contrast on #f5f5f7 */
 .np-intelligence .npi-pricing { background: #f5f5f7; }
 .np-intelligence .npi-pricing-intro { max-width: 840px; margin: 0 auto 48px; text-align: center; }
 .np-intelligence .npi-pricing-intro h2 { font-size: clamp(2.8rem, 5.4vw, 5.35rem); line-height: 1.07; letter-spacing: -.046em; font-weight: 680; }
