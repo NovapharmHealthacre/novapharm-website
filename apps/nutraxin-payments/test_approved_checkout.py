@@ -171,7 +171,7 @@ class PaymentContracts(unittest.TestCase):
         def fake_open(request, timeout):
             expected = "Bearer " + FakeSecrets().get_secret_value()["SecretString"].strip()
             self.assertEqual(request.get_header("Authorization"), expected)
-            self.assertNotIn("\\n", request.get_header("Authorization"))
+            self.assertNotIn(chr(10), request.get_header("Authorization"))
             self.assertNotIn(b"payment_method_types", request.data,
                              "Deprecated Stripe 2026-09-30 payment method parameter must be absent")
             self.assertEqual(timeout, 12)
