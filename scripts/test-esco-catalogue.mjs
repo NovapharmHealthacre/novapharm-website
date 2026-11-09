@@ -29,7 +29,7 @@ test("ESCO has a 12-item quotation list with contact-form prefill but no payment
   const fallback=readFileSync("assets/js/contact-email-draft.js","utf8");
   assert.match(builder,/data-esco-add/);
   assert.match(builder,/data-esco-quote-items/);
-  assert.match(builder,/Request final quote/);
+  assert.match(builder,/Request a confirmed quote/);
   assert.match(builder,/products\/esco\/bag\/index.html/);
   assert.match(builder,/data-esco-bag-items/);
   assert.match(interaction,/const MAX_ITEMS = 12/);
@@ -138,7 +138,7 @@ test("owner-declared 10000 per catalogue reference is planning stock, not verifi
   const builder=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
   assert.match(builder,/10,000 units per catalogue reference/);
   assert.match(builder,/warehouse-verified available stock/);
-  assert.match(builder,/No payment is taken until the exact order is approved/);
+  assert.match(builder,/Card checkout is available for individually approved UK-saleable products only/);
 });
 
 test("ESCO payment button only enables from protected server readiness, never from guide prices or owner stock",()=>{
@@ -161,4 +161,30 @@ test("ESCO payment button only enables from protected server readiness, never fr
   assert.match(bag,/redirect\.hostname !== "checkout\.stripe\.com"/);
   assert.match(bag,/info\.paid === true && info\.status === "PAID"/);
   assert.doesNotMatch(bag,/sk_live_[A-Za-z0-9]{16,}|rk_live_[A-Za-z0-9]{16,}|whsec_[A-Za-z0-9]{16,}/);
+});
+
+test("ESCO v2 is a visual shopping Bag, not an inline quotation table",()=>{
+  const generator=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
+  const bag=readFileSync("assets/js/esco-bag.js","utf8");
+  const css=readFileSync("assets/css/esco-catalogue.css","utf8");
+  assert.match(generator,/esco-shop-mini-bag/);
+  assert.match(generator,/esco-mini-a11y-list/);
+  assert.match(generator,/Review your Bag/);
+  assert.match(generator,/esco-shop-bag/);
+  assert.match(generator,/esco-bag-totals/);
+  assert.match(generator,/Order summary/);
+  assert.match(generator,/data-esco-bag-count/);
+  assert.match(generator,/Continue to secure checkout/);
+  assert.match(bag,/esco-shopping-picture/);
+  assert.match(bag,/esco-shopping-line-total/);
+  assert.match(bag,/data-esco-bag-qty/);
+  assert.match(bag,/productImage/);
+  assert.match(bag,/esco-model-photo-map\.json/);
+  assert.match(bag,/priceData\.visualPreviews/);
+  assert.match(bag,/paymentServiceReady/);
+  assert.match(bag,/checkoutApiOrigin/);
+  assert.match(css,/esco-shop-mini-bag/);
+  assert.match(css,/esco-shop-bag/);
+  assert.match(css,/\.esco-shopping-item/);
+  assert.match(css,/@media\(max-width:600px\)/);
 });
