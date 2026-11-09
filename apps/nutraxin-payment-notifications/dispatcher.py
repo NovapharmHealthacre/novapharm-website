@@ -146,11 +146,27 @@ def handler(event, context):
         return response(503, error="ses_production_access_not_approved")
     if SENDER.split("@")[-1].lower() != "novapharmhealthcare.com":
         return response(503, error="sender_domain_unapproved")
-    records = DDB.scan(TableName=OUTBOX, ConsistentRead=True, Limit=25,
-        FilterExpression="#s = :pending AND eventType = :paid",
-        ExpressionAttributeNames={"#s": "status"},
-        ExpressionAttributeValues={":pending": {"S": "PENDING_REVIEW"},
-                                   ":paid": {"S": "NUTRAXIN_PAYMENT_PAID"}}).get("Items", [])
+    records = []
+    cursor = None
+    scan_incomplete = False
+    # DynamoDB applies Limit BEFORE FilterExpression, so paginate or new
+    # paid events can be hidden behind older nonmatching outbox entries.
+    for page in range(250):
+        options = {"TableName": OUTBOX, "ConsistentRead": True, "Limit": 100,
+            "FilterExpression": "#s = :pending AND eventType = :paid",
+            "ExpressionAttributeNames": {"#s": "status"},
+            "ExpressionAttributeValues": {":pending": {"S": "PENDING_REVIEW"},
+                                          ":paid": {"S": "NUTRAXIN_PAYMENT_PAID"}}}
+        if cursor:
+            options["ExclusiveStartKey"] = cursor
+        scanned = DDB.scan(**options)
+        records.extend(scanned.get("Items", []))
+        cursor = scanned.get("LastEvaluatedKey")
+        if not cursor or len(records) >= 25:
+            break
+    else:
+        scan_incomplete = bool(cursor)
+    records = records[:25]
     sent = 0
     review = 0
     for outbox in records:
@@ -180,4 +196,4 @@ def handler(event, context):
         # stranded for manual reconciliation; automatic retries could duplicate mail.
         mark(order_id, event_id, "SENT", delivered.get("MessageId"))
         sent += 1
-    return response(200, enabled=True, sent=sent, needs_review=review)
+    return response(200, enabled=True, sent=sent, needs_review=review, scan_incomplete=scan_incomplete)
