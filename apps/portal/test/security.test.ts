@@ -75,3 +75,16 @@ test("US FDA discovery is a fixed read-only board-gateway flow with no browser-h
   assert.doesNotMatch(view, /OPENFDA_API_KEY|api_key|localStorage|sessionStorage/);
   assert.doesNotMatch(view, /fetch\("https:\/\/api\.fda\.gov/);
 });
+
+
+test("Intelligence release readiness is only available through exact read-only private gateway allowlist", () => {
+  const gateway = source("app/gateway/[...path]/route.ts");
+  const server = source("../../server.mjs");
+  assert.ok(gateway.includes("intelligence\\/readiness$/"), "Only the exact readiness path can pass the BFF");
+  assert.match(gateway, /path === "v1\\/intelligence\\/readiness"/);
+  assert.match(gateway, /request\\.method !== "GET"/);
+  assert.match(gateway, /Cache-Control.*no-store/);
+  assert.match(server, /pathname === "\/api\/v1\/intelligence\/readiness"/);
+  assert.match(server, /scopedAuthentication\(request, response, \["board"\]\)/);
+  assert.doesNotMatch(gateway, /\/\^v1\\\/intelligence\\\/.\+\$/);
+});
