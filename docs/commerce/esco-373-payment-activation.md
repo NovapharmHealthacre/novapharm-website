@@ -2,6 +2,10 @@
 
 **Scope:** 373 catalogue references in 12 groups; all may enter a customer's Bag and submit a business order request. A reference does **not** acquire permission to collect card payment from its public guide price or 10,000-unit planning-stock statement.
 
+## Merchant-approved 373 unit prices (9 November 2026)
+
+The owner has expressly authorised the **displayed catalogue guide GBP unit amounts as merchant-approved base selling prices** for all 373 references. The merchant review matrix therefore records the same figure in `owner_approved_catalogue_unit_price_ex_vat_gbp` with approval date 2026-11-09. This approves the listed per-reference **base price, excluding VAT, delivery, and any unresolved variant-specific difference**. It does not establish UK delivery included, the correct tax treatment, a physical inventory allocation, exact variation, a supplier entitlement, or eligibility for immediate Stripe card capture. Two pre-existing protected exact-model records retain their server-approved UK-delivered prices, even where those differ from catalogue category guides.
+
 ## Current customer journeys
 
 - **Exact approved SKU basket**: protected `GET /readiness` returns a server-approved catalogue identifier and fixed UK delivered ex-VAT price. Customer agrees to terms; `POST /checkout` creates a Stripe-hosted payment session with server-generated line items and automatic tax. Signed Stripe webhook reconciles the completed session with the DynamoDB ledger. A redirect is not proof of payment.
