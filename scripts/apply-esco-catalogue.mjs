@@ -17,10 +17,10 @@ for (const item of entries) {
 }
 const productPicture = (p, category) => {
   const img = imageManifest.images[p.id];
-  if (img && img.model === p.model && /^\\/assets\\/media\\/esco\\/esco-p\\d{2}-image\\d{2}\\.webp$/.test(img.path)) {
+  if (img && img.model === p.model && /^[/]assets[/]media[/]esco[/]esco-p[0-9]{2}-image[0-9]{2}[.]webp$/.test(img.path)) {
     return `<img class="esco-product-image" src="${esc(img.path)}" width="480" height="480" loading="lazy" decoding="async" alt="ESCO catalogue photograph labelled ${esc(p.model)} for ${esc(p.name)}"><span class="esco-product-art-caption">Model-matched ESCO catalogue photo · supplied variant may differ</span>`;
   }
-  return `${productPicture(p, category)}`;
+  return `<div class="esco-product-art" data-esco-photo="${esc(category.representativeImage)}" role="img" aria-label="Illustrative supplier-catalogue image for ${esc(category.name)}, not a verified individual product photograph"></div><span class="esco-product-art-caption">Supplier category image · exact variant to be confirmed</span>`;
 };
 if (imageManifest.mappedImagesCount !== 61 || Object.keys(imageManifest.images).length !== 61) throw Error('ESCO source photo manifest count mismatch');
 for (const [id, image] of Object.entries(imageManifest.images)) {
@@ -31,7 +31,7 @@ const contact = (item) => '/contact/?enquiry=Distribution%20partnership&quote=' 
 const sections = data.categories.map((category, i) => {
   const subs = [...new Set(category.entries.map((item) => item.subcategory))];
   const groups = subs.map((sub) => {
-    const cards = category.entries.filter((p) => p.subcategory === sub).map((p) => `<article class="esco-product" data-esco-entry data-esco-category="${esc(category.name)}" data-esco-search="${esc([p.name, p.model, p.id, p.subcategory, category.name].filter(Boolean).join(' '))}"><div class="esco-product-art" data-esco-photo="${esc(category.representativeImage)}" role="img" aria-label="Illustrative supplier-catalogue image for ${esc(category.name)}, not a verified individual product photograph"></div><span class="esco-product-art-caption">Supplier category image · exact variant to be confirmed</span><h4>${esc(p.name)}</h4><span class="esco-model">${p.model ? 'ESCO ' + esc(p.model) : 'Model to be confirmed'}</span><span class="esco-ref">${esc(p.id)} · Source catalogue index p. ${p.sourceIndexPage}</span><button type="button" class="esco-quote-add" data-esco-add="${esc(p.id)}" aria-label="Add ${esc(p.name)} to a quotation request">Add to quote list</button><a href="${esc(contact(p))}" class="esco-direct-quote" aria-label="Individual enquiry for ${esc(p.name)}">Individual enquiry</a></article>`).join('');
+    const cards = category.entries.filter((p) => p.subcategory === sub).map((p) => `<article class="esco-product" data-esco-entry data-esco-category="${esc(category.name)}" data-esco-search="${esc([p.name, p.model, p.id, p.subcategory, category.name].filter(Boolean).join(' '))}">${productPicture(p, category)}<h4>${esc(p.name)}</h4><span class="esco-model">${p.model ? 'ESCO ' + esc(p.model) : 'Model to be confirmed'}</span><span class="esco-ref">${esc(p.id)} · Source catalogue index p. ${p.sourceIndexPage}</span><button type="button" class="esco-quote-add" data-esco-add="${esc(p.id)}" aria-label="Add ${esc(p.name)} to a quotation request">Add to quote list</button><a href="${esc(contact(p))}" class="esco-direct-quote" aria-label="Individual enquiry for ${esc(p.name)}">Individual enquiry</a></article>`).join('');
     return `<h4 class="esco-subcat" data-esco-subcategory>${esc(sub)}</h4><div class="esco-grid">${cards}</div>`;
   });
   return `<section class="esco-section" data-esco-section id="esco-range-${i + 1}" aria-labelledby="esco-range-heading-${i + 1}"><div class="esco-section-header"><h3 id="esco-range-heading-${i + 1}">${esc(category.name)}</h3><span class="esco-section-count">${category.entries.length} catalogue entries</span></div>${groups.join('')}</section>`;
