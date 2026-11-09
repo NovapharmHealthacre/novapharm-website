@@ -1,0 +1,29 @@
+name: NOVA governed model egress contract
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/ai/provider-openai-zdr.mjs'
+      - 'src/core/ai/redaction-service.mjs'
+      - 'scripts/test-nova-openai-zdr.mjs'
+      - '.github/workflows/intelligence-nova-egress-contract.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  controlled-inference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install pinned dependencies
+        run: npm ci
+      - name: Assert source rights, no secrets, zero unexpected provider calls and no storage
+        run: npm run test:internal-ai
+      - name: Verify production NOVA and source rights remain gated
+        run: npm run intelligence:requirements:validate
