@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { portalModules, visiblePortalModules } from "@novapharm/portal-contracts";
+import { intelligenceWorkspaceCatalogue, intelligenceWorkspaceSlugs } from "../data/intelligence-workspaces";
 import { areaLandingRoutes, isPortalAccessType, landingRouteForAccess, medicinesIntelligenceSubviews, normalisePortalPath, resolvePortalView } from "../data/routes";
 
 test("only release-visible governed modules resolve through the component portal", () => {
@@ -47,4 +48,23 @@ test("Medicines Intelligence has eight governed nested views and rejects every o
   assert.equal(new Set(medicinesIntelligenceSubviews).size, 8);
   assert.equal(resolvePortalView("/portal/executive-platform/medicines-intelligence/unapproved-view/"), null);
   assert.equal(resolvePortalView("/portal/executive-platform/nhs-data/"), null);
+});
+
+test("all 22 canonical workspaces resolve to the existing protected executive module without fabricating live capability", () => {
+  assert.equal(intelligenceWorkspaceCatalogue.length, 22);
+  assert.equal(new Set(intelligenceWorkspaceSlugs).size, 22);
+  assert.equal(intelligenceWorkspaceCatalogue.filter((workspace) => workspace.state === "gated").length > 0, true);
+  for (const workspace of intelligenceWorkspaceCatalogue) {
+    const route = `/portal/executive-platform/medicines-intelligence/${workspace.slug}/`;
+    const view = resolvePortalView(route);
+    assert.equal(view?.kind, "module", route);
+    if (view?.kind === "module") {
+      assert.equal(view.module.code, "executive.nhs-data");
+      assert.equal(view.subview, workspace.slug);
+    }
+    assert.equal(workspace.requirements.length >= 2, true, `${workspace.title} must document an evidence boundary`);
+    assert.ok(workspace.state === "gated" || workspace.state === "existing-read-only");
+  }
+  assert.equal(resolvePortalView("/portal/executive-platform/medicines-intelligence/admin/"), null);
+  assert.equal(resolvePortalView("/portal/executive-platform/medicines-intelligence/data-operations/"), null);
 });
