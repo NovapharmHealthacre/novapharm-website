@@ -904,8 +904,8 @@ body[data-page="technology"] .np-intelligence {
 }
 .np-intelligence .npi-research-footer p { color: #525259; font-size: .85rem; line-height: 1.65; }
 .np-intelligence .npi-research-footer strong { color: #1d1d1f; }
-.np-intelligence .npi-research-footer a {
-  white-space: nowrap; color: #0055b7; font-size: .87rem; font-weight: 600;
+.np-intelligence .npi-research-access-status {
+  max-width: 320px; color: #64646b; font-size: .85rem; line-height: 1.6;
 }
 .np-intelligence .npi-dash-quick-search { display: flex; align-items: center; cursor: pointer; }
 @media (max-width: 850px) {
@@ -919,7 +919,7 @@ body[data-page="technology"] .np-intelligence {
   .np-intelligence .npi-research-panel { border-radius: 20px; padding: 22px 19px; }
   .np-intelligence .npi-research-submit { width: 100%; }
   .np-intelligence .npi-research-result { padding: 19px; }
-  .np-intelligence .npi-research-footer a { white-space: normal; }
+  .np-intelligence .npi-research-access-status { max-width: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .np-intelligence .npi-research :is(a,button,input,select) { transition: none; }
