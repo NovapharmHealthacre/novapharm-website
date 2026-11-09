@@ -268,3 +268,29 @@ test("ESCO Bag explains quote-only selections without authorising guide-price ch
  assert.match(bag,/checkoutApiOrigin \+ "\/checkout"/);
  assert.doesNotMatch(bag,/sk_live_[A-Za-z0-9]{16,}|rk_live_[A-Za-z0-9]{16,}|whsec_[A-Za-z0-9]{16,}/);
 });
+
+
+test("all 373 ESCO order-request references have a private, non-authorising merchant review row",async()=>{
+ const {buildMerchantReviewRows,merchantRowsToCsv}=await import("./esco-merchant-release-matrix.mjs");
+ const rows=buildMerchantReviewRows();
+ assert.equal(rows.length,373);
+ assert.equal(new Set(rows.map(x=>x.catalogue_id)).size,373);
+ assert.equal(new Set(rows.map(x=>x.category)).size,12);
+ assert.ok(rows.every(x=>x.customer_order_request_available==="YES"));
+ assert.ok(rows.every(x=>x.additional_live_card_checkout_approved_by_this_matrix==="NO"));
+ assert.ok(rows.every(x=>x.current_live_checkout_status==="VERIFY_AGAINST_PROTECTED_SSM_POLICY"));
+ assert.ok(rows.every(x=>x.checkout_status==="AWAITING_INDIVIDUAL_APPROVAL"));
+ assert.ok(rows.every(x=>!x.resolved_saleable_variant && !x.approved_stripe_tax_code));
+ assert.equal(merchantRowsToCsv(rows).trimEnd().split("\n").length,374);
+});
+
+test("ESCO Bag has no greyed checkout dead end and retains server-only payment authority",()=>{
+ const bag=readFileSync("assets/js/esco-bag.js","utf8");
+ const css=readFileSync("assets/css/esco-catalogue.css","utf8");
+ assert.match(bag,/checkoutButton\.hidden = !eligible/);
+ assert.match(bag,/Continue with order request/);
+ assert.match(bag,/Request a formal quotation/);
+ assert.match(bag,/approvedUnitPricesPence\.has\(item\.id\)/);
+ assert.match(bag,/checkoutApiOrigin \+ "\/checkout"/);
+ assert.match(css,/\.esco-shop-bag \.esco-bag-pay\[hidden\]\{display:none!important;\}/);
+});
