@@ -44,4 +44,14 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "chore(media): reconcile generated inventory with current tracked assets"
-          git push origin HEAD:refs/heads/feat/intelligence-public-research-entry-20261109
+          # Other approved PR changes may land while image decoding runs.
+          # Rebase only this one-file generated commit; never force push.
+          for attempt in 1 2 3; do
+            git fetch origin refs/heads/feat/intelligence-public-research-entry-20261109:refs/remotes/origin/feat/intelligence-public-research-entry-20261109
+            git rebase refs/remotes/origin/feat/intelligence-public-research-entry-20261109
+            if git push origin HEAD:refs/heads/feat/intelligence-public-research-entry-20261109; then
+              exit 0
+            fi
+          done
+          echo "::error::Could not safely publish reconciled inventory"
+          exit 1
