@@ -360,6 +360,64 @@
           }
         }
       }
+    },
+    "/regulatory/us/fda-labels": {
+      "get": {
+        "tags": [
+          "Medicine identity"
+        ],
+        "operationId": "readUsFdaPublicLabelDiscovery",
+        "summary": "Source-attributed US FDA drug label discovery, not authorisation or clinical advice",
+        "description": "Read-only live lookup to openFDA. API keys are configured only server-side when required. Access remains executive-scoped and source and jurisdiction limitations are returned.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "drug",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 80,
+              "description": "Generic medicine name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Source-backed label lookup with explicit dataState, source ID and uncertainty",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "required": [
+                    "sourceId",
+                    "jurisdiction",
+                    "dataState",
+                    "records",
+                    "limitations"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "503": {
+            "description": "External source temporarily unavailable"
+          }
+        }
+      }
     }
   },
   "components": {
