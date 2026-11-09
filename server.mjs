@@ -968,7 +968,7 @@ export async function handleRequest(request, response) {
       return;
     }
 
-    if (["/api/enterprise/medicines/search", "/api/v1/pharmascope/medicines/search"].includes(pathname) && request.method === "GET") {
+    if (["/api/enterprise/medicines/search", "/api/v1/pharmascope/medicines/search", "/api/v1/intelligence/medicines/search"].includes(pathname) && request.method === "GET") {
       if (!await rateLimit(request, "medicine-search", 120, 60 * 1000)) return json(response, 429, { error: "Too many medicine searches. Try again shortly." });
       const session = await scopedAuthentication(request, response, ["board"]);
       if (!session) return;
@@ -980,7 +980,7 @@ export async function handleRequest(request, response) {
       return;
     }
 
-    if (["/api/enterprise/medicines/analytics", "/api/v1/pharmascope/analytics"].includes(pathname) && request.method === "GET") {
+    if (["/api/enterprise/medicines/analytics", "/api/v1/pharmascope/analytics", "/api/v1/intelligence/markets/observations"].includes(pathname) && request.method === "GET") {
       if (!await rateLimit(request, "medicine-analytics", 120, 60 * 1000)) return json(response, 429, { error: "Too many analytical requests. Try again shortly." });
       const session = await scopedAuthentication(request, response, ["board"]);
       if (!session) return;
@@ -988,7 +988,7 @@ export async function handleRequest(request, response) {
       return;
     }
 
-    if (["/api/enterprise/medicines/nearby", "/api/v1/pharmascope/geography/nearby"].includes(pathname) && request.method === "GET") {
+    if (["/api/enterprise/medicines/nearby", "/api/v1/pharmascope/geography/nearby", "/api/v1/intelligence/geographies/nearby"].includes(pathname) && request.method === "GET") {
       if (!await rateLimit(request, "medicine-geography", 120, 60 * 1000)) return json(response, 429, { error: "Too many geography requests. Try again shortly." });
       const session = await scopedAuthentication(request, response, ["board"]);
       if (!session) return;
@@ -996,7 +996,7 @@ export async function handleRequest(request, response) {
       return;
     }
 
-    const medicineIdentityMatch = pathname.match(/^\/api\/(?:enterprise\/medicines|v1\/pharmascope\/medicines)\/(medicine-[a-f0-9]{32})$/);
+    const medicineIdentityMatch = pathname.match(/^\/api\/(?:enterprise\/medicines|v1\/pharmascope\/medicines|v1\/intelligence\/medicines)\/(medicine-[a-f0-9]{32})$/);
     if (medicineIdentityMatch && request.method === "GET") {
       const session = await scopedAuthentication(request, response, ["board"]);
       if (!session) return;
