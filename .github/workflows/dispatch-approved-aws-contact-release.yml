@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout exact merge to inspect publisher trigger paths
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 2
       - name: Avoid a duplicate release for a directly published commit
         id: publisher
         shell: bash
