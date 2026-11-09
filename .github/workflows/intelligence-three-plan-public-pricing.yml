@@ -1,0 +1,33 @@
+name: NovaPharm Intelligence three-plan prelaunch pricing acceptance
+
+on:
+  pull_request:
+    paths:
+      - 'src/content/technology-intelligence.html'
+      - 'technology/index.html'
+      - 'assets/css/technology-intelligence.css'
+      - 'assets/js/intelligence-pricing.js'
+      - 'assets/js/contact-production.js'
+      - 'scripts/apply-corporate-product-discipline.mjs'
+      - 'scripts/test-intelligence-technology-page.mjs'
+      - '.github/workflows/intelligence-three-plan-public-pricing.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  public-proposal-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install pinned dependencies
+        run: npm ci
+      - name: Verify pricing display, term disclosure and no-billing activation
+        run: npm run test:technology-page
+      - name: Preserve release and source-rights ledger
+        run: npm run intelligence:requirements:validate
