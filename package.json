@@ -70,7 +70,7 @@
     "test:integration": "node scripts/test-server.mjs",
     "test:backend-activation": "node scripts/test-backend-activation.mjs",
     "test:production-security": "node scripts/test-production-security.mjs",
-    "test:cookies": "node scripts/test-cookie-consent.mjs",
+    "test:cookies": "node scripts/test-cookie-consent.mjs && node scripts/test-consent-analytics.mjs",
     "test:backup-restore": "node scripts/test-backup-restore.mjs",
     "test:preview-security": "node scripts/test-preview-security.mjs",
     "test:session-restart": "node scripts/test-session-restart.mjs",
