@@ -472,6 +472,19 @@ class PortalSecurityTests(unittest.TestCase):
         PORTAL.login(bad)
         self.assertEqual(DDB.items[-1]["return_to"],"")
 
+    def test_bag_unit_gross_reconciles_at_quantity_3_and_10000(self):
+        # £12.89 net + 20% unit VAT = £15.47. Three units must be
+        # £46.41, not £46.40 from tax rounded on aggregate net.
+        unit_net=1289
+        unit_gross=unit_net+PORTAL.illustrative_uk_vat_pence(unit_net)
+        self.assertEqual(unit_gross,1547)
+        self.assertEqual(unit_gross*3,4641)
+        self.assertEqual(unit_gross*10000,15470000)
+        source=(ROOT/"apps/nutraxin-customer-api/index.py").read_text()
+        self.assertIn("line_gross = unit_gross * quantity",source)
+        self.assertIn('"grossMinor": line_gross',source)
+        self.assertNotIn("gross = (net * 120 + 50) // 100",source)
+
     def test_owner_self_service_checkout_prices_on_server_and_never_reserves_fake_stock(self):
         import io
 
