@@ -2,7 +2,7 @@ name: Reconcile governed image inventory (isolated branch only)
 
 on:
   push:
-    branches: [codex/security-dependencies-20261106]
+    branches: [feat/jobs-inspired-organic-marketing-20261109]
     paths:
       - '.github/workflows/reconcile-image-inventory-candidate.yml'
 
@@ -28,6 +28,8 @@ jobs:
           git diff --check
           git diff --stat -- audit/generated/image-inventory.json
           mkdir -p candidate
+          git diff -- audit/generated/image-inventory.json > candidate/inventory.diff
+          sed -n '1,260p' candidate/inventory.diff
           cp audit/generated/image-inventory.json candidate/image-inventory.json
           printf '%s\n' "$GITHUB_SHA" > candidate/source-sha.txt
           sha256sum candidate/image-inventory.json > candidate/sha256.txt
