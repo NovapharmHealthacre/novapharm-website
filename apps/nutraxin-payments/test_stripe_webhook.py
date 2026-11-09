@@ -129,7 +129,10 @@ class WebhookTests(unittest.TestCase):
         self.assertNotIn("stripe.com/v1/checkout",template["Resources"]["WebhookLambda"]["Properties"]["Code"]["ZipFile"])
         pol=json.dumps(resource["WebhookRole"]["Properties"]["Policies"])
         self.assertIn("secretsmanager:GetSecretValue",pol)
-        self.assertIn("dynamodb:TransactWriteItems",pol)
+        stmts=resource["WebhookRole"]["Properties"]["Policies"][0]["PolicyDocument"]["Statement"]
+        self.assertEqual(set(stmts[2]["Action"]),{"dynamodb:GetItem","dynamodb:PutItem","dynamodb:UpdateItem"})
+        self.assertEqual(stmts[3]["Action"],["dynamodb:PutItem"])
+        self.assertNotIn("dynamodb:TransactWriteItems",pol)
         self.assertNotIn("secretsmanager:PutSecretValue",pol)
 
 if __name__=="__main__":
