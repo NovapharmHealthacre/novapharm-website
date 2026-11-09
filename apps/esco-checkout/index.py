@@ -73,7 +73,8 @@ def secret(name):
 def eligible(item):
     if not isinstance(item, dict):
         return False
-    required = ("commercial_approved", "supplier_cost_verified", "uk_product_classification_verified",
+    owner_estimate = item.get("commercial_basis") == "owner_authorised_estimate"
+    required = ("commercial_approved", "uk_product_classification_verified",
         "uk_product_safety_verified", "tax_classification_verified", "delivery_verified",
         "stock_allocatable_verified", "manufacturer_supply_authorised", "variants_resolved")
     if any(item.get(k) is not True for k in required):
@@ -85,13 +86,35 @@ def eligible(item):
             return False
     elif kind != "general_goods":
         return False
-    amount, cost, stock = item.get("unit_price_pence"), item.get("actual_variable_cost_pence"), item.get("available_to_promise_units")
-    if any(type(v) is not int for v in (amount, cost, stock)):
+    amount, stock = item.get("unit_price_pence"), item.get("available_to_promise_units")
+    if any(type(v) is not int for v in (amount, stock)):
         return False
-    if not (1 <= amount <= MAX_SUBTOTAL and 0 <= cost <= amount and 1 <= stock <= 10000):
+    if not (1 <= amount <= MAX_SUBTOTAL and 1 <= stock <= 10000):
         return False
-    if cost * 4 > amount * 3:  # 25% margin on ex-VAT revenue, never a 25% markup.
-        return False
+    if owner_estimate:
+        # Explicit merchant-authorised estimate mode. Never label projected costs
+        # as actual; the 25% margin is conditional on true costs being below caps.
+        if (item.get("owner_authorised_release") is not True or
+            item.get("owner_accepts_unverified_landed_cost") is not True or
+            item.get("regulatory_evidence_basis") != "merchant_attestation" or
+            item.get("pricing_mode") != "approved_inline" or
+            item.get("price_includes_gb_delivery") is not True):
+            return False
+        projected = tuple(item.get(k) for k in (
+            "outbound_delivery_budget_pence", "processing_fee_budget_pence",
+            "storage_budget_pence", "supplier_inbound_cost_ceiling_pence"))
+        if any(type(x) is not int or x < 0 for x in projected):
+            return False
+        if not projected[3] or 4 * sum(projected) > 3 * amount:
+            return False
+    else:
+        if item.get("supplier_cost_verified") is not True:
+            return False
+        cost = item.get("actual_variable_cost_pence")
+        if type(cost) is not int or not 0 <= cost <= amount:
+            return False
+        if cost * 4 > amount * 3:
+            return False
     pricing_mode = item.get("pricing_mode", "precreated")
     tax_code = str(item.get("stripe_tax_code", ""))
     price_configured = (pricing_mode == "approved_inline" and
