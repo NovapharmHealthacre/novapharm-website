@@ -431,7 +431,7 @@ function nutraxinBagMain() {
     </nav>
     <div class="nx-checkout-identity" aria-labelledby="nx-checkout-identity-title">
       <div><p class="nx-shop-eyebrow">YOUR CHECKOUT</p><h2 id="nx-checkout-identity-title">Simple from start to finish.</h2><p>You can complete your purchase as a guest. Your email and UK delivery address are collected securely during checkout, without a separate business portal.</p></div>
-      <div class="nx-checkout-identity-meta"><strong>Guest checkout available</strong><span>Verified customer account creation and saved order history are not yet enabled.</span></div>
+      <div class="nx-checkout-identity-meta"><strong>Guest checkout available</strong><span><a href="/products/nutraxin/account/">Sign in or create your Nutraxin account</a>. Account access activates only after verified email and production security checks.</span></div>
     </div>
     <div class="nx-bag-grid">
       <section aria-label="Items in your bag"><div data-nx-bag-items><p class="nx-bag-empty">Loading your saved selections...</p></div><a href="/products/nutraxin/" class="nx-shop-link">Continue shopping</a></section>
