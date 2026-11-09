@@ -108,7 +108,8 @@ test("the review page uses the Products-only API and never the customer portal",
  const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
  assert.match(js,/Continue as guest/);
  assert.match(js,/credentials: "omit"/);
- assert.equal(js.includes("portal.novapharmhealthcare.com"), false, "Nutraxin commerce must not redirect to the business portal");
+ assert.equal(js.includes("PORTAL_ORIGIN"), false, "Nutraxin checkout must not use a portal destination constant");
+ assert.ok(js.includes('CHECKOUT_API_ORIGIN + "/checkout"'), "Checkout uses the dedicated Products API");
  assert.match(js,/\/checkout/);
  assert.match(js,/v?.checkout_ready === true/);
  assert.match(js,/result.checkoutUrl/);
