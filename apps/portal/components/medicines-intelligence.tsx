@@ -535,6 +535,18 @@ function PlatformOverview({ analytics, detail, headingLevel = 1, snapshot }: Rea
 
 export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStatus, snapshot, subview, user }: MedicinesIntelligenceProps) {
   const current = subview ?? "overview";
+  // Preserve bookmarked legacy tools without adding them to the 22 canonical workspace menu.
+  const legacyTitles: Readonly<Record<string, string>> = {
+    prescribers: "Prescribing",
+    pharmacies: "All pharmacies",
+    opportunities: "Pharmacy opportunity",
+    campaigns: "Governed campaigns",
+    "data-sources": "Data sources",
+  };
+  const legacyTitle = legacyTitles[current];
+  const visibleNavigationGroups = legacyTitle
+    ? [...navigationGroups, { label: "Additional governed tools", items: [[current, legacyTitle, `${baseRoute}${current}/`] as const] }]
+    : navigationGroups;
   const searchId = useId();
   const [menuOpen, setMenuOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -643,7 +655,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   return <main className={`${styles.shell} medicines-intelligence`}>
     <aside className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ""}`} aria-label="Medicines Intelligence navigation">
       <div className={styles.brand}><PharmaScopeBrand home={baseRoute} tone="reverse" /><p><strong>Medicines Intelligence</strong><span>by NovaPharm Healthcare</span></p><button type="button" onClick={() => setMenuOpen(false)}>Close</button></div>
-      <nav className={`intelligence-local-nav ${styles.navigation}`} aria-label="Medicines Intelligence views">{navigationGroups.map((group) => <section key={group.label}><h2>{group.label}</h2><ul>{group.items.map(([key, label, href]) => <li key={key}><a href={href} aria-current={current === key ? "page" : undefined}>{label}</a></li>)}</ul></section>)}</nav>
+      <nav className={`intelligence-local-nav ${styles.navigation}`} aria-label="Medicines Intelligence views">{visibleNavigationGroups.map((group) => <section key={group.label}><h2>{group.label}</h2><ul>{group.items.map(([key, label, href]) => <li key={key}><a href={href} aria-current={current === key ? "page" : undefined}>{label}</a></li>)}</ul></section>)}</nav>
       <div className={styles.sidebarFoot}><p>{user.displayName}</p><span>{display(user.accessType)}</span><small>Protected, server-authorised, no public caching</small></div>
     </aside>
     {menuOpen ? <button className={styles.scrim} type="button" aria-label="Close navigation" onClick={() => setMenuOpen(false)} /> : null}
