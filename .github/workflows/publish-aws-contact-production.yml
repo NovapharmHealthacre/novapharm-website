@@ -58,10 +58,14 @@ jobs:
           npm run build:public-only
           npm run test:owner-corrections:public-only
           node --test scripts/test-nutraxin-retail-store.mjs
+          npm run test:cookies
           npm run validate:domain
           node scripts/stage-pages-artifact.mjs _site
           grep -Fq 'Simple from start to finish.' _site/products/nutraxin/bag/index.html
           grep -Fq 'Guest checkout available' _site/products/nutraxin/bag/index.html
+          grep -Fq 'Nutraxin UK Supplements | Explore 19 Products | NovaPharm' _site/products/nutraxin/index.html
+          ! grep -Fq 'novapharm-ga4-id' _site/products/nutraxin/index.html
+          test -s _site/assets/js/consent-analytics.js
           grep -Fq 'class="nx-purchase-progress"' _site/products/nutraxin/bag/index.html
           node scripts/check-links.mjs _site
           test -s _site/assets/js/contact-production.js
@@ -198,4 +202,26 @@ jobs:
             sleep 5
           done
           echo "::error::Live Nutraxin Bag did not match the approved Apple-style release." >&2
+          exit 1
+
+      - name: Verify live organic search title and privacy-gated analytics asset
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 18); do
+            if curl --fail --silent --show-error --location --max-time 15 -H "Cache-Control: no-cache, no-store" \
+              "https://novapharmhealthcare.com/products/nutraxin/?marketing-$GITHUB_SHA-$attempt-$(date +%s)" \
+              -o /tmp/novapharm-live-organic.html; then
+              if grep -Fq 'Nutraxin UK Supplements | Explore 19 Products | NovaPharm' /tmp/novapharm-live-organic.html \
+                 && ! grep -Fq 'novapharm-ga4-id' /tmp/novapharm-live-organic.html; then
+                curl --fail --silent --show-error --max-time 15 \
+                  "https://novapharmhealthcare.com/assets/js/consent-analytics.js" \
+                  -o /tmp/novapharm-live-analytics.js
+                grep -Fq 'novapharm:consent' /tmp/novapharm-live-analytics.js
+                echo "Nutraxin organic metadata deployed; GA4 remains inactive pending owner property and privacy approval."
+                exit 0
+              fi
+            fi
+            sleep 5
+          done
+          echo "::error::Live organic metadata or inactive analytics contract did not match accepted release." >&2
           exit 1
