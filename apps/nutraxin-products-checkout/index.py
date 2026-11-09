@@ -201,7 +201,10 @@ def direct_checkout(event, customer_subject=None):
             PAYMENT_DDB.put_item(TableName=PAYMENT_LEDGER_TABLE, Item=item,
                                 ConditionExpression="attribute_not_exists(pk)")
     except ClientError as exc:
-        if exc.response.get("Error", {}).get("Code") != "ConditionalCheckFailedException":
+        # Transactional order + consumer-index writes report a different
+        # conditional-conflict exception from a single PutItem.
+        code = exc.response.get("Error", {}).get("Code")
+        if code not in ("ConditionalCheckFailedException", "TransactionCanceledException"):
             return error(503, "order_creation_unavailable")
         try:
             prior = PAYMENT_DDB.get_item(TableName=PAYMENT_LEDGER_TABLE,
@@ -209,7 +212,11 @@ def direct_checkout(event, customer_subject=None):
                       ConsistentRead=True).get("Item")
         except ClientError:
             return error(503, "order_creation_unavailable")
-        if (not prior or prior.get("customerSub") != item["customerSub"] or
+        # A transaction conflict with no durable summary is a retryable
+        # infrastructure condition, not proof that a buyer reused an ID.
+        if not prior:
+            return error(503, "order_creation_unavailable")
+        if (prior.get("customerSub") != item["customerSub"] or
             prior.get("basketHash") != item["basketHash"] or
             prior.get("quoteVersion") != item["quoteVersion"]):
             return error(409, "request_id_already_used")
