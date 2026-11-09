@@ -150,4 +150,77 @@ assert.equal(research("apixaban", "GB", "regulatory").length, 2, "UK regulatory 
 controls["[data-npi-market]"].listeners.change();
 assert.equal(controls["[data-npi-results-list]"].children.length, 0, "Changing market must clear stale source links");
 
+
+for (const [label, markup] of [["source", source], ["published", published]]) {
+  assert.ok(markup.includes('id="intelligence-pricing"'), label + " must offer a three-plan comparison");
+  assert.equal((markup.match(/data-npi-plan="(?:starter|professional|enterprise)"/g) || []).length, 3, label + " must have exactly three plans");
+  assert.ok(markup.includes("₹24,999") && markup.includes("₹89,999"), label + " proposed India-market prices must match the published plan register");
+  assert.ok(markup.includes("₹3,50,000"), label + " custom enterprise indication must not be hidden");
+  assert.ok(markup.includes("not live subscriptions"), label + " must disclose product activation boundary");
+  assert.ok(markup.includes("No payment will be collected here"), label + " must not imply production checkout");
+  assert.ok(markup.includes('href="/contact/?enquiry=NovaPharm%20Intelligence%20Starter'), label + " Starter must use qualified contact flow");
+  assert.ok(markup.includes('href="/contact/?enquiry=NovaPharm%20Intelligence%20Professional'), label + " Professional must use qualified contact flow");
+  assert.ok(markup.includes('href="/contact/?enquiry=NovaPharm%20Intelligence%20Enterprise'), label + " Enterprise must use qualified contact flow");
+  assert.ok(!markup.includes('href="https://checkout.stripe.com'), label + " must not activate unverified checkout");
+}
+assert.ok(published.includes('src="/assets/js/intelligence-pricing.js"'), "Pricing module must be in the materialised site");
+assert.ok(materialiser.includes('src="/assets/js/intelligence-pricing.js"'), "Build must preserve the pricing module");
+assert.ok(styles.includes(".npi-pricing-grid") && styles.includes(".npi-billing-switch button:focus-visible"), "Responsive comparison and keyboard focus styles required");
+
+const pricingScript = read("assets/js/intelligence-pricing.js");
+assert.ok(!/XMLHttpRequest|sendBeacon|localStorage|sessionStorage|document\\.cookie|innerHTML|fetch\\(/.test(pricingScript), "Plan selector must not store or transmit prospect data");
+const priceElement = () => ({ textContent: "" });
+function pricedCard(monthly, annual) {
+  const elements = {
+    "[data-npi-plan-price]": priceElement(),
+    "[data-npi-plan-period]": priceElement(),
+    "[data-npi-plan-billing]": priceElement()
+  };
+  return {
+    elements,
+    getAttribute(name) { return name === "data-monthly-inr" ? String(monthly) : name === "data-annual-inr" ? String(annual) : null; },
+    querySelector(selector) { return elements[selector] || null; }
+  };
+}
+function billingButton(cycle) {
+  return {
+    attributes: { "data-npi-billing": cycle },
+    listeners: {},
+    classes: new Set(),
+    getAttribute(name) { return this.attributes[name] || null; },
+    setAttribute(name, value) { this.attributes[name] = value; },
+    addEventListener(name, callback) { this.listeners[name] = callback; },
+    classList: { toggle() {} }
+  };
+}
+const starter = pricedCard(24999, 254990);
+const professional = pricedCard(89999, 917990);
+const monthlyButton = billingButton("monthly");
+const annualButton = billingButton("annual");
+const pricingRoot = {
+  querySelectorAll(selector) {
+    if (selector === "[data-npi-billing]") return [monthlyButton, annualButton];
+    if (selector === "[data-npi-plan][data-monthly-inr][data-annual-inr]") return [starter, professional];
+    return [];
+  }
+};
+runInNewContext(pricingScript, {
+  document: { getElementById(id) { return id === "intelligence-pricing" ? pricingRoot : null; } },
+  Intl,
+  Number,
+  Math
+});
+assert.equal(monthlyButton.attributes["aria-pressed"], "true");
+assert.equal(starter.elements["[data-npi-plan-price]"].textContent, "₹24,999");
+assert.equal(professional.elements["[data-npi-plan-price]"].textContent, "₹89,999");
+annualButton.listeners.click();
+assert.equal(annualButton.attributes["aria-pressed"], "true");
+assert.equal(monthlyButton.attributes["aria-pressed"], "false");
+assert.equal(starter.elements["[data-npi-plan-price]"].textContent, "₹21,249");
+assert.equal(professional.elements["[data-npi-plan-price]"].textContent, "₹76,499");
+assert.ok(starter.elements["[data-npi-plan-billing]"].textContent.includes("₹2,54,990"));
+assert.ok(professional.elements["[data-npi-plan-billing]"].textContent.includes("₹9,17,990"));
+monthlyButton.listeners.click();
+assert.equal(starter.elements["[data-npi-plan-price]"].textContent, "₹24,999");
+
 console.log("NovaPharm Intelligence Technology page: source, public output, disclosures, CSS and build integration verified.");
