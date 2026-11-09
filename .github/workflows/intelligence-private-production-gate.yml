@@ -45,6 +45,7 @@ jobs:
           origin="https://portal.novapharmhealthcare.com"
           for route in \
             '/gateway/v1/intelligence/regulatory/us/fda-labels?drug=apixaban' \
+            '/gateway/v1/intelligence/evidence/us/clinical-trials?intervention=apixaban' \
             '/gateway/v1/intelligence/readiness'; do
             status=$(curl --silent --show-error --max-time 20 --connect-timeout 8 \
               -D /tmp/novapharm-private-api-headers -o /tmp/novapharm-private-api-response \
