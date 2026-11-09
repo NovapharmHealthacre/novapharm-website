@@ -317,7 +317,6 @@ function runStore(data) {
     const p = slugMap.get(slug);
     const copy = document.querySelector(".npd-product-copy");
     if (p && copy) {
-      emitRetailFunnelEvent("view_item");
       const panel = make("section", "nx-store-panel");
       panel.setAttribute("aria-label", "Nutraxin shopping options");
       panel.append(make("p", "nx-store-kicker", "Nutraxin / Retail"));
