@@ -126,12 +126,20 @@ export function NetworkCanvas() {
       resize();
       if (media.matches) draw();
     };
-    const sizeObserver = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(redrawForSize);
-    sizeObserver?.observe(canvas.parentElement ?? canvas);
-    const onWindowResize = () => {
-      resize();
-      if (media.matches) draw();
+    // Resizing the backing-store bitmap changes canvas layout metrics in WebKit.
+    // Defer any write until the next animation frame, outside the observer's
+    // notification loop, and coalesce redundant geometry events.
+    let resizeFrame = 0;
+    const scheduleResize = () => {
+      if (resizeFrame) return;
+      resizeFrame = window.requestAnimationFrame(() => {
+        resizeFrame = 0;
+        redrawForSize();
+      });
     };
+    const sizeObserver = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(scheduleResize);
+    sizeObserver?.observe(canvas.parentElement ?? canvas);
+    const onWindowResize = scheduleResize;
 
     resize();
     draw();
@@ -146,6 +154,7 @@ export function NetworkCanvas() {
 
     return () => {
       window.cancelAnimationFrame(animation);
+      window.cancelAnimationFrame(resizeFrame);
       window.removeEventListener("resize", onWindowResize);
       sizeObserver?.disconnect();
       canvas.removeEventListener("pointermove", onPointerMove);
