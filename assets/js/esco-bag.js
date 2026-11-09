@@ -12,6 +12,8 @@ const checkoutButton = document.querySelector("[data-esco-card-checkout]");
 const termsCheckbox = document.querySelector("[data-esco-payment-terms]");
 const checkoutNote = document.querySelector("#esco-payment-note");
 const checkoutResult = document.querySelector("[data-esco-checkout-status]");
+const termsLabel = termsCheckbox?.closest(".esco-payment-terms");
+if (checkoutNote && termsLabel) termsLabel.before(checkoutNote);
 const readyShopLink = (() => {
   if (!checkoutNote) return null;
   const link = document.createElement("a");
