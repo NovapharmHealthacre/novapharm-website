@@ -225,3 +225,19 @@ jobs:
           done
           echo "::error::Live organic metadata or inactive analytics contract did not match accepted release." >&2
           exit 1
+      - name: Check out verified main source for IndexNow
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Notify IndexNow of verified changed public product URLs
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          key_url="https://novapharmhealthcare.com/da125ceca8032e01fc98782c388f894f.txt"
+          actual=$(curl --fail --silent --show-error --max-time 15 "$key_url" | tr -d '\r\n')
+          test "$actual" = "da125ceca8032e01fc98782c388f894f" || {
+            echo "::warning::Published IndexNow ownership key unverified; URLs not submitted."
+            exit 1
+          }
+          node scripts/indexnow.mjs --submit \
+            https://novapharmhealthcare.com/products/ \
+            https://novapharmhealthcare.com/products/nutraxin/
