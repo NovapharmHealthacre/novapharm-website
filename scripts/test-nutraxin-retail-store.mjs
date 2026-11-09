@@ -18,10 +18,12 @@ test("public Nutraxin retail catalogue matches all governed 19 SKUs and canonica
   assert.equal(publicEntry.name,item.name);
   assert.ok(Number.isSafeInteger(publicEntry.retail_price_pence) && publicEntry.retail_price_pence > 0);
   assert.equal(publicEntry.available_to_sell,false);
+  assert.equal(publicEntry.ordering_enabled,true);
+  assert.equal(Math.round(publicEntry.retail_net_pence*1.2),publicEntry.retail_price_pence);
  }
- assert.equal(catalogue.checkout_enabled,false);
- assert.equal(catalogue.payment_collection_enabled,false);
- assert.equal(catalogue.price_authority,"owner_authorized_provisional_public_display");
+ assert.equal(catalogue.checkout_enabled,true);
+ assert.equal(catalogue.payment_collection_enabled,true);
+ assert.equal(catalogue.price_authority,"approved_consumer_retail");
  assert.equal(catalogue.price_includes_estimated_uk_vat,true);
  assert.equal(catalogue.vat_estimate_rate_percent,20);
  assert.equal(catalogue.delivery_verified,false);
@@ -55,9 +57,9 @@ test("public guide prices match all 19 owner-approved 48-tier references plus ro
  for(const item of catalogue.products){
   assert.equal(item.retail_price_pence,expected[item.sku],item.sku);
  }
- assert.equal(catalogue.price_display_status,"indicative_not_binding");
- assert.equal(catalogue.checkout_enabled,false);
- assert.equal(catalogue.payment_collection_enabled,false);
+ assert.equal(catalogue.price_display_status,"owner_approved_uk_consumer_prices");
+ assert.equal(catalogue.checkout_enabled,true);
+ assert.equal(catalogue.payment_collection_enabled,true);
  assert.equal(catalogue.products.some(x=>x.available_to_sell),false);
 });
 
@@ -68,13 +70,13 @@ test("tampered, repeated and out-of-range Bag entries are ignored",()=>{
  assert.deepEqual(safeBasket(null,catalogue.products),[]);
  assert.equal(MAX_PER_SKU,10000);
 });
-test("owner-authorized indicative price displays while payment authority remains off",()=>{
+test("owner-authorized chargeable price displays only under approved retail policy",()=>{
  const item=catalogue.products[0];
  assert.equal(publicPrice(item,catalogue),1547);
  assert.equal(publicPrice({...item,retail_price_pence:999},catalogue),999);
  assert.equal(publicPrice(item,{...catalogue,price_authority:"not_yet_verified_for_consumer_sale"}),null);
- assert.equal(publicPrice(item,{...catalogue,checkout_enabled:true}),null);
- assert.equal(publicPrice(item,{...catalogue,price_includes_estimated_uk_vat:false}),null);
+ assert.equal(publicPrice(item,{...catalogue,payment_collection_enabled:false}),null);
+ assert.equal(publicPrice(item,{...catalogue,price_authority:"owner_authorized_provisional_public_display",checkout_enabled:true}),null);
  const approved={...catalogue,price_authority:"approved_consumer_retail"};
  assert.equal(publicPrice({...item,retail_price_pence:999},approved),999);
  assert.equal(publicPrice({...item,retail_price_pence:-2},approved),null);
@@ -85,22 +87,24 @@ test("owner-authorized indicative price displays while payment authority remains
  assert.match(storefront,/data.payment_collection_enabled === true/);
 });
 test("when approved, the Bag subtotal is correctly calculated in integer pence",()=>{
- const products=catalogue.products.map((p,i)=>({...p,retail_price_pence:i===0?1234:i===1?2299:null}));
+ const products=catalogue.products.map((p,i)=>({...p,retail_price_pence:i===0?1234:i===1?2299:null,retail_net_pence:i===0?1028:i===1?1916:null}));
  const approved={...catalogue,price_authority:"approved_consumer_retail",products};
- assert.equal(basketSubtotal([{sku:products[0].sku,quantity:2},{sku:products[1].sku,quantity:1}],approved),4767);
+ assert.equal(basketSubtotal([{sku:products[0].sku,quantity:2},{sku:products[1].sku,quantity:1}],approved),4766);
  assert.equal(basketSubtotal([{sku:products[2].sku,quantity:1}],approved),null);
  assert.equal(basketSubtotal([{sku:"NOT_REAL",quantity:1}],approved),null);
 });
-test("the review page has no payment-ready claim before authorisation",()=>{
+test("the review page uses the Products-only API and never the customer portal",()=>{
  const html=readFileSync("products/nutraxin/bag/index.html","utf8");
  assert.match(html,/data-nx-public-bag/);
  assert.match(html,/data-nx-checkout disabled/);
  assert.match(html,/data-nx-consumer-terms/);
  const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
- assert.match(js,/credentials: "include"/);
+ assert.match(js,/credentials: "omit"/);
+ assert.doesNotMatch(js,/portal.novapharmhealthcare.com/);
+ assert.match(js,/\/checkout/);
  assert.match(js,/v?.checkout_ready === true/);
  assert.match(js,/result.checkoutUrl/);
  assert.match(js,/accept_terms:true/);
- assert.match(html,/No payment will be taken/);
+ assert.match(html,/data-nx-public-bag/);
  assert.doesNotMatch(html,/\bsk_live_|\bwhsec_/);
 });
