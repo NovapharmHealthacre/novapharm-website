@@ -158,9 +158,12 @@ for (const [label, markup] of [["source", source], ["published", published]]) {
   assert.ok(markup.includes("₹3,50,000"), label + " custom enterprise indication must not be hidden");
   assert.ok(markup.includes("not live subscriptions"), label + " must disclose product activation boundary");
   assert.ok(markup.includes("No payment will be collected here"), label + " must not imply production checkout");
-  assert.ok(markup.includes('href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20Intelligence%20Starter'), label + " Starter must retain its tier in a working corporate email enquiry");
-  assert.ok(markup.includes('href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20Intelligence%20Professional'), label + " Professional must retain its tier in a working corporate email enquiry");
-  assert.ok(markup.includes('href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20Intelligence%20Enterprise'), label + " Enterprise must retain its tier in a working corporate email enquiry");
+  assert.ok(markup.includes('href="/contact/?enquiry=General%20enquiry&amp;intelligencePlan=starter"'), label + " Starter must carry a strictly enumerated plan to the approved business-enquiry form");
+  assert.ok(markup.includes('href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20Intelligence%20Starter'), label + " Starter must offer a direct email fallback");
+  assert.ok(markup.includes('href="/contact/?enquiry=General%20enquiry&amp;intelligencePlan=professional"'), label + " Professional must carry a strictly enumerated plan to the approved business-enquiry form");
+  assert.ok(markup.includes('href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20Intelligence%20Professional'), label + " Professional must offer a direct email fallback");
+  assert.ok(markup.includes('href="/contact/?enquiry=General%20enquiry&amp;intelligencePlan=enterprise"'), label + " Enterprise must carry a strictly enumerated plan to the approved business-enquiry form");
+  assert.ok(markup.includes('href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20Intelligence%20Enterprise'), label + " Enterprise must offer a direct email fallback");
   assert.ok(!markup.includes('href="https://checkout.stripe.com'), label + " must not activate unverified checkout");
 }
 assert.ok(published.includes('src="/assets/js/intelligence-pricing.js"'), "Pricing module must be in the materialised site");
@@ -168,6 +171,14 @@ assert.ok(materialiser.includes('src="/assets/js/intelligence-pricing.js"'), "Bu
 assert.ok(styles.includes(".npi-pricing-grid") && styles.includes(".npi-billing-switch button:focus-visible"), "Responsive comparison and keyboard focus styles required");
 
 const pricingScript = read("assets/js/intelligence-pricing.js");
+
+const contactIntake = read("assets/js/contact-production.js");
+assert.ok(contactIntake.includes('const requestedIntelligencePlan = intent.get("intelligencePlan")'), "Production B2B form must accept a plan identifier");
+assert.ok(contactIntake.includes("Object.hasOwn(intelligencePlans, requestedIntelligencePlan)"), "Intelligence tier must be strictly allowlisted");
+assert.ok(contactIntake.includes('!intent.has("basket") && !intent.has("quote") && !intent.has("product")'), "Subscription requests must not override Nutraxin/ESCO intent");
+assert.ok(contactIntake.includes("non-binding business enquiry"), "Intelligence tier must remain an enquiry, not a chargeable order");
+assert.ok(!contactIntake.includes("window.open"), "Plan intake must never silently open new windows");
+
 assert.ok(!/XMLHttpRequest|sendBeacon|localStorage|sessionStorage|document\\.cookie|innerHTML|fetch\\(/.test(pricingScript), "Plan selector must not store or transmit prospect data");
 const priceElement = () => ({ textContent: "" });
 function pricedCard(monthly, annual) {
