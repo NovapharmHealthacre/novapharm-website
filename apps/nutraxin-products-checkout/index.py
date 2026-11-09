@@ -7,6 +7,7 @@ guest order, then invokes the IAM-only Stripe Checkout worker. A browser
 never supplies net prices, stock reservations, approval flags or Stripe keys.
 Stripe collects card details, customer email and UK delivery address.
 """
+import base64
 import hashlib
 import json
 import os
@@ -29,6 +30,10 @@ ALLOWED_ORIGINS = frozenset((
 PAYMENT_DDB = boto3.client("dynamodb",region_name=REGION)
 SSM = boto3.client("ssm",region_name=REGION)
 CHECKOUT_LAMBDA = boto3.client("lambda",region_name=REGION)
+COGNITO = boto3.client("cognito-idp",region_name=REGION)
+CONSUMER_POOL_ID = os.environ.get("CONSUMER_USER_POOL_ID","")
+CONSUMER_CLIENT_ID = os.environ.get("CONSUMER_CLIENT_ID","")
+
 ORDER_ID = re.compile(r"^NUT-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
 PRODUCTS = {
 "NUT-UK-VD3-T120":("Nutraxin Vitamin D3","120 tablets"),
@@ -72,7 +77,7 @@ def reply(status, body):
 def error(status, code):
     return reply(status, {"error":code})
 
-def direct_checkout(event):
+def direct_checkout(event, customer_subject=None):
     # Merchant owner authorised the existing 48-unit-tier price for 1-10000
     # units, 20% UK VAT and no separately charged UK shipping. This business
     # decision does not represent physical warehouse stock as reserved.
@@ -150,7 +155,7 @@ def direct_checkout(event):
         sorted((item["sku"], item["quantity"]) for item in ordered),
         separators=(",", ":")).encode()).hexdigest()
     receipt = "NUT-" + request_id
-    subject = "guest_" + request_id.replace("-", "")
+    subject = customer_subject or ("guest_" + request_id.replace("-", ""))
     quote_version = "ownerprice_v6_" + basket_hash[:24]
     item = {
         "pk": {"S": "ORDER#" + receipt}, "sk": {"S": "SUMMARY"},
@@ -180,10 +185,26 @@ def direct_checkout(event):
         "ownerCommercialPolicy": {"S": "nutraxin_uk_direct_v1"}
     }
     try:
-        PAYMENT_DDB.put_item(TableName=PAYMENT_LEDGER_TABLE, Item=item,
-                            ConditionExpression="attribute_not_exists(pk)")
+        if customer_subject:
+            # A consumer-only index item is created atomically with the order.
+            # No public request can set the subject: it comes from Cognito GetUser.
+            index = {"pk":{"S":"CONSUMER#"+subject},
+                     "sk":{"S":"ORDER#"+str(now()).zfill(12)+"#"+receipt},
+                     "orderId":{"S":receipt},"customerSub":{"S":subject}}
+            PAYMENT_DDB.transact_write_items(TransactItems=[
+                {"Put":{"TableName":PAYMENT_LEDGER_TABLE,"Item":item,
+                        "ConditionExpression":"attribute_not_exists(pk)"}},
+                {"Put":{"TableName":PAYMENT_LEDGER_TABLE,"Item":index,
+                        "ConditionExpression":"attribute_not_exists(pk)"}}
+            ])
+        else:
+            PAYMENT_DDB.put_item(TableName=PAYMENT_LEDGER_TABLE, Item=item,
+                                ConditionExpression="attribute_not_exists(pk)")
     except ClientError as exc:
-        if exc.response.get("Error", {}).get("Code") != "ConditionalCheckFailedException":
+        # Transactional order + consumer-index writes report a different
+        # conditional-conflict exception from a single PutItem.
+        code = exc.response.get("Error", {}).get("Code")
+        if code not in ("ConditionalCheckFailedException", "TransactionCanceledException"):
             return error(503, "order_creation_unavailable")
         try:
             prior = PAYMENT_DDB.get_item(TableName=PAYMENT_LEDGER_TABLE,
@@ -191,7 +212,11 @@ def direct_checkout(event):
                       ConsistentRead=True).get("Item")
         except ClientError:
             return error(503, "order_creation_unavailable")
-        if (not prior or prior.get("customerSub") != item["customerSub"] or
+        # A transaction conflict with no durable summary is a retryable
+        # infrastructure condition, not proof that a buyer reused an ID.
+        if not prior:
+            return error(503, "order_creation_unavailable")
+        if (prior.get("customerSub") != item["customerSub"] or
             prior.get("basketHash") != item["basketHash"] or
             prior.get("quoteVersion") != item["quoteVersion"]):
             return error(409, "request_id_already_used")
@@ -212,6 +237,69 @@ def direct_checkout(event):
         return error(503, "stripe_checkout_unavailable")
     except (ClientError, ValueError, TypeError, KeyError):
         return error(503, "stripe_checkout_unavailable")
+
+
+def verified_consumer(event):
+    """Cognito validates the access-token signature, lifetime and revocation.
+    Decode claims only for binding to the exact consumer pool and web client.
+    A token from any other pool, including workforce, is rejected.
+    """
+    if not valid_origin(event) or not CONSUMER_POOL_ID or not CONSUMER_CLIENT_ID:
+        return None
+    headers = {str(k).lower():str(v) for k,v in (event.get("headers") or {}).items()}
+    bearer=headers.get("authorization","")
+    if not bearer.startswith("Bearer ") or len(bearer)>8192:
+        return None
+    token=bearer[7:]
+    if not re.fullmatch(r"[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+",token):
+        return None
+    try:
+        payload=token.split(".")[1]
+        claims=json.loads(base64.urlsafe_b64decode(payload+"="*(-len(payload)%4)))
+        if (claims.get("iss")!="https://cognito-idp."+REGION+".amazonaws.com/"+CONSUMER_POOL_ID or
+            claims.get("client_id")!=CONSUMER_CLIENT_ID or
+            claims.get("token_use")!="access" or
+            not isinstance(claims.get("exp"),int) or claims["exp"]<=now()):
+            return None
+        user=COGNITO.get_user(AccessToken=token)
+        attrs={v["Name"]:v["Value"] for v in user.get("UserAttributes",[])}
+        sub=attrs.get("sub","")
+        if (not re.fullmatch(r"[0-9a-fA-F-]{36}",sub) or
+            sub!=claims.get("sub") or attrs.get("email_verified")!="true" or
+            not isinstance(attrs.get("email"),str)):
+            return None
+        return {"subject":"consumer_"+sub.replace("-","").lower(),
+                "email":attrs["email"],"email_verified":True}
+    except (ClientError,ValueError,TypeError,KeyError,UnicodeError):
+        return None
+
+
+def account_orders(customer):
+    # A caller can query only its own server-derived partition key.
+    try:
+        rows=PAYMENT_DDB.query(
+            TableName=PAYMENT_LEDGER_TABLE,
+            KeyConditionExpression="pk = :subject",
+            ExpressionAttributeValues={":subject":{"S":"CONSUMER#"+customer["subject"]}},
+            ScanIndexForward=False,Limit=40).get("Items",[])
+        orders=[]
+        for ref in rows:
+            order_id=ref.get("orderId",{}).get("S","")
+            if not ORDER_ID.fullmatch(order_id):
+                continue
+            summary=PAYMENT_DDB.get_item(
+                TableName=PAYMENT_LEDGER_TABLE,
+                Key={"pk":{"S":"ORDER#"+order_id},"sk":{"S":"SUMMARY"}},
+                ConsistentRead=True).get("Item")
+            if not summary or summary.get("customerSub")!={"S":customer["subject"]}:
+                continue
+            state=summary.get("status",{}).get("S","PROCESSING")
+            if state not in ("PAID","CHECKOUT_OPEN","OPENING_CHECKOUT","APPROVED_FOR_PAYMENT","PAYMENT_FAILED"):
+                state="PROCESSING"
+            orders.append({"orderId":order_id,"status":state})
+        return reply(200,{"orders":orders})
+    except ClientError:
+        return error(503,"account_orders_temporarily_unavailable")
 
 def order_status(event, order_id):
     # A random UUIDv4 order reference acts as the lookup capability. Return
@@ -246,6 +334,18 @@ def handler(event, context):
                            "payment_collection_active":SHOP_ENABLED,
                            "origin":"novapharmhealthcare.com",
                            "checkout_path":"/products/nutraxin/bag/"})
+    if path in ("/account/me","/account/orders","/account/checkout"):
+        customer=verified_consumer(event)
+        if not customer:
+            return error(401,"account_sign_in_required")
+        if path=="/account/me" and method=="GET":
+            return reply(200,{"email":customer["email"],"email_verified":True,
+                              "customer_type":"personal"})
+        if path=="/account/orders" and method=="GET":
+            return account_orders(customer)
+        if path=="/account/checkout" and method=="POST":
+            return direct_checkout(event,customer["subject"])
+        return error(405,"method_not_allowed")
     if method == "POST" and path == "/checkout":
         return direct_checkout(event)
     if method == "GET" and path.startswith("/status/"):

@@ -7,6 +7,11 @@ on:
       - "assets/js/nutraxin-retail-store.js"
       - "assets/data/nutraxin-retail-catalogue.json"
       - "scripts/test-nutraxin-retail-store.mjs"
+      - "scripts/test-nutraxin-consumer-account.mjs"
+      - "infra/aws/nutraxin-consumer-identity-production.json"
+      - "assets/js/nutraxin-consumer-account.js"
+      - "assets/data/nutraxin-consumer-auth.json"
+      - "products/nutraxin/account/index.html"
       - ".github/workflows/nutraxin-products-checkout.yml"
   workflow_dispatch:
 permissions:
@@ -27,7 +32,9 @@ jobs:
       - name: Check guest Checkout and order status security
         run: python3 -m unittest discover -s apps/nutraxin-products-checkout -p 'test_public_checkout.py' -v
       - name: Check all 19 products, price and public Bag
-        run: node --test scripts/test-nutraxin-retail-store.mjs
+        run: |
+          node --test scripts/test-nutraxin-retail-store.mjs
+          node --test scripts/test-nutraxin-consumer-account.mjs
       - name: Confirm hosted Stripe returns directly to Products
         run: |
           python3 -m unittest discover -s apps/nutraxin-payments -p 'test_approved_checkout.py' -v

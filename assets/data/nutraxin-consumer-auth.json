@@ -1,0 +1,10 @@
+{
+  "enabled": false,
+  "release_status": "identity-created; production-checkout-api-and-email-acceptance-pending",
+  "region": "eu-north-1",
+  "cognito_domain": "novapharm-nutraxin-production-250675045172.auth.eu-north-1.amazoncognito.com",
+  "client_id": "4dcl7m8et6k6c599e2f75rq0vs",
+  "pool_id": "eu-north-1_SLNUKZypt",
+  "account_url": "https://novapharmhealthcare.com/products/nutraxin/account/",
+  "api_origin": "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com"
+}

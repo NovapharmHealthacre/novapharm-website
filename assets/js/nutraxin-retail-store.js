@@ -7,6 +7,15 @@ export const MAX_PER_SKU = 10000;
 const CATALOGUE_URL = "/assets/data/nutraxin-retail-catalogue.json";
 const CHECKOUT_API_ORIGIN = "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com";
 const BAG_URL = "/products/nutraxin/bag/";
+const ACCOUNT_URL = "/products/nutraxin/account/";
+const ACCOUNT_SESSION_KEY = "np.nutraxin.consumer.access.v1";
+function consumerAccess(){
+ try{
+  const v=JSON.parse(sessionStorage.getItem(ACCOUNT_SESSION_KEY)||"null");
+  if(v&&typeof v.accessToken==="string"&&Number.isFinite(v.expiresAt)&&v.expiresAt>Date.now()+15000)return v.accessToken;
+ }catch{}
+ return null;
+}
 const SHOP_URL = "/products/nutraxin/";
 
 export function safeBasket(items, catalogueProducts) {
@@ -144,6 +153,7 @@ function runStore(data) {
   tally.dataset.nxBagCount = "true";
   bagNav.append(" (", tally, ")");
   nav.append(bagNav);
+  nav.append(anchor("Account",ACCOUNT_URL,"nx-store-account-link"));
   top.insertAdjacentElement("beforebegin", nav);
 
   const path = window.location.pathname;
@@ -213,7 +223,7 @@ function runStore(data) {
         tax.textContent = "20% UK VAT included";
         grand.textContent = subtotalMinor === null ? "Not available" : formatGBP(subtotalMinor);
         checkout.disabled = !ready;
-        checkout.textContent = confirmedOrder ? "Payment confirmed" : awaitingOrder ? "Payment pending" : ready ? "Continue as guest" : "Checkout not available yet";
+        checkout.textContent = confirmedOrder ? "Payment confirmed" : awaitingOrder ? "Payment pending" : ready ? (consumerAccess() ? "Continue with your account" : "Continue as guest") : "Checkout not available yet";
         explanation.textContent = confirmedOrder
           ? "Payment confirmed for order " + confirmedOrder + ". NovaPharm will process your order."
           : awaitingOrder
@@ -238,11 +248,18 @@ function runStore(data) {
             const requestId = stored?.basket === basketId && /^[0-9a-f-]{36}$/.test(stored?.id || "")
               ? stored.id : crypto.randomUUID();
             try { sessionStorage.setItem("np-retail-checkout-attempt",JSON.stringify({basket:basketId,id:requestId})); } catch {}
-            const response = await fetch(CHECKOUT_API_ORIGIN + "/checkout", {
-              method: "POST", mode: "cors", credentials: "omit", headers: { "content-type": "application/json" },
+            const accountToken=consumerAccess();
+            const headers={ "content-type": "application/json" };
+            if(accountToken)headers.authorization="Bearer "+accountToken;
+            const target=accountToken?"/account/checkout":"/checkout";
+            const response = await fetch(CHECKOUT_API_ORIGIN + target, {
+              method: "POST", mode: "cors", credentials: "omit", headers,
               body: JSON.stringify({ request_id:requestId, lines:bag, accept_terms:true }), cache: "no-store"
             });
-            if (response.status === 401) throw new Error("Unable to authorise this basket. Please retry.");
+            if (response.status === 401) {
+              if(accountToken)try{sessionStorage.removeItem(ACCOUNT_SESSION_KEY)}catch{}
+              throw new Error("Your account session expired. Please sign in again or choose guest checkout.");
+            }
             if (!response.ok) throw new Error("Checkout has not been activated for this basket.");
             const result = await response.json();
             const url = new URL(result.checkoutUrl || "");
