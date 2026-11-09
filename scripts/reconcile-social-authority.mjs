@@ -127,7 +127,7 @@ if (existsSync(nutraxinProductDirectory)) {
       files.push(file);
       // This is a quotation-request interface, not a catalogue product pack.
       // It uses the corporate social image rather than an invented SKU image.
-      if (entry.name === "order-request" || entry.name === "bag") continue;
+      if (entry.name === "order-request" || entry.name === "bag" || entry.name === "account") continue;
       routeImages.set(`/products/nutraxin/${entry.name}/`, {
         url: `/assets/media/products/nutraxin/${entry.name}.png`,
         type: "image/png",
