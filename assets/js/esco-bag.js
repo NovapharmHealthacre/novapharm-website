@@ -1,11 +1,92 @@
 /* Customer-first ESCO Bag. All prices are non-binding estimates.
- * This page never requests a Stripe session or accepts card information.
- * Only a trusted server may later enable checkout for approved, verified SKUs.
+ * Browser prices never authorise a charge. A separately deployed AWS service
+ * can enable Stripe-hosted checkout only for individually verified UK SKUs.
+ * Card details are collected by Stripe, never by this static page.
  */
 const BAG_KEY = "novapharm-esco-quote-list-v1";
 const itemsRoot = document.querySelector("[data-esco-bag-items]");
 const totalNode = document.querySelector("[data-esco-bag-total]");
 const send = document.querySelector("[data-esco-bag-quote]");
+const checkoutButton = document.querySelector("[data-esco-card-checkout]");
+const termsCheckbox = document.querySelector("[data-esco-payment-terms]");
+const checkoutNote = document.querySelector("#esco-payment-note");
+const checkoutResult = document.querySelector("[data-esco-checkout-status]");
+const ESCO_PAYMENT_CONFIG = "/assets/data/esco-checkout-config.json";
+let checkoutApiOrigin = "";
+let approvedCatalogIds = new Set();
+let paymentServiceReady = false;
+let sendingPayment = false;
+function checkoutStatus(text) {
+  if (checkoutResult) { checkoutResult.textContent = text; checkoutResult.hidden = !text; }
+}
+async function configurePayment() {
+  if (!checkoutButton || !termsCheckbox) return;
+  const configResponse = await fetch(ESCO_PAYMENT_CONFIG, { credentials:"omit",cache:"no-store" });
+  if (!configResponse.ok) return;
+  const cfg = await configResponse.json();
+  if (cfg?.enabled !== true || typeof cfg.api_origin !== "string") return;
+  let url;
+  try { url = new URL(cfg.api_origin); } catch { return; }
+  if (url.protocol !== "https:" || !/^[a-z0-9]+\.execute-api\.eu-north-1\.amazonaws\.com$/.test(url.hostname) || url.pathname !== "/") return;
+  checkoutApiOrigin = url.origin;
+  const response = await fetch(checkoutApiOrigin + "/readiness", { credentials:"omit",cache:"no-store", headers:{"accept":"application/json"} });
+  if (!response.ok) return;
+  const readiness = await response.json();
+  if (readiness?.checkout_ready !== true || readiness?.payment_collection_active !== true ||
+      !Array.isArray(readiness?.approved_catalogue_ids)) return;
+  approvedCatalogIds = new Set(readiness.approved_catalogue_ids.filter(id=>/^ESCO-CAT-[0-9]{4}$/.test(id)));
+  paymentServiceReady = approvedCatalogIds.size > 0;
+}
+function renderPaymentEligibility(lines) {
+  if (!checkoutButton || !termsCheckbox) return;
+  const approved = paymentServiceReady && lines.length > 0 && lines.every(item => approvedCatalogIds.has(item.id));
+  checkoutButton.disabled = !approved || !termsCheckbox.checked || sendingPayment;
+  if (checkoutNote) checkoutNote.textContent = approved
+    ? "Secure card checkout is available for these approved items. Final VAT and delivery details are confirmed before payment."
+    : "Card checkout is available only for individually approved, UK-saleable items. Your Bag can still be submitted for a confirmed quotation.";
+}
+async function startCheckout(lines) {
+  if (sendingPayment || !checkoutApiOrigin || !paymentServiceReady || !termsCheckbox?.checked ||
+      !lines.length || !lines.every(item => approvedCatalogIds.has(item.id))) return;
+  sendingPayment = true;
+  renderPaymentEligibility(lines);
+  checkoutStatus("Connecting securely to payment…");
+  try {
+    const response = await fetch(checkoutApiOrigin + "/checkout", {
+      method:"POST", credentials:"omit",
+      headers:{"content-type":"application/json"},
+      body: JSON.stringify({request_id:crypto.randomUUID(), accept_terms:true,
+        lines:lines.map(item=>({id:item.id, quantity:item.quantity}))})
+    });
+    if (!response.ok) throw new Error("This order needs a confirmed product quotation before payment.");
+    const data = await response.json();
+    const redirect = new URL(data.checkoutUrl);
+    if (redirect.protocol !== "https:" || redirect.hostname !== "checkout.stripe.com") throw new Error("Invalid secure payment destination.");
+    window.location.assign(redirect.href);
+  } catch (err) {
+    checkoutStatus(err instanceof Error ? err.message : "Secure checkout is currently unavailable.");
+    sendingPayment = false;
+    renderPaymentEligibility(lines);
+  }
+}
+async function checkPaymentReturn() {
+  if (!checkoutApiOrigin) return;
+  const query = new URLSearchParams(window.location.search);
+  const order = query.get("order_id") || "";
+  if (query.get("checkout") === "cancelled") { checkoutStatus("Payment was not completed. Your Bag is saved."); return; }
+  if (query.get("checkout") !== "return" || !/^ESCO-[0-9a-f-]{36}$/.test(order)) return;
+  checkoutStatus("Your payment is being verified securely. Please do not place a duplicate order.");
+  try {
+    const response=await fetch(checkoutApiOrigin + "/status/" + encodeURIComponent(order),{credentials:"omit",cache:"no-store"});
+    if(!response.ok)return;
+    const info=await response.json();
+    if(info.paid === true && info.status === "PAID"){
+      checkoutStatus("Payment confirmed. Your order reference is " + order + ". Our team will confirm fulfilment.");
+    }else if(info.status === "PAYMENT_FAILED"){
+      checkoutStatus("Payment was not completed. Your Bag is saved for another attempt.");
+    }
+  } catch { /* Do not mistake the return redirect for proof of payment. */ }
+}
 const GBP = new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" });
 const MAX_ITEMS = 12;
 const MAX_QTY = 1000;
@@ -82,6 +163,7 @@ async function init() {
     send.setAttribute("aria-disabled", state.length ? "false" : "true");
     send.tabIndex = state.length ? 0 : -1;
     saveBag(state);
+    renderPaymentEligibility(state);
   }
   itemsRoot.addEventListener("click", event => {
     const button = event.target.closest("[data-esco-bag-remove]");
@@ -98,7 +180,11 @@ async function init() {
     render();
   });
   send.addEventListener("click", event => { if (!state.length) event.preventDefault(); });
+  if (termsCheckbox) termsCheckbox.addEventListener("change", () => renderPaymentEligibility(state));
+  if (checkoutButton) checkoutButton.addEventListener("click", () => startCheckout(state));
+  await configurePayment().catch(()=>{ paymentServiceReady=false; });
   render();
+  await checkPaymentReturn();
 }
 init().catch(() => {
   if (itemsRoot) itemsRoot.replaceChildren(node("p", "Bag details are temporarily unavailable. Please use the ESCO enquiry link to contact our team.", "esco-bag-message"));
