@@ -107,17 +107,23 @@ function showOrders(data){
  }
 }
 async function showAuthenticated(config,v){
- document.querySelector("[data-nx-account-public]").hidden=true;
- document.querySelector("[data-nx-account-private]").hidden=false;
+ // An unverified or expired token must never reveal the private account view.
  status("Retrieving your verified account…");
  const me=await accountRequest(config,"/account/me",v.accessToken);
  if(me?.email_verified!==true || me?.customer_type!=="personal"){
   clearSession();throw new Error("Email verification is required before account access.");
  }
+ let orders=null;
+ try{orders=await accountRequest(config,"/account/orders",v.accessToken);}
+ catch{
+  // An authorization failure clears the session; other outages only affect order history.
+  if(!loadSession())throw new Error("Your session expired. Please sign in again.");
+ }
+ document.querySelector("[data-nx-account-public]").hidden=true;
+ document.querySelector("[data-nx-account-private]").hidden=false;
  text("[data-nx-account-email]",me.email||"Verified customer");
+ showOrders(orders);
  status("Signed in securely.");
- try{showOrders(await accountRequest(config,"/account/orders",v.accessToken));}
- catch{showOrders(null);}
 }
 async function init(){
  const signIn=document.querySelector("[data-nx-account-signin]");
@@ -152,7 +158,11 @@ async function init(){
   catch(e){status(e.message);return;}
  }
  const session=loadSession();
- if(session)try{await showAuthenticated(config,session);}catch(e){status(e.message);}
+ if(session)try{await showAuthenticated(config,session);}catch(e){
+  document.querySelector("[data-nx-account-public]").hidden=false;
+  document.querySelector("[data-nx-account-private]").hidden=true;
+  status(e.message);
+ }
  else status("Sign in or create your account with a verified email address. Guest checkout is still available.");
 }
 if(typeof document!=="undefined")void init();
