@@ -98,7 +98,15 @@ test("the review page uses the Products-only API and never the customer portal",
  assert.match(html,/data-nx-public-bag/);
  assert.match(html,/data-nx-checkout disabled/);
  assert.match(html,/data-nx-consumer-terms/);
+ assert.match(html,/class="nx-purchase-progress"/);
+ assert.match(html,/aria-current="step"/);
+ assert.match(html,/Your Bag/);
+ assert.match(html,/Guest checkout available/);
+ assert.match(html,/Verified customer account creation and saved order history are not yet enabled/);
+ const styles=readFileSync("assets/css/nutraxin-retail-store.css","utf8");
+ assert.match(styles,/nx-checkout-identity/);
  const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ assert.match(js,/Continue as guest/);
  assert.match(js,/credentials: "omit"/);
  assert.doesNotMatch(js,/portal.novapharmhealthcare.com/);
  assert.match(js,/\/checkout/);
