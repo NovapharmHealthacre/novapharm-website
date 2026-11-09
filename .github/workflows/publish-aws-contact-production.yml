@@ -6,6 +6,7 @@ on:
     paths:
       - 'products/nutraxin/**'
       - 'assets/data/nutraxin-consumer-auth.json'
+      - 'src/content/site-content.mjs'
       - 'assets/js/nutraxin-consumer-account.js'
       - 'src/content/nutraxin-showcase.html'
       - 'assets/js/nutraxin-retail-store.js'
