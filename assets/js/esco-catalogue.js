@@ -83,12 +83,9 @@ if (root) {
     const countText = state.size + (state.size === 1 ? " item selected" : " items selected");
     if (count) count.textContent = countText;
     if (clear) clear.disabled = state.size === 0;
-    const lines = [...state].map(([id, quantity]) => {
-      const item = known.get(id);
-      return id + " | " + item.name + " | " + item.model + " | qty " + quantity;
-    });
-    const text = "ESCO Anand UK procurement enquiry. Please provide item specifications, confirmed compliant supply, itemised landed prices, delivery and lead times. Requested items: " + lines.join("; ");
-    send.href = "/contact/?enquiry=" + encodeURIComponent(text.slice(0, 1700));
+    const lines = [...state].map(([id, quantity]) => id + " qty " + quantity);
+    const text = "ESCO Anand UK quotation request (catalogue 2026). Items: " + lines.join("; ") + ". Please confirm exact variants, UK compliance, price ex VAT, delivery and lead times.";
+    send.href = "/contact/?enquiry=" + encodeURIComponent("Distribution partnership") + "&quote=" + encodeURIComponent(text);
     send.setAttribute("aria-disabled", state.size === 0 ? "true" : "false");
     send.tabIndex = state.size === 0 ? -1 : 0;
     for (const button of root.querySelectorAll("[data-esco-add]")) {
