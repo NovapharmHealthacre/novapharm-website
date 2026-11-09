@@ -13,6 +13,12 @@ const mapping = Object.freeze({
   stripeSubscriptionId: "sub_Synthetic123",
   stripeLiveMode: false,
 });
+const owner = Object.freeze({
+  verifiedServerSide: true,
+  tenantId: mapping.tenantId,
+  subject: mapping.subject,
+  stripeCustomerId: mapping.stripeCustomerId,
+});
 
 function event(type = "customer.subscription.updated") {
   const subscription = type.startsWith("customer.subscription.");
@@ -33,7 +39,7 @@ function sign(payload, time = Math.floor(nowMs / 1000), key = webhookSecret) {
 }
 function verify(payload = event(), overrides = {}) {
   return verifyIntelligenceBillingEvent({
-    ...sign(payload), webhookSecret, expectedLiveMode: false, trustedMapping: mapping, nowMs, ...overrides,
+    ...sign(payload), webhookSecret, expectedLiveMode: false, trustedMapping: mapping, trustedOwner: owner, nowMs, ...overrides,
   });
 }
 function rejected(overrides, code, payload = event()) {
@@ -103,6 +109,11 @@ test("tenant, principal, subscription and customer must match the private billin
     rejected({ trustedMapping: { ...mapping, ...bad } }, "billing_tenant_mapping_unverified");
   }
   rejected({ trustedMapping: {} }, "billing_tenant_mapping_unverified");
+  rejected({ trustedOwner: {} }, "billing_tenant_mapping_unverified");
+  rejected({ trustedOwner: { ...owner, verifiedServerSide: false } }, "billing_tenant_mapping_unverified");
+  rejected({ trustedOwner: { ...owner, tenantId: "tenant-attacker" } }, "billing_tenant_mapping_unverified");
+  rejected({ trustedOwner: { ...owner, subject: "user-attacker" } }, "billing_tenant_mapping_unverified");
+  rejected({ trustedOwner: { ...owner, stripeCustomerId: "cus_OtherCustomer1" } }, "billing_tenant_mapping_unverified");
 });
 
 test("malformed Stripe invoice/subscription identities and untrusted metadata fail closed", () => {
