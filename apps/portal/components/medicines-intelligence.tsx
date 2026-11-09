@@ -1,8 +1,8 @@
 "use client";
 
 import { type FormEvent, type ReactNode, useId, useState } from "react";
-import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { intelligenceWorkspaceBySlug, intelligenceWorkspaceCatalogue, intelligenceWorkspaceGroups } from "../data/intelligence-workspaces";
+import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError } from "../lib/gateway";
 import styles from "./medicines-intelligence.module.css";
 import { PharmaScopeBrand } from "./pharmascope-brand";
