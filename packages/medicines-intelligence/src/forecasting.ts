@@ -13,6 +13,7 @@ function validateSeries(series: readonly TimeSeriesPoint[]): void {
   for (const point of series) {
     if (!/^(?:19|20)\d{2}-(?:0[1-9]|1[0-2])$/u.test(point.period)) throw new Error("Forecast period must use YYYY-MM.");
     if (point.period <= previous) throw new Error("Forecast periods must be unique and strictly increasing.");
+    if (previous && point.period !== nextMonth(previous, 1)) throw new Error("Forecast observations must cover consecutive calendar months; missing months cannot be silently inferred.");
     if (!Number.isFinite(point.value) || point.value < 0) throw new Error("Forecast observations must be finite and non-negative.");
     previous = point.period;
   }
@@ -124,6 +125,7 @@ export function forecastMonthlySeries(
   if (!Number.isInteger(seasonLength) || seasonLength < 2 || seasonLength > 12) throw new Error("Forecast season length must be between two and 12 months.");
   const trainingCutoff = series.at(-1)?.period ?? "";
   const featureCutoff = options.featureCutoff ?? trainingCutoff;
+  if (!/^(?:19|20)\d{2}-(?:0[1-9]|1[0-2])$/u.test(featureCutoff)) throw new Error("Forecast feature cutoff must use YYYY-MM.");
   if (featureCutoff > trainingCutoff) throw new Error("Forecast features may not be newer than the training cutoff.");
   const candidates: readonly ForecastModel[] = series.length >= seasonLength * 2 ? ["seasonal_naive", "holt_linear"] : ["holt_linear"];
   const evaluations = candidates.map((model) => Object.freeze({ model, metrics: rollingBacktest(series, model, seasonLength) }));
