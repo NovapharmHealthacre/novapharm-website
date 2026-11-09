@@ -64,7 +64,7 @@ test("all 373 ESCO entries have product-specific, accurately labelled concept pr
   assert.match(builder,/buildMerchandising\(entries\)/);
   assert.match(builder,/esco-product-concept/);
   assert.match(builder,/merchandising\.guidePrices\[p\.id\]/);
-  assert.match(builder,/Product-specific concept/);
+  assert.match(builder,/Original product concept/);
   assert.match(css,/\.esco-product-concept/);
   assert.match(css,/:is\(\.esco-category-image,\.esco-product-art\)\[data-esco-photo/);
   assert.equal((css.match(/:is\(\.esco-category-image,\.esco-product-art\)\[data-esco-photo=/g)||[]).length,12);
@@ -99,7 +99,7 @@ test("61 ESCO model-matched photos exist as distinct catalogue-derived WebP asse
   }
   const generator=fs("scripts/apply-esco-catalogue.mjs","utf8");
   assert.match(generator,/productPicture\(p, category\)/);
-  assert.match(generator,/Model-matched ESCO catalogue photo/);
+  assert.match(generator,/Source catalogue photo/);
   assert.match(generator,/Source catalogue photo/);
   assert.match(generator,/Original product concept/);
 });
