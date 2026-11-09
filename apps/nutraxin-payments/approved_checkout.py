@@ -144,7 +144,7 @@ def stripe_session(order, attempt):
     if not isinstance(secret, str) or not secret.startswith(("rk_live_", "sk_live_")) or len(secret) < 20 or any(ord(char) < 33 or ord(char) > 126 for char in secret):
         raise NotReady("Stripe live restricted credentials are unavailable")
     form = {
-        "mode": "payment", "payment_method_types[0]": "card",
+        "mode": "payment",  # Stripe 2026-09-30 removed payment_method_types; use dynamic methods.
         "client_reference_id": order["orderId"],
         "billing_address_collection": "required",
         "shipping_address_collection[allowed_countries][0]": "GB",
