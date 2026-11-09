@@ -120,8 +120,6 @@ async function init() {
     fetch("/assets/data/esco-catalogue.json", { credentials: "omit", cache: "no-store" }),
     fetch("/assets/data/esco-uk-guide-prices.json", { credentials: "omit", cache: "no-store" }),
     fetch("/assets/data/esco-model-photo-map.json", { credentials: "omit", cache: "no-store" })
-    fetch("/assets/data/esco-catalogue.json", { credentials: "omit", cache: "no-store" }),
-    fetch("/assets/data/esco-uk-guide-prices.json", { credentials: "omit", cache: "no-store" })
   ]);
   if (!catalogueResponse.ok || !pricesResponse.ok) throw new Error("The ESCO catalogue could not load");
   const [catalogue, priceData, photos] = await Promise.all([
