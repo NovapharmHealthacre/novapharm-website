@@ -3,8 +3,9 @@
  * Retail checkout remains fail-closed until a trusted server creates a priced, verified order.
  */
 export const BAG_KEY = "novapharm.nutraxin.public-bag.v1";
-export const MAX_PER_SKU = 99;
+export const MAX_PER_SKU = 10000;
 const CATALOGUE_URL = "/assets/data/nutraxin-retail-catalogue.json";
+const PORTAL_ORIGIN = "https://portal.novapharmhealthcare.com";
 const BAG_URL = "/products/nutraxin/bag/";
 const SHOP_URL = "/products/nutraxin/";
 
@@ -104,6 +105,7 @@ function installStyle() {
 
 function runStore(data) {
   let bag = loadBag(data);
+  let approvedRelease = false;
   const productMap = new Map(data.products.map((p) => [p.sku, p]));
   const slugMap = new Map(data.products.map((p) => [p.slug, p]));
   const updateNav = () => {
@@ -156,18 +158,24 @@ function runStore(data) {
           const pack = make("p", "nx-bag-pack", p.pack);
           const price = make("p", "nx-bag-price", productPriceLabel(p, data));
           const label = make("label", null, "Quantity");
-          const select = make("select");
-          select.setAttribute("aria-label", "Quantity for " + p.name);
-          for (let i = 1; i <= MAX_PER_SKU; i++) {
-            const opt = make("option", null, String(i));
-            opt.value = String(i); opt.selected = i === line.quantity;
-            select.append(opt);
-          }
-          select.addEventListener("change", () => {
-            bag = bag.map((v) => v.sku === p.sku ? { sku: p.sku, quantity: Number(select.value) } : v);
+          const quantityInput = make("input");
+          quantityInput.type = "number";
+          quantityInput.min = "1";
+          quantityInput.max = String(MAX_PER_SKU);
+          quantityInput.step = "1";
+          quantityInput.inputMode = "numeric";
+          quantityInput.value = String(line.quantity);
+          quantityInput.setAttribute("aria-label", "Quantity for " + p.name);
+          quantityInput.addEventListener("change", () => {
+            const quantity = Number(quantityInput.value);
+            if (!Number.isSafeInteger(quantity) || quantity < 1 || quantity > MAX_PER_SKU) {
+              quantityInput.value = String(line.quantity);
+              return;
+            }
+            bag = bag.map((v) => v.sku === p.sku ? { sku: p.sku, quantity } : v);
             saveBag(bag); updateNav(); render();
           });
-          label.append(select);
+          label.append(quantityInput);
           const remove = make("button", "nx-bag-remove", "Remove");
           remove.type = "button";
           remove.addEventListener("click", () => {
@@ -179,10 +187,9 @@ function runStore(data) {
           list.append(item);
         }
         const subtotalMinor = basketSubtotal(bag, data);
-        const ready = !!(data.checkout_enabled === true && data.payment_collection_enabled === true &&
-          data.price_authority === "approved_consumer_retail" &&
-          data.delivery_verified === true && bag.length > 0 && subtotalMinor !== null &&
-          bag.every(({sku}) => productMap.get(sku)?.available_to_sell === true));
+        const ready = !!(approvedRelease && bag.length > 0 && subtotalMinor !== null);
+        // A public catalogue flag or browser price NEVER authorises a charge; the
+        // server independently verifies all release evidence and recalculates totals.
         const indicative = data.price_authority === "owner_authorized_provisional_public_display";
         subtotal.textContent = subtotalMinor === null ? "Pending" : (indicative ? "Guide " : "") + formatGBP(subtotalMinor);
         const ukDeliveryIncluded = indicative && data.provisional_uk_delivery_charge_pence === 0 &&
@@ -197,16 +204,32 @@ function runStore(data) {
           : "Your selections are saved in this browser. Guide prices include estimated 20% UK VAT and £0 additional UK delivery (seller-funded). Carrier service, VAT registration and stock remain unverified. No order is placed.";
         checkout.onclick = async () => {
           if (!ready) return;
+          const terms = container.querySelector("[data-nx-consumer-terms]");
+          if (!terms || !terms.checked) {
+            explanation.textContent = "Accept the UK consumer and manufacturer delivery terms before checkout.";
+            return;
+          }
           checkout.disabled = true;
           explanation.textContent = "Verifying your order securely…";
           try {
-            const response = await fetch("https://portal.novapharmhealthcare.com/api/retail/checkout", {
-              method: "POST", credentials: "omit", headers: { "content-type": "application/json" },
-              body: JSON.stringify({ lines: bag }), cache: "no-store"
+            const basketId = JSON.stringify([...bag].sort((a,b)=>a.sku.localeCompare(b.sku)));
+            let stored;
+            try { stored = JSON.parse(sessionStorage.getItem("np-retail-checkout-attempt") || "null"); }
+            catch { stored = null; }
+            const requestId = stored?.basket === basketId && /^[0-9a-f-]{36}$/.test(stored?.id || "")
+              ? stored.id : crypto.randomUUID();
+            try { sessionStorage.setItem("np-retail-checkout-attempt",JSON.stringify({basket:basketId,id:requestId})); } catch {}
+            const response = await fetch(PORTAL_ORIGIN + "/api/retail/checkout", {
+              method: "POST", credentials: "include", headers: { "content-type": "application/json" },
+              body: JSON.stringify({ request_id:requestId, lines:bag, accept_terms:true }), cache: "no-store"
             });
-            if (!response.ok) throw new Error("Checkout is unavailable");
+            if (response.status === 401) {
+              window.location.assign(PORTAL_ORIGIN + "/login?next=bag");
+              return;
+            }
+            if (!response.ok) throw new Error("Checkout has not been activated for this basket.");
             const result = await response.json();
-            const url = new URL(result.url || "");
+            const url = new URL(result.checkoutUrl || "");
             if (url.protocol !== "https:" || url.hostname !== "checkout.stripe.com") throw new Error("Invalid payment destination");
             window.location.assign(url.href);
           } catch {
@@ -216,6 +239,17 @@ function runStore(data) {
         };
       };
       render();
+      // Cross-origin status is an exact-origin, credentialed, read-only boolean.
+      // It can enable the UX only when the private AWS release gates pass.
+      void (async () => {
+        try {
+          const r=await fetch(PORTAL_ORIGIN + "/api/retail/readiness",
+            {credentials:"include",cache:"no-store",mode:"cors"});
+          const v=r.ok?await r.json():null;
+          approvedRelease = v?.checkout_ready === true && v?.payment_collection_active === true;
+        } catch { approvedRelease=false; }
+        render();
+      })();
     }
   } else if (path === SHOP_URL || path === SHOP_URL.slice(0, -1)) {
     for (const shell of document.querySelectorAll(".nx-product-card-shell")) {

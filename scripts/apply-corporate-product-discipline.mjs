@@ -427,7 +427,7 @@ function nutraxinBagMain() {
         <div><dt>Delivery</dt><dd data-nx-bag-delivery>Calculated at checkout</dd></div>
         <div><dt>Taxes</dt><dd data-nx-bag-tax>Verified at checkout</dd></div>
         <div class="nx-bag-total"><dt>Estimated total</dt><dd data-nx-bag-total>Not available</dd></div>
-      </dl><button type="button" class="nx-store-bag-button" data-nx-checkout disabled>Checkout not available yet</button>
+      </dl><label class="nx-store-consumer-terms"><input type="checkbox" data-nx-consumer-terms><span>I accept the <a href="/legal/terms/">UK consumer terms</a> and understand these supplements are fulfilled by the manufacturer, not reserved as warehouse stock. I acknowledge the stated delivery expectation may be up to 30 days.</span></label><button type="button" class="nx-store-bag-button" data-nx-checkout disabled>Checkout not available yet</button>
       <p class="nx-store-note" role="status" data-nx-checkout-note>Payment checkout is unavailable until public prices, stock, delivery, tax and merchant order processing are approved. No payment will be taken.</p>
       <a class="nx-shop-link" href="/products/nutraxin/">Back to products</a></aside>
     </div>
