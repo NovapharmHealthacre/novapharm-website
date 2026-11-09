@@ -30,11 +30,34 @@ for (const [id, image] of Object.entries(imageManifest.images)) {
   const item = entries.find((p) => p.id === id);
   if (!item || !item.model || item.model !== image.model) throw Error('ESCO image-to-model identity unresolved: ' + id);
 }
+const photoEvidence = Object.fromEntries(entries.map((p) => {
+  const matched = imageManifest.images[p.id];
+  const isSourcePhoto = matched?.model === p.model &&
+    /^[/]assets[/]media[/]esco[/]esco-p[0-9]{2}-image[0-9]{2}[.]webp$/.test(matched?.path || '');
+  return [p.id, {
+    productName:p.name, category:p.category, model:p.model || null,
+    imageType:isSourcePhoto ? 'supplier_catalogue_model_code_match' : 'original_product_type_illustration',
+    visibleImage:isSourcePhoto ? matched.path : merchandising.visualPreviews[p.id],
+    sourceCatalogueIndexPage:p.sourceIndexPage,
+    exactVariantPhotoConfirmed:false,
+    manufacturerImageRightsConfirmed:isSourcePhoto ? false : null,
+    photoRequestedFromSupplier:!isSourcePhoto
+  }];
+}));
+if (Object.keys(photoEvidence).length !== 373 ||
+    Object.values(photoEvidence).filter(x => x.imageType === 'supplier_catalogue_model_code_match').length !== 61)
+  throw Error('ESCO product-by-product photo evidence register incomplete');
+write('assets/data/esco-image-evidence.json', JSON.stringify({
+  source:'ESCO 2026 catalogue and original labelled NovaPharm illustrations',
+  entriesTotal:373, modelCodeMatchedSupplierPhotos:61, originalIllustrativePreviews:312,
+  exactVariantPhotosConfirmed:0, supplierPhotoWebRightsConfirmed:0, items:photoEvidence
+},null,2) + '\n');
+
 const contact = (item) => '/contact/?enquiry=Distribution%20partnership&quote=' + encodeURIComponent('ESCO Anand UK quotation request (catalogue 2026). Items: ' + item.id + ' qty 1. Please confirm variant, UK compliance, total delivered price and lead time.');
 const sections = data.categories.map((category, i) => {
   const subs = [...new Set(category.entries.map((item) => item.subcategory))];
   const groups = subs.map((sub) => {
-    const cards = category.entries.filter((p) => p.subcategory === sub).map((p) => `<article class="esco-product" data-esco-entry data-esco-category="${esc(category.name)}" data-esco-price="${merchandising.guidePrices[p.id].guidePriceExVatGbp.toFixed(2)}" data-esco-search="${esc([p.name, p.model, p.id, p.subcategory, category.name].filter(Boolean).join(' '))}">${productPicture(p, category)}<h4>${esc(p.name)}</h4><span class="esco-model">${p.model ? 'ESCO ' + esc(p.model) : 'Model to be confirmed'}</span><div class="esco-product-price"><strong>UK guide £${merchandising.guidePrices[p.id].guidePriceExVatGbp.toFixed(2)}</strong><small>Ex VAT · estimate, not a confirmed sale price</small></div><span class="esco-ref">${esc(p.id)} · Source catalogue index p. ${p.sourceIndexPage}</span><button type="button" class="esco-quote-add" data-esco-add="${esc(p.id)}" aria-label="Add ${esc(p.name)} to a quotation request">Add to Bag</button><a href="${esc(contact(p))}" class="esco-direct-quote" aria-label="Individual enquiry for ${esc(p.name)}">Ask about this product</a></article>`).join('');
+    const cards = category.entries.filter((p) => p.subcategory === sub).map((p) => `<article class="esco-product" data-esco-entry data-esco-category="${esc(category.name)}" data-esco-price="${merchandising.guidePrices[p.id].guidePriceExVatGbp.toFixed(2)}" data-esco-search="${esc([p.name, p.model, p.id, p.subcategory, category.name].filter(Boolean).join(' '))}"><a class="esco-image-link" href="/products/esco/product/?id=${encodeURIComponent(p.id)}" aria-label="View ESCO ${esc(p.name)} details">${productPicture(p, category)}</a><h4><a class="esco-title-link" href="/products/esco/product/?id=${encodeURIComponent(p.id)}">${esc(p.name)}</a></h4><span class="esco-model">${p.model ? 'ESCO ' + esc(p.model) : 'Model to be confirmed'}</span><div class="esco-product-price"><strong>UK guide £${merchandising.guidePrices[p.id].guidePriceExVatGbp.toFixed(2)}</strong><small>Ex VAT · estimate, not a confirmed sale price</small></div><span class="esco-ref">${esc(p.id)} · Source catalogue index p. ${p.sourceIndexPage}</span><button type="button" class="esco-quote-add" data-esco-add="${esc(p.id)}" aria-label="Add ${esc(p.name)} to a quotation request">Add to Bag</button><a href="${esc(contact(p))}" class="esco-direct-quote" aria-label="Individual enquiry for ${esc(p.name)}">Ask about this product</a></article>`).join('');
     return `<h4 class="esco-subcat" data-esco-subcategory>${esc(sub)}</h4><div class="esco-grid">${cards}</div>`;
   });
   return `<section class="esco-section" data-esco-section id="esco-range-${i + 1}" aria-labelledby="esco-range-heading-${i + 1}"><div class="esco-section-header"><h3 id="esco-range-heading-${i + 1}">${esc(category.name)}</h3><span class="esco-section-count">${category.entries.length} catalogue entries</span></div>${groups.join('')}</section>`;
@@ -55,6 +78,28 @@ bagPage=bagPage.replace(/<link rel="canonical" href="[^"]*">/,'<link rel="canoni
 bagPage=bagPage.replace('</head>','<meta name="robots" content="noindex,follow">\n<link rel="stylesheet" href="/assets/css/esco-catalogue.css">\n</head>');
 bagPage=bagPage.replace('</body>','<script type="module" src="/assets/js/esco-bag.js"></script>\n</body>');
 write('products/esco/bag/index.html',bagPage);
+const detailMain = `<main id="main" class="npd-main esco-page esco-detail-page" data-esco-detail-page>
+<section class="esco-detail-section"><div class="esco-wrap">
+<nav class="esco-detail-breadcrumb" aria-label="Breadcrumb"><a href="/products/">Products</a><span aria-hidden="true">/</span><a href="/products/esco/">ESCO Anand</a><span aria-hidden="true">/</span><span>Product details</span></nav>
+<div class="esco-detail-layout">
+<div class="esco-detail-visual"><div class="esco-detail-picture"><img data-esco-detail-image src="/assets/media/esco/previews/esco-cat-0001.svg" hidden alt=""></div><p class="esco-detail-image-note" data-esco-detail-photo-note>Loading the available product image…</p></div>
+<section class="esco-detail-info" aria-label="ESCO product information"><p class="esco-eyebrow">ESCO ANAND / PRODUCT GUIDE</p><p class="esco-detail-category" data-esco-detail-category>Official ESCO 2026 catalogue</p><h1 data-esco-detail-title>Loading product details…</h1><p class="esco-detail-model" data-esco-detail-model></p><p class="esco-detail-reference" data-esco-detail-reference></p>
+<div class="esco-detail-price"><span>Indicative UK guide, per unit</span><strong data-esco-detail-price>—</strong><small>Excluding VAT and delivery · research estimate, not a confirmed offer</small></div>
+<div class="esco-detail-purchase"><label for="esco-detail-quantity">Quantity</label><input id="esco-detail-quantity" data-esco-detail-quantity type="number" min="1" max="1000" step="1" inputmode="numeric" value="1"><button type="button" class="esco-btn" data-esco-detail-add disabled>Add to Bag</button><a href="/products/esco/bag/" class="esco-btn esco-btn-secondary">Review Bag</a></div>
+<p class="esco-detail-status" data-esco-detail-status role="status" aria-live="polite">Loading catalogue evidence…</p>
+<a class="esco-direct-quote" data-esco-detail-quote href="/contact/?enquiry=ESCO%20Anand">Ask for a confirmed quotation</a>
+<div class="esco-detail-disclosure"><h2>Before you buy</h2><p>The guide price is not a final selling price. Exact model, manufacturer photo, supplier cost, UK product requirements, applicable VAT, delivery and availability must be confirmed before a firm offer or payment. This product page never collects card information.</p></div>
+</section>
+</div>
+</div></section></main>`;
+let detailPage = sourcePage.replace(/<main\b[^>]*\bid="main"[^>]*>[\s\S]*?<\/main>/,detailMain);
+if (!detailPage.includes('data-esco-detail-page')) throw Error('Failed ESCO product detail generation');
+detailPage=detailPage.replace(/<title>[^<]*<\/title>/,'<title>ESCO Anand Product | NovaPharm</title>');
+detailPage=detailPage.replace(/<link rel="canonical" href="[^"]*">/,'<link rel="canonical" href="https://novapharmhealthcare.com/products/esco/product/">');
+detailPage=detailPage.replace('</head>','<meta name="robots" content="noindex,follow">\n<link rel="stylesheet" href="/assets/css/esco-catalogue.css">\n</head>');
+detailPage=detailPage.replace('</body>','<script type="module" src="/assets/js/esco-product-detail.js"></script>\n</body>');
+write('products/esco/product/index.html',detailPage);
+
 if (!sourcePage.includes('<main id="main"')) throw Error('No valid Products page available as ESCO template');
 let esco = sourcePage.replace(/<main\b[^>]*\bid="main"[^>]*>[\s\S]*?<\/main>/, main);
 if (!esco.includes('<main id="main" class="npd-main esco-page">')) throw Error('Could not materialise ESCO collection');

@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { runInNewContext } from "node:vm";
 const data=JSON.parse(readFileSync("assets/data/esco-catalogue.json","utf8"));
 const entries=data.categories.flatMap(x=>x.entries);
 test("source index has exactly 373 distinct ESCO references across 12 supplier categories",()=>{
@@ -139,4 +140,153 @@ test("owner-declared 10000 per catalogue reference is planning stock, not verifi
   assert.match(builder,/10,000 units per catalogue reference/);
   assert.match(builder,/warehouse-verified available stock/);
   assert.match(builder,/No payment is taken until the exact order is approved/);
+});
+
+test("all 373 ESCO products link to an evidence-labelled customer detail and safe Bag route",()=>{
+  const builder=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
+  const detail=readFileSync("assets/js/esco-product-detail.js","utf8");
+  const css=readFileSync("assets/css/esco-catalogue.css","utf8");
+  assert.match(builder,/esco-title-link/);
+  assert.match(builder,/esco-image-link/);
+  assert.match(builder,/products\/esco\/product\/\?id=/);
+  assert.match(builder,/products\/esco\/product\/index\.html/);
+  assert.match(builder,/data-esco-detail-page/);
+  assert.match(builder,/data-esco-detail-image/);
+  assert.match(builder,/data-esco-detail-photo-note/);
+  assert.match(builder,/data-esco-detail-quantity/);
+  assert.match(builder,/data-esco-detail-add disabled/);
+  assert.match(builder,/data-esco-detail-quote/);
+  assert.match(detail,/photos\.images\?\.\[id\]/);
+  assert.match(detail,/PHOTO_PATH\.test/);
+  assert.match(detail,/PREVIEW_PATH\.test/);
+  assert.match(detail,/guide\.priceApprovedForCheckout !== false/);
+  assert.match(detail,/guides\.checkoutEnabled !== false/);
+  assert.match(detail,/MAX_LINES = 12/);
+  assert.match(detail,/MAX_QTY = 1000/);
+  assert.match(detail,/localStorage\.setItem/);
+  assert.match(detail,/Original product-type illustration/);
+  assert.match(detail,/Model-code-matched supplier catalogue photograph/);
+  assert.doesNotMatch(detail,/stripe\.com|checkoutUrl|client_secret|cardNumber/);
+  assert.match(css,/\.esco-detail-layout/);
+  assert.match(css,/@media\(max-width:780px\)/);
+});
+
+
+test("Bag shows provenance-labelled images for every known ESCO selection",()=>{
+  const bag=readFileSync("assets/js/esco-bag.js","utf8");
+  const builder=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
+  const photoMap=JSON.parse(readFileSync("assets/data/esco-model-photo-map.json","utf8"));
+  const css=readFileSync("assets/css/esco-catalogue.css","utf8");
+  assert.equal(photoMap.mappedImagesCount,61);
+  assert.match(bag,/esco-model-photo-map\.json/);
+  assert.match(bag,/priceData\.visualPreviews/);
+  assert.match(bag,/matchedPhoto/);
+  assert.match(bag,/esco-bag-thumb/);
+  assert.match(bag,/Original concept image/);
+  assert.match(bag,/Supplier catalogue image/);
+  assert.match(bag,/products\/esco\/product\/\?id=/);
+  assert.match(builder,/assets\/js\/esco-product-detail\.js/);
+  assert.match(css,/\.esco-bag-thumb/);
+  assert.doesNotMatch(bag,/checkout\.sessions|client_secret|cardNumber/);
+});
+
+
+test("every ESCO image carries explicit model-photo or original-artwork provenance",()=>{
+  const source=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
+  assert.match(source,/photoEvidence = Object\.fromEntries\(entries\.map/);
+  assert.match(source,/esco-image-evidence\.json/);
+  assert.match(source,/supplier_catalogue_model_code_match/);
+  assert.match(source,/original_product_type_illustration/);
+  assert.match(source,/exactVariantPhotosConfirmed:0/);
+  assert.match(source,/supplierPhotoWebRightsConfirmed:0/);
+});
+
+
+test("product detail can add a verified reference without deleting other Bag lines",async()=>{
+  const script=readFileSync("assets/js/esco-product-detail.js","utf8");
+  const photoData=JSON.parse(readFileSync("assets/data/esco-model-photo-map.json","utf8"));
+  const guides={
+    entriesTotal:373, checkoutEnabled:false, paymentCollectionEnabled:false, requestQuoteOnly:true,
+    guidePrices:Object.fromEntries(entries.map(x=>[x.id,{
+      guidePriceExVatGbp:19.5, priceApprovedForCheckout:false, checkoutEligible:false
+    }])),
+    visualPreviews:Object.fromEntries(entries.map(x=>[x.id,
+      "/assets/media/esco/previews/"+x.id.toLowerCase()+".svg"]))
+  };
+  const elements=new Map();
+  for(const key of ["add","quantity","status","image","photo-note","title","category","model","price","reference","quote"]){
+    const node={value:key==="quantity"?"3":"",textContent:"",dataset:{},
+      disabled:key==="add",hidden:key==="image",listeners:{},
+      addEventListener(type,callback){this.listeners[type]=callback;}};
+    elements.set("[data-esco-detail-"+key+"]",node);
+  }
+  const store=new Map([["novapharm-esco-quote-list-v1",JSON.stringify([
+    {id:"ESCO-CAT-0002",quantity:4}
+  ])]]);
+  const accessed=[];
+  const ctx={
+    document:{title:"ESCO",querySelector:s=>s==="[data-esco-detail-page]"?{
+      querySelector:selector=>elements.get(selector)||null
+    }:null},
+    location:{search:"?id=ESCO-CAT-0001"},
+    localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},
+    URLSearchParams, Intl,
+    fetch:async url=>{
+      accessed.push(url);
+      const value=url.includes("esco-model-photo-map")?photoData:
+        url.includes("esco-uk-guide-prices")?guides:data;
+      return {ok:true,json:async()=>value};
+    }
+  };
+  runInNewContext(script,ctx,{timeout:2000});
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(elements.get("[data-esco-detail-add]").disabled,false);
+  assert.match(elements.get("[data-esco-detail-image]").src,/^\/assets\/media\/esco\//);
+  assert.equal(accessed.length,3);
+  elements.get("[data-esco-detail-add]").listeners.click();
+  const saved=JSON.parse(store.get("novapharm-esco-quote-list-v1"));
+  assert.equal(saved.length,2);
+  assert.equal(saved.find(x=>x.id==="ESCO-CAT-0001").quantity,3);
+  assert.equal(saved.find(x=>x.id==="ESCO-CAT-0002").quantity,4);
+  elements.get("[data-esco-detail-quantity]").value="1001";
+  elements.get("[data-esco-detail-add]").listeners.click();
+  assert.equal(JSON.parse(store.get("novapharm-esco-quote-list-v1")).length,2);
+  assert.match(elements.get("[data-esco-detail-status]").textContent,/whole-number quantity/);
+});
+
+
+test("illustrative image families distinguish distinct hospital and surgical items",async()=>{
+  const {makeProductIllustration}=await import("./esco-merchandising.mjs");
+  const examples=[
+    ["ESCO-CAT-0279","scissors"],
+    ["ESCO-CAT-0280","forceps"],
+    ["ESCO-CAT-0340","scalpel"],
+    ["ESCO-CAT-0283","retractor"],
+    ["ESCO-CAT-0286","speculum"],
+    ["ESCO-CAT-0243","petri"],
+    ["ESCO-CAT-0026","mattress"],
+    ["ESCO-CAT-0145","mask"],
+    ["ESCO-CAT-0065","stand"]
+  ];
+  const byId=new Map(data.categories.flatMap(category=>category.entries.map(item=>[
+    item.id,{...item,category:category.name}
+  ])));
+  for(const [id,kind] of examples){
+    const item=byId.get(id);
+    assert.ok(item,"Missing ESCO catalogue item "+id);
+    assert.match(makeProductIllustration(item),new RegExp('data-concept-type="'+kind+'"'),id);
+  }
+});
+
+
+test("none of the 373 catalogue concepts falls back to an unrelated generic machine",async()=>{
+  const {makeProductIllustration}=await import("./esco-merchandising.mjs");
+  let checked=0;
+  for(const category of data.categories)for(const product of category.entries){
+    const svg=makeProductIllustration({...product,category:category.name});
+    assert.match(svg,/data-concept-type="/);
+    assert.doesNotMatch(svg,/data-concept-type="machine"/,product.id+" should have an appropriate product family");
+    checked++;
+  }
+  assert.equal(checked,373);
 });

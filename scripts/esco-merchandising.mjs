@@ -165,12 +165,57 @@ const shapes = {
   machine: '<rect x="206" y="120" width="230" height="170" rx="18"/><path d="M236 164h166M237 204h167"/><circle cx="258" cy="251" r="15"/><circle cx="316" cy="251" r="15"/><path d="M376 250h36" stroke-width="13"/>',
   freezer: '<rect x="231" y="83" width="172" height="235" rx="14"/><path d="M231 190h172M262 108v36M262 211v32"/><path d="M252 313v15m129-15v15"/>',
   bin: '<path d="M237 139h175l-25 165H261Z"/><path d="M214 139h220M257 112h138M308 100h39"/><path d="M284 168v106m49-106v106m42-106v106"/>',
-  crutch: '<path d="M246 85h120M263 96l48 215m42-215-42 215M282 161h57"/><path d="M224 89h160" stroke-width="17"/>'
+  step: '<rect x="196" y="236" width="270" height="64" rx="9"/><rect x="254" y="168" width="212" height="67" rx="9"/><path d="M207 301v26m247-26v26M263 228h192" stroke-width="9"/>',
+  drum: '<ellipse cx="319" cy="130" rx="119" ry="43"/><path d="M201 130v166q115 58 237 0V130"/><ellipse cx="319" cy="297" rx="119" ry="43"/><path d="M219 177h202M220 241h200" stroke="#B9D7FF"/>',
+  autoclave: '<rect x="205" y="104" width="240" height="225" rx="28"/><rect x="241" y="143" width="165" height="150" rx="13"/><circle cx="323" cy="215" r="57" stroke="#B9D7FF"/><path d="M242 112h170M270 312h100M437 145h20"/>',
+  centrifuge: '<path d="M203 159l37-60h165l38 60v146H203Z"/><rect x="246" y="152" width="160" height="86" rx="22"/><ellipse cx="326" cy="197" rx="64" ry="27"/><circle cx="387" cy="270" r="15"/><path d="M237 269h83" stroke="#B9D7FF"/>',
+  incubator: '<rect x="222" y="76" width="198" height="250" rx="16"/><rect x="248" y="120" width="147" height="149" rx="10" fill="#E2EAF4"/><path d="M253 194h137M253 240h137M273 103h77M380 114v34"/><circle cx="380" cy="297" r="9"/>',
+  bath: '<rect x="200" y="140" width="241" height="151" rx="14"/><path d="M221 158h199v62H221Z" fill="#E2EAF4"/><path d="M225 187q23-14 46 0t46 0t46 0t48 0" stroke="#B9D7FF"/><circle cx="248" cy="256" r="12"/><path d="M300 256h113"/>',
+  hotplate: '<path d="M188 213h271l-24 83H211Z"/><ellipse cx="322" cy="194" rx="101" ry="42"/><ellipse cx="322" cy="194" rx="58" ry="21" stroke="#B9D7FF"/><circle cx="271" cy="265" r="11"/><circle cx="372" cy="265" r="11"/>',
+  hood: '<path d="M206 104h231v183H206Z"/><path d="M224 160h196v95H224Z" fill="#E2EAF4"/><path d="M206 135h231M224 255h196M245 286v37m153-37v37"/><path d="M288 187h65" stroke="#B9D7FF"/>',
+    scissors: '<circle cx="244" cy="260" r="31"/><circle cx="392" cy="260" r="31"/><path d="M269 239l133-145M368 239 245 94M300 206l45-42"/><path d="M245 93l29-7m128 8-30-7"/>',
+  forceps: '<path d="M223 92Q295 150 315 294M410 92Q345 154 330 294"/><path d="M228 92L211 115m199-23 18 23M315 295h15M252 142h135" stroke-width="9"/>',
+  scalpel: '<path d="M183 250l238-143 38 17-41 39-226 115Z"/><path d="M281 202l90-54M190 274l-24 18" stroke-width="8"/><path d="M421 107l39 17-43 42Z" fill="#DFEDFD"/>',
+  retractor: '<path d="M216 111v127q0 29 25 29h158q25 0 25-29V111"/><path d="M192 108h49m159 0h49M248 262l-26 37m175-37 26 37"/><path d="M275 194h94" stroke-width="8"/>',
+  speculum: '<path d="M310 286V178M327 286V178M310 191l-86-84m103 84 86-84"/><path d="M225 106q-25-20-32 5l80 104M414 106q25-20 32 5l-80 104"/><path d="M280 287h73" stroke-width="12"/>',
+  petri: '<ellipse cx="320" cy="175" rx="173" ry="77"/><path d="M147 175v67q0 42 173 47 173-5 173-47v-67"/><ellipse cx="320" cy="242" rx="173" ry="47" stroke="#B9D7FF"/><path d="M255 149q56-18 122 3" stroke="#B9D7FF"/>',
+  mattress: '<path d="M139 179l91-52h292l-90 52Z" fill="#E2EAF4"/><path d="M139 179v67l292 46V180M431 291l91-55V127M139 245l292 46"/><path d="M213 162h212" stroke="#B9D7FF"/>',
+  stand: '<path d="M315 78v234M315 92h-96m96 0h96M219 92v29m192-29v29M261 313h108M315 279l-72 33m72-33 73 33"/><circle cx="243" cy="312" r="10"/><circle cx="387" cy="312" r="10"/>',
+  mask: '<rect x="215" y="154" width="210" height="112" rx="35" fill="#E2EAF4"/><path d="M215 176q-57-23-65 19t65 39M425 176q57-23 65 19t-65 39"/><path d="M249 183h145M256 216h130M262 246h116" stroke="#B9D7FF"/>',
+    crutch: '<path d="M246 85h120M263 96l48 215m42-215-42 215M282 161h57"/><path d="M224 89h160" stroke-width="17"/>'
 };
 function imageKind(item) {
   const text=(item.name+' '+item.subcategory).toLowerCase();
+  // Product-type precedence prevents generic trolley, clothing or machine icons
+  // from being mistaken for specialist clinical instruments and lab consumables.
+  if (item.category==='Surgical Instruments') {
+    if (/surgical knives|surgical blades|scalpel/.test(text)) return 'scalpel';
+    if (/scissors|shears|cast cutters/.test(text)) return 'scissors';
+    if (/forceps|clamps|graspers|needle holders|bone holding/.test(text)) return 'forceps';
+    if (/specula|speculum/.test(text)) return 'speculum';
+    if (/retractors|elevators|probes|dilators|curettes/.test(text)) return 'retractor';
+    if (/sets|trays|baskets|containers/.test(text)) return 'tray';
+    return 'instrument';
+  }
+  if (/face masks|isolation masks|surgical masks/.test(text)) return 'mask';
+  if (/mattress covers|mattress protectors/.test(text)) return 'textile';
+  if (/mattress/.test(text)) return 'mattress';
+  if (/saline stand|iv stand|pipette stand/.test(text)) return 'stand';
+  if (/petri dishes|culture plates|multiwell plates|pcr plates/.test(text)) return 'petri';
+  if (/foot step/.test(text)) return 'step';
+  if (/kick bucket/.test(text)) return 'bowl';
+  if (/sterilizing drum|sterilizing box/.test(text)) return 'drum';
+  if (/tongue depressors/.test(text)) return 'pack';
+  if (item.category==='Sterilization & Refrigeration Equipment' && /autoclave|sterilizer/.test(text)) return 'autoclave';
+  if (item.category==='Laboratory Equipment') {
+    if (/centrifuge/.test(text)) return 'centrifuge';
+    if (/incubator|laboratory oven/.test(text)) return 'incubator';
+    if (/water bath/.test(text)) return 'bath';
+    if (/shaker|vortex mixer|hot plate|magnetic stirrer/.test(text)) return 'hotplate';
+    if (/fume hood|safety cabinet/.test(text)) return 'hood';
+  }
   if (/overbed table|feeding table|instrument table|back table|ot table cover/.test(text)) return 'table';
-  if (/test tubes|centrifuge tubes|micro tubes|cryovials|pipettes|burettes/.test(text)) return 'tubes';
+  if (/test tubes|centrifuge tubes|micro tubes|cryovials|pipettes|burettes|tube racks/.test(text)) return 'tubes';
   if (/pouches|reels|indicators|medical labels|patient id bands|drug bags|sample bags|zip-lock|biohazard bags/.test(text)) return 'pack';
   if (/microscope slides|cover slips|slide boxes/.test(text)) return 'tray';
   if (/wheelchair/.test(text)) return 'wheelchair';
@@ -205,7 +250,7 @@ function splitTitle(text) {
 export function makeProductIllustration(item) {
   const kind=imageKind(item);
   const [title1,title2]=splitTitle(item.name);
-  return '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="420" viewBox="0 0 640 420" role="img" aria-label="Concept illustration for '+svgEscape(item.name)+'">'
+  return '<svg xmlns="http://www.w3.org/2000/svg" data-concept-type="'+kind+'" width="640" height="420" viewBox="0 0 640 420" role="img" aria-label="Concept illustration for '+svgEscape(item.name)+'">'
    +'<rect width="640" height="420" rx="24" fill="#F6F8FB"/>'
    +'<circle cx="320" cy="196" r="162" fill="#EBF1F9"/>'
    +'<g fill="none" stroke="#283D5A" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">'+(shapes[kind]||shapes.machine)+'</g>'

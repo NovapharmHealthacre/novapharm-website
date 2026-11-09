@@ -34,15 +34,16 @@ function node(tag, content, classname = "") {
 async function init() {
   if (!itemsRoot || !send || !totalNode) return;
   itemsRoot.replaceChildren(node("p", "Loading your Bag…", "esco-bag-message"));
-  const [catalogueResponse, pricesResponse] = await Promise.all([
+  const [catalogueResponse, pricesResponse, photoResponse] = await Promise.all([
     fetch("/assets/data/esco-catalogue.json", { credentials: "omit", cache: "no-store" }),
-    fetch("/assets/data/esco-uk-guide-prices.json", { credentials: "omit", cache: "no-store" })
+    fetch("/assets/data/esco-uk-guide-prices.json", { credentials: "omit", cache: "no-store" }),
+    fetch("/assets/data/esco-model-photo-map.json", { credentials: "omit", cache: "no-store" })
   ]);
-  if (!catalogueResponse.ok || !pricesResponse.ok) throw new Error("The ESCO catalogue could not load");
-  const [catalogue, priceData] = await Promise.all([catalogueResponse.json(), pricesResponse.json()]);
+  if (!catalogueResponse.ok || !pricesResponse.ok || !photoResponse.ok) throw new Error("The ESCO catalogue could not load");
+  const [catalogue, priceData, photoData] = await Promise.all([catalogueResponse.json(), pricesResponse.json(), photoResponse.json()]);
   if (catalogue?.entriesTotal !== 373 || priceData?.entriesTotal !== 373 ||
       priceData?.checkoutEnabled !== false || priceData?.paymentCollectionEnabled !== false ||
-      priceData?.requestQuoteOnly !== true) throw new Error("This Bag cannot verify safe ESCO catalogue authority");
+      priceData?.requestQuoteOnly !== true || photoData?.mappedImagesCount !== 61) throw new Error("This Bag cannot verify safe ESCO catalogue authority");
   const all = catalogue.categories.flatMap((category) => category.entries);
   const known = new Map(all.map(p => [p.id, p]));
   if (known.size !== 373) throw new Error("Duplicate catalogue item");
@@ -58,9 +59,29 @@ async function init() {
       pennies += unitPennies * item.quantity;
       const article = document.createElement("article");
       article.className = "esco-bag-row";
+      const detailUrl = "/products/esco/product/?id=" + encodeURIComponent(item.id);
+      const photo = photoData.images?.[item.id];
+      const matchedPhoto = photo?.model === p.model && /^\/assets\/media\/esco\/esco-p[0-9]{2}-image[0-9]{2}\.webp$/.test(photo?.path || "");
+      const preview = priceData.visualPreviews?.[item.id];
+      if (!/^\/assets\/media\/esco\/previews\/esco-cat-[0-9]{4}\.svg$/.test(preview || ""))
+        throw new Error("A selected product has no approved preview");
+      const visualLink = document.createElement("a");
+      visualLink.href = detailUrl;
+      visualLink.className = "esco-bag-thumb";
+      visualLink.setAttribute("aria-label", "View " + p.name + " details");
+      const visual = document.createElement("img");
+      visual.src = matchedPhoto ? photo.path : preview;
+      visual.width = 110; visual.height = 84;
+      visual.loading = "lazy"; visual.decoding = "async";
+      visual.alt = matchedPhoto ? "ESCO catalogue photo associated with " + p.model : "Original illustrative product preview of " + p.name;
+      visualLink.append(visual);
       const text = document.createElement("div");
-      text.append(node("strong", p.name), node("p", item.id + " · " + (p.model || "Variant to confirm"), "esco-bag-meta"),
-        node("p", GBP.format(unitPennies / 100) + " guide per unit · ex VAT", "esco-bag-meta"));
+      text.className = "esco-bag-text";
+      const title = node("a", p.name, "esco-bag-name");
+      title.href = detailUrl;
+      text.append(title, node("p", item.id + " · " + (p.model || "Variant to confirm"), "esco-bag-meta"),
+        node("p", GBP.format(unitPennies / 100) + " guide per unit · ex VAT", "esco-bag-meta"),
+        node("p", matchedPhoto ? "Supplier catalogue image · variant unconfirmed" : "Original concept image · not a manufacturer photo", "esco-bag-image-meta"));
       const controls = document.createElement("div");
       controls.className = "esco-bag-row-controls";
       const label = node("label", "Quantity");
@@ -71,7 +92,7 @@ async function init() {
       const remove = node("button", "Remove");
       remove.type = "button"; remove.dataset.escoBagRemove = item.id;
       controls.append(label, remove);
-      article.append(text, controls);
+      article.append(visualLink, text, controls);
       itemsRoot.append(article);
     }
     totalNode.textContent = GBP.format(pennies / 100);

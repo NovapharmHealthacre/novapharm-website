@@ -12,6 +12,7 @@ on:
       - 'scripts/apply-esco-catalogue.mjs'
       - 'scripts/esco-merchandising.mjs'
       - 'assets/js/esco-bag.js'
+      - 'assets/js/esco-product-detail.js'
       - 'assets/css/esco-catalogue.css'
       - 'assets/data/esco-catalogue.json'
       - 'scripts/test-esco-catalogue.mjs'
@@ -88,6 +89,11 @@ jobs:
           grep -Fq 'UK guide' _site/products/esco/index.html
           test -s _site/assets/data/esco-uk-guide-prices.json
           test -s _site/assets/js/esco-bag.js
+          test -s _site/assets/js/esco-product-detail.js
+          test -s _site/assets/data/esco-image-evidence.json
+          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('_site/assets/data/esco-image-evidence.json','utf8'));if(x.entriesTotal!==373||x.modelCodeMatchedSupplierPhotos!==61||x.originalIllustrativePreviews!==312||x.exactVariantPhotosConfirmed!==0||Object.keys(x.items).length!==373)process.exit(1)"
+          grep -Fq 'data-esco-detail-page' _site/products/esco/product/index.html
+          grep -Fq '/products/esco/product/?id=' _site/products/esco/index.html
           test -s _site/assets/media/esco/previews/esco-cat-0373.svg
           node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('_site/assets/data/esco-uk-guide-prices.json','utf8'));if(x.entriesTotal!==373||x.checkoutEnabled||x.paymentCollectionEnabled||!x.requestQuoteOnly||Object.keys(x.guidePrices).length!==373||Object.keys(x.visualPreviews).length!==373)process.exit(1)"
 
@@ -286,6 +292,19 @@ jobs:
                 "https://novapharmhealthcare.com/assets/js/esco-bag.js?release-$GITHUB_SHA" \
                 -o /tmp/novapharm-live-esco-bag.js
               grep -Fq 'MAX_ITEMS = 12' /tmp/novapharm-live-esco-bag.js
+              curl --fail --silent --show-error --location --max-time 15 \
+                "https://novapharmhealthcare.com/products/esco/product/?id=ESCO-CAT-0001&release-$GITHUB_SHA" \
+                -o /tmp/novapharm-live-esco-detail.html
+              grep -Fq 'data-esco-detail-page' /tmp/novapharm-live-esco-detail.html
+              curl --fail --silent --show-error --max-time 15 \
+                "https://novapharmhealthcare.com/assets/js/esco-product-detail.js?release-$GITHUB_SHA" \
+                -o /tmp/novapharm-live-esco-detail.js
+              grep -Fq 'Model-code-matched supplier catalogue photograph' /tmp/novapharm-live-esco-detail.js
+              curl --fail --silent --show-error --max-time 15 \
+                "https://novapharmhealthcare.com/assets/data/esco-image-evidence.json?release-$GITHUB_SHA" \
+                -o /tmp/novapharm-live-esco-evidence.json
+              jq -e '.entriesTotal == 373 and .modelCodeMatchedSupplierPhotos == 61 and .originalIllustrativePreviews == 312 and .exactVariantPhotosConfirmed == 0 and (.items | length) == 373' \
+                /tmp/novapharm-live-esco-evidence.json
               curl --fail --silent --show-error --max-time 15 \
                 "https://novapharmhealthcare.com/assets/media/esco/previews/esco-cat-0373.svg?release-$GITHUB_SHA" \
                 -o /tmp/novapharm-live-esco-preview.svg
