@@ -460,14 +460,15 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
         aliases: [], codeHistory: [], hierarchy: [{ code: "02", name: "Repository validation chapter", level: "2", validFrom: "2026-06-01", validTo: null }],
         analyticalAvailability: { epd: true, pca: false, scmd: false, forecast: false }, limitations: ["Repository validation fixture only; no production identity is asserted."],
       };
-      if (requestUrl.pathname.endsWith("/analytics") && requestUrl.searchParams.get("startMonth") === "2026-05" && "series" in response) {
-        const previous = { ...response.rows[0], month_key: "2026-05", items: 8, quantity: 16, nic: 24, actual_cost: 20, metric_value: 8 };
-        response.rows = [previous, ...response.rows];
-        response.series = [previous, ...response.series];
-        response.sourcePeriods = ["2026-05", "2026-06"];
-        response.summary = { ...response.summary, totalItems: 20, totalQuantity: 40, totalNic: 60, totalActualCost: 50, firstMonth: "2026-05" };
-        response.pagination = { ...response.pagination, totalRows: 2 };
-        response.reconciliation = { ...response.reconciliation, tableTotal: 20, seriesTotal: 20 };
+      if (requestUrl.pathname.endsWith("/analytics") && requestUrl.searchParams.get("startMonth") === "2026-05") {
+        const evidence = response as Extract<typeof response, { series: { month_key: string }[] }>;
+        const previous = { ...evidence.rows[0], month_key: "2026-05", items: 8, quantity: 16, nic: 24, actual_cost: 20, metric_value: 8 };
+        evidence.rows = [previous, ...evidence.rows];
+        evidence.series = [previous, ...evidence.series];
+        evidence.sourcePeriods = ["2026-05", "2026-06"];
+        evidence.summary = { ...evidence.summary, totalItems: 20, totalQuantity: 40, totalNic: 60, totalActualCost: 50, firstMonth: "2026-05" };
+        evidence.pagination = { ...evidence.pagination, totalRows: 2 };
+        evidence.reconciliation = { ...evidence.reconciliation, tableTotal: 20, seriesTotal: 20 };
       }
       await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
     });
