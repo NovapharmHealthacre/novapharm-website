@@ -19,11 +19,13 @@ export function activateContactHtml(html, origin) {
   const telephone = '<label class="np-contact-reference-field"><span>Telephone (optional)</span><input name="telephone" type="tel" autocomplete="tel" maxlength="40"></label>';
   const safety = '<label class="np-contact-reference-consent"><input name="safetyConfirmation" type="checkbox" value="yes" required><span>I confirm this message contains no patient-identifiable information, adverse-event report or urgent medical details.</span></label>';
   const privacy = '<label class="np-contact-reference-consent"><input name="privacyAcknowledgement" type="checkbox" value="yes" required><span>I have read the <a href="/legal/privacy/#business-enquiries">business enquiry privacy notice</a>. These details will be used to assess and reply to this enquiry, not for marketing.</span></label>';
+  // Both required confirmations share one accessible, two-column control layout.
+  const confirmations = '<div class="np-contact-reference-confirmations" role="group" aria-label="Enquiry confirmations">' + safety + privacy + '</div>';
 
   let out = html
     .replace('data-email-enquiry-form', 'data-live-b2b-enquiry-form data-api-origin="' + origin + '"')
     .replace('<label class="np-contact-reference-field"><span>Country / region</span>', role + telephone + '<label class="np-contact-reference-field"><span>Country / region</span>')
-    .replace('<div class="np-contact-reference-actions">', safety + privacy + '<div class="np-contact-reference-actions">')
+    .replace('<div class="np-contact-reference-actions">', confirmations + '<div class="np-contact-reference-actions">')
     .replace('This website does not submit enquiries. Opening your email draft does not confirm delivery. Please do not include confidential dossiers or patient information.',
       'Business enquiries are securely stored in NovaPharm&#39;s AWS environment for up to 30 days. Do not include confidential dossiers, patient information or adverse-event reports.')
     .replace('This public information release does not collect or transmit enquiry details. Your email application handles sending.',
@@ -35,6 +37,7 @@ export function activateContactHtml(html, origin) {
   if (!out.includes('data-live-b2b-enquiry-form') ||
       !out.includes('name="privacyAcknowledgement"') ||
       !out.includes('name="safetyConfirmation"') ||
+      !out.includes('class="np-contact-reference-confirmations"') ||
       !out.includes('name="role"') ||
       !out.includes('src="/assets/js/contact-production.js"') ||
       out.includes('This public information release does not collect or transmit enquiry details')) {
