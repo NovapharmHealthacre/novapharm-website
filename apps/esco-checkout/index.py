@@ -388,6 +388,7 @@ def handler(event, context=None):
                         if CAT_ID.fullmatch(str(id)) and eligible(value)]
             ready = bool(cfg.get("enabled") is True and cfg.get("webhook_verified") is True and approved)
             return respond(200, {"checkout_ready": ready, "approved_catalogue_ids": approved if ready else [],
+                "approved_unit_prices_pence": {id: cfg["approved_skus"][id]["unit_price_pence"] for id in approved} if ready else {},
                 "currency": "GBP", "checkout_path": "/products/esco/bag/",
                 "payment_collection_active": ready})
         except (ClientError, KeyError, ValueError, TypeError):

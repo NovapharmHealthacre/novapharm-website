@@ -133,6 +133,7 @@ class CheckoutSecurity(unittest.TestCase):
             attempt=event("/checkout","POST", {"request_id":UUID,
                    "accept_terms":True, "lines":[{"id":"ESCO-CAT-0001","quantity":1}]})
             self.assertEqual(status(mod.handler(attempt))[0],503)
+            self.assertEqual(result.get("approved_unit_prices_pence", {}), {})
 
     def test_uk_product_release_needs_exact_sku_evidence(self):
         self.assertFalse(mod.eligible({}))

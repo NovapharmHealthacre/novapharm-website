@@ -188,3 +188,16 @@ test("ESCO v2 is a visual shopping Bag, not an inline quotation table",()=>{
   assert.match(css,/\.esco-shopping-item/);
   assert.match(css,/@media\(max-width:600px\)/);
 });
+
+test("Live ESCO approved prices take precedence over nonpayable catalogue guides",()=>{
+  const frontend=readFileSync("assets/js/esco-bag.js","utf8");
+  const api=readFileSync("apps/esco-checkout/index.py","utf8");
+  assert.match(api,/approved_unit_prices_pence/);
+  assert.match(api,/cfg\["approved_skus"\]\[id\]\["unit_price_pence"\]/);
+  assert.match(frontend,/approvedUnitPricesPence/);
+  assert.match(frontend,/serverPrices\[id\]/);
+  assert.match(frontend,/approvedPrice \?\? Math\.round\(guide\.guidePriceExVatGbp/);
+  assert.match(frontend,/UK delivered price/);
+  assert.match(frontend,/Ex VAT · final tax shown at Stripe/);
+  assert.match(frontend,/paymentServiceReady/);
+});
