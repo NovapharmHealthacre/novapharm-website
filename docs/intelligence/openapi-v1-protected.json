@@ -300,6 +300,66 @@
           }
         }
       }
+    },
+    "/readiness": {
+      "get": {
+        "tags": [
+          "Medicine identity"
+        ],
+        "operationId": "readIntelligenceReleaseReadiness",
+        "summary": "Authorised evidence, source ingestion and model readiness, never a production certification",
+        "description": "Read-only board/admin diagnostics. All NOVA, forecasting, global data and workspace operational states remain unapproved until separately certified.",
+        "responses": {
+          "200": {
+            "description": "Non-public source and model release-readiness inventory",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "required": [
+                    "contract",
+                    "sourceRegister",
+                    "nova",
+                    "forecasting",
+                    "pandora",
+                    "production"
+                  ],
+                  "properties": {
+                    "contract": {
+                      "const": "novapharm.intelligence.release-readiness.v1"
+                    },
+                    "sourceRegister": {
+                      "type": "object"
+                    },
+                    "nova": {
+                      "type": "object"
+                    },
+                    "forecasting": {
+                      "type": "object"
+                    },
+                    "pandora": {
+                      "type": "object"
+                    },
+                    "production": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
     }
   },
   "components": {

@@ -52,6 +52,7 @@ import {
   transitionProductLifecycle
 } from "./src/core/enterprise-domain-service.mjs";
 import { medicineIdentityDetail, nearbyHealthcareOrganisations, queryMedicineAnalytics, searchMedicines } from "./src/core/medicines-intelligence-service.mjs";
+import { intelligenceReleaseReadiness } from "./src/core/intelligence-release-readiness.mjs";
 import {
   changePassword,
   consumeRateLimit,
@@ -965,6 +966,14 @@ export async function handleRequest(request, response) {
       const session = await authenticated(request, response);
       if (!session) return;
       json(response, 200, await enterpriseModuleSnapshot(enterpriseModuleMatch[1], enterpriseContext(session)));
+      return;
+    }
+
+    if (pathname === "/api/v1/intelligence/readiness" && request.method === "GET") {
+      if (!await rateLimit(request, "intelligence-readiness", 30, 60 * 1000)) return json(response, 429, { error: "Too many readiness requests. Try again shortly." });
+      const session = await scopedAuthentication(request, response, ["board"]);
+      if (!session) return;
+      json(response, 200, await intelligenceReleaseReadiness(enterpriseContext(session)));
       return;
     }
 
