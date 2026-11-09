@@ -518,6 +518,12 @@ function breakdownMetric(metric, alias = "") {
     : analyticsMetric(metric, alias);
 }
 
+// SQL identifiers are server-owned and never interpolated from a client string.
+const approvedAnalyticsSortColumns = Object.freeze({
+  month_key: "month_key", canonical_name: "canonical_name", metric_value: "metric_value",
+  items: "items", quantity: "quantity", nic: "nic", actual_cost: "actual_cost",
+});
+
 export async function queryMedicineAnalytics(input, context) {
   requireExecutive(context);
   let query;
@@ -537,6 +543,10 @@ export async function queryMedicineAnalytics(input, context) {
       reconciliation: { applicable: reconciliationApplicable, tableTotal: reconciliationApplicable ? 0 : null, seriesTotal: reconciliationApplicable ? 0 : null, reconciles: reconciliationApplicable ? true : null, seriesTruncated: false },
       limitations: ["No current canonical medicine identity matched every supplied medicine filter.", "No result is imputed from a similar medicine name or code."], generatedAt: nowIso() };
   }
+  const approvedSortColumn = approvedAnalyticsSortColumns[query.sortBy];
+  if (!approvedSortColumn || !["asc", "desc"].includes(query.sortDirection)) throw invalid("Analytical sort is not allowed.");
+  const sortDirection = query.sortDirection === "asc" ? "ASC" : "DESC";
+  const rowOrder = `${approvedSortColumn} ${sortDirection}, month_key DESC, canonical_name ASC, medicine_id ASC`;
   const firstRow = (query.page - 1) * query.pageSize + 1;
   const lastRow = firstRow + query.pageSize - 1;
   const isEpd = query.dataset === "epd";
@@ -614,7 +624,7 @@ export async function queryMedicineAnalytics(input, context) {
   const [countResult, summaryRow, rows, series, periods, geographies, presentations, practices] = await Promise.all([
     one(`${scope.cte} SELECT COUNT(*) AS total_rows, COUNT(DISTINCT month_key) AS month_count, SUM(metric_value) AS metric_total FROM scoped`, ...scope.params),
     one(summaryQuery, ...scope.params),
-    all(`${scope.cte}, ranked AS (SELECT scoped.*, ROW_NUMBER() OVER (ORDER BY month_key DESC, canonical_name, medicine_id) AS row_number_value FROM scoped)
+    all(`${scope.cte}, ranked AS (SELECT scoped.*, ROW_NUMBER() OVER (ORDER BY ${rowOrder}) AS row_number_value FROM scoped)
       SELECT ${scope.columns.join(", ")} FROM ranked WHERE row_number_value BETWEEN ? AND ? ORDER BY row_number_value`, ...scope.params, firstRow, lastRow),
     all(seriesQuery, ...scope.params),
     all(`SELECT DISTINCT resource.reporting_period FROM ingestion_runs run

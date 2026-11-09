@@ -444,7 +444,7 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
         results: [{ medicineId: validationMedicineId, canonicalName: "Repository validation medicine", presentationCode: "0208020Z0AAACAC", productName: "Validation medicine", productCode: "0208020Z0AA", chemicalSubstance: "Validation substance", chemicalSubstanceCode: "0208020Z0", identityStatus: "bnf_current_identity_only" }],
         dataFreshness: "2026-08-24T00:00:00.000Z",
       } : requestUrl.pathname.endsWith("/analytics") ? {
-        query: { dataset: "epd", metric: "items", page: 1, pageSize: 50 }, source: "Repository validation fixture", sourcePeriods: ["2026-06"], dataState: "accepted_facts",
+        query: { dataset: "epd", metric: "items", page: 1, pageSize: 50, sortBy: requestUrl.searchParams.get("sortBy") || "month_key", sortDirection: requestUrl.searchParams.get("sortDirection") || "desc" }, source: "Repository validation fixture", sourcePeriods: ["2026-06"], dataState: "accepted_facts",
         rows: [{ month_key: "2026-06", medicine_id: validationMedicineId, canonical_name: "Repository validation medicine", practice_code: "A00001", practice_name: "Repository validation practice", practice_postcode: "SW1A 2AA", icb_code: "Q00", icb_name: "Repository validation ICB", region_code: "Y00", region_name: "Repository validation region", items: 12, quantity: 24, nic: 36, actual_cost: 30, registered_population: 1200, metric_value: 12 }],
         series: [{ month_key: "2026-06", items: 12, quantity: 24, nic: 36, actual_cost: 30, metric_value: 12 }],
         summary: { totalItems: 12, totalQuantity: 24, totalNic: 36, totalActualCost: 30, practiceCount: 1, geographyCount: 1, latestItemsPer1000: 10, firstMonth: "2026-06", latestMonth: "2026-06", sourceCutoffAt: "2026-07-31T00:00:00.000Z" },
@@ -460,6 +460,16 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
         aliases: [], codeHistory: [], hierarchy: [{ code: "02", name: "Repository validation chapter", level: "2", validFrom: "2026-06-01", validTo: null }],
         analyticalAvailability: { epd: true, pca: false, scmd: false, forecast: false }, limitations: ["Repository validation fixture only; no production identity is asserted."],
       };
+      if (requestUrl.pathname.endsWith("/analytics") && requestUrl.searchParams.get("startMonth") === "2026-05") {
+        const evidence = response as Extract<typeof response, { series: { month_key: string }[] }>;
+        const previous = { ...evidence.rows[0]!, month_key: "2026-05", items: 8, quantity: 16, nic: 24, actual_cost: 20, metric_value: 8 };
+        evidence.rows = [previous, ...evidence.rows];
+        evidence.series = [previous, ...evidence.series];
+        evidence.sourcePeriods = ["2026-05", "2026-06"];
+        evidence.summary = { ...evidence.summary, totalItems: 20, totalQuantity: 40, totalNic: 60, totalActualCost: 50, firstMonth: "2026-05" };
+        evidence.pagination = { ...evidence.pagination, totalRows: 2 };
+        evidence.reconciliation = { ...evidence.reconciliation, tableTotal: 20, seriesTotal: 20 };
+      }
       await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
     });
     await page.getByLabel("Medicine name, brand or code").fill("Repository validation medicine");
@@ -475,6 +485,8 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     await page.getByLabel("Region").fill("Repository validation region");
     await page.getByRole("button", { name: "Reset filters", exact: true }).click();
     assert.equal(await page.getByLabel("Region").inputValue(), "", `${engine}: one-action filter reset did not clear the grouped filters`);
+    await page.getByLabel("Table order").selectOption("items");
+    await page.getByLabel("Sort direction").selectOption("desc");
     await page.getByLabel("Start month").fill("2026-06");
     await page.getByLabel("End month").fill("2026-06");
     await page.getByRole("button", { name: "Run governed query", exact: true }).click();
@@ -483,6 +495,7 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     assert.equal(await page.getByText("No governed intelligence data loaded", { exact: true }).count(), 0, `${engine}: stale empty-source state remained after accepted analytics loaded`);
     await page.getByText("One accepted period is available", { exact: true }).waitFor();
     assert.equal(await page.getByRole("heading", { name: "Accepted analytical rows", exact: true }).count(), 1, `${engine}: accepted analytical rows did not render`);
+    await page.getByText(/Server-sorted by items \(desc\)/).waitFor();
     assert.equal(await page.getByText("999", { exact: true }).count(), 0, `${engine}: a validation-sample sentinel leaked into rendered analytics`);
     const evidenceGates = page.locator("details").filter({ hasText: "Regulatory, patent and SPC evidence" });
     assert.equal(await evidenceGates.getAttribute("open"), null, `${engine}: optional evidence gates were not initially collapsed`);
@@ -504,6 +517,16 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     await page.setViewportSize({ width: desktopViewport.width, height: desktopViewport.height });
     await settleAtViewportTop(page);
     await captureInteractionState(page, engine, desktopViewport, "interaction.medicines-analytics");
+    await page.getByLabel("Start month").fill("2026-05");
+    await page.getByRole("button", { name: "Run governed query", exact: true }).click();
+    await page.getByText("View 2 accepted monthly values in a table", { exact: true }).waitFor();
+    await page.getByText("View 2 accepted monthly values in a table", { exact: true }).click();
+    const trendData = page.getByRole("table", { name: "Accepted monthly items data from Repository validation fixture" });
+    await trendData.getByRole("rowheader", { name: "2026-05" }).waitFor();
+    await trendData.getByRole("rowheader", { name: "2026-06" }).waitFor();
+    assert.equal(await trendData.locator("tbody tr").count(), 2, `${engine}: accepted trend table must match two source periods`);
+    await page.getByText("Observed items range: 8 to 12", { exact: true }).waitFor();
+
     await page.unroute("**/gateway/enterprise/medicines/**");
 
     const intelligenceViews = [
