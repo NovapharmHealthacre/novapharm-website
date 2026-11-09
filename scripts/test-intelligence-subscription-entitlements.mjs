@@ -29,7 +29,7 @@ const release = Object.freeze({
   sourceRightsApproved: true,
   productionApprovedFeatures: ["medicine-search", "medicine-identity"],
 });
-const usage = Object.freeze({ period: "2026-11", searchCount: 24 });
+const usage = Object.freeze({ verifiedServerSide: true, tenantId: principal.tenantId, subject: principal.subject, period: "2026-11", searchCount: 24 });
 
 function request(overrides = {}) {
   return { principal, grant, feature: "medicine-search", release, usage, now, ...overrides };
@@ -63,6 +63,12 @@ test("cross-tenant or different-subject access remains denied even with a valid 
   denied({ principal: { ...principal, tenantId: "tenant-attacker-2" } }, "tenant_or_subject_mismatch");
   denied({ principal: { ...principal, subject: "user-attacker-2" } }, "tenant_or_subject_mismatch");
 });
+test("usage ledger must be independently verified and tenant- and subject-bound", () => {
+  denied({ usage: { ...usage, verifiedServerSide: false } }, "usage_not_authoritative");
+  denied({ usage: { ...usage, tenantId: "different-tenant" } }, "usage_not_authoritative");
+  denied({ usage: { ...usage, subject: "different-user" } }, "usage_not_authoritative");
+});
+
 test("untrusted client pricing, unsigned ledger and unaccepted terms cannot confer permissions", () => {
   denied({ grant: { ...grant, webhookSignatureVerified: false } }, "subscription_not_verified");
   denied({ grant: { ...grant, source: "browser-pricing-card" } }, "subscription_not_verified");
@@ -73,7 +79,7 @@ test("suspended, incomplete, unpaid or expired subscriptions never activate serv
   for (const status of ["past_due", "unpaid", "canceled", "incomplete", "paused", "trialing"]) {
     denied({ grant: { ...grant, status } }, "subscription_not_active");
   }
-  denied({ now: "2026-12-01T00:00:00.000Z", usage: { period: "2026-12", searchCount: 0 } }, "billing_period_not_current");
+  denied({ now: "2026-12-01T00:00:00.000Z", usage: { ...usage, period: "2026-12", searchCount: 0 } }, "billing_period_not_current");
   denied({ now: "2026-10-31T23:59:59.000Z" }, "billing_period_not_current");
 });
 test("production feature status, source rights and contractual grants all separately gate access", () => {
@@ -84,11 +90,11 @@ test("production feature status, source rights and contractual grants all separa
   denied({ feature: "nova" }, "feature_not_in_plan");
 });
 test("monthly quota is fail-closed, and non-search features still show remaining usage", () => {
-  denied({ usage: { period: "2026-11", searchCount: 25 } }, "monthly_search_limit_reached");
-  denied({ usage: { period: "2026-10", searchCount: 0 } }, "usage_period_not_current");
-  denied({ usage: { period: "2026-11", searchCount: -1 } }, "usage_not_authoritative");
+  denied({ usage: { ...usage, period: "2026-11", searchCount: 25 } }, "monthly_search_limit_reached");
+  denied({ usage: { ...usage, period: "2026-10", searchCount: 0 } }, "usage_period_not_current");
+  denied({ usage: { ...usage, period: "2026-11", searchCount: -1 } }, "usage_not_authoritative");
   const allowed = decideIntelligenceEntitlement(request({
-    feature: "medicine-identity", usage: { period: "2026-11", searchCount: 25 },
+    feature: "medicine-identity", usage: { ...usage, period: "2026-11", searchCount: 25 },
   }));
   assert.equal(allowed.allowed, true);
   assert.equal(allowed.remainingSearches, 0);
@@ -96,13 +102,13 @@ test("monthly quota is fail-closed, and non-search features still show remaining
 test("Professional has own bounded entitlement; Enterprise requires explicit signed quota", () => {
   const pro = decideIntelligenceEntitlement(request({
     grant: { ...grant, plan: "professional" },
-    usage: { period: "2026-11", searchCount: 249 },
+    usage: { ...usage, period: "2026-11", searchCount: 249 },
   }));
   assert.equal(pro.allowed, true);
   assert.equal(pro.remainingSearches, 1);
   const enterprise = { ...grant, plan: "enterprise", monthlySearchLimit: 123 };
   const enterpriseAllowed = decideIntelligenceEntitlement(request({
-    grant: enterprise, usage: { period: "2026-11", searchCount: 122 },
+    grant: enterprise, usage: { ...usage, period: "2026-11", searchCount: 122 },
   }));
   assert.equal(enterpriseAllowed.allowed, true);
   assert.equal(enterpriseAllowed.remainingSearches, 1);
