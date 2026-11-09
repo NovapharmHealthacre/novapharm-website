@@ -114,6 +114,9 @@ const shapes = {
   glass: '<path d="M237 113v46l-79 122q-13 23 12 23h300q25 0 12-23l-80-122v-46"/><path d="M234 113h172M197 253h251M254 175h121"/><path d="M210 285h224" stroke="#B9D7FF"/>',
   bottle: '<rect x="261" y="124" width="111" height="190" rx="22"/><rect x="288" y="91" width="58" height="36" rx="6"/><path d="M288 100h58M272 218h91M275 240h87"/>',
   tray: '<path d="M158 174h326l-37 115H195Z"/><path d="M172 190h301M220 250h199"/><path d="M170 166h300" stroke-width="10"/>',
+  table: '<rect x="180" y="158" width="305" height="40" rx="8"/><path d="M213 201v102m239-102v102"/><path d="M213 264h239M250 135h168"/>',
+  pack: '<path d="M245 99h161l28 224H215Z"/><path d="M249 135h153M275 168h101M275 195h101M275 222h67"/><path d="M299 97v-20h53v20"/>',
+  tubes: '<path d="M230 104v157q0 39 35 39t35-39V104M347 104v157q0 39 35 39t35-39V104"/><path d="M217 104h96M335 104h96M230 186h70M347 210h70"/>',
   bowl: '<path d="M145 167h345Q487 292 318 299 146 286 145 167Z"/><path d="M130 167h374"/><path d="M234 232q85 46 172-2" stroke="#B9D7FF"/>',
   textile: '<path d="M251 109l-51 38-30 102 66 21 29-54v111h110V216l29 54 66-21-30-102-51-38-44 31h-52Z"/><path d="M286 111l36 51 36-51" stroke="#D1E7FF"/>',
   cabinet: '<rect x="215" y="82" width="215" height="225" rx="9"/><path d="M323 85v218M221 194h204M294 207v25M345 207v25"/><path d="M231 309v16M409 309v16"/>',
@@ -124,6 +127,10 @@ const shapes = {
 };
 function imageKind(item) {
   const text=(item.name+' '+item.subcategory).toLowerCase();
+  if (/overbed table|feeding table|instrument table|back table|ot table cover/.test(text)) return 'table';
+  if (/test tubes|centrifuge tubes|micro tubes|cryovials|pipettes|burettes/.test(text)) return 'tubes';
+  if (/pouches|reels|indicators|medical labels|patient id bands|drug bags|sample bags|zip-lock|biohazard bags/.test(text)) return 'pack';
+  if (/microscope slides|cover slips|slide boxes/.test(text)) return 'tray';
   if (/wheelchair/.test(text)) return 'wheelchair';
   if (/crutch|walking frame|walker/.test(text)) return 'crutch';
   if (/chair|stool/.test(text)) return 'chair';
