@@ -1,0 +1,43 @@
+name: Cognito workforce identity and backend session contract
+on:
+  push:
+    branches:
+      - codex/cognito-staging-verify-fail-closed-20261107
+  pull_request:
+    paths:
+      - apps/portal/**
+      - src/core/cognito-*.mjs
+      - src/core/portal-gateway-signature.mjs
+      - server.mjs
+      - .github/workflows/portal-cognito-staging-proof.yml
+permissions:
+  contents: read
+jobs:
+  verify-fail-closed-identity-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout reviewed candidate
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Set up Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install immutable dependencies
+        run: npm ci --ignore-scripts
+      - name: Run Cognito negative cryptographic tests first
+        run: node --test apps/portal/test/cognito-staging-auth.test.mjs apps/portal/test/cognito-backend-integration.test.mjs
+      - name: Test isolated SQLite role provisioning and session revocation
+        run: node --test scripts/aws/cognito-backend.test.mjs
+      - name: Validate entire portal type safety, lint, contracts, tests, and build
+        run: npm run check --workspace=@novapharm/portal
+      - name: Confirm default-off production access and isolated Cognito assertion
+        run: |
+          grep -q 'COGNITO_STAGING_VERIFICATION_ENABLED !== "true"' apps/portal/lib/cognito-staging-auth.mjs
+          grep -q 'COGNITO_PORTAL_SESSION_ENABLED !== "true"' apps/portal/lib/cognito-session-exchange.mjs
+          grep -q 'COGNITO_WORKFORCE_BACKEND_ENABLED !== "true"' src/core/cognito-approval.mjs
+          grep -q 'exchangeApprovedCognitoSession' apps/portal/app/auth/callback/route.ts
+          grep -q 'provisionApprovedCognitoWorkforceIdentity' server.mjs
+          ! grep -Eq 'x-ms-client-principal|\.auth/login/aad' apps/portal/app/auth/callback/route.ts
+          ! grep -Eq 'x-ms-client-principal|\.auth/login/aad' apps/portal/app/auth/start/route.ts

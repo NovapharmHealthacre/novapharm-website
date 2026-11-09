@@ -45,7 +45,7 @@ export function createPortalGatewaySignature({
 		throw new Error("The portal gateway nonce is invalid.");
 	if (
 		String(method).toUpperCase() !== "POST" ||
-		pathname !== "/api/auth/federated"
+		!["/api/auth/federated", "/api/auth/cognito"].includes(pathname)
 	)
 		throw new Error("The portal gateway route is invalid.");
 	if (!accessTypes.has(accessType))

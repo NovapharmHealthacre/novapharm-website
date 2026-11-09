@@ -1,0 +1,174 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "NovaPharm staging-only portal image builder with independently scoped CodeConnections token access. No deployment, customer login or production DNS.",
+  "Parameters": {
+    "GitHubConnectionArn": {
+      "Type": "String",
+      "Default": "arn:aws:codeconnections:eu-north-1:250675045172:connection/84ae9bf2-6dbb-427a-9605-57fadb0ef2fd",
+      "AllowedPattern": "^arn:aws:codeconnections:eu-north-1:250675045172:connection/[a-f0-9-]+$"
+    }
+  },
+  "Resources": {
+    "BuildLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/codebuild/novapharm-staging-portal-image",
+        "RetentionInDays": 14
+      }
+    },
+    "BuildRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "codebuild.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "NovapharmPortalStagingImageOnly",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecr:GetAuthorizationToken"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecr:BatchCheckLayerAvailability",
+                    "ecr:InitiateLayerUpload",
+                    "ecr:UploadLayerPart",
+                    "ecr:CompleteLayerUpload",
+                    "ecr:PutImage",
+                    "ecr:BatchGetImage"
+                  ],
+                  "Resource": "arn:aws:ecr:eu-north-1:250675045172:repository/novapharm/staging/portal"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "${BuildLogGroup.Arn}:*"
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "codeconnections:GetConnection",
+                    "codeconnections:GetConnectionToken"
+                  ],
+                  "Resource": "arn:aws:codeconnections:eu-north-1:250675045172:connection/84ae9bf2-6dbb-427a-9605-57fadb0ef2fd"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "codeconnections:UseConnection",
+                  "Resource": "arn:aws:codeconnections:eu-north-1:250675045172:connection/84ae9bf2-6dbb-427a-9605-57fadb0ef2fd",
+                  "Condition": {
+                    "StringEquals": {
+                      "codeconnections:FullRepositoryId": "NovapharmHealthacre/novapharm-website",
+                      "codeconnections:ProviderAction": "GitPull"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "PortalImageBuild": {
+      "Type": "AWS::CodeBuild::Project",
+      "Properties": {
+        "Name": "novapharm-staging-portal-image",
+        "ServiceRole": {
+          "Fn::GetAtt": [
+            "BuildRole",
+            "Arn"
+          ]
+        },
+        "Source": {
+          "Type": "GITHUB",
+          "Location": "https://github.com/NovapharmHealthacre/novapharm-website.git",
+          "Auth": {
+            "Type": "CODECONNECTIONS",
+            "Resource": {
+              "Ref": "GitHubConnectionArn"
+            }
+          },
+          "GitCloneDepth": 0,
+          "BuildSpec": "version: 0.2\nenv:\n  shell: bash\nphases:\n  pre_build:\n    commands:\n      - '[[ \"$EXPECTED_SHA\" =~ ^[0-9a-f]{40}$ ]] || (echo \"Expected immutable source SHA required\" >&2; exit 1)'\n      - 'test \"$(git rev-parse HEAD)\" = \"$EXPECTED_SHA\" || (echo \"Source SHA mismatch\" >&2; exit 1)'\n      - 'aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 250675045172.dkr.ecr.eu-north-1.amazonaws.com'\n  build:\n    commands:\n      - 'docker build --pull --file deployment/aws/Dockerfile.portal --tag 250675045172.dkr.ecr.eu-north-1.amazonaws.com/novapharm/staging/portal:$EXPECTED_SHA .'\n      - 'docker push 250675045172.dkr.ecr.eu-north-1.amazonaws.com/novapharm/staging/portal:$EXPECTED_SHA'\n  post_build:\n    commands:\n      - 'echo \"Pushed staging-only portal image from immutable SHA $EXPECTED_SHA; deployment and customer sign-in remain disabled.\"'\n"
+        },
+        "Artifacts": {
+          "Type": "NO_ARTIFACTS"
+        },
+        "Environment": {
+          "Type": "LINUX_CONTAINER",
+          "ComputeType": "BUILD_GENERAL1_SMALL",
+          "Image": "aws/codebuild/standard:7.0",
+          "PrivilegedMode": true,
+          "EnvironmentVariables": [
+            {
+              "Name": "EXPECTED_SHA",
+              "Type": "PLAINTEXT",
+              "Value": "UNSET"
+            }
+          ]
+        },
+        "LogsConfig": {
+          "CloudWatchLogs": {
+            "Status": "ENABLED",
+            "GroupName": {
+              "Ref": "BuildLogGroup"
+            }
+          }
+        },
+        "TimeoutInMinutes": 30,
+        "QueuedTimeoutInMinutes": 30,
+        "ConcurrentBuildLimit": 1,
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm"
+          },
+          {
+            "Key": "environment",
+            "Value": "staging"
+          },
+          {
+            "Key": "data-classification",
+            "Value": "no-customer-data"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "ProjectName": {
+      "Value": {
+        "Ref": "PortalImageBuild"
+      }
+    },
+    "ExpectedEcrRepo": {
+      "Value": "250675045172.dkr.ecr.eu-north-1.amazonaws.com/novapharm/staging/portal"
+    }
+  }
+}
