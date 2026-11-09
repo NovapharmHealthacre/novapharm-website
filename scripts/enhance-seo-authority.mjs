@@ -285,6 +285,15 @@ function addEditorialTrust(html, article) {
   return html.replace("</main>", `${block}</main>`);
 }
 
+// Free, first-party link sharing. No LinkedIn SDK, tracking pixel, login or
+// account permission is loaded until a visitor explicitly opens LinkedIn.
+function addNativeArticleShare(html, article, canonical) {
+  if (!article || html.includes("data-native-article-share")) return html;
+  const destination = "https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(canonical);
+  const block = `<section class="section" data-native-article-share aria-label="Share this analysis"><div class="container"><p class="section-kicker">Continue the conversation</p><a class="btn btn-secondary" href="${destination}" target="_blank" rel="noopener noreferrer external" referrerpolicy="no-referrer">Share on LinkedIn <span class="sr-only">(opens a new tab)</span></a></div></section>`;
+  return html.replace("</main>", `${block}</main>`);
+}
+
 function addLegalEditorialStandards(html, route) {
   if (route !== "/legal/" || html.includes('id="editorial-standards"')) return html;
   const section = `<section class="section" id="editorial-standards"><div class="container"><div class="section-head"><span class="section-kicker">Editorial governance</span><h2>Standards for pharmaceutical and corporate content.</h2><p>NovaPharm publishes corporate B2B information, operating frameworks and analysis under evidence, authorship and correction controls.</p></div><div class="grid grid-3"><article class="card"><h3>Authorship and review</h3><p>Named authors and reviewers are used where their verified role and contribution support the subject. “Medically reviewed” is not used unless a suitably qualified reviewer actually performs that review.</p></article><article class="card"><h3>Sources and updates</h3><p>Primary sources such as legislation, competent authorities, ICH, official filings and peer-reviewed literature are preferred. Material updates change the displayed modified date; cosmetic builds do not create false freshness.</p></article><article class="card"><h3>Corrections and conflicts</h3><p>Material factual errors are corrected transparently. Commercial relationships, future intentions and professional interpretation must not be presented as independent regulatory approval or current product availability.</p></article></div><div class="regulatory-notice"><strong>Scope limitation</strong><p>The website does not provide patient-level diagnosis, treatment or medicine-use advice. Questions about a published fact or correction may be submitted through the <a href="/contact/">corporate contact route</a>.</p></div></div></section>`;
@@ -342,6 +351,7 @@ for (const file of [...new Set(publicFiles)]) {
   html = enhanceJsonLd(html, route, article, leader);
   html = insertHeadSignals(html, canonical, article, leader);
   html = addEditorialTrust(html, article);
+  html = addNativeArticleShare(html, article, canonical);
   html = addLegalEditorialStandards(html, route);
   html = addFooterEditorialLink(html);
   html = addAttributionSignals(html);
