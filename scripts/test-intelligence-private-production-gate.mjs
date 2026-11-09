@@ -14,7 +14,7 @@ test("all protected intelligence evidence endpoints are rejected without a live 
   }
   assert.match(source, /\^\(401\|403\)\$/u);
   assert.match(source, /cache-control:\.\*no-store/iu);
-  assert.match(source, /status\" = \"200\"/u);
+  assert.ok(source.includes('if [ "$status" = "200" ]; then'));
 });
 
 test("HTTPS ingress rejects public/indexable production portal responses", () => {
