@@ -2,7 +2,7 @@
 .nx-store-panel,.nx-store-card-footer,.nx-shop-bag{--nx-ink:#1d1d1f;--nx-muted:#6e6e73;--nx-blue:#0071e3;color:var(--nx-ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 .nx-store-panel{border-top:1px solid #e5e5e8;padding-top:24px;margin:28px 0 26px;max-width:520px}
 .nx-store-kicker{color:var(--nx-muted);font-size:12px;font-weight:650;letter-spacing:.08em;text-transform:uppercase}
-.nx-store-price{font-size:clamp(24px,3vw,34px);font-weight:670;letter-spacing:-.035em;margin:9px 0 8px}
+.nx-store-price{font-size:clamp(24px,3vw,34px);font-weight:670;letter-spacing:0;margin:9px 0 8px}
 .nx-store-note{font-size:13px;color:var(--nx-muted);line-height:1.55;margin:0 0 18px}
 .nx-store-options{display:flex;gap:11px;align-items:center;flex-wrap:wrap}
 .nx-store-qty-label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--nx-muted)}
@@ -21,18 +21,18 @@
 .nx-store-topbar a:hover{text-decoration:underline}
 .nx-shop-bag{max-width:1080px;margin:0 auto;padding:74px 24px 110px}
 .nx-shop-bag .nx-shop-eyebrow{font-size:12px;font-weight:700;letter-spacing:.1em;color:#6e6e73;text-transform:uppercase}
-.nx-shop-bag h1{font-size:clamp(40px,6vw,68px);letter-spacing:-.045em;line-height:1.08;margin:10px 0 16px}
+.nx-shop-bag h1{font-size:clamp(40px,6vw,68px);letter-spacing:0;line-height:1.08;margin:10px 0 16px}
 .nx-shop-bag .nx-shop-intro{font-size:18px;line-height:1.5;color:#6e6e73;max-width:620px;margin:0 0 40px}
 .nx-bag-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,.8fr);gap:42px}
 .nx-bag-item{display:grid;grid-template-columns:96px 1fr;gap:20px;padding:26px 0;border-top:1px solid #e5e5ea}
 .nx-bag-item img{width:96px;height:96px;object-fit:contain}
-.nx-bag-item h2{font-size:20px;letter-spacing:-.02em;margin:0 0 6px}
+.nx-bag-item h2{font-size:20px;letter-spacing:0;margin:0 0 6px}
 .nx-bag-item .nx-bag-pack,.nx-bag-item .nx-bag-price{font-size:14px;color:#6e6e73;margin:5px 0 10px}
 .nx-bag-item label{font-size:13px;color:#6e6e73;margin-right:10px}
 .nx-bag-item select,.nx-bag-item input[type="number"]{border:1px solid #d2d2d7;background:#fff;padding:9px 16px;border-radius:10px;font:inherit}
 .nx-bag-remove{appearance:none;border:0;background:none;padding:10px 0;color:#0066cc;cursor:pointer;font:inherit;font-size:14px}
 .nx-bag-summary{background:#f5f5f7;border-radius:24px;padding:28px;height:max-content}
-.nx-bag-summary h2{margin:0 0 24px;font-size:24px;letter-spacing:-.025em}
+.nx-bag-summary h2{margin:0 0 24px;font-size:24px;letter-spacing:0}
 .nx-bag-summary dl{margin:0;padding:0}
 .nx-bag-summary dl div{display:flex;align-items:center;justify-content:space-between;padding:11px 0;gap:12px;border-bottom:1px solid #dfdfe2;font-size:14px}
 .nx-bag-summary dt{color:#6e6e73}.nx-bag-summary dd{margin:0;text-align:right;font-weight:600}
@@ -49,11 +49,11 @@
 .nx-purchase-progress ol{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;list-style:none;margin:0;padding:0}
 .nx-purchase-progress li{display:flex;align-items:center;gap:12px;min-width:0;color:#86868b;font-size:13px}
 .nx-purchase-progress li span{display:grid;place-items:center;width:35px;height:35px;flex:0 0 35px;border:1px solid #d2d2d7;border-radius:50%;font-size:11px;font-weight:650;letter-spacing:.03em}
-.nx-purchase-progress li strong{font-weight:550;letter-spacing:-.01em}
+.nx-purchase-progress li strong{font-weight:550;letter-spacing:0}
 .nx-purchase-progress li.is-current{color:#1d1d1f}
 .nx-purchase-progress li.is-current span{background:#1d1d1f;color:#fff;border-color:#1d1d1f}
 .nx-checkout-identity{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(220px,.7fr);align-items:center;gap:30px;background:#f5f5f7;border-radius:24px;padding:29px 34px;margin-bottom:42px}
-.nx-checkout-identity h2{font-size:clamp(22px,3vw,32px);line-height:1.18;letter-spacing:-.035em;margin:7px 0 11px;font-weight:650}
+.nx-checkout-identity h2{font-size:clamp(22px,3vw,32px);line-height:1.18;letter-spacing:0;margin:7px 0 11px;font-weight:650}
 .nx-checkout-identity p:not(.nx-shop-eyebrow){font-size:14px;color:#6e6e73;line-height:1.65;margin:0;max-width:560px}
 .nx-checkout-identity .nx-shop-eyebrow{margin:0}
 .nx-checkout-identity-meta{border-left:1px solid #d2d2d7;padding-left:24px;display:flex;flex-direction:column;gap:7px}
