@@ -105,3 +105,16 @@ test("ClinicalTrials.gov study lookup stays board-only, GET-only and source-attr
   assert.doesNotMatch(view, /localStorage|sessionStorage|OPENAI_API_KEY|NHS_DOHS_API_KEY/);
   assert.doesNotMatch(view, /fetch\("https:\/\/clinicaltrials\.gov\/api/);
 });
+
+test("staging Cognito workforce sign-in cannot hijack Nutraxin customer order-intent login", () => {
+  const login = source("components/login-panel.tsx");
+  assert.match(login, /validatedNutraxinIntentQuery/);
+  assert.match(login, /destinationAfterPortalLogin/);
+  assert.match(login, /selectionQuery/);
+  assert.match(login, /accessType !== "customer"/);
+  assert.match(login, /NEXT_PUBLIC_COGNITO_STAGING_VERIFICATION_ENABLED/);
+  assert.match(login, /NEXT_PUBLIC_COGNITO_PORTAL_SESSION_ENABLED/);
+  assert.match(login, /workforceVerification \? <a className="button microsoft"/);
+  assert.match(login, /!workforceVerification && process\.env/);
+  assert.doesNotMatch(login, /localStorage|sessionStorage/);
+});
