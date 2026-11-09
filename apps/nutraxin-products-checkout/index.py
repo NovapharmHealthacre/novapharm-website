@@ -103,6 +103,8 @@ def direct_checkout(event):
         pricing = json.loads(SSM.get_parameter(Name=PRICES_PARAMETER,WithDecryption=True)["Parameter"]["Value"])
         if pricing.get("status") != "owner_approved_provisional_for_authenticated_quotation_only":
             return error(503, "owner_price_policy_unavailable")
+        if pricing.get("owner_retail_sale_authorised") is not True:
+            return error(503, "retail_sale_not_authorised")
         assumptions = pricing.get("model_assumptions", {})
         if assumptions.get("uk_delivery_charge_pence") != 0 or assumptions.get("uk_delivery_cost_borne_by_seller") is not True:
             return error(503, "uk_delivery_policy_unavailable")
@@ -149,7 +151,7 @@ def direct_checkout(event):
         separators=(",", ":")).encode()).hexdigest()
     receipt = "NUT-" + request_id
     subject = "guest_" + request_id.replace("-", "")
-    quote_version = "ownerprice_v5_" + basket_hash[:24]
+    quote_version = "ownerprice_v6_" + basket_hash[:24]
     item = {
         "pk": {"S": "ORDER#" + receipt}, "sk": {"S": "SUMMARY"},
         "orderId": {"S": receipt}, "customerSub": {"S": subject},
