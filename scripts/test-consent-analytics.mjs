@@ -8,17 +8,21 @@ for (const invalid of ["", "G-", "UA-123456", "G-ABC<script>", "G-abc123"]) {
 }
 assert.equal(publicAnalyticsRoute("/"), true);
 assert.equal(publicAnalyticsRoute("/products/nutraxin/"), true);
+assert.equal(publicAnalyticsRoute("/products/esco/"), true);
 assert.equal(publicAnalyticsRoute("/products/nutraxin/vitamin-d3-120-tablets/"), true);
 assert.equal(publicAnalyticsRoute("/technology/"), true);
 for (const forbidden of ["/portal/", "/contact/", "/account-application/", "/admin/", "/employee/", "/legal/privacy/", "/products/nutraxin/order-request/", "/products/nutraxin/checkout/"]) {
   assert.equal(publicAnalyticsRoute(forbidden), false, "Private or sensitive route must not be measured: " + forbidden);
 }
 assert.equal(analyticsBrand("/products/nutraxin/"), "nutraxin");
+assert.equal(analyticsBrand("/products/esco/"), "esco");
+assert.equal(analyticsBrand("/products/esco/bag/"), "esco");
 assert.equal(analyticsBrand("/technology/"), "intelligence");
 assert.equal(analyticsBrand("/"), "healthcare");
 assert.deepEqual(sanitiseMarketingEvent({ event:"add_to_cart", sku:"private", price:5000, email:"private@example.com" }, "/products/nutraxin/"), {
   event: "add_to_cart", brand: "nutraxin"
 });
+assert.deepEqual(sanitiseMarketingEvent({ event: "add_to_cart", model: "private", price: 99999 }, "/products/esco/"), { event: "add_to_cart", brand: "esco" });
 assert.deepEqual(sanitiseMarketingEvent({ event:"cta_click", ctaId:"partner-with-us", attribution:{email:"secret"} }, "/"), {
   event:"cta_click", brand:"healthcare", cta_id:"partner-with-us"
 });
@@ -48,6 +52,8 @@ assert.match(generator, /PUBLIC_ANALYTICS_PRIVACY_APPROVED/);
 assert.match(generator, /PUBLIC_GA4_MEASUREMENT_ID/);
 assert.match(store, /emitRetailFunnelEvent\("add_to_cart"\)/);
 assert.match(store, /emitRetailFunnelEvent\("begin_checkout"\)/);
+assert.match(readFileSync("assets/js/esco-catalogue.js", "utf8"), /event: "add_to_cart"/);
+assert.match(readFileSync("scripts/apply-corporate-product-discipline.mjs", "utf8"), /Shop the Nutraxin collection/);
 assert.match(source, /send\("view_item", \{ item_category: "food_supplements" \}\)/);
 const sourcePage = readFileSync("index.html", "utf8");
 if (sourcePage.includes('<meta name="novapharm-ga4-id"')) {
