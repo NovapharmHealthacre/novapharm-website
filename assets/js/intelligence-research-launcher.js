@@ -28,7 +28,7 @@
     { name: "EMA medicines", authority: "European Medicines Agency", markets: ["EU"], focuses: ["identity", "regulatory"], url: "https://www.ema.europa.eu/en/medicines", description: "EU centralised medicine information; national authorisations need national sources." },
     { name: "CDSCO", authority: "Central Drugs Standard Control Organization", markets: ["IN"], focuses: ["identity", "regulatory"], url: "https://cdsco.gov.in/opencms/opencms/en/Home/", description: "Indian national regulator; product coverage varies by approval pathway." },
     { name: "CTRI", authority: "Clinical Trials Registry - India", markets: ["IN"], focuses: ["trials"], url: "https://ctri.nic.in/Clinicaltrials/advancesearchmain.php", description: "Indian clinical-trial registry; search within the official site." },
-    { name: "Health Canada Drug Product Database", authority: "Health Canada", markets: ["CA"], focuses: ["identity", "regulatory"], url: "https://health-products.canada.ca/dpd-bdpp/", description: "Canadian product authorisation and information records." },
+    { name: "Health Canada Drug Product Database", authority: "Health Canada", markets: ["CA"], focuses: ["identity", "regulatory"], url: "https://health-products.canada.ca/dpd-bdpp/search?lang=eng", description: "Canadian product authorisation and information records." },
     { name: "TGA Australian Register of Therapeutic Goods", authority: "Therapeutic Goods Administration", markets: ["AU"], focuses: ["identity", "regulatory"], url: "https://www.tga.gov.au/resources/artg", description: "Australian therapeutic goods registration and listing information." }
   ]);
 
