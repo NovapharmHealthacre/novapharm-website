@@ -427,6 +427,10 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     await page.getByText("No governed intelligence data loaded", { exact: true }).waitFor();
     await page.getByRole("heading", { level: 1, name: "Search a medicine" }).waitFor();
     assert.equal(await page.getByText("Analysis mode", { exact: true }).count(), 0, `${engine}: decorative analysis modes reappeared`);
+    await page.keyboard.press("Control+k");
+    assert.equal(await page.getByLabel("Medicine name, brand or code").evaluate((element) => element === document.activeElement), true, `${engine}: Ctrl+K must focus the medicine search`);
+    await page.keyboard.press("Escape");
+    assert.equal(await page.getByLabel("Medicine name, brand or code").getAttribute("aria-keyshortcuts"), "Meta+K Control+K");
     await page.getByLabel("Medicine name, brand or code").fill("Apixaban");
     await page.locator(".medicine-search-workspace").getByRole("button", { name: "Search", exact: true }).click();
     await page.getByText("No current BNF identity matched that search.", { exact: true }).waitFor();
