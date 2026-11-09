@@ -37,7 +37,8 @@ if (root) {
   const known = new Map(entries.map((entry) => [
     entry.dataset.escoAdd || entry.querySelector("[data-esco-add]")?.dataset.escoAdd,
     { name: entry.querySelector("h4")?.textContent?.trim() || "",
-      model: entry.querySelector(".esco-model")?.textContent?.trim() || "" }
+      model: entry.querySelector(".esco-model")?.textContent?.trim() || "",
+      guidePence: Math.round(Number(entry.dataset.escoPrice || 0) * 100) }
   ]).filter(([id, item]) => /^ESCO-CAT-\d{4}$/.test(id || "") && item.name));
   const KEY = "novapharm-esco-quote-list-v1";
   const MAX_ITEMS = 12;
@@ -54,6 +55,8 @@ if (root) {
   const count = root.querySelector("[data-esco-quote-count]");
   const send = root.querySelector("[data-esco-send-quote]");
   const clear = root.querySelector("[data-esco-clear-quote]");
+  const subtotalNode = root.querySelector("[data-esco-subtotal]");
+  const GBP = new Intl.NumberFormat("en-GB", {style:"currency",currency:"GBP"});
   function persist() {
     try { localStorage.setItem(KEY, JSON.stringify([...state].map(([id,quantity]) => ({id,quantity})))); }
     catch { /* In-memory fallback. */ }
@@ -66,7 +69,7 @@ if (root) {
       if (!item) continue;
       const li = document.createElement("li");
       const title = document.createElement("span");
-      title.textContent = item.name + (item.model && item.model !== "Model to be confirmed" ? " · " + item.model : "");
+      title.textContent = item.name + (item.model && item.model !== "Model to be confirmed" ? " · " + item.model : "") + " · Guide " + GBP.format(item.guidePence / 100) + " ex VAT";
       const label = document.createElement("label");
       label.textContent = "Qty ";
       const qty = document.createElement("input");
@@ -80,7 +83,9 @@ if (root) {
       li.append(title, label, remove);
       list.append(li);
     }
-    const countText = state.size + (state.size === 1 ? " item selected" : " items selected");
+    const countText = state.size + (state.size === 1 ? " product in Bag" : " products in Bag");
+    const pennies = [...state].reduce((sum,[id,quantity]) => sum + Math.max(0,known.get(id)?.guidePence || 0) * quantity,0);
+    if(subtotalNode) subtotalNode.textContent=GBP.format(pennies / 100);
     if (count) count.textContent = countText;
     if (clear) clear.disabled = state.size === 0;
     const lines = [...state].map(([id, quantity]) => id + " qty " + quantity);
@@ -90,8 +95,9 @@ if (root) {
     send.tabIndex = state.size === 0 ? -1 : 0;
     for (const button of root.querySelectorAll("[data-esco-add]")) {
       const selected = state.has(button.dataset.escoAdd);
-      button.textContent = selected ? "Added to quote list" : "Add to quote list";
+      button.textContent = selected ? "In your Bag" : "Add to Bag";
       button.setAttribute("aria-pressed", String(selected));
+      button.setAttribute("aria-label",(selected?"In Bag: ":"Add to Bag: ") + (known.get(button.dataset.escoAdd)?.name || "ESCO product"));
     }
   }
   root.addEventListener("click", (event) => {
@@ -100,10 +106,10 @@ if (root) {
       const id = add.dataset.escoAdd;
       if (known.has(id) && (state.has(id) || state.size < MAX_ITEMS)) {
         state.set(id, state.get(id) || 1); persist(); render();
-        if (state.size === MAX_ITEMS) add.title = "Up to 12 item references per enquiry";
+        if (state.size === MAX_ITEMS) add.title = "Up to 12 products per Bag";
       } else if (known.has(id)) {
         const countNode = root.querySelector("[data-esco-quote-count]");
-        if (countNode) countNode.textContent = "Up to 12 different references per request";
+        if (countNode) countNode.textContent = "Your Bag holds up to 12 different product references";
       }
       return;
     }
