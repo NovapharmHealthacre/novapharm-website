@@ -364,7 +364,7 @@ for (const file of publicPages) {
   // but must not override route-specific imagery and metadata.
   const fallbackSocialAsset = "assets/brand/novapharm-open-graph-1200x630-white.jpg";
   if (!existsSync(join(root, fallbackSocialAsset))) fail("Approved fallback social card is missing");
-  const socialRoute = file === "index.html" ? "/" : `/${file.replace(/index\\.html$/u, "")}`;
+  const socialRoute = file === "index.html" ? "/" : `/${file.replace(/index\.html$/u, "")}`;
   const registeredSocial = socialRegister.get(socialRoute);
   if (!registeredSocial) {
     fail(`${file} has no registered social preview`);
@@ -377,7 +377,7 @@ for (const file of publicPages) {
       "og:image:height": String(registeredSocial.height),
       "og:image:alt": registeredSocial.alt
     };
-    const imageTags = [...html.matchAll(/<meta\\s+property="(og:image(?::(?:secure_url|type|width|height|alt))?)"\\s+content="([^"]*)"\\s*\\/?>/g)];
+    const imageTags = [...html.matchAll(/<meta\s+property="(og:image(?::(?:secure_url|type|width|height|alt))?)"\s+content="([^"]*)"\s*\/?>/g)];
     for (const [property, value] of Object.entries(expected)) {
       const matches = imageTags.filter((match) => match[1] === property);
       if (matches.length !== 1) fail(`${file} must expose exactly one ${property} tag (found ${matches.length})`);
