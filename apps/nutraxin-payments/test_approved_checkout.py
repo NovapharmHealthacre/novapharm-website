@@ -81,7 +81,7 @@ class PaymentContracts(unittest.TestCase):
         requests=[]
         class PastedSecret:
             def get_secret_value(self, **kw):
-                return {"SecretString":synthetic+"\\r\\n"}
+                return {"SecretString":synthetic+chr(13)+chr(10)}
         class FakeResponse:
             def __enter__(self):return self
             def __exit__(self,*args):return False
