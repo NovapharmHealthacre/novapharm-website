@@ -43,7 +43,7 @@ jobs:
               && grep -Fq 'data-npi-research-form' /tmp/novapharm-technology-live.html \
               && grep -Fq 'src="/assets/js/intelligence-research-launcher.js"' /tmp/novapharm-technology-live.html \
               && grep -Fq 'Search a medicine' /tmp/novapharm-technology-live.html \
-              && grep -Fq 'Official-source links only' /tmp/novapharm-intelligence-live.js \
+              && grep -Fq 'No tracking, storage, credential access' /tmp/novapharm-intelligence-live.js \
               && grep -Fq '.npi-research-form' /tmp/novapharm-intelligence-live.css \
               && grep -Fq 'data-live-b2b-enquiry-form' /tmp/novapharm-contact-live.html \
               && ! grep -Fq 'data-email-enquiry-form' /tmp/novapharm-contact-live.html; then
