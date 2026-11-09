@@ -58,7 +58,17 @@ def policy():
 def secret(name):
     if not name:
         raise ValueError("secret name missing")
-    return aws("secretsmanager").get_secret_value(SecretId=name)["SecretString"]
+    value = aws("secretsmanager").get_secret_value(SecretId=name)["SecretString"]
+    if not isinstance(value, str):
+        raise ValueError("secret payload invalid")
+    # AWS Console plaintext saves can include an accidental final newline.
+    # Strip only transport whitespace, not the cryptographic key's content.
+    value = value.strip(" \t\r\n")
+    if name == WEBHOOK_SECRET_ID and not re.fullmatch(r"whsec_[A-Za-z0-9]+", value):
+        raise ValueError("webhook signing secret invalid")
+    if name == STRIPE_SECRET_ID and not re.fullmatch(r"(?:sk|rk)_live_[A-Za-z0-9]+", value):
+        raise ValueError("Stripe live key invalid")
+    return value
 
 def eligible(item):
     if not isinstance(item, dict):

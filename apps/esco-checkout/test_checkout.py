@@ -40,6 +40,23 @@ def status(response):
     return response["statusCode"],json.loads(response["body"] or "{}")
 
 class CheckoutSecurity(unittest.TestCase):
+
+    def test_webhook_secret_trims_console_whitespace_without_accepting_invalid_format(self):
+        class FakeSecrets:
+            def __init__(self, raw):
+                self.raw = raw
+            def get_secret_value(self, SecretId):
+                return {"SecretString": self.raw}
+        with patch.object(mod, "WEBHOOK_SECRET_ID", "esco-test-secret"), patch.object(
+            mod, "aws", return_value=FakeSecrets("whsec_" + "A"*40 + "\n")
+        ):
+            self.assertEqual(mod.secret("esco-test-secret"), "whsec_" + "A"*40)
+        with patch.object(mod, "WEBHOOK_SECRET_ID", "esco-test-secret"), patch.object(
+            mod, "aws", return_value=FakeSecrets("wrong-signature-value")
+        ):
+            with self.assertRaises(ValueError):
+                mod.secret("esco-test-secret")
+
     def test_unapproved_catalogue_has_no_checkout(self):
         with patch.object(mod, "policy", return_value={"enabled":False,
                 "webhook_verified":False, "approved_skus":{}}):

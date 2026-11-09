@@ -1,5 +1,12 @@
 # ESCO Anand: protected Stripe checkout activation record
 **Date:** 2026-11-09  
+
+## 9 November 2026: owner-installed webhook signing secret
+
+The owner saved the ESCO Stripe endpoint signing secret to AWS Secrets Manager at `novapharm/production/esco/webhook-signing-secret`. An AWS check confirmed the value has the correct `whsec_` format after harmless leading/trailing whitespace is removed. The credential itself was not displayed or recorded. The isolated Lambda now trims only whitespace and rejects malformed values; it does not modify the secret in AWS.
+
+Payment state continues to fail closed: the separate ESCO Stripe webhook endpoint remains disabled until signed delivery acceptance; the protected SSM payment policy is still `enabled:false`, `webhook_verified:false`, `approved_skus:{}`. This step does not authorise a single customer card charge.
+
 **Repository:** NovapharmHealthacre/novapharm-website  
 **Public page:** /products/esco/bag/  
 **AWS region:** eu-north-1
