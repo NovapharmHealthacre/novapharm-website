@@ -84,6 +84,7 @@ const requiredPublicPaths = [
   "products/esco/bag/index.html",
   "assets/js/esco-bag.js",
   "assets/data/esco-uk-guide-prices.json",
+  "assets/data/esco-checkout-config.json",
   "assets/media/esco/previews/esco-cat-0373.svg",
   "assets/css/esco-catalogue.css",
   "assets/js/esco-catalogue.js",
