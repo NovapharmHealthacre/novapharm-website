@@ -171,6 +171,8 @@ class PaymentContracts(unittest.TestCase):
         def fake_open(request, timeout):
             self.assertEqual(request.get_header("Authorization"),
                              "Bearer rk_live_synthetic_restricted_key_for_contracts")
+            self.assertNotIn(b"payment_method_types", request.data,
+                             "Deprecated Stripe 2026-09-30 payment method parameter must be absent")
             self.assertEqual(timeout, 12)
             return FakeResponse()
 
