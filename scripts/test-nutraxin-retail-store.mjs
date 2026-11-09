@@ -110,6 +110,12 @@ test("the review page uses the Products-only API and never the customer portal",
  assert.match(js,/credentials: "omit"/);
  assert.equal(js.includes("PORTAL_ORIGIN"), false, "Nutraxin checkout must not use a portal destination constant");
  assert.ok(js.includes('CHECKOUT_API_ORIGIN + "/checkout"'), "Checkout uses the dedicated Products API");
+ const stripeReturnHandler=js.split('const returnedOrder = query.get("order_id");')[1]?.split('// Products-site readiness')[0];
+ assert.ok(stripeReturnHandler,"Checkout return handler exists");
+ assert.equal(stripeReturnHandler.includes("explanation.textContent"),false,"Stripe return must update UI through render, not stale scoped variables");
+ assert.equal(stripeReturnHandler.includes("checkout.disabled"),false,"Stripe return cannot access a checkout button outside its scope");
+ assert.ok(stripeReturnHandler.includes("confirmedOrder = returnedOrder"),"Paid webhook state persists during render");
+ assert.ok(stripeReturnHandler.includes("awaitingOrder = returnedOrder"),"Pending payment is not exposed as a fresh checkout");
  assert.match(js,/\/checkout/);
  assert.match(js,/v?.checkout_ready === true/);
  assert.match(js,/result.checkoutUrl/);
