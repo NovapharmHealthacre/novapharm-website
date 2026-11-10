@@ -38,6 +38,8 @@ on:
       - 'assets/media/about/**'
       - 'scripts/apply-about-editorial.mjs'
       - 'scripts/build-site.mjs'
+      - 'scripts/version-public-visual-assets.mjs'
+      - 'assets/css/homepage-editorial.css'
       - 'scripts/validate-site.mjs'
       # Keep corporate app route parity and new commercial site releases in the
       # same AWS-backed publisher as the verified live contact service.
@@ -646,7 +648,8 @@ jobs:
                 break
               fi
               sed -n '/<header class="site-header npd-header"/,/<\/header>/p' "$target" > /tmp/owner-final-header.html
-              if ! grep -Fq '<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png"' /tmp/owner-final-header.html \
+              if ! grep -Fq 'href="/assets/css/novapharm.bundle.css?v=20261110-logo-visible-v1"' "$target" \
+                || ! grep -Fq '<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png"' /tmp/owner-final-header.html \
                 || ! grep -Fq 'href="https://portal.novapharmhealthcare.com/"' /tmp/owner-final-header.html; then
                 verified=false
                 break
