@@ -383,14 +383,14 @@ def login(event):
         body=event.get("body") or ""
         if event.get("isBase64Encoded"):
             try: body=base64.b64decode(body,validate=True).decode("utf-8")
-            except (ValueError,UnicodeDecodeError): return error(400,"invalid_login_form")
+            except Exception: return error(400,"invalid_login_form")
         if not isinstance(body,str) or len(body)>1200:
             return error(400,"invalid_login_form")
         try: fields=urllib.parse.parse_qs(body,keep_blank_values=True,max_num_fields=4)
         except ValueError: return error(400,"invalid_login_form")
         signup=fields.get("mode",[""])[0]=="signup"
         email=fields.get("email",[""])[0].strip()
-        if not re.fullmatch(r"[^\\s@/<>]{1,64}@[^\\s@/<>]{1,189}",email):
+        if not re.fullmatch(r"[^\s@/<>]{1,64}@[^\s@/<>]{1,189}",email):
             return error(400,"invalid_login_email")
     state=secrets.token_urlsafe(32)
     verifier=secrets.token_urlsafe(48)
