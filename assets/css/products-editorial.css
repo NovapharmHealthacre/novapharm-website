@@ -71,3 +71,156 @@ body[data-route="/products/"] .np-products-page { background:#fff; color:#111114
  .np-products-page .np-products-qualification { padding:28px 0 38px; text-align:left; }
 }
 @media(prefers-reduced-motion:reduce) { .np-products-page .np-products-link span { transition:none; } }
+
+/* PRODUCTS UNIFIED HERO 2026-11-10
+   Owner-approved art direction: one continuous white stage, three distinct
+   product families, no photograph rectangles or ESCO supplier-photo border.
+   Product photography stays linked to the original, governed local assets. */
+.np-products-page .np-products-hero {
+  background:#fff;
+  isolation:isolate;
+}
+.np-products-page .np-products-stage {
+  isolation:isolate;
+  overflow:hidden;
+  width:min(100%,1510px);
+  height:clamp(330px,35vw,520px);
+  grid-template-columns:29% 40% 31%;
+  gap:0;
+  margin-top:38px;
+  align-items:end;
+  background:transparent;
+}
+/* A single, restrained landscape-like sweep underneath all three families. */
+.np-products-page .np-products-stage::before {
+  content:"";
+  position:absolute;
+  inset:3% 0 0;
+  z-index:-1;
+  pointer-events:none;
+  background:linear-gradient(180deg,#f9fafd 0%,#edf0f6 55%,#f9fafc 90%,#fff 100%);
+  clip-path:polygon(0 22%,8% 21%,20% 27%,31% 43%,42% 57%,54% 61%,67% 46%,78% 29%,91% 17%,100% 16%,100% 100%,0 100%);
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 18%,#000 85%,transparent 100%);
+  mask-image:linear-gradient(180deg,transparent 0%,#000 18%,#000 85%,transparent 100%);
+}
+.np-products-page .np-products-stage::after {
+  content:"";
+  left:4%;
+  width:92%;
+  height:1px;
+  bottom:3%;
+  background:linear-gradient(90deg,transparent,rgba(180,185,194,.25) 26%,rgba(180,185,194,.25) 74%,transparent);
+}
+.np-products-page .np-products-stage-item {
+  overflow:visible;
+  height:100%;
+  position:relative;
+  min-width:0;
+  background:none;
+  border:0;
+  box-shadow:none;
+}
+.np-products-page .np-products-stage-nutraxin { z-index:3; }
+.np-products-page .np-products-stage-esco { z-index:2; }
+.np-products-page .np-products-stage-pharma { z-index:1; padding:0; }
+.np-products-page .np-products-stage-nutraxin img {
+  width:101%;
+  max-width:none;
+  height:82%;
+  object-fit:contain;
+  object-position:center bottom;
+  margin:0 0 3% 0;
+  filter:drop-shadow(0 18px 16px rgba(28,35,47,.10));
+}
+.np-products-page .np-products-stage-esco img {
+  mix-blend-mode:multiply;
+  object-fit:contain;
+  object-position:center center;
+  filter:contrast(1.025) saturate(.88);
+  /* Feather the supplier photograph at all four edges, not just its sides. */
+  -webkit-mask-image:radial-gradient(ellipse 72% 71% at 50% 50%,#000 59%,transparent 100%);
+  mask-image:radial-gradient(ellipse 72% 71% at 50% 50%,#000 59%,transparent 100%);
+}
+.np-products-page .np-products-stage-bed {
+  width:92%;
+  height:94%;
+  left:-3%;
+  bottom:0;
+}
+.np-products-page .np-products-stage-trolley {
+  width:44%;
+  height:64%;
+  right:-6%;
+  bottom:0;
+}
+.np-products-page .np-products-stage-pharma img {
+  position:absolute;
+  width:126%;
+  height:82%;
+  left:-15%;
+  bottom:1%;
+  border:0;
+  border-radius:0;
+  object-fit:cover;
+  object-position:69% 64%;
+  filter:saturate(.86);
+  /* Clear the dark rectangular lab-photo frame into the common white sweep. */
+  -webkit-mask-image:radial-gradient(ellipse 75% 70% at 56% 55%,#000 39%,rgba(0,0,0,.93) 53%,transparent 100%);
+  mask-image:radial-gradient(ellipse 75% 70% at 56% 55%,#000 39%,rgba(0,0,0,.93) 53%,transparent 100%);
+}
+/* The two lower product still lifes keep the same unframed discipline. */
+.np-products-page .np-products-panel-art-esco img {
+  -webkit-mask-image:radial-gradient(ellipse 72% 70% at 50% 51%,#000 58%,transparent 100%);
+  mask-image:radial-gradient(ellipse 72% 70% at 50% 51%,#000 58%,transparent 100%);
+}
+.np-products-page .np-products-panel-art-pharma img {
+  border-radius:0;
+  -webkit-mask-image:radial-gradient(ellipse 83% 75% at 56% 55%,#000 52%,transparent 100%);
+  mask-image:radial-gradient(ellipse 83% 75% at 56% 55%,#000 52%,transparent 100%);
+}
+@media (max-width:900px) {
+  .np-products-page .np-products-stage {
+    height:clamp(265px,43vw,395px);
+    grid-template-columns:29% 42% 29%;
+  }
+  .np-products-page .np-products-stage-bed { width:100%; left:-7%; }
+  .np-products-page .np-products-stage-trolley { width:47%; right:-8%; }
+  .np-products-page .np-products-stage-pharma img { width:138%; left:-24%; }
+}
+@media (max-width:640px) {
+  .np-products-page .np-products-stage {
+    width:100%;
+    height:clamp(190px,59vw,270px);
+    grid-template-columns:30% 41% 29%;
+    padding:0 8px;
+    margin-top:30px;
+  }
+  .np-products-page .np-products-stage::before {
+    inset:6% 0 0;
+    clip-path:polygon(0 23%,16% 29%,34% 51%,52% 60%,70% 43%,85% 26%,100% 22%,100% 100%,0 100%);
+  }
+  .np-products-page .np-products-stage-nutraxin img {
+    width:110%;
+    height:83%;
+    margin-left:-9%;
+    margin-bottom:4%;
+  }
+  .np-products-page .np-products-stage-bed {
+    width:113%;
+    height:92%;
+    left:-12%;
+  }
+  .np-products-page .np-products-stage-trolley {
+    width:49%;
+    height:64%;
+    right:-14%;
+    bottom:0;
+  }
+  .np-products-page .np-products-stage-pharma img {
+    width:163%;
+    height:82%;
+    left:-32%;
+    bottom:0;
+    object-position:68% 57%;
+  }
+}
