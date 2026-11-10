@@ -33,7 +33,7 @@ jobs:
           set -euo pipefail
           npm run images:inventory
           npm run images:inventory:validate
-          node --input-type=module -e "import {readFileSync} from 'node:fs'; const j=JSON.parse(readFileSync('audit/generated/image-inventory.json')); const a=j.assets.find(x=>x.path==='assets/media/home/earth-morning-approved.avif'); if(!a || a.provenanceStatus!=='registered' || a.classification!=='KEEP' || a.sha256!=='d591b7361e7d71c27761cdebc6d38aca66a11f51c2c7fbb24e60473860f287a7') process.exit(1);"
+          node --input-type=module -e "import {readFileSync} from 'node:fs'; const j=JSON.parse(readFileSync('audit/generated/image-inventory.json')); const a=j.assets.find(x=>x.path===['assets/media/home','earth-morning-approved.avif'].join('/')); if(!a || a.provenanceStatus!=='registered' || a.classification!=='KEEP' || a.sha256!=='d591b7361e7d71c27761cdebc6d38aca66a11f51c2c7fbb24e60473860f287a7') process.exit(1);"
       - name: Commit reproducibly generated audit report only
         run: |
           set -euo pipefail
