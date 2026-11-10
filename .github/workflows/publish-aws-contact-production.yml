@@ -38,6 +38,7 @@ on:
       - 'assets/media/about/**'
       - 'scripts/apply-about-editorial.mjs'
       - 'scripts/build-site.mjs'
+      - 'scripts/validate-site.mjs'
       # Keep corporate app route parity and new commercial site releases in the
       # same AWS-backed publisher as the verified live contact service.
       - 'apps/corporate/data/site.ts'
@@ -126,6 +127,7 @@ jobs:
           node --test scripts/test-account-request-intake.mjs
           npm ci --ignore-scripts
           PUBLIC_ANALYTICS_PRIVACY_APPROVED=true PUBLIC_GA4_MEASUREMENT_ID=G-897L1VS8BX npm run build:public-only
+          npm run validate
           python3 scripts/validate-public-sitemaps.py
           node scripts/test-native-organic-marketing.mjs
           npm run test:owner-corrections:public-only

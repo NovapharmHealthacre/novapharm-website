@@ -403,6 +403,13 @@ for (const file of publicPages) {
   if (!html.includes('href="#main"') || !html.includes('id="main"')) fail(`${file} needs a working skip link`);
 }
 
+// The commercial routes must remain in both the source register and
+// the explicit public validation list, rather than only adjusting a count.
+for (const slug of ["distribution", "market-access", "markets"]) {
+  if (!Object.hasOwn(pageMeta, slug) || !publicPages.includes(`${slug}/index.html`)) {
+    fail(`Commercial route ${slug} missing from source or validation register`);
+  }
+}
 const expectedPublicPageCount = Object.keys(pageMeta).length - 3 + leadership.length + insightFiles.length + nutraxinProducts.length;
 if (publicPages.length !== expectedPublicPageCount) fail(`expected ${expectedPublicPageCount} source-defined public pages; found ${publicPages.length}`);
 for (const type of ["Organization", "Person", "Article", "BlogPosting", "Service", "BreadcrumbList"]) {
