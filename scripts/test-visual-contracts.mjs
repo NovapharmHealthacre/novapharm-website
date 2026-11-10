@@ -124,15 +124,24 @@ const contact = text("contact/index.html");
 assert.match(contact, /class="npd-main np-contact np-contact-reference"/, "Contact retains the approved standalone presentation");
 assert.match(contact, /Let&#39;s talk\./, "Contact has the reference's direct headline");
 assert.match(contact, /How can we help\?/, "Contact has the reference form heading");
-assert.match(contact, /class="np-contact-reference-grid"/, "Contact fields have the reference two-column grid");
 assert.match(contact, /class="np-contact-reference-footer"/, "Contact has a restrained legal footer");
 assert.match(contact, /Business enquiries only\./, "Contact retains regulated-business scope");
 assert.match(contact, /yellowcard\.mhra\.gov\.uk/, "Contact preserves MHRA safety routing");
 assert.match(contact, /legal\/privacy\//);
-if (contact.includes("data-contact-form")) {
+// The AWS-backed managed form retains the standard form-grid class and the
+// approved editorial class. The email-draft-only variant uses its separate
+// reference grid; never require both incompatible variants in one document.
+if (contact.includes("data-contact-form") || contact.includes("data-live-b2b-enquiry-form")) {
+  assert.match(contact, /<form class="form-grid contact-form np-contact-reference-form"/,
+    "Managed Contact must retain its approved editorial form and structured fields");
   assert.match(contact, /name="privacyAcknowledgement"/);
   assert.match(contact, /name="safetyConfirmation"/);
+  assert.doesNotMatch(contact, /data-email-enquiry-form/);
 } else {
+  assert.match(contact, /<form class="np-contact-reference-form"/,
+    "Public Contact must retain its approved email-draft form");
+  assert.match(contact, /class="np-contact-reference-grid"/,
+    "Public Contact fields must retain the two-column editorial grid");
   assert.match(contact, /data-email-enquiry-form/, "Public contact should open only an email draft");
   assert.match(contact, /action="mailto:vishal@novapharmhealthcare\.com"/);
   assert.match(contact, /This public information release does not collect or transmit enquiry details/);
