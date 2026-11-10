@@ -29,7 +29,6 @@ for (const phrase of [
   "The next conversation starts here.",
   "Regulated wholesale supply has not commenced",
   "does not provide medical advice, direct patient services or a guarantee of product authorisation",
-  "Illustrative creative image.",
   "The contact page prepares an email draft; it does not submit or store enquiries."
 ]) assert.ok(html.includes(phrase), phrase);
 
@@ -52,6 +51,8 @@ assert.match(approvedLayout, /npoc-focus-card span/, "Image labels must overlay 
 assert.ok(!html.includes("href=\"/assets/media/products/oncology-vial-handling.avif\""), "Retired hero image must not preload");
 assert.match(html, /<img[^>]+hope-tomorrow-portrait\.jpg[^>]+fetchpriority="high"/);
 assert.match(css, /body\[data-page="oncology"\]/);\nassert.match(css, /npoc-hope-hero/);\nassert.match(html, /id="oncology-focus"/);
+assert.doesNotMatch(html, /Illustrative creative image\. No patient, treatment result or NovaPharm facility is depicted\./, "Hero annotation removed from public page");
+assert.doesNotMatch(html, /class="npoc-image-note"/, "Hero should not carry a visible disclaimer badge");
 assert.match(css, /@media\(max-width:760px\)/);
 assert.match(css, /@media\(prefers-reduced-motion:reduce\)/);
 assert.match(css, /@media\(forced-colors:active\)/);

@@ -368,7 +368,6 @@ function oncologyMain() {
       <p class="npoc-hero-lead">A focused approach to oncology. A deeper commitment to evidence. A more hopeful tomorrow.</p>
       <div class="npoc-actions"><a class="npoc-button npoc-button-primary" href="#oncology-focus">Explore our oncology focus</a></div>
     </div></div>
-    <p class="npoc-image-note">Illustrative creative image. No patient, treatment result or NovaPharm facility is depicted.</p>
   </section>
   <section class="npoc-hope-focus" id="oncology-focus" aria-labelledby="npoc-focus-title">
     <div class="container npoc-focus-layout">
