@@ -10,12 +10,12 @@
     "Null semantic or provenance fields are explicit gaps, not inferred approvals."
   ],
   "summary": {
-    "trackedAssetCount": 870,
+    "trackedAssetCount": 871,
     "byClassification": {
-      "KEEP": 870
+      "KEEP": 871
     },
     "byProvenanceStatus": {
-      "registered": 660,
+      "registered": 661,
       "registered-identical-delivery-copy": 12,
       "repository-generated-test-evidence": 198
     },
@@ -2279,7 +2279,7 @@
       ],
       "lcpRelevance": true,
       "usageCount": 4,
-      "referenceCount": 17,
+      "referenceCount": 16,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "about/index.html",
@@ -3359,10 +3359,13 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 4,
+      "referenceCount": 6,
       "usageFiles": [
-        "assets/data/esco-model-photo-map.json"
+        "assets/data/esco-model-photo-map.json",
+        "products/index.html",
+        "scripts/apply-products-editorial.mjs",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -4256,10 +4259,13 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 4,
+      "referenceCount": 6,
       "usageFiles": [
-        "assets/data/esco-model-photo-map.json"
+        "assets/data/esco-model-photo-map.json",
+        "products/index.html",
+        "scripts/apply-products-editorial.mjs",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -5709,6 +5715,49 @@
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
+      "path": "assets/media/home/earth-morning-approved.avif",
+      "canonicalDeliveryPath": "assets/media/home/earth-morning-approved.avif",
+      "format": "heif",
+      "bytes": 4849,
+      "width": 1100,
+      "height": 229,
+      "aspectRatio": 4.803493,
+      "sha256": "d591b7361e7d71c27761cdebc6d38aca66a11f51c2c7fbb24e60473860f287a7",
+      "perceptualHash": "0707f3e042e2e4b5",
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Owner-approved generated NovaPharm Healthcare Earth-from-space sunrise hero concept, selected 10 November 2026 in ChatGPT; this is designed illustrative art, not documentary satellite imagery",
+      "licence": "NovaPharm owner-authorised use of original generated imagery under applicable OpenAI generated-content terms; no third-party logo or real-world facility depicted",
+      "reviewStatus": "approved by company owner on 10 November 2026 for white-morning Apple-inspired homepage hero",
+      "technicalStatus": "source-approved optimised AVIF, 1100x229, 4.8 KB, non-decorative content represented in live copy not image alt",
+      "provenanceRecord": null,
+      "semanticPurpose": "approved-editorial-earth-horizon",
+      "routes": [
+        "/ homepage hero on desktop and mobile"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "",
+      "registeredCaption": "Illustrative view of Earth at sunrise. Geography, lighting and clouds are artistic representation.",
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 5,
+      "referenceCount": 9,
+      "usageFiles": [
+        ".github/workflows/pages-live-publish.yml",
+        ".github/workflows/pages-public-release-recovery.yml",
+        "apps/corporate/components/concise-home.tsx",
+        "creative-assets/asset-register.json",
+        "scripts/apply-corporate-product-discipline.mjs"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
       "path": "assets/media/home/supply-network-hero-1200.jpg",
       "canonicalDeliveryPath": "assets/media/home/supply-network-hero-1200.jpg",
       "format": "jpeg",
@@ -5780,24 +5829,20 @@
       "observedAltText": [
         ""
       ],
-      "observedCaptions": [
-        "Conceptual visual. Not a NovaPharm facility, inventory or active distribution operation."
-      ],
+      "observedCaptions": [],
       "responsiveDerivatives": [],
       "observedLoading": [],
       "observedFetchPriority": [
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 8,
-      "referenceCount": 11,
+      "usageCount": 6,
+      "referenceCount": 9,
       "usageFiles": [
-        "apps/corporate/components/concise-home.tsx",
         "apps/corporate/components/page-renderer.tsx",
         "apps/corporate/scripts/validate-content.ts",
         "creative-assets/asset-register.json",
         "index.html",
-        "scripts/apply-corporate-product-discipline.mjs",
         "scripts/apply-pages-presentation-parity.mjs",
         "scripts/build-public-pages.mjs"
       ],
@@ -5832,9 +5877,7 @@
       "observedAltText": [
         ""
       ],
-      "observedCaptions": [
-        "Conceptual visual. Not a NovaPharm facility, inventory or active distribution operation."
-      ],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/home/supply-network-hero-1200.jpg",
         "assets/media/home/supply-network-hero.avif"
@@ -5844,10 +5887,9 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 21,
-      "referenceCount": 32,
+      "usageCount": 19,
+      "referenceCount": 30,
       "usageFiles": [
-        "apps/corporate/components/concise-home.tsx",
         "apps/corporate/lib/seo.ts",
         "creative-assets/8k-master-register.json",
         "creative-assets/asset-register.json",
@@ -5857,7 +5899,6 @@
         "packages/design-system/workbench/build.tsx",
         "packages/design-system/workbench/index.html",
         "packages/design-system/workbench/workbench.css",
-        "scripts/apply-corporate-product-discipline.mjs",
         "scripts/apply-module-media-sanity.mjs",
         "scripts/apply-pages-presentation-parity.mjs",
         "scripts/apply-visual-refinement.mjs",
@@ -12717,9 +12758,7 @@
       },
       "registeredAltText": "Unbranded vials, oral-liquid bottle, blister packs, neutral cartons, labels and a quality dossier arranged for portfolio review",
       "registeredCaption": "Representative portfolio evidence; no marketed NovaPharm product, stock or facility is implied",
-      "observedAltText": [
-        "Team reviewing pharmaceutical portfolio evidence"
-      ],
+      "observedAltText": [],
       "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/product-portfolio-evidence-960.avif",
@@ -12729,16 +12768,13 @@
         "assets/media/modules/product-portfolio-evidence.jpg",
         "assets/media/modules/product-portfolio-evidence.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "creative-assets/module-media-asset-register.json",
-        "products/index.html"
+        "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-058",
@@ -12771,9 +12807,7 @@
       },
       "registeredAltText": "Unbranded vials, oral-liquid bottle, blister packs, neutral cartons, labels and a quality dossier arranged for portfolio review",
       "registeredCaption": "Representative portfolio evidence; no marketed NovaPharm product, stock or facility is implied",
-      "observedAltText": [
-        "Team reviewing pharmaceutical portfolio evidence"
-      ],
+      "observedAltText": [],
       "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/product-portfolio-evidence-960.avif",
@@ -12783,16 +12817,13 @@
         "assets/media/modules/product-portfolio-evidence.jpg",
         "assets/media/modules/product-portfolio-evidence.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "creative-assets/module-media-asset-register.json",
-        "products/index.html"
+        "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-058",
@@ -12825,9 +12856,7 @@
       },
       "registeredAltText": "Unbranded vials, oral-liquid bottle, blister packs, neutral cartons, labels and a quality dossier arranged for portfolio review",
       "registeredCaption": "Representative portfolio evidence; no marketed NovaPharm product, stock or facility is implied",
-      "observedAltText": [
-        "Team reviewing pharmaceutical portfolio evidence"
-      ],
+      "observedAltText": [],
       "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/product-portfolio-evidence-960.avif",
@@ -12837,16 +12866,13 @@
         "assets/media/modules/product-portfolio-evidence.jpg",
         "assets/media/modules/product-portfolio-evidence.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "creative-assets/module-media-asset-register.json",
-        "products/index.html"
+        "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-059",
@@ -12879,9 +12905,7 @@
       },
       "registeredAltText": "Unbranded vials, oral-liquid bottle, blister packs, neutral cartons, labels and a quality dossier arranged for portfolio review",
       "registeredCaption": "Representative portfolio evidence; no marketed NovaPharm product, stock or facility is implied",
-      "observedAltText": [
-        "Team reviewing pharmaceutical portfolio evidence"
-      ],
+      "observedAltText": [],
       "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/product-portfolio-evidence-960.avif",
@@ -12891,16 +12915,13 @@
         "assets/media/modules/product-portfolio-evidence.jpg",
         "assets/media/modules/product-portfolio-evidence.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "creative-assets/module-media-asset-register.json",
-        "products/index.html"
+        "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-058",
@@ -12933,9 +12954,7 @@
       },
       "registeredAltText": "Unbranded vials, oral-liquid bottle, blister packs, neutral cartons, labels and a quality dossier arranged for portfolio review",
       "registeredCaption": "Representative portfolio evidence; no marketed NovaPharm product, stock or facility is implied",
-      "observedAltText": [
-        "Team reviewing pharmaceutical portfolio evidence"
-      ],
+      "observedAltText": [],
       "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/product-portfolio-evidence-960.avif",
@@ -12945,21 +12964,21 @@
         "assets/media/modules/product-portfolio-evidence.jpg",
         "assets/media/modules/product-portfolio-evidence.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 7,
-      "referenceCount": 15,
+      "usageCount": 9,
+      "referenceCount": 18,
       "usageFiles": [
         "apps/corporate/components/concise-specialist-pages.tsx",
         "apps/corporate/components/page-renderer.tsx",
         "apps/corporate/data/pages.ts",
         "creative-assets/module-media-asset-register.json",
         "products/index.html",
+        "scripts/apply-products-editorial.mjs",
         "seo/generated/social-image-register.json",
-        "sitemap-images.xml"
+        "sitemap-images.xml",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-058",
@@ -12992,9 +13011,7 @@
       },
       "registeredAltText": "Unbranded vials, oral-liquid bottle, blister packs, neutral cartons, labels and a quality dossier arranged for portfolio review",
       "registeredCaption": "Representative portfolio evidence; no marketed NovaPharm product, stock or facility is implied",
-      "observedAltText": [
-        "Team reviewing pharmaceutical portfolio evidence"
-      ],
+      "observedAltText": [],
       "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/product-portfolio-evidence-960.avif",
@@ -13004,16 +13021,13 @@
         "assets/media/modules/product-portfolio-evidence.jpg",
         "assets/media/modules/product-portfolio-evidence.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "creative-assets/module-media-asset-register.json",
-        "products/index.html"
+        "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-059",
@@ -13350,12 +13364,8 @@
       },
       "registeredAltText": "Scientific, quality and commercial professionals reviewing a pharmaceutical launch-readiness workflow",
       "registeredCaption": "Representative cross-functional service delivery",
-      "observedAltText": [
-        "Team reviewing a controlled pharmaceutical workstream"
-      ],
-      "observedCaptions": [
-        "Representative collaboration context."
-      ],
+      "observedAltText": [],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/services-connected-execution-960.avif",
         "assets/media/modules/services-connected-execution-960.jpg",
@@ -13364,15 +13374,12 @@
         "assets/media/modules/services-connected-execution.jpg",
         "assets/media/modules/services-connected-execution.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "capabilities/index.html",
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
@@ -13407,12 +13414,8 @@
       },
       "registeredAltText": "Scientific, quality and commercial professionals reviewing a pharmaceutical launch-readiness workflow",
       "registeredCaption": "Representative cross-functional service delivery",
-      "observedAltText": [
-        "Team reviewing a controlled pharmaceutical workstream"
-      ],
-      "observedCaptions": [
-        "Representative collaboration context."
-      ],
+      "observedAltText": [],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/services-connected-execution-960.avif",
         "assets/media/modules/services-connected-execution-960.jpg",
@@ -13421,15 +13424,12 @@
         "assets/media/modules/services-connected-execution.jpg",
         "assets/media/modules/services-connected-execution.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "capabilities/index.html",
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
@@ -13464,12 +13464,8 @@
       },
       "registeredAltText": "Scientific, quality and commercial professionals reviewing a pharmaceutical launch-readiness workflow",
       "registeredCaption": "Representative cross-functional service delivery",
-      "observedAltText": [
-        "Team reviewing a controlled pharmaceutical workstream"
-      ],
-      "observedCaptions": [
-        "Representative collaboration context."
-      ],
+      "observedAltText": [],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/services-connected-execution-960.avif",
         "assets/media/modules/services-connected-execution-960.jpg",
@@ -13478,15 +13474,12 @@
         "assets/media/modules/services-connected-execution.jpg",
         "assets/media/modules/services-connected-execution.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "capabilities/index.html",
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
@@ -13521,12 +13514,8 @@
       },
       "registeredAltText": "Scientific, quality and commercial professionals reviewing a pharmaceutical launch-readiness workflow",
       "registeredCaption": "Representative cross-functional service delivery",
-      "observedAltText": [
-        "Team reviewing a controlled pharmaceutical workstream"
-      ],
-      "observedCaptions": [
-        "Representative collaboration context."
-      ],
+      "observedAltText": [],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/services-connected-execution-960.avif",
         "assets/media/modules/services-connected-execution-960.jpg",
@@ -13535,15 +13524,12 @@
         "assets/media/modules/services-connected-execution.jpg",
         "assets/media/modules/services-connected-execution.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "capabilities/index.html",
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
@@ -13578,12 +13564,8 @@
       },
       "registeredAltText": "Scientific, quality and commercial professionals reviewing a pharmaceutical launch-readiness workflow",
       "registeredCaption": "Representative cross-functional service delivery",
-      "observedAltText": [
-        "Team reviewing a controlled pharmaceutical workstream"
-      ],
-      "observedCaptions": [
-        "Representative collaboration context."
-      ],
+      "observedAltText": [],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/services-connected-execution-960.avif",
         "assets/media/modules/services-connected-execution-960.jpg",
@@ -13592,18 +13574,15 @@
         "assets/media/modules/services-connected-execution.jpg",
         "assets/media/modules/services-connected-execution.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 8,
-      "referenceCount": 14,
+      "usageCount": 7,
+      "referenceCount": 12,
       "usageFiles": [
         "apps/corporate/components/concise-specialist-pages.tsx",
         "apps/corporate/components/page-renderer.tsx",
         "apps/corporate/data/pages.ts",
-        "capabilities/index.html",
         "creative-assets/module-media-asset-register.json",
         "seo/generated/social-image-register.json",
         "services/index.html",
@@ -13641,12 +13620,8 @@
       },
       "registeredAltText": "Scientific, quality and commercial professionals reviewing a pharmaceutical launch-readiness workflow",
       "registeredCaption": "Representative cross-functional service delivery",
-      "observedAltText": [
-        "Team reviewing a controlled pharmaceutical workstream"
-      ],
-      "observedCaptions": [
-        "Representative collaboration context."
-      ],
+      "observedAltText": [],
+      "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/services-connected-execution-960.avif",
         "assets/media/modules/services-connected-execution-960.jpg",
@@ -13655,15 +13630,12 @@
         "assets/media/modules/services-connected-execution.jpg",
         "assets/media/modules/services-connected-execution.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "capabilities/index.html",
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
@@ -17843,13 +17815,12 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 7,
-      "referenceCount": 9,
+      "usageCount": 6,
+      "referenceCount": 8,
       "usageFiles": [
         "assets/data/nutraxin-retail-catalogue.json",
         "docs/nutraxin-media-provenance.json",
         "index.html",
-        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
         "src/content/nutraxin-showcase.html"
@@ -17895,12 +17866,11 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 8,
+      "usageCount": 5,
+      "referenceCount": 7,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
-        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
         "src/content/nutraxin-showcase.html"
@@ -17946,12 +17916,11 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 8,
+      "usageCount": 5,
+      "referenceCount": 7,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
-        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
         "src/content/nutraxin-showcase.html"
@@ -17997,14 +17966,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 8,
-      "referenceCount": 10,
+      "usageCount": 7,
+      "referenceCount": 9,
       "usageFiles": [
         "apps/corporate/components/concise-specialist-pages.tsx",
         "apps/corporate/components/page-renderer.tsx",
         "docs/nutraxin-media-provenance.json",
         "index.html",
-        "products/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
         "src/content/nutraxin-showcase.html"
@@ -18050,8 +18018,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 10,
-      "referenceCount": 32,
+      "usageCount": 12,
+      "referenceCount": 36,
       "usageFiles": [
         "docs/nutraxin-media-provenance.json",
         "index.html",
@@ -18059,10 +18027,12 @@
         "products/nutraxin/bag/index.html",
         "products/nutraxin/index.html",
         "products/nutraxin/vitamin-d3-120-tablets/index.html",
+        "scripts/apply-products-editorial.mjs",
         "scripts/reconcile-social-authority.mjs",
         "seo/generated/social-image-register.json",
         "sitemap-images.xml",
-        "src/content/nutraxin-showcase.html"
+        "src/content/nutraxin-showcase.html",
+        "src/content/products-editorial.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-091",

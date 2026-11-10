@@ -196,23 +196,18 @@ function productPicture(product, eager = false, sizes = "(max-width: 720px) 84vw
 function homeMain() {
   const featured = [products[0], products[4], products[13]];
   return `<main id="main" class="npd-main npd-home npd-apple-home">
-    <section class="npd-apple-hero" aria-labelledby="home-title">
-      <div class="container npd-apple-hero-inner">
-        <div class="npd-apple-hero-copy">
-          <p class="npd-apple-eyebrow">NOVAPHARM HEALTHCARE</p>
-          <h1 id="home-title" aria-label="Medicine. Where it needs to be.">Medicine.<br><span>Where it needs to be.</span></h1>
-          <p class="npd-apple-lead">Medicine matters. So does every decision that brings it closer to people. We are developing a UK-led approach to specialist medicines, market access and responsible supply.</p>
-          <div class="npd-apple-actions">
-            <a class="npd-apple-button" href="/about/">Explore NovaPharm</a>
-            <a class="npd-apple-link" href="/partner-with-us/">Partner with us</a>
-          </div>
 
+    <section class="npd-apple-hero nph-earth-hero" aria-labelledby="home-title">
+      <div class="container nph-earth-hero-content">
+        <p class="npd-apple-eyebrow">NOVAPHARM HEALTHCARE</p>
+        <h1 id="home-title">Medicine. Where it needs to be.</h1>
+        <p class="npd-apple-lead">A better way to understand, access and move medicine.</p>
+        <div class="npd-apple-actions">
+          <a class="nph-earth-primary" href="/about/">Explore NovaPharm <span aria-hidden="true">›</span></a>
+          <a class="nph-earth-secondary" href="/partner-with-us/">Partner with us <span aria-hidden="true">›</span></a>
         </div>
-        <figure class="npd-apple-hero-art">
-          <picture><source srcset="/assets/media/home/supply-network-hero.avif" type="image/avif"><img src="/assets/media/home/supply-network-hero.jpg" alt="Illustrative pharmaceutical supply network visual" width="1672" height="941" fetchpriority="high" decoding="async"></picture>
-
-        </figure>
       </div>
+      <img class="nph-earth-hero-landscape" src="/assets/media/home/earth-morning-approved.avif" alt="" width="1100" height="229" fetchpriority="high" decoding="async">
     </section>
     <section class="npd-apple-manifesto" aria-labelledby="purpose-title">
       <div class="container npd-apple-center">

@@ -20,9 +20,19 @@ on:
       - 'assets/data/esco-catalogue.json'
       - 'assets/data/esco-checkout-config.json'
       - 'scripts/test-esco-catalogue.mjs'
+      # Owner-approved Capabilities Earth/vial and editorial typography are release surfaces.
+      - 'capabilities/index.html'
+      - 'src/content/capabilities-editorial.html'
+      - 'assets/css/capabilities-editorial.css'
+      - 'scripts/apply-capabilities-editorial.mjs'
       # Owner-approved About editorial is a public release surface.
       - 'about/**'
       - 'assets/css/about-editorial.css'
+      # Publish and verify the owner-approved Products experience on every future revision.
+      - 'products/index.html'
+      - 'src/content/products-editorial.html'
+      - 'assets/css/products-editorial.css'
+      - 'scripts/apply-products-editorial.mjs'
       - 'assets/media/about/**'
       - 'scripts/apply-about-editorial.mjs'
       - 'scripts/build-site.mjs'
@@ -33,6 +43,8 @@ on:
       - 'assets/css/oncology-editorial.css'
       - 'assets/media/oncology/**'
       - 'scripts/test-oncology-content.mjs'
+      - 'scripts/test-oncology-hero-browser.mjs'
+      - '.github/workflows/oncology-hero-acceptance.yml'
       - 'scripts/test-public-pages-browser.mjs'
       - 'scripts/enhance-seo-authority.mjs'
       - 'scripts/test-native-organic-marketing.mjs'
@@ -122,6 +134,15 @@ jobs:
           test -s _site/assets/css/about-editorial.css
           test -s _site/assets/media/about/novapharm-warehouse-original.jpg
           test -s _site/assets/media/about/novapharm-warehouse.avif
+          # Preserve the approved Capabilities story and raster artwork in the exact staged release.
+          grep -Fq 'data-capabilities-editorial="approved-2026-11"' _site/capabilities/index.html
+          grep -Fq 'class="npd-hero ncap-hero"' _site/capabilities/index.html
+          grep -Fq 'class="ncap-vial-illustration" src="data:image/webp;base64,' _site/capabilities/index.html
+          grep -Fq 'class="ncap-earth-illustration" src="data:image/webp;base64,' _site/capabilities/index.html
+          grep -Fq 'Start with one decision.' _site/capabilities/index.html
+          grep -Fq 'href="/assets/css/capabilities-editorial.css"' _site/capabilities/index.html
+          test -s _site/assets/css/capabilities-editorial.css
+          grep -Fq '@media print' _site/assets/css/capabilities-editorial.css
           # The approved Oncology design and its exact mobile CSS are deployment prerequisites.
           node scripts/test-oncology-content.mjs
           test -s _site/assets/css/oncology-hope-v2.css
@@ -155,6 +176,16 @@ jobs:
           test -s _site/assets/media/esco/previews/esco-cat-0373.svg
           node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('_site/assets/data/esco-uk-guide-prices.json','utf8'));if(x.entriesTotal!==373||x.checkoutEnabled||x.paymentCollectionEnabled||!x.requestQuoteOnly||Object.keys(x.guidePrices).length!==373||Object.keys(x.visualPreviews).length!==373)process.exit(1)"
 
+          # The Products hero is one uninterrupted, three-family photographic story.
+          grep -Fq 'Different products.' _site/products/index.html
+          grep -Fq 'np-products-stage-esco' _site/products/index.html
+          grep -Fq 'np-products-stage-pharma' _site/products/index.html
+          grep -Fq 'href="/products/nutraxin/"' _site/products/index.html
+          grep -Fq 'href="/products/esco/"' _site/products/index.html
+          grep -Fq 'href="/products/strategic-portfolio/"' _site/products/index.html
+          grep -Fq 'href="/assets/css/products-editorial.css"' _site/products/index.html
+          test -s _site/assets/css/products-editorial.css
+          grep -Fq 'PRODUCTS UNIFIED HERO 2026-11-10' _site/assets/css/products-editorial.css
           grep -Fq 'ESCO Anand' _site/products/index.html
           test -s _site/assets/css/esco-catalogue.css
           test -s _site/assets/js/esco-catalogue.js
@@ -480,6 +511,60 @@ jobs:
             sleep 5
           done
           echo "::error::The approved About page is not yet served on the production custom domain." >&2
+          exit 1
+
+      - name: Verify approved Capabilities Earth, pharmaceutical vial and layout on the live domain
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 18); do
+            url="https://novapharmhealthcare.com/capabilities/?capabilities-$GITHUB_SHA-$attempt-$(date +%s)"
+            if curl --fail --silent --show-error --location --max-time 20 \
+              -H 'Cache-Control: no-cache, no-store' "$url" \
+              -o /tmp/novapharm-live-capabilities.html \
+              && grep -Fq 'data-capabilities-editorial="approved-2026-11"' /tmp/novapharm-live-capabilities.html \
+              && grep -Fq 'class="npd-hero ncap-hero"' /tmp/novapharm-live-capabilities.html \
+              && grep -Fq 'class="ncap-vial-illustration" src="data:image/webp;base64,' /tmp/novapharm-live-capabilities.html \
+              && grep -Fq 'class="ncap-earth-illustration" src="data:image/webp;base64,' /tmp/novapharm-live-capabilities.html \
+              && grep -Fq 'Start with one decision.' /tmp/novapharm-live-capabilities.html; then
+              curl --fail --silent --show-error --max-time 20 \
+                "https://novapharmhealthcare.com/assets/css/capabilities-editorial.css?capabilities-$GITHUB_SHA" \
+                -o /tmp/novapharm-live-capabilities.css
+              if grep -Fq '.ncap-page .ncap-earth-image' /tmp/novapharm-live-capabilities.css \
+                && grep -Fq '@media print' /tmp/novapharm-live-capabilities.css; then
+                echo 'Approved Capabilities hero, Earth horizon, vial artwork and print styling verified on live custom domain.'
+                exit 0
+              fi
+            fi
+            sleep 5
+          done
+          echo '::error::Approved Capabilities artwork and responsive/print stylesheet are not live.'
+          exit 1
+
+      - name: Verify unified Products hero and source photography on live custom domain
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 18); do
+            url="https://novapharmhealthcare.com/products/?products-$GITHUB_SHA-$attempt-$(date +%s)"
+            if curl --fail --silent --show-error --location --max-time 20 \
+              -H 'Cache-Control: no-cache, no-store' "$url" \
+              -o /tmp/novapharm-live-products.html \
+              && grep -Fq 'Different products.' /tmp/novapharm-live-products.html \
+              && grep -Fq 'np-products-stage-nutraxin' /tmp/novapharm-live-products.html \
+              && grep -Fq 'np-products-stage-esco' /tmp/novapharm-live-products.html \
+              && grep -Fq 'np-products-stage-pharma' /tmp/novapharm-live-products.html \
+              && grep -Fq 'href="/products/esco/"' /tmp/novapharm-live-products.html; then
+              curl --fail --silent --show-error --max-time 20 \
+                "https://novapharmhealthcare.com/assets/css/products-editorial.css?products-$GITHUB_SHA" \
+                -o /tmp/novapharm-live-products.css
+              if grep -Fq 'PRODUCTS UNIFIED HERO 2026-11-10' /tmp/novapharm-live-products.css \
+                && grep -Fq 'mask-image:radial-gradient' /tmp/novapharm-live-products.css; then
+                echo 'Approved Nutraxin, ESCO and pharmaceutical hero design and edge blending verified on live custom domain.'
+                exit 0
+              fi
+            fi
+            sleep 5
+          done
+          echo '::error::Unified Products hero or unframed supplier photography CSS is not live.'
           exit 1
 
       - name: Check out verified main source for IndexNow

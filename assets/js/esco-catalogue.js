@@ -171,7 +171,7 @@ if (root) {
       ? "Ex VAT · final tax shown at secure checkout"
       : "Base price excludes delivery and VAT · confirmed before acceptance";
     if (clear) clear.disabled = state.size === 0;
-    const lines = [...state].map(([id, quantity]) => id + " qty " + quantity);
+    const lines = [...state].map(([id, quantity]) => id + " / NP-ESCO-" + id.slice(-4) + " qty " + quantity);
     const text = "ESCO Anand UK quotation request (catalogue 2026). Items: " + lines.join("; ") + ". Please confirm exact variants, UK compliance, price ex VAT, delivery and lead times.";
     send.href = "/contact/?enquiry=" + encodeURIComponent("Distribution partnership") + "&quote=" + encodeURIComponent(text);
     send.setAttribute("aria-disabled", state.size === 0 ? "true" : "false");

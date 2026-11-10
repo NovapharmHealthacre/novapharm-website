@@ -226,7 +226,7 @@ async function init() {
       const content = node("div", "", "esco-shopping-product");
       content.append(
         node("h3", p.name, "esco-shopping-product-name"),
-        node("p", (p.model ? "ESCO " + p.model : "Model to confirm") + " · " + item.id, "esco-shopping-model"),
+        node("p", (p.model ? "ESCO " + p.model : "Model to confirm") + " · NovaPharm SKU NP-ESCO-" + item.id.slice(-4) + " · " + item.id, "esco-shopping-model"),
         node("p", pictureInfo?.note || "Exact product imagery to be confirmed", "esco-shopping-provenance"),
         node("p", (approvedPrice ? "UK delivered price " : "Base price ") + GBP.format(unitPennies / 100) + " per unit · ex VAT", "esco-shopping-unitprice")
       );

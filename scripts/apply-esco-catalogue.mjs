@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { buildMerchandising } from './esco-merchandising.mjs';
+import { buildEscoProductMaster } from './esco-product-master.mjs';
 const root = resolve(process.cwd());
 const data = JSON.parse(readFileSync('assets/data/esco-catalogue.json', 'utf8'));
 const imageManifest = JSON.parse(readFileSync('assets/data/esco-model-photo-map.json', 'utf8'));
@@ -13,7 +14,15 @@ const entries = data.categories.flatMap((c) => c.entries.map((p) => ({ ...p, cat
 if (entries.length !== data.entriesTotal || entries.length !== 373) throw Error('ESCO catalogue index count mismatch');
 if (new Set(entries.map((p) => p.id)).size !== entries.length) throw Error('Duplicate ESCO catalogue references');
 const merchandising = buildMerchandising(entries);
+const productMaster = buildEscoProductMaster(data);
+const masterById = new Map(productMaster.records.map((record) => [record.catalogue_id, record]));
+const skuFor = (id) => {
+  const record = masterById.get(id);
+  if (!record || record.internal_novapharm_sku !== 'NP-ESCO-' + id.slice(-4)) throw Error('Unreconciled internal ESCO SKU: ' + id);
+  return record.internal_novapharm_sku;
+};
 for (const item of entries) {
+  if (masterById.get(item.id).owner_approved_base_price_ex_vat_pence !== Math.round(merchandising.guidePrices[item.id].guidePriceExVatGbp * 100)) throw Error('Approved ESCO website price changed: ' + item.id);
   if (!item.name || !item.subcategory || !Number.isInteger(item.sourceIndexPage)) throw Error('Unresolved ESCO catalogue row');
   if (item.priceGbp !== null || item.sellable !== false) throw Error('Unverified ESCO item must not have public prices or sellable flag');
 }
@@ -34,7 +43,7 @@ const contact = (item) => '/contact/?enquiry=Distribution%20partnership&quote=' 
 const sections = data.categories.map((category, i) => {
   const subs = [...new Set(category.entries.map((item) => item.subcategory))];
   const groups = subs.map((sub) => {
-    const cards = category.entries.filter((p) => p.subcategory === sub).map((p) => `<article class="esco-product" data-esco-entry data-esco-catalogue-id="${esc(p.id)}" data-esco-category="${esc(category.name)}" data-esco-price="${merchandising.guidePrices[p.id].guidePriceExVatGbp.toFixed(2)}" data-esco-search="${esc([p.name, p.model, p.id, p.subcategory, category.name].filter(Boolean).join(' '))}"><div class="esco-product-visual">${productPicture(p, category)}</div><div class="esco-product-body"><span class="esco-product-kicker">${esc(p.subcategory)}</span><h4>${esc(p.name)}</h4><span class="esco-model">${p.model ? 'ESCO ' + esc(p.model) : 'Model to confirm'}</span><div class="esco-product-price" data-esco-price-block="${esc(p.id)}"><strong data-esco-price-primary>Base price £${merchandising.guidePrices[p.id].guidePriceExVatGbp.toFixed(2)}</strong><small data-esco-price-note>Ex VAT · delivery confirmed before acceptance</small></div><span class="esco-product-status" data-esco-status>Order request available</span><div class="esco-product-actions"><button type="button" class="esco-quote-add" data-esco-add="${esc(p.id)}" aria-label="Add ${esc(p.name)} to your Bag">Add to Bag</button><button type="button" class="esco-details-trigger" data-esco-details="${esc(p.id)}" aria-label="View details of ${esc(p.name)}">Details</button></div></div></article>`).join('');
+    const cards = category.entries.filter((p) => p.subcategory === sub).map((p) => `<article class="esco-product" data-esco-entry data-esco-catalogue-id="${esc(p.id)}" data-esco-category="${esc(category.name)}" data-esco-price="${merchandising.guidePrices[p.id].guidePriceExVatGbp.toFixed(2)}" data-esco-search="${esc([p.name, p.model, p.id, skuFor(p.id), p.subcategory, category.name].filter(Boolean).join(' '))}"><div class="esco-product-visual">${productPicture(p, category)}</div><div class="esco-product-body"><span class="esco-product-kicker">${esc(p.subcategory)}</span><h4>${esc(p.name)}</h4><span class="esco-model">${p.model ? 'ESCO ' + esc(p.model) : 'Model to confirm'} · NovaPharm SKU ${esc(skuFor(p.id))}</span><div class="esco-product-price" data-esco-price-block="${esc(p.id)}"><strong data-esco-price-primary>Base price £${merchandising.guidePrices[p.id].guidePriceExVatGbp.toFixed(2)}</strong><small data-esco-price-note>Ex VAT · delivery confirmed before acceptance</small></div><span class="esco-product-status" data-esco-status>Order request available</span><div class="esco-product-actions"><button type="button" class="esco-quote-add" data-esco-add="${esc(p.id)}" aria-label="Add ${esc(p.name)} to your Bag">Add to Bag</button><button type="button" class="esco-details-trigger" data-esco-details="${esc(p.id)}" aria-label="View details of ${esc(p.name)}">Details</button></div></div></article>`).join('');
     return `<h4 class="esco-subcat" data-esco-subcategory>${esc(sub)}</h4><div class="esco-grid">${cards}</div>`;
   });
   return `<section class="esco-section" data-esco-section id="esco-range-${i + 1}" aria-labelledby="esco-range-heading-${i + 1}"><div class="esco-section-header"><h3 id="esco-range-heading-${i + 1}">${esc(category.name)}</h3><span class="esco-section-count">${category.entries.length} catalogue entries</span></div>${groups.join('')}</section>`;

@@ -14,6 +14,7 @@ const pdfToPpmBinary = process.env.PDFTOPPM_BIN ?? "pdftoppm";
 const routes = Object.freeze([
   ["home", "/"],
   ["company", "/about/"],
+  ["capabilities", "/capabilities/"],
   ["services", "/services/"],
   ["regulatory", "/regulatory-services/"],
   ["cro", "/cro/"],
@@ -103,7 +104,50 @@ try {
     if (semanticState.mainCharacters < 180) throw new Error(`${route} has insufficient printable main content`);
     if (semanticState.horizontalOverflow) throw new Error(`${route} has horizontal overflow before printing`);
 
+
+    // Regression guard for the owner-approved Capabilities artwork:
+    // both illustrations must be real print-visible content (not CSS backgrounds).
+    if (route === "/capabilities/") {
+      const state = await page.evaluate(() => {
+        const heroLines = [...document.querySelectorAll(".ncap-title-line")];
+        const earth = document.querySelector(".ncap-earth-illustration");
+        const vial = document.querySelector(".ncap-vial-illustration");
+        const cards = document.querySelectorAll(".ncap-discipline");
+        const earthLayer = document.querySelector(".ncap-earth-image");
+        return {
+          heroLines: heroLines.length,
+          cardCount: cards.length,
+          inlineEarth: earth?.tagName?.toLowerCase() === "img" && earth.complete && earth.naturalWidth > 0,
+          inlineVial: vial?.tagName?.toLowerCase() === "img" && vial.complete && vial.naturalWidth > 0,
+          earthWidth: earth?.getBoundingClientRect().width ?? 0,
+          earthHeight: earth?.getBoundingClientRect().height ?? 0,
+          earthZIndex: earthLayer ? getComputedStyle(earthLayer).zIndex : null,
+        };
+      });
+      if (state.heroLines !== 2 || state.cardCount !== 4 ||
+          !state.inlineEarth || !state.inlineVial ||
+          state.earthWidth < 200 || state.earthHeight < 180 ||
+          state.earthZIndex === "-1") {
+        throw new Error("Capabilities visuals or Earth horizon are missing: " + JSON.stringify(state));
+      }
+    }
+
     await page.emulateMedia({ media: "print", colorScheme: "light", reducedMotion: "reduce" });
+
+    if (route === "/capabilities/") {
+      const printLayout = await page.evaluate(() => ({
+        columns: getComputedStyle(document.querySelector(".ncap-grid")).gridTemplateColumns
+          .split(" ").filter(Boolean).length,
+        earthVisible: getComputedStyle(document.querySelector(".ncap-earth-image")).display !== "none",
+        earthZIndex: getComputedStyle(document.querySelector(".ncap-earth-image")).zIndex,
+        firstHeadingLines: document.querySelectorAll(".ncap-title-line").length,
+      }));
+      if (printLayout.columns !== 2 || !printLayout.earthVisible ||
+          printLayout.earthZIndex === "-1" || printLayout.firstHeadingLines !== 2) {
+        throw new Error("Capabilities Safari/PDF print layout violates approval: " + JSON.stringify(printLayout));
+      }
+    }
+
     const printState = await page.evaluate(() => {
       const visible = (element) => {
         const style = getComputedStyle(element);
