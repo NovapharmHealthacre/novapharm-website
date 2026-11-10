@@ -47,7 +47,7 @@ const build = read("scripts/build-site.mjs");
 
 for (const [name, html] of Object.entries(pages)) {
   requireText(html, 'class="npd-main', `${name} authored layout`);
-  requireText(html, name === "contact" ? 'class="np-contact-reference-hero"' : name === "home" ? 'class="npd-apple-hero"' : name === "oncology" ? 'class="npoc-hero npoc-hope-hero"' : name === "technology" ? 'class="npi-hero"' : name === "nutraxin" ? 'class="nx-hero"' : 'class="npd-hero', `${name} deliberate hero`);
+  requireText(html, name === "contact" ? 'class="np-contact-reference-hero"' : name === "home" ? 'class="npd-apple-hero"' : name === "oncology" ? 'class="npoc-hero npoc-hope-hero"' : name === "technology" ? 'class="npi-hero"' : name === "capabilities" ? 'class="ncap-hero"' : name === "products" ? 'class="np-products-hero"' : name === "nutraxin" ? 'class="nx-hero"' : 'class="npd-hero', `${name} deliberate hero`);
   requireText(html, "Regulated wholesale supply has not commenced", `${name} operating-status boundary`);
   requireText(html, 'class="npd-footer', `${name} institutional footer`);
   forbidText(html, "lucide", `${name} icon-free corporate presentation`);
@@ -70,7 +70,9 @@ for (const [name, html] of Object.entries(pages)) {
   [pages.partners, 'class="npd-horizontal-steps"', "Partner qualification sequence"],
   [pages.technology, 'class="npi-roadmap-grid"', "Intelligence product development roadmap"],
   [pages.technology, 'class="npi-provenance-list"', "Intelligence evidence provenance taxonomy"],
-  [pages.products, "Food Supplement Portfolio Review", "Products priority portfolio"],
+  [pages.products, 'class="np-products-panel-nutraxin"', "Products approved Nutraxin lead collection"],
+  [pages.products, 'class="np-products-panel-esco"', "Products approved ESCO collection"],
+  [pages.products, 'class="np-products-panel-pharma"', "Products approved pharmaceutical portfolio collection"],
   [pages.products, 'href="/products/nutraxin/"', "Products canonical Nutraxin route"],
   [pages.products, 'href="/products/strategic-portfolio/"', "Products strategic route"],
   [pages.nutraxin, 'class="nx-product-grid"', "Nutraxin product-led category presentation"],
@@ -114,10 +116,12 @@ if (regulatoryStages !== 7) failures.push(`Regulatory page: expected 7 governanc
 const nutraxinProducts = (pages.nutraxin.match(/class="nx-product-card"/g) ?? []).length;
 if (nutraxinProducts !== 19) failures.push(`Nutraxin catalogue: expected 19 product cards, found ${nutraxinProducts}.`);
 
-const productFeaturePosition = pages.products.indexOf("Food Supplement Portfolio Review");
-const strategicPosition = pages.products.indexOf("Strategic pharmaceutical portfolio");
-if (productFeaturePosition < 0 || strategicPosition < 0 || productFeaturePosition > strategicPosition) {
-  failures.push("Products hierarchy: Food Supplement Portfolio Review must be the first substantive portfolio route.");
+const nutraxinSection = pages.products.indexOf('class="np-products-panel np-products-panel-nutraxin"');
+const escoSection = pages.products.indexOf('class="np-products-panel np-products-panel-esco"');
+const pharmaSection = pages.products.indexOf('class="np-products-panel np-products-panel-pharma"');
+if (nutraxinSection < 0 || escoSection < 0 || pharmaSection < 0 ||
+    !(nutraxinSection < escoSection && escoSection < pharmaSection)) {
+  failures.push("Products hierarchy: approved Nutraxin, ESCO and pharmaceutical portfolio chapters must be present in that order.");
 }
 
 for (const prohibited of [
