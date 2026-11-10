@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 import { strict as assert } from "node:assert";
 import { navigation } from "../src/content/site-content.mjs";
 
@@ -35,7 +35,7 @@ for (const slug of routes) {
     assert.match(html, /UPS Healthcare/);
     assert.match(html, /Marken UK incorporates the former Polar Speed operation/);
     assert.match(html, /their official logos and proprietary photographs are not reproduced/i);
-    assert.match(html, /No representation of NovaPharm-owned/i);
+    assert.match(html, /do not represent NovaPharm-owned/i);
     assert.match(html, /<section class="npd-section ndist-pathway"/);
     assert.match(html, /<section class="npd-section npd-final ndist-final"/);
     for (const actualMedia of [
@@ -44,7 +44,6 @@ for (const slug of routes) {
       "assets/media/about/novapharm-warehouse.avif",
       "assets/media/home/supply-network-hero-1200.jpg"
     ]) {
-      const { statSync } = await import("node:fs");
       assert.ok(statSync(actualMedia).size > 4000, "Required distribution asset is missing or empty: " + actualMedia);
     }
     assert.doesNotMatch(html, /<img[^>]+(?:ups|marken|polar-speed)[^>]*>/i, "Third-party branded photos and logos require licensed use");
