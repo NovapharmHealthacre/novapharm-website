@@ -23,6 +23,10 @@ on:
       - 'scripts/build-site.mjs'
       - 'assets/data/nutraxin-retail-catalogue.json'
       - 'scripts/apply-corporate-product-discipline.mjs'
+      - 'technology/index.html'
+      - 'src/content/technology-intelligence.html'
+      - 'assets/js/intelligence-live-research.js'
+      - 'scripts/test-intelligence-live-public-research.mjs'
       - 'scripts/enhance-seo-authority.mjs'
       - 'scripts/test-native-organic-marketing.mjs'
       - 'scripts/stage-pages-artifact.mjs'
@@ -100,6 +104,15 @@ jobs:
           npm run test:cookies
           npm run validate:domain
           node scripts/stage-pages-artifact.mjs _site
+          # The official US source-search enhancement is only publishable when
+          # the page, public client, and source disclosure ship as one artifact.
+          node --test scripts/test-intelligence-live-public-research.mjs
+          test -s _site/technology/index.html
+          test -s _site/assets/js/intelligence-live-research.js
+          grep -Fq 'data-npi-research' _site/technology/index.html
+          grep -Fq 'src="/assets/js/intelligence-live-research.js"' _site/technology/index.html
+          grep -Fq 'US regulatory and trial searches send the medicine term' _site/technology/index.html
+          grep -Fq '5pcszvyqm1.execute-api.eu-north-1.amazonaws.com' _site/assets/js/intelligence-live-research.js
           node scripts/verify-nutraxin-merchant-live.mjs --local
           test -s _site/shopping/nutraxin-uk.tsv
           cmp _site/shopping/nutraxin-uk.tsv shopping/nutraxin-uk.tsv
@@ -423,6 +436,24 @@ jobs:
           done
           echo "::error::Live organic metadata or inactive analytics contract did not match accepted release." >&2
           exit 1
+      - name: Verify live Intelligence official research without losing customer contact
+        env:
+          LIVE_ORIGIN: https://novapharmhealthcare.com
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Verify precisely the deployed JS, page and privacy/source disclosure.
+          # No Checkout Sessions, user data, test subscriptions or charges.
+          stamp="intelligence-$(date +%s)-$GITHUB_SHA"
+          curl --fail --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' "$LIVE_ORIGIN/technology/?$stamp" -o /tmp/npi-intelligence-live.html
+          curl --fail --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' "$LIVE_ORIGIN/assets/js/intelligence-live-research.js?$stamp" -o /tmp/npi-intelligence-live.js
+          curl --fail --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' "$LIVE_ORIGIN/contact/?$stamp" -o /tmp/npi-contact-preservation.html
+          grep -Fq 'data-npi-research' /tmp/npi-intelligence-live.html
+          grep -Fq 'src="/assets/js/intelligence-live-research.js"' /tmp/npi-intelligence-live.html
+          grep -Fq 'US regulatory and trial searches send the medicine term' /tmp/npi-intelligence-live.html
+          grep -Fq '5pcszvyqm1.execute-api.eu-north-1.amazonaws.com' /tmp/npi-intelligence-live.js
+          grep -Fq 'data-live-b2b-enquiry-form' /tmp/npi-contact-preservation.html
+          echo 'Verified public Intelligence source research and preserved AWS contact.'
       - name: Check out verified main source for IndexNow
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
