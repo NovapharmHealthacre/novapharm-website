@@ -44,3 +44,9 @@ for (const { file, article } of legalPolicies) {
 
 // Apply the owner-approved About page after every source rewrite.
 await import("./apply-about-editorial.mjs");
+
+// Restore owner-approved Capabilities design after all shared page rewrites.
+await import("./apply-capabilities-editorial.mjs");
+
+// Apply approved, real-image Products presentation last.
+await import("./apply-products-editorial.mjs");

@@ -1,0 +1,73 @@
+/* Owner-approved NovaPharm Products presentation, real catalogue assets, 2026-11-10. */
+body[data-route="/products/"] .np-products-page { background:#fff; color:#111114; overflow:hidden; font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif; }
+.np-products-page, .np-products-page * { box-sizing:border-box; }
+.np-products-page .np-products-wrap { width:min(calc(100% - 104px),1320px); margin-inline:auto; }
+.np-products-page .np-products-hero { background:linear-gradient(180deg,#fff 0%,#fff 72%,#fbfbfd 100%); text-align:center; padding:clamp(78px,9vw,132px) 0 0; }
+.np-products-page .np-products-kicker { margin:0; font-size:12px; font-weight:650; line-height:1.4; letter-spacing:.2em; text-transform:uppercase; color:#565961; }
+.np-products-page .np-products-hero h1 { max-width:1000px; margin:24px auto 18px; color:#08080a; font-size:clamp(54px,7.5vw,108px); font-weight:650; line-height:1.015; letter-spacing:-.075em; text-wrap:balance; }
+.np-products-page .np-products-intro { margin:0 auto; font-size:clamp(18px,2.05vw,27px); line-height:1.5; letter-spacing:-.02em; color:#65676e; }
+.np-products-page .np-products-link { color:#06c; text-decoration:none; font-weight:550; font-size:clamp(16px,1.3vw,19px); display:inline-flex; align-items:center; gap:8px; line-height:1.4; }
+.np-products-page .np-products-link:hover { color:#004a98; text-decoration:underline; text-underline-offset:4px; }
+.np-products-page .np-products-link span { font-size:1.3em; line-height:1; transition:transform .2s ease; }
+.np-products-page .np-products-link:hover span { transform:translateX(3px); }
+.np-products-page .np-products-hero-link { margin-top:23px; }
+.np-products-page .np-products-stage { display:grid; grid-template-columns:28% 37% 35%; align-items:end; justify-content:center; width:min(100%,1470px); height:clamp(280px,31vw,465px); margin:34px auto 0; position:relative; }
+.np-products-page .np-products-stage:after { content:""; position:absolute; bottom:0; left:4%; width:92%; height:1px; background:linear-gradient(90deg,transparent,#e8e9eb,transparent); }
+.np-products-page .np-products-stage-item { min-width:0; height:100%; overflow:hidden; position:relative; display:flex; align-items:flex-end; justify-content:center; }
+.np-products-page .np-products-stage-nutraxin img { max-width:100%; width:min(100%,370px); height:93%; object-fit:contain; object-position:center bottom; filter:drop-shadow(0 21px 15px rgba(19,24,29,.10)); }
+.np-products-page .np-products-stage-esco img { position:absolute; object-fit:contain; mix-blend-mode:multiply; }
+.np-products-page .np-products-stage-bed { width:80%; height:92%; bottom:0; left:5%; }
+.np-products-page .np-products-stage-trolley { width:43%; height:65%; right:0; bottom:0; }
+.np-products-page .np-products-stage-pharma { padding:5% 0 0; }
+.np-products-page .np-products-stage-pharma img { width:100%; height:78%; object-fit:cover; object-position:65% center; border-radius:8px 0 0 0; mask-image:linear-gradient(90deg,transparent 0,#000 16%,#000 100%); }
+.np-products-page .np-products-collections { display:block; }
+.np-products-page .np-products-panel { border-top:1px solid #e9eaed; min-height:clamp(390px,38vw,550px); display:flex; align-items:center; overflow:hidden; }
+.np-products-page .np-products-panel-inner { display:grid; grid-template-columns:44% 56%; gap:0; align-items:center; min-height:inherit; }
+.np-products-page .np-products-panel-copy { position:relative; z-index:2; padding:72px 0; }
+.np-products-page .np-products-panel h2 { font-size:clamp(44px,4.75vw,76px); font-weight:635; letter-spacing:-.068em; line-height:1.055; color:#070709; margin:21px 0 14px; text-wrap:balance; }
+.np-products-page .np-products-panel-lead { color:#5a5d64; font-size:clamp(17px,1.55vw,21px); line-height:1.48; letter-spacing:-.012em; max-width:510px; margin:0 0 20px; }
+.np-products-page .np-products-meta { color:#85888e; font-size:12px; line-height:1.65; max-width:430px; margin:0 0 20px; }
+.np-products-page .np-products-panel-art { width:100%; align-self:stretch; position:relative; min-height:390px; }
+.np-products-page .np-products-panel-art img { position:absolute; display:block; }
+.np-products-page .np-products-panel-nutraxin { background:linear-gradient(115deg,#fff 0%,#fff 45%,#f8f9fb 100%); }
+.np-products-page .np-products-panel-art-nutraxin img { height:108%; width:100%; right:-5%; bottom:-15%; object-fit:contain; object-position:right bottom; filter:drop-shadow(0 20px 15px rgba(6,24,48,.11)); }
+.np-products-page .np-products-panel-esco { background:linear-gradient(100deg,#fff 0%,#fff 45%,#f3f6fa 100%); }
+.np-products-page .np-products-panel-art-esco img { object-fit:contain; mix-blend-mode:multiply; }
+.np-products-page .np-products-esco-bed { width:84%; height:93%; bottom:-2%; left:0; }
+.np-products-page .np-products-esco-trolley { width:40%; height:70%; bottom:1%; right:-8%; }
+.np-products-page .np-products-panel-pharma { background:linear-gradient(100deg,#fff 0%,#fff 43%,#f4f7f9 100%); }
+.np-products-page .np-products-panel-art-pharma img { inset:4% -7% 4% 0; width:107%; height:92%; object-fit:cover; object-position:72% center; border-radius:8px; mask-image:linear-gradient(90deg,transparent,#000 15%); }
+.np-products-page .np-products-qualification { font-size:12px; line-height:1.65; color:#737780; text-align:center; padding:30px 0 42px; }
+.np-products-page a:focus-visible { outline:3px solid #1673d2; outline-offset:5px; border-radius:3px; }
+@media(max-width:900px) {
+ .np-products-page .np-products-wrap { width:calc(100% - 64px); }
+ .np-products-page .np-products-stage { height:clamp(260px,42vw,380px); }
+ .np-products-page .np-products-panel-inner { grid-template-columns:49% 51%; }
+ .np-products-page .np-products-panel h2 { font-size:clamp(38px,5.1vw,58px); }
+ .np-products-page .np-products-panel-art { min-height:320px; }
+ .np-products-page .np-products-panel { min-height:390px; }
+}
+@media(max-width:640px) {
+ .np-products-page .np-products-wrap { width:calc(100% - 40px); }
+ .np-products-page .np-products-hero { padding-top:72px; }
+ .np-products-page .np-products-hero h1 { font-size:clamp(47px,12vw,72px); margin:18px auto 15px; letter-spacing:-.066em; }
+ .np-products-page .np-products-intro { font-size:17px; max-width:320px; }
+ .np-products-page .np-products-stage { margin-top:34px; grid-template-columns:31% 39% 30%; height:210px; padding:0 8px; }
+ .np-products-page .np-products-stage-nutraxin img { height:90%; }
+ .np-products-page .np-products-stage-bed { width:100%; left:-4%; }
+ .np-products-page .np-products-stage-trolley { width:52%; right:-7%; }
+ .np-products-page .np-products-stage-pharma img { height:78%; width:125%; max-width:none; object-position:65% center; }
+ .np-products-page .np-products-panel { min-height:0; }
+ .np-products-page .np-products-panel-inner { display:flex; flex-direction:column; align-items:stretch; }
+ .np-products-page .np-products-panel-copy { padding:64px 0 18px; }
+ .np-products-page .np-products-panel h2 { font-size:clamp(42px,11vw,57px); line-height:1.075; margin:17px 0 15px; }
+ .np-products-page .np-products-panel-lead { font-size:17px; max-width:370px; }
+ .np-products-page .np-products-meta { font-size:11px; }
+ .np-products-page .np-products-panel-art { width:100%; min-height:300px; }
+ .np-products-page .np-products-panel-art-nutraxin img { width:110%; right:-12%; bottom:-28%; height:125%; }
+ .np-products-page .np-products-esco-bed { width:85%; bottom:-5%; left:0; }
+ .np-products-page .np-products-esco-trolley { right:-6%; }
+ .np-products-page .np-products-panel-art-pharma img { inset:10% -20% 2% -5%; width:125%; height:90%; }
+ .np-products-page .np-products-qualification { padding:28px 0 38px; text-align:left; }
+}
+@media(prefers-reduced-motion:reduce) { .np-products-page .np-products-link span { transition:none; } }
