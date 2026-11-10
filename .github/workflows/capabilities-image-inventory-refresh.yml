@@ -1,0 +1,36 @@
+name: Capabilities approved media inventory refresh
+on:
+  push:
+    branches:
+      - fix/capabilities-media-inventory-20261110
+permissions:
+  contents: write
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out inventory repair branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Use Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install pinned dependencies
+        run: npm ci --ignore-scripts
+      - name: Refresh authoritative inventory from tracked project assets
+        run: npm run images:inventory
+      - name: Commit exact generated inventory to repair branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add audit/generated/image-inventory.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Regenerate audited image inventory for approved Capabilities visuals"
+            git push origin HEAD:fix/capabilities-media-inventory-20261110
+          else
+            echo "Inventory already in sync."
+          fi
