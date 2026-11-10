@@ -16,7 +16,7 @@ const routes = [
   { path: "/oncology/", name: "oncology", required: "Oncology" },
   { path: "/cro/", name: "cro", required: "Clinical" },
   { path: "/technology/", name: "technology", required: "Technology" },
-  { path: "/products/", name: "products-overview", required: "Three collections. Distinct decisions." },
+  { path: "/products/", name: "products-overview", required: "Different products. One purpose." },
   { path: "/products/nutraxin/", name: "nutraxin-collection", required: "Nutraxin" }
 ];
 const routeViewports = [
@@ -219,6 +219,17 @@ for (const [engineName, browserType] of engines) {
             await materialiseLazyMedia(page);
             const bodyText = (await page.locator("body").innerText()).replace(/\s+/g, " ");
             assert.ok(bodyText.includes(route.required), `${engineName} ${viewport.name} ${route.path}: required page marker missing`);
+
+            if (route.name === "products-overview") {
+              assert.equal(await page.locator(".np-products-hero h1").count(), 1,
+                `${engineName} ${viewport.name}: approved Products headline missing`);
+              for (const routeHref of ["/products/nutraxin/", "/products/esco/", "/products/strategic-portfolio/"]) {
+                assert.ok(await page.locator(`.np-products-collections a[href="${routeHref}"]`).count() >= 1,
+                  `${engineName} ${viewport.name}: approved collection navigation missing: ${routeHref}`);
+              }
+              assert.equal(await page.locator(".np-products-stage-item").count(), 3,
+                `${engineName} ${viewport.name}: three-source product hero incomplete`);
+            }
 
             await assertLayout(page, `${engineName} ${viewport.name} ${route.path}`);
             await assertFooterHeadings(page, `${engineName} ${viewport.name} ${route.path}`);
