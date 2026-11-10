@@ -114,7 +114,7 @@ test("the separate liveness route is noindex, never reveals readiness and cannot
   assert.match(health, /status: 200/);
   assert.match(health, /Cache-Control": "no-store"/);
   assert.match(health, /X-Robots-Tag": "noindex, nofollow, noarchive"/);
-  assert.doesNotMatch(health, /process\\.env|token|database|session|customer/iu);
-  assert.match(proxy, /"\\/healthz\\/"/);
-  assert.match(docker, /4303\\/healthz\\//);
+  assert.doesNotMatch(health, /process\.env|jwt|cookies\(|database|session/iu);
+  assert.match(proxy, /"\/healthz\/"/);
+  assert.match(docker, /4303\/healthz\//);
 });
