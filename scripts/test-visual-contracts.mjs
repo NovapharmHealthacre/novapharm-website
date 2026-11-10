@@ -61,9 +61,10 @@ assert.match(bundleCss, /Source: homepage-editorial.css/, "homepage styles must 
 
 const home = text("index.html");
 assert.match(home, /<main id="main" class="npd-main npd-home npd-apple-home">/);
-assert.match(home, /Medicine\.<br><span>Where it needs to be\.<\/span>/);
-assert.match(home, /supply-network-hero\.avif/);
-assert.match(home, /supply-network-hero\.jpg/);
+assert.match(home, /<h1 id="home-title">Medicine\. Where it needs to be\.<\/h1>/, "owner-approved hero headline must remain centred and whole");
+assert.match(home, /class="nph-earth-hero-landscape"/, "approved Earth horizon must be a full-width hero image");
+assert.match(home, /earth-reference-1400\.jpg/, "approved reference-sourced sharp Earth hero must be served");
+assert.match(home, /A better way to understand, access and move medicine\./, "approved supporting proposition must remain visible");
 assert.match(home, /Three routes\.<br>One evidence standard\./);
 assert.equal((home.match(/<div class="npd-apple-sourcing-grid">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) ?? []).length, 3, "homepage must present three evidence-gated sourcing routes");
 assert.equal((home.match(/<div class="npd-apple-product-grid">[\s\S]*?<\/div>/)?.[0].match(/class="npd-apple-product"/g) ?? []).length, 3, "homepage must stage three authentic catalogue product references");
@@ -76,17 +77,25 @@ assert.match(home, /PLPI activity requires the relevant licence/);
 assert.match(home, /Let's build something meaningful\./);
 assert.doesNotMatch(home, /<svg|lucide|<video|hero-cinematic-layer|data-motion-toggle|data-ai-search-open|nav-search|ai-search-dialog/);
 
-const expectedNavigation = [
+const expectedHomeNavigation = [
   ["Company", "/about/"],
   ["Capabilities", "/capabilities/"],
   ["Oncology", "/oncology/"],
   ["Products", "/products/"],
-  ["NovaPharm Intelligence", "/technology/"],
-  ["Insights", "/news-insights/"],
+  ["Intelligence", "/technology/"],
   ["Contact", "/contact/"],
-  ["Secure Portal", "https://portal.novapharmhealthcare.com/"],
 ];
-for (const [label, href] of expectedNavigation) assert.match(home, new RegExp(`<a href="${href.replaceAll("/", "\\/")}"[^>]*>${label}<\\/a>`));
+const homepagePrimaryNav = home.match(/<nav class="site-nav npd-global-nav"[^>]*>([\\s\\S]*?)<\\/nav>/)?.[1] ?? "";
+assert.ok(homepagePrimaryNav, "homepage must expose an accessible primary navigation");
+assert.equal((homepagePrimaryNav.match(/<a /g) ?? []).length, 6, "approved homepage must have six primary links");
+for (const [label, href] of expectedHomeNavigation) {
+  assert.ok(homepagePrimaryNav.includes(`href="${href}"`), `homepage navigation must link to ${href}`);
+  assert.ok(homepagePrimaryNav.includes(`>${label}</a>`), `homepage navigation must label ${href} accurately`);
+}
+const secondaryPage = text("about/index.html");
+assert.match(secondaryPage, /NovaPharm Intelligence/, "other corporate pages retain full Intelligence brand name");
+assert.match(secondaryPage, /Insights/, "other corporate pages retain Insights navigation");
+assert.match(secondaryPage, /Secure Portal/, "other corporate pages retain secure Portal navigation");
 assert.match(home, /<span data-menu-label>Menu<\/span>/, "mobile navigation must use the visible word Menu");
 assert.match(home, /data-mega-trigger="intelligence"/, "global header must expose Intelligence navigation");
 assert.match(home, /data-mega-panel="intelligence"/, "Intelligence navigation must offer contextual destinations");
