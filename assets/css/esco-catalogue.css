@@ -678,3 +678,13 @@
   font-weight:650;
 }
 .esco-shop-bag .esco-bag-quote.esco-order-request-primary:hover{background:#005bb5;}
+
+
+/* The collection is for discovery. Bag review lives in the header and on its
+   dedicated checkout page, never as a large panel on the storefront.
+   The mini-panel is retained as a hidden compatibility DOM for state syncing.
+   Explicitly protect [hidden] against earlier display:grid author rules. */
+.esco-storefront .esco-shop-mini-bag[hidden],
+.esco-page .esco-shop-mini-bag[hidden] {
+  display: none !important;
+}
