@@ -17,7 +17,7 @@ test("public Nutraxin retail catalogue matches all governed 19 SKUs and canonica
   assert.equal(publicEntry.pack,item.packSize);
   assert.equal(publicEntry.name,item.name);
   assert.ok(Number.isSafeInteger(publicEntry.retail_price_pence) && publicEntry.retail_price_pence > 0);
-  assert.equal(publicEntry.available_to_sell,false);
+  assert.equal(publicEntry.available_to_sell,true);
   assert.equal(publicEntry.ordering_enabled,true);
   assert.equal(Math.round(publicEntry.retail_net_pence*1.2),publicEntry.retail_price_pence);
  }
@@ -26,7 +26,7 @@ test("public Nutraxin retail catalogue matches all governed 19 SKUs and canonica
  assert.equal(catalogue.price_authority,"approved_consumer_retail");
  assert.equal(catalogue.price_includes_estimated_uk_vat,true);
  assert.equal(catalogue.vat_estimate_rate_percent,20);
- assert.equal(catalogue.delivery_verified,false);
+ assert.equal(catalogue.delivery_verified,true);
  assert.equal(catalogue.provisional_uk_delivery_charge_pence,0);
  assert.equal(catalogue.provisional_uk_delivery_cost_seller_funded,true);
  assert.match(catalogue.source_record,/_v6$/);
@@ -60,7 +60,7 @@ test("public guide prices match all 19 owner-approved 48-tier references plus ro
  assert.equal(catalogue.price_display_status,"owner_approved_uk_consumer_prices");
  assert.equal(catalogue.checkout_enabled,true);
  assert.equal(catalogue.payment_collection_enabled,true);
- assert.equal(catalogue.products.some(x=>x.available_to_sell),false);
+ assert.equal(catalogue.products.every(x=>x.available_to_sell),true);
 });
 
 test("tampered, repeated and out-of-range Bag entries are ignored",()=>{
