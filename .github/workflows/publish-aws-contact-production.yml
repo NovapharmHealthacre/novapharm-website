@@ -736,13 +736,13 @@ jobs:
             for attempt in $(seq 1 18); do
               if [ "$route" = home ]; then path=""; else path="$route/"; fi
               url="https://novapharmhealthcare.com/${path}?nav-${GITHUB_SHA}-${attempt}-$(date +%s)"
-              if curl --fail --silent --show-error --location --max-time 20 \\
+              if curl --fail --silent --show-error --location --max-time 20 \
                    -H 'Cache-Control: no-cache, no-store' "$url" -o /tmp/novapharm-live-distribution-header.html; then
-                sed -n '/<nav class="site-nav npd-global-nav"/,/<\\/nav>/p' \\
+                sed -n '/<nav class="site-nav npd-global-nav"/,/<\/nav>/p' \
                   /tmp/novapharm-live-distribution-header.html > /tmp/novapharm-live-distribution-nav.html
-                if grep -Fq 'href="/distribution/"' /tmp/novapharm-live-distribution-nav.html \\
-                  && grep -Fq 'data-mega-trigger="distribution"' /tmp/novapharm-live-distribution-nav.html \\
-                  && grep -Fq 'data-mega-panel="distribution"' /tmp/novapharm-live-distribution-header.html \\
+                if grep -Fq 'href="/distribution/"' /tmp/novapharm-live-distribution-nav.html \
+                  && grep -Fq 'data-mega-trigger="distribution"' /tmp/novapharm-live-distribution-nav.html \
+                  && grep -Fq 'data-mega-panel="distribution"' /tmp/novapharm-live-distribution-header.html \
                   && grep -Fq 'href="https://portal.novapharmhealthcare.com/"' /tmp/novapharm-live-distribution-nav.html; then
                   verified=true
                   break
