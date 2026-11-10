@@ -64,9 +64,9 @@ permissions:
   id-token: write
   deployments: read
 
-# Release one Pages artifact at a time. The deploy-stage guard verifies the
-# candidate is not older than the last successful Pages publication even if
-# main advances while the approved artifact waits for its runner.
+# Each approved commit has its own build; stale source is rejected both before build
+# and immediately before deploying, so newer PR merges cannot endlessly replace
+# the one pending release in the global Pages concurrency group.
 concurrency:
   group: novapharm-pages-production
   cancel-in-progress: false
@@ -263,12 +263,12 @@ jobs:
       name: github-pages
       url: ${{ steps.ship.outputs.page_url }}
     steps:
-      - name: Check out the exact already verified Pages release policy
+      - name: Check out the exact previously verified Pages release policy
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
           persist-credentials: false
-      - name: Prove Pages deployment only moves forward from last successful publication
+      - name: Prove Pages publication moves forward from last successful release
         env:
           GH_TOKEN: ${{ github.token }}
           EXPECTED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
@@ -374,7 +374,7 @@ jobs:
           echo 'Production account entry and anonymous account API denial verified.'
           echo 'Real signup email, password recovery and authenticated customer order acceptance remain separate.'
 
-      - name: Verify ESCO Anand 373-product catalogue and Bag on live custom domain
+      - name: Verify ESCO Anand catalogue and quotation list on live custom domain
         run: |
           set -euo pipefail
           for attempt in $(seq 1 18); do
@@ -384,7 +384,6 @@ jobs:
                 && grep -Fq 'data-esco-quote-items' /tmp/novapharm-live-esco.html \
                 && grep -Fq 'ESCO-CAT-0373' /tmp/novapharm-live-esco.html \
                 && grep -Fq '373 catalogue entries' /tmp/novapharm-live-esco.html; then
-                grep -Fq 'Base price' /tmp/novapharm-live-esco.html
                 curl --fail --silent --show-error --max-time 15 "https://novapharmhealthcare.com/assets/js/esco-catalogue.js" -o /tmp/novapharm-live-esco.js
                 grep -Fq 'MAX_ITEMS = 12' /tmp/novapharm-live-esco.js
                 curl --fail --silent --show-error --max-time 15 "https://novapharmhealthcare.com/assets/css/esco-catalogue.css" -o /tmp/novapharm-live-esco.css

@@ -2278,14 +2278,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 18,
+      "usageCount": 4,
+      "referenceCount": 17,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "about/index.html",
         "creative-assets/asset-register.json",
-        "scripts/apply-about-editorial.mjs",
-        "scripts/validate-module-media-sanity.mjs"
+        "scripts/apply-about-editorial.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-015",
