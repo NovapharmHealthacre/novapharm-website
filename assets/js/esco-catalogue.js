@@ -67,7 +67,7 @@ if (root) {
   try {
     const saved = JSON.parse(localStorage.getItem(KEY) || "[]");
     if (Array.isArray(saved)) for (const row of saved.slice(0, MAX_ITEMS)) {
-      if (known.has(row?.id) && Number.isSafeInteger(row.quantity) && row.quantity >= 1 && row.quantity <= 1000)
+      if (known.has(row?.id) && Number.isSafeInteger(row.quantity) && row.quantity >= 1 && row.quantity <= 10000)
         state.set(row.id, row.quantity);
     }
   } catch { /* Private browsing may disable storage. Quote list still works in memory. */ }
@@ -146,7 +146,7 @@ if (root) {
       const label = document.createElement("label");
       label.textContent = "Qty ";
       const qty = document.createElement("input");
-      qty.type = "number"; qty.min = "1"; qty.max = "1000"; qty.step = "1";
+      qty.type = "number"; qty.min = "1"; qty.max = "10000"; qty.step = "1";
       qty.value = String(quantity); qty.dataset.escoQty = id;
       qty.setAttribute("aria-label", "Quantity of " + item.name);
       label.append(qty);
@@ -256,7 +256,7 @@ if (root) {
     const el = event.target.closest("[data-esco-qty]");
     if (!el || !root.contains(el)) return;
     const quantity = Number(el.value);
-    if (state.has(el.dataset.escoQty) && Number.isSafeInteger(quantity) && quantity >= 1 && quantity <= 1000)
+    if (state.has(el.dataset.escoQty) && Number.isSafeInteger(quantity) && quantity >= 1 && quantity <= 10000)
       state.set(el.dataset.escoQty, quantity);
     persist(); render();
   });
