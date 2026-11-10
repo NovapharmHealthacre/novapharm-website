@@ -70,6 +70,14 @@ jobs:
           set -euo pipefail
           [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Refuse stale source while a newer main commit exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+        run: |
+          set -euo pipefail
+          current="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
+          test "$current" = "$EXPECTED_SHA" || { echo "::error::Stale publication commit: $EXPECTED_SHA; main is $current"; exit 1; }
       - name: Node.js 24
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -89,6 +97,9 @@ jobs:
           npm run test:cookies
           npm run validate:domain
           node scripts/stage-pages-artifact.mjs _site
+          node scripts/verify-nutraxin-merchant-live.mjs --local
+          test -s _site/shopping/nutraxin-uk.tsv
+          cmp _site/shopping/nutraxin-uk.tsv shopping/nutraxin-uk.tsv
           jq -e '.enabled == true and .pool_id == "eu-north-1_SLNUKZypt" and .account_url == "https://novapharmhealthcare.com/products/nutraxin/account/" and .api_origin == "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com"' _site/assets/data/nutraxin-consumer-auth.json
           test -s _site/products/nutraxin/account/index.html
           test -s _site/assets/js/nutraxin-consumer-account.js
@@ -207,9 +218,26 @@ jobs:
       name: github-pages
       url: ${{ steps.ship.outputs.page_url }}
     steps:
+      - name: Refuse stale main release before publishing
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+        run: |
+          set -euo pipefail
+          current="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
+          test "$current" = "$EXPECTED_SHA" || { echo "::error::Cannot publish stale commit $EXPECTED_SHA; current main $current"; exit 1; }
       - name: Publish verified Pages artifact
         id: ship
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+      - name: Check out verified source for Merchant Center release vetting
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+          persist-credentials: false
+      - name: Verify 19 live Product Offers and Google Shopping TSV
+        env:
+          GITHUB_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+        run: node scripts/verify-nutraxin-merchant-live.mjs
       - name: Verify customer contact form on NovaPharm domain without exposing portal login
         env:
           EXPECTED_ORIGIN: ${{ github.event_name == 'push' && 'https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com' || inputs.contact_api_origin }}
