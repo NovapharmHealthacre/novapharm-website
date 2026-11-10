@@ -347,6 +347,22 @@ for (const file of mediaFiles.filter((value) => value.startsWith("assets/media/o
   });
 }
 
+// Register the owner-approved, repository-authored Capabilities illustrations.
+// These are original editorial visuals, not licensed product photographs.
+for (const file of mediaFiles.filter((value) => value.startsWith("assets/media/capabilities/") && value.endsWith(".svg"))) {
+  const canonical = canonicalDeliveryPath(file);
+  addRegistryRecord(registry, canonical, {
+    id: path.basename(file, ".svg"),
+    source: "Original repository-authored NovaPharm illustration approved 10 November 2026",
+    licence: "Original NovaPharm project work for owner-approved corporate use",
+    semanticPurpose: "Capabilities editorial image and Earth-horizon illustration",
+    pageUsage: ["/capabilities/"],
+    reviewStatus: "owner-approved-capabilities-editorial-2026-11-10",
+    technicalStatus: "script-free-vector-delivery",
+    provenanceRecord: "src/content/capabilities-editorial.html"
+  });
+}
+
 const routeByAssetId = new Map();
 for (const module of modulePageRegister.modules ?? []) {
   for (const assetId of [module.heroAsset, module.secondaryAsset].filter(Boolean)) {
