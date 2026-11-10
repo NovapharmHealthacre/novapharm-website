@@ -8,7 +8,7 @@ import {
   statSync,
   writeFileSync
 } from "node:fs";
-import { basename, join, relative, resolve } from "node:path";
+import { basename, dirname, join, relative, resolve } from "node:path";
 
 const root = resolve(process.cwd());
 const output = resolve(process.argv[2] || "_site");
@@ -67,6 +67,8 @@ const allowedRootFiles = new Set([
   "web-app-manifest-512x512.png"
 ]);
 
+const allowedPublicShoppingFiles = new Set(["shopping/nutraxin-uk.tsv"]);
+
 const requiredPublicPaths = [
   "index.html",
   "404.html",
@@ -89,6 +91,7 @@ const requiredPublicPaths = [
   "assets/css/esco-catalogue.css",
   "assets/js/esco-catalogue.js",
   "products/nutraxin/index.html",
+  "shopping/nutraxin-uk.tsv",
   "products/strategic-portfolio/index.html",
   "trust-centre/index.html"
 ];
@@ -147,6 +150,15 @@ for (const entry of readdirSync(root, { withFileTypes: true })) {
   }
 }
 
+// Publish only the approved Merchant Center feed, never an unrestricted shopping directory.
+for (const stagedPath of allowedPublicShoppingFiles) {
+  const source = join(root, stagedPath);
+  if (!existsSync(source)) throw new Error("Merchant feed missing: " + stagedPath);
+  const destination = join(output, stagedPath);
+  mkdirSync(dirname(destination), { recursive: true });
+  cpSync(source, destination, { force: true });
+}
+
 writeFileSync(join(output, ".nojekyll"), "");
 
 for (const requiredPath of requiredPublicPaths) {
@@ -173,7 +185,7 @@ for (const file of stagedFiles) {
   const topLevel = stagedPath.split("/")[0];
   const isAllowedRootFile = !stagedPath.includes("/") && allowedRootFiles.has(stagedPath);
   const isAllowedDirectory = allowedTopLevelDirectories.has(topLevel);
-  if (!isAllowedRootFile && !isAllowedDirectory && stagedPath !== ".nojekyll") {
+  if (!isAllowedRootFile && !isAllowedDirectory && !allowedPublicShoppingFiles.has(stagedPath) && stagedPath !== ".nojekyll") {
     throw new Error(`Unexpected path entered the Pages artifact: ${stagedPath}`);
   }
   if (/\.(?:env|pem|key|sqlite|db|bak)$/i.test(stagedPath)) {

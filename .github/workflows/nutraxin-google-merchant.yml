@@ -1,0 +1,29 @@
+name: Nutraxin Google Merchant UK source parity
+on:
+  pull_request:
+    paths:
+      - "shopping/nutraxin-uk.tsv"
+      - "scripts/generate-nutraxin-shopping.mjs"
+      - "scripts/test-nutraxin-merchant.mjs"
+      - "scripts/build-site.mjs"
+      - "products/nutraxin/**"
+      - "assets/data/nutraxin-retail-catalogue.json"
+      - "docs/nutraxin-product-register.json"
+      - ".github/workflows/nutraxin-google-merchant.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate-merchant-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "22"
+      - name: Verify feed, page parity and fail-closed availability
+        run: |
+          node scripts/generate-nutraxin-shopping.mjs --check
+          node --test scripts/test-nutraxin-merchant.mjs

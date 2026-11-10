@@ -142,7 +142,12 @@ assert.match(products, /href="\/products\/strategic-portfolio\/"/);
 assert.doesNotMatch(products, /£|\bGBP\b|Add to basket|Buy now|In stock/);
 
 const register = JSON.parse(text("apps/corporate/data/nutraxin-product-register.json"));
+const retail = JSON.parse(text("assets/data/nutraxin-retail-catalogue.json"));
+const retailBySku = new Map(retail.products.map((item) => [item.sku, item]));
+assert.equal(retail.price_authority, "approved_consumer_retail");
+assert.equal(retail.currency, "GBP");
 assert.equal(register.products.length, 19);
+assert.equal(retailBySku.size, 19);
 const nutraxin = text("products/nutraxin/index.html");
 assert.equal((nutraxin.match(/class="nx-product-card"/g) ?? []).length, 19);
 for (const product of register.products) {
@@ -151,7 +156,22 @@ for (const product of register.products) {
   const detail = text(route);
   assert.match(detail, new RegExp(`<h1>${product.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}<\\/h1>`));
   assert.match(detail, /"@type":"Product"/);
-  assert.doesNotMatch(detail, /"offers"|Add to basket|Buy now|In stock|£|\bGBP\b/);
+  const sku = retailBySku.get(product.sku);
+  assert.ok(sku && sku.slug === product.slug, `Approved retail reference missing for ${product.slug}`);
+  const amount = (sku.retail_price_pence / 100).toFixed(2);
+  const availability = retail.delivery_verified === true &&
+    retail.checkout_enabled === true && retail.payment_collection_enabled === true &&
+    sku.ordering_enabled === true && sku.available_to_sell === true ? "InStock" : "OutOfStock";
+  assert.ok(detail.includes("£" + amount), `Visible GBP price mismatch for ${product.slug}`);
+  assert.ok(detail.includes(`data-merchant-sku="${product.sku}"`));
+  const offer = [...detail.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g)]
+    .map((m) => JSON.parse(m[1])).find((item) => item["@type"] === "Product" && item.sku === product.sku)?.offers;
+  assert.ok(offer, `Product Offer markup missing for ${product.slug}`);
+  assert.equal(offer.price, amount);
+  assert.equal(offer.priceCurrency, "GBP");
+  assert.equal(offer.availability, "https://schema.org/" + availability);
+  if (availability === "OutOfStock") assert.match(detail, /Currently unavailable to order online/);
+  assert.doesNotMatch(detail, /Add to basket|Buy now/i);
 }
 
 const legacyProducts = text("product-portfolio/index.html");
