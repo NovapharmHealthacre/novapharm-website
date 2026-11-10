@@ -131,7 +131,7 @@ test("production Stripe IAM allows underlying transactional PutItem and UpdateIt
  const webhook=JSON.parse(readFileSync("infra/aws/nutraxin-stripe-webhook-production.json","utf8"));
  const checkoutPolicy=checkout.Resources.CheckoutRole.Properties.Policies[0].PolicyDocument.Statement;
  const ledgerGrant=checkoutPolicy.find(s=>Array.isArray(s.Action)&&s.Action.includes("dynamodb:PutItem"));
- assert.deepEqual(ledgerGrant.Action,["dynamodb:GetItem","dynamodb:PutItem","dynamodb:UpdateItem"]);
+ assert.deepEqual(ledgerGrant.Action,["dynamodb:GetItem","dynamodb:PutItem","dynamodb:UpdateItem","dynamodb:TransactWriteItems"]);
  assert.match(JSON.stringify(ledgerGrant.Resource),/novapharm-production-nutraxin-payment-ledger/);
  const webhookPolicy=webhook.Resources.WebhookRole.Properties.Policies[0].PolicyDocument.Statement;
  const ledgerWebhookGrant=webhookPolicy.find(s=>Array.isArray(s.Action)&&s.Action.includes("dynamodb:UpdateItem"));
@@ -139,7 +139,7 @@ test("production Stripe IAM allows underlying transactional PutItem and UpdateIt
  assert.deepEqual(ledgerWebhookGrant.Action,["dynamodb:GetItem","dynamodb:PutItem","dynamodb:UpdateItem"]);
  assert.match(JSON.stringify(ledgerWebhookGrant.Resource),/novapharm-production-nutraxin-payment-ledger/);
  assert.match(JSON.stringify(outboxWebhookGrant.Resource),/novapharm-production-nutraxin-payment-outbox/);
- assert.equal(JSON.stringify(checkoutPolicy).includes("dynamodb:TransactWriteItems"),false);
+ assert.equal(JSON.stringify(checkoutPolicy).includes("dynamodb:TransactWriteItems"),true);
  assert.equal(JSON.stringify(webhookPolicy).includes("dynamodb:TransactWriteItems"),false);
 });
 
