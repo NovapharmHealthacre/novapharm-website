@@ -74,8 +74,10 @@ class OrderRequests(unittest.TestCase):
     def test_retry_is_idempotent_and_returns_only_same_order_id(self):
         first=mod.handler(event(body=payload()))
         second=mod.handler(event(body=payload()))
-        self.assertEqual(parse(first),parse(second) if "message" not in json.loads(first["body"]) else
-                         (202, {**json.loads(second["body"]),"message":json.loads(first["body"])["message"]}))
+        self.assertEqual(parse(first)[0],202)
+        self.assertEqual(parse(second)[0],202)
+        self.assertEqual(parse(first)[1]["orderId"],parse(second)[1]["orderId"])
+        self.assertFalse(parse(second)[1]["paymentCollected"])
         self.assertEqual(len(self.db.rows),1)
         changed=payload()
         changed["lines"][0]["quantity"]=3
