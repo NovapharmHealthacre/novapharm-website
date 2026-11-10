@@ -38,16 +38,14 @@
             {
               "Id": "limit-alb-access-log-retention",
               "Status": "Enabled",
-              "Filter": {
-                "Prefix": "intelligence/"
-              },
               "ExpirationInDays": 90,
               "NoncurrentVersionExpiration": {
                 "NoncurrentDays": 30
               },
               "AbortIncompleteMultipartUpload": {
                 "DaysAfterInitiation": 7
-              }
+              },
+              "Prefix": "intelligence/"
             }
           ]
         },
