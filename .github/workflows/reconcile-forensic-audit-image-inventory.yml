@@ -1,0 +1,92 @@
+name: Reconcile forensic website image provenance on logo release branch
+
+on:
+  push:
+    branches:
+      - fix/official-logo-across-managed-and-public-20261110
+    paths:
+      - '.github/workflows/reconcile-forensic-audit-image-inventory.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: novapharm-audit-image-inventory-logo-candidate
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    if: github.repository == 'NovapharmHealthacre/novapharm-website'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Recompute original-image inventory with provenance validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run images:inventory
+          npm run images:inventory:validate
+          git diff --check
+          test -s audit/generated/image-inventory.json
+          mkdir -p candidate
+          cp audit/generated/image-inventory.json candidate/image-inventory.json
+          printf '%s\n' "$GITHUB_SHA" > candidate/source-sha.txt
+          (cd candidate && sha256sum image-inventory.json > sha256.txt)
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: forensic-logo-image-inventory-candidate
+          path: candidate/
+          retention-days: 7
+
+  apply:
+    needs: generate
+    if: github.repository == 'NovapharmHealthacre/novapharm-website' && github.ref == 'refs/heads/fix/official-logo-across-managed-and-public-20261110'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Reject stale or competing source commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote origin refs/heads/fix/official-logo-across-managed-and-public-20261110 | cut -f1)" = "$GITHUB_SHA"
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: forensic-logo-image-inventory-candidate
+          path: ${{ runner.temp }}/novapharm-forensic-inventory
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Validate provenance and commit ONLY generated inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          candidate="$RUNNER_TEMP/novapharm-forensic-inventory"
+          test "$(tr -d '\r\n' < "$candidate/source-sha.txt")" = "$GITHUB_SHA"
+          (cd "$candidate" && sha256sum -c sha256.txt)
+          cp "$candidate/image-inventory.json" audit/generated/image-inventory.json
+          npm ci --ignore-scripts
+          npm run images:inventory:validate
+          git diff --check
+          git add -- audit/generated/image-inventory.json
+          if git diff --cached --quiet; then
+            echo "Image inventory already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix(audit): reconcile authoritative image inventory for official logo release"
+          git push origin HEAD:refs/heads/fix/official-logo-across-managed-and-public-20261110
