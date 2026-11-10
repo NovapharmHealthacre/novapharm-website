@@ -25,6 +25,7 @@ await import("./apply-corporate-product-discipline.mjs");
 await import("./apply-esco-catalogue.mjs");
 await import("./validate-contact-publication.mjs");
 await import("./activate-contact-intake.mjs");
+await import("./apply-global-distribution-foundation.mjs");
 await import("./enhance-seo-authority.mjs");
 await import("./reconcile-leadership-authority.mjs");
 await import("./reconcile-article-authority.mjs");
