@@ -665,7 +665,7 @@ body[data-page="home"] .npd-apple-sourcing-grid article > span {
   justify-content: space-between;
   gap: 28px;
 }
-:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .brand {
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header:not(.npd-header) .brand {
   display: inline-flex;
   align-items: center;
   flex: 0 0 auto;
@@ -675,11 +675,11 @@ body[data-page="home"] .npd-apple-sourcing-grid article > span {
   text-decoration: none;
   color: #09090b;
 }
-:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .brand > picture,
-:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .brand > img {
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header:not(.npd-header) .brand > picture,
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header:not(.npd-header) .brand > img {
   display: none;
 }
-:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .brand::after {
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header:not(.npd-header) .brand::after {
   content: "NOVAPHARM";
   display: block;
   color: #07080a;
@@ -717,7 +717,7 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
   content: "Intelligence";
   font-size: clamp(.88rem, 1.08vw, 1.18rem);
 }
-:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .brand:focus-visible,
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header:not(.npd-header) .brand:focus-visible,
 :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header a:focus-visible {
   outline: 3px solid #0066cc;
   outline-offset: 4px;
@@ -860,7 +860,7 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
   :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .header-inner {
     width: calc(100% - 36px);
   }
-  :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .brand::after {
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header:not(.npd-header) .brand::after {
     font-size: 1.18rem;
     letter-spacing: .13em;
   }
