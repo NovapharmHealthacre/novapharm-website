@@ -88,7 +88,7 @@
   margin:0 auto clamp(19px,2vw,28px);
   font-size:clamp(3.05rem,6.05vw,6.15rem);
   line-height:1.07;
-  letter-spacing:-.047em;
+  letter-spacing:normal;
   font-weight:730;
   color:#0c0c0d;
   text-wrap:balance;
@@ -128,7 +128,7 @@
   margin:0 0 5px;
   font-size:clamp(2rem,3.3vw,3.5rem);
   line-height:1.1;
-  letter-spacing:-.05em;
+  letter-spacing:normal;
   font-weight:710;
   color:#131315;
 }
@@ -180,7 +180,7 @@
   margin:0 0 17px;
   font-size:clamp(2.15rem,4.1vw,4rem);
   font-weight:700;
-  letter-spacing:-.045em;
+  letter-spacing:normal;
   line-height:1.14;
   color:#121214;
 }
@@ -203,7 +203,7 @@
 .esco-storefront .esco-section-intro h2 {
   max-width:820px;
   font-size:clamp(2.2rem,3.65vw,3.55rem);
-  letter-spacing:-.038em;
+  letter-spacing:normal;
   font-weight:700;
 }
 .esco-storefront .esco-section-intro>p {
@@ -246,7 +246,7 @@
   min-height:0;
   font-size:1rem;
   font-weight:650;
-  letter-spacing:-.01em;
+  letter-spacing:normal;
 }
 .esco-storefront .esco-category small {
   color:#67676f;
@@ -305,7 +305,7 @@
 }
 .esco-storefront .esco-spotlight-card h3 {
   font-size:clamp(1.45rem,2vw,2rem);
-  letter-spacing:-.035em;
+  letter-spacing:normal;
   line-height:1.16;
 }
 .esco-storefront .esco-spotlight-label {font-size:.61rem;margin-bottom:11px;}
@@ -388,7 +388,7 @@
 .esco-storefront .esco-product h4 {
   font-size:clamp(1.18rem,1.55vw,1.47rem);
   line-height:1.23;
-  letter-spacing:-.018em;
+  letter-spacing:normal;
 }
 .esco-storefront .esco-product-price strong {font-size:1.4rem;}
 .esco-storefront .esco-product-actions {gap:12px;}
