@@ -21,7 +21,7 @@ if (!/^<main id="main"[\s\S]*<\/main>$/.test(template)) throw new Error("Product
 const mains=html.match(/<main\b[^>]*>[\s\S]*?<\/main>/g)||[];
 if (mains.length!==1) throw new Error("Expected exactly one generated Products main.");
 html=html.replace(mains[0],template);
-if(!html.includes('href="'+sheet+'"')) html=html.replace("</head>",'  <link rel="stylesheet" href="'+sheet+'">\n</head>');
+if(!html.includes('href="'+sheet+'"') && !html.includes('href="'+sheet+'?')) html=html.replace("</head>",'  <link rel="stylesheet" href="'+sheet+'">\n</head>');
 const escoLink='<a href="/products/esco/">ESCO Anand</a>';
 const local=html.match(/<nav class="npd-local-nav"[\s\S]*?<\/nav>/)?.[0];
 if (local && !local.includes('href="/products/esco/"')) {
