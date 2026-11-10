@@ -499,3 +499,150 @@
 @media (max-width: 600px) {
   .nph-editorial-home .npd-apple-product picture img { max-height: 205px; }
 }
+
+
+/* Approved Earth-at-sunrise hero only (10 Nov 2026). All other homepage sections remain unchanged. */
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: block;
+  min-height: clamp(660px, calc(100svh - 64px), 885px);
+  background: linear-gradient(180deg, #fff 0%, #fbfcff 54%, #edf5ff 83%, #d9eafa 100%);
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-hero-content {
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  margin-inline: auto;
+  width: min(100%, 1500px);
+  max-width: 1500px;
+  padding: clamp(76px, 8vw, 126px) clamp(20px, 4vw, 70px) 340px;
+  text-align: center;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .npd-apple-eyebrow {
+  margin: 0 0 clamp(28px, 3vw, 39px);
+  font-size: .76rem;
+  letter-spacing: .23em;
+  line-height: 1.4;
+  font-weight: 600;
+  color: #545861;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero h1 {
+  margin: 0;
+  max-width: 1430px;
+  color: #08090b;
+  font-size: clamp(3rem, 5.28vw, 5.6rem);
+  font-weight: 700;
+  line-height: 1.055;
+  letter-spacing: -.052em;
+  text-wrap: balance;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .npd-apple-lead {
+  margin: clamp(20px, 2vw, 28px) 0 0;
+  max-width: 900px;
+  font-size: clamp(1.125rem, 1.64vw, 1.6rem);
+  font-weight: 400;
+  line-height: 1.4;
+  color: #68686f;
+  text-wrap: balance;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .npd-apple-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: clamp(30px, 3.5vw, 49px);
+  gap: 16px;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-primary,
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-secondary {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .7em;
+  min-height: 48px;
+  border-radius: 999px;
+  border: 1px solid #111113;
+  padding: 12px 26px;
+  font-size: .96rem;
+  font-weight: 550;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-primary {
+  color: #fff;
+  background: #111113;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-secondary {
+  color: #111113;
+  background: rgba(255,255,255,.78);
+  border-color: #909298;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-primary:hover {
+  background: #33343a;
+  border-color: #33343a;
+  color: #fff;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-secondary:hover {
+  background: #fff;
+  border-color: #111113;
+  color: #111113;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-hero-landscape {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  height: clamp(300px, 33vw, 460px);
+  max-height: none;
+  object-fit: cover;
+  object-position: center bottom;
+  pointer-events: none;
+  user-select: none;
+}
+@media (max-width: 760px) {
+  :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero {
+    min-height: min(780px, 100svh);
+  }
+  :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-hero-content {
+    padding: 84px 20px 310px;
+  }
+  :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero h1 {
+    max-width: 560px;
+    font-size: clamp(2.85rem, 9.5vw, 4.5rem);
+    letter-spacing: -.045em;
+  }
+  :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .npd-apple-lead {
+    max-width: 440px;
+    font-size: 1.12rem;
+  }
+  :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .npd-apple-actions {
+    gap: 12px;
+    margin-top: 28px;
+  }
+  :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-primary,
+  :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-secondary {
+    font-size: .85rem;
+    padding: 11px 15px;
+    min-height: 44px;
+  }
+  :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-hero-landscape {
+    left: 50%;
+    width: 200%;
+    height: 290px;
+    transform: translateX(-50%);
+    object-position: center bottom;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero a { transition: none; }
+}
