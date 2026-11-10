@@ -82,7 +82,8 @@ const expectedHomeNavigation = [
   ["Capabilities", "/capabilities/"],
   ["Oncology", "/oncology/"],
   ["Products", "/products/"],
-  ["Intelligence", "/technology/"],
+  ["NovaPharm Intelligence", "/technology/"],
+  ["Insights", "/news-insights/"],
   ["Contact", "/contact/"],
   ["Secure Portal", "https://portal.novapharmhealthcare.com/"],
 ];
@@ -90,7 +91,7 @@ const primaryNavStart = home.indexOf('<nav class="site-nav npd-global-nav"');
 const primaryNavEnd = home.indexOf("</nav>", primaryNavStart);
 const homepagePrimaryNav = primaryNavStart >= 0 && primaryNavEnd > primaryNavStart ? home.slice(primaryNavStart, primaryNavEnd) : "";
 assert.ok(homepagePrimaryNav, "homepage must expose an accessible primary navigation");
-assert.equal((homepagePrimaryNav.match(/<a /g) ?? []).length, expectedHomeNavigation.length, "approved homepage must expose all six corporate destinations plus Secure Portal");
+assert.equal((homepagePrimaryNav.match(/<a /g) ?? []).length, expectedHomeNavigation.length, "approved homepage must expose seven corporate destinations plus Secure Portal");
 for (const [label, href] of expectedHomeNavigation) {
   assert.ok(homepagePrimaryNav.includes(`href="${href}"`), `homepage navigation must link to ${href}`);
   assert.ok(homepagePrimaryNav.includes(`>${label}</a>`), `homepage navigation must label ${href} accurately`);
