@@ -99,7 +99,7 @@ assert.equal(new Set(principalHeroes).size, principalHeroes.length, "every princ
 
 const authoredModuleContracts = new Map([
   ["home", ["npd-main npd-home npd-apple-home", "npd-apple-hero", "npd-apple-hero-art", "npd-apple-oncology", "npd-apple-product-grid", "npd-apple-nova-art", "npd-apple-sourcing-grid", "npd-apple-regulatory-notice"]],
-  ["about", ["npd-main", "npd-principles", "about-operating-model"]],
+  ["about", ["npd-main np-about-page", "np-about-intro", "np-about-pillars", "np-about-principles", "/assets/media/about/novapharm-warehouse-original.jpg"]],
   ["services", ["npd-main", "npd-service-ledger", "npd-horizontal-steps"]],
   ["regulatory", ["npd-main", "npd-roadmap npd-roadmap-large", "regulatory-batch-integrity"]],
   ["products", ["npd-main", "Food Supplement Portfolio Review", "npd-products-lead", "product-portfolio-evidence"]],
