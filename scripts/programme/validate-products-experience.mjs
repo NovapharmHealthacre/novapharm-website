@@ -45,7 +45,7 @@ for (const product of register.products) {
   const expectedAvailability = retailCatalog.delivery_verified === true &&
     retailCatalog.checkout_enabled === true && retailCatalog.payment_collection_enabled === true &&
     retail.available_to_sell === true && retail.ordering_enabled === true ? "InStock" : "OutOfStock";
-  const structuredOffers = [...detail.matchAll(/<script type="application\\/ld\\+json">([^<]+)<\\/script>/g)]
+  const structuredOffers = [...detail.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g)]
     .map((match) => JSON.parse(match[1]))
     .filter((node) => node["@type"] === "Product" && node.sku === product.sku);
   if (structuredOffers.length !== 1) throw new Error(`Missing product markup: ${product.slug}.`);
