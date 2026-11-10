@@ -1,5 +1,6 @@
 import { all, nowIso, one } from "../data/database.mjs";
 import { distanceKm, normaliseAnalyticsQuery, normaliseNearbyQuery } from "./medicines-query-contract.mjs";
+import { buildMedicineIdentityRelationships } from "./medicine-identity-relationships.mjs";
 
 function forbidden() {
   return Object.assign(new Error("You do not have permission to use Medicines Intelligence."), { statusCode: 403 });
@@ -362,7 +363,20 @@ export async function medicineIdentityDetail(medicineId, context) {
     hierarchy.unshift({ code: node.bnf_code, name: node.bnf_name, level: node.bnf_level, validFrom: node.valid_from, validTo: node.valid_to });
     node = node.parent_bnf_id ? await one("SELECT bnf_id, bnf_code, bnf_name, bnf_level, parent_bnf_id, valid_from, valid_to FROM dim_bnf WHERE bnf_id = ?", node.parent_bnf_id) : null;
   }
+  const identityRelationships = buildMedicineIdentityRelationships({
+    medicine: {
+      medicineId: medicine.medicine_id,
+      canonicalName: medicine.canonical_name,
+      medicineLevel: medicine.medicine_level,
+      validFrom: medicine.valid_from,
+      validTo: medicine.valid_to,
+      sourceId: medicine.source_id,
+      sourceLastSeenAt: medicine.source_last_seen_at
+    },
+    aliases, codeHistory, hierarchy
+  });
   return {
+    identityRelationships,
     medicine: { medicineId: medicine.medicine_id, canonicalName: medicine.canonical_name, medicineLevel: medicine.medicine_level,
       snomedCode: medicine.snomed_code, dmDStatus: medicine.dm_d_status, supplierName: medicine.supplier_name,
       formulation: medicine.formulation, route: medicine.route, strength: medicine.strength, unitOfMeasure: medicine.unit_of_measure,
