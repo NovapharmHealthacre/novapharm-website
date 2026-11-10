@@ -1290,9 +1290,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 83,
-      "referenceCount": 210,
+      "usageCount": 85,
+      "referenceCount": 215,
       "usageFiles": [
+        ".github/workflows/publish-aws-contact-production.yml",
         "404.html",
         "500.html",
         "about/company/index.html",
@@ -1364,6 +1365,7 @@
         "scripts/build-public-pages.mjs",
         "scripts/enhance-seo-authority.mjs",
         "scripts/programme/validate-brand-assets.mjs",
+        "scripts/test-owner-corrections.mjs",
         "scripts/validate-app.mjs",
         "scripts/validate-site.mjs",
         "seo/generated/entity-register.json",
@@ -1430,8 +1432,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 95,
-      "referenceCount": 203,
+      "usageCount": 96,
+      "referenceCount": 199,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -1521,6 +1523,7 @@
         "scripts/build-pages.mjs",
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
+        "scripts/test-owner-corrections.mjs",
         "scripts/validate-app.mjs",
         "scripts/validate-site.mjs",
         "service-unavailable/index.html",
