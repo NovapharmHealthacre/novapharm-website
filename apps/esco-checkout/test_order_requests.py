@@ -94,6 +94,13 @@ class OrderRequests(unittest.TestCase):
             p["lines"]=[{"id":id_,"quantity":1}]
             self.assertEqual(parse(mod.handler(event(body=p)))[0],400, id_)
 
+    def test_high_volume_order_request_accepts_10000_without_charging(self):
+        p=payload()
+        p["lines"]=[{"id":"ESCO-CAT-0373","quantity":10000}]
+        code,receipt=parse(mod.handler(event(body=p)))
+        self.assertEqual(code,202)
+        self.assertFalse(receipt["paymentCollected"])
+
     def test_unrecognised_price_and_fake_approvals_rejected(self):
         for key,val in [("unit_price_pence",1),("payment_approved",True),("stripe_price","price_fake")]:
             p=payload()
@@ -106,7 +113,7 @@ class OrderRequests(unittest.TestCase):
             {"customer":{**payload()["customer"],"email":"bad-email"}},
             {"website":"spam-domain.example"},
             {"accept_order_terms":False},
-            {"lines":[{"id":"ESCO-CAT-0001","quantity":1001}]},
+            {"lines":[{"id":"ESCO-CAT-0001","quantity":10001}]},
             {"lines":[{"id":"ESCO-CAT-0001","quantity":1},{"id":"ESCO-CAT-0001","quantity":1}]},
         ]
         for change in examples:
