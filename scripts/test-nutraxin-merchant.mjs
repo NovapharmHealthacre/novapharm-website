@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { merchantSaleReady } from "../assets/js/nutraxin-retail-store.js";
 const read = path => readFileSync(new URL("../" + path, import.meta.url), "utf8");
 const catalogue = JSON.parse(read("assets/data/nutraxin-retail-catalogue.json"));
 const registered = JSON.parse(read("docs/nutraxin-product-register.json"));
@@ -43,4 +44,19 @@ test("Do not represent unavailable-to-sell products as stocked", () => {
     const product = catalogue.products.find(p => p.sku === item.id);
     if (!product.available_to_sell || !catalogue.delivery_verified) assert.equal(item.availability, "out_of_stock");
   }
+});
+
+test("Consumer Add to Bag, Buy now and checkout honor exactly the published Merchant stock gate", () => {
+  const item = catalogue.products[0];
+  assert.equal(merchantSaleReady(item, catalogue), false);
+  const clear = { ...catalogue, delivery_verified: true };
+  assert.equal(merchantSaleReady(item, clear), false);
+  const verified = { ...item, available_to_sell: true };
+  assert.equal(merchantSaleReady(verified, clear), true);
+  assert.equal(merchantSaleReady({ ...verified, ordering_enabled: false }, clear), false);
+  assert.equal(merchantSaleReady(verified, { ...clear, payment_collection_enabled: false }), false);
+  const runtime = read("assets/js/nutraxin-retail-store.js");
+  assert.match(runtime, /add\.disabled = !merchantSaleReady\(p, data\)/);
+  assert.match(runtime, /buy\.disabled = !merchantSaleReady\(p, data\)/);
+  assert.match(runtime, /bag\.every\(\(line\) => merchantSaleReady/);
 });
