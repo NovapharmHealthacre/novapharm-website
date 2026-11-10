@@ -162,9 +162,9 @@ for (const product of register.products) {
   const availability = retail.delivery_verified === true &&
     retail.checkout_enabled === true && retail.payment_collection_enabled === true &&
     sku.ordering_enabled === true && sku.available_to_sell === true ? "InStock" : "OutOfStock";
-  assert.match(detail, new RegExp(`£${amount.replace(".", "\\.")}`));
+  assert.ok(detail.includes("£" + amount), `Visible GBP price mismatch for ${product.slug}`);
   assert.ok(detail.includes(`data-merchant-sku="${product.sku}"`));
-  const offer = [...detail.matchAll(/<script type="application\\/ld\\+json">([^<]+)<\\/script>/g)]
+  const offer = [...detail.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g)]
     .map((m) => JSON.parse(m[1])).find((item) => item["@type"] === "Product" && item.sku === product.sku)?.offers;
   assert.ok(offer, `Product Offer markup missing for ${product.slug}`);
   assert.equal(offer.price, amount);
