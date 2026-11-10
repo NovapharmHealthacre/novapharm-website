@@ -12,6 +12,11 @@ const checkoutButton = document.querySelector("[data-esco-card-checkout]");
 const termsCheckbox = document.querySelector("[data-esco-payment-terms]");
 const checkoutNote = document.querySelector("#esco-payment-note");
 const checkoutResult = document.querySelector("[data-esco-checkout-status]");
+const orderRequestForm = document.querySelector("[data-esco-order-request-form]");
+const orderRequestSubmit = document.querySelector("[data-esco-order-request-submit]");
+const orderRequestReceipt = document.querySelector("[data-esco-order-request-receipt]");
+let sendingOrderRequest = false;
+let draftRequestId = null;
 const termsLabel = termsCheckbox?.closest(".esco-payment-terms");
 if (checkoutNote && termsLabel) termsLabel.before(checkoutNote);
 const readyShopLink = (() => {
@@ -67,20 +72,22 @@ function renderPaymentEligibility(lines) {
   // a confirmed order request for every other catalogue reference.
   checkoutButton.hidden = !eligible;
   checkoutButton.disabled = !eligible || !termsCheckbox.checked || sendingPayment;
+  if (orderRequestForm) orderRequestForm.hidden = eligible || !lines.length;
+  if (orderRequestSubmit) orderRequestSubmit.disabled = sendingOrderRequest || !lines.length;
   if (send) {
-    send.textContent = eligible ? "Request a formal quotation" : "Continue with order request";
-    send.classList.toggle("esco-order-request-primary", !eligible && lines.length > 0);
+    send.textContent = eligible ? "Contact product support" : "Contact sales";
+    send.classList.remove("esco-order-request-primary");
   }
   if (checkoutNote) {
     if (!paymentServiceReady) {
-      checkoutNote.textContent = "Secure card checkout could not be confirmed right now. Your selection is saved; request a confirmed quote or try again later.";
+      checkoutNote.textContent = "You can submit an order request for any product. Card payment is available only where a fixed UK-delivered price is authorised.";
     } else if (lines.length === 0) {
-      checkoutNote.textContent = "Add a product marked Ready to order to see a fixed UK delivered price and continue to Stripe.";
+      checkoutNote.textContent = "Add products to your Bag to submit an order request or use immediate card payment for approved items.";
     } else if (quoteOnly.length) {
       const codes = quoteOnly.map(item => item.id).join(", ");
-      checkoutNote.textContent = quoteOnly.length + (quoteOnly.length === 1
-        ? " product in your Bag requires a confirmed quote (" : " products in your Bag require a confirmed quote (") +
-        codes + "). These catalogue guide prices are not payable prices. Secure checkout is available for products marked Ready to order.";
+      checkoutNote.textContent = "Submit your order request below. " + quoteOnly.length +
+        (quoteOnly.length === 1 ? " selected reference (" : " selected references (") +
+        codes + ") require product and delivery confirmation before payment.";
     } else {
       checkoutNote.textContent = "These prices include UK delivery, excluding VAT. Stripe confirms the final VAT and total before your card is charged.";
     }
@@ -219,7 +226,7 @@ async function init() {
         node("h3", p.name, "esco-shopping-product-name"),
         node("p", (p.model ? "ESCO " + p.model : "Model to confirm") + " · " + item.id, "esco-shopping-model"),
         node("p", pictureInfo?.note || "Exact product imagery to be confirmed", "esco-shopping-provenance"),
-        node("p", (approvedPrice ? "UK delivered price " : "Guide ") + GBP.format(unitPennies / 100) + " per unit · ex VAT", "esco-shopping-unitprice")
+        node("p", (approvedPrice ? "UK delivered price " : "Base price ") + GBP.format(unitPennies / 100) + " per unit · ex VAT", "esco-shopping-unitprice")
       );
       const controls = node("div", "", "esco-bag-row-controls");
       const label = node("label", "Quantity", "esco-shopping-qty-label");
@@ -240,7 +247,7 @@ async function init() {
       controls.append(label, remove);
       const linePrice = node("div", "", "esco-shopping-line");
       linePrice.append(node("strong", GBP.format(linePennies / 100), "esco-shopping-line-total"),
-        node("small", approvedPrice ? "UK delivery included · ex VAT" : "Guide total · ex VAT", "esco-shopping-line-note"));
+        node("small", approvedPrice ? "UK delivery included · ex VAT" : "Base amount · delivery and VAT confirmed before acceptance", "esco-shopping-line-note"));
       content.append(controls);
       article.append(pictureBox,content,linePrice);
       itemsRoot.append(article);
@@ -254,13 +261,13 @@ async function init() {
     const estimateTitle = document.querySelector(".esco-bag-estimate span");
     const estimateNote = document.querySelector(".esco-bag-estimate small");
     const financialNote = document.querySelector(".esco-bag-financial-note");
-    if (summaryTitle) summaryTitle.textContent = allPayable ? "Order subtotal" : "Estimated subtotal";
+    if (summaryTitle) summaryTitle.textContent = allPayable ? "Order subtotal" : "Base subtotal";
     if (deliverySummary) deliverySummary.textContent = allPayable ? "Included" : "Calculated on approval";
-    if (estimateTitle) estimateTitle.textContent = allPayable ? "UK delivered prices" : "Guide estimate";
-    if (estimateNote) estimateNote.textContent = allPayable ? "Ex VAT · final tax shown at Stripe" : "Ex VAT · Not yet a payable total";
+    if (estimateTitle) estimateTitle.textContent = allPayable ? "UK delivered prices" : "Base prices";
+    if (estimateNote) estimateNote.textContent = allPayable ? "Ex VAT · final tax shown at Stripe" : "Ex VAT and delivery · total confirmed before order acceptance";
     if (financialNote) financialNote.textContent = allPayable
       ? "Your selected items have fixed UK delivered prices. Stripe calculates applicable VAT and displays the final amount before payment."
-      : "Catalogue guide prices are not a binding offer. Your final order total, applicable VAT and delivery are confirmed before payment.";
+      : "These merchant-approved base prices exclude delivery and VAT. Your order request is not a completed sale; the final amount is confirmed before acceptance.";
     const lines = state.map((item) => item.id + " qty " + item.quantity);
     const quote = "ESCO Anand UK quotation request (catalogue 2026). Items: " + lines.join("; ") +
       ". Please confirm exact variant, UK compliance, selling price, applicable VAT, delivery and lead time.";
@@ -285,6 +292,60 @@ async function init() {
     render();
   });
   send.addEventListener("click", event => { if (!state.length) event.preventDefault(); });
+
+  if (orderRequestForm) orderRequestForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!state.length || sendingOrderRequest) return;
+    if (!orderRequestForm.reportValidity()) return;
+    if (!checkoutApiOrigin) {
+      checkoutStatus("Order requests are temporarily unavailable. Use Contact product support.");
+      return;
+    }
+    const fields = new FormData(orderRequestForm);
+    const lines = state.map(item => ({id:item.id, quantity:item.quantity}));
+    if (!draftRequestId) draftRequestId = crypto.randomUUID();
+    sendingOrderRequest = true;
+    renderPaymentEligibility(state);
+    checkoutStatus("Submitting your order request securely…");
+    try {
+      const response = await fetch(checkoutApiOrigin + "/order-requests", {
+        method:"POST",credentials:"omit",headers:{"content-type":"application/json"},
+        body:JSON.stringify({
+          request_id:draftRequestId,
+          lines,
+          customer:{
+            name:String(fields.get("customer-name") || "").trim(),
+            email:String(fields.get("customer-email") || "").trim(),
+            organisation:String(fields.get("customer-organisation") || "").trim(),
+            postcode:String(fields.get("customer-postcode") || "").trim()
+          },
+          accept_order_terms:fields.get("accept-order-terms") === "on",
+          website:String(fields.get("website") || "")
+        })
+      });
+      const receipt = await response.json().catch(() => ({}));
+      if (response.status !== 202 || !/^ESCO-REQ-[0-9a-f-]{36}$/.test(receipt.orderId)) {
+        throw new Error("We could not submit your order request. Your Bag is saved. Please try again or contact our team.");
+      }
+      const orderId = receipt.orderId;
+      state = [];
+      saveBag(state);
+      orderRequestForm.reset();
+      draftRequestId = null;
+      render();
+      if (orderRequestReceipt) {
+        orderRequestReceipt.textContent = "Order request received. Reference: " + orderId +
+          ". No payment has been collected. We will confirm the exact products, availability, delivery, VAT and final amount before accepting the order.";
+        orderRequestReceipt.hidden = false;
+      }
+      checkoutStatus("Request recorded. Keep your reference " + orderId + " for any follow-up.");
+    } catch (error) {
+      checkoutStatus(error instanceof Error ? error.message : "Order request is unavailable right now.");
+    } finally {
+      sendingOrderRequest = false;
+      renderPaymentEligibility(state);
+    }
+  });
   if (termsCheckbox) termsCheckbox.addEventListener("change", () => renderPaymentEligibility(state));
   if (checkoutButton) checkoutButton.addEventListener("click", () => startCheckout(state));
   await configurePayment().catch(()=>{ paymentServiceReady=false; });
