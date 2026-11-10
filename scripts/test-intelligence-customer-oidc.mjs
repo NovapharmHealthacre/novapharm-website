@@ -17,7 +17,7 @@ const token = (claims, changeSignature = false) => {
   const header = Buffer.from(JSON.stringify({ alg: "RS256", typ: "JWT", kid: jwk.kid })).toString("base64url");
   const body = Buffer.from(JSON.stringify(claims)).toString("base64url");
   const signature = signJwt("RSA-SHA256", Buffer.from(header + "." + body), privateKey).toString("base64url");
-  return header + "." + body + "." + (changeSignature ? "x" + signature.slice(1) : signature);
+  return header + "." + body + "." + (changeSignature ? (signature[0] === "x" ? "y" : "x") + signature.slice(1) : signature);
 };
 const nonce = "abcdefghijklmnopqrstuvwxyz0123456789abcdefgh";
 const validClaims = {
