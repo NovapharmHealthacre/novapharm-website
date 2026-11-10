@@ -54,6 +54,9 @@ def prepare_evidence(rows):
         records.append({
             "catalogue_id": row["catalogue_id"],
             "internal_novapharm_sku": "NP-ESCO-" + row["catalogue_id"][-4:],
+            "manufacturer": "Eastern Surgical Company (ESCO)",
+            "owner_declared_stock_units": 10000,
+            "stock_declaration_basis": "OWNER_DECLARED_NOT_ALLOCATED",
             "category": row["category"],
             "name": row["product"],
             "catalogue_model": row["supplier_model"],
@@ -108,6 +111,10 @@ def release_record(record, eligible):
     catalogue_id = record.get("catalogue_id")
     if not isinstance(catalogue_id, str) or not CAT.fullmatch(catalogue_id):
         raise ValueError("invalid catalogue ID")
+    if record.get("manufacturer") != "Eastern Surgical Company (ESCO)":
+        raise ValueError("manufacturer must match the ESCO product master")
+    if record.get("internal_novapharm_sku") != "NP-ESCO-" + catalogue_id[-4:]:
+        raise ValueError("internal product SKU does not match its catalogue reference")
     if record.get("release_authorised") is not True:
         raise ValueError("merchant release not approved")
     model = record.get("catalogue_model")
