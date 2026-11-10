@@ -32,21 +32,21 @@ def get_json(url):
  try:
   with opener.open(req,timeout=7) as reply:
    if reply.status!=200: raise RuntimeError("upstream_status")
-   raw=reply.read(262145)
+   raw=reply.read(2097153)
  except urllib.error.HTTPError as error:
   if error.code==404: return {}
   raise RuntimeError("official_source_unavailable") from None
- if len(raw)>262144: raise RuntimeError("source_payload_too_large")
+ if len(raw)>2097152: raise RuntimeError("source_payload_too_large")
  return json.loads(raw.decode("utf-8"))
 
 def fda(term):
- q=urllib.parse.urlencode({"search":'openfda.generic_name:"'+term+'"',"limit":5})
+ q=urllib.parse.urlencode({"search":'openfda.generic_name:"'+term+'"',"limit":3})
  data=get_json("https://api.fda.gov/drug/label.json?"+q)
  if not data.get("results"):
   q=urllib.parse.urlencode({"search":'openfda.brand_name:"'+term+'"',"limit":5})
   data=get_json("https://api.fda.gov/drug/label.json?"+q)
  out=[]
- for item in data.get("results",[])[:5]:
+ for item in data.get("results",[])[:3]:
   names=item.get("openfda") or {}
   generic=(names.get("generic_name") or [""])[0]
   brand=(names.get("brand_name") or [""])[0]
@@ -66,7 +66,7 @@ def trials(term):
   status=section.get("statusModule") or {}
   nct=str(identity.get("nctId") or "")
   if not NCT.fullmatch(nct): continue
-  out.append({"title":str(identity.get("briefTitle") or "Registered study")[:150],"subtitle":str(status.get("overallStatus") or "Status not specified")[:80],"recordId":nct,"updated":str(status.get("studyFirstPostDateStruct",{}).get("date") or "")[:10],"source":"ClinicalTrials.gov","sourceUrl":"https://clinicaltrials.gov/study/"+nct})
+  out.append({"title":str(identity.get("briefTitle") or "Registered study")[:150],"subtitle":str(status.get("overallStatus") or "Status not specified")[:80],"recordId":nct,"updated":str((status.get("studyFirstPostDateStruct") or {}).get("date") or "")[:10],"source":"ClinicalTrials.gov","sourceUrl":"https://clinicaltrials.gov/study/"+nct})
  return out
 
 def handler(event, context):
