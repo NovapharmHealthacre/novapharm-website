@@ -224,3 +224,41 @@ body[data-route="/products/"] .np-products-page { background:#fff; color:#111114
     object-position:68% 57%;
   }
 }
+
+
+/* Final owner-approved Products art direction: no boxed supplier photograph,
+   visible source border, divider, hard seam or dark photo rectangle. */
+.np-products-page .np-products-hero,
+.np-products-page .np-products-stage {
+  background:#fff;
+}
+.np-products-page .np-products-stage::before {
+  clip-path:none;
+  background:radial-gradient(ellipse 78% 64% at 50% 100%,#f0f3f8 0%,#f9fafc 53%,transparent 92%);
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 38%,transparent 100%);
+  mask-image:linear-gradient(180deg,transparent 0%,#000 38%,transparent 100%);
+}
+.np-products-page .np-products-stage::after { display:none; }
+.np-products-page .np-products-stage-esco img {
+  border:0;
+  border-radius:0;
+  outline:0;
+  box-shadow:none;
+  /* Original manufacturer WebP has a literal dark perimeter.
+     Remove the entire pixel edge before soft compositing on white. */
+  clip-path:inset(2% 2% 2% 2%);
+  -webkit-mask-image:radial-gradient(ellipse 66% 65% at 50% 50%,#000 49%,rgba(0,0,0,.93) 60%,transparent 89%);
+  mask-image:radial-gradient(ellipse 66% 65% at 50% 50%,#000 49%,rgba(0,0,0,.93) 60%,transparent 89%);
+  mix-blend-mode:multiply;
+}
+.np-products-page .np-products-stage-pharma img {
+  border:0;
+  border-radius:0;
+  outline:0;
+  box-shadow:none;
+  -webkit-mask-image:radial-gradient(ellipse 68% 70% at 56% 52%,#000 34%,rgba(0,0,0,.82) 50%,transparent 77%);
+  mask-image:radial-gradient(ellipse 68% 70% at 56% 52%,#000 34%,rgba(0,0,0,.82) 50%,transparent 77%);
+}
+.np-products-page .np-products-panel-art-esco img {
+  clip-path:inset(2% 2% 2% 2%);
+}
