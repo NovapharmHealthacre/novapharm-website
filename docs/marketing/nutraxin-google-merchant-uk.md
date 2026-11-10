@@ -15,7 +15,7 @@ The existing /feed.xml is a news RSS feed. It is not a Merchant Center product f
 
 ## Stock and delivery truth
 
-Google requires feed availability to match the product landing page, schema and checkout. All 19 current retail records have available_to_sell=false; the shared catalogue also has delivery_verified=false. Therefore the first feed is correctly out_of_stock for all 19. This DOES NOT claim that physical stock is zero. Do not automatically convert nominal 10,000 unit manufacturer stock to sellable stock without a verified fulfilment commitment. Change flags only after verified sellability and deployment. Every product is in_stock only when delivery_verified, checkout_enabled, payment_collection_enabled, ordering_enabled and available_to_sell are all true.
+Google requires feed availability to match the product landing page, schema and checkout. On 10 November 2026 the NovaPharm owner confirmed genuine sellable stock exists for all 19 products and stated the range is already supplied through Amazon and eBay. Combined with the previously authorised seller-funded UK delivery commitment and 30-day customer-accepted fulfilment expectation, the catalogue now records available_to_sell=true and delivery_verified=true. This is an owner-attested operational assertion, not an independent warehouse audit or reserved-stock count. If direct UK fulfilment stops, immediately close the relevant product sale-readiness flags and regenerate all pages/feed. Every product is in_stock only when delivery_verified, checkout_enabled, payment_collection_enabled, ordering_enabled and available_to_sell are all true.
 
 The feed contains owner-approved GBP prices, no guessed GTIN or MPN, and no unverified delivery SLA. The feed lists the owner-approved UK customer delivery charge, currently £0 as shown in the Bag. This does not verify the fulfilment service, transit time or ability to dispatch. Merchant Center still requires actual UK delivery and returns policies; do not claim unverified delivery times.
 
@@ -28,3 +28,9 @@ The feed contains owner-approved GBP prices, no guessed GTIN or MPN, and no unve
 5. Confirm the feed fetched successfully, every individual product URL is publicly accessible, Product markup parses correctly, checkout matches the same price and availability, and Google's final product status is approved.
 
 GitHub code, a merged PR, or a screenshot of a new Merchant account does not demonstrate Merchant Center product approval. Google alone decides approval. Nor does a merge alone demonstrate live deployment.
+
+## Merchant Center ingestion evidence, 10 November 2026
+
+Owner screenshot shows Google Merchant Center account 5902381696, PRODUCTS SOURCE 2, message 'Your products have been updated', 19 new products added, all attribute names recognised, no product-file issues. This proves file ingestion only; it does not prove each SKU is approved for free listings or Shopping.
+
+The 19 product URLs, source file, schema offers and site purchase actions must publish in_stock only with the owner's attested inventory and delivery commitment. Merchant Center source must fetch the latest live TSV after deployment. Inspect Products > All products and Needs attention to establish each SKU's status. No automatic claim of Google approval is authorised.
