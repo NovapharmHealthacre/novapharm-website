@@ -39,10 +39,11 @@
         "desktop": "50% 100%",
         "mobile": "50% 100%"
       },
-      "maxReuse": 1,
+      "maxReuse": 2,
       "structuredDataRelationship": "primaryImageOfPage",
       "allowedRoutes": [
-        "/"
+        "/",
+        "/distribution/"
       ]
     },
     {
