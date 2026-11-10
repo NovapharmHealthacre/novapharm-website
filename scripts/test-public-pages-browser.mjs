@@ -314,7 +314,7 @@ for (const [engineName, browserType] of engines) {
               const label = `${engineName} ${viewport.name}: Oncology approved composition`;
               assert.ok(geometry.portrait?.naturalWidth > 0 && geometry.portrait?.naturalHeight > 0,
                 `${label}: portrait asset must load`);
-              assert.equal(geometry.portrait.fit, "contain", `${label}: portrait must remain fully visible (not object-fit:cover)`);
+              assert.equal(geometry.portrait.fit, viewport.width >= 1101 ? "cover" : "contain", `${label}: portrait fit must match the owner-approved desktop canvas and uncropped tablet/mobile composition`);
               assert.ok(geometry.portrait.box.width > 250 && geometry.portrait.box.height > 200,
                 `${label}: portrait must not collapse`);
               if (viewport.width > 760) {
