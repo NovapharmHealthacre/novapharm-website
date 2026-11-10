@@ -424,6 +424,44 @@
       "caption": null,
       "technicalStatus": "owner-approved authoritative PNG preserved outside the public delivery tree; deterministic AVIF, WebP and JPEG derivatives at 480, 768 and 960 pixels, each below the governed delivery ceiling",
       "ownerApproval": "approved"
+    },
+    {
+      "path": "assets/media/about/novapharm-warehouse-original.jpg",
+      "type": "owner-supplied-corporate-warehouse-editorial-photograph",
+      "source": "Warehouse exterior photograph supplied directly by NovaPharm project owner for About page, 10 November 2026 (original 1600x580 JPEG)",
+      "licence": "Owner directly supplied photograph and approved its use on NovaPharm About page; photographed facility ownership and operating authorisation are not asserted",
+      "generated": false,
+      "modified": false,
+      "dimensions": "1600x580",
+      "optimisedVariants": [
+        "assets/media/about/novapharm-warehouse.avif"
+      ],
+      "pageUsage": [
+        "/about/"
+      ],
+      "altText": "Wide exterior view of a modern warehouse building, with a glazed entrance, silver metal cladding and loading frontage",
+      "caption": "Warehouse photograph provided by NovaPharm. Regulated wholesale supply has not commenced.",
+      "technicalStatus": "owner-supplied-original-preserved-1600x580",
+      "ownerApproval": "approved for About page visual 10 November 2026"
+    },
+    {
+      "path": "assets/media/about/novapharm-warehouse.avif",
+      "type": "optimized-responsive-corporate-warehouse-photo",
+      "source": "Image optimization derivative of assets/media/about/novapharm-warehouse-original.jpg (1200x435 AVIF)",
+      "licence": "Owner directly supplied source photograph and approved About page use; derivative for web performance, not new rights",
+      "generated": false,
+      "modified": true,
+      "dimensions": "1200x435",
+      "optimisedVariants": [
+        "assets/media/about/novapharm-warehouse-original.jpg"
+      ],
+      "pageUsage": [
+        "/about/"
+      ],
+      "altText": "Wide exterior view of a modern warehouse building, with a glazed entrance, silver metal cladding and loading frontage",
+      "caption": "Warehouse photograph provided by NovaPharm. Regulated wholesale supply has not commenced.",
+      "technicalStatus": "lossy-web-derivative-source-preserved",
+      "ownerApproval": "approved for About page visual 10 November 2026"
     }
   ],
   "missingApprovedAssets": [
