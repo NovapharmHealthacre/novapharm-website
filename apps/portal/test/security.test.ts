@@ -105,3 +105,16 @@ test("ClinicalTrials.gov study lookup stays board-only, GET-only and source-attr
   assert.doesNotMatch(view, /localStorage|sessionStorage|OPENAI_API_KEY|NHS_DOHS_API_KEY/);
   assert.doesNotMatch(view, /fetch\("https:\/\/clinicaltrials\.gov\/api/);
 });
+
+test("the separate liveness route is noindex, never reveals readiness and cannot bypass private routes", () => {
+  const health = source("app/healthz/route.ts");
+  const proxy = source("proxy.ts");
+  const docker = source("../../deployment/aws/Dockerfile.portal");
+  assert.match(health, /export function GET/);
+  assert.match(health, /status: 200/);
+  assert.match(health, /Cache-Control": "no-store"/);
+  assert.match(health, /X-Robots-Tag": "noindex, nofollow, noarchive"/);
+  assert.doesNotMatch(health, /process\\.env|token|database|session|customer/iu);
+  assert.match(proxy, /"\\/healthz\\/"/);
+  assert.match(docker, /4303\\/healthz\\//);
+});
