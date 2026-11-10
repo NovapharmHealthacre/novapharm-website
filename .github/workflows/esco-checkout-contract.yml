@@ -6,7 +6,8 @@ on:
       - 'infra/aws/esco-products-checkout-production.json'
       - 'assets/js/esco-bag.js'
       - 'scripts/apply-esco-catalogue.mjs'
-      - 'scripts/test-esco-catalogue.mjs'\n      - 'scripts/test-esco-order-requests.mjs'
+      - 'scripts/test-esco-catalogue.mjs'
+      - 'scripts/test-esco-order-requests.mjs'
       - '.github/workflows/esco-checkout-contract.yml'
   workflow_dispatch:
 permissions:
