@@ -6,7 +6,7 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const SHA = /^[a-f0-9]{40}$/;
-const REPO = /^[\\w.-]+\\/[\\w.-]+$/;
+const REPO = new RegExp("^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$");
 export function canBuild({ candidateSha, mainSha, candidateToMain }) {
   return SHA.test(candidateSha || "") && SHA.test(mainSha || "") &&
     (candidateSha === mainSha ? candidateToMain === "identical" :
