@@ -38,6 +38,8 @@ on:
       - 'assets/css/oncology-editorial.css'
       - 'assets/media/oncology/**'
       - 'scripts/test-oncology-content.mjs'
+      - 'scripts/test-oncology-hero-browser.mjs'
+      - '.github/workflows/oncology-hero-acceptance.yml'
       - 'scripts/test-public-pages-browser.mjs'
       - 'scripts/enhance-seo-authority.mjs'
       - 'scripts/test-native-organic-marketing.mjs'
