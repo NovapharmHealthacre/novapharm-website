@@ -93,6 +93,8 @@ class PaymentContracts(unittest.TestCase):
         def fake_open(req,timeout=12):
             requests.append(req)
             self.assertEqual(req.get_header("Authorization"),"Bearer "+synthetic)
+            self.assertNotIn(b"payment_method_types",req.data)
+            self.assertIn(b"mode=payment",req.data)
             return FakeResponse()
         CHECKOUT.sm=PastedSecret()
         CHECKOUT.urllib.request.urlopen=fake_open
@@ -199,8 +201,8 @@ class PaymentContracts(unittest.TestCase):
         self.assertIn("secretsmanager:GetSecretValue",policy)
         self.assertNotIn("secretsmanager:PutSecretValue",policy)
         ledger_actions=resources["CheckoutRole"]["Properties"]["Policies"][0]["PolicyDocument"]["Statement"][2]["Action"]
-        self.assertEqual(set(ledger_actions),{"dynamodb:GetItem","dynamodb:PutItem","dynamodb:UpdateItem"})
-        self.assertNotIn("dynamodb:TransactWriteItems",policy)
+        self.assertEqual(set(ledger_actions),{"dynamodb:GetItem","dynamodb:PutItem","dynamodb:UpdateItem","dynamodb:TransactWriteItems"})
+        self.assertIn("dynamodb:TransactWriteItems",policy)
 
 if __name__=="__main__":
     unittest.main()
