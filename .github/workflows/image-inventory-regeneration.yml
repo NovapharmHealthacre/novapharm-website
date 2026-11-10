@@ -1,0 +1,35 @@
+name: Generate authoritative image inventory evidence
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/image-inventory-regeneration.yml'
+permissions:
+  contents: read
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact PR source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Use Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Regenerate from tracked source and original evidence, without bypassing validation
+        run: |
+          npm run images:inventory
+          test -s audit/generated/image-inventory.json
+          git diff --check
+          git diff --stat -- audit/generated/image-inventory.json
+          npm run images:inventory:validate
+      - name: Preserve generated file for review and exact-branch update
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: authoritative-image-inventory
+          path: audit/generated/image-inventory.json
+          if-no-files-found: error
+          retention-days: 1
