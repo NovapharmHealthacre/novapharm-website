@@ -176,7 +176,25 @@ def stripe_session(order, attempt):
     try:
         with urllib.request.urlopen(req, timeout=12) as resp:
             session = json.loads(resp.read(131072))
-    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, ValueError):
+    except urllib.error.HTTPError as exc:
+        # Never log keys, provider free text, buyer information or request bodies.
+        code, param = "unknown", "none"
+        try:
+            error = json.loads(exc.read(8192)).get("error", {})
+            value, field = error.get("code", ""), error.get("param", "")
+            if isinstance(value, str) and re.fullmatch(r"[a-z_]{1,70}", value):
+                code = value
+            if isinstance(field, str) and re.fullmatch(r"[a-zA-Z0-9_\[\]]{1,90}", field):
+                param = field
+        except (ValueError, TypeError, AttributeError):
+            pass
+        print("STRIPE_CHECKOUT_REJECTED status=" + str(exc.code) + " code=" + code + " param=" + param)
+        raise NotReady("Stripe could not create an approved Checkout session")
+    except (urllib.error.URLError, TimeoutError):
+        print("STRIPE_CHECKOUT_NETWORK_FAILURE")
+        raise NotReady("Stripe could not create an approved Checkout session")
+    except ValueError:
+        print("STRIPE_CHECKOUT_INVALID_RESPONSE")
         raise NotReady("Stripe could not create an approved Checkout session")
     url = session.get("url")
     if (not SESSION.fullmatch(str(session.get("id", ""))) or
