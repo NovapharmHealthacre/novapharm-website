@@ -48,7 +48,7 @@ assert.ok(html.indexOf("oncology-hope-v2.css") > html.indexOf("oncology-editoria
 assert.match(approvedLayout, /object-fit:contain/, "Portrait must preserve its full framing");
 assert.match(approvedLayout, /-webkit-mask-image:linear-gradient/, "Desktop image must blend into one continuous hero");
 assert.match(approvedLayout, /width:72%/, "Desktop portrait occupies a broad seamless hero area with subpixel safety");
-assert.match(approvedLayout, /object-fit:cover/, "Desktop photographic hero must not retain a hard contain-image edge");
+assert.match(approvedLayout, /object-fit:contain/, "Desktop and mobile photographic hero must preserve the complete portrait");
 assert.match(approvedLayout, /-webkit-mask-image:none/, "Portrait masking must reset on mobile");
 assert.match(approvedLayout, /grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/, "All three Oncology visuals share a grid row");
 assert.match(approvedLayout, /npoc-focus-card span/, "Image labels must overlay on the cards");
