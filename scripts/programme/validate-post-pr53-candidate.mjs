@@ -196,8 +196,8 @@ const homepageSource = read("apps/corporate/components/concise-home.tsx");
 const homepageArtifact = read("index.html");
 const regulatoryArtifact = read("regulatory-services/index.html");
 for (const [marker, label] of [
-  ["npd-apple-hero-art", "intentional editorial hero and image composition"],
-  ["Conceptual visual. Not a NovaPharm facility, inventory or active distribution operation.", "conceptual hero truth boundary"],
+  ["nph-earth-hero-landscape", "approved Earth-horizon hero composition"],
+  ["A better way to understand, access and move medicine.", "approved homepage proposition without active supply claim"],
   ["Specialist medicines.", "specialist oncology editorial heading"],
   ["Representative scientific context. No NovaPharm facility, stock or approved programme is depicted.", "specialist visual truth boundary"],
   ["In development. The adjacent graphic is an artistic concept", "NOVA not-live maturity disclosure"],
