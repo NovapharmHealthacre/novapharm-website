@@ -1,0 +1,191 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Bounded public official medicine research API; no licensed analytics or paid customer access.",
+  "Resources": {
+    "Logs": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/novapharm-intelligence-public-official-research",
+        "RetentionInDays": 14
+      }
+    },
+    "Role": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "novapharm-intelligence-public-research-role",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "cloudwatch-only",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/novapharm-intelligence-public-official-research:*"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "Function": {
+      "Type": "AWS::Lambda::Function",
+      "DependsOn": [
+        "Logs"
+      ],
+      "Properties": {
+        "FunctionName": "novapharm-intelligence-public-official-research",
+        "Description": "Public bounded FDA label and ClinicalTrials.gov research, no customer/paid data",
+        "Runtime": "python3.13",
+        "Handler": "index.handler",
+        "Code": {
+          "ZipFile": "\"\"\"Public official-source lookup for the NovaPharm Intelligence research entry.\n\nThis is neither the authenticated Medicines Terminal nor medical advice.\nOnly a bounded search term is relayed to FDA or ClinicalTrials.gov. No patient,\ncustomer, or tenant information is accepted or retained by this function.\n\"\"\"\nimport datetime\nimport json\nimport re\nimport urllib.error\nimport urllib.parse\nimport urllib.request\n\nTERM = re.compile(r\"^[A-Za-z0-9][A-Za-z0-9 .-]{1,79}$\")\nSET_ID = re.compile(r\"^[0-9a-fA-F-]{36}$\")\nNCT = re.compile(r\"^NCT[0-9]{8}$\")\nOFFICIAL = {\"fda\", \"trials\"}\n\nclass NoRedirect(urllib.request.HTTPRedirectHandler):\n def redirect_request(self, request, fp, code, msg, headers, newurl):\n  return None\n\ndef respond(status, body):\n return {\"statusCode\":status,\"headers\":{\"Content-Type\":\"application/json; charset=utf-8\",\"Cache-Control\":\"no-store\",\"X-Content-Type-Options\":\"nosniff\",\"X-Robots-Tag\":\"noindex\"},\"body\":json.dumps(body,separators=(\",\",\":\"))}\n\ndef get_json(url):\n parsed=urllib.parse.urlsplit(url)\n if parsed.scheme!=\"https\" or parsed.hostname not in {\"api.fda.gov\",\"clinicaltrials.gov\"}:\n  raise ValueError(\"Unapproved source\")\n req=urllib.request.Request(url,headers={\"Accept\":\"application/json\",\"User-Agent\":\"NovaPharmIntelligence-OfficialPublicResearch/1.0\"})\n opener=urllib.request.build_opener(NoRedirect())\n try:\n  with opener.open(req,timeout=7) as reply:\n   if reply.status!=200: raise RuntimeError(\"upstream_status\")\n   raw=reply.read(2097153)\n except urllib.error.HTTPError as error:\n  if error.code==404: return {}\n  raise RuntimeError(\"official_source_unavailable\") from None\n if len(raw)>2097152: raise RuntimeError(\"source_payload_too_large\")\n return json.loads(raw.decode(\"utf-8\"))\n\ndef fda(term):\n q=urllib.parse.urlencode({\"search\":'openfda.generic_name:\"'+term+'\"',\"limit\":3})\n data=get_json(\"https://api.fda.gov/drug/label.json?\"+q)\n if not data.get(\"results\"):\n  q=urllib.parse.urlencode({\"search\":'openfda.brand_name:\"'+term+'\"',\"limit\":5})\n  data=get_json(\"https://api.fda.gov/drug/label.json?\"+q)\n out=[]\n for item in data.get(\"results\",[])[:3]:\n  names=item.get(\"openfda\") or {}\n  generic=(names.get(\"generic_name\") or [\"\"])[0]\n  brand=(names.get(\"brand_name\") or [\"\"])[0]\n  title=(brand or generic or \"FDA drug-label record\")[:120]\n  setid=str(item.get(\"set_id\") or \"\")\n  url=\"https://dailymed.nlm.nih.gov/dailymed/\" if not SET_ID.fullmatch(setid) else \"https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=\"+setid\n  out.append({\"title\":title,\"subtitle\":generic[:140],\"recordId\":setid[:60],\"updated\":str(item.get(\"effective_time\") or \"\")[:8],\"source\":\"FDA openFDA label\",\"sourceUrl\":url})\n return out\n\ndef trials(term):\n q=urllib.parse.urlencode({\"query.term\":term,\"pageSize\":5,\"format\":\"json\"})\n data=get_json(\"https://clinicaltrials.gov/api/v2/studies?\"+q)\n out=[]\n for item in data.get(\"studies\",[])[:5]:\n  section=item.get(\"protocolSection\") or {}\n  identity=section.get(\"identificationModule\") or {}\n  status=section.get(\"statusModule\") or {}\n  nct=str(identity.get(\"nctId\") or \"\")\n  if not NCT.fullmatch(nct): continue\n  out.append({\"title\":str(identity.get(\"briefTitle\") or \"Registered study\")[:150],\"subtitle\":str(status.get(\"overallStatus\") or \"Status not specified\")[:80],\"recordId\":nct,\"updated\":str((status.get(\"studyFirstPostDateStruct\") or {}).get(\"date\") or \"\")[:10],\"source\":\"ClinicalTrials.gov\",\"sourceUrl\":\"https://clinicaltrials.gov/study/\"+nct})\n return out\n\ndef handler(event, context):\n query=event.get(\"queryStringParameters\") or {}\n if not isinstance(query,dict):return respond(400,{\"error\":\"invalid_query\"})\n term=str(query.get(\"medicine\") or \"\").strip()\n source=str(query.get(\"source\") or \"\").strip()\n if source not in OFFICIAL or not TERM.fullmatch(term) or len(term)<2:\n  return respond(400,{\"error\":\"invalid_medicine_or_source\"})\n try:\n  records=fda(term) if source==\"fda\" else trials(term)\n except Exception:\n  return respond(503,{\"error\":\"official_source_temporarily_unavailable\",\"source\":source})\n return respond(200,{\"source\":source,\"publisher\":\"U.S. Food and Drug Administration\" if source==\"fda\" else \"ClinicalTrials.gov\",\"medicine\":term,\"results\":records,\"observedOnly\":True,\"licenceAndProvenanceMustBeReviewed\":True,\"customerMedicinesTerminal\":False,\"medicalAdvice\":False,\"retrievedAt\":datetime.datetime.now(datetime.timezone.utc).isoformat()})\n"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "Role",
+            "Arn"
+          ]
+        },
+        "Timeout": 20,
+        "MemorySize": 128,
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "public-scope",
+            "Value": "official-source-only"
+          }
+        ]
+      }
+    },
+    "Api": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "novapharm-intelligence-official-public-research",
+        "ProtocolType": "HTTP",
+        "Description": "Public read-only official research, no paid Intelligence access",
+        "CorsConfiguration": {
+          "AllowOrigins": [
+            "https://novapharmhealthcare.com",
+            "https://www.novapharmhealthcare.com"
+          ],
+          "AllowMethods": [
+            "GET",
+            "OPTIONS"
+          ],
+          "AllowHeaders": [
+            "content-type"
+          ],
+          "MaxAge": 300
+        }
+      }
+    },
+    "Integration": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "Api"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "Function",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 25000
+      }
+    },
+    "Route": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "Api"
+        },
+        "RouteKey": "GET /intelligence/public/research",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "Integration"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "Stage": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "Api"
+        },
+        "StageName": "$default",
+        "AutoDeploy": true,
+        "DefaultRouteSettings": {
+          "ThrottlingBurstLimit": 5,
+          "ThrottlingRateLimit": 2
+        }
+      }
+    },
+    "InvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "Function"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${Api}/*/GET/intelligence/public/research"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "PublicResearchUrl": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            {
+              "Fn::GetAtt": [
+                "Api",
+                "ApiEndpoint"
+              ]
+            },
+            "/intelligence/public/research"
+          ]
+        ]
+      }
+    },
+    "ReleaseBoundary": {
+      "Value": "Public official-source discovery only, no medical advice, no customer access."
+    }
+  }
+}

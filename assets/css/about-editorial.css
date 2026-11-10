@@ -1,0 +1,83 @@
+/* NovaPharm About | approved editorial direction, 10 November 2026.
+   Scoped to /about/ to preserve the site's shared design system. */
+body[data-page="about"] { background: #fff; }
+body[data-page="about"] .npd-main.np-about-page { background: #fff; color: #111; overflow: clip; }
+body[data-page="about"] .npd-local-nav { display: none; }
+body[data-page="about"] .site-header { background: rgba(255,255,255,.98); border-bottom: 1px solid #ececef; box-shadow: none; }
+body[data-page="about"] .site-header .site-nav > a { text-decoration: none; }
+.np-about-page,
+.np-about-page * { box-sizing: border-box; }
+.np-about-page { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+.np-about-page h1,
+.np-about-page h2,
+.np-about-page h3,
+.np-about-page p { margin-block: 0; }
+.np-about-page .np-about-wrap { width: min(100% - 64px, 1250px); margin-inline: auto; }
+.np-about-page .np-about-intro { padding: clamp(86px, 10vw, 164px) 24px clamp(52px, 5.3vw, 78px); text-align: center; }
+.np-about-page .np-about-kicker { color: #777a80; font-size: 13px; font-weight: 650; text-transform: uppercase; letter-spacing: .23em; line-height: 1.5; }
+.np-about-page .np-about-intro h1 { max-width: 1050px; margin: 25px auto 22px; font-size: clamp(48px, 6.45vw, 102px); font-weight: 650; line-height: 1.045; letter-spacing: -.068em; text-wrap: balance; }
+.np-about-page .np-about-intro .np-about-deck { max-width: 850px; margin: 0 auto; color: #66676b; font-size: clamp(19px, 1.75vw, 26px); line-height: 1.36; letter-spacing: -.025em; text-wrap: balance; }
+.np-about-page .np-about-image { margin: 0 auto; width: min(100%, 1800px); background: #f8f9fb; }
+.np-about-page .np-about-image img { display: block; width: 100%; height: auto; aspect-ratio: 1600 / 580; object-fit: contain; object-position: center; }
+.np-about-page .np-about-image figcaption { padding: 12px 24px; color: #727378; background: #fff; font-size: 12px; text-align: center; line-height: 1.5; }
+.np-about-page .np-about-pillars { padding: 34px 0 88px; }
+.np-about-page .np-about-pillars-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); align-items: start; }
+.np-about-page .np-about-pillars article { min-width: 0; padding: 0 38px; text-align: center; }
+.np-about-page .np-about-pillars article + article { border-left: 1px solid #d5d5d7; }
+.np-about-page .np-about-pillars h2 { font-size: clamp(21px, 2.1vw, 29px); font-weight: 600; letter-spacing: -.045em; line-height: 1.2; }
+.np-about-page .np-about-pillars p { margin-top: 6px; color: #6e6e73; font-size: clamp(15px, 1.3vw, 18px); line-height: 1.55; }
+.np-about-page .np-about-purpose { padding: clamp(95px, 12vw, 185px) 0; background: #f5f5f7; }
+.np-about-page .np-about-purpose-inner { max-width: 1020px; margin: 0 auto; text-align: center; }
+.np-about-page .np-about-purpose h2 { margin: 20px auto 26px; font-size: clamp(39px, 5.3vw, 76px); font-weight: 650; line-height: 1.08; letter-spacing: -.062em; text-wrap: balance; }
+.np-about-page .np-about-purpose .np-about-purpose-copy { max-width: 740px; margin: 0 auto; color: #6e6e73; font-size: clamp(19px, 1.7vw, 25px); line-height: 1.45; }
+.np-about-page .np-about-detail { padding: clamp(90px, 10vw, 154px) 0; }
+.np-about-page .np-about-detail-header { display: grid; grid-template-columns: 1fr 1.15fr; gap: 8%; align-items: start; margin-bottom: 60px; }
+.np-about-page .np-about-detail-header h2 { margin-top: 16px; font-size: clamp(40px, 4.45vw, 66px); font-weight: 650; line-height: 1.08; letter-spacing: -.055em; text-wrap: balance; }
+.np-about-page .np-about-detail-header > p { padding-top: 43px; font-size: clamp(18px, 1.7vw, 23px); line-height: 1.5; color: #66676b; }
+.np-about-page .np-about-principles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 72px; list-style: none; margin: 0; padding: 0; }
+.np-about-page .np-about-principles li { border-top: 1px solid #d5d5d7; padding: 28px 0 34px; }
+.np-about-page .np-about-principles h3 { font-size: clamp(23px, 2.05vw, 30px); font-weight: 600; letter-spacing: -.035em; }
+.np-about-page .np-about-principles p { max-width: 500px; margin-top: 10px; font-size: 17px; line-height: 1.55; color: #6e6e73; }
+.np-about-page .np-about-facts { padding: 42px 0; border-top: 1px solid #ececef; }
+.np-about-page .np-about-facts dl { margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; }
+.np-about-page .np-about-facts dt { color: #86868b; font-size: 13px; margin-bottom: 8px; }
+.np-about-page .np-about-facts dd { margin: 0; color: #242426; font-size: 15px; line-height: 1.4; font-weight: 550; }
+.np-about-page .np-about-cta { padding: clamp(115px, 12vw, 190px) 20px; text-align: center; background: #f5f5f7; }
+.np-about-page .np-about-cta h2 { max-width: 900px; margin: 18px auto 30px; font-size: clamp(43px, 5vw, 76px); line-height: 1.09; letter-spacing: -.06em; font-weight: 650; text-wrap: balance; }
+.np-about-page .np-about-cta p:not(.np-about-kicker) { max-width: 680px; margin-inline: auto; color: #6e6e73; line-height: 1.5; font-size: 20px; }
+.np-about-page .np-about-cta-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
+.np-about-page .np-about-cta-actions a { display: inline-flex; align-items: center; justify-content: center; padding: 12px 24px; min-height: 45px; border-radius: 999px; font-size: 15px; line-height: 1.2; font-weight: 550; text-decoration: none; transition: background .2s ease, color .2s ease; }
+.np-about-page .np-about-primary { color: #fff; background: #151515; border: 1px solid #151515; }
+.np-about-page .np-about-secondary { color: #171717; border: 1px solid #86868b; background: transparent; }
+.np-about-page .np-about-primary:hover, .np-about-page .np-about-primary:focus-visible { background: #434343; color: #fff; }
+.np-about-page .np-about-secondary:hover, .np-about-page .np-about-secondary:focus-visible { background: #fff; }
+.np-about-page a:focus-visible { outline: 3px solid #2563eb; outline-offset: 4px; }
+@media (max-width: 900px) {
+  .np-about-page .np-about-wrap { width: min(100% - 40px, 1250px); }
+  .np-about-page .np-about-pillars article { padding: 0 16px; }
+  .np-about-page .np-about-detail-header { gap: 35px; }
+  .np-about-page .np-about-principles { gap: 0 30px; }
+}
+@media (max-width: 640px) {
+  .np-about-page .np-about-wrap { width: min(100% - 36px, 1250px); }
+  .np-about-page .np-about-intro { padding: 88px 18px 42px; }
+  .np-about-page .np-about-intro h1 { margin: 19px auto 20px; font-size: clamp(45px, 10.4vw, 60px); letter-spacing: -.064em; }
+  .np-about-page .np-about-intro .np-about-deck { font-size: 18px; }
+  .np-about-page .np-about-image figcaption { font-size: 11px; padding: 10px 16px; }
+  .np-about-page .np-about-pillars { padding: 28px 0 55px; }
+  .np-about-page .np-about-pillars-grid { grid-template-columns: 1fr; }
+  .np-about-page .np-about-pillars article { padding: 22px 12px; }
+  .np-about-page .np-about-pillars article + article { border-left: 0; border-top: 1px solid #e4e4e7; }
+  .np-about-page .np-about-purpose { padding: 105px 0; }
+  .np-about-page .np-about-detail { padding: 92px 0; }
+  .np-about-page .np-about-detail-header { grid-template-columns: 1fr; gap: 15px; margin-bottom: 40px; }
+  .np-about-page .np-about-detail-header > p { padding-top: 0; font-size: 18px; }
+  .np-about-page .np-about-principles { grid-template-columns: 1fr; }
+  .np-about-page .np-about-principles li { padding: 25px 0; }
+  .np-about-page .np-about-facts dl { grid-template-columns: 1fr 1fr; gap: 28px 18px; }
+  .np-about-page .np-about-cta { padding: 112px 18px; }
+  .np-about-page .np-about-cta p:not(.np-about-kicker) { font-size: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .np-about-page * { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+}

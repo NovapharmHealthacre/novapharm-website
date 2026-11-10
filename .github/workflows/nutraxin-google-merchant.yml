@@ -5,6 +5,8 @@ on:
       - "shopping/nutraxin-uk.tsv"
       - "scripts/generate-nutraxin-shopping.mjs"
       - "scripts/test-nutraxin-merchant.mjs"
+      - "scripts/verify-nutraxin-merchant-live.mjs"
+      - ".github/workflows/publish-aws-contact-production.yml"
       - "scripts/build-site.mjs"
       - "products/nutraxin/**"
       - "assets/data/nutraxin-retail-catalogue.json"
@@ -27,3 +29,4 @@ jobs:
         run: |
           node scripts/generate-nutraxin-shopping.mjs --check
           node --test scripts/test-nutraxin-merchant.mjs
+          node scripts/verify-nutraxin-merchant-live.mjs --local

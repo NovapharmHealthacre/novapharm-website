@@ -1,0 +1,111 @@
+/* ESCO customer order request: quiet, accessible and distinct from paid checkout. */
+.esco-shop-bag .esco-order-request-form[hidden],
+.esco-shop-bag .esco-order-request-receipt[hidden] { display:none!important; }
+.esco-shop-bag .esco-order-request-form {
+  margin-top:20px;
+  padding:26px 0 0;
+  border-top:1px solid #e5e5ea;
+  color:#1d1d1f;
+}
+.esco-shop-bag .esco-order-request-form h3 {
+  font-size:clamp(1.24rem,2.1vw,1.55rem);
+  letter-spacing:-.03em;
+  font-weight:690;
+  margin:0 0 8px;
+}
+.esco-shop-bag .esco-order-request-form p {
+  color:#6e6e73;
+  font-size:.86rem;
+  line-height:1.6;
+  margin:0 0 20px;
+}
+.esco-shop-bag .esco-order-request-fields {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:13px;
+}
+.esco-shop-bag .esco-order-request-fields label {
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  min-width:0;
+  font-size:.78rem;
+  color:#515158;
+  font-weight:620;
+}
+.esco-shop-bag .esco-order-request-fields input {
+  box-sizing:border-box;
+  width:100%;
+  min-height:48px;
+  padding:12px 14px;
+  font-family:inherit;
+  font-size:.91rem;
+  color:#1d1d1f;
+  border-radius:12px;
+  border:1px solid #d6d6dc;
+  background:#fff;
+}
+.esco-shop-bag .esco-order-request-fields input:focus-visible,
+.esco-shop-bag .esco-order-request-agreement input:focus-visible {
+  outline:2px solid #0071e3;
+  outline-offset:2px;
+}
+.esco-shop-bag .esco-order-request-agreement {
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  font-size:.78rem;
+  line-height:1.55;
+  color:#57575f;
+  margin:19px 0;
+}
+.esco-shop-bag .esco-order-request-agreement input {
+  accent-color:#0071e3;
+  flex:none;
+  margin-top:3px;
+}
+.esco-shop-bag .esco-bag-submit-order {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-height:52px;
+  background:#1d1d1f;
+  border-color:#1d1d1f;
+  border-radius:13px;
+  color:white;
+  font-weight:650;
+}
+.esco-shop-bag .esco-bag-submit-order:disabled { opacity:.5;cursor:wait; }
+.esco-shop-bag .esco-order-request-trap {
+  position:absolute!important;
+  left:-10000px!important;
+  width:1px!important;
+  height:1px!important;
+  overflow:hidden!important;
+}
+.esco-shop-bag .esco-order-request-receipt {
+  margin:20px 0 0;
+  padding:17px 19px;
+  border:1px solid #d5e5fa;
+  border-radius:13px;
+  background:#f4f9ff;
+  color:#1d1d1f;
+  font-size:.87rem;
+  line-height:1.65;
+  overflow-wrap:anywhere;
+}
+.esco-shop-bag .esco-bag-quote:not(.esco-order-request-primary){
+  display:inline-flex;
+  background:transparent;
+  border:0;
+  color:#0066cc;
+  font-size:.86rem;
+  padding:12px 0;
+}
+@media(max-width:660px){
+  .esco-shop-bag .esco-order-request-fields {grid-template-columns:minmax(0,1fr);}
+  .esco-shop-bag .esco-order-request-form {padding-top:20px;}
+}
+
+.esco-shop-bag .esco-payment-terms[hidden] { display:none!important; }

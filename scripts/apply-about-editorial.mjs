@@ -1,0 +1,48 @@
+import { readFileSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
+
+// Post-build editorial treatment: earlier public-page generators and the
+// corporate-discipline pass both rewrite about/index.html. Apply last so
+// the owner-approved About page survives a production rebuild.
+const file = resolve(process.cwd(), "about/index.html");
+const main = "<main id=\"main\" class=\"npd-main np-about-page\">\n  <section class=\"np-about-intro\" aria-labelledby=\"np-about-title\">\n    <p class=\"np-about-kicker\">About NovaPharm</p>\n    <h1 id=\"np-about-title\">Getting medicine to where it matters.</h1>\n    <p class=\"np-about-deck\">We are a UK-based healthcare company building a more resilient, accessible and intelligent medicines supply chain.</p>\n  </section>\n\n  <figure class=\"np-about-image\">\n    <picture><source srcset=\"/assets/media/about/novapharm-warehouse.avif\" type=\"image/avif\"><img src=\"/assets/media/about/novapharm-warehouse-original.jpg\" alt=\"Wide exterior view of a modern warehouse building, with a glazed entrance, silver metal cladding and loading frontage\" width=\"1600\" height=\"580\" fetchpriority=\"high\" decoding=\"async\"></picture>\n    <figcaption>Warehouse photograph provided by NovaPharm. Regulated wholesale supply has not commenced.</figcaption>\n  </figure>\n\n  <section class=\"np-about-pillars\" aria-label=\"The three areas of NovaPharm's work\">\n    <div class=\"np-about-wrap np-about-pillars-grid\">\n      <article>\n        <h2>Specialist medicines</h2>\n        <p>Focused on areas of real need.</p>\n      </article>\n      <article>\n        <h2>Resilient supply</h2>\n        <p>From qualified source to healthcare demand.</p>\n      </article>\n      <article>\n        <h2>Decision systems</h2>\n        <p>Insight that moves medicine forward.</p>\n      </article>\n    </div>\n  </section>\n\n  <section class=\"np-about-purpose\" aria-labelledby=\"np-about-purpose-title\">\n    <div class=\"np-about-wrap np-about-purpose-inner\">\n      <p class=\"np-about-kicker\">Our purpose</p>\n      <h2 id=\"np-about-purpose-title\">Medicine. Where it needs to be.</h2>\n      <p class=\"np-about-purpose-copy\">The industry doesn't lack ambition. It needs better connections between access, evidence and supply. That's what we're building.</p>\n    </div>\n  </section>\n\n  <section class=\"np-about-detail\" aria-labelledby=\"np-about-detail-title\">\n    <div class=\"np-about-wrap\">\n      <div class=\"np-about-detail-header\">\n        <div>\n          <p class=\"np-about-kicker\">How we work</p>\n          <h2 id=\"np-about-detail-title\">Simple in principle.<br>Rigorous in practice.</h2>\n        </div>\n        <p>We develop pharmaceutical partnerships and market-access pathways around qualified evidence, regulatory readiness and accountable decisions.</p>\n      </div>\n      <ul class=\"np-about-principles\">\n        <li><h3>Permission first.</h3><p>Regulatory authorisation and quality controls must be in place before any regulated supply begins.</p></li>\n        <li><h3>Evidence before claims.</h3><p>Product rights, sourcing and status must be supported, specific and reviewable.</p></li>\n        <li><h3>Quality across every partner.</h3><p>Supplier and logistics relationships require qualification and defined oversight.</p></li>\n        <li><h3>Humans make the decision.</h3><p>Intelligence supports understanding. Responsibility stays with people.</p></li>\n      </ul>\n    </div>\n  </section>\n\n  <aside class=\"np-about-facts\" aria-label=\"NovaPharm corporate facts\">\n    <div class=\"np-about-wrap\">\n      <dl>\n        <div><dt>Registered company</dt><dd>NOVAPHARM HEALTHCARE LTD</dd></div>\n        <div><dt>Company number</dt><dd>16716501</dd></div>\n        <div><dt>Location</dt><dd>Feltham, England</dd></div>\n        <div><dt>Current status</dt><dd>Commercial development. Regulated wholesale supply not commenced.</dd></div>\n      </dl>\n    </div>\n  </aside>\n\n  <section class=\"np-about-cta\" aria-labelledby=\"np-about-cta-title\">\n    <div class=\"np-about-wrap\">\n      <p class=\"np-about-kicker\">Work with NovaPharm</p>\n      <h2 id=\"np-about-cta-title\">Let's move medicine forward.</h2>\n      <p>Explore a qualified partnership or speak with our team about the opportunities ahead.</p>\n      <div class=\"np-about-cta-actions\">\n        <a class=\"np-about-primary\" href=\"/partner-with-us/\">Explore partnerships</a>\n        <a class=\"np-about-secondary\" href=\"/contact/\">Contact NovaPharm</a>\n      </div>\n    </div>\n  </section>\n</main>";
+let html = readFileSync(file, "utf8");
+const target = /<main\b[^>]*\bid=["']main["'][^>]*>[\s\S]*?<\/main>/i;
+if (!target.test(html)) throw new Error("About editorial: main landmark not found");
+html = html.replace(target, main);
+const style = '<link rel="stylesheet" href="/assets/css/about-editorial.css">';
+if (!html.includes(style)) {
+  const anchor = '<link rel="stylesheet" href="/assets/css/novapharm.bundle.css">';
+  if (!html.includes(anchor)) throw new Error("About editorial: shared CSS link not found");
+  html = html.replace(anchor, anchor + "\n  " + style);
+}
+html = html.replace(/<meta name="description" content="[^"]*">/, '<meta name="description" content="Meet NovaPharm Healthcare. Specialist medicines, resilient supply and decision systems, built on qualified evidence and regulatory readiness.">');
+html = html.replace(/<meta name="theme-color" content="[^"]*">/, '<meta name="theme-color" content="#FFFFFF">');
+html = html.replace(/https:\/\/novapharmhealthcare\.com\/assets\/media\/modules\/about-operating-model\.jpg/g, 'https://novapharmhealthcare.com/assets/media/about/novapharm-warehouse-original.jpg');
+// The original JPEG is retained for cross-platform social preview compatibility.
+
+html = html.replace(/<meta property="og:image:height" content="900">/, '<meta property="og:image:height" content="580">');
+html = html.replace(/Representative operating-model review/g, 'Warehouse photograph supplied by NovaPharm');
+const aboutSummary = "Meet NovaPharm Healthcare. Specialist medicines, resilient supply and decision systems, built on qualified evidence and regulatory readiness.";
+html = html.replace(/<meta property="og:description" content="[^"]*">/, '<meta property="og:description" content="' + aboutSummary + '">');
+html = html.replace(/<meta name="twitter:description" content="[^"]*">/, '<meta name="twitter:description" content="' + aboutSummary + '">');
+html = html.replace(/(<script type="application\/ld\+json">)([\s\S]*?)(<\/script>)/g, (entire, open, raw, close) => {
+  try {
+    const schema = JSON.parse(raw);
+    if (schema["@type"] !== "WebPage" || !String(schema["@id"] || "").includes("/about/#webpage")) return entire;
+    schema.description = aboutSummary;
+    schema.dateModified = "2026-11-10";
+    schema.primaryImageOfPage = {
+      "@type": "ImageObject",
+      url: "https://novapharmhealthcare.com/assets/media/about/novapharm-warehouse-original.jpg",
+      contentUrl: "https://novapharmhealthcare.com/assets/media/about/novapharm-warehouse-original.jpg",
+      width: 1600, height: 580,
+      caption: "Warehouse photograph supplied by NovaPharm"
+    };
+    return open + JSON.stringify(schema) + close;
+  } catch {
+    return entire;
+  }
+});
+writeFileSync(file, html, "utf8");
+console.log("Applied owner-approved About editorial design.");

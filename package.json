@@ -151,7 +151,7 @@
     "azure:validate-topology": "node scripts/validate-unified-estate-infrastructure.mjs",
     "test:technology-page": "node scripts/test-intelligence-technology-page.mjs",
     "test:nutraxin-showcase": "node scripts/test-nutraxin-showcase.mjs",
-    "test:esco-catalogue": "node --test scripts/test-esco-catalogue.mjs scripts/test-esco-approved-experience.mjs",
+    "test:esco-catalogue": "node --test scripts/test-esco-catalogue.mjs scripts/test-esco-approved-experience.mjs scripts/test-esco-order-requests.mjs",
     "test:nutraxin-retail-store": "node --test scripts/test-nutraxin-retail-store.mjs",
     "test:nutraxin-consumer-account": "node --test scripts/test-nutraxin-consumer-account.mjs"
   },

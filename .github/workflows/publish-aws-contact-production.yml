@@ -20,9 +20,20 @@ on:
       - 'assets/data/esco-catalogue.json'
       - 'assets/data/esco-checkout-config.json'
       - 'scripts/test-esco-catalogue.mjs'
+      # Owner-approved About editorial is a public release surface.
+      - 'about/**'
+      - 'assets/css/about-editorial.css'
+      - 'assets/media/about/**'
+      - 'scripts/apply-about-editorial.mjs'
       - 'scripts/build-site.mjs'
       - 'assets/data/nutraxin-retail-catalogue.json'
       - 'scripts/apply-corporate-product-discipline.mjs'
+      - 'oncology/**'
+      - 'assets/css/oncology-hope-v2.css'
+      - 'assets/css/oncology-editorial.css'
+      - 'assets/media/oncology/**'
+      - 'scripts/test-oncology-content.mjs'
+      - 'scripts/test-public-pages-browser.mjs'
       - 'scripts/enhance-seo-authority.mjs'
       - 'scripts/test-native-organic-marketing.mjs'
       - 'scripts/stage-pages-artifact.mjs'
@@ -48,8 +59,11 @@ permissions:
   pages: write
   id-token: write
 
+# Each approved commit has its own build; stale source is rejected both before build
+# and immediately before deploying, so newer PR merges cannot endlessly replace
+# the one pending release in the global Pages concurrency group.
 concurrency:
-  group: novapharm-pages-production
+  group: novapharm-pages-production-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
@@ -70,6 +84,14 @@ jobs:
           set -euo pipefail
           [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Refuse stale source while a newer main commit exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+        run: |
+          set -euo pipefail
+          current="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
+          test "$current" = "$EXPECTED_SHA" || { echo "::error::Stale publication commit: $EXPECTED_SHA; main is $current"; exit 1; }
       - name: Node.js 24
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -89,6 +111,27 @@ jobs:
           npm run test:cookies
           npm run validate:domain
           node scripts/stage-pages-artifact.mjs _site
+          # Verify the approved About story, asset fallbacks and responsive stylesheet
+          # in the exact staged artifact before touching the active public website.
+          grep -Fq 'Getting medicine to where it matters.' _site/about/index.html
+          grep -Fq 'Specialist medicines' _site/about/index.html
+          grep -Fq 'Resilient supply' _site/about/index.html
+          grep -Fq 'Decision systems' _site/about/index.html
+          grep -Fq '/assets/css/about-editorial.css' _site/about/index.html
+          grep -Fq '/assets/media/about/novapharm-warehouse-original.jpg' _site/about/index.html
+          test -s _site/assets/css/about-editorial.css
+          test -s _site/assets/media/about/novapharm-warehouse-original.jpg
+          test -s _site/assets/media/about/novapharm-warehouse.avif
+          # The approved Oncology design and its exact mobile CSS are deployment prerequisites.
+          node scripts/test-oncology-content.mjs
+          test -s _site/assets/css/oncology-hope-v2.css
+          grep -Fq 'href="/assets/css/oncology-hope-v2.css"' _site/oncology/index.html
+          grep -Fq 'A Hope of<br>Tomorrow.' _site/oncology/index.html
+          ! grep -Fq 'Illustrative creative image. No patient, treatment result or NovaPharm facility is depicted.' _site/oncology/index.html
+          grep -Fq 'grid-template-columns:repeat(3,minmax(220px,1fr))' _site/assets/css/oncology-hope-v2.css
+          node scripts/verify-nutraxin-merchant-live.mjs --local
+          test -s _site/shopping/nutraxin-uk.tsv
+          cmp _site/shopping/nutraxin-uk.tsv shopping/nutraxin-uk.tsv
           jq -e '.enabled == true and .pool_id == "eu-north-1_SLNUKZypt" and .account_url == "https://novapharmhealthcare.com/products/nutraxin/account/" and .api_origin == "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com"' _site/assets/data/nutraxin-consumer-auth.json
           test -s _site/products/nutraxin/account/index.html
           test -s _site/assets/js/nutraxin-consumer-account.js
@@ -103,7 +146,8 @@ jobs:
           grep -Fq 'data-esco-quote-items' _site/products/esco/index.html
           grep -Fq 'data-esco-bag-items' _site/products/esco/bag/index.html
           grep -Fq 'data-esco-card-checkout disabled' _site/products/esco/bag/index.html
-          grep -Fq 'UK guide' _site/products/esco/index.html
+          grep -Fq 'Base price £' _site/products/esco/index.html
+          grep -Fq 'Ex VAT · delivery confirmed before acceptance' _site/products/esco/index.html
           test -s _site/assets/data/esco-uk-guide-prices.json
           test -s _site/assets/data/esco-checkout-config.json
           grep -Fq 'data-esco-payment-terms' _site/products/esco/bag/index.html
@@ -207,9 +251,26 @@ jobs:
       name: github-pages
       url: ${{ steps.ship.outputs.page_url }}
     steps:
+      - name: Refuse stale main release before publishing
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+        run: |
+          set -euo pipefail
+          current="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
+          test "$current" = "$EXPECTED_SHA" || { echo "::error::Cannot publish stale commit $EXPECTED_SHA; current main $current"; exit 1; }
       - name: Publish verified Pages artifact
         id: ship
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+      - name: Check out verified source for Merchant Center release vetting
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+          persist-credentials: false
+      - name: Verify 19 live Product Offers and Google Shopping TSV
+        env:
+          GITHUB_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+        run: node scripts/verify-nutraxin-merchant-live.mjs
       - name: Verify customer contact form on NovaPharm domain without exposing portal login
         env:
           EXPECTED_ORIGIN: ${{ github.event_name == 'push' && 'https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com' || inputs.contact_api_origin }}
@@ -391,6 +452,36 @@ jobs:
           done
           echo "::error::Live organic metadata or inactive analytics contract did not match accepted release." >&2
           exit 1
+      - name: Verify the approved About page on the production domain
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 18); do
+            if curl --fail --silent --show-error --location --max-time 20 \
+              -H "Cache-Control: no-cache, no-store" \
+              "https://novapharmhealthcare.com/about/?about-$GITHUB_SHA-$attempt-$(date +%s)" \
+              -o /tmp/novapharm-live-about.html \
+              && grep -Fq 'Getting medicine to where it matters.' /tmp/novapharm-live-about.html \
+              && grep -Fq 'Specialist medicines' /tmp/novapharm-live-about.html \
+              && grep -Fq 'Resilient supply' /tmp/novapharm-live-about.html \
+              && grep -Fq 'Decision systems' /tmp/novapharm-live-about.html \
+              && grep -Fq '/assets/css/about-editorial.css' /tmp/novapharm-live-about.html \
+              && grep -Fq '/assets/media/about/novapharm-warehouse-original.jpg' /tmp/novapharm-live-about.html; then
+              curl --fail --silent --show-error --max-time 20 \
+                "https://novapharmhealthcare.com/assets/css/about-editorial.css?about-$GITHUB_SHA" \
+                -o /tmp/novapharm-live-about.css
+              grep -Fq 'np-about-intro' /tmp/novapharm-live-about.css
+              curl --fail --silent --show-error --max-time 20 \
+                "https://novapharmhealthcare.com/assets/media/about/novapharm-warehouse-original.jpg?about-$GITHUB_SHA" \
+                -o /tmp/novapharm-live-warehouse.jpg
+              test "$(wc -c < /tmp/novapharm-live-warehouse.jpg)" -gt 100000
+              echo "Owner-approved About page, responsive styling and source warehouse photo verified live."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::The approved About page is not yet served on the production custom domain." >&2
+          exit 1
+
       - name: Check out verified main source for IndexNow
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 

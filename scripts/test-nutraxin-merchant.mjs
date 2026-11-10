@@ -48,15 +48,21 @@ test("Do not represent unavailable-to-sell products as stocked", () => {
 
 test("Consumer Add to Bag, Buy now and checkout honor exactly the published Merchant stock gate", () => {
   const item = catalogue.products[0];
-  assert.equal(merchantSaleReady(item, catalogue), false);
-  const clear = { ...catalogue, delivery_verified: true };
-  assert.equal(merchantSaleReady(item, clear), false);
-  const verified = { ...item, available_to_sell: true };
-  assert.equal(merchantSaleReady(verified, clear), true);
-  assert.equal(merchantSaleReady({ ...verified, ordering_enabled: false }, clear), false);
-  assert.equal(merchantSaleReady(verified, { ...clear, payment_collection_enabled: false }), false);
+  assert.equal(merchantSaleReady(item, catalogue), true);
+  assert.equal(merchantSaleReady({ ...item, available_to_sell: false }, catalogue), false);
+  assert.equal(merchantSaleReady(item, { ...catalogue, delivery_verified: false }), false);
+  assert.equal(merchantSaleReady({ ...item, ordering_enabled: false }, catalogue), false);
+  assert.equal(merchantSaleReady(item, { ...catalogue, payment_collection_enabled: false }), false);
   const runtime = read("assets/js/nutraxin-retail-store.js");
   assert.match(runtime, /add\.disabled = !merchantSaleReady\(p, data\)/);
   assert.match(runtime, /buy\.disabled = !merchantSaleReady\(p, data\)/);
   assert.match(runtime, /bag\.every\(\(line\) => merchantSaleReady/);
+});
+
+test("19-stock declaration has owner traceability and in-stock Merchant parity", () => {
+  assert.equal(catalogue.delivery_verified, true);
+  assert.equal(catalogue.inventory_attestation?.independently_audited, false);
+  assert.equal(catalogue.delivery_attestation?.independently_audited, false);
+  assert(catalogue.products.every(p => p.available_to_sell && p.ordering_enabled));
+  assert(parsed.every(p => p.availability === "in_stock"));
 });

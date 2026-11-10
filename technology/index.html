@@ -119,12 +119,12 @@
           </div>
           <button class="npi-button npi-button-primary npi-research-submit" type="submit">Find official sources</button>
         </form>
-        <p class="npi-research-privacy">No login required. Searches are prepared in your browser and shared with an external official provider only if you open its link. Do not enter patient details, confidential documents or personal health information.</p>
+        <p class="npi-research-privacy">No login required. US regulatory and trial searches send the medicine term through NovaPharm's AWS research service to the official publisher. Other searches prepare provider links. Do not enter patient details, confidential documents or personal health information.</p>
         <p class="npi-research-status" data-npi-research-status role="status" aria-live="polite">Select a medicine, market and research area.</p>
         <div class="npi-research-results" data-npi-results hidden>
           <h3>Official source destinations</h3>
           <ul class="npi-research-list" data-npi-results-list></ul>
-          <p>Source links are not live NovaPharm API integrations or verified medicine matches. Always verify the current source record, date, jurisdiction and limitations.</p>
+          <p>Live US records come from official publisher APIs; other links open provider research pages. Results do not constitute validated medicine matches or medical advice. Check the record, date, jurisdiction and limitations.</p>
         </div>
       </div>
       <div class="npi-research-footer">
@@ -466,5 +466,5 @@
 <script src="/assets/js/visual-refinement.js" defer></script>
 <script type="module" src="/assets/js/marketing-attribution.js"></script>
   <script src="/assets/js/medicines-terminal-preview.js" defer></script>
-<script src="/assets/js/intelligence-research-launcher.js" defer></script><script src="/assets/js/intelligence-pricing.js" defer></script></body>
+<script src="/assets/js/intelligence-research-launcher.js" defer></script><script src="/assets/js/intelligence-live-research.js" defer></script><script src="/assets/js/intelligence-pricing.js" defer></script></body>
 </html>

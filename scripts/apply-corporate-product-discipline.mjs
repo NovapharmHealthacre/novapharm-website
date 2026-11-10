@@ -368,7 +368,6 @@ function oncologyMain() {
       <p class="npoc-hero-lead">A focused approach to oncology. A deeper commitment to evidence. A more hopeful tomorrow.</p>
       <div class="npoc-actions"><a class="npoc-button npoc-button-primary" href="#oncology-focus">Explore our oncology focus</a></div>
     </div></div>
-    <p class="npoc-image-note">Illustrative creative image. No patient, treatment result or NovaPharm facility is depicted.</p>
   </section>
   <section class="npoc-hope-focus" id="oncology-focus" aria-labelledby="npoc-focus-title">
     <div class="container npoc-focus-layout">
@@ -631,6 +630,15 @@ function materialize(relative, route, main, metadata = null, template = null) {
     if (!html.includes('href="/assets/css/oncology-editorial.css"')) {
       html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/oncology-editorial.css">\n</head>');
     }
+    // The owner-approved white visual system must load after the legacy dark Oncology CSS.
+    // Unique filename prevents browsers from reusing the old cached presentation.
+    if (!html.includes('href="/assets/css/oncology-hope-v2.css"')) {
+      html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/oncology-hope-v2.css">\n</head>');
+    }
+    html = html.replace(
+      '<link rel="preload" as="image" href="/assets/media/products/oncology-vial-handling.avif" type="image/avif" fetchpriority="high">',
+      '<link rel="preload" as="image" href="/assets/media/oncology/hope-tomorrow-portrait.jpg" type="image/jpeg" fetchpriority="high">'
+    );
   }
   if (route === "/products/nutraxin/order-request/" && !html.includes('href="/assets/css/nutraxin-order-request.css"')) {
     html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/nutraxin-order-request.css">\n</head>');
@@ -647,6 +655,9 @@ function materialize(relative, route, main, metadata = null, template = null) {
   }
   if (route === "/technology/" && !html.includes('src="/assets/js/intelligence-research-launcher.js"')) {
     html = html.replace("</body>", '<script src="/assets/js/intelligence-research-launcher.js" defer></script></body>');
+  }
+  if (route === "/technology/" && !html.includes('src="/assets/js/intelligence-live-research.js"')) {
+    html = html.replace("</body>", '<script src="/assets/js/intelligence-live-research.js" defer></script></body>');
   }
   if (route === "/technology/" && !html.includes('src="/assets/js/intelligence-pricing.js"')) {
     html = html.replace("</body>", '<script src="/assets/js/intelligence-pricing.js" defer></script></body>');

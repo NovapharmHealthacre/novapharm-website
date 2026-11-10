@@ -41,3 +41,6 @@ for (const { file, article } of legalPolicies) {
   const approved = generated.replace(/<article class="legal-content">[\s\S]*?<\/article>/, article);
   writeFileSync(file, approved, "utf8");
 }
+
+// Apply the owner-approved About page after every source rewrite.
+await import("./apply-about-editorial.mjs");

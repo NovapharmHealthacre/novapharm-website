@@ -11,6 +11,7 @@ const source = (path) => readFileSync(join(root,path), "utf8");
 const html = source("oncology/index.html");
 const visible = visibleTextFromHtml(html);
 const css = source("assets/css/oncology-editorial.css");
+const approvedLayout = source("assets/css/oncology-hope-v2.css");
 
 assert.deepEqual(navigation.find(([, href]) => href === "/oncology/"), ["Oncology","/oncology/"]);
 assert.ok(pageMeta.oncology?.title.includes("Oncology"));
@@ -28,7 +29,6 @@ for (const phrase of [
   "The next conversation starts here.",
   "Regulated wholesale supply has not commenced",
   "does not provide medical advice, direct patient services or a guarantee of product authorisation",
-  "Illustrative creative image.",
   "The contact page prepares an email draft; it does not submit or store enquiries."
 ]) assert.ok(html.includes(phrase), phrase);
 
@@ -43,8 +43,29 @@ assert.match(html, /id="scope-boundary"/);
 assert.match(html, /id="oncology-faqs"/);
 assert.match(html, /href="\/contact\/\?enquiry=Oncology%20%26%20specialist%20medicines"/);
 assert.match(html, /href="\/assets\/css\/oncology-editorial\.css"/);
+assert.ok(html.includes('href="/assets/css/oncology-hope-v2.css"'), "Cache-safe approved layout stylesheet must load");
+assert.ok(html.indexOf("oncology-hope-v2.css") > html.indexOf("oncology-editorial.css"), "Approved style must follow original stylesheet");
+assert.match(approvedLayout, /object-fit:contain/, "Portrait must preserve its full framing");
+assert.match(approvedLayout, /grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/, "All three Oncology visuals share a grid row");
+assert.match(approvedLayout, /npoc-focus-card span/, "Image labels must overlay on the cards");
+
+// The previous annotation cleanup must never consume the remainder of a media query.
+// Validate the intact mobile track, responsive card height and balanced stylesheet braces.
+assert.match(approvedLayout, /grid-template-columns:repeat\(3,minmax\(220px,1fr\)\)/,
+  "Oncology mobile art cards must retain a full-width horizontal grid track");
+assert.match(approvedLayout, /height:285px;/,
+  "Oncology mobile art cards must retain their approved card height");
+assert.equal((approvedLayout.match(/{/g) ?? []).length,
+  (approvedLayout.match(/}/g) ?? []).length,
+  "Oncology stylesheet declarations and responsive blocks must be balanced");
+
+assert.ok(!html.includes("href=\"/assets/media/products/oncology-vial-handling.avif\""), "Retired hero image must not preload");
 assert.match(html, /<img[^>]+hope-tomorrow-portrait\.jpg[^>]+fetchpriority="high"/);
-assert.match(css, /body\[data-page="oncology"\]/);\nassert.match(css, /npoc-hope-hero/);\nassert.match(html, /id="oncology-focus"/);
+assert.match(css, /body\[data-page="oncology"\]/);
+assert.match(css, /npoc-hope-hero/);
+assert.match(html, /id="oncology-focus"/);
+assert.doesNotMatch(html, /Illustrative creative image\. No patient, treatment result or NovaPharm facility is depicted\./, "Hero annotation removed from public page");
+assert.doesNotMatch(html, /class="npoc-image-note"/, "Hero should not carry a visible disclaimer badge");
 assert.match(css, /@media\(max-width:760px\)/);
 assert.match(css, /@media\(prefers-reduced-motion:reduce\)/);
 assert.match(css, /@media\(forced-colors:active\)/);

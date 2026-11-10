@@ -10,19 +10,19 @@
     "Null semantic or provenance fields are explicit gaps, not inferred approvals."
   ],
   "summary": {
-    "trackedAssetCount": 868,
+    "trackedAssetCount": 870,
     "byClassification": {
-      "KEEP": 868
+      "KEEP": 870
     },
     "byProvenanceStatus": {
-      "registered": 658,
+      "registered": 660,
       "registered-identical-delivery-copy": 12,
       "repository-generated-test-evidence": 198
     },
     "exactDuplicateGroups": 52,
-    "perceptualDuplicateCandidateGroups": 183,
+    "perceptualDuplicateCandidateGroups": 184,
     "overPublicDeliveryFileCeiling": 0,
-    "lcpRelevantAssets": 192
+    "lcpRelevantAssets": 194
   },
   "assets": [
     {
@@ -2241,6 +2241,106 @@
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
+      "path": "assets/media/about/novapharm-warehouse-original.jpg",
+      "canonicalDeliveryPath": "assets/media/about/novapharm-warehouse-original.jpg",
+      "format": "jpeg",
+      "bytes": 152189,
+      "width": 1600,
+      "height": 580,
+      "aspectRatio": 2.758621,
+      "sha256": "4433296aff1341e9c461a23efa75aa2a569c63ab0c9d3040a961bb24d4139f91",
+      "perceptualHash": "1969f8f8f8d878dc",
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Warehouse exterior photograph supplied directly by NovaPharm project owner for About page, 10 November 2026 (original 1600x580 JPEG)",
+      "licence": "Owner directly supplied photograph and approved its use on NovaPharm About page; photographed facility ownership and operating authorisation are not asserted",
+      "reviewStatus": "approved for About page visual 10 November 2026",
+      "technicalStatus": "owner-supplied-original-preserved-1600x580",
+      "provenanceRecord": null,
+      "semanticPurpose": "owner-supplied-corporate-warehouse-editorial-photograph",
+      "routes": [
+        "/about/"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "Wide exterior view of a modern warehouse building, with a glazed entrance, silver metal cladding and loading frontage",
+      "registeredCaption": "Warehouse photograph provided by NovaPharm. Regulated wholesale supply has not commenced.",
+      "observedAltText": [
+        "Wide exterior view of a modern warehouse building, with a glazed entrance, silver metal cladding and loading frontage"
+      ],
+      "observedCaptions": [
+        "Warehouse photograph provided by NovaPharm. Regulated wholesale supply has not commenced."
+      ],
+      "responsiveDerivatives": [
+        "assets/media/about/novapharm-warehouse.avif"
+      ],
+      "observedLoading": [],
+      "observedFetchPriority": [
+        "high"
+      ],
+      "lcpRelevance": true,
+      "usageCount": 4,
+      "referenceCount": 17,
+      "usageFiles": [
+        ".github/workflows/publish-aws-contact-production.yml",
+        "about/index.html",
+        "creative-assets/asset-register.json",
+        "scripts/apply-about-editorial.mjs"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": "visual-candidate-015",
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/media/about/novapharm-warehouse.avif",
+      "canonicalDeliveryPath": "assets/media/about/novapharm-warehouse.avif",
+      "format": "heif",
+      "bytes": 19948,
+      "width": 1200,
+      "height": 435,
+      "aspectRatio": 2.758621,
+      "sha256": "875fb49ddfd2ad40902387ccae33079e3a8ebfff76d49e0be33b69bfb502fcff",
+      "perceptualHash": "1969f8f8f8d878de",
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Image optimization derivative of assets/media/about/novapharm-warehouse-original.jpg (1200x435 AVIF)",
+      "licence": "Owner directly supplied source photograph and approved About page use; derivative for web performance, not new rights",
+      "reviewStatus": "approved for About page visual 10 November 2026",
+      "technicalStatus": "lossy-web-derivative-source-preserved",
+      "provenanceRecord": null,
+      "semanticPurpose": "optimized-responsive-corporate-warehouse-photo",
+      "routes": [
+        "/about/"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "Wide exterior view of a modern warehouse building, with a glazed entrance, silver metal cladding and loading frontage",
+      "registeredCaption": "Warehouse photograph provided by NovaPharm. Regulated wholesale supply has not commenced.",
+      "observedAltText": [
+        "Wide exterior view of a modern warehouse building, with a glazed entrance, silver metal cladding and loading frontage"
+      ],
+      "observedCaptions": [
+        "Warehouse photograph provided by NovaPharm. Regulated wholesale supply has not commenced."
+      ],
+      "responsiveDerivatives": [
+        "assets/media/about/novapharm-warehouse-original.jpg"
+      ],
+      "observedLoading": [],
+      "observedFetchPriority": [
+        "high"
+      ],
+      "lcpRelevance": true,
+      "usageCount": 4,
+      "referenceCount": 5,
+      "usageFiles": [
+        ".github/workflows/publish-aws-contact-production.yml",
+        "about/index.html",
+        "creative-assets/asset-register.json",
+        "scripts/apply-about-editorial.mjs"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": "visual-candidate-015",
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
       "path": "assets/media/cro/cro-delivery-architecture-1600.avif",
       "canonicalDeliveryPath": "assets/media/cro/cro-delivery-architecture-1600.avif",
       "format": "heif",
@@ -2278,7 +2378,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-015",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-016",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -2324,7 +2424,7 @@
         "scripts/capture-cro-owner-review.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-015",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-016",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -2365,7 +2465,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-015",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-016",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -2406,7 +2506,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-015",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-016",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -2447,7 +2547,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-015",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-016",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -2488,7 +2588,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-015",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-016",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -2529,7 +2629,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-015",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-016",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -2570,7 +2670,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-015",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-016",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -2666,7 +2766,7 @@
         "scripts/build-public-pages.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-016",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-017",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -2722,7 +2822,7 @@
         "sitemap-images.xml"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-016",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-017",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -2772,7 +2872,7 @@
         "cro/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-017",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-018",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -2817,7 +2917,7 @@
         "scripts/build-public-pages.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-016",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-017",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -2870,7 +2970,7 @@
         "audit/evidence/cro-lighthouse/mobile-compressed-3.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-016",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-017",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -2912,7 +3012,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-017",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-018",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -2969,7 +3069,7 @@
         "scripts/build-public-pages.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-016",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-017",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -3019,7 +3119,7 @@
         "cro/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-016",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-017",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -3069,7 +3169,7 @@
         "cro/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-017",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-018",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -5650,7 +5750,7 @@
         "scripts/validate-site.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-018",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-019",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -5702,7 +5802,7 @@
         "scripts/build-public-pages.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-018",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-019",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -5825,7 +5925,7 @@
         "news-insights/batch-to-buyer-pharmaceutical-traceability/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-019",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-020",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -5935,7 +6035,7 @@
         "news-insights/batch-to-buyer-pharmaceutical-traceability/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-020",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-021",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -5990,7 +6090,7 @@
         "news-insights/batch-to-buyer-pharmaceutical-traceability/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-019",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-020",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -6049,7 +6149,7 @@
         "src/content/insights/batch-to-buyer-traceability.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-019",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-020",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -6142,7 +6242,7 @@
         "news-insights/batch-to-buyer-pharmaceutical-traceability/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-020",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-021",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -6197,7 +6297,7 @@
         "news-insights/compliance-first-pharmaceutical-distribution-uk/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-021",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-022",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -6252,7 +6352,7 @@
         "news-insights/compliance-first-pharmaceutical-distribution-uk/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-022",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-023",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -6307,7 +6407,7 @@
         "news-insights/compliance-first-pharmaceutical-distribution-uk/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-023",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-024",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -6362,7 +6462,7 @@
         "news-insights/compliance-first-pharmaceutical-distribution-uk/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-021",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-022",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -6421,7 +6521,7 @@
         "src/content/insights/compliance-first-distribution.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-022",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-023",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -6514,7 +6614,7 @@
         "news-insights/compliance-first-pharmaceutical-distribution-uk/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-023",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-024",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -6569,7 +6669,7 @@
         "news-insights/gdp-qms-pharmaceutical-distribution-foundations/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-024",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-025",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -6624,7 +6724,7 @@
         "news-insights/gdp-qms-pharmaceutical-distribution-foundations/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-024",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-025",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -6679,7 +6779,7 @@
         "news-insights/gdp-qms-pharmaceutical-distribution-foundations/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-025",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-026",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -6734,7 +6834,7 @@
         "news-insights/gdp-qms-pharmaceutical-distribution-foundations/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-024",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-025",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -6793,7 +6893,7 @@
         "src/content/insights/gdp-qms-foundations.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-024",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-025",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -6887,7 +6987,7 @@
         "news-insights/gdp-qms-pharmaceutical-distribution-foundations/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-025",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-026",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -6942,7 +7042,7 @@
         "news-insights/oncology-supply-chain-demand-forecasting/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-026",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-027",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -6997,7 +7097,7 @@
         "news-insights/oncology-supply-chain-demand-forecasting/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-026",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-027",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -7052,7 +7152,7 @@
         "news-insights/oncology-supply-chain-demand-forecasting/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-027",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-028",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -7107,7 +7207,7 @@
         "news-insights/oncology-supply-chain-demand-forecasting/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-026",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-027",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -7166,7 +7266,7 @@
         "src/content/insights/oncology-demand-forecasting.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-026",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-027",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -7259,7 +7359,7 @@
         "news-insights/oncology-supply-chain-demand-forecasting/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-027",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-028",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -7314,7 +7414,7 @@
         "news-insights/plpi-pharmaceutical-supply-resilience/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-028",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-029",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -7369,7 +7469,7 @@
         "news-insights/plpi-pharmaceutical-supply-resilience/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-029",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-030",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -7424,7 +7524,7 @@
         "news-insights/plpi-pharmaceutical-supply-resilience/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-029",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-030",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -7479,7 +7579,7 @@
         "news-insights/plpi-pharmaceutical-supply-resilience/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-028",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-029",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -7538,7 +7638,7 @@
         "src/content/insights/plpi-supply-resilience.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-028",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-029",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -7631,7 +7731,7 @@
         "news-insights/plpi-pharmaceutical-supply-resilience/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-029",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-030",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -7686,7 +7786,7 @@
         "news-insights/three-pillar-pharmaceutical-sourcing-model/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-030",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-031",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -7741,7 +7841,7 @@
         "news-insights/three-pillar-pharmaceutical-sourcing-model/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-030",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-031",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -7796,7 +7896,7 @@
         "news-insights/three-pillar-pharmaceutical-sourcing-model/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-031",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-032",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -7851,7 +7951,7 @@
         "news-insights/three-pillar-pharmaceutical-sourcing-model/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-030",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-031",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -7910,7 +8010,7 @@
         "src/content/insights/three-pillar-sourcing.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-030",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-031",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -8003,7 +8103,7 @@
         "news-insights/three-pillar-pharmaceutical-sourcing-model/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-031",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-032",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -8055,7 +8155,7 @@
         "leadership/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-032",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-033",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -8107,7 +8207,7 @@
         "leadership/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-032",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-033",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -8159,7 +8259,7 @@
         "leadership/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-033",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-034",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -8211,7 +8311,7 @@
         "leadership/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-032",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-033",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -8263,7 +8363,7 @@
         "leadership/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-032",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-033",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -8315,7 +8415,7 @@
         "leadership/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-033",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-034",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -8367,7 +8467,7 @@
         "leadership/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-032",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-033",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -8430,7 +8530,7 @@
         "src/content/site-content.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-032",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-033",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -8482,7 +8582,7 @@
         "leadership/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-033",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-034",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -8534,7 +8634,7 @@
         "leadership/prabhakar-lahare/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-034",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-035",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -8586,7 +8686,7 @@
         "leadership/prabhakar-lahare/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-034",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-035",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -8638,7 +8738,7 @@
         "leadership/prabhakar-lahare/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-035",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-036",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -8690,7 +8790,7 @@
         "leadership/prabhakar-lahare/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-034",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-035",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -8742,7 +8842,7 @@
         "leadership/prabhakar-lahare/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-034",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-035",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -8794,7 +8894,7 @@
         "leadership/prabhakar-lahare/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-035",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-036",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -8846,7 +8946,7 @@
         "leadership/prabhakar-lahare/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-034",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-035",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -8906,7 +9006,7 @@
         "src/content/site-content.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-034",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-035",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -8958,7 +9058,7 @@
         "leadership/prabhakar-lahare/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-035",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-036",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -9010,7 +9110,7 @@
         "leadership/vishal-chakravarty/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-036",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-037",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -9071,7 +9171,7 @@
         "src/content/site-content.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-036",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-037",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -9123,7 +9223,7 @@
         "leadership/vishal-chakravarty/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-037",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-038",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -9175,7 +9275,7 @@
         "leadership/vishal-chakravarty/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-036",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-037",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -9227,7 +9327,7 @@
         "leadership/vishal-chakravarty/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-036",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-037",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -9279,7 +9379,7 @@
         "leadership/vishal-chakravarty/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-037",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-038",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -9331,7 +9431,7 @@
         "leadership/vishal-chakravarty/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-036",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-037",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -9384,7 +9484,7 @@
         "scripts/capture-cro-owner-review.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-036",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-037",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -9436,7 +9536,7 @@
         "leadership/vishal-chakravarty/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-037",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-038",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -9466,9 +9566,7 @@
       },
       "registeredAltText": "Executive and quality professionals reviewing pharmaceutical operating-model records and neutral product samples",
       "registeredCaption": "Representative operating-model review",
-      "observedAltText": [
-        "Professional reviewing controlled pharmaceutical operating information"
-      ],
+      "observedAltText": [],
       "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/about-operating-model-960.avif",
@@ -9478,19 +9576,16 @@
         "assets/media/modules/about-operating-model.jpg",
         "assets/media/modules/about-operating-model.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "about/index.html",
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-038",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-039",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -9520,9 +9615,7 @@
       },
       "registeredAltText": "Executive and quality professionals reviewing pharmaceutical operating-model records and neutral product samples",
       "registeredCaption": "Representative operating-model review",
-      "observedAltText": [
-        "Professional reviewing controlled pharmaceutical operating information"
-      ],
+      "observedAltText": [],
       "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/about-operating-model-960.avif",
@@ -9532,19 +9625,16 @@
         "assets/media/modules/about-operating-model.jpg",
         "assets/media/modules/about-operating-model.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "about/index.html",
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-038",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-039",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -9574,9 +9664,7 @@
       },
       "registeredAltText": "Executive and quality professionals reviewing pharmaceutical operating-model records and neutral product samples",
       "registeredCaption": "Representative operating-model review",
-      "observedAltText": [
-        "Professional reviewing controlled pharmaceutical operating information"
-      ],
+      "observedAltText": [],
       "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/about-operating-model-960.avif",
@@ -9586,19 +9674,16 @@
         "assets/media/modules/about-operating-model.jpg",
         "assets/media/modules/about-operating-model.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "about/index.html",
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-039",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-040",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -9628,9 +9713,7 @@
       },
       "registeredAltText": "Executive and quality professionals reviewing pharmaceutical operating-model records and neutral product samples",
       "registeredCaption": "Representative operating-model review",
-      "observedAltText": [
-        "Professional reviewing controlled pharmaceutical operating information"
-      ],
+      "observedAltText": [],
       "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/about-operating-model-960.avif",
@@ -9640,19 +9723,16 @@
         "assets/media/modules/about-operating-model.jpg",
         "assets/media/modules/about-operating-model.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "about/index.html",
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-038",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-039",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -9682,9 +9762,7 @@
       },
       "registeredAltText": "Executive and quality professionals reviewing pharmaceutical operating-model records and neutral product samples",
       "registeredCaption": "Representative operating-model review",
-      "observedAltText": [
-        "Professional reviewing controlled pharmaceutical operating information"
-      ],
+      "observedAltText": [],
       "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/about-operating-model-960.avif",
@@ -9694,15 +9772,12 @@
         "assets/media/modules/about-operating-model.jpg",
         "assets/media/modules/about-operating-model.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 6,
-      "referenceCount": 13,
+      "usageCount": 5,
+      "referenceCount": 6,
       "usageFiles": [
-        "about/index.html",
         "apps/corporate/data/pages.ts",
         "creative-assets/8k-master-register.json",
         "creative-assets/module-media-asset-register.json",
@@ -9710,7 +9785,7 @@
         "sitemap-images.xml"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-038",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-039",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -9740,9 +9815,7 @@
       },
       "registeredAltText": "Executive and quality professionals reviewing pharmaceutical operating-model records and neutral product samples",
       "registeredCaption": "Representative operating-model review",
-      "observedAltText": [
-        "Professional reviewing controlled pharmaceutical operating information"
-      ],
+      "observedAltText": [],
       "observedCaptions": [],
       "responsiveDerivatives": [
         "assets/media/modules/about-operating-model-960.avif",
@@ -9752,19 +9825,16 @@
         "assets/media/modules/about-operating-model.jpg",
         "assets/media/modules/about-operating-model.webp"
       ],
-      "observedLoading": [
-        "lazy"
-      ],
+      "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "about/index.html",
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-039",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-040",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -9814,7 +9884,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-040",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-041",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -9864,7 +9934,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-040",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-041",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -9914,7 +9984,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-041",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-042",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -9964,7 +10034,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-040",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-041",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -10019,7 +10089,7 @@
         "seo/generated/social-image-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-040",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-041",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -10069,7 +10139,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-041",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-042",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -10123,7 +10193,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-042",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-043",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -10231,7 +10301,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-043",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-044",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -10285,7 +10355,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-042",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-043",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -10342,7 +10412,7 @@
         "sitemap-images.xml"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-042",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-043",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -10396,7 +10466,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-043",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-044",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -10450,7 +10520,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-044",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-045",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -10504,7 +10574,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-044",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-045",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -10558,7 +10628,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-044",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-045",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -10612,7 +10682,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-044",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-045",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -10669,7 +10739,7 @@
         "sitemap-images.xml"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-044",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-045",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -10723,7 +10793,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-044",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-045",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -10773,7 +10843,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-045",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-046",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -10823,7 +10893,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-045",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-046",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -10873,7 +10943,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-046",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-047",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -10923,7 +10993,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-045",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-046",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -10976,7 +11046,7 @@
         "seo/generated/social-image-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-045",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-046",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -11026,7 +11096,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-046",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-047",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -11080,7 +11150,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-047",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-048",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -11134,7 +11204,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-047",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-048",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -11188,7 +11258,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-048",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-049",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -11242,7 +11312,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-049",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-050",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -11300,7 +11370,7 @@
         "sitemap-images.xml"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-049",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-050",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -11354,7 +11424,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-048",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-049",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -11404,7 +11474,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-050",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-051",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -11504,7 +11574,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-050",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-051",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -11554,7 +11624,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-050",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-051",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -11609,7 +11679,7 @@
         "seo/generated/social-image-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-050",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-051",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -11659,7 +11729,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-050",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-051",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -11713,7 +11783,7 @@
         "investor-information/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-051",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-052",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -11767,7 +11837,7 @@
         "investor-information/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-052",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-053",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -11821,7 +11891,7 @@
         "investor-information/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-053",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-054",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -11875,7 +11945,7 @@
         "investor-information/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-051",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-052",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -11932,7 +12002,7 @@
         "sitemap-images.xml"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-052",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-053",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -11986,7 +12056,7 @@
         "investor-information/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-053",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-054",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -12040,7 +12110,7 @@
         "legal/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-054",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-055",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -12094,7 +12164,7 @@
         "legal/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-054",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-055",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -12148,7 +12218,7 @@
         "legal/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-054",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-055",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -12202,7 +12272,7 @@
         "legal/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-054",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-055",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -12259,7 +12329,7 @@
         "sitemap-images.xml"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-054",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-055",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -12313,7 +12383,7 @@
         "legal/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-054",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-055",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -12363,7 +12433,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-055",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-056",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -12463,7 +12533,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-056",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-057",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -12513,7 +12583,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-055",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-056",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -12567,7 +12637,7 @@
         "seo/generated/social-image-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-055",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-056",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -12617,7 +12687,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-056",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-057",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -12671,7 +12741,7 @@
         "products/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-057",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-058",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -12725,7 +12795,7 @@
         "products/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-057",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-058",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -12779,7 +12849,7 @@
         "products/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-058",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-059",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -12833,7 +12903,7 @@
         "products/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-057",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-058",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -12892,7 +12962,7 @@
         "sitemap-images.xml"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-057",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-058",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -12946,7 +13016,7 @@
         "products/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-058",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-059",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -12995,7 +13065,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-059",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-060",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -13044,7 +13114,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-060",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-061",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -13093,7 +13163,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-060",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-061",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -13142,7 +13212,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-059",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-060",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -13200,7 +13270,7 @@
         "seo/generated/social-image-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-059",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-060",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -13249,7 +13319,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-060",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-061",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -13306,7 +13376,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-061",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-062",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -13363,7 +13433,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-061",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-062",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -13420,7 +13490,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-062",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-063",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -13477,7 +13547,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-061",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-062",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -13540,7 +13610,7 @@
         "sitemap-images.xml"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-061",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-062",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -13597,7 +13667,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-062",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-063",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -13647,7 +13717,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-063",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-064",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -13697,7 +13767,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-063",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-064",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -13747,7 +13817,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-064",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-065",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -13797,7 +13867,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-063",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-064",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -13851,7 +13921,7 @@
         "technology/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-063",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-064",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -13903,7 +13973,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-064",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-065",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -13978,7 +14048,7 @@
       "observedFetchPriority": [],
       "lcpRelevance": false,
       "usageCount": 3,
-      "referenceCount": 3,
+      "referenceCount": 5,
       "usageFiles": [
         "docs/application-media-provenance.json",
         "oncology/index.html",
@@ -14232,7 +14302,7 @@
         "scripts/apply-visual-refinement.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-065",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-066",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -14276,7 +14346,7 @@
         "scripts/finalise-social-cards.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-065",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-066",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -14360,7 +14430,7 @@
         "scripts/apply-visual-refinement.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-066",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-067",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -14404,7 +14474,7 @@
         "scripts/finalise-social-cards.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-066",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-067",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -14446,7 +14516,7 @@
         "scripts/apply-visual-refinement.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-066",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-067",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -14657,7 +14727,7 @@
         "scripts/apply-visual-refinement.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-067",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-068",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -14700,7 +14770,7 @@
         "scripts/apply-visual-refinement.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-067",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-068",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -14742,7 +14812,7 @@
         "scripts/apply-visual-refinement.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-067",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-068",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -14841,7 +14911,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-068",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-069",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -14890,7 +14960,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-069",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-070",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -14939,7 +15009,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-068",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-069",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -14990,7 +15060,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-069",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-070",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -15040,7 +15110,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-070",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-071",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -15089,7 +15159,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-071",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-072",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -15138,7 +15208,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-070",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-071",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -15187,7 +15257,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-071",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-072",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -15238,7 +15308,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-070",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-071",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -15288,7 +15358,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-072",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-073",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -15337,7 +15407,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-073",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-074",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -15386,7 +15456,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-072",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-073",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -15435,7 +15505,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-073",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-074",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -15486,7 +15556,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-072",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-073",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -15587,7 +15657,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-074",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-075",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -15637,7 +15707,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-075",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-076",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -15687,7 +15757,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-074",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-075",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -15739,7 +15809,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-075",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-076",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -15789,7 +15859,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-076",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-077",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -15838,7 +15908,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-077",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-078",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -15887,7 +15957,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-076",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-077",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -15936,7 +16006,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-077",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-078",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -16037,7 +16107,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-078",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-079",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -16086,7 +16156,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-079",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-080",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -16135,7 +16205,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-078",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-079",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -16184,7 +16254,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-079",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-080",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -16235,7 +16305,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-078",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-079",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -16285,7 +16355,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-080",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-081",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -16334,7 +16404,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-080",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-081",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -16383,7 +16453,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-080",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-081",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -16432,7 +16502,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-080",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-081",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -16483,7 +16553,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-080",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-081",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -16584,7 +16654,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-081",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-082",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -16634,7 +16704,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-082",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-083",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -16684,7 +16754,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-081",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-082",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -16736,7 +16806,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-082",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-083",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -16835,7 +16905,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-083",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-084",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -16884,7 +16954,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-084",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-085",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -16933,7 +17003,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-083",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-084",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -16984,7 +17054,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-084",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-085",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -17034,7 +17104,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-085",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-086",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -17132,7 +17202,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-085",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-086",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -17232,7 +17302,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-085",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-086",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -17283,7 +17353,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-086",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-087",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -17333,7 +17403,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-087",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-088",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -17383,7 +17453,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-086",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-087",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -17433,7 +17503,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-087",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-088",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -17485,7 +17555,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-086",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-087",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -17633,7 +17703,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-088",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-089",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -17733,7 +17803,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-088",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-089",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -17836,7 +17906,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-089",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-090",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -17887,7 +17957,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-090",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-091",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -17940,7 +18010,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-089",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-090",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -17995,7 +18065,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-090",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-091",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -18094,7 +18164,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-091",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-092",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -18143,7 +18213,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-090",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-091",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -18192,7 +18262,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-091",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-092",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -18243,7 +18313,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-090",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-091",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -18342,7 +18412,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-092",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-093",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -18391,7 +18461,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-093",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-094",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -18440,7 +18510,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-092",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-093",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -18491,7 +18561,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-093",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-094",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -18541,7 +18611,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-094",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-095",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -18590,7 +18660,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-095",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-096",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -18639,7 +18709,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-094",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-095",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -18688,7 +18758,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-095",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-096",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -18739,7 +18809,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-094",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-095",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -18789,7 +18859,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-096",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-097",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -18838,7 +18908,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-097",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-098",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -18887,7 +18957,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-096",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-097",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -18936,7 +19006,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-097",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-098",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -18987,7 +19057,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-096",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-097",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -19086,7 +19156,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-098",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-099",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -19135,7 +19205,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-099",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-100",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -19184,7 +19254,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-098",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-099",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -19235,7 +19305,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-099",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-100",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -19286,7 +19356,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-100",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-101",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -19336,7 +19406,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-081",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-082",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -19386,7 +19456,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-100",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-101",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -19436,7 +19506,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-081",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-082",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -19488,7 +19558,7 @@
         "src/content/nutraxin-showcase.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-100",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-101",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -19538,7 +19608,7 @@
         "index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-101",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-102",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -19585,7 +19655,7 @@
         "index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-101",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-102",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -19635,7 +19705,7 @@
         "index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-102",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-103",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -19680,19 +19750,20 @@
       ],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 7,
-      "referenceCount": 7,
+      "usageCount": 8,
+      "referenceCount": 8,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
         "apps/corporate/components/oncology-editorial.tsx",
         "creative-assets/image-asset-register.json",
         "docs/oncology-media-provenance.json",
         "index.html",
-        "oncology/index.html",
-        "scripts/build-public-pages.mjs"
+        "scripts/apply-corporate-product-discipline.mjs",
+        "scripts/build-public-pages.mjs",
+        "scripts/test-oncology-content.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-101",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-102",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -19758,7 +19829,7 @@
         "sitemap-images.xml"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-101",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-102",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -19813,7 +19884,7 @@
         "index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-102",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-103",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -19858,7 +19929,7 @@
         "docs/oncology-media-provenance.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-103",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-104",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -19904,7 +19975,7 @@
         "scripts/finalise-social-cards.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-103",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-104",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -19949,7 +20020,7 @@
         "docs/oncology-media-provenance.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-103",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-104",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -19991,7 +20062,7 @@
         "scripts/apply-visual-refinement.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-104",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-105",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -20034,7 +20105,7 @@
         "scripts/apply-visual-refinement.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-104",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-105",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -20122,7 +20193,7 @@
         "scripts/apply-visual-refinement.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-105",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-106",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -20170,7 +20241,7 @@
         "scripts/finalise-social-cards.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-105",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-106",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -20216,7 +20287,7 @@
         "scripts/apply-visual-refinement.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-105",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-106",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -20266,7 +20337,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-106",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-107",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -20366,7 +20437,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-106",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-107",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -20416,7 +20487,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-106",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-107",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -20466,7 +20537,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-106",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-107",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -20516,7 +20587,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-106",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-107",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -20573,7 +20644,7 @@
         "regulatory-services/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-107",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-108",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -20630,7 +20701,7 @@
         "regulatory-services/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-107",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-108",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -20687,7 +20758,7 @@
         "regulatory-services/index.html"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-108",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-109",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -20745,7 +20816,7 @@
         "scripts/apply-pages-presentation-parity.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-107",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-108",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -20806,7 +20877,7 @@
         "sitemap-images.xml"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-107",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-108",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -20864,7 +20935,7 @@
         "scripts/apply-pages-presentation-parity.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-108",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-109",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -20913,7 +20984,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-109",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-110",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -21011,7 +21082,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-110",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-111",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -21060,7 +21131,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-109",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-110",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -21112,7 +21183,7 @@
         "scripts/test-visual-contracts.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-109",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-110",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -21161,7 +21232,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-110",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-111",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -21211,7 +21282,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-111",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-112",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -21261,7 +21332,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-111",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-112",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -21311,7 +21382,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-112",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-113",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -21361,7 +21432,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-111",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-112",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -21411,7 +21482,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-111",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-112",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -21461,7 +21532,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-112",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-113",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -21511,7 +21582,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-113",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-114",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -21611,7 +21682,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-114",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-115",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -21661,7 +21732,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-113",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-114",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -21711,7 +21782,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-113",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-114",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -21761,7 +21832,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-114",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-115",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -21811,7 +21882,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-115",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-116",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -21861,7 +21932,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-115",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-116",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -21911,7 +21982,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-116",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-117",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -21961,7 +22032,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-115",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-116",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -22011,7 +22082,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-115",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-116",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -22061,7 +22132,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-116",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-117",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -22111,7 +22182,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-117",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-118",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -22161,7 +22232,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-117",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-118",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -22211,7 +22282,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-118",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-119",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -22315,7 +22386,7 @@
         "sitemap-images.xml"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-117",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-118",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -22365,7 +22436,7 @@
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-118",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-119",
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -22445,7 +22516,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-119",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-120",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -22482,7 +22553,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-120",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-121",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -22519,7 +22590,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-121",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-122",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -22593,7 +22664,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-122",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-123",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -22630,7 +22701,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-123",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-124",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -22667,7 +22738,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-124",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-125",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -22704,7 +22775,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-125",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-126",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -22778,7 +22849,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-126",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-127",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -22852,7 +22923,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-127",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-128",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -22926,7 +22997,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-128",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-129",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -22963,7 +23034,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-129",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-130",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23000,7 +23071,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-130",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-131",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23037,7 +23108,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-131",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-132",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23074,7 +23145,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-132",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-133",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23148,7 +23219,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-133",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-134",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23185,7 +23256,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-134",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-135",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23222,7 +23293,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-135",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-136",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23296,7 +23367,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-136",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-137",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23333,7 +23404,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-119",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-120",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23370,7 +23441,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-120",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-121",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23407,7 +23478,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-121",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-122",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23481,7 +23552,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-122",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-123",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23518,7 +23589,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-123",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-124",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23555,7 +23626,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-124",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-125",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23592,7 +23663,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-125",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-126",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23666,7 +23737,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-126",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-127",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23740,7 +23811,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-127",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-128",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23814,7 +23885,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-128",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-129",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23851,7 +23922,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-129",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-130",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23888,7 +23959,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-130",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-131",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23925,7 +23996,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-131",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-132",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -23962,7 +24033,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-132",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-133",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -24036,7 +24107,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-133",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-134",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -24073,7 +24144,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-134",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-135",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -24110,7 +24181,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-135",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-136",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -24184,7 +24255,7 @@
         "audit/evidence/art-direction/after/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-136",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-137",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -24295,7 +24366,7 @@
         "audit/evidence/art-direction/before/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-121",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-122",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -24443,7 +24514,7 @@
         "audit/evidence/art-direction/before/manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-124",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-125",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -25109,7 +25180,7 @@
         "scripts/capture-cro-owner-review.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-137",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-138",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -25214,7 +25285,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-137",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-138",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -25989,7 +26060,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-024",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-138",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-139",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26024,7 +26095,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-025",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-139",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-140",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26059,7 +26130,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-026",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-140",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-141",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26094,7 +26165,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-027",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-141",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-142",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26129,7 +26200,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-028",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-142",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-143",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26164,7 +26235,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-029",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-143",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-144",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26199,7 +26270,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-030",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-144",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-145",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26234,7 +26305,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-031",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-145",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-146",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26269,7 +26340,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-032",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-146",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-147",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26304,7 +26375,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-033",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-139",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-140",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26339,7 +26410,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-034",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-140",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-141",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26374,7 +26445,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-035",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-141",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-142",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26409,7 +26480,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-036",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-147",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-148",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26444,7 +26515,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-037",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-143",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-144",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26479,7 +26550,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-038",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-144",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-145",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26514,7 +26585,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-039",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-145",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-146",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26551,7 +26622,7 @@
         "audit/evidence/design-system/visual-regression-report.json"
       ],
       "exactDuplicateGroup": "exact-024",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-138",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-139",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26588,7 +26659,7 @@
         "audit/evidence/design-system/visual-regression-report.json"
       ],
       "exactDuplicateGroup": "exact-025",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-139",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-140",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26625,7 +26696,7 @@
         "audit/evidence/design-system/visual-regression-report.json"
       ],
       "exactDuplicateGroup": "exact-026",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-140",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-141",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26662,7 +26733,7 @@
         "audit/evidence/design-system/visual-regression-report.json"
       ],
       "exactDuplicateGroup": "exact-027",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-141",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-142",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26699,7 +26770,7 @@
         "audit/evidence/design-system/visual-regression-report.json"
       ],
       "exactDuplicateGroup": "exact-028",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-142",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-143",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26736,7 +26807,7 @@
         "audit/evidence/design-system/visual-regression-report.json"
       ],
       "exactDuplicateGroup": "exact-029",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-143",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-144",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26773,7 +26844,7 @@
         "audit/evidence/design-system/visual-regression-report.json"
       ],
       "exactDuplicateGroup": "exact-030",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-144",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-145",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26810,7 +26881,7 @@
         "audit/evidence/design-system/visual-regression-report.json"
       ],
       "exactDuplicateGroup": "exact-031",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-145",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-146",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26847,7 +26918,7 @@
         "audit/evidence/design-system/visual-regression-report.json"
       ],
       "exactDuplicateGroup": "exact-032",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-146",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-147",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26884,7 +26955,7 @@
         "audit/evidence/design-system/visual-regression-report.json"
       ],
       "exactDuplicateGroup": "exact-033",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-139",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-140",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26921,7 +26992,7 @@
         "audit/evidence/design-system/visual-regression-report.json"
       ],
       "exactDuplicateGroup": "exact-034",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-140",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-141",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26958,7 +27029,7 @@
         "audit/evidence/design-system/visual-regression-report.json"
       ],
       "exactDuplicateGroup": "exact-035",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-141",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-142",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -26995,7 +27066,7 @@
         "audit/evidence/design-system/visual-regression-report.json"
       ],
       "exactDuplicateGroup": "exact-036",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-147",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-148",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -27032,7 +27103,7 @@
         "audit/evidence/design-system/visual-regression-report.json"
       ],
       "exactDuplicateGroup": "exact-037",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-143",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-144",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -27069,7 +27140,7 @@
         "audit/evidence/design-system/visual-regression-report.json"
       ],
       "exactDuplicateGroup": "exact-038",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-144",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-145",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -27106,7 +27177,7 @@
         "audit/evidence/design-system/visual-regression-report.json"
       ],
       "exactDuplicateGroup": "exact-039",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-145",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-146",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28054,7 +28125,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-148",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-149",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28091,7 +28162,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-149",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-150",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28128,7 +28199,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-150",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-151",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28202,7 +28273,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-151",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-152",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28239,7 +28310,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": "exact-040",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-152",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-153",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28276,7 +28347,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": "exact-040",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-152",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-153",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28313,7 +28384,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-153",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-154",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28350,7 +28421,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-154",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-155",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28387,7 +28458,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-148",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-149",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28424,7 +28495,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-149",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-150",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28461,7 +28532,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-150",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-151",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28535,7 +28606,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-151",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-152",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28572,7 +28643,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": "exact-041",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-152",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-153",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28609,7 +28680,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": "exact-041",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-152",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-153",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28646,7 +28717,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-153",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-154",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28683,7 +28754,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-154",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-155",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28757,7 +28828,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-155",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-156",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28794,7 +28865,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-156",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-157",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28831,7 +28902,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-157",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-158",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28868,7 +28939,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-158",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-159",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28942,7 +29013,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-155",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-156",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -28979,7 +29050,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-156",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-157",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -29016,7 +29087,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-157",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-158",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -29053,7 +29124,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-158",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-159",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -29090,7 +29161,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-159",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-160",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -29127,7 +29198,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-159",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-160",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -29164,7 +29235,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-160",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-161",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -29238,7 +29309,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-161",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-162",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -29275,7 +29346,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-159",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-160",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -29349,7 +29420,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-160",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-161",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -29423,7 +29494,7 @@
         "audit/evidence/final-visual-lock/selected-screenshot-manifest.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-161",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-162",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -29684,7 +29755,7 @@
         "docs/data/medicines-intelligence-visual-acceptance.md"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-162",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-163",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -29762,7 +29833,7 @@
         "docs/data/medicines-intelligence-visual-acceptance.md"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-163",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-164",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -29801,7 +29872,7 @@
         "docs/data/medicines-intelligence-visual-acceptance.md"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-164",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-165",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -29879,7 +29950,7 @@
         "docs/data/medicines-intelligence-visual-acceptance.md"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-162",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-163",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -29917,7 +29988,7 @@
         "audit/evidence/medicines-intelligence/provenance.json"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-163",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-164",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -29956,7 +30027,7 @@
         "docs/data/medicines-intelligence-visual-acceptance.md"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-164",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-165",
       "budgetReview": "REVIEW_EVIDENCE_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -30625,7 +30696,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-165",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-166",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -30730,7 +30801,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-165",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-166",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -30905,7 +30976,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-165",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-166",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -31010,7 +31081,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-166",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-167",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -31045,7 +31116,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-166",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-167",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -31080,7 +31151,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-166",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-167",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -31115,7 +31186,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-166",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-167",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -31745,7 +31816,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-167",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-168",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -31780,7 +31851,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-167",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-168",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -31815,7 +31886,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-167",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-168",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -32375,7 +32446,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-166",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-167",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -32515,7 +32586,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-043",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-168",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-169",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -32585,7 +32656,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-044",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-169",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-170",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -32620,7 +32691,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-043",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-168",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-169",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -32690,7 +32761,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-044",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-169",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-170",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -33565,7 +33636,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-170",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-171",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -33635,7 +33706,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-170",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-171",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -33670,7 +33741,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-170",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-171",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -33740,7 +33811,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-171",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-172",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -33810,7 +33881,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-171",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-172",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -33845,7 +33916,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-171",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-172",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -33880,7 +33951,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-171",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-172",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -33950,7 +34021,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-166",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-167",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -33985,7 +34056,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-166",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-167",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -34020,7 +34091,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-166",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-167",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -34055,7 +34126,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-166",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-167",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -34125,7 +34196,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-046",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-172",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-173",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -34160,7 +34231,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-047",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-173",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-174",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -34195,7 +34266,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-048",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-174",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-175",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -34510,7 +34581,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-175",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-176",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -34615,7 +34686,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-046",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-172",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-173",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -34825,7 +34896,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-175",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-176",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -34860,7 +34931,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-175",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-176",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -35280,7 +35351,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-166",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-167",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -35455,7 +35526,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-047",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-173",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-174",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -35490,7 +35561,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-048",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-174",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-175",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -35595,7 +35666,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": "exact-048",
-      "perceptualDuplicateCandidateGroup": "visual-candidate-174",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-175",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -35840,7 +35911,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-176",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-177",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -35875,7 +35946,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-176",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-177",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -35910,7 +35981,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-176",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-177",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -35980,7 +36051,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-177",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-178",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -36015,7 +36086,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-177",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-178",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -36050,7 +36121,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-177",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-178",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -36155,7 +36226,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-178",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-179",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -36190,7 +36261,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-178",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-179",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -36225,7 +36296,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-179",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-180",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -36295,7 +36366,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-179",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-180",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -36330,7 +36401,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-166",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-167",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -36400,7 +36471,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-180",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-181",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -36470,7 +36541,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-180",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-181",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -36505,7 +36576,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-180",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-181",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -36575,7 +36646,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-181",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-182",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -36645,7 +36716,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-181",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-182",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -36750,7 +36821,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-166",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-167",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -36820,7 +36891,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-182",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-183",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -36855,7 +36926,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-182",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-183",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -36890,7 +36961,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-182",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-183",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -36925,7 +36996,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-182",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-183",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -36995,7 +37066,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-183",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-184",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -37065,7 +37136,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-183",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-184",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -37100,7 +37171,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-183",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-184",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -37135,7 +37206,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-183",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-184",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -37170,7 +37241,7 @@
       "referenceCount": 0,
       "usageFiles": [],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-166",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-167",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -37259,7 +37330,7 @@
         "scripts/test-owner-corrections.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-032",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-033",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -37313,7 +37384,7 @@
         "scripts/test-owner-corrections.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-034",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-035",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     },
     {
@@ -37367,7 +37438,7 @@
         "scripts/test-owner-corrections.mjs"
       ],
       "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": "visual-candidate-036",
+      "perceptualDuplicateCandidateGroup": "visual-candidate-037",
       "budgetReview": "REVIEW_GOVERNED_SOURCE_MASTER_EXEMPT_FROM_PUBLIC_DELIVERY_BUDGET"
     }
   ]

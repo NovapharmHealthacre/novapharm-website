@@ -29,7 +29,7 @@ test("ESCO has a 12-item quotation list with contact-form prefill but no payment
   const fallback=readFileSync("assets/js/contact-email-draft.js","utf8");
   assert.match(builder,/data-esco-add/);
   assert.match(builder,/data-esco-quote-items/);
-  assert.match(builder,/Request a confirmed quote/);
+  assert.match(builder,/data-esco-order-request-form/);
   assert.match(builder,/products\/esco\/bag\/index.html/);
   assert.match(builder,/data-esco-bag-items/);
   assert.match(interaction,/const MAX_ITEMS = 12/);
@@ -70,14 +70,14 @@ test("all 373 ESCO entries have product-specific, accurately labelled concept pr
   assert.equal((css.match(/:is\(\.esco-category-image,\.esco-product-art\)\[data-esco-photo=/g)||[]).length,12);
 });
 
-test("consumer Bag shows estimates, retains quote flow and never solicits or processes card payments",()=>{
+test("Bag shows merchant base amounts, retains request flow, and sends no card details from the browser",()=>{
   const generator=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
   const interaction=readFileSync("assets/js/esco-catalogue.js","utf8");
   const bag=readFileSync("assets/js/esco-bag.js","utf8");
   assert.match(generator,/data-esco-subtotal/);
   assert.match(generator,/data-esco-bag-quote/);
   assert.match(generator,/data-esco-card-checkout disabled/);
-  assert.match(generator,/UK guide/);
+  assert.match(generator,/Base price/);
   assert.match(interaction,/guidePence/);
   assert.match(bag,/MAX_ITEMS = 12/);
   assert.match(bag,/requestQuoteOnly !== true/);
@@ -260,9 +260,9 @@ test("ESCO hero and product details stay in separate responsive grid tracks",()=
 test("ESCO Bag explains quote-only selections without authorising guide-price charges",()=>{
  const bag=readFileSync("assets/js/esco-bag.js","utf8");
  const shop=readFileSync("assets/js/esco-catalogue.js","utf8");
- assert.match(bag,/lines\.every\(item => approvedCatalogIds\.has\(item\.id\) && approvedUnitPricesPence\.has\(item\.id\)\)/);
+ assert.match(bag,/lines\.every\(item => approvedCatalogIds\.has\(item\.id\) && approvedUnitPricesPence\.has\(item\.id\) && item\.quantity <= MAX_CARD_QTY\)/);
  assert.match(bag,/quoteOnly = paymentServiceReady/);
- assert.match(bag,/catalogue guide prices are not payable prices/i);
+ assert.match(bag,/product and delivery confirmation before payment/i);
  assert.match(bag,/\/products\/esco\/\?availability=ready#esco-catalogue/);
  assert.match(shop,/get\("availability"\) === "ready"/);
  assert.match(bag,/checkoutApiOrigin \+ "\/checkout"/);
@@ -288,8 +288,8 @@ test("ESCO Bag has no greyed checkout dead end and retains server-only payment a
  const bag=readFileSync("assets/js/esco-bag.js","utf8");
  const css=readFileSync("assets/css/esco-catalogue.css","utf8");
  assert.match(bag,/checkoutButton\.hidden = !eligible/);
- assert.match(bag,/Continue with order request/);
- assert.match(bag,/Request a formal quotation/);
+ assert.match(bag,/orderRequestForm\.hidden = eligible \|\| !lines\.length/);
+ assert.match(bag,/Contact product support/);
  assert.match(bag,/approvedUnitPricesPence\.has\(item\.id\)/);
  assert.match(bag,/checkoutApiOrigin \+ "\/checkout"/);
  assert.match(css,/\.esco-shop-bag \.esco-bag-pay\[hidden\]\{display:none!important;\}/);
