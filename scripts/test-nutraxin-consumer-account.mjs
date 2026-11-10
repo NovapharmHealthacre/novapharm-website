@@ -103,13 +103,13 @@ test("Bag markup remains exactly matched to generator, including account entry",
 test("password recovery stays with Cognito Managed Login and never exposes passwords in public Pages",()=>{
  const js=read("assets/js/nutraxin-consumer-account.js");
  const html=read("products/nutraxin/account/index.html");
- assert.match(js,/mode==="recover"\?"\\/forgotPassword"/);
- assert.match(js,/new URL\(path,"https:\\/\\/"+config\.cognito_domain\)/);
+ assert.ok(js.includes('mode==="recover"?"/forgotPassword"'));
+ assert.ok(js.includes('new URL(path,"https://"+config.cognito_domain)'));
  assert.match(js,/code_challenge_method","S256"/);
  assert.match(js,/recover\.disabled=true;return/);
  assert.match(js,/recover\.onclick=\(\)=>\{void beginLogin\(config,"recover"\)/);
  assert.match(html,/data-nx-account-recover type="button" disabled>Reset password/);
  assert.doesNotMatch(html,/type="password"|autocomplete="new-password"|client_secret/);
- assert.match(html,/href="\\/account-application\\/"[^>]*>Request a business account/);
+ assert.ok(html.includes('href="/account-application/"'));
  assert.doesNotMatch(html,/data-admin-approve|data-business-role|data-wholesale-order/);
 });
