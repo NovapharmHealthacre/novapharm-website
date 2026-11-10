@@ -1,4 +1,5 @@
 name: Reconcile approved Earth hero image inventory
+# Re-run against the current merged branch and approved three-collection validator.
 
 on:
   push:
