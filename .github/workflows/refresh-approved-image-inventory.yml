@@ -6,13 +6,17 @@ on:
       - fix/approved-about-module-contract-20261110
     paths:
       - .github/workflows/refresh-approved-image-inventory.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/refresh-approved-image-inventory.yml
 
 permissions:
   contents: write
 
 jobs:
   refresh-inventory-only:
-    if: github.ref == 'refs/heads/fix/approved-about-module-contract-20261110'
+    if: github.ref == 'refs/heads/fix/approved-about-module-contract-20261110' || (github.event_name == 'pull_request' && github.head_ref == 'fix/approved-about-module-contract-20261110' && github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
