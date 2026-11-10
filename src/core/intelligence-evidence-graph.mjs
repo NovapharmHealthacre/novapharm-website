@@ -35,9 +35,9 @@ function permittedGrant(grant, row, workspaceId, asOf) {
     typeof grant.rightsRevision !== "string" || !/^[A-Za-z0-9._:-]{1,128}$/.test(grant.rightsRevision)) return false;
   // Current active rights are required even for historical as-of queries.
   if (typeof grant.validFrom !== "string" || !Number.isFinite(Date.parse(grant.validFrom)) ||
-    grant.validFrom > asOf) return false;
+    Date.parse(grant.validFrom) > Date.parse(asOf)) return false;
   if (grant.validUntil != null && (typeof grant.validUntil !== "string" ||
-    !Number.isFinite(Date.parse(grant.validUntil)) || grant.validUntil <= asOf)) return false;
+    !Number.isFinite(Date.parse(grant.validUntil)) || Date.parse(grant.validUntil) <= Date.parse(asOf))) return false;
   return true;
 }
 
@@ -74,7 +74,7 @@ export async function readGovernedMedicineEvidenceGraph({
   for (const row of records) {
     // Atlas's observed_at query is not sufficient for an as-of read:
     // records not yet ingested at that time cannot enter historical views.
-    if (row.observed_at > asOf || row.recorded_at > asOf) continue;
+    if (Date.parse(row.observed_at) > Date.parse(asOf) || Date.parse(row.recorded_at) > Date.parse(asOf)) continue;
     const grant = await resolveSourceGrant({
       workspaceId: scoped.workspace_id, sourceId: row.source_id,
       sourceVersion: row.source_version, purpose, asOf
