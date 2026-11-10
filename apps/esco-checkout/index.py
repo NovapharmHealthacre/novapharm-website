@@ -25,6 +25,9 @@ POLICY_PARAMETER = os.environ.get("POLICY_PARAMETER", "")
 ORDERS_TABLE = os.environ.get("ORDERS_TABLE", "")
 STRIPE_SECRET_ID = os.environ.get("STRIPE_SECRET_ID", "")
 WEBHOOK_SECRET_ID = os.environ.get("WEBHOOK_SECRET_ID", "")
+ESCO_APPROVAL_BUCKET = os.environ.get("ESCO_APPROVAL_BUCKET", "")
+MAX_MANIFEST_BYTES = 2000000
+MANIFEST_KEY = re.compile(r"^policies/[0-9a-f]{64}\.json$")
 STORE_ORIGIN = "https://novapharmhealthcare.com"
 ALLOWED_ORIGINS = {STORE_ORIGIN, "https://www.novapharmhealthcare.com"}
 UUID4 = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
@@ -53,6 +56,27 @@ def policy():
     cfg = json.loads(raw)
     if not isinstance(cfg, dict) or not isinstance(cfg.get("approved_skus"), dict):
         raise ValueError("invalid policy")
+    pointer = cfg.get("approval_manifest")
+    if pointer is not None:
+        if (not isinstance(pointer, dict) or not ESCO_APPROVAL_BUCKET or
+            not MANIFEST_KEY.fullmatch(str(pointer.get("key", ""))) or
+            not re.fullmatch(r"[0-9a-f]{64}", str(pointer.get("sha256", "")))):
+            raise ValueError("invalid protected approval manifest")
+        response = aws("s3").get_object(Bucket=ESCO_APPROVAL_BUCKET, Key=pointer["key"])
+        payload = response["Body"].read(MAX_MANIFEST_BYTES + 1)
+        if not payload or len(payload) > MAX_MANIFEST_BYTES:
+            raise ValueError("approval manifest size invalid")
+        if not hmac.compare_digest(hashlib.sha256(payload).hexdigest(), pointer["sha256"]):
+            raise ValueError("approval manifest integrity mismatch")
+        manifest = json.loads(payload.decode("utf-8"))
+        if (manifest.get("schema") != "novapharm-esco-approved-skus-v1" or
+            not isinstance(manifest.get("approved_skus"), dict)):
+            raise ValueError("approval manifest schema invalid")
+        incoming = manifest["approved_skus"]
+        if (len(incoming) > 373 or any(not CAT_ID.fullmatch(str(sku)) for sku in incoming) or
+            set(incoming).intersection(cfg["approved_skus"])):
+            raise ValueError("duplicated or invalid saleable catalogue identity")
+        cfg["approved_skus"] = {**cfg["approved_skus"], **incoming}
     return cfg
 
 def secret(name):
