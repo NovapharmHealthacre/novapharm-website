@@ -49,6 +49,10 @@ on:
       - 'assets/css/global-distribution-editorial.css'
       - 'assets/data/nutraxin-retail-catalogue.json'
       - 'scripts/apply-corporate-product-discipline.mjs'
+      - 'technology/index.html'
+      - 'src/content/technology-intelligence.html'
+      - 'assets/js/intelligence-live-research.js'
+      - 'scripts/test-intelligence-live-public-research.mjs'
       - 'oncology/**'
       - 'assets/css/oncology-hope-v2.css'
       - 'assets/css/oncology-editorial.css'
@@ -136,6 +140,13 @@ jobs:
           npm run test:cookies
           npm run validate:domain
           node scripts/stage-pages-artifact.mjs _site
+          node --test scripts/test-intelligence-live-public-research.mjs
+          test -s _site/technology/index.html
+          test -s _site/assets/js/intelligence-live-research.js
+          grep -Fq 'data-npi-research' _site/technology/index.html
+          grep -Fq 'src="/assets/js/intelligence-live-research.js"' _site/technology/index.html
+          grep -Fq 'US regulatory and trial searches send the medicine term' _site/technology/index.html
+          grep -Fq '5pcszvyqm1.execute-api.eu-north-1.amazonaws.com' _site/assets/js/intelligence-live-research.js
           # Three commercial routes must be included in the same verified release.
           for route in distribution market-access markets; do
             test -s "_site/$route/index.html"
@@ -618,6 +629,22 @@ jobs:
           grep -Fq 'White space, quiet typography' /tmp/global-distribution-editorial.css
           echo 'All three canonical commercial routes and Apple-inspired styling are live.'
 
+      - name: Verify live official Intelligence research with AWS contact preserved
+        env:
+          LIVE_ORIGIN: https://novapharmhealthcare.com
+        shell: bash
+        run: |
+          set -euo pipefail
+          key="npi-intel-$GITHUB_SHA-$(date +%s)"
+          curl --fail --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' "$LIVE_ORIGIN/technology/?$key" -o /tmp/npi-live-technology.html
+          curl --fail --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' "$LIVE_ORIGIN/assets/js/intelligence-live-research.js?$key" -o /tmp/npi-live-intelligence.js
+          curl --fail --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' "$LIVE_ORIGIN/contact/?$key" -o /tmp/npi-live-contact.html
+          grep -Fq 'data-npi-research' /tmp/npi-live-technology.html
+          grep -Fq 'src="/assets/js/intelligence-live-research.js"' /tmp/npi-live-technology.html
+          grep -Fq 'US regulatory and trial searches send the medicine term' /tmp/npi-live-technology.html
+          grep -Fq '5pcszvyqm1.execute-api.eu-north-1.amazonaws.com' /tmp/npi-live-intelligence.js
+          grep -Fq 'data-live-b2b-enquiry-form' /tmp/npi-live-contact.html
+          echo 'Live Intelligence official research and existing AWS-backed contact verified.'
       - name: Check out verified main source for IndexNow
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
