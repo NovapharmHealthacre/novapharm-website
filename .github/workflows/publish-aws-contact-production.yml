@@ -614,9 +614,9 @@ jobs:
           for route in "" "capabilities/" "oncology/" "products/" "contact/"; do
             verified=false
             for attempt in $(seq 1 10); do
-              curl --fail --silent --show-error --location --max-time 15 \\
-                -H 'Cache-Control: no-cache, no-store' \\
-                "https://novapharmhealthcare.com/${route}?source-proof-${EXPECTED_SHA}-${attempt}-$(date +%s)" \\
+              curl --fail --silent --show-error --location --max-time 15 \
+                -H 'Cache-Control: no-cache, no-store' \
+                "https://novapharmhealthcare.com/${route}?source-proof-${EXPECTED_SHA}-${attempt}-$(date +%s)" \
                 -o /tmp/novapharm-source-proof.html || true
               if grep -Fq "name=\"novapharm-source-sha\" content=\"${EXPECTED_SHA}\"" /tmp/novapharm-source-proof.html; then
                 verified=true
