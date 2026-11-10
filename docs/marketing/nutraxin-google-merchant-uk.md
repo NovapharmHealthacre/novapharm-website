@@ -17,7 +17,7 @@ The existing /feed.xml is a news RSS feed. It is not a Merchant Center product f
 
 Google requires feed availability to match the product landing page, schema and checkout. All 19 current retail records have available_to_sell=false; the shared catalogue also has delivery_verified=false. Therefore the first feed is correctly out_of_stock for all 19. This DOES NOT claim that physical stock is zero. Do not automatically convert nominal 10,000 unit manufacturer stock to sellable stock without a verified fulfilment commitment. Change flags only after verified sellability and deployment. Every product is in_stock only when delivery_verified, checkout_enabled, payment_collection_enabled, ordering_enabled and available_to_sell are all true.
 
-The feed contains owner-approved GBP prices, no guessed GTIN or MPN, and no unverified delivery SLA. When delivery_verified is false, shipping(country:price) stays blank. Merchant Center must contain actual UK delivery and returns policies; don't claim rates without fulfilling them.
+The feed contains owner-approved GBP prices, no guessed GTIN or MPN, and no unverified delivery SLA. The feed lists the owner-approved UK customer delivery charge, currently £0 as shown in the Bag. This does not verify the fulfilment service, transit time or ability to dispatch. Merchant Center still requires actual UK delivery and returns policies; do not claim unverified delivery times.
 
 ## Google Merchant Center actions (account controlled)
 
