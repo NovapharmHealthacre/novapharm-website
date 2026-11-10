@@ -1,5 +1,5 @@
 /* Quiet, accessible product-price treatment for the UK Nutraxin catalogue. */
 .nx-merchant-offer { margin: 1.5rem 0 1.25rem; }
-.nx-merchant-price { margin: 0 0 .45rem; font-size: clamp(1.6rem, 2.7vw, 2rem); font-weight: 600; letter-spacing: -.035em; line-height: 1.14; color: #111; }
+.nx-merchant-price { margin: 0 0 .45rem; font-size: clamp(1.6rem, 2.7vw, 2rem); font-weight: 600; line-height: 1.14; color: #111; }
 .nx-merchant-price small { font-size: .42em; font-weight: 400; letter-spacing: 0; color: #6e6e73; white-space: nowrap; }
 .nx-merchant-availability { max-width: 34rem; font-size: .95rem; line-height: 1.55; color: #555; }
