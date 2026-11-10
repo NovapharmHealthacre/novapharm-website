@@ -119,7 +119,19 @@ for (const module of config.modules) {
   const authoredContract = authoredModuleContracts.get(module.id);
   if (authoredContract) {
     for (const marker of authoredContract) assert.ok(html.includes(marker), `${module.id} must retain ${marker}`);
-    if (module.heroAsset) {
+    if (module.id === "about") {
+      // Approved owner-supplied warehouse imagery supersedes the retired
+      // generated operating-model illustration. Preserve its actual source
+      // and About editorial stylesheet, not an obsolete asset identifier.
+      assert.ok(
+        html.includes("/assets/media/about/novapharm-warehouse-original.jpg"),
+        "About must retain the approved original warehouse photograph"
+      );
+      assert.ok(
+        html.includes("/assets/css/about-editorial.css"),
+        "About must retain its approved editorial styling"
+      );
+    } else if (module.heroAsset) {
       const asset = assets.get(module.heroAsset);
       assert.ok(asset, `${module.id} references an unknown hero or social asset`);
       assert.ok(html.includes(asset.base), `${module.id} must retain its governed hero, content or social asset`);
