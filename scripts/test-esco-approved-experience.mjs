@@ -53,7 +53,7 @@ test("featured links open the correct product and readiness labels are server-sp
   assert.match(client, /if \(spotlightLabel\) spotlightLabel\.textContent = "READY TO ORDER"/);
   assert.match(client, /payment_collection_active !== true/);
   assert.match(client, /approved_unit_prices_pence/);
-  assert.match(generator, /UK guide/);
+  assert.match(generator, /Base price/);
   assert.doesNotMatch(client, /checkout\.sessions\.create|cardNumber|sk_live_[A-Za-z0-9]{16,}/);
 });
 
