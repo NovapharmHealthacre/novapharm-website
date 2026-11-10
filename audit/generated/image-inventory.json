@@ -2278,9 +2278,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 13,
+      "usageCount": 4,
+      "referenceCount": 17,
       "usageFiles": [
+        ".github/workflows/publish-aws-contact-production.yml",
         "about/index.html",
         "creative-assets/asset-register.json",
         "scripts/apply-about-editorial.mjs"
@@ -2327,9 +2328,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 3,
-      "referenceCount": 4,
+      "usageCount": 4,
+      "referenceCount": 5,
       "usageFiles": [
+        ".github/workflows/publish-aws-contact-production.yml",
         "about/index.html",
         "creative-assets/asset-register.json",
         "scripts/apply-about-editorial.mjs"
