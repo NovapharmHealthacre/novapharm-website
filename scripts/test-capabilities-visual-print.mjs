@@ -21,6 +21,14 @@ for (const [engine, browserType, width] of [
     const page = await browser.newPage({ viewport: { width, height: 900 }, reducedMotion: "reduce" });
     const response = await page.goto(origin + "/capabilities/", { waitUntil: "networkidle" });
     assert.equal(response?.status(), 200, engine + " " + width + " returns HTTP 200");
+    // Consent is part of the public experience, but its fixed white panel must not
+    // contaminate screenshots or the Earth's image-contrast measurement.
+    // Use the actual consent action; do not hide a page element with test-only CSS.
+    const rejectConsent = page.getByRole("button", { name: "Reject non-essential" });
+    if (await rejectConsent.isVisible()) {
+      await rejectConsent.click();
+      await rejectConsent.waitFor({ state: "hidden" });
+    }
     await page.evaluate(async () => { await document.fonts.ready; });
     const observed = await page.evaluate(() => {
       const earth = document.querySelector(".ncap-earth-illustration");
