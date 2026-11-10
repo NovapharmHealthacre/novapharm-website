@@ -35,3 +35,10 @@ test("production image has only liveness, not synthetic-readiness, as its contai
   assert.doesNotMatch(dockerfile, /\/gateway\/v1\/intelligence\/readiness|\/gateway\/portal\/session/);
   assert.match(image, /public/i, "The existing public official-source service is independent of the private candidate");
 });
+
+test("Docker build context excludes nested credentials and environment files", () => {
+  const ignore = readFileSync(new URL("../.dockerignore", import.meta.url), "utf8").split("\n");
+  for (const expression of [".env", ".env.*", "**/.env", "**/.env.*", "**/.aws", "**/.ssh", "node_modules", "*.sqlite*"]) {
+    assert.ok(ignore.includes(expression), `Sensitive Docker exclusion missing: ${expression}`);
+  }
+});
