@@ -18,7 +18,7 @@
     "@novapharm/content": "0.1.0",
     "@novapharm/security": "0.1.0",
     "@novapharm/seo": "0.1.0",
-    "motion": "12.42.2",
+    "motion": "14.10.1",
     "next": "16.4.5",
     "react": "19.2.8",
     "react-dom": "19.2.8",
