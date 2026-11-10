@@ -448,6 +448,20 @@ for (const [engineName, browserType] of engines) {
           const image = document.querySelector('[data-esco-gallery-item="ESCO-CAT-0003"] img');
           return image?.dataset.escoPhotoCleanup === "cleaned";
         }, null, {timeout:15000});
+        const cleanedCornerAlphas = await page.evaluate(async () => {
+          const image = document.querySelector('[data-esco-gallery-item="ESCO-CAT-0003"] img');
+          await image.decode();
+          const canvas = document.createElement("canvas");
+          canvas.width = image.naturalWidth;
+          canvas.height = image.naturalHeight;
+          const context = canvas.getContext("2d");
+          context.drawImage(image, 0, 0);
+          const data = context.getImageData(0, 0, canvas.width, canvas.height).data;
+          const w = canvas.width, h = canvas.height;
+          return [0, w - 1, (h - 1) * w, h * w - 1].map(index => data[index * 4 + 3]);
+        });
+        assert.ok(cleanedCornerAlphas.every(alpha => alpha < 16),
+          `${engineName} ${viewport.name}: supplier-image black backdrop remains opaque`);
         const heroLayout = await page.evaluate(() => {
           const rect = node => node?.getBoundingClientRect();
           const intersection = (a,b) => a && b &&
