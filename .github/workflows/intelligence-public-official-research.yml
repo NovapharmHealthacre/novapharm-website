@@ -27,3 +27,5 @@ jobs:
           python -m json.tool infra/aws/intelligence-public-official-research.json >/dev/null
       - name: Test source provenance, bounds and failure paths
         run: python scripts/test_intelligence_public_official_research.py
+      - name: Verify public client wiring, no-storage and source notices
+        run: node --test scripts/test-intelligence-live-public-research.mjs
