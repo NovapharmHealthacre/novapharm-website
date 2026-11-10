@@ -27,8 +27,15 @@ jobs:
       - name: Generate and verify exact image inventory
         run: |
           set -euo pipefail
+          npm run requirements:validate
+          npm run owner:reconcile
+          npm run owner:validate
+          npm run design:audits:generate
+          npm run design:audits:validate
+          npm run brand:validate
           npm run images:inventory
           npm run images:inventory:validate
+          git status --short
       - name: Commit only authoritative generated report
         run: |
           set -euo pipefail
