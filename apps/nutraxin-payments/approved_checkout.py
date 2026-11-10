@@ -146,8 +146,10 @@ def stripe_session(order, attempt):
     if (not isinstance(secret, str) or len(secret) < 20 or
         not re.fullmatch(r"(?:rk|sk)_live_[A-Za-z0-9_]+", secret)):
         raise NotReady("Stripe live restricted credentials are unavailable")
+    # Stripe API 2026-09-30.endive removed payment_method_types from Checkout Sessions.
+    # Stripe now selects supported methods; the verified account has active card payments.
     form = {
-        "mode": "payment", "payment_method_types[0]": "card",
+        "mode": "payment",
         "client_reference_id": order["orderId"],
         "billing_address_collection": "required",
         "shipping_address_collection[allowed_countries][0]": "GB",
