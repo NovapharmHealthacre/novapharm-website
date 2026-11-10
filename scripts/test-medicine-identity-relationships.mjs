@@ -71,7 +71,7 @@ test("missing source identity or malformed medicine cannot silently form trusted
     { ...payload, medicine: { ...payload.medicine, medicineId: "other:123" } },
     { ...payload, medicine: { ...payload.medicine, canonicalName: "" } },
     { ...payload, medicine: { ...payload.medicine, canonicalName: "<script>\u0000" } }
-  ]) assert.throws(() => buildMedicineIdentityRelationships(bad), /Invalid|authorised/);
+  ]) assert.throws(() => buildMedicineIdentityRelationships(bad), /invalid|authoritative|authorised/i);
 });
 
 test("invalid code/alias/hierarchy inputs and excessive payloads fail closed", () => {
