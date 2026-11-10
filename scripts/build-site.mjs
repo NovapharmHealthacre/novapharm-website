@@ -51,3 +51,6 @@ await import("./apply-capabilities-editorial.mjs");
 
 // Apply approved, real-image Products presentation last.
 await import("./apply-products-editorial.mjs");
+
+// Restore the approved Earth homepage after every public-page rewrite.
+await import("./apply-home-earth-hero.mjs");
