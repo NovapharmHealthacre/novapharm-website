@@ -1,0 +1,335 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Isolated NovaPharm Intelligence network foundation only. Two AZ public and private subnets, no launched compute, load balancers, NAT, public IPs, customers or payments. Private has no default route until independently reviewed TLS VPC endpoints or NAT.",
+  "Resources": {
+    "IntelligenceVpc": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.80.0.0/16",
+        "EnableDnsSupport": true,
+        "EnableDnsHostnames": true,
+        "InstanceTenancy": "default",
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "production-candidate"
+          },
+          {
+            "Key": "cost-control",
+            "Value": "non-billable-networking-only"
+          },
+          {
+            "Key": "role",
+            "Value": "isolated-vpc"
+          }
+        ]
+      }
+    },
+    "IntelligenceIgw": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "production-candidate"
+          },
+          {
+            "Key": "cost-control",
+            "Value": "non-billable-networking-only"
+          },
+          {
+            "Key": "role",
+            "Value": "public-ingress-only"
+          }
+        ]
+      }
+    },
+    "InternetGatewayAttachment": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "IntelligenceVpc"
+        },
+        "InternetGatewayId": {
+          "Ref": "IntelligenceIgw"
+        }
+      }
+    },
+    "PublicSubnetA": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "IntelligenceVpc"
+        },
+        "CidrBlock": "10.80.0.0/24",
+        "AvailabilityZone": "eu-north-1a",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "production-candidate"
+          },
+          {
+            "Key": "cost-control",
+            "Value": "non-billable-networking-only"
+          },
+          {
+            "Key": "role",
+            "Value": "public-alb-a"
+          }
+        ]
+      }
+    },
+    "PublicSubnetB": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "IntelligenceVpc"
+        },
+        "CidrBlock": "10.80.1.0/24",
+        "AvailabilityZone": "eu-north-1b",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "production-candidate"
+          },
+          {
+            "Key": "cost-control",
+            "Value": "non-billable-networking-only"
+          },
+          {
+            "Key": "role",
+            "Value": "public-alb-b"
+          }
+        ]
+      }
+    },
+    "PrivateSubnetA": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "IntelligenceVpc"
+        },
+        "CidrBlock": "10.80.10.0/24",
+        "AvailabilityZone": "eu-north-1a",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "production-candidate"
+          },
+          {
+            "Key": "cost-control",
+            "Value": "non-billable-networking-only"
+          },
+          {
+            "Key": "role",
+            "Value": "private-fargate-a"
+          }
+        ]
+      }
+    },
+    "PrivateSubnetB": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "IntelligenceVpc"
+        },
+        "CidrBlock": "10.80.11.0/24",
+        "AvailabilityZone": "eu-north-1b",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "production-candidate"
+          },
+          {
+            "Key": "cost-control",
+            "Value": "non-billable-networking-only"
+          },
+          {
+            "Key": "role",
+            "Value": "private-fargate-b"
+          }
+        ]
+      }
+    },
+    "PublicRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "IntelligenceVpc"
+        },
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "production-candidate"
+          },
+          {
+            "Key": "cost-control",
+            "Value": "non-billable-networking-only"
+          },
+          {
+            "Key": "role",
+            "Value": "public-route"
+          }
+        ]
+      }
+    },
+    "PrivateRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "IntelligenceVpc"
+        },
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "production-candidate"
+          },
+          {
+            "Key": "cost-control",
+            "Value": "non-billable-networking-only"
+          },
+          {
+            "Key": "role",
+            "Value": "private-no-internet-route"
+          }
+        ]
+      }
+    },
+    "PublicDefaultRoute": {
+      "Type": "AWS::EC2::Route",
+      "DependsOn": "InternetGatewayAttachment",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PublicRouteTable"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "IntelligenceIgw"
+        }
+      }
+    },
+    "PublicSubnetRouteA": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "PublicSubnetA"
+        },
+        "RouteTableId": {
+          "Ref": "PublicRouteTable"
+        }
+      }
+    },
+    "PublicSubnetRouteB": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "PublicSubnetB"
+        },
+        "RouteTableId": {
+          "Ref": "PublicRouteTable"
+        }
+      }
+    },
+    "PrivateSubnetRouteA": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "PrivateSubnetA"
+        },
+        "RouteTableId": {
+          "Ref": "PrivateRouteTable"
+        }
+      }
+    },
+    "PrivateSubnetRouteB": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "PrivateSubnetB"
+        },
+        "RouteTableId": {
+          "Ref": "PrivateRouteTable"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "VpcId": {
+      "Value": {
+        "Ref": "IntelligenceVpc"
+      },
+      "Description": "Dedicated isolated VPC for Intelligence only, not connected to existing Nutraxin infrastructure"
+    },
+    "PublicSubnetIds": {
+      "Value": {
+        "Fn::Join": [
+          ",",
+          [
+            {
+              "Ref": "PublicSubnetA"
+            },
+            {
+              "Ref": "PublicSubnetB"
+            }
+          ]
+        ]
+      },
+      "Description": "AZ-diverse public subnets exclusively for a future TLS-only ALB"
+    },
+    "PrivateSubnetIds": {
+      "Value": {
+        "Fn::Join": [
+          ",",
+          [
+            {
+              "Ref": "PrivateSubnetA"
+            },
+            {
+              "Ref": "PrivateSubnetB"
+            }
+          ]
+        ]
+      },
+      "Description": "AZ-diverse private subnets; no Internet/NAT/IPv4 public IP by default"
+    },
+    "OperationalReleaseState": {
+      "Value": "NETWORK FOUNDATION ONLY: no compute, WAF, ALB, ECR endpoints, NAT, DNS, data sources, OIDC or billing; production hosting blocked"
+    }
+  }
+}
