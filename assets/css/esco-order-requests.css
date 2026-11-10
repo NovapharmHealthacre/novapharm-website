@@ -107,3 +107,5 @@
   .esco-shop-bag .esco-order-request-fields {grid-template-columns:minmax(0,1fr);}
   .esco-shop-bag .esco-order-request-form {padding-top:20px;}
 }
+
+.esco-shop-bag .esco-payment-terms[hidden] { display:none!important; }
