@@ -58,10 +58,10 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
           };
         });
         const label=`${engine} ${viewport.name}`;
-        assert.match(layout.heading,/A Hope of\s*Tomorrow\./,`${label}: heading`);
+        assert.match(layout.heading,/A Hope for\s*Tomorrow\./,`${label}: heading`);
         assert.equal(layout.hasAnnotation,false,`${label}: removed annotation returned`);
         assert.ok(layout.imageLoaded,`${label}: portrait did not load`);
-        assert.equal(layout.imageFit,"contain",`${label}: portrait must not crop`);
+        assert.equal(layout.imageFit,viewport.width>=1101?"cover":"contain",`${label}: reference-responsive portrait fit`);
         assert.ok(layout.portraitWidth>260 && layout.portraitHeight>200,`${label}: portrait collapsed`);
         assert.ok(layout.heroWidth>=layout.viewportWidth-2,`${label}: hero is not full width`);
         assert.equal(layout.cards.length,3,`${label}: three category images`);

@@ -21,7 +21,7 @@ for (const [name,count] of [
 ]) assert.equal(oncologyContent[name].length, count, name);
 
 for (const phrase of [
-  "A Hope of<br>Tomorrow.",
+  "A Hope for<br>Tomorrow.",
   "Every detail<br>matters.",
   "Six connected decisions.",
   "Complexity deserves precision.",
@@ -42,12 +42,13 @@ assert.equal((html.match(/<meta property="og:image" content=/g) ?? []).length, 1
 assert.match(html, /id="scope-boundary"/);
 assert.match(html, /id="oncology-faqs"/);
 assert.match(html, /href="\/contact\/\?enquiry=Oncology%20%26%20specialist%20medicines"/);
-assert.match(html, /href="\/assets\/css\/oncology-editorial\.css"/);
-assert.ok(html.includes('href="/assets/css/oncology-hope-v2.css"'), "Cache-safe approved layout stylesheet must load");
+assert.match(html, /href="\/assets\/css\/oncology-editorial\.css(?:\?v=[^"]+)?"/);
+assert.match(html, /href="\/assets\/css\/oncology-hope-v2\.css(?:\?v=[^"]+)?"/, "Cache-safe approved layout stylesheet must load");
 assert.ok(html.indexOf("oncology-hope-v2.css") > html.indexOf("oncology-editorial.css"), "Approved style must follow original stylesheet");
 assert.match(approvedLayout, /object-fit:contain/, "Portrait must preserve its full framing");
 assert.match(approvedLayout, /-webkit-mask-image:linear-gradient/, "Desktop image must blend into one continuous hero");
-assert.match(approvedLayout, /width:72%/, "Hero photograph must extend across the composition");
+assert.match(approvedLayout, /width:70%/, "Desktop portrait must blend across the continuous reference composition");
+assert.match(approvedLayout, /object-fit:cover/, "Desktop photographic hero must not retain a hard contain-image edge");
 assert.match(approvedLayout, /-webkit-mask-image:none/, "Portrait masking must reset on mobile");
 assert.match(approvedLayout, /grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/, "All three Oncology visuals share a grid row");
 assert.match(approvedLayout, /npoc-focus-card span/, "Image labels must overlay on the cards");
