@@ -179,14 +179,26 @@ const homeHeader = homeHeaderStart < 0 ? "" : home.slice(homeHeaderStart, home.i
 const homePrimaryNavStart = homeHeader.indexOf('<nav class="site-nav npd-global-nav"');
 const homePrimaryNav = homePrimaryNavStart < 0 ? "" : homeHeader.slice(homePrimaryNavStart, homeHeader.indexOf("</nav>", homePrimaryNavStart) + 6);
 if (!homePrimaryNav.includes('<a href="https://portal.novapharmhealthcare.com/">Secure Portal</a>')) fail("Homepage primary header hides Secure Portal");
-if (!homeHeader.includes('<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png"')) fail("Homepage header is not using the supplied official PNG logo");
+if (!homeHeader.includes('<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png?v=approved-20261110-red02"')) fail("Homepage header is not using the supplied official PNG logo");
 if (homeHeader.includes('<source srcset="/assets/brand/novapharm-healthcare-logo.svg"')) fail("Homepage header still prioritises the replaced vector wordmark");
 for (const route of ["capabilities", "oncology", "products"]) {
   const html = text(route + "/index.html");
   const headerStart = html.indexOf('<header class="site-header npd-header"');
   const header = headerStart < 0 ? "" : html.slice(headerStart, html.indexOf("</header>", headerStart) + 9);
   if (!header.includes('href="https://portal.novapharmhealthcare.com/"')) fail(route + " primary header must link to live secure portal");
-  if (!header.includes('<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png"')) fail(route + " primary header must use official NovaPharm logo");
+  if (!header.includes('<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png?v=approved-20261110-red02"')) fail(route + " primary header must use official NovaPharm logo");
+}
+// Every approved public visual page must force current CSS and red logo pixels.
+for (const [route, style] of [
+  ["index.html", null],
+  ["capabilities/index.html", "capabilities-editorial.css"],
+  ["oncology/index.html", "oncology-hope-v2.css"],
+  ["products/index.html", "products-editorial.css"]
+]) {
+  const html = text(route);
+  if (!html.includes('href="/assets/css/novapharm.bundle.css?v=approved-20261110-red02"')) fail(route + " still uses the stale unversioned visual stylesheet");
+  if (!html.includes('src="/assets/brand/novapharm-healthcare-logo.png?v=approved-20261110-red02"')) fail(route + " still uses an unversioned header logo");
+  if (style && !html.includes('href="/assets/css/' + style + '?v=approved-20261110-red02"')) fail(route + " still uses the old editorial stylesheet");
 }
 const approvedProductsCss = text("assets/css/products-editorial.css");
 if (!approvedProductsCss.includes("clip-path:inset(2% 2% 2% 2%)")) fail("Products ESCO source-photo border must be removed in Safari");
