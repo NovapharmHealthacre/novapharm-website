@@ -47,7 +47,7 @@ const build = read("scripts/build-site.mjs");
 
 for (const [name, html] of Object.entries(pages)) {
   requireText(html, 'class="npd-main', `${name} authored layout`);
-  requireText(html, name === "contact" ? 'class="npd-hero"' : name === "home" ? 'class="npd-hero npd-hero-media"' : name === "oncology" ? 'class="npoc-hero npoc-hope-hero"' : name === "technology" ? 'class="npi-hero"' : name === "nutraxin" ? 'class="nx-hero"' : 'class="npd-hero', `${name} deliberate hero`);
+  requireText(html, name === "contact" ? 'class="np-contact-reference-hero"' : name === "home" ? 'class="npd-apple-hero"' : name === "oncology" ? 'class="npoc-hero npoc-hope-hero"' : name === "technology" ? 'class="npi-hero"' : name === "nutraxin" ? 'class="nx-hero"' : 'class="npd-hero', `${name} deliberate hero`);
   requireText(html, "Regulated wholesale supply has not commenced", `${name} operating-status boundary`);
   requireText(html, 'class="npd-footer', `${name} institutional footer`);
   forbidText(html, "lucide", `${name} icon-free corporate presentation`);
@@ -59,12 +59,12 @@ for (const [name, html] of Object.entries(pages)) {
 [
   [pages.home, "Medicine. Where it needs to be.", "Homepage single proposition"],
   [pages.home, "Three routes. One evidence standard.", "Homepage sourcing hierarchy"],
-  [pages.home, 'class="npd-hero npd-hero-media"', "Homepage approved evidence-led photographic hero"],
-  [pages.home, 'class="npd-section npd-media-section"', "Homepage specialist-medicine visual chapter"],
-  [pages.home, 'class="npd-product-stage"', "Homepage approved real-product gallery"],
-  [pages.home, 'class="npd-maturity"', "Homepage clearly qualified technology maturity"],
-  [pages.home, 'class="npd-notice npd-notice-regulatory"', "Homepage explicit operating-authority boundary"],
-  [pages.home, "NovaPharm separates what is live, what is in development and what remains planned.", "Homepage transparent technology maturity"],
+  [pages.home, 'class="npd-apple-hero"', "Homepage premium editorial hero"],
+  [pages.home, 'class="npd-apple-oncology"', "Homepage specialist-medicine visual chapter"],
+  [pages.home, 'class="npd-apple-product-grid"', "Homepage evidence-governed real-product gallery"],
+  [pages.home, 'class="npd-apple-nova-art"', "Homepage NOVA explicitly conceptual showcase"],
+  [pages.home, 'class="npd-apple-regulatory-notice"', "Homepage operating-authority boundary"],
+  [pages.home, "In development. The adjacent graphic is an artistic concept", "Homepage transparent technology maturity"],
   [pages.services, 'class="npd-service-ledger"', "Services editorial ledger"],
   [pages.regulatory, 'class="npd-roadmap npd-roadmap-large"', "Regulatory full roadmap"],
   [pages.partners, 'class="npd-horizontal-steps"', "Partner qualification sequence"],
@@ -75,8 +75,8 @@ for (const [name, html] of Object.entries(pages)) {
   [pages.products, 'href="/products/strategic-portfolio/"', "Products strategic route"],
   [pages.nutraxin, 'class="nx-product-grid"', "Nutraxin product-led category presentation"],
   [pages.nutraxin, 'class="nx-featured-grid"', "Nutraxin featured product stage"],
-  [pages.contact, "A qualified B2B contact route.", "Contact qualified business information hierarchy"],
-  [pages.contact, 'class="npd-managed-control"', "Contact controlled and clear managed-enquiry boundary"],
+  [pages.contact, "How can we help?", "Contact information hierarchy"],
+  [pages.contact, 'class="np-contact-reference-form"', "Contact minimal reference form"],
   [leadership, "/assets/media/leadership/vishal-chakravarty-1200.jpg", "Vishal approved portrait"],
   [leadership, "/assets/media/leadership/prabhakar-lahare-960.jpg", "Prabhakar approved portrait"],
   [leadership, "/assets/media/leadership/girish-achliya-960.jpg", "Girish approved portrait"],
@@ -104,9 +104,9 @@ if (pages.contact.includes('data-contact-form')) {
   requireText(pages.contact, "mailto:vishal@novapharmhealthcare.com", "Public contact verified fallback");
 }
 
-const sourcingRoutes = (pages.home.match(/<ol class="npd-numbered-grid">[\s\S]*?<\/ol>/)?.[0].match(/<li>/g) ?? []).length;
+const sourcingRoutes = (pages.home.match(/<div class="npd-apple-sourcing-grid">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) ?? []).length;
 if (sourcingRoutes !== 3) failures.push(`Homepage sourcing: expected 3 evidence-gated routes, found ${sourcingRoutes}.`);
-const featuredProducts = (pages.home.match(/<div class="npd-product-stage">[\s\S]*?<\/div>/)?.[0].match(/<a href="\/products\/nutraxin\//g) ?? []).length;
+const featuredProducts = (pages.home.match(/<div class="npd-apple-product-grid">[\s\S]*?<\/div>/)?.[0].match(/class="npd-apple-product"/g) ?? []).length;
 if (featuredProducts !== 3) failures.push(`Homepage products: expected 3 actual catalogue references, found ${featuredProducts}.`);
 const regulatoryStages = (pages.regulatory.match(/<ol class="npd-roadmap npd-roadmap-large">[\s\S]*?<\/ol>/)?.[0].match(/<li>/g) ?? []).length;
 if (regulatoryStages !== 7) failures.push(`Regulatory page: expected 7 governance stages, found ${regulatoryStages}.`);
