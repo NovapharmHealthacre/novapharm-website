@@ -25,8 +25,8 @@ test("19 product URLs, approved prices and availability match Merchant feed and 
     assert.equal(item.image_link, "https://novapharmhealthcare.com/assets/media/products/nutraxin/" + ref.imageBase + ".png");
     assert.equal(item.availability, ready ? "in_stock" : "out_of_stock");
     assert.equal(item.brand, "Nutraxin");
-    assert.equal(item["shipping(country:price)"], catalogue.delivery_verified ?
-      "GB:" + (catalogue.provisional_uk_delivery_charge_pence / 100).toFixed(2) + " GBP" : "");
+    assert.equal(item["shipping(country:price)"],
+      "GB:" + (catalogue.provisional_uk_delivery_charge_pence / 100).toFixed(2) + " GBP");
     const html = read("products/nutraxin/" + product.slug + "/index.html");
     const nodes = [...html.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g)].map(m => JSON.parse(m[1]));
     const schema = nodes.find(node => node["@type"] === "Product");
