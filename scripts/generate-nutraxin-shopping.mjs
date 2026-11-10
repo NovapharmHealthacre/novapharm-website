@@ -38,8 +38,9 @@ for (const product of registered.products) {
   const inStock = ready(p);
   if (inStock) saleReady++;
   const availability = inStock ? "in_stock" : "out_of_stock";
-  const ship = retail.delivery_verified === true
-    ? "GB:" + (retail.provisional_uk_delivery_charge_pence / 100).toFixed(2) + " GBP" : "";
+  assert(Number.isSafeInteger(retail.provisional_uk_delivery_charge_pence) && retail.provisional_uk_delivery_charge_pence >= 0,
+    "Merchant feed requires the approved UK shipping charge");
+  const ship = "GB:" + (retail.provisional_uk_delivery_charge_pence / 100).toFixed(2) + " GBP";
   lines.push([
     p.sku, p.name + " - " + p.pack,
     p.name + ", " + p.pack + ". Nutraxin food supplement in the " + product.range + " range.",
