@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'apps/esco-checkout/**'
+      - 'infra/aws/esco-products-checkout-production.json'
       - 'scripts/esco-merchant-release-matrix.mjs'
       - 'scripts/esco-merchandising.mjs'
       - 'assets/data/esco-catalogue.json'
