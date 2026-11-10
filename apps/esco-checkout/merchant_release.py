@@ -249,7 +249,7 @@ def promote(document, *, policy_version, approve_live, ssm, s3, bucket):
     pointer = cfg.get("approval_manifest")
     if pointer:
         if (not isinstance(pointer, dict) or
-            not re.fullmatch(r"policies/[a-f0-9]{64}\\.json", str(pointer.get("key", ""))) or
+            not re.fullmatch(r"policies/[a-f0-9]{64}\.json", str(pointer.get("key", ""))) or
             not re.fullmatch(r"[a-f0-9]{64}", str(pointer.get("sha256", "")))):
             raise ValueError("existing manifest pointer invalid")
         obj = s3.get_object(Bucket=bucket, Key=pointer["key"])
