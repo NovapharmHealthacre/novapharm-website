@@ -250,6 +250,9 @@ const productionImagePlacements = new Map();
 const productionMediaPattern = /\/assets\/media\/(modules|stories|insights|products)\/([a-z0-9-]+?)(?:-960)?\.(?:avif|webp|jpe?g)/g;
 const productionImagePattern = /<img[^>]+src="(\/assets\/media\/(modules|stories|insights|products)\/([a-z0-9-]+)\.jpg)"[^>]*>/g;
 for (const document of htmlDocuments) {
+  // Reusable src/content/ editorial templates are not shipped as independent
+  // public routes; count only actual published pages for placement limits.
+  if (document.relativePath.startsWith("src/content/")) continue;
   for (const match of document.html.matchAll(productionMediaPattern)) {
     const base = `/assets/media/${match[1]}/${match[2]}`;
     if (!productionImageUsage.has(base)) productionImageUsage.set(base, new Set());
