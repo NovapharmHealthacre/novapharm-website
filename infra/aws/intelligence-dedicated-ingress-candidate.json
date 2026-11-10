@@ -219,13 +219,13 @@
         "TargetType": "ip",
         "HealthCheckEnabled": true,
         "HealthCheckProtocol": "HTTP",
-        "HealthCheckPath": "/",
+        "HealthCheckPath": "/healthz/",
         "HealthCheckIntervalSeconds": 30,
         "HealthCheckTimeoutSeconds": 5,
         "HealthyThresholdCount": 3,
         "UnhealthyThresholdCount": 2,
         "Matcher": {
-          "HttpCode": "200-399"
+          "HttpCode": "200"
         },
         "TargetGroupAttributes": [
           {
@@ -491,4 +491,4 @@
       }
     }
   }
-}
+}\n
