@@ -51,3 +51,6 @@ await import("./apply-capabilities-editorial.mjs");
 
 // Apply approved, real-image Products presentation last.
 await import("./apply-products-editorial.mjs");
+
+// Stamp only the final generated public pages after all editorial transforms.
+await import("./stamp-public-release-provenance.mjs");
