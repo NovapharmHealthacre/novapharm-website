@@ -55,7 +55,8 @@
                   "Action": [
                     "dynamodb:PutItem",
                     "dynamodb:GetItem",
-                    "dynamodb:Query"
+                    "dynamodb:Query",
+                    "dynamodb:TransactWriteItems"
                   ],
                   "Resource": {
                     "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/novapharm-production-nutraxin-payment-ledger"
