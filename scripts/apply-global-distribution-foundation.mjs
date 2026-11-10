@@ -26,7 +26,7 @@ const pages = [
  description:"Explore NovaPharm's global pharmaceutical distribution planning, qualified logistics routes, temperature-control strategy, warehouse infrastructure and regulated market access.",
  body: `
 <section class="npd-hero ndist-hero" aria-labelledby="ndist-title" data-distribution-design="20261110-premium">
-  <img class="ndist-hero-earth" src="/assets/media/home/earth-reference-1400.jpg" width="1400" height="788" fetchpriority="high" decoding="async" alt="Sunrise above the horizon of Earth, representing international healthcare connections">
+  <img class="ndist-hero-earth" src="/assets/media/home/earth-reference-1400.jpg" width="1400" height="305" fetchpriority="high" decoding="async" alt="Illustrative sunrise at Earth’s horizon, representing connections between international healthcare markets">
   <div class="container ndist-hero-inner">
     <p class="ndist-eyebrow">Global perspective. Pharmaceutical discipline.</p>
     <h1 id="ndist-title">Across borders.<br>Within standards.</h1>
