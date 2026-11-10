@@ -1,0 +1,36 @@
+name: Intelligence private serverless runtime candidate
+
+on:
+  pull_request:
+    paths:
+      - 'deployment/aws/Dockerfile.intelligence-lambda'
+      - 'scripts/test-intelligence-serverless-runtime.mjs'
+      - '.github/workflows/intelligence-serverless-runtime-candidate.yml'
+      - '.dockerignore'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Deny credentials, bypasses and unverified readiness
+        run: node --test scripts/test-intelligence-serverless-runtime.mjs
+      - name: Build pinned private Lambda runtime without deployment
+        run: |
+          set -euo pipefail
+          docker build --pull --file deployment/aws/Dockerfile.intelligence-lambda \
+            --build-arg SOURCE_SHA="$GITHUB_SHA" \
+            --tag novapharm-intelligence:lambda-private .
+          image_sha="$(docker image inspect novapharm-intelligence:lambda-private --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')"
+          release_gate="$(docker image inspect novapharm-intelligence:lambda-private --format '{{index .Config.Labels "novapharm.release-gate"}}')"
+          test "$image_sha" = "$GITHUB_SHA"
+          test "$release_gate" = "private-no-customer-acceptance"
+          echo "Private candidate verified; no public URL, customer sign-in, DNS, deployment or payments."
