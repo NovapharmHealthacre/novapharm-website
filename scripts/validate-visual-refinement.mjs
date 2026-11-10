@@ -47,7 +47,7 @@ const build = read("scripts/build-site.mjs");
 
 for (const [name, html] of Object.entries(pages)) {
   requireText(html, 'class="npd-main', `${name} authored layout`);
-  requireText(html, name === "contact" ? 'class="np-contact-reference-hero"' : name === "home" ? 'class="npd-apple-hero"' : name === "oncology" ? 'class="npoc-hero"' : name === "technology" ? 'class="npi-hero"' : name === "nutraxin" ? 'class="nx-hero"' : 'class="npd-hero', `${name} deliberate hero`);
+  requireText(html, name === "contact" ? 'class="np-contact-reference-hero"' : name === "home" ? 'class="npd-apple-hero"' : name === "oncology" ? 'class="npoc-hero npoc-hope-hero"' : name === "technology" ? 'class="npi-hero"' : name === "nutraxin" ? 'class="nx-hero"' : 'class="npd-hero', `${name} deliberate hero`);
   requireText(html, "Regulated wholesale supply has not commenced", `${name} operating-status boundary`);
   requireText(html, 'class="npd-footer', `${name} institutional footer`);
   forbidText(html, "lucide", `${name} icon-free corporate presentation`);

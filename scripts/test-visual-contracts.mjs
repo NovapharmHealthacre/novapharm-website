@@ -96,7 +96,7 @@ const routeContracts = [
   ["services/index.html", "npd-service-ledger"],
   ["regulatory-services/index.html", "npd-roadmap npd-roadmap-large"],
   ["cro/index.html", "Define the programme before assembling the delivery model."],
-  ["oncology/index.html", "Oncology demands<br>more than supply."],
+  ["oncology/index.html", "A Hope of<br>Tomorrow."],
   ["partner-with-us/index.html", "npd-horizontal-steps"],
   ["technology/index.html", "npi-dash-analytics-grid"],
   ["news-insights/index.html", "Regulated-market thinking, written to be challenged."],

@@ -10,19 +10,19 @@
     "Null semantic or provenance fields are explicit gaps, not inferred approvals."
   ],
   "summary": {
-    "trackedAssetCount": 864,
+    "trackedAssetCount": 868,
     "byClassification": {
-      "KEEP": 864
+      "KEEP": 868
     },
     "byProvenanceStatus": {
-      "registered": 654,
+      "registered": 658,
       "registered-identical-delivery-copy": 12,
       "repository-generated-test-evidence": 198
     },
     "exactDuplicateGroups": 52,
     "perceptualDuplicateCandidateGroups": 183,
     "overPublicDeliveryFileCeiling": 0,
-    "lcpRelevantAssets": 198
+    "lcpRelevantAssets": 192
   },
   "assets": [
     {
@@ -13907,6 +13907,88 @@
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
+      "path": "assets/media/oncology/haematological-cancers.jpg",
+      "canonicalDeliveryPath": "assets/media/oncology/haematological-cancers.jpg",
+      "format": "jpeg",
+      "bytes": 10222,
+      "width": 319,
+      "height": 237,
+      "aspectRatio": 1.345992,
+      "sha256": "3355089913adf883d86d75f6db14f7d3effa57dc356d40fcd5ce9e57196b346a",
+      "perceptualHash": "f5f1d327e9e9f3d3",
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Owner-approved generative artwork in ChatGPT conversation, 10 November 2026",
+      "licence": "Owner-approved project creative; downstream publishing subject to generative-asset usage terms",
+      "reviewStatus": "approved-illustrative-B2B-editorial-no-actual-product-or-clinical-outcome",
+      "technicalStatus": "registered-application-media",
+      "provenanceRecord": "docs/application-media-provenance.json#oncology-hope-haematological-cancers",
+      "semanticPurpose": "AI-created scientific visual illustrating haematological cancer strategic category, not an approved medicine",
+      "routes": [
+        "/oncology/"
+      ],
+      "focalPoint": null,
+      "registeredAltText": null,
+      "registeredCaption": null,
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 3,
+      "referenceCount": 3,
+      "usageFiles": [
+        "docs/application-media-provenance.json",
+        "oncology/index.html",
+        "scripts/apply-corporate-product-discipline.mjs"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/media/oncology/hope-tomorrow-portrait.jpg",
+      "canonicalDeliveryPath": "assets/media/oncology/hope-tomorrow-portrait.jpg",
+      "format": "jpeg",
+      "bytes": 55050,
+      "width": 894,
+      "height": 552,
+      "aspectRatio": 1.619565,
+      "sha256": "cb86fdb13dedcb550f88244fcc62acb934cbfb347dc8e605ec6f21b294029cde",
+      "perceptualHash": "e4e2c0c0d1c0c1c5",
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Owner-approved generative artwork in ChatGPT conversation, 10 November 2026",
+      "licence": "Owner-approved project creative; downstream publishing subject to generative-asset usage terms",
+      "reviewStatus": "approved-illustrative-B2B-editorial-no-actual-product-or-clinical-outcome",
+      "technicalStatus": "registered-application-media",
+      "provenanceRecord": "docs/application-media-provenance.json#oncology-hope-hope-tomorrow-portrait",
+      "semanticPurpose": "Illustrative AI-created portrait from the owner-approved A Hope of Tomorrow visual concept; not a photographed patient or treatment outcome",
+      "routes": [
+        "/oncology/"
+      ],
+      "focalPoint": null,
+      "registeredAltText": null,
+      "registeredCaption": null,
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 3,
+      "referenceCount": 3,
+      "usageFiles": [
+        "docs/application-media-provenance.json",
+        "oncology/index.html",
+        "scripts/apply-corporate-product-discipline.mjs"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
       "path": "assets/media/oncology/oncology-condition-control.svg",
       "canonicalDeliveryPath": "assets/media/oncology/oncology-condition-control.svg",
       "format": "svg",
@@ -14024,6 +14106,88 @@
         "docs/oncology-corrective-media-register.md",
         "scripts/apply-owner-corrections.mjs",
         "scripts/test-owner-corrections.mjs"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/media/oncology/solid-tumours.jpg",
+      "canonicalDeliveryPath": "assets/media/oncology/solid-tumours.jpg",
+      "format": "jpeg",
+      "bytes": 21124,
+      "width": 324,
+      "height": 237,
+      "aspectRatio": 1.367089,
+      "sha256": "3c849389ab671af5630c1363e3a3cc51da6a730b6e6127c55f563d1fdd0eb287",
+      "perceptualHash": "8e9e264cdd3b7cf9",
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Owner-approved generative artwork in ChatGPT conversation, 10 November 2026",
+      "licence": "Owner-approved project creative; downstream publishing subject to generative-asset usage terms",
+      "reviewStatus": "approved-illustrative-B2B-editorial-no-actual-product-or-clinical-outcome",
+      "technicalStatus": "registered-application-media",
+      "provenanceRecord": "docs/application-media-provenance.json#oncology-hope-solid-tumours",
+      "semanticPurpose": "AI-created scientific visual illustrating the solid tumour strategic category, not an approved medicine",
+      "routes": [
+        "/oncology/"
+      ],
+      "focalPoint": null,
+      "registeredAltText": null,
+      "registeredCaption": null,
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 3,
+      "referenceCount": 3,
+      "usageFiles": [
+        "docs/application-media-provenance.json",
+        "oncology/index.html",
+        "scripts/apply-corporate-product-discipline.mjs"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/media/oncology/supportive-care.jpg",
+      "canonicalDeliveryPath": "assets/media/oncology/supportive-care.jpg",
+      "format": "jpeg",
+      "bytes": 13863,
+      "width": 321,
+      "height": 237,
+      "aspectRatio": 1.35443,
+      "sha256": "1c4f59c98bc87f9fe5cd31558beec08e5c238d9ee929972d70648db3897f34a2",
+      "perceptualHash": "81c3833364ececc8",
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Owner-approved generative artwork in ChatGPT conversation, 10 November 2026",
+      "licence": "Owner-approved project creative; downstream publishing subject to generative-asset usage terms",
+      "reviewStatus": "approved-illustrative-B2B-editorial-no-actual-product-or-clinical-outcome",
+      "technicalStatus": "registered-application-media",
+      "provenanceRecord": "docs/application-media-provenance.json#oncology-hope-supportive-care",
+      "semanticPurpose": "AI-created molecular visual illustrating supportive-care category, not an approved medicine",
+      "routes": [
+        "/oncology/"
+      ],
+      "focalPoint": null,
+      "registeredAltText": null,
+      "registeredCaption": null,
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 3,
+      "referenceCount": 3,
+      "usageFiles": [
+        "docs/application-media-provenance.json",
+        "oncology/index.html",
+        "scripts/apply-corporate-product-discipline.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -19353,7 +19517,6 @@
       "registeredAltText": null,
       "registeredCaption": null,
       "observedAltText": [
-        "",
         "Controlled laboratory handling used as representative oncology context"
       ],
       "observedCaptions": [
@@ -19364,19 +19527,15 @@
       "observedLoading": [
         "lazy"
       ],
-      "observedFetchPriority": [
-        "high"
-      ],
-      "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 6,
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
         "apps/corporate/components/oncology-editorial.tsx",
         "creative-assets/image-asset-register.json",
-        "index.html",
-        "oncology/index.html",
-        "scripts/apply-corporate-product-discipline.mjs"
+        "index.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-101",
@@ -19408,7 +19567,6 @@
       "registeredAltText": null,
       "registeredCaption": null,
       "observedAltText": [
-        "",
         "Controlled laboratory handling used as representative oncology context"
       ],
       "observedCaptions": [
@@ -19418,17 +19576,13 @@
       "observedLoading": [
         "lazy"
       ],
-      "observedFetchPriority": [
-        "high"
-      ],
-      "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 2,
+      "referenceCount": 2,
       "usageFiles": [
         "creative-assets/image-asset-register.json",
-        "index.html",
-        "oncology/index.html",
-        "scripts/apply-corporate-product-discipline.mjs"
+        "index.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-101",
@@ -19460,7 +19614,6 @@
       "registeredAltText": null,
       "registeredCaption": null,
       "observedAltText": [
-        "",
         "Controlled laboratory handling used as representative oncology context"
       ],
       "observedCaptions": [
@@ -19471,19 +19624,15 @@
       "observedLoading": [
         "lazy"
       ],
-      "observedFetchPriority": [
-        "high"
-      ],
-      "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 6,
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
         "apps/corporate/components/oncology-editorial.tsx",
         "creative-assets/image-asset-register.json",
-        "index.html",
-        "oncology/index.html",
-        "scripts/apply-corporate-product-discipline.mjs"
+        "index.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-102",
@@ -19515,7 +19664,6 @@
       "registeredAltText": "Gloved laboratory professional using a pipette to handle a vial in a controlled scientific setting",
       "registeredCaption": "Representative stock image; not a NovaPharm product, facility or efficacy claim.",
       "observedAltText": [
-        "",
         "Controlled laboratory handling used as representative oncology context"
       ],
       "observedCaptions": [
@@ -19530,12 +19678,10 @@
       "observedLoading": [
         "lazy"
       ],
-      "observedFetchPriority": [
-        "high"
-      ],
-      "lcpRelevance": true,
-      "usageCount": 8,
-      "referenceCount": 9,
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 7,
+      "referenceCount": 7,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
         "apps/corporate/components/oncology-editorial.tsx",
@@ -19543,7 +19689,6 @@
         "docs/oncology-media-provenance.json",
         "index.html",
         "oncology/index.html",
-        "scripts/apply-corporate-product-discipline.mjs",
         "scripts/build-public-pages.mjs"
       ],
       "exactDuplicateGroup": null,
@@ -19576,7 +19721,6 @@
       "registeredAltText": "Gloved laboratory professional using a pipette to handle a vial in a controlled scientific setting",
       "registeredCaption": "Representative stock image; not a NovaPharm product, facility or efficacy claim.",
       "observedAltText": [
-        "",
         "Controlled laboratory handling used as representative oncology context"
       ],
       "observedCaptions": [
@@ -19591,12 +19735,10 @@
       "observedLoading": [
         "lazy"
       ],
-      "observedFetchPriority": [
-        "high"
-      ],
-      "lcpRelevance": true,
-      "usageCount": 17,
-      "referenceCount": 29,
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 16,
+      "referenceCount": 25,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
         "apps/corporate/components/concise-specialist-pages.tsx",
@@ -19610,7 +19752,6 @@
         "oncology/index.html",
         "packages/design-system/workbench/build.tsx",
         "packages/design-system/workbench/index.html",
-        "scripts/apply-corporate-product-discipline.mjs",
         "scripts/finalise-social-cards.mjs",
         "scripts/reconcile-social-authority.mjs",
         "seo/generated/social-image-register.json",
@@ -19646,7 +19787,6 @@
       "registeredAltText": "Gloved laboratory professional using a pipette to handle a vial in a controlled scientific setting",
       "registeredCaption": "Representative stock image; not a NovaPharm product, facility or efficacy claim.",
       "observedAltText": [
-        "",
         "Controlled laboratory handling used as representative oncology context"
       ],
       "observedCaptions": [
@@ -19661,20 +19801,16 @@
       "observedLoading": [
         "lazy"
       ],
-      "observedFetchPriority": [
-        "high"
-      ],
-      "lcpRelevance": true,
-      "usageCount": 7,
-      "referenceCount": 7,
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
         "apps/corporate/components/oncology-editorial.tsx",
         "creative-assets/image-asset-register.json",
         "docs/oncology-media-provenance.json",
-        "index.html",
-        "oncology/index.html",
-        "scripts/apply-corporate-product-discipline.mjs"
+        "index.html"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-102",

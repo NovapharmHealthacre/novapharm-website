@@ -20,7 +20,7 @@ for (const [name,count] of [
 ]) assert.equal(oncologyContent[name].length, count, name);
 
 for (const phrase of [
-  "Oncology demands<br>more than supply.",
+  "A Hope of<br>Tomorrow.",
   "Every detail<br>matters.",
   "Six connected decisions.",
   "Complexity deserves precision.",
@@ -28,7 +28,7 @@ for (const phrase of [
   "The next conversation starts here.",
   "Regulated wholesale supply has not commenced",
   "does not provide medical advice, direct patient services or a guarantee of product authorisation",
-  "Representative scientific photography.",
+  "Illustrative creative image.",
   "The contact page prepares an email draft; it does not submit or store enquiries."
 ]) assert.ok(html.includes(phrase), phrase);
 
@@ -43,17 +43,17 @@ assert.match(html, /id="scope-boundary"/);
 assert.match(html, /id="oncology-faqs"/);
 assert.match(html, /href="\/contact\/\?enquiry=Oncology%20%26%20specialist%20medicines"/);
 assert.match(html, /href="\/assets\/css\/oncology-editorial\.css"/);
-assert.match(html, /<img[^>]+oncology-vial-handling\.jpg[^>]+fetchpriority="high"/);
-assert.match(css, /body\[data-page="oncology"\]/);
+assert.match(html, /<img[^>]+hope-tomorrow-portrait\.jpg[^>]+fetchpriority="high"/);
+assert.match(css, /body\[data-page="oncology"\]/);\nassert.match(css, /npoc-hope-hero/);\nassert.match(html, /id="oncology-focus"/);
 assert.match(css, /@media\(max-width:760px\)/);
 assert.match(css, /@media\(prefers-reduced-motion:reduce\)/);
 assert.match(css, /@media\(forced-colors:active\)/);
 assert.match(css, /@media print/);
 assert.doesNotMatch(html, /<svg|lucide|doodle|oncology-editorial-gallery|Formulation and Complexity Navigator|Oncology Product-Readiness Matrix/);
 assert.doesNotMatch(html, /"@type":"(?:Drug|MedicalTherapy|MedicalStudy|ClinicalTrial)"/);
-for (const extension of ["avif","webp","jpg"]) {
-  assert.ok(existsSync(join(root, "assets/media/products", "oncology-vial-handling."+extension)), "Main hero asset missing");
-
+for (const filename of ["hope-tomorrow-portrait.jpg", "solid-tumours.jpg", "haematological-cancers.jpg", "supportive-care.jpg"]) {
+  assert.ok(existsSync(join(root, "assets/media/oncology", filename)), "Approved oncology image missing: "+filename);
+  assert.ok(html.includes(filename), "Oncology image must be referenced: "+filename);
 }
 assert.doesNotMatch(html, /specialty-pharmacy-handling/, "Retired specialist media must not be used on public page");
 assert.match(html, /class="npoc-programme-image npoc-editorial-panel"/);
