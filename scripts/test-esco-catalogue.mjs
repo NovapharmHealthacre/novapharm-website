@@ -77,7 +77,7 @@ test("consumer Bag shows estimates, retains quote flow and never solicits or pro
   assert.match(generator,/data-esco-subtotal/);
   assert.match(generator,/data-esco-bag-quote/);
   assert.match(generator,/data-esco-card-checkout disabled/);
-  assert.match(generator,/UK guide/);
+  assert.match(generator,/UK base/);
   assert.match(interaction,/guidePence/);
   assert.match(bag,/MAX_ITEMS = 12/);
   assert.match(bag,/requestQuoteOnly !== true/);
@@ -262,7 +262,7 @@ test("ESCO Bag explains quote-only selections without authorising guide-price ch
  const shop=readFileSync("assets/js/esco-catalogue.js","utf8");
  assert.match(bag,/lines\.every\(item => approvedCatalogIds\.has\(item\.id\) && approvedUnitPricesPence\.has\(item\.id\)\)/);
  assert.match(bag,/quoteOnly = paymentServiceReady/);
- assert.match(bag,/catalogue guide prices are not payable prices/i);
+ assert.match(bag,/Owner-approved base prices are not final payable totals/i);
  assert.match(bag,/\/products\/esco\/\?availability=ready#esco-catalogue/);
  assert.match(shop,/get\("availability"\) === "ready"/);
  assert.match(bag,/checkoutApiOrigin \+ "\/checkout"/);
@@ -293,4 +293,25 @@ test("ESCO Bag has no greyed checkout dead end and retains server-only payment a
  assert.match(bag,/approvedUnitPricesPence\.has\(item\.id\)/);
  assert.match(bag,/checkoutApiOrigin \+ "\/checkout"/);
  assert.match(css,/\.esco-shop-bag \.esco-bag-pay\[hidden\]\{display:none!important;\}/);
+});
+
+test("373 NovaPharm internal order codes are unique and never impersonate manufacturer models",async()=>{
+ const {internalSkuFromCatalogueId}=await import("../assets/js/esco-internal-sku.js");
+ const codes=entries.map(x=>internalSkuFromCatalogueId(x.id));
+ assert.equal(codes.length,373);
+ assert.equal(new Set(codes).size,373);
+ assert.equal(internalSkuFromCatalogueId("ESCO-CAT-0001"),"NPH-ESCO-0001");
+ assert.equal(internalSkuFromCatalogueId("ESCO-CAT-0373"),"NPH-ESCO-0373");
+ assert.throws(()=>internalSkuFromCatalogueId("ESCO-MANUFACTURER-001"));
+ const generator=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
+ const bag=readFileSync("assets/js/esco-bag.js","utf8");
+ const detail=readFileSync("assets/js/esco-catalogue.js","utf8");
+ assert.match(generator,/NovaPharm order code/);
+ assert.match(generator,/Supplier model to confirm/);
+ assert.match(generator,/Owner-approved base price/);
+ assert.match(bag,/internalSkuFromCatalogueId\(item\.id\)/);
+ assert.match(detail,/internalSkuFromCatalogueId\(entry\.dataset\.escoCatalogueId\)/);
+ assert.match(detail,/NovaPharm order code/);
+ assert.match(bag,/approvedCatalogIds\.has\(item\.id\)/);
+ assert.match(bag,/checkoutButton\.hidden = !eligible/);
 });

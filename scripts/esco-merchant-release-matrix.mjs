@@ -5,6 +5,7 @@ import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { guideFor } from "./esco-merchandising.mjs";
+import { internalSkuFromCatalogueId } from "../assets/js/esco-internal-sku.js";
 
 const catalogue = JSON.parse(readFileSync(resolve("assets/data/esco-catalogue.json"), "utf8"));
 export function buildMerchantReviewRows(data = catalogue) {
@@ -23,6 +24,8 @@ export function buildMerchantReviewRows(data = catalogue) {
     }
     return {
       catalogue_id: item.id,
+      novapharm_internal_order_code: internalSkuFromCatalogueId(item.id),
+      internal_code_issuer: "NOVAPHARM_NOT_ESCO_MANUFACTURER",
       category: category.name,
       subcategory: item.subcategory,
       product: item.name,
@@ -39,6 +42,9 @@ export function buildMerchantReviewRows(data = catalogue) {
       maximum_supplier_and_inbound_cost_for_modelled_25pct_margin_gbp:
         guide.unitEconomics.maximumSupplierAndInboundCostGbp.toFixed(2),
       owner_declared_planning_units: guide.ownerDeclaredStockUnits,
+      fulfilment_state: "OWNER_DECLARED_UNALLOCATED_ORDER_REQUEST",
+      delivery_charge_basis: "CALCULATE_FOR_CONFIRMED_UK_ADDRESS",
+      tax_engine: "STRIPE_TAX_AFTER_PRODUCT_CLASSIFICATION",
       warehouse_allocatable_units: "",
       resolved_saleable_variant: "",
       manufacturer_supply_rights_confirmed: "",
