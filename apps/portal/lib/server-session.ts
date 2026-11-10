@@ -17,16 +17,17 @@ type SessionLookupOptions = Readonly<{
   cookieValue: string;
   apiOrigin?: string;
   production?: boolean;
+  validationMode?: boolean;
   fetchImpl?: typeof fetch;
 }>;
 
-function trustedApiOrigin(value: string | undefined, production: boolean): string | null {
+function trustedApiOrigin(value: string | undefined, production: boolean, validationMode: boolean): string | null {
   if (!value) return null;
   try {
     const target = new URL(value);
     if (target.username || target.password || target.search || target.hash || target.pathname !== "/") return null;
     if (target.protocol === "https:") return target.origin;
-    if (!production && target.protocol === "http:" && ["127.0.0.1", "localhost"].includes(target.hostname)) return target.origin;
+    if ((!production || validationMode) && target.protocol === "http:" && ["127.0.0.1", "localhost"].includes(target.hostname)) return target.origin;
   } catch {
     // Malformed or untrusted API origins must never trigger outbound requests.
   }
@@ -42,9 +43,10 @@ export async function verifiedPortalSession({
   cookieValue,
   apiOrigin = process.env["INTERNAL_API_ORIGIN"] ?? process.env["PUBLIC_API_ORIGIN"],
   production = process.env["NODE_ENV"] === "production",
+  validationMode = process.env["PORTAL_VALIDATION_MODE"] === "true",
   fetchImpl = globalThis.fetch,
 }: SessionLookupOptions): Promise<PortalUser | null> {
-  const origin = trustedApiOrigin(apiOrigin, production);
+  const origin = trustedApiOrigin(apiOrigin, production, validationMode);
   if (!origin || !/^[A-Za-z0-9_-]{16,128}\.[a-f0-9]{64}$/.test(cookieValue)) return null;
   try {
     const response = await fetchImpl(new URL("/api/portal/session", origin), {
