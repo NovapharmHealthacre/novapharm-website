@@ -8,7 +8,6 @@
  *
  * The existing Nutraxin / ESCO physical checkout is deliberately untouched.
  */
-import { randomBytes } from "node:crypto";
 import {
   selectIntelligenceCheckoutPrice,
   INTELLIGENCE_LIVE_STRIPE_ACCOUNT,
@@ -95,12 +94,6 @@ function validLiveKey(key) {
     (key.startsWith("rk_live_") || key.startsWith("sk_live_")) && key.length >= 20;
 }
 
-function integrationIdentifier() {
-  // 8 random letters, with no customer or tenant material embedded.
-  const b = randomBytes(8);
-  return "novapharm_intelligence_" + [...b].map((v) => String.fromCharCode(97 + (v % 26))).join("");
-}
-
 /**
  * Requires an independently reconciled durable intent before invocation.
  * Network/mock injection is for tests and private server transports only.
@@ -117,7 +110,6 @@ export async function createIntelligenceSubscriptionCheckout({
   }
 
   const params = new URLSearchParams(prepared.params);
-  params.set("integration_identifier", integrationIdentifier());
   const response = await fetchImpl(STRIPE_SESSIONS_API, {
     method: "POST",
     headers: {
