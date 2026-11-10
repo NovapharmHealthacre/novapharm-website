@@ -1291,7 +1291,7 @@
       ],
       "lcpRelevance": true,
       "usageCount": 85,
-      "referenceCount": 215,
+      "referenceCount": 222,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "404.html",
@@ -1432,8 +1432,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 96,
-      "referenceCount": 199,
+      "usageCount": 95,
+      "referenceCount": 198,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -1519,7 +1519,6 @@
         "products/nutraxin/womens-multivitamin-complex-60-tablets/index.html",
         "products/strategic-portfolio/index.html",
         "regulatory-services/index.html",
-        "scripts/apply-corporate-product-discipline.mjs",
         "scripts/build-pages.mjs",
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
