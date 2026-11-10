@@ -371,20 +371,20 @@ function oncologyMain() {
     <div class="npoc-hero-shade" aria-hidden="true"></div>
     <div class="container npoc-hero-content"><div class="npoc-hero-copy">
       <p class="npoc-eyebrow">ONCOLOGY</p>
-      <h1 id="npoc-title">A Hope of<br>Tomorrow.</h1>
-      <p class="npoc-hero-lead">A focused approach to oncology. A deeper commitment to evidence. A more hopeful tomorrow.</p>
-      <div class="npoc-actions"><a class="npoc-button npoc-button-primary" href="#oncology-focus">Explore our oncology focus</a></div>
+      <h1 id="npoc-title">A Hope for<br>Tomorrow.</h1>
+      <p class="npoc-hero-lead">A focused approach to oncology. A deeper commitment to patients. A more hopeful future.</p>
+      <div class="npoc-actions"><a class="npoc-button npoc-button-primary" href="#oncology-focus">Explore Our Oncology Portfolio</a></div>
     </div></div>
   </section>
   <section class="npoc-hope-focus" id="oncology-focus" aria-labelledby="npoc-focus-title">
     <div class="container npoc-focus-layout">
       <div class="npoc-focus-copy">
-        <p class="npoc-eyebrow">OUR ONCOLOGY FOCUS</p>
-        <h2 id="npoc-focus-title">Precision in every decision.</h2>
-        <p>Exploring opportunities across oncology and supportive care through qualified partners, traceable evidence and responsible market-access planning.</p>
-        <a class="npoc-focus-link" href="#approach">Explore our approach</a>
+        <p class="npoc-eyebrow">OUR ONCOLOGY PORTFOLIO</p>
+        <h2 id="npoc-focus-title">Selected Therapies.<br>Real Impact.</h2>
+        <p>A growing portfolio of oncology medicines, built to improve access, expand treatment options and support better outcomes.</p>
+        <a class="npoc-focus-link" href="/products/strategic-portfolio/">Explore the Portfolio</a>
       </div>
-      <div class="npoc-focus-cards" aria-label="Areas of oncology interest">
+      <div class="npoc-focus-cards" aria-label="Oncology portfolio areas of interest">
         <a class="npoc-focus-card" href="/contact/?enquiry=Oncology%20solid%20tumours" aria-label="Discuss solid tumour opportunities"><img src="/assets/media/oncology/solid-tumours.jpg" alt="" width="325" height="237" loading="lazy" decoding="async"><span>Solid tumours</span></a>
         <a class="npoc-focus-card" href="/contact/?enquiry=Oncology%20haematological%20cancers" aria-label="Discuss haematological cancer opportunities"><img src="/assets/media/oncology/haematological-cancers.jpg" alt="" width="320" height="237" loading="lazy" decoding="async"><span>Haematological cancers</span></a>
         <a class="npoc-focus-card" href="/contact/?enquiry=Oncology%20supportive%20care" aria-label="Discuss supportive care opportunities"><img src="/assets/media/oncology/supportive-care.jpg" alt="" width="320" height="237" loading="lazy" decoding="async"><span>Supportive care</span></a>

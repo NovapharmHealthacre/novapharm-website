@@ -192,8 +192,8 @@ jobs:
           # The approved Oncology design and its exact mobile CSS are deployment prerequisites.
           node scripts/test-oncology-content.mjs
           test -s _site/assets/css/oncology-hope-v2.css
-          grep -Fq 'href="/assets/css/oncology-hope-v2.css?v=20261110-logo-visible-v1"' _site/oncology/index.html
-          grep -Fq 'A Hope of<br>Tomorrow.' _site/oncology/index.html
+          grep -Fq 'href="/assets/css/oncology-hope-v2.css?v=20261110-hope-for-tomorrow-v3"' _site/oncology/index.html
+          grep -Fq 'A Hope for<br>Tomorrow.' _site/oncology/index.html
           ! grep -Fq 'Illustrative creative image. No patient, treatment result or NovaPharm facility is depicted.' _site/oncology/index.html
           grep -Fq 'grid-template-columns:repeat(3,minmax(220px,1fr))' _site/assets/css/oncology-hope-v2.css
           node scripts/verify-nutraxin-merchant-live.mjs --local
@@ -622,12 +622,13 @@ jobs:
               -H 'Cache-Control: no-cache, no-store' \
               "https://novapharmhealthcare.com/oncology/?${cache}" -o /tmp/live-hope-oncology.html \
               && grep -Fq 'class="npoc-hero npoc-hope-hero"' /tmp/live-hope-oncology.html \
-              && grep -Fq 'A Hope of<br>Tomorrow.' /tmp/live-hope-oncology.html \
-              && grep -Fq 'href="/assets/css/oncology-hope-v2.css?v=20261110-logo-visible-v1"' /tmp/live-hope-oncology.html \
+              && grep -Fq 'A Hope for<br>Tomorrow.' /tmp/live-hope-oncology.html \
+              && grep -Fq 'href="/assets/css/oncology-hope-v2.css?v=20261110-hope-for-tomorrow-v3"' /tmp/live-hope-oncology.html \
               && ! grep -Fq 'Illustrative creative image. No patient, treatment result or NovaPharm facility is depicted.' /tmp/live-hope-oncology.html \
               && curl --fail --silent --show-error --location --max-time 20 \
                 "https://novapharmhealthcare.com/assets/css/oncology-hope-v2.css?${cache}" -o /tmp/live-hope-oncology.css \
-              && grep -Fq 'object-fit:contain' /tmp/live-hope-oncology.css; then
+              && grep -Fq 'object-fit:cover' /tmp/live-hope-oncology.css \
+              && grep -Fq 'Owner-approved reference SS2' /tmp/live-hope-oncology.css; then
               echo 'Approved full-scene Oncology hero, crop rule and no retired disclaimer verified live.'
               break
             fi
@@ -729,6 +730,7 @@ jobs:
             -o /tmp/global-distribution-editorial.css
           grep -Fq 'White space, quiet typography' /tmp/global-distribution-editorial.css
           echo 'All three canonical commercial routes and Apple-inspired styling are live.'
+
           # Prove Distribution exists in the actual visible primary navigation on
           # both the homepage and all three commercial routes (not only footers).
           for route in home distribution market-access markets; do
