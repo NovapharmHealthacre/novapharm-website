@@ -217,6 +217,30 @@ for (const [engineName, browserType] of engines) {
             await page.locator("main").waitFor({ state: "visible", timeout: 15_000 });
             await dismissConsent(page);
             await materialiseLazyMedia(page);
+            // Forensic Safari regression: a supplied PNG in source is not enough.
+            // The real computed header must render the logo instead of pseudo-text.
+            if (["home", "oncology", "products-overview", "capabilities"].includes(route.name)) {
+              const identity = await page.evaluate(() => {
+                const brand = document.querySelector("header.site-header a.brand");
+                const image = brand?.querySelector('img[src*="novapharm-healthcare-logo.png"]');
+                if (!brand || !image) return null;
+                const imgStyle = getComputedStyle(image);
+                const box = image.getBoundingClientRect();
+                return {
+                  loaded: image.complete && image.naturalWidth > 0,
+                  displayed: imgStyle.display !== "none" && imgStyle.visibility !== "hidden" && Number(imgStyle.opacity) > 0,
+                  width: box.width,
+                  height: box.height,
+                  pseudoContent: getComputedStyle(brand, "::after").content
+                };
+              });
+              const label = `${engineName} ${viewport.name} ${route.path}`;
+              assert.ok(identity?.loaded, `${label}: approved red corporate logo failed to load`);
+              assert.ok(identity.displayed && identity.width > 80 && identity.height > 8,
+                `${label}: official logo is hidden or collapsed`);
+              assert.ok(!/NOVAPHARM/i.test(identity.pseudoContent || ""),
+                `${label}: legacy black pseudo-wordmark replaced the corporate logo`);
+            }
             const bodyText = (await page.locator("body").innerText()).replace(/\s+/g, " ");
             assert.ok(bodyText.includes(route.required), `${engineName} ${viewport.name} ${route.path}: required page marker missing`);
 
