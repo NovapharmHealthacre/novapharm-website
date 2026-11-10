@@ -212,7 +212,7 @@ function homeMain() {
           <a class="nph-earth-secondary" href="/partner-with-us/">Partner with us <span aria-hidden="true">›</span></a>
         </div>
       </div>
-      <img class="nph-earth-hero-landscape" src="/assets/media/home/earth-morning-approved.avif" alt="" width="1400" height="305" fetchpriority="high" decoding="async">
+      <img class="nph-earth-hero-landscape" src="/assets/media/home/earth-reference-1400.jpg" alt="" width="1400" height="305" fetchpriority="high" decoding="async">
     </section>
     <section class="npd-apple-manifesto" aria-labelledby="purpose-title">
       <div class="container npd-apple-center">
@@ -605,7 +605,7 @@ function materialize(relative, route, main, metadata = null, template = null) {
     html = html.replace(/\s*<link rel="preload" as="image" href="\/assets\/media\/home\/supply-network-hero\.avif"[^>]*>\n?/g, "\n");
   } else {
     // Do not preload the retired supply-network illustration on the homepage.
-    html = html.replace(/href="\/assets\/media\/home\/supply-network-hero\.avif"/g, 'href="/assets/media/home/earth-morning-approved.avif"');
+    html = html.replace(/href="\/assets\/media\/home\/supply-network-hero\.avif"/g, 'href="/assets/media/home/earth-reference-1400.jpg"');
   }
   html = replaceMain(html, main);
   html = replaceChrome(html, route);
