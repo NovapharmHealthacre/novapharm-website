@@ -13,6 +13,12 @@ for (const slug of routes) {
   assert.ok(html.includes("#organization") && html.includes("#website"), slug + " missing canonical entities");
   assert.ok(html.includes("Regulated pharmaceutical wholesale supply has not commenced"), slug + " missing current permissions boundary");
   assert.ok(html.includes("/contact/?enquiry="), slug + " missing qualified enquiry route");
+  if (slug === "distribution") {
+    for (const destination of ["/regulatory-services/", "/oncology/", "/products/"]) {
+      assert.ok(html.includes('href="' + destination + '"'),
+        "Distribution category editorial link must be valid: " + destination);
+    }
+  }
   assert.ok(sitemap.includes("<loc>https://novapharmhealthcare.com" + path + "</loc>"), slug + " absent from sitemap");
   assert.ok(homepage.includes('href="' + path + '"'), slug + " absent from homepage");
   assert.doesNotMatch(html, /fully licensed worldwide|ISO certified|guaranteed distribution/i, slug + " contains unverified claims");
