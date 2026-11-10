@@ -100,15 +100,15 @@ const megaNavigation = {
 
 function header(route) {
   const current = globalSection(route);
-  // The owner-approved homepage has six primary destinations; the remaining
-  // destinations remain reachable from the footer on every public page.
+  // The public homepage retains concise navigation but must never hide the
+  // explicit secure portal entry. Insights remains available through site links.
   const headerLinks = route === "/"
-    ? globalNavigation.filter(([, href]) => href !== "/news-insights/" && href !== "https://portal.novapharmhealthcare.com/")
+    ? globalNavigation.filter(([, href]) => href !== "/news-insights/")
     : globalNavigation;
   return `<header class="site-header npd-header" data-site-header data-mega-open="">
     <div class="container header-inner npd-header-inner">
       <a class="brand" href="/" aria-label="NovaPharm Healthcare home">
-        <picture class="brand-logo"><source srcset="/assets/brand/novapharm-healthcare-logo.svg" type="image/svg+xml"><img src="/assets/brand/novapharm-healthcare-logo.png" alt="NovaPharm Healthcare" width="2048" height="258" fetchpriority="high" decoding="async"></picture>
+        <picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png" alt="NovaPharm Healthcare official red logo" width="2048" height="258" fetchpriority="high" decoding="async"></picture>
       </a>
       <button class="nav-toggle npd-menu" type="button" aria-expanded="false" aria-controls="primary-navigation" data-nav-toggle><span data-menu-label>Menu</span><span class="sr-only">Open navigation</span></button>
       <nav class="site-nav npd-global-nav" id="primary-navigation" aria-label="Primary navigation" data-site-nav>
@@ -124,7 +124,7 @@ function footer() {
     <div class="container">
       <div class="npd-footer-top">
         <div class="npd-footer-identity">
-          <a class="footer-brand" href="/" aria-label="NovaPharm Healthcare home"><picture class="brand-logo"><source srcset="/assets/brand/novapharm-healthcare-logo.svg" type="image/svg+xml"><img src="/assets/brand/novapharm-healthcare-logo.png" alt="NovaPharm Healthcare" width="2048" height="258" loading="lazy" decoding="async"></picture></a>
+          <a class="footer-brand" href="/" aria-label="NovaPharm Healthcare home"><picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png" alt="NovaPharm Healthcare official red logo" width="2048" height="258" loading="lazy" decoding="async"></picture></a>
           <p>Evidence-led pharmaceutical market entry, sourcing and supply-chain development.</p>
         </div>
         <div><h2>Company</h2><a href="/about/">Overview</a><a href="/leadership/">Leadership</a><a href="/about/governance/">Governance</a><a href="/partner-with-us/">Partners</a><a href="/investor-information/">Investors</a><a href="/careers/">Careers</a></div>
