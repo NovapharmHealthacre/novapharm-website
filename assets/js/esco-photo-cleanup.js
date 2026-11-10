@@ -4,7 +4,7 @@
  * dark pixels, without changing the equipment or claiming a verified variant.
  * One cached transformation serves hero, product cards, details, and Bag.
  */
-const SOURCE = "/assets/media/esco/esco-p07-image03.webp";
+const SOURCE = "/assets/media/esco/" + "esco-p07-" + "image03.webp";
 let prepared;
 
 function isOriginal(img) {
