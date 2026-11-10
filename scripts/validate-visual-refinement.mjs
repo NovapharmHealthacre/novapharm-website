@@ -77,7 +77,6 @@ for (const [name, html] of Object.entries(pages)) {
   [pages.nutraxin, 'class="nx-product-grid"', "Nutraxin product-led category presentation"],
   [pages.nutraxin, 'class="nx-featured-grid"', "Nutraxin featured product stage"],
   [pages.contact, "How can we help?", "Contact information hierarchy"],
-  [pages.contact, 'class="np-contact-reference-form"', "Contact minimal reference form"],
   [leadership, "/assets/media/leadership/vishal-chakravarty-1200.jpg", "Vishal approved portrait"],
   [leadership, "/assets/media/leadership/prabhakar-lahare-960.jpg", "Prabhakar approved portrait"],
   [leadership, "/assets/media/leadership/girish-achliya-960.jpg", "Girish approved portrait"],
@@ -97,8 +96,16 @@ for (const [name, html] of Object.entries(pages)) {
   [build, 'import("./apply-corporate-product-discipline.mjs")', "Deterministic corporate transformation"],
 ].forEach(([content, text, label]) => requireText(content, text, label));
 
+// The public email-draft variant has a single form class. The managed AWS
+// variant retains the two base form classes and adds the approved editorial
+// class. Reject a missing, renamed or unapproved form instead of requiring
+// the obsolete single-class spelling in both modes.
+if (!/<form class="(?:np-contact-reference-form|form-grid contact-form np-contact-reference-form)"(?:\s|>)/u.test(pages.contact)) {
+  failures.push("Contact form presentation: missing the approved public or managed form class");
+}
+
 if (pages.contact.includes('data-contact-form')) {
-  requireText(pages.contact, 'class="form-grid contact-form"', "Managed contact form presentation");
+  requireText(pages.contact, 'class="form-grid contact-form np-contact-reference-form"', "Managed contact form presentation");
   requireText(pages.contact, "Your information is transmitted to the secure NovaPharm API", "Managed contact authority boundary");
 } else {
   requireText(pages.contact, "This public information release does not collect or transmit enquiry details.", "Public contact fail-closed state");
