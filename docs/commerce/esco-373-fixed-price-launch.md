@@ -42,7 +42,9 @@ python apps/esco-checkout/merchant_release.py \
   --expected-policy-version ACTUAL_SSM_VERSION --approve-live
 \`\`\`
 
-This appends **only** fully validated records to \`/novapharm/production/esco/checkout-policy\`, preserving existing approved SKUs. Any collision or changed SSM version aborts. Apply with a least-privilege AWS identity and no concurrent writers. Since SSM Parameter Store has no compare-and-swap write primitive, use a serialized change-control window and review the target policy immediately before execution. Do not place private regulatory/commercial evidence or the live policy in the public website repository.
+This creates a private, encrypted, versioned **S3 manifest** at \`policies/<sha256>.json\` and updates **only the SHA256 pointer** in the existing SSM \`/novapharm/production/esco/checkout-policy\` record. Full approval records cannot fit reliably in one 4/8 KB SSM parameter. The existing approved SKUs remain untouched, all new SKU records are validated, and changed SSM versions or collisions abort. The Lambda retrieves the exact hash-pinned manifest using a read-only, prefix-limited role. Use the private S3 bucket deployed from the \`ApprovalBucket\` resource of \`infra/aws/esco-products-checkout-production.json\`.
+
+Pass \`--bucket novapharm-esco-approved-skus-<AWS_ACCOUNT_ID>-eu-north-1\` (or set \`ESCO_APPROVAL_BUCKET\`) when applying. Apply with a least-privilege AWS identity and no concurrent writers. Since SSM Parameter Store has no compare-and-swap write primitive, use a serialized change-control window and review the target policy immediately before execution. Do not put private regulatory/commercial evidence or the live approval manifest in the public website repository.
 
 **Production acceptance per release batch:** verify \`GET /readiness\`, availability/price from the server, normal and rejected checkout, automatic UK tax, signed webhook, idempotency, DynamoDB paid-state reconciliation, quantity bounds, and fulfilment allocation. The original protected payment architecture is retained.
 
