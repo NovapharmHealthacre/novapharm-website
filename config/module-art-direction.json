@@ -61,7 +61,9 @@
       "structuredDataRelationship": "primaryImageOfPage",
       "allowedRoutes": [
         "/about/"
-      ]
+      ],
+      "publicationStatus": "retired",
+      "retirementReason": "Superseded on the approved About page by the owner-supplied NovaPharm warehouse photograph; retained only for provenance and immutable audit history."
     },
     {
       "id": "company-corporate-structure",
@@ -664,7 +666,7 @@
       "route": "/about/",
       "purpose": "Operating model and company positioning",
       "label": "Operating model",
-      "heroAsset": "about-operating-model",
+      "heroAsset": null,
       "signals": [
         "Evidence",
         "Optionality",

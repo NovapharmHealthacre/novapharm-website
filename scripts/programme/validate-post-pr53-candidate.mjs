@@ -196,9 +196,9 @@ const homepageSource = read("apps/corporate/components/concise-home.tsx");
 const homepageArtifact = read("index.html");
 const regulatoryArtifact = read("regulatory-services/index.html");
 for (const [marker, label] of [
-  ["nph-earth-hero-landscape", "owner-approved full-width Earth horizon composition"],
-  ["/assets/media/home/earth-reference-1400.jpg", "owner-approved Earth source asset"],
-  ["Conceptual visual. Not a NovaPharm facility, inventory or active distribution operation.", "conceptual hero truth boundary"],
+  ["nph-earth-hero-landscape", "approved Earth-horizon hero composition"],
+  ["/assets/media/home/earth-reference-1400.jpg", "exact owner-approved high-definition Earth reference"],
+  ["A better way to understand, access and move medicine.", "approved homepage proposition without active supply claim"],
   ["Specialist medicines.", "specialist oncology editorial heading"],
   ["Representative scientific context. No NovaPharm facility, stock or approved programme is depicted.", "specialist visual truth boundary"],
   ["In development. The adjacent graphic is an artistic concept", "NOVA not-live maturity disclosure"],

@@ -98,11 +98,11 @@ const principalHeroes = config.modules.filter((module) => module.heroAsset).map(
 assert.equal(new Set(principalHeroes).size, principalHeroes.length, "every principal module must have a unique hero asset");
 
 const authoredModuleContracts = new Map([
-  ["home", ["npd-main npd-home npd-apple-home", "npd-apple-hero", "nph-earth-hero-landscape", "npd-apple-oncology", "npd-apple-product-grid", "npd-apple-nova-art", "npd-apple-sourcing-grid", "npd-apple-regulatory-notice"]],
-  ["about", ["npd-main", "np-about-intro", "np-about-pillars", "np-about-detail"]],
+  ["home", ["npd-main npd-home npd-apple-home", "npd-apple-hero", "nph-earth-hero-content", "nph-earth-hero-landscape", "npd-apple-oncology", "npd-apple-product-grid", "npd-apple-nova-art", "npd-apple-sourcing-grid", "npd-apple-regulatory-notice"]],
+  ["about", ["npd-main", "np-about-pillars", "np-about-purpose"]],
   ["services", ["npd-main", "npd-service-ledger", "npd-horizontal-steps"]],
   ["regulatory", ["npd-main", "npd-roadmap npd-roadmap-large", "regulatory-batch-integrity"]],
-  ["products", ["npd-main", "np-products-hero", "np-products-panel-nutraxin", "np-products-panel-esco", "np-products-panel-pharma", "product-portfolio-evidence"]],
+  ["products", ["npd-main np-products-page", "np-products-hero", "np-products-panel-nutraxin", "np-products-panel-esco", "np-products-panel-pharma"]],
   ["partners", ["npd-main", "npd-partner-editorial", "npd-horizontal-steps"]],
   ["technology", ["npd-main", "npi-terminal", "npi-roadmap-grid", "npi-provenance-list"]],
   ["insights", ["npd-main", "npd-insight-lead", "npd-insight-list"]],
@@ -119,7 +119,19 @@ for (const module of config.modules) {
   const authoredContract = authoredModuleContracts.get(module.id);
   if (authoredContract) {
     for (const marker of authoredContract) assert.ok(html.includes(marker), `${module.id} must retain ${marker}`);
-    if (module.heroAsset) {
+    if (module.id === "about") {
+      // Approved owner-supplied warehouse imagery supersedes the retired
+      // generated operating-model illustration. Preserve its actual source
+      // and About editorial stylesheet, not an obsolete asset identifier.
+      assert.ok(
+        html.includes("/assets/media/about/novapharm-warehouse-original.jpg"),
+        "About must retain the approved original warehouse photograph"
+      );
+      assert.ok(
+        html.includes("/assets/css/about-editorial.css"),
+        "About must retain its approved editorial styling"
+      );
+    } else if (module.heroAsset) {
       const asset = assets.get(module.heroAsset);
       assert.ok(asset, `${module.id} references an unknown hero or social asset`);
       assert.ok(html.includes(asset.base), `${module.id} must retain its governed hero, content or social asset`);
@@ -139,8 +151,13 @@ for (const module of config.modules) {
   assert.doesNotMatch(html, /assets\/media\/editorial\/[^"']+\.svg/, `${module.id} must not retain decorative editorial SVG imagery`);
 }
 
+// The approved Capabilities design is intentionally typographic and uses its
+// distinct editorial Earth chapter instead of a stock contextual photograph.
+const capabilitiesHtml = read("capabilities/index.html");
+for (const landmark of ["npd-main ncap-page", "ncap-hero", "ncap-model", "ncap-earth"]) {
+  assert.ok(capabilitiesHtml.includes(landmark), `Capabilities must retain approved editorial landmark ${landmark}`);
+}
 for (const [path, assetId] of [
-  ["capabilities/index.html", "services-connected-execution"],
   ["regulatory-services/index.html", "regulatory-batch-integrity"],
   ["products/index.html", "product-portfolio-evidence"],
 ]) {
@@ -152,7 +169,7 @@ assert.match(read("regulatory-services/index.html"), /npd-roadmap npd-roadmap-la
 assert.match(read("technology/index.html"), /npi-roadmap-grid/, "Technology must explain development maturity");
 assert.match(read("technology/index.html"), /npi-terminal/, "Technology must provide an explicit illustrative Medicines Terminal");
 assert.match(read("leadership/index.html"), /module-portrait-composition/, "Leadership must use approved portraits");
-assert.match(read("products/index.html"), /npd-product-picture/, "Products must retain approved category-specific product media");
+assert.match(read("products/index.html"), /np-products-panel-nutraxin[\s\S]*np-products-panel-esco[\s\S]*np-products-panel-pharma/, "Products must retain three approved and differentiated portfolio collections");
 assert.doesNotMatch(read("index.html"), /partner-ecosystem-grid/, "Homepage must not retain the generic repeated partner grid");
 
 const generatedRegister = new Map(productionRegister.assets.map((asset) => [asset.id, asset]));
@@ -200,7 +217,11 @@ for (const asset of config.assets) {
   imageHashes.set(digest, asset.id);
   perceptualHashes.push({ id: asset.id, value: await differenceHash(jpg) });
 
-  const usedRoutes = new Set(htmlDocuments.filter((document) => document.html.includes(asset.base)).map((document) => document.route));
+  // Source editorial templates are not distinct published pages; constrain
+  // publication licence/reuse assertions to actual generated public HTML.
+  const usedRoutes = new Set(htmlDocuments
+    .filter((document) => !document.relativePath.startsWith("src/content/") && document.html.includes(asset.base))
+    .map((document) => document.route));
   const allowedRoutes = new Set(asset.allowedRoutes.map(publicRoute));
   if (asset.publicationStatus === "retired") {
     assert.ok(asset.retirementReason, `${asset.id} requires a documented retirement reason`);
@@ -229,6 +250,9 @@ const productionImagePlacements = new Map();
 const productionMediaPattern = /\/assets\/media\/(modules|stories|insights|products)\/([a-z0-9-]+?)(?:-960)?\.(?:avif|webp|jpe?g)/g;
 const productionImagePattern = /<img[^>]+src="(\/assets\/media\/(modules|stories|insights|products)\/([a-z0-9-]+)\.jpg)"[^>]*>/g;
 for (const document of htmlDocuments) {
+  // Reusable src/content/ editorial templates are not shipped as independent
+  // public routes; count only actual published pages for placement limits.
+  if (document.relativePath.startsWith("src/content/")) continue;
   for (const match of document.html.matchAll(productionMediaPattern)) {
     const base = `/assets/media/${match[1]}/${match[2]}`;
     if (!productionImageUsage.has(base)) productionImageUsage.set(base, new Set());

@@ -10,12 +10,12 @@
     "Null semantic or provenance fields are explicit gaps, not inferred approvals."
   ],
   "summary": {
-    "trackedAssetCount": 872,
+    "trackedAssetCount": 871,
     "byClassification": {
-      "KEEP": 872
+      "KEEP": 871
     },
     "byProvenanceStatus": {
-      "registered": 662,
+      "registered": 661,
       "registered-identical-delivery-copy": 12,
       "repository-generated-test-evidence": 198
     },
@@ -2278,13 +2278,14 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 16,
+      "usageCount": 5,
+      "referenceCount": 17,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "about/index.html",
         "creative-assets/asset-register.json",
-        "scripts/apply-about-editorial.mjs"
+        "scripts/apply-about-editorial.mjs",
+        "scripts/validate-module-media-sanity.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-015",
@@ -5744,55 +5745,15 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
-      "usageFiles": [
-        "creative-assets/asset-register.json",
-        "infra/aws/nutraxin-customer-staging-stack.json"
-      ],
-      "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": null,
-      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
-    },
-    {
-      "path": "assets/media/home/earth-reference-1400.jpg",
-      "canonicalDeliveryPath": "assets/media/home/earth-reference-1400.jpg",
-      "format": "jpeg",
-      "bytes": 66170,
-      "width": 1400,
-      "height": 305,
-      "aspectRatio": 4.590164,
-      "sha256": "a77c4d138ef2293f9a77df82a14d63c21ff42a744e033b7472798f08c85e5d92",
-      "perceptualHash": "078773e062e2e0f5",
-      "classification": "KEEP",
-      "provenanceStatus": "registered",
-      "source": "Crop (Earth and atmosphere only, y=500 to y=887) from the exact owner-approved NovaPharm Medicine in Motion homepage screenshot supplied on 10 November 2026, resampled to 1400 x 305 and optimised for web. No generated elements or typography are added to this crop.",
-      "licence": "Owner-authorised NovaPharm corporate art sourced from the owner-supplied approved design reference. Not NASA/ESA imagery or a documentary satellite photograph.",
-      "reviewStatus": "Explicit owner approval of the reference design; homepage visual match requested 10 November 2026",
-      "technicalStatus": "JPEG, 1400 x 305, 66,170 bytes; standalone local asset; copyright and provenance registered",
-      "provenanceRecord": null,
-      "semanticPurpose": "homepage-approved-earth-horizon-reference",
-      "routes": [
-        "/ homepage Earth horizon hero only"
-      ],
-      "focalPoint": null,
-      "registeredAltText": "",
-      "registeredCaption": "Illustrative Earth-at-sunrise design image; not a factual satellite photograph.",
-      "observedAltText": [],
-      "observedCaptions": [],
-      "responsiveDerivatives": [],
-      "observedLoading": [],
-      "observedFetchPriority": [],
-      "lcpRelevance": false,
       "usageCount": 6,
-      "referenceCount": 15,
+      "referenceCount": 10,
       "usageFiles": [
         ".github/workflows/pages-live-publish.yml",
         ".github/workflows/pages-public-release-recovery.yml",
         "apps/corporate/components/concise-home.tsx",
         "creative-assets/asset-register.json",
-        "scripts/apply-corporate-product-discipline.mjs",
-        "scripts/programme/validate-post-pr53-candidate.mjs"
+        "infra/aws/nutraxin-customer-staging-stack.json",
+        "scripts/apply-corporate-product-discipline.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
