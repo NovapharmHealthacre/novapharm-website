@@ -69,7 +69,7 @@ for (const p of pages) {
  const webPage={"@context":"https://schema.org","@type":"WebPage","@id":url+"#webpage",name:p.title,description:p.description,url,inLanguage:"en-GB",isPartOf:{"@id":domain+"/#website"},about:{"@id":domain+"/#organization"},dateModified:"2026-11-10"};
  const breadcrumbs={"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Home",item:domain+"/"},{"@type":"ListItem",position:2,name:p.slug,item:url}]};
  head+='<script type="application/ld+json">'+JSON.stringify(webPage)+'</script><script type="application/ld+json">'+JSON.stringify(breadcrumbs)+'</script>\n';
- doc=(head+rest).replace(/<body\b[^>]*>/,'<body data-page="'+p.slug+'" data-visual-refinement="2026-07" data-family="company" data-route="/'+p.slug+'/">');
+ doc=(head+rest).replace('href="/capabilities/" aria-current="page"', 'href="/capabilities/"').replace(/<body\b[^>]*>/,'<body data-page="'+p.slug+'" data-visual-refinement="2026-07" data-family="company" data-route="/'+p.slug+'/">');
  if ((doc.match(/<h1\b/g)||[]).length!==1)throw Error("Page requires one H1: "+p.slug);
  save(p.slug+"/index.html",doc);
 }
