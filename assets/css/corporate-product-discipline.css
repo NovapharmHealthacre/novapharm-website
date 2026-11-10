@@ -2254,7 +2254,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   .npd-header.site-header { overflow: visible; }
   .npd-header-inner.header-inner,
   body[data-page="home"] .npd-header-inner.header-inner { gap: 16px; }
-  .npd-header .brand { width: 171px; }
+  .npd-header .brand { width: 210px; }
   .npd-global-nav.site-nav { gap: 0; }
   .npd-global-nav.site-nav > a:not(.btn),
   body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
