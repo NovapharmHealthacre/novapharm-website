@@ -24,7 +24,8 @@ test("private bucket has enforced ownership, SSE-S3, no public access and retain
 
 test("retention expires access logs within 90 days and old versions within 30 days", () => {
   const rule = properties.LifecycleConfiguration.Rules.find((r) => r.Status === "Enabled");
-  assert.equal(rule.Filter.Prefix, "intelligence/");
+  assert.equal(rule.Prefix, "intelligence/");
+  assert.equal(Object.hasOwn(rule, "Filter"), false, "CloudFormation S3 LifecycleRule does not accept Filter");
   assert.equal(rule.ExpirationInDays, 90);
   assert.equal(rule.NoncurrentVersionExpiration.NoncurrentDays, 30);
   assert.equal(rule.AbortIncompleteMultipartUpload.DaysAfterInitiation, 7);
