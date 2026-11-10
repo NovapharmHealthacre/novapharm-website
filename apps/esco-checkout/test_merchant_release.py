@@ -56,6 +56,9 @@ class MerchantReleaseContract(unittest.TestCase):
         self.assertEqual(draft["catalogue_reference_count"], 373)
         self.assertEqual(len(draft["records"]), 373)
         self.assertEqual(len({v["internal_novapharm_sku"] for v in draft["records"]}), 373)
+        self.assertTrue(all(v["manufacturer"] == "Eastern Surgical Company (ESCO)" for v in draft["records"]))
+        self.assertTrue(all(v["owner_declared_stock_units"] == 10000 for v in draft["records"]))
+        self.assertTrue(all(v["stock_declaration_basis"] == "OWNER_DECLARED_NOT_ALLOCATED" for v in draft["records"]))
         self.assertEqual(sum(not v["catalogue_model"] for v in draft["records"]), 300)
         self.assertTrue(all(v["release_authorised"] is False for v in draft["records"]))
         self.assertTrue(all(v["final_uk_delivered_selling_price_pence"] is None for v in draft["records"]))
@@ -80,6 +83,22 @@ class MerchantReleaseContract(unittest.TestCase):
         self.assertEqual(released["ESCO-CAT-0001"]["unit_price_pence"], 15600)
         self.assertEqual(released["ESCO-CAT-0001"]["actual_variable_cost_pence"], 11000)
         self.assertTrue(released["ESCO-CAT-0001"]["supplier_cost_verified"])
+
+    def test_website_base_price_must_match_every_checkout_promotion(self):
+        draft = mod.prepare_evidence(synthetic_matrix())
+        draft["records"][0] = full_record(draft["records"][0])
+        draft["records"][0]["merchant_base_price_pence"] = 11999
+        with patch.object(mod, "read_matrix", return_value=synthetic_matrix()):
+            released, blocked = mod.evaluate(draft, lambda item: True)
+        self.assertEqual(len(released), 0)
+        self.assertEqual(len(blocked), 373)
+        self.assertEqual(blocked["ESCO-CAT-0001"], "website-approved base price mismatch")
+
+    def test_checkout_price_cannot_undercut_owner_approved_base(self):
+        record = full_record(mod.prepare_evidence(synthetic_matrix())["records"][0])
+        record["final_uk_delivered_selling_price_pence"] = 11999
+        with self.assertRaisesRegex(ValueError, "below approved website base price"):
+            mod.release_record(record, lambda item: True)
 
     def test_unconfirmed_model_tax_stock_safety_and_margin_cannot_launch(self):
         good = full_record(mod.prepare_evidence(synthetic_matrix())["records"][0])
