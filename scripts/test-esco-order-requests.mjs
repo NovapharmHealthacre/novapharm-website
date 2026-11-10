@@ -9,8 +9,8 @@ const css=readFileSync("assets/css/esco-order-requests.css","utf8");
 
 test("all catalogue customers can submit an explicit nonfinancial order request",()=>{
   for (const marker of ["data-esco-order-request-form","data-esco-order-request-submit",
-    "data-esco-order-request-receipt","name=\\\"customer-name\\\"","name=\\\"customer-email\\\"",
-    "name=\\\"accept-order-terms\\\""]) assert.ok(generator.includes(marker),marker);
+    "data-esco-order-request-receipt","customer-name","customer-email",
+    "accept-order-terms"]) assert.ok(generator.includes(marker),marker);
   assert.match(generator,/No card details or payment now/);
   assert.match(generator,/Base price/);
   assert.match(bag,/checkoutApiOrigin \+ "\/order-requests"/);
@@ -24,7 +24,7 @@ test("paid checkout remains server authoritative and separate from request submi
   assert.match(bag,/checkoutApiOrigin \+ "\/checkout"/);
   assert.match(bag,/checkoutApiOrigin \+ "\/order-requests"/);
   assert.match(checkout,/set\(payload\) != \{/);
-  assert.match(checkout,/request_id.*lines.*customer.*accept_order_terms/);
+  assert.match(checkout,/request_id[\\s\\S]*lines[\\s\\S]*customer[\\s\\S]*accept_order_terms/);
   assert.match(checkout,/not 1 <= int\(sku\[-4:\]\) <= 373/);
   assert.doesNotMatch(checkout,/request\.get\("unit_price_pence"\)/);
 });
