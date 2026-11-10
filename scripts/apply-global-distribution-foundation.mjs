@@ -57,6 +57,8 @@ function setMeta(head, attr, key, content) {
 }
 for (const p of pages) {
  if (!pageMeta[p.slug]) throw Error("Source metadata missing for "+p.slug);
+ p.title = pageMeta[p.slug].title;
+ p.description = pageMeta[p.slug].description;
  const url=domain+"/"+p.slug+"/";
  let doc=template.replace(main,'<main id="main" class="npd-main npd-commercial">'+localNav+p.body+'</main>');
  const ix=doc.indexOf("</head>");
