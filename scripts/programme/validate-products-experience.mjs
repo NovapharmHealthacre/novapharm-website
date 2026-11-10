@@ -24,14 +24,42 @@ if (!existsSync(path.join(root, "products/nutraxin/index.html"))) throw new Erro
 if (/[£€$]\s*\d|add to cart|buy now|checkout/i.test(main)) throw new Error("Products page exposes ecommerce or price content.");
 
 const register = JSON.parse(readFileSync(path.join(root, "docs/nutraxin-product-register.json"), "utf8"));
+const retailCatalog = JSON.parse(readFileSync(path.join(root, "assets/data/nutraxin-retail-catalogue.json"), "utf8"));
+const retailBySku = new Map(retailCatalog.products.map((item) => [item.sku, item]));
 if (register.products.length !== 19) throw new Error(`Expected 19 governed Nutraxin products; found ${register.products.length}.`);
 for (const product of register.products) {
   const productPath = path.join(root, "products", "nutraxin", product.slug, "index.html");
   if (!existsSync(productPath)) throw new Error(`Nutraxin detail route is missing: ${product.slug}.`);
   const detail = readFileSync(productPath, "utf8");
   if (!detail.includes(product.name) || !detail.includes(product.packSize)) throw new Error(`Nutraxin detail route is incomplete: ${product.slug}.`);
-  if (/[£€$]\s*\d|add to cart|buy now|checkout/i.test(detail)) throw new Error(`Nutraxin detail route exposes commerce without authority: ${product.slug}.`);
-  if (!detail.includes("availability") || !detail.includes("not asserted")) throw new Error(`Nutraxin detail route is missing its availability boundary: ${product.slug}.`);
+  const retail = retailBySku.get(product.sku);
+  if (!retail || retail.slug !== product.slug) throw new Error(`Approved Nutraxin retail identity is missing: ${product.slug}.`);
+  const permitted = retailCatalog.price_authority === "approved_consumer_retail" && retailCatalog.currency === "GBP";
+  if (!permitted || !Number.isSafeInteger(retail.retail_price_pence) || retail.retail_price_pence <= 0) {
+    throw new Error(`Nutraxin retail price authority is missing: ${product.slug}.`);
+  }
+  const amount = (retail.retail_price_pence / 100).toFixed(2);
+  if (!detail.includes("£" + amount) || !detail.includes('data-merchant-sku="' + product.sku + '"')) {
+    throw new Error(`Nutraxin displayed price differs from approved source: ${product.slug}.`);
+  }
+  const expectedAvailability = retailCatalog.delivery_verified === true &&
+    retailCatalog.checkout_enabled === true && retailCatalog.payment_collection_enabled === true &&
+    retail.available_to_sell === true && retail.ordering_enabled === true ? "InStock" : "OutOfStock";
+  const structuredOffers = [...detail.matchAll(/<script type="application\\/ld\\+json">([^<]+)<\\/script>/g)]
+    .map((match) => JSON.parse(match[1]))
+    .filter((node) => node["@type"] === "Product" && node.sku === product.sku);
+  if (structuredOffers.length !== 1) throw new Error(`Missing product markup: ${product.slug}.`);
+  const offer = structuredOffers[0].offers;
+  if (offer?.priceCurrency !== "GBP" || offer.price !== amount ||
+      offer.availability !== "https://schema.org/" + expectedAvailability) {
+    throw new Error(`Nutraxin Offer price/availability is inconsistent: ${product.slug}.`);
+  }
+  if (expectedAvailability === "OutOfStock" && !detail.includes("Currently unavailable to order online")) {
+    throw new Error(`Unavailable Nutraxin product lacks a clear availability warning: ${product.slug}.`);
+  }
+  if (/add to cart|buy now/i.test(detail) && expectedAvailability !== "InStock") {
+    throw new Error(`Unapproved public purchase action: ${product.slug}.`);
+  }
 }
 
 for (const [legacy, canonical] of [["product-portfolio/index.html", "/products/"], ["product-portfolio/nutraxin/index.html", "/products/nutraxin/"]]) {
