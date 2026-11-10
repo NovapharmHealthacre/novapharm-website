@@ -36,6 +36,7 @@ PRICE_ID = re.compile(r"^price_[A-Za-z0-9]{8,}$")
 SESSION_ID = re.compile(r"^cs_live_[A-Za-z0-9]+$")
 MAX_LINES = 12
 MAX_QTY = 1000
+MAX_REQUEST_QTY = 10000
 MAX_SUBTOTAL = 99999999
 
 def aws(service):
@@ -440,7 +441,7 @@ def order_request(event):
         sku, qty = row.get("id"), row.get("quantity")
         if (not isinstance(sku, str) or not CAT_ID.fullmatch(sku) or
             not 1 <= int(sku[-4:]) <= 373 or sku in seen or
-            type(qty) is not int or not 1 <= qty <= MAX_QTY):
+            type(qty) is not int or not 1 <= qty <= MAX_REQUEST_QTY):
             return fail(400, "invalid_lines")
         seen.add(sku)
         canonical.append({"id": sku, "quantity": qty})
