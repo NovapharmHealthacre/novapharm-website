@@ -169,7 +169,7 @@ assert.match(read("regulatory-services/index.html"), /npd-roadmap npd-roadmap-la
 assert.match(read("technology/index.html"), /npi-roadmap-grid/, "Technology must explain development maturity");
 assert.match(read("technology/index.html"), /npi-terminal/, "Technology must provide an explicit illustrative Medicines Terminal");
 assert.match(read("leadership/index.html"), /module-portrait-composition/, "Leadership must use approved portraits");
-assert.match(read("products/index.html"), /np-products-panel-nutraxin[\\s\\S]*np-products-panel-esco[\\s\\S]*np-products-panel-pharma/, "Products must retain three approved and differentiated portfolio collections");
+assert.match(read("products/index.html"), /np-products-panel-nutraxin[\s\S]*np-products-panel-esco[\s\S]*np-products-panel-pharma/, "Products must retain three approved and differentiated portfolio collections");
 assert.doesNotMatch(read("index.html"), /partner-ecosystem-grid/, "Homepage must not retain the generic repeated partner grid");
 
 const generatedRegister = new Map(productionRegister.assets.map((asset) => [asset.id, asset]));
