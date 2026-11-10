@@ -54,6 +54,15 @@ export function publicPrice(product, data) {
   return product.retail_price_pence;
 }
 
+export function merchantSaleReady(product, data) {
+  return data?.price_authority === "approved_consumer_retail" &&
+    data?.delivery_verified === true &&
+    data?.checkout_enabled === true &&
+    data?.payment_collection_enabled === true &&
+    product?.ordering_enabled === true &&
+    product?.available_to_sell === true;
+}
+
 export function basketSubtotal(bag, data) {
   if (!catalogueIsSafe(data) || !bag.length) return null;
   const products = new Map(data.products.map((p) => [p.sku, p]));
@@ -136,6 +145,10 @@ function runStore(data) {
   };
   const put = (sku, qty) => {
     if (!productMap.has(sku) || !Number.isSafeInteger(qty) || qty < 1 || qty > MAX_PER_SKU) return;
+    if (!merchantSaleReady(productMap.get(sku), data)) {
+      toast("This product is currently unavailable to order online.");
+      return;
+    }
     const existing = bag.find((item) => item.sku === sku);
     bag = safeBasket([...bag.filter((item) => item.sku !== sku), { sku, quantity: Math.min(MAX_PER_SKU, (existing?.quantity || 0) + qty) }], data.products);
     saveBag(bag);
@@ -212,7 +225,7 @@ function runStore(data) {
           list.append(item);
         }
         const subtotalMinor = basketSubtotal(bag, data);
-        const ready = !!(approvedRelease && bag.length > 0 && subtotalMinor !== null && !confirmedOrder && !awaitingOrder);
+        const ready = !!(approvedRelease && bag.length > 0 && subtotalMinor !== null && bag.every((line) => merchantSaleReady(productMap.get(line.sku), data)) && !confirmedOrder && !awaitingOrder);
         // A public catalogue flag or browser price NEVER authorises a charge; the
         // server independently verifies all release evidence and recalculates totals.
         const indicative = data.price_authority === "owner_authorized_provisional_public_display";
@@ -325,6 +338,8 @@ function runStore(data) {
       add.addEventListener("click", () => put(p.sku, 1));
       const buy = make("button", "nx-store-add nx-store-buy-now", "Buy now");
       buy.type = "button";
+      add.disabled = !merchantSaleReady(p, data);
+      buy.disabled = !merchantSaleReady(p, data);
       buy.addEventListener("click", () => { put(p.sku, 1); window.location.assign(BAG_URL); });
       footer.append(priceWrap, add, buy);
       shell.append(footer);
@@ -350,7 +365,9 @@ function runStore(data) {
       add.type = "button";
       add.addEventListener("click", () => put(p.sku, Number(quantity.value)));
       const buy = make("button","nx-store-add nx-store-buy-now","Buy now");
-      buy.type="button";buy.addEventListener("click",()=>{put(p.sku,Number(quantity.value));window.location.assign(BAG_URL);});
+      buy.type="button";
+      add.disabled = !merchantSaleReady(p, data);
+      buy.disabled = !merchantSaleReady(p, data);buy.addEventListener("click",()=>{put(p.sku,Number(quantity.value));window.location.assign(BAG_URL);});
       options.append(label, add, buy, anchor("View Bag", BAG_URL, "nx-store-bag-link"));
       panel.append(options);
       const pack = copy.querySelector(".npd-product-pack");
