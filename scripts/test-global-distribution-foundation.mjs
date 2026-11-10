@@ -3,6 +3,12 @@ import { strict as assert } from "node:assert";
 import { navigation } from "../src/content/site-content.mjs";
 
 const routes = ["distribution", "market-access", "markets"];
+const artDirection = JSON.parse(readFileSync("config/module-art-direction.json", "utf8"));
+const earthApproval = artDirection.assets.find((asset) => asset.id === "home-earth-horizon");
+assert.deepEqual(earthApproval?.allowedRoutes, ["/", "/distribution/"],
+  "Owner-approved Earth image may appear on Home and Distribution only");
+assert.equal(earthApproval?.maxReuse, 2, "Earth media reuse must remain explicitly limited to two routes");
+
 const sitemap = readFileSync("sitemap.xml", "utf8");
 const homepage = readFileSync("index.html", "utf8");
 // The visible desktop and mobile navigation in both corporate renderers must
