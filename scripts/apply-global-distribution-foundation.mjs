@@ -86,7 +86,7 @@ const pages = [
     <p class="ndist-eyebrow">The standard behind the journey</p>
     <h2 id="ndist-proof-title">Precision is not optional.</h2>
     <div class="ndist-proof-grid">
-      <div><strong>02–08°C</strong><span>Refrigerated service profile where validated and contracted</span></div>
+      <div><strong>2–8°C</strong><span>Refrigerated service profile where validated and contracted</span></div>
       <div><strong>15–25°C</strong><span>Controlled ambient service profile where validated and contracted</span></div>
       <div><strong>Documented</strong><span>Defined handoffs and product-specific monitoring requirements</span></div>
       <div><strong>Accountable</strong><span>Qualified partners and the required permissions at every destination</span></div>
