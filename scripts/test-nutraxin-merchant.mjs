@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 const read = path => readFileSync(new URL("../" + path, import.meta.url), "utf8");
 const catalogue = JSON.parse(read("assets/data/nutraxin-retail-catalogue.json"));
 const registered = JSON.parse(read("docs/nutraxin-product-register.json"));
-const lines = read("shopping/nutraxin-uk.tsv").trimEnd().split("\n");
+const lines = read("shopping/nutraxin-uk.tsv").replace(/\n$/, "").split("\n");
 const heads = lines[0].split("\t");
 const parsed = lines.slice(1).map(line => Object.fromEntries(line.split("\t").map((value, i) => [heads[i], value])));
 test("19 product URLs, approved prices and availability match Merchant feed and Product offers", () => {
