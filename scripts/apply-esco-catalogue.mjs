@@ -90,7 +90,7 @@ let bagPage=sourcePage.replace(/<main\b[^>]*\bid="main"[^>]*>[\s\S]*?<\/main>/,b
 if(!bagPage.includes('data-esco-bag-items')) throw Error('Failed ESCO Bag generation');
 bagPage=bagPage.replace(/<title>[^<]*<\/title>/,'<title>Your ESCO Bag | NovaPharm</title>');
 bagPage=bagPage.replace(/<link rel="canonical" href="[^"]*">/,'<link rel="canonical" href="https://novapharmhealthcare.com/products/esco/bag/">');
-bagPage=bagPage.replace('</head>','<meta name="robots" content="noindex,follow">\n<link rel="stylesheet" href="/assets/css/esco-catalogue.css">\n</head>');
+bagPage=bagPage.replace('</head>','<meta name="robots" content="noindex,follow">\n<link rel="stylesheet" href="/assets/css/esco-catalogue.css">\n<link rel="stylesheet" href="/assets/css/esco-order-requests.css">\n</head>');
 bagPage=bagPage.replace('</body>','<script type="module" src="/assets/js/esco-bag.js"></script>\n<script type="module" src="/assets/js/esco-photo-cleanup.js"></script>\n</body>');
 write('products/esco/bag/index.html',bagPage);
 if (!sourcePage.includes('<main id="main"')) throw Error('No valid Products page available as ESCO template');
