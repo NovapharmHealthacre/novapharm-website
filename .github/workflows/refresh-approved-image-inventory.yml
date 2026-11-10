@@ -32,6 +32,7 @@ jobs:
       - name: Install locked dependencies without executing install scripts
         run: npm ci --ignore-scripts
       # The generated inventory is a factual audit, never a licence approval.
+      # Source files and human provenance registers stay unmodified.
       - name: Regenerate provenance inventory without modifying source media
         shell: bash
         run: |
