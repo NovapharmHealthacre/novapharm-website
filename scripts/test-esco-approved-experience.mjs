@@ -67,3 +67,24 @@ test("responsive, keyboard-accessible storefront is styled without altering chec
   assert.match(generator, /aria-label="Catalogue at a glance"/);
   assert.match(generator, /aria-label="Model-associated ESCO medical equipment photographs"/);
 });
+
+test("customer-first catalogue relies on the header Bag without the oversized homepage tray", () => {
+  const refinement = readFileSync("assets/css/esco-customer-first-fixes.css", "utf8");
+  assert.match(generator, /data-esco-quote-tray hidden aria-hidden="true"/);
+  assert.match(generator, /class="esco-localbar-bag"/);
+  assert.doesNotMatch(generator, /class="esco-results-bag"/);
+  assert.match(refinement, /\.esco-storefront \.esco-quote-tray\[hidden\]/);
+  assert.match(refinement, /\.esco-storefront \.esco-mobile-bag/);
+  assert.match(client, /topBagCount\.textContent = String\(state\.size\)/);
+  assert.match(client, /clearFilters\.hidden = !\(search \|\| category \|\| readyToggle\?\.checked\)/);
+});
+test("black-background supplier photograph is cleaned once and reused across product, hero and Bag", () => {
+  const photoScript = readFileSync("assets/js/esco-photo-cleanup.js", "utf8");
+  assert.match(photoScript, /esco-p07-image03\.webp/);
+  assert.match(photoScript, /getImageData/);
+  assert.match(photoScript, /MutationObserver/);
+  assert.match(photoScript, /neutralDark/);
+  assert.match(photoScript, /canvas\.toDataURL\("image\/png"\)/);
+  assert.match(generator, /esco-photo-cleanup\.js/);
+  assert.match(generator, /esco-customer-first-fixes\.css/);
+});
