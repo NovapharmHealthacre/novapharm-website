@@ -1,0 +1,268 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Isolated Stripe Billing signed webhook quarantine for NovaPharm Intelligence. No checkout or access grant.",
+  "Resources": {
+    "EventTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "TableName": "novapharm-intelligence-billing-webhook-events",
+        "BillingMode": "PAY_PER_REQUEST",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "event_id",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "event_id",
+            "KeyType": "HASH"
+          }
+        ],
+        "SSESpecification": {
+          "SSEEnabled": true
+        },
+        "TimeToLiveSpecification": {
+          "AttributeName": "expires_at",
+          "Enabled": true
+        },
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          }
+        ]
+      }
+    },
+    "SigningSecret": {
+      "Type": "AWS::SecretsManager::Secret",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "Name": "novapharm/intelligence/production/stripe/webhook-signing-secret",
+        "Description": "Separate Intelligence Stripe Billing webhook signing secret",
+        "GenerateSecretString": {
+          "PasswordLength": 48,
+          "ExcludePunctuation": true
+        },
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          }
+        ]
+      }
+    },
+    "WebhookLogs": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/novapharm-intelligence-stripe-billing-webhook",
+        "RetentionInDays": 30
+      }
+    },
+    "WebhookRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "novapharm-intelligence-stripe-webhook-role",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "webhook-least-privilege",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:PutItem"
+                  ],
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "EventTable",
+                      "Arn"
+                    ]
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "secretsmanager:GetSecretValue"
+                  ],
+                  "Resource": {
+                    "Ref": "SigningSecret"
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/novapharm-intelligence-stripe-billing-webhook:*"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "WebhookFunction": {
+      "Type": "AWS::Lambda::Function",
+      "DependsOn": [
+        "WebhookLogs"
+      ],
+      "Properties": {
+        "FunctionName": "novapharm-intelligence-stripe-billing-webhook",
+        "Description": "Signed Stripe Billing events, durable quarantine only; no entitlements",
+        "Runtime": "python3.13",
+        "Handler": "index.handler",
+        "Code": {
+          "ZipFile": "import os, json, base64, re, hmac, hashlib, time\nimport boto3\nfrom botocore.exceptions import ClientError\n\nsecrets = boto3.client(\"secretsmanager\")\ndynamodb = boto3.client(\"dynamodb\")\nTYPES = frozenset({\n \"checkout.session.completed\", \"checkout.session.async_payment_succeeded\",\n \"checkout.session.async_payment_failed\", \"customer.subscription.created\",\n \"customer.subscription.updated\", \"customer.subscription.deleted\",\n \"invoice.paid\", \"invoice.payment_failed\", \"charge.dispute.created\",\n \"charge.refunded\", \"radar.early_fraud_warning.created\"\n})\nEVENT_ID = re.compile(r\"^evt_[A-Za-z0-9]{8,}$\")\nHEX = re.compile(r\"^[0-9a-f]{64}$\")\n\ndef response(status, code):\n return {\"statusCode\":status,\"headers\":{\"content-type\":\"application/json\",\"cache-control\":\"no-store\",\"x-robots-tag\":\"noindex\"},\"body\":json.dumps({\"status\":code},separators=(\",\",\":\"))}\n\ndef handler(event, context):\n try:\n  headers = {str(k).lower():v for k,v in (event.get(\"headers\") or {}).items()}\n  signature = headers.get(\"stripe-signature\", \"\")\n  raw = event.get(\"body\", \"\")\n  body = base64.b64decode(raw,validate=True) if event.get(\"isBase64Encoded\") else raw.encode(\"utf-8\")\n  if len(body)>262144 or not body or not isinstance(signature,str):\n   return response(400,\"invalid_payload\")\n  parts = [x.strip().split(\"=\",1) for x in signature.split(\",\") if \"=\" in x]\n  timestamp = next((v for k,v in parts if k==\"t\"),None)\n  signatures = [v for k,v in parts if k==\"v1\" and HEX.fullmatch(v)]\n  if not timestamp or not timestamp.isdigit() or abs(int(time.time())-int(timestamp))>300 or not signatures:\n   return response(400,\"invalid_signature\")\n  secret = secrets.get_secret_value(SecretId=os.environ[\"STRIPE_WEBHOOK_SECRET_ARN\"]).get(\"SecretString\",\"\")\n  if not secret.startswith(\"whsec_\"):\n   return response(503,\"signing_secret_not_ready\")\n  digest = hmac.new(secret.encode(\"utf-8\"),timestamp.encode(\"ascii\")+b\".\"+body,hashlib.sha256).hexdigest()\n  if not any(hmac.compare_digest(digest,value) for value in signatures):\n   return response(400,\"invalid_signature\")\n  data=json.loads(body.decode(\"utf-8\"))\n  if not isinstance(data,dict) or not EVENT_ID.fullmatch(str(data.get(\"id\",\"\"))) or data.get(\"livemode\") is not True:\n   return response(400,\"invalid_live_event\")\n  account=data.get(\"account\")\n  if account is not None and account!=os.environ[\"EXPECTED_STRIPE_ACCOUNT_ID\"]:\n   return response(400,\"wrong_account\")\n  kind=data.get(\"type\")\n  if kind not in TYPES:\n   return response(200,\"ignored_type\")\n  obj=(data.get(\"data\") or {}).get(\"object\") or {}\n  if kind.startswith(\"checkout.session.\") and (not isinstance(obj,dict) or obj.get(\"mode\")!=\"subscription\"):\n   return response(200,\"ignored_non_subscription\")\n  now=int(time.time())\n  synthetic=str(data[\"id\"]).startswith(\"evt_NovaSynthetic\")\n  item={\n   \"event_id\":{\"S\":data[\"id\"]},\n   \"event_type\":{\"S\":kind},\n   \"status\":{\"S\":\"quarantined_unmapped\"},\n   \"received_at\":{\"N\":str(now)},\n   \"expires_at\":{\"N\":str(now+7776000)},\n   \"synthetic\":{\"BOOL\":synthetic}\n  }\n  try:\n   dynamodb.put_item(TableName=os.environ[\"BILLING_EVENT_TABLE\"],Item=item,ConditionExpression=\"attribute_not_exists(event_id)\")\n   return response(200,\"received_unmapped_no_entitlement\")\n  except ClientError as err:\n   if err.response.get(\"Error\",{}).get(\"Code\")==\"ConditionalCheckFailedException\":\n    return response(200,\"duplicate_event\")\n   return response(503,\"ledger_unavailable\")\n except (ValueError,TypeError,UnicodeError,KeyError,base64.binascii.Error):\n  return response(400,\"invalid_payload\")\n except Exception:\n  return response(503,\"temporarily_unavailable\")\n"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "WebhookRole",
+            "Arn"
+          ]
+        },
+        "Timeout": 10,
+        "MemorySize": 128,
+        "Environment": {
+          "Variables": {
+            "STRIPE_WEBHOOK_SECRET_ARN": {
+              "Ref": "SigningSecret"
+            },
+            "BILLING_EVENT_TABLE": {
+              "Ref": "EventTable"
+            },
+            "EXPECTED_STRIPE_ACCOUNT_ID": "acct_1UZUNv2U9Y3sX5I2"
+          }
+        },
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          }
+        ]
+      }
+    },
+    "WebhookApi": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "novapharm-intelligence-stripe-billing-webhook",
+        "ProtocolType": "HTTP",
+        "Description": "Signed subscription event webhook only"
+      }
+    },
+    "WebhookIntegration": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "WebhookApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "WebhookFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 10000
+      }
+    },
+    "WebhookRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "WebhookApi"
+        },
+        "RouteKey": "POST /intelligence/stripe/webhook",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "WebhookIntegration"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "WebhookStage": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "WebhookApi"
+        },
+        "StageName": "$default",
+        "AutoDeploy": true,
+        "DefaultRouteSettings": {
+          "ThrottlingBurstLimit": 5,
+          "ThrottlingRateLimit": 2
+        }
+      }
+    },
+    "WebhookInvokePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "WebhookFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${WebhookApi}/*/POST/intelligence/stripe/webhook"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "WebhookUrl": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            {
+              "Fn::GetAtt": [
+                "WebhookApi",
+                "ApiEndpoint"
+              ]
+            },
+            "/intelligence/stripe/webhook"
+          ]
+        ]
+      }
+    },
+    "SigningSecretArn": {
+      "Value": {
+        "Ref": "SigningSecret"
+      }
+    },
+    "EventTableName": {
+      "Value": {
+        "Ref": "EventTable"
+      }
+    },
+    "ReleaseBoundary": {
+      "Value": "Events only. Does not charge or grant access."
+    }
+  }
+}
