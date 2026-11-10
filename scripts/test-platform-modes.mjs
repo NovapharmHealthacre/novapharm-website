@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { platformModes, getPlatformCapabilities, resolvePlatformMode } from "../src/core/platform-mode.mjs";
 
@@ -63,10 +63,21 @@ try {
     assert.equal(existsSync(path), false, `${path} must not exist in a PUBLIC_ONLY build`);
   }
 
-  run(process.execPath, ["scripts/stage-pages-artifact.mjs", output], platformModes.PUBLIC_ONLY);
-  assert.equal(existsSync(`${output}/portal/index.html`), true);
-  assert.equal(existsSync(`${output}/admin`), false);
-  assert.equal(existsSync(`${output}/employee`), false);
+  // A generated protected route must NEVER cross the Pages boundary even if
+  // it accidentally remains on disk. Test actual copying, not only a filename
+  // pattern check against a clean PUBLIC_ONLY build.
+  const syntheticProtectedRoute = "portal/change-password/index.html";
+  try {
+    mkdirSync("portal/change-password", { recursive: true });
+    writeFileSync(syntheticProtectedRoute, "<!doctype html><title>Non-secret synthetic protected route</title>\n");
+    run(process.execPath, ["scripts/stage-pages-artifact.mjs", output], platformModes.PUBLIC_ONLY);
+    assert.equal(existsSync(`${output}/portal/index.html`), true, "Public portal landing must remain available");
+    assert.equal(existsSync(`${output}/portal/change-password`), false, "Protected route must not enter Pages output");
+    assert.equal(existsSync(`${output}/admin`), false);
+    assert.equal(existsSync(`${output}/employee`), false);
+  } finally {
+    rmSync("portal/change-password", { recursive: true, force: true });
+  }
 
   run(process.execPath, ["scripts/build-site.mjs"], platformModes.FULL_PLATFORM);
   assert.match(read("portal/index.html"), /data-login-form/);
