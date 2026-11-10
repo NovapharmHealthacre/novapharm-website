@@ -70,6 +70,7 @@ function renderPaymentEligibility(lines) {
   // A disabled payment button for quote-only products creates a dead end.
   // Show exactly one primary purchase path: Stripe for approved goods or
   // a confirmed order request for every other catalogue reference.
+  if (termsLabel) termsLabel.hidden = !eligible;
   checkoutButton.hidden = !eligible;
   checkoutButton.disabled = !eligible || !termsCheckbox.checked || sendingPayment;
   if (orderRequestForm) orderRequestForm.hidden = eligible || !lines.length;
