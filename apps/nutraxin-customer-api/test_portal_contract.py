@@ -1,4 +1,5 @@
 """Offline security and pricing-contract tests for the staging B2B portal."""
+import base64
 import importlib.util
 import json
 import os
@@ -125,6 +126,18 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertIn('host.replaceChildren()', PORTAL.APP)
         self.assertIn('void renderHistory()', PORTAL.APP)
         self.assertNotIn("innerHTML", PORTAL.APP)
+
+    def test_approved_official_logo_and_earth_horizon(self):
+        self.assertIn("novapharm-healthcare-logo.svg", PORTAL.PAGE)
+        self.assertNotIn('<div class="account-navigation">', PORTAL.PAGE)
+        self.assertIn("url('/assets/earth-horizon-approved.jpg')", PORTAL.PAGE)
+        image=PORTAL.handler(self.event("/assets/earth-horizon-approved.jpg"),None)
+        self.assertEqual(image["statusCode"],200)
+        self.assertTrue(image["isBase64Encoded"])
+        self.assertEqual(image["headers"]["content-type"],"image/jpeg")
+        decoded=base64.b64decode(image["body"])
+        self.assertTrue(decoded.startswith(b"\\xff\\xd8"))
+        self.assertGreater(len(decoded),50000)
 
     def test_approved_account_landing_and_personal_signup(self):
         policy=PORTAL.reply(200,PORTAL.PAGE,"text/html")["headers"]["content-security-policy"]
