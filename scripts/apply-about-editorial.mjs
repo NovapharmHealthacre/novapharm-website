@@ -18,11 +18,10 @@ if (!html.includes(style)) {
 }
 html = html.replace(/<meta name="description" content="[^"]*">/, '<meta name="description" content="Meet NovaPharm Healthcare. Specialist medicines, resilient supply and decision systems, built on qualified evidence and regulatory readiness.">');
 html = html.replace(/<meta name="theme-color" content="[^"]*">/, '<meta name="theme-color" content="#FFFFFF">');
-html = html.replace(/https:\/\/novapharmhealthcare\.com\/assets\/media\/modules\/about-operating-model\.jpg/g, 'https://novapharmhealthcare.com/assets/media/about/novapharm-warehouse-original.jpg');
 // The original JPEG is retained for cross-platform social preview compatibility.
 
-html = html.replace(/<meta property="og:image:height" content="900">/, '<meta property="og:image:height" content="580">');
-html = html.replace(/Representative operating-model review/g, 'Warehouse photograph supplied by NovaPharm');
+// Keep the route-specific OG/Twitter image and dimensions from the generated social-image register.
+// The warehouse is the on-page hero and AboutPage schema image; social previews stay registered.
 const aboutSummary = "Meet NovaPharm Healthcare. Specialist medicines, resilient supply and decision systems, built on qualified evidence and regulatory readiness.";
 html = html.replace(/<meta property="og:description" content="[^"]*">/, '<meta property="og:description" content="' + aboutSummary + '">');
 html = html.replace(/<meta name="twitter:description" content="[^"]*">/, '<meta name="twitter:description" content="' + aboutSummary + '">');
