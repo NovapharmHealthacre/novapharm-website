@@ -27,7 +27,9 @@ if (!result.includes('href="' + stylesheet + '"')) {
   result = result.replace("</head>", '  <link rel="stylesheet" href="' + stylesheet + '">\n</head>');
 }
 if ((result.match(/<h1\b/g) || []).length !== 1 ||
-    !result.includes("From evidence<br>to access.") ||
+    !result.includes('class="ncap-title-line">From evidence</span>') ||
+    !result.includes('class="ncap-earth-illustration"') ||
+    !result.includes('class="ncap-vial-illustration"') ||
     !result.includes("Start with one decision.") ||
     !result.includes("Regulated wholesale supply has not commenced") ||
     !result.includes('href="/services/"') ||
