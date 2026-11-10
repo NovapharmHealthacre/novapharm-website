@@ -1,0 +1,67 @@
+/* Owner-approved Capabilities editorial presentation | 2026-11-10.
+   Intentionally scoped; never modifies corporate navigation, footers or legal notices. */
+body[data-route="/capabilities/"] .ncap-page { background: #fff; color: #0b0b0d; overflow: hidden; }
+.ncap-page, .ncap-page * { box-sizing: border-box; }
+.ncap-page .ncap-wrap { width: min(100% - 112px, 1312px); margin-inline: auto; }
+.ncap-page .ncap-kicker, .ncap-page .ncap-earth-kicker {
+  margin: 0; font: 700 12px/1.4 -apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  letter-spacing: .185em; text-transform: uppercase; color: #5b6068;
+}
+.ncap-page .ncap-hero { padding-top: clamp(72px,8vw,130px); text-align:center; background:#fff; position:relative; }
+.ncap-page .ncap-hero-content { position: relative; z-index:1; }
+.ncap-page .ncap-hero h1 { font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif; font-weight:700; font-size:clamp(58px,8.3vw,124px); line-height:.99; letter-spacing:-.077em; color:#050507; margin:24px auto 22px; max-width:1040px; }
+.ncap-page .ncap-hero-lead { margin:0 auto; max-width:710px; color:#454951; font-size:clamp(17px,1.65vw,22px); line-height:1.49; font-weight:400; letter-spacing:-.017em; }
+.ncap-page .ncap-hero-link { display:inline-flex; align-items:center; gap:12px; margin-top:26px; padding:10px 0; color:#0066cc; font-size:15px; font-weight:500; text-decoration:none; }
+.ncap-page .ncap-hero-link:hover { text-decoration:underline; color:#004a97; }
+.ncap-page .ncap-hero-art { margin:14px auto 0; max-width:1500px; width:100%; height:clamp(270px,40vw,560px); overflow:hidden; position:relative; }
+.ncap-page .ncap-hero-art img { display:block; width:100%; height:100%; object-fit:contain; object-position:center bottom; }
+.ncap-page .ncap-model { background:#fff; padding:clamp(72px,9vw,138px) 0 clamp(110px,12vw,180px); position:relative; z-index:2; }
+.ncap-page .ncap-model h2 { font-size:clamp(37px,4.6vw,68px); line-height:1.07; font-weight:700; letter-spacing:-.057em; color:#09090b; margin:27px 0 14px; max-width:1100px; }
+.ncap-page .ncap-model-lead { font-size:clamp(17px,1.65vw,21px); line-height:1.5; color:#666a71; max-width:810px; margin:0 0 65px; }
+.ncap-page .ncap-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); }
+.ncap-page .ncap-discipline { display:flex; flex-direction:column; position:relative; color:inherit; padding:4px 32px 4px 32px; border-left:1px solid #e0e2e5; min-height:254px; text-decoration:none; transition:transform .2s ease; }
+.ncap-page .ncap-discipline:first-child { padding-left:0; border-left:0; }
+.ncap-page .ncap-discipline:last-child { padding-right:0; }
+.ncap-page .ncap-discipline:hover { color:#09090b; transform:translateY(-3px); }
+.ncap-page .ncap-number { font-size:17px; line-height:1.3; font-weight:650; color:#767981; margin-bottom:20px; letter-spacing:-.02em; }
+.ncap-page .ncap-discipline h3 { margin:0 0 13px; font-size:clamp(23px,2.05vw,32px); line-height:1.11; font-weight:675; letter-spacing:-.045em; color:#121215; }
+.ncap-page .ncap-discipline p { margin:0; color:#565960; font-size:16px; line-height:1.52; letter-spacing:-.012em; }
+.ncap-page .ncap-arrow { color:#6e7178; font-size:20px; margin-top:auto; padding-top:14px; align-self:flex-start; transition:transform .2s ease; }
+.ncap-page .ncap-discipline:hover .ncap-arrow { transform:translate(3px,-3px); color:#0066cc; }
+.ncap-page .ncap-earth { position:relative; min-height:clamp(490px,49vw,700px); background:#fff; display:flex; align-items:flex-end; justify-content:center; padding:0 20px 75px; isolation:isolate; text-align:center; }
+.ncap-page .ncap-earth-image { position:absolute; inset:0; z-index:-1; background: url('/assets/media/capabilities/earth-horizon.svg') center top / cover no-repeat; }
+.ncap-page .ncap-earth-copy { position:relative; z-index:1; color:#fff; max-width:900px; padding-top:240px; }
+.ncap-page .ncap-earth-kicker { color:#bdc8d9; }
+.ncap-page .ncap-earth h2 { font-size:clamp(43px,5.15vw,76px); line-height:1.08; margin:14px 0 15px; font-weight:690; letter-spacing:-.057em; color:#fff; }
+.ncap-page .ncap-earth p:not(.ncap-earth-kicker) { margin:0 auto; max-width:700px; font-size:clamp(16px,1.45vw,20px); line-height:1.55; color:#e4e9f0; }
+.ncap-page .ncap-cta { display:inline-flex; align-items:center; gap:16px; margin-top:30px; padding:13px 22px; border:1px solid rgba(255,255,255,.83); border-radius:999px; color:#fff; background:rgba(10,19,34,.22); font-size:15px; font-weight:600; text-decoration:none; transition:background .2s ease,color .2s ease; }
+.ncap-page .ncap-cta:hover { background:#fff; color:#101d2b; }
+.ncap-page a:focus-visible { outline:3px solid #217fe8; outline-offset:5px; border-radius:3px; }
+@media(max-width:1100px) {
+ .ncap-page .ncap-wrap { width:min(100% - 64px,1312px); }
+ .ncap-page .ncap-grid { grid-template-columns:repeat(2,minmax(0,1fr)); row-gap:40px; }
+ .ncap-page .ncap-discipline:nth-child(3) { padding-left:0; border-left:0; }
+ .ncap-page .ncap-earth-copy { padding-top:225px; }
+}
+@media(max-width:640px) {
+ .ncap-page .ncap-wrap { width:calc(100% - 40px); }
+ .ncap-page .ncap-hero { padding-top:80px; }
+ .ncap-page .ncap-hero h1 { font-size:clamp(52px,14vw,72px); line-height:1.02; letter-spacing:-.065em; margin:20px auto; }
+ .ncap-page .ncap-hero-lead { font-size:17px; line-height:1.5; }
+ .ncap-page .ncap-hero-art { height:310px; width:130%; margin-left:-15%; }
+ .ncap-page .ncap-model { padding:72px 0 96px; }
+ .ncap-page .ncap-model h2 { font-size:clamp(35px,10vw,47px); }
+ .ncap-page .ncap-model-lead { margin-bottom:40px; }
+ .ncap-page .ncap-grid { grid-template-columns:1fr; row-gap:0; }
+ .ncap-page .ncap-discipline, .ncap-page .ncap-discipline:first-child, .ncap-page .ncap-discipline:nth-child(3) { min-height:0; padding:25px 0 32px; border:0; border-top:1px solid #e0e2e5; }
+ .ncap-page .ncap-discipline:last-child { padding-bottom:20px; }
+ .ncap-page .ncap-number { margin-bottom:12px; }
+ .ncap-page .ncap-discipline h3 { font-size:29px; }
+ .ncap-page .ncap-arrow { padding-top:12px; }
+ .ncap-page .ncap-earth { min-height:620px; padding:0 0 61px; align-items:flex-end; }
+ .ncap-page .ncap-earth-image { background-position:center top; background-size:auto 100%; }
+ .ncap-page .ncap-earth-copy { padding-top:215px; }
+ .ncap-page .ncap-earth h2 { font-size:clamp(40px,11vw,56px); }
+ .ncap-page .ncap-earth p:not(.ncap-earth-kicker) { font-size:16px; }
+}
+@media(prefers-reduced-motion:reduce) { .ncap-page .ncap-discipline,.ncap-page .ncap-arrow,.ncap-page .ncap-cta { transition:none; } }
