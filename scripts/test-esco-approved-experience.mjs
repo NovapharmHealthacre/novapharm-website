@@ -86,6 +86,7 @@ test("black-background supplier photograph is cleaned once and reused across pro
   assert.match(photoScript, /MutationObserver/);
   assert.match(photoScript, /neutralDark/);
   assert.match(photoScript, /canvas\.toDataURL\("image\/png"\)/);
+  assert.match(photoScript, /^  for \(let i = 0; i < total; i\+\+\) \{$/m);
   assert.match(generator, /esco-photo-cleanup\.js/);
   assert.match(generator, /esco-customer-first-fixes\.css/);
 });
