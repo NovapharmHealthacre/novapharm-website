@@ -76,3 +76,13 @@ test("forensic page identity and privacy choices do not regress", () => {
   assert.match(style, /Forensic remediation: non-obscuring consent/);
   assert.match(style, /\.cookie-banner\s*\{[\s\S]*?position: relative;/);
 });
+
+
+test("brand red token remains identical across public and managed corporate design", () => {
+  const publicTokens = readFileSync(path.join(root, "../../assets/css/tokens.css"), "utf8");
+  assert.match(publicTokens, /--brand:\s*#E3120B/i);
+  assert.match(style, /--nph-accent:\s*#e3120b/i);
+  assert.match(style, /--red-dark:\s*#b30e09/i);
+  assert.match(style, /--pharma-red-dark:\s*#b30e09/i);
+  assert.match(style, /--nph-link:\s*#0066cc/i, "Links and focus should remain distinguishable from brand CTAs");
+});
