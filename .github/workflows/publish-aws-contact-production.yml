@@ -165,6 +165,11 @@ jobs:
           grep -Fq 'href="/assets/css/capabilities-editorial.css"' _site/capabilities/index.html
           test -s _site/assets/css/capabilities-editorial.css
           grep -Fq '@media print' _site/assets/css/capabilities-editorial.css
+          # Exact approved homepage image and styling must be in the artifact.
+          grep -Fq 'class="npd-apple-hero nph-earth-hero"' _site/index.html
+          grep -Fq 'src="/assets/media/home/earth-reference-1400.jpg"' _site/index.html
+          test -s _site/assets/media/home/earth-reference-1400.jpg
+          grep -Fq 'nph-earth-hero' _site/assets/css/novapharm.bundle.css
           # The approved Oncology design and its exact mobile CSS are deployment prerequisites.
           node scripts/test-oncology-content.mjs
           test -s _site/assets/css/oncology-hope-v2.css
@@ -565,6 +570,54 @@ jobs:
           done
           echo '::error::Approved Capabilities artwork and responsive/print stylesheet are not live.'
           exit 1
+
+      - name: Verify approved morning Earth homepage image on the live domain
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 18); do
+            cache="earth-${GITHUB_SHA}-${attempt}-$(date +%s)"
+            if curl --fail --silent --show-error --location --max-time 20 \
+              -H 'Cache-Control: no-cache, no-store' \
+              "https://novapharmhealthcare.com/?${cache}" -o /tmp/live-earth-home.html \
+              && grep -Fq 'class="npd-apple-hero nph-earth-hero"' /tmp/live-earth-home.html \
+              && grep -Fq 'src="/assets/media/home/earth-reference-1400.jpg"' /tmp/live-earth-home.html \
+              && curl --fail --silent --show-error --location --max-time 20 \
+                "https://novapharmhealthcare.com/assets/media/home/earth-reference-1400.jpg?${cache}" -o /tmp/live-earth-1400.jpg \
+              && test "$(wc -c < /tmp/live-earth-1400.jpg)" -gt 30000; then
+              echo 'Approved high-definition Earth hero verified on production homepage.'
+              break
+            fi
+            if test "$attempt" -eq 18; then
+              echo '::error::Old homepage hero remains or approved Earth asset is missing.'
+              exit 1
+            fi
+            sleep 5
+          done
+
+      - name: Verify full-scene Oncology hero and un-cropped mobile styling on live domain
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 18); do
+            cache="hope-${GITHUB_SHA}-${attempt}-$(date +%s)"
+            if curl --fail --silent --show-error --location --max-time 20 \
+              -H 'Cache-Control: no-cache, no-store' \
+              "https://novapharmhealthcare.com/oncology/?${cache}" -o /tmp/live-hope-oncology.html \
+              && grep -Fq 'class="npoc-hero npoc-hope-hero"' /tmp/live-hope-oncology.html \
+              && grep -Fq 'A Hope of<br>Tomorrow.' /tmp/live-hope-oncology.html \
+              && grep -Fq 'href="/assets/css/oncology-hope-v2.css"' /tmp/live-hope-oncology.html \
+              && ! grep -Fq 'Illustrative creative image. No patient, treatment result or NovaPharm facility is depicted.' /tmp/live-hope-oncology.html \
+              && curl --fail --silent --show-error --location --max-time 20 \
+                "https://novapharmhealthcare.com/assets/css/oncology-hope-v2.css?${cache}" -o /tmp/live-hope-oncology.css \
+              && grep -Fq 'object-fit:contain' /tmp/live-hope-oncology.css; then
+              echo 'Approved full-scene Oncology hero, crop rule and no retired disclaimer verified live.'
+              break
+            fi
+            if test "$attempt" -eq 18; then
+              echo '::error::Old Oncology hero is still live or full-scene stylesheet is missing.'
+              exit 1
+            fi
+            sleep 5
+          done
 
       - name: Verify unified Products hero and source photography on live custom domain
         run: |
