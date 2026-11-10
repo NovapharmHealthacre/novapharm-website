@@ -382,7 +382,7 @@ function oncologyMain() {
         <p class="npoc-eyebrow">OUR ONCOLOGY PORTFOLIO</p>
         <h2 id="npoc-focus-title">Selected Therapies.<br>Real Impact.</h2>
         <p>A growing portfolio of oncology medicines, built to improve access, expand treatment options and support better outcomes.</p>
-        <a class="npoc-focus-link" href="#approach">Explore the Portfolio</a>
+        <a class="npoc-focus-link" href="/products/strategic-portfolio/">Explore the Portfolio</a>
       </div>
       <div class="npoc-focus-cards" aria-label="Oncology portfolio areas of interest">
         <a class="npoc-focus-card" href="/contact/?enquiry=Oncology%20solid%20tumours" aria-label="Discuss solid tumour opportunities"><img src="/assets/media/oncology/solid-tumours.jpg" alt="" width="325" height="237" loading="lazy" decoding="async"><span>Solid tumours</span></a>
