@@ -260,7 +260,7 @@ test("ESCO hero and product details stay in separate responsive grid tracks",()=
 test("ESCO Bag explains quote-only selections without authorising guide-price charges",()=>{
  const bag=readFileSync("assets/js/esco-bag.js","utf8");
  const shop=readFileSync("assets/js/esco-catalogue.js","utf8");
- assert.match(bag,/lines\.every\(item => approvedCatalogIds\.has\(item\.id\) && approvedUnitPricesPence\.has\(item\.id\)\)/);
+ assert.match(bag,/lines\.every\(item => approvedCatalogIds\.has\(item\.id\) && approvedUnitPricesPence\.has\(item\.id\) && item\.quantity <= MAX_CARD_QTY\)/);
  assert.match(bag,/quoteOnly = paymentServiceReady/);
  assert.match(bag,/product and delivery confirmation before payment/i);
  assert.match(bag,/\/products\/esco\/\?availability=ready#esco-catalogue/);
