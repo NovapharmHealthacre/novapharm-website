@@ -400,6 +400,21 @@ export const pageMeta = Object.freeze({
     description: "NovaPharm's planned pharmaceutical trading, PLPI strategy, European sourcing, GMP partnerships, QMS, GDP logistics and digital B2B services.",
     eyebrow: "Services"
   },
+  "distribution": {
+    title: "Pharmaceutical Distribution & Wholesale Readiness | NovaPharm",
+    description: "Explore NovaPharm Healthcare's UK pharmaceutical sourcing, wholesale-readiness, partner qualification and planned distribution pathways for qualified business buyers.",
+    eyebrow: "Distribution"
+  },
+  "market-access": {
+    title: "Pharmaceutical Market Entry & Access Strategy | NovaPharm",
+    description: "A practical B2B pharmaceutical market-entry pathway covering product rights, registration strategy, access, qualified partners, pricing and launch readiness.",
+    eyebrow: "Market access"
+  },
+  "markets": {
+    title: "International Pharmaceutical Market Development | NovaPharm",
+    description: "Understand NovaPharm's UK-first commercial development and potential EU, US, Canada and MENA partner-led market-entry pathways, each subject to local permissions.",
+    eyebrow: "International markets"
+  },
   "capabilities": {
     title: "Pharmaceutical Capabilities | NovaPharm Healthcare",
     description: "Explore NovaPharm's connected services, regulatory and quality model, clinical-development support and governed technology architecture.",

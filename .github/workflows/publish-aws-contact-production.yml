@@ -20,6 +20,8 @@ on:
       - 'assets/data/esco-catalogue.json'
       - 'assets/data/esco-checkout-config.json'
       - 'scripts/test-esco-catalogue.mjs'
+      - 'scripts/check-pages-monotonic-release.mjs'
+      - 'scripts/test-pages-monotonic-release.mjs'
       # Owner-approved Capabilities Earth/vial and editorial typography are release surfaces.
       - 'capabilities/index.html'
       - 'src/content/capabilities-editorial.html'
@@ -36,6 +38,14 @@ on:
       - 'assets/media/about/**'
       - 'scripts/apply-about-editorial.mjs'
       - 'scripts/build-site.mjs'
+      # Keep corporate app route parity and new commercial site releases in the
+      # same AWS-backed publisher as the verified live contact service.
+      - 'apps/corporate/data/site.ts'
+      - 'apps/corporate/data/pages.ts'
+      - 'apps/corporate/scripts/validate-content.ts'
+      - 'src/content/site-content.mjs'
+      - 'scripts/apply-global-distribution-foundation.mjs'
+      - 'assets/css/global-distribution-editorial.css'
       - 'assets/data/nutraxin-retail-catalogue.json'
       - 'scripts/apply-corporate-product-discipline.mjs'
       - 'oncology/**'
@@ -72,8 +82,8 @@ permissions:
   id-token: write
   deployments: read
 
-# Validate the exact trusted main before build, then publish only in proven
-# forward ancestry order. A later main merge must not discard a verified build.
+# Exact-main verification precedes build; a verified artifact may publish later
+# only when last successful Pages deployment and current main prove forward ancestry.
 concurrency:
   group: novapharm-pages-production
   cancel-in-progress: false
@@ -124,6 +134,15 @@ jobs:
           npm run test:cookies
           npm run validate:domain
           node scripts/stage-pages-artifact.mjs _site
+          # Three commercial routes must be included in the same verified release.
+          for route in distribution market-access markets; do
+            test -s "_site/$route/index.html"
+            grep -Fq 'Regulated pharmaceutical wholesale supply has not commenced' "_site/$route/index.html"
+            grep -Fq 'href="/assets/css/global-distribution-editorial.css"' "_site/$route/index.html"
+            grep -Fq "https://novapharmhealthcare.com/$route/" _site/sitemap.xml
+          done
+          test -s _site/assets/css/global-distribution-editorial.css
+          grep -Fq 'id="commercial-pathways"' _site/index.html
           # Verify the approved About story, asset fallbacks and responsive stylesheet
           # in the exact staged artifact before touching the active public website.
           grep -Fq 'Getting medicine to where it matters.' _site/about/index.html
@@ -283,12 +302,12 @@ jobs:
       name: github-pages
       url: ${{ steps.ship.outputs.page_url }}
     steps:
-      - name: Checkout verified source for forward-only release policy
+      - name: Check out independently verified release policy
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
           persist-credentials: false
-      - name: Prove publication advances from last successful Pages release
+      - name: Prove forward-only release ancestry and deploy evidence
         env:
           GH_TOKEN: ${{ github.token }}
           EXPECTED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
@@ -571,6 +590,31 @@ jobs:
           done
           echo '::error::Unified Products hero or unframed supplier photography CSS is not live.'
           exit 1
+
+      - name: Verify live Global Distribution, Market Access and Markets pages
+        run: |
+          set -euo pipefail
+          for route in distribution market-access markets; do
+            verified=false
+            for attempt in $(seq 1 18); do
+              url="https://novapharmhealthcare.com/$route/?release=$GITHUB_SHA-$attempt-$(date +%s)"
+              if curl --fail --silent --show-error --location --max-time 15 \
+                  -H 'Cache-Control: no-cache, no-store' "$url" -o "/tmp/novapharm-$route.html" \
+                && grep -Fq 'Regulated pharmaceutical wholesale supply has not commenced' "/tmp/novapharm-$route.html" \
+                && grep -Fq 'href="/assets/css/global-distribution-editorial.css"' "/tmp/novapharm-$route.html" \
+                && grep -Fq "https://novapharmhealthcare.com/$route/" "/tmp/novapharm-$route.html"; then
+                verified=true
+                break
+              fi
+              sleep 5
+            done
+            test "$verified" = true || { echo "::error::$route not verified live on the customer domain"; exit 1; }
+          done
+          curl --fail --silent --show-error --location --max-time 15 \
+            'https://novapharmhealthcare.com/assets/css/global-distribution-editorial.css' \
+            -o /tmp/global-distribution-editorial.css
+          grep -Fq 'White space, quiet typography' /tmp/global-distribution-editorial.css
+          echo 'All three canonical commercial routes and Apple-inspired styling are live.'
 
       - name: Check out verified main source for IndexNow
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
