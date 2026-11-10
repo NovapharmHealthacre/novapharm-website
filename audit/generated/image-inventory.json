@@ -5777,12 +5777,13 @@
       "provenanceStatus": "registered",
       "source": "Crop (Earth and atmosphere only, y=500 to y=887) from the exact owner-approved NovaPharm Medicine in Motion homepage screenshot supplied on 10 November 2026, resampled to 1400 x 305 and optimised for web. No generated elements or typography are added to this crop.",
       "licence": "Owner-authorised NovaPharm corporate art sourced from the owner-supplied approved design reference. Not NASA/ESA imagery or a documentary satellite photograph.",
-      "reviewStatus": "Explicit owner approval of the reference design; homepage visual match requested 10 November 2026",
+      "reviewStatus": "Owner-approved Earth horizon creative reference for corporate homepage and Distribution editorial design, requested 10 November 2026; only those two routes are permitted.",
       "technicalStatus": "JPEG, 1400 x 305, 66,170 bytes; standalone local asset; copyright and provenance registered",
       "provenanceRecord": null,
-      "semanticPurpose": "homepage-approved-earth-horizon-reference",
+      "semanticPurpose": "owner-approved-earth-horizon-brand-reference",
       "routes": [
-        "/ homepage Earth horizon hero only"
+        "/ homepage approved Earth-horizon hero",
+        "/distribution/ approved global-distribution Earth-horizon hero"
       ],
       "focalPoint": null,
       "registeredAltText": "",
