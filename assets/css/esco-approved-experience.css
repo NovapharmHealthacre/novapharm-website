@@ -14,7 +14,8 @@
   max-width:1440px;
   padding-inline:clamp(22px,5.1vw,88px);
 }
-.esco-storefront :where(a,button,input,select,summary):focus-visible {outline:3px solid #0071e3;outline-offset:3px;}\n.esco-storefront .esco-localbar {
+.esco-storefront :where(a,button,input,select,summary):focus-visible {outline:3px solid #0071e3;outline-offset:3px;}
+.esco-storefront .esco-localbar {
   border-top:0;
   border-bottom:1px solid #ededf0;
   background:rgba(255,255,255,.94);
