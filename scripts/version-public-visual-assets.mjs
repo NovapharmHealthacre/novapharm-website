@@ -14,7 +14,10 @@ for (const [page, extraStyles] of pages) {
   for (const stylesheet of ["novapharm.bundle.css", ...extraStyles]) {
     const href = `/assets/css/${stylesheet}`;
     const current = `href="${href}"`;
-    const next = `href="${href}?v=${version}"`;
+    const visualVersion = page === "oncology/index.html" && stylesheet === "oncology-hope-v2.css"
+      ? "20261110-hope-for-tomorrow-v3"
+      : version;
+    const next = `href="${href}?v=${visualVersion}"`;
     if (html.includes(next)) continue;
     assert.equal(html.split(current).length - 1, 1, `${page}: required stylesheet should occur exactly once: ${href}`);
     html = html.replace(current, next);

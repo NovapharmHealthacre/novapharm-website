@@ -175,7 +175,7 @@ jobs:
           grep -Fq 'class="ncap-vial-illustration" src="data:image/webp;base64,' _site/capabilities/index.html
           grep -Fq 'class="ncap-earth-illustration" src="data:image/webp;base64,' _site/capabilities/index.html
           grep -Fq 'Start with one decision.' _site/capabilities/index.html
-          grep -Fq 'href="/assets/css/capabilities-editorial.css"' _site/capabilities/index.html
+          grep -Fq 'href="/assets/css/capabilities-editorial.css?v=20261110-logo-visible-v1"' _site/capabilities/index.html
           test -s _site/assets/css/capabilities-editorial.css
           grep -Fq '@media print' _site/assets/css/capabilities-editorial.css
           # Exact approved homepage image and styling must be in the artifact.
@@ -186,8 +186,8 @@ jobs:
           # The approved Oncology design and its exact mobile CSS are deployment prerequisites.
           node scripts/test-oncology-content.mjs
           test -s _site/assets/css/oncology-hope-v2.css
-          grep -Fq 'href="/assets/css/oncology-hope-v2.css"' _site/oncology/index.html
-          grep -Fq 'A Hope of<br>Tomorrow.' _site/oncology/index.html
+          grep -Fq 'href="/assets/css/oncology-hope-v2.css?v=20261110-hope-for-tomorrow-v3"' _site/oncology/index.html
+          grep -Fq 'A Hope for<br>Tomorrow.' _site/oncology/index.html
           ! grep -Fq 'Illustrative creative image. No patient, treatment result or NovaPharm facility is depicted.' _site/oncology/index.html
           grep -Fq 'grid-template-columns:repeat(3,minmax(220px,1fr))' _site/assets/css/oncology-hope-v2.css
           node scripts/verify-nutraxin-merchant-live.mjs --local
@@ -223,7 +223,7 @@ jobs:
           grep -Fq 'href="/products/nutraxin/"' _site/products/index.html
           grep -Fq 'href="/products/esco/"' _site/products/index.html
           grep -Fq 'href="/products/strategic-portfolio/"' _site/products/index.html
-          grep -Fq 'href="/assets/css/products-editorial.css"' _site/products/index.html
+          grep -Fq 'href="/assets/css/products-editorial.css?v=20261110-logo-visible-v1"' _site/products/index.html
           test -s _site/assets/css/products-editorial.css
           grep -Fq 'PRODUCTS UNIFIED HERO 2026-11-10' _site/assets/css/products-editorial.css
           grep -Fq 'ESCO Anand' _site/products/index.html
@@ -616,12 +616,13 @@ jobs:
               -H 'Cache-Control: no-cache, no-store' \
               "https://novapharmhealthcare.com/oncology/?${cache}" -o /tmp/live-hope-oncology.html \
               && grep -Fq 'class="npoc-hero npoc-hope-hero"' /tmp/live-hope-oncology.html \
-              && grep -Fq 'A Hope of<br>Tomorrow.' /tmp/live-hope-oncology.html \
-              && grep -Fq 'href="/assets/css/oncology-hope-v2.css"' /tmp/live-hope-oncology.html \
+              && grep -Fq 'A Hope for<br>Tomorrow.' /tmp/live-hope-oncology.html \
+              && grep -Fq 'href="/assets/css/oncology-hope-v2.css?v=20261110-hope-for-tomorrow-v3"' /tmp/live-hope-oncology.html \
               && ! grep -Fq 'Illustrative creative image. No patient, treatment result or NovaPharm facility is depicted.' /tmp/live-hope-oncology.html \
               && curl --fail --silent --show-error --location --max-time 20 \
                 "https://novapharmhealthcare.com/assets/css/oncology-hope-v2.css?${cache}" -o /tmp/live-hope-oncology.css \
-              && grep -Fq 'object-fit:contain' /tmp/live-hope-oncology.css; then
+              && grep -Fq 'object-fit:cover' /tmp/live-hope-oncology.css \
+              && grep -Fq 'Owner-approved reference SS2' /tmp/live-hope-oncology.css; then
               echo 'Approved full-scene Oncology hero, crop rule and no retired disclaimer verified live.'
               break
             fi
