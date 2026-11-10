@@ -462,6 +462,23 @@
       "caption": "Warehouse photograph provided by NovaPharm. Regulated wholesale supply has not commenced.",
       "technicalStatus": "lossy-web-derivative-source-preserved",
       "ownerApproval": "approved for About page visual 10 November 2026"
+    },
+    {
+      "path": "assets/media/home/earth-morning-approved.avif",
+      "type": "approved-editorial-earth-horizon",
+      "source": "Owner-approved generated NovaPharm Healthcare Earth-from-space sunrise hero concept, selected 10 November 2026 in ChatGPT; this is designed illustrative art, not documentary satellite imagery",
+      "licence": "NovaPharm owner-authorised use of original generated imagery under applicable OpenAI generated-content terms; no third-party logo or real-world facility depicted",
+      "generated": true,
+      "modified": true,
+      "dimensions": "1100x229",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "/ homepage hero on desktop and mobile"
+      ],
+      "altText": "",
+      "caption": "Illustrative view of Earth at sunrise. Geography, lighting and clouds are artistic representation.",
+      "technicalStatus": "source-approved optimised AVIF, 1100x229, 4.8 KB, non-decorative content represented in live copy not image alt",
+      "ownerApproval": "approved by company owner on 10 November 2026 for white-morning Apple-inspired homepage hero"
     }
   ],
   "missingApprovedAssets": [
