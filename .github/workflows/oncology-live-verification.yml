@@ -42,7 +42,7 @@ jobs:
             sleep 5
           done
           if [[ "$found" != true ]]; then
-            echo '::error::Public Oncology URL does not yet serve the approved Hope of Tomorrow page.'
+            echo '::error::Public Oncology URL does not yet serve the approved Hope for Tomorrow page.'
             exit 1
           fi
           echo 'Verified approved A Hope for Tomorrow HTML on the custom production domain.'

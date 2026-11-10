@@ -74,7 +74,7 @@ jobs:
           grep -Fq 'Medicine. Where it needs to be' _site/index.html
           grep -Fq 'class="npd-apple-hero nph-earth-hero"' _site/index.html
           grep -Fq 'src="/assets/media/home/earth-reference-1400.jpg"' _site/index.html
-          grep -Fq '>Intelligence</a>' _site/index.html
+          grep -Fq '>NovaPharm Intelligence</a>' _site/index.html
           test -s _site/assets/media/home/earth-reference-1400.jpg
           grep -Fq 'class="npd-apple-nova-art"' _site/index.html
           grep -Fq 'class="np-contact-reference-hero"' _site/contact/index.html
@@ -148,7 +148,7 @@ jobs:
           grep -Fq 'Medicine. Where it needs to be' _site/index.html
           grep -Fq 'class="npd-apple-hero nph-earth-hero"' _site/index.html
           grep -Fq 'src="/assets/media/home/earth-reference-1400.jpg"' _site/index.html
-          grep -Fq '>Intelligence</a>' _site/index.html
+          grep -Fq '>NovaPharm Intelligence</a>' _site/index.html
           test -s _site/assets/media/home/earth-reference-1400.jpg
           grep -Fq 'class="npd-apple-nova-art"' _site/index.html
           grep -Fq 'class="np-contact-reference-hero"' _site/contact/index.html
