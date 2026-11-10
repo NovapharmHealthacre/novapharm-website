@@ -51,7 +51,8 @@ async function beginLogin(config,mode){
  const state=randomUrlSafe();
  const verifier=randomUrlSafe(48);
  sessionStorage.setItem(PKCE_KEY,JSON.stringify({state,verifier,startedAt:Date.now()}));
- const url=new URL(mode==="signup"?"/signup":"/oauth2/authorize","https://"+config.cognito_domain);
+ const path=mode==="signup"?"/signup":mode==="recover"?"/forgotPassword":"/oauth2/authorize";
+ const url=new URL(path,"https://"+config.cognito_domain);
  url.searchParams.set("response_type","code");
  url.searchParams.set("client_id",config.client_id);
  url.searchParams.set("redirect_uri",ACCOUNT_URL);
@@ -128,18 +129,20 @@ async function showAuthenticated(config,v){
 async function init(){
  const signIn=document.querySelector("[data-nx-account-signin]");
  const signUp=document.querySelector("[data-nx-account-signup]");
+ const recover=document.querySelector("[data-nx-account-recover]");
  const signOut=document.querySelector("[data-nx-account-signout]");
- if(!signIn||!signUp||!signOut)return;
+ if(!signIn||!signUp||!recover||!signOut)return;
  let config;
  try{const r=await fetch(CONFIG_URL,{cache:"no-store",credentials:"omit"});config=await r.json();}
  catch{config=null}
  if(!safeConfiguration(config)){
   status("Customer sign-in is not activated yet. You can continue shopping and use guest checkout.");
-  signIn.disabled=true;signUp.disabled=true;return;
+  signIn.disabled=true;signUp.disabled=true;recover.disabled=true;return;
  }
- signIn.disabled=false;signUp.disabled=false;
+ signIn.disabled=false;signUp.disabled=false;recover.disabled=false;
  signIn.onclick=()=>{void beginLogin(config,"signin").catch(()=>status("Unable to start sign-in."));};
  signUp.onclick=()=>{void beginLogin(config,"signup").catch(()=>status("Unable to start registration."));};
+ recover.onclick=()=>{void beginLogin(config,"recover").catch(()=>status("Unable to start password recovery."));};
  signOut.onclick=()=>{
   clearSession();
   const url=new URL("/logout","https://"+config.cognito_domain);

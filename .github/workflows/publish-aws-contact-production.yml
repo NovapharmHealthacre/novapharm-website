@@ -95,6 +95,9 @@ jobs:
           test -s _site/assets/css/nutraxin-consumer-account.css
           grep -Fq 'data-nx-account-signup' _site/products/nutraxin/account/index.html
           grep -Fq 'data-nx-account-orders' _site/products/nutraxin/account/index.html
+          grep -Fq 'data-nx-account-recover' _site/products/nutraxin/account/index.html
+          grep -Fq 'href="/account-application/"' _site/products/nutraxin/account/index.html
+          grep -Fq '/forgotPassword' _site/assets/js/nutraxin-consumer-account.js
           node --test scripts/test-esco-catalogue.mjs
           grep -Fq 'data-esco-catalogue' _site/products/esco/index.html
           grep -Fq 'data-esco-quote-items' _site/products/esco/index.html
@@ -273,8 +276,11 @@ jobs:
               if curl --fail --silent --show-error --location --max-time 15 "https://novapharmhealthcare.com/products/nutraxin/account/?${cache}" -o /tmp/novapharm-account.html \
                 && grep -Fq 'data-nx-account-signup' /tmp/novapharm-account.html \
                 && grep -Fq 'data-nx-account-orders' /tmp/novapharm-account.html \
+                && grep -Fq 'data-nx-account-recover' /tmp/novapharm-account.html \
+                && grep -Fq 'href="/account-application/"' /tmp/novapharm-account.html \
                 && curl --fail --silent --show-error --max-time 15 "https://novapharmhealthcare.com/assets/js/nutraxin-consumer-account.js?${cache}" -o /tmp/novapharm-account.js \
                 && grep -Fq 'code_challenge_method' /tmp/novapharm-account.js \
+                && grep -Fq '/forgotPassword' /tmp/novapharm-account.js \
                 && curl --fail --silent --show-error --max-time 15 "https://novapharmhealthcare.com/assets/css/nutraxin-consumer-account.css?${cache}" -o /tmp/novapharm-account.css; then
                 passed=true
                 break
