@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { resolvePortalView } from "../data/routes";
-import { sessionDecision, verifiedPortalSession } from "../lib/server-session";
 import type { PortalUser } from "../lib/gateway";
+import { sessionDecision, verifiedPortalSession } from "../lib/server-session";
 
 const cookieValue = "session-identifier-12345." + "a".repeat(64);
 const user: PortalUser = {
