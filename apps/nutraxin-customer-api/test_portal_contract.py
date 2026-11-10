@@ -126,6 +126,28 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertIn('void renderHistory()', PORTAL.APP)
         self.assertNotIn("innerHTML", PORTAL.APP)
 
+    def test_approved_account_landing_and_personal_signup(self):
+        policy=PORTAL.reply(200,PORTAL.PAGE,"text/html")["headers"]["content-security-policy"]
+        self.assertIn("form-action 'self' https://synthetic.auth.eu-north-1.amazoncognito.com",policy)
+        self.assertIn("One account.<br>Every NovaPharm experience.", PORTAL.PAGE)
+        self.assertIn('id="account-entry-form"', PORTAL.PAGE)
+        self.assertIn('id="account-type-business"', PORTAL.PAGE)
+        self.assertIn("https://novapharmhealthcare.com/account-application/", PORTAL.PAGE)
+        self.assertIn("body:not(.account-authenticated) .retail-shop{display:none}", PORTAL.PAGE)
+        event=self.event("/login","POST")
+        event["body"]="mode=signup&email=buyer%40example.org"
+        response=PORTAL.handler(event,None)
+        self.assertEqual(response["statusCode"],302)
+        from urllib.parse import urlsplit,parse_qs
+        uri=urlsplit(response["headers"]["location"])
+        self.assertEqual(uri.path,"/signup")
+        fields=parse_qs(uri.query)
+        self.assertEqual(fields["login_hint"],["buyer@example.org"])
+        self.assertEqual(fields["code_challenge_method"],["S256"])
+        self.assertTrue(any(x.startswith("__Host-np_txn=") for x in response.get("cookies",[])))
+        event["body"]="mode=signup&email=invalid"
+        self.assertEqual(PORTAL.handler(event,None)["statusCode"],400)
+
     def test_oauth_scope_allows_cognito_get_user_after_verified_email(self):
         from urllib.parse import urlsplit, parse_qs
         response = PORTAL.login(self.event("/login"))
