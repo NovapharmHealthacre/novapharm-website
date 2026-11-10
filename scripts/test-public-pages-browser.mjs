@@ -16,7 +16,7 @@ const routes = [
   { path: "/oncology/", name: "oncology", required: "Oncology" },
   { path: "/cro/", name: "cro", required: "Clinical" },
   { path: "/technology/", name: "technology", required: "Technology" },
-  { path: "/products/", name: "products-overview", required: "Three collections. Distinct decisions." },
+  { path: "/products/", name: "products-overview", required: "Different products. One purpose." },
   { path: "/products/nutraxin/", name: "nutraxin-collection", required: "Nutraxin" }
 ];
 const routeViewports = [
@@ -220,6 +220,17 @@ for (const [engineName, browserType] of engines) {
             const bodyText = (await page.locator("body").innerText()).replace(/\s+/g, " ");
             assert.ok(bodyText.includes(route.required), `${engineName} ${viewport.name} ${route.path}: required page marker missing`);
 
+            if (route.name === "products-overview") {
+              assert.equal(await page.locator(".np-products-hero h1").count(), 1,
+                `${engineName} ${viewport.name}: approved Products headline missing`);
+              for (const routeHref of ["/products/nutraxin/", "/products/esco/", "/products/strategic-portfolio/"]) {
+                assert.ok(await page.locator(`.np-products-collections a[href="${routeHref}"]`).count() >= 1,
+                  `${engineName} ${viewport.name}: approved collection navigation missing: ${routeHref}`);
+              }
+              assert.equal(await page.locator(".np-products-stage-item").count(), 3,
+                `${engineName} ${viewport.name}: three-source product hero incomplete`);
+            }
+
             await assertLayout(page, `${engineName} ${viewport.name} ${route.path}`);
             await assertFooterHeadings(page, `${engineName} ${viewport.name} ${route.path}`);
             if (route.name === "home" && viewport.name !== "tablet-768") {
@@ -272,6 +283,7 @@ for (const [engineName, browserType] of engines) {
               const geometry = await page.evaluate(() => {
                 const hero = document.querySelector(".npoc-hope-hero");
                 const portrait = hero?.querySelector(".npoc-hero-visual img");
+                const heroVisual = hero?.querySelector(".npoc-hero-visual");
                 const heading = hero?.querySelector("h1");
                 const button = hero?.querySelector(".npoc-button-primary");
                 const cardsContainer = document.querySelector(".npoc-focus-cards");
@@ -287,6 +299,8 @@ for (const [engineName, browserType] of engines) {
                     naturalHeight:portrait.naturalHeight,
                     box:getRect(portrait)
                   } : null,
+                  heroImageBlend: heroVisual ? [getComputedStyle(heroVisual).maskImage, getComputedStyle(heroVisual).webkitMaskImage].some((mask) => typeof mask === "string" && mask.includes("gradient")) : false,
+                  heroMediaRatio: heroVisual && hero ? getRect(heroVisual).width / getRect(hero).width : 0,
                   headingColor: heading ? getComputedStyle(heading).color : null,
                   buttonColor: button ? getComputedStyle(button).backgroundColor : null,
                   cardGrid: cardsContainer ? getComputedStyle(cardsContainer).display : null,
@@ -303,6 +317,12 @@ for (const [engineName, browserType] of engines) {
               assert.equal(geometry.portrait.fit, "contain", `${label}: portrait must remain fully visible (not object-fit:cover)`);
               assert.ok(geometry.portrait.box.width > 250 && geometry.portrait.box.height > 200,
                 `${label}: portrait must not collapse`);
+              if (viewport.width > 760) {
+                assert.ok(geometry.heroMediaRatio >= 0.7, `${label}: desktop photograph must extend across the hero, not sit in a hard-edged box`);
+                assert.equal(geometry.heroImageBlend, true, `${label}: photograph must fade seamlessly into the light hero`);
+              } else {
+                assert.equal(geometry.heroImageBlend, false, `${label}: mobile portrait should not be partially masked`);
+              }
               assert.equal(geometry.headingColor, "rgb(19, 19, 22)", `${label}: white hero uses dark heading, never the previous dark-overlay white heading`);
               assert.equal(geometry.buttonColor, "rgb(22, 22, 25)", `${label}: hero call-to-action must use the approved black, not old red`);
               assert.equal(geometry.cardGrid, "grid", `${label}: cards must use an aligned CSS grid`);

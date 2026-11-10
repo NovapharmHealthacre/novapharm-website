@@ -55,12 +55,15 @@ body[data-page="oncology"] main.npoc-page section.npoc-hero.npoc-hope-hero{
 body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-visual{
   position:absolute;
   inset:0 0 0 auto;
-  width:57%;
+  width:72%;
   height:100%;
   display:flex;
   justify-content:flex-end;
   align-items:stretch;
   overflow:visible;
+  /* Seamless edge-to-edge hero: no visible line between the white copy and photograph. */
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.05) 12%,rgba(0,0,0,.45) 28%,rgba(0,0,0,.9) 44%,#000 54%);
+  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.05) 12%,rgba(0,0,0,.45) 28%,rgba(0,0,0,.9) 44%,#000 54%);
   pointer-events:none;
 }
 body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-visual img{
@@ -78,7 +81,7 @@ body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-visual img{
 body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-shade{
   position:absolute;
   inset:0;
-  background:linear-gradient(90deg,#fff 0%,rgba(255,255,255,.99) 20%,rgba(255,255,255,.93) 34%,rgba(255,255,255,.56) 44%,rgba(255,255,255,.06) 60%,transparent 72%);
+  background:linear-gradient(90deg,#fff 0%,rgba(255,255,255,.99) 20%,rgba(255,255,255,.84) 34%,rgba(255,255,255,.24) 48%,rgba(255,255,255,0) 63%);
   pointer-events:none;
 }
 body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-content{
@@ -355,6 +358,9 @@ body[data-page="oncology"] main.npoc-page :is(.npoc-focus-card,.npoc-button,.npo
     display:flex;
     align-items:flex-start;
     justify-content:center;
+    /* Portrait and white text stack independently on phones. */
+    -webkit-mask-image:none;
+    mask-image:none;
   }
   body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-visual img{
     width:100%;

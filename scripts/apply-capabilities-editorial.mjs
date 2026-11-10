@@ -9,9 +9,7 @@ const stylesheet = "/assets/css/capabilities-editorial.css";
 for (const file of [
   pageFile,
   templateFile,
-  resolve("assets/css/capabilities-editorial.css"),
-  resolve("assets/media/capabilities/vial-study.svg"),
-  resolve("assets/media/capabilities/earth-horizon.svg")
+  resolve("assets/css/capabilities-editorial.css")
 ]) {
   if (!existsSync(file)) throw new Error("Approved Capabilities asset missing: " + file);
 }
@@ -27,7 +25,9 @@ if (!result.includes('href="' + stylesheet + '"')) {
   result = result.replace("</head>", '  <link rel="stylesheet" href="' + stylesheet + '">\n</head>');
 }
 if ((result.match(/<h1\b/g) || []).length !== 1 ||
-    !result.includes("From evidence<br>to access.") ||
+    !result.includes('class="ncap-title-line">From evidence</span>') ||
+    !result.includes('class="ncap-earth-illustration"') ||
+    !result.includes('class="ncap-vial-illustration"') ||
     !result.includes("Start with one decision.") ||
     !result.includes("Regulated wholesale supply has not commenced") ||
     !result.includes('href="/services/"') ||
