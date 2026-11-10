@@ -146,7 +146,10 @@ def release_record(record, eligible):
     amount = record.get("final_uk_delivered_selling_price_pence")
     if type(amount) is not int or not 1 <= amount <= 99999999:
         raise ValueError("firm UK delivered ex-VAT price required")
-    if amount < record.get("merchant_base_price_pence", 0):
+    base_price = record.get("merchant_base_price_pence")
+    if type(base_price) is not int or base_price < 1:
+        raise ValueError("merchant-approved website base price missing")
+    if amount < base_price:
         raise ValueError("delivered selling price falls below approved website base price")
     if record.get("pricing_basis") not in ("VERIFIED_SUPPLIER_COST", "MERCHANT_ACCEPTED_COST_RISK"):
         raise ValueError("unverified suggested price is not a final price")
