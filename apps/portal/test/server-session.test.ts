@@ -90,3 +90,35 @@ test("rejected, redirected, malformed and unavailable sessions are never authori
     assert.equal(result, null);
   }
 });
+
+test("production-like isolated browser validation may use loopback HTTP but never remote HTTP", async () => {
+  let calls = 0;
+  const fetchImpl: typeof fetch = async (url) => {
+    calls += 1;
+    assert.equal(String(url), "http://127.0.0.1:4178/api/portal/session");
+    return Response.json({ user });
+  };
+  assert.deepEqual(await verifiedPortalSession({
+    cookieValue,
+    apiOrigin: "http://127.0.0.1:4178",
+    production: true,
+    validationMode: true,
+    fetchImpl,
+  }), user);
+  assert.equal(calls, 1);
+  assert.equal(await verifiedPortalSession({
+    cookieValue,
+    apiOrigin: "http://127.0.0.1:4178",
+    production: true,
+    validationMode: false,
+    fetchImpl,
+  }), null);
+  assert.equal(await verifiedPortalSession({
+    cookieValue,
+    apiOrigin: "http://example.com",
+    production: true,
+    validationMode: true,
+    fetchImpl,
+  }), null);
+  assert.equal(calls, 1);
+});
