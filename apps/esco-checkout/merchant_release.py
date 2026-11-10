@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
+import os
 import importlib.util
 import json
 import re
@@ -220,9 +222,17 @@ def evaluate(document, eligible):
     return released, blocked
 
 
-def promote(document, *, policy_version, approve_live, ssm):
+def promote(document, *, policy_version, approve_live, ssm, s3, bucket):
+    """Store approvals in an immutable, private S3 manifest, not a 4/8 KB SSM value.
+
+    The protected SSM parameter points to the exact SHA256 of the immutable
+    manifest. Existing two inline SSM SKUs are preserved unchanged.
+    """
     if approve_live is not True or type(policy_version) is not int or policy_version <= 0:
         raise ValueError("exact SSM version and explicit live approval required")
+    if not isinstance(bucket, str) or not re.fullmatch(
+            r"novapharm-esco-approved-skus-[0-9]{12}-eu-north-1", bucket):
+        raise ValueError("use only the isolated private ESCO approval bucket")
     approved, blocked = evaluate(document, load_eligible())
     if not approved:
         raise ValueError("no individually approved SKUs; nothing can be activated")
@@ -235,17 +245,48 @@ def promote(document, *, policy_version, approve_live, ssm):
     existing = cfg["approved_skus"]
     if not isinstance(existing, dict):
         raise ValueError("protected policy malformed")
-    collisions = set(existing) & set(approved)
+    from_s3 = {}
+    pointer = cfg.get("approval_manifest")
+    if pointer:
+        if (not isinstance(pointer, dict) or
+            not re.fullmatch(r"policies/[a-f0-9]{64}\\.json", str(pointer.get("key", ""))) or
+            not re.fullmatch(r"[a-f0-9]{64}", str(pointer.get("sha256", "")))):
+            raise ValueError("existing manifest pointer invalid")
+        obj = s3.get_object(Bucket=bucket, Key=pointer["key"])
+        raw = obj["Body"].read(2000001)
+        if len(raw) > 2000000 or hashlib.sha256(raw).hexdigest() != pointer["sha256"]:
+            raise ValueError("existing approval manifest failed integrity verification")
+        prior = json.loads(raw.decode("utf-8"))
+        if prior.get("schema") != "novapharm-esco-approved-skus-v1" or not isinstance(
+                prior.get("approved_skus"), dict):
+            raise ValueError("existing approval manifest schema invalid")
+        from_s3 = prior["approved_skus"]
+    all_existing = set(existing) | set(from_s3)
+    collisions = all_existing & set(approved)
     if collisions:
         raise ValueError("existing live SKUs cannot be overwritten: " + ",".join(sorted(collisions)))
-    cfg["approved_skus"] = {**existing, **approved}
-    # No static customer amount is being promoted; every row must have
-    # explicit evidence, server price and review metadata.
+    rows = {**from_s3, **approved}
+    if len(rows) + len(existing) > 373:
+        raise ValueError("policy exceeds 373 catalogue identities")
+    encoded = json.dumps({"schema": "novapharm-esco-approved-skus-v1",
+                          "approved_skus": rows}, sort_keys=True,
+                         separators=(",", ":")).encode("utf-8")
+    if len(encoded) > 2000000:
+        raise ValueError("manifest exceeds Lambda download limit")
+    digest = hashlib.sha256(encoded).hexdigest()
+    key = "policies/" + digest + ".json"
+    s3.put_object(Bucket=bucket, Key=key, Body=encoded,
+                  ServerSideEncryption="AES256", ContentType="application/json",
+                  IfNoneMatch="*")
+    cfg["approval_manifest"] = {"key": key, "sha256": digest}
+    if len(json.dumps(cfg).encode("utf-8")) > 8000:
+        raise ValueError("SSM pointer policy exceeds advanced parameter capacity")
     updated = ssm.put_parameter(Name=POLICY, Type="SecureString",
                                 Value=json.dumps(cfg, separators=(",", ":")), Overwrite=True)
     return {"promoted": len(approved), "still_blocked": len(blocked),
-            "total_live_policy_skus": len(cfg["approved_skus"]),
-            "ssm_version": updated.get("Version")}
+            "total_live_policy_skus": len(existing) + len(rows),
+            "ssm_version": updated.get("Version"),
+            "manifest_sha256": digest}
 
 
 def main():
@@ -257,6 +298,7 @@ def main():
     parser.add_argument("--apply", action="store_true", help="append only fully supported rows to protected SSM")
     parser.add_argument("--expected-policy-version", type=int)
     parser.add_argument("--approve-live", action="store_true")
+    parser.add_argument("--bucket", default=os.environ.get("ESCO_APPROVAL_BUCKET", ""))
     args = parser.parse_args()
     if args.bootstrap:
         args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -270,7 +312,8 @@ def main():
     if args.apply:
         import boto3
         result = promote(doc, policy_version=args.expected_policy_version,
-                         approve_live=args.approve_live, ssm=boto3.client("ssm", region_name="eu-north-1"))
+                         approve_live=args.approve_live, ssm=boto3.client("ssm", region_name="eu-north-1"),
+                         s3=boto3.client("s3", region_name="eu-north-1"), bucket=args.bucket)
         print(json.dumps(result))
         return
     print(json.dumps({"prepared": len(doc["records"]), "ready_for_promotion": len(released),
