@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - 'products/nutraxin/**'
+      - 'assets/data/nutraxin-consumer-auth.json'
+      - 'src/content/site-content.mjs'
+      - 'assets/js/nutraxin-consumer-account.js'
       - 'src/content/nutraxin-showcase.html'
       - 'assets/js/nutraxin-retail-store.js'
       - 'assets/js/contact-production.js'
@@ -56,6 +59,9 @@ jobs:
     steps:
       - name: Checkout exactly approved main
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+          persist-credentials: false
       - name: Match independently reviewed commit
         env:
           EXPECTED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
@@ -110,6 +116,9 @@ jobs:
           ! grep -Fq 'novapharm-ga4-id' _site/legal/cookies/index.html
           grep -Fq 'Google Analytics 4' _site/legal/cookies/index.html
           test -s _site/assets/js/consent-analytics.js
+          jq -e '.enabled == true and .account_url == "https://novapharmhealthcare.com/products/nutraxin/account/"' _site/assets/data/nutraxin-consumer-auth.json
+          test -s _site/products/nutraxin/account/index.html
+          test -s _site/assets/js/nutraxin-consumer-account.js
           grep -Fq 'class="nx-purchase-progress"' _site/products/nutraxin/bag/index.html
           node scripts/check-links.mjs _site
           test -s _site/assets/js/contact-production.js
@@ -248,6 +257,23 @@ jobs:
           echo "::error::Live Nutraxin Bag did not match the approved Apple-style release." >&2
           exit 1
 
+      - name: Verify limited consumer registration on the live custom domain
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 24); do
+            cache="account-${GITHUB_SHA}-${attempt}-$(date +%s)"
+            if curl --fail --silent --show-error --location --max-time 15 -H 'Cache-Control: no-cache, no-store' "https://novapharmhealthcare.com/assets/data/nutraxin-consumer-auth.json?${cache}" -o /tmp/novapharm-live-consumer-auth.json \
+               && jq -e '.enabled == true and .account_url == "https://novapharmhealthcare.com/products/nutraxin/account/"' /tmp/novapharm-live-consumer-auth.json; then
+              curl --fail --silent --show-error --location --max-time 15 "https://novapharmhealthcare.com/products/nutraxin/account/?${cache}" -o /tmp/novapharm-live-consumer-page.html
+              grep -Fq 'data-nx-account-public' /tmp/novapharm-live-consumer-page.html
+              grep -Fq '/assets/js/nutraxin-consumer-account.js' /tmp/novapharm-live-consumer-page.html
+              echo "Limited account registration is served. Real verified-email customer acceptance remains separate."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Account signup config not verified on live website." >&2
+          exit 1
       - name: Verify ESCO Anand catalogue and quotation list on live custom domain
         run: |
           set -euo pipefail
