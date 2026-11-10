@@ -172,6 +172,26 @@ for (const sitemap of ["sitemap.xml", "sitemap-images.xml", "sitemap-insights.xm
 
 const home = text("index.html");
 if (home.includes("nav-search")) fail("Homepage navigation still contains the removed search control");
+// The actual visible header, not merely the footer, must show the secure
+// customer portal and the supplied red NovaPharm Healthcare master logo.
+const homeHeaderStart = home.indexOf('<header class="site-header npd-header"');
+const homeHeader = homeHeaderStart < 0 ? "" : home.slice(homeHeaderStart, home.indexOf("</header>", homeHeaderStart) + 9);
+const homePrimaryNavStart = homeHeader.indexOf('<nav class="site-nav npd-global-nav"');
+const homePrimaryNav = homePrimaryNavStart < 0 ? "" : homeHeader.slice(homePrimaryNavStart, homeHeader.indexOf("</nav>", homePrimaryNavStart) + 6);
+if (!homePrimaryNav.includes('<a href="https://portal.novapharmhealthcare.com/">Secure Portal</a>')) fail("Homepage primary header hides Secure Portal");
+if (!homeHeader.includes('<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png"')) fail("Homepage header is not using the supplied official PNG logo");
+if (homeHeader.includes('<source srcset="/assets/brand/novapharm-healthcare-logo.svg"')) fail("Homepage header still prioritises the replaced vector wordmark");
+for (const route of ["capabilities", "oncology", "products"]) {
+  const html = text(route + "/index.html");
+  const headerStart = html.indexOf('<header class="site-header npd-header"');
+  const header = headerStart < 0 ? "" : html.slice(headerStart, html.indexOf("</header>", headerStart) + 9);
+  if (!header.includes('href="https://portal.novapharmhealthcare.com/"')) fail(route + " primary header must link to live secure portal");
+  if (!header.includes('<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png"')) fail(route + " primary header must use official NovaPharm logo");
+}
+const approvedProductsCss = text("assets/css/products-editorial.css");
+if (!approvedProductsCss.includes("clip-path:inset(2% 2% 2% 2%)")) fail("Products ESCO source-photo border must be removed in Safari");
+if (!approvedProductsCss.includes(".np-products-page .np-products-stage::after { display:none; }")) fail("Products hero still shows a horizontal divider");
+
 if (!home.includes('<a href="https://portal.novapharmhealthcare.com/">Secure Portal</a>')) fail("Homepage Secure Portal navigation does not target the hosted customer portal");
 if (home.includes('<a href="/portal/">Secure Portal</a>')) fail("Homepage still routes Secure Portal navigation to the static holding page");
 if (!home.includes("/account-application/")) fail("Homepage no longer links to Open an account");

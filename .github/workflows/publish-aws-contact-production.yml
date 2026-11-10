@@ -630,6 +630,45 @@ jobs:
             sleep 5
           done
 
+      - name: Verify supplied official logo and secure header on four live pages
+        run: |
+          set -euo pipefail
+          verified=false
+          for attempt in $(seq 1 18); do
+            verified=true
+            for route in home capabilities oncology products; do
+              if [ "$route" = home ]; then path=""; else path="$route/"; fi
+              target="/tmp/owner-final-${route}.html"
+              url="https://novapharmhealthcare.com/${path}?owner-final-${GITHUB_SHA}-${attempt}-$(date +%s)"
+              if ! curl --fail --silent --show-error --location --max-time 20 \
+                -H 'Cache-Control: no-cache, no-store' "$url" -o "$target"; then
+                verified=false
+                break
+              fi
+              sed -n '/<header class="site-header npd-header"/,/<\/header>/p' "$target" > /tmp/owner-final-header.html
+              if ! grep -Fq '<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png"' /tmp/owner-final-header.html \
+                || ! grep -Fq 'href="https://portal.novapharmhealthcare.com/"' /tmp/owner-final-header.html; then
+                verified=false
+                break
+              fi
+            done
+            if [ "$verified" = true ]; then
+              curl --fail --silent --show-error --location --max-time 20 \
+                "https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.png?owner-final-${GITHUB_SHA}" \
+                -o /tmp/owner-final-red-logo.png
+              cmp -s assets/brand/novapharm-healthcare-logo.png /tmp/owner-final-red-logo.png || verified=false
+            fi
+            if [ "$verified" = true ]; then
+              echo 'Official red master logo and direct Secure Portal verified in every live primary header.'
+              break
+            fi
+            sleep 5
+          done
+          test "$verified" = true || {
+            echo '::error::Official red logo or Secure Portal still missing on at least one production header.'
+            exit 1
+          }
+
       - name: Verify unified Products hero and source photography on live custom domain
         run: |
           set -euo pipefail

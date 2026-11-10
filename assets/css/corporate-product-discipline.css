@@ -2338,3 +2338,42 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-product-detail .npd-publisher-action {margin-top:18px;font-size:.89rem;line-height:1.5}
 .npd-product-detail .npd-publisher-action a {display:inline-block;color:#3f4248;text-decoration:underline;text-underline-offset:3px;font-weight:600}
 .npd-product-detail .npd-publisher-action p {font-size:.76rem;color:#62656a;max-width:50ch;margin:9px 0 0}
+
+
+/* Owner-approved corporate identity and direct secure access | 2026-11-10.
+   Use the supplied red master PNG, not a glyph-dependent vector fallback. */
+.npd-header .brand .brand-logo img {
+  display:block;
+  width:100%;
+  height:auto;
+  object-fit:contain;
+  object-position:left center;
+}
+.npd-global-nav.site-nav > a[href="https://portal.novapharmhealthcare.com/"] {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  align-self:center;
+  min-height:35px;
+  margin-left:10px;
+  padding:0 15px;
+  border:1px solid #d6d6db;
+  border-radius:999px;
+  background:#fff;
+  color:#1d1d1f;
+  font-weight:610;
+}
+.npd-global-nav.site-nav > a[href="https://portal.novapharmhealthcare.com/"]:hover,
+.npd-global-nav.site-nav > a[href="https://portal.novapharmhealthcare.com/"]:focus-visible {
+  background:#f5f5f7;
+  border-color:#99999f;
+  color:#111113;
+}
+@media (max-width:1050px) {
+  .npd-global-nav.site-nav > a[href="https://portal.novapharmhealthcare.com/"] {
+    margin-left:0;
+    padding:12px 18px;
+    border-radius:12px;
+    min-height:44px;
+  }
+}

@@ -295,3 +295,36 @@ body[data-route="/capabilities/"] .ncap-page { background: #fff; color: #0b0b0d;
 
 /* Keep the corporate hero contract while retaining approved editorial geometry. */
 .ncap-page .npd-hero.ncap-hero { display:block; min-height:0; align-items:initial; }
+
+
+/* Final Capabilities art-direction parity: clear Apple-style hierarchy,
+   original vial and Earth raster images, natural unboxed transitions. */
+body[data-route="/capabilities/"] .ncap-page .ncap-hero {
+  background:#fff;
+  padding-top:clamp(82px,9vw,146px);
+}
+body[data-route="/capabilities/"] .ncap-page .ncap-hero-art {
+  margin-top:0;
+  width:min(100%,1500px);
+  height:clamp(330px,40vw,590px);
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  background:#fff;
+}
+body[data-route="/capabilities/"] .ncap-page .ncap-hero-art img {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center bottom;
+  border:0;
+}
+@media (max-width:760px) {
+  body[data-route="/capabilities/"] .ncap-page .ncap-hero {
+    padding-top:clamp(66px,12vw,90px);
+  }
+  body[data-route="/capabilities/"] .ncap-page .ncap-hero-art {
+    height:clamp(240px,68vw,440px);
+  }
+}
