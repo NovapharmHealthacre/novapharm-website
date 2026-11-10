@@ -42,7 +42,7 @@ assert.equal((html.match(/<meta property="og:image" content=/g) ?? []).length, 1
 assert.match(html, /id="scope-boundary"/);
 assert.match(html, /id="oncology-faqs"/);
 assert.match(html, /href="\/contact\/\?enquiry=Oncology%20%26%20specialist%20medicines"/);
-assert.match(html, /href="\/assets\/css\/oncology-editorial\.css"/);
+assert.match(html, /href="\/assets\/css\/oncology-editorial\.css(?:\?v=20261110-logo-visible-v1)?"/);
 assert.match(html, /href="\/assets\/css\/oncology-hope-v2\.css(?:\?v=20261110-logo-visible-v1)?"/, "Approved Oncology layout stylesheet must load in source and cache-versioned releases");
 assert.ok(html.indexOf("oncology-hope-v2.css") > html.indexOf("oncology-editorial.css"), "Approved style must follow original stylesheet");
 assert.match(approvedLayout, /object-fit:contain/, "Portrait must preserve its full framing");
