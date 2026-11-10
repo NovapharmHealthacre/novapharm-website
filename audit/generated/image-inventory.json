@@ -10,16 +10,14 @@
     "Null semantic or provenance fields are explicit gaps, not inferred approvals."
   ],
   "summary": {
-    "trackedAssetCount": 873,
+    "trackedAssetCount": 871,
     "byClassification": {
-      "KEEP": 871,
-      "NEEDS_PROVENANCE": 2
+      "KEEP": 871
     },
     "byProvenanceStatus": {
       "registered": 661,
       "registered-identical-delivery-copy": 12,
-      "repository-generated-test-evidence": 198,
-      "unregistered-physical-asset": 2
+      "repository-generated-test-evidence": 198
     },
     "exactDuplicateGroups": 52,
     "perceptualDuplicateCandidateGroups": 184,
@@ -2340,83 +2338,6 @@
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-015",
-      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
-    },
-    {
-      "path": "assets/media/capabilities/earth-horizon.svg",
-      "canonicalDeliveryPath": "assets/media/capabilities/earth-horizon.svg",
-      "format": "svg",
-      "bytes": 2069,
-      "width": 1600,
-      "height": 720,
-      "aspectRatio": 2.222222,
-      "sha256": "34b1f9063c92279c39c9033fd0ce67fe17fe6d80bea2b4ea8f260d354eae954e",
-      "perceptualHash": null,
-      "classification": "NEEDS_PROVENANCE",
-      "provenanceStatus": "unregistered-physical-asset",
-      "source": null,
-      "licence": null,
-      "reviewStatus": null,
-      "technicalStatus": null,
-      "provenanceRecord": null,
-      "semanticPurpose": null,
-      "routes": [],
-      "focalPoint": null,
-      "registeredAltText": null,
-      "registeredCaption": null,
-      "observedAltText": [],
-      "observedCaptions": [],
-      "responsiveDerivatives": [],
-      "observedLoading": [],
-      "observedFetchPriority": [],
-      "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
-      "usageFiles": [
-        "assets/css/capabilities-editorial.css",
-        "scripts/apply-capabilities-editorial.mjs"
-      ],
-      "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": null,
-      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
-    },
-    {
-      "path": "assets/media/capabilities/vial-study.svg",
-      "canonicalDeliveryPath": "assets/media/capabilities/vial-study.svg",
-      "format": "svg",
-      "bytes": 3722,
-      "width": 1600,
-      "height": 610,
-      "aspectRatio": 2.622951,
-      "sha256": "714176a0c273927fbfb69b52eb1d68305615e20d53b3d5b2505dbbeea271c41d",
-      "perceptualHash": null,
-      "classification": "NEEDS_PROVENANCE",
-      "provenanceStatus": "unregistered-physical-asset",
-      "source": null,
-      "licence": null,
-      "reviewStatus": null,
-      "technicalStatus": null,
-      "provenanceRecord": null,
-      "semanticPurpose": null,
-      "routes": [],
-      "focalPoint": null,
-      "registeredAltText": null,
-      "registeredCaption": null,
-      "observedAltText": [],
-      "observedCaptions": [],
-      "responsiveDerivatives": [],
-      "observedLoading": [],
-      "observedFetchPriority": [],
-      "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 3,
-      "usageFiles": [
-        "capabilities/index.html",
-        "scripts/apply-capabilities-editorial.mjs",
-        "src/content/capabilities-editorial.html"
-      ],
-      "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": null,
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
@@ -5823,12 +5744,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 6,
-      "referenceCount": 10,
+      "usageCount": 5,
+      "referenceCount": 9,
       "usageFiles": [
         ".github/workflows/pages-live-publish.yml",
         ".github/workflows/pages-public-release-recovery.yml",
-        ".github/workflows/reconcile-earth-hero-inventory.yml",
         "apps/corporate/components/concise-home.tsx",
         "creative-assets/asset-register.json",
         "scripts/apply-corporate-product-discipline.mjs"
