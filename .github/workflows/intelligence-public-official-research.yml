@@ -1,0 +1,31 @@
+name: Intelligence public official research acceptance
+
+on:
+  pull_request:
+    paths:
+      - 'deployment/aws/intelligence_public_official_research.py'
+      - 'scripts/test_intelligence_public_official_research.py'
+      - 'infra/aws/intelligence-public-official-research.json'
+      - 'assets/js/intelligence-live-research.js'
+      - '.github/workflows/intelligence-public-official-research.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.13'
+      - name: Check Python source and CloudFormation JSON
+        run: |
+          python -m py_compile deployment/aws/intelligence_public_official_research.py
+          python -m json.tool infra/aws/intelligence-public-official-research.json >/dev/null
+      - name: Test source provenance, bounds and failure paths
+        run: python scripts/test_intelligence_public_official_research.py
+      - name: Verify public client wiring, no-storage and source notices
+        run: node --test scripts/test-intelligence-live-public-research.mjs
