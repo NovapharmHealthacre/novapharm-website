@@ -10,6 +10,7 @@ const cro = read("cro/index.html");
 const leadershipMedia = JSON.parse(read("config/leadership-media.json"));
 
 assert.deepEqual(navigation.map(([label]) => label), ["Company", "Capabilities", "Distribution", "Oncology", "Products", "NovaPharm Intelligence", "Insights", "Contact", "Secure Portal"]);
+assert.equal(navigation.find(([label]) => label === "Distribution")?.[1], "/distribution/", "CRO shared navigation must route Distribution to its canonical page");
 assert.equal((cro.match(/<h1\b/g) ?? []).length, 1, "CRO page must contain exactly one H1");
 assert.match(cro, /<link rel="canonical" href="https:\/\/novapharmhealthcare\.com\/cro\/">/);
 assert.match(cro, /<meta name="robots" content="index, follow/);
