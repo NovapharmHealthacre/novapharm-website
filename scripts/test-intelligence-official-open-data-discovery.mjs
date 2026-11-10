@@ -19,6 +19,7 @@ test("NHSBSA discovery uses fixed official origin and does not certify market ob
     sourceId: "nhsbsa_english_prescribing", release,
     fetchImpl: async (url, options) => {
       assert.equal(new URL(url).hostname, "opendata.nhsbsa.net");
+      assert.equal(new URL(url).searchParams.get("id"), "english-prescribing-dataset-epd-with-snomed-code");
       assert.equal(options.method, "GET");
       assert.equal(options.redirect, "error");
       return response({ success: true, result: {
