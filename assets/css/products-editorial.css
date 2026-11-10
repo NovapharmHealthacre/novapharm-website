@@ -37,7 +37,7 @@ body[data-route="/products/"] .np-products-page { background:#fff; color:#111114
 .np-products-page .np-products-esco-trolley { width:40%; height:70%; bottom:1%; right:-8%; }
 .np-products-page .np-products-panel-pharma { background:linear-gradient(100deg,#fff 0%,#fff 43%,#f4f7f9 100%); }
 .np-products-page .np-products-panel-art-pharma img { inset:4% -7% 4% 0; width:107%; height:92%; object-fit:cover; object-position:72% center; border-radius:8px; mask-image:linear-gradient(90deg,transparent,#000 15%); }
-.np-products-page .np-products-qualification { font-size:12px; line-height:1.65; color:#737780; text-align:center; padding:30px 0 42px; }
+.np-products-page .np-products-qualification { font-size:12px; line-height:1.65; color:#6b7079; text-align:center; padding:30px 0 42px; }
 .np-products-page a:focus-visible { outline:3px solid #1673d2; outline-offset:5px; border-radius:3px; }
 @media(max-width:900px) {
  .np-products-page .np-products-wrap { width:calc(100% - 64px); }

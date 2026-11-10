@@ -31,7 +31,6 @@ const allowedTopLevelDirectories = new Set([
   "news-insights",
   "oncology",
   "partner-with-us",
-  "portal",
   "products",
   "product-portfolio",
   "regulatory-services",
@@ -71,6 +70,7 @@ const allowedRootFiles = new Set([
 ]);
 
 const allowedPublicShoppingFiles = new Set(["shopping/nutraxin-uk.tsv"]);
+const allowedPublicPortalFiles = new Set(["portal/index.html"]);
 
 const requiredPublicPaths = [
   "index.html",
@@ -146,6 +146,18 @@ for (const entry of readdirSync(root, { withFileTypes: true })) {
   if (source === output) continue;
 
   const destination = join(output, entry.name);
+  // Publish the public portal landing page only, never generated authenticated
+  // routes such as /portal/change-password or /portal/dashboard.
+  if (entry.isDirectory() && entry.name === "portal") {
+    for (const publicPath of allowedPublicPortalFiles) {
+      const approvedSource = join(root, publicPath);
+      if (!existsSync(approvedSource)) throw new Error("Missing reviewed public portal page: " + publicPath);
+      const approvedDestination = join(output, publicPath);
+      mkdirSync(dirname(approvedDestination), { recursive: true });
+      cpSync(approvedSource, approvedDestination, { force: true });
+    }
+    continue;
+  }
   if (entry.isDirectory() && allowedTopLevelDirectories.has(entry.name)) {
     copyDirectory(source, destination);
     continue;
@@ -191,7 +203,7 @@ for (const file of stagedFiles) {
   const topLevel = stagedPath.split("/")[0];
   const isAllowedRootFile = !stagedPath.includes("/") && allowedRootFiles.has(stagedPath);
   const isAllowedDirectory = allowedTopLevelDirectories.has(topLevel);
-  if (!isAllowedRootFile && !isAllowedDirectory && !allowedPublicShoppingFiles.has(stagedPath) && stagedPath !== ".nojekyll") {
+  if (!isAllowedRootFile && !isAllowedDirectory && !allowedPublicShoppingFiles.has(stagedPath) && !allowedPublicPortalFiles.has(stagedPath) && stagedPath !== ".nojekyll") {
     throw new Error(`Unexpected path entered the Pages artifact: ${stagedPath}`);
   }
   if (/\.(?:env|pem|key|sqlite|db|bak)$/i.test(stagedPath)) {
