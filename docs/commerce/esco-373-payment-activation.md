@@ -22,7 +22,7 @@ For every reference that should accept **immediate** payment, reconcile:
 2. **Supply:** manufacturer sale rights, qualified supplier, allocated available-to-promise units (not owner-declared planning units), dispatch service and GB delivered cost.
 3. **Regulatory and tax evidence:** appropriate UK product class, any device registration/UKRP/conformity records applicable to that exact variant, Stripe product tax code and verified UK VAT treatment. Preserve the evidence link/reference even when the merchant states checks are complete.
 4. **Commercial authorisation:** fixed delivered ex-VAT GBP unit price, owner sign-off and actual or explicitly owner-attested cost basis. Confirm actual variable costs fit the margin target; guide prices do not prove margin.
-5. **Server-only payment release:** append the approved SKU to the private SSM `/novapharm/production/esco/checkout-policy` record using the existing backend's `eligible()` contract. Do not put secrets, supplier costs or approval flags in the public catalogue or localStorage.
+5. **Server-only payment release:** use `apps/esco-checkout/merchant_release.py` to generate exact, individually approved SKU records, confirm them with the backend's `eligible()` contract, and publish an immutable SHA256-pinned **private S3 approval manifest**. The existing SSM `/novapharm/production/esco/checkout-policy` retains the small global gate and a manifest pointer; it cannot hold all 373 complete records. Do not put secrets, supplier costs or approval flags in the public catalogue or localStorage.
 6. **Exact-SKU testing:** for each batch verify `GET /readiness`, negative unauthorised SKU, quantities, VAT, UK delivery, Stripe Checkout session, signed webhook, idempotency, paid-order ledger, and post-payment fulfilment handoff. Do not simulate a paid customer order and report it as a live settlement.
 
 ## Current boundary
@@ -30,3 +30,7 @@ For every reference that should accept **immediate** payment, reconcile:
 The verified private payment policy currently contains ESCO-CAT-0003 and ESCO-CAT-0048 only, at **£710** and **£169** ex VAT respectively with UK delivery included. This statement records the 9 November 2026 check, not a promise that those prices can never change. All other records require per-variant approval before card capture.
 
 A future **confirmed quote → hosted Stripe invoice/payment link** flow may provide secure payment for every requested catalogue reference after exact supplier and commercial confirmation. It has **not yet been implemented** by this document or the existing contact enquiry; do not present a quote request as a completed order or a payment.
+
+## Scalable 373-product activation utility
+
+See [ESCO 373 fixed-price launch](esco-373-fixed-price-launch.md) for the 373-row draft, source-evidence register, protected S3 approval manifest, exact-version policy pointer and release tests. This process does not auto-authorise the 371 remaining references.
