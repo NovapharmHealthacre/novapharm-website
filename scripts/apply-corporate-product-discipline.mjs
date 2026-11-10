@@ -43,6 +43,7 @@ const esc = (value) => String(value ?? "").replace(/[&<>\"]/g, (character) => ({
 function globalSection(route) {
   if (route === "/" || route.startsWith("/about/") || route.startsWith("/leadership/") || route === "/about/" || route === "/partner-with-us/" || route === "/investor-information/" || route === "/careers/") return "company";
   if (route === "/technology/") return "intelligence";
+  if (["/distribution/", "/market-access/", "/markets/"].some((path) => route === path || route.startsWith(path))) return "distribution";
   if (["/capabilities/", "/services/", "/regulatory-services/", "/cro/"].some((prefix) => route === prefix || route.startsWith(prefix))) return "capabilities";
   if (route.startsWith("/oncology/")) return "oncology";
   if (route.startsWith("/products/") || route.startsWith("/product-portfolio/")) return "products";
@@ -55,6 +56,7 @@ function globalSection(route) {
 const globalNavigation = [
   ["Company", "/about/", "company"],
   ["Capabilities", "/capabilities/", "capabilities"],
+  ["Distribution", "/distribution/", "distribution"],
   ["Oncology", "/oncology/", "oncology"],
   ["Products", "/products/", "products"],
   ["NovaPharm Intelligence", "/technology/", "intelligence"],
@@ -75,6 +77,11 @@ const megaNavigation = {
     ["Explore", [["All capabilities", "/capabilities/"], ["Sourcing & market access", "/services/"], ["Regulatory & Quality", "/regulatory-services/"]]],
     ["Specialist work", [["Clinical Research & CRO", "/cro/"], ["Oncology", "/oncology/"]]],
     ["Technology", [["NovaPharm Intelligence", "/technology/"], ["Governance", "/about/governance/"]]]
+  ],
+  distribution: [
+    ["Explore", [["Distribution overview", "/distribution/"], ["Market access", "/market-access/"], ["International markets", "/markets/"]]],
+    ["Products & pathways", [["Generics, OTC & licensed medicines", "/distribution/#distribution-categories"], ["Oncology & specialist medicines", "/oncology/"], ["Nutraceuticals & medical equipment", "/products/"]]],
+    ["Work with NovaPharm", [["Discuss distribution", "/contact/?enquiry=Distribution"], ["Manufacturer partnerships", "/partner-with-us/"]]]
   ],
   oncology: [
     ["Explore oncology", [["Oncology overview", "/oncology/"], ["Strategic portfolio", "/products/strategic-portfolio/"]]],
@@ -128,7 +135,7 @@ function footer() {
           <p>Evidence-led pharmaceutical market entry, sourcing and supply-chain development.</p>
         </div>
         <div><h2>Company</h2><a href="/about/">Overview</a><a href="/leadership/">Leadership</a><a href="/about/governance/">Governance</a><a href="/partner-with-us/">Partners</a><a href="/investor-information/">Investors</a><a href="/careers/">Careers</a></div>
-        <div><h2>Capabilities</h2><a href="/services/">Services</a><a href="/regulatory-services/">Regulatory &amp; Quality</a><a href="/cro/">Clinical Research &amp; CRO</a><a href="/technology/">Technology</a></div>
+        <div><h2>Capabilities</h2><a href="/distribution/">Distribution</a><a href="/services/">Services</a><a href="/regulatory-services/">Regulatory &amp; Quality</a><a href="/cro/">Clinical Research &amp; CRO</a><a href="/technology/">Technology</a></div>
         <div><h2>Products</h2><a href="/products/nutraxin/">Nutraxin</a><a href="/products/esco/">ESCO Anand</a><a href="/products/strategic-portfolio/">Strategic portfolio</a><a href="/contact/?enquiry=Product%20opportunity">Discuss an opportunity</a></div>
         <div><h2>Connect</h2><a href="/news-insights/">Insights</a><a href="/contact/">Contact</a><a href="/account-application/">Open a business account</a><a href="https://portal.novapharmhealthcare.com/">Secure Portal</a><a href="/trust-centre/">Trust centre</a></div>
       </div>
