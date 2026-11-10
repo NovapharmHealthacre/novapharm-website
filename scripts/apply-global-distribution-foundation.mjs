@@ -23,14 +23,131 @@ function finish(copy, enquiry) {
 }
 const pages = [
  { slug:"distribution", title:"Pharmaceutical Distribution & Wholesale Readiness | NovaPharm",
- description:"Explore NovaPharm Healthcare's UK pharmaceutical sourcing, wholesale-readiness, partner qualification and planned distribution pathways for qualified business buyers.",
- body: hero("Pharmaceutical distribution","Distribution starts with trust.","Qualified sources, responsible market access and controlled B2B supply planning.","Distribution")
- +intro("distribution-path","The operating model","The right medicine needs the right route.","Wholesale distribution depends on legitimate product identity, sourcing, permissions, quality oversight and accountable commercial relationships.")
- +ledger([["Qualified sourcing","Review manufacturer and authorised wholesaler standing, traceability, provenance and supply continuity."],["Licensing and quality","Define the relevant WDA(H), GDP, product rights, PLPI and operational requirements before release."],["Commercial distribution","Qualify intended buyers, channels, contracts, demand, transport responsibilities and post-sale controls."]])
- +boundary+'</div></section>'
- +intro("distribution-categories","Category focus","Different products. Different responsibilities.","Category focus is not a statement of current stock or an authorisation to supply.")
- +ledger([["Generics, OTC and licensed medicines","Product and country-specific marketing and wholesale permissions. <a href=\"/regulatory-services/\">Regulatory pathways</a>."],["Oncology and specialty","Continuity, handling, quality and product-specific evidence. <a href=\"/oncology/\">Oncology</a>."],["Nutraceuticals and hospital equipment","Separate food supplement and medical equipment commercial and compliance routes. <a href=\"/products/\">Browse product portfolios</a>."]])
- +'</div></section>'+finish("Tell us what you need to source or bring to market.","Distribution") },
+ description:"Explore NovaPharm's global pharmaceutical distribution planning, qualified logistics routes, temperature-control strategy, warehouse infrastructure and regulated market access.",
+ body: `
+<section class="npd-hero ndist-hero" aria-labelledby="ndist-title" data-distribution-design="20261110-premium">
+  <img class="ndist-hero-earth" src="/assets/media/home/earth-reference-1400.jpg" width="1400" height="788" fetchpriority="high" decoding="async" alt="Sunrise above the horizon of Earth, representing international healthcare connections">
+  <div class="container ndist-hero-inner">
+    <p class="ndist-eyebrow">Global perspective. Pharmaceutical discipline.</p>
+    <h1 id="ndist-title">Across borders.<br>Within standards.</h1>
+    <p class="ndist-hero-lead">Connecting qualified medicine suppliers, responsible market access and temperature-controlled logistics pathways. From the United Kingdom to the markets that need them.</p>
+    <div class="ndist-hero-actions">
+      <a class="npd-button npd-button-primary" href="/contact/?enquiry=Distribution" data-cta-id="distribution-hero-enquiry">Discuss distribution</a>
+      <a class="ndist-text-link" href="#ndist-approach">Explore our approach <span aria-hidden="true">→</span></a>
+    </div>
+    <p class="ndist-hero-context">Commercial development and qualified supply planning. Regulated pharmaceutical wholesale supply has not commenced.</p>
+  </div>
+</section>
+<section class="npd-section ndist-intro" id="ndist-approach" aria-labelledby="ndist-intro-title">
+  <div class="container">
+    <p class="ndist-eyebrow">One standard</p>
+    <h2 id="ndist-intro-title">The journey matters.<br>Every degree of it.</h2>
+    <p class="ndist-intro-lead">Medicines move through people, facilities, approvals and borders. A dependable route begins with the right product, the right handling conditions and a documented chain of responsibility.</p>
+    <div class="ndist-rule-grid" aria-label="Principles of a qualified distribution route">
+      <div><h3>Temperature integrity</h3><p>Define product-specific storage and transit profiles before selecting a logistics lane.</p></div>
+      <div><h3>Chain of custody</h3><p>Document qualified counterparties, handling responsibilities and release evidence.</p></div>
+      <div><h3>Global perspective</h3><p>Evaluate international routes against destination-country permissions and product rights.</p></div>
+    </div>
+  </div>
+</section>
+<section class="npd-section ndist-facility" aria-labelledby="ndist-facility-title">
+  <div class="container ndist-facility-layout">
+    <figure class="ndist-facility-media">
+      <picture>
+        <source srcset="/assets/media/about/novapharm-warehouse.avif" type="image/avif">
+        <img src="/assets/media/about/novapharm-warehouse-original.jpg" width="1600" height="580" loading="lazy" decoding="async" alt="Exterior of the warehouse facility photographed and supplied by NovaPharm">
+      </picture>
+      <figcaption>Facility photograph supplied by NovaPharm. Site operating role, authorisation and temperature qualifications are verified separately.</figcaption>
+    </figure>
+    <div class="ndist-facility-copy">
+      <p class="ndist-eyebrow">Infrastructure</p>
+      <h2 id="ndist-facility-title">Built around the medicine.</h2>
+      <p>Warehousing is more than space. Every product calls for the right environment, qualified processes and a partner accountable for what happens from receipt to release.</p>
+      <div class="ndist-facility-details">
+        <div><strong>Controlled environments</strong><span>Temperature profile determined by the product and qualified site</span></div>
+        <div><strong>Quality-led handling</strong><span>GDP obligations, documented controls and deviation management where applicable</span></div>
+        <div><strong>Traceable movement</strong><span>Chain-of-custody records and evidence-led delivery reconciliation</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="ndist-network-hero" aria-labelledby="ndist-network-title">
+  <img src="/assets/media/home/supply-network-hero-1200.jpg" width="1200" height="675" loading="lazy" decoding="async" alt="Representative visual of healthcare transport, temperature-sensitive packaging and global supply connections">
+  <div class="ndist-network-shade"></div>
+  <div class="container ndist-network-inner">
+    <p class="ndist-eyebrow">From origin to destination</p>
+    <h2 id="ndist-network-title">One product.<br>A world of possibilities.</h2>
+    <p>Road, air and specialised cold-chain solutions can connect markets, provided every handoff, handling condition and authorisation is qualified for that specific shipment.</p>
+    <span class="ndist-visual-caption">Representative supply-chain visual. Not a photograph of NovaPharm-operated transport.</span>
+  </div>
+</section>
+<section class="npd-section ndist-network-proof" aria-labelledby="ndist-proof-title">
+  <div class="container">
+    <p class="ndist-eyebrow">The standard behind the journey</p>
+    <h2 id="ndist-proof-title">Precision is not optional.</h2>
+    <div class="ndist-proof-grid">
+      <div><strong>02–08°C</strong><span>Refrigerated service profile where validated and contracted</span></div>
+      <div><strong>15–25°C</strong><span>Controlled ambient service profile where validated and contracted</span></div>
+      <div><strong>Documented</strong><span>Defined handoffs and product-specific monitoring requirements</span></div>
+      <div><strong>Accountable</strong><span>Qualified partners and the required permissions at every destination</span></div>
+    </div>
+    <p class="ndist-proof-note">These are common healthcare logistics service profiles, not certifications, facility conditions or services warranted by NovaPharm for every product or route.</p>
+  </div>
+</section>
+<section class="npd-section ndist-partners" aria-labelledby="ndist-partners-title">
+  <div class="container">
+    <div class="ndist-partner-heading">
+      <p class="ndist-eyebrow">Healthcare logistics ecosystem</p>
+      <h2 id="ndist-partners-title">Networks built for healthcare.</h2>
+      <p>The logistics organisations below provide specialist healthcare services at international and UK level. Service eligibility for NovaPharm business is determined by the applicable agreements, lane qualification and regulatory permissions.</p>
+    </div>
+    <div class="ndist-partner-list" aria-label="Independent healthcare logistics provider capability references">
+      <div class="ndist-partner-entry">
+        <div class="ndist-partner-name">UPS Healthcare</div>
+        <div><h3>International healthcare logistics</h3><p>Temperature-controlled freight infrastructure, global shipping and healthcare-focused warehousing and logistics solutions.</p><span>External provider capabilities. Contracted scope must be verified per route.</span></div>
+      </div>
+      <div class="ndist-partner-entry">
+        <div class="ndist-partner-name">Marken <small>UPS Healthcare Precision Logistics</small></div>
+        <div><h3>Precision clinical and commercial movement</h3><p>Specialist temperature-sensitive transport, packaging, depot and clinical-to-commercial logistics capabilities.</p><span>Marken UK incorporates the former Polar Speed operation.</span></div>
+      </div>
+    </div>
+    <p class="ndist-partner-disclosure">Names are factual references to independent companies and their publicly documented service portfolios. They do not represent NovaPharm-owned premises, vehicles, aircraft, subsidiaries, universal contracted coverage or endorsement. Their official logos and proprietary photographs are not reproduced pending the necessary brand and image-use permissions.</p>
+  </div>
+</section>
+<section class="npd-section ndist-pathway" aria-labelledby="ndist-pathway-title">
+  <div class="container">
+    <p class="ndist-eyebrow">A qualified route</p>
+    <h2 id="ndist-pathway-title">From opportunity to a responsible delivery.</h2>
+    <ol class="ndist-pathway-steps">
+      <li><span>01</span><h3>Understand the product</h3><p>Identity, handling profile, rights and destination requirements.</p></li>
+      <li><span>02</span><h3>Qualify the network</h3><p>Supplier standing, logistics partners, GDP obligations and contract scope.</p></li>
+      <li><span>03</span><h3>Verify the permissions</h3><p>Applicable wholesale, import, product and market-specific approvals.</p></li>
+      <li><span>04</span><h3>Plan accountable delivery</h3><p>Validated lanes, evidence, custody and exception procedures.</p></li>
+    </ol>
+    ${boundary}
+  </div>
+</section>
+<section class="npd-section ndist-categories" id="distribution-categories" aria-labelledby="ndist-categories-title">
+  <div class="container">
+    <p class="ndist-eyebrow">Product pathways</p>
+    <h2 id="ndist-categories-title">Different medicines. Different responsibilities.</h2>
+    <p>Each product category has distinct permissions and handling requirements. A capability statement is not an offer to supply.</p>
+    <div class="ndist-categories-links">
+      <a href="/regulatory-services/"><strong>Licensed medicines &amp; PLPI</strong><span>Regulatory pathways and obligations</span></a>
+      <a href="/oncology/"><strong>Oncology &amp; specialty</strong><span>Continuity and quality requirements</span></a>
+      <a href="/products/"><strong>Supplements &amp; medical equipment</strong><span>Separate product-specific frameworks</span></a>
+    </div>
+  </div>
+</section>
+<section class="npd-section npd-final ndist-final" aria-labelledby="ndist-final-title">
+  <div class="container">
+    <p class="ndist-eyebrow">The next step</p>
+    <h2 id="ndist-final-title">Let's make the next route possible.</h2>
+    <p>Tell us about the product, the destination and the opportunity. We'll start with the evidence and identify the right commercial and regulatory next steps.</p>
+    <div class="npd-actions"><a class="npd-button npd-button-primary" href="/contact/?enquiry=Distribution" data-cta-id="qualified-commercial-enquiry">Start a conversation</a><a class="ndist-text-link" href="/market-access/">Explore market access <span aria-hidden="true">→</span></a></div>
+  </div>
+</section>
+` },
  { slug:"market-access", title:"Pharmaceutical Market Entry & Access Strategy | NovaPharm",
  description:"A practical B2B pharmaceutical market-entry pathway covering product rights, registration strategy, access, qualified partners, pricing and launch readiness.",
  body: hero("Pharmaceutical market access","A product can be ready. A market may not be.","Connecting product rights and regulatory pathways with commercial evidence and qualified partners.","Market%20access")
