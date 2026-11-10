@@ -16,7 +16,7 @@ import {
 
 const root = resolve(process.cwd());
 const releaseDate = process.env.SEO_LASTMOD || "2026-07-18";
-const materialPageReleaseDate = (route) => ["/distribution/", "/market-access/", "/markets/"].includes(route) ? "2026-11-10" : releaseDate;
+const materialPageReleaseDate = (route) => ["/", "/services/", "/distribution/", "/market-access/", "/markets/"].includes(route) ? "2026-11-10" : releaseDate;
 const logoUrl = `${SITE_URL}/assets/brand/novapharm-healthcare-logo.png`;
 const leaderBySlug = new Map(leadership.map((person) => [person.slug, person]));
 const articleDirectory = join(root, "src", "content", "insights");
