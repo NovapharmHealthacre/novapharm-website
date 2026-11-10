@@ -1,0 +1,46 @@
+name: Reconcile approved Earth hero image inventory
+
+on:
+  push:
+    branches:
+      - feat/approved-earth-morning-home-hero-20261110
+    paths:
+      - .github/workflows/reconcile-earth-hero-inventory.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  reconcile:
+    if: github.repository == 'NovapharmHealthacre/novapharm-website'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact owner-approved PR branch
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: true
+      - name: Use Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Regenerate complete physical-image provenance inventory
+        run: |
+          set -euo pipefail
+          npm run images:inventory
+          npm run images:inventory:validate
+          node --input-type=module -e "import {readFileSync} from 'node:fs'; const j=JSON.parse(readFileSync('audit/generated/image-inventory.json')); const a=j.assets.find(x=>x.path==='assets/media/home/earth-morning-approved.avif'); if(!a || a.provenanceStatus!=='registered' || a.classification!=='KEEP' || a.sha256!=='d591b7361e7d71c27761cdebc6d38aca66a11f51c2c7fbb24e60473860f287a7') process.exit(1);"
+      - name: Commit reproducibly generated audit report only
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add audit/generated/image-inventory.json
+          if ! git diff --cached --quiet; then
+            git commit -m "audit(media): reconcile owner-approved Earth hero inventory"
+            git push origin HEAD:refs/heads/feat/approved-earth-morning-home-hero-20261110
+          fi
