@@ -36,6 +36,7 @@ PRICE_ID = re.compile(r"^price_[A-Za-z0-9]{8,}$")
 SESSION_ID = re.compile(r"^cs_live_[A-Za-z0-9]+$")
 MAX_LINES = 12
 MAX_QTY = 1000
+MAX_REQUEST_QTY = 10000
 MAX_SUBTOTAL = 99999999
 
 def aws(service):
@@ -400,6 +401,148 @@ def order_status(event, order_id):
     return respond(200, {"orderId": order_id, "status": state if state in
         ("PAID", "PAYMENT_FAILED", "CHECKOUT_OPEN") else "PROCESSING", "paid": state == "PAID"})
 
+
+# An order request is a durable customer purchasing intent, not a completed
+# transaction, payment authorisation, inventory reservation or accepted PO.
+REQUEST_ID = re.compile(r"^ESCO-REQ-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
+EMAIL = re.compile(r"^[A-Za-z0-9.!#$%&'*+/=?^_\x60{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$")
+ORDER_NOTIFY_FROM = os.environ.get("ESCO_ORDER_NOTIFY_FROM", "")
+ORDER_NOTIFY_TO = os.environ.get("ESCO_ORDER_NOTIFY_TO", "")
+
+
+def order_request(event):
+    headers = {str(k).lower(): str(v) for k, v in (event.get("headers") or {}).items()}
+    if headers.get("origin") not in ALLOWED_ORIGINS:
+        return fail(403, "invalid_origin")
+    raw = event.get("body") or ""
+    if event.get("isBase64Encoded") or not isinstance(raw, str) or len(raw) > 8192:
+        return fail(400, "invalid_payload")
+    try:
+        payload = json.loads(raw)
+    except (TypeError, ValueError):
+        return fail(400, "invalid_payload")
+    if (not isinstance(payload, dict) or set(payload) != {
+        "request_id", "lines", "customer", "accept_order_terms", "website"
+    } or payload.get("accept_order_terms") is not True):
+        return fail(400, "invalid_request")
+    # Quiet bot trap; never store or email spam submission content.
+    if payload.get("website") != "":
+        return fail(400, "invalid_request")
+    request_id = payload.get("request_id")
+    if not isinstance(request_id, str) or not UUID4.fullmatch(request_id):
+        return fail(400, "invalid_request_id")
+    lines = payload.get("lines")
+    if not isinstance(lines, list) or not 1 <= len(lines) <= MAX_LINES:
+        return fail(400, "invalid_lines")
+    seen, canonical = set(), []
+    for row in lines:
+        if not isinstance(row, dict) or set(row) != {"id", "quantity"}:
+            return fail(400, "invalid_lines")
+        sku, qty = row.get("id"), row.get("quantity")
+        if (not isinstance(sku, str) or not CAT_ID.fullmatch(sku) or
+            not 1 <= int(sku[-4:]) <= 373 or sku in seen or
+            type(qty) is not int or not 1 <= qty <= MAX_REQUEST_QTY):
+            return fail(400, "invalid_lines")
+        seen.add(sku)
+        canonical.append({"id": sku, "quantity": qty})
+    customer = payload.get("customer")
+    if not isinstance(customer, dict) or set(customer) != {"name", "email", "organisation", "postcode"}:
+        return fail(400, "invalid_customer")
+    if not all(isinstance(v, str) for v in customer.values()):
+        return fail(400, "invalid_customer")
+    name = customer["name"].strip()
+    email = customer["email"].strip().lower()
+    company = customer["organisation"].strip()
+    postcode = customer["postcode"].strip().upper()
+    if (not 2 <= len(name) <= 100 or not 6 <= len(email) <= 254 or
+        not EMAIL.fullmatch(email) or len(company) > 150 or len(postcode) > 16 or
+        any(ord(ch) < 32 for ch in name + company + postcode)):
+        return fail(400, "invalid_customer")
+    if not ORDERS_TABLE:
+        return fail(503, "order_service_unavailable")
+    order_id = "ESCO-REQ-" + request_id
+    request_hash = hashlib.sha256(json.dumps(
+        {"lines": sorted(canonical, key=lambda x:x["id"]), "customer": customer,
+         "email": email, "consent": True}, sort_keys=True,
+        separators=(",", ":")).encode("utf-8")).hexdigest()
+    db = aws("dynamodb")
+    key = {"pk":{"S":"REQUEST#" + order_id}, "sk":{"S":"SUMMARY"}}
+    now = int(time.time())
+    entry = {**key,
+        "orderId": {"S": order_id},
+        "brand": {"S": "ESCO"},
+        "state": {"S": "RECEIVED_AWAITING_CONFIRMATION"},
+        "requestHash": {"S": request_hash},
+        "linesJson": {"S": json.dumps(canonical, separators=(",", ":"))},
+        "customerName": {"S": name}, "customerEmail": {"S": email},
+        "customerOrganisation": {"S": company}, "customerPostcode": {"S": postcode},
+        "createdAtUnix": {"N": str(now)},
+        "expiresAt": {"N": str(now + 90 * 86400)},
+        "moneyTaken": {"BOOL": False},
+    }
+    try:
+        db.put_item(TableName=ORDERS_TABLE, Item=entry,
+                    ConditionExpression="attribute_not_exists(pk)")
+    except ClientError as err:
+        if err.response.get("Error",{}).get("Code") != "ConditionalCheckFailedException":
+            return fail(503, "order_service_unavailable")
+        try:
+            existing = db.get_item(TableName=ORDERS_TABLE, Key=key,
+                                   ConsistentRead=True).get("Item")
+            if not existing or existing.get("requestHash",{}).get("S") != request_hash:
+                return fail(409, "request_id_already_used")
+            return respond(202, {"orderId": order_id,
+                "status": "RECEIVED_AWAITING_CONFIRMATION", "paymentCollected": False})
+        except ClientError:
+            return fail(503, "order_service_unavailable")
+    # Notification is best-effort, not order storage. SES sandbox restrictions
+    # must not make an accepted order disappear or block a customer's receipt.
+    if ORDER_NOTIFY_FROM and ORDER_NOTIFY_TO:
+        try:
+            details = ", ".join(row["id"] + " x " + str(row["quantity"]) for row in canonical)
+            aws("sesv2").send_email(
+                FromEmailAddress=ORDER_NOTIFY_FROM,
+                Destination={"ToAddresses":[ORDER_NOTIFY_TO]},
+                Content={"Simple":{"Subject":{"Data":"ESCO order request " + order_id},
+                    "Body":{"Text":{"Data":
+                        "New ESCO order request (not a paid or accepted order).\n"
+                        "Reference: " + order_id + "\n"
+                        "Customer: " + name + "\n"
+                        "Email: " + email + "\n"
+                        "Organisation: " + company + "\n"
+                        "Delivery postcode: " + postcode + "\n"
+                        "Catalogue items: " + details + "\n"
+                        "Check product approval, delivery and VAT before issuing an order acceptance."}}}})
+        except (ClientError, ValueError):
+            pass
+    return respond(202, {"orderId": order_id,
+        "status": "RECEIVED_AWAITING_CONFIRMATION", "paymentCollected": False,
+        "message": "Request recorded. No payment has been taken. A confirmed order and final total follow supplier and delivery checks."})
+
+
+def request_status(event, order_id):
+    headers = {str(k).lower(): str(v) for k, v in (event.get("headers") or {}).items()}
+    if headers.get("origin") not in ALLOWED_ORIGINS:
+        return fail(403, "invalid_origin")
+    if not isinstance(order_id, str) or not REQUEST_ID.fullmatch(order_id):
+        return fail(400, "invalid_request_id")
+    try:
+        found = aws("dynamodb").get_item(
+            TableName=ORDERS_TABLE,
+            Key={"pk":{"S":"REQUEST#" + order_id}, "sk":{"S":"SUMMARY"}},
+            ConsistentRead=True).get("Item")
+    except ClientError:
+        return fail(503, "order_status_unavailable")
+    if not found or found.get("brand") != {"S":"ESCO"}:
+        return fail(404, "order_not_found")
+    state = found.get("state",{}).get("S", "RECEIVED_AWAITING_CONFIRMATION")
+    if state not in ("RECEIVED_AWAITING_CONFIRMATION", "AWAITING_CUSTOMER_ACCEPTANCE",
+                     "ACCEPTED_AWAITING_PAYMENT", "CANCELLED"):
+        state = "RECEIVED_AWAITING_CONFIRMATION"
+    # The opaque receipt is the only access credential. Do not expose any PII.
+    return respond(200, {"orderId": order_id, "status": state,
+                         "paymentCollected": False})
+
 def handler(event, context=None):
     path = event.get("rawPath") or "/"
     method = (event.get("requestContext") or {}).get("http", {}).get("method", "GET")
@@ -420,6 +563,10 @@ def handler(event, context=None):
                 "currency": "GBP", "payment_collection_active": False})
     if method == "GET" and path.startswith("/status/"):
         return order_status(event, path.removeprefix("/status/"))
+    if method == "POST" and path == "/order-requests":
+        return order_request(event)
+    if method == "GET" and path.startswith("/order-request-status/"):
+        return request_status(event, path.removeprefix("/order-request-status/"))
     if method == "POST" and path == "/checkout":
         return checkout(event)
     if method == "POST" and path == "/stripe/webhook":

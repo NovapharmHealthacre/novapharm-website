@@ -67,7 +67,7 @@ if (root) {
   try {
     const saved = JSON.parse(localStorage.getItem(KEY) || "[]");
     if (Array.isArray(saved)) for (const row of saved.slice(0, MAX_ITEMS)) {
-      if (known.has(row?.id) && Number.isSafeInteger(row.quantity) && row.quantity >= 1 && row.quantity <= 1000)
+      if (known.has(row?.id) && Number.isSafeInteger(row.quantity) && row.quantity >= 1 && row.quantity <= 10000)
         state.set(row.id, row.quantity);
     }
   } catch { /* Private browsing may disable storage. Quote list still works in memory. */ }
@@ -142,11 +142,11 @@ if (root) {
       const title = document.createElement("span");
       const trustedPence = readyPrices.get(id);
       title.textContent = item.name + (item.model && item.model !== "Model to be confirmed" ? " · " + item.model : "") +
-        " · " + (trustedPence ? "UK delivered " : "Guide ") + GBP.format((trustedPence ?? item.guidePence) / 100) + " ex VAT";
+        " · " + (trustedPence ? "UK delivered " : "Base price ") + GBP.format((trustedPence ?? item.guidePence) / 100) + " ex VAT";
       const label = document.createElement("label");
       label.textContent = "Qty ";
       const qty = document.createElement("input");
-      qty.type = "number"; qty.min = "1"; qty.max = "1000"; qty.step = "1";
+      qty.type = "number"; qty.min = "1"; qty.max = "10000"; qty.step = "1";
       qty.value = String(quantity); qty.dataset.escoQty = id;
       qty.setAttribute("aria-label", "Quantity of " + item.name);
       label.append(qty);
@@ -169,7 +169,7 @@ if (root) {
     if (miniLabel) miniLabel.textContent = readyBasket ? "UK delivered subtotal" : "Estimated subtotal";
     if (miniNote) miniNote.textContent = readyBasket
       ? "Ex VAT · final tax shown at secure checkout"
-      : "Guide estimates · ex VAT · confirmed at checkout or enquiry";
+      : "Base price excludes delivery and VAT · confirmed before acceptance";
     if (clear) clear.disabled = state.size === 0;
     const lines = [...state].map(([id, quantity]) => id + " qty " + quantity);
     const text = "ESCO Anand UK quotation request (catalogue 2026). Items: " + lines.join("; ") + ". Please confirm exact variants, UK compliance, price ex VAT, delivery and lead times.";
@@ -206,9 +206,9 @@ if (root) {
     const item = known.get(id);
     if (title) title.textContent = item.name;
     if (model) model.textContent = (item.model || "Model to confirm") + " · " + card.dataset.escoCategory;
-    if (price) price.textContent = (readyPrices.has(id) ? "UK delivered " : "UK guide ") +
+    if (price) price.textContent = (readyPrices.has(id) ? "UK delivered " : "Base price ") +
       GBP.format((readyPrices.get(id) ?? item.guidePence) / 100) +
-      (readyPrices.has(id) ? " ex VAT · secure checkout available" : " ex VAT · indicative");
+      (readyPrices.has(id) ? " ex VAT · secure checkout available" : " ex VAT · delivery confirmed before acceptance");
     if (provenance) provenance.textContent =
       card.querySelector(".esco-product-art-caption")?.textContent?.trim() ||
       "Product imagery is illustrative; specification to confirm";
@@ -256,7 +256,7 @@ if (root) {
     const el = event.target.closest("[data-esco-qty]");
     if (!el || !root.contains(el)) return;
     const quantity = Number(el.value);
-    if (state.has(el.dataset.escoQty) && Number.isSafeInteger(quantity) && quantity >= 1 && quantity <= 1000)
+    if (state.has(el.dataset.escoQty) && Number.isSafeInteger(quantity) && quantity >= 1 && quantity <= 10000)
       state.set(el.dataset.escoQty, quantity);
     persist(); render();
   });
