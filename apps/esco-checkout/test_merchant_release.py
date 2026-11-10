@@ -99,50 +99,67 @@ class MerchantReleaseContract(unittest.TestCase):
             with self.assertRaises(ValueError, msg=key):
                 mod.release_record(bad, lambda item: True)
 
+    def _fake_ssm(self, version, existing):
+        class SSM:
+            def __init__(self):
+                self.calls = []
+            def get_parameter(self, **kwargs):
+                return {"Parameter": {"Version": version, "Value": json.dumps({
+                    "enabled": True, "webhook_verified": True, "approved_skus": existing
+                })}}
+            def put_parameter(self, **kwargs):
+                self.calls.append(kwargs)
+                return {"Version": version + 1}
+        return SSM()
+
+    def _fake_s3(self):
+        class S3:
+            def __init__(self):
+                self.calls = []
+            def put_object(self, **kwargs):
+                self.calls.append(kwargs)
+                return {"ETag": '"test-only"'}
+        return S3()
+
     def test_existing_live_skus_cannot_be_overwritten_and_no_approval_means_no_mutation(self):
         draft = mod.prepare_evidence(synthetic_matrix())
         draft["records"][0] = full_record(draft["records"][0])
-        fake = type("FakeSSM", (), {
-            "calls": [],
-            "get_parameter": lambda self, **kwargs: {
-                "Parameter": {"Version": 4, "Value": json.dumps({
-                    "enabled": True, "webhook_verified": True,
-                    "approved_skus": {"ESCO-CAT-0001": {"name": "original protected record"}}
-                })}
-            },
-            "put_parameter": lambda self, **kwargs: self.calls.append(kwargs) or {"Version": 5},
-        })()
+        ssm = self._fake_ssm(4, {"ESCO-CAT-0001": {"name": "original protected record"}})
+        s3 = self._fake_s3()
+        bucket = "novapharm-esco-approved-skus-123456789012-eu-north-1"
         with patch.object(mod, "read_matrix", return_value=synthetic_matrix()), \
              patch.object(mod, "load_eligible", return_value=lambda x: True):
             with self.assertRaises(ValueError):
-                mod.promote(draft, policy_version=4, approve_live=False, ssm=fake)
+                mod.promote(draft, policy_version=4, approve_live=False, ssm=ssm, s3=s3, bucket=bucket)
             with self.assertRaises(ValueError):
-                mod.promote(draft, policy_version=3, approve_live=True, ssm=fake)
+                mod.promote(draft, policy_version=3, approve_live=True, ssm=ssm, s3=s3, bucket=bucket)
             with self.assertRaises(ValueError):
-                mod.promote(draft, policy_version=4, approve_live=True, ssm=fake)
-        self.assertEqual(fake.calls, [])
+                mod.promote(draft, policy_version=4, approve_live=True, ssm=ssm, s3=s3, bucket=bucket)
+        self.assertEqual(ssm.calls, [])
+        self.assertEqual(s3.calls, [])
 
-    def test_policy_merge_adds_only_authorised_item_and_preserves_existing(self):
+    def test_policy_merge_publishes_immutable_manifest_and_preserves_existing(self):
         draft = mod.prepare_evidence(synthetic_matrix())
         draft["records"][2] = full_record(draft["records"][2])
-        fake = type("FakeSSM", (), {
-            "calls": [],
-            "get_parameter": lambda self, **kwargs: {
-                "Parameter": {"Version": 7, "Value": json.dumps({
-                    "enabled": True, "webhook_verified": True,
-                    "approved_skus": {"ESCO-CAT-0048": {"name": "keep original"}}
-                })}
-            },
-            "put_parameter": lambda self, **kwargs: self.calls.append(kwargs) or {"Version": 8},
-        })()
+        ssm = self._fake_ssm(7, {"ESCO-CAT-0048": {"name": "keep original"}})
+        s3 = self._fake_s3()
+        bucket = "novapharm-esco-approved-skus-123456789012-eu-north-1"
         with patch.object(mod, "read_matrix", return_value=synthetic_matrix()), \
              patch.object(mod, "load_eligible", return_value=lambda x: True):
-            result = mod.promote(draft, policy_version=7, approve_live=True, ssm=fake)
+            result = mod.promote(draft, policy_version=7, approve_live=True,
+                                 ssm=ssm, s3=s3, bucket=bucket)
         self.assertEqual(result["promoted"], 1)
-        after = json.loads(fake.calls[0]["Value"])
+        self.assertEqual(result["total_live_policy_skus"], 2)
+        self.assertEqual(s3.calls[0]["ServerSideEncryption"], "AES256")
+        self.assertEqual(s3.calls[0]["IfNoneMatch"], "*")
+        manifest = json.loads(s3.calls[0]["Body"])
+        self.assertEqual(list(manifest["approved_skus"]), ["ESCO-CAT-0003"])
+        after = json.loads(ssm.calls[0]["Value"])
         self.assertEqual(after["approved_skus"]["ESCO-CAT-0048"]["name"], "keep original")
-        self.assertIn("ESCO-CAT-0003", after["approved_skus"])
-        self.assertEqual(len(after["approved_skus"]), 2)
+        self.assertNotIn("ESCO-CAT-0003", after["approved_skus"])
+        self.assertEqual(after["approval_manifest"]["sha256"], result["manifest_sha256"])
+        self.assertEqual(after["approval_manifest"]["key"], s3.calls[0]["Key"])
+        self.assertTrue(after["approval_manifest"]["key"].startswith("policies/"))
 
 
 if __name__ == "__main__":
