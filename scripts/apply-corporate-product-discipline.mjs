@@ -207,7 +207,7 @@ function homeMain() {
           <a class="nph-earth-secondary" href="/partner-with-us/">Partner with us <span aria-hidden="true">›</span></a>
         </div>
       </div>
-      <img class="nph-earth-hero-landscape" src="/assets/media/home/earth-morning-approved.webp" alt="" width="960" height="200" fetchpriority="high" decoding="async">
+      <img class="nph-earth-hero-landscape" src="/assets/media/home/earth-morning-approved.avif" alt="" width="1100" height="229" fetchpriority="high" decoding="async">
     </section>
     <section class="npd-apple-manifesto" aria-labelledby="purpose-title">
       <div class="container npd-apple-center">
