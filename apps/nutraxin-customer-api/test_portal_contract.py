@@ -136,7 +136,7 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertTrue(image["isBase64Encoded"])
         self.assertEqual(image["headers"]["content-type"],"image/jpeg")
         decoded=base64.b64decode(image["body"])
-        self.assertTrue(decoded.startswith(b"\\xff\\xd8"))
+        self.assertTrue(decoded[:2]==bytes([255,216]))
         self.assertGreater(len(decoded),50000)
 
     def test_approved_account_landing_and_personal_signup(self):
