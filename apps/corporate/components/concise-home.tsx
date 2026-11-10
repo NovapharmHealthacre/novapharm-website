@@ -12,28 +12,19 @@ const featured = nutraxinRegister.products.filter((product) => [1, 5, 14].includ
 export function ConciseHomePage() {
   return (
     <div className="nph-editorial-home npd-apple-home">
-      <section className="npd-apple-hero" aria-labelledby="nph-home-title">
-        <div className="shell container npd-apple-hero-inner">
-          <div className="npd-apple-hero-copy">
-            <p className="npd-apple-eyebrow">NOVAPHARM HEALTHCARE</p>
-            <h1 id="nph-home-title" aria-label="Medicine. Where it needs to be.">Medicine.<br /><span>Where it needs to be.</span></h1>
-            <p className="npd-apple-lead">Connecting specialist medicines, market access and regulatory judgement through a more considered pharmaceutical model.</p>
-            <div className="npd-apple-actions">
-              <a className="npd-apple-button" href="/about/">Explore NovaPharm</a>
-              <a className="npd-apple-link" href="/partner-with-us/">Partner with us</a>
-            </div>
-            <p className="npd-apple-status">Regulated wholesale supply has not commenced. Applicable authorisations and operating controls remain prerequisites to release.</p>
-          </div>
-          <figure className="npd-apple-hero-art">
-            <picture>
-              <source srcSet="/assets/media/home/supply-network-hero.avif" type="image/avif" />
-              <Image src="/assets/media/home/supply-network-hero.jpg" alt="Illustrative pharmaceutical supply network visual" width={1672} height={941} priority fetchPriority="high" unoptimized />
-            </picture>
-            <figcaption>Conceptual visual. Not a NovaPharm facility, inventory or active distribution operation.</figcaption>
-          </figure>
-        </div>
-      </section>
 
+      <section className="npd-apple-hero nph-earth-hero" aria-labelledby="nph-home-title">
+        <div className="shell container nph-earth-hero-content">
+          <p className="npd-apple-eyebrow">NOVAPHARM HEALTHCARE</p>
+          <h1 id="nph-home-title">Medicine. Where it needs to be.</h1>
+          <p className="npd-apple-lead">A better way to understand, access and move medicine.</p>
+          <div className="npd-apple-actions">
+            <a className="nph-earth-primary" href="/about/">Explore NovaPharm <span aria-hidden="true">›</span></a>
+            <a className="nph-earth-secondary" href="/partner-with-us/">Partner with us <span aria-hidden="true">›</span></a>
+          </div>
+        </div>
+        <Image className="nph-earth-hero-landscape" src="/assets/media/home/earth-morning-approved.webp" alt="" width={960} height={200} priority fetchPriority="high" unoptimized />
+      </section>
       <section className="npd-apple-manifesto" aria-labelledby="nph-purpose-title">
         <div className="shell container npd-apple-center">
           <p className="npd-apple-eyebrow">WHY NOVAPHARM</p>
