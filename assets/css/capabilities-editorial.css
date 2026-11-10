@@ -292,3 +292,6 @@ body[data-route="/capabilities/"] .ncap-page { background: #fff; color: #0b0b0d;
   .ncap-page .ncap-earth p:not(.ncap-earth-kicker) { color:#fff !important; font-size:11.5px !important; line-height:1.42 !important; }
   .ncap-page .ncap-cta { font-size:11px !important; margin-top:10px !important; padding:7px 15px !important; color:#fff !important; border-color:#fff !important; }
 }
+
+/* Keep the corporate hero contract while retaining approved editorial geometry. */
+.ncap-page .npd-hero.ncap-hero { display:block; min-height:0; align-items:initial; }
