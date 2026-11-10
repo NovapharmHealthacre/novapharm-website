@@ -357,7 +357,7 @@ for (const file of publicPages) {
   uniqueValue(titles, title, file, "title");
   uniqueValue(descriptions, description, file, "meta description");
   uniqueValue(canonicals, canonical, file, "canonical URL");
-  if (!html.includes('/assets/brand/novapharm-healthcare-logo.svg')) fail(`${file} does not reference the approved SVG logo`);
+  if (!/<img\b[^>]*\bsrc="\/assets\/brand\/novapharm-healthcare-logo\.png"/i.test(html)) fail(`${file} does not render the approved red PNG logo in an image element`);
   if (!html.includes('/assets/brand/novapharm-healthcare-logo.png')) fail(`${file} does not include the approved PNG fallback or social image`);
   if (!html.includes('alt="NovaPharm Healthcare"')) fail(`${file} is missing the approved logo alternative text`);
   if (html.includes('/assets/Novapharm-logo.svg')) fail(`${file} references the retired logo path`);
