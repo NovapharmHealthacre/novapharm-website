@@ -440,6 +440,14 @@ for (const [engineName, browserType] of engines) {
         assert.equal(response?.status(), 200, `${engineName} ${viewport.name}: ESCO page unavailable`);
         await dismissConsent(page);
         await page.locator(".esco-hero-gallery-item").first().waitFor({state:"visible"});
+        assert.equal(await page.locator("[data-esco-quote-tray]").isVisible(),false,
+          `${engineName} ${viewport.name}: duplicate oversized Bag panel is still visible`);
+        assert.equal(await page.locator(".esco-localbar-bag").isVisible(),true,
+          `${engineName} ${viewport.name}: customer Bag is missing from the product header`);
+        await page.waitForFunction(() => {
+          const image = document.querySelector('[data-esco-gallery-item="ESCO-CAT-0003"] img');
+          return image?.dataset.escoPhotoCleanup === "cleaned";
+        }, null, {timeout:15000});
         const heroLayout = await page.evaluate(() => {
           const rect = node => node?.getBoundingClientRect();
           const intersection = (a,b) => a && b &&
@@ -486,6 +494,11 @@ for (const [engineName, browserType] of engines) {
         assert.equal(layout.overflow,false,`${engineName} ${viewport.name}: ESCO dialog overflows horizontally`);
         assert.ok(layout.pictureWidth > 80 && layout.copyWidth > 80,`${engineName} ${viewport.name}: ESCO dialog collapsed`);
         await dialog.screenshot({path:path.join(directory,"esco-details.png"),animations:"disabled"});
+        await dialog.locator("[data-esco-dialog-add]").click();
+        assert.equal((await page.locator("[data-esco-top-bag-count]").innerText()).trim(),"1",
+          `${engineName} ${viewport.name}: adding a product did not update the single header Bag`);
+        assert.equal(await page.locator("[data-esco-quote-tray]").isVisible(),false,
+          `${engineName} ${viewport.name}: adding a product showed the old homepage Bag panel`);
         screenshots += 2;
         geometryRuns += 1;
       } finally {
