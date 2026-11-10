@@ -115,7 +115,8 @@
                     "aliases",
                     "codeHistory",
                     "analyticalAvailability",
-                    "limitations"
+                    "limitations",
+                    "identityRelationships"
                   ],
                   "properties": {
                     "medicine": {
@@ -140,6 +141,65 @@
                       "type": "array",
                       "items": {
                         "type": "string"
+                      }
+                    },
+                    "identityRelationships": {
+                      "type": "object",
+                      "description": "Read-only BNF/alias/source relationship projection derived from the existing authorised identity detail. Does not prove clinical equivalence, approvals, demand or commercial access.",
+                      "required": [
+                        "contract",
+                        "dataState",
+                        "sourceId",
+                        "nodes",
+                        "relationships",
+                        "limitations"
+                      ],
+                      "properties": {
+                        "contract": {
+                          "const": "novapharm.intelligence.identity-relationships.v1"
+                        },
+                        "dataState": {
+                          "const": "derived_from_authorised_identity_records"
+                        },
+                        "sourceId": {
+                          "type": "string"
+                        },
+                        "nodes": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": true
+                          }
+                        },
+                        "relationships": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "from",
+                              "to",
+                              "relation"
+                            ],
+                            "additionalProperties": false,
+                            "properties": {
+                              "from": {
+                                "type": "string"
+                              },
+                              "to": {
+                                "type": "string"
+                              },
+                              "relation": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "limitations": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
                       }
                     }
                   }
