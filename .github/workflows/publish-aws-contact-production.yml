@@ -185,7 +185,7 @@ jobs:
           node scripts/test-oncology-content.mjs
           test -s _site/assets/css/oncology-hope-v2.css
           grep -Fq 'href="/assets/css/oncology-hope-v2.css"' _site/oncology/index.html
-          grep -Fq 'A Hope of<br>Tomorrow.' _site/oncology/index.html
+          grep -Fq 'A Hope for<br>Tomorrow.' _site/oncology/index.html
           ! grep -Fq 'Illustrative creative image. No patient, treatment result or NovaPharm facility is depicted.' _site/oncology/index.html
           grep -Fq 'grid-template-columns:repeat(3,minmax(220px,1fr))' _site/assets/css/oncology-hope-v2.css
           node scripts/verify-nutraxin-merchant-live.mjs --local
@@ -614,7 +614,7 @@ jobs:
               -H 'Cache-Control: no-cache, no-store' \
               "https://novapharmhealthcare.com/oncology/?${cache}" -o /tmp/live-hope-oncology.html \
               && grep -Fq 'class="npoc-hero npoc-hope-hero"' /tmp/live-hope-oncology.html \
-              && grep -Fq 'A Hope of<br>Tomorrow.' /tmp/live-hope-oncology.html \
+              && grep -Fq 'A Hope for<br>Tomorrow.' /tmp/live-hope-oncology.html \
               && grep -Fq 'href="/assets/css/oncology-hope-v2.css"' /tmp/live-hope-oncology.html \
               && ! grep -Fq 'Illustrative creative image. No patient, treatment result or NovaPharm facility is depicted.' /tmp/live-hope-oncology.html \
               && curl --fail --silent --show-error --location --max-time 20 \

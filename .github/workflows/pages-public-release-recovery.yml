@@ -84,7 +84,7 @@ jobs:
           grep -Fq -- '--apple-pharma-public-contract: 3' _site/assets/css/novapharm.bundle.css
           grep -Fq 'body[data-page="home"]' _site/assets/css/novapharm.bundle.css
           grep -Fq 'regulatory-dossier-control' _site/regulatory-services/index.html
-          grep -Fq 'id="npoc-title"' _site/oncology/index.html
+          grep -Fq 'A Hope for' _site/oncology/index.html
           grep -Fq 'class="npoc-hero npoc-hope-hero"' _site/oncology/index.html
           test -s _site/assets/css/oncology-editorial.css
           grep -Fq '/assets/media/modules/regulatory-dossier-control.jpg' _site/regulatory-services/index.html
@@ -158,7 +158,7 @@ jobs:
           grep -Fq -- '--apple-pharma-public-contract: 3' _site/assets/css/novapharm.bundle.css
           grep -Fq 'body[data-page="home"]' _site/assets/css/novapharm.bundle.css
           grep -Fq 'regulatory-dossier-control' _site/regulatory-services/index.html
-          grep -Fq 'A Hope of' _site/oncology/index.html
+          grep -Fq 'A Hope for' _site/oncology/index.html
           grep -Fq 'class="npoc-hero npoc-hope-hero"' _site/oncology/index.html
           test -s _site/assets/css/oncology-editorial.css
           grep -Fq '/assets/media/modules/regulatory-dossier-control.jpg' _site/regulatory-services/index.html
@@ -280,7 +280,7 @@ jobs:
               && grep -Fq '/assets/media/modules/regulatory-dossier-control.jpg' /tmp/live-regulatory.html \
               && ! grep -Fq 'data-ai-search-open' /tmp/live-home.html \
               && grep -Fq 'Prabhakar Vitthal Lahare' /tmp/live-cro.html \
-              && grep -Fq 'A Hope of' /tmp/live-oncology.html \
+              && grep -Fq 'A Hope for' /tmp/live-oncology.html \
               && grep -Fq 'class="npoc-hero npoc-hope-hero"' /tmp/live-oncology.html \
               && ! grep -Fq 'oncology-editorial-gallery' /tmp/live-oncology.html \
               && grep -Fq 'class="np-contact-reference-hero"' /tmp/live-contact.html \
