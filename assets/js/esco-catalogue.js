@@ -38,6 +38,7 @@ if (root) {
       }
     }
     if (counter) counter.textContent = visible + " catalogue entries";
+    if (clearFilters) clearFilters.hidden = !(search || category || readyToggle?.checked);
     if (noResults) noResults.hidden = visible !== 0;
   };
   input?.addEventListener("input", apply);
