@@ -98,7 +98,7 @@ const principalHeroes = config.modules.filter((module) => module.heroAsset).map(
 assert.equal(new Set(principalHeroes).size, principalHeroes.length, "every principal module must have a unique hero asset");
 
 const authoredModuleContracts = new Map([
-  ["home", ["npd-main npd-home npd-apple-home", "npd-apple-hero", "npd-apple-hero-art", "npd-apple-oncology", "npd-apple-product-grid", "npd-apple-nova-art", "npd-apple-sourcing-grid", "npd-apple-regulatory-notice"]],
+  ["home", ["npd-main npd-home npd-apple-home", "npd-apple-hero", "nph-earth-hero-landscape", "npd-apple-oncology", "npd-apple-product-grid", "npd-apple-nova-art", "npd-apple-sourcing-grid", "npd-apple-regulatory-notice"]],
   ["about", ["npd-main", "npd-principles", "about-operating-model"]],
   ["services", ["npd-main", "npd-service-ledger", "npd-horizontal-steps"]],
   ["regulatory", ["npd-main", "npd-roadmap npd-roadmap-large", "regulatory-batch-integrity"]],
