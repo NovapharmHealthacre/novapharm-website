@@ -117,8 +117,8 @@ try {
         return {
           heroLines: heroLines.length,
           cardCount: cards.length,
-          inlineEarth: earth?.tagName?.toLowerCase() === "svg",
-          inlineVial: vial?.tagName?.toLowerCase() === "svg",
+          inlineEarth: earth?.tagName?.toLowerCase() === "img" && earth.complete && earth.naturalWidth > 0,
+          inlineVial: vial?.tagName?.toLowerCase() === "img" && vial.complete && vial.naturalWidth > 0,
           earthWidth: earth?.getBoundingClientRect().width ?? 0,
           earthHeight: earth?.getBoundingClientRect().height ?? 0,
           earthZIndex: earthLayer ? getComputedStyle(earthLayer).zIndex : null,
