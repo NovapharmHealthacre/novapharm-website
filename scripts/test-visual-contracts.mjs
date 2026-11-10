@@ -62,8 +62,9 @@ assert.match(bundleCss, /Source: homepage-editorial.css/, "homepage styles must 
 const home = text("index.html");
 assert.match(home, /<main id="main" class="npd-main npd-home npd-apple-home">/);
 assert.match(home, /<h1(?:\s+[^>]*)?>Medicine\. Where it needs to be\.<\/h1>/, "homepage preserves the approved semantic hero headline");
-assert.match(home, /supply-network-hero\.avif/);
-assert.match(home, /supply-network-hero\.jpg/);
+assert.match(home, /class="npd-apple-hero nph-earth-hero"/, "approved Earth-horizon hero layout");
+assert.match(home, /class="nph-earth-hero-landscape"/, "approved morning-Earth image placement");
+assert.match(home, /earth-morning-approved\.avif/, "approved Earth artwork remains present");
 assert.match(home, /Three routes\.<br>One evidence standard\./);
 assert.equal((home.match(/<div class="npd-apple-sourcing-grid">[\s\S]*?<\/div>/)?.[0].match(/<article>/g) ?? []).length, 3, "homepage must present three evidence-gated sourcing routes");
 assert.equal((home.match(/<div class="npd-apple-product-grid">[\s\S]*?<\/div>/)?.[0].match(/class="npd-apple-product"/g) ?? []).length, 3, "homepage must stage three authentic catalogue product references");
@@ -92,7 +93,7 @@ assert.match(home, /data-mega-trigger="intelligence"/, "global header must expos
 assert.match(home, /data-mega-panel="intelligence"/, "Intelligence navigation must offer contextual destinations");
 
 const routeContracts = [
-  ["capabilities/index.html", "The right route depends on the evidence already in place."],
+  ["capabilities/index.html", "class=\"ncap-title-line\">From evidence</span>"],
   ["services/index.html", "npd-service-ledger"],
   ["regulatory-services/index.html", "npd-roadmap npd-roadmap-large"],
   ["cro/index.html", "Define the programme before assembling the delivery model."],
@@ -133,10 +134,13 @@ assert.match(contactCss, /np-contact-reference-submit/);
 assert.match(contactCss, /@media \(max-width: 700px\)/);
 
 const products = text("products/index.html");
-const priorityPosition = products.indexOf("Food Supplement Portfolio Review");
-const strategicPosition = products.indexOf("Strategic pharmaceutical portfolio");
-assert.ok(priorityPosition >= 0 && strategicPosition > priorityPosition, "Food Supplement Portfolio Review must be the first substantive product section");
-assert.equal((products.match(/Food Supplement Portfolio Review/g) ?? []).length, 1);
+const approvedCollections = ["np-products-panel-nutraxin", "np-products-panel-esco", "np-products-panel-pharma"];
+const collectionPositions = approvedCollections.map((marker) => products.indexOf(marker));
+assert.ok(collectionPositions.every((pos) => pos >= 0) &&
+  collectionPositions.every((pos, i) => i === 0 || pos > collectionPositions[i - 1]),
+  "approved Products experience must present Nutraxin, ESCO and pharmaceutical portfolio as one ordered story");
+assert.match(products, /<h1 id="np-products-title">Different products\.<br>One purpose\.<\/h1>/);
+assert.match(products, /Food Supplement Portfolio Review/, "genuine Nutraxin catalogue provenance remains present");
 assert.match(products, /href="\/products\/nutraxin\/"/);
 assert.match(products, /href="\/products\/strategic-portfolio\/"/);
 assert.doesNotMatch(products, /£|\bGBP\b|Add to basket|Buy now|In stock/);
