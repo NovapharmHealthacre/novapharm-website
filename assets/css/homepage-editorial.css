@@ -907,3 +907,117 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
     transition: none;
   }
 }
+
+
+/* Owner-approved morning Earth horizon. Real approved asset; no generated placeholders.
+   This scope deliberately leaves Products, Oncology, Contact and private portal untouched. */
+body[data-page="home"] .nph-earth-hero {
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+  color: #1d1d1f;
+}
+body[data-page="home"] .nph-earth-layout {
+  display: grid;
+  grid-template-columns: minmax(0, .98fr) minmax(0, 1.02fr);
+  align-items: center;
+  gap: clamp(24px, 5.2vw, 84px);
+  max-width: 1480px;
+  min-height: min(760px, calc(100svh - 70px));
+  padding-block: clamp(76px, 8.5vw, 132px);
+}
+body[data-page="home"] .nph-earth-copy { position: relative; z-index: 1; min-width: 0; }
+body[data-page="home"] .nph-earth-eyebrow {
+  margin: 0 0 23px;
+  font-size: .74rem;
+  font-weight: 650;
+  letter-spacing: .12em;
+  line-height: 1.5;
+  color: #6e6e73;
+}
+body[data-page="home"] .nph-earth-copy h1 {
+  margin: 0;
+  max-width: 680px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: clamp(3.5rem, 6.4vw, 6.5rem);
+  font-weight: 700;
+  line-height: 1.025;
+  letter-spacing: -.045em;
+  text-wrap: balance;
+  color: #111113;
+}
+body[data-page="home"] .nph-earth-lead {
+  margin: clamp(22px, 3vw, 34px) 0 0;
+  max-width: 520px;
+  color: #54545a;
+  font-size: clamp(1.14rem, 1.55vw, 1.42rem);
+  line-height: 1.48;
+}
+body[data-page="home"] .nph-earth-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 15px 25px;
+  margin-top: 32px;
+}
+body[data-page="home"] .nph-earth-actions a {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 47px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+}
+body[data-page="home"] .nph-earth-primary {
+  padding: 12px 24px;
+  background: #111113;
+  color: #fff;
+  border-radius: 999px;
+}
+body[data-page="home"] .nph-earth-primary:hover { background: #343438; color: #fff; }
+body[data-page="home"] .nph-earth-secondary { color: #0066cc; }
+body[data-page="home"] .nph-earth-secondary:hover { color: #004f9d; text-decoration: underline; }
+body[data-page="home"] .nph-earth-actions a:focus-visible { outline: 3px solid #0066cc; outline-offset: 4px; }
+body[data-page="home"] .nph-earth-status {
+  margin: 28px 0 0;
+  max-width: 520px;
+  font-size: .81rem;
+  line-height: 1.5;
+  color: #66666b;
+}
+body[data-page="home"] .nph-earth-visual {
+  margin: 0;
+  min-width: 0;
+  align-self: center;
+}
+body[data-page="home"] .nph-earth-visual img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 690px;
+  object-fit: contain;
+  object-position: center;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: #fff;
+}
+@media (max-width: 920px) {
+  body[data-page="home"] .nph-earth-layout {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding-block: clamp(68px, 10vw, 105px);
+    gap: 32px;
+  }
+  body[data-page="home"] .nph-earth-copy h1 { font-size: clamp(3rem, 9vw, 5.6rem); }
+  body[data-page="home"] .nph-earth-visual { max-width: 740px; width: 100%; margin-inline: auto; }
+}
+@media (max-width: 520px) {
+  body[data-page="home"] .nph-earth-layout { padding-block: 70px 50px; }
+  body[data-page="home"] .nph-earth-copy h1 { font-size: clamp(2.65rem, 12vw, 4.1rem); }
+  body[data-page="home"] .nph-earth-lead { font-size: 1.12rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-page="home"] .nph-earth-actions a { transition: none; }
+}
