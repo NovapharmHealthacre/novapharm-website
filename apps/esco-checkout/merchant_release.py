@@ -146,6 +146,8 @@ def release_record(record, eligible):
     amount = record.get("final_uk_delivered_selling_price_pence")
     if type(amount) is not int or not 1 <= amount <= 99999999:
         raise ValueError("firm UK delivered ex-VAT price required")
+    if amount < record.get("merchant_base_price_pence", 0):
+        raise ValueError("delivered selling price falls below approved website base price")
     if record.get("pricing_basis") not in ("VERIFIED_SUPPLIER_COST", "MERCHANT_ACCEPTED_COST_RISK"):
         raise ValueError("unverified suggested price is not a final price")
     out = {
@@ -215,14 +217,20 @@ def evaluate(document, eligible):
     rows = document.get("records")
     if not isinstance(rows, list) or len(rows) != 373:
         raise ValueError("all 373 catalogue references must be present")
-    expected = {x["catalogue_id"] for x in read_matrix()}
+    expected = {x["catalogue_id"]: x for x in read_matrix()}
     actual = [x.get("catalogue_id") for x in rows]
-    if len(set(actual)) != 373 or set(actual) != expected:
+    if len(set(actual)) != 373 or set(actual) != set(expected):
         raise ValueError("catalogue reconciliation failed")
     released, blocked = {}, {}
     for record in rows:
         key = record["catalogue_id"]
         try:
+            # Never promote a product whose base price has drifted from the
+            # merchant-approved website source, regardless of variant approval.
+            authorised_base = pence(
+                expected[key]["owner_approved_catalogue_unit_price_ex_vat_gbp"])
+            if record.get("merchant_base_price_pence") != authorised_base:
+                raise ValueError("website-approved base price mismatch")
             released[key] = release_record(record, eligible)
         except (ValueError, KeyError, TypeError) as exc:
             blocked[key] = str(exc)
