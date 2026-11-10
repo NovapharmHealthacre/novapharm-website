@@ -117,7 +117,8 @@ jobs:
           grep -Fq 'data-esco-quote-items' _site/products/esco/index.html
           grep -Fq 'data-esco-bag-items' _site/products/esco/bag/index.html
           grep -Fq 'data-esco-card-checkout disabled' _site/products/esco/bag/index.html
-          grep -Fq 'UK guide' _site/products/esco/index.html
+          grep -Fq 'Base price £' _site/products/esco/index.html
+          grep -Fq 'Ex VAT · delivery confirmed before acceptance' _site/products/esco/index.html
           test -s _site/assets/data/esco-uk-guide-prices.json
           test -s _site/assets/data/esco-checkout-config.json
           grep -Fq 'data-esco-payment-terms' _site/products/esco/bag/index.html
