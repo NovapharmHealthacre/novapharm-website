@@ -23,6 +23,12 @@ on:
       - 'scripts/build-site.mjs'
       - 'assets/data/nutraxin-retail-catalogue.json'
       - 'scripts/apply-corporate-product-discipline.mjs'
+      - 'oncology/**'
+      - 'assets/css/oncology-hope-v2.css'
+      - 'assets/css/oncology-editorial.css'
+      - 'assets/media/oncology/**'
+      - 'scripts/test-oncology-content.mjs'
+      - 'scripts/test-public-pages-browser.mjs'
       - 'scripts/enhance-seo-authority.mjs'
       - 'scripts/test-native-organic-marketing.mjs'
       - 'scripts/stage-pages-artifact.mjs'
@@ -100,6 +106,13 @@ jobs:
           npm run test:cookies
           npm run validate:domain
           node scripts/stage-pages-artifact.mjs _site
+          # The approved Oncology design and its exact mobile CSS are deployment prerequisites.
+          node scripts/test-oncology-content.mjs
+          test -s _site/assets/css/oncology-hope-v2.css
+          grep -Fq 'href="/assets/css/oncology-hope-v2.css"' _site/oncology/index.html
+          grep -Fq 'A Hope of<br>Tomorrow.' _site/oncology/index.html
+          ! grep -Fq 'Illustrative creative image. No patient, treatment result or NovaPharm facility is depicted.' _site/oncology/index.html
+          grep -Fq 'grid-template-columns:repeat(3,minmax(220px,1fr))' _site/assets/css/oncology-hope-v2.css
           node scripts/verify-nutraxin-merchant-live.mjs --local
           test -s _site/shopping/nutraxin-uk.tsv
           cmp _site/shopping/nutraxin-uk.tsv shopping/nutraxin-uk.tsv
