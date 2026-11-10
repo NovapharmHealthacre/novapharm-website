@@ -308,7 +308,7 @@ def reply(status, body="", content_type="application/json", cookies=None, locati
     headers = {"content-type":content_type,"cache-control":"no-store",
         "x-content-type-options":"nosniff","referrer-policy":"no-referrer",
         "strict-transport-security":"max-age=31536000; includeSubDomains",
-        "content-security-policy":"default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' https://novapharmhealthcare.com; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"}
+        "content-security-policy":"default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' https://novapharmhealthcare.com; base-uri 'none'; form-action 'self' https://"+COGNITO_DOMAIN+"; frame-ancestors 'none'"}
     if location: headers["location"] = location
     result={"statusCode":status,"headers":headers,"body":json.dumps(body,separators=(",",":")) if isinstance(body,(dict,list)) else str(body)}
     if cookies: result["cookies"]=cookies
