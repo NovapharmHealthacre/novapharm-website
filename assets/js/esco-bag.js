@@ -63,9 +63,9 @@ async function configurePayment() {
 function renderPaymentEligibility(lines) {
   if (!checkoutButton || !termsCheckbox) return;
   const eligible = paymentServiceReady && lines.length > 0 &&
-    lines.every(item => approvedCatalogIds.has(item.id) && approvedUnitPricesPence.has(item.id));
+    lines.every(item => approvedCatalogIds.has(item.id) && approvedUnitPricesPence.has(item.id) && item.quantity <= MAX_CARD_QTY);
   const quoteOnly = paymentServiceReady
-    ? lines.filter(item => !approvedCatalogIds.has(item.id) || !approvedUnitPricesPence.has(item.id))
+    ? lines.filter(item => !approvedCatalogIds.has(item.id) || !approvedUnitPricesPence.has(item.id) || item.quantity > MAX_CARD_QTY)
     : [];
   // A disabled payment button for quote-only products creates a dead end.
   // Show exactly one primary purchase path: Stripe for approved goods or
@@ -96,7 +96,7 @@ function renderPaymentEligibility(lines) {
 }
 async function startCheckout(lines) {
   if (sendingPayment || !checkoutApiOrigin || !paymentServiceReady || !termsCheckbox?.checked ||
-      !lines.length || !lines.every(item => approvedCatalogIds.has(item.id))) return;
+      !lines.length || !lines.every(item => approvedCatalogIds.has(item.id) && item.quantity <= MAX_CARD_QTY)) return;
   sendingPayment = true;
   renderPaymentEligibility(lines);
   checkoutStatus("Connecting securely to payment…");
@@ -138,7 +138,8 @@ async function checkPaymentReturn() {
 }
 const GBP = new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" });
 const MAX_ITEMS = 12;
-const MAX_QTY = 1000;
+const MAX_QTY = 10000;
+const MAX_CARD_QTY = 1000;
 const validId = (id) => typeof id === "string" && /^ESCO-CAT-[0-9]{4}$/.test(id);
 function loadBag() {
   try {
@@ -231,7 +232,7 @@ async function init() {
       const controls = node("div", "", "esco-bag-row-controls");
       const label = node("label", "Quantity", "esco-shopping-qty-label");
       const qty = document.createElement("select");
-      const choices = new Set([1,2,3,4,5,6,7,8,9,10,12,24,48,100,250,500,1000,item.quantity]);
+      const choices = new Set([1,2,3,4,5,6,7,8,9,10,12,24,48,100,250,500,1000,2500,5000,10000,item.quantity]);
       for(const n of [...choices].sort((a,b)=>a-b)) {
         const opt = document.createElement("option");
         opt.value = String(n); opt.textContent = String(n);
@@ -255,7 +256,7 @@ async function init() {
     if (itemCountNode) itemCountNode.textContent = unitCount + (unitCount === 1 ? " item" : " items");
     totalNode.textContent = GBP.format(pennies / 100);
     const allPayable = paymentServiceReady && state.length>0 &&
-      state.every(item=>approvedCatalogIds.has(item.id) && approvedUnitPricesPence.has(item.id));
+      state.every(item=>approvedCatalogIds.has(item.id) && approvedUnitPricesPence.has(item.id) && item.quantity <= MAX_CARD_QTY);
     const summaryTitle = document.querySelector(".esco-bag-totals dt");
     const deliverySummary = document.querySelector(".esco-bag-totals>div:nth-child(2) dd");
     const estimateTitle = document.querySelector(".esco-bag-estimate span");
