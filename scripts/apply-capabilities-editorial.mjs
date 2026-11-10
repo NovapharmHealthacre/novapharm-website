@@ -9,9 +9,7 @@ const stylesheet = "/assets/css/capabilities-editorial.css";
 for (const file of [
   pageFile,
   templateFile,
-  resolve("assets/css/capabilities-editorial.css"),
-  resolve("assets/media/capabilities/vial-study.svg"),
-  resolve("assets/media/capabilities/earth-horizon.svg")
+  resolve("assets/css/capabilities-editorial.css")
 ]) {
   if (!existsSync(file)) throw new Error("Approved Capabilities asset missing: " + file);
 }
