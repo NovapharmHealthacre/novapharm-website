@@ -1,0 +1,25 @@
+name: Intelligence private ALB log archive contract
+
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/intelligence-alb-logs.json'
+      - 'scripts/test-intelligence-alb-logs.mjs'
+      - '.github/workflows/intelligence-private-alb-logs.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify-private-archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Verify regional owner-only encrypted ALB logs and bounded retention
+        run: node --test scripts/test-intelligence-alb-logs.mjs
+      - name: Preserve enterprise release ledger
+        run: npm run intelligence:requirements:validate
