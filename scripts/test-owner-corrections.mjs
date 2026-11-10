@@ -176,7 +176,7 @@ if (!home.includes('<a href="https://portal.novapharmhealthcare.com/">Secure Por
 if (home.includes('<a href="/portal/">Secure Portal</a>')) fail("Homepage still routes Secure Portal navigation to the static holding page");
 if (!home.includes("/account-application/")) fail("Homepage no longer links to Open an account");
 if (!home.includes("Medicine. Where it needs to be")) fail("Homepage is missing the owner-approved hero title.");
-if (!home.includes("Medicine matters. So does every decision that brings it closer to people.")) fail("Homepage is missing the founder-led product promise.");
+if (!home.includes("Pharmaceutical opportunity should move no faster than the evidence behind it.")) fail("Homepage is missing the approved evidence-led product promise.");
 
 const contact = text("contact/index.html");
 if (platformCapabilities.publicForms && !contact.includes("data-contact-form")) fail("Contact enquiry form hook is missing");
