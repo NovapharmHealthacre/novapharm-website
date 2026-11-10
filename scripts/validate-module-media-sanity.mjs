@@ -98,7 +98,7 @@ const principalHeroes = config.modules.filter((module) => module.heroAsset).map(
 assert.equal(new Set(principalHeroes).size, principalHeroes.length, "every principal module must have a unique hero asset");
 
 const authoredModuleContracts = new Map([
-  ["home", ["npd-main npd-home", "npd-hero npd-hero-media", "npd-hero-background", "npd-section npd-statement", "npd-numbered-grid", "npd-media-section", "npd-product-feature", "npd-notice npd-notice-regulatory"]],
+  ["home", ["npd-main npd-home npd-apple-home", "npd-apple-hero", "npd-apple-hero-art", "npd-apple-oncology", "npd-apple-product-grid", "npd-apple-nova-art", "npd-apple-sourcing-grid", "npd-apple-regulatory-notice"]],
   ["about", ["npd-main", "np-about-pillars", "np-about-purpose"]],
   ["services", ["npd-main", "npd-service-ledger", "npd-horizontal-steps"]],
   ["regulatory", ["npd-main", "npd-roadmap npd-roadmap-large", "regulatory-batch-integrity"]],
@@ -106,7 +106,7 @@ const authoredModuleContracts = new Map([
   ["partners", ["npd-main", "npd-partner-editorial", "npd-horizontal-steps"]],
   ["technology", ["npd-main", "npi-terminal", "npi-roadmap-grid", "npi-provenance-list"]],
   ["insights", ["npd-main", "npd-insight-lead", "npd-insight-list"]],
-  ["contact", ["npd-main", "npd-contact-layout", "npd-topic-list", "npd-managed-control", "Not a medical or safety channel"]],
+  ["contact", ["npd-main", "np-contact-reference-form", "How can we help?"]],
   ["account", ["npd-main", "npd-account-stages", "An account is approved through evidence"]]
 ]);
 
