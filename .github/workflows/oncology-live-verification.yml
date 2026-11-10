@@ -1,0 +1,71 @@
+name: Verify Oncology Hope of Tomorrow live
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/oncology-live-verification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: novapharm-oncology-live-verification
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verify the deployed Oncology page is current and public
+        shell: bash
+        run: |
+          set -euo pipefail
+          origin='https://novapharmhealthcare.com'
+          found=false
+          for attempt in $(seq 1 24); do
+            url="$origin/oncology/?oncology-verify-${GITHUB_SHA}-${GITHUB_RUN_ID}-${attempt}"
+            if curl --fail --silent --show-error --location --max-time 20 \
+                -H 'Cache-Control: no-cache, no-store, max-age=0' \
+                -H 'Pragma: no-cache' "$url" -o /tmp/oncology-live.html \
+              && grep -Fq 'A Hope of<br>Tomorrow.' /tmp/oncology-live.html \
+              && grep -Fq 'class="npoc-hero npoc-hope-hero"' /tmp/oncology-live.html \
+              && grep -Fq 'id="oncology-focus"' /tmp/oncology-live.html \
+              && grep -Fq 'href="#oncology-focus"' /tmp/oncology-live.html \
+              && grep -Fq 'Regulated wholesale supply has not commenced' /tmp/oncology-live.html \
+              && ! grep -Fq 'Oncology demands<br>more than supply.' /tmp/oncology-live.html; then
+              found=true
+              break
+            fi
+            sleep 5
+          done
+          if [[ "$found" != true ]]; then
+            echo '::error::Public Oncology URL does not yet serve the approved Hope of Tomorrow page.'
+            exit 1
+          fi
+          echo 'Verified approved A Hope of Tomorrow HTML on the custom production domain.'
+
+      - name: Verify all four artwork assets and the live Oncology stylesheet
+        shell: bash
+        run: |
+          set -euo pipefail
+          origin='https://novapharmhealthcare.com'
+          for asset in hope-tomorrow-portrait.jpg solid-tumours.jpg haematological-cancers.jpg supportive-care.jpg; do
+            grep -Fq "/assets/media/oncology/$asset" /tmp/oncology-live.html
+            curl --fail --silent --show-error --location --max-time 20 \
+              -H 'Cache-Control: no-cache, no-store, max-age=0' \
+              "$origin/assets/media/oncology/$asset?oncology-verified-${GITHUB_RUN_ID}" \
+              -o "/tmp/$asset"
+            test -s "/tmp/$asset"
+            actual_type="$(file --mime-type -b "/tmp/$asset")"
+            test "$actual_type" = image/jpeg
+            echo "Verified production visual: $asset"
+          done
+          curl --fail --silent --show-error --location --max-time 20 \
+            -H 'Cache-Control: no-cache, no-store, max-age=0' \
+            "$origin/assets/css/oncology-editorial.css?oncology-verified-${GITHUB_RUN_ID}" \
+            -o /tmp/oncology-editorial-live.css
+          grep -Fq 'npoc-hope-hero' /tmp/oncology-editorial-live.css
+          echo 'Verified deployed Oncology stylesheet and all four image files.'
