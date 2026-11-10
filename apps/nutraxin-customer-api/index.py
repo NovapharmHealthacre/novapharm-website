@@ -37,13 +37,82 @@ DIRECT_SHOP_PAYMENTS_ENABLED = os.environ.get("DIRECT_SHOP_PAYMENTS_ENABLED", "f
 PAYMENT_LEDGER_TABLE = os.environ.get("PAYMENT_LEDGER_TABLE", "")
 PAYMENT_DDB = boto3.client("dynamodb", region_name=REGION) if DIRECT_SHOP_PAYMENTS_ENABLED and PAYMENT_LEDGER_TABLE else None
 
-PAGE = """<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nutraxin | Customer Account | NovaPharm Healthcare</title><meta name="robots" content="noindex,nofollow"><style>
+PAGE = """<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Create your NovaPharm account | NovaPharm Healthcare</title><meta name="robots" content="noindex,nofollow"><style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#18181b;background:#f5f5f7;font-synthesis:none}*{box-sizing:border-box}body{margin:0}nav{background:rgba(252,252,253,.94);border-bottom:1px solid #e6e6e9}nav div{max-width:1120px;margin:auto;padding:19px 24px;display:flex;justify-content:space-between;gap:16px;align-items:center}nav a{color:inherit;text-decoration:none;font-size:14px}nav b{letter-spacing:.06em;font-size:13px}main{max-width:920px;margin:auto;padding:80px 24px 100px}.eyebrow{font-size:12px;font-weight:700;color:#6e737d;letter-spacing:.08em;text-transform:uppercase}h1{font-size:clamp(42px,7vw,76px);line-height:1.06;letter-spacing:-.035em;margin:15px 0 20px}h2{font-size:26px;letter-spacing:-.02em;margin:0 0 14px}.lead{font-size:clamp(18px,2.5vw,23px);line-height:1.5;color:#5a6069;max-width:760px}.card{border:1px solid #e3e4e8;background:#fff;border-radius:23px;padding:30px;margin-top:32px}.fine{color:#717681;font-size:13px;line-height:1.65}.button{border:0;border-radius:999px;background:#0071e3;color:#fff;font-size:15px;font-weight:600;padding:14px 22px;display:inline-block;text-decoration:none;cursor:pointer}.button:disabled{background:#a5b1c2;cursor:not-allowed}.quiet{background:#eeeef2;color:#20232a}.row{display:grid;grid-template-columns:minmax(0,1fr) 115px;gap:24px;align-items:center;padding:18px 0;border-bottom:1px solid #e5e5e9}.name{font-weight:640;font-size:16px}.pack{display:block;color:#707580;font-size:13px;margin-top:4px}.price{display:block;color:#34363b;font-size:13px;margin-top:4px}.qty{border:1px solid #cbd0d8;border-radius:10px;background:#fcfcfd;padding:12px;width:100%;font:inherit;text-align:center}.actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:24px}.business-option{border-top:1px solid #e3e4e8;margin-top:30px;padding-top:22px}.business-option h3{font-size:18px;letter-spacing:-.02em;margin:0 0 8px}.business-option a{font-size:14px;color:#0066cc}.retail-shop{margin-top:60px}.retail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin:24px 0}.retail-card{background:#fff;padding:18px;border-radius:18px;border:1px solid #e3e4e8}.retail-card img{width:100%;aspect-ratio:1;object-fit:contain}.retail-card h3{font-size:15px;line-height:1.4;margin:12px 0 4px;min-height:2.8em}.retail-card p{margin:6px 0}.retail-card button{font-size:13px;padding:10px 14px;margin-top:10px}.retail-card a{font-size:13px;color:#0066cc}.retail-card .retail-muted{color:#737985;font-size:12px}.bag-summary{border:1px solid #e3e4e8;border-radius:18px;background:white;padding:22px}.bag-summary button{border:0;background:none;color:#0066cc;padding:4px;cursor:pointer;font:inherit;text-decoration:underline}.hide{display:none}#message{margin-top:18px;line-height:1.6;font-size:14px}a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #0071e3;outline-offset:3px}@media(max-width:580px){main{padding:55px 18px}.card{padding:22px 18px;border-radius:18px}.row{grid-template-columns:minmax(0,1fr) 85px;gap:14px}.name{font-size:14px}}
-</style><script defer src="/app.js"></script></head><body><nav><div><a href="https://novapharmhealthcare.com/products/nutraxin/"><b>NOVAPHARM / NUTRAXIN</b></a><a href="https://novapharmhealthcare.com/">NovaPharm Healthcare</a></div></nav><main><p class="eyebrow">NUTRAXIN / CUSTOMER ACCOUNT</p><h1>Welcome to Nutraxin.</h1><p class="lead">Explore the collection, sign in to your account and return whenever you like. Personal shopping and business trading are separate experiences.</p><section class="card" id="signed-out"><h2>Your Nutraxin account.</h2><p>Browse the product collection without registering. Sign in when you want to manage your account. You do not need a business account for personal shopping.</p><div class="actions"><a class="button" href="https://novapharmhealthcare.com/products/nutraxin/">Browse the collection</a><a class="button quiet" href="/login">Sign in or create account</a></div></section><section class="card hide" id="pending"><h2>Your account is ready.</h2><p id="pending-email"></p><p>Your email is verified. Personal shoppers do not need business approval to explore Nutraxin. Your personal Nutraxin account can browse the retail collection below. Sign in and accept the terms to access secure checkout when order processing is enabled. Business account approval is not required for personal shopping.</p><div class="actions"><a class="button" href="https://novapharmhealthcare.com/products/nutraxin/">Explore Nutraxin products</a><form action="/logout" method="post"><button type="submit" class="button quiet">Sign out</button></form></div><div class="business-option"><h3>Buying for a pharmacy or wholesale business?</h3><p class="fine">Only trade accounts need additional checks before private wholesale prices and business order requests are available.</p><a href="https://novapharmhealthcare.com/account-application/">Apply for business access</a></div></section><section id="approved" class="card hide"><h2>Your verified business account.</h2><p class="fine">Business account access is separate from Nutraxin retail shopping. You can also <a href="https://novapharmhealthcare.com/products/nutraxin/">browse the public collection</a>.</p><h3>Prepare a business order request.</h3><p id="welcome"></p><p class="fine">Minimum 1 unit per selected product; you may request up to 10,000 units per SKU. The existing 48-unit reference price applies to every quantity from 1 to 10,000. This is an order request, not proof of 10,000 units physically in stock. The prices shown are provisional B2B net prices for the stated quantity tiers. All products and availability remain subject to NovaPharm confirmation. This is not a binding order or a request for payment. VAT treatment, shipping and terms will be confirmed separately.</p><form id="order-form"><div id="products"></div><p id="indicative-totals" class="fine" aria-live="polite">Select product quantities to see an illustrative 20% UK VAT estimate. The indicative UK delivery charge is £0; fulfilment costs are absorbed by NovaPharm within the existing price assumption. This is not a VAT invoice or a request for payment.</p><div class="actions"><button class="button" type="submit" id="send">Submit order request</button><a class="button quiet" href="https://novapharmhealthcare.com/products/nutraxin/">Browse products</a></div><p id="message" role="status" aria-live="polite"></p></form><section aria-labelledby="request-history-heading"><h3 id="request-history-heading">Your requests</h3><p class="fine" id="history-status" role="status">Loading recent requests…</p><div id="request-history"></div></section><form action="/logout" method="post"><button class="button quiet" type="submit">Sign out</button></form></section><section class="retail-shop" aria-labelledby="retail-shop-title"><p class="eyebrow">NUTRAXIN / THE COLLECTION</p><h2 id="retail-shop-title">Explore and save your favourites.</h2><p class="fine">Choose products for your bag. Retail prices use the existing owner-approved 48-unit reference price for every quantity. The displayed price includes 20% UK VAT under NovaPharm’s selected standard-rate policy; UK delivery adds £0. UK consumer delivery is due without undue delay, normally within 30 days, subject to any different agreed delivery period.</p><div class="retail-grid" id="retail-grid"><p>Loading the collection...</p></div><div class="bag-summary"><h3>Your bag</h3><p role="status" id="retail-bag-status">Your bag is empty.</p><ol id="retail-bag-items"></ol><button type="button" id="retail-bag-clear">Clear bag</button><p class="fine">Product price includes the owner-selected 20% UK VAT rate and £0 additional UK delivery. NovaPharm commits to supply from stock or manufacturer fulfilment; physical stock is not represented as reserved. You may cancel or seek a refund in accordance with UK consumer law and the published terms.</p><label class="fine"><input type="checkbox" id="retail-terms-accept"> I agree to the <a href="https://novapharmhealthcare.com/legal/terms/">terms of sale</a>, the UK delivery period of up to 30 days unless agreed otherwise, and payment through Stripe.</label><p id="retail-checkout-message" class="fine" role="status" aria-live="polite"></p><button id="retail-checkout" type="button" class="button" disabled>Continue to secure payment</button></div></section><p class="fine">NovaPharm Healthcare Ltd, United Kingdom. Payment cards are entered only into Stripe-hosted Checkout. Trade access remains separately approved. <a href="https://novapharmhealthcare.com/legal/privacy/">Privacy</a>.</p></main></body></html>"""
+
+/* Approved NovaPharm global account artwork: white canvas, single action, and earth horizon. */
+html{background:#fff}body{background:#fff;color:#101010;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.account-nav{height:79px;padding:0 clamp(22px,4.7vw,76px);display:flex;align-items:center;justify-content:space-between;gap:30px;border-bottom:1px solid #e8e8e8;background:#fff}
+.account-wordmark{display:flex;flex-direction:column;align-items:flex-start;text-decoration:none;line-height:1;color:#111;font-size:27px;font-weight:660;letter-spacing:-.055em;white-space:nowrap}
+.account-wordmark span{font-size:10px;letter-spacing:.42em;margin-top:7px;font-weight:550}
+.account-navigation{display:flex;gap:clamp(22px,4.4vw,70px);align-items:center}
+.account-navigation a,.account-nav-actions a{font-size:15px;color:#151515;text-decoration:none;white-space:nowrap}
+.account-nav-actions{display:flex;align-items:center;gap:27px}
+.account-nav-actions .account-pill{background:#101010;color:#fff;padding:11px 23px;border-radius:100px}
+main{max-width:none;margin:0;padding:0}
+.account-hero{position:relative;min-height:calc(100svh - 79px);padding:46px 22px 215px;text-align:center;overflow:hidden;isolation:isolate;background:#fff}
+.account-kicker{font-size:12px;letter-spacing:.44em;margin:4px 0 23px;color:#515151;font-weight:500}
+.account-hero h1{font-weight:680;letter-spacing:-.055em;font-size:clamp(42px,4.9vw,72px);line-height:1.04;margin:0 auto 16px;max-width:1150px}
+.account-description{font-size:clamp(16px,1.4vw,21px);line-height:1.48;margin:0 auto 39px;max-width:1040px;color:#525252}
+.account-type-switch{max-width:435px;margin:0 auto 31px;display:grid;grid-template-columns:1fr 1fr;border:1px solid #d9d9dd;border-radius:999px;overflow:hidden}
+.account-type-switch button{appearance:none;background:transparent;border:0;color:#111;font:inherit;font-size:16px;padding:12px;cursor:pointer;border-radius:999px}
+.account-type-switch button[aria-pressed="true"]{background:#111;color:#fff}
+.account-form{max-width:630px;margin:0 auto;text-align:left;position:relative;z-index:1}
+.account-field{display:block;color:#4b4b4b;font-size:15px;margin-bottom:7px}
+.account-input{display:block;border:1px solid #c9cad0;background:#fff;width:100%;height:54px;border-radius:12px;font:inherit;font-size:17px;padding:12px 17px;box-shadow:none;color:#111;outline-offset:3px}
+.account-continue{width:100%;display:block;margin-top:27px;text-align:center;background:#0c0c0d;color:#fff;border:0;border-radius:100px;padding:16px 20px;min-height:54px;font:inherit;font-size:16px;cursor:pointer;text-decoration:none}
+.account-continue:hover,.account-nav-actions .account-pill:hover{background:#262626}
+.account-inline{margin:23px auto 0;position:relative;z-index:1;font-size:16px;color:#555}
+.account-inline a{color:#111;text-underline-offset:4px}
+.account-inline.account-browse{margin-top:21px}
+.account-earth{position:absolute;z-index:-1;left:0;right:0;bottom:0;height:clamp(120px,19vw,265px);background:#f9fcff url("https://novapharmhealthcare.com/assets/media/home/earth-morning-approved.avif") center 44%/cover no-repeat;pointer-events:none;mask-image:linear-gradient(to bottom,transparent 0%,#000 17%,#000 100%)}
+.account-business-note{max-width:600px;color:#5e5e61;font-size:15px;line-height:1.55;margin:0 auto 18px}
+.account-business-apply{max-width:630px;margin:auto}
+.account-business-apply .account-continue{margin-top:10px}
+.account-hero [hidden],.hide{display:none!important}
+.account-hero a:focus-visible,.account-hero button:focus-visible,.account-hero input:focus-visible,.account-nav a:focus-visible{outline:3px solid #005fcc;outline-offset:3px}
+#pending,#approved{max-width:920px;margin:65px auto 28px}
+body:not(.account-authenticated) .retail-shop{display:none}
+body.account-authenticated .retail-shop{max-width:920px;margin:45px auto;padding:0 22px}
+.account-footer{font-size:12px;color:#707070;text-align:center;padding:26px 20px;background:white}
+.account-footer a{color:inherit;text-decoration:none;margin:0 12px}
+@media(max-width:900px){.account-navigation{gap:20px}.account-nav{height:69px;padding:0 22px}.account-wordmark{font-size:23px}.account-nav-actions{gap:14px}.account-hero{padding-top:55px}}
+@media(max-width:680px){.account-navigation{display:none}.account-nav-actions .account-pill{display:none}.account-nav{height:66px}.account-hero{min-height:calc(100svh - 66px);padding:55px 20px 175px}.account-hero h1{font-size:clamp(38px,9vw,54px);line-height:1.07}.account-kicker{font-size:10px;letter-spacing:.28em}.account-description{font-size:17px;margin-bottom:29px}.account-type-switch{margin-bottom:25px}.account-inline{font-size:15px}#pending,#approved{margin:25px 16px}.account-earth{height:155px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style><script defer src="/app.js"></script></head><body><header class="account-nav" aria-label="NovaPharm account navigation">
+<a class="account-wordmark" href="https://novapharmhealthcare.com/" aria-label="NovaPharm Healthcare home">NovaPharm<span>HEALTHCARE</span></a>
+<div class="account-navigation"><a href="https://novapharmhealthcare.com/products/">Products</a><a href="https://novapharmhealthcare.com/oncology/">Oncology</a><a href="https://novapharmhealthcare.com/capabilities/">Capabilities</a></div>
+<div class="account-nav-actions"><a href="/login">Sign in</a><a class="account-pill" href="#create-account">Create account</a></div>
+</header><main>
+<section id="signed-out" class="account-hero" aria-labelledby="account-title">
+<p class="account-kicker">NOVAPHARM ACCOUNT</p>
+<h1 id="account-title">One account.<br>Every NovaPharm experience.</h1>
+<p class="account-description">Create your account to shop, manage orders and access business services with clarity and ease.</p>
+<div class="account-type-switch" role="group" aria-label="Account type"><button type="button" id="account-type-personal" aria-pressed="true">Personal</button><button type="button" id="account-type-business" aria-pressed="false">Business</button></div>
+<form class="account-form" id="account-entry-form" method="post" action="/login">
+<input type="hidden" name="mode" value="signup">
+<label class="account-field" for="account-email">Email address</label>
+<input class="account-input" id="account-email" name="email" type="email" required autocomplete="email" maxlength="254" inputmode="email" aria-describedby="account-intro">
+<button class="account-continue" type="submit" id="create-account">Continue</button>
+</form>
+<div class="account-business-apply" id="account-business-apply" hidden><p class="account-business-note">For pharmacies, clinics and organisations. Business access is reviewed and approved separately.</p><a class="account-continue" href="https://novapharmhealthcare.com/account-application/">Continue with business application</a></div>
+<p class="account-inline" id="account-intro">Already have an account? <a href="/login">Sign in</a></p>
+<p class="account-inline account-browse"><a href="https://novapharmhealthcare.com/products/">Continue browsing products</a></p>
+<div class="account-earth" aria-hidden="true"></div>
+</section><section class="card hide" id="pending"><h2>Your account is ready.</h2><p id="pending-email"></p><p>Your email is verified. Personal shoppers do not need business approval to explore Nutraxin. Your personal Nutraxin account can browse the retail collection below. Sign in and accept the terms to access secure checkout when order processing is enabled. Business account approval is not required for personal shopping.</p><div class="actions"><a class="button" href="https://novapharmhealthcare.com/products/nutraxin/">Explore Nutraxin products</a><form action="/logout" method="post"><button type="submit" class="button quiet">Sign out</button></form></div><div class="business-option"><h3>Buying for a pharmacy or wholesale business?</h3><p class="fine">Only trade accounts need additional checks before private wholesale prices and business order requests are available.</p><a href="https://novapharmhealthcare.com/account-application/">Apply for business access</a></div></section><section id="approved" class="card hide"><h2>Your verified business account.</h2><p class="fine">Business account access is separate from Nutraxin retail shopping. You can also <a href="https://novapharmhealthcare.com/products/nutraxin/">browse the public collection</a>.</p><h3>Prepare a business order request.</h3><p id="welcome"></p><p class="fine">Minimum 1 unit per selected product; you may request up to 10,000 units per SKU. The existing 48-unit reference price applies to every quantity from 1 to 10,000. This is an order request, not proof of 10,000 units physically in stock. The prices shown are provisional B2B net prices for the stated quantity tiers. All products and availability remain subject to NovaPharm confirmation. This is not a binding order or a request for payment. VAT treatment, shipping and terms will be confirmed separately.</p><form id="order-form"><div id="products"></div><p id="indicative-totals" class="fine" aria-live="polite">Select product quantities to see an illustrative 20% UK VAT estimate. The indicative UK delivery charge is £0; fulfilment costs are absorbed by NovaPharm within the existing price assumption. This is not a VAT invoice or a request for payment.</p><div class="actions"><button class="button" type="submit" id="send">Submit order request</button><a class="button quiet" href="https://novapharmhealthcare.com/products/nutraxin/">Browse products</a></div><p id="message" role="status" aria-live="polite"></p></form><section aria-labelledby="request-history-heading"><h3 id="request-history-heading">Your requests</h3><p class="fine" id="history-status" role="status">Loading recent requests…</p><div id="request-history"></div></section><form action="/logout" method="post"><button class="button quiet" type="submit">Sign out</button></form></section><section class="retail-shop" aria-labelledby="retail-shop-title"><p class="eyebrow">NUTRAXIN / THE COLLECTION</p><h2 id="retail-shop-title">Explore and save your favourites.</h2><p class="fine">Choose products for your bag. Retail prices use the existing owner-approved 48-unit reference price for every quantity. The displayed price includes 20% UK VAT under NovaPharm’s selected standard-rate policy; UK delivery adds £0. UK consumer delivery is due without undue delay, normally within 30 days, subject to any different agreed delivery period.</p><div class="retail-grid" id="retail-grid"><p>Loading the collection...</p></div><div class="bag-summary"><h3>Your bag</h3><p role="status" id="retail-bag-status">Your bag is empty.</p><ol id="retail-bag-items"></ol><button type="button" id="retail-bag-clear">Clear bag</button><p class="fine">Product price includes the owner-selected 20% UK VAT rate and £0 additional UK delivery. NovaPharm commits to supply from stock or manufacturer fulfilment; physical stock is not represented as reserved. You may cancel or seek a refund in accordance with UK consumer law and the published terms.</p><label class="fine"><input type="checkbox" id="retail-terms-accept"> I agree to the <a href="https://novapharmhealthcare.com/legal/terms/">terms of sale</a>, the UK delivery period of up to 30 days unless agreed otherwise, and payment through Stripe.</label><p id="retail-checkout-message" class="fine" role="status" aria-live="polite"></p><button id="retail-checkout" type="button" class="button" disabled>Continue to secure payment</button></div></section><p class="fine">NovaPharm Healthcare Ltd, United Kingdom. Payment cards are entered only into Stripe-hosted Checkout. Trade access remains separately approved. <a href="https://novapharmhealthcare.com/legal/privacy/">Privacy</a>.</p></main><footer class="account-footer">© NovaPharm Healthcare Ltd. <a href="https://novapharmhealthcare.com/legal/privacy/">Privacy</a><a href="https://novapharmhealthcare.com/legal/terms/">Terms</a></footer></body></html>"""
 
 APP = """(function(){"use strict";
 const $=id=>document.getElementById(id);
-function show(id){["signed-out","pending","approved"].forEach(x=>$(x).classList.toggle("hide",x!==id));}
+function show(id){["signed-out","pending","approved"].forEach(x=>$(x).classList.toggle("hide",x!==id));document.body.classList.toggle("account-authenticated",id!=="signed-out");}
+function setupAccountType(){
+ const personal=$("account-type-personal"),business=$("account-type-business"),form=$("account-entry-form"),apply=$("account-business-apply"),email=$("account-email");
+ function select(isBusiness){
+  personal.setAttribute("aria-pressed",String(!isBusiness));business.setAttribute("aria-pressed",String(isBusiness));
+  form.hidden=isBusiness;apply.hidden=!isBusiness;email.disabled=isBusiness;email.required=!isBusiness;
+ }
+ personal.addEventListener("click",()=>select(false));business.addEventListener("click",()=>select(true));
+}
+setupAccountType();
 function money(pence){return new Intl.NumberFormat("en-GB",{style:"currency",currency:"GBP"}).format(pence/100);}
 const indicativeVatRateBps=2000;
 const indicativePrices=new Map();
@@ -239,7 +308,7 @@ def reply(status, body="", content_type="application/json", cookies=None, locati
     headers = {"content-type":content_type,"cache-control":"no-store",
         "x-content-type-options":"nosniff","referrer-policy":"no-referrer",
         "strict-transport-security":"max-age=31536000; includeSubDomains",
-        "content-security-policy":"default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' https://novapharmhealthcare.com; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"}
+        "content-security-policy":"default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' https://novapharmhealthcare.com; base-uri 'none'; form-action 'self' https://"+COGNITO_DOMAIN+"; frame-ancestors 'none'"}
     if location: headers["location"] = location
     result={"statusCode":status,"headers":headers,"body":json.dumps(body,separators=(",",":")) if isinstance(body,(dict,list)) else str(body)}
     if cookies: result["cookies"]=cookies
@@ -302,19 +371,42 @@ def request_base(event):
     return "https://"+host if host in trusted else BASE_URL
 
 def login(event):
+    method=(event.get("requestContext",{}).get("http",{}).get("method") or "GET").upper()
+    parameters=event.get("queryStringParameters") or {}
+    signup=False
+    email=""
+    if method=="POST":
+        headers={str(k).lower():str(v) for k,v in (event.get("headers") or {}).items()}
+        origin=headers.get("origin")
+        if origin and origin not in (BASE_URL,request_base(event)):
+            return error(403,"invalid_login_origin")
+        body=event.get("body") or ""
+        if event.get("isBase64Encoded"):
+            try: body=base64.b64decode(body,validate=True).decode("utf-8")
+            except Exception: return error(400,"invalid_login_form")
+        if not isinstance(body,str) or len(body)>1200:
+            return error(400,"invalid_login_form")
+        try: fields=urllib.parse.parse_qs(body,keep_blank_values=True,max_num_fields=4)
+        except ValueError: return error(400,"invalid_login_form")
+        signup=fields.get("mode",[""])[0]=="signup"
+        email=fields.get("email",[""])[0].strip()
+        if not re.fullmatch(r"[^\s@/<>]{1,64}@[^\s@/<>]{1,189}",email):
+            return error(400,"invalid_login_email")
     state=secrets.token_urlsafe(32)
     verifier=secrets.token_urlsafe(48)
     challenge=base64.urlsafe_b64encode(hashlib.sha256(verifier.encode()).digest()).decode().rstrip("=")
     # Only this fixed shopping path may be used as a post-login return destination.
-    next_path=(event.get("queryStringParameters") or {}).get("next","")
+    next_path=parameters.get("next","")
     return_to="https://novapharmhealthcare.com/products/nutraxin/bag/" if next_path=="bag" else ""
     TABLE.put_item(Item={"pk":"TXN#"+h(state),"sk":"META","verifier":verifier,
         "return_to":return_to,"expires_at":now()+600},
         ConditionExpression="attribute_not_exists(pk)")
-    query=urllib.parse.urlencode({"response_type":"code","client_id":CLIENT_ID,
+    query_fields={"response_type":"code","client_id":CLIENT_ID,
         "redirect_uri":request_base(event)+"/auth/callback","scope":"openid email profile aws.cognito.signin.user.admin",
-        "state":state,"code_challenge":challenge,"code_challenge_method":"S256"})
-    destination="https://"+COGNITO_DOMAIN+"/oauth2/authorize?"+query
+        "state":state,"code_challenge":challenge,"code_challenge_method":"S256"}
+    if email: query_fields["login_hint"]=email
+    query=urllib.parse.urlencode(query_fields)
+    destination="https://"+COGNITO_DOMAIN+("/signup?" if signup else "/oauth2/authorize?")+query
     return redirect(destination,[cookie("__Host-np_txn",state,600)])
 
 def callback(event):
@@ -700,7 +792,7 @@ def handler(event,context):
     path=event.get("rawPath") or "/"
     if method=="GET" and path=="/":return reply(200,PAGE,"text/html; charset=utf-8")
     if method=="GET" and path=="/app.js":return reply(200,APP,"text/javascript; charset=utf-8")
-    if method=="GET" and path=="/login":return login(event)
+    if method in ("GET","POST") and path=="/login":return login(event)
     if method=="GET" and path=="/auth/callback":return callback(event)
     if method=="POST" and path=="/logout":return logout(event)
     if method=="GET" and path=="/api/retail/catalogue":
