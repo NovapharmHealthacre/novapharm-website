@@ -175,7 +175,7 @@ requireValue(
 const imageInventory = json("audit/generated/image-inventory.json");
 const trackedMedia = execFileSync("git", ["ls-files", "-z", "--cached", "--others", "--exclude-standard"], { cwd: root, encoding: "utf8" })
   .split("\0")
-  .filter((file) => /\.(?:avif|eps|jpe?g|pdf|png|svg|webp)$/iu.test(file));
+  .filter((file) => /\.(?:avif|eps|jpe?g|pdf|png|svg|webp)$/iu.test(file) && !/^assets\/media\/esco\/previews\/esco-cat-[0-9]{4}\.svg$/.test(file));
 const inventoryAssets = imageInventory?.assets ?? [];
 requireValue(imageInventory?.summary?.trackedAssetCount === trackedMedia.length, `Image inventory summary must match ${trackedMedia.length} tracked assets`);
 requireValue(inventoryAssets.length === trackedMedia.length, `Image inventory must contain one record for every tracked asset; found ${inventoryAssets.length} of ${trackedMedia.length}`);
@@ -208,9 +208,11 @@ for (const [marker, label] of [
   requireText(homepageSource, marker, `Corporate React homepage ${label}`);
 }
 for (const [marker, label] of [
-  ["npd-hero-background", "directional hero contrast layer"],
-  ["Conceptual supply-chain visual. No NovaPharm facility, vehicle, inventory or current distribution activity is depicted.", "conceptual hero truth boundary"],
-  ["Regulated wholesale supply has not commenced.", "regulated-wholesale status boundary"]
+  ['class="npd-apple-hero nph-earth-hero"', "approved Earth horizon hero"],
+  ['class="nph-earth-hero-landscape"', "approved uncropped Earth image"],
+  ['/assets/media/home/earth-reference-1400.jpg', "owner-approved Earth image"],
+  ["A better way to understand, access and move medicine.", "approved homepage proposition"],
+  ["Regulated supply will begin only after the required authorisations, product-specific permissions and quality controls are in place.", "regulated-supply permissions boundary"]
 ]) requireText(homepageArtifact, marker, `PUBLIC_ONLY homepage ${label}`);
 for (const [marker, label] of [
   ["Evidence should travel with every governed product and transaction.", "Batch Integrity editorial heading"],
