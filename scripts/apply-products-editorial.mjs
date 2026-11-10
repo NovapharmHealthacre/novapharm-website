@@ -12,7 +12,7 @@ const assets = [
   "assets/media/esco/esco-p26-image01.webp",
   "assets/media/modules/product-portfolio-evidence.jpg"
 ];
-for (const file of [pagePath,templatePath,resolve("assets/css/products-editorial.css"),...assets.map(resolve)]) {
+for (const file of [pagePath,templatePath,resolve("assets/css/products-editorial.css"),...assets.map((file) => resolve(file))]) {
   if (!existsSync(file)) throw new Error("Approved Products asset missing: "+file);
 }
 const template=readFileSync(templatePath,"utf8").trim();
