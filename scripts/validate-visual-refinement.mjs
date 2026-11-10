@@ -70,7 +70,8 @@ for (const [name, html] of Object.entries(pages)) {
   [pages.partners, 'class="npd-horizontal-steps"', "Partner qualification sequence"],
   [pages.technology, 'class="npi-roadmap-grid"', "Intelligence product development roadmap"],
   [pages.technology, 'class="npi-provenance-list"', "Intelligence evidence provenance taxonomy"],
-  [pages.products, "Food Supplement Portfolio Review", "Products priority portfolio"],
+  [pages.products, "Different products.", "Approved three-collection Products hero"],
+  [pages.products, 'href="/products/esco/"', "Products canonical ESCO route"],
   [pages.products, 'href="/products/nutraxin/"', "Products canonical Nutraxin route"],
   [pages.products, 'href="/products/strategic-portfolio/"', "Products strategic route"],
   [pages.nutraxin, 'class="nx-product-grid"', "Nutraxin product-led category presentation"],
@@ -114,10 +115,15 @@ if (regulatoryStages !== 7) failures.push(`Regulatory page: expected 7 governanc
 const nutraxinProducts = (pages.nutraxin.match(/class="nx-product-card"/g) ?? []).length;
 if (nutraxinProducts !== 19) failures.push(`Nutraxin catalogue: expected 19 product cards, found ${nutraxinProducts}.`);
 
-const productFeaturePosition = pages.products.indexOf("Food Supplement Portfolio Review");
-const strategicPosition = pages.products.indexOf("Strategic pharmaceutical portfolio");
-if (productFeaturePosition < 0 || strategicPosition < 0 || productFeaturePosition > strategicPosition) {
-  failures.push("Products hierarchy: Food Supplement Portfolio Review must be the first substantive portfolio route.");
+const collectionPanels = [
+  '<section class="np-products-panel np-products-panel-nutraxin"',
+  '<section class="np-products-panel np-products-panel-esco"',
+  '<section class="np-products-panel np-products-panel-pharma"'
+];
+const panelPositions = collectionPanels.map((marker) => pages.products.indexOf(marker));
+if (panelPositions.some((position) => position < 0) ||
+    panelPositions.some((position, index) => index > 0 && position <= panelPositions[index - 1])) {
+  failures.push("Products hierarchy: approved Nutraxin, ESCO and pharmaceutical collections must appear in order.");
 }
 
 for (const prohibited of [
