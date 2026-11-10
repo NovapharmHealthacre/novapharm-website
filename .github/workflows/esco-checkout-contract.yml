@@ -5,6 +5,8 @@ on:
       - 'apps/esco-checkout/**'
       - 'infra/aws/esco-products-checkout-production.json'
       - 'assets/js/esco-bag.js'
+      - 'scripts/esco-product-master.mjs'
+      - 'scripts/test-esco-product-master.mjs'
       - 'scripts/apply-esco-catalogue.mjs'
       - 'scripts/test-esco-catalogue.mjs'
       - 'scripts/test-esco-order-requests.mjs'
@@ -20,6 +22,8 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: false
+      - name: Validate the complete merchant-approved ESCO product master
+        run: node --test scripts/test-esco-product-master.mjs scripts/test-esco-merchant-release-matrix.mjs
       - name: Install AWS SDK only for isolated unit tests
         run: python3 -m pip install 'boto3>=1.34,<2'
       - name: Check checkout and webhook syntax
