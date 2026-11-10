@@ -174,14 +174,17 @@ const home = text("index.html");
 if (home.includes("nav-search")) fail("Homepage navigation still contains the removed search control");
 // The actual visible header, not merely the footer, must show the secure
 // customer portal and the supplied red NovaPharm Healthcare master logo.
-const homeHeader = home.match(/<header class="site-header npd-header"[\\s\\S]*?<\\/header>/)?.[0] ?? "";
-const homePrimaryNav = homeHeader.match(/<nav class="site-nav npd-global-nav"[\\s\\S]*?<\\/nav>/)?.[0] ?? "";
+const homeHeaderStart = home.indexOf('<header class="site-header npd-header"');
+const homeHeader = homeHeaderStart < 0 ? "" : home.slice(homeHeaderStart, home.indexOf("</header>", homeHeaderStart) + 9);
+const homePrimaryNavStart = homeHeader.indexOf('<nav class="site-nav npd-global-nav"');
+const homePrimaryNav = homePrimaryNavStart < 0 ? "" : homeHeader.slice(homePrimaryNavStart, homeHeader.indexOf("</nav>", homePrimaryNavStart) + 6);
 if (!homePrimaryNav.includes('<a href="https://portal.novapharmhealthcare.com/">Secure Portal</a>')) fail("Homepage primary header hides Secure Portal");
 if (!homeHeader.includes('<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png"')) fail("Homepage header is not using the supplied official PNG logo");
 if (homeHeader.includes('<source srcset="/assets/brand/novapharm-healthcare-logo.svg"')) fail("Homepage header still prioritises the replaced vector wordmark");
 for (const route of ["capabilities", "oncology", "products"]) {
   const html = text(route + "/index.html");
-  const header = html.match(/<header class="site-header npd-header"[\\s\\S]*?<\\/header>/)?.[0] ?? "";
+  const headerStart = html.indexOf('<header class="site-header npd-header"');
+  const header = headerStart < 0 ? "" : html.slice(headerStart, html.indexOf("</header>", headerStart) + 9);
   if (!header.includes('href="https://portal.novapharmhealthcare.com/"')) fail(route + " primary header must link to live secure portal");
   if (!header.includes('<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png"')) fail(route + " primary header must use official NovaPharm logo");
 }
