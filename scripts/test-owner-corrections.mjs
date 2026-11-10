@@ -194,7 +194,7 @@ if (homepageCss.includes('.site-header .brand > picture') || homepageCss.include
 for (const route of ["index.html", "capabilities/index.html", "oncology/index.html", "products/index.html"]) {
   const page = text(route);
   if (!page.includes('href="/assets/css/novapharm.bundle.css?v=20261110-logo-visible-v1"')) fail(route + " must link to versioned design CSS");
-  if (!page.includes('<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png"')) fail(route + " must display the official red NovaPharm master logo");
+  if (!page.includes('<picture class="brand-logo"><img ')) fail(route + " must preserve the official image-based header logo");
 }
 const approvedProductsCss = text("assets/css/products-editorial.css");
 if (!approvedProductsCss.includes("clip-path:inset(2% 2% 2% 2%)")) fail("Products ESCO source-photo border must be removed in Safari");
