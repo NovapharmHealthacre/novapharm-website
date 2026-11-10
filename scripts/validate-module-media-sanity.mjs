@@ -97,8 +97,9 @@ assert.equal(new Set(config.assets.map((entry) => entry.base)).size, config.asse
 const principalHeroes = config.modules.filter((module) => module.heroAsset).map((module) => module.heroAsset);
 assert.equal(new Set(principalHeroes).size, principalHeroes.length, "every principal module must have a unique hero asset");
 
+// Owner-approved hero release gate: evaluate the rendered public layout and registered asset, not a retired split hero.
 const authoredModuleContracts = new Map([
-  ["home", ["npd-main npd-home npd-apple-home", "npd-apple-hero", "nph-earth-hero-content", "npd-apple-oncology", "npd-apple-product-grid", "npd-apple-nova-art", "npd-apple-sourcing-grid", "npd-apple-regulatory-notice"]],
+  ["home", ["npd-main npd-home npd-apple-home", "npd-apple-hero", "nph-earth-hero-content", "nph-earth-hero-landscape", "npd-apple-oncology", "npd-apple-product-grid", "npd-apple-nova-art", "npd-apple-sourcing-grid", "npd-apple-regulatory-notice"]],
   ["about", ["npd-main", "np-about-pillars", "np-about-purpose"]],
   ["services", ["npd-main", "npd-service-ledger", "npd-horizontal-steps"]],
   ["regulatory", ["npd-main", "npd-roadmap npd-roadmap-large", "regulatory-batch-integrity"]],

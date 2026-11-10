@@ -1,0 +1,101 @@
+/* NovaPharm Healthcare commercial editorial presentation.
+ * White space, quiet typography and precise responsive hierarchy.
+ * No decorative icons, gradients, simulated facilities or faux status badges.
+ */
+body[data-page="distribution"],
+body[data-page="market-access"],
+body[data-page="markets"] {
+  background: #fff;
+  color: #171717;
+}
+.npd-commercial { background:#fff; }
+.npd-commercial .npd-hero {
+  background:#fff;
+  padding-block: clamp(6.75rem, 12vw, 11rem) clamp(5.25rem, 9vw, 9rem);
+  min-height: auto;
+}
+.npd-commercial .npd-hero-inner {
+  max-width: 1160px;
+}
+.npd-commercial .npd-hero-copy { max-width: 930px; }
+.npd-commercial .npd-hero h1 {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(3.25rem, 7.4vw, 6.5rem);
+  font-weight: 600;
+  line-height: 1.025;
+  letter-spacing: -0.065em;
+  text-wrap: balance;
+  color: #151515;
+}
+.npd-commercial .npd-lead {
+  max-width: 730px;
+  color: #535353;
+  font-size: clamp(1.125rem, 1.85vw, 1.45rem);
+  line-height: 1.5;
+}
+.npd-commercial .npd-section {
+  padding-block: clamp(5rem, 9vw, 9rem);
+  background:#fff;
+}
+.npd-commercial .npd-section + .npd-section {
+  border-top: 1px solid #ececec;
+}
+.npd-commercial .npd-section-intro {
+  max-width: 900px;
+  margin-bottom: clamp(2.5rem, 5vw, 5rem);
+}
+.npd-commercial .npd-section-intro h2,
+.npd-commercial .npd-final h2 {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(2.35rem, 4.7vw, 4.65rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+.npd-commercial .npd-section-intro p:not(.npd-eyebrow),
+.npd-commercial .npd-final p {
+  max-width: 710px;
+  color: #626262;
+  font-size: clamp(1.05rem, 1.55vw, 1.3rem);
+  line-height: 1.58;
+}
+.npd-commercial .npd-service-ledger {
+  border-top: 1px solid #dfdfdf;
+}
+.npd-commercial .npd-service-ledger li {
+  background: transparent;
+  box-shadow: none;
+  border: 0;
+  border-bottom: 1px solid #e8e8e8;
+  border-radius: 0;
+  padding-block: clamp(1.7rem, 3.25vw, 3.3rem);
+}
+.npd-commercial .npd-service-ledger h2 {
+  letter-spacing:-0.035em;
+}
+.npd-commercial .npd-service-ledger p {
+  color:#646464;
+  line-height:1.58;
+}
+.npd-commercial a:not(.npd-button) {
+  text-underline-offset:.18em;
+}
+.npd-commercial .npd-notice {
+  margin-top:3.5rem;
+  background:#f6f6f6;
+  color:#555;
+  border:0;
+  border-radius:0;
+  padding:clamp(1.4rem, 2.5vw, 2.4rem);
+}
+@media (max-width: 760px) {
+  .npd-commercial .npd-hero { padding-block: 6rem 4rem; }
+  .npd-commercial .npd-section { padding-block:4.5rem; }
+  .npd-commercial .npd-hero h1 { font-size:clamp(2.75rem, 11vw, 4.5rem); letter-spacing:-.058em; }
+  .npd-commercial .npd-service-ledger li { padding-block:1.75rem; }
+  .npd-commercial .npd-actions { gap:1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .npd-commercial * { scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; }
+}

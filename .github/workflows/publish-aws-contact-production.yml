@@ -36,6 +36,14 @@ on:
       - 'assets/media/about/**'
       - 'scripts/apply-about-editorial.mjs'
       - 'scripts/build-site.mjs'
+      # Keep corporate app route parity and new commercial site releases in the
+      # same AWS-backed publisher as the verified live contact service.
+      - 'apps/corporate/data/site.ts'
+      - 'apps/corporate/data/pages.ts'
+      - 'apps/corporate/scripts/validate-content.ts'
+      - 'src/content/site-content.mjs'
+      - 'scripts/apply-global-distribution-foundation.mjs'
+      - 'assets/css/global-distribution-editorial.css'
       - 'assets/data/nutraxin-retail-catalogue.json'
       - 'scripts/apply-corporate-product-discipline.mjs'
       - 'technology/index.html'
@@ -134,6 +142,15 @@ jobs:
           grep -Fq 'src="/assets/js/intelligence-live-research.js"' _site/technology/index.html
           grep -Fq 'US regulatory and trial searches send the medicine term' _site/technology/index.html
           grep -Fq '5pcszvyqm1.execute-api.eu-north-1.amazonaws.com' _site/assets/js/intelligence-live-research.js
+          # Three commercial routes must be included in the same verified release.
+          for route in distribution market-access markets; do
+            test -s "_site/$route/index.html"
+            grep -Fq 'Regulated pharmaceutical wholesale supply has not commenced' "_site/$route/index.html"
+            grep -Fq 'href="/assets/css/global-distribution-editorial.css"' "_site/$route/index.html"
+            grep -Fq "https://novapharmhealthcare.com/$route/" _site/sitemap.xml
+          done
+          test -s _site/assets/css/global-distribution-editorial.css
+          grep -Fq 'id="commercial-pathways"' _site/index.html
           # Verify the approved About story, asset fallbacks and responsive stylesheet
           # in the exact staged artifact before touching the active public website.
           grep -Fq 'Getting medicine to where it matters.' _site/about/index.html
@@ -577,6 +594,31 @@ jobs:
           done
           echo '::error::Unified Products hero or unframed supplier photography CSS is not live.'
           exit 1
+
+      - name: Verify live Global Distribution, Market Access and Markets pages
+        run: |
+          set -euo pipefail
+          for route in distribution market-access markets; do
+            verified=false
+            for attempt in $(seq 1 18); do
+              url="https://novapharmhealthcare.com/$route/?release=$GITHUB_SHA-$attempt-$(date +%s)"
+              if curl --fail --silent --show-error --location --max-time 15 \
+                  -H 'Cache-Control: no-cache, no-store' "$url" -o "/tmp/novapharm-$route.html" \
+                && grep -Fq 'Regulated pharmaceutical wholesale supply has not commenced' "/tmp/novapharm-$route.html" \
+                && grep -Fq 'href="/assets/css/global-distribution-editorial.css"' "/tmp/novapharm-$route.html" \
+                && grep -Fq "https://novapharmhealthcare.com/$route/" "/tmp/novapharm-$route.html"; then
+                verified=true
+                break
+              fi
+              sleep 5
+            done
+            test "$verified" = true || { echo "::error::$route not verified live on the customer domain"; exit 1; }
+          done
+          curl --fail --silent --show-error --location --max-time 15 \
+            'https://novapharmhealthcare.com/assets/css/global-distribution-editorial.css' \
+            -o /tmp/global-distribution-editorial.css
+          grep -Fq 'White space, quiet typography' /tmp/global-distribution-editorial.css
+          echo 'All three canonical commercial routes and Apple-inspired styling are live.'
 
       - name: Verify live official Intelligence research with AWS contact preserved
         env:

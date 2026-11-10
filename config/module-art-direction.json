@@ -29,15 +29,15 @@
   },
   "assets": [
     {
-      "id": "home-supply-network",
-      "base": "/assets/media/home/supply-network-hero",
+      "id": "home-earth-horizon",
+      "base": "/assets/media/home/earth-reference-1400",
       "sourceType": "approved-existing",
-      "subject": "Governed pharmaceutical supply network with global route context",
+      "subject": "Owner-approved atmospheric Earth horizon over the UK and Europe at morning sunrise",
       "alt": "",
-      "caption": "Governed pharmaceutical supply network visual",
+      "caption": "Illustrative atmospheric Earth horizon at sunrise, cropped from the approved NovaPharm homepage composition",
       "focalPoint": {
-        "desktop": "70% 50%",
-        "mobile": "68% 50%"
+        "desktop": "50% 100%",
+        "mobile": "50% 100%"
       },
       "maxReuse": 1,
       "structuredDataRelationship": "primaryImageOfPage",
@@ -652,7 +652,7 @@
       "route": "/",
       "purpose": "Corporate positioning and governed supply-network overview",
       "label": "Corporate network",
-      "heroAsset": "home-supply-network",
+      "heroAsset": "home-earth-horizon",
       "signals": [
         "Regulatory sequence",
         "Qualified sourcing",
