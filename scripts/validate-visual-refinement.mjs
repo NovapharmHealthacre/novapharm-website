@@ -47,7 +47,7 @@ const build = read("scripts/build-site.mjs");
 
 for (const [name, html] of Object.entries(pages)) {
   requireText(html, 'class="npd-main', `${name} authored layout`);
-  requireText(html, name === "contact" ? 'class="np-contact-reference-hero"' : name === "home" ? 'class="npd-apple-hero"' : name === "oncology" ? 'class="npoc-hero npoc-hope-hero"' : name === "technology" ? 'class="npi-hero"' : name === "nutraxin" ? 'class="nx-hero"' : 'class="npd-hero', `${name} deliberate hero`);
+  requireText(html, name === "contact" ? 'class="np-contact-reference-hero"' : name === "home" ? 'class="npd-apple-hero nph-earth-hero"' : name === "oncology" ? 'class="npoc-hero npoc-hope-hero"' : name === "technology" ? 'class="npi-hero"' : name === "nutraxin" ? 'class="nx-hero"' : 'class="npd-hero', `${name} deliberate hero`);
   requireText(html, "Regulated wholesale supply has not commenced", `${name} operating-status boundary`);
   requireText(html, 'class="npd-footer', `${name} institutional footer`);
   forbidText(html, "lucide", `${name} icon-free corporate presentation`);
@@ -59,7 +59,7 @@ for (const [name, html] of Object.entries(pages)) {
 [
   [pages.home, "Medicine. Where it needs to be.", "Homepage single proposition"],
   [pages.home, "Three routes. One evidence standard.", "Homepage sourcing hierarchy"],
-  [pages.home, 'class="npd-apple-hero"', "Homepage premium editorial hero"],
+  [pages.home, 'class="npd-apple-hero nph-earth-hero"', "Homepage premium editorial hero"],
   [pages.home, 'class="npd-apple-oncology"', "Homepage specialist-medicine visual chapter"],
   [pages.home, 'class="npd-apple-product-grid"', "Homepage evidence-governed real-product gallery"],
   [pages.home, 'class="npd-apple-nova-art"', "Homepage NOVA explicitly conceptual showcase"],
