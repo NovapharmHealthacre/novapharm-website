@@ -11,7 +11,12 @@ const ref = (value) => value?.Ref;
 test("production infrastructure cannot activate by default", () => {
   assert.equal(template.Parameters.ActivationApproval.Default, "BLOCKED");
   assert.deepEqual(template.Parameters.ActivationApproval.AllowedValues, ["BLOCKED", "APPROVED"]);
-  assert.deepEqual(template.Conditions[condition], { "Fn::Equals": [{ Ref: "ActivationApproval" }, "APPROVED"] });
+  assert.deepEqual(template.Conditions[condition], { "Fn::And": [
+    { "Fn::Equals": [{ Ref: "ActivationApproval" }, "APPROVED"] },
+    { "Fn::Equals": [{ Ref: "PrivateEgressAcceptance" }, "ACCEPTED"] },
+  ] });
+  assert.equal(template.Parameters.PrivateEgressAcceptance.Default, "BLOCKED");
+  assert.deepEqual(template.Parameters.PrivateEgressAcceptance.AllowedValues, ["BLOCKED", "ACCEPTED"]);
   for (const [name, resource] of Object.entries(resources)) {
     assert.equal(resource.Condition, condition, name + " must require owner acceptance");
   }
@@ -25,13 +30,16 @@ test("dedicated Intelligence service does not reference staging or Nutraxin reso
   assert.equal(service.EnableExecuteCommand, false);
   assert.ok(service.DesiredCount.Ref === "DesiredCount");
   assert.equal(template.Parameters.DesiredCount.MinValue, 2);
-  assert.equal(resources.IntelligenceCluster.Properties.ClusterName, "novapharm-intelligence-production");
-  // Compare the ECS resource identity, not a URL substring (which cannot prove isolation).
+  // The production cluster already exists; recreating it in this stack would
+  // collide with the dedicated cluster and fail production deployment.
+  assert.equal(resources.IntelligenceCluster, undefined);
   assert.deepEqual(
     Object.keys(resources).filter((name) => /^(?:IntelligenceCluster|IntelligenceService)$/u.test(name)),
-    ["IntelligenceCluster", "IntelligenceService"],
+    ["IntelligenceService"],
   );
-  assert.equal(resources.IntelligenceService.Properties.Cluster.Ref, "IntelligenceCluster");
+  assert.equal(resources.IntelligenceService.Properties.Cluster.Ref, "ExistingIntelligenceClusterArn");
+  assert.equal(template.Parameters.ExistingIntelligenceClusterArn.AllowedPattern,
+    "^arn:aws:ecs:eu-north-1:[0-9]{12}:cluster/novapharm-intelligence-production$");
 });
 
 test("TLS-only WAF-protected ALB and private target boundaries", () => {

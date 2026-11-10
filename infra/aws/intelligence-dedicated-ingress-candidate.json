@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "NovaPharm Intelligence separate, approval-gated ALB/WAF/ECS production ingress candidate. NO deployable resources until ActivationApproval=APPROVED. Never reuses the Nutraxin customer portal.",
+  "Description": "NovaPharm Intelligence separate, owner-approval-gated ALB/WAF/ECS ingress candidate. Reuses existing dedicated production ECS cluster and requires accepted private egress and a reviewed standalone task definition. NO resources while ActivationApproval=BLOCKED. Never reuses Nutraxin portal.",
   "Parameters": {
     "ActivationApproval": {
       "Type": "String",
@@ -43,15 +43,41 @@
       "MinValue": 2,
       "MaxValue": 10,
       "Description": "Two production tasks in distinct subnets minimum; don't activate without operating budget"
+    },
+    "ExistingIntelligenceClusterArn": {
+      "Type": "String",
+      "AllowedPattern": "^arn:aws:ecs:eu-north-1:[0-9]{12}:cluster/novapharm-intelligence-production$",
+      "Description": "Existing and independently verified dedicated production ECS cluster ARN; do not create another cluster"
+    },
+    "PrivateEgressAcceptance": {
+      "Type": "String",
+      "Default": "BLOCKED",
+      "AllowedValues": [
+        "BLOCKED",
+        "ACCEPTED"
+      ],
+      "Description": "Explicit evidence that private task subnets can pull ECR images, write logs, resolve Cognito JWKS and reach licensed data/model APIs; no NAT or VPC endpoints exist in initial network foundation"
     }
   },
   "Conditions": {
     "ActivateAfterApproval": {
-      "Fn::Equals": [
+      "Fn::And": [
         {
-          "Ref": "ActivationApproval"
+          "Fn::Equals": [
+            {
+              "Ref": "ActivationApproval"
+            },
+            "APPROVED"
+          ]
         },
-        "APPROVED"
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "PrivateEgressAcceptance"
+            },
+            "ACCEPTED"
+          ]
+        }
       ]
     }
   },
@@ -305,29 +331,6 @@
         }
       }
     },
-    "IntelligenceCluster": {
-      "Type": "AWS::ECS::Cluster",
-      "Condition": "ActivateAfterApproval",
-      "Properties": {
-        "ClusterName": "novapharm-intelligence-production",
-        "ClusterSettings": [
-          {
-            "Name": "containerInsights",
-            "Value": "enabled"
-          }
-        ],
-        "Tags": [
-          {
-            "Key": "application",
-            "Value": "novapharm-intelligence"
-          },
-          {
-            "Key": "environment",
-            "Value": "production"
-          }
-        ]
-      }
-    },
     "IntelligenceService": {
       "Type": "AWS::ECS::Service",
       "Condition": "ActivateAfterApproval",
@@ -339,7 +342,7 @@
       "Properties": {
         "ServiceName": "novapharm-intelligence-terminal",
         "Cluster": {
-          "Ref": "IntelligenceCluster"
+          "Ref": "ExistingIntelligenceClusterArn"
         },
         "TaskDefinition": {
           "Ref": "ProductionTaskDefinitionArn"
@@ -458,7 +461,7 @@
         "Fn::If": [
           "ActivateAfterApproval",
           "APPROVED infrastructure only; NOT proof of OIDC, data rights, NOVA or billing",
-          "BLOCKED: no charge-bearing ingress/ECS resources created"
+          "BLOCKED: activation and independently verified private egress not both accepted; no charge-bearing ingress/ECS resources created"
         ]
       }
     },
