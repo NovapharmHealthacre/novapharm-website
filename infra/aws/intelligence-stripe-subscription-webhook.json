@@ -142,7 +142,6 @@
         },
         "Timeout": 10,
         "MemorySize": 128,
-        "ReservedConcurrentExecutions": 2,
         "Environment": {
           "Variables": {
             "STRIPE_WEBHOOK_SECRET_ARN": {
