@@ -48,6 +48,17 @@ assert.ok(html.indexOf("oncology-hope-v2.css") > html.indexOf("oncology-editoria
 assert.match(approvedLayout, /object-fit:contain/, "Portrait must preserve its full framing");
 assert.match(approvedLayout, /grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/, "All three Oncology visuals share a grid row");
 assert.match(approvedLayout, /npoc-focus-card span/, "Image labels must overlay on the cards");
+
+// The previous annotation cleanup must never consume the remainder of a media query.
+// Validate the intact mobile track, responsive card height and balanced stylesheet braces.
+assert.match(approvedLayout, /grid-template-columns:repeat\(3,minmax\(220px,1fr\)\)/,
+  "Oncology mobile art cards must retain a full-width horizontal grid track");
+assert.match(approvedLayout, /height:285px;/,
+  "Oncology mobile art cards must retain their approved card height");
+assert.equal((approvedLayout.match(/{/g) ?? []).length,
+  (approvedLayout.match(/}/g) ?? []).length,
+  "Oncology stylesheet declarations and responsive blocks must be balanced");
+
 assert.ok(!html.includes("href=\"/assets/media/products/oncology-vial-handling.avif\""), "Retired hero image must not preload");
 assert.match(html, /<img[^>]+hope-tomorrow-portrait\.jpg[^>]+fetchpriority="high"/);
 assert.match(css, /body\[data-page="oncology"\]/);
