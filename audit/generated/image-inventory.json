@@ -5745,13 +5745,14 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 5,
-      "referenceCount": 9,
+      "usageCount": 6,
+      "referenceCount": 10,
       "usageFiles": [
         ".github/workflows/pages-live-publish.yml",
         ".github/workflows/pages-public-release-recovery.yml",
         "apps/corporate/components/concise-home.tsx",
         "creative-assets/asset-register.json",
+        "infra/aws/nutraxin-customer-staging-stack.json",
         "scripts/apply-corporate-product-discipline.mjs"
       ],
       "exactDuplicateGroup": null,
