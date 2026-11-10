@@ -30,6 +30,10 @@ test("ESCO has a 12-item quotation list with contact-form prefill but no payment
   assert.match(builder,/data-esco-add/);
   assert.match(builder,/data-esco-quote-items/);
   assert.match(builder,/data-esco-order-request-form/);
+  assert.match(builder,/buildEscoProductMaster\(data\)/);
+  assert.match(builder,/skuFor\(p\.id\)/);
+  assert.match(interaction,/NP-ESCO-/);
+  assert.match(readFileSync("assets/js/esco-bag.js","utf8"),/NovaPharm SKU NP-ESCO-/);
   assert.match(builder,/products\/esco\/bag\/index.html/);
   assert.match(builder,/data-esco-bag-items/);
   assert.match(interaction,/const MAX_ITEMS = 12/);
