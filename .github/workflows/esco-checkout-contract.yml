@@ -6,7 +6,7 @@ on:
       - 'infra/aws/esco-products-checkout-production.json'
       - 'assets/js/esco-bag.js'
       - 'scripts/apply-esco-catalogue.mjs'
-      - 'scripts/test-esco-catalogue.mjs'
+      - 'scripts/test-esco-catalogue.mjs'\n      - 'scripts/test-esco-order-requests.mjs'
       - '.github/workflows/esco-checkout-contract.yml'
   workflow_dispatch:
 permissions:
@@ -22,9 +22,9 @@ jobs:
       - name: Install AWS SDK only for isolated unit tests
         run: python3 -m pip install 'boto3>=1.34,<2'
       - name: Check checkout and webhook syntax
-        run: python3 -m py_compile apps/esco-checkout/index.py
+        run: python3 -m py_compile apps/esco-checkout/index.py apps/esco-checkout/merchant_release.py
       - name: Verify fail-closed checkout, signature, price and legal controls
-        run: python3 -m unittest discover -s apps/esco-checkout -p test_checkout.py -v
+        run: python3 -m unittest discover -s apps/esco-checkout -p 'test_*.py' -v
       - name: Verify checkout IaC is separate from Nutraxin
         run: |
           python3 - <<'PY'
