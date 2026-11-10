@@ -217,7 +217,11 @@ for (const asset of config.assets) {
   imageHashes.set(digest, asset.id);
   perceptualHashes.push({ id: asset.id, value: await differenceHash(jpg) });
 
-  const usedRoutes = new Set(htmlDocuments.filter((document) => document.html.includes(asset.base)).map((document) => document.route));
+  // Source editorial templates are not distinct published pages; constrain
+  // publication licence/reuse assertions to actual generated public HTML.
+  const usedRoutes = new Set(htmlDocuments
+    .filter((document) => !document.relativePath.startsWith("src/content/") && document.html.includes(asset.base))
+    .map((document) => document.route));
   const allowedRoutes = new Set(asset.allowedRoutes.map(publicRoute));
   if (asset.publicationStatus === "retired") {
     assert.ok(asset.retirementReason, `${asset.id} requires a documented retirement reason`);
