@@ -5744,10 +5744,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 2,
       "usageFiles": [
-        "creative-assets/asset-register.json"
+        "creative-assets/asset-register.json",
+        "infra/aws/nutraxin-customer-staging-stack.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -5762,7 +5763,7 @@
       "height": 305,
       "aspectRatio": 4.590164,
       "sha256": "a77c4d138ef2293f9a77df82a14d63c21ff42a744e033b7472798f08c85e5d92",
-      "perceptualHash": "078773e062e2e4f5",
+      "perceptualHash": "078773e062e2e0f5",
       "classification": "KEEP",
       "provenanceStatus": "registered",
       "source": "Crop (Earth and atmosphere only, y=500 to y=887) from the exact owner-approved NovaPharm Medicine in Motion homepage screenshot supplied on 10 November 2026, resampled to 1400 x 305 and optimised for web. No generated elements or typography are added to this crop.",
