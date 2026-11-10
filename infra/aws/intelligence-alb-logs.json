@@ -1,0 +1,156 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Dedicated private encrypted S3 ALB access log archive for future NovaPharm Intelligence HTTPS ingress. Does not create ALB, compute, payment or live service.",
+  "Resources": {
+    "IntelligenceAlbLogBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "BucketName": "novapharm-intelligence-alb-access-logs-250675045172-eu-north-1",
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "Id": "limit-alb-access-log-retention",
+              "Status": "Enabled",
+              "Filter": {
+                "Prefix": "intelligence/"
+              },
+              "ExpirationInDays": 90,
+              "NoncurrentVersionExpiration": {
+                "NoncurrentDays": 30
+              },
+              "AbortIncompleteMultipartUpload": {
+                "DaysAfterInitiation": 7
+              }
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "production-candidate"
+          },
+          {
+            "Key": "purpose",
+            "Value": "private-alb-access-logs"
+          },
+          {
+            "Key": "record-retention",
+            "Value": "90-days"
+          }
+        ]
+      }
+    },
+    "IntelligenceAlbLogPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "IntelligenceAlbLogBucket"
+        },
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "DenyInsecureTransport",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Action": "s3:*",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "IntelligenceAlbLogBucket",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "IntelligenceAlbLogBucket",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              }
+            },
+            {
+              "Sid": "AllowRegionalAlbLogDeliveryOnly",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "logdelivery.elasticloadbalancing.amazonaws.com"
+              },
+              "Action": "s3:PutObject",
+              "Resource": "arn:aws:s3:::novapharm-intelligence-alb-access-logs-250675045172-eu-north-1/intelligence/AWSLogs/250675045172/*",
+              "Condition": {
+                "StringEquals": {
+                  "aws:SourceAccount": "250675045172"
+                },
+                "ArnLike": {
+                  "aws:SourceArn": "arn:aws:elasticloadbalancing:eu-north-1:250675045172:loadbalancer/*"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "BucketName": {
+      "Value": {
+        "Ref": "IntelligenceAlbLogBucket"
+      }
+    },
+    "BucketArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "IntelligenceAlbLogBucket",
+          "Arn"
+        ]
+      }
+    },
+    "ReleaseBoundary": {
+      "Value": "LOG ARCHIVE ONLY; no ALB, public access, DNS, customer identity or storage of clinical data is activated."
+    }
+  }
+}
