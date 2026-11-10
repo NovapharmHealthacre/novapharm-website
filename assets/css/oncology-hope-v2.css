@@ -436,3 +436,35 @@ body[data-page="oncology"] main.npoc-page :is(.npoc-focus-card,.npoc-button,.npo
     display:none;
   }
 }
+
+
+/* Final owner reference: one continuous image-led editorial hero without
+   a photograph card, hard crop, seam or shadow. Keep full portrait framing. */
+@media (min-width:761px) {
+  body[data-page="oncology"] main.npoc-page section.npoc-hero.npoc-hope-hero {
+    background:linear-gradient(90deg,#fff 0%,#fdfdff 37%,#f1effa 70%,#fae9d9 100%);
+    box-shadow:none;
+    border:0;
+  }
+  body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-visual {
+    inset:0 0 0 auto;
+    width:78%;
+    height:100%;
+    border:0;
+    border-radius:0;
+    box-shadow:none;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.08) 12%,rgba(0,0,0,.72) 34%,#000 51%);
+    mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.08) 12%,rgba(0,0,0,.72) 34%,#000 51%);
+  }
+  body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-visual img {
+    object-fit:contain;
+    object-position:right center;
+    border:0;
+    border-radius:0;
+    box-shadow:none;
+    filter:none;
+  }
+  body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-shade {
+    background:linear-gradient(90deg,#fff 0%,rgba(255,255,255,.995) 22%,rgba(255,255,255,.83) 35%,rgba(255,255,255,.16) 52%,transparent 68%);
+  }
+}
