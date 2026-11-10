@@ -1,0 +1,41 @@
+name: One-time regenerate approved home hero inventory
+on:
+  push:
+    branches:
+      - ops/reconcile-approved-home-hero-20261110
+    paths:
+      - .github/workflows/one-time-home-hero-inventory.yml
+permissions:
+  contents: write
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact PR content without helper workflow
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: fix/home-hero-exact-reference-20261110
+          persist-credentials: true
+      - name: Set up Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Generate and verify exact image inventory
+        run: |
+          set -euo pipefail
+          npm run images:inventory
+          npm run images:inventory:validate
+      - name: Commit only authoritative generated report
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add audit/generated/image-inventory.json
+          if ! git diff --cached --quiet; then
+            git commit -m "audit(media): reconcile exact approved homepage hero after final tests"
+            git push origin HEAD:refs/heads/fix/home-hero-exact-reference-20261110
+          fi
