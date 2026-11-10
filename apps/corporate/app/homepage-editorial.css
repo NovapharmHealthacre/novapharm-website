@@ -647,3 +647,276 @@
 @media (prefers-reduced-motion: reduce) {
   :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero a { transition: none; }
 }
+
+
+
+/* Owner-approved 10 Nov 2026 reference alignment.
+   Homepage only. All corporate identity, commerce and secure portal surfaces outside
+   the homepage retain their existing appearance. The letterform is typographic,
+   not a change to the registered NovaPharm brand assets. */
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header {
+  position: relative;
+  z-index: 20;
+  height: 68px;
+  min-height: 68px;
+  background: rgba(255,255,255,.98);
+  border-bottom: 1px solid #e2e5e9;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .header-inner {
+  box-sizing: border-box;
+  width: calc(100% - clamp(36px, 10.8vw, 192px));
+  max-width: none;
+  min-height: 68px;
+  height: 68px;
+  padding: 0;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .brand {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  min-height: 48px;
+  width: auto;
+  text-decoration: none;
+  color: #09090b;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .brand > picture,
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .brand > img {
+  display: none;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .brand::after {
+  content: "NOVAPHARM";
+  display: block;
+  color: #07080a;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: clamp(1.22rem, 1.60vw, 1.82rem);
+  font-weight: 680;
+  letter-spacing: .16em;
+  line-height: 1;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .site-nav,
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .desktop-nav {
+  align-items: center;
+  gap: clamp(18px, 2.8vw, 52px);
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .site-nav > a,
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .desktop-nav > a {
+  color: #151518;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: clamp(.88rem, 1.08vw, 1.18rem);
+  font-weight: 450;
+  line-height: 1.2;
+  letter-spacing: -.012em;
+  white-space: nowrap;
+  padding-block: 14px;
+  text-decoration: none;
+}
+body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/news-insights/"],
+body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/portal/"] {
+  display: none;
+}
+body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"] {
+  font-size: 0;
+}
+body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]::after {
+  content: "Intelligence";
+  font-size: clamp(.88rem, 1.08vw, 1.18rem);
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .brand:focus-visible,
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header a:focus-visible {
+  outline: 3px solid #0066cc;
+  outline-offset: 4px;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero {
+  display: block;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  height: auto;
+  min-height: clamp(760px, calc(100svh - 68px), 910px);
+  background:
+    radial-gradient(ellipse at 68% 74%, rgba(255,243,215,.24), transparent 36%),
+    linear-gradient(180deg, #ffffff 0%, #fcfdff 35%, #f4f8ff 59%, #e0edfc 100%);
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-hero-content {
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1600px;
+  min-height: 0;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(91px, 6.2vw, 111px) 24px 0;
+  text-align: center;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .npd-apple-eyebrow {
+  margin: 0 0 clamp(29px, 2.75vw, 45px);
+  color: #3d424a;
+  font-size: clamp(.78rem, 1.1vw, 1.2rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: .27em;
+  text-transform: uppercase;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero h1 {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0;
+  color: #07080b;
+  font-size: clamp(3.15rem, 5.05vw, 5.95rem);
+  font-weight: 720;
+  line-height: 1.055;
+  letter-spacing: -.052em;
+  text-wrap: balance;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .npd-apple-lead {
+  width: 100%;
+  max-width: 1100px;
+  margin: clamp(15px, 1.30vw, 25px) 0 0;
+  color: #62646a;
+  font-size: clamp(1.15rem, 1.89vw, 2.12rem);
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -.018em;
+  text-wrap: balance;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .npd-apple-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(13px, 1.7vw, 32px);
+  margin: clamp(29px, 2.35vw, 43px) 0 0;
+  flex-wrap: wrap;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero :is(.nph-earth-primary,.nph-earth-secondary) {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .65em;
+  min-height: clamp(46px, 3.05vw, 56px);
+  border: 1px solid #121215;
+  border-radius: 999px;
+  padding: 12px clamp(24px, 2.4vw, 44px);
+  font-size: clamp(.92rem, 1.20vw, 1.27rem);
+  font-weight: 530;
+  line-height: 1.15;
+  letter-spacing: -.018em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-primary {
+  background: #0a0a0c;
+  border-color: #0a0a0c;
+  color: white;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-secondary {
+  background: rgba(255,255,255,.86);
+  border-color: #73767c;
+  color: #111114;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-primary:hover {
+  background: #333439;
+  border-color: #333439;
+  color: #fff;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-secondary:hover {
+  background: #fff;
+  border-color: #111114;
+  color: #111114;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-hero-landscape {
+  display: block;
+  position: absolute;
+  z-index: 1;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  aspect-ratio: 1400 / 305;
+  object-fit: cover;
+  object-position: center bottom;
+  transform: none;
+  user-select: none;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.75) 9%, #000 18%);
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.75) 9%, #000 18%);
+}
+@media (min-width: 761px) and (max-width: 1120px) {
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .header-inner {
+    width: calc(100% - 64px);
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .site-nav,
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .desktop-nav {
+    gap: 17px;
+  }
+}
+@media (max-width: 760px) {
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header,
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .header-inner {
+    min-height: 60px;
+    height: 60px;
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .header-inner {
+    width: calc(100% - 36px);
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .brand::after {
+    font-size: 1.18rem;
+    letter-spacing: .13em;
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero {
+    min-height: clamp(695px, calc(100svh - 60px), 810px);
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-hero-content {
+    padding: clamp(80px, 16vw, 116px) 22px 0;
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .npd-apple-eyebrow {
+    font-size: .72rem;
+    letter-spacing: .19em;
+    margin-bottom: 31px;
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero h1 {
+    font-size: clamp(2.8rem, 9vw, 4.6rem);
+    line-height: 1.08;
+    letter-spacing: -.047em;
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .npd-apple-lead {
+    max-width: 540px;
+    font-size: clamp(1.1rem, 3.75vw, 1.5rem);
+    line-height: 1.45;
+    margin-top: 22px;
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .npd-apple-actions {
+    gap: 12px;
+    margin-top: 28px;
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero :is(.nph-earth-primary,.nph-earth-secondary) {
+    min-height: 45px;
+    padding: 10px 16px;
+    font-size: clamp(.81rem, 3.2vw, .97rem);
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-hero-landscape {
+    left: 50%;
+    width: max(900px, 245%);
+    height: auto;
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero a {
+    transition: none;
+  }
+}
