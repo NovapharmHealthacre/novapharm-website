@@ -197,6 +197,7 @@ const homepageArtifact = read("index.html");
 const regulatoryArtifact = read("regulatory-services/index.html");
 for (const [marker, label] of [
   ["nph-earth-hero-landscape", "approved Earth-horizon hero composition"],
+  ["/assets/media/home/earth-reference-1400.jpg", "exact owner-approved high-definition Earth reference"],
   ["A better way to understand, access and move medicine.", "approved homepage proposition without active supply claim"],
   ["Specialist medicines.", "specialist oncology editorial heading"],
   ["Representative scientific context. No NovaPharm facility, stock or approved programme is depicted.", "specialist visual truth boundary"],

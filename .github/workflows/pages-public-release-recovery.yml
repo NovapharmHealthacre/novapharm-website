@@ -6,7 +6,7 @@ on:
       - .github/workflows/pages-public-release-recovery.yml
       - assets/css/apple-pharma-public.css
       - assets/css/homepage-editorial.css
-      - assets/media/home/earth-morning-approved.avif
+      - assets/media/home/earth-reference-1400.jpg
       - apps/corporate/components/concise-home.tsx
       - apps/corporate/app/homepage-editorial.css
       - assets/css/oncology-editorial.css
@@ -73,7 +73,9 @@ jobs:
           node scripts/check-links.mjs _site
           grep -Fq 'Medicine. Where it needs to be' _site/index.html
           grep -Fq 'class="npd-apple-hero nph-earth-hero"' _site/index.html
-          test -s _site/assets/media/home/earth-morning-approved.avif
+          grep -Fq 'src="/assets/media/home/earth-reference-1400.jpg"' _site/index.html
+          grep -Fq '>Intelligence</a>' _site/index.html
+          test -s _site/assets/media/home/earth-reference-1400.jpg
           grep -Fq 'class="npd-apple-nova-art"' _site/index.html
           grep -Fq 'class="np-contact-reference-hero"' _site/contact/index.html
           grep -Fq 'data-email-enquiry-form' _site/contact/index.html
@@ -145,7 +147,9 @@ jobs:
           node scripts/check-links.mjs _site
           grep -Fq 'Medicine. Where it needs to be' _site/index.html
           grep -Fq 'class="npd-apple-hero nph-earth-hero"' _site/index.html
-          test -s _site/assets/media/home/earth-morning-approved.avif
+          grep -Fq 'src="/assets/media/home/earth-reference-1400.jpg"' _site/index.html
+          grep -Fq '>Intelligence</a>' _site/index.html
+          test -s _site/assets/media/home/earth-reference-1400.jpg
           grep -Fq 'class="npd-apple-nova-art"' _site/index.html
           grep -Fq 'class="np-contact-reference-hero"' _site/contact/index.html
           grep -Fq 'data-email-enquiry-form' _site/contact/index.html
