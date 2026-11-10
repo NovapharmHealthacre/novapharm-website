@@ -181,6 +181,11 @@ const homePrimaryNav = homePrimaryNavStart < 0 ? "" : homeHeader.slice(homePrima
 if (!homePrimaryNav.includes('<a href="https://portal.novapharmhealthcare.com/">Secure Portal</a>')) fail("Homepage primary header hides Secure Portal");
 if (!homeHeader.includes('<picture class="brand-logo" data-logo-release="20261110-red-master"><img src="/assets/brand/novapharm-healthcare-logo.png" srcset="/assets/brand/novapharm-healthcare-logo.png?v=20261110-red-master 1x"')) fail("Homepage header is not using the supplied official PNG logo");
 if (homeHeader.includes('<source srcset="/assets/brand/novapharm-healthcare-logo.svg"')) fail("Homepage header still prioritises the replaced vector wordmark");
+const homepageEditorialCss = text("assets/css/homepage-editorial.css");
+if (!homepageEditorialCss.includes(".site-header:not(.npd-header) .brand > picture")) fail("Legacy homepage CSS must not hide the production PNG header");
+if (!homepageEditorialCss.includes(".site-header:not(.npd-header) .brand::after")) fail("Legacy text wordmark fallback must be restricted to non-production headers");
+if (homepageEditorialCss.includes(".site-header .brand > picture") || homepageEditorialCss.includes(".site-header .brand::after")) fail("The canonical production header must not be replaced by a black text pseudo-logo");
+
 for (const route of ["capabilities", "oncology", "products"]) {
   const html = text(route + "/index.html");
   const headerStart = html.indexOf('<header class="site-header npd-header"');
