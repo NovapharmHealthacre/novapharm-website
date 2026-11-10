@@ -16,6 +16,7 @@ import {
 
 const root = resolve(process.cwd());
 const releaseDate = process.env.SEO_LASTMOD || "2026-07-18";
+const materialPageReleaseDate = (route) => ["/distribution/", "/market-access/", "/markets/"].includes(route) ? "2026-11-10" : releaseDate;
 const logoUrl = `${SITE_URL}/assets/brand/novapharm-healthcare-logo.png`;
 const leaderBySlug = new Map(leadership.map((person) => [person.slug, person]));
 const articleDirectory = join(root, "src", "content", "insights");
@@ -232,7 +233,7 @@ function enhanceJsonLd(html, route, article, leader) {
           url: canonical,
           isPartOf: { "@id": WEBSITE_ID },
           about: schema.about || { "@id": ORGANIZATION_ID },
-          dateModified: releaseDate
+          dateModified: materialPageReleaseDate(route)
         };
       }
       schema = JSON.parse(JSON.stringify(schema).replaceAll("#organisation", "#organization"));
@@ -401,7 +402,7 @@ for (const file of [...new Set(publicFiles)]) {
 
 const sitemapEntries = pageRecords.filter((page) => page.indexable).map((page) => {
   const article = page.route.startsWith("/news-insights/") ? articleBySlug.get(page.route.split("/")[2]) : null;
-  const lastmod = article ? (article.updated || article.published) : releaseDate;
+  const lastmod = article ? (article.updated || article.published) : materialPageReleaseDate(page.route);
   return `<url><loc>${escXml(page.canonical)}</loc><lastmod>${lastmod}</lastmod></url>`;
 });
 write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${sitemapEntries.join("")}</urlset>\n`);
