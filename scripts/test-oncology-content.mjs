@@ -50,7 +50,9 @@ assert.match(approvedLayout, /grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/
 assert.match(approvedLayout, /npoc-focus-card span/, "Image labels must overlay on the cards");
 assert.ok(!html.includes("href=\"/assets/media/products/oncology-vial-handling.avif\""), "Retired hero image must not preload");
 assert.match(html, /<img[^>]+hope-tomorrow-portrait\.jpg[^>]+fetchpriority="high"/);
-assert.match(css, /body\[data-page="oncology"\]/);\nassert.match(css, /npoc-hope-hero/);\nassert.match(html, /id="oncology-focus"/);
+assert.match(css, /body\[data-page="oncology"\]/);
+assert.match(css, /npoc-hope-hero/);
+assert.match(html, /id="oncology-focus"/);
 assert.doesNotMatch(html, /Illustrative creative image\. No patient, treatment result or NovaPharm facility is depicted\./, "Hero annotation removed from public page");
 assert.doesNotMatch(html, /class="npoc-image-note"/, "Hero should not carry a visible disclaimer badge");
 assert.match(css, /@media\(max-width:760px\)/);
