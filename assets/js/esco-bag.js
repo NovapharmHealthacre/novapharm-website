@@ -62,7 +62,15 @@ function renderPaymentEligibility(lines) {
   const quoteOnly = paymentServiceReady
     ? lines.filter(item => !approvedCatalogIds.has(item.id) || !approvedUnitPricesPence.has(item.id))
     : [];
+  // A disabled payment button for quote-only products creates a dead end.
+  // Show exactly one primary purchase path: Stripe for approved goods or
+  // a confirmed order request for every other catalogue reference.
+  checkoutButton.hidden = !eligible;
   checkoutButton.disabled = !eligible || !termsCheckbox.checked || sendingPayment;
+  if (send) {
+    send.textContent = eligible ? "Request a formal quotation" : "Continue with order request";
+    send.classList.toggle("esco-order-request-primary", !eligible && lines.length > 0);
+  }
   if (checkoutNote) {
     if (!paymentServiceReady) {
       checkoutNote.textContent = "Secure card checkout could not be confirmed right now. Your selection is saved; request a confirmed quote or try again later.";

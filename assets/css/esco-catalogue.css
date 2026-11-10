@@ -663,3 +663,18 @@
   .esco-storefront .esco-dialog-picture .esco-product-visual .esco-product-image{max-height:195px;}
   .esco-storefront .esco-dialog-actions{gap:12px;}
 }
+
+/* The Bag presents a single honest next step for each basket state. */
+.esco-shop-bag .esco-bag-pay[hidden]{display:none!important;}
+.esco-shop-bag .esco-bag-quote.esco-order-request-primary{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:51px;
+  border-radius:13px;
+  background:#0071e3;
+  color:#fff!important;
+  border:1px solid #0071e3;
+  font-weight:650;
+}
+.esco-shop-bag .esco-bag-quote.esco-order-request-primary:hover{background:#005bb5;}
