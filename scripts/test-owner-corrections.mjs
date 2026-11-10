@@ -197,7 +197,7 @@ if (!/\.site-header \.brand > img\s*\{[\s\S]*?display:\s*block/.test(homepageCss
 if (!/\.site-header \.brand::after\s*\{\s*content:\s*none/.test(homepageCss)) fail("Legacy text-wordmark pseudo-element must remain disabled");
 for (const route of ["index.html", "capabilities/index.html", "oncology/index.html", "products/index.html"]) {
   const page = text(route);
-  if (!page.includes('href="/assets/css/novapharm.bundle.css?v=20261110-logo-visible-v1"')) fail(route + " must link to versioned design CSS");
+  if (!page.includes('href="/assets/css/novapharm.bundle.css?v=20261110-official-header-logo-v2"')) fail(route + " must link to versioned design CSS");
   if (!page.includes('<picture class="brand-logo"><img ')) fail(route + " must preserve the official image-based header logo");
 }
 const approvedProductsCss = text("assets/css/products-editorial.css");
