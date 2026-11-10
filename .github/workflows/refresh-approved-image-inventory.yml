@@ -1,0 +1,65 @@
+name: Reconcile audited image inventory from current approved assets
+
+on:
+  push:
+    branches:
+      - fix/image-inventory-authoritative-refresh-20261110
+    paths:
+      - .github/workflows/refresh-approved-image-inventory.yml
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-inventory-only:
+    if: github.ref == 'refs/heads/fix/image-inventory-authoritative-refresh-20261110'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: true
+          fetch-depth: 1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install locked dependencies without executing install scripts
+        run: npm ci --ignore-scripts
+      - name: Regenerate provenance inventory without modifying source media
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run images:inventory
+          npm run images:inventory:validate
+          test -s audit/generated/image-inventory.json
+          node - <<'JS'
+          const fs = require('node:fs');
+          const value = JSON.parse(fs.readFileSync('audit/generated/image-inventory.json','utf8'));
+          if (!Array.isArray(value.assets) || value.assets.length < 100) process.exit(1);
+          if (value.assets.some((asset) => !asset.path || !asset.sha256)) process.exit(1);
+          console.log('Generated audited source inventory:', JSON.stringify({
+            assetCount: value.summary.trackedAssetCount,
+            provenanceStatus: value.summary.byProvenanceStatus,
+            exactDuplicateGroups: value.summary.exactDuplicateGroups
+          }));
+          JS
+          altered="$(git diff --name-only --)"
+          if [ -n "$altered" ] && [ "$altered" != "audit/generated/image-inventory.json" ]; then
+            echo "::error::Unexpected modified file(s): $altered"
+            exit 1
+          fi
+      - name: Commit only regenerated inventory to this nonproduction branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- audit/generated/image-inventory.json; then
+            echo 'Image inventory already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- audit/generated/image-inventory.json
+          test "$(git diff --cached --name-only)" = "audit/generated/image-inventory.json"
+          git commit -m 'chore(audit): refresh authoritative approved image inventory'
+          git push origin HEAD:fix/image-inventory-authoritative-refresh-20261110
