@@ -13,7 +13,7 @@
   --nph-muted: #595961;
   --nph-line: #d9d9df;
   --nph-link: #0066cc;
-  --nph-accent: #b51c1a;
+  --nph-accent: #e3120b;
   --nph-deep: #0a101a;
   --nph-radius: 22px;
   --nph-max: 1200px;
@@ -26,7 +26,7 @@
   --white: var(--nph-canvas);
   --navy: var(--nph-deep);
   --red: var(--nph-accent);
-  --red-dark: #a01412;
+  --red-dark: #b30e09;
   --focus: var(--nph-link);
   --apple-ink: var(--nph-ink);
   --apple-muted: var(--nph-muted);
@@ -34,7 +34,7 @@
   --apple-soft: var(--nph-silver);
   --apple-white: var(--nph-canvas);
   --pharma-red: var(--nph-accent);
-  --pharma-red-dark: #a01412;
+  --pharma-red-dark: #b30e09;
   --header: 64px;
   --shell: var(--nph-max);
   --shadow: 0 18px 58px rgba(12, 20, 34, .08);
