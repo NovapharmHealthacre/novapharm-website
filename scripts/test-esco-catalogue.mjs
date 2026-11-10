@@ -298,3 +298,15 @@ test("ESCO Bag has no greyed checkout dead end and retains server-only payment a
  assert.match(bag,/checkoutApiOrigin \+ "\/checkout"/);
  assert.match(css,/\.esco-shop-bag \.esco-bag-pay\[hidden\]\{display:none!important;\}/);
 });
+
+
+test("ESCO discovery page keeps only the compact navigation Bag, not an oversized inline Bag",()=>{
+  const builder=readFileSync("scripts/apply-esco-catalogue.mjs","utf8");
+  const css=readFileSync("assets/css/esco-catalogue.css","utf8");
+  const interaction=readFileSync("assets/js/esco-catalogue.js","utf8");
+  assert.ok(builder.includes('data-esco-quote-tray hidden aria-hidden="true"'));
+  assert.ok(builder.includes("data-esco-top-bag-count"));
+  assert.ok(interaction.includes("topBagCount.textContent"));
+  assert.ok(builder.includes("/products/esco/bag/"));
+  assert.match(css,/\.esco-page \.esco-shop-mini-bag\[hidden\]\s*\{\s*display: none !important;/);
+});
