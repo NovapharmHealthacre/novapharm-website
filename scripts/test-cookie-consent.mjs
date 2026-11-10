@@ -45,6 +45,11 @@ const serverSource = readFileSync(resolve(root, "server.mjs"), "utf8");
 assert.doesNotMatch(clientSource, /\bgtag\s*\(/);
 assert.doesNotMatch(serverSource, /googletagmanager|google-analytics/);
 assert.match(readFileSync(resolve(root, "index.html"), "utf8"), /cookie-consent\.js/);
+const consentClientSource = readFileSync(resolve(root, "assets/js/cookie-consent.js"), "utf8");
+const publicDesignSource = readFileSync(resolve(root, "assets/css/corporate-product-discipline.css"), "utf8");
+assert.match(consentClientSource, /main\.before\(banner\)/, "Consent notice must be inserted ahead of main content");
+assert.doesNotMatch(consentClientSource, /document\.body\.append\(banner, dialog\)/, "Fixed overlay insertion must not return");
+assert.match(publicDesignSource, /Forensic static consent: non-obscuring/, "In-flow consent rules must ship in public CSS");
 assert.match(readFileSync(resolve(root, "legal/cookies/index.html"), "utf8"), /data-cookie-settings/);
 
 console.log("Cookie consent tests passed: optional categories default off, rejection persists, granular acceptance persists, expired records fail closed, and no analytics loader is enabled.");

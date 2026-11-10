@@ -97,7 +97,7 @@ function HomePage() {
 }
 
 function NarrativePage({ page }: { readonly page: CorporatePage }) {
-  return <><PageHero eyebrow={page.slug === "about/company" ? "Company" : page.slug === "about/governance" ? "Governance" : page.slug === "investor-information" ? "Investor information" : page.slug === "careers" ? "Careers" : "About NovaPharm"} title={page.heroTitle} intro={page.intro} image={page.heroImage} alt={page.heroAlt} />{page.sections?.map((section, index) => <NarrativeBlock section={section} index={index} key={section.title} />)}<FinalCta title={page.slug === "careers" ? "Bring specialist judgement to a controlled growth programme." : undefined} /></>;
+  return <><PageHero eyebrow={page.slug === "about/company" ? "Company" : page.slug === "about/governance" ? "Governance" : page.slug === "investor-information" ? "Investor information" : page.slug === "careers" ? "Careers" : page.slug === "capabilities" ? "Capabilities" : "About NovaPharm"} title={page.heroTitle} intro={page.intro} image={page.heroImage} alt={page.heroAlt} />{page.sections?.map((section, index) => <NarrativeBlock section={section} index={index} key={section.title} />)}<FinalCta title={page.slug === "careers" ? "Bring specialist judgement to a controlled growth programme." : undefined} /></>;
 }
 
 function NarrativeBlock({ section, index }: { readonly section: NarrativeSection; readonly index: number }) {

@@ -607,6 +607,29 @@ jobs:
             sleep 5
           done
 
+      - name: Prove exact source commit reached the public custom domain
+        env:
+          EXPECTED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
+          for route in "" "capabilities/" "oncology/" "products/" "contact/"; do
+            verified=false
+            for attempt in $(seq 1 10); do
+              curl --fail --silent --show-error --location --max-time 15 \
+                -H 'Cache-Control: no-cache, no-store' \
+                "https://novapharmhealthcare.com/${route}?source-proof-${EXPECTED_SHA}-${attempt}-$(date +%s)" \
+                -o /tmp/novapharm-source-proof.html || true
+              if grep -Fq "name=\"novapharm-source-sha\" content=\"${EXPECTED_SHA}\"" /tmp/novapharm-source-proof.html; then
+                verified=true
+                break
+              fi
+              sleep 3
+            done
+            test "$verified" = true || { echo "::error::Customer-facing ${route:-home} does not match the approved source SHA"; exit 1; }
+          done
+          echo 'The public origin serves the exact reviewed Git commit on all five critical routes.'
+
       - name: Verify full-scene Oncology hero and un-cropped mobile styling on live domain
         run: |
           set -euo pipefail

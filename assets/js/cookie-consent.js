@@ -121,7 +121,13 @@ function initialiseConsentInterface() {
   document.addEventListener("click", (event) => {
     if (event.target.closest("[data-cookie-settings]")) openDialog();
   });
-  document.body.append(banner, dialog);
+  // Place choices in reading order immediately before the main content.
+  // This reserves the actual space for consent rather than covering forms,
+  // headlines or mobile navigation while optional categories remain off.
+  const main = document.querySelector("main");
+  if (main?.parentElement === document.body) main.before(banner);
+  else document.body.prepend(banner);
+  document.body.append(dialog);
 }
 
 if (typeof window !== "undefined" && typeof document !== "undefined") {

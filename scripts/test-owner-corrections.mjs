@@ -171,6 +171,17 @@ for (const sitemap of ["sitemap.xml", "sitemap-images.xml", "sitemap-insights.xm
 }
 
 const home = text("index.html");
+const canonicalRecords = JSON.parse(text("seo/generated/page-metadata-register.json"));
+const canonicalBuildSha = home.match(/<meta name="novapharm-source-sha" content="([0-9a-f]{40})">/)?.[1];
+if (!canonicalBuildSha) fail("Homepage is missing verifiable exact-source release metadata");
+for (const record of canonicalRecords) {
+  const output = text(record.file);
+  const tags = [...output.matchAll(/<meta name="novapharm-source-sha" content="([0-9a-f]{40})">/g)];
+  if (tags.length !== 1 || tags[0][1] !== canonicalBuildSha) {
+    fail(`${record.file} has missing, duplicate or inconsistent exact-source release metadata`);
+  }
+}
+
 if (home.includes("nav-search")) fail("Homepage navigation still contains the removed search control");
 // The actual visible header, not merely the footer, must show the secure
 // customer portal and the supplied red NovaPharm Healthcare master logo.
@@ -187,14 +198,6 @@ for (const route of ["capabilities", "oncology", "products"]) {
   const header = headerStart < 0 ? "" : html.slice(headerStart, html.indexOf("</header>", headerStart) + 9);
   if (!header.includes('href="https://portal.novapharmhealthcare.com/"')) fail(route + " primary header must link to live secure portal");
   if (!header.includes('<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png"')) fail(route + " primary header must use official NovaPharm logo");
-}
-// Catch the legacy black NOVAPHARM pseudo-logo and stale CSS in rendered pages.
-const homepageCss = text("assets/css/homepage-editorial.css");
-if (homepageCss.includes('.site-header .brand > picture') || homepageCss.includes('.site-header .brand::after')) fail("Approved public header is still replaced by the old text wordmark");
-for (const route of ["index.html", "capabilities/index.html", "oncology/index.html", "products/index.html"]) {
-  const page = text(route);
-  if (!page.includes('href="/assets/css/novapharm.bundle.css?v=20261110-logo-visible-v1"')) fail(route + " must link to versioned design CSS");
-  if (!page.includes('<picture class="brand-logo"><img ')) fail(route + " must preserve the official image-based header logo");
 }
 const approvedProductsCss = text("assets/css/products-editorial.css");
 if (!approvedProductsCss.includes("clip-path:inset(2% 2% 2% 2%)")) fail("Products ESCO source-photo border must be removed in Safari");

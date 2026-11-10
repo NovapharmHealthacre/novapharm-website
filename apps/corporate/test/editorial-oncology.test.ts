@@ -17,7 +17,7 @@ test("Oncology is implemented in the active Next.js renderer, not solely static 
   assert.match(layout, /import "\.\/oncology-editorial\.css"/);
   assert.match(component, /data-oncology-design="editorial-v2"/);
   assert.match(pageMetadata, /Oncology \| Evidence-led Specialist Medicines \| NovaPharm Healthcare/);
-  assert.match(component, /Oncology demands<br \/>more than supply/);
+  assert.match(component, /Oncology demands\{" "\}<br \/>more than supply/);
   assert.match(component, /Every detail<br \/>matters/);
   assert.match(component, /Six connected decisions/);
   assert.match(component, /Complexity deserves precision/);

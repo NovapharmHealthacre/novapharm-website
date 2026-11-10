@@ -56,9 +56,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <a className="skip-link" href="#main-content">Skip to main content</a>
         <SiteHeader />
+        <CookieControls />
         <main id="main-content">{children}</main>
         <SiteFooter />
-        <CookieControls />
         <JsonLd id="organisation-schema" value={organisationSchema()} />
         <JsonLd id="website-schema" value={websiteSchema()} />
       </body>
