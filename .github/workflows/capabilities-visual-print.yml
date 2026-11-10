@@ -1,0 +1,48 @@
+name: Capabilities desktop mobile and A4 print acceptance
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/capabilities-visual-print.yml"
+      - "scripts/test-capabilities-visual-print.mjs"
+      - "scripts/apply-capabilities-editorial.mjs"
+      - "src/content/capabilities-editorial.html"
+      - "assets/css/capabilities-editorial.css"
+      - "capabilities/index.html"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/capabilities-visual-print.yml"
+      - "scripts/test-capabilities-visual-print.mjs"
+      - "scripts/apply-capabilities-editorial.mjs"
+      - "src/content/capabilities-editorial.html"
+      - "assets/css/capabilities-editorial.css"
+      - "capabilities/index.html"
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npm run build:public-only
+      - name: Start local static server
+        run: |
+          python3 -m http.server 4310 --bind 127.0.0.1 > /tmp/capabilities-static.log 2>&1 &
+      - run: node scripts/test-capabilities-visual-print.mjs
+      - name: Preserve screenshots PDF and test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: capabilities-visual-print-${{ github.sha }}
+          path: |
+            artifacts/capabilities-visual-print
+            /tmp/capabilities-static.log
+          retention-days: 14
+          if-no-files-found: warn
