@@ -69,7 +69,11 @@ async function cleanedSource() {
     if (i >= w) push(i - w);
     if (i + w < total) push(i + w);
   }
-  // Interior spaces between the cot rails share the same black backdrop,\n  // even when separated from the frame edge by the equipment itself.\n  for (let i = 0; i < total; i++) if (visited[i] || neutralDark(i)) data[4 * i + 3] = 0;
+  // Remove the original black backdrop, including gaps between cot rails.
+  // Keep all non-background supplier-photo pixels and the original model ID.
+  for (let i = 0; i < total; i++) {
+    if (visited[i] || neutralDark(i)) data[4 * i + 3] = 0;
+  }
   ctx.putImageData(frame, 0, 0);
   return canvas.toDataURL("image/png");
 }
