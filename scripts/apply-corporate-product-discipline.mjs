@@ -359,12 +359,32 @@ function croMain() {
 
 function oncologyMain() {
   return `<main id="main" class="npd-main npoc-page">
-  <nav class="npoc-subnav" aria-label="Oncology page sections"><div class="container"><strong>Oncology</strong><div><a href="#approach">Approach</a><a href="#evidence">Evidence</a><a href="#programmes">Programmes</a><a href="#governance">Governance</a><a href="#oncology-enquiry">Partner with us</a></div></div></nav>
-  <section class="npoc-hero" aria-labelledby="npoc-title">
-    <div class="npoc-hero-visual" aria-hidden="true"><picture><source srcset="/assets/media/products/oncology-vial-handling-960.avif 960w, /assets/media/products/oncology-vial-handling.avif 1600w" sizes="(max-width: 760px) 100vw, 65vw" type="image/avif"><source srcset="/assets/media/products/oncology-vial-handling-960.webp 960w, /assets/media/products/oncology-vial-handling.webp 1600w" sizes="(max-width: 760px) 100vw, 65vw" type="image/webp"><img src="/assets/media/products/oncology-vial-handling.jpg" srcset="/assets/media/products/oncology-vial-handling-960.jpg 960w, /assets/media/products/oncology-vial-handling.jpg 1600w" sizes="(max-width: 760px) 100vw, 65vw" alt="" width="1600" height="900" fetchpriority="high" decoding="async"></picture></div>
+  <section class="npoc-hero npoc-hope-hero" aria-labelledby="npoc-title">
+    <div class="npoc-hero-visual" aria-hidden="true"><img src="/assets/media/oncology/hope-tomorrow-portrait.jpg" alt="" width="890" height="550" fetchpriority="high" decoding="async"></div>
     <div class="npoc-hero-shade" aria-hidden="true"></div>
-    <div class="container npoc-hero-content"><div class="npoc-hero-copy"><p class="npoc-eyebrow">NOVAPHARM / ONCOLOGY</p><h1 id="npoc-title">Oncology demands<br>more than supply.</h1><p class="npoc-hero-lead">Product identity. Qualified sourcing. Regulatory readiness.</p><p class="npoc-hero-detail">An evidence-led approach to evaluating specialist-medicine opportunities, built around the details that matter.</p><div class="npoc-actions"><a class="npoc-button npoc-button-primary" href="/contact/?enquiry=Oncology%20%26%20specialist%20medicines">Discuss a partnership</a><a class="npoc-button npoc-button-light" href="#approach">Explore our approach</a></div></div></div>
-    <p class="npoc-image-note">Representative scientific photography. No NovaPharm product, facility or active oncology programme is depicted.</p>
+    <div class="container npoc-hero-content"><div class="npoc-hero-copy">
+      <p class="npoc-eyebrow">ONCOLOGY</p>
+      <h1 id="npoc-title">A Hope of<br>Tomorrow.</h1>
+      <p class="npoc-hero-lead">A focused approach to oncology. A deeper commitment to evidence. A more hopeful tomorrow.</p>
+      <div class="npoc-actions"><a class="npoc-button npoc-button-primary" href="#oncology-focus">Explore our oncology focus</a></div>
+    </div></div>
+    <p class="npoc-image-note">Illustrative creative image. No patient, treatment result or NovaPharm facility is depicted.</p>
+  </section>
+  <section class="npoc-hope-focus" id="oncology-focus" aria-labelledby="npoc-focus-title">
+    <div class="container npoc-focus-layout">
+      <div class="npoc-focus-copy">
+        <p class="npoc-eyebrow">OUR ONCOLOGY FOCUS</p>
+        <h2 id="npoc-focus-title">Precision in every decision.</h2>
+        <p>Exploring opportunities across oncology and supportive care through qualified partners, traceable evidence and responsible market-access planning.</p>
+        <a class="npoc-focus-link" href="#approach">Explore our approach</a>
+      </div>
+      <div class="npoc-focus-cards" aria-label="Areas of oncology interest">
+        <a class="npoc-focus-card" href="/contact/?enquiry=Oncology%20solid%20tumours" aria-label="Discuss solid tumour opportunities"><img src="/assets/media/oncology/solid-tumours.jpg" alt="" width="325" height="237" loading="lazy" decoding="async"><span>Solid tumours</span></a>
+        <a class="npoc-focus-card" href="/contact/?enquiry=Oncology%20haematological%20cancers" aria-label="Discuss haematological cancer opportunities"><img src="/assets/media/oncology/haematological-cancers.jpg" alt="" width="320" height="237" loading="lazy" decoding="async"><span>Haematological cancers</span></a>
+        <a class="npoc-focus-card" href="/contact/?enquiry=Oncology%20supportive%20care" aria-label="Discuss supportive care opportunities"><img src="/assets/media/oncology/supportive-care.jpg" alt="" width="320" height="237" loading="lazy" decoding="async"><span>Supportive care</span></a>
+      </div>
+    </div>
+    <p class="container npoc-focus-disclosure">Illustrative programme categories only. No oncology medicine is represented as approved, stocked or available from NovaPharm.</p>
   </section>
   <aside class="npoc-status" id="scope-boundary" aria-label="Current oncology scope"><div class="container"><strong>Strategic B2B focus</strong><p>Regulated wholesale supply has not commenced. Oncology products are not presented as approved, stocked or available from NovaPharm. All activity remains subject to relevant authorisations and applicable controls.</p><a href="#oncology-faqs">Read our current scope</a></div></aside>
   <section class="npoc-section npoc-introduction" id="approach" aria-labelledby="npoc-approach-title"><div class="container npoc-narrow"><p class="npoc-eyebrow">THE PRINCIPLE</p><h2 id="npoc-approach-title">Every detail<br>matters.</h2><p class="npoc-intro-lead">A medicine is more than its name. Its identity, evidence, source, handling and accountable decisions must remain connected through every hand-off.</p><p class="npoc-intro-support">Commercial interest opens a question. It does not establish a right to supply, the quality of the evidence or readiness for regulated activity.</p></div></section>
