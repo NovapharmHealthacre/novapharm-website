@@ -48,8 +48,11 @@ permissions:
   pages: write
   id-token: write
 
+# Each approved commit has its own build; stale source is rejected both before build
+# and immediately before deploying, so newer PR merges cannot endlessly replace
+# the one pending release in the global Pages concurrency group.
 concurrency:
-  group: novapharm-pages-production
+  group: novapharm-pages-production-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
