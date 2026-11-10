@@ -100,6 +100,11 @@ const megaNavigation = {
 
 function header(route) {
   const current = globalSection(route);
+  // The owner-approved homepage has six primary destinations; the remaining
+  // destinations remain reachable from the footer on every public page.
+  const headerLinks = route === "/"
+    ? globalNavigation.filter(([, href]) => href !== "/news-insights/" && href !== "https://portal.novapharmhealthcare.com/")
+    : globalNavigation;
   return `<header class="site-header npd-header" data-site-header data-mega-open="">
     <div class="container header-inner npd-header-inner">
       <a class="brand" href="/" aria-label="NovaPharm Healthcare home">
@@ -107,7 +112,7 @@ function header(route) {
       </a>
       <button class="nav-toggle npd-menu" type="button" aria-expanded="false" aria-controls="primary-navigation" data-nav-toggle><span data-menu-label>Menu</span><span class="sr-only">Open navigation</span></button>
       <nav class="site-nav npd-global-nav" id="primary-navigation" aria-label="Primary navigation" data-site-nav>
-        ${globalNavigation.map(([label, href, section]) => `<a href="${href}"${current === section ? ' aria-current="page"' : ""}${megaNavigation[section] ? ` data-mega-trigger="${section}" aria-expanded="false" aria-controls="npd-mega-${section}"` : ""}>${label}</a>`).join("")}
+        ${headerLinks.map(([label, href, section]) => `<a href="${href}"${current === section ? ' aria-current="page"' : ""}${megaNavigation[section] ? ` data-mega-trigger="${section}" aria-expanded="false" aria-controls="npd-mega-${section}"` : ""}>${route === "/" && href === "/technology/" ? "Intelligence" : label}</a>`).join("")}
       </nav>
     </div>
     ${Object.entries(megaNavigation).map(([section, columns]) => `<div class="npd-mega" id="npd-mega-${section}" data-mega-panel="${section}" aria-hidden="true"><nav class="container npd-mega-inner" aria-label="${section === "intelligence" ? "NovaPharm Intelligence" : section} category navigation">${columns.map(([heading, links]) => `<div class="npd-mega-column"><p>${esc(heading)}</p>${links.map(([name, href], i) => `<a href="${href}"${i === 0 ? ' class="npd-mega-feature"' : ""}>${esc(name)}</a>`).join("")}</div>`).join("")}</nav></div>`).join("")}
@@ -207,7 +212,7 @@ function homeMain() {
           <a class="nph-earth-secondary" href="/partner-with-us/">Partner with us <span aria-hidden="true">›</span></a>
         </div>
       </div>
-      <img class="nph-earth-hero-landscape" src="/assets/media/home/earth-morning-approved.avif" alt="" width="1100" height="229" fetchpriority="high" decoding="async">
+      <img class="nph-earth-hero-landscape" src="/assets/media/home/earth-morning-approved.avif" alt="" width="1400" height="305" fetchpriority="high" decoding="async">
     </section>
     <section class="npd-apple-manifesto" aria-labelledby="purpose-title">
       <div class="container npd-apple-center">
@@ -598,6 +603,9 @@ function materialize(relative, route, main, metadata = null, template = null) {
   let html = template ?? read(relative);
   if (route !== "/") {
     html = html.replace(/\s*<link rel="preload" as="image" href="\/assets\/media\/home\/supply-network-hero\.avif"[^>]*>\n?/g, "\n");
+  } else {
+    // Do not preload the retired supply-network illustration on the homepage.
+    html = html.replace(/href="\/assets\/media\/home\/supply-network-hero\.avif"/g, 'href="/assets/media/home/earth-morning-approved.avif"');
   }
   html = replaceMain(html, main);
   html = replaceChrome(html, route);
