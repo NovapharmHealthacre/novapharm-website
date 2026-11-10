@@ -102,7 +102,7 @@ const authoredModuleContracts = new Map([
   ["about", ["npd-main", "np-about-pillars", "np-about-purpose"]],
   ["services", ["npd-main", "npd-service-ledger", "npd-horizontal-steps"]],
   ["regulatory", ["npd-main", "npd-roadmap npd-roadmap-large", "regulatory-batch-integrity"]],
-  ["products", ["npd-main", "Food Supplement Portfolio Review", "npd-products-lead", "product-portfolio-evidence"]],
+  ["products", ["npd-main np-products-page", "np-products-hero", "np-products-panel-nutraxin", "np-products-panel-esco", "np-products-panel-pharma"]],
   ["partners", ["npd-main", "npd-partner-editorial", "npd-horizontal-steps"]],
   ["technology", ["npd-main", "npi-terminal", "npi-roadmap-grid", "npi-provenance-list"]],
   ["insights", ["npd-main", "npd-insight-lead", "npd-insight-list"]],
@@ -164,7 +164,7 @@ assert.match(read("regulatory-services/index.html"), /npd-roadmap npd-roadmap-la
 assert.match(read("technology/index.html"), /npi-roadmap-grid/, "Technology must explain development maturity");
 assert.match(read("technology/index.html"), /npi-terminal/, "Technology must provide an explicit illustrative Medicines Terminal");
 assert.match(read("leadership/index.html"), /module-portrait-composition/, "Leadership must use approved portraits");
-assert.match(read("products/index.html"), /npd-product-picture/, "Products must retain approved category-specific product media");
+assert.match(read("products/index.html"), /np-products-panel-nutraxin[\\s\\S]*np-products-panel-esco[\\s\\S]*np-products-panel-pharma/, "Products must retain three approved and differentiated portfolio collections");
 assert.doesNotMatch(read("index.html"), /partner-ecosystem-grid/, "Homepage must not retain the generic repeated partner grid");
 
 const generatedRegister = new Map(productionRegister.assets.map((asset) => [asset.id, asset]));
