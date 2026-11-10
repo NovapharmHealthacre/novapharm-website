@@ -30,7 +30,7 @@ jobs:
             if curl --fail --silent --show-error --location --max-time 20 \
                 -H 'Cache-Control: no-cache, no-store, max-age=0' \
                 -H 'Pragma: no-cache' "$url" -o /tmp/oncology-live.html \
-              && grep -Fq 'A Hope of<br>Tomorrow.' /tmp/oncology-live.html \
+              && grep -Fq 'A Hope for<br>Tomorrow.' /tmp/oncology-live.html \
               && grep -Fq 'class="npoc-hero npoc-hope-hero"' /tmp/oncology-live.html \
               && grep -Fq 'id="oncology-focus"' /tmp/oncology-live.html \
               && grep -Fq 'href="#oncology-focus"' /tmp/oncology-live.html \
@@ -45,7 +45,7 @@ jobs:
             echo '::error::Public Oncology URL does not yet serve the approved Hope of Tomorrow page.'
             exit 1
           fi
-          echo 'Verified approved A Hope of Tomorrow HTML on the custom production domain.'
+          echo 'Verified approved A Hope for Tomorrow HTML on the custom production domain.'
 
       - name: Verify all four artwork assets and the live Oncology stylesheet
         shell: bash
