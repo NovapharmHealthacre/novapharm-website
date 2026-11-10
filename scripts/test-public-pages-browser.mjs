@@ -15,7 +15,9 @@ const routes = [
   { path: "/services/", name: "services", required: "Services" },
   { path: "/oncology/", name: "oncology", required: "Oncology" },
   { path: "/cro/", name: "cro", required: "Clinical" },
-  { path: "/technology/", name: "technology", required: "Technology" }
+  { path: "/technology/", name: "technology", required: "Technology" },
+  { path: "/products/", name: "products-overview", required: "Three collections. Distinct decisions." },
+  { path: "/products/nutraxin/", name: "nutraxin-collection", required: "Nutraxin" }
 ];
 const routeViewports = [
   { name: "mobile-390", width: 390, height: 844 },
