@@ -631,6 +631,15 @@ function materialize(relative, route, main, metadata = null, template = null) {
     if (!html.includes('href="/assets/css/oncology-editorial.css"')) {
       html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/oncology-editorial.css">\n</head>');
     }
+    // The owner-approved white visual system must load after the legacy dark Oncology CSS.
+    // Unique filename prevents browsers from reusing the old cached presentation.
+    if (!html.includes('href="/assets/css/oncology-hope-v2.css"')) {
+      html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/oncology-hope-v2.css">\n</head>');
+    }
+    html = html.replace(
+      '<link rel="preload" as="image" href="/assets/media/products/oncology-vial-handling.avif" type="image/avif" fetchpriority="high">',
+      '<link rel="preload" as="image" href="/assets/media/oncology/hope-tomorrow-portrait.jpg" type="image/jpeg" fetchpriority="high">'
+    );
   }
   if (route === "/products/nutraxin/order-request/" && !html.includes('href="/assets/css/nutraxin-order-request.css"')) {
     html = html.replace("</head>", '  <link rel="stylesheet" href="/assets/css/nutraxin-order-request.css">\n</head>');
