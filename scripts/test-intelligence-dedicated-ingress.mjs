@@ -44,6 +44,9 @@ test("dedicated Intelligence service does not reference staging or Nutraxin reso
 
 test("TLS-only WAF-protected ALB and private target boundaries", () => {
   const alb = resources.IntelligenceAlb.Properties;
+  const targets = resources.IntelligenceTargets.Properties;
+  assert.equal(targets.HealthCheckPath, "/healthz/");
+  assert.equal(targets.Matcher.HttpCode, "200", "redirects must never mark the terminal healthy");
   const listener = resources.IntelligenceHttpsListener.Properties;
   assert.equal(alb.Scheme, "internet-facing");
   assert.equal(listener.Port, 443);

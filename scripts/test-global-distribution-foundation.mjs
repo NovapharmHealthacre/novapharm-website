@@ -1,9 +1,18 @@
 import { readFileSync } from "node:fs";
 import { strict as assert } from "node:assert";
+import { navigation } from "../src/content/site-content.mjs";
 
 const routes = ["distribution", "market-access", "markets"];
 const sitemap = readFileSync("sitemap.xml", "utf8");
 const homepage = readFileSync("index.html", "utf8");
+// The visible desktop and mobile navigation in both corporate renderers must
+// expose Distribution. A section CTA alone does not satisfy primary navigation.
+const nav = homepage.match(/<nav\b[^>]*aria-label="Primary navigation"[\s\S]*?<\/nav>/i)?.[0] || "";
+assert.equal(navigation.filter(([label, href]) => label === "Distribution" && href === "/distribution/").length, 1, "Public navigation must have one Distribution entry");
+assert.match(readFileSync("apps/corporate/data/site.ts", "utf8"), /\["Distribution", "\/distribution\/"\]/, "Next.js navigation must include Distribution");
+assert.match(nav, /<a\b[^>]*href="\/distribution\/"/, "Homepage primary navigation must link to Distribution");
+assert.match(nav, /data-mega-trigger="distribution"/, "Distribution navigation must open a contextual menu");
+assert.match(homepage, /data-mega-panel="distribution"/, "Distribution menu must include its accessible panel");
 assert.match(homepage, /id="commercial-pathways"/, "Homepage must expose commercial pathways");
 for (const slug of routes) {
   const path = "/" + slug + "/";

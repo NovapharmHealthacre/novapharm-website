@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'src/data/atlas-evidence-staging.mjs'
+      - 'src/core/intelligence-evidence-graph.mjs'
+      - 'scripts/test-intelligence-evidence-graph.mjs'
       - 'infra/aws/entra-atlas-staging-readiness.json'
       - 'scripts/aws/entra-atlas-staging.test.mjs'
       - 'docs/deployments/entra-atlas-staging-20261108.md'
@@ -26,4 +28,5 @@ jobs:
       - name: Verify no cross-workspace Atlas access and no production Entra sessions
         run: |
           node --check src/data/atlas-evidence-staging.mjs
-          node --test scripts/aws/entra-atlas-staging.test.mjs
+          node --check src/core/intelligence-evidence-graph.mjs
+          node --test scripts/aws/entra-atlas-staging.test.mjs scripts/test-intelligence-evidence-graph.mjs

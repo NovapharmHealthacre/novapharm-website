@@ -20,6 +20,7 @@ export const company = Object.freeze({
 export const navigation = Object.freeze([
   ["Company", "/about/"],
   ["Capabilities", "/capabilities/"],
+  ["Distribution", "/distribution/"],
   ["Oncology", "/oncology/"],
   ["Products", "/products/"],
   ["NovaPharm Intelligence", "/technology/"],
