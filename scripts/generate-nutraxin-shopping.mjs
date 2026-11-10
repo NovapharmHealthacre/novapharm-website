@@ -39,7 +39,7 @@ for (const product of registered.products) {
   if (inStock) saleReady++;
   const availability = inStock ? "in_stock" : "out_of_stock";
   const ship = retail.delivery_verified === true
-    ? "GB:" + money(retail.provisional_uk_delivery_charge_pence) + " GBP" : "";
+    ? "GB:" + (retail.provisional_uk_delivery_charge_pence / 100).toFixed(2) + " GBP" : "";
   lines.push([
     p.sku, p.name + " - " + p.pack,
     p.name + ", " + p.pack + ". Nutraxin food supplement in the " + product.range + " range.",
