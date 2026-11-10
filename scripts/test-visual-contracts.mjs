@@ -61,7 +61,7 @@ assert.match(bundleCss, /Source: homepage-editorial.css/, "homepage styles must 
 
 const home = text("index.html");
 assert.match(home, /<main id="main" class="npd-main npd-home npd-apple-home">/);
-assert.match(home, /Medicine\.<br><span>Where it needs to be\.<\/span>/);
+assert.match(home, /<h1(?:\s+[^>]*)?>Medicine\. Where it needs to be\.<\/h1>/, "homepage preserves the approved semantic hero headline");
 assert.match(home, /supply-network-hero\.avif/);
 assert.match(home, /supply-network-hero\.jpg/);
 assert.match(home, /Three routes\.<br>One evidence standard\./);
