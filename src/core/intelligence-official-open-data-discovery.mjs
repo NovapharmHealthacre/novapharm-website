@@ -9,7 +9,7 @@
  */
 const SOURCES = Object.freeze({
   nhsbsa_english_prescribing: Object.freeze({
-    url: "https://opendata.nhsbsa.net/api/3/action/package_show?id=english-prescribing-data-epd",
+    url: "https://opendata.nhsbsa.net/api/3/action/package_show?id=english-prescribing-dataset-epd-with-snomed-code",
     publisher: "NHS Business Services Authority",
     sourceId: "nhsbsa_english_prescribing",
   }),
