@@ -112,6 +112,9 @@ if (root) {
       }
       const spotlight = root.querySelector('[data-esco-live-price="' + id + '"]');
       if (spotlight) spotlight.textContent = GBP.format(value / 100) + " · UK delivered, ex VAT";
+      const spotlightCard = root.querySelector('[data-esco-spotlight="' + id + '"]');
+      const spotlightLabel = spotlightCard?.querySelector(".esco-spotlight-label");
+      if (spotlightLabel) spotlightLabel.textContent = "READY TO ORDER";
     }
     if (readyToggle) {
       readyToggle.disabled = readyPrices.size === 0;
@@ -120,8 +123,6 @@ if (root) {
         ? "Show only products currently available for secure card checkout"
         : "No products currently available for immediate card checkout";
     }
-    const intro = root.querySelector(".esco-spotlight-label");
-    if (intro && readyPrices.size) intro.textContent = "READY TO ORDER";
     render();
     apply();
   }
@@ -221,14 +222,9 @@ if (root) {
     const jump = event.target.closest("[data-esco-spotlight-jump]");
     if (jump && root.contains(jump)) {
       event.preventDefault();
-      const id = jump.dataset.escoSpotlightJump;
-      if (input) input.value = id;
-      if (filter) filter.value = "";
-      if (readyToggle) readyToggle.checked = false;
-      apply();
-      const target = root.querySelector('[data-esco-catalogue-id="' + id + '"]');
-      target?.scrollIntoView({behavior:"smooth",block:"center"});
-      target?.querySelector("[data-esco-details]")?.focus({preventScroll:true});
+      // A selected product opens immediately, without discarding the customer's
+      // current search or scrolling them away from the featured selection.
+      openProductDetails(jump.dataset.escoSpotlightJump);
       return;
     }
     const details = event.target.closest("[data-esco-details]");

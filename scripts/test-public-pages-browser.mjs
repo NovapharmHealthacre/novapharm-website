@@ -439,31 +439,39 @@ for (const [engineName, browserType] of engines) {
         const response = await page.goto("/products/esco/", { waitUntil:"networkidle", timeout:30_000 });
         assert.equal(response?.status(), 200, `${engineName} ${viewport.name}: ESCO page unavailable`);
         await dismissConsent(page);
-        await page.locator(".esco-hero-showcase-image").first().waitFor({state:"visible"});
-        const intersects = await page.evaluate(() => {
+        await page.locator(".esco-hero-gallery-item").first().waitFor({state:"visible"});
+        const heroLayout = await page.evaluate(() => {
           const rect = node => node?.getBoundingClientRect();
           const intersection = (a,b) => a && b &&
             a.right > b.left + 1 && b.right > a.left + 1 &&
             a.bottom > b.top + 1 && b.bottom > a.top + 1;
-          const hero = document.querySelector(".esco-hero-showcase");
-          const [bed,crutches] = hero.querySelectorAll(".esco-hero-showcase-image");
-          const note = hero.querySelector(":scope > p");
+          const gallery = document.querySelector(".esco-hero-gallery");
+          const items = [...gallery.querySelectorAll(".esco-hero-gallery-item")];
+          const note = document.querySelector(".esco-hero-gallery-note");
+          const overlappingItems = items.some((one,index) =>
+            items.slice(index+1).some(two => intersection(rect(one),rect(two))));
           return {
-            imageOverlap:intersection(rect(bed),rect(crutches)),
-            noteOverlapsBed:intersection(rect(note),rect(bed)),
-            noteOverlapsCrutches:intersection(rect(note),rect(crutches)),
+            count:items.length,
+            overlappingItems,
+            noteOverlapsGallery:intersection(rect(note),rect(gallery)),
             horizontalOverflow:document.documentElement.scrollWidth > document.documentElement.clientWidth + 2
           };
         });
-        assert.equal(intersects.imageOverlap,false,`${engineName} ${viewport.name}: ESCO hero product photographs overlap`);
-        assert.equal(intersects.noteOverlapsBed,false,`${engineName} ${viewport.name}: ESCO hero caption overlaps bed`);
-        assert.equal(intersects.noteOverlapsCrutches,false,`${engineName} ${viewport.name}: ESCO hero caption overlaps crutches`);
-        assert.equal(intersects.horizontalOverflow,false,`${engineName} ${viewport.name}: ESCO hero overflows viewport`);
+        assert.equal(heroLayout.count,4,`${engineName} ${viewport.name}: expected four approved model photo slots`);
+        assert.equal(heroLayout.overlappingItems,false,`${engineName} ${viewport.name}: ESCO hero product photographs overlap`);
+        assert.equal(heroLayout.noteOverlapsGallery,false,`${engineName} ${viewport.name}: ESCO hero provenance note overlaps product images`);
+        assert.equal(heroLayout.horizontalOverflow,false,`${engineName} ${viewport.name}: ESCO hero overflows viewport`);
         const directory = path.join(artifactRoot,engineName,viewport.name);
         await mkdir(directory,{recursive:true});
         await page.locator(".esco-hero").screenshot({path:path.join(directory,"esco-hero.png"),animations:"disabled"});
-        await page.locator("[data-esco-details]").first().click();
+        // The featured product CTA must open its exact model without moving
+        // or clearing catalogue search state; card Details remains available.
+        await page.locator("[data-esco-spotlight-jump]").first().click();
         const dialog = page.locator("dialog.esco-product-dialog");
+        await dialog.waitFor({state:"visible"});
+        assert.match(await dialog.locator("[data-esco-dialog-title]").innerText(),/Pediatric Bed/);
+        await dialog.locator("[data-esco-dialog-close]").click();
+        await page.locator("[data-esco-details]").first().click();
         await dialog.waitFor({state:"visible"});
         const layout = await page.evaluate(() => {
           const dialog = document.querySelector("dialog.esco-product-dialog");
