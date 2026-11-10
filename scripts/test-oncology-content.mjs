@@ -21,7 +21,7 @@ for (const [name,count] of [
 ]) assert.equal(oncologyContent[name].length, count, name);
 
 for (const phrase of [
-  "A Hope of<br>Tomorrow.",
+  "A Hope for<br>Tomorrow.",
   "Every detail<br>matters.",
   "Six connected decisions.",
   "Complexity deserves precision.",
