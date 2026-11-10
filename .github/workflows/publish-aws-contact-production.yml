@@ -38,6 +38,9 @@ on:
       - 'assets/media/about/**'
       - 'scripts/apply-about-editorial.mjs'
       - 'scripts/build-site.mjs'
+      - 'scripts/apply-corporate-product-discipline.mjs'
+      - 'assets/css/corporate-product-discipline.css'
+      - 'scripts/test-owner-corrections.mjs'
       - 'scripts/validate-site.mjs'
       # Keep corporate app route parity and new commercial site releases in the
       # same AWS-backed publisher as the verified live contact service.
@@ -181,6 +184,10 @@ jobs:
           grep -Fq 'src="/assets/media/home/earth-reference-1400.jpg"' _site/index.html
           test -s _site/assets/media/home/earth-reference-1400.jpg
           grep -Fq 'nph-earth-hero' _site/assets/css/novapharm.bundle.css
+          # Ensure the generated page, not just checked-in HTML, uses the freshly versioned official red logo.
+          grep -Fq 'data-logo-release="20261110-red-master"' _site/index.html
+          grep -Fq 'srcset="/assets/brand/novapharm-healthcare-logo.png?v=20261110-red-master 1x"' _site/index.html
+          test -s _site/assets/brand/novapharm-healthcare-logo.png
           # The approved Oncology design and its exact mobile CSS are deployment prerequisites.
           node scripts/test-oncology-content.mjs
           test -s _site/assets/css/oncology-hope-v2.css
@@ -646,7 +653,7 @@ jobs:
                 break
               fi
               sed -n '/<header class="site-header npd-header"/,/<\/header>/p' "$target" > /tmp/owner-final-header.html
-              if ! grep -Fq '<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png"' /tmp/owner-final-header.html \
+              if ! grep -Fq '<picture class="brand-logo" data-logo-release="20261110-red-master"><img src="/assets/brand/novapharm-healthcare-logo.png" srcset="/assets/brand/novapharm-healthcare-logo.png?v=20261110-red-master 1x"' /tmp/owner-final-header.html \
                 || ! grep -Fq 'href="https://portal.novapharmhealthcare.com/"' /tmp/owner-final-header.html; then
                 verified=false
                 break
