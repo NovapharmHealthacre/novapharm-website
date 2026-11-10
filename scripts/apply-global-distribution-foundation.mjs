@@ -104,11 +104,11 @@ const pages = [
     <div class="ndist-partner-list" aria-label="Independent healthcare logistics provider capability references">
       <div class="ndist-partner-entry">
         <div class="ndist-partner-name">UPS Healthcare</div>
-        <div><h3>International healthcare logistics</h3><p>Temperature-controlled freight infrastructure, global shipping and healthcare-focused warehousing and logistics solutions.</p><span>External provider capabilities. Contracted scope must be verified per route.</span></div>
+        <div><h3>International healthcare logistics</h3><p>Temperature-controlled freight infrastructure, global shipping and healthcare-focused warehousing and logistics solutions.</p><span>External provider capabilities. Contracted scope must be verified per route.</span><a class="ndist-provider-source" href="https://about.ups.com/gb/en/newsroom/press-releases/customer-first/ups-extends-complex-healthcare-logistics-lead-with--48-million-i.html" rel="noopener noreferrer">UPS Healthcare service information</a></div>
       </div>
       <div class="ndist-partner-entry">
         <div class="ndist-partner-name">Marken <small>UPS Healthcare Precision Logistics</small></div>
-        <div><h3>Precision clinical and commercial movement</h3><p>Specialist temperature-sensitive transport, packaging, depot and clinical-to-commercial logistics capabilities.</p><span>Marken UK incorporates the former Polar Speed operation.</span></div>
+        <div><h3>Precision clinical and commercial movement</h3><p>Specialist temperature-sensitive transport, packaging, depot and clinical-to-commercial logistics capabilities.</p><span>Marken UK incorporates the former Polar Speed operation.</span><a class="ndist-provider-source" href="https://www.marken.com/news/marken-ups-healthcare-precision-logistics" rel="noopener noreferrer">Marken network announcement</a></div>
       </div>
     </div>
     <p class="ndist-partner-disclosure">Names are factual references to independent companies and their publicly documented service portfolios. They do not represent NovaPharm-owned premises, vehicles, aircraft, subsidiaries, universal contracted coverage or endorsement. Their official logos and proprietary photographs are not reproduced pending the necessary brand and image-use permissions.</p>
