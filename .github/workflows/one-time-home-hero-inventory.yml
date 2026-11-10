@@ -1,4 +1,5 @@
 name: One-time regenerate approved home hero inventory
+# Reconcile the latest main governance merge while preserving the PR-only image source.
 on:
   push:
     branches:
