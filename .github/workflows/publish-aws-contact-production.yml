@@ -20,6 +20,8 @@ on:
       - 'assets/data/esco-catalogue.json'
       - 'assets/data/esco-checkout-config.json'
       - 'scripts/test-esco-catalogue.mjs'
+      - 'scripts/check-pages-monotonic-release.mjs'
+      - 'scripts/test-pages-monotonic-release.mjs'
       # Owner-approved Capabilities Earth/vial and editorial typography are release surfaces.
       - 'capabilities/index.html'
       - 'src/content/capabilities-editorial.html'
@@ -78,12 +80,12 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  deployments: read
 
-# Each approved commit has its own build; stale source is rejected both before build
-# and immediately before deploying, so newer PR merges cannot endlessly replace
-# the one pending release in the global Pages concurrency group.
+# Exact-main verification precedes build; a verified artifact may publish later
+# only when last successful Pages deployment and current main prove forward ancestry.
 concurrency:
-  group: novapharm-pages-production-${{ github.sha }}
+  group: novapharm-pages-production
   cancel-in-progress: false
 
 jobs:
@@ -120,6 +122,7 @@ jobs:
       - name: Prove default public website is noncollecting
         run: |
           node scripts/test-static-public-source-safety.mjs
+          node --test scripts/test-pages-monotonic-release.mjs
           node --test scripts/test-account-request-intake.mjs
           npm ci --ignore-scripts
           PUBLIC_ANALYTICS_PRIVACY_APPROVED=true PUBLIC_GA4_MEASUREMENT_ID=G-897L1VS8BX npm run build:public-only
@@ -299,14 +302,18 @@ jobs:
       name: github-pages
       url: ${{ steps.ship.outputs.page_url }}
     steps:
-      - name: Refuse stale main release before publishing
+      - name: Check out independently verified release policy
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+          persist-credentials: false
+      - name: Prove forward-only release ancestry and deploy evidence
         env:
           GH_TOKEN: ${{ github.token }}
           EXPECTED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
         run: |
           set -euo pipefail
-          current="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
-          test "$current" = "$EXPECTED_SHA" || { echo "::error::Cannot publish stale commit $EXPECTED_SHA; current main $current"; exit 1; }
+          node scripts/check-pages-monotonic-release.mjs
       - name: Publish verified Pages artifact
         id: ship
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
