@@ -29,7 +29,7 @@ body[data-route="/capabilities/"] .ncap-page { background: #fff; color: #0b0b0d;
 .ncap-page .ncap-arrow { color:#6e7178; font-size:20px; margin-top:auto; padding-top:14px; align-self:flex-start; transition:transform .2s ease; }
 .ncap-page .ncap-discipline:hover .ncap-arrow { transform:translate(3px,-3px); color:#0066cc; }
 .ncap-page .ncap-earth { position:relative; min-height:clamp(490px,49vw,700px); background:#fff; display:flex; align-items:flex-end; justify-content:center; padding:0 20px 75px; isolation:isolate; text-align:center; }
-.ncap-page .ncap-earth-image { position:absolute; inset:0; z-index:-1; background: url('/assets/media/capabilities/earth-horizon.svg') center top / cover no-repeat; }
+.ncap-page .ncap-earth-image { position:absolute; inset:0; z-index:-1; background:none; }
 .ncap-page .ncap-earth-copy { position:relative; z-index:1; color:#fff; max-width:900px; padding-top:240px; }
 .ncap-page .ncap-earth-kicker { color:#bdc8d9; }
 .ncap-page .ncap-earth h2 { font-size:clamp(43px,5.15vw,76px); line-height:1.08; margin:14px 0 15px; font-weight:690; letter-spacing:-.057em; color:#fff; }
