@@ -249,6 +249,11 @@ async function auditPage(name, pathName, formFactor) {
     },
     trials,
   };
+  // Persist sanitized evidence even when performance misses the gate, so a
+  // failing build yields actionable LCP/TBT/CLS data without auth payloads.
+  const evidenceName = `${formFactor}-${pathName === "/" ? "sign-in" : "dashboard"}-sanitized.json`;
+  writeFileSync(join(artifactRoot, evidenceName), `${JSON.stringify(summary, null, 2)}\\n`);
+  console.log(`${name} three-run median: performance ${summary.scores.performance}; LCP ${summary.metrics.largestContentfulPaint.displayValue}; TBT ${summary.metrics.totalBlockingTime.displayValue}; CLS ${summary.metrics.cumulativeLayoutShift.displayValue}.`);
   assert.ok(summary.scores.performance >= 95, `${name}: performance score ${summary.scores.performance} is below 95.`);
   assert.equal(summary.scores.accessibility, 100, `${name}: accessibility must remain 100; received ${summary.scores.accessibility}.`);
   assert.equal(summary.scores.bestPractices, 100, `${name}: best practices must remain 100; received ${summary.scores.bestPractices}.`);
