@@ -51,3 +51,6 @@ await import("./apply-capabilities-editorial.mjs");
 
 // Apply approved, real-image Products presentation last.
 await import("./apply-products-editorial.mjs");
+
+// Fingerprint the approved four-page public design after every generator pass.
+await import("./version-public-visual-assets.mjs");
