@@ -24,7 +24,7 @@ test("paid checkout remains server authoritative and separate from request submi
   assert.match(bag,/checkoutApiOrigin \+ "\/checkout"/);
   assert.match(bag,/checkoutApiOrigin \+ "\/order-requests"/);
   assert.match(checkout,/set\(payload\) != \{/);
-  assert.match(checkout,/request_id[\\s\\S]*lines[\\s\\S]*customer[\\s\\S]*accept_order_terms/);
+  assert.match(checkout,/request_id[\s\S]*lines[\s\S]*customer[\s\S]*accept_order_terms/);
   assert.match(checkout,/not 1 <= int\(sku\[-4:\]\) <= 373/);
   assert.doesNotMatch(checkout,/request\.get\("unit_price_pence"\)/);
 });
