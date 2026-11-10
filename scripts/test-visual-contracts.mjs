@@ -85,7 +85,9 @@ const expectedHomeNavigation = [
   ["Intelligence", "/technology/"],
   ["Contact", "/contact/"],
 ];
-const homepagePrimaryNav = home.match(/<nav class="site-nav npd-global-nav"[^>]*>([\\s\\S]*?)<\\/nav>/)?.[1] ?? "";
+const primaryNavStart = home.indexOf('<nav class="site-nav npd-global-nav"');
+const primaryNavEnd = home.indexOf("</nav>", primaryNavStart);
+const homepagePrimaryNav = primaryNavStart >= 0 && primaryNavEnd > primaryNavStart ? home.slice(primaryNavStart, primaryNavEnd) : "";
 assert.ok(homepagePrimaryNav, "homepage must expose an accessible primary navigation");
 assert.equal((homepagePrimaryNav.match(/<a /g) ?? []).length, 6, "approved homepage must have six primary links");
 for (const [label, href] of expectedHomeNavigation) {
