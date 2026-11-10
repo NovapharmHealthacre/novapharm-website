@@ -266,6 +266,57 @@ for (const [engineName, browserType] of engines) {
               await assertLayout(page, `${engineName} ${viewport.name} research results`);
             }
 
+            if (route.name === "oncology") {
+              // Assert the approved visual geometry, not merely the page text.
+              // This caught the earlier cached dark hero and vertical card stack.
+              const geometry = await page.evaluate(() => {
+                const hero = document.querySelector(".npoc-hope-hero");
+                const portrait = hero?.querySelector(".npoc-hero-visual img");
+                const heading = hero?.querySelector("h1");
+                const button = hero?.querySelector(".npoc-button-primary");
+                const cardsContainer = document.querySelector(".npoc-focus-cards");
+                const cards = [...document.querySelectorAll(".npoc-focus-cards .npoc-focus-card")];
+                const getRect = (element) => {
+                  const rect = element.getBoundingClientRect();
+                  return { x:rect.x, y:rect.y, width:rect.width, height:rect.height, bottom:rect.bottom };
+                };
+                return {
+                  portrait: portrait ? {
+                    fit:getComputedStyle(portrait).objectFit,
+                    naturalWidth:portrait.naturalWidth,
+                    naturalHeight:portrait.naturalHeight,
+                    box:getRect(portrait)
+                  } : null,
+                  headingColor: heading ? getComputedStyle(heading).color : null,
+                  buttonColor: button ? getComputedStyle(button).backgroundColor : null,
+                  cardGrid: cardsContainer ? getComputedStyle(cardsContainer).display : null,
+                  cardRects:cards.map(getRect),
+                  labelPositions:cards.map((card) => {
+                    const label = card.querySelector("span");
+                    return label ? getComputedStyle(label).position : "missing";
+                  })
+                };
+              });
+              const label = `${engineName} ${viewport.name}: Oncology approved composition`;
+              assert.ok(geometry.portrait?.naturalWidth > 0 && geometry.portrait?.naturalHeight > 0,
+                `${label}: portrait asset must load`);
+              assert.equal(geometry.portrait.fit, "contain", `${label}: portrait must remain fully visible (not object-fit:cover)`);
+              assert.ok(geometry.portrait.box.width > 250 && geometry.portrait.box.height > 200,
+                `${label}: portrait must not collapse`);
+              assert.equal(geometry.headingColor, "rgb(19, 19, 22)", `${label}: white hero uses dark heading, never the previous dark-overlay white heading`);
+              assert.equal(geometry.buttonColor, "rgb(22, 22, 25)", `${label}: hero call-to-action must use the approved black, not old red`);
+              assert.equal(geometry.cardGrid, "grid", `${label}: cards must use an aligned CSS grid`);
+              assert.equal(geometry.cardRects.length, 3, `${label}: exactly three oncology art cards`);
+              assert.ok(geometry.cardRects.every((rect) => rect.width >= 170 && rect.height >= 250),
+                `${label}: cards must retain useful, balanced dimensions`);
+              assert.ok(geometry.cardRects.every((rect) => Math.abs(rect.y - geometry.cardRects[0].y) < 2),
+                `${label}: cards must start on the same row`);
+              assert.ok(geometry.cardRects.every((rect) => Math.abs(rect.height - geometry.cardRects[0].height) < 2),
+                `${label}: cards must share identical height`);
+              assert.ok(geometry.labelPositions.every((position) => position === "absolute"),
+                `${label}: labels must overlay each image, not appear underneath`);
+            }
+
             if (route.name === "contact") {
               const draft = page.locator("form[data-email-enquiry-form]");
               assert.equal(await draft.count(), 1, engineName + " " + viewport.name + ": public contact must have exactly one local email draft");
