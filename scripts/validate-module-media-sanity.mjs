@@ -151,8 +151,13 @@ for (const module of config.modules) {
   assert.doesNotMatch(html, /assets\/media\/editorial\/[^"']+\.svg/, `${module.id} must not retain decorative editorial SVG imagery`);
 }
 
+// The approved Capabilities design is intentionally typographic and uses its
+// distinct editorial Earth chapter instead of a stock contextual photograph.
+const capabilitiesHtml = read("capabilities/index.html");
+for (const landmark of ["npd-main ncap-page", "ncap-hero", "ncap-model", "ncap-earth"]) {
+  assert.ok(capabilitiesHtml.includes(landmark), `Capabilities must retain approved editorial landmark ${landmark}`);
+}
 for (const [path, assetId] of [
-  ["capabilities/index.html", "services-connected-execution"],
   ["regulatory-services/index.html", "regulatory-batch-integrity"],
   ["products/index.html", "product-portfolio-evidence"],
 ]) {
