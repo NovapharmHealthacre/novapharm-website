@@ -127,6 +127,8 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertNotIn("innerHTML", PORTAL.APP)
 
     def test_approved_account_landing_and_personal_signup(self):
+        policy=PORTAL.reply(200,PORTAL.PAGE,"text/html")["headers"]["content-security-policy"]
+        self.assertIn("form-action 'self' https://synthetic.auth.eu-north-1.amazoncognito.com",policy)
         self.assertIn("One account.<br>Every NovaPharm experience.", PORTAL.PAGE)
         self.assertIn('id="account-entry-form"', PORTAL.PAGE)
         self.assertIn('id="account-type-business"', PORTAL.PAGE)
