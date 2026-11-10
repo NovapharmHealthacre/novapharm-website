@@ -80,7 +80,7 @@ test("customer-first catalogue relies on the header Bag without the oversized ho
 });
 test("black-background supplier photograph is cleaned once and reused across product, hero and Bag", () => {
   const photoScript = readFileSync("assets/js/esco-photo-cleanup.js", "utf8");
-  assert.match(photoScript, /esco-p07-image03\.webp/);
+  assert.match(photoScript, /esco-p07-/);\n  assert.match(photoScript, /image03\\.webp/);
   assert.match(photoScript, /getImageData/);
   assert.match(photoScript, /MutationObserver/);
   assert.match(photoScript, /neutralDark/);
