@@ -668,6 +668,22 @@ function materialize(relative, route, main, metadata = null, template = null) {
   if (route === "/contact/" && html.includes("data-email-enquiry-form")) {
     html = html.replace("</body>", '<script src="/assets/js/contact-email-draft.js" defer></script></body>');
   }
+  // Public asset URLs must change whenever owner-approved visual assets change.
+  // This particular release uses a new URL for the official red logo and the
+  // four public page styles, avoiding stale Safari and edge-cache resources.
+  if (["/", "/capabilities/", "/oncology/", "/products/"].includes(route)) {
+    const revision = "approved-20261110-red02";
+    const assets = [
+      ["src", "/assets/brand/novapharm-healthcare-logo.png"],
+      ["href", "/assets/css/novapharm.bundle.css"],
+      ...(route === "/capabilities/" ? [["href", "/assets/css/capabilities-editorial.css"]] : []),
+      ...(route === "/oncology/" ? [["href", "/assets/css/oncology-editorial.css"], ["href", "/assets/css/oncology-hope-v2.css"]] : []),
+      ...(route === "/products/" ? [["href", "/assets/css/products-editorial.css"]] : [])
+    ];
+    for (const [attribute, path] of assets) {
+      html = html.replaceAll(`${attribute}="${path}"`, `${attribute}="${path}?v=${revision}"`);
+    }
+  }
   write(relative, html);
 }
 
