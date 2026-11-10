@@ -3,6 +3,7 @@
  * can enable Stripe-hosted checkout only for individually verified UK SKUs.
  * Card details are collected by Stripe, never by this static page.
  */
+import { internalSkuFromCatalogueId } from "./esco-internal-sku.js";
 const BAG_KEY = "novapharm-esco-quote-list-v1";
 const itemsRoot = document.querySelector("[data-esco-bag-items]");
 const totalNode = document.querySelector("[data-esco-bag-total]");
@@ -80,7 +81,7 @@ function renderPaymentEligibility(lines) {
       const codes = quoteOnly.map(item => item.id).join(", ");
       checkoutNote.textContent = quoteOnly.length + (quoteOnly.length === 1
         ? " product in your Bag requires a confirmed quote (" : " products in your Bag require a confirmed quote (") +
-        codes + "). These catalogue guide prices are not payable prices. Secure checkout is available for products marked Ready to order.";
+        codes + "). Owner-approved base prices are not final payable totals until VAT, delivery, variant and order eligibility are confirmed. Secure checkout is available for products individually marked Ready to order.";
     } else {
       checkoutNote.textContent = "These prices include UK delivery, excluding VAT. Stripe confirms the final VAT and total before your card is charged.";
     }
@@ -217,9 +218,9 @@ async function init() {
       const content = node("div", "", "esco-shopping-product");
       content.append(
         node("h3", p.name, "esco-shopping-product-name"),
-        node("p", (p.model ? "ESCO " + p.model : "Model to confirm") + " · " + item.id, "esco-shopping-model"),
+        node("p", (p.model ? "ESCO " + p.model : "Supplier model to confirm") + " · NovaPharm order code " + internalSkuFromCatalogueId(item.id) + " · " + item.id, "esco-shopping-model"),
         node("p", pictureInfo?.note || "Exact product imagery to be confirmed", "esco-shopping-provenance"),
-        node("p", (approvedPrice ? "UK delivered price " : "Guide ") + GBP.format(unitPennies / 100) + " per unit · ex VAT", "esco-shopping-unitprice")
+        node("p", (approvedPrice ? "UK delivered price " : "Owner-approved base price ") + GBP.format(unitPennies / 100) + " per unit · ex VAT", "esco-shopping-unitprice")
       );
       const controls = node("div", "", "esco-bag-row-controls");
       const label = node("label", "Quantity", "esco-shopping-qty-label");
@@ -240,7 +241,7 @@ async function init() {
       controls.append(label, remove);
       const linePrice = node("div", "", "esco-shopping-line");
       linePrice.append(node("strong", GBP.format(linePennies / 100), "esco-shopping-line-total"),
-        node("small", approvedPrice ? "UK delivery included · ex VAT" : "Guide total · ex VAT", "esco-shopping-line-note"));
+        node("small", approvedPrice ? "UK delivery included · ex VAT" : "Base-price subtotal · ex VAT; delivery to confirm", "esco-shopping-line-note"));
       content.append(controls);
       article.append(pictureBox,content,linePrice);
       itemsRoot.append(article);
@@ -254,13 +255,13 @@ async function init() {
     const estimateTitle = document.querySelector(".esco-bag-estimate span");
     const estimateNote = document.querySelector(".esco-bag-estimate small");
     const financialNote = document.querySelector(".esco-bag-financial-note");
-    if (summaryTitle) summaryTitle.textContent = allPayable ? "Order subtotal" : "Estimated subtotal";
+    if (summaryTitle) summaryTitle.textContent = allPayable ? "Order subtotal" : "Base-price subtotal";
     if (deliverySummary) deliverySummary.textContent = allPayable ? "Included" : "Calculated on approval";
-    if (estimateTitle) estimateTitle.textContent = allPayable ? "UK delivered prices" : "Guide estimate";
+    if (estimateTitle) estimateTitle.textContent = allPayable ? "UK delivered prices" : "Approved base prices";
     if (estimateNote) estimateNote.textContent = allPayable ? "Ex VAT · final tax shown at Stripe" : "Ex VAT · Not yet a payable total";
     if (financialNote) financialNote.textContent = allPayable
       ? "Your selected items have fixed UK delivered prices. Stripe calculates applicable VAT and displays the final amount before payment."
-      : "Catalogue guide prices are not a binding offer. Your final order total, applicable VAT and delivery are confirmed before payment.";
+      : "Your base unit prices are owner-approved. Your final order total, variant, applicable VAT and delivery are confirmed before payment.";
     const lines = state.map((item) => item.id + " qty " + item.quantity);
     const quote = "ESCO Anand UK quotation request (catalogue 2026). Items: " + lines.join("; ") +
       ". Please confirm exact variant, UK compliance, selling price, applicable VAT, delivery and lead time.";
