@@ -1,6 +1,20 @@
 name: Build, deploy and verify GitHub Pages
 
 on:
+  # Publication is limited to committed source changes on main. Deployment
+  # still runs the public security, build, link and live-site verification gates.
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/pages-live-publish.yml
+      - scripts/build-site.mjs
+      - scripts/apply-global-distribution-foundation.mjs
+      - scripts/enhance-seo-authority.mjs
+      - scripts/test-global-distribution-foundation.mjs
+      - src/content/site-content.mjs
+      - assets/css/global-distribution-editorial.css
+      - docs/strategy/global-distribution-execution.md
+      - package.json
   pull_request:
     paths:
       - .github/workflows/pages-live-publish.yml
