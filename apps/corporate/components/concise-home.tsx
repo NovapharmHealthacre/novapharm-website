@@ -23,7 +23,7 @@ export function ConciseHomePage() {
             <a className="nph-earth-secondary" href="/partner-with-us/">Partner with us <span aria-hidden="true">›</span></a>
           </div>
         </div>
-        <Image className="nph-earth-hero-landscape" src="/assets/media/home/earth-morning-approved.webp" alt="" width={960} height={200} priority fetchPriority="high" unoptimized />
+        <Image className="nph-earth-hero-landscape" src="/assets/media/home/earth-morning-approved.avif" alt="" width={1100} height={229} priority fetchPriority="high" unoptimized />
       </section>
       <section className="npd-apple-manifesto" aria-labelledby="nph-purpose-title">
         <div className="shell container npd-apple-center">
