@@ -237,6 +237,9 @@ try {
 
   const detail = await service.medicineIdentityDetail(medicineId, context);
   assert.equal(detail.hierarchy.length, 2);
+  assert.equal(detail.investigationPassport.contract, "novapharm.intelligence.investigation-passport.v1");
+  assert.equal(detail.investigationPassport.decisionReady, false);
+  assert.equal(detail.investigationPassport.lenses.length, 12);
   assert.equal(detail.hierarchy[0].name, "Cardiovascular system");
   assert.equal(detail.identityRelationships.contract, "novapharm.intelligence.identity-relationships.v1");
   assert.equal(detail.identityRelationships.dataState, "derived_from_authorised_identity_records");
@@ -276,6 +279,11 @@ try {
   assert.equal(analytics.rows[0].metric_value, 12);
   assert.equal(analytics.series.length, 1);
   assert.equal(analytics.series[0].metric_value, 12);
+  assert.equal(analytics.observedChange.contract, "novapharm.intelligence.observed-medicine-change.v1");
+  assert.equal(analytics.observedChange.state, "insufficient_comparable_evidence");
+  assert.equal(analytics.observedChange.reason, "three_accepted_monthly_observations_required");
+  assert.equal(analytics.observedChange.observation, null);
+  assert.equal(analytics.observedChange.decisionReady, false);
   assert.deepEqual(analytics.summary, {
     totalItems: 12,
     totalQuantity: 24,
