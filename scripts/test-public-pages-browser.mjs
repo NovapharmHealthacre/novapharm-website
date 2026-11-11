@@ -8,6 +8,7 @@ const baseUrl = process.env.PUBLIC_PAGES_BASE_URL ?? "http://127.0.0.1:4310";
 const artifactRoot = path.resolve(process.env.PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT ?? "artifacts/public-pages-browser");
 const routes = [
   { path: "/", name: "home", required: "Medicine. Where it needs to be" },
+  { path: "/capabilities/", name: "capabilities", required: "From evidence to access." },
   { path: "/contact/", name: "contact", required: "How can we help?" },
   { path: "/leadership/", name: "leadership", required: "Chief Scientific Officer" },
   { path: "/leadership/girish-achliya/", name: "leadership-girish", required: "Chief Scientific Officer" },
@@ -244,6 +245,47 @@ for (const [engineName, browserType] of engines) {
             }
             const bodyText = (await page.locator("body").innerText()).replace(/\s+/g, " ");
             assert.ok(bodyText.includes(route.required), `${engineName} ${viewport.name} ${route.path}: required page marker missing`);
+
+            if (route.name === "capabilities") {
+              const state = await page.evaluate(() => {
+                const hero = document.querySelector(".ncap-hero h1");
+                const grid = document.querySelector(".ncap-grid");
+                const vial = document.querySelector(".ncap-vial-illustration");
+                const earth = document.querySelector(".ncap-earth-illustration");
+                const earthPanel = document.querySelector(".ncap-earth");
+                const styleLink = document.querySelector('link[href*="capabilities-editorial.css"]');
+                const headingStyle = hero && getComputedStyle(hero);
+                const gridStyle = grid && getComputedStyle(grid);
+                const illustrationOk = (image) => image && image.complete && image.naturalWidth > 100 &&
+                  image.naturalHeight > 100 && image.getBoundingClientRect().width > 100;
+                return {
+                  heading: hero?.innerText.replace(/\\s+/g, " ").trim() ?? "",
+                  headlineSize: Number.parseFloat(headingStyle?.fontSize ?? "0"),
+                  headlineLineCount: document.querySelectorAll(".ncap-title-line").length,
+                  disciplineCount: document.querySelectorAll(".ncap-discipline").length,
+                  gridDisplay: gridStyle?.display,
+                  gridColumns: gridStyle?.gridTemplateColumns.trim().split(/\\s+/).length ?? 0,
+                  vialVisible: Boolean(illustrationOk(vial)),
+                  earthVisible: Boolean(illustrationOk(earth)),
+                  earthBackground: earthPanel && getComputedStyle(earthPanel).backgroundColor,
+                  cssVersion: styleLink?.getAttribute("href") ?? "",
+                  ctaCount: document.querySelectorAll('.ncap-earth a[href^="/contact/"]').length
+                };
+              });
+              const label = `${engineName} ${viewport.name} Capabilities`;
+              assert.equal(state.heading, "From evidence to access.", `${label}: approved headline missing`);
+              assert.ok(state.headlineSize > 30, `${label}: editorial typography not rendered`);
+              assert.equal(state.headlineLineCount, 2, `${label}: approved two-line hero not rendered`);
+              assert.equal(state.disciplineCount, 4, `${label}: four capability disciplines missing`);
+              assert.equal(state.gridDisplay, "grid", `${label}: CSS failed to apply to capability layout`);
+              const columns = viewport.name === "desktop-1440" ? 4 : viewport.name === "tablet-768" ? 2 : 1;
+              assert.equal(state.gridColumns, columns, `${label}: responsive capability columns incorrect`);
+              assert.ok(state.vialVisible && state.earthVisible, `${label}: approved artwork absent or not visible`);
+              assert.equal(state.earthBackground, "rgb(7, 22, 37)", `${label}: cinematic Earth stage absent`);
+              assert.ok(state.cssVersion.includes("20261111-capabilities-design-verified-v4"),
+                `${label}: browser still uses stale Capabilities stylesheet`);
+              assert.equal(state.ctaCount, 1, `${label}: capability enquiry CTA missing`);
+            }
 
             if (route.name === "distribution") {
               const hero = page.locator(".ndist-hero h1");
