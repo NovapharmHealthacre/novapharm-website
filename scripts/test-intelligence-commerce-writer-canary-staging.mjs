@@ -53,7 +53,12 @@ test("canary remains isolated with fixed bucket, no public endpoints, no email o
   assert.match(code, /ServerSideEncryption="AES256"/);
   assert.match(code, /"customer_data": False/);
   assert.match(code, /"production_exporter_cutover": False/);
-  assert.doesNotMatch(code, /send_email|send_message|checkout|payment_intent|create_customer|secretsmanager|PutRolePolicy/i);
+  // Human-readable module docstrings can mention prohibited activities while
+  // explicitly saying the canary never performs them. Keep the denial check
+  // on executable Python, not its initial explanatory module docstring.
+  assert.match(code, /^"""/);
+  const executablePython = code.replace(/^"""[\s\S]*?"""\s*/, "");
+  assert.doesNotMatch(executablePython, /send_email|send_message|checkout|payment_intent|create_customer|secretsmanager|PutRolePolicy/i);
 });
 
 test("log retention and candidate release tags are bounded", () => {
