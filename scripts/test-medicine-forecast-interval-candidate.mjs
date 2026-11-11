@@ -61,10 +61,11 @@ test("permission rejection and unaccepted observations propagate", () => {
 test("out-of-time demand shift fails actual coverage even if calibration residuals are zero", () => {
   const shifted = history().map((row, i) => i >= 36 ? { ...row, value: row.value + 200 } : row);
   const x = evaluate({ observations: shifted });
-  assert.equal(x.accepted, true);
   assert.equal(x.intervalValidation.calibratedErrorRadius, 0);
   assert.equal(x.intervalValidation.empiricalHoldoutCoverage, 0.5);
   assert.equal(x.intervalValidation.empiricalCoveragePassed, false);
+  assert.equal(x.accepted, false);
+  assert.equal(x.code, "independent_interval_coverage_failed");
   assert.deepEqual(x.forecast, []);
   assert.equal(x.productionApproved, false);
 });
