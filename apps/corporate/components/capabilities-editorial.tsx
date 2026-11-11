@@ -42,7 +42,7 @@ export function CapabilitiesEditorialPage() {
         <div className="ncap-wrap ncap-hero-content">
           <p className="ncap-kicker">Capabilities</p>
           <h1 id="ncap-title"><span className="ncap-title-line">From evidence</span><span className="ncap-title-line">to access.</span></h1>
-          <p className="ncap-hero-lead">Market entry, regulatory, clinical and technology decisions, connected to shape an evidence-led route for medicines.</p>
+          <p className="ncap-hero-lead">Market entry, regulatory, clinical and technology — connected to create real access for medicines.</p>
           <a className="ncap-hero-link" href="#ncap-model">Explore our capabilities <span aria-hidden="true">↗</span></a>
         </div>
         <figure className="ncap-hero-art">
