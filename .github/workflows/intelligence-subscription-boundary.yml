@@ -5,6 +5,8 @@ on:
     paths:
       - 'src/core/intelligence-subscription-entitlements.mjs'
       - 'src/core/intelligence-customer-access.mjs'
+      - 'infra/aws/intelligence-customer-authorizer.py'
+      - 'scripts/test_intelligence_customer_authorizer.py'
       - 'scripts/test-intelligence-customer-access.mjs'
       - 'infra/aws/intelligence-customer-access-ledger-production.json'
       - 'scripts/test-intelligence-subscription-entitlements.mjs'
@@ -30,6 +32,8 @@ jobs:
         run: npm ci
       - name: Verify revocable sessions, tenant isolation and approved seats
         run: node --test scripts/test-intelligence-customer-access.mjs
+      - name: Verify the DynamoDB private production authorizer denies bypasses
+        run: python3 -m unittest scripts/test_intelligence_customer_authorizer.py
       - name: Verify denied-by-default subscription access and same-tenant MFA
         run: node --test scripts/test-intelligence-subscription-entitlements.mjs
       - name: Assert signed Billing webhook idempotency, tenant binding and no premature grants
