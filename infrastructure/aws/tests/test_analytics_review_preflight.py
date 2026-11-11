@@ -140,5 +140,34 @@ class PreflightContractTests(unittest.TestCase):
         self.assertNotIn("s3:PutBucketPolicy", text)
 
 
+    def test_official_publisher_metadata_is_unapproved_and_bounded(self):
+        metadata = json.loads(
+            (ROOT / "docs" / "data" / "evidence" / "nhsbsa-epd-publisher-metadata-202608.json")
+            .read_text(encoding="utf-8")
+        )
+        self.assertEqual(metadata["source_id"], "nhsbsa.epd")
+        self.assertEqual(metadata["reporting_period"], "2026-08")
+        self.assertEqual(metadata["resource_id"], "30b74257-9912-4b54-8990-8eec2a4b7f14")
+        self.assertEqual(metadata["resource_size_bytes"], 7432815985)
+        self.assertEqual(metadata["publisher_license_id"], "OGL-UK-3.0")
+        self.assertFalse(metadata["publisher_hash_independently_verified"])
+        self.assertFalse(metadata["source_file_downloaded"])
+        self.assertFalse(metadata["terminology_rights_approved"])
+        self.assertEqual(metadata["production_observations_accepted"], 0)
+        self.assertEqual(metadata["production_admission_status"], "blocked_pending_independent_review")
+        self.assertEqual(len(metadata["publisher_advertised_sha256"]), 64)
+        self.assertEqual(len(metadata["publisher_metadata_response_sha256"]), 64)
+
+    def test_publisher_catalog_separates_metadata_from_medicine_facts(self):
+        manifest = (ROOT / "infrastructure" / "aws" / "novapharm-intelligence-analytics-review.yaml").read_text(encoding="utf-8")
+        self.assertIn("PublisherMetadataTable:", manifest)
+        self.assertIn("Name: publisher_resource_metadata_v1", manifest)
+        self.assertIn("source-review/publisher-metadata/v1/", manifest)
+        self.assertIn("data_state: unverified_publisher_metadata", manifest)
+        self.assertIn("customer_publication: prohibited", manifest)
+        self.assertIn("Name: resource_size_bytes, Type: bigint", manifest)
+        self.assertNotIn("AWS::Glue::Crawler", manifest)
+        self.assertNotIn("AWS::Events::Rule", manifest)
+
 if __name__ == "__main__":
     unittest.main()
