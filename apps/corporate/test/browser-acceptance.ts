@@ -282,7 +282,7 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
     const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
     accessibilityRuns += 1;
     for (const violation of result.violations.filter((item) => item.impact === "serious" || item.impact === "critical")) {
-      findings.push({ engine, viewport: viewport.name, route, type: `axe:${violation.id}`, detail: violation.help });
+      findings.push({ engine, viewport: viewport.name, route, type: `axe:${violation.id}`, detail: `${violation.help} | ${violation.nodes.map((node) => `${node.target.join(", ")}: ${node.failureSummary ?? "No detail"}`).join(" | ")}` });
     }
   }
 }

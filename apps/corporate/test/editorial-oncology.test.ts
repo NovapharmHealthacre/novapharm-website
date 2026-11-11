@@ -15,9 +15,12 @@ test("Oncology is implemented in the active Next.js renderer, not solely static 
   assert.match(route, /case "oncology":\s*content = <OncologyEditorialPage \/>/);
   assert.match(route, /import \{ OncologyEditorialPage \} from "@\/components\/oncology-editorial"/);
   assert.match(layout, /import "\.\/oncology-editorial\.css"/);
-  assert.match(component, /data-oncology-design="editorial-v2"/);
+  assert.match(component, /data-oncology-design="hope-for-tomorrow-v3"/);
   assert.match(pageMetadata, /Oncology \| Evidence-led Specialist Medicines \| NovaPharm Healthcare/);
-  assert.match(component, /Oncology demands\{" "\}<br \/>more than supply/);
+  assert.match(component, /A Hope for\{" "\}<br \/>Tomorrow\./);
+  assert.match(component, /id="oncology-focus"/);
+  assert.match(component, /Selected Therapies\.<br \/>Real Impact\./);
+  assert.doesNotMatch(component, /Oncology demands|oncology-vial-handling/);
   assert.match(component, /Every detail<br \/>matters/);
   assert.match(component, /Six connected decisions/);
   assert.match(component, /Complexity deserves precision/);
@@ -38,13 +41,13 @@ test("Oncology product safety, governance, imagery and progressive disclosure ar
   assert.match(component, /oncologyContent\.faqs\.map/);
   assert.match(component, /<details className="npoc-matrix">/);
   assert.match(component, /aria-label="Scrollable oncology readiness matrix"/);
-  assert.match(component, /Representative scientific photography/);
+  assert.match(component, /Illustrative programme categories only/);
   assert.match(component, /non-confidential opportunity summary/);
   assert.doesNotMatch(component, /<svg|lucide|oncology-editorial-gallery|specialty-pharmacy-handling|data-login-form|Buy now|In stock/i);
-  assert.match(component, /oncology-vial-handling-960\.avif/);
-  for (const format of ["jpg","webp","avif"]) {
-    const media = path.join(root, "../../assets/media/products", `oncology-vial-handling.${format}`);
-    assert.ok(existsSync(media), `Missing governed image asset: ${media}`);
+  assert.ok(component.includes("/assets/media/oncology/hope-tomorrow-portrait.jpg"));
+  for (const image of ["hope-tomorrow-portrait.jpg", "solid-tumours.jpg", "haematological-cancers.jpg", "supportive-care.jpg"]) {
+    const media = path.join(root, "../../assets/media/oncology", image);
+    assert.ok(existsSync(media), `Missing approved image asset: ${media}`);
   }
   assert.match(component, /href=\{enquiry\}/);
   assert.match(component, /mailto:vishal@novapharmhealthcare\.com/);
@@ -53,9 +56,23 @@ test("Oncology product safety, governance, imagery and progressive disclosure ar
 test("Oncology visuals are isolated, responsive, and respect user accessibility preferences", () => {
   assert.match(css, /\.npoc-page\s*\{/);
   assert.match(css, /\.npoc-page \.npoc-hero/);
+  assert.match(css, /\.npoc-page section\.npoc-hero\.npoc-hope-hero/);
+  assert.match(css, /object-fit:contain/);
   assert.match(css, /@media\(max-width:760px\)/);
   assert.match(css, /@media\(prefers-reduced-motion:reduce\)/);
   assert.match(css, /@media\(forced-colors:active\)/);
   assert.match(css, /@media print/);
   assert.doesNotMatch(css, /body\[data-page="oncology"\]/);
+});
+
+
+test("Next.js Oncology stylesheet remains exactly in sync with the approved static design", () => {
+  const staticCss = readFileSync(path.join(root, "../../assets/css/oncology-hope-v2.css"), "utf8");
+  const matchingNextSelectors = staticCss
+    .replaceAll('body[data-page="oncology"] main.npoc-page', ".npoc-page")
+    .replaceAll('body[data-page="oncology"] .npoc-page', ".npoc-page")
+    .replace(/body\[data-page="oncology"\] \.site-header\.npd-header[^{]*\{[^}]*\}\s*/g, "");
+  assert.ok(css.includes(matchingNextSelectors), "Next.js must inherit the exact owner-approved Oncology visual contract");
+  assert.match(component, /A Hope for\{" "\}<br \/>Tomorrow\./);
+  assert.doesNotMatch(component, /Oncology demands|oncology-vial-handling/);
 });
