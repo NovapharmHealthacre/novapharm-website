@@ -67,7 +67,7 @@ export function evaluateMedicineForecastBaseline({ observations, source, scope, 
         row.sourceId !== source.sourceId || row.medicineId !== scope.medicineId ||
         row.jurisdiction !== scope.jurisdiction ||
         row.measure !== scope.measure || row.unit !== scope.unit ||
-        row.accepted !== true || row.validationSample === true ||
+        row.accepted !== true || row.validationSample !== false ||
         typeof row.provenanceSha256 !== "string" ||
         !/^[a-f0-9]{64}$/u.test(row.provenanceSha256)) {
       return denied("historical_series_invalid_or_mixed");
