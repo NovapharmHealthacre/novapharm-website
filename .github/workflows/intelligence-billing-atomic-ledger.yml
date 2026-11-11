@@ -1,0 +1,43 @@
+name: Intelligence atomic paid-invoice ledger contract
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/intelligence-billing-atomic-ledger.mjs'
+      - 'scripts/test-intelligence-billing-atomic-ledger.mjs'
+      - 'docs/intelligence/billing-atomic-commit-release.md'
+      - '.github/workflows/intelligence-billing-atomic-ledger.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  atomic-billing-contract:
+    name: Signed Stripe invoice, replay and revocation fences
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact review commit
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Install Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Verify atomic invoice and customer ownership contracts
+        run: |
+          node --test scripts/test-intelligence-billing-atomic-ledger.mjs
+          node --test scripts/test-intelligence-billing-reconciliation.mjs
+          node --test scripts/test-intelligence-billing-events.mjs
+          node --test scripts/test-intelligence-subscription-entitlements.mjs
+      - name: Verify default OFF and strictly private scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'customerLaunchAccepted !== true' src/core/intelligence-billing-atomic-ledger.mjs
+          grep -Fq 'sourceRightsApproved !== true' src/core/intelligence-billing-atomic-ledger.mjs
+          grep -Fq 'transactionalWriteVerified !== true' src/core/intelligence-billing-atomic-ledger.mjs
+          ! grep -Eq 'sk_live_[A-Za-z0-9]{10,}|rk_live_[A-Za-z0-9]{10,}' src/core/intelligence-billing-atomic-ledger.mjs
