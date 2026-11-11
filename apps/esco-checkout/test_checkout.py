@@ -171,6 +171,37 @@ class CheckoutSecurity(unittest.TestCase):
         req["headers"]["origin"]="https://evil.example"
         self.assertEqual(status(mod.handler(req))[0],403)
 
+    def test_checkout_expiry_is_not_card_failure(self):
+        # These cases represent signed Stripe lifecycle events, not browser claims.
+        outcome = mod.payment_event_outcome
+        self.assertEqual(outcome("checkout.session.expired", "unpaid"), "CHECKOUT_EXPIRED")
+        self.assertEqual(outcome("checkout.session.async_payment_failed", "unpaid"), "PAYMENT_FAILED")
+        self.assertEqual(outcome("checkout.session.completed", "paid"), "PAID")
+        self.assertEqual(outcome("checkout.session.async_payment_succeeded", "paid"), "PAID")
+        self.assertIsNone(outcome("checkout.session.completed", "unpaid"))
+        self.assertIsNone(outcome("checkout.session.async_payment_succeeded", "unpaid"))
+        with self.assertRaises(ValueError):
+            outcome("checkout.session.expired", "paid")
+        with self.assertRaises(ValueError):
+            outcome("checkout.session.async_payment_failed", "paid")
+        with self.assertRaises(ValueError):
+            outcome("unexpected.event", "unpaid")
+
+    def test_expired_checkout_return_has_distinct_status(self):
+        class Db:
+            def get_item(self, **kwargs):
+                return {"Item": {"brand": {"S": "ESCO"}, "state": {"S": "CHECKOUT_EXPIRED"}}}
+        with patch.object(mod, "ORDERS_TABLE", "esco-acceptance-ledger"), patch.object(
+            mod, "aws", return_value=Db()
+        ):
+            response = mod.order_status(
+                {"headers": {"origin": "https://novapharmhealthcare.com"}},
+                "ESCO-" + UUID)
+        code, payload = status(response)
+        self.assertEqual(code, 200)
+        self.assertEqual(payload["status"], "CHECKOUT_EXPIRED")
+        self.assertFalse(payload["paid"])
+
     def test_bad_webhook_signature_never_updates_order(self):
         req=event("/stripe/webhook","POST",{"type":"checkout.session.completed"})
         req["headers"]["stripe-signature"]="t=1000000000,v1=0000"
