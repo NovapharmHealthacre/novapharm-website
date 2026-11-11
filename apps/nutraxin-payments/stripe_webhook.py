@@ -143,6 +143,23 @@ def record_once(event, payment):
         known = ddb.get_item(TableName=LEDGER, Key=event_key, ConsistentRead=True).get("Item")
         if known and attr_value(known, "sessionId") == payment["sessionId"]:
             return False
+        # Stripe may send both checkout.session.completed and
+        # checkout.session.async_payment_succeeded for the same paid attempt.
+        # Reconcile these as one settled order, never write a second outbox
+        # item or regress a PAID order back to CHECKOUT_OPEN. Only acknowledge
+        # the second event when the durable attempt and summary agree.
+        if payment["action"] == "PAID":
+            attempt = ddb.get_item(TableName=LEDGER, Key=attempt_key,
+                                   ConsistentRead=True).get("Item")
+            summary = ddb.get_item(TableName=LEDGER, Key={
+                "pk": {"S": "ORDER#" + payment["orderId"]},
+                "sk": {"S": "SUMMARY"}}, ConsistentRead=True).get("Item")
+            if (attempt and summary and
+                attempt.get("paymentStatus") == {"S": "PAID"} and
+                attempt.get("sessionId") == {"S": payment["sessionId"]} and
+                summary.get("status") == {"S": "PAID"} and
+                summary.get("stripeSessionId") == {"S": payment["sessionId"]}):
+                return False
         raise
 
 
