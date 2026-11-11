@@ -6,6 +6,8 @@ on:
       - 'src/core/intelligence-subscription-entitlements.mjs'
       - 'src/core/intelligence-customer-access.mjs'
       - 'infra/aws/intelligence-customer-authorizer.py'
+      - 'scripts/build-intelligence-customer-authorizer-template.mjs'
+      - 'scripts/test-intelligence-customer-authorizer-template.mjs'
       - 'scripts/test_intelligence_customer_authorizer.py'
       - 'scripts/test-intelligence-customer-access.mjs'
       - 'infra/aws/intelligence-customer-access-ledger-production.json'
@@ -32,6 +34,8 @@ jobs:
         run: npm ci
       - name: Verify revocable sessions, tenant isolation and approved seats
         run: node --test scripts/test-intelligence-customer-access.mjs
+      - name: Reproduce reviewed least-privilege private authorizer infrastructure
+        run: node --test scripts/test-intelligence-customer-authorizer-template.mjs
       - name: Verify the DynamoDB private production authorizer denies bypasses
         run: python3 -m unittest scripts/test_intelligence_customer_authorizer.py
       - name: Verify denied-by-default subscription access and same-tenant MFA
