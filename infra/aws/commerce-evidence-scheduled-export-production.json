@@ -49,7 +49,7 @@
                   "Action": [
                     "s3:PutObject"
                   ],
-                  "Resource": "arn:aws:s3:::novapharm-intelligence-evidence-250675045172-eu-north-1/commerce/owner-attestations/*"
+                  "Resource": "arn:aws:s3:::novapharm-commerce-evidence-250675045172-eu-north-1/commerce/owner-attestations/*"
                 },
                 {
                   "Effect": "Allow",
@@ -84,7 +84,7 @@
         },
         "Environment": {
           "Variables": {
-            "EVIDENCE_BUCKET": "novapharm-intelligence-evidence-250675045172-eu-north-1",
+            "EVIDENCE_BUCKET": "novapharm-commerce-evidence-250675045172-eu-north-1",
             "NUTRAXIN_TABLE": "novapharm-production-nutraxin-inventory",
             "ESCO_TABLE": "novapharm-production-esco-inventory"
           }
