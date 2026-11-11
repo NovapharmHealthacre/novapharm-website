@@ -238,22 +238,27 @@ def transacted_session(client, records, now):
     audit = {"PK": "AUDIT#" + uuid.uuid4().hex, "SK": "SESSION_CREATED",
         "subject": subject, "tenantId": tenant_id, "tokenHash": token_hash, "eventAt": issued}
     active = {":active": attr_s("active"), ":yes": attr_b(True)}
-    check = lambda pk, sk, expr, values: {"ConditionCheck": {"TableName": TABLE,
-        "Key": {"PK": attr_s(pk), "SK": attr_s(sk)}, "ConditionExpression": expr,
-        "ExpressionAttributeNames": {"#st": "status"} if "#st" in expr else {},
-        "ExpressionAttributeValues": values}}
+    def check(pk, sk, expr, values):
+        statement = {"TableName": TABLE, "Key": {"PK": attr_s(pk), "SK": attr_s(sk)},
+                     "ConditionExpression": expr, "ExpressionAttributeValues": values}
+        if "#st" in expr:
+            statement["ExpressionAttributeNames"] = {"#st": "status"}
+        return {"ConditionCheck": statement}
     tx = [
         check("TENANT#" + tenant_id, "META", "#st = :active AND contractAccepted = :yes AND ownershipVerified = :yes", active),
-        check("SUBJECT#" + subject, "TENANT#" + tenant_id, "#st = :active AND approved = :yes AND approvedBy = :by",
-            {**active, ":by": attr_s(records["member"]["approvedBy"])}),
+        check("SUBJECT#" + subject, "TENANT#" + tenant_id, "#st = :active AND approved = :yes AND approvedBy = :by AND subject = :subject AND tenantId = :tenant",
+            {**active, ":by": attr_s(records["member"]["approvedBy"]), ":subject": attr_s(subject), ":tenant": attr_s(tenant_id)}),
         check("TENANT#" + tenant_id, "SEAT#" + subject,
-            "#st = :active AND sessionVersion = :version AND contains(features, :feature)",
-            {":active": attr_s("active"), ":version": attr_n(int(records["seat"]["sessionVersion"])), ":feature": attr_s("medicine-search")}),
+            "#st = :active AND sessionVersion = :version AND contains(features, :feature) AND tenantId = :tenant AND subject = :subject",
+            {":active": attr_s("active"), ":version": attr_n(int(records["seat"]["sessionVersion"])), ":feature": attr_s("medicine-search"),
+             ":tenant": attr_s(tenant_id), ":subject": attr_s(subject)}),
         check("TENANT#" + tenant_id, "BILLING#" + subject,
-            "#st = :active AND webhookSignatureVerified = :yes AND contractAccepted = :yes AND periodEnd = :end AND stripeSubscriptionId = :sub",
-            {**active, ":end": attr_s(records["billing"]["periodEnd"]), ":sub": attr_s(records["billing"]["stripeSubscriptionId"])}),
+            "#st = :active AND webhookSignatureVerified = :yes AND contractAccepted = :yes AND periodEnd = :end AND stripeSubscriptionId = :sub AND tenantId = :tenant AND subject = :subject",
+            {**active, ":end": attr_s(records["billing"]["periodEnd"]), ":sub": attr_s(records["billing"]["stripeSubscriptionId"]),
+             ":tenant": attr_s(tenant_id), ":subject": attr_s(subject)}),
         check("TENANT#" + tenant_id, "USAGE#" + subject + "#" + now.strftime("%Y-%m"),
-            "searchCount = :used", {":used": attr_n(records["used"])}),
+            "searchCount = :used AND tenantId = :tenant AND subject = :subject",
+            {":used": attr_n(records["used"]), ":tenant": attr_s(tenant_id), ":subject": attr_s(subject)}),
         check("GOVERNANCE#PRODUCTION", "FEATURE#medicine-search",
             "customerLaunchAccepted = :yes AND sourceRightsApproved = :yes AND productionApproved = :yes AND approvedBy = :by",
             {":yes": attr_b(True), ":by": attr_s(records["governance"]["approvedBy"])}),
@@ -305,9 +310,11 @@ def handle(event, client, now=None, enabled=False):
             records = approved_records(client, subject, now)
             created = transacted_session(client, records, now) if records else None
         except Exception:
-            created = None
-        if not created:
+            return http(503, "customer_session_service_unavailable")
+        if not records:
             return http(403, "customer_approval_required")
+        if not created:
+            return http(503, "session_commit_unavailable")
         secret, age = created
         return http(200, "approved_customer_session", cookie=new_cookie(secret, age))
     if route == "GET /customer/session":
