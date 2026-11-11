@@ -54,6 +54,10 @@ for (const [name, engine] of [["chromium", chromium], ["webkit", webkit]]) {
             columns: grid && getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/).length,
             vial: imageOK(vial),
             earth: imageOK(earthImage),
+            vialWidth: vial?.naturalWidth,
+            vialHeight: vial?.naturalHeight,
+            earthWidth: earthImage?.naturalWidth,
+            earthHeight: earthImage?.naturalHeight,
             earthColor: earth && getComputedStyle(earth).backgroundColor,
             linkedDisciplines: [...document.querySelectorAll(".ncap-discipline")].map((a) => a.getAttribute("href")),
             closingTitle: document.querySelector(".ncap-earth h2")?.textContent?.trim(),
@@ -67,6 +71,11 @@ for (const [name, engine] of [["chromium", chromium], ["webkit", webkit]]) {
         assert.ok(observation.css.includes(version), `${name} ${viewport.label}: stale CSS URL served`);
         assert.equal(observation.columns, viewport.columns, `${name} ${viewport.label}: wrong responsive grid`);
         assert.ok(observation.vial && observation.earth, `${name} ${viewport.label}: artwork not rendered`);
+        assert.deepEqual(
+          [observation.vialWidth, observation.vialHeight, observation.earthWidth, observation.earthHeight],
+          [800,224,800,53],
+          `${name} ${viewport.label}: production still serves retired schematic artwork instead of owner-approved photography`
+        );
         assert.equal(observation.earthColor, "rgb(7, 22, 37)", `${name} ${viewport.label}: dark Earth stage missing`);
         assert.deepEqual(observation.linkedDisciplines, ["/services/", "/regulatory-services/", "/cro/", "/technology/"]);
         assert.equal(observation.closingTitle, "Start with one decision.");
