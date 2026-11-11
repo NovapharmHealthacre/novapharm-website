@@ -319,7 +319,7 @@ async function verifyInteractions(page: Page, engine: string): Promise<void> {
   await page.waitForURL(/\/about\/$/);
   assert.equal(await page.locator("details.mobile-menu").getAttribute("open"), null, `${engine}: mobile menu did not close after navigation`);
 
-  await page.goto(baseUrl + "/contact/", { waitUntil: "domcontentloaded" });
+  await page.goto(`${baseUrl}/contact/`, { waitUntil: "domcontentloaded" });
   assert.equal(await page.getByRole("heading", { level: 1, name: "Let's talk." }).count(), 1, "approved contact hero missing");
   assert.equal(await page.getByRole("heading", { level: 2, name: "How can we help?" }).count(), 1, "approved form heading missing");
   assert.equal(await page.locator(".np-contact-reference-footer").count(), 1, "approved contact footer missing");

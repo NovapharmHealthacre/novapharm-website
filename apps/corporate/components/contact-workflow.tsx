@@ -138,7 +138,7 @@ export function ContactWorkflow() {
           <button className="np-contact-reference-submit" type="submit" disabled={state === "sending"}>{state === "sending" ? "Submitting..." : "Send enquiry"}</button>
         </div>
       </form>
-      <div className={"np-contact-reference-status form-status form-status-" + state} ref={statusRef} role="status" aria-live="polite" tabIndex={-1}>
+      <div className={`np-contact-reference-status form-status form-status-${state}`} ref={statusRef} role="status" aria-live="polite" tabIndex={-1}>
         <p>{message || "Your enquiry is transmitted only to NovaPharm's verified secure API when you select Send enquiry."}</p>
       </div>
       {state === "error" ? <a className="verified-email" href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20business%20enquiry">Use the verified corporate email route</a> : null}

@@ -15,7 +15,7 @@ test("one governed design layer is applied across every public corporate route",
   assert.match(layout, /import "\.\/design-system\.css"/);
   assert.ok(layout.indexOf('import "./design-system.css"') > layout.indexOf('import "./homepage-editorial.css"'));
   for (const name of ["--nph-ink", "--nph-silver", "--nph-link", "--nph-accent", "--nph-radius", "--nph-system"]) {
-    assert.ok(style.includes(name), "Missing shared design token: " + name);
+    assert.ok(style.includes(name), `Missing shared design token: ${name}`);
   }
   assert.match(style, /\.site-header\s*\{/);
   assert.match(style, /\.site-footer\s*\{/);
@@ -47,10 +47,10 @@ test("Apple-inspired system remains a NovaPharm identity with accessible, functi
 
 test("audit route register includes every corporate, leadership, article and canonical Nutraxin destination", () => {
   const routes = [
-    ...corporatePages.map((page) => "/" + (page.slug ? page.slug + "/" : "")),
-    ...leadership.map((person) => "/leadership/" + person.slug + "/"),
-    ...articles.map((article) => "/news-insights/" + article.slug + "/"),
-    ...nutraxinRegister.products.map((product) => "/products/nutraxin/" + product.slug + "/"),
+    ...corporatePages.map((page) => `/${page.slug ? `${page.slug}/` : ""}`),
+    ...leadership.map((person) => `/leadership/${person.slug}/`),
+    ...articles.map((article) => `/news-insights/${article.slug}/`),
+    ...nutraxinRegister.products.map((product) => `/products/nutraxin/${product.slug}/`),
   ];
   assert.equal(new Set(routes).size, routes.length, "Duplicate canonical destination must be fixed");
   assert.ok(routes.length >= 45, "Do not silently drop route families from the system audit");
