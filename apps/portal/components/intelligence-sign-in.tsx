@@ -1,5 +1,5 @@
-import { PortalBrand } from "./portal-brand";
 import styles from "./intelligence-sign-in.module.css";
+import { PortalBrand } from "./portal-brand";
 
 /** Dedicated customer entry: never reuse the legacy password service. */
 export function IntelligenceSignIn() {
