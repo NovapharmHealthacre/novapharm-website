@@ -93,3 +93,57 @@ test("holdout error remains visible and never implies owner approval", () => {
   assert.equal(result.productionApproved, false);
   assert.equal(result.forecast[0].empiricalErrorRange.lower, 100);
 });
+
+test("missing, null or ambiguous sample-status metadata fail closed", () => {
+  for (const validationSample of [undefined, null, "false", 0, 1]) {
+    const contaminated = data.map((row, index) => {
+      if (index !== 11) return row;
+      const replacement = { ...row };
+      if (validationSample === undefined) delete replacement.validationSample;
+      else replacement.validationSample = validationSample;
+      return replacement;
+    });
+    assert.equal(evaluate({ observations: contaminated }).code,
+      "historical_series_invalid_or_mixed");
+  }
+});
+
+test("neither future-supplied approval nor an invalid source grant authorises a forecast", () => {
+  for (const changedSource of [
+    { acceptedServerSide: "true" }, { licenceAllowsForecasting: undefined },
+    { ingestionRunAccepted: false }, { sourceId: "INVALID SOURCE" },
+  ]) {
+    assert.equal(evaluate({ source: { ...source, ...changedSource } }).accepted, false);
+  }
+  for (const changedRelease of [
+    { verifiedServerSide: false }, { forecastEvaluationEnabled: false },
+    { sourceRightsCertified: false }, { customerForecastingEnabled: true },
+  ]) {
+    assert.equal(evaluate({ release: { ...release, ...changedRelease } }).accepted, false);
+  }
+});
+
+test("zeros remain finite and the supplied history cannot mutate between evaluations", () => {
+  const zeroHistory = data.map(row => ({ ...row, value: 0 }));
+  const baseline = evaluate({ observations: zeroHistory });
+  assert.equal(baseline.backtest.mae, 0);
+  assert.equal(baseline.backtest.smape, 0);
+  assert.equal(baseline.forecast[0].estimate, 0);
+  assert.deepEqual(baseline.forecast[0].empiricalErrorRange, { lower: 0, upper: 0 });
+  assert.equal(baseline.productionApproved, false);
+  const modified = zeroHistory.map((row, i) => i === 2 ? { ...row, value: 5 } : row);
+  assert.notEqual(baseline.inputFingerprint, evaluate({ observations: modified }).inputFingerprint);
+});
+
+test("inconsistent medicine, duplicate months and projected calendar overflow are rejected", () => {
+  assert.equal(evaluate({ observations: data.map((row, i) =>
+    i === 3 ? { ...row, medicineId: "medicine-" + "b".repeat(32) } : row)
+  }).code, "historical_series_invalid_or_mixed");
+  assert.equal(evaluate({ observations: data.map((row, i) =>
+    i === 12 ? { ...row, period: data[11].period } : row)
+  }).code, "historical_series_invalid_or_mixed");
+  const farFuture = data.map((row, i) => ({
+    ...row, period: `${9997 + Math.floor(i / 12)}-${String(i % 12 + 1).padStart(2, "0")}`,
+  }));
+  assert.equal(evaluate({ observations: farFuture }).code, "forecast_period_out_of_bounds");
+});
