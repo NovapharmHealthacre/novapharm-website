@@ -1,16 +1,8 @@
 name: Recover public GitHub Pages publication
 
 on:
-  # Publish reviewed corporate Markets changes from the protected main branch.
-  # Keep all existing artifact and live-domain checks intact.
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/pages-public-release-recovery.yml
-      - scripts/build-site.mjs
-      - scripts/apply-markets-editorial.mjs
-      - scripts/test-global-distribution-foundation.mjs
-      - assets/css/markets-editorial.css
+  # Manual, controlled recovery only. The AWS-backed publisher owns main-branch
+  # releases; duplicate push triggers compete for the same github-pages queue.
   pull_request:
     paths:
       - .github/workflows/pages-public-release-recovery.yml
