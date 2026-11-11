@@ -10,12 +10,12 @@
     "Null semantic or provenance fields are explicit gaps, not inferred approvals."
   ],
   "summary": {
-    "trackedAssetCount": 872,
+    "trackedAssetCount": 874,
     "byClassification": {
-      "KEEP": 872
+      "KEEP": 874
     },
     "byProvenanceStatus": {
-      "registered": 662,
+      "registered": 664,
       "registered-identical-delivery-copy": 12,
       "repository-generated-test-evidence": 198
     },
@@ -1433,8 +1433,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 95,
-      "referenceCount": 198,
+      "usageCount": 97,
+      "referenceCount": 200,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -1524,8 +1524,10 @@
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
         "scripts/test-owner-corrections.mjs",
+        "scripts/test-verify-intelligence-public-entry.mjs",
         "scripts/validate-app.mjs",
         "scripts/validate-site.mjs",
+        "scripts/verify-intelligence-public-entry.mjs",
         "service-unavailable/index.html",
         "services/index.html",
         "src/integrations/sharepoint/secure-content-branding.mjs",
@@ -2346,6 +2348,86 @@
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-015",
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/media/capabilities/approved-earth-horizon-crest.webp",
+      "canonicalDeliveryPath": "assets/media/capabilities/approved-earth-horizon-crest.webp",
+      "format": "webp",
+      "bytes": 1170,
+      "width": 800,
+      "height": 53,
+      "aspectRatio": 15.09434,
+      "sha256": "19080638da0aed6d65198642e27cbfc211ee710e4db179d8b3fdea659df48cb8",
+      "perceptualHash": "00000010327171f1",
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Repository visual derivative introduced in merged PR #397 from an owner-approved Capabilities visual reference; original source photographer, upstream file and independent usage rights are not documented",
+      "licence": "UNVERIFIED RIGHTS: record tracks internal reference only; third-party reuse/publication permissions require independent approval",
+      "reviewStatus": "owner-approved-composition; underlying-image-rights-pending-verification",
+      "technicalStatus": null,
+      "provenanceRecord": "https://github.com/NovapharmHealthacre/novapharm-website/pull/397",
+      "semanticPurpose": null,
+      "routes": [
+        "/capabilities/"
+      ],
+      "focalPoint": null,
+      "registeredAltText": null,
+      "registeredCaption": null,
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 2,
+      "referenceCount": 2,
+      "usageFiles": [
+        "apps/corporate/components/capabilities-editorial.tsx",
+        "scripts/apply-capabilities-editorial.mjs"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/media/capabilities/approved-vial-photo-800.webp",
+      "canonicalDeliveryPath": "assets/media/capabilities/approved-vial-photo-800.webp",
+      "format": "webp",
+      "bytes": 2748,
+      "width": 800,
+      "height": 224,
+      "aspectRatio": 3.571429,
+      "sha256": "683609ae91e0dc41707b9c1c2f0edd5d5af4dbbe356b52b07702c3b79fb82b98",
+      "perceptualHash": "13333333b3b333b4",
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Repository visual derivative introduced in merged PR #397 from an owner-approved Capabilities visual reference; original photographer, upstream file and independent usage rights are not documented",
+      "licence": "UNVERIFIED RIGHTS: record tracks internal reference only; third-party reuse/publication permissions require independent approval",
+      "reviewStatus": "owner-approved-composition; underlying-image-rights-pending-verification",
+      "technicalStatus": null,
+      "provenanceRecord": "https://github.com/NovapharmHealthacre/novapharm-website/pull/397",
+      "semanticPurpose": null,
+      "routes": [
+        "/capabilities/"
+      ],
+      "focalPoint": null,
+      "registeredAltText": null,
+      "registeredCaption": null,
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 2,
+      "referenceCount": 2,
+      "usageFiles": [
+        "apps/corporate/components/capabilities-editorial.tsx",
+        "scripts/apply-capabilities-editorial.mjs"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
