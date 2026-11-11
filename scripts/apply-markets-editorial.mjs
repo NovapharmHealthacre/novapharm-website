@@ -49,7 +49,7 @@ const photos = [
   },
   {
     slug: "mena",
-    name: "Middle East & North Africa",
+    name: "Middle East &amp; North Africa",
     descriptor: "Regional opportunity assessment.",
     text: "Considering country-specific partnerships, including the UAE and Saudi Arabia. Establishment, import and distribution permissions require local assessment.",
     image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1400&q=82",
