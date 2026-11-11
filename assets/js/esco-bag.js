@@ -224,11 +224,11 @@ function downloadBoq(lines, known, categoryNameById) {
   });
   if (!rows.length) return;
   const safeCsv = value => {
-    let cell = String(value ?? "").replace(/[\\r\\n]+/g, " ");
-    if (/^\\s*[=+@\\t]/.test(cell) || /^\\s*-(?!\\d)/.test(cell)) cell = "'" + cell;
+    let cell = String(value ?? "").replace(/[\r\n]+/g, " ");
+    if (/^\s*[=+@\t]/.test(cell) || /^\s*-(?!\d)/.test(cell)) cell = "'" + cell;
     return '"' + cell.replaceAll('"', '""') + '"';
   };
-  const csv = [headers, ...rows].map(row => row.map(safeCsv).join(",")).join("\\r\\n") + "\\r\\n";
+  const csv = [headers, ...rows].map(row => row.map(safeCsv).join(",")).join("\r\n") + "\r\n";
   const url = URL.createObjectURL(new Blob([csv], {type:"text/csv;charset=utf-8"}));
   const link = document.createElement("a");
   link.href = url;
