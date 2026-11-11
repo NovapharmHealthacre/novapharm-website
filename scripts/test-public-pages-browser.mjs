@@ -9,12 +9,6 @@ const artifactRoot = path.resolve(process.env.PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT
 const routes = [
   { path: "/", name: "home", required: "Medicine. Where it needs to be" },
   { path: "/capabilities/", name: "capabilities", required: "From evidence to access." },
-  { path: "/about/", name: "about", required: "Getting medicine to where it matters." },
-  { path: "/markets/", name: "markets", required: "Access is local." },
-  { path: "/market-access/", name: "market-access", required: "A market may not be." },
-  { path: "/legal/privacy/", name: "legal-privacy", required: "Privacy" },
-  { path: "/legal/accessibility/", name: "legal-accessibility", required: "Accessibility" },
-  { path: "/news-insights/", name: "insights", required: "Insights" },
   { path: "/contact/", name: "contact", required: "How can we help?" },
   { path: "/leadership/", name: "leadership", required: "Chief Scientific Officer" },
   { path: "/leadership/girish-achliya/", name: "leadership-girish", required: "Chief Scientific Officer" },
@@ -262,8 +256,10 @@ for (const [engineName, browserType] of engines) {
                 const styleLink = document.querySelector('link[href*="capabilities-editorial.css"]');
                 const headingStyle = hero && getComputedStyle(hero);
                 const gridStyle = grid && getComputedStyle(grid);
-                const illustrationOk = (image, minNaturalHeight) => image && image.complete && image.naturalWidth > 100 &&
-                  image.naturalHeight >= minNaturalHeight && image.getBoundingClientRect().width > 100;
+                const illustrationOk = (image, expectedHeight) => image && image.complete &&
+                  image.naturalWidth === 800 && image.naturalHeight === expectedHeight &&
+                  image.getBoundingClientRect().width > 100 &&
+                  image.getBoundingClientRect().height > (expectedHeight === 53 ? 15 : 30);
                 return {
                   heading: hero?.innerText.replace(/\s+/g, " ").trim() ?? "",
                   headlineSize: Number.parseFloat(headingStyle?.fontSize ?? "0"),
@@ -271,7 +267,7 @@ for (const [engineName, browserType] of engines) {
                   disciplineCount: document.querySelectorAll(".ncap-discipline").length,
                   gridDisplay: gridStyle?.display,
                   gridColumns: gridStyle?.gridTemplateColumns.trim().split(/\s+/).length ?? 0,
-                  vialVisible: Boolean(illustrationOk(vial, 100)),
+                  vialVisible: Boolean(illustrationOk(vial, 224)),
                   earthVisible: Boolean(illustrationOk(earth, 53)),
                   earthBackground: earthPanel && getComputedStyle(earthPanel).backgroundColor,
                   cssVersion: styleLink?.getAttribute("href") ?? "",
