@@ -2257,13 +2257,14 @@
       "classification": "KEEP",
       "provenanceStatus": "registered",
       "source": "Warehouse exterior photograph supplied directly by NovaPharm project owner for About page, 10 November 2026 (original 1600x580 JPEG)",
-      "licence": "Owner directly supplied photograph and approved its use on NovaPharm About page; photographed facility ownership and operating authorisation are not asserted",
-      "reviewStatus": "approved for About page visual 10 November 2026",
+      "licence": "Owner directly supplied photograph and approved its NovaPharm corporate use, including Distribution hero; photographed facility ownership and operating authorisation are not asserted.",
+      "reviewStatus": "Owner-approved original warehouse photograph for the live Distribution hero, 11 November 2026, and existing About page.",
       "technicalStatus": "owner-supplied-original-preserved-1600x580",
       "provenanceRecord": null,
       "semanticPurpose": "owner-supplied-corporate-warehouse-editorial-photograph",
       "routes": [
-        "/about/"
+        "/about/",
+        "/distribution/"
       ],
       "focalPoint": null,
       "registeredAltText": "Wide exterior view of a modern warehouse building, with a glazed entrance, silver metal cladding and loading frontage",
@@ -5777,13 +5778,12 @@
       "provenanceStatus": "registered",
       "source": "Crop (Earth and atmosphere only, y=500 to y=887) from the exact owner-approved NovaPharm Medicine in Motion homepage screenshot supplied on 10 November 2026, resampled to 1400 x 305 and optimised for web. No generated elements or typography are added to this crop.",
       "licence": "Owner-authorised NovaPharm corporate art sourced from the owner-supplied approved design reference. Not NASA/ESA imagery or a documentary satellite photograph.",
-      "reviewStatus": "Owner-approved Earth horizon creative reference for corporate homepage and Distribution editorial design, requested 10 November 2026; only those two routes are permitted.",
+      "reviewStatus": "Approved for corporate homepage use; Distribution now uses the owner's real warehouse photograph, requested 11 November 2026.",
       "technicalStatus": "JPEG, 1400 x 305, 66,170 bytes; standalone local asset; copyright and provenance registered",
       "provenanceRecord": null,
       "semanticPurpose": "owner-approved-earth-horizon-brand-reference",
       "routes": [
-        "/ homepage approved Earth-horizon hero",
-        "/distribution/ approved global-distribution Earth-horizon hero"
+        "/ homepage approved Earth-horizon hero"
       ],
       "focalPoint": null,
       "registeredAltText": "",
@@ -5794,8 +5794,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 9,
-      "referenceCount": 24,
+      "usageCount": 7,
+      "referenceCount": 19,
       "usageFiles": [
         ".github/workflows/pages-live-publish.yml",
         ".github/workflows/pages-public-release-recovery.yml",
@@ -5803,9 +5803,7 @@
         "apps/corporate/components/concise-home.tsx",
         "creative-assets/asset-register.json",
         "scripts/apply-corporate-product-discipline.mjs",
-        "scripts/apply-global-distribution-foundation.mjs",
-        "scripts/programme/validate-post-pr53-candidate.mjs",
-        "scripts/test-global-distribution-foundation.mjs"
+        "scripts/programme/validate-post-pr53-candidate.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -6442,11 +6440,14 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 5,
+      "referenceCount": 7,
       "usageFiles": [
+        ".github/workflows/publish-aws-contact-production.yml",
         "creative-assets/module-media-asset-register.json",
-        "news-insights/compliance-first-pharmaceutical-distribution-uk/index.html"
+        "news-insights/compliance-first-pharmaceutical-distribution-uk/index.html",
+        "scripts/apply-global-distribution-foundation.mjs",
+        "scripts/test-global-distribution-foundation.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-023",
