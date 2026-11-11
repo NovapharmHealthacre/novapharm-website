@@ -2283,7 +2283,7 @@
       ],
       "lcpRelevance": true,
       "usageCount": 7,
-      "referenceCount": 19,
+      "referenceCount": 22,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "about/index.html",
@@ -5795,7 +5795,7 @@
       "observedFetchPriority": [],
       "lcpRelevance": false,
       "usageCount": 9,
-      "referenceCount": 21,
+      "referenceCount": 24,
       "usageFiles": [
         ".github/workflows/pages-live-publish.yml",
         ".github/workflows/pages-public-release-recovery.yml",
