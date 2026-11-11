@@ -1,6 +1,11 @@
 .git
 .github
 .env
+.env.*
+**/.env
+**/.env.*
+**/.aws
+**/.ssh
 _secure
 data
 node_modules

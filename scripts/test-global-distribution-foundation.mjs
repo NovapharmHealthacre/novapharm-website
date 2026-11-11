@@ -1,5 +1,6 @@
 import { readFileSync, statSync } from "node:fs";
 import { strict as assert } from "node:assert";
+import { runInNewContext } from "node:vm";
 import { navigation } from "../src/content/site-content.mjs";
 
 const routes = ["distribution", "market-access", "markets"];
@@ -63,4 +64,48 @@ for (const slug of routes) {
   assert.ok(homepage.includes('href="' + path + '"'), slug + " absent from homepage");
   assert.doesNotMatch(html, /fully licensed worldwide|ISO certified|guaranteed distribution/i, slug + " contains unverified claims");
 }
-console.log("Global distribution foundation: pages, internal links, canonicals, schema, sitemap, regulatory boundaries and enquiries passed.");
+for (const script of ["assets/js/contact-production.js", "assets/js/contact-email-draft.js"]) {
+  const source = readFileSync(script, "utf8");
+  for (const [search, expected] of [
+    ["?enquiry=Distribution", "Distribution partnership"],
+    ["?enquiry=Distribution%20partnership", "Distribution partnership"],
+    ["?enquiry=Oncology", "Oncology & specialist medicines"],
+    ["?enquiry=Oncology%20solid%20tumours", "Oncology & specialist medicines"],
+    ["?enquiry=Pharmacy%20or%20wholesaler%20account", "Pharmacy or wholesaler account"]
+  ]) {
+    class Select {
+      constructor() {
+        this.options = [
+          { value: "Product opportunity" },
+          { value: "Distribution partnership" },
+          { value: "Oncology & specialist medicines" },
+          { value: "Pharmacy or wholesaler account" },
+          { value: "General enquiry" }
+        ];
+        this.value = "";
+      }
+    }
+    class TextArea { constructor() { this.value = ""; } }
+    class Form {}
+    const select = new Select();
+    const message = new TextArea();
+    const form = new Form();
+    form.dataset = { apiOrigin: "https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com" };
+    form.elements = { namedItem: (name) => name === "enquiryType" ? select : name === "message" ? message : null };
+    form.querySelector = () => ({ disabled: false });
+    form.addEventListener = () => {};
+    const isLive = script.includes("contact-production");
+    const document = { querySelector: (selector) => {
+      if (selector === (isLive ? "[data-live-b2b-enquiry-form]" : "[data-email-enquiry-form]")) return form;
+      return { textContent: "" };
+    }};
+    runInNewContext(source, {
+      document, URLSearchParams, HTMLFormElement: Form,
+      HTMLSelectElement: Select, HTMLTextAreaElement: TextArea,
+      location: { search }, window: { location: { search } }
+    }, { timeout: 1000 });
+    assert.equal(select.value, expected, script + " must preselect " + expected + " for " + search);
+  }
+}
+
+console.log("Global distribution foundation: pages, internal links, canonicals, schema, sitemap, regulatory boundaries and canonical enquiry prefills passed.");
