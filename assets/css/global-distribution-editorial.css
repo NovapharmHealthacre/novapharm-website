@@ -156,15 +156,15 @@ body[data-page="distribution"] h1,body[data-page="distribution"] h2,body[data-pa
 .ndist-partner-list{margin-top:clamp(53px,7vw,100px);border-top:1px solid #cfd1d6}
 .ndist-partner-entry{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1fr);gap:clamp(26px,6vw,86px);padding:clamp(32px,5vw,58px) 0;border-bottom:1px solid #cfd1d6}
 .ndist-partner-name{font-size:clamp(1.82rem,3.3vw,3.25rem);font-weight:620;letter-spacing:-.06em;line-height:1.11}
-.ndist-partner-name small{display:block;margin-top:10px;color:#777a82;font-size:13px;line-height:1.4;font-weight:500;letter-spacing:0}
+.ndist-partner-name small{display:block;margin-top:10px;color:#595d66;font-size:13px;line-height:1.4;font-weight:500;letter-spacing:0}
 .ndist-partner-entry h3{margin:0 0 13px;font-size:clamp(1.26rem,1.75vw,1.75rem);font-weight:605;letter-spacing:-.045em}
 .ndist-partner-entry p{max-width:530px;margin:0 0 15px;color:#5c6169;font-size:16px;line-height:1.58}
-.ndist-partner-entry span,.ndist-partner-disclosure{color:#777b82;font-size:12px;line-height:1.62}
+.ndist-partner-entry span,.ndist-partner-disclosure{color:#595d66;font-size:12px;line-height:1.62}
 .ndist-partner-disclosure{max-width:960px;margin:22px 0 0}
 .npd-commercial .ndist-provider-source{display:inline-block;margin-top:13px;color:#175b9f;font-size:13px;font-weight:560;text-decoration:none}.ndist-provider-source:hover{text-decoration:underline;text-underline-offset:3px}
 .ndist-pathway-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(21px,3vw,45px);list-style:none;margin:clamp(55px,7vw,102px) 0 0;padding:0}
 .ndist-pathway-steps li{border-top:1px solid #cdd0d4;padding-top:23px}
-.ndist-pathway-steps li>span{font-size:13px;color:#8b8e96;font-variant-numeric:tabular-nums}
+.ndist-pathway-steps li>span{font-size:13px;color:#595d66;font-variant-numeric:tabular-nums}
 .ndist-pathway-steps h3{margin:21px 0 13px;font-size:clamp(1.28rem,1.75vw,1.75rem);font-weight:615;letter-spacing:-.045em}
 .ndist-pathway-steps p{margin:0;color:#666971;font-size:15px;line-height:1.55}
 .ndist-pathway .npd-notice{max-width:100%;margin-top:clamp(67px,8vw,120px);padding:clamp(24px,4vw,44px);border-radius:14px;background:#f4f5f7}
