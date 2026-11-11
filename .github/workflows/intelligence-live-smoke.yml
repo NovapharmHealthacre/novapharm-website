@@ -52,6 +52,11 @@ jobs:
               && grep -Fq 'data-npi-research-form' /tmp/novapharm-technology-live.html \
               && grep -Fq 'src="/assets/js/intelligence-research-launcher.js"' /tmp/novapharm-technology-live.html \
               && grep -Fq 'Search a medicine' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'id="intelligence-workspace-directory"' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'ALL 22 PROFESSIONAL WORKSPACES' /tmp/novapharm-technology-live.html \
+              && test "$(grep -o 'data-npi-workspace="' /tmp/novapharm-technology-live.html | wc -l | tr -d '[:space:]')" -eq 22 \
+              && grep -Fq 'Protected workspace entry' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'Public research is available separately' /tmp/novapharm-technology-live.html \
               && grep -Fq 'No tracking, storage, credential access' /tmp/novapharm-intelligence-live.js \
               && grep -Fq '.npi-research-form' /tmp/novapharm-intelligence-live.css \
               && grep -Fq 'data-live-b2b-enquiry-form' /tmp/novapharm-contact-live.html \
