@@ -12,7 +12,7 @@ const handoffs = [
 
 export function OncologyEditorialPage() {
   return (
-    <div className="npoc-page" data-oncology-design="editorial-v2">
+    <div className="npoc-page" data-oncology-design="hope-for-tomorrow-v3">
       <nav className="npoc-subnav" aria-label="Oncology page sections">
         <div className="container">
           <strong>Oncology</strong>
@@ -26,50 +26,58 @@ export function OncologyEditorialPage() {
         </div>
       </nav>
 
-      <section className="npoc-hero" aria-labelledby="npoc-title">
+      {/* Approved SS2 composition shared with /oncology/ static release. */}
+      <section className="npoc-hero npoc-hope-hero" aria-labelledby="npoc-title">
         <div className="npoc-hero-visual" aria-hidden="true">
-          <picture>
-            <source
-              srcSet="/assets/media/products/oncology-vial-handling-960.avif 960w, /assets/media/products/oncology-vial-handling.avif 1600w"
-              sizes="(max-width: 760px) 100vw, 100vw"
-              type="image/avif"
-            />
-            <source
-              srcSet="/assets/media/products/oncology-vial-handling-960.webp 960w, /assets/media/products/oncology-vial-handling.webp 1600w"
-              sizes="(max-width: 760px) 100vw, 100vw"
-              type="image/webp"
-            />
-            <Image
-              src="/assets/media/products/oncology-vial-handling.jpg"
-              alt=""
-              width={1600}
-              height={900}
-              sizes="100vw"
-              priority
-              unoptimized
-            />
-          </picture>
+          <Image
+            src="/assets/media/oncology/hope-tomorrow-portrait.jpg"
+            alt=""
+            width={890}
+            height={550}
+            sizes="(max-width: 760px) 100vw, 72vw"
+            priority
+            unoptimized
+          />
         </div>
         <div className="npoc-hero-shade" aria-hidden="true" />
         <div className="container npoc-hero-content">
           <div className="npoc-hero-copy">
-            <p className="npoc-eyebrow">NOVAPHARM / ONCOLOGY</p>
-            <h1 id="npoc-title">Oncology demands{" "}<br />more than supply.</h1>
-            <p className="npoc-hero-lead">Product identity. Qualified sourcing. Regulatory readiness.</p>
-            <p className="npoc-hero-detail">
-              An evidence-led approach to evaluating specialist-medicine opportunities,
-              built around the details that matter.
+            <p className="npoc-eyebrow">ONCOLOGY</p>
+            <h1 id="npoc-title">A Hope for{" "}<br />Tomorrow.</h1>
+            <p className="npoc-hero-lead">
+              A focused approach to oncology. A deeper commitment to patients. A more hopeful future.
             </p>
             <div className="npoc-actions">
-              <a className="npoc-button npoc-button-primary" href={enquiry}>Discuss a partnership</a>
-              <a className="npoc-button npoc-button-light" href="#approach">Explore our approach</a>
+              <a className="npoc-button npoc-button-primary" href="#oncology-focus">Explore Our Oncology Portfolio</a>
             </div>
           </div>
         </div>
-        <p className="npoc-image-note">
-          Representative scientific photography. No NovaPharm product, facility or
-          active oncology programme is depicted.
-        </p>
+      </section>
+
+      <section className="npoc-hope-focus" id="oncology-focus" aria-labelledby="npoc-focus-title">
+        <div className="container npoc-focus-layout">
+          <div className="npoc-focus-copy">
+            <p className="npoc-eyebrow">OUR ONCOLOGY PORTFOLIO</p>
+            <h2 id="npoc-focus-title">Selected Therapies.<br />Real Impact.</h2>
+            <p>A growing portfolio of oncology medicines, built to improve access, expand treatment options and support better outcomes.</p>
+            <a className="npoc-focus-link" href="/products/strategic-portfolio/">Explore the Portfolio</a>
+          </div>
+          <div className="npoc-focus-cards" aria-label="Oncology portfolio areas of interest">
+            <a className="npoc-focus-card" href="/contact/?enquiry=Oncology%20solid%20tumours" aria-label="Discuss solid tumour opportunities">
+              <Image src="/assets/media/oncology/solid-tumours.jpg" alt="" width={325} height={237} loading="lazy" unoptimized />
+              <span>Solid tumours</span>
+            </a>
+            <a className="npoc-focus-card" href="/contact/?enquiry=Oncology%20haematological%20cancers" aria-label="Discuss haematological cancer opportunities">
+              <Image src="/assets/media/oncology/haematological-cancers.jpg" alt="" width={320} height={237} loading="lazy" unoptimized />
+              <span>Haematological cancers</span>
+            </a>
+            <a className="npoc-focus-card" href="/contact/?enquiry=Oncology%20supportive%20care" aria-label="Discuss supportive care opportunities">
+              <Image src="/assets/media/oncology/supportive-care.jpg" alt="" width={320} height={237} loading="lazy" unoptimized />
+              <span>Supportive care</span>
+            </a>
+          </div>
+        </div>
+        <p className="container npoc-focus-disclosure">Illustrative programme categories only. No oncology medicine is represented as approved, stocked or available from NovaPharm.</p>
       </section>
 
       <aside className="npoc-status" id="scope-boundary" aria-label="Current oncology scope">
