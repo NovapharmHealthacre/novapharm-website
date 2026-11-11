@@ -9,7 +9,7 @@ test("NOVA exporter uses private AWS evidence storage without public distributio
  const lambda=res.EvidenceLambda.Properties;
  assert.equal(lambda.FunctionName,"novapharm-production-commerce-evidence-export");
  assert.equal(lambda.Runtime,"python3.12");
- assert.equal(lambda.Environment.Variables.EVIDENCE_BUCKET,"novapharm-intelligence-evidence-250675045172-eu-north-1");
+ assert.equal(lambda.Environment.Variables.EVIDENCE_BUCKET,"novapharm-commerce-evidence-250675045172-eu-north-1");
  assert.equal(res.DailySchedule.Properties.State,"ENABLED");
  assert.equal(res.DailySchedule.Properties.ScheduleExpression,"cron(0 3 * * ? *)");
  assert(!("ReservedConcurrentExecutions" in lambda));
