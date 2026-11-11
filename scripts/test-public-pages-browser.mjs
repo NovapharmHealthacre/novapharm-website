@@ -262,8 +262,8 @@ for (const [engineName, browserType] of engines) {
                 const styleLink = document.querySelector('link[href*="capabilities-editorial.css"]');
                 const headingStyle = hero && getComputedStyle(hero);
                 const gridStyle = grid && getComputedStyle(grid);
-                const illustrationOk = (image) => image && image.complete && image.naturalWidth > 100 &&
-                  image.naturalHeight > 100 && image.getBoundingClientRect().width > 100;
+                const illustrationOk = (image, minNaturalHeight) => image && image.complete && image.naturalWidth > 100 &&
+                  image.naturalHeight >= minNaturalHeight && image.getBoundingClientRect().width > 100;
                 return {
                   heading: hero?.innerText.replace(/\s+/g, " ").trim() ?? "",
                   headlineSize: Number.parseFloat(headingStyle?.fontSize ?? "0"),
@@ -271,8 +271,8 @@ for (const [engineName, browserType] of engines) {
                   disciplineCount: document.querySelectorAll(".ncap-discipline").length,
                   gridDisplay: gridStyle?.display,
                   gridColumns: gridStyle?.gridTemplateColumns.trim().split(/\s+/).length ?? 0,
-                  vialVisible: Boolean(illustrationOk(vial)),
-                  earthVisible: Boolean(illustrationOk(earth)),
+                  vialVisible: Boolean(illustrationOk(vial, 100)),
+                  earthVisible: Boolean(illustrationOk(earth, 53)),
                   earthBackground: earthPanel && getComputedStyle(earthPanel).backgroundColor,
                   cssVersion: styleLink?.getAttribute("href") ?? "",
                   ctaCount: document.querySelectorAll('.ncap-earth a[href^="/contact/"]').length
