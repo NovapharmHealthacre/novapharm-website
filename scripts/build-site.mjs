@@ -56,6 +56,7 @@ await import("./apply-products-editorial.mjs");
 
 // Build the unified, public discovery surface after source-specific storefronts.
 await import("./generate-commerce-marketplace.mjs");
+await import("./generate-commerce-tracking.mjs");
 
 // Version the final public CSS URLs so old Safari/edge caches cannot hide the approved logo.
 // This must run after all editorial transforms and before release source-SHA stamping.
