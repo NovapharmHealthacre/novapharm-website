@@ -1,0 +1,34 @@
+name: Intelligence Atlas private observer contract
+
+on:
+  pull_request:
+    paths:
+      - 'src/data/atlas-free-preview.mjs'
+      - 'src/data/atlas-private-preview-inspection.mjs'
+      - 'scripts/test-atlas-free-preview.mjs'
+      - 'scripts/test-atlas-private-preview-inspection.mjs'
+      - '.github/workflows/intelligence-atlas-private-observer.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-private-observer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact PR source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Verify fail-closed private Atlas observer and existing schema plan
+        run: |
+          node --check src/data/atlas-free-preview.mjs
+          node --check src/data/atlas-private-preview-inspection.mjs
+          node --test scripts/test-atlas-free-preview.mjs scripts/test-atlas-private-preview-inspection.mjs
+      - name: Assert CI never provisions Atlas network or customer access
+        run: |
+          ! grep -Eq '0\\.0\\.0\\.0/0|aws lambda update-function|stripe\\.com/v1|aws ec2 create-nat-gateway' .github/workflows/intelligence-atlas-private-observer.yml
