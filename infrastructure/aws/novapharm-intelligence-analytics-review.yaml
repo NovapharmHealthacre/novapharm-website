@@ -103,6 +103,61 @@ Resources:
             EncryptionOption: SSE_S3
         EngineVersion:
           SelectedEngineVersion: Athena engine version 3
+  MetadataPreflightRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: novapharm-intelligence-analytics-review-preflight
+      Description: Read isolated candidate metadata and write only review preflight results
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: glue.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CandidateMetadataOnly
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: ReadReviewInputs
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource:
+                  - arn:aws:s3:::novapharm-intelligence-analytics-review-250675045172-eu-north-1/jobs/review_candidate_preflight.py
+                  - arn:aws:s3:::novapharm-intelligence-analytics-review-250675045172-eu-north-1/source-review/candidates/v1/*
+              - Sid: WriteAuditOnly
+                Effect: Allow
+                Action:
+                  - s3:PutObject
+                Resource:
+                  - arn:aws:s3:::novapharm-intelligence-analytics-review-250675045172-eu-north-1/source-review/preflight/v1/*
+              - Sid: WriteOwnLogs
+                Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource:
+                  - arn:aws:logs:eu-north-1:250675045172:log-group:/aws-glue/python-jobs/*
+  MetadataPreflightJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Name: novapharm-intelligence-analytics-review-preflight
+      Description: Candidate metadata quality gate; no raw prescribing data or approval authority
+      Role: !GetAtt MetadataPreflightRole.Arn
+      Command:
+        Name: pythonshell
+        PythonVersion: '3.9'
+        ScriptLocation: s3://novapharm-intelligence-analytics-review-250675045172-eu-north-1/jobs/review_candidate_preflight.py
+      MaxCapacity: 0.0625
+      Timeout: 5
+      MaxRetries: 0
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      DefaultArguments:
+        '--job-language': python
 Outputs:
   ReviewBucket:
     Value: !Ref ReviewBucket
