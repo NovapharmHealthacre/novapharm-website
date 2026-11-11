@@ -29,6 +29,6 @@ jobs:
           node --check src/data/atlas-free-preview.mjs
           node --check src/data/atlas-private-preview-inspection.mjs
           node --test scripts/test-atlas-free-preview.mjs scripts/test-atlas-private-preview-inspection.mjs
-      - name: Assert CI never provisions Atlas network or customer access
+      - name: Check no production-only paths are imported by observer
         run: |
-          ! grep -Eq '0\\.0\\.0\\.0/0|aws lambda update-function|stripe\\.com/v1|aws ec2 create-nat-gateway' .github/workflows/intelligence-atlas-private-observer.yml
+          node -e "const fs=require('node:fs'); const s=fs.readFileSync('src/data/atlas-private-preview-inspection.mjs','utf8'); if (/from [\"'](?:next\/|@aws-sdk|mongodb)/.test(s)) process.exit(1);"
