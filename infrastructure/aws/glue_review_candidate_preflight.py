@@ -61,9 +61,11 @@ report = {
     ],
 }
 key = "source-review/preflight/v1/" + now.strftime("%Y%m%dT%H%M%S") + "-" + uuid.uuid4().hex + ".json"
+# Glue Python 3.9 includes an older botocore without PutObject IfNoneMatch.
+# A high-entropy unique key and bucket versioning avoid intentional overwrites.
 s3.put_object(
     Bucket=BUCKET, Key=key, Body=(json.dumps(report, sort_keys=True)+"\n").encode("utf-8"),
-    ContentType="application/json", ServerSideEncryption="AES256", IfNoneMatch="*",
+    ContentType="application/json", ServerSideEncryption="AES256",
     Metadata={"review-state": "blocked-not-accepted"}
 )
 print(json.dumps({"audit_key": key, "status": report["status"], "production_eligible": False}))
