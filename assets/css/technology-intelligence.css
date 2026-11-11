@@ -1055,8 +1055,8 @@ body[data-page="technology"] .np-intelligence {
   height: auto;
 }
 .np-intelligence .npi-hero--editorial h1 {
-  max-width: 870px;
-  font-size: clamp(3.25rem, 5.7vw, 6.15rem);
+  max-width: 1040px;
+  font-size: clamp(3.15rem, 5vw, 5.1rem);
   font-weight: 700;
   line-height: 1.055;
   letter-spacing: -.043em;
