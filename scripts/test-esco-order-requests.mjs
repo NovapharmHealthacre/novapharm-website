@@ -56,3 +56,16 @@ test("customers can check their receipt without seeing personal or payment data"
   assert.match(checkout,/def request_status\(event, order_id\):/);
   assert.match(css,/\.esco-request-lookup-state\[hidden\]/);
 });
+
+test("customers can download a specification-based BOQ without sending any emails or prices",()=>{
+  assert.match(generator,/data-esco-export-boq/);
+  assert.match(bag,/boqExportButton\.disabled = !state\.length/);
+  assert.match(bag,/downloadBoq\(state, known, categoryNameById\)/);
+  assert.match(bag,/novapharm-esco-bill-of-quantities\.csv/);
+  assert.match(bag,/new Blob\(\[csv\]/);
+  assert.match(bag,/categoryNameById\.get\(item\.id\)/);
+  assert.match(bag,/Exact specification \/ size \/ variant \(buyer to complete\)/);
+  assert.match(bag,/replaceAll\('"', '""'\)/);
+  assert.doesNotMatch(bag,/window\.location\.assign\([^;]*boq/i);
+  assert.match(css,/\.esco-bag-boq:disabled/);
+});
