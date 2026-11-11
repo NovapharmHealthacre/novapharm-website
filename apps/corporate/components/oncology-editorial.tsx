@@ -62,7 +62,7 @@ export function OncologyEditorialPage() {
             <p>A growing portfolio of oncology medicines, built to improve access, expand treatment options and support better outcomes.</p>
             <a className="npoc-focus-link" href="/products/strategic-portfolio/">Explore the Portfolio</a>
           </div>
-          <div className="npoc-focus-cards" role="group" aria-label="Oncology portfolio areas of interest">
+          <div className="npoc-focus-cards">
             <a className="npoc-focus-card" href="/contact/?enquiry=Oncology%20solid%20tumours" aria-label="Discuss solid tumour opportunities">
               <Image src="/assets/media/oncology/solid-tumours.jpg" alt="" width={325} height={237} loading="lazy" unoptimized />
               <span>Solid tumours</span>
