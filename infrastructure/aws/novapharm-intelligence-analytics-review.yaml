@@ -1,0 +1,112 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Private NovaPharm candidate-source metadata review. No medicine ingestion or customer access.
+Resources:
+  ReviewBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: novapharm-intelligence-analytics-review-250675045172-eu-north-1
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireAthenaQueryResultsAfter7Days
+            Status: Enabled
+            Prefix: athena/results/
+            ExpirationInDays: 7
+          - Id: AbortMultipartAfter7Days
+            Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+  ReviewBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ReviewBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource:
+              - arn:aws:s3:::novapharm-intelligence-analytics-review-250675045172-eu-north-1
+              - arn:aws:s3:::novapharm-intelligence-analytics-review-250675045172-eu-north-1/*
+            Condition:
+              Bool:
+                aws:SecureTransport: 'false'
+  ReviewDatabase:
+    Type: AWS::Glue::Database
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: novapharm_intelligence_analytics_review
+        Description: Rights-pending candidate source metadata. Not accepted medicine observations.
+  CandidateTable:
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: !Ref ReviewDatabase
+      TableInput:
+        Name: source_review_candidates_v1
+        TableType: EXTERNAL_TABLE
+        Parameters:
+          EXTERNAL: 'TRUE'
+          classification: json
+          data_state: candidate_only
+          customer_publication: prohibited
+        StorageDescriptor:
+          Location: s3://novapharm-intelligence-analytics-review-250675045172-eu-north-1/source-review/candidates/v1/
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          SerdeInfo:
+            SerializationLibrary: org.openx.data.jsonserde.JsonSerDe
+          Columns:
+            - { Name: source_id, Type: string }
+            - { Name: publisher, Type: string }
+            - { Name: reporting_period, Type: string }
+            - { Name: resource_id, Type: string }
+            - { Name: discovery_manifest_key, Type: string }
+            - { Name: publisher_hash_unverified, Type: string }
+            - { Name: independent_sha256, Type: string }
+            - { Name: rights_status, Type: string }
+            - { Name: identity_status, Type: string }
+            - { Name: data_status, Type: string }
+            - { Name: accepted_observation_count, Type: bigint }
+            - { Name: reviewer_id, Type: string }
+            - { Name: snapshot_verified, Type: boolean }
+            - { Name: last_reviewed_at, Type: string }
+  ReviewWorkGroup:
+    Type: AWS::Athena::WorkGroup
+    Properties:
+      Name: novapharm-intelligence-analytics-review
+      Description: Isolated, cost-bounded, non-production metadata-only candidate review.
+      State: ENABLED
+      WorkGroupConfiguration:
+        EnforceWorkGroupConfiguration: true
+        PublishCloudWatchMetricsEnabled: true
+        BytesScannedCutoffPerQuery: 26214400
+        ResultConfiguration:
+          OutputLocation: s3://novapharm-intelligence-analytics-review-250675045172-eu-north-1/athena/results/
+          EncryptionConfiguration:
+            EncryptionOption: SSE_S3
+        EngineVersion:
+          SelectedEngineVersion: Athena engine version 3
+Outputs:
+  ReviewBucket:
+    Value: !Ref ReviewBucket
+  ReviewDatabase:
+    Value: !Ref ReviewDatabase
+  ReviewWorkGroup:
+    Value: !Ref ReviewWorkGroup
