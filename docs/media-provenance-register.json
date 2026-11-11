@@ -659,6 +659,42 @@
       ],
       "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
       "detailedRegister": "creative-assets/module-media-asset-register.json#insight-three-pillar"
+    },
+    {
+      "id": "capabilities-vial-photo-2026-11",
+      "sourceType": "approved-existing",
+      "source": "Repository visual derivative introduced in merged PR #397 from an owner-approved Capabilities visual reference; original photographer, upstream file and independent usage rights are not documented",
+      "creator": null,
+      "originalUrl": null,
+      "licence": "UNVERIFIED RIGHTS: record tracks internal reference only; third-party reuse/publication permissions require independent approval",
+      "acquisitionDate": "2026-11-11",
+      "modificationPermitted": null,
+      "modifications": "800x224 WebP crop present in repository; no claim of original ownership",
+      "generatedPrompt": null,
+      "publicBase": "/assets/media/capabilities/approved-vial-photo",
+      "pagesUsingIt": [
+        "/capabilities/"
+      ],
+      "reviewStatus": "owner-approved-composition; underlying-image-rights-pending-verification",
+      "detailedRegister": "https://github.com/NovapharmHealthacre/novapharm-website/pull/397"
+    },
+    {
+      "id": "capabilities-earth-horizon-2026-11",
+      "sourceType": "approved-existing",
+      "source": "Repository visual derivative introduced in merged PR #397 from an owner-approved Capabilities visual reference; original source photographer, upstream file and independent usage rights are not documented",
+      "creator": null,
+      "originalUrl": null,
+      "licence": "UNVERIFIED RIGHTS: record tracks internal reference only; third-party reuse/publication permissions require independent approval",
+      "acquisitionDate": "2026-11-11",
+      "modificationPermitted": null,
+      "modifications": "800x53 WebP horizon crop present in repository; no claim of original ownership",
+      "generatedPrompt": null,
+      "publicBase": "/assets/media/capabilities/approved-earth-horizon-crest",
+      "pagesUsingIt": [
+        "/capabilities/"
+      ],
+      "reviewStatus": "owner-approved-composition; underlying-image-rights-pending-verification",
+      "detailedRegister": "https://github.com/NovapharmHealthacre/novapharm-website/pull/397"
     }
   ]
 }
