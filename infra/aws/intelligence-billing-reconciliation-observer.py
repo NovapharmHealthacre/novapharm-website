@@ -82,6 +82,19 @@ def _json_object(value):
     return value
 
 
+def normalize_live_key(raw):
+    # Secrets Manager's shared key currently has a terminal line break.
+    # Normalize only at this private HTTP boundary. Do not change the
+    # shared secret that other commerce services may be using.
+    if not isinstance(raw, str):
+        raise ReconciliationUnavailable("live_key_unavailable")
+    key = raw.strip()
+    if (not key.startswith(("sk_live_", "rk_live_")) or len(key) < 24 or
+            any(ord(char) < 33 or ord(char) > 126 for char in key)):
+        raise ReconciliationUnavailable("live_key_unavailable")
+    return key
+
+
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         raise ReconciliationUnavailable("stripe_redirect_rejected")
@@ -240,9 +253,9 @@ def handler(event, _context):
         return {"ok": False, "code": "billing_observer_configuration_mismatch", "grants_created": 0}
     try:
         secrets = boto3.client("secretsmanager", region_name="eu-north-1")
-        secret = secrets.get_secret_value(SecretId=STRIPE_KEY_SECRET).get("SecretString", "")
-        if not isinstance(secret, str) or not secret.startswith(("sk_live_", "rk_live_")):
-            raise ReconciliationUnavailable("live_key_unavailable")
+        secret = normalize_live_key(
+            secrets.get_secret_value(SecretId=STRIPE_KEY_SECRET).get("SecretString", "")
+        )
         fetch = lambda resource, identifier=None: read_live_stripe(secret, resource, identifier)
         # A live key's account is verified BEFORE interpreting even one event.
         # An empty quarantine must never produce false "connected" confidence.
