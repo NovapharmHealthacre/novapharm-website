@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'infra/aws/*.json'
+      - 'infra/aws/policies/*.json'
+      - 'infra/aws/contact-synthetic-staging.yaml'
       - 'scripts/aws/production-hardening-contract.test.mjs'
       - '.github/workflows/aws-live-hardening-contract.yml'
   workflow_dispatch:
