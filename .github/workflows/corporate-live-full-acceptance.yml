@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'scripts/test-corporate-live-acceptance.mjs'
+      - 'scripts/test-corporate-contact-failure.mjs'
       - '.github/workflows/corporate-live-full-acceptance.yml'
   workflow_run:
     workflows: ["Publish verified AWS-backed contact form"]
@@ -45,6 +46,8 @@ jobs:
           CORPORATE_LIVE_ORIGIN: https://novapharmhealthcare.com
           EXPECTED_LIVE_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || '' }}
         run: node scripts/test-corporate-live-acceptance.mjs
+      - name: Verify safe Contact failure and retry without real AWS requests
+        run: node scripts/test-corporate-contact-failure.mjs
       - name: Preserve screenshots, accessibility results and failures
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
