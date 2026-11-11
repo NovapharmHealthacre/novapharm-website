@@ -28,6 +28,9 @@ const validClaims = {
   sub: "41fb4ecc-e9c6-4f7e-a376-17b0eddb4a8a",
   email_verified: true,
   iat: second - 30,
+  auth_time: second - 60,
+  acr: "urn:cognito:loa:4",
+  amr: ["pwd", "otp", "mfa"],
   exp: second + 300,
 };
 const mockJwks = async (url, options) => {
@@ -45,6 +48,8 @@ test("dedicated client uses code and PKCE with no access grant", () => {
   assert.equal(url.searchParams.get("client_id"), intelligenceCustomerOidc.clientId);
   assert.equal(url.searchParams.get("redirect_uri"), intelligenceCustomerOidc.callback);
   assert.equal(url.searchParams.get("scope"), "openid email profile");
+  assert.equal(url.searchParams.get("acr_values"), "urn:cognito:loa:4");
+  assert.equal(url.searchParams.get("max_age"), "300");
   const transaction = verifyCustomerLoginTransaction({
     signingKey, cookieValue: started.transactionCookieValue,
     state: url.searchParams.get("state"), nowMs: second * 1000 + 30_000,
@@ -96,7 +101,8 @@ test("signed ID JWT verifies exact issuer, audience, nonce and expiry but never 
   assert.equal(result.verifiedCognitoSubject, validClaims.sub);
   assert.equal(result.tenantOwnershipVerified, false);
   assert.equal(result.subscriptionVerified, false);
-  assert.equal(result.mfaSessionAttestationRequired, true);
+  assert.equal(result.mfaVerified, true);
+  assert.equal(result.mfaSessionAttestationRequired, false);
   assert.equal(result.grantsTenantAccess, false);
 });
 
@@ -108,6 +114,13 @@ test("forged JWT, wrong nonce, email, audience or expiry cannot pass", async () 
     ["email unverified", { ...validClaims, email_verified: false }],
     ["expired", { ...validClaims, exp: second - 1 }],
     ["wrong type", { ...validClaims, token_use: "access" }],
+    ["no acr", { ...validClaims, acr: undefined }],
+    ["weak acr", { ...validClaims, acr: "urn:cognito:loa:1" }],
+    ["no MFA", { ...validClaims, amr: ["pwd"] }],
+    ["missing TOTP", { ...validClaims, amr: ["pwd", "mfa"] }],
+    ["stale auth", { ...validClaims, auth_time: second - 301 }],
+    ["future auth", { ...validClaims, auth_time: second + 120 }],
+    ["missing auth time", { ...validClaims, auth_time: undefined }],
   ]) {
     await assert.rejects(verifyIntelligenceCustomerIdToken({
       idToken: token(claims), expectedNonce: nonce, fetchImpl: mockJwks, nowSeconds: second,
