@@ -69,6 +69,62 @@ jobs:
           done
           echo "Unauthenticated private API boundaries and no-store caching verified."
 
+      - name: Verify exact public health and Cognito paths without redirecting into protected fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_url="https://intelligence.novapharmhealthcare.com"
+
+          # Do not follow redirects. A 308 on the canonical HTTP API route
+          # would fall into the AWS_IAM catch-all and break real login.
+          health_status=$(curl --silent --show-error --max-time 20 --connect-timeout 8 \
+            -D /tmp/npi-health-headers -o /tmp/npi-health-body \
+            -w '%{http_code}' "$base_url/healthz" || true)
+          if [ "$health_status" != "200" ] || ! grep -qx 'ok' /tmp/npi-health-body; then
+            echo "::error::Canonical /healthz is not HTTP 200 with the liveness payload; found HTTP $health_status."
+            exit 1
+          fi
+          if ! tr -d '\r' </tmp/npi-health-headers | grep -qi '^cache-control:.*no-store'; then
+            echo "::error::Health must disable caching."
+            exit 1
+          fi
+
+          start_status=$(curl --silent --show-error --max-time 20 --connect-timeout 8 \
+            -D /tmp/npi-auth-start-headers -o /tmp/npi-auth-start-body \
+            -w '%{http_code}' "$base_url/auth/customer/start" || true)
+          if [ "$start_status" != "302" ]; then
+            echo "::error::Canonical Cognito start did not return HTTP 302 (found $start_status)."
+            exit 1
+          fi
+          if ! tr -d '\r' </tmp/npi-auth-start-headers | grep -Eqi '^location: https://novapharm-intelligence-production-eun1\.auth\.eu-north-1\.amazoncognito\.com/oauth2/authorize\?'; then
+            echo "::error::Cognito start must redirect only to the pinned hosted UI."
+            exit 1
+          fi
+          if ! tr -d '\r' </tmp/npi-auth-start-headers | grep -Eqi '^set-cookie: __Host-npi_oidc_tx=.*;[[:space:]]*Secure'; then
+            # Cookie attributes may be reordered, so inspect the same header as a whole.
+            if ! tr -d '\r' </tmp/npi-auth-start-headers | grep -Ei '^set-cookie: __Host-npi_oidc_tx=' | grep -Eqi 'secure'; then
+              echo "::error::Cognito PKCE transaction cookie is not Secure."
+              exit 1
+            fi
+          fi
+          if ! tr -d '\r' </tmp/npi-auth-start-headers | grep -Ei '^set-cookie: __Host-npi_oidc_tx=' | grep -Eqi 'httponly'; then
+            echo "::error::Cognito PKCE transaction cookie is not HttpOnly."
+            exit 1
+          fi
+
+          callback_status=$(curl --silent --show-error --max-time 20 --connect-timeout 8 \
+            -D /tmp/npi-auth-callback-headers -o /tmp/npi-auth-callback-body \
+            -w '%{http_code}' "$base_url/auth/callback" || true)
+          if [ "$callback_status" != "401" ]; then
+            echo "::error::Unsigned Cognito callback must deny HTTP 401, found $callback_status."
+            exit 1
+          fi
+          if ! tr -d '\r' </tmp/npi-auth-callback-headers | grep -qi '^cache-control:.*no-store'; then
+            echo "::error::Cognito callback must disable caching."
+            exit 1
+          fi
+          echo "Canonical health and customer identity public route smoke passed; medicine/customer application acceptance remains separate."
+
       - name: Record scope of proof
         run: |
           echo "HTTPS + unauthenticated boundaries verified only."
