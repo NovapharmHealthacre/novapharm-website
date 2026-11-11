@@ -19,6 +19,11 @@ test("production candidate uses a non-root, standalone Next.js runtime with exac
   assert.match(dockerfile, /npm ci --ignore-scripts/);
   assert.match(dockerfile, /npm run build --workspace=@novapharm\/portal/);
   assert.match(dockerfile, /COPY --from=builder --chown=node:node/);
+  assert.match(dockerfile, /\/workspace\/apps\/portal\/\.next\/static\/\s+\/app\/apps\/portal\/\.next\/static\//,
+    "Production candidate must ship hashed JS/CSS alongside standalone server");
+  const stagingDockerfile = readFileSync(new URL("../deployment/aws/Dockerfile.portal", import.meta.url), "utf8");
+  assert.match(stagingDockerfile, /\/workspace\/apps\/portal\/\.next\/static\/\s+\/app\/apps\/portal\/\.next\/static\//,
+    "Staging image must not pass health checks while missing app JS/CSS assets");
   assert.match(dockerfile, /^USER node$/m);
   assert.match(dockerfile, /CMD \["node", "apps\/portal\/server\.js"\]/);
 });
