@@ -21,6 +21,6 @@ export default async function PortalPage({ params }: Readonly<{ params: Promise<
     if (decision !== "allow") redirect("/");
   }
 
-  const incomingHost = (await headers()).get("host")?.split(":")[0].toLowerCase();
+  const incomingHost = (await headers()).get("host")?.split(":")[0]?.toLowerCase() ?? "";
   return <PortalClient view={view} intelligencePortal={incomingHost === "intelligence.novapharmhealthcare.com"} />;
 }
