@@ -236,6 +236,7 @@ try {
   assert.equal(endedSearch.results.length, 0);
 
   const detail = await service.medicineIdentityDetail(medicineId, context);
+  // The investigation stays explicitly undecided even for a canonical identity.
   assert.equal(detail.hierarchy.length, 2);
   assert.equal(detail.investigationPassport.contract, "novapharm.intelligence.investigation-passport.v1");
   assert.equal(detail.investigationPassport.decisionReady, false);
