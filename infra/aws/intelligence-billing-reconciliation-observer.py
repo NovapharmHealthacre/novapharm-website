@@ -114,6 +114,10 @@ def read_live_stripe(key, resource, stripe_id=None):
             if len(raw) > MAX_RESPONSE_BYTES:
                 raise ReconciliationUnavailable("stripe_response_too_large")
             return _json_object(json.loads(raw))
+    except urllib.error.HTTPError as exc:
+        # An HTTP status alone is safe to report from a private health probe.
+        # Never propagate response bodies, API keys or customer identifiers.
+        raise ReconciliationUnavailable("stripe_http_" + str(exc.code)) from exc
     except (urllib.error.URLError, TimeoutError, UnicodeError, ValueError) as exc:
         raise ReconciliationUnavailable("live_stripe_unavailable") from exc
 
@@ -240,13 +244,19 @@ def handler(event, _context):
         if not isinstance(secret, str) or not secret.startswith(("sk_live_", "rk_live_")):
             raise ReconciliationUnavailable("live_key_unavailable")
         fetch = lambda resource, identifier=None: read_live_stripe(secret, resource, identifier)
+        # A live key's account is verified BEFORE interpreting even one event.
+        # An empty quarantine must never produce false "connected" confidence.
+        account = fetch("account")
+        if account.get("id") != ACCOUNT_ID:
+            return {"ok": False, "code": "stripe_account_mismatch", "grants_created": 0}
         if event.get("mode") == "health":
-            account = fetch("account")
-            return {"ok": account.get("id") == ACCOUNT_ID, "code":
-                "stripe_live_account_verified" if account.get("id") == ACCOUNT_ID else "stripe_account_mismatch",
-                "customer_access_enabled": False, "grants_created": 0}
+            return {"ok": True, "code": "stripe_live_account_verified",
+                    "customer_access_enabled": False, "grants_created": 0}
         ddb = boto3.client("dynamodb", region_name="eu-north-1")
         batch = run_observer(ddb, fetch)
         return {"ok": True, "code": "observation_only", **batch}
+    except ReconciliationUnavailable as exc:
+        # The exception has a fixed, non-sensitive status code; no stack traces.
+        return {"ok": False, "code": str(exc), "grants_created": 0}
     except Exception:
         return {"ok": False, "code": "billing_observer_unavailable", "grants_created": 0}
