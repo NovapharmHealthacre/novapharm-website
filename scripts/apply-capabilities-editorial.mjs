@@ -46,7 +46,7 @@ if (!/^<main id="main"[\s\S]*<\/main>$/.test(template)) {
 const mainMatches = original.match(/<main\b[^>]*>[\s\S]*?<\/main>/g) || [];
 if (mainMatches.length !== 1) throw new Error("Expected exactly one Capabilities main element in generated shell.");
 let result = original.replace(mainMatches[0], template);
-if (!result.includes('href="' + stylesheet + '"')) {
+if (!result.includes('href="' + stylesheet + '"') && !result.includes('href="' + stylesheet + '?v=')) {
   result = result.replace("</head>", '  <link rel="stylesheet" href="' + stylesheet + '">\n</head>');
 }
 if ((result.match(/<h1\b/g) || []).length !== 1 ||
