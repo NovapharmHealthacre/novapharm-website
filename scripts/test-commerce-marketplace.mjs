@@ -41,7 +41,10 @@ test('Apple-style public marketplace route is built and linked from products pag
 test('public marketplace JS never collects payments or presents owner declared stock as verified',()=>{
  const app=read('assets/js/commerce-marketplace.js');
  assert.doesNotMatch(app,/checkout\.sessions\.create|sk_live_|whsec_|cardNumber|ownerDeclaredUnits/);
- assert.match(app,/stock to be confirmed|Stock to be confirmed/i);
+ assert.match(app,/Owner-confirmed warehouse stock/);
+ assert.match(app,/Warehouse availability: confirm with seller/);
+ assert.match(app,/stockEvidence==='owner_confirmed_not_independently_audited'/);
+ assert.match(app,/checkoutAuthority===false/);
 });
 
 test('derived catalogue and tracking pages do not reuse Products-only image rights',()=>{

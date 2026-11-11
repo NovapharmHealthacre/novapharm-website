@@ -21,6 +21,7 @@ on:
       - 'scripts/generate-commerce-marketplace.mjs'
       - 'scripts/generate-commerce-tracking.mjs'
       - 'scripts/test-commerce-stock-live.mjs'
+      - 'scripts/test-commerce-marketplace.mjs'
       - 'infra/aws/commerce-stock-public-production.json'
       - 'apps/commerce-stock-api/index.py'
       - 'assets/css/esco-catalogue.css'
