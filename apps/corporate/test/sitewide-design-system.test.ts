@@ -32,7 +32,7 @@ test("one governed design layer is applied across every public corporate route",
 
 test("Apple-inspired system remains a NovaPharm identity with accessible, functional surfaces", () => {
   assert.match(style, /-apple-system, BlinkMacSystemFont/);
-  assert.match(style, /--nph-accent: #b51c1a/);
+  assert.match(style, /--nph-accent:\s*#e3120b/i);
   assert.match(style, /--nph-link: #0066cc/);
   assert.match(style, /min-height: 46px/);
   assert.match(style, /:focus-visible/);
