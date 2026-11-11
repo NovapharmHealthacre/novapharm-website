@@ -42,22 +42,42 @@ function safeCitationUrl(value) {
     const url = new URL(value);
     return url.protocol === "https:" && !url.username && !url.password &&
       url.hostname.includes(".") && !url.hostname.endsWith(".local") &&
-      !/^(?:localhost|127\.|10\.|192\.168\.|169\.254\.)/u.test(url.hostname);
+      !url.hostname.startsWith("[") && !/^\d+\.\d+\.\d+\.\d+$/u.test(url.hostname) &&
+      !/^(?:localhost|127\.|10\.|192\.168\.|169\.254\.|172\.)/u.test(url.hostname);
   } catch { return false; }
+}
+/** Bind the accepted source text and displayed citation to its admission record. */
+function recordContentFingerprint(row) {
+  return digest(JSON.stringify({
+    workspaceId: row.workspaceId, medicineId: row.medicineId, id: row.id,
+    sourceId: row.sourceId, sourceVersion: row.sourceVersion,
+    title: row.title, passage: row.passage, sourceUrl: row.sourceUrl
+  }));
 }
 function validEvidence(row, workspaceId, medicineId) {
   return row && typeof row === "object" && !Array.isArray(row) &&
     row.workspaceId === workspaceId && row.medicineId === medicineId &&
     ID.test(row.id) && ID.test(row.sourceId) && ID.test(row.sourceVersion) &&
     row.acceptanceStatus === "accepted" && row.isSample === false &&
+    row.verifiedByEvidenceAuthority === true && SHA256.test(row.acceptanceReceiptSha256) &&
     row.evidenceType === "observed_fact" && SHA256.test(row.provenanceSha256) &&
     validText(row.title, 240) && validText(row.passage, 1100) &&
-    safeCitationUrl(row.sourceUrl);
+    safeCitationUrl(row.sourceUrl) && SHA256.test(row.recordContentSha256) &&
+    row.recordContentSha256 === recordContentFingerprint(row);
 }
 function validRight(grant, row, workspaceId, now) {
   return grant && grant.workspaceId === workspaceId &&
     grant.sourceId === row.sourceId && grant.sourceVersion === row.sourceVersion &&
-    grant.status === "active" && REVISION.test(grant.rightsRevision) &&
+    grant.status === "active" && grant.revokedAt == null &&
+    grant.verifiedByRightsAuthority === true && grant.externalAiMedicineAnswerApproved === true &&
+    REVISION.test(grant.rightsRevision) && SHA256.test(grant.approvalRecordSha256) &&
+    ID.test(grant.reviewedBy) && typeof grant.reviewedAt === "string" &&
+    Number.isFinite(Date.parse(grant.reviewedAt)) && Date.parse(grant.reviewedAt) <= now &&
+    Array.isArray(grant.approvedPublisherHosts) && grant.approvedPublisherHosts.length > 0 &&
+    grant.approvedPublisherHosts.length <= 10 &&
+    grant.approvedPublisherHosts.every(host => typeof host === "string" &&
+      /^[a-z0-9][a-z0-9.-]{2,252}\.[a-z]{2,63}$/u.test(host)) &&
+    grant.approvedPublisherHosts.includes(new URL(row.sourceUrl).hostname.toLowerCase()) &&
     Array.isArray(grant.allowedPurposes) && grant.allowedPurposes.includes(PURPOSE) &&
     typeof grant.validFrom === "string" && Number.isFinite(Date.parse(grant.validFrom)) &&
     Date.parse(grant.validFrom) <= now &&
@@ -152,7 +172,8 @@ export async function answerGovernedMedicineQuestion({
     eventId, action: "nova.medicine_answer.preflight", workspaceId: authority.workspaceId,
     principalId: authority.principalId, authorityRevision: authority.authorityRevision,
     medicineFingerprint: digest(authority.workspaceId + ":" + medicineId),
-    sourceFingerprint: digest(rows.map(row => row.provenanceSha256).join(":")),
+    sourceFingerprint: digest(rows.map(row =>
+      row.id + ":" + row.provenanceSha256 + ":" + row.recordContentSha256).sort().join(":")),
     sourceCount: rows.length, promptBodyStored: false
   });
   if (preflight?.committed !== true || preflight.eventId !== eventId) {

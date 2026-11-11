@@ -1,0 +1,38 @@
+name: Intelligence public entry and anonymous denial acceptance
+
+on:
+  pull_request:
+    paths:
+      - "scripts/verify-intelligence-public-entry.mjs"
+      - "scripts/test-verify-intelligence-public-entry.mjs"
+      - ".github/workflows/intelligence-public-entry-acceptance.yml"
+      - "apps/portal/app/auth/**"
+      - "apps/portal/next.config.ts"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/verify-intelligence-public-entry.mjs"
+      - "scripts/test-verify-intelligence-public-entry.mjs"
+      - ".github/workflows/intelligence-public-entry-acceptance.yml"
+      - "apps/portal/app/auth/**"
+      - "apps/portal/next.config.ts"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-entry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Validate read-only verifier and its negative cases
+        run: |
+          node --check scripts/verify-intelligence-public-entry.mjs
+          node --test scripts/test-verify-intelligence-public-entry.mjs
+      - name: Verify public sign-in and anonymous API denial against live URLs
+        run: node scripts/verify-intelligence-public-entry.mjs

@@ -69,8 +69,10 @@ export function evaluateMedicineForecastIntervalCandidate(args = {}) {
     intervalIsProductionCalibrated: false,
   })));
   return Object.freeze({
-    contract: CONTRACT, accepted: true,
-    code: "independent_interval_validation_candidate_only",
+    contract: CONTRACT, accepted: empiricalCoveragePassed,
+    code: empiricalCoveragePassed
+      ? "independent_interval_validation_candidate_only"
+      : "independent_interval_coverage_failed",
     baselineModel: baseline.baselineModel,
     inputFingerprint: baseline.inputFingerprint,
     intervalValidation: Object.freeze({
