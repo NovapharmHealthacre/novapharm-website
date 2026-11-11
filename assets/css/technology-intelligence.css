@@ -979,3 +979,34 @@ body[data-page="technology"] .np-intelligence {
   .np-intelligence .npi-billing-switch button { padding-inline: 13px; }
 }
 @media (prefers-reduced-motion: reduce) { .np-intelligence .npi-plan-cta { transition: none; } }
+
+/* Dedicated Intelligence sign-in, visible without misrepresenting workspace activation. */
+.np-intelligence .np-intelligence-local-nav .npi-local-login {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: #1d1d1f;
+  color: #fff;
+  font-weight: 650;
+  white-space: nowrap;
+}
+.np-intelligence .np-intelligence-local-nav .npi-local-login:hover {
+  background: #3a3a3c;
+  color: #fff;
+}
+.np-intelligence .npi-research-access {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 360px;
+}
+.np-intelligence .npi-research-access .npi-button {
+  min-height: 44px;
+}
+.np-intelligence .npi-research-access .npi-research-access-status {
+  max-width: 340px;
+}
