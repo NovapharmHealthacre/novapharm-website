@@ -19,6 +19,11 @@ test("one medicine gives twelve deterministic evidence and decision lenses", () 
   const result = buildMedicineInvestigationPassport(input());
   assert.equal(result.contract, "novapharm.intelligence.investigation-passport.v1");
   assert.equal(result.lenses.length, 12);
+  assert.equal(result.researchPlan.contract, "novapharm.intelligence.nova-investigation-plan.v1");
+  assert.equal(result.researchPlan.status, "planning_only");
+  assert.equal(result.researchPlan.steps.length, 7);
+  assert.equal(result.researchPlan.executionAuthorized, false);
+  assert.equal(result.researchPlan.decisionReady, false);
   assert.equal(result.lenses[0].id, "identity");
   assert.equal(result.lenses.find(x => x.id === "primary_care").state, "records_exist_not_yet_rights_verified");
   assert.equal(result.lenses.find(x => x.id === "forecast").state, "records_exist_not_yet_rights_verified");
