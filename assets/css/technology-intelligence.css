@@ -35,6 +35,8 @@ body[data-page="technology"] .np-intelligence {
   letter-spacing: .08em;
   line-height: 1.35;
 }
+/* WCAG AA: section kicker on the soft directory panel needs at least 4.5:1. */
+.np-intelligence .npi-directory-intro .npi-kicker { color: var(--npi-red-deep); }
 .np-intelligence .npi-section-heading { max-width: 780px; margin-bottom: clamp(36px, 5vw, 70px); }
 .np-intelligence .npi-section-heading h2,
 .np-intelligence .npi-centered-heading h2 {
