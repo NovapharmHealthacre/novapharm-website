@@ -182,13 +182,21 @@ export async function answerGovernedMedicineQuestion({
   });
   const citations = verifiedModelCitations(text, rows);
   if (!await currentAuthority()) throw blocked("nova_authority_revoked");
+  const finalEventId = randomUUID();
   const receipt = await recordAudit({
-    eventId: randomUUID(), parentEventId: eventId, action: "nova.medicine_answer.draft",
+    eventId: finalEventId, parentEventId: eventId, action: "nova.medicine_answer.draft",
     workspaceId: authority.workspaceId, principalId: authority.principalId,
     sourceCount: rows.length, citationCount: citations.length,
     answerBodyStored: false, promptBodyStored: false
   });
-  if (receipt?.committed !== true) throw blocked("nova_audit_unavailable", 503);
+  if (receipt?.committed !== true || receipt.eventId !== finalEventId) {
+    throw blocked("nova_audit_unavailable", 503);
+  }
+  const completedMetric = await recordMetric({
+    eventId, event: "nova_inference_completed", outcome: "draft_requires_human_review",
+    citationCount: citations.length
+  });
+  if (completedMetric?.recorded !== true) throw blocked("nova_monitoring_unavailable", 503);
   return {
     status: "draft_requires_human_review", productionCertified: false,
     answer: text, citations, auditEventId: eventId,
