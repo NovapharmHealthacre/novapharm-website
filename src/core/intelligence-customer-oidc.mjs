@@ -13,6 +13,8 @@ const OIDC_ISSUER = "https://cognito-idp.eu-north-1.amazonaws.com/eu-north-1_jBL
 const CLIENT_ID = "7c76122stt76k4d8cjvd7tf6ck";
 const CALLBACK = "https://intelligence.novapharmhealthcare.com/auth/callback";
 const AGE_MS = 300_000;
+const REQUIRED_ACR = "urn:cognito:loa:4";
+const MAX_AUTH_AGE_SECONDS = 300;
 const VALID_RANDOM = /^[A-Za-z0-9_-]{40,128}$/u;
 
 function blocked(code) {
@@ -58,6 +60,8 @@ export function createCustomerLoginTransaction({ signingKey, nowMs = Date.now() 
     code_challenge: createHash("sha256").update(verifier).digest("base64url"),
     state,
     nonce,
+    acr_values: REQUIRED_ACR,
+    max_age: String(MAX_AUTH_AGE_SECONDS),
   };
   for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value);
   return Object.freeze({
@@ -157,6 +161,10 @@ export async function verifyIntelligenceCustomerIdToken({
       claims.token_use !== "id" || claims.nonce !== expectedNonce ||
       claims.email_verified !== true ||
       typeof claims.sub !== "string" || !/^[A-Za-z0-9-]{8,128}$/u.test(claims.sub) ||
+      claims.acr !== REQUIRED_ACR || !Array.isArray(claims.amr) ||
+      !["pwd", "otp", "mfa"].every((method) => claims.amr.includes(method)) ||
+      !Number.isSafeInteger(claims.auth_time) || claims.auth_time > nowSeconds + 60 ||
+      nowSeconds - claims.auth_time > MAX_AUTH_AGE_SECONDS ||
       !Number.isSafeInteger(claims.exp) || claims.exp <= nowSeconds ||
       !Number.isSafeInteger(claims.iat) || claims.iat > nowSeconds + 60 ||
       !Number.isSafeInteger(nowSeconds)) throw blocked("identity_claims_invalid");
@@ -164,9 +172,10 @@ export async function verifyIntelligenceCustomerIdToken({
     verifiedCognitoSubject: claims.sub,
     verifiedIssuer: OIDC_ISSUER,
     identityVerified: true,
-    // Cognito pool has TOTP MFA ON, but this token alone does not prove the
-    // tenant session's independent step-up assertion. Do not infer a seat.
-    mfaSessionAttestationRequired: true,
+    // Verified signed Cognito Essentials ACR 4 / AMR pwd+otp+mfa and fresh auth_time.
+    // This proves TOTP authentication, not a customer seat or a paid contract.
+    mfaVerified: true,
+    mfaSessionAttestationRequired: false,
     tenantOwnershipVerified: false,
     subscriptionVerified: false,
     grantsTenantAccess: false,
