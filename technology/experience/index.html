@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Explore the NovaPharm Intelligence Medicines Terminal through a fully interactive, clearly-labelled synthetic geography experience.">
+  <title>Explore the Medicines Terminal | NovaPharm Intelligence</title>
+  <style>
+    :root { --ink:#1d1d1f;--muted:#6e6e73;--faint:#8b8b92;--line:#e5e5e9;--surface:#f5f5f7;--blue:#0066cc;--deep:#03499b; --white:#fff; }
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:white;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}button,select,input{font:inherit}a{color:inherit;text-decoration:none}button{cursor:pointer}button:disabled{cursor:not-allowed}button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid #0071e3;outline-offset:4px}button,select{touch-action:manipulation}
+    .wrap{width:min(1180px,calc(100% - 64px));margin-inline:auto}.topbar{height:60px;border-bottom:1px solid #efeff1;background:rgba(255,255,255,.9);backdrop-filter:saturate(160%) blur(20px);position:sticky;top:0;z-index:20}.topbar .wrap{height:100%;display:flex;justify-content:space-between;align-items:center;gap:24px}.brand{font-size:17px;font-weight:670;letter-spacing:-.045em}.toplinks{display:flex;align-items:center;gap:30px;color:#55555a;font-size:12px;font-weight:520}.toplinks .active{color:var(--ink)}.toplinks a:hover{text-decoration:underline}.toplinks .pill{color:#fff;background:#1d1d1f;border-radius:99px;padding:9px 17px;font-weight:550}.toplinks .pill:hover{text-decoration:none;background:#404045}
+    .hero{text-align:center;padding:104px 24px 100px}.eyebrow{font-size:12px;letter-spacing:.11em;font-weight:680;color:#606066;text-transform:uppercase}.hero h1{max-width:1080px;margin:24px auto 22px;font-weight:680;font-size:clamp(51px,7.35vw,105px);letter-spacing:-.082em;line-height:1.015}.hero h1 span{color:#7c7c81}.hero .lead{font-size:clamp(17px,1.75vw,22px);line-height:1.5;font-weight:425;color:#626268;max-width:675px;margin:0 auto 27px;letter-spacing:-.014em}.hero .hero-action{display:inline-flex;align-items:center;justify-content:center;background:#1d1d1f;border-radius:100px;color:white;font-size:14px;padding:14px 24px;font-weight:550;transition:background .2s,transform .2s}.hero .hero-action:hover{background:#414145;transform:translateY(-1px)}.hero .disclosure{font-size:12px;color:#88888d;margin-top:20px}
+    .experience{padding:96px 0 114px;background:#f5f5f7}.section-label{font-size:12px;font-weight:680;color:var(--blue);letter-spacing:.12em;text-transform:uppercase}.section-heading{margin:14px 0 13px;font-size:clamp(40px,5.8vw,75px);font-weight:670;letter-spacing:-.067em;line-height:1.07}.section-sub{font-size:clamp(17px,1.75vw,22px);color:var(--muted);line-height:1.5;margin:0 0 38px;max-width:590px;letter-spacing:-.012em}
+    .terminal{background:white;border-radius:25px;box-shadow:0 22px 80px rgba(32,38,48,.065),0 0 0 1px #e4e4e7;overflow:hidden}.terminal-header{min-height:84px;padding:21px 36px;display:flex;gap:22px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.terminal-heading{font-weight:660;letter-spacing:-.03em;font-size:18px}.terminal-subheading{display:block;color:#828288;font-size:12px;margin-top:4px}.demo-tag{font-size:11px;font-weight:650;background:#f5f5f7;border:1px solid #e9e9eb;border-radius:100px;padding:8px 12px;color:#74747b;white-space:nowrap}
+    .tabs{display:flex;gap:30px;border-bottom:1px solid var(--line);padding:0 36px;overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tabs button{border:0;border-bottom:2px solid transparent;background:none;color:#86868b;font-size:14px;font-weight:570;min-height:53px;padding:0 2px;white-space:nowrap}.tabs button[aria-selected="true"]{color:#1d1d1f;border-color:#1d1d1f}.tabs button:hover{color:#1d1d1f}
+    .panel{padding:34px 36px 29px}.panel[hidden]{display:none}.stage-intro{display:flex;justify-content:space-between;align-items:start;gap:24px;margin-bottom:12px}.stage-eyebrow{color:#85858b;font-size:11px;font-weight:620;letter-spacing:.07em;text-transform:uppercase}.stage-title{font-size:clamp(28px,3.1vw,43px);font-weight:670;letter-spacing:-.055em;line-height:1.1;margin:10px 0 7px}.stage-desc{font-size:13px;color:#7d7d82;margin:0;line-height:1.5}.period-badge{background:#f7f7f8;border:1px solid #eeeef0;border-radius:10px;padding:11px 15px;color:#5e5e64;font-size:12px;font-weight:560;white-space:nowrap}
+    .map-layout{display:grid;grid-template-columns:minmax(0,1.18fr) minmax(0,1fr);gap:28px;min-height:480px;align-items:stretch}.map-stage{border:1px solid #eeeef0;border-radius:18px;background:radial-gradient(circle at 56% 34%,#fff 0,#f9fafb 62%,#f5f6f8 100%);position:relative;min-height:475px;display:flex;align-items:center;justify-content:center;padding:22px 12px 30px;overflow:hidden}.map-stage svg{max-height:460px;width:100%;max-width:460px;display:block;overflow:visible}.map-stage svg path{stroke:white;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:fill .22s ease,opacity .2s ease,filter .2s ease;outline:none;cursor:pointer}.map-stage svg path:hover,.map-stage svg path:focus-visible{filter:brightness(.85);stroke:#1d1d1f;stroke-width:2.6}.map-stage svg path[data-selected="true"]{stroke:#182a4f;stroke-width:3.2;filter:drop-shadow(0 2px 3px rgba(10,43,93,.23))}.map-note{position:absolute;bottom:13px;left:15px;right:15px;text-align:center;font-size:10px;line-height:1.45;color:#777780}.map-fallback-label{color:#777;font-size:12px}
+    .insights{padding:29px 31px;background:#fafafa;border-radius:18px;border:1px solid #f1f1f2;display:flex;flex-direction:column}.value-label{text-transform:uppercase;font-size:11px;letter-spacing:.1em;font-weight:660;color:#88888e}.region-name{font-weight:650;font-size:clamp(29px,3.4vw,45px);letter-spacing:-.065em;margin:13px 0 7px;line-height:1.1}.mega-value{font-size:clamp(68px,7vw,96px);letter-spacing:-.078em;font-weight:630;line-height:1.05;margin-top:15px}.value-unit{font-size:13px;color:#6e6e73;margin-top:7px}.insight-rule{height:1px;background:#e5e5e8;width:100%;margin:32px 0 24px}.data-pair{display:flex;justify-content:space-between;gap:15px;padding:10px 0;font-size:13px;color:#73737b}.data-pair strong{font-weight:610;color:#1d1d1f;text-align:right}.insight-callout{font-size:13px;color:#66666d;line-height:1.55;margin:auto 0 0;padding-top:24px}.insight-callout strong{color:#1d1d1f}
+    .region-selector{margin-top:25px}.region-selector-label{font-size:12px;font-weight:610;color:#77777d;margin-bottom:12px}.regions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.regions button{border:1px solid #e9e9eb;border-radius:10px;background:#fff;min-height:48px;padding:11px 12px;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;font-weight:540;transition:border-color .2s,background .2s}.regions button:hover{background:#f6f7f9;border-color:#b9c5d3}.regions button[aria-pressed="true"]{background:#f0f6ff;border-color:#87b5ee;color:#004a9d;font-weight:650}.regions button span:last-child{font-variant-numeric:tabular-nums;color:#85858b}.regions button[aria-pressed="true"] span:last-child{color:#004a9d}
+    .timeline{padding:21px 36px 25px;border-top:1px solid var(--line);display:grid;grid-template-columns:155px minmax(0,1fr) 90px;gap:22px;align-items:center;background:#fcfcfd}.timeline label{display:block;font-size:12px;font-weight:630}.timeline label span{display:block;color:#85858b;font-weight:460;margin-top:5px;font-size:11px}.timeline input[type=range]{accent-color:#1d1d1f;width:100%;height:6px;cursor:pointer}.timeline button{border:1px solid #dedee2;color:#1d1d1f;border-radius:90px;background:white;padding:9px 12px;font-size:12px;font-weight:580}.timeline button:hover{background:#f3f3f5}
+    .chart-header{display:flex;align-items:end;justify-content:space-between;gap:20px}.compare-control label{display:block;font-size:11px;font-weight:650;color:#898991;margin-bottom:7px}.compare-control select{border:1px solid #dddde2;border-radius:9px;padding:10px 33px 10px 12px;font-size:13px;background:white;color:#222;max-width:100%}.chart-wrap{margin-top:33px;background:#fafbfc;border:1px solid #f0f0f1;border-radius:18px;padding:25px 28px 20px}.chart-wrap svg{width:100%;height:auto;display:block;overflow:visible}.chart-legend{display:flex;gap:22px;flex-wrap:wrap;color:#686872;margin:11px 0 0;font-size:12px}.chart-legend .swatch{display:inline-block;width:24px;height:3px;vertical-align:middle;margin:0 8px 3px 0;border-radius:3px}.chart-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:24px}.chart-stat{border-top:1px solid #e7e7ea;padding-top:15px}.chart-stat small{display:block;color:#85858c;font-size:12px;margin-bottom:7px}.chart-stat strong{font-weight:630;font-size:28px;letter-spacing:-.05em}.chart-caption{font-size:12px;color:#92929a;margin-top:24px;line-height:1.5}
+    .evidence-lede{max-width:770px;font-size:19px;color:#6e6e73;line-height:1.55;margin:14px 0 36px}.evidence-cols{display:grid;grid-template-columns:1fr 1fr;gap:22px}.evidence-item{padding:24px;background:#f9f9fb;border:1px solid #f0f0f2;border-radius:15px}.evidence-item b{display:block;font-weight:640;font-size:17px;letter-spacing:-.035em;margin-bottom:10px}.evidence-item p{margin:0;color:#6c6c73;font-size:13px;line-height:1.6}.evidence-item a{color:var(--blue);text-decoration:underline;text-underline-offset:2px}.source-note{color:#7d7d84;margin:23px 0 0;font-size:12px;line-height:1.55}
+    .bottom-copy{text-align:center;padding:99px 20px 92px}.bottom-copy h2{font-size:clamp(41px,6.2vw,79px);letter-spacing:-.072em;font-weight:680;line-height:1.08;margin:0 auto 19px;max-width:900px}.bottom-copy p{color:#727278;font-size:clamp(16px,1.6vw,21px);line-height:1.5;max-width:580px;margin:0 auto}.footer{border-top:1px solid var(--line);padding:22px 0;color:#86868b;font-size:12px}.footer .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px}.footer a:hover{text-decoration:underline}
+    @media(max-width:850px){.wrap{width:min(100% - 36px,1180px)}.hero{padding:83px 18px}.experience{padding:68px 0 76px}.toplinks a:not(.pill){display:none}.map-layout{grid-template-columns:1fr}.map-stage{min-height:380px}.insights{min-height:320px}.regions{grid-template-columns:repeat(2,minmax(0,1fr))}.timeline{grid-template-columns:1fr;gap:15px}.chart-header{display:block}.compare-control{margin-top:23px}.evidence-cols{grid-template-columns:1fr}.terminal-header,.panel{padding-left:20px;padding-right:20px}.tabs{padding-left:20px;padding-right:20px}.timeline{padding-left:20px;padding-right:20px}.chart-summary{gap:10px}.chart-stat strong{font-size:23px}}
+    @media(max-width:520px){.topbar .wrap{gap:10px}.brand{font-size:14px}.toplinks .pill{font-size:11px;padding:9px 12px}.hero h1{font-size:clamp(44px,12vw,65px)}.hero{padding:65px 18px 75px}.section-heading{font-size:43px}.terminal{border-radius:15px}.terminal-header{min-height:77px}.terminal-heading{font-size:15px}.demo-tag{font-size:9px;padding:7px 8px}.map-stage{min-height:350px}.stage-intro{flex-direction:column;gap:13px}.period-badge{display:none}.regions{grid-template-columns:1fr 1fr}.regions button{font-size:11px;min-height:53px}.chart-wrap{padding:15px 9px}.chart-summary{grid-template-columns:1fr 1fr}.chart-stat:last-child{grid-column:1/-1}.footer .wrap{flex-direction:column;align-items:flex-start}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
+  </style>
+</head>
+<body>
+<header class="topbar"><nav class="wrap" aria-label="Product navigation"><a class="brand" href="/technology/">NovaPharm Intelligence</a><div class="toplinks"><a class="active" href="#experience">Experience</a><a href="#principle">Approach</a><a class="pill" href="https://intelligence.novapharmhealthcare.com/">Sign in</a></div></nav></header>
+<main>
+  <section class="hero" aria-labelledby="hero-title"><p class="eyebrow">The Medicines Terminal</p><h1 id="hero-title">Medicine is complex.<br><span>Understanding it shouldn't be.</span></h1><p class="lead">See how medicine, geography, and evidence come together. An entirely new way to explore the market, one question at a time.</p><a class="hero-action" href="#experience">Explore the experience</a><p class="disclosure">Interactive concept. All prescribing figures are simulated, not NHS observations.</p></section>
+  <section class="experience" id="experience" aria-labelledby="experience-heading"><div class="wrap"><p class="section-label">One connected view</p><h2 class="section-heading" id="experience-heading">The bigger picture.<br>At your fingertips.</h2><p class="section-sub">Choose a region. Move through time. Compare what changes. Every interaction is yours.</p>
+    <div class="terminal" id="terminal">
+      <header class="terminal-header"><div><strong class="terminal-heading">Salamol <span style="font-weight:400;color:#a1a1a8">/</span> Geography</strong><span class="terminal-subheading">Example medicine · Salbutamol · Inhalation presentation</span></div><span class="demo-tag">SIMULATED EXPERIENCE</span></header>
+      <div class="tabs" role="tablist" aria-label="Explore intelligence"><button type="button" role="tab" id="tab-geography" aria-selected="true" aria-controls="panel-geography" data-tab="geography">Geography</button><button type="button" role="tab" id="tab-trends" aria-selected="false" aria-controls="panel-trends" data-tab="trends" tabindex="-1">Trends</button><button type="button" role="tab" id="tab-evidence" aria-selected="false" aria-controls="panel-evidence" data-tab="evidence" tabindex="-1">Evidence &amp; sources</button></div>
+      <section class="panel" id="panel-geography" role="tabpanel" aria-labelledby="tab-geography"><div class="stage-intro"><div><span class="stage-eyebrow">Illustrative UK market geography</span><h3 class="stage-title">England, in focus.</h3><p class="stage-desc">Select a region on the map or below. Values are examples, never actual prescribing.</p></div><div class="period-badge" id="periodTag">Jun 2026 · sample</div></div>
+        <div class="map-layout"><div class="map-stage"><div id="mapMount" style="width:100%;display:flex;align-items:center;justify-content:center;min-height:365px" role="group" aria-label="Select an English region on the map"><span class="map-fallback-label">Preparing regional map…</span></div><p class="map-note" id="mapStatus" aria-live="polite">ONS region boundaries where available. All colours are simulated.</p></div><div class="insights"><div class="value-label">Selected region</div><h4 class="region-name" id="selectedRegion">North East</h4><div class="mega-value" id="selectedValue" aria-live="polite">78.4</div><div class="value-unit">Illustrative items per 1,000 patients</div><div class="insight-rule"></div><div class="data-pair"><span>Compared with England example</span><strong id="comparedMean">Above example mean</strong></div><div class="data-pair"><span>Relative example index</span><strong id="regionIndex">100 / 100</strong></div><div class="data-pair"><span>Current selection</span><strong id="currentPeriod">Jun 2026</strong></div><p class="insight-callout"><strong>Explore the evidence.</strong> Meaningful intelligence begins with verified sources, not impressive-looking numbers.</p></div></div>
+        <div class="region-selector"><p class="region-selector-label">Choose a region</p><div class="regions" id="regionButtons" role="group" aria-label="Example English region values"></div></div>
+      </section>
+      <section class="panel" id="panel-trends" role="tabpanel" aria-labelledby="tab-trends" hidden><div class="chart-header"><div><span class="stage-eyebrow">Compare the difference</span><h3 class="stage-title">A clearer view of change.</h3><p class="stage-desc">Two synthetic series, twelve periods. Select the regions to compare.</p></div><div class="compare-control"><label for="comparisonRegion">Compare with</label><select id="comparisonRegion"></select></div></div><div class="chart-wrap"><svg id="trendChart" viewBox="0 0 960 380" aria-labelledby="chartTitle chartDescription" role="img"><title id="chartTitle">Synthetic geography trends</title><desc id="chartDescription">A chart of two illustrative index series over twelve sample periods.</desc></svg><div class="chart-legend"><span><i class="swatch" style="background:#073f84"></i><span id="legendFirst">North East</span></span><span><i class="swatch" style="background:#7e9fca"></i><span id="legendSecond">South West</span></span></div></div><div class="chart-summary"><div class="chart-stat"><small>Selected region</small><strong id="trendSelected">78.4</strong></div><div class="chart-stat"><small>Comparison region</small><strong id="trendCompared">24.7</strong></div><div class="chart-stat"><small>Sample difference</small><strong id="trendDifference">53.7</strong></div></div><p class="chart-caption">Series are deterministic synthetic examples designed only to demonstrate filtering and comparison. No model forecast is generated.</p></section>
+      <section class="panel" id="panel-evidence" role="tabpanel" aria-labelledby="tab-evidence" hidden><span class="stage-eyebrow">Provenance before prediction</span><h3 class="stage-title">Know what you're looking at.</h3><p class="evidence-lede">The interface is functional. The sample numbers are not real observations. A production system must make that distinction unmistakable.</p><div class="evidence-cols"><article class="evidence-item"><b>Geography boundaries</b><p>ONS regions, December 2025, super-generalised English regional boundaries. Official map geometry is requested from the ONS ArcGIS service. <a href="https://www.data.gov.uk/dataset/7f7f2760-eebb-4bc1-8b84-f087ee53f62a/regions-december-2025-boundaries-en-bsc" target="_blank" rel="noopener noreferrer">View source</a>.</p></article><article class="evidence-item"><b>Prescribing figures</b><p>All nine regional rates, totals, indicators and trends are illustrative. These are not NHSBSA observations and must not be used in a real commercial or clinical decision.</p></article><article class="evidence-item"><b>NHS source connections</b><p>English Prescribing Data and Prescription Cost Analysis: not active in this preview. Secondary Care Medicines Data and population denominators: unvalidated here.</p></article><article class="evidence-item"><b>Methodology and forecasts</b><p>Example index = sample region rate divided by the highest example rate. The timeline is a synthetic presentation device. No forecasting, statistical inference or model validation is represented.</p></article></div><p class="source-note">Data principles: observed fact, derived metric, model forecast, commercial assumption and recommendation must be separately identified and auditable.</p></section>
+      <div class="timeline"><label for="samplePeriod">Explore sample period<span id="periodLabel">June 2026</span></label><input id="samplePeriod" type="range" min="0" max="11" value="11" step="1" aria-label="Sample period from July 2025 to June 2026"><button type="button" id="resetView">Reset view</button></div>
+    </div>
+  </div></section>
+  <section class="bottom-copy" id="principle"><p class="section-label" style="margin:0 0 20px">NovaPharm Intelligence</p><h2>The industry doesn't lack data.<br>It lacks connection.</h2><p>Models forecast. AI explains. Humans decide. A better experience begins by knowing the difference.</p></section>
+</main>
+<footer class="footer"><div class="wrap"><span>© NovaPharm Healthcare Ltd. · Product concept · Not live prescribing data.</span><a href="/technology/">Return to NovaPharm Intelligence</a></div></footer>
+<script>
+(() => {
+  'use strict';
+  // Explicit demonstration values, not government health observations.
+  const examples = [
+    ['North East',78.4],['North West',69.2],['Yorkshire and The Humber',61.8],['West Midlands',54.6],
+    ['East Midlands',51.3],['East of England',43.6],['London',39.2],['South East',31.5],['South West',24.7]
+  ];
+  const labels = ['Jul 2025','Aug 2025','Sep 2025','Oct 2025','Nov 2025','Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','May 2026','Jun 2026'];
+  const byName = Object.fromEntries(examples);
+  let selected='North East', compared='South West', period=11, tab='geography';
+  const $ = id => document.getElementById(id);
+  // Synthetic historical progression; only the final period equals the illustrated values from the supplied screenshot.
+  const rate = (name,i) => {
+    const base=byName[name];
+    const position=i/11;
+    const seasonal = Math.sin((i+examples.findIndex(x=>x[0]===name))*.8)*.012*(1-position);
+    return Math.round((base*(.77+.23*position+seasonal))*10)/10;
+  };
+  const regionButtons = $('regionButtons');
+  const comparison = $('comparisonRegion');
+  examples.forEach(([name])=>{
+    const button=document.createElement('button');button.type='button';button.dataset.region=name;button.setAttribute('aria-pressed','false');
+    const label=document.createElement('span');label.textContent=name==='Yorkshire and The Humber'?'Yorkshire':name;
+    const value=document.createElement('span');value.className='region-rate';button.append(label,value);
+    button.addEventListener('click',()=>selectRegion(name));regionButtons.append(button);
+    const option=document.createElement('option');option.value=name;option.textContent=name;comparison.append(option);
+  });
+  comparison.value=compared;
+  comparison.addEventListener('change',()=>{compared=comparison.value;update();});
+  const tabs=[...document.querySelectorAll('[data-tab]')];
+  function setTab(name,focus=false){
+    tab=name;tabs.forEach(btn=>{const active=btn.dataset.tab===name;btn.setAttribute('aria-selected',String(active));btn.tabIndex=active?0:-1; if(active&&focus)btn.focus();});
+    ['geography','trends','evidence'].forEach(key=>{$('panel-'+key).hidden=key!==name;});
+    if(name==='trends')drawChart();
+  }
+  tabs.forEach((btn,index)=>{
+    btn.addEventListener('click',()=>setTab(btn.dataset.tab));
+    btn.addEventListener('keydown',event=>{if(!['ArrowRight','ArrowLeft','Home','End'].includes(event.key))return;event.preventDefault();const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(index+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;setTab(tabs[next].dataset.tab,true);});
+  });
+  function selectRegion(name){selected=name;if(selected===compared){compared=examples.find(x=>x[0]!==name)[0];comparison.value=compared;}update();}
+  const shades=['#dbe8f9','#c2d7f2','#9abde9','#6d9bd5','#386fb2','#064b91'];
+  function shade(value){return shades[Math.max(0,Math.min(shades.length-1,Math.floor(value/18)))];}
+  const svgNS='http://www.w3.org/2000/svg';
+  const make=(tag,attrs={})=>{const el=document.createElementNS(svgNS,tag);Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,String(v)));return el;};
+  const fallbackPolygons=[
+    ['North East','M276 35 L326 66 347 115 338 166 301 176 278 139 265 99Z'],
+    ['North West','M239 109 L265 99 278 139 301 176 275 225 238 218 211 174Z'],
+    ['Yorkshire and The Humber','M301 176 L340 161 370 211 351 266 302 259 275 225Z'],
+    ['East Midlands','M302 259 L351 266 371 321 340 360 289 344 276 299Z'],
+    ['West Midlands','M238 218 L275 225 302 259 276 299 289 344 244 358 212 310Z'],
+    ['East of England','M371 321 L409 326 427 383 405 429 358 414 340 360Z'],
+    ['London','M342 407 L358 414 376 435 349 448 331 430Z'],
+    ['South East','M289 344 L340 360 342 407 331 430 349 448 311 480 249 465 249 423Z'],
+    ['South West','M244 358 L289 344 249 423 249 465 196 475 163 496 109 494 76 519 47 513 64 491 123 456 162 429 195 389Z']
+  ];
+  function buildFallback(){
+    const svg=make('svg',{viewBox:'0 0 475 550',role:'img','aria-label':'Illustrative schematic placement of England regions; not surveyed boundary shapes'});
+    fallbackPolygons.forEach(([name,d])=>{
+      const path=make('path',{d,'data-region':name,tabindex:0,role:'button','aria-label':'Select '+name});path.append(make('title'));path.querySelector('title').textContent=name+' · schematic geography';
+      path.addEventListener('click',()=>selectRegion(name));path.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectRegion(name);}});svg.append(path);
+    });$('mapMount').replaceChildren(svg);$('mapStatus').textContent='Schematic fallback only. Prescribing colours and figures are simulated.';colourMap();
+  }
+  function buildFromGeometry(featureCollection){
+    const features=(featureCollection.features||[]).filter(f=>f.geometry&&['Polygon','MultiPolygon'].includes(f.geometry.type));
+    if(features.length!==9)throw Error('Expected nine ONS English regions');
+    const getRegion=f=>Object.entries(f.properties||{}).find(([key,val])=>typeof val==='string'&&/RGN.*NM|NAME/i.test(key))?.[1];
+    const matching=features.map(f=>({feature:f,name:getRegion(f)}));
+    const resolve=name=>name&&name.toLowerCase().includes('yorkshire')?'Yorkshire and The Humber':examples.find(x=>x[0].toLowerCase()===String(name).toLowerCase())?.[0];
+    if(matching.some(item=>!resolve(item.name)))throw Error('Unknown ONS region name');
+    const pts=[];const recurse=p=>{if(!Array.isArray(p))return;if(p.length===2&&Number.isFinite(p[0])&&Number.isFinite(p[1])){pts.push(p);return;}p.forEach(recurse);};features.forEach(f=>recurse(f.geometry.coordinates));
+    if(pts.length<100)throw Error('Invalid region geometry');
+    const cosine=Math.cos(52*Math.PI/180),left=Math.min(...pts.map(p=>p[0]*cosine)),right=Math.max(...pts.map(p=>p[0]*cosine)),bottom=Math.min(...pts.map(p=>p[1])),top=Math.max(...pts.map(p=>p[1]));
+    const w=475,h=550,pad=24,s=Math.min((w-pad*2)/(right-left),(h-pad*2)/(top-bottom)),ox=(w-(right-left)*s)/2,oy=(h-(top-bottom)*s)/2;
+    const coord=([lon,lat])=>[(lon*cosine-left)*s+ox,(top-lat)*s+oy];
+    const ring=r=>r.map((p,i)=>{const [x,y]=coord(p);return(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1);}).join(' ')+'Z';
+    const polygon=p=>p.map(ring).join(' ');
+    const svg=make('svg',{viewBox:`0 0 ${w} ${h}`,role:'img','aria-label':'Interactive ONS December 2025 regional boundaries of England with simulated examples'});
+    matching.forEach(({feature,name})=>{const region=resolve(name);const shapes=feature.geometry.type==='Polygon'?[feature.geometry.coordinates]:feature.geometry.coordinates;
+      const path=make('path',{d:shapes.map(polygon).join(' '),'fill-rule':'evenodd','data-region':region,role:'button',tabindex:0,'aria-label':'Select '+region});const title=make('title');title.textContent=region+' · simulated rate';path.append(title);
+      path.addEventListener('click',()=>selectRegion(region));path.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectRegion(region);}});svg.append(path);
+    });$('mapMount').replaceChildren(svg);$('mapStatus').textContent='ONS December 2025 region geometry. Shading and all prescribing figures are simulated.';colourMap();
+  }
+  function colourMap(){document.querySelectorAll('#mapMount path[data-region]').forEach(path=>{const name=path.dataset.region;path.setAttribute('fill',shade(rate(name,period)));path.dataset.selected=String(name===selected);});}
+  // Public ONS regional geometry; no identity or application data is transmitted.
+  const endpoint='https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Regions_December_2025_Boundaries_EN_BSC/FeatureServer/0/query';
+  const params=new URLSearchParams({where:'1=1',outFields:'*',outSR:'4326',returnGeometry:'true',f:'geojson'});
+  buildFallback();
+  if(typeof fetch==='function'){
+    const controller=typeof AbortController==='function'?new AbortController():null;
+    const timer=controller?setTimeout(()=>controller.abort(),7000):null;
+    fetch(endpoint+'?'+params,{mode:'cors',credentials:'omit',cache:'force-cache',...(controller?{signal:controller.signal}:{})})
+      .then(r=>{if(!r.ok)throw Error('ONS geometry unavailable');return r.json();}).then(buildFromGeometry).catch(()=>{/* Keep functional schematic fallback */}).finally(()=>{if(timer!==null)clearTimeout(timer);});
+  }
+  function drawChart(){
+    const svg=$('trendChart');svg.replaceChildren();
+    const W=960,H=380,L=58,R=18,T=18,B=56;const x=i=>L+(W-L-R)*(i/11), y=v=>H-B-(H-T-B)*v/100;
+    for(const val of [0,25,50,75,100]){const yy=y(val);svg.append(make('line',{x1:L,y1:yy,x2:W-R,y2:yy,stroke:'#e4e8ed','stroke-width':1}));const text=make('text',{x:L-14,y:yy+5,'text-anchor':'end',fill:'#92929a','font-size':14});text.textContent=val;svg.append(text);}
+    [0,3,6,9,11].forEach(i=>{const text=make('text',{x:x(i),y:H-22,'text-anchor':i===0?'start':i===11?'end':'middle',fill:'#92929a','font-size':14});text.textContent=labels[i].replace(' 20',' ’');svg.append(text);});
+    const cursor=make('line',{x1:x(period),x2:x(period),y1:T,y2:H-B,stroke:'#a8a8b0','stroke-dasharray':'5 6','stroke-width':1.5});svg.append(cursor);
+    [[selected,'#073f84'],[compared,'#7e9fca']].forEach(([name,color])=>{const values=labels.map((_,i)=>rate(name,i));const d=values.map((v,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1)).join(' ');svg.append(make('path',{d,fill:'none',stroke:color,'stroke-width':3.5,'stroke-linecap':'round','stroke-linejoin':'round'}));svg.append(make('circle',{cx:x(period),cy:y(values[period]),r:6.5,fill:color,stroke:'#fff','stroke-width':2.8}));});
+    $('legendFirst').textContent=selected;$('legendSecond').textContent=compared;
+  }
+  function update(){
+    const current=rate(selected,period),other=rate(compared,period),high=Math.max(...examples.map(([n])=>rate(n,period)));
+    $('selectedRegion').textContent=selected;
+    $('selectedValue').textContent=current.toFixed(1);
+    const allMean=examples.reduce((a,[n])=>a+rate(n,period),0)/examples.length;
+    $('comparedMean').textContent=current>=allMean?'Above example mean':'Below example mean';
+    $('regionIndex').textContent=Math.round(100*current/high)+' / 100';
+    $('currentPeriod').textContent=labels[period];$('periodTag').textContent=labels[period]+' · sample';$('periodLabel').textContent=labels[period];
+    regionButtons.querySelectorAll('button').forEach(button=>{const name=button.dataset.region;button.setAttribute('aria-pressed',String(name===selected));button.querySelector('.region-rate').textContent=rate(name,period).toFixed(1);});
+    $('trendSelected').textContent=current.toFixed(1);$('trendCompared').textContent=other.toFixed(1);$('trendDifference').textContent=Math.abs(current-other).toFixed(1);
+    $('chartDescription').textContent='Synthetic example values for '+selected+' and '+compared+', July 2025 through June 2026. Sample period '+labels[period]+'.';
+    colourMap();if(tab==='trends')drawChart();
+  }
+  $('samplePeriod').addEventListener('input',e=>{period=Number(e.target.value);update();});
+  $('resetView').addEventListener('click',()=>{selected='North East';compared='South West';comparison.value=compared;period=11;$('samplePeriod').value='11';setTab('geography');update();});
+  setTab('geography');update();
+})();
+</script>
+</body>
+</html>
