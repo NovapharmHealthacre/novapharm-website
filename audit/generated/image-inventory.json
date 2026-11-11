@@ -1435,8 +1435,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 95,
-      "referenceCount": 198,
+      "usageCount": 97,
+      "referenceCount": 200,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -1526,8 +1526,10 @@
         "scripts/build-public-pages.mjs",
         "scripts/programme/validate-brand-assets.mjs",
         "scripts/test-owner-corrections.mjs",
+        "scripts/test-verify-intelligence-public-entry.mjs",
         "scripts/validate-app.mjs",
         "scripts/validate-site.mjs",
+        "scripts/verify-intelligence-public-entry.mjs",
         "service-unavailable/index.html",
         "services/index.html",
         "src/integrations/sharepoint/secure-content-branding.mjs",
