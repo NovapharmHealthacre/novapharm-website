@@ -1,9 +1,9 @@
 "use client";
 
 import type { PortalModule } from "@novapharm/portal-contracts";
+import dynamic from "next/dynamic";
 import modulePresentations from "../data/module-presentations.json";
 import type { PortalView } from "../data/routes";
-import dynamic from "next/dynamic";
 import styles from "./module-presentations.module.css";
 
 // Keep the public sign-in lightweight: governed workspace code and its
