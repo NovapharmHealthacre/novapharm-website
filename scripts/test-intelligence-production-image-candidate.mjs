@@ -45,6 +45,21 @@ test("production image has only liveness, not synthetic-readiness, as its contai
   assert.match(image, /public/i, "The existing public official-source service is independent of the private candidate");
 });
 
+test("Lambda Web Adapter canary uses the same supported musl base without activating customers", () => {
+  const lambda = readFileSync(new URL("../deployment/aws/Dockerfile.intelligence-lambda", import.meta.url), "utf8");
+  assert.match(lambda, /^FROM node:24-alpine3\.23 AS builder$/m);
+  assert.match(lambda, /^FROM node:24-alpine3\.23 AS runtime$/m);
+  assert.equal((lambda.match(/^RUN apk upgrade --no-cache$/gm) ?? []).length, 2);
+  assert.doesNotMatch(lambda, /node:24-trixie-slim|node:24-bookworm-slim/);
+  assert.match(lambda, /aws-lambda-adapter:1\.1\.0/);
+  assert.match(lambda, /AWS_LWA_READINESS_CHECK_PATH=\/healthz\//);
+  assert.match(lambda, /\/workspace\/apps\/portal\/\.next\/static\/\s+\/app\/apps\/portal\/\.next\/static\//);
+  assert.match(lambda, /^USER node$/m);
+  assert.match(lambda, /novapharm\.release-gate="private-no-customer-acceptance"/);
+  assert.match(lambda, /org\.opencontainers\.image\.revision="\$\{SOURCE_SHA\}"/);
+  assert.doesNotMatch(lambda, /ENV\s+(?:OPENAI_API_KEY|STRIPE_SECRET_KEY|MONGODB_URI)=/);
+});
+
 test("Docker build context excludes nested credentials and environment files", () => {
   const ignore = readFileSync(new URL("../.dockerignore", import.meta.url), "utf8").split("\n");
   for (const expression of [".env", ".env.*", "**/.env", "**/.env.*", "**/.aws", "**/.ssh", "node_modules", "*.sqlite*"]) {
