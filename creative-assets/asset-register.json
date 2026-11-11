@@ -497,6 +497,40 @@
       "caption": "Illustrative Earth-at-sunrise design image; not a factual satellite photograph.",
       "technicalStatus": "JPEG, 1400 x 305, 66,170 bytes; standalone local asset; copyright and provenance registered",
       "ownerApproval": "Approved for corporate homepage use; Distribution now uses the owner's real warehouse photograph, requested 11 November 2026."
+    },
+    {
+      "path": "assets/media/capabilities/approved-earth-horizon-crest.webp",
+      "type": "capabilities-decorative-editorial-image",
+      "source": "Repository-delivered WebP of the owner-selected Capabilities Earth horizon illustration, integrated by scripts/apply-capabilities-editorial.mjs. Original image-master metadata remains unverified.",
+      "licence": "Owner-selected website visual; original source usage rights not independently established",
+      "generated": null,
+      "modified": true,
+      "dimensions": "800x53",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "/capabilities/"
+      ],
+      "altText": "",
+      "caption": "Decorative horizon visual, not documentary satellite imagery",
+      "technicalStatus": "registered-file; original-master-provenance-pending",
+      "ownerApproval": "owner-selected visual, rights verification outstanding"
+    },
+    {
+      "path": "assets/media/capabilities/approved-vial-photo-800.webp",
+      "type": "capabilities-unbranded-laboratory-editorial-image",
+      "source": "Repository-delivered WebP of owner-selected Capabilities vial visual, integrated by scripts/apply-capabilities-editorial.mjs. Photographer and original source are not independently established.",
+      "licence": "Owner-selected visual; photographer and licence evidence not independently verified",
+      "generated": null,
+      "modified": true,
+      "dimensions": "800x224",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "/capabilities/"
+      ],
+      "altText": "Unbranded medicine vial in an editorial laboratory visual",
+      "caption": "Representative laboratory photograph; not NovaPharm-owned stock, facility or product batch",
+      "technicalStatus": "registered-file; photographer-rights-pending",
+      "ownerApproval": "owner-selected visual, rights verification outstanding"
     }
   ],
   "missingApprovedAssets": [
