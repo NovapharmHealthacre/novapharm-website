@@ -50,6 +50,8 @@ def encode(data):
             out[name] = attr_b(value)
         elif isinstance(value, int) and type(value) is not bool:
             out[name] = attr_n(value)
+        elif isinstance(value, Decimal) and value.is_finite() and value == value.to_integral_value():
+            out[name] = attr_n(int(value))
         elif isinstance(value, list) and all(isinstance(x, str) for x in value):
             out[name] = attr_l(value)
         elif value is None:
