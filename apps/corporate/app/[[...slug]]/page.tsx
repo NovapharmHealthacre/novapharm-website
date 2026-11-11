@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
+import { CapabilitiesEditorialPage } from "@/components/capabilities-editorial";
 import { ConciseHomePage } from "@/components/concise-home";
 import {
   ConciseCroPage,
