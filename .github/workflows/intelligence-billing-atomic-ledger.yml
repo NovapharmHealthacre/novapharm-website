@@ -4,7 +4,9 @@ on:
   pull_request:
     paths:
       - 'src/core/intelligence-billing-atomic-ledger.mjs'
+      - 'src/core/intelligence-billing-suspension.mjs'
       - 'scripts/test-intelligence-billing-atomic-ledger.mjs'
+      - 'scripts/test-intelligence-billing-suspension.mjs'
       - 'docs/intelligence/billing-atomic-commit-release.md'
       - '.github/workflows/intelligence-billing-atomic-ledger.yml'
   workflow_dispatch:
@@ -30,6 +32,7 @@ jobs:
       - name: Verify atomic invoice and customer ownership contracts
         run: |
           node --test scripts/test-intelligence-billing-atomic-ledger.mjs
+          node --test scripts/test-intelligence-billing-suspension.mjs
           node --test scripts/test-intelligence-billing-reconciliation.mjs
           node --test scripts/test-intelligence-billing-events.mjs
           node --test scripts/test-intelligence-subscription-entitlements.mjs
