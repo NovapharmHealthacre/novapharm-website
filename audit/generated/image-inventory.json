@@ -10,12 +10,12 @@
     "Null semantic or provenance fields are explicit gaps, not inferred approvals."
   ],
   "summary": {
-    "trackedAssetCount": 874,
+    "trackedAssetCount": 875,
     "byClassification": {
-      "KEEP": 874
+      "KEEP": 875
     },
     "byProvenanceStatus": {
-      "registered": 664,
+      "registered": 665,
       "registered-identical-delivery-copy": 12,
       "repository-generated-test-evidence": 198
     },
@@ -1571,7 +1571,7 @@
       "observedFetchPriority": [],
       "lcpRelevance": false,
       "usageCount": 4,
-      "referenceCount": 4,
+      "referenceCount": 6,
       "usageFiles": [
         "creative-assets/asset-register.json",
         "scripts/test-intelligence-technology-page.mjs",
@@ -22590,6 +22590,46 @@
         "creative-assets/asset-register.json",
         "src/content/technology-intelligence.html",
         "technology/index.html"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/media/technology/novapharm-intelligence-hero.avif",
+      "canonicalDeliveryPath": "assets/media/technology/novapharm-intelligence-hero.avif",
+      "format": "heif",
+      "bytes": 7197,
+      "width": 1180,
+      "height": 664,
+      "aspectRatio": 1.777108,
+      "sha256": "c2d06a025ebce77718fa00a79e9a39e454334b1f66854e9efd528ff15e18f99a",
+      "perceptualHash": "eff67e6ffcfef6f5",
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Original owner-directed, AI-assisted NovaPharm Intelligence hero artwork selected for the Technology page on 11 November 2026; site-delivery AVIF derivative.",
+      "licence": "Original NovaPharm project artwork for owner-authorised corporate website use; no third-party photography or competitor visual assets claimed.",
+      "reviewStatus": "Owner-directed Technology hero placement, 11 November 2026",
+      "technicalStatus": "original-editorial-avif-delivery",
+      "provenanceRecord": null,
+      "semanticPurpose": "original-corporate-editorial-hero",
+      "routes": [
+        "/technology/"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "",
+      "registeredCaption": "Conceptual NovaPharm Intelligence hero artwork. Not clinical, regulatory or observed medicines-market evidence.",
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 2,
+      "referenceCount": 2,
+      "usageFiles": [
+        "assets/css/technology-intelligence.css",
+        "creative-assets/asset-register.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
