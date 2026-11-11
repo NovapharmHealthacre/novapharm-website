@@ -241,21 +241,35 @@ def transacted_session(client, records, now):
     def check(pk, sk, expr, values):
         statement = {"TableName": TABLE, "Key": {"PK": attr_s(pk), "SK": attr_s(sk)},
                      "ConditionExpression": expr, "ExpressionAttributeValues": values}
+        expression_names = {}
         if "#st" in expr:
-            statement["ExpressionAttributeNames"] = {"#st": "status"}
+            expression_names["#st"] = "status"
+        if "#role" in expr:
+            expression_names["#role"] = "role"
+        if "#src" in expr:
+            expression_names["#src"] = "source"
+        if "#plan" in expr:
+            expression_names["#plan"] = "plan"
+        if expression_names:
+            statement["ExpressionAttributeNames"] = expression_names
         return {"ConditionCheck": statement}
     tx = [
-        check("TENANT#" + tenant_id, "META", "#st = :active AND contractAccepted = :yes AND ownershipVerified = :yes", active),
+        check("TENANT#" + tenant_id, "META", "#st = :active AND contractAccepted = :yes AND ownershipVerified = :yes AND ownerSubject = :owner AND activeSeatCount = :seats AND seatLimit = :limit",
+            {**active, ":owner": attr_s(records["tenant"]["ownerSubject"]),
+             ":seats": attr_n(int(records["tenant"]["activeSeatCount"])),
+             ":limit": attr_n(int(records["tenant"]["seatLimit"]))}),
         check("SUBJECT#" + subject, "TENANT#" + tenant_id, "#st = :active AND approved = :yes AND approvedBy = :by AND subject = :subject AND tenantId = :tenant",
             {**active, ":by": attr_s(records["member"]["approvedBy"]), ":subject": attr_s(subject), ":tenant": attr_s(tenant_id)}),
         check("TENANT#" + tenant_id, "SEAT#" + subject,
-            "#st = :active AND sessionVersion = :version AND contains(features, :feature) AND tenantId = :tenant AND subject = :subject",
+            "#st = :active AND sessionVersion = :version AND contains(features, :feature) AND tenantId = :tenant AND subject = :subject AND #role = :role",
             {":active": attr_s("active"), ":version": attr_n(int(records["seat"]["sessionVersion"])), ":feature": attr_s("medicine-search"),
-             ":tenant": attr_s(tenant_id), ":subject": attr_s(subject)}),
+             ":tenant": attr_s(tenant_id), ":subject": attr_s(subject), ":role": attr_s(records["seat"]["role"])}),
         check("TENANT#" + tenant_id, "BILLING#" + subject,
-            "#st = :active AND webhookSignatureVerified = :yes AND contractAccepted = :yes AND periodEnd = :end AND stripeSubscriptionId = :sub AND tenantId = :tenant AND subject = :subject",
-            {**active, ":end": attr_s(records["billing"]["periodEnd"]), ":sub": attr_s(records["billing"]["stripeSubscriptionId"]),
-             ":tenant": attr_s(tenant_id), ":subject": attr_s(subject)}),
+            "#st = :active AND webhookSignatureVerified = :yes AND contractAccepted = :yes AND periodStart = :start AND periodEnd = :end AND stripeSubscriptionId = :sub AND stripeCustomerId = :customer AND #src = :src AND #plan = :plan AND tenantId = :tenant AND subject = :subject",
+            {**active, ":start": attr_s(records["billing"]["periodStart"]),
+             ":end": attr_s(records["billing"]["periodEnd"]), ":sub": attr_s(records["billing"]["stripeSubscriptionId"]),
+             ":customer": attr_s(records["billing"]["stripeCustomerId"]), ":src": attr_s("verified-stripe-webhook-ledger"),
+             ":plan": attr_s(records["billing"]["plan"]), ":tenant": attr_s(tenant_id), ":subject": attr_s(subject)}),
         check("TENANT#" + tenant_id, "USAGE#" + subject + "#" + now.strftime("%Y-%m"),
             "searchCount = :used AND tenantId = :tenant AND subject = :subject",
             {":used": attr_n(records["used"]), ":tenant": attr_s(tenant_id), ":subject": attr_s(subject)}),
@@ -365,11 +379,14 @@ def handle(event, client, now=None, enabled=False):
     return http(404, "route_not_found")
 
 def handler(event, _context):
-    if os.environ.get("NPI_CUSTOMER_ACCESS_ENABLED") != "true" or os.environ.get("NPI_CUSTOMER_ACCESS_TABLE") != TABLE:
+    if os.environ.get("NPI_CUSTOMER_ACCESS_TABLE") != TABLE:
+        return http(503, "customer_access_not_launched")
+    enabled = os.environ.get("NPI_CUSTOMER_ACCESS_ENABLED") == "true"
+    if not enabled and (not isinstance(event, dict) or event.get("requestContext", {}).get("routeKey") != "POST /customer/logout"):
         return http(503, "customer_access_not_launched")
     try:
         import boto3
         client = boto3.client("dynamodb", region_name=REGION)
-        return handle(event, client, enabled=True)
+        return handle(event, client, enabled=enabled)
     except Exception:
         return http(503, "customer_session_service_unavailable")
