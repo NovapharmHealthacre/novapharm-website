@@ -38,14 +38,41 @@ test("server-side encryption and HTTPS-only object access are required", () => {
   }]);
   assert.equal(resources.EvidenceBucketPolicy.Properties.Bucket.Ref, "EvidenceBucket");
   assert.equal(policy.Version, "2012-10-17");
-  assert.equal(policy.Statement.length, 1);
-  const deny = policy.Statement[0];
+  assert.ok(policy.Statement.length >= 2, "HTTPS and workload-isolation denies must both exist");
+  assert.ok(policy.Statement.every(({ Effect }) => Effect === "Deny"), "Evidence bucket policy must not allow publication");
+  const deny = policy.Statement.find(({ Sid }) => Sid === "DenyInsecureTransport");
+  assert.ok(deny, "HTTPS-only deny must be present");
   assert.equal(deny.Sid, "DenyInsecureTransport");
   assert.equal(deny.Effect, "Deny");
   assert.equal(deny.Principal, "*");
   assert.equal(deny.Action, "s3:*");
   assert.equal(deny.Condition.Bool["aws:SecureTransport"], "false");
   assert.equal(deny.Resource.length, 2, "Bucket and all object ARNs must deny insecure transport");
+});
+
+
+test("commerce exporter is denied mutations inside the Intelligence evidence prefix", () => {
+  const deny = policy.Statement.find(({ Sid }) => Sid === "DenyCommerceWorkloadWritesToIntelligenceEvidence");
+  assert.ok(deny, "Cross-workload write denial must be present");
+  assert.equal(deny.Effect, "Deny");
+  assert.equal(deny.Principal, "*");
+  for (const operation of [
+    "s3:PutObject", "s3:DeleteObject", "s3:DeleteObjectVersion",
+    "s3:PutObjectTagging", "s3:DeleteObjectTagging"
+  ]) {
+    assert.ok(deny.Action.includes(operation), `${operation} must be denied`);
+  }
+  assert.deepEqual(deny.Resource["Fn::Join"], [
+    "",
+    [{ "Fn::GetAtt": ["EvidenceBucket", "Arn"] }, "/intelligence/*"]
+  ]);
+  assert.deepEqual(deny.Condition, {
+    ArnEquals: {
+      "aws:PrincipalArn": {
+        "Fn::Sub": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/novapharm-production-commerce-evidence-EvidenceRole-GNet28VHTjmN"
+      }
+    }
+  });
 });
 
 test("empty candidate retention and no publication grants are explicit", () => {
