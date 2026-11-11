@@ -21,7 +21,7 @@ The following seven empty collections were created on the existing free cluster.
 
 All seven collection names and all seven secondary indexes were verified by fresh read operations immediately after creation. **No production data documents were inserted**; no licence, source-rights grant, sample observation, model sign-off, customer, charge, or entitlement was created.
 
-The pre-existing `novapharm_intelligence_preview` database was not migrated or altered. The project's two existing application database users were both preview-scoped (`readWrite` and `read`, respectively); no production-scoped application user was created by this change. Nothing was deployed to an application or made publicly reachable.
+The pre-existing `novapharm_intelligence_preview` database was not migrated or altered. Its two existing application users remain preview-scoped (`readWrite` and `read`, respectively). A further Atlas **production-database read-only** principal was created in a separate attempted credentials setup, but secure parameter storage was blocked and no usable application credential was configured. The parameter was independently checked as absent. **This principal must be rotated into a verified secret-management workflow or removed; do not use it for production access.** Atlas network access and customer routes were not opened. Nothing was deployed to an application or made publicly reachable.
 
 ## Outstanding controls before production acceptance
 
