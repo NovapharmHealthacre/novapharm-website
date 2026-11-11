@@ -29,6 +29,21 @@ for (const slug of routes) {
   assert.ok(html.includes("#organization") && html.includes("#website"), slug + " missing canonical entities");
   assert.ok(html.includes("Regulated pharmaceutical wholesale supply has not commenced"), slug + " missing current permissions boundary");
   assert.ok(html.includes("/contact/?enquiry="), slug + " missing qualified enquiry route");
+  if (slug === "markets") {
+    assert.match(html, /data-markets-design="apple-photographic-approved-20261111"/);
+    assert.match(html, /Medicine<br>moves globally\.<br>Access is local\./);
+    assert.match(html, /Five regions\. Five different pathways\./);
+    assert.match(html, /Local permissions\.<br>Shared standards\./);
+    assert.match(html, /Where should medicine go next\?/);
+    assert.match(html, /href="\/assets\/css\/markets-editorial\.css\?v=20261111-approved-1"/);
+    assert.match(html, /https:\/\/d2pn8kiwq2w21t\.cloudfront\.net\/original_images\/1-Europe_at_night\.jpeg/);
+    for (const region of ["United Kingdom", "European Union", "United States", "Canada", "Middle East &amp; North Africa"]) {
+      assert.ok(html.includes(region), "Markets regional photograph or description missing: " + region);
+    }
+    assert.equal((html.match(/<article class="markets-card /g) || []).length, 5, "Markets must present five regional photo cards.");
+    assert.doesNotMatch(html, /<svg\b|heroicon|lucide/i, "Markets page must not add decorative icons or SVG illustrations.");
+    assert.match(html, /UK permissions do not confer distribution rights in other countries/);
+  }
   if (slug === "distribution") {
     // The public page must contain the approved actual media, not solely a
     // mockup, stock photo, unsupported carrier logo or copy-only proposal.
