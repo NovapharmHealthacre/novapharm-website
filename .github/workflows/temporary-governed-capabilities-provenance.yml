@@ -1,0 +1,42 @@
+name: Temporary governed Capabilities provenance reconciliation
+on:
+  push:
+    branches:
+      - fix/corporate-inventory-readiness-20261111
+    paths:
+      - .github/workflows/temporary-governed-capabilities-provenance.yml
+permissions:
+  contents: read
+jobs:
+  reconcile:
+    if: github.repository == 'NovapharmHealthacre/novapharm-website'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout exact review commit
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: true
+      - name: Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: Regenerate authoritative inventory from rights-pending source records
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse --abbrev-ref HEAD)" = "fix/corporate-inventory-readiness-20261111"
+          npm ci --ignore-scripts
+          npm run images:inventory
+          npm run images:inventory:validate
+          git diff --check
+          test "$(git diff --name-only)" = "audit/generated/image-inventory.json"
+          git add audit/generated/image-inventory.json
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix(evidence): regenerate inventory from explicit rights-pending Capabilities reference metadata"
+          git push origin HEAD:refs/heads/fix/corporate-inventory-readiness-20261111
