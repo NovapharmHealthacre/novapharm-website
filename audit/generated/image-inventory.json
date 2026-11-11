@@ -2380,10 +2380,9 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 2,
+      "referenceCount": 2,
       "usageFiles": [
-        ".github/workflows/reconcile-corporate-inventory-readiness.yml",
         "apps/corporate/components/capabilities-editorial.tsx",
         "scripts/apply-capabilities-editorial.mjs"
       ],
@@ -2419,10 +2418,9 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 2,
+      "referenceCount": 2,
       "usageFiles": [
-        ".github/workflows/reconcile-corporate-inventory-readiness.yml",
         "apps/corporate/components/capabilities-editorial.tsx",
         "scripts/apply-capabilities-editorial.mjs"
       ],
