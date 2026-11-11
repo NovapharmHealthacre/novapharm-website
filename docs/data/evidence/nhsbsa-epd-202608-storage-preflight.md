@@ -42,3 +42,7 @@ Actual disk usage, table overhead, AWS storage prices, transfer speed and proces
 5. Maintain **zero accepted observations** until a separate rights authority and audited transaction verify the specific data and production access controls. Do not expose raw code/terminology to external models.
 
 **No automated action in this report authorises a bulk download or recurring cloud spend.** Issues: #454, #176, #461.
+
+## Athena JSON reader compatibility
+
+The immutable human-review evidence JSON is retained at `source-review/publisher-metadata/v1/`. A separate compact one-record-per-line NDJSON projection is retained at `source-review/publisher-metadata-query/v1/nhsbsa-epd-202608-20261111.ndjson` for Glue JsonSerDe. A first Athena query against pretty-printed JSON failed with `HIVE_CURSOR_ERROR`; the dedicated projection avoids mutating source evidence. Both representations retain `production_observations_accepted=0` and `blocked_pending_independent_review` and must be kept separate from accepted clinical datasets.
