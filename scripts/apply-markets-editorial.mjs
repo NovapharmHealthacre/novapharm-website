@@ -74,7 +74,7 @@ function imageCard(photo, index) {
 const newMain = [
   '<main id="main" class="markets-editorial" data-markets-design="apple-photographic-approved-20261111">',
   '  <section class="markets-hero" aria-labelledby="markets-hero-heading">',
-  '    <img class="markets-hero-photo" src="https://d2pn8kiwq2w21t.cloudfront.net/original_images/1-Europe_at_night.jpeg" width="1800" height="1080" fetchpriority="high" decoding="async" alt="Astronaut-style photograph of illuminated European cities on Earth at night. The imagery represents international markets, not NovaPharm operating locations.">',
+  '    <img class="markets-hero-photo" src="https://assets.science.nasa.gov/content/dam/science/esd/eo/images/imagerecords/152000/152693/iss070e075895_lrg.jpg" width="5568" height="3712" fetchpriority="high" decoding="async" alt="NASA Expedition 70 astronaut photograph of northwestern Europe at night, showing the illuminated cities of London, Amsterdam and Paris beneath Earth’s horizon. The scene does not depict NovaPharm operating facilities.">',
   '    <div class="markets-hero-shade" aria-hidden="true"></div>',
   '    <div class="markets-shell markets-hero-content">',
   '      <p class="markets-overline">International markets</p>',
@@ -119,8 +119,8 @@ const newMain = [
   '  </section>',
   '  <aside class="markets-photo-credits" aria-label="Photography credits">',
   '    <div class="markets-shell"><details><summary>Photography and imagery credits</summary>',
-  '      <p>Earth at night: NASA/JPL imagery. Locations: independently sourced photographs representing London, Brussels, New York, Toronto and Dubai; photographs do not represent NovaPharm-owned facilities or existing regional operations. London, New York, Toronto and Dubai: Unsplash. Brussels: © European Union 2019 – Source: EP, via Wikimedia Commons; supplied under Creative Commons Attribution with the original source requesting CC BY 4.0 credit. Image framed by CSS. Medicine packaging photograph: Unsplash.</p>',
-  '      <p><a href="https://www.jpl.nasa.gov/news/nasa-space-missions-pinpoint-sources-of-co2-emissions-on-earth/" rel="noopener noreferrer">NASA/JPL source</a> · <a href="https://commons.wikimedia.org/wiki/File:Outside_the_European_Parliament_in_Brussels_(47937867822).jpg" rel="noopener noreferrer">European Parliament photograph and author credit</a> · <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener noreferrer">CC BY 4.0</a> · <a href="https://unsplash.com/license" rel="noopener noreferrer">Unsplash licence</a>.</p>',
+  '      <p>Hero: Europe at Night, NASA Expedition 70 crew / ISS, acquired 19 January 2024 (photograph ISS070-E-75895, 5568 × 3712 pixels). Locations: independently sourced photographs representing London, Brussels, New York, Toronto and Dubai; photographs do not represent NovaPharm-owned facilities or existing regional operations. London, New York, Toronto and Dubai: Unsplash. Brussels: © European Union 2019 – Source: EP, via Wikimedia Commons; supplied under Creative Commons Attribution with the original source requesting CC BY 4.0 credit. Image framed by CSS. Medicine packaging photograph: Unsplash.</p>',
+  '      <p><a href="https://science.nasa.gov/earth/earth-observatory/europe-at-night-152693/" rel="noopener noreferrer">NASA original photograph</a> · <a href="https://commons.wikimedia.org/wiki/File:Outside_the_European_Parliament_in_Brussels_(47937867822).jpg" rel="noopener noreferrer">European Parliament photograph and author credit</a> · <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener noreferrer">CC BY 4.0</a> · <a href="https://unsplash.com/license" rel="noopener noreferrer">Unsplash licence</a>.</p>',
   '    </details></div>',
   '  </aside>',
   '</main>'
@@ -131,11 +131,11 @@ if (!updated.includes('href="/assets/css/markets-editorial.css')) {
   updated = updated.replace(
     "</head>",
     '  <link rel="preconnect" href="https://images.unsplash.com" crossorigin>\n' +
-    '  <link rel="preconnect" href="https://d2pn8kiwq2w21t.cloudfront.net" crossorigin>\n' +
-    '  <link rel="stylesheet" href="/assets/css/markets-editorial.css?v=20261111-approved-1">\n</head>'
+    '  <link rel="preconnect" href="https://assets.science.nasa.gov" crossorigin>\n' +
+    '  <link rel="stylesheet" href="/assets/css/markets-editorial.css?v=20261111-nasa-hd-1">\n</head>'
   );
 }
 if ((updated.match(/<h1\b/g) || []).length !== 1) throw new Error("Markets design needs exactly one H1.");
 if (!updated.includes("Regulated pharmaceutical wholesale supply has not commenced")) throw new Error("Markets regulatory notice lost.");
 writeFileSync(route, updated, "utf8");
-console.log("Applied approved photo-led Markets design and preserved the authorisation boundary.");
+console.log("Applied approved Markets design with NASA Expedition 70 full-resolution photographic hero and retained regulatory boundary.");
