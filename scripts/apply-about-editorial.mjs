@@ -10,7 +10,7 @@ let html = readFileSync(file, "utf8");
 const target = /<main\b[^>]*\bid=["']main["'][^>]*>[\s\S]*?<\/main>/i;
 if (!target.test(html)) throw new Error("About editorial: main landmark not found");
 html = html.replace(target, main);
-const style = '<link rel="stylesheet" href="/assets/css/about-editorial.css">';
+const style = '<link rel="stylesheet" href="/assets/css/about-editorial.css?v=20261111-about-aa-contrast-v1">';
 if (!html.includes(style)) {
   const anchor = '<link rel="stylesheet" href="/assets/css/novapharm.bundle.css">';
   if (!html.includes(anchor)) throw new Error("About editorial: shared CSS link not found");
