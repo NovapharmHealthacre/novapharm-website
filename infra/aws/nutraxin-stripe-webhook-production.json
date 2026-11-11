@@ -159,7 +159,13 @@
           "Ref": "WebhookApi"
         },
         "StageName": "$default",
-        "AutoDeploy": true
+        "AutoDeploy": true,
+        "AccessLogSettings": {
+          "DestinationArn": {
+            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/novapharm-production-nutraxin-stripe-events"
+          },
+          "Format": "{\"requestId\":\"$context.requestId\",\"route\":\"$context.routeKey\",\"method\":\"$context.httpMethod\",\"status\":\"$context.status\",\"latencyMs\":\"$context.responseLatency\",\"integrationStatus\":\"$context.integrationStatus\"}"
+        }
       }
     },
     "WebhookInvokePermission": {
