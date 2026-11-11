@@ -65,6 +65,8 @@ test("out-of-time demand shift fails actual coverage even if calibration residua
   assert.equal(x.intervalValidation.calibratedErrorRadius, 0);
   assert.equal(x.intervalValidation.empiricalHoldoutCoverage, 0.5);
   assert.equal(x.intervalValidation.empiricalCoveragePassed, false);
+  assert.equal(x.accepted, false);
+  assert.equal(x.code, "independent_interval_coverage_failed");
   assert.deepEqual(x.forecast, []);
   assert.equal(x.productionApproved, false);
 });
