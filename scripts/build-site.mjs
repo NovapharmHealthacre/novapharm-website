@@ -26,6 +26,8 @@ await import("./apply-esco-catalogue.mjs");
 await import("./validate-contact-publication.mjs");
 await import("./activate-contact-intake.mjs");
 await import("./apply-global-distribution-foundation.mjs");
+// Materialize approved Markets before SEO, attribution and release registers are generated.
+await import("./apply-markets-editorial.mjs");
 await import("./enhance-seo-authority.mjs");
 await import("./reconcile-leadership-authority.mjs");
 await import("./reconcile-article-authority.mjs");
@@ -51,9 +53,6 @@ await import("./apply-capabilities-editorial.mjs");
 
 // Apply approved, real-image Products presentation last.
 await import("./apply-products-editorial.mjs");
-
-// Retain the owner-approved photo-led Markets page after the shared commercial generator.
-await import("./apply-markets-editorial.mjs");
 
 // Version the final public CSS URLs so old Safari/edge caches cannot hide the approved logo.
 // This must run after all editorial transforms and before release source-SHA stamping.
