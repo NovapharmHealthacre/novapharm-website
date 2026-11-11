@@ -5,6 +5,8 @@ on:
     paths:
       - 'src/core/medicine-forecast-baseline.mjs'
       - 'scripts/test-medicine-forecast-baseline.mjs'
+      - 'src/core/medicine-forecast-interval-candidate.mjs'
+      - 'scripts/test-medicine-forecast-interval-candidate.mjs'
       - '.github/workflows/intelligence-governed-forecast-baseline.yml'
   push:
     branches: [main]
@@ -26,4 +28,4 @@ jobs:
         with:
           node-version: 24
       - name: Rights-gated, deterministic, non-production forecast contract
-        run: node --test scripts/test-medicine-forecast-baseline.mjs
+        run: node --test scripts/test-medicine-forecast-baseline.mjs scripts/test-medicine-forecast-interval-candidate.mjs
