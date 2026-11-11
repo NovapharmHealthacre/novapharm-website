@@ -40,7 +40,7 @@ assert.equal(catalog.length,392);assert.equal(new Set(catalog.map(p=>p.id)).size
 assert.equal(new Set(catalog.map(p=>p.sku)).size,392);
 assert(catalog.every(p=>p.availabilityQuantity===null&&p.cardCheckoutAuthority===false));
 const destination=join(root,'assets/data/commerce-marketplace.json');
-writeFileSync(destination,JSON.stringify({schema:'novapharm-public-merchant-discovery-v1',sourceScope:'owner-supplied-nutraxin-and-esco-catalogues',updatedAt:'2026-11-11',inventoryAuthority:'none',notPaymentAuthority:true,
+writeFileSync(destination,JSON.stringify({schema:'novapharm-public-merchant-discovery-v1',sourceScope:'owner-supplied-nutraxin-and-esco-catalogues',updatedAt:'2026-11-11',inventoryAuthority:'aws_dynamodb_owner_confirmed_read_only',notPaymentAuthority:true,
   search:true,comparisons:true,sellers:1,sourceProductCount:392,products:catalog},null,2)+'\n','utf8');
 const site=join(root,'products/index.html');
 const template=readFileSync(site,'utf8');
@@ -58,7 +58,7 @@ const body=`<main id="main" class="mp-main" data-commerce-marketplace>
 <div class="mp-status" role="status" aria-live="polite" id="mp-count">Loading the collection…</div>
 <div class="mp-grid" id="mp-grid"></div><div class="mp-more"><button id="mp-more" type="button" hidden>Show more products</button></div>
 </section><section class="mp-wrap mp-compare" aria-labelledby="mp-compare-title" id="mp-compare" hidden><div class="mp-heading"><p class="mp-eyebrow">PRODUCT COMPARISON</p><h2 id="mp-compare-title">Compare what matters.</h2><p>Prices may have different VAT and delivery treatments. Confirm final price at checkout or with NovaPharm.</p></div><div id="mp-compare-content"></div></section>
-<section class="mp-wrap mp-disclosure"><h2>Clearly governed.</h2><p>Each listing identifies its merchant, source and price basis. ESCO references are not necessarily saleable variants. Declared warehouse quantities are not verified available-to-promise stock. Checkout, delivery, regulatory requirements and refunds remain controlled by each product's approved order process.</p>
+<section class="mp-wrap mp-disclosure"><h2>Clearly governed.</h2><p>Each listing identifies its merchant, source and price basis. ESCO references are not necessarily saleable variants. NovaPharm confirms 10,000 warehouse units per catalogue record. This owner-attested quantity is shown from AWS inventory, not represented as an independent stock audit. Product-specific checkout, variant release, payment, dispatch and refund controls still apply.</p>
 <a href="/products/nutraxin/">Explore Nutraxin</a><a href="/products/esco/">Explore ESCO</a></section></main>`;
 
 // A derived route must not inherit product-portfolio photography or Products-only

@@ -64,3 +64,18 @@ Label sales as **Observed fact** only when signed payment and order ledger recon
 4. Enforce paid-order picking/packing and carrier scans with a genuine UK delivery service integration; test tracking and returns on a non-customer acceptance order. Never send external emails without a specific approved recipient and message.
 5. Gate third-party seller onboarding with commercial agreements, KYC, seller settlement/Stripe Connect capability, VAT/invoicing, moderation, prohibited listings and dispute handling. Keep uncontracted monetization plans inactive.
 6. Deploy the public route through the protected GitHub CI/CD workflow; verify HTML, search, accessibility, mobile Safari, links, security checks and live content parity. Only then describe the new page as live.
+
+
+## Owner-authorised 10,000-unit inventory integration (11 November 2026)
+
+The owner has confirmed 10,000 units per catalogue record as on-hand warehouse stock. This was accepted as an **owner attestation** for all 392 references, without pretending an independent audit occurred.
+
+- Atlas `novapharm_commerce`: 392 `inventory_positions` and 392 `seller_offers` carry `ownerConfirmedAvailableUnits=10000`; 392 `inventory_reconciliations` carry `ownerApprovalStatus=approved`. Existing `verificationStatus=unverified`, `physicalQuantity=null` and `availableToPromise=0` remain independent release safeguards.
+- DynamoDB: 19 Nutraxin and 373 ESCO records carry `ownerConfirmedUnits=10000` and `ownerConfirmedAvailableUnits=10000`. Original stock and item-level approval policy fields remain intact.
+- Owner-confirmed combined quantity: **3,920,000 units**.
+- Production read-only stock API: `https://eyoj5e64zb.execute-api.eu-north-1.amazonaws.com/stock?skus=NUT-UK-MVE-T60,NP-ESCO-0003`. Requires 1-24 validated SKUs. DynamoDB `BatchGetItem` only; rejects unsafe fields and never authorizes checkout. Lambda: `novapharm-public-commerce-stock`. CloudFormation: `novapharm-production-commerce-stock-read-api`.
+- Marketplace browser now fetches stock for its visible products and uses the term `Owner-confirmed warehouse stock`. Displaying the quantity does not enable payment on ESCO records without exact variant and commercial approval.
+- NOVA's private evidence bucket contains `commerce/owner-attestations/2026-11-11/owner-confirmed-warehouse-stock-392.json` with all 392 owner confirmations. The scheduled evidence-export source is prepared to include the same owner-confirmation fields.
+- **Free-tier-compatible alternative:** DynamoDB is the runtime inventory source for AWS commerce, with MongoDB Atlas remaining the separate catalogue and analytics staging database. This avoids a mandatory paid Atlas PrivateLink/NAT dependency; DynamoDB/API Gateway/Lambda usage can still incur charges if monthly free quotas or AWS credits are exceeded.
+
+Remaining integrations: transactional checkout reservations and failed/expired-order release against the same stock ledger, verified Stripe charges and refunds, carrier tracking provider onboarding, seller KYC/Connect payout setup, downstream NOVA customer workspace acceptance, and successful GitHub Pages publication. Do not equate an owner confirmation with a third-party physical-stock certificate.

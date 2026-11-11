@@ -1,0 +1,205 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "NovaPharm public read-only owner-confirmed warehouse stock, DynamoDB free-tier-compatible. Not payment or physical-audit authority.",
+  "Resources": {
+    "StockLog": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/novapharm-public-commerce-stock",
+        "RetentionInDays": 14
+      }
+    },
+    "StockRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "ReadSpecificStockTables",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:BatchGetItem"
+                  ],
+                  "Resource": [
+                    "arn:aws:dynamodb:eu-north-1:250675045172:table/novapharm-production-nutraxin-inventory",
+                    "arn:aws:dynamodb:eu-north-1:250675045172:table/novapharm-production-esco-inventory"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": "arn:aws:logs:eu-north-1:250675045172:log-group:/aws/lambda/novapharm-public-commerce-stock:*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "StockLambda": {
+      "Type": "AWS::Lambda::Function",
+      "DependsOn": [
+        "StockLog"
+      ],
+      "Properties": {
+        "FunctionName": "novapharm-public-commerce-stock",
+        "Runtime": "python3.12",
+        "Handler": "index.handler",
+        "Timeout": 10,
+        "MemorySize": 128,
+        "Role": {
+          "Fn::GetAtt": [
+            "StockRole",
+            "Arn"
+          ]
+        },
+        "Code": {
+          "ZipFile": "\"\"\"Public read-only NovaPharm commerce inventory. No checkout or customer data.\"\"\"\nimport json\nimport re\nimport boto3\nfrom botocore.exceptions import ClientError\n\nREGION=\"eu-north-1\"\nTABLES={\"NUT\":\"novapharm-production-nutraxin-inventory\",\"ESCO\":\"novapharm-production-esco-inventory\"}\nddb=boto3.client(\"dynamodb\",region_name=REGION)\nNUT=re.compile(r\"^NUT-UK-[A-Z0-9-]{3,64}$\")\nESCO=re.compile(r\"^NP-ESCO-[0-9]{4}$\")\n\ndef reply(code,body):\n    return {\"statusCode\":code,\"headers\":{\"content-type\":\"application/json; charset=utf-8\",\n            \"cache-control\":\"public, max-age=30\" if code==200 else \"no-store\",\n            \"x-content-type-options\":\"nosniff\"},\"body\":json.dumps(body,separators=(\",\",\":\"))}\n\ndef scalar(v,key,kind=\"S\"):\n    return (v.get(key) or {}).get(kind)\n\ndef handler(event,context):\n    method=((event.get(\"requestContext\") or {}).get(\"http\") or {}).get(\"method\",\"\")\n    path=event.get(\"rawPath\",\"\")\n    if method!=\"GET\":\n        return reply(405,{\"error\":\"method_not_allowed\"})\n    if path==\"/health\":\n        return reply(200,{\"service\":\"novapharm-commerce-owner-stock\",\"status\":\"ready\",\"authority\":\"owner_attestation_only\"})\n    if path!=\"/stock\":\n        return reply(404,{\"error\":\"not_found\"})\n    query=event.get(\"queryStringParameters\") or {}\n    raw=query.get(\"skus\",\"\")\n    if not isinstance(raw,str) or len(raw)>2300:\n        return reply(400,{\"error\":\"invalid_skus\"})\n    skus=raw.split(\",\")\n    if not 1<=len(skus)<=24 or len(set(skus))!=len(skus):\n        return reply(400,{\"error\":\"invalid_sku_count\"})\n    names={}\n    for sku in skus:\n        if NUT.fullmatch(sku):\n            names[sku]=\"NUT\"\n        elif ESCO.fullmatch(sku):\n            names[sku]=\"ESCO\"\n        else:\n            return reply(400,{\"error\":\"invalid_sku\"})\n    request={}\n    for label,table in TABLES.items():\n        keys=[{\"sku\":{\"S\":sku}} for sku,kind in names.items() if kind==label]\n        if keys:\n            request[table]={\"Keys\":keys,\"ConsistentRead\":True,\n                \"ProjectionExpression\":\"sku,ownerConfirmedUnits,ownerConfirmedAvailableUnits,declaredOnHandUnits,reservedUnits,fulfilledUnits,reconciliationRequired\"}\n    try:\n        results={}\n        remaining=request\n        for attempt in range(3):\n            if not remaining:\n                break\n            data=ddb.batch_get_item(RequestItems=remaining)\n            for table,items in (data.get(\"Responses\") or {}).items():\n                for item in items:\n                    sku=scalar(item,\"sku\")\n                    if sku in names:\n                        declared=scalar(item,\"declaredOnHandUnits\",\"N\")\n                        owner=scalar(item,\"ownerConfirmedUnits\",\"N\")\n                        available=scalar(item,\"ownerConfirmedAvailableUnits\",\"N\")\n                        reserved=scalar(item,\"reservedUnits\",\"N\")\n                        fulfilled=scalar(item,\"fulfilledUnits\",\"N\")\n                        approved=(declared==\"10000\" and owner==\"10000\" and\n                            available is not None and reserved is not None and fulfilled is not None)\n                        count=max(0,min(int(available),int(owner)-int(reserved)-int(fulfilled))) if approved else None\n                        results[sku]={\"sku\":sku,\"ownerConfirmedUnits\":int(owner) if approved else None,\n                            \"ownerConfirmedRemainingUnits\":count,\n                            \"stockEvidence\":\"owner_confirmed_not_independently_audited\",\n                            \"independentAudit\":False,\"checkoutAuthority\":False}\n            remaining=data.get(\"UnprocessedKeys\") or {}\n        if remaining:\n            return reply(503,{\"error\":\"stock_source_busy\"})\n        return reply(200,{\"schema\":\"novapharm-commerce-stock-public-v1\",\n            \"stockAuthority\":\"owner_confirmed_warehouse_attestation\",\"notPaymentAuthority\":True,\n            \"items\":[results.get(sku,{\"sku\":sku,\"ownerConfirmedUnits\":None,\n                     \"ownerConfirmedRemainingUnits\":None,\"stockEvidence\":\"not_available\",\n                     \"independentAudit\":False,\"checkoutAuthority\":False}) for sku in skus]})\n    except (ClientError,ValueError,TypeError):\n        return reply(503,{\"error\":\"stock_source_unavailable\"})\n"
+        }
+      }
+    },
+    "HttpApi": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "novapharm-public-commerce-stock",
+        "ProtocolType": "HTTP",
+        "CorsConfiguration": {
+          "AllowOrigins": [
+            "https://novapharmhealthcare.com",
+            "https://www.novapharmhealthcare.com"
+          ],
+          "AllowMethods": [
+            "GET",
+            "OPTIONS"
+          ],
+          "AllowHeaders": [
+            "content-type"
+          ],
+          "MaxAge": 300
+        }
+      }
+    },
+    "HttpIntegration": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "StockLambda",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 10000
+      }
+    },
+    "StockRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /stock",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpIntegration"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "HealthRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /health",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpIntegration"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "Stage": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "StageName": "$default",
+        "AutoDeploy": true,
+        "DefaultRouteSettings": {
+          "ThrottlingRateLimit": 15,
+          "ThrottlingBurstLimit": 30
+        }
+      }
+    },
+    "Permission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "StockLambda",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${HttpApi}/*/GET/*"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ApiUrl": {
+      "Value": {
+        "Fn::GetAtt": [
+          "HttpApi",
+          "ApiEndpoint"
+        ]
+      }
+    },
+    "StockAuthority": {
+      "Value": "owner_confirmed_warehouse_stock_not_independently_audited"
+    }
+  }
+}
