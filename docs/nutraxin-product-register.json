@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "reviewedAt": "2026-07-16",
   "source": {
     "title": "NUTRAXIN UK CATALOUGE",
@@ -7,7 +7,12 @@
     "pages": 8,
     "suppliedBy": "NovaPharm Healthcare owner",
     "usageBasis": "Owner-supplied B2B catalogue and embedded product-pack artwork",
-    "repositoryCopy": false
+    "repositoryCopy": false,
+    "publisherObservation": {
+      "checkedOn": "2026-11-11",
+      "method": "Current Nutraxin UK product-page evidence used to correct apparent July catalogue transcription, while original catalogue SHA-256 remains unchanged",
+      "physicalPackApproved": false
+    }
   },
   "controls": {
     "publicAudience": "B2B catalogue reference only",
@@ -31,7 +36,12 @@
       "packSize": "120 tablets",
       "dosageForm": "tablet",
       "servingText": "Catalogue states per tablet",
-      "formulation": [{ "name": "Vitamin D3 (cholecalciferol)", "amount": "1000 IU" }],
+      "formulation": [
+        {
+          "name": "Vitamin D3 (cholecalciferol)",
+          "amount": "1000 IU"
+        }
+      ],
       "cataloguePage": 3,
       "catalogueOrder": 1,
       "imageBase": "vitamin-d3-120-tablets",
@@ -50,13 +60,20 @@
       "packSize": "30 ml",
       "dosageForm": "oral spray",
       "servingText": "Catalogue states per 2 sprays",
-      "formulation": [{ "name": "Vitamin D3 (cholecalciferol)", "amount": "1000 IU" }],
+      "formulation": [
+        {
+          "name": "Vitamin D3 (cholecalciferol)",
+          "amount": "1000 IU"
+        }
+      ],
       "cataloguePage": 3,
       "catalogueOrder": 2,
       "imageBase": "vitamin-d3-spray-30ml",
       "imageSha256": "17feae499cffc81e3a25f329825b075ede5fa419b1661cde7e831cabadae00c1",
       "altText": "Nutraxin Vitamin D3 spray box and 30 ml bottle",
-      "notes": ["The pack image uses the wording 2 puff; serving terminology requires label confirmation."]
+      "notes": [
+        "The pack image uses the wording 2 puff; serving terminology requires label confirmation."
+      ]
     },
     {
       "id": "nutraxin-vitamin-d3-k2-120-tablets",
@@ -70,8 +87,14 @@
       "dosageForm": "tablet",
       "servingText": "Catalogue states per tablet",
       "formulation": [
-        { "name": "Vitamin D3 (cholecalciferol)", "amount": "1000 IU" },
-        { "name": "Vitamin K2 (menaquinone-7)", "amount": "25 µg" }
+        {
+          "name": "Vitamin D3 (cholecalciferol)",
+          "amount": "1000 IU"
+        },
+        {
+          "name": "Vitamin K2 (menaquinone-7)",
+          "amount": "25 µg"
+        }
       ],
       "cataloguePage": 3,
       "catalogueOrder": 3,
@@ -92,15 +115,23 @@
       "dosageForm": "oral spray",
       "servingText": "Catalogue states per puff",
       "formulation": [
-        { "name": "Vitamin D3 (cholecalciferol)", "amount": "1000 IU" },
-        { "name": "Vitamin K2 (menaquinone-7)", "amount": "25 µg" }
+        {
+          "name": "Vitamin D3 (cholecalciferol)",
+          "amount": "1000 IU"
+        },
+        {
+          "name": "Vitamin K2 (menaquinone-7)",
+          "amount": "25 µg"
+        }
       ],
       "cataloguePage": 3,
       "catalogueOrder": 4,
       "imageBase": "vitamin-d3-k2-spray-30ml",
       "imageSha256": "85ee1c502e60ba154257895fd37bb33f054839507c8a46f502556e3c86952366",
       "altText": "Nutraxin Vitamin D3 and K2 spray box and 30 ml bottle",
-      "notes": ["Serving terminology differs from the D3-only spray and requires final label confirmation."]
+      "notes": [
+        "Serving terminology differs from the D3-only spray and requires final label confirmation."
+      ]
     },
     {
       "id": "nutraxin-vitamin-c-1000mg-30-tablets",
@@ -114,9 +145,18 @@
       "dosageForm": "time-release tablet",
       "servingText": "Catalogue states per tablet",
       "formulation": [
-        { "name": "L-ascorbic acid", "amount": "1000 mg" },
-        { "name": "Rosa canina extract", "amount": "100 mg" },
-        { "name": "Citrus bioflavonoid complex", "amount": "50 mg" }
+        {
+          "name": "L-ascorbic acid",
+          "amount": "1000 mg"
+        },
+        {
+          "name": "Rosa canina extract",
+          "amount": "100 mg"
+        },
+        {
+          "name": "Citrus bioflavonoid complex",
+          "amount": "50 mg"
+        }
       ],
       "cataloguePage": 4,
       "catalogueOrder": 5,
@@ -136,13 +176,20 @@
       "packSize": "30 chewable tablets",
       "dosageForm": "chewable tablet",
       "servingText": "Catalogue pack front states 500 mg",
-      "formulation": [{ "name": "Vitamin C", "amount": "500 mg" }],
+      "formulation": [
+        {
+          "name": "Vitamin C",
+          "amount": "500 mg"
+        }
+      ],
       "cataloguePage": 4,
       "catalogueOrder": 6,
       "imageBase": "vitamin-c-500mg-chewable-30-tablets",
       "imageSha256": "c12ac2e8726897e56b1cb36971c0f70eadfb2200c999fab269d7b46e77eb61fe",
       "altText": "Nutraxin Vitamin C 500 mg chewable box and 30-tablet bottle",
-      "notes": ["The extracted catalogue text repeats the 1000 mg formula from another product; the visible pack front states 500 mg. Full actives require confirmation from approved labelling."]
+      "notes": [
+        "The extracted catalogue text repeats the 1000 mg formula from another product; the visible pack front states 500 mg. Full actives require confirmation from approved labelling."
+      ]
     },
     {
       "id": "nutraxin-vitamin-max-60-tablets",
@@ -156,9 +203,18 @@
       "dosageForm": "tablet",
       "servingText": "Catalogue states per serving",
       "formulation": [
-        { "name": "L-ascorbic acid", "amount": "1000 mg" },
-        { "name": "Vitamin D (cholecalciferol)", "amount": "1000 IU" },
-        { "name": "Zinc", "amount": "10 mg" }
+        {
+          "name": "L-ascorbic acid",
+          "amount": "1000 mg"
+        },
+        {
+          "name": "Vitamin D (cholecalciferol)",
+          "amount": "1000 IU"
+        },
+        {
+          "name": "Zinc",
+          "amount": "10 mg"
+        }
       ],
       "cataloguePage": 4,
       "catalogueOrder": 7,
@@ -179,16 +235,27 @@
       "dosageForm": "effervescent tablet",
       "servingText": "Catalogue states per serving",
       "formulation": [
-        { "name": "L-ascorbic acid", "amount": "1000 mg" },
-        { "name": "Vitamin D (cholecalciferol)", "amount": "400 IU" },
-        { "name": "Zinc", "amount": "10 mg" }
+        {
+          "name": "L-ascorbic acid",
+          "amount": "1000 mg"
+        },
+        {
+          "name": "Vitamin D (cholecalciferol)",
+          "amount": "400 IU"
+        },
+        {
+          "name": "Zinc",
+          "amount": "10 mg"
+        }
       ],
       "cataloguePage": 4,
       "catalogueOrder": 8,
       "imageBase": "vitamin-max-15-effervescent-tablets",
       "imageSha256": "0aa9202abb2cfd1ebc93a8774753b69df8998b6b8c70ca681a7db8d5fae50023",
       "altText": "Nutraxin Vitamin MAX C, D and Zinc 15-tablet effervescent pack",
-      "notes": ["Catalogue contains the spelling Oraneg; flavour wording is withheld pending approved-label confirmation."]
+      "notes": [
+        "Original catalogue contains spelling Oraneg; flavour wording is withheld until label confirmation. Pack mismatch: owner catalogue states 15 effervescent tablets, while the currently linked Nutraxin UK publisher page states 20 tablets. Verify the exact sellable 15-tablet SKU/pack before treating the external page as product-specific label authority."
+      ]
     },
     {
       "id": "nutraxin-magnesium-complex-60-tablets",
@@ -202,19 +269,39 @@
       "dosageForm": "tablet",
       "servingText": "Catalogue states per serving",
       "formulation": [
-        { "name": "Elemental magnesium", "amount": "125 mg" },
-        { "name": "Magnesium citrate", "amount": "215 mg" },
-        { "name": "Magnesium bisglycinate", "amount": "275 mg" },
-        { "name": "Magnesium malate", "amount": "200 mg" },
-        { "name": "Magnesium taurate", "amount": "250 mg" },
-        { "name": "Vitamin B6", "amount": "10 mg" }
+        {
+          "name": "Elemental magnesium",
+          "amount": "125 mg"
+        },
+        {
+          "name": "Magnesium citrate",
+          "amount": "215 mg"
+        },
+        {
+          "name": "Magnesium bisglycinate",
+          "amount": "275 mg"
+        },
+        {
+          "name": "Magnesium malate",
+          "amount": "200 mg"
+        },
+        {
+          "name": "Magnesium taurate",
+          "amount": "250 mg"
+        },
+        {
+          "name": "Vitamin B6",
+          "amount": "10 mg"
+        }
       ],
       "cataloguePage": 5,
       "catalogueOrder": 9,
       "imageBase": "magnesium-complex-60-tablets",
       "imageSha256": "0d29786d88112d286f9d56731d5ce315695e794056a3e0b5a89b884bd7bbb113",
       "altText": "Nutraxin Magnesium Complex and Vitamin B6 box and 60-tablet bottle",
-      "notes": ["The source marks the first two magnesium values with an asterisk but does not define it on the catalogue page."]
+      "notes": [
+        "The source marks the first two magnesium values with an asterisk but does not define it on the catalogue page."
+      ]
     },
     {
       "id": "nutraxin-magnesium-daily-60-tablets",
@@ -228,10 +315,22 @@
       "dosageForm": "tablet",
       "servingText": "Catalogue states per serving",
       "formulation": [
-        { "name": "Magnesium", "amount": "250 mg" },
-        { "name": "Vitamin D3", "amount": "1000 IU" },
-        { "name": "Vitamin K2", "amount": "26 µg" },
-        { "name": "Vitamin B6", "amount": "10 mg" }
+        {
+          "name": "Magnesium",
+          "amount": "250 mg"
+        },
+        {
+          "name": "Vitamin D3",
+          "amount": "1000 IU"
+        },
+        {
+          "name": "Vitamin K2",
+          "amount": "26 µg"
+        },
+        {
+          "name": "Vitamin B6",
+          "amount": "10 mg"
+        }
       ],
       "cataloguePage": 5,
       "catalogueOrder": 10,
@@ -252,22 +351,51 @@
       "dosageForm": "time-release tablet",
       "servingText": "Catalogue composition summary; approved label required",
       "formulation": [
-        { "name": "Vitamin A", "amount": "17 µg" },
-        { "name": "Vitamin B complex", "amount": "19 mg" },
-        { "name": "Vitamin C", "amount": "80 mg" },
-        { "name": "Vitamin D", "amount": "400 IU" },
-        { "name": "Vitamin E", "amount": "10 mg" },
-        { "name": "Mineral complex", "amount": "180 mg" },
-        { "name": "Choline and inositol", "amount": "6.014 mg" },
-        { "name": "Bioflavonoids", "amount": "5 mg" },
-        { "name": "Energy blend", "amount": "125 mg" }
+        {
+          "name": "Vitamin A",
+          "amount": "17 µg"
+        },
+        {
+          "name": "Vitamin B complex",
+          "amount": "19 mg"
+        },
+        {
+          "name": "Vitamin C",
+          "amount": "80 mg"
+        },
+        {
+          "name": "Vitamin D",
+          "amount": "400 IU"
+        },
+        {
+          "name": "Vitamin E",
+          "amount": "10 mg"
+        },
+        {
+          "name": "Mineral complex",
+          "amount": "180 mg"
+        },
+        {
+          "name": "Choline and inositol",
+          "amount": "6.014 mg"
+        },
+        {
+          "name": "Bioflavonoids",
+          "amount": "5 mg"
+        },
+        {
+          "name": "Energy blend",
+          "amount": "125 mg"
+        }
       ],
       "cataloguePage": 6,
       "catalogueOrder": 11,
       "imageBase": "multivitamin-mineral-energy-60-tablets",
       "imageSha256": "1c6be163f18afb066bb0f455adf3abf3f47f904f2ad669fd089e3ac73f40be4f",
       "altText": "Nutraxin Multivitamin Mineral Energy box and 60-tablet bottle",
-      "notes": ["Several grouped amounts are small or unusually precise and require confirmation against approved labelling."]
+      "notes": [
+        "Several grouped amounts are small or unusually precise and require confirmation against approved labelling."
+      ]
     },
     {
       "id": "nutraxin-womens-multivitamin-complex-60-tablets",
@@ -281,21 +409,47 @@
       "dosageForm": "time-release tablet",
       "servingText": "Catalogue composition summary; approved label required",
       "formulation": [
-        { "name": "Vitamin A", "amount": "68 µg" },
-        { "name": "Vitamin B complex", "amount": "42 mg" },
-        { "name": "Vitamin C", "amount": "60 mg" },
-        { "name": "Vitamin D", "amount": "400 IU" },
-        { "name": "Vitamin E", "amount": "10 mg" },
-        { "name": "Mineral complex", "amount": "516 mg" },
-        { "name": "Choline and inositol", "amount": "46.5 mg" },
-        { "name": "Botanical and antioxidant blend", "amount": "78.5 mg" }
+        {
+          "name": "Vitamin A",
+          "amount": "68 µg"
+        },
+        {
+          "name": "Vitamin B complex",
+          "amount": "42 mg"
+        },
+        {
+          "name": "Vitamin C",
+          "amount": "60 mg"
+        },
+        {
+          "name": "Vitamin D",
+          "amount": "400 IU"
+        },
+        {
+          "name": "Vitamin E",
+          "amount": "10 mg"
+        },
+        {
+          "name": "Mineral complex",
+          "amount": "516 mg"
+        },
+        {
+          "name": "Choline and inositol",
+          "amount": "46.5 mg"
+        },
+        {
+          "name": "Botanical and antioxidant blend",
+          "amount": "78.5 mg"
+        }
       ],
       "cataloguePage": 6,
       "catalogueOrder": 12,
       "imageBase": "womens-multivitamin-complex-60-tablets",
       "imageSha256": "6fcdbc23007d57cffb4fa3c9050d0f184467dc168c7f3027841c583a642d2e45",
       "altText": "Nutraxin Women's Multivitamin Complex box and 60-tablet bottle",
-      "notes": ["Catalogue heading contains a spelling error; public name is normalised without altering the supplied pack artwork."]
+      "notes": [
+        "Catalogue heading contains a spelling error; public name is normalised without altering the supplied pack artwork."
+      ]
     },
     {
       "id": "nutraxin-mens-multivitamin-complex-60-tablets",
@@ -309,21 +463,47 @@
       "dosageForm": "time-release tablet",
       "servingText": "Catalogue composition summary; approved label required",
       "formulation": [
-        { "name": "Vitamin A (beta-carotene)", "amount": "66 µg" },
-        { "name": "Vitamin B complex", "amount": "38 mg" },
-        { "name": "Vitamin C", "amount": "60 mg" },
-        { "name": "Vitamin D", "amount": "400 IU" },
-        { "name": "Vitamin E", "amount": "10 mg" },
-        { "name": "Mineral complex", "amount": "269 mg" },
-        { "name": "Choline and inositol", "amount": "46.5 mg" },
-        { "name": "Botanical and antioxidant blend", "amount": "91 mg" }
+        {
+          "name": "Vitamin A (beta-carotene)",
+          "amount": "66 µg"
+        },
+        {
+          "name": "Vitamin B complex",
+          "amount": "38 mg"
+        },
+        {
+          "name": "Vitamin C",
+          "amount": "60 mg"
+        },
+        {
+          "name": "Vitamin D",
+          "amount": "400 IU"
+        },
+        {
+          "name": "Vitamin E",
+          "amount": "10 mg"
+        },
+        {
+          "name": "Mineral complex",
+          "amount": "269 mg"
+        },
+        {
+          "name": "Choline and inositol",
+          "amount": "46.5 mg"
+        },
+        {
+          "name": "Botanical and antioxidant blend",
+          "amount": "91 mg"
+        }
       ],
       "cataloguePage": 6,
       "catalogueOrder": 13,
       "imageBase": "mens-multivitamin-complex-60-tablets",
       "imageSha256": "d1f1913c410e341f094ed377573e30d48aaf391a1b23cae8e80050e5fe43ab57",
       "altText": "Nutraxin Men's Multivitamin Complex box and 60-tablet bottle",
-      "notes": ["Catalogue heading contains a spelling error; public name is normalised without altering the supplied pack artwork."]
+      "notes": [
+        "Catalogue heading contains a spelling error; public name is normalised without altering the supplied pack artwork."
+      ]
     },
     {
       "id": "nutraxin-collagen-gold-30-tablets",
@@ -337,20 +517,43 @@
       "dosageForm": "tablet",
       "servingText": "Catalogue states per serving",
       "formulation": [
-        { "name": "Hydrolysed collagen", "amount": "1050 mg" },
-        { "name": "Vitamin C", "amount": "100 mg" },
-        { "name": "Resveratrol", "amount": "10 mg" },
-        { "name": "Bromelain", "amount": "50 µg" },
-        { "name": "Biotin", "amount": "1000 µg" },
-        { "name": "Hyaluronic acid", "amount": "100 mg" },
-        { "name": "Zinc", "amount": "6 mg" }
+        {
+          "name": "Hydrolysed collagen",
+          "amount": "1050 mg"
+        },
+        {
+          "name": "Vitamin C",
+          "amount": "100 mg"
+        },
+        {
+          "name": "Resveratrol",
+          "amount": "10 mg"
+        },
+        {
+          "name": "Bromelain",
+          "amount": "50 mg"
+        },
+        {
+          "name": "Biotin",
+          "amount": "1000 µg"
+        },
+        {
+          "name": "Hyaluronic acid",
+          "amount": "100 mg"
+        },
+        {
+          "name": "Zinc",
+          "amount": "6 mg"
+        }
       ],
       "cataloguePage": 7,
       "catalogueOrder": 14,
       "imageBase": "collagen-gold-30-tablets",
       "imageSha256": "ab92725a6ec98562e96d3ad0df8dafedb983328c6f298bd1435e5723df0878a5",
       "altText": "Nutraxin Gold Quality Collagen box and 30-tablet bottle",
-      "notes": ["Bromelain unit is transcribed as µg and requires approved-label confirmation."]
+      "notes": [
+        "Original owner catalogue transcribed bromelain as 50 µg. Nutraxin UK's Gold Quality Collagen Tablets publisher page specifies 50 mg per tablet. Public publisher-observed unit corrected on 11 November 2026; exact marketed pack label remains unverified."
+      ]
     },
     {
       "id": "nutraxin-collagen-gold-30-sachets",
@@ -364,22 +567,51 @@
       "dosageForm": "powder sachet",
       "servingText": "Catalogue states per sachet",
       "formulation": [
-        { "name": "Hydrolysed collagen", "amount": "10000 mg" },
-        { "name": "Vitamin C", "amount": "300 mg" },
-        { "name": "Hyaluronic acid", "amount": "10 mg" },
-        { "name": "Zinc", "amount": "10 mg" },
-        { "name": "Biotin", "amount": "2500 µg" },
-        { "name": "Vitamin B5", "amount": "6 mg" },
-        { "name": "Vitamin B6", "amount": "140 mg" },
-        { "name": "Vitamin E", "amount": "6 mg" },
-        { "name": "Selenium", "amount": "55 µg" }
+        {
+          "name": "Hydrolysed collagen",
+          "amount": "10000 mg"
+        },
+        {
+          "name": "Vitamin C",
+          "amount": "300 mg"
+        },
+        {
+          "name": "Hyaluronic acid",
+          "amount": "10 mg"
+        },
+        {
+          "name": "Zinc",
+          "amount": "10 mg"
+        },
+        {
+          "name": "Biotin",
+          "amount": "2500 µg"
+        },
+        {
+          "name": "Vitamin B5",
+          "amount": "6 mg"
+        },
+        {
+          "name": "Vitamin B6",
+          "amount": "1.40 mg"
+        },
+        {
+          "name": "Vitamin E",
+          "amount": "6 mg"
+        },
+        {
+          "name": "Selenium",
+          "amount": "55 µg"
+        }
       ],
       "cataloguePage": 7,
       "catalogueOrder": 15,
       "imageBase": "collagen-gold-30-sachets",
       "imageSha256": "b7fbc349a585aaef706dbaab74b9cc6d1e2bc069b7ac88d475654d26e22af06b",
       "altText": "Nutraxin Gold Quality Collagen 30-sachet box and sachet",
-      "notes": ["The catalogue lists vitamin B6 at 140 mg; this value is flagged for urgent approved-label verification before any claim or sale use."]
+      "notes": [
+        "Original owner-supplied catalogue transcribed vitamin B6 as 140 mg. The Nutraxin UK publisher's current Gold Quality Collagen Sachet page specifies 1,40 mg per sachet. Public composition corrected to publisher-observed 1.40 mg on 11 November 2026; verify the physical UK pack back label and lot before final sale acceptance."
+      ]
     },
     {
       "id": "nutraxin-collagen-complex-90-tablets",
@@ -393,16 +625,46 @@
       "dosageForm": "tablet",
       "servingText": "Catalogue states per serving",
       "formulation": [
-        { "name": "Fish collagen types I and III", "amount": "3000 mg" },
-        { "name": "Collagen type II", "amount": "60 mg" },
-        { "name": "Undenatured collagen type II", "amount": "30 mg" },
-        { "name": "Collagen types V and X", "amount": "30 mg" },
-        { "name": "Hyaluronic acid", "amount": "120 mg" },
-        { "name": "Zinc", "amount": "12 mg" },
-        { "name": "Copper", "amount": "1500 µg" },
-        { "name": "Vitamin C", "amount": "240 mg" },
-        { "name": "Biotin", "amount": "1500 µg" },
-        { "name": "Selenium", "amount": "30 µg" }
+        {
+          "name": "Fish collagen types I and III",
+          "amount": "3000 mg"
+        },
+        {
+          "name": "Collagen type II",
+          "amount": "60 mg"
+        },
+        {
+          "name": "Undenatured collagen type II",
+          "amount": "30 mg"
+        },
+        {
+          "name": "Collagen types V and X",
+          "amount": "30 mg"
+        },
+        {
+          "name": "Hyaluronic acid",
+          "amount": "120 mg"
+        },
+        {
+          "name": "Zinc",
+          "amount": "12 mg"
+        },
+        {
+          "name": "Copper",
+          "amount": "1500 µg"
+        },
+        {
+          "name": "Vitamin C",
+          "amount": "240 mg"
+        },
+        {
+          "name": "Biotin",
+          "amount": "1500 µg"
+        },
+        {
+          "name": "Selenium",
+          "amount": "30 µg"
+        }
       ],
       "cataloguePage": 7,
       "catalogueOrder": 16,
@@ -423,18 +685,35 @@
       "dosageForm": "tablet",
       "servingText": "Catalogue states per serving",
       "formulation": [
-        { "name": "Glucosamine", "amount": "1500 mg" },
-        { "name": "Chondroitin", "amount": "1200 mg" },
-        { "name": "MSM", "amount": "1200 mg" },
-        { "name": "Devil's claw", "amount": "198 mg" },
-        { "name": "Bromelain", "amount": "180 mg" }
+        {
+          "name": "Glucosamine",
+          "amount": "1500 mg"
+        },
+        {
+          "name": "Chondroitin",
+          "amount": "1200 mg"
+        },
+        {
+          "name": "MSM",
+          "amount": "1200 mg"
+        },
+        {
+          "name": "Devil's claw",
+          "amount": "180 mg"
+        },
+        {
+          "name": "Bromelain",
+          "amount": "198 mg"
+        }
       ],
       "cataloguePage": 8,
       "catalogueOrder": 17,
       "imageBase": "artoflex-90-tablets",
       "imageSha256": "fa66610ef6a6990433e424593fde49cb64a7d75160accb5ea5271a7e6f8b4837",
       "altText": "Nutraxin Artoflex box and 90-tablet bottle",
-      "notes": ["Pack references clinical trials; no such statement is reproduced publicly without an evidence review."]
+      "notes": [
+        "Pack references clinical trials; no such statement is reproduced publicly without an evidence review. Original owner catalogue reverses the listed Devil's claw and bromelain amounts relative to the current Nutraxin UK Artroflex publisher page. Publisher reports Devil's claw 180 mg and bromelain 198 mg per 3-tablet serving. Corrected published comparison on 11 November 2026; marketed pack label remains unverified."
+      ]
     },
     {
       "id": "nutraxin-l-carnitine-60-tablets",
@@ -447,13 +726,20 @@
       "packSize": "60 tablets",
       "dosageForm": "tablet",
       "servingText": "Pack front states 700 mg; catalogue narrative states 1400 mg per serving",
-      "formulation": [{ "name": "L-Carnitine", "amount": "700 mg per tablet; 1400 mg per stated serving" }],
+      "formulation": [
+        {
+          "name": "L-Carnitine",
+          "amount": "700 mg per tablet; 1400 mg per stated serving"
+        }
+      ],
       "cataloguePage": 8,
       "catalogueOrder": 18,
       "imageBase": "l-carnitine-60-tablets",
       "imageSha256": "caad6b84ce9dec678ec2ade12a94f58455f85328758e971e0274fe45a37df22b",
       "altText": "Nutraxin L-Carnitine 700 mg box and 60-tablet bottle",
-      "notes": ["Catalogue heading misspells Carnitine; serving quantity should be confirmed against approved labelling."]
+      "notes": [
+        "Catalogue heading misspells Carnitine; serving quantity should be confirmed against approved labelling."
+      ]
     },
     {
       "id": "nutraxin-vitamin-b12-60-sublingual-tablets",
@@ -466,7 +752,12 @@
       "packSize": "60 sublingual tablets",
       "dosageForm": "sublingual tablet",
       "servingText": "Catalogue states per tablet",
-      "formulation": [{ "name": "Vitamin B12 (methylcobalamin)", "amount": "1000 µg" }],
+      "formulation": [
+        {
+          "name": "Vitamin B12 (methylcobalamin)",
+          "amount": "1000 µg"
+        }
+      ],
       "cataloguePage": 8,
       "catalogueOrder": 19,
       "imageBase": "vitamin-b12-60-sublingual-tablets",

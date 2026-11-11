@@ -75,4 +75,17 @@ for (const range of ranges) {
   const id = range.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/-$/,"");
   assert.ok(master.includes('id="nx-'+id+'"'),"Missing range anchor "+range);
 }
+const productBySku = new Map(products.map(product => [product.sku, product]));
+assert.equal(productBySku.get("NUT-UK-CG-S30").formulation.find(item => item.name === "Vitamin B6").amount, "1.40 mg");
+assert.equal(productBySku.get("NUT-UK-CG-T30").formulation.find(item => item.name === "Bromelain").amount, "50 mg");
+assert.equal(productBySku.get("NUT-UK-ART-T90").formulation.find(item => item.name === "Devil's claw").amount, "180 mg");
+assert.equal(productBySku.get("NUT-UK-ART-T90").formulation.find(item => item.name === "Bromelain").amount, "198 mg");
+assert.match(productBySku.get("NUT-UK-VMAX-E15").notes.join(" "), /15 effervescent tablets.*20 tablets/);
+assert.match(read("products/nutraxin/collagen-gold-30-sachets/index.html"), /<dt>Vitamin B6<\/dt><dd>1\.40 mg<\/dd>/);
+assert.match(read("products/nutraxin/collagen-gold-30-tablets/index.html"), /<dt>Bromelain<\/dt><dd>50 mg<\/dd>/);
+assert.match(read("products/nutraxin/artoflex-90-tablets/index.html"), /<dt>Devil's claw<\/dt><dd>180 mg<\/dd>/);
+assert.match(read("products/nutraxin/artoflex-90-tablets/index.html"), /<dt>Bromelain<\/dt><dd>198 mg<\/dd>/);
+const manufacturerAudit = JSON.parse(read("docs/products/nutraxin-manufacturer-observation-20261111.json"));
+assert.equal(manufacturerAudit.products.length,19);
+assert.ok(manufacturerAudit.products.every(product => product.physical_uk_pack_label_accepted === false), "Publisher website is not signed physical-label evidence");
 console.log("Nutraxin Apple-inspired lineup: 19 products, six ranges, canonical links, original media, responsible disclosures, source and responsive styles verified.");
