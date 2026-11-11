@@ -1182,8 +1182,9 @@ body[data-page="technology"] .np-intelligence {
 .np-intelligence .npi-hero--editorial .npi-hero-photo {
   position: absolute;
   z-index: -2;
-  inset: 0;
-  background: #f1f3f6 url("/assets/media/technology/novapharm-intelligence-hero.avif") center right / cover no-repeat;
+  inset: 0 0 0 auto;
+  width: min(55%, 1000px);
+  background: #f1f3f6 url("/assets/media/technology/novapharm-intelligence-hero.avif?v=20261111-crisp-v2") center top / cover no-repeat;
 }
 .np-intelligence .npi-hero--editorial::before {
   content: "";
@@ -1233,14 +1234,14 @@ body[data-page="technology"] .np-intelligence {
   color: #55565b;
 }
 @media (min-width: 1600px) {
-  .np-intelligence .npi-hero--editorial .npi-hero-photo { background-position: center 40%; }
+  .np-intelligence .npi-hero--editorial .npi-hero-photo { background-position: center top; }
 }
 @media (max-width: 1020px) {
   .np-intelligence .npi-hero--editorial {
     min-height: 635px;
     padding-block: 70px;
   }
-  .np-intelligence .npi-hero--editorial .npi-hero-photo { background-position: 62% center; }
+  .np-intelligence .npi-hero--editorial .npi-hero-photo { width: 82%; background-position: 60% top; }
   .np-intelligence .npi-hero--editorial::before {
     background: linear-gradient(90deg, rgba(250,251,253,.99) 0%, rgba(250,251,253,.94) 52%, rgba(250,251,253,.53) 78%, rgba(250,251,253,.27) 100%);
   }
@@ -1251,7 +1252,7 @@ body[data-page="technology"] .np-intelligence {
     min-height: 660px;
     padding-block: 46px 52px;
   }
-  .np-intelligence .npi-hero--editorial .npi-hero-photo { background-position: 67% center; }
+  .np-intelligence .npi-hero--editorial .npi-hero-photo { width: 100%; opacity: .40; background-position: 56% top; }
   .np-intelligence .npi-hero--editorial::before {
     background: linear-gradient(90deg, rgba(250,251,253,.97) 0%, rgba(250,251,253,.94) 46%, rgba(250,251,253,.79) 100%);
   }
