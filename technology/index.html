@@ -79,9 +79,10 @@
     </div>
   </nav>
 
-  <section class="npi-hero" aria-labelledby="npi-title">
+  <section class="npi-hero npi-hero--editorial" aria-labelledby="npi-title">
+    <div class="npi-hero-photo" aria-hidden="true"></div>
     <div class="npi-wrap npi-hero-content">
-      <p class="npi-kicker">NOVAPHARM INTELLIGENCE</p>
+      <div class="npi-hero-logo"><img src="/assets/brand/novapharm-intelligence-approved.svg" alt="NovaPharm Intelligence" width="1950" height="337" decoding="async"></div>
       <h1 id="npi-title">Medicine is complex.<br><span>Understanding it shouldn't be.</span></h1>
       <p class="npi-hero-intro">The industry doesn't lack data. It lacks connection. We're building NovaPharm Intelligence to bring medicine identity, evidence, market context and explainable analysis into one governed view.</p>
       <div class="npi-actions">
@@ -90,7 +91,6 @@
       </div>
       <p class="npi-status-line"><span>Product in development.</span> Explore the design direction for the Medicines Terminal.</p>
     </div>
-    <div class="npi-hero-bottom" aria-hidden="true">THE LIVING INTELLIGENCE OF MEDICINE</div>
   </section>
 
   <section id="intelligence-research" class="npi-section npi-research" aria-labelledby="npi-research-title">
@@ -307,6 +307,182 @@
         <article><span>08</span><h3>Reports &amp; integrations</h3><p>Make governed outputs reusable through reports and future partner integrations, with permissions and traceability preserved.</p></article>
       </div>
       <p class="npi-workspace-disclosure">These are intended product workspaces, not a statement that each module or dataset is commercially operational today.</p>
+
+      <div class="npi-workspace-directory" id="intelligence-workspace-directory" aria-labelledby="npi-directory-title">
+        <div class="npi-directory-intro">
+          <div>
+            <p class="npi-kicker">ALL 22 PROFESSIONAL WORKSPACES</p>
+            <h3 id="npi-directory-title">Explore every workspace.</h3>
+            <p>Browse the complete architecture here without a login. Public research is available separately; the protected application requires verified identity, permissions and accepted source data.</p>
+          </div>
+          <div class="npi-directory-actions">
+            <a href="#intelligence-research" class="npi-button npi-button-primary">Search official sources</a>
+            <a href="https://intelligence.novapharmhealthcare.com/" class="npi-button npi-button-secondary">Open protected sign-in</a>
+          </div>
+        </div>
+        <div class="npi-directory-groups">
+          <details class="npi-directory-group" open>
+            <summary><span>Medicine research</span><span>6 workspaces</span></summary>
+            <div class="npi-directory-list">
+              <article class="npi-directory-item" id="workspace-medicine-search" data-npi-workspace="medicine-search" data-npi-workspace-state="existing-read-only">
+                <div class="npi-directory-item-top"><h4>Search</h4><span class="npi-directory-state">Source-dependent read-only view</span></div>
+                <p>Search the currently ingested medicine identity catalogue.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Current identity source and canonical aliases; Authorised board session.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+              <article class="npi-directory-item" id="workspace-medicine-overview" data-npi-workspace="medicine-overview" data-npi-workspace-state="existing-read-only">
+                <div class="npi-directory-item-top"><h4>Medicine Overview</h4><span class="npi-directory-state">Source-dependent read-only view</span></div>
+                <p>A source-separated view of the selected medicine.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Resolved governed medicine identity; Authorised source freshness.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+              <article class="npi-directory-item" id="workspace-identity" data-npi-workspace="identity" data-npi-workspace-state="existing-read-only">
+                <div class="npi-directory-item-top"><h4>Identity</h4><span class="npi-directory-state">Source-dependent read-only view</span></div>
+                <p>Current BNF identity, aliases and effective-date history only.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Source-accepted identity mappings; Unresolved code mappings remain explicit.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+              <article class="npi-directory-item" id="workspace-evidence" data-npi-workspace="evidence" data-npi-workspace-state="gated">
+                <div class="npi-directory-item-top"><h4>Evidence</h4><span class="npi-directory-state">Data and access not yet approved</span></div>
+                <p>Published literature and trial evidence is not yet ingested into this authorised workspace.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Approved source access and ingestion rights; Citations, clinical-study status and freshness.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+              <article class="npi-directory-item" id="workspace-observed-market" data-npi-workspace="observed-market" data-npi-workspace-state="existing-read-only">
+                <div class="npi-directory-item-top"><h4>Observed Market</h4><span class="npi-directory-state">Source-dependent read-only view</span></div>
+                <p>UK source-separated prescribing and cost observations where accepted facts exist.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Approved non-sample NHSBSA EPD/PCA facts; Units, periods and source reconciliation.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+              <article class="npi-directory-item" id="workspace-geography" data-npi-workspace="geography" data-npi-workspace-state="existing-read-only">
+                <div class="npi-directory-item-top"><h4>Geography</h4><span class="npi-directory-state">Source-dependent read-only view</span></div>
+                <p>Source-backed UK postcode and organisation context where records are available.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Geography sources and date alignment; No imputed prescribing or pharmacy demand.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+            </div>
+          </details>
+          <details class="npi-directory-group">
+            <summary><span>Market intelligence</span><span>4 workspaces</span></summary>
+            <div class="npi-directory-list">
+              <article class="npi-directory-item" id="workspace-market-structure" data-npi-workspace="market-structure" data-npi-workspace-state="gated">
+                <div class="npi-directory-item-top"><h4>Market Structure</h4><span class="npi-directory-state">Data and access not yet approved</span></div>
+                <p>Comparable market shares and segments are not available without complete denominator and channel coverage.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Accepted market universe and denominator; Comparable geography, period and channel rules.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+              <article class="npi-directory-item" id="workspace-forecasts" data-npi-workspace="forecasts" data-npi-workspace-state="gated">
+                <div class="npi-directory-item-top"><h4>Forecasting</h4><span class="npi-directory-state">Data and access not yet approved</span></div>
+                <p>No operational forecasts are available from an identity-only catalogue.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Accepted non-sample time series; Versioned backtests, cutoffs and prediction intervals.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+              <article class="npi-directory-item" id="workspace-signals" data-npi-workspace="signals" data-npi-workspace-state="gated">
+                <div class="npi-directory-item-top"><h4>Signals</h4><span class="npi-directory-state">Data and access not yet approved</span></div>
+                <p>No verified signal scoring or alerting model has been released.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Versioned evidence thresholds and provenance; Reviewed false-positive and escalation rules.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+              <article class="npi-directory-item" id="workspace-medicine-tape" data-npi-workspace="medicine-tape" data-npi-workspace-state="gated">
+                <div class="npi-directory-item-top"><h4>Medicine Tape</h4><span class="npi-directory-state">Data and access not yet approved</span></div>
+                <p>A validated time-stamped observation feed is required before medicine tape can display market movement.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Timestamped accepted source events; Rights, delay and duplicate handling.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+            </div>
+          </details>
+          <details class="npi-directory-group">
+            <summary><span>Supply &amp; regulation</span><span>5 workspaces</span></summary>
+            <div class="npi-directory-list">
+              <article class="npi-directory-item" id="workspace-supply-intelligence" data-npi-workspace="supply-intelligence" data-npi-workspace-state="gated">
+                <div class="npi-directory-item-top"><h4>Supply Intelligence</h4><span class="npi-directory-state">Data and access not yet approved</span></div>
+                <p>No supplier or stock statement is inferred from an unverified inventory feed.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Authorised supplier and inventory connections; Batch, expiry and GDP controls.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+              <article class="npi-directory-item" id="workspace-regulatory-intelligence" data-npi-workspace="regulatory-intelligence" data-npi-workspace-state="gated">
+                <div class="npi-directory-item-top"><h4>Regulatory Intelligence</h4><span class="npi-directory-state">Data and access not yet approved</span></div>
+                <p>Country regulator links are discovery routes, not yet reconciled global product approvals.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Rights-approved regulator adapters; Jurisdiction, approval status and effective dates.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+              <article class="npi-directory-item" id="workspace-pricing-reimbursement" data-npi-workspace="pricing-reimbursement" data-npi-workspace-state="gated">
+                <div class="npi-directory-item-top"><h4>Pricing &amp; Reimbursement</h4><span class="npi-directory-state">Data and access not yet approved</span></div>
+                <p>No cross-market prices or reimbursement claims without compatible licensed records.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Licensed, currency and pack-equivalent price series; Reimbursement eligibility and effective-date checks.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+              <article class="npi-directory-item" id="workspace-tender-intelligence" data-npi-workspace="tender-intelligence" data-npi-workspace-state="gated">
+                <div class="npi-directory-item-top"><h4>Tender Intelligence</h4><span class="npi-directory-state">Data and access not yet approved</span></div>
+                <p>Public tender listings cannot be ranked without accepted award and eligibility evidence.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Official procurement feeds and provenance; Eligible product, jurisdiction and tender terms.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+              <article class="npi-directory-item" id="workspace-portfolio" data-npi-workspace="portfolio" data-npi-workspace-state="gated">
+                <div class="npi-directory-item-top"><h4>Portfolio</h4><span class="npi-directory-state">Data and access not yet approved</span></div>
+                <p>Private product portfolios require tenant-isolated records and approved product rights.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Qualified supplier and owner permissions; Portfolio and MA status reconciliation.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+            </div>
+          </details>
+          <details class="npi-directory-group">
+            <summary><span>Strategy</span><span>3 workspaces</span></summary>
+            <div class="npi-directory-list">
+              <article class="npi-directory-item" id="workspace-biotech-intelligence" data-npi-workspace="biotech-intelligence" data-npi-workspace-state="gated">
+                <div class="npi-directory-item-top"><h4>Biotech Intelligence</h4><span class="npi-directory-state">Data and access not yet approved</span></div>
+                <p>Pipeline intelligence needs approved source datasets and entity reconciliation.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Licensed clinical and pipeline coverage; Source-cited molecule, sponsor and stage mapping.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+              <article class="npi-directory-item" id="workspace-capital-intelligence" data-npi-workspace="capital-intelligence" data-npi-workspace-state="gated">
+                <div class="npi-directory-item-top"><h4>Capital Intelligence</h4><span class="npi-directory-state">Data and access not yet approved</span></div>
+                <p>Funding, deal and valuation intelligence is not inferred from incomplete public events.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Licensed financial source agreements; Entity resolution and as-of valuations.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+              <article class="npi-directory-item" id="workspace-decision-workspace" data-npi-workspace="decision-workspace" data-npi-workspace-state="gated">
+                <div class="npi-directory-item-top"><h4>Decision Workspace</h4><span class="npi-directory-state">Data and access not yet approved</span></div>
+                <p>Recommendations cannot execute commercial, regulatory or clinical decisions autonomously.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Versioned assumptions and decision provenance; Human sign-off and auditable alternatives.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+            </div>
+          </details>
+          <details class="npi-directory-group">
+            <summary><span>Decision tools</span><span>4 workspaces</span></summary>
+            <div class="npi-directory-list">
+              <article class="npi-directory-item" id="workspace-watchlists" data-npi-workspace="watchlists" data-npi-workspace-state="gated">
+                <div class="npi-directory-item-top"><h4>Watchlists</h4><span class="npi-directory-state">Data and access not yet approved</span></div>
+                <p>User-specific watchlists need persistent tenancy and role-scoped storage.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Tenant-isolated authenticated persistence; Retention, access and audit policy.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+              <article class="npi-directory-item" id="workspace-alerts" data-npi-workspace="alerts" data-npi-workspace-state="gated">
+                <div class="npi-directory-item-top"><h4>Alerts</h4><span class="npi-directory-state">Data and access not yet approved</span></div>
+                <p>Monitoring and delivery require verified signal source and consent.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Approved event rules and source freshness; User preferences and reliable delivery.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+              <article class="npi-directory-item" id="workspace-reports" data-npi-workspace="reports" data-npi-workspace-state="gated">
+                <div class="npi-directory-item-top"><h4>Reports</h4><span class="npi-directory-state">Data and access not yet approved</span></div>
+                <p>Governed reports require reproducible evidence manifests and approved export permissions.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Source-accepted report definitions; Reproducible source and model version manifest.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+              <article class="npi-directory-item" id="workspace-private-commercial" data-npi-workspace="private-commercial" data-npi-workspace-state="gated">
+                <div class="npi-directory-item-top"><h4>Private Commercial</h4><span class="npi-directory-state">Data and access not yet approved</span></div>
+                <p>Commercial opportunities and records must remain tenant-isolated and non-public.</p>
+                <p class="npi-directory-requirements"><strong>Release requirements:</strong> Verified customer and partner permissions; Strict ABAC, redaction and export controls.</p>
+                <div class="npi-directory-links"><a href="#intelligence-research">Explore public research</a><a href="https://intelligence.novapharmhealthcare.com/">Protected workspace entry</a></div>
+              </article>
+            </div>
+          </details>
+        </div>
+        <p class="npi-workspace-disclosure">This directory is a public map of intended professional workspaces, not access to protected data, a customer entitlement or proof of feature activation. No synthetic prescribing figures or forecasts are presented as observations.</p>
+      </div>
+
+    </div>
     </div>
   </section>
 

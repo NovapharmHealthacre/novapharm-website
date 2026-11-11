@@ -11,6 +11,24 @@ const styles = read("assets/css/technology-intelligence.css");
 const materialiser = read("scripts/apply-corporate-product-discipline.mjs");
 const metadata = read("src/content/site-content.mjs");
 
+// The build regenerates technology/index.html from src/content; assert exact hero parity.
+const heroSource = (text) => text.slice(text.indexOf('<section class="npi-hero'), text.indexOf('<section id="intelligence-research"'));
+assert.equal(heroSource(source), heroSource(published), "The published hero must match the canonical source template");
+for (const [label, html] of [["source", source], ["published", published]]) {
+  const hero = heroSource(html);
+  assert.ok(hero.includes('npi-hero--editorial'), label + " must use the editorial hero");
+  assert.ok(hero.includes('class="npi-hero-photo" aria-hidden="true"'), label + " must keep photography decorative");
+  assert.ok(hero.includes('class="npi-hero-logo"'), label + " must use approved vector branding in the hero");
+  assert.ok(hero.includes('alt="NovaPharm Intelligence"'), label + " must provide a meaningful logo alt");
+  assert.ok(hero.includes("Medicine is complex."), label + " must preserve the owner-approved headline");
+  assert.ok(hero.includes('href="#intelligence-research"'), label + " must preserve medicine search");
+  assert.ok(!hero.includes('<p class="npi-kicker">NOVAPHARM INTELLIGENCE</p>'), label + " must not keep the old text label");
+}
+const heroAsset = readFileSync(resolve(root, "assets/media/technology/novapharm-intelligence-hero.avif"));
+assert.ok(heroAsset.byteLength > 5000, "The optimized portrait background must be present in the build");
+assert.ok(heroAsset.subarray(4, 12).toString("ascii").includes("ftypavif"), "Hero asset must be a valid AVIF container");
+assert.ok(styles.includes('novapharm-intelligence-hero.avif'), "Hero stylesheet must reference its built asset");
+
 const required = [
   "NOVAPHARM INTELLIGENCE", "Medicine is complex.", "The industry doesn't lack data. It lacks connection.",
   "The Medicines Terminal", "NOVA", "PANDORA",
