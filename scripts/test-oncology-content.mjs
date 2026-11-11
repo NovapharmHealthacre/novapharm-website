@@ -48,9 +48,15 @@ assert.ok(html.indexOf("oncology-hope-v2.css") > html.indexOf("oncology-editoria
 assert.match(approvedLayout, /object-fit:contain/, "Portrait must preserve its full framing");
 assert.match(approvedLayout, /-webkit-mask-image:linear-gradient/, "Desktop image must blend into one continuous hero");
 assert.match(approvedLayout, /width:72%/, "Approved desktop portrait must use the seamless 72% composition");
-const portraitRule = approvedLayout.match(/\.npoc-hope-hero \.npoc-hero-visual img\{([^}]*)\}/)?.[1] ?? "";
-assert.match(portraitRule, /object-fit:contain;/, "Approved portrait must remain fully visible without cropping");
-assert.match(approvedLayout, /\.npoc-hope-focus \.npoc-focus-card img\{[^}]*object-fit:cover;/,
+// Match actual CSS selectors. A double-escaped regex here silently matches
+// nothing and incorrectly fails even when the portrait is fully visible.
+const portraitRules = [...approvedLayout.matchAll(/\.npoc-hope-hero \.npoc-hero-visual img\s*\{([^}]*)\}/g)];
+assert.ok(portraitRules.length > 0, "Approved portrait selector must exist");
+assert.ok(portraitRules.some(([, declarations]) => /object-fit:\s*contain;/.test(declarations)),
+  "Approved portrait must remain fully visible without cropping");
+assert.ok(portraitRules.every(([, declarations]) => !/object-fit:\s*cover;/.test(declarations)),
+  "No responsive portrait rule may crop the approved hero");
+assert.match(approvedLayout, /\.npoc-hope-focus \.npoc-focus-card img\s*\{[^}]*object-fit:\s*cover;/,
   "Oncology supporting category photographs should retain their cropped card treatment");
 assert.match(approvedLayout, /-webkit-mask-image:none/, "Portrait masking must reset on mobile");
 assert.match(approvedLayout, /grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/, "All three Oncology visuals share a grid row");
