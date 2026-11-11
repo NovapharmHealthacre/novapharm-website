@@ -1,0 +1,36 @@
+name: Intelligence analytics review guard
+
+on:
+  pull_request:
+    paths:
+      - 'infrastructure/aws/novapharm-intelligence-analytics-review.yaml'
+      - 'infrastructure/aws/glue_review_candidate_preflight.py'
+      - 'infrastructure/aws/tests/test_analytics_review_preflight.py'
+      - 'docs/data/evidence/nhsbsa-epd-apixaban-2026-08-candidate.ndjson'
+      - '.github/workflows/intelligence-analytics-review-guard.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'infrastructure/aws/novapharm-intelligence-analytics-review.yaml'
+      - 'infrastructure/aws/glue_review_candidate_preflight.py'
+      - 'infrastructure/aws/tests/test_analytics_review_preflight.py'
+      - 'docs/data/evidence/nhsbsa-epd-apixaban-2026-08-candidate.ndjson'
+      - '.github/workflows/intelligence-analytics-review-guard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fail-closed-candidate-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+      - name: Compile Python preflight and run negative contract tests
+        run: |
+          python -m py_compile infrastructure/aws/glue_review_candidate_preflight.py
+          python -m unittest discover -s infrastructure/aws/tests -p 'test_analytics_review_preflight.py' -v
