@@ -21,3 +21,18 @@
 `node --test scripts/aws/production-hardening-contract.test.mjs`
 
 These templates reflect existing live settings. Do **not** equate this source PR, a CloudFormation template validation or a successful merge with a completed customer-facing release.
+
+
+## Additional reconciliation: API log-delivery permissions
+
+The API stage destination alone is not enough. The authenticated AWS audit found that the original CloudWatch Logs resource policy permitted only the private Intelligence gateway, with the other nine access-log groups holding no recorded bytes.
+
+**Applied directly in AWS:** `PutResourcePolicy` created `NovapharmHttpApiScopedLogDelivery`, a 3,353-byte resource policy granting only `logs:CreateLogStream` and `logs:PutLogEvents` to `apigateway.amazonaws.com`. Each of the nine statements limits the resource to one known log group and the principal source to that API's exact `execute-api` ARN. The existing private Intelligence gateway resource policy was left intact.
+
+**Reproducible source:** `infra/aws/policies/novapharm-http-api-scoped-log-delivery.json` contains the exact live policy input for an audited `aws logs put-resource-policy --region eu-north-1 --cli-input-json file://infra/aws/policies/novapharm-http-api-scoped-log-delivery.json` operation. This command must be run only by an authorised release role after current account/API/log ARN verification. Do not treat adding this file as automatic CloudFormation ownership or run it blindly after endpoint replacement.
+
+The two staging Stage templates were also updated to preserve their already-deployed API access-log destinations: `infra/aws/nutraxin-customer-staging-stack.json` and `infra/aws/contact-synthetic-staging.yaml`. The production template changes and staging API logs now cover **9 source-owned HTTP APIs**. The private Intelligence terminal gateway remains separately managed and already had its own delivery policy.
+
+**Proof still required:** A network-level GET to a harmless public `/health` endpoint followed by a matching CloudWatch Logs record. Direct Lambda handler invocation does not exercise API Gateway. The initial external HTTP probe environment could not reach AWS API endpoints, and the AWS connector temporarily refused further sessions at its session limit; no request-delivery proof was claimed. The fact that an API stage lists an access log destination or has write permissions is NOT sufficient.
+
+GitHub CI remains mandatory; local source-level/parity checks are not substitutes for required CodeQL, supply chain, production readiness or browser acceptance.
