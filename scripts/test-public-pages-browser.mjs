@@ -259,12 +259,12 @@ for (const [engineName, browserType] of engines) {
                 const illustrationOk = (image) => image && image.complete && image.naturalWidth > 100 &&
                   image.naturalHeight > 100 && image.getBoundingClientRect().width > 100;
                 return {
-                  heading: hero?.innerText.replace(/\\s+/g, " ").trim() ?? "",
+                  heading: hero?.innerText.replace(/\s+/g, " ").trim() ?? "",
                   headlineSize: Number.parseFloat(headingStyle?.fontSize ?? "0"),
                   headlineLineCount: document.querySelectorAll(".ncap-title-line").length,
                   disciplineCount: document.querySelectorAll(".ncap-discipline").length,
                   gridDisplay: gridStyle?.display,
-                  gridColumns: gridStyle?.gridTemplateColumns.trim().split(/\\s+/).length ?? 0,
+                  gridColumns: gridStyle?.gridTemplateColumns.trim().split(/\s+/).length ?? 0,
                   vialVisible: Boolean(illustrationOk(vial)),
                   earthVisible: Boolean(illustrationOk(earth)),
                   earthBackground: earthPanel && getComputedStyle(earthPanel).backgroundColor,
