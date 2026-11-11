@@ -14,7 +14,7 @@ concurrency:
 jobs:
   public-applications:
     name: ${{ matrix.application }} public application
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -58,7 +58,7 @@ jobs:
 
   secure-portal:
     name: Secure portal and role-boundary acceptance
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -98,7 +98,7 @@ jobs:
 
   backend-workflows:
     name: Contact, account, upload and authentication workflows
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -142,7 +142,7 @@ jobs:
       - public-applications
       - secure-portal
       - backend-workflows
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Enforce all rendered and workflow suites
         run: |
