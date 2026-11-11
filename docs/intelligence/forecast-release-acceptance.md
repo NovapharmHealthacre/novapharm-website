@@ -25,3 +25,18 @@ node --test scripts/test-medicine-forecast-baseline.mjs
 ```
 
 A separate GitHub Actions check runs on relevant changed files. Final production approval is deliberately impossible in this candidate evaluator until the above independent evidence exists.
+
+## Independent interval candidate (PR #396 follow-up)
+
+`src/core/medicine-forecast-interval-candidate.mjs` requires at least **60 accepted consecutive calendar months**, including a 12-month warm-up, **24 earlier months used exclusively to estimate the absolute-error quantile**, and **24 later untouched months used to validate empirical coverage**. It produces a 90% target-coverage *candidate* error band. A sudden level shift must fail its holdout coverage test.
+
+A chronological empirical-coverage test is **not a distribution-free predictive coverage guarantee for dependent time series**. To claim a calibrated production interval, an independent model reviewer must establish appropriate time-series assumptions, horizon-specific calibration, stability across real medicines and market cohorts, validated performance with publication lag and frozen source snapshots, plus operational monitoring. Candidate `productionApproved` and `customerVisible` remain `false`, regardless of synthetic test results.
+
+Run locally:
+```sh
+node --test scripts/test-medicine-forecast-baseline.mjs scripts/test-medicine-forecast-interval-candidate.mjs
+```
+
+## 11 November 2026 observed infrastructure status
+
+The free MongoDB Atlas `novapharm_intelligence_preview` database has registered official-source metadata but **no accepted medicine evidence** or verified customer rights. Its source-rights ledger is empty. AWS Glue `novapharm_intelligence_staging` had **zero tables** at independent inspection. Publisher OGL notices alone are not an internal licence acceptance, a source reconciliation, a customer access grant or production model-owner signature. Do not ingest into a customer-visible collection or show model output until the evidence gates above are met.
