@@ -29,9 +29,10 @@ for (const phrase of [
   "The next conversation starts here.",
   "Regulated wholesale supply has not commenced",
   "does not provide medical advice, direct patient services or a guarantee of product authorisation",
-  "The contact page prepares an email draft; it does not submit or store enquiries."
+  "Use the Contact page for a non-confidential business enquiry, or email our team directly."
 ]) assert.ok(html.includes(phrase), phrase);
 
+assert.doesNotMatch(html, /The contact page prepares an email draft;/, "Public Oncology copy must not contradict the live AWS-backed Contact channel");
 assert.ok(visible.split(/\s+/).length >= 700, "Oncology page requires substantive, evidence-led B2B content");
 assert.equal((html.match(/class="npoc-evidence-list"[\s\S]*?<\/ol>/)?.[0].match(/<li>/g) ?? []).length, 6, "Six evidence areas");
 assert.equal((html.match(/class="npoc-programme-list"[\s\S]*?<\/div><aside/)?.[0].match(/<details/g) ?? []).length, 4, "Four expandable programme categories");
