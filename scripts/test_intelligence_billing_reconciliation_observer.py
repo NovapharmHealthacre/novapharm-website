@@ -124,6 +124,14 @@ class ObserverTests(unittest.TestCase):
         self.assertIn("except ReconciliationUnavailable as exc:", source)
         self.assertIn("stripe_http_", getsource(M.read_live_stripe))
 
+    def test_shared_secret_linebreak_is_stripped_without_leaking_key(self):
+        fake = "rk_" + "live_" + ("x" * 48)
+        self.assertEqual(M.normalize_live_key(fake + "\\n"), fake)
+        self.assertEqual(M.normalize_live_key("  " + fake + "  "), fake)
+        for bad in (None, "", "invalid", fake[:14] + "\\n" + fake[14:]):
+            with self.assertRaises(M.ReconciliationUnavailable):
+                M.normalize_live_key(bad)
+
     def test_stripe_resource_allowlist(self):
         # Join harmless fragments at runtime; never commit real or complete API keys.
         fake = "rk_" + "live_" + ("x" * 48)
