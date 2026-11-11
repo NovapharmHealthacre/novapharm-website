@@ -48,7 +48,7 @@ for (const [engineName, engine] of [["chromium", chromium], ["webkit", webkit], 
               const ids = [...document.querySelectorAll("[id]")].map(n => n.id);
               return {
                 title: document.title, lang: document.documentElement.lang,
-                h1Count: h1s.length, h1: h1s[0]?.innerText.replace(/\\s+/g," ").trim() ?? "",
+                h1Count: h1s.length, h1: h1s[0]?.innerText.replace(/\s+/g," ").trim() ?? "",
                 canonical: document.querySelector('link[rel="canonical"]')?.href ?? "",
                 description: meta("description", "name"),
                 sourceSha: meta("novapharm-source-sha", "name"),
