@@ -38,14 +38,31 @@ test("server-side encryption and HTTPS-only object access are required", () => {
   }]);
   assert.equal(resources.EvidenceBucketPolicy.Properties.Bucket.Ref, "EvidenceBucket");
   assert.equal(policy.Version, "2012-10-17");
-  assert.equal(policy.Statement.length, 1);
-  const deny = policy.Statement[0];
+  assert.equal(policy.Statement.length, 2, "HTTPS and commerce-workload deny rules must both remain active");
+  assert.deepEqual(policy.Statement.map(statement => statement.Sid).sort(), [
+    "DenyCommerceWorkloadWritesToIntelligenceEvidence",
+    "DenyInsecureTransport"
+  ]);
+  const deny = policy.Statement.find(statement => statement.Sid === "DenyInsecureTransport");
   assert.equal(deny.Sid, "DenyInsecureTransport");
   assert.equal(deny.Effect, "Deny");
   assert.equal(deny.Principal, "*");
   assert.equal(deny.Action, "s3:*");
   assert.equal(deny.Condition.Bool["aws:SecureTransport"], "false");
   assert.equal(deny.Resource.length, 2, "Bucket and all object ARNs must deny insecure transport");
+  const commerce = policy.Statement.find(statement => statement.Sid === "DenyCommerceWorkloadWritesToIntelligenceEvidence");
+  assert.equal(commerce.Effect, "Deny");
+  assert.equal(commerce.Principal, "*");
+  assert.deepEqual(commerce.Action, [
+    "s3:PutObject", "s3:DeleteObject", "s3:DeleteObjectVersion",
+    "s3:PutObjectTagging", "s3:DeleteObjectTagging"
+  ]);
+  assert.deepEqual(commerce.Resource, { "Fn::Join": ["", [
+    { "Fn::GetAtt": ["EvidenceBucket", "Arn"] }, "/intelligence/*"
+  ]] });
+  assert.deepEqual(commerce.Condition.ArnEquals["aws:PrincipalArn"], {
+    "Fn::Sub": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/novapharm-production-commerce-evidence-EvidenceRole-GNet28VHTjmN"
+  });
 });
 
 test("empty candidate retention and no publication grants are explicit", () => {
