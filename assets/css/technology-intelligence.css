@@ -1166,3 +1166,112 @@ body[data-page="technology"] .np-intelligence {
   .np-intelligence .npi-directory-group > summary { padding: 18px; }
   .np-intelligence .npi-directory-group > summary > span:nth-child(2) { font-size: .72rem; }
 }
+
+/* Editorial Intelligence hero, 11 Nov 2026. Real, accessible copy sits above a decorative photo.
+   Logo is the approved vector supplied for NovaPharm Intelligence; no text is baked into imagery. */
+.np-intelligence .npi-hero--editorial {
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  min-height: clamp(620px, 57vw, 800px);
+  padding-block: clamp(64px, 7vw, 110px);
+  overflow: hidden;
+  background: #f7f8fa;
+  text-align: left;
+}
+.np-intelligence .npi-hero--editorial .npi-hero-photo {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  background: #f1f3f6 url("/assets/media/technology/novapharm-intelligence-hero.avif") center right / cover no-repeat;
+}
+.np-intelligence .npi-hero--editorial::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(250,251,253,.98) 0%, rgba(250,251,253,.94) 28%, rgba(250,251,253,.73) 45%, rgba(250,251,253,.22) 63%, rgba(250,251,253,0) 82%);
+}
+.np-intelligence .npi-hero--editorial .npi-hero-content {
+  position: relative;
+  z-index: 1;
+  align-items: flex-start;
+  margin-inline: auto;
+}
+.np-intelligence .npi-hero--editorial .npi-hero-logo {
+  width: clamp(225px, 22vw, 320px);
+  max-width: 72vw;
+  margin: 0 0 clamp(24px, 3vw, 42px);
+}
+.np-intelligence .npi-hero--editorial .npi-hero-logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.np-intelligence .npi-hero--editorial h1 {
+  max-width: 1040px;
+  font-size: clamp(3.15rem, 5vw, 5.1rem);
+  font-weight: 700;
+  line-height: 1.055;
+  letter-spacing: 0;
+  text-wrap: pretty;
+}
+.np-intelligence .npi-hero--editorial h1 span { color: #75757b; }
+.np-intelligence .npi-hero--editorial .npi-hero-intro {
+  max-width: 605px;
+  margin-top: 28px;
+  color: #45454b;
+  font-size: clamp(1.05rem, 1.45vw, 1.24rem);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+.np-intelligence .npi-hero--editorial .npi-actions { margin-top: 30px; }
+.np-intelligence .npi-hero--editorial .npi-status-line {
+  max-width: 610px;
+  margin-top: 21px;
+  color: #55565b;
+}
+@media (min-width: 1600px) {
+  .np-intelligence .npi-hero--editorial .npi-hero-photo { background-position: center 40%; }
+}
+@media (max-width: 1020px) {
+  .np-intelligence .npi-hero--editorial {
+    min-height: 635px;
+    padding-block: 70px;
+  }
+  .np-intelligence .npi-hero--editorial .npi-hero-photo { background-position: 62% center; }
+  .np-intelligence .npi-hero--editorial::before {
+    background: linear-gradient(90deg, rgba(250,251,253,.99) 0%, rgba(250,251,253,.94) 52%, rgba(250,251,253,.53) 78%, rgba(250,251,253,.27) 100%);
+  }
+  .np-intelligence .npi-hero--editorial h1 { max-width: 675px; font-size: clamp(3.1rem, 7.5vw, 5.1rem); }
+}
+@media (max-width: 600px) {
+  .np-intelligence .npi-hero--editorial {
+    min-height: 660px;
+    padding-block: 46px 52px;
+  }
+  .np-intelligence .npi-hero--editorial .npi-hero-photo { background-position: 67% center; }
+  .np-intelligence .npi-hero--editorial::before {
+    background: linear-gradient(90deg, rgba(250,251,253,.97) 0%, rgba(250,251,253,.94) 46%, rgba(250,251,253,.79) 100%);
+  }
+  .np-intelligence .npi-hero--editorial .npi-hero-logo { width: clamp(220px, 65vw, 290px); margin-bottom: 22px; }
+  .np-intelligence .npi-hero--editorial h1 {
+    max-width: 100%;
+    font-size: clamp(2.55rem, 10.5vw, 4rem);
+    line-height: 1.08;
+    letter-spacing: 0;
+  }
+  .np-intelligence .npi-hero--editorial .npi-hero-intro {
+    margin-top: 24px;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+  .np-intelligence .npi-hero--editorial .npi-actions {
+    width: 100%;
+    margin-top: 26px;
+  }
+}
+@media (prefers-reduced-data: reduce) {
+  .np-intelligence .npi-hero--editorial .npi-hero-photo { background-image: none; }
+}
