@@ -276,6 +276,88 @@
                       "items": {
                         "type": "string"
                       }
+                    },
+                    "observedChange": {
+                      "type": "object",
+                      "additionalProperties": true,
+                      "description": "Read-only derived observation from three consecutive accepted months for a single canonical medicine. Not a forecast, source licence, or decision.",
+                      "required": [
+                        "contract",
+                        "state",
+                        "decisionReady",
+                        "methodology",
+                        "observation",
+                        "limitations"
+                      ],
+                      "properties": {
+                        "contract": {
+                          "const": "novapharm.intelligence.observed-medicine-change.v1"
+                        },
+                        "state": {
+                          "enum": [
+                            "observed_change_candidate_requires_review",
+                            "insufficient_comparable_evidence"
+                          ]
+                        },
+                        "decisionReady": {
+                          "const": false
+                        },
+                        "methodology": {
+                          "type": "string"
+                        },
+                        "observation": {
+                          "oneOf": [
+                            {
+                              "type": "null"
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": true,
+                              "required": [
+                                "sourceId",
+                                "dataset",
+                                "metric",
+                                "fromMonth",
+                                "throughMonth",
+                                "absoluteChange",
+                                "percentageChange"
+                              ],
+                              "properties": {
+                                "sourceId": {
+                                  "type": "string"
+                                },
+                                "dataset": {
+                                  "type": "string"
+                                },
+                                "metric": {
+                                  "type": "string"
+                                },
+                                "fromMonth": {
+                                  "type": "string"
+                                },
+                                "throughMonth": {
+                                  "type": "string"
+                                },
+                                "absoluteChange": {
+                                  "type": "number"
+                                },
+                                "percentageChange": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "limitations": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
                     }
                   },
                   "additionalProperties": true
