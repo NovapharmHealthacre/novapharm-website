@@ -1,4 +1,5 @@
 import hashlib
+from decimal import Decimal
 import importlib.util
 import os
 from datetime import datetime, timezone, timedelta
@@ -57,6 +58,14 @@ class AccessTests(unittest.TestCase):
         self.assertTrue(result["allowed"])
         self.assertEqual(result["remainingSearches"], 25)
         self.assertEqual(len(self.table.calls), 7)
+    def test_production_dynamodb_decimal_numbers(self):
+        self.data[("SESSION#" + HASH, "META")]["sessionVersion"] = Decimal(1)
+        self.data[("SESSION#" + HASH, "META")]["ttlEpoch"] = Decimal(int((NOW + timedelta(hours=1)).timestamp()))
+        self.data[("TENANT#" + TENANT, "META")]["seatLimit"] = Decimal(4)
+        self.data[("TENANT#" + TENANT, "META")]["activeSeatCount"] = Decimal(1)
+        self.data[("TENANT#" + TENANT, "SEAT#" + SUB)]["sessionVersion"] = Decimal(1)
+        self.data[("TENANT#" + TENANT, "USAGE#" + SUB + "#2026-11")]["searchCount"] = Decimal(0)
+        self.assertTrue(self.check()["allowed"])
     def test_default_release_off(self):
         self.assertFalse(self.check(False)["allowed"])
         self.assertEqual(len(self.table.calls), 0)
