@@ -46,6 +46,11 @@ jobs:
           node --test scripts/test-intelligence-subscription-entitlements.mjs
       - name: Verify governed image inventory against tracked source assets
         run: npm run images:inventory:validate
+      - name: Cross-check paid billing, medicine evidence and customer governance
+        run: |
+          node --test scripts/test-intelligence-billing-events.mjs
+          node --test scripts/test-medicine-evidence-admission.mjs
+          node --test scripts/test-intelligence-customer-governance.mjs
       - name: Verify customer login callback and portal type safety
         run: npm run portal:check
       - name: Verify release remains disabled in reviewed infrastructure
