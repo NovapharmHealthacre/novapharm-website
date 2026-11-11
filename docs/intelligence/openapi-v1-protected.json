@@ -115,7 +115,8 @@
                     "aliases",
                     "codeHistory",
                     "analyticalAvailability",
-                    "limitations"
+                    "limitations",
+                    "investigationPassport"
                   ],
                   "properties": {
                     "medicine": {
@@ -140,6 +141,54 @@
                       "type": "array",
                       "items": {
                         "type": "string"
+                      }
+                    },
+                    "investigationPassport": {
+                      "type": "object",
+                      "additionalProperties": true,
+                      "description": "Read-only, explicit evidence gaps and next verification steps. Does not grant source rights or imply commercial readiness.",
+                      "required": [
+                        "contract",
+                        "status",
+                        "medicineId",
+                        "decisionReady",
+                        "lenses",
+                        "requiredBeforeDecision"
+                      ],
+                      "properties": {
+                        "contract": {
+                          "const": "novapharm.intelligence.investigation-passport.v1"
+                        },
+                        "status": {
+                          "const": "investigation_only"
+                        },
+                        "medicineId": {
+                          "type": "string"
+                        },
+                        "decisionReady": {
+                          "const": false
+                        },
+                        "lenses": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "name",
+                              "type",
+                              "state",
+                              "sourceRights",
+                              "decisionUsable"
+                            ],
+                            "additionalProperties": true
+                          }
+                        },
+                        "requiredBeforeDecision": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
                       }
                     }
                   }
