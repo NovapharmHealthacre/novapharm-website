@@ -13,6 +13,8 @@ on:
     paths:
       - 'src/core/medicine-forecast-baseline.mjs'
       - 'scripts/test-medicine-forecast-baseline.mjs'
+      - 'src/core/medicine-forecast-interval-candidate.mjs'
+      - 'scripts/test-medicine-forecast-interval-candidate.mjs'
       - '.github/workflows/intelligence-governed-forecast-baseline.yml'
 
 permissions:
