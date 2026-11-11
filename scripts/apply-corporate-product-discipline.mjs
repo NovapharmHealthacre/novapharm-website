@@ -96,7 +96,7 @@ const megaNavigation = {
   intelligence: [
     ["Explore", [["NovaPharm Intelligence", "/technology/"], ["The Medicines Terminal", "/technology/#intelligence-platform"], ["NOVA & PANDORA", "/technology/#intelligence-ecosystem"]]],
     ["Intelligence workspaces", [["Medicine identity", "/technology/#intelligence-workspaces"], ["Markets & geography", "/technology/#intelligence-platform"], ["Trends & forecasting", "/technology/#intelligence-platform"]]],
-    ["Discover", [["Evidence & trust", "/technology/#intelligence-trust"], ["Platform roadmap", "/technology/#intelligence-roadmap"]]]
+    ["Discover", [["Evidence & trust", "/technology/#intelligence-trust"], ["Platform roadmap", "/technology/#intelligence-roadmap"], ["Sign in to Intelligence", "https://intelligence.novapharmhealthcare.com/"]]]
   ],
   insights: [
     ["Explore", [["Insights overview", "/news-insights/"], ["Supply-chain traceability", "/news-insights/batch-to-buyer-pharmaceutical-traceability/"]]],
