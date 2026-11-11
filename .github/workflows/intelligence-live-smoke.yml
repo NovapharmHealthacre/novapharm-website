@@ -39,7 +39,16 @@ jobs:
             curl --fail --silent --show-error --location --max-time 15 \
               -H 'Cache-Control: no-cache, no-store, max-age=0' \
               "$origin/contact/?$key" -o /tmp/novapharm-contact-live.html || true
-            if grep -Fq 'id="intelligence-research"' /tmp/novapharm-technology-live.html \
+            # Verify the actual new hero image, not just an old text-compatible page.
+            curl --fail --silent --show-error --location --max-time 15 \
+              -H 'Cache-Control: no-cache, no-store, max-age=0' \
+              "$origin/assets/media/technology/novapharm-intelligence-hero.avif?$key" -o /tmp/novapharm-intelligence-hero-live.avif || true
+            if grep -Fq 'class="npi-hero npi-hero--editorial"' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'class="npi-hero-logo"><img src="/assets/brand/novapharm-intelligence-approved.svg"' /tmp/novapharm-technology-live.html \
+              && ! grep -Fq '<p class="npi-kicker">NOVAPHARM INTELLIGENCE</p>' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'novapharm-intelligence-hero.avif' /tmp/novapharm-intelligence-live.css \
+              && test -s /tmp/novapharm-intelligence-hero-live.avif \
+              && grep -Fq 'id="intelligence-research"' /tmp/novapharm-technology-live.html \
               && grep -Fq 'data-npi-research-form' /tmp/novapharm-technology-live.html \
               && grep -Fq 'src="/assets/js/intelligence-research-launcher.js"' /tmp/novapharm-technology-live.html \
               && grep -Fq 'Search a medicine' /tmp/novapharm-technology-live.html \
