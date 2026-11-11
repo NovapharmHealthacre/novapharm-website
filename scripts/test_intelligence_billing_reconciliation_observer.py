@@ -126,9 +126,9 @@ class ObserverTests(unittest.TestCase):
 
     def test_shared_secret_linebreak_is_stripped_without_leaking_key(self):
         fake = "rk_" + "live_" + ("x" * 48)
-        self.assertEqual(M.normalize_live_key(fake + "\\n"), fake)
+        self.assertEqual(M.normalize_live_key(fake + "\n"), fake)
         self.assertEqual(M.normalize_live_key("  " + fake + "  "), fake)
-        for bad in (None, "", "invalid", fake[:14] + "\\n" + fake[14:]):
+        for bad in (None, "", "invalid", fake[:14] + "\n" + fake[14:]):
             with self.assertRaises(M.ReconciliationUnavailable):
                 M.normalize_live_key(bad)
 
