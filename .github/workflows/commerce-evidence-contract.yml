@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'infra/aws/commerce-evidence-scheduled-export-production.json'
+      - 'infra/aws/commerce-evidence-exporter-unreleased-code-candidate-20261111.json'
       - 'scripts/test-commerce-evidence-export.mjs'
       - '.github/workflows/commerce-evidence-contract.yml'
   workflow_dispatch:
