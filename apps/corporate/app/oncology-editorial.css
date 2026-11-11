@@ -691,3 +691,10 @@
     object-fit:contain;
   }
 }
+
+/* Governance contrast correction for approved light background.
+ * The retired dark theme's pink kicker / pale caption cannot be reused on #f6f5f9.
+ */
+.npoc-page .npoc-governance .npoc-eyebrow { color:#655482; }
+.npoc-page .npoc-governance .npoc-matrix caption { color:#555361; }
+.npoc-page .npoc-governance .npoc-matrix :is(td,th) { border-bottom-color:#d0ced9; }
