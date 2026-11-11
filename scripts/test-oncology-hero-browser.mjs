@@ -25,9 +25,18 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
         assert.equal(response?.status(),200,`${engine} ${viewport.name}: page HTTP`);
         await page.locator(".npoc-hope-hero").waitFor({state:"visible"});
         await page.evaluate(async () => {
-          await document.fonts.ready;
+          // Never leave CI waiting on a missed image load event or a stalled font.
+          // These timeouts are fail-closed: invalid or missing images still fail acceptance.
+          const bounded = (promise, label) => Promise.race([
+            promise,
+            new Promise((_, reject) => setTimeout(() => reject(new Error(`${label} did not load within 15 seconds`)), 15_000)),
+          ]);
+          await bounded(document.fonts.ready, "Oncology fonts");
           for (const img of document.querySelectorAll(".npoc-hope-hero img,.npoc-focus-cards img")) {
-            if (!img.complete) await new Promise((resolve) => { img.addEventListener("load",resolve,{once:true}); img.addEventListener("error",resolve,{once:true}); });
+            await bounded(img.decode(), `Oncology image ${img.currentSrc || img.src}`);
+            if (!img.complete || img.naturalWidth <= 0) {
+              throw new Error(`Oncology image is missing or broken: ${img.currentSrc || img.src}`);
+            }
           }
         });
         const layout=await page.evaluate(() => {
