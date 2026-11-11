@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - 'src/core/intelligence-subscription-entitlements.mjs'
+      - 'src/core/intelligence-customer-access.mjs'
+      - 'scripts/test-intelligence-customer-access.mjs'
+      - 'infra/aws/intelligence-customer-access-ledger-production.json'
       - 'scripts/test-intelligence-subscription-entitlements.mjs'
       - 'src/core/intelligence-billing-events.mjs'
       - 'scripts/test-intelligence-billing-events.mjs'
@@ -25,6 +28,8 @@ jobs:
           cache: npm
       - name: Install pinned dependencies
         run: npm ci
+      - name: Verify revocable sessions, tenant isolation and approved seats
+        run: node --test scripts/test-intelligence-customer-access.mjs
       - name: Verify denied-by-default subscription access and same-tenant MFA
         run: node --test scripts/test-intelligence-subscription-entitlements.mjs
       - name: Assert signed Billing webhook idempotency, tenant binding and no premature grants
