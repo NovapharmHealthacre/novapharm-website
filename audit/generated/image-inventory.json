@@ -1290,8 +1290,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 85,
-      "referenceCount": 215,
+      "usageCount": 86,
+      "referenceCount": 216,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "404.html",
@@ -1300,6 +1300,7 @@
         "about/governance/index.html",
         "about/index.html",
         "account-application/index.html",
+        "apps/corporate/components/brand.tsx",
         "apps/corporate/lib/seo.ts",
         "assets/js/admin-app.js",
         "capabilities/index.html",
@@ -1432,8 +1433,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 96,
-      "referenceCount": 199,
+      "usageCount": 95,
+      "referenceCount": 198,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -1442,7 +1443,6 @@
         "about/index.html",
         "account-application/index.html",
         "apps/api/test/server-boundary.test.ts",
-        "apps/corporate/components/brand.tsx",
         "apps/corporate/package.json",
         "apps/corporate/scripts/validate-content.ts",
         "apps/portal/package.json",

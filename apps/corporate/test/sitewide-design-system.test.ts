@@ -60,3 +60,15 @@ test("audit route register includes every corporate, leadership, article and can
   assert.ok(routes.includes("/legal/privacy/"), "Privacy/legal routes are required");
   assert.ok(routes.some((route) => route.startsWith("/products/nutraxin/") && route !== "/products/nutraxin/"));
 });
+
+
+test("official corporate logo is visible on managed homepage and never replaced by text", () => {
+  const brand = readFileSync(path.join(root, "components/brand.tsx"), "utf8");
+  const homepage = readFileSync(path.join(root, "app/homepage-editorial.css"), "utf8");
+  assert.match(brand, /src="\/assets\/brand\/novapharm-healthcare-logo\.png"/);
+  assert.doesNotMatch(homepage, /content:\s*"NOVAPHARM"/);
+  assert.doesNotMatch(homepage, /\.brand > img\s*\{\s*display:\s*none/);
+  assert.match(homepage, /\.site-header \.brand > img\s*\{[\s\S]*?display:\s*block/);
+  const site = readFileSync(path.join(root, "data/site.ts"), "utf8");
+  assert.match(site, /\["Distribution", "\/distribution\/"\]/);
+});
