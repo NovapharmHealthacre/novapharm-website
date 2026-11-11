@@ -6,6 +6,36 @@
   const sort=root.querySelector('#mp-sort'),grid=root.querySelector('#mp-grid'),counter=root.querySelector('#mp-count');
   const more=root.querySelector('#mp-more'),compareArea=root.querySelector('#mp-compare'),compareContent=root.querySelector('#mp-compare-content');
   let products=[],displayed=24;const selected=new Set();
+  const stockApi='https://eyoj5e64zb.execute-api.eu-north-1.amazonaws.com';
+  const stockCache=new Map(),pendingSkus=new Set();
+  const stockLabel=sku=>{
+    const item=stockCache.get(sku);
+    if(!item)return stockCache.has(sku)?'Warehouse availability: confirm with seller':'Checking owner-confirmed warehouse stock…';
+    if(item.stockEvidence==='owner_confirmed_not_independently_audited' &&
+        Number.isSafeInteger(item.ownerConfirmedRemainingUnits) && item.ownerConfirmedRemainingUnits>=0)
+      return 'Owner-confirmed warehouse stock: '+item.ownerConfirmedRemainingUnits.toLocaleString('en-GB')+' units';
+    return 'Warehouse availability: confirm with seller';
+  };
+  async function loadStock(rows){
+    const fresh=rows.filter(p=>!stockCache.has(p.sku)&&!pendingSkus.has(p.sku));
+    for(let i=0;i<fresh.length;i+=24){
+      const group=fresh.slice(i,i+24),skus=group.map(x=>x.sku);
+      skus.forEach(sku=>pendingSkus.add(sku));
+      try{
+        const url=stockApi+'/stock?skus='+encodeURIComponent(skus.join(','));
+        const res=await fetch(url,{credentials:'omit',cache:'no-store',headers:{accept:'application/json'}});
+        if(!res.ok)throw new Error('stock unavailable');
+        const data=await res.json();
+        if(data.schema!=='novapharm-commerce-stock-public-v1'||data.notPaymentAuthority!==true||
+            !Array.isArray(data.items)||data.items.length!==skus.length)throw new Error('stock contract changed');
+        for(let j=0;j<skus.length;j++){
+          const x=data.items[j];
+          stockCache.set(skus[j],x&&x.sku===skus[j]&&x.checkoutAuthority===false?x:null);
+        }
+      }catch(err){skus.forEach(sku=>stockCache.set(sku,null));}
+      finally{skus.forEach(sku=>pendingSkus.delete(sku));render();renderCompare();}
+    }
+  }
   const fold=v=>String(v??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
   const element=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=String(text);return e;};
   const money=v=>Number.isSafeInteger(v)&&v>=0?'£'+(v/100).toFixed(2):'Ask for price';
@@ -24,7 +54,7 @@
     compareArea.hidden=items.length===0;compareContent.replaceChildren();
     if(!items.length)return;
     const frame=element('div','mp-compare-scroll'),table=element('table');
-    const rows=[['Product',p=>p.title],['Brand',p=>p.brand],['Seller',p=>p.seller],['Category',p=>p.category],['SKU',p=>p.sku],['Model',p=>p.model||'Confirm with supplier'],['Pack',p=>p.pack||'Confirm variant'],['Listed price',p=>money(p.priceMinor)],['Price basis',p=>p.priceBasis],['Stock',p=>'Warehouse allocation pending verification']];
+    const rows=[['Product',p=>p.title],['Brand',p=>p.brand],['Seller',p=>p.seller],['Category',p=>p.category],['SKU',p=>p.sku],['Model',p=>p.model||'Confirm with supplier'],['Pack',p=>p.pack||'Confirm variant'],['Listed price',p=>money(p.priceMinor)],['Price basis',p=>p.priceBasis],['Owner-confirmed stock',p=>stockLabel(p.sku)]];
     for(const [label,get] of rows){
       const tr=element('tr');tr.append(element('th','',label));
       for(const p of items)tr.append(element('td','',get(p)));
@@ -51,7 +81,8 @@
     copy.append(element('p','mp-card-evidence',p.seller+' · '+p.supplier));
     copy.append(element('div','mp-card-price',money(p.priceMinor)));
     copy.append(element('small','mp-card-price-scope',p.priceBasis));
-    copy.append(element('small','mp-card-price-scope','Stock to be confirmed by the fulfilment service'));
+    copy.append(element('small','mp-card-price-scope',stockLabel(p.sku)));
+    copy.append(element('small','mp-card-price-scope','Payment and dispatch require product-specific approval'));
     const actions=element('div','mp-card-actions');
     const link=element('a','mp-card-link',offerLabel(p));
     link.href=/^\/products\/(?:nutraxin|esco)\//.test(p.href)?p.href:'/products/';
@@ -76,6 +107,7 @@
     const found=visible();
     counter.textContent=found.length+' results across the governed catalogue';
     grid.replaceChildren(...found.slice(0,displayed).map(card));
+    void loadStock(found.slice(0,displayed));
     more.hidden=found.length<=displayed;
     if(!found.length)grid.append(element('p','mp-card-meta','No products match. Try another search term or select a different collection.'));
   }
