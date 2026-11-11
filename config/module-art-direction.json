@@ -561,11 +561,12 @@
         "desktop": "54% 50%",
         "mobile": "58% 50%"
       },
-      "maxReuse": 2,
+      "maxReuse": 3,
       "structuredDataRelationship": "articleImage",
       "allowedRoutes": [
         "/news-insights/",
-        "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
+        "/news-insights/compliance-first-pharmaceutical-distribution-uk/",
+        "/distribution/"
       ]
     },
     {
