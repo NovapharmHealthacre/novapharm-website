@@ -6,9 +6,9 @@ import { navigation } from "../src/content/site-content.mjs";
 const routes = ["distribution", "market-access", "markets"];
 const artDirection = JSON.parse(readFileSync("config/module-art-direction.json", "utf8"));
 const earthApproval = artDirection.assets.find((asset) => asset.id === "home-earth-horizon");
-assert.deepEqual(earthApproval?.allowedRoutes, ["/", "/distribution/"],
-  "Owner-approved Earth image may appear on Home and Distribution only");
-assert.equal(earthApproval?.maxReuse, 2, "Earth media reuse must remain explicitly limited to two routes");
+assert.deepEqual(earthApproval?.allowedRoutes, ["/"],
+  "Owner-approved Earth image must remain on Home only; Distribution uses the real warehouse");
+assert.equal(earthApproval?.maxReuse, 1, "Earth must not be reused on the Distribution hero");
 
 const sitemap = readFileSync("sitemap.xml", "utf8");
 const homepage = readFileSync("index.html", "utf8");
@@ -32,10 +32,14 @@ for (const slug of routes) {
   if (slug === "distribution") {
     // The public page must contain the approved actual media, not solely a
     // mockup, stock photo, unsupported carrier logo or copy-only proposal.
-    assert.match(html, /data-distribution-design="20261110-premium"/);
-    assert.match(html, /<h1 id="ndist-title">Across borders\.<br>Within standards\.<\/h1>/);
-    assert.match(html, /src="\/assets\/media\/home\/earth-reference-1400\.jpg"/);
-    assert.match(html, /src="\/assets\/media\/about\/novapharm-warehouse-original\.jpg"/);
+    assert.match(html, /data-distribution-design="20261111-real-warehouse"/);
+    assert.match(html, /<h1 id="ndist-title">Global distribution<br>for modern healthcare\.<\/h1>/);
+    assert.match(html, /class="ndist-hero-warehouse" src="\/assets\/media\/about\/novapharm-warehouse-original\.jpg"/);
+    assert.doesNotMatch(html, /class="ndist-hero-earth"|<img[^>]+src="\/assets\/media\/home\/earth-reference-1400\.jpg"/);
+    assert.match(html, /src="\/assets\/media\/insights\/compliance-first-distribution-960\.jpg"/);
+    assert.ok(html.indexOf("ndist-facility") < html.indexOf("ndist-network-hero"), "Warehouse capabilities must appear before global network");
+    assert.match(html, /2–8°C \/ controlled ambient/);
+    assert.match(html, /Not claimed to show this warehouse’s refrigerated room/);
     assert.match(html, /src="\/assets\/media\/home\/supply-network-hero-1200\.jpg"/);
     assert.match(html, /<figure class="ndist-facility-media">/);
     assert.match(html, /<section class="npd-section ndist-partners"/);
@@ -46,9 +50,8 @@ for (const slug of routes) {
     assert.match(html, /<section class="npd-section ndist-pathway"/);
     assert.match(html, /<section class="npd-section npd-final ndist-final"/);
     for (const actualMedia of [
-      "assets/media/home/earth-reference-1400.jpg",
       "assets/media/about/novapharm-warehouse-original.jpg",
-      "assets/media/about/novapharm-warehouse.avif",
+      "assets/media/insights/compliance-first-distribution-960.jpg",
       "assets/media/home/supply-network-hero-1200.jpg"
     ]) {
       assert.ok(statSync(actualMedia).size > 4000, "Required distribution asset is missing or empty: " + actualMedia);

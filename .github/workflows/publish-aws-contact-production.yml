@@ -157,12 +157,12 @@ jobs:
             grep -Fq "https://novapharmhealthcare.com/$route/" _site/sitemap.xml
           done
           # Distribution's premium release must not silently fall back to the old page.
-          grep -Fq 'data-distribution-design="20261110-premium"' _site/distribution/index.html
-          grep -Fq 'Across borders.<br>Within standards.' _site/distribution/index.html
-          grep -Fq '/assets/media/about/novapharm-warehouse-original.jpg' _site/distribution/index.html
-          grep -Fq '/assets/media/home/earth-reference-1400.jpg' _site/distribution/index.html
+          grep -Fq 'data-distribution-design="20261111-real-warehouse"' _site/distribution/index.html
+          grep -Fq 'Global distribution<br>for modern healthcare.' _site/distribution/index.html
+          grep -Fq '/assets/media/insights/compliance-first-distribution-960.jpg' _site/distribution/index.html
+          grep -Fq 'class="ndist-hero-warehouse" src="/assets/media/about/novapharm-warehouse-original.jpg"' _site/distribution/index.html
           test -s _site/assets/media/about/novapharm-warehouse-original.jpg
-          test -s _site/assets/media/home/earth-reference-1400.jpg
+          test -s _site/assets/media/insights/compliance-first-distribution-960.jpg
           test -s _site/assets/css/global-distribution-editorial.css
           grep -Fq 'id="commercial-pathways"' _site/index.html
           # A primary link, not a Capabilities sub-link or footer CTA, is required.
@@ -756,10 +756,10 @@ jobs:
             test "$verified" = true || { echo "::error::$route not verified live on the customer domain"; exit 1; }
           done
           # Confirm the actual new hero and owner-provided warehouse, not just the legacy route.
-          grep -Fq 'data-distribution-design="20261110-premium"' /tmp/novapharm-distribution.html
-          grep -Fq 'Across borders.<br>Within standards.' /tmp/novapharm-distribution.html
-          grep -Fq '/assets/media/about/novapharm-warehouse-original.jpg' /tmp/novapharm-distribution.html
-          grep -Fq '/assets/media/home/earth-reference-1400.jpg' /tmp/novapharm-distribution.html
+          grep -Fq 'data-distribution-design="20261111-real-warehouse"' /tmp/novapharm-distribution.html
+          grep -Fq 'Global distribution<br>for modern healthcare.' /tmp/novapharm-distribution.html
+          grep -Fq '/assets/media/insights/compliance-first-distribution-960.jpg' /tmp/novapharm-distribution.html
+          grep -Fq 'class="ndist-hero-warehouse" src="/assets/media/about/novapharm-warehouse-original.jpg"' /tmp/novapharm-distribution.html
           curl --fail --silent --show-error --location --max-time 15 \
             'https://novapharmhealthcare.com/assets/css/global-distribution-editorial.css' \
             -o /tmp/global-distribution-editorial.css

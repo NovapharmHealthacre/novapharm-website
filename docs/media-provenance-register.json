@@ -578,7 +578,8 @@
       "publicBase": "/assets/media/insights/compliance-first-distribution",
       "pagesUsingIt": [
         "/news-insights/",
-        "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
+        "/news-insights/compliance-first-pharmaceutical-distribution-uk/",
+        "/distribution/"
       ],
       "reviewStatus": "human-reviewed-for-brand-claims-and-accessibility",
       "detailedRegister": "creative-assets/module-media-asset-register.json#insight-compliance-first"

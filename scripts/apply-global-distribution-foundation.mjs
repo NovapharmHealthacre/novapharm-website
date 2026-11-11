@@ -25,17 +25,61 @@ const pages = [
  { slug:"distribution", title:"Pharmaceutical Distribution & Wholesale Readiness | NovaPharm",
  description:"Explore NovaPharm's global pharmaceutical distribution planning, qualified logistics routes, temperature-control strategy, warehouse infrastructure and regulated market access.",
  body: `
-<section class="npd-hero ndist-hero" aria-labelledby="ndist-title" data-distribution-design="20261110-premium">
-  <img class="ndist-hero-earth" src="/assets/media/home/earth-reference-1400.jpg" width="1400" height="305" fetchpriority="high" decoding="async" alt="Illustrative sunrise at Earth’s horizon, representing connections between international healthcare markets">
+<section class="npd-hero ndist-hero" aria-labelledby="ndist-title" data-distribution-design="20261111-real-warehouse">
+  <img class="ndist-hero-warehouse" src="/assets/media/about/novapharm-warehouse-original.jpg" width="1600" height="580" fetchpriority="high" decoding="async" alt="Actual warehouse exterior photograph supplied by NovaPharm, with loading bays and glazed frontage">
   <div class="container ndist-hero-inner">
-    <p class="ndist-eyebrow">Global perspective. Pharmaceutical discipline.</p>
-    <h1 id="ndist-title">Across borders.<br>Within standards.</h1>
-    <p class="ndist-hero-lead">Connecting qualified medicine suppliers, responsible market access and temperature-controlled logistics pathways. From the United Kingdom to the markets that need them.</p>
+    <p class="ndist-eyebrow">NovaPharm Distribution</p>
+    <h1 id="ndist-title">Global distribution<br>for modern healthcare.</h1>
+    <p class="ndist-hero-lead">A qualified approach to healthcare distribution, connecting medicine sourcing, product-specific temperature control, responsible market access and accountable logistics partners.</p>
     <div class="ndist-hero-actions">
-      <a class="npd-button npd-button-primary" href="/contact/?enquiry=Distribution" data-cta-id="distribution-hero-enquiry">Discuss distribution</a>
-      <a class="ndist-text-link" href="#ndist-approach">Explore our approach <span aria-hidden="true">→</span></a>
+      <a class="npd-button npd-button-primary" href="#ndist-facility" data-cta-id="distribution-hero-capabilities">Our capabilities</a>
+      <a class="ndist-text-link" href="/contact/?enquiry=Distribution" data-cta-id="distribution-hero-enquiry">Start a conversation <span aria-hidden="true">→</span></a>
     </div>
-    <p class="ndist-hero-context">Commercial development and qualified supply planning. Regulated pharmaceutical wholesale supply has not commenced.</p>
+    <p class="ndist-hero-context">Actual facility photograph supplied by NovaPharm. The site’s operating role and temperature qualifications must be verified for each proposed service. Regulated pharmaceutical wholesale supply has not commenced.</p>
+  </div>
+</section>
+
+<section class="npd-section ndist-facility" id="ndist-facility" aria-labelledby="ndist-facility-title">
+  <div class="container ndist-facility-layout">
+    <figure class="ndist-facility-media">
+      <picture>
+        <img src="/assets/media/insights/compliance-first-distribution-960.jpg" width="960" height="540" loading="lazy" decoding="async" alt="Representative pharmaceutical quality-control photograph showing documented storage checks and secured inventory">
+      </picture>
+      <figcaption>Representative quality-control image from the existing NovaPharm media library. Not claimed to show this warehouse’s refrigerated room or certified temperature range.</figcaption>
+    </figure>
+    <div class="ndist-facility-copy">
+      <p class="ndist-eyebrow">Infrastructure and temperature assurance</p>
+      <h2 id="ndist-facility-title">Built around the medicine.</h2>
+      <p>From controlled ambient to refrigerated handling, the right temperature is product-specific. A qualified logistics partner, documented monitoring and traceable custody matter at every step.</p>
+      <div class="ndist-facility-details">
+        <div><strong>2–8°C / controlled ambient</strong><span>Service profiles are only offered where the product, contracted facility and validated route support them</span></div>
+        <div><strong>Quality-led handling</strong><span>GDP obligations, documented controls and deviation management where applicable</span></div>
+        <div><strong>Traceable movement</strong><span>Chain-of-custody records and evidence-led delivery reconciliation</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="ndist-network-hero" aria-labelledby="ndist-network-title">
+  <img src="/assets/media/home/supply-network-hero-1200.jpg" width="1200" height="675" loading="lazy" decoding="async" alt="Representative visual of healthcare transport, temperature-sensitive packaging and global supply connections">
+  <div class="ndist-network-shade"></div>
+  <div class="container ndist-network-inner">
+    <p class="ndist-eyebrow">From origin to destination</p>
+    <h2 id="ndist-network-title">From a single pallet.<br>To global supply.</h2>
+    <p>Road, air and specialised cold-chain solutions can connect markets, provided every handoff, handling condition and authorisation is qualified for that specific shipment.</p>
+    <span class="ndist-visual-caption">Representative supply-chain visual. Not a photograph of NovaPharm-operated transport.</span>
+  </div>
+</section>
+<section class="npd-section ndist-network-proof" aria-labelledby="ndist-proof-title">
+  <div class="container">
+    <p class="ndist-eyebrow">The standard behind the journey</p>
+    <h2 id="ndist-proof-title">Confidence at every handoff.</h2>
+    <div class="ndist-proof-grid">
+      <div><strong>2–8°C</strong><span>Refrigerated service profile where validated and contracted</span></div>
+      <div><strong>15–25°C</strong><span>Controlled ambient service profile where validated and contracted</span></div>
+      <div><strong>Documented</strong><span>Defined handoffs and product-specific monitoring requirements</span></div>
+      <div><strong>Accountable</strong><span>Qualified partners and the required permissions at every destination</span></div>
+    </div>
+    <p class="ndist-proof-note">These are common healthcare logistics service profiles, not certifications, facility conditions or services warranted by NovaPharm for every product or route.</p>
   </div>
 </section>
 <section class="npd-section ndist-intro" id="ndist-approach" aria-labelledby="ndist-intro-title">
@@ -48,50 +92,6 @@ const pages = [
       <div><h3>Chain of custody</h3><p>Document qualified counterparties, handling responsibilities and release evidence.</p></div>
       <div><h3>Global perspective</h3><p>Evaluate international routes against destination-country permissions and product rights.</p></div>
     </div>
-  </div>
-</section>
-<section class="npd-section ndist-facility" aria-labelledby="ndist-facility-title">
-  <div class="container ndist-facility-layout">
-    <figure class="ndist-facility-media">
-      <picture>
-        <source srcset="/assets/media/about/novapharm-warehouse.avif" type="image/avif">
-        <img src="/assets/media/about/novapharm-warehouse-original.jpg" width="1600" height="580" loading="lazy" decoding="async" alt="Exterior of the warehouse facility photographed and supplied by NovaPharm">
-      </picture>
-      <figcaption>Facility photograph supplied by NovaPharm. Site operating role, authorisation and temperature qualifications are verified separately.</figcaption>
-    </figure>
-    <div class="ndist-facility-copy">
-      <p class="ndist-eyebrow">Infrastructure</p>
-      <h2 id="ndist-facility-title">Built around the medicine.</h2>
-      <p>Warehousing is more than space. Every product calls for the right environment, qualified processes and a partner accountable for what happens from receipt to release.</p>
-      <div class="ndist-facility-details">
-        <div><strong>Controlled environments</strong><span>Temperature profile determined by the product and qualified site</span></div>
-        <div><strong>Quality-led handling</strong><span>GDP obligations, documented controls and deviation management where applicable</span></div>
-        <div><strong>Traceable movement</strong><span>Chain-of-custody records and evidence-led delivery reconciliation</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-<section class="ndist-network-hero" aria-labelledby="ndist-network-title">
-  <img src="/assets/media/home/supply-network-hero-1200.jpg" width="1200" height="675" loading="lazy" decoding="async" alt="Representative visual of healthcare transport, temperature-sensitive packaging and global supply connections">
-  <div class="ndist-network-shade"></div>
-  <div class="container ndist-network-inner">
-    <p class="ndist-eyebrow">From origin to destination</p>
-    <h2 id="ndist-network-title">One product.<br>A world of possibilities.</h2>
-    <p>Road, air and specialised cold-chain solutions can connect markets, provided every handoff, handling condition and authorisation is qualified for that specific shipment.</p>
-    <span class="ndist-visual-caption">Representative supply-chain visual. Not a photograph of NovaPharm-operated transport.</span>
-  </div>
-</section>
-<section class="npd-section ndist-network-proof" aria-labelledby="ndist-proof-title">
-  <div class="container">
-    <p class="ndist-eyebrow">The standard behind the journey</p>
-    <h2 id="ndist-proof-title">Precision is not optional.</h2>
-    <div class="ndist-proof-grid">
-      <div><strong>2–8°C</strong><span>Refrigerated service profile where validated and contracted</span></div>
-      <div><strong>15–25°C</strong><span>Controlled ambient service profile where validated and contracted</span></div>
-      <div><strong>Documented</strong><span>Defined handoffs and product-specific monitoring requirements</span></div>
-      <div><strong>Accountable</strong><span>Qualified partners and the required permissions at every destination</span></div>
-    </div>
-    <p class="ndist-proof-note">These are common healthcare logistics service profiles, not certifications, facility conditions or services warranted by NovaPharm for every product or route.</p>
   </div>
 </section>
 <section class="npd-section ndist-partners" aria-labelledby="ndist-partners-title">
@@ -142,7 +142,7 @@ const pages = [
 <section class="npd-section npd-final ndist-final" aria-labelledby="ndist-final-title">
   <div class="container">
     <p class="ndist-eyebrow">The next step</p>
-    <h2 id="ndist-final-title">Let's make the next route possible.</h2>
+    <h2 id="ndist-final-title">A distribution partner for what’s next.</h2>
     <p>Tell us about the product, the destination and the opportunity. We'll start with the evidence and identify the right commercial and regulatory next steps.</p>
     <div class="npd-actions"><a class="npd-button npd-button-primary" href="/contact/?enquiry=Distribution" data-cta-id="qualified-commercial-enquiry">Start a conversation</a><a class="ndist-text-link" href="/market-access/">Explore market access <span aria-hidden="true">→</span></a></div>
   </div>

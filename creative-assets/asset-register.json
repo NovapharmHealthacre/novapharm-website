@@ -429,7 +429,7 @@
       "path": "assets/media/about/novapharm-warehouse-original.jpg",
       "type": "owner-supplied-corporate-warehouse-editorial-photograph",
       "source": "Warehouse exterior photograph supplied directly by NovaPharm project owner for About page, 10 November 2026 (original 1600x580 JPEG)",
-      "licence": "Owner directly supplied photograph and approved its use on NovaPharm About page; photographed facility ownership and operating authorisation are not asserted",
+      "licence": "Owner directly supplied photograph and approved its NovaPharm corporate use, including Distribution hero; photographed facility ownership and operating authorisation are not asserted.",
       "generated": false,
       "modified": false,
       "dimensions": "1600x580",
@@ -437,12 +437,13 @@
         "assets/media/about/novapharm-warehouse.avif"
       ],
       "pageUsage": [
-        "/about/"
+        "/about/",
+        "/distribution/"
       ],
       "altText": "Wide exterior view of a modern warehouse building, with a glazed entrance, silver metal cladding and loading frontage",
       "caption": "Warehouse photograph provided by NovaPharm. Regulated wholesale supply has not commenced.",
       "technicalStatus": "owner-supplied-original-preserved-1600x580",
-      "ownerApproval": "approved for About page visual 10 November 2026"
+      "ownerApproval": "Owner-approved original warehouse photograph for the live Distribution hero, 11 November 2026, and existing About page."
     },
     {
       "path": "assets/media/about/novapharm-warehouse.avif",
@@ -490,13 +491,12 @@
       "dimensions": "1400x305",
       "optimisedVariants": [],
       "pageUsage": [
-        "/ homepage approved Earth-horizon hero",
-        "/distribution/ approved global-distribution Earth-horizon hero"
+        "/ homepage approved Earth-horizon hero"
       ],
       "altText": "",
       "caption": "Illustrative Earth-at-sunrise design image; not a factual satellite photograph.",
       "technicalStatus": "JPEG, 1400 x 305, 66,170 bytes; standalone local asset; copyright and provenance registered",
-      "ownerApproval": "Owner-approved Earth horizon creative reference for corporate homepage and Distribution editorial design, requested 10 November 2026; only those two routes are permitted."
+      "ownerApproval": "Approved for corporate homepage use; Distribution now uses the owner's real warehouse photograph, requested 11 November 2026."
     }
   ],
   "missingApprovedAssets": [

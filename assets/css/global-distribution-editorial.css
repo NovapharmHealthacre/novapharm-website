@@ -184,3 +184,104 @@ body[data-page="distribution"] h1,body[data-page="distribution"] h2,body[data-pa
 @media(max-width:760px){.npd-commercial .ndist-hero{min-height:710px;padding:78px 0 210px}.ndist-hero-earth{width:max(980px,235vw);object-position:center bottom}.ndist-hero::after{background:linear-gradient(180deg,rgba(251,253,255,.98),rgba(251,253,255,.95) 38%,rgba(251,253,255,.64) 65%,rgba(251,253,255,.05))}.npd-commercial .ndist-hero h1{font-size:clamp(3.1rem,11.9vw,5.2rem)}.ndist-hero-lead{font-size:1.08rem;margin-top:23px}.ndist-hero-actions{gap:17px;margin-top:24px}.ndist-intro h2,.ndist-network-proof h2,.ndist-partner-heading h2,.ndist-pathway h2,.ndist-categories h2{font-size:clamp(2.7rem,9.7vw,4.2rem)}.ndist-rule-grid{grid-template-columns:1fr;margin-top:51px;gap:28px}.ndist-facility-media picture{border-radius:16px}.ndist-facility-media img{height:clamp(275px,62vw,425px)}.ndist-facility-copy h2{font-size:clamp(2.55rem,9.5vw,4rem)}.ndist-network-hero{min-height:650px;align-items:flex-start}.ndist-network-hero>img{object-position:60% center}.ndist-network-shade{background:linear-gradient(180deg,rgba(249,251,253,.98),rgba(249,251,253,.89) 49%,rgba(249,251,253,.05) 94%)}.ndist-network-inner{padding-block:67px 210px}.ndist-network-inner h2{font-size:clamp(2.9rem,10vw,5rem)}.ndist-partner-heading,.ndist-partner-entry{grid-template-columns:1fr}.ndist-partner-heading>p:not(.ndist-eyebrow){margin-top:22px}.ndist-partner-entry{gap:22px}.ndist-categories-links{grid-template-columns:1fr;gap:10px}}
 @media(max-width:480px){.npd-commercial .ndist-hero{min-height:695px;padding-top:65px;padding-bottom:175px}.npd-commercial .ndist-hero h1{font-size:clamp(2.75rem,11.4vw,3.8rem)}.ndist-hero-lead{font-size:1rem}.ndist-facility-details>div{grid-template-columns:1fr;gap:5px}.ndist-proof-grid{grid-template-columns:1fr}.ndist-proof-grid>div{padding-left:0;padding-right:0;border-right:0;border-bottom:1px solid #e1e2e6}.ndist-proof-grid>div:last-child{border-bottom:0}.ndist-pathway-steps{grid-template-columns:1fr;gap:26px}}
 @media(prefers-reduced-motion:reduce){.ndist-text-link span{transition:none}}
+
+
+/* 2026-11-11 Warehouse-first distribution editorial. The hero is the
+   supplied, unaltered facility photograph, not a generated building. */
+body[data-page="distribution"] .npd-commercial .ndist-hero{
+  display:flex;align-items:center;min-height:clamp(560px,47vw,690px);
+  padding:clamp(72px,8vw,112px) 0 clamp(65px,8vw,108px);
+  background:#e8ecf1;
+}
+body[data-page="distribution"] .ndist-hero-warehouse{
+  position:absolute;inset:0;z-index:-2;display:block;width:100%;height:100%;
+  object-fit:cover;object-position:57% 52%;
+}
+body[data-page="distribution"] .ndist-hero::after{
+  background:linear-gradient(90deg,rgba(249,250,252,.99) 0%,rgba(249,250,252,.97) 25%,rgba(249,250,252,.86) 42%,rgba(249,250,252,.25) 65%,rgba(249,250,252,0) 85%);
+}
+body[data-page="distribution"] .npd-commercial .ndist-hero-inner{max-width:1280px;width:100%}
+body[data-page="distribution"] .npd-commercial .ndist-hero h1{
+  max-width:760px;font-size:clamp(3.4rem,6.25vw,6.6rem);
+  letter-spacing:-.071em;line-height:1.015;font-weight:625;
+}
+body[data-page="distribution"] .ndist-hero-lead{
+  max-width:570px;font-size:clamp(1.03rem,1.45vw,1.24rem);
+  line-height:1.52;color:#3d424b;margin-top:24px;
+}
+body[data-page="distribution"] .ndist-hero-context{
+  max-width:535px;font-size:11px;color:#3d434e;margin-top:20px;
+}
+body[data-page="distribution"] .ndist-eyebrow{
+  font-size:11px;letter-spacing:.11em;color:#535862;
+}
+body[data-page="distribution"] .npd-commercial .ndist-facility{
+  padding-block:clamp(54px,6vw,85px) clamp(55px,7vw,104px);
+}
+body[data-page="distribution"] .ndist-facility-layout{
+  grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);
+  gap:clamp(36px,5vw,82px);
+}
+body[data-page="distribution"] .ndist-facility-media img{
+  height:clamp(335px,32vw,485px);
+  object-position:center center;
+}
+body[data-page="distribution"] .ndist-facility-copy h2{
+  font-size:clamp(2.55rem,4.05vw,4.5rem);
+}
+body[data-page="distribution"] .ndist-network-hero{
+  min-height:clamp(430px,44vw,600px);
+}
+body[data-page="distribution"] .ndist-network-inner h2{
+  font-size:clamp(3rem,5.6vw,5.7rem);
+}
+body[data-page="distribution"] .npd-commercial .ndist-network-proof{
+  padding-block:clamp(55px,7vw,100px);
+}
+body[data-page="distribution"] .npd-commercial .ndist-intro{
+  background:#f5f5f7;
+}
+body[data-page="distribution"] .ndist-proof-grid{
+  margin-top:clamp(32px,4vw,58px);
+}
+body[data-page="distribution"] .ndist-final h2{
+  font-size:clamp(2.8rem,5.25vw,5.6rem);
+}
+@media(max-width:1050px){
+  body[data-page="distribution"] .ndist-facility-layout{grid-template-columns:1fr}
+  body[data-page="distribution"] .ndist-facility-media img{height:clamp(320px,52vw,480px)}
+  body[data-page="distribution"] .ndist-facility-copy{max-width:800px}
+}
+@media(max-width:760px){
+  body[data-page="distribution"] .npd-commercial .ndist-hero{
+    display:block;min-height:705px;padding:66px 0 245px;
+  }
+  body[data-page="distribution"] .ndist-hero-warehouse{
+    height:100%;object-fit:cover;object-position:58% bottom;
+  }
+  body[data-page="distribution"] .ndist-hero::after{
+    background:linear-gradient(180deg,rgba(250,251,252,.99) 0%,rgba(250,251,252,.98) 35%,rgba(250,251,252,.88) 52%,rgba(250,251,252,.05) 81%);
+  }
+  body[data-page="distribution"] .npd-commercial .ndist-hero h1{
+    max-width:590px;font-size:clamp(2.7rem,10.9vw,5rem);
+  }
+  body[data-page="distribution"] .ndist-hero-lead{font-size:1rem;line-height:1.5}
+  body[data-page="distribution"] .ndist-hero-context{
+    max-width:480px;font-size:10px;color:#464951;
+  }
+  body[data-page="distribution"] .ndist-facility-media img{
+    height:clamp(295px,64vw,430px);
+  }
+  body[data-page="distribution"] .ndist-network-hero{
+    min-height:585px;
+  }
+}
+@media(max-width:480px){
+  body[data-page="distribution"] .npd-commercial .ndist-hero{
+    min-height:710px;padding:58px 0 225px;
+  }
+  body[data-page="distribution"] .npd-commercial .ndist-hero h1{
+    font-size:clamp(2.5rem,10.3vw,3.7rem);
+  }
+  body[data-page="distribution"] .ndist-hero-actions{gap:15px}
+}
