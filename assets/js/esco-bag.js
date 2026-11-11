@@ -15,6 +15,11 @@ const checkoutResult = document.querySelector("[data-esco-checkout-status]");
 const orderRequestForm = document.querySelector("[data-esco-order-request-form]");
 const orderRequestSubmit = document.querySelector("[data-esco-order-request-submit]");
 const orderRequestReceipt = document.querySelector("[data-esco-order-request-receipt]");
+const requestLookupForm = document.querySelector("[data-esco-request-lookup]");
+const requestLookupInput = document.querySelector("[data-esco-request-id]");
+const requestLookupState = document.querySelector("[data-esco-request-state]");
+const REQUEST_REF = /^ESCO-REQ-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+
 let sendingOrderRequest = false;
 let draftRequestId = null;
 const termsLabel = termsCheckbox?.closest(".esco-payment-terms");
@@ -59,6 +64,48 @@ async function configurePayment() {
     Number.isSafeInteger(serverPrices[id]) && serverPrices[id]>0 && serverPrices[id]<=99999999
   ).map(id=>[id,serverPrices[id]]));
   paymentServiceReady = approvedCatalogIds.size > 0 && approvedUnitPricesPence.size === approvedCatalogIds.size;
+}
+function reportRequestState(message) {
+  if (!requestLookupState) return;
+  requestLookupState.textContent = message;
+  requestLookupState.hidden = !message;
+}
+async function checkOrderRequestStatus(rawReference) {
+  const provided = String(rawReference || "").trim();
+  const orderId = /^esco-req-/i.test(provided)
+    ? "ESCO-REQ-" + provided.slice(9).toLowerCase() : "";
+  if (!REQUEST_REF.test(orderId)) {
+    reportRequestState("Enter a valid ESCO-REQ receipt reference.");
+    return;
+  }
+  if (!checkoutApiOrigin) {
+    reportRequestState("The order status service is temporarily unavailable. Keep your reference and contact product support.");
+    return;
+  }
+  reportRequestState("Checking your order request…");
+  try {
+    const response = await fetch(checkoutApiOrigin + "/order-request-status/" + encodeURIComponent(orderId), {
+      credentials: "omit", cache: "no-store", headers: {accept: "application/json"}
+    });
+    if (!response.ok) {
+      reportRequestState(response.status === 404
+        ? "Request not found. Check the reference and try again."
+        : "Order status is temporarily unavailable. Your receipt is still valid.");
+      return;
+    }
+    const info = await response.json();
+    const descriptions = {
+      RECEIVED_AWAITING_CONFIRMATION: "Received. Our team must confirm the product, price, availability and delivery.",
+      AWAITING_CUSTOMER_ACCEPTANCE: "Awaiting customer acceptance of confirmed terms.",
+      ACCEPTED_AWAITING_PAYMENT: "Accepted and awaiting a separate authorised payment instruction.",
+      CANCELLED: "Cancelled. Contact product support if you need assistance."
+    };
+    if (info.orderId !== orderId || info.paymentCollected !== false ||
+        !Object.hasOwn(descriptions, info.status)) throw new Error("Unrecognised order status");
+    reportRequestState(orderId + ": " + descriptions[info.status] + " No payment has been collected for this request.");
+  } catch {
+    reportRequestState("Unable to confirm the request status right now. Keep your receipt reference.");
+  }
 }
 function renderPaymentEligibility(lines) {
   if (!checkoutButton || !termsCheckbox) return;
@@ -330,6 +377,8 @@ async function init() {
         throw new Error("We could not submit your order request. Your Bag is saved. Please try again or contact our team.");
       }
       const orderId = receipt.orderId;
+      if (requestLookupInput) requestLookupInput.value = orderId;
+      reportRequestState("Request received. Use this reference to check its status whenever needed.");
       state = [];
       saveBag(state);
       orderRequestForm.reset();
@@ -347,6 +396,10 @@ async function init() {
       sendingOrderRequest = false;
       renderPaymentEligibility(state);
     }
+  });
+  if (requestLookupForm) requestLookupForm.addEventListener("submit", event => {
+    event.preventDefault();
+    void checkOrderRequestStatus(requestLookupInput?.value);
   });
   if (termsCheckbox) termsCheckbox.addEventListener("change", () => renderPaymentEligibility(state));
   if (checkoutButton) checkoutButton.addEventListener("click", () => startCheckout(state));
