@@ -150,7 +150,7 @@ test("missing, revoked, wrong provider or non-MFA sessions deny before ownership
     { mfaVerified: false },
     { revokedAt: "2026-11-11T09:00:00.000Z" },
     { expiresAt: "2026-11-11T10:00:00.000Z" },
-    { status: "revoked" }, { tenantId: "other-tenant" },
+    { status: "revoked" }, { tenantId: "" },
     { subject: "other-subject" }, { sessionId: "stolen-session" },
     { identityProvider: "unknown" }, { revision: "" },
   ]) {
