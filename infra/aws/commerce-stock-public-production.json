@@ -169,6 +169,12 @@
         "DefaultRouteSettings": {
           "ThrottlingRateLimit": 15,
           "ThrottlingBurstLimit": 30
+        },
+        "AccessLogSettings": {
+          "DestinationArn": {
+            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/novapharm-public-commerce-stock"
+          },
+          "Format": "{\"requestId\":\"$context.requestId\",\"route\":\"$context.routeKey\",\"method\":\"$context.httpMethod\",\"status\":\"$context.status\",\"latencyMs\":\"$context.responseLatency\",\"integrationStatus\":\"$context.integrationStatus\"}"
         }
       }
     },
