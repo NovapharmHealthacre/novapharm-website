@@ -47,7 +47,7 @@ main.markets-editorial {
   align-items: center;
   isolation: isolate;
   min-height: clamp(590px, 58vw, 780px);
-  background: #080f1d url("/assets/media/home/earth-reference-1400.jpg") center 46% / cover no-repeat;
+  background: #080f1d;
   color: #fff;
 }
 .markets-editorial .markets-hero-photo {
@@ -303,6 +303,8 @@ main.markets-editorial {
   font-size: 12px;
   line-height: 1.5;
 }
+.markets-editorial .markets-photo-credits summary::marker { content: ""; }
+.markets-editorial .markets-photo-credits summary::-webkit-details-marker { display: none; }
 .markets-editorial .markets-photo-credits details {
   max-width: 940px;
   margin: 0 auto;
