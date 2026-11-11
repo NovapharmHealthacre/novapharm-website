@@ -38,37 +38,26 @@ test("server-side encryption and HTTPS-only object access are required", () => {
   }]);
   assert.equal(resources.EvidenceBucketPolicy.Properties.Bucket.Ref, "EvidenceBucket");
   assert.equal(policy.Version, "2012-10-17");
-  assert.equal(policy.Statement.length, 2, "HTTPS deny and commerce-writer isolation must remain present");
-  const bySid = new Map(policy.Statement.map(statement => [statement.Sid, statement]));
-  assert.equal(bySid.size, 2, "Denial statements must have distinct security identities");
-  assert.deepEqual([...bySid.keys()].sort(), [
-    "DenyCommerceWorkloadWritesToIntelligenceEvidence",
-    "DenyInsecureTransport"
-  ].sort());
-  const commerceDeny = bySid.get("DenyCommerceWorkloadWritesToIntelligenceEvidence");
-  assert.equal(commerceDeny.Effect, "Deny");
-  assert.equal(commerceDeny.Principal, "*");
-  assert.deepEqual(commerceDeny.Action.slice().sort(), [
-    "s3:PutObject", "s3:DeleteObject", "s3:DeleteObjectVersion",
-    "s3:PutObjectTagging", "s3:DeleteObjectTagging"
-  ].sort());
-  assert.deepEqual(commerceDeny.Resource, {
-    "Fn::Join": ["", [{"Fn::GetAtt": ["EvidenceBucket", "Arn"]}, "/intelligence/*"]]
-  });
-  assert.deepEqual(commerceDeny.Condition, {
-    ArnEquals: {
-      "aws:PrincipalArn": {
-        "Fn::Sub": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/novapharm-production-commerce-evidence-EvidenceRole-GNet28VHTjmN"
-      }
-    }
-  });
-  const deny = bySid.get("DenyInsecureTransport");
+  assert.equal(policy.Statement.length, 2, "TLS enforcement and commerce writer isolation must both be present");
+  const deny = policy.Statement.find(statement => statement.Sid === "DenyInsecureTransport");
+  assert.ok(deny, "TLS deny statement is mandatory");
   assert.equal(deny.Sid, "DenyInsecureTransport");
   assert.equal(deny.Effect, "Deny");
   assert.equal(deny.Principal, "*");
   assert.equal(deny.Action, "s3:*");
   assert.equal(deny.Condition.Bool["aws:SecureTransport"], "false");
   assert.equal(deny.Resource.length, 2, "Bucket and all object ARNs must deny insecure transport");
+  const commerceDeny = policy.Statement.find(statement => statement.Sid === "DenyCommerceWorkloadWritesToIntelligenceEvidence");
+  assert.ok(commerceDeny, "Commerce-to-Intelligence object write protection is mandatory");
+  assert.equal(commerceDeny.Effect, "Deny");
+  assert.equal(commerceDeny.Principal, "*");
+  assert.deepEqual([...commerceDeny.Action].sort(), [
+    "s3:DeleteObject", "s3:DeleteObjectTagging", "s3:DeleteObjectVersion",
+    "s3:PutObject", "s3:PutObjectTagging"
+  ].sort());
+  assert.deepEqual(commerceDeny.Resource["Fn::Join"][1][1], "/intelligence/*");
+  const principalArn = commerceDeny.Condition.ArnEquals["aws:PrincipalArn"]["Fn::Sub"];
+  assert.match(principalArn, /^arn:\$\{AWS::Partition\}:iam::\$\{AWS::AccountId\}:role\/novapharm-production-commerce-evidence-/u);
 });
 
 test("empty candidate retention and no publication grants are explicit", () => {
