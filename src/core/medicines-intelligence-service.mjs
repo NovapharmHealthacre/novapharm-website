@@ -1,4 +1,5 @@
 import { all, nowIso, one } from "../data/database.mjs";
+import { buildMedicineInvestigationPassport } from "./medicine-investigation-passport.mjs";
 import { distanceKm, normaliseAnalyticsQuery, normaliseNearbyQuery } from "./medicines-query-contract.mjs";
 
 function forbidden() {
