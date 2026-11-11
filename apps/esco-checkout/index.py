@@ -389,12 +389,15 @@ def webhook(event):
             return respond(200, {"duplicate": True})
         if current != "CHECKOUT_OPEN":
             return fail(503, "payment_state_not_ready")
+        # A Checkout expiry or failed asynchronous attempt captures no money.
+        # Do not write the quoted total into a field named chargedAmountMinor.
+        charged_minor = session["amount_total"] if new_state == "PAID" else 0
         db.update_item(TableName=ORDERS_TABLE, Key=key,
             UpdateExpression="SET #s=:new, stripeEventId=:eid, chargedAmountMinor=:amt",
             ConditionExpression="#s=:open AND sessionId=:sid",
             ExpressionAttributeNames={"#s": "state"},
             ExpressionAttributeValues={":new": {"S": new_state}, ":eid": {"S": signed["id"]},
-                ":amt": {"N": str(session["amount_total"])},
+                ":amt": {"N": str(charged_minor)},
                 ":open": {"S": "CHECKOUT_OPEN"}, ":sid": {"S": sid}})
         return respond(200, {"processed": True})
     except (ClientError, KeyError, ValueError, TypeError):
