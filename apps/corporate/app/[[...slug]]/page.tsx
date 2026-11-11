@@ -113,6 +113,9 @@ export default async function CorporateRoute({ params }: RouteProps) {
     case "":
       content = <ConciseHomePage />;
       break;
+    case "capabilities":
+      content = <CapabilitiesEditorialPage />;
+      break;
     case "services":
       content = <ConciseServicesPage />;
       break;
