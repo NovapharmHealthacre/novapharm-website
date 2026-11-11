@@ -1,0 +1,53 @@
+name: Intelligence customer session API production contract
+
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/intelligence-customer-session-api.py'
+      - 'scripts/test_intelligence_customer_session_api.py'
+      - 'scripts/build-intelligence-customer-session-api-template.mjs'
+      - 'scripts/test-intelligence-customer-session-api-template.mjs'
+      - 'apps/portal/app/auth/callback/route.ts'
+      - 'apps/portal/components/intelligence-sign-in.tsx'
+      - 'apps/portal/components/intelligence-sign-in.module.css'
+      - 'apps/portal/test/intelligence-customer-oidc-web.test.ts'
+      - '.github/workflows/intelligence-customer-session-api.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  customer-sessions:
+    name: Cognito MFA, durable sessions and tenant isolation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact review commit
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install exact locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Compile and verify private session API Python source
+        run: |
+          python3 -m py_compile infra/aws/intelligence-customer-session-api.py
+          python3 -m unittest scripts/test_intelligence_customer_session_api.py -v
+      - name: Verify CloudFormation JWT and release-gate contracts
+        run: node --test scripts/test-intelligence-customer-session-api-template.mjs
+      - name: Preserve Cognito token validation and session regressions
+        run: |
+          node --test scripts/test-intelligence-customer-oidc.mjs
+          node --test scripts/test-intelligence-customer-sessions.mjs
+          node --test scripts/test-intelligence-customer-access.mjs
+          node --test scripts/test-intelligence-subscription-entitlements.mjs
+      - name: Verify customer login callback and portal type safety
+        run: npm run portal:check
+      - name: Verify release remains disabled in reviewed infrastructure
+        run: |
+          grep -Fq 'Default: "false"' scripts/build-intelligence-customer-session-api-template.mjs
+          grep -Fq 'NPI_CUSTOMER_SESSION_API_ENABLED' apps/portal/app/auth/callback/route.ts
+          grep -Fq 'NPI_CUSTOMER_ACCESS_ENABLED' infra/aws/intelligence-customer-session-api.py
