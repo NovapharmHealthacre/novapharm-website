@@ -87,7 +87,7 @@
     "test:keyed-digest": "node scripts/test-keyed-digest.mjs",
     "test:safe-json": "node scripts/test-safe-json.mjs",
     "test:html-text": "node scripts/test-html-text.mjs",
-    "test:internal-ai": "node scripts/test-internal-ai-gateway.mjs && node scripts/test-nova-openai-zdr.mjs",
+    "test:internal-ai": "node scripts/test-internal-ai-gateway.mjs && node scripts/test-nova-openai-zdr.mjs && node scripts/test-nova-governed-medicine-answer.mjs",
     "test:document-scans": "node scripts/test-document-scan-engine.mjs",
     "test:visual-contracts": "node scripts/test-visual-contracts.mjs",
     "test:cro": "node scripts/test-cro-section.mjs",
