@@ -10,7 +10,8 @@ const expectedApiGroups = {
   "infra/aws/esco-products-checkout-production.json": "novapharm-production-esco-checkout",
   "infra/aws/contact-production.json": "novapharm-contact-production",
   "infra/aws/nutraxin-products-checkout-api.json": "novapharm-production-nutraxin-products-checkout",
-  "infra/aws/nutraxin-stripe-webhook-production.json": "novapharm-production-nutraxin-stripe-events"
+  "infra/aws/nutraxin-stripe-webhook-production.json": "novapharm-production-nutraxin-stripe-events",
+  "infra/aws/nutraxin-customer-staging-stack.json": "novapharm-nutraxin-customer-staging"
 };
 const protectedTableNames = new Set([
   'novapharm-intelligence-billing-webhook-events',
@@ -20,7 +21,7 @@ const protectedTableNames = new Set([
 function template(path) {
   return JSON.parse(readFileSync(new URL(path, root), 'utf8'));
 }
-test('seven production HTTP stages preserve existing metadata-only access logs', () => {
+test('eight JSON HTTP stage templates preserve metadata-only access logs', () => {
   for (const [path, group] of Object.entries(expectedApiGroups)) {
     const stages = Object.values(template(path).Resources ?? {}).filter(
       resource => resource.Type === 'AWS::ApiGatewayV2::Stage'
@@ -54,4 +55,36 @@ test('three CloudFormation-owned production DynamoDB tables preserve PITR and de
     }
   }
   assert.deepEqual([...observed].sort(), [...protectedTableNames].sort());
+});
+
+test('synthetic staging contact HTTP stage preserves metadata-only logs', () => {
+  const path = 'infra/aws/contact-synthetic-staging.yaml';
+  const yaml = readFileSync(new URL(path, root), 'utf8');
+  const section = yaml.match(/\\n  Stage:\\n    Type: AWS::ApiGatewayV2::Stage\\n    Properties:\\n([\\s\\S]*?)\\n  InvokePermission:/);
+  assert.ok(section, 'contact staging must have an HTTP stage');
+  assert.ok(section[1].includes('AccessLogSettings:'), 'contact staging must have access logs');
+  assert.ok(section[1].includes('/aws/apigateway/novapharm-contact-synthetic-staging'), 'stage destination must match deployed log group');
+  assert.ok(section[1].includes('$context.requestId'));
+  assert.ok(section[1].includes('$context.status'));
+  assert.ok(!/requestBody|authorizer.claims|authorization|cookie/i.test(section[1]));
+});
+test('the nine permitted HTTP API log-writers are scoped to exact API IDs and groups', () => {
+  const stored = template('infra/aws/policies/novapharm-http-api-scoped-log-delivery.json');
+  assert.equal(stored.PolicyName, 'NovapharmHttpApiScopedLogDelivery');
+  const policy = JSON.parse(stored.PolicyDocument);
+  assert.equal(policy.Version, '2012-10-17');
+  const groups = Object.values(expectedApiGroups).concat('novapharm-contact-synthetic-staging').sort();
+  const statements = policy.Statement;
+  assert.equal(statements.length, 9);
+  assert.equal(new Set(statements.map(statement => statement.Sid)).size, 9);
+  assert.deepEqual(statements.map(s => s.Resource.split('/aws/apigateway/')[1]?.replace(/:\\*$/, '')).sort(), groups);
+  for (const statement of statements) {
+    assert.equal(statement.Effect, 'Allow');
+    assert.equal(statement.Principal?.Service, 'apigateway.amazonaws.com');
+    assert.deepEqual(statement.Action.slice().sort(), ['logs:CreateLogStream','logs:PutLogEvents'].sort());
+    const arn = statement.Condition?.ArnLike?.['aws:SourceArn'];
+    assert.match(arn, /^arn:aws:execute-api:eu-north-1:250675045172:[a-z0-9]{10}\/\\*$/);
+    assert.match(statement.Resource, /^arn:aws:logs:eu-north-1:250675045172:log-group:\/aws\/apigateway\/novapharm-[a-z0-9-]+:\\*$/);
+  }
+  assert.ok(stored.PolicyDocument.length <= 5120, 'CloudWatch resource-policy size must stay within limit');
 });
