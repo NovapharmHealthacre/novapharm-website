@@ -7,7 +7,7 @@ import { chromium, webkit } from "playwright";
 // The earlier source-only checks did not prove Safari's rendered appearance.
 const origin = process.env.CAPABILITIES_LIVE_ORIGIN ?? "https://novapharmhealthcare.com";
 const artifactRoot = path.resolve("artifacts/capabilities-live-browser");
-const version = "20261111-capabilities-design-verified-v4";
+const version = "20261111-capabilities-approved-photo-v5";
 const viewports = [
   { label: "mobile-390", width: 390, height: 844, columns: 1 },
   { label: "tablet-768", width: 768, height: 1024, columns: 2 },
