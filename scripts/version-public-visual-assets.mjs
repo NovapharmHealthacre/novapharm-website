@@ -15,7 +15,7 @@ for (const [page, extraStyles] of pages) {
     const href = `/assets/css/${stylesheet}`;
     const current = `href="${href}"`;
     const visualVersion = page === "capabilities/index.html" && stylesheet === "capabilities-editorial.css"
-      ? "20261111-capabilities-design-verified-v4"
+      ? "20261111-capabilities-approved-photo-v5"
       : page === "oncology/index.html" && stylesheet === "oncology-hope-v2.css"
         ? "20261110-hope-for-tomorrow-v3"
         : version;
