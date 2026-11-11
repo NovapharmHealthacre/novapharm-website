@@ -37,3 +37,15 @@ The only valid starting state for August 2026 NHSBSA EPD Apixaban is `pending_in
 ## Explicit rollback
 
 Stack resources are isolated from commerce and the existing Intelligence private evidence bucket. Before deleting the stack, archive any actual review data, review S3 deletion protection and confirm there are no active dependent Athena queries. CloudFormation can fail deletion of non-empty S3 buckets by design. Do not delete or rewrite source evidence to force rollback.
+
+## Verified on-demand Glue candidate metadata preflight
+
+- Glue job: `novapharm-intelligence-analytics-review-preflight`, Python shell 3.9; 0.0625 DPU, 5-minute hard timeout, zero retries and one concurrent run.
+- IAM execution role: `novapharm-intelligence-analytics-review-preflight`; scoped read of review candidate + job script, scoped write of `source-review/preflight/v1/*`, and Glue job logs. No allow statement for existing shared Intelligence/commerce evidence, publisher bulk files, customer data or production medicine admission.
+- Source: `infrastructure/aws/glue_review_candidate_preflight.py`. It always produces a *blocked* audit while the review metadata remains unapproved, and rejects unexpected approval or accepted-count changes.
+- The initial run failed due to Glue Python 3.9's older botocore lacking `PutObject.IfNoneMatch`; code was corrected to use a unique timestamp/UUID output key in the versioned bucket. The second run `jr_b568c604d997238c627b74ce890ea35e6e881d6d06cfa2e806f2df1d5650add8` **SUCCEEDED**.
+- Audited output: `source-review/preflight/v1/20261111T154002-6b6667c87b954bfeba76f0d9e13b9355.json`; actual JSON independently read from AWS says `BLOCKED_PENDING_INDEPENDENT_RIGHTS_AND_SOURCE_PROOF`, `production_eligible=false`, `accepted_observation_count=0`.
+- Athena query `70b046b0-3819-439f-be84-8a849b6db85b` **SUCCEEDED** on 589 bytes, returning **one candidate, zero accepted observations, zero invalid candidate states**.
+- IAM policy review confirmed scoped actions; a true cross-principal unauthorized-write negative test and independent source data licensing are still outstanding. Do not conflate policy review with a full permissions proof.
+
+No Glue crawler or scheduled raw-data ingestion is enabled. No raw publisher data was downloaded and no customer API was activated.
