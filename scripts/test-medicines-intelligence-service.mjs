@@ -238,6 +238,15 @@ try {
   const detail = await service.medicineIdentityDetail(medicineId, context);
   assert.equal(detail.hierarchy.length, 2);
   assert.equal(detail.hierarchy[0].name, "Cardiovascular system");
+  assert.equal(detail.identityRelationships.contract, "novapharm.intelligence.identity-relationships.v1");
+  assert.equal(detail.identityRelationships.dataState, "derived_from_authorised_identity_records");
+  assert.equal(detail.identityRelationships.sourceId, "nhsbsa.bnf-current");
+  assert.equal(detail.identityRelationships.nodes.filter(node => node.kind === "medicine").length, 1);
+  assert.equal(detail.identityRelationships.nodes.filter(node => node.kind === "historical_code").length, 1);
+  assert.equal(detail.identityRelationships.relationships.filter(edge => edge.relation === "bnf_parent_of").length, 1);
+  assert.equal(detail.identityRelationships.relationships.filter(edge => edge.relation === "has_recorded_alias").length, 6);
+  assert.equal(detail.identityRelationships.relationships.filter(edge => edge.relation === "listed_in_source").length, 1);
+  assert.equal(detail.identityRelationships.relationships.some(edge => /equivalence|approved/.test(edge.relation)), false);
   assert.deepEqual(detail.analyticalAvailability, { epd: true, pca: false, scmd: false, forecast: false });
   assert.match(detail.limitations.join(" "), /does not assert prescribing/iu);
 
