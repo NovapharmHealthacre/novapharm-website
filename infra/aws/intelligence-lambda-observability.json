@@ -1,0 +1,98 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Fail-closed, no-email CloudWatch error/throttle alarms for NovaPharm Intelligence deployed AWS functions. No NOVA model deployment or access activation.",
+  "Resources": {
+    "AuthorizerErrors": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "novapharm-intelligence-customer-authorizer-errors",
+        "AlarmDescription": "NOVA Intelligence foundation: novapharm-intelligence-customer-authorizer-private Errors, no notification target; not a production AI inference certification",
+        "ActionsEnabled": false,
+        "Namespace": "AWS/Lambda",
+        "MetricName": "Errors",
+        "Dimensions": [
+          {
+            "Name": "FunctionName",
+            "Value": "novapharm-intelligence-customer-authorizer-private"
+          }
+        ],
+        "Statistic": "Sum",
+        "Period": 300,
+        "EvaluationPeriods": 1,
+        "DatapointsToAlarm": 1,
+        "Threshold": 1,
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "TreatMissingData": "notBreaching"
+      }
+    },
+    "AuthorizerThrottles": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "novapharm-intelligence-customer-authorizer-throttles",
+        "AlarmDescription": "NOVA Intelligence foundation: novapharm-intelligence-customer-authorizer-private Throttles, no notification target; not a production AI inference certification",
+        "ActionsEnabled": false,
+        "Namespace": "AWS/Lambda",
+        "MetricName": "Throttles",
+        "Dimensions": [
+          {
+            "Name": "FunctionName",
+            "Value": "novapharm-intelligence-customer-authorizer-private"
+          }
+        ],
+        "Statistic": "Sum",
+        "Period": 300,
+        "EvaluationPeriods": 1,
+        "DatapointsToAlarm": 1,
+        "Threshold": 1,
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "TreatMissingData": "notBreaching"
+      }
+    },
+    "TerminalErrors": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "novapharm-intelligence-terminal-candidate-errors",
+        "AlarmDescription": "NOVA Intelligence foundation: novapharm-intelligence-private-terminal-candidate Errors, no notification target; not a production AI inference certification",
+        "ActionsEnabled": false,
+        "Namespace": "AWS/Lambda",
+        "MetricName": "Errors",
+        "Dimensions": [
+          {
+            "Name": "FunctionName",
+            "Value": "novapharm-intelligence-private-terminal-candidate"
+          }
+        ],
+        "Statistic": "Sum",
+        "Period": 300,
+        "EvaluationPeriods": 1,
+        "DatapointsToAlarm": 1,
+        "Threshold": 1,
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "TreatMissingData": "notBreaching"
+      }
+    },
+    "OfficialResearchErrors": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": "novapharm-intelligence-public-research-errors",
+        "AlarmDescription": "NOVA Intelligence foundation: novapharm-intelligence-public-official-research Errors, no notification target; not a production AI inference certification",
+        "ActionsEnabled": false,
+        "Namespace": "AWS/Lambda",
+        "MetricName": "Errors",
+        "Dimensions": [
+          {
+            "Name": "FunctionName",
+            "Value": "novapharm-intelligence-public-official-research"
+          }
+        ],
+        "Statistic": "Sum",
+        "Period": 300,
+        "EvaluationPeriods": 1,
+        "DatapointsToAlarm": 1,
+        "Threshold": 1,
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "TreatMissingData": "notBreaching"
+      }
+    }
+  }
+}
