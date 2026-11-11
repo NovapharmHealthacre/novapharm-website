@@ -1280,3 +1280,34 @@ body[data-page="technology"] .np-intelligence {
 @media (prefers-reduced-data: reduce) {
   .np-intelligence .npi-hero--editorial .npi-hero-photo { background-image: none; }
 }
+
+/* Direct entry to the functional Medicines Terminal concept. */
+.np-intelligence .npi-experience-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  margin: 27px auto 0;
+  min-height: 49px;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background: #1d1d1f;
+  color: #fff;
+  font-size: .93rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-decoration: none;
+  transition: background-color .2s ease, transform .2s ease;
+}
+.np-intelligence .npi-experience-cta:hover {
+  color: #fff;
+  background: #414145;
+  transform: translateY(-1px);
+}
+.np-intelligence .npi-experience-cta:focus-visible {
+  outline: 3px solid #0071e3;
+  outline-offset: 4px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .np-intelligence .npi-experience-cta { transition: none; }
+}
