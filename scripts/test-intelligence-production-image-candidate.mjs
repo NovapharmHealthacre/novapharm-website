@@ -7,8 +7,13 @@ const lines = dockerfile.split("\n");
 const image = readFileSync(new URL("../deployment/aws/intelligence_public_official_research.py", import.meta.url), "utf8");
 
 test("production candidate uses a non-root, standalone Next.js runtime with exact source revision", () => {
-  assert.match(dockerfile, /^FROM node:24-bookworm-slim AS builder/m);
-  assert.match(dockerfile, /^FROM node:24-bookworm-slim AS runtime/m);
+  assert.match(dockerfile, /^FROM node:24-trixie-slim AS builder/m);
+  assert.match(dockerfile, /^FROM node:24-trixie-slim AS runtime/m);
+  const securityUpdate = /^RUN apt-get update && apt-get install --only-upgrade -y zlib1g && rm -rf \/var\/lib\/apt\/lists\/\*$/gm;
+  assert.equal((dockerfile.match(securityUpdate) ?? []).length, 2,
+    "Both builder and runtime must apply the vendor security-patched zlib");
+  assert.doesNotMatch(dockerfile, /FROM node:24-(?:bookworm|alpine)/,
+    "Do not silently revert to the vulnerable candidate base");
   assert.match(dockerfile, /^ARG SOURCE_SHA$/m);
   assert.match(dockerfile, /org\.opencontainers\.image\.revision="\$\{SOURCE_SHA\}"/);
   assert.match(dockerfile, /npm ci --ignore-scripts/);

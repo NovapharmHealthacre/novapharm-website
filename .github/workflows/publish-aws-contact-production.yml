@@ -181,7 +181,7 @@ jobs:
           grep -Fq 'class="ncap-vial-illustration" src="data:image/webp;base64,' _site/capabilities/index.html
           grep -Fq 'class="ncap-earth-illustration" src="data:image/webp;base64,' _site/capabilities/index.html
           grep -Fq 'Start with one decision.' _site/capabilities/index.html
-          grep -Fq 'href="/assets/css/capabilities-editorial.css?v=20261110-logo-visible-v1"' _site/capabilities/index.html
+          grep -Fq 'href="/assets/css/capabilities-editorial.css?v=20261110-official-header-logo-v2"' _site/capabilities/index.html
           test -s _site/assets/css/capabilities-editorial.css
           grep -Fq '@media print' _site/assets/css/capabilities-editorial.css
           # Exact approved homepage image and styling must be in the artifact.
@@ -229,7 +229,7 @@ jobs:
           grep -Fq 'href="/products/nutraxin/"' _site/products/index.html
           grep -Fq 'href="/products/esco/"' _site/products/index.html
           grep -Fq 'href="/products/strategic-portfolio/"' _site/products/index.html
-          grep -Fq 'href="/assets/css/products-editorial.css?v=20261110-logo-visible-v1"' _site/products/index.html
+          grep -Fq 'href="/assets/css/products-editorial.css?v=20261110-official-header-logo-v2"' _site/products/index.html
           test -s _site/assets/css/products-editorial.css
           grep -Fq 'PRODUCTS UNIFIED HERO 2026-11-10' _site/assets/css/products-editorial.css
           grep -Fq 'ESCO Anand' _site/products/index.html
@@ -678,7 +678,7 @@ jobs:
                 break
               fi
               sed -n '/<header class="site-header npd-header"/,/<\/header>/p' "$target" > /tmp/owner-final-header.html
-              if ! grep -Fq 'href="/assets/css/novapharm.bundle.css?v=20261110-logo-visible-v1"' "$target" \
+              if ! grep -Fq 'href="/assets/css/novapharm.bundle.css?v=20261110-official-header-logo-v2"' "$target" \
                 || ! grep -Fq '<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png"' /tmp/owner-final-header.html \
                 || ! grep -Fq 'href="https://portal.novapharmhealthcare.com/"' /tmp/owner-final-header.html; then
                 verified=false

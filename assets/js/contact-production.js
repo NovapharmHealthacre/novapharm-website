@@ -15,7 +15,13 @@ if (form instanceof HTMLFormElement) {
     const requestedType = new URLSearchParams(location.search).get("enquiry");
     const topic = form.elements.namedItem("enquiryType");
     if (topic instanceof HTMLSelectElement && requestedType) {
-      const match = [...topic.options].find(option => option.value.toLowerCase() === requestedType.toLowerCase());
+      // Canonical public links use concise section names; the receiving
+      // business form uses more specific, controlled enquiry categories.
+      const intent = requestedType.trim().toLowerCase();
+      const preferredTopic = intent === "distribution" ? "Distribution partnership"
+        : intent.startsWith("oncology") ? "Oncology & specialist medicines"
+        : requestedType;
+      const match = [...topic.options].find(option => option.value.toLowerCase() === preferredTopic.toLowerCase());
       if (match) topic.value = match.value;
     }
     // Product details arrive only as public, non-sensitive URL hints. They

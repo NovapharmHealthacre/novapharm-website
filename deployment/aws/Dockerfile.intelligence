@@ -1,13 +1,15 @@
 # Isolated NovaPharm Intelligence production CANDIDATE.
 # This image never activates customers, billing, inference, DNS or private data.
 # Do not deploy before accepted ECR digest, dedicated API runtime and identity.
-FROM node:24-bookworm-slim AS builder
+FROM node:24-trixie-slim AS builder
+RUN apt-get update && apt-get install --only-upgrade -y zlib1g && rm -rf /var/lib/apt/lists/*
 WORKDIR /workspace
 COPY . .
 RUN npm ci --ignore-scripts
 RUN npm run build --workspace=@novapharm/portal
 
-FROM node:24-bookworm-slim AS runtime
+FROM node:24-trixie-slim AS runtime
+RUN apt-get update && apt-get install --only-upgrade -y zlib1g && rm -rf /var/lib/apt/lists/*
 ARG SOURCE_SHA
 LABEL org.opencontainers.image.title="NovaPharm Intelligence Medicines Terminal" \
       org.opencontainers.image.revision="${SOURCE_SHA}" \
