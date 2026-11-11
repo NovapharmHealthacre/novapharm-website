@@ -84,6 +84,11 @@ for (const [name, documentHtml] of [["source", source], ["published", published]
   assert.ok(!researchSection.includes('href="https://portal.novapharmhealthcare.com/"'), name + " research must not redirect to the Nutraxin customer portal");
 }
 assert.ok(source.includes('npi-research-access-status') && published.includes('npi-research-access-status'), "Private terminal access must be represented honestly");
+for (const [name, html] of [["source", source], ["published", published]]) {
+  assert.ok(html.includes('href="https://intelligence.novapharmhealthcare.com/"'), name + " must link the public sign-in entry");
+  assert.ok(html.includes("Invitation-only.") && html.includes("does not activate medicines data"), name + " must not imply customer entitlements");
+  assert.ok(!html.includes("Professional sign-in will be available after secure workspace activation."), name + " must not misstate sign-in availability");
+}
 assert.ok(source.includes("English Prescribing Data") && published.includes("Secondary Care Medicines Data"), "EPD and SCMD must use the correct NHSBSA terminology");
 assert.ok(!source.includes("Scottish Medicines Data") && !published.includes("Electronic Prescribing Data"), "Incorrect dataset terminology must not regress");
 assert.ok(source.includes('data-npi-query') && published.includes('data-npi-query'), "Medicine research input must be present");
