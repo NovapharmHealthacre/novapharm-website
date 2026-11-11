@@ -56,9 +56,9 @@ export function buildIntelligenceCustomerSessionTemplate() {
               Version: "2012-10-17",
               Statement: [
                 { Effect: "Allow", Action: ["dynamodb:GetItem", "dynamodb:Query", "dynamodb:TransactWriteItems"],
-                  Resource: sub("arn:\${AWS::Partition}:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/" + table) },
+                  Resource: sub("arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/" + table) },
                 { Effect: "Allow", Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
-                  Resource: sub("arn:\${AWS::Partition}:logs:\${AWS::Region}:\${AWS::AccountId}:log-group:" + logName + ":*") },
+                  Resource: sub("arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:" + logName + ":*") },
               ],
             },
           }],
@@ -139,7 +139,7 @@ export function buildIntelligenceCustomerSessionTemplate() {
         Properties: {
           Action: "lambda:InvokeFunction", FunctionName: ref("Function"),
           Principal: "apigateway.amazonaws.com",
-          SourceArn: sub("arn:\${AWS::Partition}:execute-api:\${AWS::Region}:\${AWS::AccountId}:" + apiId + "/*/*/customer/*"),
+          SourceArn: sub("arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:" + apiId + "/*/*/customer/*"),
         },
       },
     },
