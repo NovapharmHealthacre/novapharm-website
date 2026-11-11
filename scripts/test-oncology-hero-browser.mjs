@@ -24,6 +24,11 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
         const response=await page.goto(origin+"/oncology/",{waitUntil:"networkidle",timeout:30000});
         assert.equal(response?.status(),200,`${engine} ${viewport.name}: page HTTP`);
         await page.locator(".npoc-hope-hero").waitFor({state:"visible"});
+        // Offscreen category images are intentionally lazy-loaded by the public site.
+        // Bring each into view before testing decoding, without changing page behaviour.
+        for (const image of await page.locator(".npoc-hope-hero img,.npoc-focus-cards img").all()) {
+          await image.scrollIntoViewIfNeeded({timeout:15000});
+        }
         await page.evaluate(async () => {
           // Never leave CI waiting on a missed image load event or a stalled font.
           // These timeouts are fail-closed: invalid or missing images still fail acceptance.
