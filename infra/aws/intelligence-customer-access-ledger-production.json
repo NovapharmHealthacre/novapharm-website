@@ -1,0 +1,81 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "NovaPharm Intelligence dedicated fail-closed customer account metadata and revocable-session ledger. No users, seats, grants, email, payment, or public endpoints are created.",
+  "Resources": {
+    "IntelligenceCustomerAccessTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "TableName": "novapharm-intelligence-customer-access",
+        "BillingMode": "PAY_PER_REQUEST",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "PK",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "SK",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "PK",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "SK",
+            "KeyType": "RANGE"
+          }
+        ],
+        "SSESpecification": {
+          "SSEEnabled": true,
+          "SSEType": "KMS",
+          "KMSMasterKeyId": "alias/aws/dynamodb"
+        },
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true
+        },
+        "TimeToLiveSpecification": {
+          "AttributeName": "expiresAt",
+          "Enabled": true
+        },
+        "DeletionProtectionEnabled": true,
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "production"
+          },
+          {
+            "Key": "data-classification",
+            "Value": "customer-account-metadata"
+          },
+          {
+            "Key": "release-gate",
+            "Value": "default-deny-no-customers"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "CustomerAccessTableName": {
+      "Value": {
+        "Ref": "IntelligenceCustomerAccessTable"
+      }
+    },
+    "CustomerAccessTableArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "IntelligenceCustomerAccessTable",
+          "Arn"
+        ]
+      }
+    }
+  }
+}
