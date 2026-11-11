@@ -907,6 +907,10 @@ body[data-page="technology"] .np-intelligence {
 .np-intelligence .npi-research-access-status {
   max-width: 320px; color: #64646b; font-size: .85rem; line-height: 1.6;
 }
+.np-intelligence .npi-research-access-status a { display: block; color: #0066cc; font-weight: 650; text-decoration: none; }
+.np-intelligence .npi-research-access-status a:hover,
+.np-intelligence .npi-research-access-status a:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+.np-intelligence .npi-research-access-status span { display: block; margin-top: 5px; }
 .np-intelligence .npi-dash-quick-search { display: flex; align-items: center; cursor: pointer; }
 @media (max-width: 850px) {
   .np-intelligence .npi-research-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
