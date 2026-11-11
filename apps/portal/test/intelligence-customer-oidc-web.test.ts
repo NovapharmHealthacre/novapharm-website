@@ -82,6 +82,7 @@ test("identity verification never creates an application session or subscription
   assert.match(callback, /cookies\.set/);
   assert.match(proxy, /"\/auth\/customer\/start\/"/);
   assert.match(proxy, /"\/auth\/callback\/"/);
+  assert.match(source("components/intelligence-sign-in.tsx"), /href="\\/auth\\/customer\\/start"/);
   assert.match(portal, /verifiedPortalSession/);
   assert.match(source("components/portal-client.tsx"), /intelligencePortal \? <IntelligenceSignIn/);
 });
