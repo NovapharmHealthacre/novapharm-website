@@ -12,6 +12,7 @@ import styles from "./module-presentations.module.css";
 const Dashboard = dynamic(() => import("./dashboard").then((module) => module.Dashboard));
 const EntraComplete = dynamic(() => import("./entra-complete").then((module) => module.EntraComplete));
 const LoginPanel = dynamic(() => import("./login-panel").then((module) => module.LoginPanel));
+const IntelligenceSignIn = dynamic(() => import("./intelligence-sign-in").then((module) => module.IntelligenceSignIn));
 const PasswordChange = dynamic(() => import("./password-change").then((module) => module.PasswordChange));
 
 type PresentationArchetype = "command" | "ledger" | "workflow" | "catalogue" | "tracking" | "documents" | "regulated" | "intelligence";
@@ -26,8 +27,8 @@ function ModulePresentation({ module, subview }: Readonly<{ module: PortalModule
   return <div className={`${presentationClass} ${archetypeClass}`} data-module={module.code} data-presentation={archetype}><Dashboard module={module} subview={subview} /></div>;
 }
 
-export function PortalClient({ view }: Readonly<{ view: PortalView }>) {
-  if (view.kind === "login") return <LoginPanel />;
+export function PortalClient({ view, intelligencePortal = false }: Readonly<{ view: PortalView; intelligencePortal?: boolean }>) {
+  if (view.kind === "login") return intelligencePortal ? <IntelligenceSignIn /> : <LoginPanel />;
   if (view.kind === "password-change") return <PasswordChange />;
   if (view.kind === "entra-complete") return <EntraComplete />;
   return <ModulePresentation module={view.module} subview={view.subview} />;

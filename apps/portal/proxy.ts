@@ -2,7 +2,7 @@ import { randomBytes } from "node:crypto";
 import { buildPublicSecurityPolicy } from "@novapharm/security";
 import { type NextRequest, NextResponse } from "next/server";
 
-const anonymousPaths = new Set(["/", "/portal/", "/auth/entra-complete/", "/healthz/"]);
+const anonymousPaths = new Set(["/", "/portal/", "/auth/entra-complete/", "/healthz/", "/auth/customer/start/", "/auth/callback/"]);
 
 export function proxy(request: NextRequest): NextResponse {
   const nonce = randomBytes(16).toString("base64");

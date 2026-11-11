@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { PortalClient } from "../../components/portal-client";
 import { resolvePortalView } from "../../data/routes";
@@ -21,5 +21,6 @@ export default async function PortalPage({ params }: Readonly<{ params: Promise<
     if (decision !== "allow") redirect("/");
   }
 
-  return <PortalClient view={view} />;
+  const incomingHost = (await headers()).get("host")?.split(":")[0]?.toLowerCase() ?? "";
+  return <PortalClient view={view} intelligencePortal={incomingHost === "intelligence.novapharmhealthcare.com"} />;
 }
