@@ -71,6 +71,15 @@ type MedicineDetail = Readonly<{
   hierarchy: readonly Readonly<{ code: string; name: string; level: string; validFrom: string; validTo: string | null }>[];
   analyticalAvailability: Readonly<{ epd: boolean; pca: boolean; scmd: boolean; forecast: boolean }>;
   limitations: readonly string[];
+  investigationPassport?: Readonly<{
+    contract: "novapharm.intelligence.investigation-passport.v1";
+    status: "investigation_only";
+    decisionReady: false;
+    snapshotFingerprintSha256: string;
+    lenses: readonly Readonly<{ id: string; name: string; type: string; state: string; next: string; sourceRights: string; decisionUsable: boolean }>[];
+    requiredBeforeDecision: readonly string[];
+    limitations: readonly string[];
+  }>;
 }>;
 
 type AnalyticsSummary = Readonly<{
@@ -547,10 +556,30 @@ function ContextRail({ analytics, busy, detail, filters, onChange, onReset, onRu
   </>;
 }
 
+function MedicineInvestigationPassport({ passport }: Readonly<{ passport: NonNullable<MedicineDetail["investigationPassport"]> }>) {
+  return <section className={styles.tablePanel} aria-labelledby="medicine-investigation-passport-title">
+    <header className={styles.panelHeader}>
+      <div><h2 id="medicine-investigation-passport-title">Medicine Investigation Passport</h2><p>One identity. Twelve evidence lenses. A transparent path from known facts to accountable decisions.</p></div>
+      <p>Investigation only</p>
+    </header>
+    <p className={styles.empty}>Source licences, jurisdictional equivalence, model validity and decision permission must be verified before use. This view makes no medical or commercial recommendation.</p>
+    <div className={styles.tableRegion} role="region" tabIndex={0} aria-label="Investigation passport evidence coverage, scrollable table">
+      <table>
+        <thead><tr><th scope="col">Perspective</th><th scope="col">Evidence type</th><th scope="col">Current state</th><th scope="col">Required next verification</th></tr></thead>
+        <tbody>{passport.lenses.map(lens => <tr key={lens.id}>
+          <th scope="row">{lens.name}</th><td>{display(lens.type)}</td><td>{display(lens.state)}</td><td>{lens.next}</td>
+        </tr>)}</tbody>
+      </table>
+    </div>
+    <p className={styles.empty}>Decision blocked pending rights, reconciled source data and authorised human review. Fingerprint tracks this snapshot only; it is not publisher attestation.</p>
+  </section>;
+}
+
 function PlatformOverview({ analytics, detail, headingLevel = 1, snapshot }: Readonly<{ analytics: AnalyticsResponse | null; detail: MedicineDetail | null; headingLevel?: 1 | 2; snapshot: IntelligenceSnapshot }>) {
   const Heading = headingLevel === 1 ? "h1" : "h2";
   return <>
     {detail ? <MedicineIdentity detail={detail} headingLevel={headingLevel} /> : <header className={styles.emptySubject}><p className={styles.breadcrumb}>Medicines Intelligence / Governed workspace</p><Heading>Search a medicine</Heading><p>Understand a governed medicine identity, then examine source-separated demand, geography and commercial evidence. Nothing is inferred to fill an absent fact.</p><dl><div><dt>Medicine identities</dt><dd>{metricValue(snapshot, "medicines").toLocaleString("en-GB")}</dd></div><div><dt>Pharmacy records</dt><dd>{metricValue(snapshot, "pharmacies").toLocaleString("en-GB")}</dd></div><div><dt>Population-linked practices</dt><dd>{metricValue(snapshot, "population-linked-practices").toLocaleString("en-GB")}</dd></div></dl></header>}
+    {detail?.investigationPassport ? <MedicineInvestigationPassport passport={detail.investigationPassport} /> : null}
     <AnalyticsDashboard analytics={analytics} detail={detail} />
   </>;
 }
