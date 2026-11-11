@@ -1,0 +1,24 @@
+# Isolated NovaPharm Intelligence production CANDIDATE.
+# This image never activates customers, billing, inference, DNS or private data.
+# Do not deploy before accepted ECR digest, dedicated API runtime and identity.
+FROM node:24-bookworm-slim AS builder
+WORKDIR /workspace
+COPY . .
+RUN npm ci --ignore-scripts
+RUN npm run build --workspace=@novapharm/portal
+
+FROM node:24-bookworm-slim AS runtime
+ARG SOURCE_SHA
+LABEL org.opencontainers.image.title="NovaPharm Intelligence Medicines Terminal" \
+      org.opencontainers.image.revision="${SOURCE_SHA}" \
+      novapharm.release-gate="production-candidate-not-approved"
+ENV NODE_ENV=production \
+    HOSTNAME=0.0.0.0 \
+    PORT=4303
+WORKDIR /app
+COPY --from=builder --chown=node:node /workspace/apps/portal/.next/standalone/ /app/
+USER node
+EXPOSE 4303
+HEALTHCHECK --interval=30s --timeout=5s --start-period=45s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:4303/healthz/').then(r=>{if(r.status!==200)process.exit(1)}).catch(()=>process.exit(1))"
+CMD ["node", "apps/portal/server.js"]
