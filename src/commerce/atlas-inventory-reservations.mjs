@@ -39,6 +39,8 @@ export function createAtlasReservationRepository({client,database,clock=()=>new 
       if(!Number.isSafeInteger(n))throw new Error('Lot quantity overflow');
       return n;
     },0);
+    if(!product || product.brand!==req.brand || !product.sku)throw new Error('Product brand or identity mismatch');
+    if(!offer || offer.brand!==product.brand)throw new Error('Offer brand mismatch');
     const approved=reserveForCheckout({
       line:{productId:req.productId,offerId:req.offerId,quantity:req.quantity},
       product,offer,position,compliance,price,
@@ -84,7 +86,11 @@ export function createAtlasReservationRepository({client,database,clock=()=>new 
     if(rec.status!=='reserved')throw new Error('Reservation cannot be released');
     const claim=await coll('stock_reservations').updateOne({_id:reservationId,status:'reserved'},{$set:{status:'released',releasedAt:now,releaseReason:reason}},{session});
     if(claim.modifiedCount!==1)throw new Error('Concurrent reservation release');
-    const moved=await coll('inventory_positions').updateOne({_id:rec.productId,reservedQuantity:{$gte:rec.quantity}},{$inc:{reservedQuantity:-rec.quantity,availableToPromise:rec.quantity}},{session});
+    const position=await coll('inventory_positions').findOne({_id:rec.productId},{session});
+    // A failed payment must not restore saleability after a recall or warehouse hold.
+    const approvedToRestore=position?.verificationStatus==='verified' && position?.stockStatus==='released_for_sale';
+    const movement=approvedToRestore?{reservedQuantity:-rec.quantity,availableToPromise:rec.quantity}:{reservedQuantity:-rec.quantity};
+    const moved=await coll('inventory_positions').updateOne({_id:rec.productId,reservedQuantity:{$gte:rec.quantity}},{$inc:movement},{session});
     if(moved.modifiedCount!==1)throw new Error('Inconsistent inventory reservation');
     await coll('stock_movements').insertOne({_id:'movement:release:'+reservationId,productId:rec.productId,orderId:rec.orderId,reservationId,type:'release',quantity:rec.quantity,actorId,evidenceRef:reason,createdAt:now},{session});
     await coll('integration_outbox').insertOne({_id:'released:'+reservationId,eventType:'commerce.inventory.released',aggregateId:rec.orderId,payload:{reservationId,reason},state:'pending',createdAt:now},{session});
