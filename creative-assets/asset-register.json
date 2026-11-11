@@ -1,6 +1,6 @@
 {
   "version": "1.4",
-  "reviewed": "2026-11-11",
+  "reviewed": "2026-08-20",
   "legacyVisualStatus": "Editorial SVG records are retained for provenance only. They are retired from public production; creative-assets/module-media-asset-register.json is the current module and Insights media register.",
   "competitorCodeOrAssetsUsed": false,
   "authoringMaster": {
@@ -497,42 +497,6 @@
       "caption": "Illustrative Earth-at-sunrise design image; not a factual satellite photograph.",
       "technicalStatus": "JPEG, 1400 x 305, 66,170 bytes; standalone local asset; copyright and provenance registered",
       "ownerApproval": "Approved for corporate homepage use; Distribution now uses the owner's real warehouse photograph, requested 11 November 2026."
-    },
-    {
-      "path": "assets/media/capabilities/approved-vial-photo-800.webp",
-      "type": "owner-approved-photographic-reference-crop-rights-pending",
-      "source": "Owner-approved Capabilities photographic design reference; added as a checked-in cropped WebP in commit 34a4683577abc92d87c2b1bbd79ded124c9feb03 on 11 November 2026. Original creator and acquisition chain are not documented.",
-      "licence": "NOT VERIFIED: visual approval does not establish copyright ownership, supplier permission or a licence for public reproduction. Publishing-rights review required.",
-      "generated": false,
-      "modified": true,
-      "dimensions": "800x224 WebP",
-      "optimisedVariants": [],
-      "pageUsage": [
-        "/capabilities/"
-      ],
-      "altText": "Illustrative close-up of an unbranded clear medicine vial from the approved Capabilities visual reference",
-      "caption": "Representative visual only; does not depict NovaPharm stock, a licensed medicine or a manufacturing operation.",
-      "technicalStatus": "source-commit-traced-permission-review-pending",
-      "ownerApproval": "Visual layout approved; independent image rights not verified",
-      "publicationRightsAccepted": false
-    },
-    {
-      "path": "assets/media/capabilities/approved-earth-horizon-crest.webp",
-      "type": "owner-approved-earth-horizon-reference-crop-rights-pending",
-      "source": "Owner-approved Capabilities Earth-horizon visual reference; added as a checked-in cropped WebP in commit bd74286d9f381dc2ad069216a7c3d6ad7dcd03a2 on 11 November 2026. Original creator and acquisition chain are not documented.",
-      "licence": "NOT VERIFIED: visual approval does not establish copyright ownership, supplier permission or a licence for public reproduction. Publishing-rights review required.",
-      "generated": false,
-      "modified": true,
-      "dimensions": "800x53 WebP",
-      "optimisedVariants": [],
-      "pageUsage": [
-        "/capabilities/"
-      ],
-      "altText": "",
-      "caption": "Decorative Earth-horizon artwork; not live logistics or facility photography.",
-      "technicalStatus": "source-commit-traced-permission-review-pending",
-      "ownerApproval": "Visual layout approved; independent image rights not verified",
-      "publicationRightsAccepted": false
     }
   ],
   "missingApprovedAssets": [
