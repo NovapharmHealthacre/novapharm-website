@@ -5,7 +5,7 @@ import {
   freePreviewSecureParameter, inspectPrivateAtlasPreview, verifyPrivatePreviewUri,
 } from "../src/data/atlas-private-preview-inspection.mjs";
 
-const uri = "mongodb+srv://npi_preview_observer:fixture-password-only@npi-bootstrap.t9cf7ht.mongodb.net/novapharm_intelligence_preview?retryWrites=false&w=majority";
+const uri = "mongodb+srv://npi_preview_observer:fixture-password-only@npi-bootstrap.t9cf7ht.mongodb.net/novapharm_intelligence_preview?retryWrites=false&w=majority&appName=novapharm-intelligence-preview-observer";
 const environment = Object.freeze({
   AWS_REGION: "eu-north-1",
   NPI_ATLAS_PRIVATE_INSPECTION_ENABLED: "true",
