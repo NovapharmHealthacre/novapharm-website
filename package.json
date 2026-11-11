@@ -154,7 +154,7 @@
     "test:esco-catalogue": "node --test scripts/test-esco-catalogue.mjs scripts/test-esco-approved-experience.mjs scripts/test-esco-order-requests.mjs",
     "test:nutraxin-retail-store": "node --test scripts/test-nutraxin-retail-store.mjs",
     "test:nutraxin-consumer-account": "node --test scripts/test-nutraxin-consumer-account.mjs",
-    "test:global-distribution-foundation": "node scripts/test-global-distribution-foundation.mjs"
+    "test:global-distribution-foundation": "node scripts/test-global-distribution-foundation.mjs && node --test scripts/test-distribution-release-candidate.mjs"
   },
   "engines": {
     "node": "24.x",
