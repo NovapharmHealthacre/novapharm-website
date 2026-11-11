@@ -7,6 +7,7 @@
  * No demand, approval, safety, stock, pricing or forecast claim is fabricated.
  */
 import { createHash } from "node:crypto";
+import { buildNovaInvestigationPlan } from "./ai/nova-investigation-planner.mjs";
 
 const reject = () => Object.assign(new Error("Invalid medicine investigation input."), { statusCode: 400 });
 const medicinePattern = /^medicine-[a-f0-9]{32}$/u;
@@ -71,7 +72,7 @@ export function buildMedicineInvestigationPassport(detail) {
     medicine.medicineId, medicine.sourceId, observedAt, assessedAt,
     coverage.epd, coverage.pca, coverage.scmd, coverage.forecast
   ])).digest("hex");
-  return {
+  const passport = {
     contract: "novapharm.intelligence.investigation-passport.v1",
     status: "investigation_only",
     medicineId: medicine.medicineId,
@@ -100,5 +101,9 @@ export function buildMedicineInvestigationPassport(detail) {
       "No market figures, regulatory permissions, supply guarantees or patient-level conclusions are generated.",
       "This fingerprint detects changes to the identity/availability snapshot only; it is not signed provenance."
     ]
+  };
+  return {
+    ...passport,
+    researchPlan: buildNovaInvestigationPlan(passport)
   };
 }
