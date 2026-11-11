@@ -633,6 +633,7 @@ function MedicineInvestigationPassport({ passport }: Readonly<{ passport: NonNul
       <details>
         <summary>Scientific research plan: seven stages and testable hypotheses</summary>
         <p className={styles.empty}>A proposed research sequence, not an autonomous AI run or approved market conclusion. Every step remains blocked until separate server-side authorisation and evidence checks.</p>
+        {/* biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard navigation is required for the scrollable research stages table. */}
         <section className={styles.tableRegion} tabIndex={0} aria-label="NOVA proposed research stages, scrollable table">
           <table>
             <thead><tr><th scope="col">Investigation stage</th><th scope="col">Required verification</th><th scope="col">Execution</th></tr></thead>
@@ -644,6 +645,7 @@ function MedicineInvestigationPassport({ passport }: Readonly<{ passport: NonNul
           </table>
         </section>
         <h3>Research hypotheses to test, not established findings</h3>
+        {/* biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard navigation is required for the scrollable research hypotheses table. */}
         <section className={styles.tableRegion} tabIndex={0} aria-label="NOVA falsifiable research hypotheses, scrollable table">
           <table>
             <thead><tr><th scope="col">Hypothesis</th><th scope="col">Proposition</th><th scope="col">What could disprove it</th></tr></thead>
