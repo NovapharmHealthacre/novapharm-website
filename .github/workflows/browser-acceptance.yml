@@ -34,8 +34,15 @@ jobs:
           cache: npm
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      - name: Install Chromium and WebKit
-        run: npx playwright install --with-deps chromium webkit
+      - name: Cache exact Playwright browser binaries
+        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Install Chromium and WebKit system dependencies (bounded)
+        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install-deps chromium webkit
+      - name: Install Chromium and WebKit browsers (bounded)
+        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
       - name: Validate and build ${{ matrix.application }}
         run: npm run ${{ matrix.application }}:check
       - name: Run complete route, viewport and Axe matrix
@@ -63,8 +70,15 @@ jobs:
           cache: npm
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      - name: Install Chromium and WebKit
-        run: npx playwright install --with-deps chromium webkit
+      - name: Cache exact Playwright browser binaries
+        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Install Chromium and WebKit system dependencies (bounded)
+        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install-deps chromium webkit
+      - name: Install Chromium and WebKit browsers (bounded)
+        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
       - name: Validate portal and API boundary
         run: npm run api:check && npm run portal:check
       - name: Run all portal roles, routes and responsive viewports
@@ -96,8 +110,15 @@ jobs:
           cache: npm
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      - name: Install Chromium and WebKit
-        run: npx playwright install --with-deps chromium webkit
+      - name: Cache exact Playwright browser binaries
+        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: Install Chromium and WebKit system dependencies (bounded)
+        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install-deps chromium webkit
+      - name: Install Chromium and WebKit browsers (bounded)
+        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
       - name: Build legacy rollback shell used only by the isolated workflow harness
         run: npm run build
       - name: Start synthetic non-production runtime
