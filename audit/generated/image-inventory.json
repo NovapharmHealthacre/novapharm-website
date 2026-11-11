@@ -1570,9 +1570,10 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 4,
-      "referenceCount": 6,
+      "usageCount": 5,
+      "referenceCount": 7,
       "usageFiles": [
+        ".github/workflows/intelligence-live-smoke.yml",
         "creative-assets/asset-register.json",
         "scripts/test-intelligence-technology-page.mjs",
         "src/content/technology-intelligence.html",
@@ -22625,11 +22626,13 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
+        ".github/workflows/intelligence-live-smoke.yml",
         "assets/css/technology-intelligence.css",
-        "creative-assets/asset-register.json"
+        "creative-assets/asset-register.json",
+        "scripts/test-intelligence-technology-page.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
