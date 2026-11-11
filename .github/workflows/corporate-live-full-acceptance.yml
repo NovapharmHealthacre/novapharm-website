@@ -38,6 +38,9 @@ jobs:
           npm ci --ignore-scripts
           npx playwright install --with-deps chromium webkit firefox
       - name: Inspect live domain and capture evidence, never submit customer forms
+        # A PR cannot repair an already-live defect until publication; production
+        # workflow_run remains a hard acceptance gate after the verified deploy.
+        continue-on-error: ${{ github.event_name == 'pull_request' }}
         env:
           CORPORATE_LIVE_ORIGIN: https://novapharmhealthcare.com
           EXPECTED_LIVE_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || '' }}
