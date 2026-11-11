@@ -23,7 +23,7 @@ const heroCopy: Readonly<Record<string, { readonly title: string; readonly intro
   },
   capabilities: {
     title: "From evidence to access.",
-    intro: "Market entry, regulatory, clinical and technology decisions, connected to shape an evidence-led route for medicines.",
+    intro: "Market entry, regulatory, clinical and technology — connected to create real access for medicines.",
   },
   "regulatory-services": {
     title: "Authorisation before supply.",
