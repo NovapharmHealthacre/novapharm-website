@@ -14122,9 +14122,10 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
+        "apps/corporate/components/oncology-editorial.tsx",
         "docs/application-media-provenance.json",
         "oncology/index.html",
         "scripts/apply-corporate-product-discipline.mjs"
@@ -14163,9 +14164,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 5,
+      "usageCount": 5,
+      "referenceCount": 7,
       "usageFiles": [
+        "apps/corporate/components/oncology-editorial.tsx",
+        "apps/corporate/test/editorial-oncology.test.ts",
         "docs/application-media-provenance.json",
         "oncology/index.html",
         "scripts/apply-corporate-product-discipline.mjs"
@@ -14327,9 +14330,10 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
+        "apps/corporate/components/oncology-editorial.tsx",
         "docs/application-media-provenance.json",
         "oncology/index.html",
         "scripts/apply-corporate-product-discipline.mjs"
@@ -14368,9 +14372,10 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 3,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
+        "apps/corporate/components/oncology-editorial.tsx",
         "docs/application-media-provenance.json",
         "oncology/index.html",
         "scripts/apply-corporate-product-discipline.mjs"
@@ -19713,11 +19718,10 @@
       ],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
-        "apps/corporate/components/oncology-editorial.tsx",
         "creative-assets/image-asset-register.json",
         "index.html"
       ],
@@ -19810,11 +19814,10 @@
       ],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
-        "apps/corporate/components/oncology-editorial.tsx",
         "creative-assets/image-asset-register.json",
         "index.html"
       ],
@@ -19864,11 +19867,10 @@
       ],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 8,
-      "referenceCount": 8,
+      "usageCount": 7,
+      "referenceCount": 7,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
-        "apps/corporate/components/oncology-editorial.tsx",
         "creative-assets/image-asset-register.json",
         "docs/oncology-media-provenance.json",
         "index.html",
@@ -19922,12 +19924,11 @@
       ],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 16,
-      "referenceCount": 25,
+      "usageCount": 15,
+      "referenceCount": 24,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
         "apps/corporate/components/concise-specialist-pages.tsx",
-        "apps/corporate/components/oncology-editorial.tsx",
         "apps/corporate/components/page-renderer.tsx",
         "apps/corporate/data/pages.ts",
         "assets/js/visual-refinement.js",
