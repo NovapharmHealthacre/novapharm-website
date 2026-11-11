@@ -23,7 +23,7 @@ body[data-route="/capabilities/"] .ncap-page { background: #fff; color: #0b0b0d;
 .ncap-page .ncap-discipline:first-child { padding-left:0; border-left:0; }
 .ncap-page .ncap-discipline:last-child { padding-right:0; }
 .ncap-page .ncap-discipline:hover { color:#09090b; transform:translateY(-3px); }
-.ncap-page .ncap-number { font-size:17px; line-height:1.3; font-weight:650; color:#767981; margin-bottom:20px; letter-spacing:-.02em; }
+.ncap-page .ncap-number { font-size:17px; line-height:1.3; font-weight:650; color:#666a72; margin-bottom:20px; letter-spacing:-.02em; }
 .ncap-page .ncap-discipline h3 { margin:0 0 13px; font-size:clamp(23px,2.05vw,32px); line-height:1.11; font-weight:675; letter-spacing:-.045em; color:#121215; }
 .ncap-page .ncap-discipline p { margin:0; color:#565960; font-size:16px; line-height:1.52; letter-spacing:-.012em; }
 .ncap-page .ncap-arrow { color:#6e7178; font-size:20px; margin-top:auto; padding-top:14px; align-self:flex-start; transition:transform .2s ease; }

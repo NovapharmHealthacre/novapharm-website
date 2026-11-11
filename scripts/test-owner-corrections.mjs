@@ -171,6 +171,17 @@ for (const sitemap of ["sitemap.xml", "sitemap-images.xml", "sitemap-insights.xm
 }
 
 const home = text("index.html");
+const canonicalRecords = JSON.parse(text("seo/generated/page-metadata-register.json"));
+const canonicalBuildSha = home.match(/<meta name="novapharm-source-sha" content="([0-9a-f]{40})">/)?.[1];
+if (!canonicalBuildSha) fail("Homepage is missing verifiable exact-source release metadata");
+for (const record of canonicalRecords) {
+  const output = text(record.file);
+  const tags = [...output.matchAll(/<meta name="novapharm-source-sha" content="([0-9a-f]{40})">/g)];
+  if (tags.length !== 1 || tags[0][1] !== canonicalBuildSha) {
+    fail(`${record.file} has missing, duplicate or inconsistent exact-source release metadata`);
+  }
+}
+
 if (home.includes("nav-search")) fail("Homepage navigation still contains the removed search control");
 // The actual visible header, not merely the footer, must show the secure
 // customer portal and the supplied red NovaPharm Healthcare master logo.
@@ -197,7 +208,7 @@ if (!/\.site-header \.brand > img\s*\{[\s\S]*?display:\s*block/.test(homepageCss
 if (!/\.site-header \.brand::after\s*\{\s*content:\s*none/.test(homepageCss)) fail("Legacy text-wordmark pseudo-element must remain disabled");
 for (const route of ["index.html", "capabilities/index.html", "oncology/index.html", "products/index.html"]) {
   const page = text(route);
-  if (!page.includes('href="/assets/css/novapharm.bundle.css?v=20261110-official-header-logo-v2"')) fail(route + " must link to versioned design CSS");
+  if (!page.includes('href="/assets/css/novapharm.bundle.css?v=20261111-forensic-design-v3"')) fail(route + " must link to versioned design CSS");
   if (!page.includes('<picture class="brand-logo"><img ')) fail(route + " must preserve the official image-based header logo");
 }
 const approvedProductsCss = text("assets/css/products-editorial.css");

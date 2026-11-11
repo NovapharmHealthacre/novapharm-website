@@ -54,7 +54,17 @@ async function audit() {
             await page.locator("main").waitFor({state:"visible",timeout:10000});
             await page.evaluate(()=>document.fonts.ready);
             if(showcase.has(route) && (vp.name==="desktop-1440" || ["/","/contact/","/oncology/"].includes(route))) {
-              await page.screenshot({path:artifactDir+"/"+safe(route)+"-"+vp.name+".png",fullPage:true,animations:"disabled"});
+              // A transient Chromium capture-protocol failure is not a design finding.
+              // Keep the exact same full-page evidence requirement and fail after 3 attempts.
+              for (let attempt=1;attempt<=3;attempt++) {
+                try {
+                  await page.screenshot({path:artifactDir+"/"+safe(route)+"-"+vp.name+".png",fullPage:true,animations:"disabled",timeout:15000});
+                  break;
+                } catch (error) {
+                  if (attempt===3 || !/Page\.captureScreenshot|Unable to capture screenshot/i.test(String(error))) throw error;
+                  await page.waitForTimeout(attempt*350);
+                }
+              }
             }
             const data=await page.evaluate(()=>{
               const root=getComputedStyle(document.documentElement);

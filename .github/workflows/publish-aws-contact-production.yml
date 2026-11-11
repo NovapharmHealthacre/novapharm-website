@@ -165,6 +165,12 @@ jobs:
           test -s _site/assets/media/home/earth-reference-1400.jpg
           test -s _site/assets/css/global-distribution-editorial.css
           grep -Fq 'id="commercial-pathways"' _site/index.html
+          # A primary link, not a Capabilities sub-link or footer CTA, is required.
+          sed -n '/<nav class="site-nav npd-global-nav"/,/<\/nav>/p' _site/index.html > /tmp/staged-distribution-header-nav.html
+          grep -Fq 'href="/distribution/"' /tmp/staged-distribution-header-nav.html
+          grep -Fq 'data-mega-trigger="distribution"' /tmp/staged-distribution-header-nav.html
+          grep -Fq 'data-mega-panel="distribution"' _site/index.html
+          grep -Fq 'href="https://portal.novapharmhealthcare.com/"' /tmp/staged-distribution-header-nav.html
           # Verify the approved About story, asset fallbacks and responsive stylesheet
           # in the exact staged artifact before touching the active public website.
           grep -Fq 'Getting medicine to where it matters.' _site/about/index.html
@@ -182,7 +188,7 @@ jobs:
           grep -Fq 'class="ncap-vial-illustration" src="data:image/webp;base64,' _site/capabilities/index.html
           grep -Fq 'class="ncap-earth-illustration" src="data:image/webp;base64,' _site/capabilities/index.html
           grep -Fq 'Start with one decision.' _site/capabilities/index.html
-          grep -Fq 'href="/assets/css/capabilities-editorial.css?v=20261110-official-header-logo-v2"' _site/capabilities/index.html
+          grep -Fq 'href="/assets/css/capabilities-editorial.css?v=20261111-forensic-design-v3"' _site/capabilities/index.html
           test -s _site/assets/css/capabilities-editorial.css
           grep -Fq '@media print' _site/assets/css/capabilities-editorial.css
           # Exact approved homepage image and styling must be in the artifact.
@@ -230,7 +236,7 @@ jobs:
           grep -Fq 'href="/products/nutraxin/"' _site/products/index.html
           grep -Fq 'href="/products/esco/"' _site/products/index.html
           grep -Fq 'href="/products/strategic-portfolio/"' _site/products/index.html
-          grep -Fq 'href="/assets/css/products-editorial.css?v=20261110-official-header-logo-v2"' _site/products/index.html
+          grep -Fq 'href="/assets/css/products-editorial.css?v=20261111-forensic-design-v3"' _site/products/index.html
           test -s _site/assets/css/products-editorial.css
           grep -Fq 'PRODUCTS UNIFIED HERO 2026-11-10' _site/assets/css/products-editorial.css
           grep -Fq 'ESCO Anand' _site/products/index.html
@@ -614,6 +620,29 @@ jobs:
             sleep 5
           done
 
+      - name: Prove exact source commit reached the public custom domain
+        env:
+          EXPECTED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
+          for route in "" "capabilities/" "oncology/" "products/" "contact/"; do
+            verified=false
+            for attempt in $(seq 1 10); do
+              curl --fail --silent --show-error --location --max-time 15 \
+                -H 'Cache-Control: no-cache, no-store' \
+                "https://novapharmhealthcare.com/${route}?source-proof-${EXPECTED_SHA}-${attempt}-$(date +%s)" \
+                -o /tmp/novapharm-source-proof.html || true
+              if grep -Fq "name=\"novapharm-source-sha\" content=\"${EXPECTED_SHA}\"" /tmp/novapharm-source-proof.html; then
+                verified=true
+                break
+              fi
+              sleep 3
+            done
+            test "$verified" = true || { echo "::error::Customer-facing ${route:-home} does not match the approved source SHA"; exit 1; }
+          done
+          echo 'The public origin serves the exact reviewed Git commit on all five critical routes.'
+
       - name: Verify full-scene Oncology hero and un-cropped mobile styling on live domain
         run: |
           set -euo pipefail
@@ -656,7 +685,7 @@ jobs:
                 break
               fi
               sed -n '/<header class="site-header npd-header"/,/<\/header>/p' "$target" > /tmp/owner-final-header.html
-              if ! grep -Fq 'href="/assets/css/novapharm.bundle.css?v=20261110-official-header-logo-v2"' "$target" \
+              if ! grep -Fq 'href="/assets/css/novapharm.bundle.css?v=20261111-forensic-design-v3"' "$target" \
                 || ! grep -Fq '<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png"' /tmp/owner-final-header.html \
                 || ! grep -Fq 'href="https://portal.novapharmhealthcare.com/"' /tmp/owner-final-header.html; then
                 verified=false
@@ -736,6 +765,31 @@ jobs:
             -o /tmp/global-distribution-editorial.css
           grep -Fq 'White space, quiet typography' /tmp/global-distribution-editorial.css
           echo 'All three canonical commercial routes and Apple-inspired styling are live.'
+
+          # Prove Distribution exists in the actual visible primary navigation on
+          # both the homepage and all three commercial routes (not only footers).
+          for route in home distribution market-access markets; do
+            verified=false
+            for attempt in $(seq 1 18); do
+              if [ "$route" = home ]; then path=""; else path="$route/"; fi
+              url="https://novapharmhealthcare.com/${path}?nav-${GITHUB_SHA}-${attempt}-$(date +%s)"
+              if curl --fail --silent --show-error --location --max-time 20 \
+                   -H 'Cache-Control: no-cache, no-store' "$url" -o /tmp/novapharm-live-distribution-header.html; then
+                sed -n '/<nav class="site-nav npd-global-nav"/,/<\/nav>/p' \
+                  /tmp/novapharm-live-distribution-header.html > /tmp/novapharm-live-distribution-nav.html
+                if grep -Fq 'href="/distribution/"' /tmp/novapharm-live-distribution-nav.html \
+                  && grep -Fq 'data-mega-trigger="distribution"' /tmp/novapharm-live-distribution-nav.html \
+                  && grep -Fq 'data-mega-panel="distribution"' /tmp/novapharm-live-distribution-header.html \
+                  && grep -Fq 'href="https://portal.novapharmhealthcare.com/"' /tmp/novapharm-live-distribution-nav.html; then
+                  verified=true
+                  break
+                fi
+              fi
+              sleep 5
+            done
+            test "$verified" = true || { echo "::error::Distribution primary navigation not verified on $route"; exit 1; }
+          done
+          echo 'Distribution primary menu and Secure Portal are live on all four routes.'
 
       - name: Verify live official Intelligence research with AWS contact preserved
         env:
