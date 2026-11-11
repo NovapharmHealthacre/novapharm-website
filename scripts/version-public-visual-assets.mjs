@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync, writeFileSync } from "node:fs";
 
-const version = "20261110-official-header-logo-v2";
+const version = "20261111-forensic-design-v3";
 const pages = [
   ["index.html", []],
   ["capabilities/index.html", ["capabilities-editorial.css"]],
