@@ -13,6 +13,12 @@ The signed Intelligence Stripe Billing webhook presently persists live event IDs
 5. Transactional **condition checks** fence owner approval, contract, seat revision, global source-rights governance, refund/dispute/payment-failure risk, and existing pending/active billing revision. The same atomic transaction consumes a previously unprocessed, non-synthetic `invoice.paid` quarantine event, advances the matching billing period and writes a redacted audit record.
 6. The private `commitIntelligenceBillingAtomicLedger()` performs no database work without an injected trusted `transactWrite` adapter. Any conditional transaction failure is denied. Successful persistence still returns `grantsCustomerAccess: false`: downstream live session, seat, quota, source-specific rights and every customer API must be separately authorised at request time.
 
+## Negative-event revocation and cancellation
+
+The separate `intelligence-billing-suspension.mjs` module assembles a fail-closed transactional suspension, never a new grant. It requires a signed quarantined live event and independently re-fetched Stripe state before revoking an active customer's access. Supported triggers include failed invoices, deleted/canceled/past-due/unpaid subscriptions, confirmed refunds, disputes and independently flagged fraud risk. A mere intention to cancel at period end is **not** an immediate cancellation. Transactional checks fence the trusted risk ledger and current billing version, consume the original non-synthetic event only once, replace active status with `suspended`, clear enabled features, and append a minimal audit.
+
+Revocation deliberately does **not** depend on medicine source-rights being available. An existing customer must be able to cancel or lose privileges safely even during platform outages. A fresh downstream session check denies `suspended` status. Network or conditional transaction failures return an explicit non-persisted denial and require private retry, dead-letter handling and operational review. The module is not an active worker and has no public endpoint.
+
 ## Required before production activation
 
 - Independently accept real organisation ownership, Cognito MFA, seats, signed commercial contract, current billing price/currency/tax and source-specific data rights.
