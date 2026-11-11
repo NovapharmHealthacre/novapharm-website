@@ -1,6 +1,8 @@
 # Distribution evidence ledger: staging-only design
 
-**Status:** Infrastructure candidate, not deployed or approved for regulated operations. Prepared 11 November 2026.
+**Status:** Staging infrastructure **deployed and verified 11 November 2026**, not approved for regulated operations. Repository pull request/release checks remain separate from this AWS staging activation.
+
+**Deployment evidence:** AWS account `250675045172`, region `eu-north-1`, CloudFormation stack `novapharm-distribution-evidence-staging`, `CREATE_COMPLETE`. Exact source reviewed from PR #443 at commit `46a6ba7035ef8865ac2e49b7922d8bab8d86afb5`. The change set contained exactly two DynamoDB table additions and zero AWS validation errors. `novapharm-distribution-evidence-staging-evidence` and `novapharm-distribution-evidence-staging-events` are `ACTIVE`; both have server-side encryption, PITR and deletion protection enabled, on-demand billing, and estimated item count 0. No API, IAM writer, live trading, product stock or dispatch is provisioned.
 
 This design introduces two private AWS DynamoDB **staging** tables only: a qualification evidence ledger and a journal for immutable business events. CloudFormation creates **no IAM writer, public API, network exposure, account, checkout, medicine stock, price, order release or shipment execution service**. The templates cannot become a production authorisation and make no statement about MHRA licence status.
 
@@ -23,13 +25,13 @@ No real records are preloaded. Every example identifier below is an illustrative
 
 The source module `src/core/distribution-release-candidate.mjs` in PR #430 tests the D01–D15 completeness boundary but does not independently verify documents and **always returns `transactionAuthorized:false` and `medicineDispatchAuthorized:false`**. There is no authenticated production writer or reader yet. Do not confuse this CloudFormation template's successful syntax validation with accepted GDP implementation.
 
-## Before infrastructure deployment
+## Before any production integration or permission expansion
 
 - Decide the production system of record and tenancy/role boundaries; obtain a formal IT/security and Quality design review.
 - Use an approved encrypted evidence-document store and explicit document hashes if real supporting files are required.
 - Review residency, retention, lawful basis, access control, audit, backup/restore and incident handling.
 - Perform a CloudFormation changeset review; check actual AWS account, stack name, cost and staging ownership before executing.
-- Only then create the isolated **staging** stack and run controlled tests with synthetic data.
+- The isolated **staging** stack exists. Before writing any real or synthetic records, define and approve a least-privilege identity, scope-based access, role-segregated auditing, automated negative tests and safe cleanup procedures.
 - Do not connect this staging storage to public contact forms, checkout, subscription entitlement, medicine availability or dispatch.
 - Actual wholesale orders require valid applicable MHRA permissions, RP/GDP QMS, validated facility/carriers, supplier/buyer and SKU-country rights, accepted real batch stock and independent owner/quality/finance sign-off.
 
