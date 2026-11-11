@@ -50,6 +50,23 @@
       "ownerApproval": "owner-directed website integration"
     },
     {
+      "path": "assets/media/technology/novapharm-intelligence-hero.avif",
+      "type": "original-corporate-editorial-hero",
+      "source": "Original owner-directed, AI-assisted NovaPharm Intelligence hero artwork selected for the Technology page on 11 November 2026; site-delivery AVIF derivative.",
+      "licence": "Original NovaPharm project artwork for owner-authorised corporate website use; no third-party photography or competitor visual assets claimed.",
+      "generated": true,
+      "modified": true,
+      "dimensions": "1180x664",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "/technology/"
+      ],
+      "altText": "",
+      "caption": "Conceptual NovaPharm Intelligence hero artwork. Not clinical, regulatory or observed medicines-market evidence.",
+      "technicalStatus": "original-editorial-avif-delivery",
+      "ownerApproval": "Owner-directed Technology hero placement, 11 November 2026"
+    },
+    {
       "path": "assets/brand/novapharm-healthcare-logo.svg",
       "type": "official-logo",
       "source": "owner-supplied NovaPharm Healthcare Logo Asset Pack: 02_web/primary_transparent/novapharm-logo.svg",
