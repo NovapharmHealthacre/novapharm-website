@@ -78,6 +78,12 @@ on:
       - '.github/workflows/publish-aws-contact-production.yml'
       # Dispatch deduplication changes must trigger one independently verified publication.
       - '.github/workflows/dispatch-approved-aws-contact-release.yml'
+      # Retain every legacy automatic public-release trigger in one guarded publisher.
+      - '.github/workflows/pages-live-publish.yml'
+      - 'assets/css/technology-intelligence.css'
+      - 'scripts/test-intelligence-technology-page.mjs'
+      - 'docs/strategy/global-distribution-execution.md'
+      - 'package.json'
   workflow_dispatch:
     inputs:
       expected_sha:
@@ -98,7 +104,7 @@ permissions:
 # Exact-main verification precedes build; a verified artifact may publish later
 # only when last successful Pages deployment and current main prove forward ancestry.
 concurrency:
-  group: novapharm-pages-production
+  group: novapharm-pages-verified-customer-publication-v2
   cancel-in-progress: false
 
 jobs:
