@@ -3,7 +3,7 @@ import Link from "next/link";
 
 // The canonical editorial text, composition and artwork mirror
 // src/content/capabilities-editorial.html in the static public publisher.
-// Derived artwork is materialised at build by sync-public-assets.mjs.
+// The owner-approved photographs are copied from the governed media register.
 const disciplines = [
   {
     id: "01",
@@ -48,10 +48,10 @@ export function CapabilitiesEditorialPage() {
         <figure className="ncap-hero-art">
           <Image
             className="ncap-vial-illustration"
-            src="/assets/media/capabilities/vial-study.webp"
-            width={1200}
-            height={458}
-            alt="Illustrative pharmaceutical glass vial representing an evidence-led route to market"
+            src="/assets/media/capabilities/approved-vial-photo-800.webp"
+            width={800}
+            height={224}
+            alt="Photographic study of an unbranded medicine vial from the owner-approved design"
             unoptimized
             fetchPriority="high"
           />
@@ -78,7 +78,7 @@ export function CapabilitiesEditorialPage() {
 
       <section className="ncap-earth" aria-labelledby="ncap-earth-title">
         <div className="ncap-earth-image" aria-hidden="true">
-          <Image className="ncap-earth-illustration" src="/assets/media/capabilities/earth-horizon.webp" width={1600} height={720} alt="" unoptimized />
+          <Image className="ncap-earth-illustration" src="/assets/media/capabilities/approved-earth-horizon-crest.webp" width={800} height={53} alt="" unoptimized />
         </div>
         <div className="ncap-earth-copy ncap-wrap">
           <p className="ncap-earth-kicker">Your next move matters</p>
