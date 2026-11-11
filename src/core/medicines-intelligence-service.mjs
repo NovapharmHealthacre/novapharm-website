@@ -363,7 +363,7 @@ export async function medicineIdentityDetail(medicineId, context) {
     hierarchy.unshift({ code: node.bnf_code, name: node.bnf_name, level: node.bnf_level, validFrom: node.valid_from, validTo: node.valid_to });
     node = node.parent_bnf_id ? await one("SELECT bnf_id, bnf_code, bnf_name, bnf_level, parent_bnf_id, valid_from, valid_to FROM dim_bnf WHERE bnf_id = ?", node.parent_bnf_id) : null;
   }
-  return {
+  const detail = {
     medicine: { medicineId: medicine.medicine_id, canonicalName: medicine.canonical_name, medicineLevel: medicine.medicine_level,
       snomedCode: medicine.snomed_code, dmDStatus: medicine.dm_d_status, supplierName: medicine.supplier_name,
       formulation: medicine.formulation, route: medicine.route, strength: medicine.strength, unitOfMeasure: medicine.unit_of_measure,
@@ -378,6 +378,7 @@ export async function medicineIdentityDetail(medicineId, context) {
     dataFreshness: medicine.source_last_seen_at,
     generatedAt: nowIso(),
   };
+  return { ...detail, investigationPassport: buildMedicineInvestigationPassport(detail) };
 }
 
 function epdScope(query, medicineIds) {
