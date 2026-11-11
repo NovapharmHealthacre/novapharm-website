@@ -60,7 +60,7 @@ test('three CloudFormation-owned production DynamoDB tables preserve PITR and de
 test('synthetic staging contact HTTP stage preserves metadata-only logs', () => {
   const path = 'infra/aws/contact-synthetic-staging.yaml';
   const yaml = readFileSync(new URL(path, root), 'utf8');
-  const section = yaml.match(/\\n  Stage:\\n    Type: AWS::ApiGatewayV2::Stage\\n    Properties:\\n([\\s\\S]*?)\\n  InvokePermission:/);
+  const section = yaml.match(/\n  Stage:\n    Type: AWS::ApiGatewayV2::Stage\n    Properties:\n([\s\S]*?)\n  InvokePermission:/);
   assert.ok(section, 'contact staging must have an HTTP stage');
   assert.ok(section[1].includes('AccessLogSettings:'), 'contact staging must have access logs');
   assert.ok(section[1].includes('/aws/apigateway/novapharm-contact-synthetic-staging'), 'stage destination must match deployed log group');
@@ -77,14 +77,14 @@ test('the nine permitted HTTP API log-writers are scoped to exact API IDs and gr
   const statements = policy.Statement;
   assert.equal(statements.length, 9);
   assert.equal(new Set(statements.map(statement => statement.Sid)).size, 9);
-  assert.deepEqual(statements.map(s => s.Resource.split('/aws/apigateway/')[1]?.replace(/:\\*$/, '')).sort(), groups);
+  assert.deepEqual(statements.map(s => s.Resource.split('/aws/apigateway/')[1]?.replace(/:\*$/, '')).sort(), groups);
   for (const statement of statements) {
     assert.equal(statement.Effect, 'Allow');
     assert.equal(statement.Principal?.Service, 'apigateway.amazonaws.com');
     assert.deepEqual(statement.Action.slice().sort(), ['logs:CreateLogStream','logs:PutLogEvents'].sort());
     const arn = statement.Condition?.ArnLike?.['aws:SourceArn'];
-    assert.match(arn, /^arn:aws:execute-api:eu-north-1:250675045172:[a-z0-9]{10}\/\\*$/);
-    assert.match(statement.Resource, /^arn:aws:logs:eu-north-1:250675045172:log-group:\/aws\/apigateway\/novapharm-[a-z0-9-]+:\\*$/);
+    assert.match(arn, /^arn:aws:execute-api:eu-north-1:250675045172:[a-z0-9]{10}\/\*$/);
+    assert.match(statement.Resource, /^arn:aws:logs:eu-north-1:250675045172:log-group:\/aws\/apigateway\/novapharm-[a-z0-9-]+:\*$/);
   }
   assert.ok(stored.PolicyDocument.length <= 5120, 'CloudWatch resource-policy size must stay within limit');
 });
