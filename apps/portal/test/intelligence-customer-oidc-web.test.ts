@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import { generateKeyPairSync, sign as signJwt } from "node:crypto";
-import { createCustomerLoginTransaction, verifyCustomerLoginTransaction, intelligenceCustomerOidc } from "../../../src/core/intelligence-customer-oidc.mjs";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import { NextRequest } from "next/server";
+import { createCustomerLoginTransaction, intelligenceCustomerOidc, verifyCustomerLoginTransaction } from "../../../src/core/intelligence-customer-oidc.mjs";
 import { GET as finishCustomerIdentity } from "../app/auth/callback/route";
 import { GET as startCustomerIdentity } from "../app/auth/customer/start/route";
 
