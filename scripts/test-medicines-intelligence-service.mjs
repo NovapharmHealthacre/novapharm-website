@@ -237,6 +237,9 @@ try {
 
   const detail = await service.medicineIdentityDetail(medicineId, context);
   assert.equal(detail.hierarchy.length, 2);
+  assert.equal(detail.investigationPassport.contract, "novapharm.intelligence.investigation-passport.v1");
+  assert.equal(detail.investigationPassport.decisionReady, false);
+  assert.equal(detail.investigationPassport.lenses.length, 12);
   assert.equal(detail.hierarchy[0].name, "Cardiovascular system");
   assert.deepEqual(detail.analyticalAvailability, { epd: true, pca: false, scmd: false, forecast: false });
   assert.match(detail.limitations.join(" "), /does not assert prescribing/iu);
