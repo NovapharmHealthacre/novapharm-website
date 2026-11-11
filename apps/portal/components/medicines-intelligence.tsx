@@ -111,6 +111,26 @@ type AnalyticsResponse = Readonly<{
   pagination: Readonly<{ page: number; pageSize: number; totalRows: number; totalPages: number }>;
   reconciliation: Readonly<{ applicable: boolean; tableTotal: number | null; seriesTotal: number | null; reconciles: boolean | null; seriesTruncated?: boolean }>;
   limitations: readonly string[];
+  observedChange?: Readonly<{
+    contract: "novapharm.intelligence.observed-medicine-change.v1";
+    state: "observed_change_candidate_requires_review" | "insufficient_comparable_evidence";
+    reason: string | null;
+    decisionReady: false;
+    methodology: string;
+    limitations: readonly string[];
+    observation: Readonly<{
+      sourceId: string;
+      dataset: string;
+      metric: string;
+      fromMonth: string;
+      throughMonth: string;
+      baselineValue: number;
+      latestValue: number;
+      absoluteChange: number;
+      percentageChange: number | null;
+      directionalLabel: string;
+    }> | null;
+  }>;
 }>;
 
 type NearbyResponse = Readonly<{
@@ -404,6 +424,20 @@ function AnalyticsDashboard({ analytics, detail }: Readonly<{ analytics: Analyti
       <MetricPanel label="Number of practices" value={summary.practiceCount} context={analytics?.query.dataset === "epd" ? "Matched practices" : "Not applicable to PCA"} />
       <MetricPanel label="Items / 1,000 patients" value={summary.latestItemsPer1000} context={summary.latestMonth ? `Latest accepted month ${summary.latestMonth}` : "Registered-population denominator required"} kind="decimal" />
     </section>
+    {analytics?.observedChange ? <section className={styles.analysisPanel} aria-labelledby="medicine-observed-change-title">
+      <header className={styles.analysisHeader}><h3 id="medicine-observed-change-title">What changed in the observed record?</h3><span>Source-backed, not a forecast</span></header>
+      {analytics.observedChange.observation ? <>
+        <p><strong>{analytics.observedChange.observation.directionalLabel}</strong> from {analytics.observedChange.observation.fromMonth} to {analytics.observedChange.observation.throughMonth} in the selected {display(analytics.observedChange.observation.metric)} series.</p>
+        <dl className={styles.identityCodes}>
+          <div><dt>First month</dt><dd>{display(analytics.observedChange.observation.baselineValue, "number")}</dd></div>
+          <div><dt>Last month</dt><dd>{display(analytics.observedChange.observation.latestValue, "number")}</dd></div>
+          <div><dt>Absolute difference</dt><dd>{display(analytics.observedChange.observation.absoluteChange, "number")}</dd></div>
+          <div><dt>Change relative to first</dt><dd>{analytics.observedChange.observation.percentageChange === null ? "Undefined: zero baseline" : `${display(analytics.observedChange.observation.percentageChange, "number")}%`}</dd></div>
+        </dl>
+        <p className={styles.sourceLine}>{analytics.observedChange.observation.sourceId}. Three consecutive periods, selected query filters. Review comparability, revisions and data rights before using this finding.</p>
+      </> : <div className={styles.designedEmpty}><strong>Not enough comparable observations</strong><p>{display(analytics.observedChange.reason)}. No signal has been inferred.</p></div>}
+      <p className={styles.sourceLine}>No causal conclusion, shortage, obtainable sales, forecast or commercial recommendation is asserted.</p>
+    </section> : null}
     <section className={styles.analysisGrid}>
       <section className={styles.analysisPanel}>
         <header className={styles.analysisHeader}><h3>Prescribing trend</h3><span>{display(metricName)}</span></header>
@@ -668,7 +702,22 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
       setDetail(next);
       setAnalytics(null);
       setSearchResponse(null);
-      setSearchStatus("Medicine identity loaded. Demand, sales, stock and availability are not inferred.");
+      setSearchStatus("Medicine identity loaded. Checking accepted observed history without inventing missing data.");
+      const params = formSearchParams(filters);
+      params.set("medicineId", next.medicine.medicineId);
+      params.set("page", "1");
+      params.set("pageSize", "50");
+      setAnalyticsStatus("Checking accepted, non-sample source observations for this medicine.");
+      try {
+        const observed = await gatewayJson<AnalyticsResponse>(`enterprise/medicines/analytics?${params.toString()}`);
+        setAnalytics(observed);
+        setAnalyticsStatus(observed.dataState === "accepted_facts"
+          ? "Accepted observations loaded. Review source provenance, comparison and limitations."
+          : "No accepted observed history available for this medicine under the selected filters.");
+      } catch (error) {
+        setAnalytics(null);
+        setAnalyticsStatus(professionalError(error));
+      }
     } catch (error) {
       setDetail(null);
       setSearchStatus(professionalError(error));
