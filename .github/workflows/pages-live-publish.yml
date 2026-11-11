@@ -1,25 +1,8 @@
 name: Build, deploy and verify GitHub Pages
 
 on:
-  # Publication is limited to committed source changes on main. Deployment
-  # still runs the public security, build, link and live-site verification gates.
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/pages-live-publish.yml
-      - src/content/technology-intelligence.html
-      - technology/index.html
-      - assets/css/technology-intelligence.css
-      - scripts/apply-corporate-product-discipline.mjs
-      - scripts/test-intelligence-technology-page.mjs
-      - scripts/build-site.mjs
-      - scripts/apply-global-distribution-foundation.mjs
-      - scripts/enhance-seo-authority.mjs
-      - scripts/test-global-distribution-foundation.mjs
-      - src/content/site-content.mjs
-      - assets/css/global-distribution-editorial.css
-      - docs/strategy/global-distribution-execution.md
-      - package.json
+  # The AWS-verified customer publisher alone handles main-branch pushes.
+  # Keep this workflow available for scoped PR validation and manual recovery.
   pull_request:
     paths:
       - .github/workflows/pages-live-publish.yml
@@ -59,7 +42,7 @@ permissions:
   statuses: write
 
 concurrency:
-  group: ${{ github.event_name == 'pull_request' && format('novapharm-pages-pr-{0}', github.head_ref) || 'novapharm-pages-production' }}
+  group: ${{ github.event_name == 'pull_request' && format('novapharm-pages-pr-{0}', github.head_ref) || 'novapharm-pages-verified-customer-publication-v2' }}
   cancel-in-progress: false
 
 env:
