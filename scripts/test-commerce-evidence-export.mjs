@@ -26,6 +26,9 @@ test("IAM source/sink access is strictly limited",()=>{
 test("only source-labelled commercial assumptions are exported",()=>{
  assert.match(source,/EXPECTED = \{"Nutraxin": 19, "ESCO": 373\}/);
  assert.match(source,/if len\(records\) != 392/);
+ assert.match(source,/"ownerConfirmedUnits": owner/);
+ assert.match(source,/"ownerConfirmedRemainingUnits"/);
+ assert.match(source,/"ownerConfirmedTotalUnits"/);
  assert.match(source,/"physicalStockVerified": False/);
  assert.match(source,/"physicalVerifiedUnits": None/);
  assert.match(source,/"availableToPromiseAccepted": False/);
