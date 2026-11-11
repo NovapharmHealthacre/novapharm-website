@@ -36,6 +36,9 @@ const indexes = Object.freeze([
   { collection: f.audits, name: "by_tenant_time", keys: { tenant_id: 1, recorded_at: -1 } },
 ].map(spec => Object.freeze({ ...spec, keys: Object.freeze(spec.keys) })));
 
+/** Exact schema index requirements for private operator verification. */
+export const freePreviewAtlasIndexSpecs = indexes;
+
 /** Operator-reviewed plan only; never creates a collection or an account. */
 export function planFreePreviewAtlasBootstrap({ cluster, release } = {}) {
   if (!cluster ||
