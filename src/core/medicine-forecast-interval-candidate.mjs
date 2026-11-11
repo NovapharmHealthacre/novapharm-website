@@ -60,7 +60,7 @@ export function evaluateMedicineForecastIntervalCandidate(args = {}) {
     last: observations.at(-1).period,
   });
   const empiricalCoveragePassed = actualCoverage >= 0.9;
-  const forecast = Object.freeze(baseline.forecast.map(f => Object.freeze({
+  const forecast = Object.freeze((empiricalCoveragePassed ? baseline.forecast : []).map(f => Object.freeze({
     period: f.period, estimate: f.estimate, evidenceType: "model_forecast",
     candidateErrorRange: Object.freeze({
       lower: round(Math.max(0, f.estimate - width)),
