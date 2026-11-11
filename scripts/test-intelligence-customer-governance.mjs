@@ -129,7 +129,7 @@ test("OIDC identity alone and missing authoritative adapters never permit access
     { identity: { ...identity, grantsTenantAccess: true } },
     { identity: { ...identity, verifiedIssuer: "https://forged.example" } },
     { identity: { ...identity, identityVerified: false } },
-    { sessionId: "bad" },
+    { sessionId: "" },
     { feature: "commercial-advice" },
     { release: { ...release, customerLaunchAccepted: false } },
     { release: { ...release, atomicAuthorityCommitApproved: false } },
