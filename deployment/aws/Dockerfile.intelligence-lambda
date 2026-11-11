@@ -1,0 +1,31 @@
+# Private, on-demand Intelligence runtime candidate (not customer-approved).
+# The official AWS Lambda Web Adapter lets a standard Next.js HTTP app run
+# on Lambda, avoiding idle ECS/ALB/NAT fees until actual users are onboarded.
+# No identity secrets, customer data, Stripe keys or API origins are embedded.
+FROM node:24-bookworm-slim AS builder
+WORKDIR /workspace
+COPY . .
+RUN npm ci --ignore-scripts
+RUN npm run build --workspace=@novapharm/portal
+
+FROM node:24-bookworm-slim AS runtime
+COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:1.1.0 /lambda-adapter /opt/extensions/lambda-adapter
+ARG SOURCE_SHA
+LABEL org.opencontainers.image.title="NovaPharm Intelligence private serverless candidate" \
+      org.opencontainers.image.revision="${SOURCE_SHA}" \
+      novapharm.release-gate="private-no-customer-acceptance"
+ENV NODE_ENV=production \
+    HOSTNAME=0.0.0.0 \
+    PORT=4303 \
+    AWS_LWA_PORT=4303 \
+    AWS_LWA_READINESS_CHECK_PATH=/healthz/ \
+    AWS_LWA_READINESS_CHECK_PROTOCOL=http \
+    HOME=/tmp \
+    NEXT_TELEMETRY_DISABLED=1
+WORKDIR /app
+COPY --from=builder --chown=node:node /workspace/apps/portal/.next/standalone/ /app/
+COPY --from=builder --chown=node:node /workspace/apps/portal/.next/static/ /app/apps/portal/.next/static/
+RUN mkdir -p /app/apps/portal/.next && ln -s /tmp/novapharm-next-cache /app/apps/portal/.next/cache
+USER node
+EXPOSE 4303
+CMD ["node", "apps/portal/server.js"]

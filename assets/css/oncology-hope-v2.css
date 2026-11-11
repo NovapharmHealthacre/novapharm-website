@@ -489,7 +489,6 @@ body[data-page="oncology"] main.npoc-page :is(.npoc-focus-card,.npoc-button,.npo
   body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-visual img {
     width:100%;
     height:100%;
-    /* Approved SS2 hero preserves the complete portrait instead of cropping. */
     object-fit:contain;
     object-position:right center;
     border:0;
