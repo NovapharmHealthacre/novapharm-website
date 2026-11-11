@@ -7,6 +7,8 @@ on:
       - 'scripts/test-intelligence-subscription-entitlements.mjs'
       - 'src/core/intelligence-billing-events.mjs'
       - 'scripts/test-intelligence-billing-events.mjs'
+      - 'src/core/intelligence-billing-reconciliation.mjs'
+      - 'scripts/test-intelligence-billing-reconciliation.mjs'
       - 'package.json'
       - '.github/workflows/intelligence-subscription-boundary.yml'
 
@@ -29,6 +31,8 @@ jobs:
         run: node --test scripts/test-intelligence-subscription-entitlements.mjs
       - name: Assert signed Billing webhook idempotency, tenant binding and no premature grants
         run: node --test scripts/test-intelligence-billing-events.mjs
+      - name: Reject unverified invoice, refund, dispute and cross-tenant billing transitions
+        run: node --test scripts/test-intelligence-billing-reconciliation.mjs
       - name: Preserve exact medicine and clinical evidence contracts
         run: npm run test:medicines-intelligence
       - name: Verify the enterprise release ledger remains gated
