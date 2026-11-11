@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
+import { generateKeyPairSync, sign as signJwt } from "node:crypto";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { NextRequest } from "next/server";
+import { createCustomerLoginTransaction, intelligenceCustomerOidc, verifyCustomerLoginTransaction } from "../../../src/core/intelligence-customer-oidc.mjs";
 import { GET as finishCustomerIdentity } from "../app/auth/callback/route";
 import { GET as startCustomerIdentity } from "../app/auth/customer/start/route";
 
@@ -69,7 +71,7 @@ test("callback refuses unsolicited or forged OAuth codes and clears transient co
   }
 });
 
-test("identity verification never creates an application session or subscription", () => {
+test("customer session never self-provisions an account and requires the private accepted backend", () => {
   const callback = source("app/auth/callback/route.ts");
   const start = source("app/auth/customer/start/route.ts");
   const proxy = source("proxy.ts");
@@ -78,6 +80,11 @@ test("identity verification never creates an application session or subscription
   assert.match(callback, /verifyCustomerLoginTransaction/);
   assert.match(callback, /verifyIntelligenceCustomerIdToken/);
   assert.match(callback, /identity\.grantsTenantAccess !== false/);
+  assert.match(callback, /NPI_CUSTOMER_SESSION_API_ENABLED/);
+  assert.match(callback, /__Host-npi_session/);
+  assert.match(callback, /activateApprovedCustomerSession/);
+  assert.match(callback, /response\.status !== 200/);
+  assert.match(callback, /intelligence\.novapharmhealthcare\.com\/customer\/session/);
   assert.doesNotMatch(callback + start, /set\(\{\s*name:\s*"np_session"|setSession|createTenant|activateSubscription|grantMedicineScope/);
   assert.match(callback, /cookies\.set/);
   assert.match(proxy, /"\/auth\/customer\/start\/"/);
@@ -85,4 +92,134 @@ test("identity verification never creates an application session or subscription
   assert.ok(source("components/intelligence-sign-in.tsx").includes('href="/auth/customer/start"'));
   assert.match(portal, /verifiedPortalSession/);
   assert.match(source("components/portal-client.tsx"), /intelligencePortal \? <IntelligenceSignIn/);
+});
+
+
+function prepareCustomerProof() {
+  const now = Math.floor(Date.now() / 1000);
+  const started = createCustomerLoginTransaction({ signingKey: key });
+  const state = new URL(started.authorizeUrl).searchParams.get("state") ?? "";
+  const decoded = verifyCustomerLoginTransaction({
+    signingKey: key, state, cookieValue: started.transactionCookieValue,
+  });
+  const keys = generateKeyPairSync("rsa", { modulusLength: 2048 });
+  const jwk = { ...keys.publicKey.export({ format: "jwk" }), kid: "account-test-kid", alg: "RS256", use: "sig" };
+  const claims = {
+    iss: intelligenceCustomerOidc.issuer,
+    aud: intelligenceCustomerOidc.clientId,
+    nonce: decoded.nonce,
+    token_use: "id",
+    sub: "customer-verified-12345678",
+    email_verified: true,
+    acr: "urn:cognito:loa:4",
+    amr: ["pwd", "otp", "mfa"],
+    auth_time: now - 30,
+    iat: now - 30,
+    exp: now + 300,
+  };
+  const part1 = Buffer.from(JSON.stringify({ alg: "RS256", kid: jwk.kid })).toString("base64url");
+  const part2 = Buffer.from(JSON.stringify(claims)).toString("base64url");
+  const signature = signJwt("RSA-SHA256", Buffer.from(part1 + "." + part2), keys.privateKey).toString("base64url");
+  const token = part1 + "." + part2 + "." + signature;
+  const request = new NextRequest(
+    new URL("/auth/callback?code=valid_test_authorization_code&state=" + encodeURIComponent(state),
+      "https://intelligence.novapharmhealthcare.com"),
+    { headers: { cookie: "__Host-npi_oidc_tx=" + started.transactionCookieValue } },
+  );
+  return { request, token, jwk };
+}
+
+function responseCookies(response: Response) {
+  const headers = response.headers as Headers & { getSetCookie?: () => string[] };
+  return headers.getSetCookie?.() ?? [response.headers.get("set-cookie") ?? ""];
+}
+
+async function withCallbackMock(
+  mode: "approved" | "not-approved" | "forged-cookie" | "flag-off",
+  run: (response: Response, sessionApiCalls: number) => void | Promise<void>,
+): Promise<void> {
+  const oldKey = process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
+  const oldFlag = process.env["NPI_CUSTOMER_SESSION_API_ENABLED"];
+  const priorFetch = globalThis.fetch;
+  const proof = prepareCustomerProof();
+  let calls = 0;
+  process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = key;
+  if (mode !== "flag-off") process.env["NPI_CUSTOMER_SESSION_API_ENABLED"] = "true";
+  else delete process.env["NPI_CUSTOMER_SESSION_API_ENABLED"];
+  globalThis.fetch = (async (input: URL | RequestInfo, init?: RequestInit) => {
+    const url = String(input);
+    if (url === intelligenceCustomerOidc.domain + "/oauth2/token") {
+      return new Response(JSON.stringify({ token_type: "Bearer", id_token: proof.token }), {
+        status: 200, headers: { "Content-Type": "application/json" },
+      });
+    }
+    if (url === intelligenceCustomerOidc.issuer + "/.well-known/jwks.json") {
+      return new Response(JSON.stringify({ keys: [proof.jwk] }), { status: 200 });
+    }
+    if (url === "https://intelligence.novapharmhealthcare.com/customer/session") {
+      calls++;
+      assert.equal(init?.method, "POST");
+      assert.equal(new Headers(init?.headers).get("authorization"), "Bearer " + proof.token);
+      if (mode === "not-approved") return new Response("", { status: 403 });
+      if (mode === "forged-cookie") {
+        return new Response("{}", {
+          status: 200,
+          headers: { "set-cookie": "__Host-npi_session=" + "B".repeat(43) + "; Domain=evil.example; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=3600" },
+        });
+      }
+      return new Response("{}", {
+        status: 200,
+        headers: { "set-cookie": "__Host-npi_session=" + "A".repeat(43) + "; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=3600" },
+      });
+    }
+    throw new Error("Unexpected network destination: " + url);
+  }) as typeof fetch;
+  try {
+    const response = await finishCustomerIdentity(proof.request);
+    await run(response, calls);
+  } finally {
+    globalThis.fetch = priorFetch;
+    if (oldKey === undefined) delete process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
+    else process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = oldKey;
+    if (oldFlag === undefined) delete process.env["NPI_CUSTOMER_SESSION_API_ENABLED"];
+    else process.env["NPI_CUSTOMER_SESSION_API_ENABLED"] = oldFlag;
+  }
+}
+
+test("signed Cognito identity alone never grants a customer session with feature gate off", async () => {
+  await withCallbackMock("flag-off", (response, calls) => {
+    assert.equal(response.status, 200);
+    assert.equal(calls, 0);
+    assert.doesNotMatch(responseCookies(response).join(","), /__Host-npi_session=/);
+    assert.match(responseCookies(response).join(","), /__Host-npi_oidc_tx=/);
+  });
+});
+
+test("valid MFA and signed backend session acknowledgement set only the host cookie", async () => {
+  await withCallbackMock("approved", async (response, calls) => {
+    assert.equal(response.status, 200);
+    assert.equal(calls, 1);
+    const cookies = responseCookies(response).join(",");
+    assert.match(cookies, /__Host-npi_session=/);
+    assert.match(cookies, /HttpOnly/);
+    assert.match(cookies, /Secure/);
+    assert.doesNotMatch(cookies, /Domain=/);
+    assert.match(await response.text(), /Business account connected/);
+  });
+});
+
+test("missing account approval never issues a session cookie", async () => {
+  await withCallbackMock("not-approved", (response, calls) => {
+    assert.equal(response.status, 200);
+    assert.equal(calls, 1);
+    assert.doesNotMatch(responseCookies(response).join(","), /__Host-npi_session=/);
+  });
+});
+
+test("untrusted session service cookie with Domain attribute is discarded", async () => {
+  await withCallbackMock("forged-cookie", (response, calls) => {
+    assert.equal(response.status, 200);
+    assert.equal(calls, 1);
+    assert.doesNotMatch(responseCookies(response).join(","), /__Host-npi_session=/);
+  });
 });
