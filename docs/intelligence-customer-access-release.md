@@ -3,14 +3,14 @@
 This is a **production infrastructure foundation, not a customer launch certificate**.
 
 Table: novapharm-intelligence-customer-access (AWS Stockholm / eu-north-1).
-Encryption: AWS-managed DynamoDB KMS, PITR, TTL on expiresAt and deletion protection. No public IAM policy. Never put credentials, OAuth codes, tokens, clinical content or raw payment details in a row.
+Encryption: AWS-managed DynamoDB KMS, PITR, TTL on ttlEpoch and deletion protection. No public IAM policy. Never put credentials, OAuth codes, tokens, clinical content or raw payment details in a row.
 
 ## Keys, enforced by the server-side application (not client claims)
 
 - PK=TENANT#<tenantId>, SK=META: approved organisation, signed contract, owner, seat limit, status.
 - PK=SUBJECT#<CognitoSub>, SK=TENANT#<tenantId>: approved membership; no auto-provisioning from Cognito or Stripe.
 - PK=TENANT#<tenantId>, SK=SEAT#<CognitoSub>: role, feature allowlist and incrementing sessionVersion (revoke by rotating version).
-- PK=SESSION#<sha256(opaqueCookie)>, SK=META: Cognito subject, tenant, MFA-attested identity, issuedAt, expiresAt, status, revocation. TTL expiresAt is **Unix seconds**; authorization checks expiry on every read, never rely on DynamoDB TTL deletion timing.
+- PK=SESSION#<sha256(opaqueCookie)>, SK=META: Cognito subject, tenant, MFA-attested identity, issuedAt, expiresAt (ISO-8601), ttlEpoch (Unix seconds), status, revocation. Authorization checks expiresAt on every read, never rely on DynamoDB TTL deletion timing.
 - PK=TENANT#<tenantId>, SK=BILLING#<CognitoSub>: explicitly reconciled, signature-backed Stripe subscription and accepted contract.
 - PK=TENANT#<tenantId>, SK=USAGE#<CognitoSub>#YYYY-MM: authoritative feature usage.
 
