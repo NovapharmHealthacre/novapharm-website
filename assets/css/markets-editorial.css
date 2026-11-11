@@ -28,7 +28,7 @@ main.markets-editorial {
 .markets-editorial h2,
 .markets-editorial h3 {
   font-family: inherit;
-  letter-spacing: -.055em;
+  letter-spacing: 0;
   text-wrap: balance;
 }
 .markets-editorial .markets-overline {
@@ -84,7 +84,7 @@ main.markets-editorial {
   font-size: clamp(3.3rem, 6.9vw, 6.55rem);
   font-weight: 640;
   line-height: .995;
-  letter-spacing: -.072em;
+  letter-spacing: 0;
 }
 .markets-editorial .markets-hero-intro {
   max-width: 515px;
@@ -92,7 +92,7 @@ main.markets-editorial {
   color: rgba(255,255,255,.91);
   font-size: clamp(1.11rem, 1.58vw, 1.42rem);
   line-height: 1.56;
-  letter-spacing: -.014em;
+  letter-spacing: 0;
 }
 .markets-editorial .markets-actions {
   display: flex;
@@ -210,7 +210,7 @@ main.markets-editorial {
   font-size: clamp(1.45rem,2.15vw,2.2rem);
   font-weight: 620;
   line-height: 1.16;
-  letter-spacing: -.05em;
+  letter-spacing: 0;
 }
 .markets-editorial .markets-card p {
   max-width: 460px;
@@ -246,7 +246,7 @@ main.markets-editorial {
   font-size: clamp(2.95rem,4.9vw,5.1rem);
   font-weight: 630;
   line-height: 1.08;
-  letter-spacing: -.065em;
+  letter-spacing: 0;
 }
 .markets-editorial .markets-principle-copy > p:not(.markets-overline) {
   max-width: 640px;
@@ -281,7 +281,7 @@ main.markets-editorial {
   max-width: 1120px;
   font-size: clamp(2.8rem,5.7vw,5.6rem);
   line-height: 1.08;
-  letter-spacing: -.068em;
+  letter-spacing: 0;
   font-weight: 640;
 }
 .markets-editorial .markets-final > .markets-shell > p {
