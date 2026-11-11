@@ -36,7 +36,8 @@
         "TimeToLiveSpecification": {
           "AttributeName": "expiresAt",
           "Enabled": true
-        }
+        },
+        "DeletionProtectionEnabled": true
       }
     },
     "CheckoutLogGroup": {
@@ -319,6 +320,12 @@
         "DefaultRouteSettings": {
           "ThrottlingBurstLimit": 10,
           "ThrottlingRateLimit": 3
+        },
+        "AccessLogSettings": {
+          "DestinationArn": {
+            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/apigateway/novapharm-production-esco-checkout"
+          },
+          "Format": "{\"requestId\":\"$context.requestId\",\"route\":\"$context.routeKey\",\"method\":\"$context.httpMethod\",\"status\":\"$context.status\",\"latencyMs\":\"$context.responseLatency\",\"integrationStatus\":\"$context.integrationStatus\"}"
         }
       }
     },
