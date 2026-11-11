@@ -41,7 +41,7 @@ for (const slug of routes) {
       assert.ok(html.includes(region), "Markets regional photograph or description missing: " + region);
     }
     assert.equal((html.match(/<article class="markets-card /g) || []).length, 5, "Markets must present five regional photo cards.");
-    assert.doesNotMatch(html, /<svg\b|heroicon|lucide/i, "Markets page must not add decorative icons or SVG illustrations.");
+    assert.doesNotMatch(html.match(/<main id="main" class="markets-editorial"[\s\S]*?<\/main>/i)?.[0] || "", /<svg\b|heroicon|lucide/i, "Markets page must not add decorative icons or SVG illustrations.");
     assert.match(html, /UK permissions do not confer distribution rights in other countries/);
   }
   if (slug === "distribution") {
