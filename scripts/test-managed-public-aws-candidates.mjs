@@ -20,6 +20,12 @@ test("AWS candidate images admit only the four public Next.js applications", () 
 
 test("runtime is non-root, keeps immutable provenance and remains a nonproduction candidate", () => {
   assert.match(docker, /COPY --from=builder --chown=node:node/);
+  assert.match(docker, /^FROM node:24-alpine3\.23 AS builder$/m);
+  assert.match(docker, /^FROM node:24-alpine3\.23 AS runtime$/m);
+  assert.match(docker, /^RUN apk upgrade --no-cache$/m);
+  assert.doesNotMatch(docker, /FROM node:24-trixie-slim/, "Do not ship the known HIGH glibc candidate base");
+  assert.match(docker, /\/workspace\/apps\/\$\{APP\}\/\.next\/static\/\s+\/app\/apps\/\$\{APP\}\/\.next\/static\//,
+    "All four standalone public applications must ship their hashed CSS and JavaScript");
   assert.match(docker, /RUN test -f "\/app\/apps\/\$\{APP\}\/server\.js"/);
   assert.match(docker, /USER node/);
   assert.match(docker, /novapharm\.release-gate="nonproduction-candidate-not-approved"/);
