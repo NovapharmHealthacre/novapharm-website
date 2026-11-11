@@ -80,6 +80,28 @@ type MedicineDetail = Readonly<{
     lenses: readonly Readonly<{ id: string; name: string; type: string; state: string; next: string; sourceRights: string; decisionUsable: boolean }>[];
     requiredBeforeDecision: readonly string[];
     limitations: readonly string[];
+    researchPlan?: Readonly<{
+      contract: "novapharm.intelligence.nova-investigation-plan.v1";
+      status: "planning_only";
+      executionAuthorized: false;
+      decisionReady: false;
+      steps: readonly Readonly<{
+        id: string;
+        type: "read_only_research_plan";
+        toolBoundary: string;
+        requiredProof: readonly string[];
+        status: "not_authorised_to_execute";
+        executionAuthorized: false;
+        lenses: readonly Readonly<{ id: string; observedState: string }>[];
+      }>[];
+      hypotheses: readonly Readonly<{
+        id: string;
+        proposition: string;
+        disconfirmingEvidence: string;
+        epistemicStatus: "untested_hypothesis";
+        evidenceAccepted: false;
+      }>[];
+    }>;
   }>;
 }>;
 
@@ -607,6 +629,31 @@ function MedicineInvestigationPassport({ passport }: Readonly<{ passport: NonNul
         </tr>)}</tbody>
       </table>
     </section>
+    {passport.researchPlan?.status === "planning_only" && passport.researchPlan.executionAuthorized === false && passport.researchPlan.decisionReady === false ? (
+      <details>
+        <summary>Scientific research plan: seven stages and testable hypotheses</summary>
+        <p className={styles.empty}>A proposed research sequence, not an autonomous AI run or approved market conclusion. Every step remains blocked until separate server-side authorisation and evidence checks.</p>
+        <section className={styles.tableRegion} tabIndex={0} aria-label="NOVA proposed research stages, scrollable table">
+          <table>
+            <thead><tr><th scope="col">Investigation stage</th><th scope="col">Required verification</th><th scope="col">Execution</th></tr></thead>
+            <tbody>{passport.researchPlan.steps.map(step => <tr key={step.id}>
+              <th scope="row">{display(step.id)}</th>
+              <td>{step.requiredProof.join("; ")}</td>
+              <td>Not authorised</td>
+            </tr>)}</tbody>
+          </table>
+        </section>
+        <h3>Research hypotheses to test, not established findings</h3>
+        <section className={styles.tableRegion} tabIndex={0} aria-label="NOVA falsifiable research hypotheses, scrollable table">
+          <table>
+            <thead><tr><th scope="col">Hypothesis</th><th scope="col">Proposition</th><th scope="col">What could disprove it</th></tr></thead>
+            <tbody>{passport.researchPlan.hypotheses.map(hypothesis => <tr key={hypothesis.id}>
+              <th scope="row">{hypothesis.id}</th><td>{hypothesis.proposition}</td><td>{hypothesis.disconfirmingEvidence}</td>
+            </tr>)}</tbody>
+          </table>
+        </section>
+      </details>
+    ) : null}
     <p className={styles.empty}>Decision blocked pending rights, reconciled source data and authorised human review. Fingerprint tracks this snapshot only; it is not publisher attestation.</p>
   </section>;
 }
