@@ -54,6 +54,10 @@ await import("./apply-capabilities-editorial.mjs");
 // Apply approved, real-image Products presentation last.
 await import("./apply-products-editorial.mjs");
 
+// Generate one governed public search, then a cross-brand order-status lookup.
+await import("./generate-commerce-marketplace.mjs");
+await import("./generate-commerce-tracking.mjs");
+
 // Version the final public CSS URLs so old Safari/edge caches cannot hide the approved logo.
 // This must run after all editorial transforms and before release source-SHA stamping.
 await import("./version-public-visual-assets.mjs");
