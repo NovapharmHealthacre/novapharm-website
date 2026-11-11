@@ -256,13 +256,10 @@ for (const [engineName, browserType] of engines) {
                 const styleLink = document.querySelector('link[href*="capabilities-editorial.css"]');
                 const headingStyle = hero && getComputedStyle(hero);
                 const gridStyle = grid && getComputedStyle(grid);
-                // The approved Earth horizon is a deliberate 800×53 panorama; the vial is 800×224.
-                // Require each asset to load at its real intended dimensions and appear on screen.
-                const illustrationOk = (image, minHeight) => image && image.complete &&
-                  image.naturalWidth > 100 && image.naturalHeight > minHeight &&
+                const illustrationOk = (image, expectedHeight) => image && image.complete &&
+                  image.naturalWidth === 800 && image.naturalHeight === expectedHeight &&
                   image.getBoundingClientRect().width > 100 &&
-                  getComputedStyle(image).display !== "none" &&
-                  getComputedStyle(image).visibility !== "hidden";
+                  image.getBoundingClientRect().height > (expectedHeight === 53 ? 15 : 30);
                 return {
                   heading: hero?.innerText.replace(/\s+/g, " ").trim() ?? "",
                   headlineSize: Number.parseFloat(headingStyle?.fontSize ?? "0"),
@@ -270,8 +267,8 @@ for (const [engineName, browserType] of engines) {
                   disciplineCount: document.querySelectorAll(".ncap-discipline").length,
                   gridDisplay: gridStyle?.display,
                   gridColumns: gridStyle?.gridTemplateColumns.trim().split(/\s+/).length ?? 0,
-                  vialVisible: Boolean(illustrationOk(vial, 100)),
-                  earthVisible: Boolean(illustrationOk(earth, 40)),
+                  vialVisible: Boolean(illustrationOk(vial, 224)),
+                  earthVisible: Boolean(illustrationOk(earth, 53)),
                   earthBackground: earthPanel && getComputedStyle(earthPanel).backgroundColor,
                   cssVersion: styleLink?.getAttribute("href") ?? "",
                   ctaCount: document.querySelectorAll('.ncap-earth a[href^="/contact/"]').length

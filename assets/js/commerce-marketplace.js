@@ -36,10 +36,14 @@
     const article=element('article','mp-card');
     const media=element('div','mp-card-picture');
     const img=element('img');img.loading='lazy';img.decoding='async';
-    if(/^\/assets\/media\/[a-zA-Z0-9/_-]+\.(?:png|avif|webp|svg)$/.test(p.image))img.src=p.image;
-    else img.src='/assets/media/products/licensed-image-pending.svg';
-    img.alt=p.photoCaption||('Product reference '+p.title);
-    media.append(img);
+    if(/^\/assets\/media\/[a-zA-Z0-9/_-]+\.(?:png|avif|webp|svg)$/.test(p.image)){
+      img.src=p.image;
+      img.alt=p.photoCaption||('Product reference '+p.title);
+      img.addEventListener('error',()=>{img.remove();media.append(element('span','mp-image-pending','Image under review'));},{once:true});
+      media.append(img);
+    }else{
+      media.append(element('span','mp-image-pending','Image under review'));
+    }
     const copy=element('div','mp-card-copy');
     copy.append(element('div','mp-card-label',p.brand+' / '+p.category));
     copy.append(element('h3','',p.title));

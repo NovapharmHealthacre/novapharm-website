@@ -54,7 +54,7 @@ await import("./apply-capabilities-editorial.mjs");
 // Apply approved, real-image Products presentation last.
 await import("./apply-products-editorial.mjs");
 
-// Build the unified, public discovery surface after source-specific storefronts.
+// Generate one governed public search, then a cross-brand order-status lookup.
 await import("./generate-commerce-marketplace.mjs");
 await import("./generate-commerce-tracking.mjs");
 

@@ -60,11 +60,27 @@ const body=`<main id="main" class="mp-main" data-commerce-marketplace>
 </section><section class="mp-wrap mp-compare" aria-labelledby="mp-compare-title" id="mp-compare" hidden><div class="mp-heading"><p class="mp-eyebrow">PRODUCT COMPARISON</p><h2 id="mp-compare-title">Compare what matters.</h2><p>Prices may have different VAT and delivery treatments. Confirm final price at checkout or with NovaPharm.</p></div><div id="mp-compare-content"></div></section>
 <section class="mp-wrap mp-disclosure"><h2>Clearly governed.</h2><p>Each listing identifies its merchant, source and price basis. ESCO references are not necessarily saleable variants. Declared warehouse quantities are not verified available-to-promise stock. Checkout, delivery, regulatory requirements and refunds remain controlled by each product's approved order process.</p>
 <a href="/products/nutraxin/">Explore Nutraxin</a><a href="/products/esco/">Explore ESCO</a></section></main>`;
+
+// A derived route must not inherit product-portfolio photography or Products-only
+// JSON-LD/social identity. The Products artwork is approved for that route alone.
+function removeInheritedProductMedia(html) {
+  const headEnd=html.indexOf('</head>');
+  if(headEnd<0)throw new Error('Expected head closing tag');
+  let head=html.slice(0,headEnd);
+  head=head.replace(/<meta\s+(?:property|name)="(?:og:image(?::[^"]*)?|twitter:image(?::[^"]*)?)"[^>]*>\s*/g,'');
+  head=head.replace(/<meta\s+[^>]*product-portfolio-evidence\.jpg[^>]*>\s*/g,'');
+  head=head.replace(/<script\s+type="application\/ld\+json"[^>]*>[\s\S]*?<\/script>/g, block=>
+    block.includes('product-portfolio-evidence.jpg')?'':block);
+  if(head.includes('product-portfolio-evidence.jpg'))throw new Error('Products-only media remained in derived social metadata');
+  return head+html.slice(headEnd);
+}
+
 let html=template.replace(main[0],body).replace(/<title>[\s\S]*?<\/title>/,'<title>Shop Nutraxin & ESCO | NovaPharm Commerce</title>');
 html=html.replace(/<link rel="canonical" href="[^"]*"/,'<link rel="canonical" href="https://novapharmhealthcare.com/products/marketplace/"');
 html=html.replace(/<meta name="description" content="[^"]*"/,'<meta name="description" content="Search and compare 392 Nutraxin and ESCO products in one NovaPharm catalogue. Find product specifications, owners and governed ordering routes."');
 html=html.replace('</head>','<link rel="stylesheet" href="/assets/css/commerce-marketplace.css"><script src="/assets/js/commerce-marketplace.js" defer></script></head>');
 assert(html.includes('data-commerce-marketplace')&&html.includes('commerce-marketplace.css'));
+html=removeInheritedProductMedia(html);
 const target=join(root,'products/marketplace/index.html');mkdirSync(dirname(target),{recursive:true});writeFileSync(target,html,'utf8');
 const callToAction='<section class="npd-commerce-link" aria-label="Unified product search"><p>ONE SEARCH. BOTH PORTFOLIOS.</p><h2>Explore the complete catalogue.</h2><a href="/products/marketplace/">Search all 392 products</a></section>';
 let productsIndex=template;

@@ -43,3 +43,11 @@ test('public marketplace JS never collects payments or presents owner declared s
  assert.doesNotMatch(app,/checkout\.sessions\.create|sk_live_|whsec_|cardNumber|ownerDeclaredUnits/);
  assert.match(app,/stock to be confirmed|Stock to be confirmed/i);
 });
+
+test('derived catalogue and tracking pages do not reuse Products-only image rights',()=>{
+  for(const route of ['products/marketplace/index.html','products/track/index.html']){
+    const html=read(route);
+    assert.doesNotMatch(html,/product-portfolio-evidence\.jpg/);
+    assert.match(html,/<link rel="canonical"/);
+  }
+});
