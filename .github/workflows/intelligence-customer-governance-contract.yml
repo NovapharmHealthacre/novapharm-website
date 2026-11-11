@@ -1,0 +1,47 @@
+name: Intelligence customer governance contract
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/intelligence-customer-governance.mjs'
+      - 'scripts/test-intelligence-customer-governance.mjs'
+      - 'src/core/intelligence-customer-oidc.mjs'
+      - 'src/core/intelligence-subscription-entitlements.mjs'
+      - 'src/core/intelligence-billing-events.mjs'
+      - '.github/workflows/intelligence-customer-governance-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  customer-governance:
+    name: Customer tenant, source rights and revocation fencing
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out exact review commit
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install exact locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts
+      - name: Deny unverified identities, tenants, subscriptions and source rights
+        run: node --test scripts/test-intelligence-customer-governance.mjs
+      - name: Preserve signed Cognito customer identity
+        run: node --test scripts/test-intelligence-customer-oidc.mjs
+      - name: Preserve Stripe subscription and billing event boundaries
+        run: |
+          node --test scripts/test-intelligence-subscription-entitlements.mjs
+          node --test scripts/test-intelligence-billing-events.mjs
+      - name: Verify this release does not silently enable customers
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'customerLaunchAccepted !== true' src/core/intelligence-customer-governance.mjs
+          grep -Fq 'atomicAuthorityCommitApproved !== true' src/core/intelligence-customer-governance.mjs
+          grep -Fq 'majorityAcknowledged !== true' src/core/intelligence-customer-governance.mjs
+          grep -Fq 'return deny("authoritative_ledger_unavailable")' src/core/intelligence-customer-governance.mjs
