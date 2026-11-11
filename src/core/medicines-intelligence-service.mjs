@@ -1,6 +1,8 @@
 import { all, nowIso, one } from "../data/database.mjs";
 import { distanceKm, normaliseAnalyticsQuery, normaliseNearbyQuery } from "./medicines-query-contract.mjs";
 import { buildMedicineIdentityRelationships } from "./medicine-identity-relationships.mjs";
+import { buildMedicineInvestigationPassport } from "./medicine-investigation-passport.mjs";
+import { buildObservedMedicineChange } from "./medicine-observed-change.mjs";
 
 function forbidden() {
   return Object.assign(new Error("You do not have permission to use Medicines Intelligence."), { statusCode: 403 });
@@ -375,7 +377,7 @@ export async function medicineIdentityDetail(medicineId, context) {
     },
     aliases, codeHistory, hierarchy
   });
-  return {
+  const detail = {
     identityRelationships,
     medicine: { medicineId: medicine.medicine_id, canonicalName: medicine.canonical_name, medicineLevel: medicine.medicine_level,
       snomedCode: medicine.snomed_code, dmDStatus: medicine.dm_d_status, supplierName: medicine.supplier_name,
@@ -391,6 +393,7 @@ export async function medicineIdentityDetail(medicineId, context) {
     dataFreshness: medicine.source_last_seen_at,
     generatedAt: nowIso(),
   };
+  return { ...detail, investigationPassport: buildMedicineInvestigationPassport(detail) };
 }
 
 function epdScope(query, medicineIds) {
@@ -655,15 +658,21 @@ export async function queryMedicineAnalytics(input, context) {
   const chronologicalSeries = [...series].reverse();
   const seriesTotal = query.metric === "items_per_1000" ? null : chronologicalSeries.reduce((sum, row) => sum + Number(row.metric_value || 0), 0);
   const reconciliationApplicable = query.metric !== "items_per_1000" && monthCount <= 120;
+  const reconciliation = { applicable: reconciliationApplicable, tableTotal, seriesTotal,
+    reconciles: reconciliationApplicable ? Math.abs(tableTotal - seriesTotal) < 0.000001 : null,
+    seriesTruncated: monthCount > 120 };
+  const dataState = analyticalSourceState(totalRows, Boolean(sourceAvailable?.available));
+  const observedChange = buildObservedMedicineChange({
+    medicineId: query.filters.medicineId, dataset: query.dataset, metric: query.metric,
+    dataState, sourceId: scope.sourceId, series: chronologicalSeries, reconciliation
+  });
   return {
     query, source: scope.source, sourcePeriods: periods.map((row) => row.reporting_period),
-    dataState: analyticalSourceState(totalRows, Boolean(sourceAvailable?.available)), rows, series: chronologicalSeries,
+    dataState, rows, series: chronologicalSeries, observedChange,
     summary: normaliseAnalyticsSummary(summaryRow, totalRows > 0),
     breakdowns: { geographies, presentations, practices },
     pagination: { page: query.page, pageSize: query.pageSize, totalRows, totalPages: Math.ceil(totalRows / query.pageSize) },
-    reconciliation: { applicable: reconciliationApplicable, tableTotal, seriesTotal,
-      reconciles: reconciliationApplicable ? Math.abs(tableTotal - seriesTotal) < 0.000001 : null,
-      seriesTruncated: monthCount > 120 },
+    reconciliation,
     limitations: [
       query.dataset === "epd" ? "EPD describes prescribing attributed to published practices; practice postcode is not patient residence." : "PCA describes community dispensing and reimbursement-oriented management information; it is not prescribing or NovaPharm sales.",
       "Only successful non-sample ingestion runs can contribute to this response.",
