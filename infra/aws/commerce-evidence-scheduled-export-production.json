@@ -82,7 +82,6 @@
             "Arn"
           ]
         },
-        "ReservedConcurrentExecutions": 1,
         "Environment": {
           "Variables": {
             "EVIDENCE_BUCKET": "novapharm-intelligence-evidence-250675045172-eu-north-1",
