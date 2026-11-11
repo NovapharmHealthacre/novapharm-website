@@ -1,0 +1,21 @@
+{
+  "schema_version": "novapharm.intelligence.publisher-metadata-evidence.v1",
+  "source_id": "nhsbsa.epd",
+  "publisher": "NHS Business Services Authority",
+  "dataset_slug": "english-prescribing-dataset-epd-with-snomed-code",
+  "resource_id": "30b74257-9912-4b54-8990-8eec2a4b7f14",
+  "resource_name": "EPD_SNOMED_202608",
+  "reporting_period": "2026-08",
+  "resource_format": "CSV",
+  "resource_size_bytes": 7432815985,
+  "publisher_advertised_sha256": "1a3ee72477c8e999cabd3284544bf370f78eb3045529191c0062bf74c9a1017b",
+  "publisher_metadata_response_sha256": "19734e62257df4bf940b82ad6bcf0dc5608765f45e5074ebf253c278ced6a1a5",
+  "publisher_license_id": "OGL-UK-3.0",
+  "publisher_metadata_resource_count": 70,
+  "metadata_audit_codebuild_id": "novapharm-intelligence-production-image-candidate:13fb410e-4fda-4bd6-ab94-edad5ead27ac",
+  "publisher_hash_independently_verified": false,
+  "source_file_downloaded": false,
+  "terminology_rights_approved": false,
+  "production_observations_accepted": 0,
+  "production_admission_status": "blocked_pending_independent_review"
+}

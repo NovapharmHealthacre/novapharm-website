@@ -1,0 +1,72 @@
+name: Recover confirmed stale browser acceptance runners
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/recover-stale-browser-runners.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: novapharm-stale-browser-runner-recovery
+  cancel-in-progress: false
+
+jobs:
+  recover-only-verified-stale-runs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Release only identified, hour-stalled Playwright installation jobs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # These historical run IDs and SHAs are intentionally pinned. Never
+          # search-and-cancel arbitrary active production or security runs.
+          targets=(
+            '43048809151|c95ba0de6f44be28c986bfa8740e7145a17f532d'
+            '43044601860|1552c604276174d3cb38cd22fcf1569b0e8f4af2'
+            '43040164988|f000141d25780d11ef93ad8e961d6bb34ddb6f6f'
+            '43038478411|2f74f102cdc71520f168745be1d8bb8c05172128'
+            '43036889858|bc701ed7e1ebc54af865f733fb766262b2a70b56'
+            '43036475671|16f2dd47dfed8614597dd322b6062dac940b392c'
+          )
+          now="$(date -u +%s)"
+          for entry in "${targets[@]}"; do
+            IFS='|' read -r id expected_sha <<< "$entry"
+            run="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id")"
+            name="$(jq -r '.name' <<< "$run")"
+            sha="$(jq -r '.head_sha' <<< "$run")"
+            status="$(jq -r '.status' <<< "$run")"
+            created="$(jq -r '.created_at' <<< "$run")"
+            if [[ "$sha" != "$expected_sha" ]]; then
+              echo "::error::Run $id points to unexpected source SHA; refusing cancellation"
+              exit 1
+            fi
+            case "$name" in
+              'Unified Chromium and WebKit acceptance'|'Public Pages Chromium and WebKit acceptance') ;;
+              *) echo "::error::Unexpected run type for $id: $name"; exit 1 ;;
+            esac
+            if [[ "$status" != 'in_progress' ]]; then
+              echo "Run $id is $status; no cancellation required"
+              continue
+            fi
+            started_epoch="$(date -u -d "$created" +%s)"
+            if (( now - started_epoch < 3600 )); then
+              echo "Run $id has not exceeded the one-hour age gate; preserving it"
+              continue
+            fi
+            jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id/jobs?per_page=100")"
+            if ! jq -e '[.jobs[] | select(.status == "in_progress") | .steps[]? | select(.status == "in_progress" and .name == "Install Chromium and WebKit")] | length > 0' <<< "$jobs" > /dev/null; then
+              echo "Run $id is no longer hung in the legacy Playwright install step; preserving it"
+              continue
+            fi
+            gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$id/cancel" > /dev/null
+            echo "Requested cancellation of legacy Playwright install run $id; exact SHA and current step verified"
+          done
+          echo 'Recovery is limited to the six pre-identified historical browser test runs.'
