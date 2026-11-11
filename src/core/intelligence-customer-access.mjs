@@ -21,7 +21,7 @@ function validInstant(value) {
   if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u.test(value)) return null;
   const millis = Date.parse(value);
   if (!Number.isSafeInteger(millis)) return null;
-  return new Date(millis).toISOString() === (value.endsWith(".000Z") ? value : value.replace(/Z$/u, ".000Z")) ? millis : null;
+  return new Date(millis).toISOString() === (value.includes(".") ? value : value.replace(/Z$/u, ".000Z")) ? millis : null;
 }
 
 /** Only issue after durable, atomic session-record creation by the trusted backend. */
