@@ -24,26 +24,31 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
         const response=await page.goto(origin+"/oncology/",{waitUntil:"networkidle",timeout:30000});
         assert.equal(response?.status(),200,`${engine} ${viewport.name}: page HTTP`);
         await page.locator(".npoc-hope-hero").waitFor({state:"visible"});
-        // Offscreen category images are intentionally lazy-loaded by the public site.
-        // Bring each into view before testing decoding, without changing page behaviour.
-        for (const image of await page.locator(".npoc-hope-hero img,.npoc-focus-cards img").all()) {
-          await image.scrollIntoViewIfNeeded({timeout:15000});
-        }
+        // Lazy category images must be decoded *while intersecting the viewport*.
+        // Scrolling past all cards before awaiting their decode can leave earlier
+        // lazy images unloaded indefinitely on WebKit and busy CI runners.
+        // Preserve the real public lazy-loading behaviour and strict 15s limit.
         await page.evaluate(async () => {
-          // Never leave CI waiting on a missed image load event or a stalled font.
-          // These timeouts are fail-closed: invalid or missing images still fail acceptance.
-          const bounded = (promise, label) => Promise.race([
-            promise,
-            new Promise((_, reject) => setTimeout(() => reject(new Error(`${label} did not load within 15 seconds`)), 15_000)),
+          await Promise.race([
+            document.fonts.ready,
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error("Oncology fonts did not load within 15 seconds")), 15_000)),
           ]);
-          await bounded(document.fonts.ready, "Oncology fonts");
-          for (const img of document.querySelectorAll(".npoc-hope-hero img,.npoc-focus-cards img")) {
-            await bounded(img.decode(), `Oncology image ${img.currentSrc || img.src}`);
-            if (!img.complete || img.naturalWidth <= 0) {
-              throw new Error(`Oncology image is missing or broken: ${img.currentSrc || img.src}`);
-            }
-          }
         });
+        for (const image of await page.locator(".npoc-hope-hero img,.npoc-focus-cards img").all()) {
+          await image.scrollIntoViewIfNeeded({timeout:15_000});
+          await image.evaluate(async (img) => {
+            const src = img.currentSrc || img.src;
+            await Promise.race([
+              img.decode(),
+              new Promise((_, reject) =>
+                setTimeout(() => reject(new Error(`Oncology image ${src} did not load within 15 seconds`)), 15_000)),
+            ]);
+            if (!img.complete || img.naturalWidth <= 0) {
+              throw new Error(`Oncology image is missing or broken: ${src}`);
+            }
+          });
+        }
         const layout=await page.evaluate(() => {
           const hero=document.querySelector(".npoc-hope-hero");
           const imageLayer=hero?.querySelector(".npoc-hero-visual");
@@ -75,7 +80,7 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
         assert.match(layout.heading,/A Hope for\s*Tomorrow\./,`${label}: heading`);
         assert.equal(layout.hasAnnotation,false,`${label}: removed annotation returned`);
         assert.ok(layout.imageLoaded,`${label}: portrait did not load`);
-        assert.equal(layout.imageFit,viewport.width>=1101?"cover":"contain",`${label}: reference-responsive portrait fit`);
+        assert.equal(layout.imageFit,"contain",`${label}: complete portrait preserves its framing across responsive hero sizes`);
         assert.ok(layout.portraitWidth>260 && layout.portraitHeight>200,`${label}: portrait collapsed`);
         assert.ok(layout.heroWidth>=layout.viewportWidth-2,`${label}: hero is not full width`);
         assert.equal(layout.cards.length,3,`${label}: three category images`);
