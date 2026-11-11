@@ -6357,6 +6357,7 @@
       "provenanceRecord": "creative-assets/module-media-asset-register.json#insight-compliance-first",
       "semanticPurpose": "Quality release gate before distribution",
       "routes": [
+        "/distribution/",
         "/news-insights/",
         "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
       ],
@@ -6412,6 +6413,7 @@
       "provenanceRecord": "creative-assets/module-media-asset-register.json#insight-compliance-first",
       "semanticPurpose": "Quality release gate before distribution",
       "routes": [
+        "/distribution/",
         "/news-insights/",
         "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
       ],
@@ -6470,6 +6472,7 @@
       "provenanceRecord": "creative-assets/module-media-asset-register.json#insight-compliance-first",
       "semanticPurpose": "Quality release gate before distribution",
       "routes": [
+        "/distribution/",
         "/news-insights/",
         "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
       ],
@@ -6525,6 +6528,7 @@
       "provenanceRecord": "creative-assets/module-media-asset-register.json#insight-compliance-first",
       "semanticPurpose": "Quality release gate before distribution",
       "routes": [
+        "/distribution/",
         "/news-insights/",
         "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
       ],
@@ -6580,6 +6584,7 @@
       "provenanceRecord": "creative-assets/module-media-asset-register.json#insight-compliance-first",
       "semanticPurpose": "Quality release gate before distribution",
       "routes": [
+        "/distribution/",
         "/news-insights/",
         "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
       ],
@@ -6677,6 +6682,7 @@
       "provenanceRecord": "creative-assets/module-media-asset-register.json#insight-compliance-first",
       "semanticPurpose": "Quality release gate before distribution",
       "routes": [
+        "/distribution/",
         "/news-insights/",
         "/news-insights/compliance-first-pharmaceutical-distribution-uk/"
       ],
