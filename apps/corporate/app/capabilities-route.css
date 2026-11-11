@@ -1,0 +1,56 @@
+/* Managed Next.js parity for the owner-approved static Capabilities design.
+   Scoped so the global corporate design system is unaffected. */
+.ncap-managed {
+  width: 100%;
+  overflow: hidden;
+  background: #fff;
+  color: #0b0b0d;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+}
+.ncap-managed h1,
+.ncap-managed h2,
+.ncap-managed h3,
+.ncap-managed p,
+.ncap-managed a {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+}
+.ncap-managed h1,
+.ncap-managed h2,
+.ncap-managed h3 { font-weight: 700; }
+.ncap-managed .ncap-hero {
+  display: block;
+  min-height: 0;
+  padding-top: clamp(82px, 9vw, 146px);
+  background: #fff;
+  text-align: center;
+}
+.ncap-managed .ncap-hero-art {
+  margin: 0 auto;
+  width: min(100%, 1500px);
+  height: clamp(330px, 40vw, 590px);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.ncap-managed .ncap-hero-art img {
+  display: block;
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+}
+.ncap-managed .ncap-earth { background: #071625; }
+.ncap-managed .ncap-earth-image img {
+  display: block;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+.ncap-managed a { text-decoration: none; }
+.ncap-managed .ncap-cta { color: #fff; }
+.ncap-managed .ncap-cta:hover { color: #101d2b; }
+@media (max-width: 760px) {
+  .ncap-managed .ncap-hero { padding-top: clamp(66px, 12vw, 90px); }
+  .ncap-managed .ncap-hero-art { height: clamp(240px, 68vw, 440px); }
+}
