@@ -33,11 +33,21 @@ export function verifyPrivatePreviewUri(value) {
   try { uri = new URL(value); } catch { throw new Error("Unapproved private Atlas connection target."); }
   if (uri.protocol !== "mongodb+srv:" || uri.hostname !== expectedHost ||
       uri.username !== expectedUser || !uri.password || uri.port || uri.hash ||
-      uri.pathname !== "/" + freePreviewAtlasTarget.database ||
-      uri.searchParams.get("tls") === "false" ||
-      uri.searchParams.get("ssl") === "false" ||
-      uri.searchParams.get("directConnection") === "true" ||
-      (uri.searchParams.has("authSource") && uri.searchParams.get("authSource") !== "admin")) {
+      uri.pathname !== "/" + freePreviewAtlasTarget.database) {
+    throw new Error("Unapproved private Atlas connection target.");
+  }
+  // With mongodb+srv TLS is enabled by default. Explicitly allow only these
+  // exact non-security-changing options; disallow case variants, duplicates,
+  // insecure certificate overrides, alternate auth, and unknown driver flags.
+  const required = new Map([
+    ["retryWrites", "false"],
+    ["w", "majority"],
+    ["appName", "novapharm-intelligence-preview-observer"],
+  ]);
+  if ([...uri.searchParams].length !== required.size ||
+      [...uri.searchParams].some(([name, setting]) =>
+        !required.has(name) || required.get(name) !== setting ||
+        uri.searchParams.getAll(name).length !== 1)) {
     throw new Error("Unapproved private Atlas connection target.");
   }
   return value;
