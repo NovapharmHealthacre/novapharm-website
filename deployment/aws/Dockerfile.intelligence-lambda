@@ -1,16 +1,17 @@
 # Private, on-demand Intelligence runtime candidate (not customer-approved).
+# Alpine/musl is a security remediation CANARY, not production acceptance.
 # The official AWS Lambda Web Adapter lets a standard Next.js HTTP app run
 # on Lambda, avoiding idle ECS/ALB/NAT fees until actual users are onboarded.
 # No identity secrets, customer data, Stripe keys or API origins are embedded.
-FROM node:24-trixie-slim AS builder
-RUN apt-get update && apt-get install --only-upgrade -y zlib1g && rm -rf /var/lib/apt/lists/*
+FROM node:24-alpine3.23 AS builder
+RUN apk upgrade --no-cache
 WORKDIR /workspace
 COPY . .
 RUN npm ci --ignore-scripts
 RUN npm run build --workspace=@novapharm/portal
 
-FROM node:24-trixie-slim AS runtime
-RUN apt-get update && apt-get install --only-upgrade -y zlib1g && rm -rf /var/lib/apt/lists/*
+FROM node:24-alpine3.23 AS runtime
+RUN apk upgrade --no-cache
 COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:1.1.0 /lambda-adapter /opt/extensions/lambda-adapter
 ARG SOURCE_SHA
 LABEL org.opencontainers.image.title="NovaPharm Intelligence private serverless candidate" \

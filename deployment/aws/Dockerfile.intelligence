@@ -1,15 +1,16 @@
+# Security remediation canary, NOT approved for production without musl/native-ABI browser acceptance and ECR scan.
 # Isolated NovaPharm Intelligence production CANDIDATE.
 # This image never activates customers, billing, inference, DNS or private data.
 # Do not deploy before accepted ECR digest, dedicated API runtime and identity.
-FROM node:24-trixie-slim AS builder
-RUN apt-get update && apt-get install --only-upgrade -y zlib1g && rm -rf /var/lib/apt/lists/*
+FROM node:24-alpine3.23 AS builder
+RUN apk upgrade --no-cache
 WORKDIR /workspace
 COPY . .
 RUN npm ci --ignore-scripts
 RUN npm run build --workspace=@novapharm/portal
 
-FROM node:24-trixie-slim AS runtime
-RUN apt-get update && apt-get install --only-upgrade -y zlib1g && rm -rf /var/lib/apt/lists/*
+FROM node:24-alpine3.23 AS runtime
+RUN apk upgrade --no-cache
 ARG SOURCE_SHA
 LABEL org.opencontainers.image.title="NovaPharm Intelligence Medicines Terminal" \
       org.opencontainers.image.revision="${SOURCE_SHA}" \
@@ -19,6 +20,8 @@ ENV NODE_ENV=production \
     PORT=4303
 WORKDIR /app
 COPY --from=builder --chown=node:node /workspace/apps/portal/.next/standalone/ /app/
+# Next.js standalone omits hashed JS and CSS; ship these immutable assets with the matching build.
+COPY --from=builder --chown=node:node /workspace/apps/portal/.next/static/ /app/apps/portal/.next/static/
 USER node
 EXPOSE 4303
 HEALTHCHECK --interval=30s --timeout=5s --start-period=45s --retries=3 \
