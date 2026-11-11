@@ -109,3 +109,45 @@
 }
 
 .esco-shop-bag .esco-payment-terms[hidden] { display:none!important; }
+
+/* Read-only receipt lookup: no customer identity or payment details on the public page. */
+.esco-shop-bag .esco-request-lookup {
+  margin:24px 0 0;
+  padding:22px 0 0;
+  border-top:1px solid #e5e5ea;
+}
+.esco-shop-bag .esco-request-lookup h3 {
+  font-size:1.2rem;
+  font-weight:650;
+  margin:0 0 8px;
+}
+.esco-shop-bag .esco-request-lookup p,
+.esco-shop-bag .esco-request-lookup label {
+  color:#57575f;
+  line-height:1.55;
+  font-size:.84rem;
+}
+.esco-shop-bag .esco-request-lookup label { display:block; margin:12px 0 7px; font-weight:620; }
+.esco-shop-bag .esco-request-lookup-fields { display:flex; flex-wrap:wrap; gap:10px; }
+.esco-shop-bag .esco-request-lookup-fields input {
+  min-width:0;
+  flex:1 1 190px;
+  border:1px solid #d6d6dc;
+  background:#fff;
+  color:#1d1d1f;
+  border-radius:12px;
+  padding:12px;
+  font-family:inherit;
+  font-size:.9rem;
+}
+.esco-shop-bag .esco-request-lookup-fields button {
+  border-radius:12px;
+  min-height:46px;
+  padding:10px 18px;
+}
+.esco-shop-bag .esco-request-lookup-fields :focus-visible {
+  outline:2px solid #0071e3;
+  outline-offset:2px;
+}
+.esco-shop-bag .esco-request-lookup-state { overflow-wrap:anywhere; }
+.esco-shop-bag .esco-request-lookup-state[hidden] { display:none!important; }
