@@ -258,7 +258,7 @@ jobs:
           grep -Fq 'href="/products/nutraxin/"' _site/products/index.html
           grep -Fq 'href="/products/esco/"' _site/products/index.html
           grep -Fq 'href="/products/strategic-portfolio/"' _site/products/index.html
-          grep -Fq 'href="/assets/css/products-editorial.css?v=20261111-forensic-design-v3"' _site/products/index.html
+          grep -Fq 'href="/assets/css/products-editorial.css?v=20261111-products-layout-v4"' _site/products/index.html
           test -s _site/assets/css/products-editorial.css
           grep -Fq 'PRODUCTS UNIFIED HERO 2026-11-10' _site/assets/css/products-editorial.css
           grep -Fq 'ESCO Anand' _site/products/index.html
