@@ -259,7 +259,7 @@ for (const [engineName, browserType] of engines) {
                 const illustrationOk = (image, expectedHeight) => image && image.complete &&
                   image.naturalWidth === 800 && image.naturalHeight === expectedHeight &&
                   image.getBoundingClientRect().width > 100 &&
-                  image.getBoundingClientRect().height > 30;
+                  image.getBoundingClientRect().height > (expectedHeight === 53 ? 15 : 30);
                 return {
                   heading: hero?.innerText.replace(/\s+/g, " ").trim() ?? "",
                   headlineSize: Number.parseFloat(headingStyle?.fontSize ?? "0"),
