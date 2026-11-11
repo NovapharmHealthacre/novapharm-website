@@ -1,9 +1,11 @@
 /**
  * NovaPharm Intelligence live Stripe Billing product and price registry.
  *
- * Catalog records exist in the UK LIVE Stripe account, but all five prices
- * and all three products are INACTIVE. This module never creates a Checkout
- * Session, charges money, validates customer identity or grants entitlement.
+ * Catalog records exist and were ACTIVATED in the UK LIVE Stripe account
+ * on 11 November 2026: all three products and five recurring INR prices.
+ * Catalog activation is NOT paid customer checkout acceptance. This module
+ * never creates a Checkout Session, charges money, validates customer identity
+ * or grants entitlement.
  * IDs are not secrets. Credentials and webhook signing keys must never be
  * committed. Only a production server with independently accepted release
  * evidence may select a price. Browser prices are never authoritative.
