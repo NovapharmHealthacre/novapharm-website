@@ -1,11 +1,11 @@
 .np-order-track{background:#fff;color:#1d1d1f;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif}
 .np-order-track-wrap{width:min(920px,calc(100% - 48px));margin-inline:auto}
 .np-order-track-hero{background:#f5f5f7;text-align:center;padding:clamp(95px,12vw,165px) 0 clamp(75px,8vw,112px)}
-.np-order-track-hero h1{margin:0;font-size:clamp(3.1rem,7vw,6.8rem);letter-spacing:-.072em;line-height:1.03;font-weight:660}
+.np-order-track-hero h1{margin:0;font-size:clamp(3.1rem,7vw,6.8rem);letter-spacing:normal;line-height:1.03;font-weight:660}
 .np-order-track-hero p:not(.np-order-track-kicker){font-size:clamp(1.1rem,2vw,1.55rem);line-height:1.5;color:#6e6e73;max-width:630px;margin:26px auto 0}
 .np-order-track-kicker{font-size:.74rem;letter-spacing:.14em;font-weight:650;color:#6e6e73;margin:0 0 25px}
 .np-order-track-panel{padding:85px 0 95px}
-.np-order-track-panel h2,.np-order-track-note h2{font-size:clamp(2.2rem,4vw,4.3rem);letter-spacing:-.055em;line-height:1.1;margin:0 0 18px}
+.np-order-track-panel h2,.np-order-track-note h2{font-size:clamp(2.2rem,4vw,4.3rem);letter-spacing:normal;line-height:1.1;margin:0 0 18px}
 .np-order-track-panel>p:not(.np-order-track-kicker),.np-order-track-note p{font-size:1.07rem;color:#6e6e73;line-height:1.65;max-width:720px}
 .np-order-track-form{margin-top:43px}
 .np-order-track-form label{font-size:.9rem;display:block;font-weight:650;margin-bottom:12px}
