@@ -54,3 +54,53 @@
   .ncap-managed .ncap-hero { padding-top: clamp(66px, 12vw, 90px); }
   .ncap-managed .ncap-hero-art { height: clamp(240px, 68vw, 440px); }
 }
+
+/* Photographic parity, same approved source and responsive layout as public Pages. */
+@media screen {
+  .ncap-managed .ncap-hero { padding-top: clamp(56px, 6vw, 98px); }
+  .ncap-managed .ncap-hero-art {
+    height: clamp(255px, 29vw, 390px);
+    width: min(100%,1199px);
+    margin-top: 0;
+  }
+  .ncap-managed .ncap-hero-art img { object-fit: cover; object-position: center; }
+  .ncap-managed .ncap-model {
+    padding-top: clamp(28px,4vw,68px);
+    padding-bottom: clamp(62px,7vw,105px);
+  }
+  .ncap-managed .ncap-earth {
+    background: #071625;
+    min-height: clamp(420px,43vw,590px);
+    padding-bottom: clamp(48px,6vw,72px);
+  }
+  .ncap-managed .ncap-earth-image {
+    z-index: 0;
+    overflow: hidden;
+  }
+  .ncap-managed .ncap-earth-image img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    object-position: top center;
+  }
+  .ncap-managed .ncap-earth-image::after {
+    content: "";
+    position: absolute;
+    inset: 26px 0 0;
+    background: linear-gradient(to bottom, rgba(7,22,37,0) 0, #071625 180px);
+    pointer-events: none;
+  }
+  .ncap-managed .ncap-earth-copy {
+    z-index: 2;
+    padding-top: clamp(145px,18vw,235px);
+  }
+}
+@media screen and (max-width:720px) {
+  .ncap-managed .ncap-hero-art {
+    height: clamp(210px,64vw,290px);
+    width: 145%;
+    margin-left: -22.5%;
+  }
+  .ncap-managed .ncap-earth { min-height: 490px; }
+  .ncap-managed .ncap-earth-copy { padding-top: 130px; }
+}
