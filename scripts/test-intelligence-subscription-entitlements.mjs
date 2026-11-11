@@ -121,3 +121,14 @@ test("all incomplete inputs deny access without exposing billing or identity val
   assert.equal(JSON.stringify(result).includes("stripe"), false);
   assert.equal(JSON.stringify(result).includes("tenant-owner-1"), false);
 });
+
+test("nonexistent, rolled-over or noncanonical UTC billing dates never authorise access", () => {
+  denied({ grant: { ...grant, periodEnd: "2026-11-31T00:00:00.000Z" } }, "billing_period_not_current");
+  denied({ grant: { ...grant, periodStart: "2026-02-30T00:00:00.000Z" } }, "billing_period_not_current");
+  denied({ now: "2026-11-31T12:00:00.000Z" }, "billing_period_not_current");
+  denied({ grant: { ...grant, periodEnd: "2026-12-01T24:00:00.000Z" } }, "billing_period_not_current");
+  const validShortFraction = decideIntelligenceEntitlement(request({
+    grant: { ...grant, periodStart: "2026-11-01T00:00:00Z", periodEnd: "2026-12-01T00:00:00.0Z" },
+  }));
+  assert.equal(validShortFraction.allowed, true);
+});

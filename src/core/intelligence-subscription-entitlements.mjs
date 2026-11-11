@@ -35,7 +35,12 @@ function monthKey(value) {
 function validDate(value) {
   if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/u.test(value)) return null;
   const n = Date.parse(value);
-  return Number.isFinite(n) ? n : null;
+  if (!Number.isFinite(n)) return null;
+  // Date.parse can normalise impossible UTC dates (e.g. November 31) into
+  // the following month. Billing grants must match the claimed instant exactly.
+  const canonical = value.replace(/(\.\d{1,3})?Z$/u, (_, fraction) =>
+    `${fraction ? fraction.padEnd(4, "0") : ".000"}Z`);
+  return new Date(n).toISOString() === canonical ? n : null;
 }
 
 /**
