@@ -9,6 +9,12 @@ const artifactRoot = path.resolve(process.env.PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT
 const routes = [
   { path: "/", name: "home", required: "Medicine. Where it needs to be" },
   { path: "/capabilities/", name: "capabilities", required: "From evidence to access." },
+  { path: "/about/", name: "about", required: "Getting medicine to where it matters." },
+  { path: "/markets/", name: "markets", required: "Access is local." },
+  { path: "/market-access/", name: "market-access", required: "A market may not be." },
+  { path: "/legal/privacy/", name: "legal-privacy", required: "Privacy" },
+  { path: "/legal/accessibility/", name: "legal-accessibility", required: "Accessibility" },
+  { path: "/news-insights/", name: "insights", required: "Insights" },
   { path: "/contact/", name: "contact", required: "How can we help?" },
   { path: "/leadership/", name: "leadership", required: "Chief Scientific Officer" },
   { path: "/leadership/girish-achliya/", name: "leadership-girish", required: "Chief Scientific Officer" },
