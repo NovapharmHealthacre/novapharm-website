@@ -28,6 +28,11 @@ test("public Intelligence directory mirrors all 22 governed workspaces without h
   }
 });
 
+test("workspace directory kicker uses a darker accessible red on the soft surface", () => {
+  assert.match(css, /\\.npi-directory-intro \\.npi-kicker \\{ color: var\\(--npi-red-deep\\); \\}/u);
+  assert.match(css, /--npi-red-deep: #bd100b/u);
+});
+
 test("every group is keyboard navigable without JavaScript and has the correct number of entries", () => {
   assert.equal(groups.length, 5);
   assert.equal((html.match(/<details class="npi-directory-group"/g) ?? []).length, groups.length);
