@@ -13,7 +13,7 @@ const routes = [
   { path: "/leadership/girish-achliya/", name: "leadership-girish", required: "Chief Scientific Officer" },
   { path: "/regulatory-services/", name: "regulatory-roadmap", required: "No regulated supply before the required permissions." },
   { path: "/services/", name: "services", required: "Services" },
-  { path: "/distribution/", name: "distribution", required: "Across borders." },
+  { path: "/distribution/", name: "distribution", required: "Global distribution" },
   { path: "/oncology/", name: "oncology", required: "Oncology" },
   { path: "/cro/", name: "cro", required: "Clinical" },
   { path: "/technology/", name: "technology", required: "Technology" },
@@ -252,7 +252,7 @@ for (const [engineName, browserType] of engines) {
                 engineName + " " + viewport.name + ": dedicated Distribution navigation missing");
               assert.equal(await page.locator(".ndist-partner-entry").count(), 2,
                 engineName + " " + viewport.name + ": provider explanation must cover UPS Healthcare and Marken UK");
-              for (const selector of [".ndist-hero-earth", ".ndist-facility-media img", ".ndist-network-hero > img"]) {
+              for (const selector of [".ndist-hero-warehouse", ".ndist-facility-media img", ".ndist-network-hero > img"]) {
                 const element = page.locator(selector);
                 assert.equal(await element.count(), 1, engineName + " " + viewport.name + ": image missing " + selector);
                 const state = await element.evaluate((image) => ({
