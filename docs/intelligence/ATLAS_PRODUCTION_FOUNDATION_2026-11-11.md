@@ -19,7 +19,20 @@ The following seven empty collections were created on the existing free cluster.
 | `npi_evidence_manifests` | `manifest_lookup` | `workspace_id: 1, medicine_id: 1, manifest_sha256: 1` |
 | `npi_audit_events` | `workspace_audit_timeline` | `workspace_id: 1, recorded_at: -1` |
 
-All seven collection names and all seven secondary indexes were verified by fresh read operations immediately after creation. **No production data documents were inserted**; no licence, source-rights grant, sample observation, model sign-off, customer, charge, or entitlement was created.
+All seven collection names and all seven secondary indexes were verified by fresh read operations immediately after creation.
+
+### Official-source metadata catalogue admitted to the empty production candidate
+
+Four **metadata-only, explicitly unaccepted** source registry entries were subsequently copied from `novapharm_intelligence_preview.npi_source_registry_preview` into `novapharm_intelligence_production.npi_source_registry`. A fresh read confirmed these exact IDs:
+
+- `nhsbsa_english_prescribing`: England monthly community prescribing metadata; OGL-3.0 listed; independent BNF/SNOMED terminology and publisher-use review pending
+- `ons_population`: UK population/geography metadata; dataset version, licensing and denominator comparability review pending
+- `openfda_drug`: United States regulatory-label metadata; third-party copyrighted fields and record-level reuse review pending
+- `clinicaltrials_gov`: United States study-registry metadata; reuse, attribution and version policy review pending
+
+Each copied document retains `ingestion_status: "metadata_only"`, `accepted_observations: 0`, `customer_publish_approved: false`, `data_persisted: false`, and a `rights_status` beginning `pending_`; added explicit `admission_status: "unaccepted"`, `source_rights_grant_active: false`, `environment: "production_candidate_metadata_only"`, and the preview-collection import provenance. No fresh resource rights were independently re-attested by this migration.
+
+**Read-back after insertion:** source registry = 4 metadata documents; source-rights collection = 0 grants; medicine-evidence collection = 0 documents. No medicine identity, sample observation, clinical claim, grant, subscription, model approval, customer, charge or entitlement was inserted or accepted. This catalogue **must never be interpreted as a production medicine-data admission or publication permission**.
 
 The pre-existing `novapharm_intelligence_preview` database was not migrated or altered. Its two existing application users remain preview-scoped (`readWrite` and `read`, respectively). A further Atlas **production-database read-only** principal was created in a separate attempted credentials setup, but secure parameter storage was blocked and no usable application credential was configured. The parameter was independently checked as absent. **This principal must be rotated into a verified secret-management workflow or removed; do not use it for production access.** Atlas network access and customer routes were not opened. Nothing was deployed to an application or made publicly reachable.
 
