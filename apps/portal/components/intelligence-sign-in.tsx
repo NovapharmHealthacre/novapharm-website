@@ -79,6 +79,7 @@ export function IntelligenceSignIn() {
             <a className={styles["secondary"]} href="https://novapharmhealthcare.com/technology/">Explore NovaPharm Intelligence</a>
           </div>
           <p className={styles["notice"]}>{customer ? `Verified ${customer.plan} subscription, ${customer.role} seat. Only accepted and licensed data will be released in the customer workspaces.` : "Create and verify a business identity with Cognito. Subscription checkout and medicines access become available only after organisation, contract, billing and dataset approvals."}</p>
+          <p className={styles["notice"]}><a href="https://novapharmhealthcare.com/legal/privacy/" target="_blank" rel="noopener noreferrer">How we protect business account information</a></p>
         </section>
         <footer className={styles["footer"]}><span>Medicine. Where it needs to be.</span><span>Protected professional access</span></footer>
       </div>
