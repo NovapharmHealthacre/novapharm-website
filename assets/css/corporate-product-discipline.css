@@ -2377,3 +2377,38 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
     min-height:44px;
   }
 }
+
+/* Forensic static consent: non-obscuring, keyboard-accessible notice.
+   Keep consent before main; no banners covering contact fields or oncology copy. */
+.cookie-banner {
+  position: relative;
+  inset: auto;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 18px 24px;
+  border: 0;
+  border-bottom: 1px solid #dfe1e5;
+  border-radius: 0;
+  background: #f5f5f7;
+  box-shadow: none;
+}
+.cookie-banner-inner {
+  max-width: 1200px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 22px;
+}
+.cookie-banner .cookie-actions { align-items: center; }
+.cookie-banner .cookie-actions .btn { min-height: 44px; }
+@media (max-width: 900px) {
+  .cookie-banner-inner { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .cookie-banner { padding: 15px 20px; }
+}
+@media (max-width: 620px) {
+  .cookie-banner { padding: 14px 16px; }
+  .cookie-banner .cookie-actions { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .cookie-banner .cookie-actions .btn:last-child { grid-column: 1 / -1; }
+}

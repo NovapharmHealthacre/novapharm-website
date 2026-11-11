@@ -13,6 +13,7 @@ const routes = [
   { path: "/leadership/girish-achliya/", name: "leadership-girish", required: "Chief Scientific Officer" },
   { path: "/regulatory-services/", name: "regulatory-roadmap", required: "No regulated supply before the required permissions." },
   { path: "/services/", name: "services", required: "Services" },
+  { path: "/distribution/", name: "distribution", required: "Across borders." },
   { path: "/oncology/", name: "oncology", required: "Oncology" },
   { path: "/cro/", name: "cro", required: "Clinical" },
   { path: "/technology/", name: "technology", required: "Technology" },
@@ -217,8 +218,58 @@ for (const [engineName, browserType] of engines) {
             await page.locator("main").waitFor({ state: "visible", timeout: 15_000 });
             await dismissConsent(page);
             await materialiseLazyMedia(page);
+            // Forensic Safari regression: a supplied PNG in source is not enough.
+            // The real computed header must render the logo instead of pseudo-text.
+            if (["home", "oncology", "products-overview", "capabilities"].includes(route.name)) {
+              const identity = await page.evaluate(() => {
+                const brand = document.querySelector("header.site-header a.brand");
+                const image = brand?.querySelector('img[src*="novapharm-healthcare-logo.png"]');
+                if (!brand || !image) return null;
+                const imgStyle = getComputedStyle(image);
+                const box = image.getBoundingClientRect();
+                return {
+                  loaded: image.complete && image.naturalWidth > 0,
+                  displayed: imgStyle.display !== "none" && imgStyle.visibility !== "hidden" && Number(imgStyle.opacity) > 0,
+                  width: box.width,
+                  height: box.height,
+                  pseudoContent: getComputedStyle(brand, "::after").content
+                };
+              });
+              const label = `${engineName} ${viewport.name} ${route.path}`;
+              assert.ok(identity?.loaded, `${label}: approved red corporate logo failed to load`);
+              assert.ok(identity.displayed && identity.width > 80 && identity.height > 8,
+                `${label}: official logo is hidden or collapsed`);
+              assert.ok(!/NOVAPHARM/i.test(identity.pseudoContent || ""),
+                `${label}: legacy black pseudo-wordmark replaced the corporate logo`);
+            }
             const bodyText = (await page.locator("body").innerText()).replace(/\s+/g, " ");
             assert.ok(bodyText.includes(route.required), `${engineName} ${viewport.name} ${route.path}: required page marker missing`);
+
+            if (route.name === "distribution") {
+              const hero = page.locator(".ndist-hero h1");
+              assert.equal(await hero.count(), 1, engineName + " " + viewport.name + ": premium Distribution H1 missing");
+              assert.equal(await page.locator('nav[aria-label="Primary navigation"] a[href="/distribution/"]').count(), 1,
+                engineName + " " + viewport.name + ": dedicated Distribution navigation missing");
+              assert.equal(await page.locator(".ndist-partner-entry").count(), 2,
+                engineName + " " + viewport.name + ": provider explanation must cover UPS Healthcare and Marken UK");
+              for (const selector of [".ndist-hero-earth", ".ndist-facility-media img", ".ndist-network-hero > img"]) {
+                const element = page.locator(selector);
+                assert.equal(await element.count(), 1, engineName + " " + viewport.name + ": image missing " + selector);
+                const state = await element.evaluate((image) => ({
+                  loaded: image.complete && image.naturalWidth > 0 && image.naturalHeight > 0,
+                  visible: getComputedStyle(image).display !== "none" && getComputedStyle(image).visibility !== "hidden",
+                  box: image.getBoundingClientRect().toJSON()
+                }));
+                assert.equal(state.loaded && state.visible && state.box.width > 100 && state.box.height > 100, true,
+                  engineName + " " + viewport.name + ": image failed or collapsed " + selector);
+              }
+              assert.ok(bodyText.includes("Regulated pharmaceutical wholesale supply has not commenced"),
+                engineName + " " + viewport.name + ": regulatory boundary missing");
+              assert.ok(bodyText.includes("Former Polar Speed") || bodyText.includes("former Polar Speed"),
+                engineName + " " + viewport.name + ": Marken UK branding history missing");
+              assert.equal(await page.locator('.ndist-partners img').count(), 0,
+                engineName + " " + viewport.name + ": unlicensed third-party provider imagery must not appear");
+            }
 
             if (route.name === "products-overview") {
               assert.equal(await page.locator(".np-products-hero h1").count(), 1,

@@ -54,7 +54,7 @@ export function OncologyEditorialPage() {
         <div className="container npoc-hero-content">
           <div className="npoc-hero-copy">
             <p className="npoc-eyebrow">NOVAPHARM / ONCOLOGY</p>
-            <h1 id="npoc-title">Oncology demands<br />more than supply.</h1>
+            <h1 id="npoc-title">Oncology demands{" "}<br />more than supply.</h1>
             <p className="npoc-hero-lead">Product identity. Qualified sourcing. Regulatory readiness.</p>
             <p className="npoc-hero-detail">
               An evidence-led approach to evaluating specialist-medicine opportunities,

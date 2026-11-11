@@ -77,6 +77,10 @@ assert.match(home, /PLPI activity requires the relevant licence/);
 assert.match(home, /Let's build something meaningful\./);
 assert.doesNotMatch(home, /<svg|lucide|<video|hero-cinematic-layer|data-motion-toggle|data-ai-search-open|nav-search|ai-search-dialog/);
 
+const approvedHeaderCss = text("assets/css/homepage-editorial.css");
+assert.doesNotMatch(approvedHeaderCss, /content:\s*"NOVAPHARM"/, "never replace the supplied logo with generated black typography");
+assert.match(approvedHeaderCss, /\.site-header \.brand > img\s*\{[\s\S]*?display:\s*block/, "the official image must render in the header");
+
 const expectedHomeNavigation = [
   ["Company", "/about/"],
   ["Capabilities", "/capabilities/"],

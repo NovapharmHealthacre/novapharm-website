@@ -1290,8 +1290,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 85,
-      "referenceCount": 215,
+      "usageCount": 86,
+      "referenceCount": 216,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "404.html",
@@ -1300,6 +1300,7 @@
         "about/governance/index.html",
         "about/index.html",
         "account-application/index.html",
+        "apps/corporate/components/brand.tsx",
         "apps/corporate/lib/seo.ts",
         "assets/js/admin-app.js",
         "capabilities/index.html",
@@ -1432,8 +1433,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 96,
-      "referenceCount": 199,
+      "usageCount": 95,
+      "referenceCount": 198,
       "usageFiles": [
         "404.html",
         "500.html",
@@ -1442,7 +1443,6 @@
         "about/index.html",
         "account-application/index.html",
         "apps/api/test/server-boundary.test.ts",
-        "apps/corporate/components/brand.tsx",
         "apps/corporate/package.json",
         "apps/corporate/scripts/validate-content.ts",
         "apps/portal/package.json",
@@ -2282,13 +2282,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 17,
+      "usageCount": 7,
+      "referenceCount": 22,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "about/index.html",
         "creative-assets/asset-register.json",
         "scripts/apply-about-editorial.mjs",
+        "scripts/apply-global-distribution-foundation.mjs",
+        "scripts/test-global-distribution-foundation.mjs",
         "scripts/validate-module-media-sanity.mjs"
       ],
       "exactDuplicateGroup": null,
@@ -2333,13 +2335,15 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 5,
+      "usageCount": 6,
+      "referenceCount": 7,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "about/index.html",
         "creative-assets/asset-register.json",
-        "scripts/apply-about-editorial.mjs"
+        "scripts/apply-about-editorial.mjs",
+        "scripts/apply-global-distribution-foundation.mjs",
+        "scripts/test-global-distribution-foundation.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-015",
@@ -5773,12 +5777,13 @@
       "provenanceStatus": "registered",
       "source": "Crop (Earth and atmosphere only, y=500 to y=887) from the exact owner-approved NovaPharm Medicine in Motion homepage screenshot supplied on 10 November 2026, resampled to 1400 x 305 and optimised for web. No generated elements or typography are added to this crop.",
       "licence": "Owner-authorised NovaPharm corporate art sourced from the owner-supplied approved design reference. Not NASA/ESA imagery or a documentary satellite photograph.",
-      "reviewStatus": "Explicit owner approval of the reference design; homepage visual match requested 10 November 2026",
+      "reviewStatus": "Owner-approved Earth horizon creative reference for corporate homepage and Distribution editorial design, requested 10 November 2026; only those two routes are permitted.",
       "technicalStatus": "JPEG, 1400 x 305, 66,170 bytes; standalone local asset; copyright and provenance registered",
       "provenanceRecord": null,
-      "semanticPurpose": "homepage-approved-earth-horizon-reference",
+      "semanticPurpose": "owner-approved-earth-horizon-brand-reference",
       "routes": [
-        "/ homepage Earth horizon hero only"
+        "/ homepage approved Earth-horizon hero",
+        "/distribution/ approved global-distribution Earth-horizon hero"
       ],
       "focalPoint": null,
       "registeredAltText": "",
@@ -5789,8 +5794,8 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 7,
-      "referenceCount": 19,
+      "usageCount": 9,
+      "referenceCount": 24,
       "usageFiles": [
         ".github/workflows/pages-live-publish.yml",
         ".github/workflows/pages-public-release-recovery.yml",
@@ -5798,7 +5803,9 @@
         "apps/corporate/components/concise-home.tsx",
         "creative-assets/asset-register.json",
         "scripts/apply-corporate-product-discipline.mjs",
-        "scripts/programme/validate-post-pr53-candidate.mjs"
+        "scripts/apply-global-distribution-foundation.mjs",
+        "scripts/programme/validate-post-pr53-candidate.mjs",
+        "scripts/test-global-distribution-foundation.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -5834,14 +5841,16 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 7,
-      "referenceCount": 12,
+      "usageCount": 9,
+      "referenceCount": 14,
       "usageFiles": [
         "creative-assets/asset-register.json",
         "creative-assets/visual-provenance.md",
+        "scripts/apply-global-distribution-foundation.mjs",
         "scripts/apply-visual-refinement.mjs",
         "scripts/build-public-pages.mjs",
         "scripts/optimise-images.mjs",
+        "scripts/test-global-distribution-foundation.mjs",
         "scripts/test-visual-contracts.mjs",
         "scripts/validate-site.mjs"
       ],

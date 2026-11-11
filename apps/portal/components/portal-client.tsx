@@ -1,14 +1,19 @@
 "use client";
 
 import type { PortalModule } from "@novapharm/portal-contracts";
+import dynamic from "next/dynamic";
 import modulePresentations from "../data/module-presentations.json";
 import type { PortalView } from "../data/routes";
-import { Dashboard } from "./dashboard";
-import { EntraComplete } from "./entra-complete";
-import { IntelligenceSignIn } from "./intelligence-sign-in";
-import { LoginPanel } from "./login-panel";
 import styles from "./module-presentations.module.css";
-import { PasswordChange } from "./password-change";
+
+// Keep the public sign-in lightweight: governed workspace code and its
+// extensive module catalogue must not be in the anonymous login JS bundle.
+// Next.js dynamically imports only the authenticated view selected by SSR.
+const Dashboard = dynamic(() => import("./dashboard").then((module) => module.Dashboard));
+const EntraComplete = dynamic(() => import("./entra-complete").then((module) => module.EntraComplete));
+const LoginPanel = dynamic(() => import("./login-panel").then((module) => module.LoginPanel));
+const IntelligenceSignIn = dynamic(() => import("./intelligence-sign-in").then((module) => module.IntelligenceSignIn));
+const PasswordChange = dynamic(() => import("./password-change").then((module) => module.PasswordChange));
 
 type PresentationArchetype = "command" | "ledger" | "workflow" | "catalogue" | "tracking" | "documents" | "regulated" | "intelligence";
 const presentationByModule = modulePresentations as Readonly<Record<string, PresentationArchetype>>;

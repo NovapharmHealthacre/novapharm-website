@@ -32,7 +32,7 @@ test("one governed design layer is applied across every public corporate route",
 
 test("Apple-inspired system remains a NovaPharm identity with accessible, functional surfaces", () => {
   assert.match(style, /-apple-system, BlinkMacSystemFont/);
-  assert.match(style, /--nph-accent: #b51c1a/);
+  assert.match(style, /--nph-accent:\s*#e3120b/);
   assert.match(style, /--nph-link: #0066cc/);
   assert.match(style, /min-height: 46px/);
   assert.match(style, /:focus-visible/);
@@ -59,4 +59,42 @@ test("audit route register includes every corporate, leadership, article and can
   assert.ok(routes.includes("/oncology/"), "Oncology is required");
   assert.ok(routes.includes("/legal/privacy/"), "Privacy/legal routes are required");
   assert.ok(routes.some((route) => route.startsWith("/products/nutraxin/") && route !== "/products/nutraxin/"));
+});
+
+
+test("official corporate logo is visible on managed homepage and never replaced by text", () => {
+  const brand = readFileSync(path.join(root, "components/brand.tsx"), "utf8");
+  const homepage = readFileSync(path.join(root, "app/homepage-editorial.css"), "utf8");
+  assert.match(brand, /src="\/assets\/brand\/novapharm-healthcare-logo\.png"/);
+  assert.doesNotMatch(homepage, /content:\s*"NOVAPHARM"/);
+  assert.doesNotMatch(homepage, /\.brand > img\s*\{\s*display:\s*none/);
+  assert.match(homepage, /\.site-header \.brand > img\s*\{[\s\S]*?display:\s*block/);
+  const site = readFileSync(path.join(root, "data/site.ts"), "utf8");
+  assert.match(site, /\["Distribution", "\/distribution\/"\]/);
+});
+
+test("forensic page identity and privacy choices do not regress", () => {
+  const renderer = readFileSync(path.join(root, "components/page-renderer.tsx"), "utf8");
+  const oncology = readFileSync(path.join(root, "components/oncology-editorial.tsx"), "utf8");
+  const capabilitiesCss = readFileSync(path.join(root, "../../assets/css/capabilities-editorial.css"), "utf8");
+  assert.match(renderer, /page\.slug === "capabilities" \? "Capabilities"/,
+    "Capabilities must never inherit the About NovaPharm breadcrumb");
+  assert.match(oncology, /Oncology demands\{" "\}<br \/>more than supply\./,
+    "The Oncology H1 must have a spoken word boundary at its visual line break");
+  assert.doesNotMatch(capabilitiesCss, /#767981/i,
+    "Small Capabilities labels must not use the previously low-contrast grey");
+  assert.ok(layout.indexOf("<CookieControls />") < layout.indexOf('<main id="main-content">'),
+    "Cookie consent must be in normal document flow before main content");
+  assert.match(style, /Forensic remediation: non-obscuring consent/);
+  assert.match(style, /\.cookie-banner\s*\{[\s\S]*?position: relative;/);
+});
+
+
+test("brand red token remains identical across public and managed corporate design", () => {
+  const publicTokens = readFileSync(path.join(root, "../../assets/css/tokens.css"), "utf8");
+  assert.match(publicTokens, /--brand:\s*#E3120B/i);
+  assert.match(style, /--nph-accent:\s*#e3120b/i);
+  assert.match(style, /--red-dark:\s*#b30e09/i);
+  assert.match(style, /--pharma-red-dark:\s*#b30e09/i);
+  assert.match(style, /--nph-link:\s*#0066cc/i, "Links and focus should remain distinguishable from brand CTAs");
 });

@@ -9,6 +9,7 @@ import {
   writeFileSync
 } from "node:fs";
 import { basename, dirname, join, relative, resolve } from "node:path";
+import { execFileSync } from "node:child_process";
 
 const root = resolve(process.cwd());
 const output = resolve(process.argv[2] || "_site");
@@ -214,6 +215,22 @@ for (const file of stagedFiles) {
     for (const marker of forbiddenPublicMarkers) {
       if (html.includes(marker)) throw new Error(`Server-dependent control entered ${stagedPath}: ${marker}`);
     }
+  }
+}
+
+// Require immutable source identity in every canonical page in the staged
+// artifact. A visually correct build from a different commit is not an
+// auditable production release.
+const releaseSha = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
+const canonicalPages = JSON.parse(readFileSync(join(root, "seo/generated/page-metadata-register.json"), "utf8"));
+if (canonicalPages.length < 60) throw new Error("Missing canonical pages in release provenance register");
+for (const page of canonicalPages) {
+  const target = join(output, page.file);
+  if (!existsSync(target)) throw new Error(`Canonical release page not staged: ${page.file}`);
+  const html = readFileSync(target, "utf8");
+  const markers = [...html.matchAll(/<meta name="novapharm-source-sha" content="([0-9a-f]{40})">/g)];
+  if (markers.length !== 1 || markers[0][1] !== releaseSha) {
+    throw new Error(`Canonical release provenance mismatch: ${page.file}`);
   }
 }
 

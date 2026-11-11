@@ -1,9 +1,15 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 import { strict as assert } from "node:assert";
 import { runInNewContext } from "node:vm";
 import { navigation } from "../src/content/site-content.mjs";
 
 const routes = ["distribution", "market-access", "markets"];
+const artDirection = JSON.parse(readFileSync("config/module-art-direction.json", "utf8"));
+const earthApproval = artDirection.assets.find((asset) => asset.id === "home-earth-horizon");
+assert.deepEqual(earthApproval?.allowedRoutes, ["/", "/distribution/"],
+  "Owner-approved Earth image may appear on Home and Distribution only");
+assert.equal(earthApproval?.maxReuse, 2, "Earth media reuse must remain explicitly limited to two routes");
+
 const sitemap = readFileSync("sitemap.xml", "utf8");
 const homepage = readFileSync("index.html", "utf8");
 // The visible desktop and mobile navigation in both corporate renderers must
@@ -24,6 +30,31 @@ for (const slug of routes) {
   assert.ok(html.includes("Regulated pharmaceutical wholesale supply has not commenced"), slug + " missing current permissions boundary");
   assert.ok(html.includes("/contact/?enquiry="), slug + " missing qualified enquiry route");
   if (slug === "distribution") {
+    // The public page must contain the approved actual media, not solely a
+    // mockup, stock photo, unsupported carrier logo or copy-only proposal.
+    assert.match(html, /data-distribution-design="20261110-premium"/);
+    assert.match(html, /<h1 id="ndist-title">Across borders\.<br>Within standards\.<\/h1>/);
+    assert.match(html, /src="\/assets\/media\/home\/earth-reference-1400\.jpg"/);
+    assert.match(html, /src="\/assets\/media\/about\/novapharm-warehouse-original\.jpg"/);
+    assert.match(html, /src="\/assets\/media\/home\/supply-network-hero-1200\.jpg"/);
+    assert.match(html, /<figure class="ndist-facility-media">/);
+    assert.match(html, /<section class="npd-section ndist-partners"/);
+    assert.match(html, /UPS Healthcare/);
+    assert.match(html, /Marken UK incorporates the former Polar Speed operation/);
+    assert.match(html, /their official logos and proprietary photographs are not reproduced/i);
+    assert.match(html, /do not represent NovaPharm-owned/i);
+    assert.match(html, /<section class="npd-section ndist-pathway"/);
+    assert.match(html, /<section class="npd-section npd-final ndist-final"/);
+    for (const actualMedia of [
+      "assets/media/home/earth-reference-1400.jpg",
+      "assets/media/about/novapharm-warehouse-original.jpg",
+      "assets/media/about/novapharm-warehouse.avif",
+      "assets/media/home/supply-network-hero-1200.jpg"
+    ]) {
+      assert.ok(statSync(actualMedia).size > 4000, "Required distribution asset is missing or empty: " + actualMedia);
+    }
+    assert.doesNotMatch(html, /<img[^>]+(?:ups|marken|polar-speed)[^>]*>/i, "Third-party branded photos and logos require licensed use");
+    assert.doesNotMatch(html, /we own the warehouse|we operate UPS|fully licensed global distributor|guaranteed worldwide delivery/i);
     for (const destination of ["/regulatory-services/", "/oncology/", "/products/"]) {
       assert.ok(html.includes('href="' + destination + '"'),
         "Distribution category editorial link must be valid: " + destination);
