@@ -32,7 +32,7 @@ function harness(overrides = {}) {
     resolveSourceRight: async () => { calls.rights++; return { ...grant }; },
     verifyCurrentAuthority: async () => { calls.verification++; return true; },
     recordAudit: async event => { calls.audit.push(event); return { committed: true, eventId: event.eventId }; },
-    recordMetric: async event => { calls.metrics++; assert.equal(event.event, "nova_inference_preflight"); return { recorded: true }; },
+    recordMetric: async event => { calls.metrics++; assert.ok(["nova_inference_preflight", "nova_inference_completed"].includes(event.event)); return { recorded: true }; },
     provider: {
       id: "openai-zdr",
       complete: async args => {
@@ -57,7 +57,7 @@ test("NOVA returns only review-labelled sourced drafts with server-owned citatio
   assert.deepEqual(result.citations.map(c => c.recordId), ["fda-label-1"]);
   assert.equal(result.citations[0].sourceUrl, row.sourceUrl);
   assert.equal(calls.model, 1);
-  assert.equal(calls.metrics, 1);
+  assert.equal(calls.metrics, 2);
   assert.equal(calls.audit.length, 2);
   assert.equal(calls.verification, 3);
   for (const audit of calls.audit) {
@@ -116,6 +116,11 @@ test("an unavailable audit or monitor prevents all outbound AI requests", async 
   const noMetric = harness({ recordMetric: async () => ({ recorded: false }) });
   await assert.rejects(() => answerGovernedMedicineQuestion(noMetric.options), error => error.code === "nova_monitoring_unavailable");
   assert.equal(noMetric.calls.model, 0);
+  const noCompletionMetric = harness({ recordMetric: async event => ({
+    recorded: event.event === "nova_inference_preflight"
+  }) });
+  await assert.rejects(() => answerGovernedMedicineQuestion(noCompletionMetric.options), error => error.code === "nova_monitoring_unavailable");
+  assert.equal(noCompletionMetric.calls.model, 1);
 });
 
 test("credentials, personal identifiers and medical treatment prompts are blocked before egress", async () => {
