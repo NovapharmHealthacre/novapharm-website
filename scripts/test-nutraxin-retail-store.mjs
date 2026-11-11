@@ -98,6 +98,11 @@ test("the review page uses the Products-only API and never the customer portal",
  assert.match(html,/data-nx-public-bag/);
  assert.match(html,/data-nx-checkout disabled/);
  assert.match(html,/data-nx-consumer-terms/);
+ assert.match(html,/href="\/legal\/terms\/#nutraxin-consumer-sales"/);
+ const legal=readFileSync("legal/terms/index.html","utf8");
+ assert.match(legal,/id="nutraxin-consumer-sales"/);
+ assert.match(legal,/14 days of receiving goods/);
+ assert.doesNotMatch(legal,/The website is for corporate and qualified B2B information\./);
  assert.match(html,/class="nx-purchase-progress"/);
  assert.match(html,/aria-current="step"/);
  assert.match(html,/Your Bag/);
