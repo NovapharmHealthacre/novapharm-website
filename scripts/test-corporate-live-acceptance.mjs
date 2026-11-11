@@ -71,7 +71,10 @@ for (const [engineName, engine] of [["chromium", chromium], ["webkit", webkit], 
             if (!expectedH1.test(state.h1) || state.h1Count !== 1) row.issues.push("Wrong H1: " + state.h1);
             if (state.overflow > 2) row.issues.push("Horizontal overflow " + state.overflow);
             if (!state.logo) row.issues.push("Header logo not loaded");
-            if (!state.nav.includes("/distribution/") || !state.nav.includes("https://portal.novapharmhealthcare.com/")) row.issues.push("Navigation incomplete");
+            if (!state.nav.some(href => href === "/distribution/") ||
+                !state.nav.some(href => href === "https://portal.novapharmhealthcare.com/")) {
+              row.issues.push("Navigation incomplete");
+            }
             if (!state.title || !state.lang.startsWith("en")) row.issues.push("Title/lang invalid");
             if (new URL(state.canonical || origin).pathname !== route) row.issues.push("Wrong canonical " + state.canonical);
             if (state.description.length !== 1 || !state.description[0]) row.issues.push("Description metadata");
