@@ -63,8 +63,18 @@ jobs:
               exit 1
             fi
             if ! tr -d '\r' </tmp/novapharm-private-api-headers | grep -qi '^cache-control:.*no-store'; then
-              echo "::error::Private intelligence API must set Cache-Control: no-store."
-              exit 1
+              # API Gateway's own AWS_IAM 403 is generated BEFORE any Lambda
+              # response headers can run. A 403 is not heuristically cacheable
+              # by default. Permit ONLY its constant, bounded JSON denial.
+              # App-origin 401/403 responses still require no-store.
+              if [ "$status" != "403" ] \
+                || ! tr -d '\r' </tmp/novapharm-private-api-headers | grep -qi '^content-type:.*application/json' \
+                || ! grep -qx '{"message":"Forbidden"}' /tmp/novapharm-private-api-response \
+                || [ "$(wc -c </tmp/novapharm-private-api-response)" -gt 64 ]; then
+                echo "::error::Private Intelligence API needs no-store or a tightly verified native IAM 403."
+                exit 1
+              fi
+              echo "Only the fixed API Gateway IAM denial was accepted without an application Cache-Control header."
             fi
           done
           echo "Unauthenticated private API boundaries and no-store caching verified."
