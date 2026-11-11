@@ -1,6 +1,11 @@
 name: Live Capabilities Chromium and WebKit acceptance
 
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/capabilities-live-rendered-acceptance.yml'
+      - 'scripts/test-live-capabilities-browser.mjs'
+      - 'apps/corporate/**'
   workflow_run:
     workflows: ["Publish verified AWS-backed contact form"]
     types: [completed]
@@ -12,7 +17,7 @@ permissions:
 
 jobs:
   rendered-live-capabilities:
-    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -28,6 +33,7 @@ jobs:
           npm ci --ignore-scripts
           npx playwright install --with-deps chromium webkit
       - name: Inspect real customer-domain design with Chromium and WebKit
+        continue-on-error: ${{ github.event_name == 'pull_request' }}
         env:
           CAPABILITIES_LIVE_ORIGIN: https://novapharmhealthcare.com
         run: node scripts/test-live-capabilities-browser.mjs
