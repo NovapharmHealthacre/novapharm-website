@@ -8,6 +8,8 @@ import "./print.css";
 import "./homepage-editorial.css";
 import "./oncology-editorial.css";
 import "./design-system.css";
+import "../../../assets/css/capabilities-editorial.css";
+import "./capabilities-route.css";
 import "../../../assets/css/nutraxin-lineup.css";
 import "../../../assets/css/nutraxin-order-access.css";
 import { CookieControls } from "@/components/cookie-controls";
