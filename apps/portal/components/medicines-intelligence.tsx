@@ -563,14 +563,15 @@ function MedicineInvestigationPassport({ passport }: Readonly<{ passport: NonNul
       <p>Investigation only</p>
     </header>
     <p className={styles.empty}>Source licences, jurisdictional equivalence, model validity and decision permission must be verified before use. This view makes no medical or commercial recommendation.</p>
-    <div className={styles.tableRegion} role="region" tabIndex={0} aria-label="Investigation passport evidence coverage, scrollable table">
+    {/* biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users must be able to scroll wide evidence tables. */}
+    <section className={styles.tableRegion} tabIndex={0} aria-label="Investigation passport evidence coverage, scrollable table">
       <table>
         <thead><tr><th scope="col">Perspective</th><th scope="col">Evidence type</th><th scope="col">Current state</th><th scope="col">Required next verification</th></tr></thead>
         <tbody>{passport.lenses.map(lens => <tr key={lens.id}>
           <th scope="row">{lens.name}</th><td>{display(lens.type)}</td><td>{display(lens.state)}</td><td>{lens.next}</td>
         </tr>)}</tbody>
       </table>
-    </div>
+    </section>
     <p className={styles.empty}>Decision blocked pending rights, reconciled source data and authorised human review. Fingerprint tracks this snapshot only; it is not publisher attestation.</p>
   </section>;
 }
