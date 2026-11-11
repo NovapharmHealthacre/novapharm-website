@@ -41,3 +41,31 @@ test("request route, protected DynamoDB persistence and data retention are confi
   assert.ok(css.includes(":focus-visible"));
   assert.ok(!generator.includes("Ready to order</span>"));
 });
+
+test("customers can check their receipt without seeing personal or payment data",()=>{
+  assert.match(generator,/data-esco-request-lookup/);
+  assert.match(generator,/data-esco-request-id/);
+  assert.match(generator,/data-esco-request-state/);
+  assert.match(bag,/\/order-request-status\/"/);
+  assert.match(bag,/REQUEST_REF\.test\(orderId\)/);
+  assert.match(bag,/info\.paymentCollected !== false/);
+  assert.match(bag,/info\.orderId !== orderId/);
+  assert.match(bag,/credentials: "omit", cache: "no-store"/);
+  assert.match(bag,/requestLookupInput\.value = orderId/);
+  assert.doesNotMatch(bag,/localStorage\.setItem\([^;]*orderId/);
+  assert.match(checkout,/def request_status\(event, order_id\):/);
+  assert.match(css,/\.esco-request-lookup-state\[hidden\]/);
+});
+
+test("customers can download a specification-based BOQ without sending any emails or prices",()=>{
+  assert.match(generator,/data-esco-export-boq/);
+  assert.match(bag,/boqExportButton\.disabled = !state\.length/);
+  assert.match(bag,/downloadBoq\(state, known, categoryNameById\)/);
+  assert.match(bag,/novapharm-esco-bill-of-quantities\.csv/);
+  assert.match(bag,/new Blob\(\[csv\]/);
+  assert.match(bag,/categoryNameById\.get\(item\.id\)/);
+  assert.match(bag,/Exact specification \/ size \/ variant \(buyer to complete\)/);
+  assert.match(bag,/replaceAll\('"', '""'\)/);
+  assert.doesNotMatch(bag,/window\.location\.assign\([^;]*boq/i);
+  assert.match(css,/\.esco-bag-boq:disabled/);
+});

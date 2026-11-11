@@ -15,6 +15,12 @@ const checkoutResult = document.querySelector("[data-esco-checkout-status]");
 const orderRequestForm = document.querySelector("[data-esco-order-request-form]");
 const orderRequestSubmit = document.querySelector("[data-esco-order-request-submit]");
 const orderRequestReceipt = document.querySelector("[data-esco-order-request-receipt]");
+const boqExportButton = document.querySelector("[data-esco-export-boq]");
+const requestLookupForm = document.querySelector("[data-esco-request-lookup]");
+const requestLookupInput = document.querySelector("[data-esco-request-id]");
+const requestLookupState = document.querySelector("[data-esco-request-state]");
+const REQUEST_REF = /^ESCO-REQ-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+
 let sendingOrderRequest = false;
 let draftRequestId = null;
 const termsLabel = termsCheckbox?.closest(".esco-payment-terms");
@@ -59,6 +65,48 @@ async function configurePayment() {
     Number.isSafeInteger(serverPrices[id]) && serverPrices[id]>0 && serverPrices[id]<=99999999
   ).map(id=>[id,serverPrices[id]]));
   paymentServiceReady = approvedCatalogIds.size > 0 && approvedUnitPricesPence.size === approvedCatalogIds.size;
+}
+function reportRequestState(message) {
+  if (!requestLookupState) return;
+  requestLookupState.textContent = message;
+  requestLookupState.hidden = !message;
+}
+async function checkOrderRequestStatus(rawReference) {
+  const provided = String(rawReference || "").trim();
+  const orderId = /^esco-req-/i.test(provided)
+    ? "ESCO-REQ-" + provided.slice(9).toLowerCase() : "";
+  if (!REQUEST_REF.test(orderId)) {
+    reportRequestState("Enter a valid ESCO-REQ receipt reference.");
+    return;
+  }
+  if (!checkoutApiOrigin) {
+    reportRequestState("The order status service is temporarily unavailable. Keep your reference and contact product support.");
+    return;
+  }
+  reportRequestState("Checking your order request…");
+  try {
+    const response = await fetch(checkoutApiOrigin + "/order-request-status/" + encodeURIComponent(orderId), {
+      credentials: "omit", cache: "no-store", headers: {accept: "application/json"}
+    });
+    if (!response.ok) {
+      reportRequestState(response.status === 404
+        ? "Request not found. Check the reference and try again."
+        : "Order status is temporarily unavailable. Your receipt is still valid.");
+      return;
+    }
+    const info = await response.json();
+    const descriptions = {
+      RECEIVED_AWAITING_CONFIRMATION: "Received. Our team must confirm the product, price, availability and delivery.",
+      AWAITING_CUSTOMER_ACCEPTANCE: "Awaiting customer acceptance of confirmed terms.",
+      ACCEPTED_AWAITING_PAYMENT: "Accepted and awaiting a separate authorised payment instruction.",
+      CANCELLED: "Cancelled. Contact product support if you need assistance."
+    };
+    if (info.orderId !== orderId || info.paymentCollected !== false ||
+        !Object.hasOwn(descriptions, info.status)) throw new Error("Unrecognised order status");
+    reportRequestState(orderId + ": " + descriptions[info.status] + " No payment has been collected for this request.");
+  } catch {
+    reportRequestState("Unable to confirm the request status right now. Keep your receipt reference.");
+  }
 }
 function renderPaymentEligibility(lines) {
   if (!checkoutButton || !termsCheckbox) return;
@@ -163,6 +211,34 @@ function node(tag, content, classname = "") {
   if (classname) element.className = classname;
   return element;
 }
+// CSV stays on the buyer's device: no supplier email, payment, customer data or public API call.
+function downloadBoq(lines, known, categoryNameById) {
+  const headers = ["ESCO catalogue reference", "NovaPharm internal SKU", "Manufacturer",
+    "ESCO manufacturer model", "Product", "Category", "Quantity",
+    "Exact specification / size / variant (buyer to complete)",
+    "Delivery requirement / location (buyer to complete)"];
+  const rows = lines.filter(item => known.has(item.id)).map(item => {
+    const product = known.get(item.id);
+    return [item.id, "NP-ESCO-" + item.id.slice(-4), "Eastern Surgical Company (ESCO)",
+      product.model || "", product.name, categoryNameById.get(item.id) || "", item.quantity, "", ""];
+  });
+  if (!rows.length) return;
+  const safeCsv = value => {
+    let cell = String(value ?? "").replace(/[\r\n]+/g, " ");
+    if (/^\s*[=+@\t]/.test(cell) || /^\s*-(?!\d)/.test(cell)) cell = "'" + cell;
+    return '"' + cell.replaceAll('"', '""') + '"';
+  };
+  const csv = [headers, ...rows].map(row => row.map(safeCsv).join(",")).join("\r\n") + "\r\n";
+  const url = URL.createObjectURL(new Blob([csv], {type:"text/csv;charset=utf-8"}));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "novapharm-esco-bill-of-quantities.csv";
+  link.style.display = "none";
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
 async function init() {
   if (!itemsRoot || !send || !totalNode) return;
   itemsRoot.replaceChildren(node("p", "Loading your Bag…", "esco-bag-message"));
@@ -179,6 +255,9 @@ async function init() {
       priceData?.checkoutEnabled !== false || priceData?.paymentCollectionEnabled !== false ||
       priceData?.requestQuoteOnly !== true) throw new Error("This Bag cannot verify safe ESCO catalogue authority");
   const all = catalogue.categories.flatMap((category) => category.entries);
+  const categoryNameById = new Map(catalogue.categories.flatMap(category =>
+    category.entries.map(product => [product.id, category.name])));
+
   const known = new Map(all.map(p => [p.id, p]));
   if (known.size !== 373) throw new Error("Duplicate catalogue item");
   let state = loadBag().filter(item => known.has(item.id) && Number.isFinite(priceData.guidePrices?.[item.id]?.guidePriceExVatGbp));
@@ -277,6 +356,7 @@ async function init() {
     send.setAttribute("aria-disabled", state.length ? "false" : "true");
     send.tabIndex = state.length ? 0 : -1;
     saveBag(state);
+    if (boqExportButton) boqExportButton.disabled = !state.length;
     renderPaymentEligibility(state);
   }
   itemsRoot.addEventListener("click", event => {
@@ -330,6 +410,8 @@ async function init() {
         throw new Error("We could not submit your order request. Your Bag is saved. Please try again or contact our team.");
       }
       const orderId = receipt.orderId;
+      if (requestLookupInput) requestLookupInput.value = orderId;
+      reportRequestState("Request received. Use this reference to check its status whenever needed.");
       state = [];
       saveBag(state);
       orderRequestForm.reset();
@@ -347,6 +429,12 @@ async function init() {
       sendingOrderRequest = false;
       renderPaymentEligibility(state);
     }
+  });
+  if (boqExportButton) boqExportButton.addEventListener("click", () =>
+    downloadBoq(state, known, categoryNameById));
+  if (requestLookupForm) requestLookupForm.addEventListener("submit", event => {
+    event.preventDefault();
+    void checkOrderRequestStatus(requestLookupInput?.value);
   });
   if (termsCheckbox) termsCheckbox.addEventListener("change", () => renderPaymentEligibility(state));
   if (checkoutButton) checkoutButton.addEventListener("click", () => startCheckout(state));
