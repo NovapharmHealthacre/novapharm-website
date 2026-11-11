@@ -36,7 +36,9 @@ for (const slug of routes) {
     assert.match(html, /Local permissions\.<br>Shared standards\./);
     assert.match(html, /Where should medicine go next\?/);
     assert.match(html, /href="\/assets\/css\/markets-editorial\.css\?v=20261111-nasa-hd-1"/);
-    assert.match(html, /https:\/\/assets\.science\.nasa\.gov\/content\/dam\/science\/esd\/eo\/images\/imagerecords\/152000\/152693\/iss070e075895_lrg\.jpg/);\n    assert.match(html, /width="5568" height="3712" fetchpriority="high"/);\n    assert.match(html, /NASA Expedition 70 crew/);
+    assert.match(html, /https:\/\/assets\.science\.nasa\.gov\/content\/dam\/science\/esd\/eo\/images\/imagerecords\/152000\/152693\/iss070e075895_lrg\.jpg/);
+    assert.match(html, /width="5568" height="3712" fetchpriority="high"/);
+    assert.match(html, /NASA Expedition 70 crew/);
     for (const region of ["United Kingdom", "European Union", "United States", "Canada", "Middle East &amp; North Africa"]) {
       assert.ok(html.includes(region), "Markets regional photograph or description missing: " + region);
     }
