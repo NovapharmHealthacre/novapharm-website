@@ -1,0 +1,471 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "COST-GATED STAGING PILOT ONLY. Standalone VPC, one managed NAT gateway, static outbound EIP for Atlas FREE-cluster /32 allowlisting. Creates zero resources by default. No compute, credentials, DNS, user, IAM grants, medical records or production acceptance.",
+  "Parameters": {
+    "PilotActivation": {
+      "Type": "String",
+      "Default": "BLOCKED",
+      "AllowedValues": [
+        "BLOCKED",
+        "APPROVED"
+      ],
+      "Description": "No AWS networking resources may be created unless explicitly APPROVED."
+    },
+    "MonthlyOperatingCostApproval": {
+      "Type": "String",
+      "Default": "BLOCKED",
+      "AllowedValues": [
+        "BLOCKED",
+        "APPROVED"
+      ],
+      "Description": "Recurring NAT gateway, Elastic IPv4, data and any AWS egress charges require separately reviewed monthly cost authorization."
+    },
+    "SecurityReview": {
+      "Type": "String",
+      "Default": "BLOCKED",
+      "AllowedValues": [
+        "BLOCKED",
+        "APPROVED"
+      ],
+      "Description": "Confirm EIP /32 Atlas allowlist policy, private Lambda role, and no patient/customer data."
+    },
+    "CostApprovalReference": {
+      "Type": "String",
+      "Default": "",
+      "AllowedPattern": "[A-Za-z0-9._-]*",
+      "Description": "Nonempty owner-approved ticket/reference identifying monthly cost ceiling. Not an API secret."
+    }
+  },
+  "Conditions": {
+    "ProvisionPilot": {
+      "Fn::And": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "PilotActivation"
+            },
+            "APPROVED"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "MonthlyOperatingCostApproval"
+            },
+            "APPROVED"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "SecurityReview"
+            },
+            "APPROVED"
+          ]
+        },
+        {
+          "Fn::Not": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "CostApprovalReference"
+                },
+                ""
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "eu-north-1"
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "PilotVpc": {
+      "Type": "AWS::EC2::VPC",
+      "Condition": "ProvisionPilot",
+      "Properties": {
+        "CidrBlock": "10.91.0.0/16",
+        "EnableDnsSupport": true,
+        "EnableDnsHostnames": true,
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "staging-network-pilot"
+          },
+          {
+            "Key": "atlas-release-state",
+            "Value": "not-production-approved"
+          },
+          {
+            "Key": "cost-control",
+            "Value": "explicit-opt-in-only"
+          }
+        ]
+      }
+    },
+    "PilotIgw": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Condition": "ProvisionPilot",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "staging-network-pilot"
+          },
+          {
+            "Key": "atlas-release-state",
+            "Value": "not-production-approved"
+          },
+          {
+            "Key": "cost-control",
+            "Value": "explicit-opt-in-only"
+          }
+        ]
+      }
+    },
+    "PilotIgwAttach": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Condition": "ProvisionPilot",
+      "Properties": {
+        "InternetGatewayId": {
+          "Ref": "PilotIgw"
+        },
+        "VpcId": {
+          "Ref": "PilotVpc"
+        }
+      }
+    },
+    "PilotPublicSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Condition": "ProvisionPilot",
+      "Properties": {
+        "VpcId": {
+          "Ref": "PilotVpc"
+        },
+        "CidrBlock": "10.91.0.0/24",
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "staging-network-pilot"
+          },
+          {
+            "Key": "atlas-release-state",
+            "Value": "not-production-approved"
+          },
+          {
+            "Key": "cost-control",
+            "Value": "explicit-opt-in-only"
+          }
+        ]
+      }
+    },
+    "PilotPrivateSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Condition": "ProvisionPilot",
+      "Properties": {
+        "VpcId": {
+          "Ref": "PilotVpc"
+        },
+        "CidrBlock": "10.91.1.0/24",
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "staging-network-pilot"
+          },
+          {
+            "Key": "atlas-release-state",
+            "Value": "not-production-approved"
+          },
+          {
+            "Key": "cost-control",
+            "Value": "explicit-opt-in-only"
+          }
+        ]
+      }
+    },
+    "PilotPublicRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Condition": "ProvisionPilot",
+      "Properties": {
+        "VpcId": {
+          "Ref": "PilotVpc"
+        },
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "staging-network-pilot"
+          },
+          {
+            "Key": "atlas-release-state",
+            "Value": "not-production-approved"
+          },
+          {
+            "Key": "cost-control",
+            "Value": "explicit-opt-in-only"
+          }
+        ]
+      }
+    },
+    "PilotPrivateRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Condition": "ProvisionPilot",
+      "Properties": {
+        "VpcId": {
+          "Ref": "PilotVpc"
+        },
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "staging-network-pilot"
+          },
+          {
+            "Key": "atlas-release-state",
+            "Value": "not-production-approved"
+          },
+          {
+            "Key": "cost-control",
+            "Value": "explicit-opt-in-only"
+          }
+        ]
+      }
+    },
+    "PilotPublicDefaultRoute": {
+      "Type": "AWS::EC2::Route",
+      "Condition": "ProvisionPilot",
+      "DependsOn": "PilotIgwAttach",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PilotPublicRouteTable"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "PilotIgw"
+        }
+      }
+    },
+    "PilotPublicRouteAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Condition": "ProvisionPilot",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "PilotPublicSubnet"
+        },
+        "RouteTableId": {
+          "Ref": "PilotPublicRouteTable"
+        }
+      }
+    },
+    "PilotPrivateRouteAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Condition": "ProvisionPilot",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "PilotPrivateSubnet"
+        },
+        "RouteTableId": {
+          "Ref": "PilotPrivateRouteTable"
+        }
+      }
+    },
+    "PilotStaticEgressIp": {
+      "Type": "AWS::EC2::EIP",
+      "Condition": "ProvisionPilot",
+      "Properties": {
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "staging-network-pilot"
+          },
+          {
+            "Key": "atlas-release-state",
+            "Value": "not-production-approved"
+          },
+          {
+            "Key": "cost-control",
+            "Value": "explicit-opt-in-only"
+          }
+        ]
+      }
+    },
+    "PilotNatGateway": {
+      "Type": "AWS::EC2::NatGateway",
+      "Condition": "ProvisionPilot",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "PilotPublicSubnet"
+        },
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "PilotStaticEgressIp",
+            "AllocationId"
+          ]
+        },
+        "ConnectivityType": "public",
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "staging-network-pilot"
+          },
+          {
+            "Key": "atlas-release-state",
+            "Value": "not-production-approved"
+          },
+          {
+            "Key": "cost-control",
+            "Value": "explicit-opt-in-only"
+          }
+        ]
+      }
+    },
+    "PilotPrivateDefaultRoute": {
+      "Type": "AWS::EC2::Route",
+      "Condition": "ProvisionPilot",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PilotPrivateRouteTable"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "PilotNatGateway"
+        }
+      }
+    },
+    "PilotNoIngressSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Condition": "ProvisionPilot",
+      "Properties": {
+        "VpcId": {
+          "Ref": "PilotVpc"
+        },
+        "GroupDescription": "Staging-only private Atlas TLS probe; no inbound connections",
+        "SecurityGroupIngress": [],
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 27017,
+            "ToPort": 27017,
+            "CidrIp": "0.0.0.0/0",
+            "Description": "MongoDB Atlas TLS connections; Atlas narrows source to generated /32 EIP"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Pinned AWS services/TLS endpoint bootstrap; IAM scoped to observer SSM parameter"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "environment",
+            "Value": "staging-network-pilot"
+          },
+          {
+            "Key": "atlas-release-state",
+            "Value": "not-production-approved"
+          },
+          {
+            "Key": "cost-control",
+            "Value": "explicit-opt-in-only"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "PilotActivationStatus": {
+      "Description": "No resources unless four independent opt-ins and Stockholm region satisfied",
+      "Value": {
+        "Fn::If": [
+          "ProvisionPilot",
+          "STAGING NETWORK PILOT ONLY; NOT CUSTOMER PRODUCTION",
+          "BLOCKED: no hourly NAT, public IPv4 or network resources"
+        ]
+      }
+    },
+    "PilotOutboundIp": {
+      "Condition": "ProvisionPilot",
+      "Description": "Exactly this IP, as /32, may be considered for a narrow Atlas project allowlist after network security approval",
+      "Value": {
+        "Ref": "PilotStaticEgressIp"
+      }
+    },
+    "PilotPrivateSubnetId": {
+      "Condition": "ProvisionPilot",
+      "Value": {
+        "Ref": "PilotPrivateSubnet"
+      }
+    },
+    "PilotProbeSecurityGroupId": {
+      "Condition": "ProvisionPilot",
+      "Value": {
+        "Ref": "PilotNoIngressSecurityGroup"
+      }
+    },
+    "DataReleaseState": {
+      "Value": "NO MEDICINE DATA RIGHTS, CUSTOMER ACCESS, COMMERCE PAYMENT OR PRODUCTION APPROVAL"
+    }
+  }
+}
