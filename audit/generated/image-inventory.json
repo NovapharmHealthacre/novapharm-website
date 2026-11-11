@@ -19989,11 +19989,10 @@
       ],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 5,
-      "referenceCount": 5,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
         "apps/corporate/components/concise-home.tsx",
-        "apps/corporate/components/oncology-editorial.tsx",
         "creative-assets/image-asset-register.json",
         "docs/oncology-media-provenance.json",
         "index.html"
