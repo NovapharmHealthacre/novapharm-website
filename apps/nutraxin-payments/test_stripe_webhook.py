@@ -9,6 +9,7 @@ from pathlib import Path
 import sys
 import types
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 os.environ["PAYMENT_LEDGER_TABLE"] = "synthetic-ledger"
@@ -112,6 +113,63 @@ class WebhookTests(unittest.TestCase):
         self.assertEqual(writes[3]["Update"]["TableName"],"synthetic-ledger")
         self.assertEqual(writes[3]["Update"]["ExpressionAttributeValues"][":updated"]["S"],"PAID")
         self.assertIn("stripeSessionId = :session",writes[3]["Update"]["ConditionExpression"])
+
+    def test_two_distinct_paid_events_same_session_are_idempotent(self):
+        details=WH.reconcile(event(),durable())
+        order=details["orderId"]
+        sid=details["sessionId"]
+        aid=details["attemptId"]
+        DDB.items[("ORDER#"+order,"ATTEMPT#"+aid)]={
+            "paymentStatus":{"S":"PAID"},"sessionId":{"S":sid}}
+        DDB.items[("ORDER#"+order,"SUMMARY")]={
+            "status":{"S":"PAID"},"stripeSessionId":{"S":sid}}
+        with patch.object(DDB,"transact_write_items",side_effect=DummyError()):
+            self.assertFalse(WH.record_once(event(),details))
+        # No additional paid outbox writes or paid-order side effects.
+        self.assertEqual(DDB.transacted,[])
+
+    def test_paid_replay_with_inconsistent_ledger_must_not_be_acked(self):
+        details=WH.reconcile(event(),durable())
+        order=details["orderId"]
+        aid=details["attemptId"]
+        sid=details["sessionId"]
+        DDB.items[("ORDER#"+order,"ATTEMPT#"+aid)]={
+            "paymentStatus":{"S":"PAID"},"sessionId":{"S":sid}}
+        DDB.items[("ORDER#"+order,"SUMMARY")]={
+            "status":{"S":"PAID"},"stripeSessionId":{"S":"cs_live_"+"x"*15}}
+        with patch.object(DDB,"transact_write_items",side_effect=DummyError()):
+            with self.assertRaises(DummyError):
+                WH.record_once(event(),details)
+
+    def test_late_failed_event_cannot_reverse_already_paid_order(self):
+        e=event()
+        e["type"]="checkout.session.expired"
+        details=WH.reconcile(e,durable())
+        order=details["orderId"]
+        aid=details["attemptId"]
+        sid=details["sessionId"]
+        DDB.items[("ORDER#"+order,"ATTEMPT#"+aid)]={
+            "paymentStatus":{"S":"PAID"},"sessionId":{"S":sid}}
+        DDB.items[("ORDER#"+order,"SUMMARY")]={
+            "status":{"S":"PAID"},"stripeSessionId":{"S":sid}}
+        with patch.object(DDB,"transact_write_items",side_effect=DummyError()):
+            with self.assertRaises(DummyError):
+                WH.record_once(e,details)
+
+    def test_refunds_and_disputes_not_claimed_as_reconciled(self):
+        # No real refund/dispute event is handled by this checkout-only
+        # webhook; separate signed event correlation is a release gate.
+        for kind in ("charge.refunded","refund.created","refund.updated",
+                     "charge.dispute.created","charge.dispute.closed"):
+            e=event()
+            e["type"]=kind
+            e["data"]["object"]={"id":"re_"+"d"*16,"object":"refund",
+                                  "livemode":True,"payment_intent":"pi_"+"e"*16}
+            raw,signature=signed_payload(e)
+            self.assertEqual(WH.signed_event(raw,signature,
+                "whsec_"+"z"*32,now=1794151250)["type"],kind)
+            self.assertNotIn(kind,WH.ALLOWED)
+        self.assertEqual(DDB.transacted,[])
 
     def test_handler_does_not_accept_unsigned_or_non_post(self):
         self.assertEqual(WH.handler({"requestContext":{"http":{"method":"GET"}}},None)["statusCode"],405)
