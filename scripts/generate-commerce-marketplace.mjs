@@ -27,7 +27,7 @@ for(const category of esco.categories)for(const p of category.entries){
  const price=guideFor({...p,category:category.name});
  assert(Number.isFinite(price.guidePriceExVatGbp));
  const mapping=photos.images?.[p.id];
- const photoIsMatched=Boolean(mapping?.path&&mapping.model&&mapping.model===p.model);
+ const photoIsMatched=Boolean(mapping?.path&&mapping.model&&mapping.model===p.model&&mapping.rightsConfirmed===true&&mapping.variantConfirmed===true);
  catalog.push({id:p.id,brand:'ESCO',seller:'NovaPharm Healthcare Ltd',supplier:'Eastern Surgical Company (ESCO)',title:p.name,category:category.name,subcategory:p.subcategory,
     model:p.model??null,pack:null,sku:'NP-ESCO-'+p.id.slice(-4),currency:'GBP',
     priceMinor:Math.round(price.guidePriceExVatGbp*100),priceBasis:'UK catalogue base ex VAT and delivery',priceVerification:'guide_price_only',
