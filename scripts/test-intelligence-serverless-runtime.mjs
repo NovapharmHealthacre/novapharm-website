@@ -6,6 +6,11 @@ const docker = readFileSync(new URL("../deployment/aws/Dockerfile.intelligence-l
 const ignore = readFileSync(new URL("../.dockerignore", import.meta.url), "utf8");
 
 test("serverless image is a fail-closed, source-labelled, non-root Next.js runtime", () => {
+  assert.match(docker, /^FROM node:24-trixie-slim AS builder$/m);
+  assert.match(docker, /^FROM node:24-trixie-slim AS runtime$/m);
+  assert.equal((docker.match(/^RUN apt-get update && apt-get install --only-upgrade -y zlib1g && rm -rf \/var\/lib\/apt\/lists\/\*$/gm) ?? []).length, 2,
+    "Both image stages must apply the current vendor zlib security update");
+  assert.doesNotMatch(docker, /FROM node:24-(?:bookworm|alpine)/);
   assert.match(docker, /COPY --from=public\.ecr\.aws\/awsguru\/aws-lambda-adapter:1\.1\.0/);
   assert.match(docker, /org\.opencontainers\.image\.revision="\$\{SOURCE_SHA\}"/);
   assert.match(docker, /novapharm\.release-gate="private-no-customer-acceptance"/);

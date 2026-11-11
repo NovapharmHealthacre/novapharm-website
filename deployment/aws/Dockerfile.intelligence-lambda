@@ -2,13 +2,15 @@
 # The official AWS Lambda Web Adapter lets a standard Next.js HTTP app run
 # on Lambda, avoiding idle ECS/ALB/NAT fees until actual users are onboarded.
 # No identity secrets, customer data, Stripe keys or API origins are embedded.
-FROM node:24-bookworm-slim AS builder
+FROM node:24-trixie-slim AS builder
+RUN apt-get update && apt-get install --only-upgrade -y zlib1g && rm -rf /var/lib/apt/lists/*
 WORKDIR /workspace
 COPY . .
 RUN npm ci --ignore-scripts
 RUN npm run build --workspace=@novapharm/portal
 
-FROM node:24-bookworm-slim AS runtime
+FROM node:24-trixie-slim AS runtime
+RUN apt-get update && apt-get install --only-upgrade -y zlib1g && rm -rf /var/lib/apt/lists/*
 COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:1.1.0 /lambda-adapter /opt/extensions/lambda-adapter
 ARG SOURCE_SHA
 LABEL org.opencontainers.image.title="NovaPharm Intelligence private serverless candidate" \
