@@ -33,6 +33,9 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
           ]);
           await bounded(document.fonts.ready, "Oncology fonts");
           for (const img of document.querySelectorAll(".npoc-hope-hero img,.npoc-focus-cards img")) {
+            // Lazy focus-card images below the fold will not fetch until scrolled.
+            // Force an actual network load before decoding, without ignoring failures.
+            img.loading = "eager";
             await bounded(img.decode(), `Oncology image ${img.currentSrc || img.src}`);
             if (!img.complete || img.naturalWidth <= 0) {
               throw new Error(`Oncology image is missing or broken: ${img.currentSrc || img.src}`);
