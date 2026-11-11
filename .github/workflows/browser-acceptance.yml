@@ -15,6 +15,10 @@ jobs:
   public-applications:
     name: ${{ matrix.application }} public application
     runs-on: ubuntu-latest
+    # Official Playwright v1.61.1 Noble image pinned to Microsoft Artifact Registry digest.
+    # Browser system libraries and executable binaries are preinstalled, avoiding Ubuntu apt DNS.
+    container:
+      image: mcr.microsoft.com/playwright@sha256:5b8f294aff9041b7191c34a4bab3ac270157a28774d4b0660e9743297b697e48
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -28,21 +32,21 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Trust only this checked-out repository for git provenance
+        shell: bash
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      - name: Cache exact Playwright browser binaries
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-      - name: Install Chromium and WebKit system dependencies (bounded)
-        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install-deps chromium webkit
-      - name: Install Chromium and WebKit browsers (bounded)
-        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
+      - name: Validate pinned Playwright browsers and system dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${PLAYWRIGHT_BROWSERS_PATH:-}" = "/ms-playwright"
+          timeout --signal=TERM --kill-after=30s 120s node --input-type=module -e 'import { chromium, webkit } from "playwright"; for (const engine of [chromium, webkit]) { const browser = await engine.launch({ headless: true }); await browser.close(); }'
       - name: Validate and build ${{ matrix.application }}
         run: npm run ${{ matrix.application }}:check
       - name: Run complete route, viewport and Axe matrix
@@ -59,26 +63,30 @@ jobs:
   secure-portal:
     name: Secure portal and role-boundary acceptance
     runs-on: ubuntu-latest
+    # Official Playwright v1.61.1 Noble image pinned to Microsoft Artifact Registry digest.
+    # Browser system libraries and executable binaries are preinstalled, avoiding Ubuntu apt DNS.
+    container:
+      image: mcr.microsoft.com/playwright@sha256:5b8f294aff9041b7191c34a4bab3ac270157a28774d4b0660e9743297b697e48
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Trust only this checked-out repository for git provenance
+        shell: bash
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      - name: Cache exact Playwright browser binaries
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-      - name: Install Chromium and WebKit system dependencies (bounded)
-        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install-deps chromium webkit
-      - name: Install Chromium and WebKit browsers (bounded)
-        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
+      - name: Validate pinned Playwright browsers and system dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${PLAYWRIGHT_BROWSERS_PATH:-}" = "/ms-playwright"
+          timeout --signal=TERM --kill-after=30s 120s node --input-type=module -e 'import { chromium, webkit } from "playwright"; for (const engine of [chromium, webkit]) { const browser = await engine.launch({ headless: true }); await browser.close(); }'
       - name: Validate portal and API boundary
         run: npm run api:check && npm run portal:check
       - name: Run all portal roles, routes and responsive viewports
@@ -99,26 +107,30 @@ jobs:
   backend-workflows:
     name: Contact, account, upload and authentication workflows
     runs-on: ubuntu-latest
+    # Official Playwright v1.61.1 Noble image pinned to Microsoft Artifact Registry digest.
+    # Browser system libraries and executable binaries are preinstalled, avoiding Ubuntu apt DNS.
+    container:
+      image: mcr.microsoft.com/playwright@sha256:5b8f294aff9041b7191c34a4bab3ac270157a28774d4b0660e9743297b697e48
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Trust only this checked-out repository for git provenance
+        shell: bash
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
       - name: Install exact dependencies
         run: npm ci --ignore-scripts
-      - name: Cache exact Playwright browser binaries
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-      - name: Install Chromium and WebKit system dependencies (bounded)
-        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install-deps chromium webkit
-      - name: Install Chromium and WebKit browsers (bounded)
-        run: timeout --signal=TERM --kill-after=30s 600s npx playwright install chromium webkit
+      - name: Validate pinned Playwright browsers and system dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${PLAYWRIGHT_BROWSERS_PATH:-}" = "/ms-playwright"
+          timeout --signal=TERM --kill-after=30s 120s node --input-type=module -e 'import { chromium, webkit } from "playwright"; for (const engine of [chromium, webkit]) { const browser = await engine.launch({ headless: true }); await browser.close(); }'
       - name: Build legacy rollback shell used only by the isolated workflow harness
         run: npm run build
       - name: Start synthetic non-production runtime
