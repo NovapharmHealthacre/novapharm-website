@@ -76,6 +76,8 @@ on:
       - 'legal/cookies/index.html'
       - 'legal/privacy/index.html'
       - '.github/workflows/publish-aws-contact-production.yml'
+      # Dispatch deduplication changes must trigger one independently verified publication.
+      - '.github/workflows/dispatch-approved-aws-contact-release.yml'
   workflow_dispatch:
     inputs:
       expected_sha:
