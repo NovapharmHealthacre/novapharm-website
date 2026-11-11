@@ -57,7 +57,9 @@ async function activateApprovedCustomerSession(idToken: string): Promise<{ token
     if (!match) return null;
     const seconds = Number(match[2]);
     if (!Number.isSafeInteger(seconds) || seconds < 1 || seconds > 43200) return null;
-    return { token: match[1], seconds };
+    const token = match[1];
+    if (!token) return null;
+    return { token, seconds };
   } catch {
     return null;
   }
