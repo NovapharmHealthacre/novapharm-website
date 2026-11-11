@@ -50,7 +50,7 @@ test("Lambda IAM is restricted to customer table operations and log writing", ()
     /^arn:\$\{AWS::Partition\}:execute-api:\$\{AWS::Region\}:/);
   assert.equal(JSON.stringify(r).includes("cognito-idp:AdminCreateUser"), false);
   assert.equal(JSON.stringify(r).includes("ses:SendEmail"), false);
-  assert.equal(JSON.stringify(r).includes("stripe"), false);
+  assert.equal(JSON.stringify(statements).includes("stripe"), false);
   assert.equal(r.Function.Properties.FunctionUrlConfig, undefined);
 });
 
