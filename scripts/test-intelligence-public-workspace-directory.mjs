@@ -29,7 +29,7 @@ test("public Intelligence directory mirrors all 22 governed workspaces without h
 });
 
 test("workspace directory kicker uses a darker accessible red on the soft surface", () => {
-  assert.match(css, /\\.npi-directory-intro \\.npi-kicker \\{ color: var\\(--npi-red-deep\\); \\}/u);
+  assert.ok(css.includes(".np-intelligence .npi-directory-intro .npi-kicker { color: var(--npi-red-deep); }"));
   assert.match(css, /--npi-red-deep: #bd100b/u);
 });
 
