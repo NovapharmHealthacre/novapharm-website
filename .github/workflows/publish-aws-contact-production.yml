@@ -841,6 +841,12 @@ jobs:
           curl --fail --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' "$LIVE_ORIGIN/assets/js/intelligence-live-research.js?$key" -o /tmp/npi-live-intelligence.js
           curl --fail --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' "$LIVE_ORIGIN/contact/?$key" -o /tmp/npi-live-contact.html
           grep -Fq 'data-npi-research' /tmp/npi-live-technology.html
+          # Public Intelligence directory must be present on the real customer domain.
+          # Source/build success alone never certifies 22 published workspaces.
+          grep -Fq 'id="intelligence-workspace-directory"' /tmp/npi-live-technology.html
+          grep -Fq 'ALL 22 PROFESSIONAL WORKSPACES' /tmp/npi-live-technology.html
+          test "$(grep -o 'data-npi-workspace="' /tmp/npi-live-technology.html | wc -l | tr -d '[:space:]')" -eq 22
+          grep -Fq 'Public research is available separately' /tmp/npi-live-technology.html
           grep -Fq 'src="/assets/js/intelligence-live-research.js"' /tmp/npi-live-technology.html
           grep -Fq 'US regulatory and trial searches send the medicine term' /tmp/npi-live-technology.html
           grep -Fq '5pcszvyqm1.execute-api.eu-north-1.amazonaws.com' /tmp/npi-live-intelligence.js
