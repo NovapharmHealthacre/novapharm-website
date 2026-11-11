@@ -162,7 +162,7 @@ class PreflightContractTests(unittest.TestCase):
         manifest = (ROOT / "infrastructure" / "aws" / "novapharm-intelligence-analytics-review.yaml").read_text(encoding="utf-8")
         self.assertIn("PublisherMetadataTable:", manifest)
         self.assertIn("Name: publisher_resource_metadata_v1", manifest)
-        self.assertIn("source-review/publisher-metadata/v1/", manifest)
+        self.assertIn("source-review/publisher-metadata-query/v1/", manifest)
         self.assertIn("data_state: unverified_publisher_metadata", manifest)
         self.assertIn("customer_publication: prohibited", manifest)
         self.assertIn("Name: resource_size_bytes, Type: bigint", manifest)
