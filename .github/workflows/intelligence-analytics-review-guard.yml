@@ -8,6 +8,7 @@ on:
       - 'infrastructure/aws/tests/test_analytics_review_preflight.py'
       - 'docs/data/evidence/nhsbsa-epd-apixaban-2026-08-candidate.ndjson'
       - '.github/workflows/intelligence-analytics-review-guard.yml'
+      - 'scripts/aws/deploy-intelligence-analytics-review-script.sh'
   push:
     branches: [main]
     paths:
@@ -29,6 +30,8 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
+      - name: Validate controlled deployment helper
+        run: bash -n scripts/aws/deploy-intelligence-analytics-review-script.sh
       - name: Compile Python preflight and run negative contract tests
         run: |
           python3 -m py_compile infrastructure/aws/glue_review_candidate_preflight.py
