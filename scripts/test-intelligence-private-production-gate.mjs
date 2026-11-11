@@ -38,3 +38,30 @@ test("live verification is an explicit dispatch, not unapproved PR deployment", 
   assert.doesNotMatch(source, /pull_request:/u);
   assert.doesNotMatch(source, /aws ecs update-service|az deployment group create|stripe\.com\/v1/u);
 });
+
+test("exact unsuffixed Cognito routes and health refuse redirects or insecure PKCE cookies", () => {
+  for (const route of ["/healthz", "/auth/customer/start", "/auth/callback"]) {
+    assert.ok(source.includes(`"$base_url${route}"`), `Missing canonical live probe: ${route}`);
+  }
+  assert.match(source, /\$health_status" != "200"/u);
+  assert.match(source, /\$start_status" != "302"/u);
+  assert.match(source, /\$callback_status" != "401"/u);
+  assert.match(source, /novapharm-intelligence-production-eun1\\\.auth\\\.eu-north-1\\\.amazoncognito\\\.com\/oauth2\/authorize/u);
+  assert.match(source, /__Host-npi_oidc_tx/u);
+  assert.match(source, /httponly/iu);
+  assert.match(source, /secure/iu);
+  assert.match(source, /do not follow redirects/iu);
+  assert.doesNotMatch(source, /curl [^\n]*--location/iu);
+  assert.match(source, /medicine\/customer application acceptance remains separate/iu);
+});
+
+test("native IAM gateway denial is narrowly bounded when AWS omits Lambda cache headers", () => {
+  assert.match(source, /\$status" != "403"/u);
+  assert.match(source, /content-type:\.\*application\/json/iu);
+  assert.ok(source.includes(`grep -qx '{"message":"Forbidden"}'`));
+  assert.match(source, /wc -c <\/tmp\/novapharm-private-api-response/);
+  assert.match(source, /-gt 64/);
+  assert.match(source, /App-origin 401\/403 responses still require no-store/);
+  assert.match(source, /cache-control:\.\*no-store/iu);
+  assert.doesNotMatch(source, /authorizationType: NONE|BYPASS_AUTH|ALLOW_ANONYMOUS/u);
+});
