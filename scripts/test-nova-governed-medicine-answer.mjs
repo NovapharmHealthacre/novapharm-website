@@ -1,8 +1,14 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { test } from "node:test";
 import { answerGovernedMedicineQuestion } from "../src/core/ai/nova-governed-medicine-answer.mjs";
 
 const sha = "a".repeat(64);
+const contentHash = row => createHash("sha256").update(JSON.stringify({
+  workspaceId: row.workspaceId, medicineId: row.medicineId, id: row.id,
+  sourceId: row.sourceId, sourceVersion: row.sourceVersion,
+  title: row.title, passage: row.passage, sourceUrl: row.sourceUrl
+})).digest("hex");
 const authority = {
   verified: true, principalId: "reviewer-1", workspaceId: "tenant_alpha",
   authorityRevision: "session-1", accessScopes: ["intelligence:research"]
@@ -10,14 +16,19 @@ const authority = {
 const row = {
   id: "fda-label-1", workspaceId: "tenant_alpha", medicineId: "apixaban",
   sourceId: "fda.labels", sourceVersion: "2026-11",
-  acceptanceStatus: "accepted", isSample: false, evidenceType: "observed_fact",
+  acceptanceStatus: "accepted", isSample: false, verifiedByEvidenceAuthority: true,
+  acceptanceReceiptSha256: "c".repeat(64), evidenceType: "observed_fact",
   provenanceSha256: sha, title: "Accepted official label metadata",
   passage: "An official product label record is registered for apixaban.",
   sourceUrl: "https://api.fda.gov/drug/label.json"
 };
+row.recordContentSha256 = contentHash(row);
 const grant = {
   workspaceId: "tenant_alpha", sourceId: "fda.labels", sourceVersion: "2026-11",
-  status: "active", rightsRevision: "rights-1",
+  status: "active", rightsRevision: "rights-1", revokedAt: null,
+  verifiedByRightsAuthority: true, externalAiMedicineAnswerApproved: true,
+  approvalRecordSha256: "b".repeat(64), reviewedBy: "compliance-reviewer-1",
+  reviewedAt: "2026-10-01T00:00:00Z", approvedPublisherHosts: ["api.fda.gov"],
   allowedPurposes: ["external_ai_medicine_answer"], validFrom: "2026-01-01T00:00:00Z",
   validUntil: "2027-01-01T00:00:00Z"
 };
@@ -77,7 +88,10 @@ test("missing records abstain without model egress", async () => {
 test("cross-tenant, unaccepted, sample or malformed provenance cannot reach a model", async () => {
   for (const altered of [
     { workspaceId: "tenant_beta" }, { acceptanceStatus: "staged" },
-    { isSample: true }, { provenanceSha256: "invalid" }, { sourceUrl: "http://localhost/secret" }
+    { isSample: true }, { provenanceSha256: "invalid" }, { sourceUrl: "http://localhost/secret" },
+    { verifiedByEvidenceAuthority: false }, { acceptanceReceiptSha256: "invalid" },
+    { passage: "Changed after acceptance" }, { sourceUrl: "https://172.16.0.1/private" },
+    { sourceUrl: "https://[::1]/private" }, { recordContentSha256: "0".repeat(64) }
   ]) {
     const { calls, options } = harness({ loadAcceptedEvidence: async () => [{ ...row, ...altered }] });
     await assert.rejects(() => answerGovernedMedicineQuestion(options), error => error.code === "nova_evidence_not_accepted");
@@ -89,7 +103,11 @@ test("explicit, current external-AI rights are mandatory for every source", asyn
   for (const altered of [
     { status: "pending" }, { allowedPurposes: ["internal_evidence_graph"] },
     { workspaceId: "tenant_beta" }, { validUntil: "2026-01-01T00:00:00Z" },
-    { sourceVersion: "old-version" }
+    { sourceVersion: "old-version" }, { revokedAt: "2026-10-01T00:00:00Z" },
+    { verifiedByRightsAuthority: false }, { externalAiMedicineAnswerApproved: false },
+    { approvalRecordSha256: "invalid" }, { reviewedBy: "" },
+    { reviewedAt: "2027-01-01T00:00:00Z" },
+    { approvedPublisherHosts: ["attacker.example"] }, { approvedPublisherHosts: [] }
   ]) {
     const { calls, options } = harness({ resolveSourceRight: async () => ({ ...grant, ...altered }) });
     await assert.rejects(() => answerGovernedMedicineQuestion(options), error => error.code === "nova_source_rights_not_approved");
@@ -150,4 +168,41 @@ test("unapproved or absent provider cannot be invoked", async () => {
   const { calls, options } = harness({ provider: { id: "none", complete: async () => "No" } });
   await assert.rejects(() => answerGovernedMedicineQuestion(options), error => error.code === "nova_production_dependencies_missing");
   assert.equal(calls.model, 0);
+});
+
+
+test("source content hash is bound to record, medicine, tenant, citation and publisher grant", async () => {
+  for (const changed of [
+    { title: "Replaced label title" }, { medicineId: "rivaroxaban" },
+    { sourceId: "different.publisher" }, { sourceVersion: "2026-10" },
+    { sourceUrl: "https://unauthorised.example/label" }
+  ]) {
+    const item = { ...row, ...changed };
+    const { calls, options } = harness({ loadAcceptedEvidence: async () => [item] });
+    await assert.rejects(() => answerGovernedMedicineQuestion(options), error =>
+      error.code === "nova_evidence_not_accepted");
+    assert.equal(calls.model, 0);
+  }
+  // A changed, freshly hashed URL is still rejected unless rights authority
+  // explicitly approved that exact publisher hostname.
+  const changed = { ...row, sourceUrl: "https://unauthorised.example/label" };
+  changed.recordContentSha256 = contentHash(changed);
+  const { calls, options } = harness({ loadAcceptedEvidence: async () => [changed] });
+  await assert.rejects(() => answerGovernedMedicineQuestion(options), error =>
+    error.code === "nova_source_rights_not_approved");
+  assert.equal(calls.model, 0);
+});
+
+test("server supplied acceptance and grant receipts are both required before any model request", async () => {
+  const missingEvidence = harness({ loadAcceptedEvidence: async () => [{ ...row, acceptanceReceiptSha256: null }] });
+  await assert.rejects(() => answerGovernedMedicineQuestion(missingEvidence.options), error =>
+    error.code === "nova_evidence_not_accepted");
+  assert.equal(missingEvidence.calls.model, 0);
+
+  const missingRights = harness({ resolveSourceRight: async () => ({
+    ...grant, approvalRecordSha256: null
+  }) });
+  await assert.rejects(() => answerGovernedMedicineQuestion(missingRights.options), error =>
+    error.code === "nova_source_rights_not_approved");
+  assert.equal(missingRights.calls.model, 0);
 });
