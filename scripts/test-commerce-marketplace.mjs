@@ -51,3 +51,13 @@ test('derived catalogue and tracking pages do not reuse Products-only image righ
     assert.match(html,/<link rel="canonical"/);
   }
 });
+
+test('supplier ESCO photographs are shown only after rights and exact-variant approval',()=>{
+  const map=JSON.parse(read('assets/data/esco-model-photo-map.json')).images;
+  const catalogue=JSON.parse(read('assets/data/commerce-marketplace.json')).products;
+  for(const row of catalogue.filter(p=>p.brand==='ESCO')){
+    const m=map?.[row.id];
+    if(!m || m.rightsConfirmed!==true || m.variantConfirmed!==true || m.model!==row.model)
+      assert.doesNotMatch(row.image,/^\/assets\/media\/esco\/esco-p[0-9]/);
+  }
+});
