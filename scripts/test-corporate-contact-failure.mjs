@@ -16,10 +16,6 @@ try {
   });
   try {
     const page = await context.newPage();
-    const response = await page.goto(origin + "/contact/?synthetic-failure-check=20261111", {
-      waitUntil: "domcontentloaded", timeout: 45000
-    });
-    assert.equal(response?.status(), 200, "Public Contact page not available");
     await page.route("**/*", async (route) => {
       const request = route.request();
       const url = new URL(request.url());
@@ -40,6 +36,10 @@ try {
         await route.abort("blockedbyclient");
       } else await route.continue();
     });
+    const response = await page.goto(origin + "/contact/?synthetic-failure-check=20261111", {
+      waitUntil: "domcontentloaded", timeout: 45000
+    });
+    assert.equal(response?.status(), 200, "Public Contact page not available");
     const form = page.locator("[data-live-b2b-enquiry-form]");
     await form.waitFor({ state: "visible", timeout: 20000 });
     const ready = await form.evaluate((node) => {
