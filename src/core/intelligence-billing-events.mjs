@@ -2,6 +2,7 @@ import { verifyStripeWebhook } from "./payments/stripe-checkout.mjs";
 
 const CUSTOMER_ID = /^cus_[a-zA-Z0-9]{6,}$/u;
 const SUBSCRIPTION_ID = /^sub_[a-zA-Z0-9]{6,}$/u;
+const INVOICE_ID = /^in_[a-zA-Z0-9]{6,}$/u;
 const EVENT_TYPES = new Set([
   "customer.subscription.created",
   "customer.subscription.updated",
@@ -50,7 +51,7 @@ export function verifyIntelligenceBillingEvent({
   if (!CUSTOMER_ID.test(String(stripeCustomerId ?? "")) ||
       !SUBSCRIPTION_ID.test(String(stripeSubscriptionId ?? "")) ||
       (subscriptionEvent && object.object !== "subscription") ||
-      (!subscriptionEvent && object.object !== "invoice")) {
+      (!subscriptionEvent && (object.object !== "invoice" || !INVOICE_ID.test(String(object.id ?? ""))))) {
     throw reject("billing_object_identity_invalid");
   }
 
@@ -79,6 +80,7 @@ export function verifyIntelligenceBillingEvent({
     subject: trustedMapping.subject,
     stripeCustomerId,
     stripeSubscriptionId,
+    invoiceId: subscriptionEvent ? null : object.id,
     observedStripeSubscriptionStatus: status,
     receivedInLiveMode: expectedLiveMode,
     requiresAtomicEventDeduplication: true,
