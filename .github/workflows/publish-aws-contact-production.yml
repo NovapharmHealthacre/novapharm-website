@@ -499,6 +499,8 @@ jobs:
             if curl --fail --silent --show-error --location --max-time 15 -H "Cache-Control: no-cache, no-store" "$url" -o /tmp/novapharm-live-esco-bag.html \
               && grep -Fq 'data-esco-bag-items' /tmp/novapharm-live-esco-bag.html \
               && grep -Fq 'data-esco-bag-quote' /tmp/novapharm-live-esco-bag.html \
+              && grep -Fq 'data-esco-request-lookup' /tmp/novapharm-live-esco-bag.html \
+              && grep -Fq 'data-esco-export-boq' /tmp/novapharm-live-esco-bag.html \
               && grep -Fq 'data-esco-card-checkout disabled' /tmp/novapharm-live-esco-bag.html; then
               curl --fail --silent --show-error --max-time 15 \
                 "https://novapharmhealthcare.com/assets/data/esco-uk-guide-prices.json?release-$GITHUB_SHA" \
@@ -509,11 +511,13 @@ jobs:
                 "https://novapharmhealthcare.com/assets/js/esco-bag.js?release-$GITHUB_SHA" \
                 -o /tmp/novapharm-live-esco-bag.js
               grep -Fq 'MAX_ITEMS = 12' /tmp/novapharm-live-esco-bag.js
+              grep -Fq 'function checkOrderRequestStatus(' /tmp/novapharm-live-esco-bag.js
+              grep -Fq 'function downloadBoq(' /tmp/novapharm-live-esco-bag.js
               curl --fail --silent --show-error --max-time 15 \
                 "https://novapharmhealthcare.com/assets/media/esco/previews/esco-cat-0373.svg?release-$GITHUB_SHA" \
                 -o /tmp/novapharm-live-esco-preview.svg
               grep -Fq 'Concept illustration for' /tmp/novapharm-live-esco-preview.svg
-              echo "Live ESCO Bag, 373 indicative guide prices, product previews and disabled-until-approved card controls verified."
+              echo "Live ESCO Bag, 373 guide prices, read-only receipt tracking, local BOQ export and server-gated card controls verified."
               exit 0
             fi
             sleep 5
