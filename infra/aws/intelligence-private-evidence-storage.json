@@ -105,6 +105,39 @@
                   "aws:SecureTransport": "false"
                 }
               }
+            },
+            {
+              "Sid": "DenyCommerceWorkloadWritesToIntelligenceEvidence",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Action": [
+                "s3:PutObject",
+                "s3:DeleteObject",
+                "s3:DeleteObjectVersion",
+                "s3:PutObjectTagging",
+                "s3:DeleteObjectTagging"
+              ],
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "EvidenceBucket",
+                        "Arn"
+                      ]
+                    },
+                    "/intelligence/*"
+                  ]
+                ]
+              },
+              "Condition": {
+                "ArnEquals": {
+                  "aws:PrincipalArn": {
+                    "Fn::Sub": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/novapharm-production-commerce-evidence-EvidenceRole-GNet28VHTjmN"
+                  }
+                }
+              }
             }
           ]
         }
