@@ -103,6 +103,45 @@ Resources:
             EncryptionOption: SSE_S3
         EngineVersion:
           SelectedEngineVersion: Athena engine version 3
+  PublisherMetadataTable:
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: !Ref ReviewDatabase
+      TableInput:
+        Name: publisher_resource_metadata_v1
+        TableType: EXTERNAL_TABLE
+        Parameters:
+          EXTERNAL: 'TRUE'
+          classification: json
+          data_state: unverified_publisher_metadata
+          customer_publication: prohibited
+        StorageDescriptor:
+          Location: s3://novapharm-intelligence-analytics-review-250675045172-eu-north-1/source-review/publisher-metadata-query/v1/
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          SerdeInfo:
+            SerializationLibrary: org.openx.data.jsonserde.JsonSerDe
+          Columns:
+            - { Name: schema_version, Type: string }
+            - { Name: source_id, Type: string }
+            - { Name: publisher, Type: string }
+            - { Name: dataset_slug, Type: string }
+            - { Name: resource_id, Type: string }
+            - { Name: resource_name, Type: string }
+            - { Name: reporting_period, Type: string }
+            - { Name: resource_format, Type: string }
+            - { Name: resource_size_bytes, Type: bigint }
+            - { Name: publisher_advertised_sha256, Type: string }
+            - { Name: publisher_metadata_response_sha256, Type: string }
+            - { Name: publisher_license_id, Type: string }
+            - { Name: publisher_metadata_resource_count, Type: int }
+            - { Name: metadata_audit_codebuild_id, Type: string }
+            - { Name: publisher_hash_independently_verified, Type: boolean }
+            - { Name: source_file_downloaded, Type: boolean }
+            - { Name: terminology_rights_approved, Type: boolean }
+            - { Name: production_observations_accepted, Type: bigint }
+            - { Name: production_admission_status, Type: string }
   MetadataPreflightRole:
     Type: AWS::IAM::Role
     Properties:
