@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - feat/intelligence-customer-session-api-20261111
-    paths:
-      - '.github/workflows/intelligence-image-inventory-reconcile.yml'
+    # Run after branch is refreshed from main; bot commits never re-trigger.
 
 permissions:
   contents: read
