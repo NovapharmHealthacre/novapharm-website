@@ -118,3 +118,16 @@ test("the separate liveness route is noindex, never reveals readiness and cannot
   assert.match(proxy, /"\/healthz\/"/);
   assert.match(docker, /4303\/healthz\//);
 });
+
+test("unconfigured protected API origins fail closed with a controlled 503", () => {
+  const gateway = source("app/gateway/[...path]/route.ts");
+  const targetStart = gateway.indexOf("let target: URL;");
+  const queryCopy = gateway.indexOf("target.search = request.nextUrl.search");
+  assert.ok(targetStart > 0 && queryCopy > targetStart, "The service origin must be validated before proxying");
+  const resolution = gateway.slice(targetStart, queryCopy);
+  assert.match(resolution, /try\s*\{[\s\S]*?new URL\(`\/api\/\$\{path\}`, apiOrigin\(\)\)/);
+  assert.match(resolution, /catch\s*\{[\s\S]*?status: 503/);
+  assert.match(resolution, /"Retry-After": "30"/);
+  assert.match(resolution, /"Cache-Control": "no-store"/);
+  assert.doesNotMatch(resolution, /error: error\.|message: error\.|JSON\.stringify\(error\)/);
+});
