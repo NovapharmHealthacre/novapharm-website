@@ -5,6 +5,7 @@ import modulePresentations from "../data/module-presentations.json";
 import type { PortalView } from "../data/routes";
 import { Dashboard } from "./dashboard";
 import { EntraComplete } from "./entra-complete";
+import { IntelligenceSignIn } from "./intelligence-sign-in";
 import { LoginPanel } from "./login-panel";
 import styles from "./module-presentations.module.css";
 import { PasswordChange } from "./password-change";
@@ -21,8 +22,8 @@ function ModulePresentation({ module, subview }: Readonly<{ module: PortalModule
   return <div className={`${presentationClass} ${archetypeClass}`} data-module={module.code} data-presentation={archetype}><Dashboard module={module} subview={subview} /></div>;
 }
 
-export function PortalClient({ view }: Readonly<{ view: PortalView }>) {
-  if (view.kind === "login") return <LoginPanel />;
+export function PortalClient({ view, intelligencePortal = false }: Readonly<{ view: PortalView; intelligencePortal?: boolean }>) {
+  if (view.kind === "login") return intelligencePortal ? <IntelligenceSignIn /> : <LoginPanel />;
   if (view.kind === "password-change") return <PasswordChange />;
   if (view.kind === "entra-complete") return <EntraComplete />;
   return <ModulePresentation module={view.module} subview={view.subview} />;
