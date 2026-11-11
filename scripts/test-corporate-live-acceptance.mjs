@@ -5,7 +5,10 @@ import { chromium, webkit, firefox } from "playwright";
 import AxeBuilder from "@axe-core/playwright";
 
 // Read-only inspection. Never submit contact forms or initiate orders/payments.
-const origin = process.env.CORPORATE_LIVE_ORIGIN ?? "https://novapharmhealthcare.com";
+const origin = "https://novapharmhealthcare.com";
+if (process.env.CORPORATE_LIVE_ORIGIN && process.env.CORPORATE_LIVE_ORIGIN !== origin) {
+  throw new Error("Corporate browser acceptance refuses an unapproved off-domain origin");
+}
 const expectedSHA = process.env.EXPECTED_LIVE_SHA ?? "";
 const output = path.resolve("artifacts/corporate-live-acceptance");
 const pages = [

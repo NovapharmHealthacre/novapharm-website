@@ -23,7 +23,7 @@ try {
     await page.route("**/*", async (route) => {
       const request = route.request();
       const url = new URL(request.url());
-      if (url.hostname.endsWith(".execute-api.eu-north-1.amazonaws.com")) {
+      if (url.protocol === "https:" && url.hostname === "h4dc1e4u57.execute-api.eu-north-1.amazonaws.com") {
         const headers = {
           "access-control-allow-origin": origin,
           "access-control-allow-methods": "GET,POST,OPTIONS",
@@ -36,7 +36,7 @@ try {
           intercepted += 1;
           await route.fulfill({ status: 503, headers, body: '{"error":"synthetic-receiver-unavailable"}' });
         } else await route.abort("blockedbyclient");
-      } else if (!["GET", "HEAD"].includes(request.method())) {
+      } else if (url.origin !== origin || !["GET", "HEAD"].includes(request.method())) {
         await route.abort("blockedbyclient");
       } else await route.continue();
     });
