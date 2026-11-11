@@ -174,3 +174,520 @@
 }
 
 /* Route owns its typography and section layout inside the shared Next.js shell. */
+
+/* Approved Hope for Tomorrow / SS2 responsive parity.
+ * Kept after the legacy Next.js editorial rules to prevent a dark hero regression.
+ * Design authority: assets/css/oncology-hope-v2.css on the canonical static route.
+ */
+/* Oncology: A Hope for Tomorrow | approved reference fidelity v3 | 2026-11-10
+   This isolated, uniquely named stylesheet follows legacy Oncology CSS to prevent
+   the dark hero, cropped portrait and unstyled/stacked cards from returning.
+   All visuals remain illustrative; no medicine availability is implied. */
+.npoc-page{
+  --npoc-v2-ink:#15151a;
+  --npoc-v2-copy:#50505a;
+  --npoc-v2-muted:#6b6b75;
+  --npoc-v2-rule:#e8e8ed;
+  --npoc-v2-surface:#f7f7f9;
+  background:#fff;
+  color:var(--npoc-v2-copy);
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+}
+.npoc-page .container{
+  width:min(calc(100% - 112px),1400px);
+  max-width:1400px;
+  margin-inline:auto;
+}
+.npoc-page .npoc-section{
+  padding-block:clamp(76px,8vw,125px);
+}
+.npoc-page .npoc-eyebrow{
+  color:#50505b;
+  letter-spacing:.16em;
+  font-size:12px;
+  font-weight:700;
+}
+.npoc-page :is(h1,h2,h3){
+  letter-spacing:-.044em;
+  font-family:inherit;
+  text-wrap:balance;
+}
+.npoc-page section.npoc-hero.npoc-hope-hero{
+  position:relative;
+  display:flex;
+  align-items:center;
+  min-height:clamp(540px,41vw,620px);
+  padding:0;
+  overflow:hidden;
+  isolation:isolate;
+  background:linear-gradient(90deg,#fff 0%,#fefeff 38%,#f5f1fc 75%,#fdf6ee 100%);
+  color:var(--npoc-v2-ink);
+}
+.npoc-page .npoc-hope-hero .npoc-hero-visual{
+  position:absolute;
+  inset:0 0 0 auto;
+  width:72%;
+  height:100%;
+  display:flex;
+  justify-content:flex-end;
+  align-items:stretch;
+  overflow:visible;
+  /* Seamless edge-to-edge hero: no visible line between the white copy and photograph. */
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.05) 12%,rgba(0,0,0,.45) 28%,rgba(0,0,0,.9) 44%,#000 54%);
+  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.05) 12%,rgba(0,0,0,.45) 28%,rgba(0,0,0,.9) 44%,#000 54%);
+  pointer-events:none;
+}
+.npoc-page .npoc-hope-hero .npoc-hero-visual img{
+  position:static;
+  inset:auto;
+  display:block;
+  width:100%;
+  height:100%;
+  max-width:none;
+  max-height:none;
+  object-fit:contain;
+  object-position:right center;
+  filter:none;
+}
+.npoc-page .npoc-hope-hero .npoc-hero-shade{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,#fff 0%,rgba(255,255,255,.99) 20%,rgba(255,255,255,.84) 34%,rgba(255,255,255,.24) 48%,rgba(255,255,255,0) 63%);
+  pointer-events:none;
+}
+.npoc-page .npoc-hope-hero .npoc-hero-content{
+  position:relative;
+  z-index:2;
+  width:min(calc(100% - 112px),1400px);
+  padding:clamp(60px,6vw,96px) 0 clamp(75px,6vw,110px);
+  margin-inline:auto;
+}
+.npoc-page .npoc-hope-hero .npoc-hero-copy{
+  width:min(46%,590px);
+  max-width:590px;
+}
+.npoc-page .npoc-hope-hero .npoc-eyebrow{
+  color:#4c4c57;
+  font-weight:670;
+  letter-spacing:.2em;
+  margin:0 0 23px;
+}
+.npoc-page .npoc-hope-hero h1{
+  font-size:clamp(58px,6.2vw,96px);
+  font-weight:710;
+  color:#131316;
+  line-height:.995;
+  letter-spacing:-.058em;
+  margin:0 0 25px;
+}
+.npoc-page .npoc-hope-hero .npoc-hero-lead{
+  color:#53535c;
+  font-weight:450;
+  font-size:clamp(18px,1.65vw,24px);
+  max-width:550px;
+  line-height:1.41;
+  margin:0;
+}
+.npoc-page .npoc-hope-hero .npoc-actions{
+  margin-top:38px;
+}
+.npoc-page .npoc-hope-hero .npoc-button-primary{
+  background:#161619;
+  border:1px solid #161619;
+  color:#fff;
+  border-radius:999px;
+  min-height:54px;
+  padding:14px 30px;
+  font-size:15px;
+  font-weight:620;
+}
+.npoc-page .npoc-hope-hero .npoc-button-primary:hover{
+  background:#33333b;
+  border-color:#33333b;
+  color:#fff;
+}
+.npoc-page .npoc-hope-focus{
+  padding:58px 0 67px;
+  scroll-margin-top:72px;
+  background:#fff;
+}
+.npoc-page .npoc-hope-focus .npoc-focus-layout{
+  display:grid;
+  grid-template-columns:minmax(270px,.9fr) minmax(0,2.2fr);
+  align-items:center;
+  column-gap:clamp(30px,3.5vw,58px);
+  row-gap:32px;
+}
+.npoc-page .npoc-hope-focus .npoc-focus-copy{
+  align-self:center;
+  min-width:0;
+}
+.npoc-page .npoc-hope-focus .npoc-focus-copy h2{
+  color:#15151a;
+  font-size:clamp(35px,3.1vw,48px);
+  line-height:1.04;
+  font-weight:690;
+  letter-spacing:-.05em;
+  margin:0 0 16px;
+}
+.npoc-page .npoc-hope-focus .npoc-focus-copy>p:not(.npoc-eyebrow){
+  color:#575761;
+  font-size:clamp(16px,1.25vw,19px);
+  line-height:1.49;
+  margin:0;
+}
+.npoc-page .npoc-hope-focus .npoc-focus-link{
+  margin-top:24px;
+  background:#ededf2;
+  color:#18181c;
+  border-radius:999px;
+  font-weight:620;
+  padding:13px 24px;
+  display:inline-flex;
+}
+.npoc-page .npoc-hope-focus .npoc-focus-link:hover{
+  background:#e2e2e9;
+  color:#17171a;
+}
+.npoc-page .npoc-hope-focus .npoc-focus-cards{
+  display:grid;
+  width:100%;
+  min-width:0;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  align-items:stretch;
+  gap:18px;
+  overflow:visible;
+}
+.npoc-page .npoc-hope-focus .npoc-focus-card{
+  position:relative;
+  width:100%;
+  min-width:0;
+  min-height:0;
+  height:clamp(260px,24vw,360px);
+  aspect-ratio:auto;
+  display:block;
+  flex:none;
+  border-radius:22px;
+  overflow:hidden;
+  isolation:isolate;
+  color:#fff;
+  background:#35284b;
+  text-decoration:none;
+}
+.npoc-page .npoc-hope-focus .npoc-focus-card img{
+  display:block;
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  max-width:none;
+  filter:none;
+  transition:transform .35s ease;
+}
+.npoc-page .npoc-hope-focus .npoc-focus-card:after{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:0;
+  background:linear-gradient(0deg,rgba(10,7,21,.75),rgba(10,7,21,.1) 43%,transparent 74%);
+}
+.npoc-page .npoc-hope-focus .npoc-focus-card span{
+  display:block;
+  position:absolute;
+  left:20px;
+  right:16px;
+  bottom:24px;
+  z-index:1;
+  color:#fff;
+  font-size:clamp(16px,1.4vw,20px);
+  line-height:1.2;
+  font-weight:640;
+  letter-spacing:-.02em;
+}
+.npoc-page .npoc-hope-focus .npoc-focus-card:hover img{
+  transform:scale(1.035);
+}
+.npoc-page .npoc-hope-focus .npoc-focus-disclosure{
+  margin-top:18px;
+  font-size:12px;
+  color:#686874;
+  line-height:1.55;
+}
+.npoc-page .npoc-status{
+  background:#fbfbfc;
+  border-top:1px solid var(--npoc-v2-rule);
+  border-bottom:1px solid var(--npoc-v2-rule);
+}
+.npoc-page .npoc-status .container{
+  width:min(calc(100% - 112px),1400px);
+}
+.npoc-page .npoc-introduction{
+  background:#fff;
+  border-top:0;
+}
+.npoc-page .npoc-introduction h2{
+  font-size:clamp(58px,7vw,100px);
+  line-height:1;
+  color:var(--npoc-v2-ink);
+}
+.npoc-page .npoc-evidence{
+  background:#f7f7f9;
+}
+.npoc-page .npoc-section-heading h2,
+.npoc-page .npoc-faq h2,
+.npoc-page .npoc-enquiry h2{
+  color:var(--npoc-v2-ink);
+  font-size:clamp(40px,4.5vw,68px);
+  line-height:1.06;
+  font-weight:690;
+}
+.npoc-page .npoc-evidence-list li{
+  border-top-color:#d8d8df;
+}
+.npoc-page .npoc-index,
+.npoc-page .npoc-pathway li>span{
+  color:#6f5b8c;
+}
+.npoc-page .npoc-programmes{
+  background:#fff;
+}
+.npoc-page .npoc-editorial-panel{
+  background:linear-gradient(135deg,#e9e5f5 0%,#f5f1fb 60%,#faf5f0 100%);
+  color:#20202a;
+  border-radius:25px;
+}
+.npoc-page .npoc-editorial-panel .npoc-eyebrow{
+  color:#655482;
+}
+.npoc-page .npoc-editorial-panel .npoc-panel-headline{
+  color:#262032;
+}
+.npoc-page .npoc-editorial-panel .npoc-panel-support,
+.npoc-page .npoc-editorial-panel .npoc-panel-footer{
+  color:#514c5b;
+}
+.npoc-page .npoc-editorial-panel .npoc-panel-footer{
+  border-color:#cfc9df;
+}
+.npoc-page .npoc-governance{
+  background:#f6f5f9;
+  color:#35343e;
+}
+.npoc-page .npoc-governance .npoc-section-heading h2,
+.npoc-page .npoc-governance .npoc-pathway strong,
+.npoc-page .npoc-governance .npoc-matrix summary,
+.npoc-page .npoc-governance .npoc-matrix th,
+.npoc-page .npoc-governance .npoc-matrix td:first-child{
+  color:#22222a;
+}
+.npoc-page .npoc-governance .npoc-section-heading>p:last-child,
+.npoc-page .npoc-governance .npoc-boundary,
+.npoc-page .npoc-governance .npoc-matrix table{
+  color:#555361;
+}
+.npoc-page .npoc-governance .npoc-pathway li,
+.npoc-page .npoc-governance .npoc-matrix{
+  border-color:#d0ced9;
+}
+.npoc-page .npoc-faq{background:#fff}
+.npoc-page .npoc-enquiry{
+  background:#f8f8fa;
+}
+.npoc-page :is(.npoc-focus-card,.npoc-button,.npoc-focus-link):focus-visible{
+  outline:3px solid #1356ab;
+  outline-offset:3px;
+}
+@media (max-width:1100px){
+  .npoc-page .npoc-hope-focus .npoc-focus-layout{
+    grid-template-columns:1fr;
+  }
+  .npoc-page .npoc-hope-focus .npoc-focus-cards{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-copy{
+    width:min(52%,590px);
+  }
+}
+@media (max-width:760px){
+  .npoc-page .container,
+  .npoc-page .npoc-status .container{
+    width:min(calc(100% - 40px),1400px);
+  }
+  .npoc-page section.npoc-hero.npoc-hope-hero{
+    display:flex;
+    align-items:flex-end;
+    min-height:740px;
+    background:#fff;
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-visual{
+    position:absolute;
+    inset:0 0 auto 0;
+    width:100%;
+    height:310px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    /* Portrait and white text stack independently on phones. */
+    -webkit-mask-image:none;
+    mask-image:none;
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-visual img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    object-position:top center;
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-shade{
+    background:linear-gradient(180deg,transparent 0%,rgba(255,255,255,.1) 240px,#fff 330px,#fff 100%);
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-content{
+    padding:330px 0 73px;
+    width:min(calc(100% - 40px),1400px);
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-copy{
+    width:100%;
+    max-width:560px;
+  }
+  .npoc-page .npoc-hope-hero h1{
+    font-size:clamp(51px,10.6vw,76px);
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-lead{
+    font-size:18px;
+  }
+  .npoc-page .npoc-hope-focus{
+    padding:52px 0;
+  }
+  .npoc-page .npoc-hope-focus .npoc-focus-cards{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(220px,1fr));
+    gap:14px;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    padding-bottom:12px;
+  }
+  .npoc-page .npoc-hope-focus .npoc-focus-card{
+    height:285px;
+    scroll-snap-align:start;
+  }
+  .npoc-page .npoc-programme-layout,
+  .npoc-page .npoc-faq-layout{
+    grid-template-columns:1fr;
+    gap:36px;
+  }
+}
+@media (max-width:420px){
+  .npoc-page section.npoc-hero.npoc-hope-hero{
+    min-height:775px;
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-visual{
+    height:280px;
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-content{
+    padding-top:298px;
+  }
+  .npoc-page .npoc-hope-hero h1{
+    font-size:clamp(47px,11.4vw,57px);
+  }
+}
+@media (prefers-reduced-motion:reduce){
+  .npoc-page .npoc-focus-card img{transition:none}
+}
+@media (forced-colors:active){
+  .npoc-page .npoc-hope-hero,
+  .npoc-page .npoc-editorial-panel{
+    background:Canvas;
+    color:CanvasText;
+  }
+}
+@media print{
+  .npoc-page .npoc-hope-hero .npoc-hero-visual,
+  .npoc-page .npoc-hope-focus .npoc-focus-card img{
+    display:none;
+  }
+}
+
+
+/* Final owner reference: one continuous image-led editorial hero without
+   a photograph card, hard crop, seam or shadow. Keep full portrait framing. */
+@media (min-width:761px) {
+  .npoc-page section.npoc-hero.npoc-hope-hero {
+    background:linear-gradient(90deg,#fff 0%,#fdfdff 37%,#f1effa 70%,#fae9d9 100%);
+    box-shadow:none;
+    border:0;
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-visual {
+    inset:0 0 0 auto;
+    width:78%;
+    height:100%;
+    border:0;
+    border-radius:0;
+    box-shadow:none;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.08) 12%,rgba(0,0,0,.72) 34%,#000 51%);
+    mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.08) 12%,rgba(0,0,0,.72) 34%,#000 51%);
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-visual img {
+    object-fit:contain;
+    object-position:right center;
+    border:0;
+    border-radius:0;
+    box-shadow:none;
+    filter:none;
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-shade {
+    background:linear-gradient(90deg,#fff 0%,rgba(255,255,255,.995) 22%,rgba(255,255,255,.83) 35%,rgba(255,255,255,.16) 52%,transparent 68%);
+  }
+}
+
+/* Owner-approved reference SS2, 10 November 2026.
+   At desktop sizes the photograph is the *same continuous hero canvas*,
+   never a separate rectangular card. A broad alpha transition protects
+   the headline while the right-hand portrait stays intact. */
+@media (min-width:1101px) {
+  .npoc-page section.npoc-hero.npoc-hope-hero {
+    min-height:clamp(555px,41vw,640px);
+    background:linear-gradient(102deg,#fff 0%,#faf9fe 42%,#f1eafb 72%,#fff3e8 100%);
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-visual {
+    inset:0 0 0 auto;
+    width:72%;
+    height:100%;
+    overflow:hidden;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.10) 16%,rgba(0,0,0,.58) 35%,rgba(0,0,0,.94) 53%,#000 65%);
+    mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.10) 16%,rgba(0,0,0,.58) 35%,rgba(0,0,0,.94) 53%,#000 65%);
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-visual img {
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    object-position:right center;
+    border:0;
+    box-shadow:none;
+    filter:none;
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-shade {
+    background:linear-gradient(90deg,#fff 0%,rgba(255,255,255,.99) 17%,rgba(255,255,255,.87) 31%,rgba(255,255,255,.35) 48%,rgba(255,255,255,0) 69%);
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-content {
+    padding-block:clamp(78px,6.1vw,112px);
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-copy {
+    width:min(49%,640px);
+    max-width:640px;
+  }
+  .npoc-page .npoc-hope-hero h1 {
+    font-size:clamp(68px,6.55vw,104px);
+    line-height:.99;
+  }
+  .npoc-page .npoc-hope-focus .npoc-focus-layout {
+    grid-template-columns:minmax(310px,.93fr) minmax(0,2.15fr);
+  }
+}
+/* On tablets, retain the complete supplied portrait without the desktop
+   image-cover treatment; on phones, retain the stacked unmasked composition. */
+@media (min-width:761px) and (max-width:1100px) {
+  .npoc-page .npoc-hope-hero .npoc-hero-visual img {
+    object-fit:contain;
+  }
+}
