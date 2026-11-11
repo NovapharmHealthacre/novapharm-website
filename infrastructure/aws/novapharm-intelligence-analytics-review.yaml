@@ -117,7 +117,7 @@ Resources:
           data_state: unverified_publisher_metadata
           customer_publication: prohibited
         StorageDescriptor:
-          Location: s3://novapharm-intelligence-analytics-review-250675045172-eu-north-1/source-review/publisher-metadata/v1/
+          Location: s3://novapharm-intelligence-analytics-review-250675045172-eu-north-1/source-review/publisher-metadata-query/v1/
           InputFormat: org.apache.hadoop.mapred.TextInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
           SerdeInfo:
