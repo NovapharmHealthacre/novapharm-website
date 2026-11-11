@@ -271,6 +271,12 @@ try {
   assert.equal(analytics.rows[0].metric_value, 12);
   assert.equal(analytics.series.length, 1);
   assert.equal(analytics.series[0].metric_value, 12);
+  assert.equal(analytics.observedChange.contract, "novapharm.intelligence.observed-medicine-change.v1");
+  assert.equal(analytics.observedChange.state, "insufficient_comparable_evidence");
+  assert.equal(analytics.observedChange.reason, "three_accepted_monthly_observations_required");
+  assert.equal(analytics.observedChange.observation, null);
+  assert.equal(analytics.observedChange.decisionReady, false);
+
   assert.deepEqual(analytics.summary, {
     totalItems: 12,
     totalQuantity: 24,
