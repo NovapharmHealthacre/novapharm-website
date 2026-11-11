@@ -4,6 +4,7 @@ import test from "node:test";
 
 const read = path => readFileSync(new URL("../" + path, import.meta.url), "utf8");
 const html = read("src/content/technology-intelligence.html");
+const publicArtifact = read("technology/index.html");
 const catalogue = read("apps/portal/data/intelligence-workspaces.ts");
 const css = read("assets/css/technology-intelligence.css");
 const signIn = read("apps/portal/components/intelligence-sign-in.tsx");
@@ -57,4 +58,15 @@ test("customer entry page exposes the public directory without bypassing server 
   assert.match(signIn, /href="\/auth\/customer\/register"/u);
   assert.match(signIn, /customer\/session/u);
   assert.doesNotMatch(signIn, /np_session\s*=|localStorage\.setItem/u);
+});
+
+
+test("checked-in public technology route exposes the same 22 workspaces as canonical source", () => {
+  const all = [...publicArtifact.matchAll(/data-npi-workspace="([^"]+)"/g)].map(x => x[1]);
+  assert.equal(all.length, entries.length);
+  assert.deepEqual(new Set(all), new Set(entries.map(([, slug]) => slug)));
+  assert.match(publicArtifact, /id="intelligence-workspace-directory"/u);
+  assert.match(publicArtifact, /href="#intelligence-research"/u);
+  assert.match(publicArtifact, /href="https:\/\/intelligence\.novapharmhealthcare\.com\/"/u);
+  assert.doesNotMatch(publicArtifact, /data-npi-workspace-access="(?:enabled|active|unlocked)"/u);
 });
