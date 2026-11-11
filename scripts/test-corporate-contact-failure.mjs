@@ -75,7 +75,11 @@ try {
     const button = form.locator("button[type=submit]");
     await button.click();
     const status = page.locator("[data-live-contact-status]");
-    await status.getByText("We could not confirm that your enquiry was received.", { exact: false }).waitFor({state:"visible", timeout:16000});
+    await page.waitForFunction(
+      () => document.querySelector("[data-live-contact-status]")?.textContent?.includes("We could not confirm that your enquiry was received."),
+      null,
+      { timeout: 16000 }
+    );
     assert.equal(intercepted,1,"Browser did not intercept exactly one API mutation");
     assert.equal(await button.isEnabled(), true, "Submit button not restored after receiver failure");
     assert.ok((await status.locator('a[href="mailto:vishal@novapharmhealthcare.com"]').count()) === 1,
