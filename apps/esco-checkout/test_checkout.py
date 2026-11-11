@@ -202,6 +202,59 @@ class CheckoutSecurity(unittest.TestCase):
         self.assertEqual(payload["status"], "CHECKOUT_EXPIRED")
         self.assertFalse(payload["paid"])
 
+    def test_signed_checkout_events_record_only_actual_paid_amount(self):
+        session_id = "cs_live_" + "A" * 24
+        order_id = "ESCO-" + UUID
+        class FakeLedger:
+            def __init__(self):
+                self.updated = None
+            def get_item(self, **kwargs):
+                return {"Item": {
+                    "sessionId": {"S": session_id},
+                    "basketHash": {"S": "basket-test"},
+                    "subtotalMinor": {"N": "71000"},
+                    "state": {"S": "CHECKOUT_OPEN"},
+                }}
+            def update_item(self, **kwargs):
+                self.updated = kwargs["ExpressionAttributeValues"]
+
+        cases = [
+            ("checkout.session.expired", "unpaid", "CHECKOUT_EXPIRED", "0"),
+            ("checkout.session.async_payment_failed", "unpaid", "PAYMENT_FAILED", "0"),
+            ("checkout.session.completed", "paid", "PAID", "71000"),
+            ("checkout.session.async_payment_succeeded", "paid", "PAID", "71000"),
+        ]
+        for event_type, payment_status, expected_state, expected_amount in cases:
+            with self.subTest(event_type=event_type):
+                db = FakeLedger()
+                signed = {
+                    "id": "evt_Abc123456",
+                    "livemode": True,
+                    "type": event_type,
+                    "data": {"object": {
+                        "id": session_id,
+                        "metadata": {"brand": "ESCO", "order_id": order_id,
+                                     "basket_hash": "basket-test"},
+                        "currency": "gbp",
+                        "client_reference_id": order_id,
+                        "livemode": True,
+                        "amount_subtotal": 71000,
+                        "amount_total": 71000,
+                        "payment_status": payment_status,
+                    }},
+                }
+                with patch.object(mod, "ORDERS_TABLE", "offline-ledger"), patch.object(
+                    mod, "WEBHOOK_SECRET_ID", "offline-secret"
+                ), patch.object(mod, "secret", return_value="whsec_offline"), patch.object(
+                    mod, "parse_signature", return_value=signed
+                ), patch.object(mod, "aws", return_value=db):
+                    response = mod.webhook({"headers": {"stripe-signature": "test"}, "body": "{}"})
+                code, body = status(response)
+                self.assertEqual(code, 200, body)
+                self.assertTrue(body["processed"])
+                self.assertEqual(db.updated[":new"]["S"], expected_state)
+                self.assertEqual(db.updated[":amt"]["N"], expected_amount)
+
     def test_bad_webhook_signature_never_updates_order(self):
         req=event("/stripe/webhook","POST",{"type":"checkout.session.completed"})
         req["headers"]["stripe-signature"]="t=1000000000,v1=0000"
