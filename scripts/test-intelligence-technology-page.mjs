@@ -234,4 +234,18 @@ assert.ok(professional.elements["[data-npi-plan-billing]"].textContent.includes(
 monthlyButton.listeners.click();
 assert.equal(starter.elements["[data-npi-plan-price]"].textContent, "₹24,999");
 
+
+const terminalOrigin = "https://intelligence.novapharmhealthcare.com/";
+for (const [label, markup] of [["source", source], ["published", published]]) {
+  assert.ok(markup.includes('class="npi-local-login" href="' + terminalOrigin + '"'), label + " must have a visible local-nav sign-in button");
+  assert.ok(markup.includes('class="npi-button npi-button-secondary">Sign in to the Medicines Terminal</a>'), label + " must have a prominent Medicines Terminal sign-in CTA");
+  assert.ok(markup.includes('class="npi-research-access"'), label + " must expose professional sign-in next to public research");
+  assert.ok((markup.match(/href="https:\/\/intelligence\.novapharmhealthcare\.com\/"/g) || []).length >= 3, label + " must link the three scoped sign-in affordances to the dedicated HTTPS host; the generated page also adds a sitewide mega-menu link");
+  assert.ok(markup.includes("Invitation-only sign-in is available."), label + " must disclose invitation-only authentication");
+  assert.ok(!markup.includes("Professional sign-in will be available after secure workspace activation."), label + " must not retain superseded sign-in copy");
+}
+assert.ok(materialiser.includes('["Sign in to Intelligence", "https://intelligence.novapharmhealthcare.com/"]'), "All global Intelligence mega-menus must include live terminal sign-in");
+assert.ok(styles.includes(".np-intelligence-local-nav .npi-local-login"), "Sign-in nav must have scoped visual styling");
+assert.ok(styles.includes(".npi-research-access .npi-button"), "Research-area sign-in must have scoped button styling");
+
 console.log("NovaPharm Intelligence Technology page: source, public output, disclosures, CSS and build integration verified.");

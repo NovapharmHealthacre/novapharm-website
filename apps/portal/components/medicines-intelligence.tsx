@@ -7,6 +7,7 @@ import { gatewayJson, type PortalUser, professionalError } from "../lib/gateway"
 import { ClinicalTrialsDiscovery } from "./clinical-trials-discovery";
 import styles from "./medicines-intelligence.module.css";
 import { PharmaScopeBrand } from "./pharmascope-brand";
+import { ProfessionalWorkspace } from "./professional-workspaces";
 import { UsFdaLabelDiscovery } from "./us-fda-label-discovery";
 
 type Metric = Readonly<{ key: string; label: string; value: number; format?: string }>;
@@ -659,6 +660,37 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     return () => window.removeEventListener("keydown", handleSearchShortcut);
   }, []);
 
+  // Restore an authorised medicine selection on workspace deep links. The server
+  // validates both the session and the exact medicine identifier on each request.
+  useEffect(() => {
+    const medicineId = new URLSearchParams(window.location.search).get("medicineId");
+    if (!medicineId || !/^medicine-[a-f0-9]{32}$/u.test(medicineId)) return;
+    let active = true;
+    const restore = async () => {
+      setBusy(true);
+      try {
+        const next = await gatewayJson<MedicineDetail>(`enterprise/medicines/${encodeURIComponent(medicineId)}`);
+        if (!active) return;
+        setDetail(next);
+        const params = formSearchParams(emptyFilters);
+        params.set("medicineId", medicineId);
+        params.set("page", "1");
+        params.set("pageSize", "50");
+        const observed = await gatewayJson<AnalyticsResponse>(`enterprise/medicines/analytics?${params.toString()}`);
+        if (active) {
+          setAnalytics(observed);
+          setAnalyticsStatus(observed.dataState === "accepted_facts" ? "Accepted observed history loaded for this identity." : "No accepted observed history available for this identity.");
+        }
+      } catch (error) {
+        if (active) setSearchStatus(professionalError(error));
+      } finally {
+        if (active) setBusy(false);
+      }
+    };
+    void restore();
+    return () => { active = false; };
+  }, []);
+
   function changeFilter(key: keyof AnalyticsFilters, value: string) {
     setFilters((currentFilters) => {
       const next = { ...currentFilters, [key]: value };
@@ -700,6 +732,9 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     try {
       const next = await gatewayJson<MedicineDetail>(`enterprise/medicines/${encodeURIComponent(medicineId)}`);
       setDetail(next);
+      const nextUrl = new URL(window.location.href);
+      nextUrl.searchParams.set("medicineId", next.medicine.medicineId);
+      window.history.replaceState(null, "", `${nextUrl.pathname}${nextUrl.search}`);
       setAnalytics(null);
       setSearchResponse(null);
       setSearchStatus("Medicine identity loaded. Checking accepted observed history without inventing missing data.");
@@ -755,11 +790,15 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   else if (current === "geography") central = <><NearbyOrganisations /><EvidenceTable data={section(snapshot, "Practice population context")} /><EvidenceTable data={section(snapshot, "Pharmacy geography")} /></>;
   else if (current === "pharmacies") central = <section className={styles.routeWorkspace}><header><p className={styles.stateLabel}>Governed master</p><h1>All pharmacies</h1><p>Identity, geography and contact-evidence facts remain separate from medicine dispensing and marketing eligibility.</p></header><EvidenceTable data={section(snapshot, "Pharmacy geography")} /><EvidenceTable data={section(snapshot, "Pharmacy contact evidence")} /></section>;
   else if (current === "data-sources") central = <section className={styles.routeWorkspace}><header><p className={styles.stateLabel}>Source truth</p><h1>Source registry</h1><p>Discovered, schema-validated, sample-validated, ingested and production-operational remain distinct states.</p></header><EvidenceTable data={section(snapshot, "Data sources and quality")} /></section>;
-  else if (current === "prescribers" || current === "observed-market") central = <section className={styles.routeWorkspace}><header><p className={styles.stateLabel}>Source-separated analysis</p><h1>Prescriber intelligence</h1><p>Select a governed medicine identity through the global search, then query accepted EPD facts. An empty result remains empty.</p></header><PlatformOverview analytics={analytics} detail={detail} headingLevel={2} snapshot={snapshot} /></section>;
+  else if (current === "prescribers") central = <section className={styles.routeWorkspace}><header><p className={styles.stateLabel}>Source-separated analysis</p><h1>Prescriber intelligence</h1><p>Select a governed medicine identity through the global search, then query accepted EPD facts. An empty result remains empty.</p></header><PlatformOverview analytics={analytics} detail={detail} headingLevel={2} snapshot={snapshot} /></section>;
+  else if (current === "observed-market") central = <section className={styles.routeWorkspace}><ProfessionalWorkspace kind="observed-market" detail={detail} analytics={analytics} /><PlatformOverview analytics={analytics} detail={detail} headingLevel={2} snapshot={snapshot} /></section>;
   else if (current === "forecasts") central = <UnavailableEvidence title="Forecasts" statement="No forecast is displayed because an identity catalogue is not a demand history and cannot support a truthful forecast by itself." requirements={["Leakage-safe historical fact series", "Recorded training and feature cutoffs", "Backtests against accepted baselines", "Uncertainty intervals and owner acceptance"]} />;
   else if (current === "opportunities") central = <UnavailableEvidence title="Commercial opportunities" statement="No pharmacy or medicine is ranked without measured demand, distance, uncertainty and approved commercial evidence." requirements={["Accepted demand facts", "Governed medicine-to-pharmacy eligibility rules", "Versioned transparent score components", "Commercial and Regulatory approval"]} />;
   else if (current === "evidence") central = <ClinicalTrialsDiscovery />;
-  else if (current === "regulatory-intelligence") central = <UsFdaLabelDiscovery />;
+  else if (current === "regulatory-intelligence") central = <><ProfessionalWorkspace kind="regulatory-intelligence" detail={detail} analytics={analytics} /><UsFdaLabelDiscovery /></>;
+  else if (current === "tender-intelligence" || current === "portfolio" || current === "alerts" || current === "reports" || current === "decision-workspace") {
+    central = <ProfessionalWorkspace kind={current} detail={detail} analytics={analytics} />;
+  }
   else if (current === "campaigns") central = <UnavailableEvidence title="Campaigns" statement="No outreach campaign is active. Imported business contacts are marketing-ineligible by default and are not exposed in this view." requirements={["Lawful-purpose and channel review", "Contact evidence and suppression controls", "Human-approved content and target snapshot", "Audited delivery integration"]} />;
   else {
     const workspace = intelligenceWorkspaceBySlug.get(current);
@@ -773,7 +812,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   return <main className={`${styles.shell} medicines-intelligence`}>
     <aside className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ""}`} aria-label="Medicines Intelligence navigation">
       <div className={styles.brand}><PharmaScopeBrand home={baseRoute} tone="reverse" /><p><strong>Medicines Intelligence</strong><span>by NovaPharm Healthcare</span></p><button type="button" onClick={() => setMenuOpen(false)}>Close</button></div>
-      <nav className={`intelligence-local-nav ${styles.navigation}`} aria-label="Medicines Intelligence views">{visibleNavigationGroups.map((group) => <section key={group.label}><h2>{group.label}</h2><ul>{group.items.map(([key, label, href]) => <li key={key}><a href={href} aria-current={current === key ? "page" : undefined}>{label}</a></li>)}</ul></section>)}</nav>
+      <nav className={`intelligence-local-nav ${styles.navigation}`} aria-label="Medicines Intelligence views">{visibleNavigationGroups.map((group) => <section key={group.label}><h2>{group.label}</h2><ul>{group.items.map(([key, label, href]) => <li key={key}><a href={detail ? `${href}?medicineId=${encodeURIComponent(detail.medicine.medicineId)}` : href} aria-current={current === key ? "page" : undefined}>{label}</a></li>)}</ul></section>)}</nav>
       <div className={styles.sidebarFoot}><p>{user.displayName}</p><span>{display(user.accessType)}</span><small>Protected, server-authorised, no public caching</small></div>
     </aside>
     {menuOpen ? <button className={styles.scrim} type="button" aria-label="Close navigation" onClick={() => setMenuOpen(false)} /> : null}
