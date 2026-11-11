@@ -38,8 +38,31 @@ test("server-side encryption and HTTPS-only object access are required", () => {
   }]);
   assert.equal(resources.EvidenceBucketPolicy.Properties.Bucket.Ref, "EvidenceBucket");
   assert.equal(policy.Version, "2012-10-17");
-  assert.equal(policy.Statement.length, 1);
-  const deny = policy.Statement[0];
+  assert.equal(policy.Statement.length, 2, "HTTPS deny and commerce-writer isolation must remain present");
+  const bySid = new Map(policy.Statement.map(statement => [statement.Sid, statement]));
+  assert.equal(bySid.size, 2, "Denial statements must have distinct security identities");
+  assert.deepEqual([...bySid.keys()].sort(), [
+    "DenyCommerceWorkloadWritesToIntelligenceEvidence",
+    "DenyInsecureTransport"
+  ].sort());
+  const commerceDeny = bySid.get("DenyCommerceWorkloadWritesToIntelligenceEvidence");
+  assert.equal(commerceDeny.Effect, "Deny");
+  assert.equal(commerceDeny.Principal, "*");
+  assert.deepEqual(commerceDeny.Action.slice().sort(), [
+    "s3:PutObject", "s3:DeleteObject", "s3:DeleteObjectVersion",
+    "s3:PutObjectTagging", "s3:DeleteObjectTagging"
+  ].sort());
+  assert.deepEqual(commerceDeny.Resource, {
+    "Fn::Join": ["", [{"Fn::GetAtt": ["EvidenceBucket", "Arn"]}, "/intelligence/*"]]
+  });
+  assert.deepEqual(commerceDeny.Condition, {
+    ArnEquals: {
+      "aws:PrincipalArn": {
+        "Fn::Sub": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/novapharm-production-commerce-evidence-EvidenceRole-GNet28VHTjmN"
+      }
+    }
+  });
+  const deny = bySid.get("DenyInsecureTransport");
   assert.equal(deny.Sid, "DenyInsecureTransport");
   assert.equal(deny.Effect, "Deny");
   assert.equal(deny.Principal, "*");
