@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
-import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, rm } from "node:fs/promises";
 import path from "node:path";
-import sharp from "sharp";
 
 const applicationRoot = process.cwd();
 const repositoryRoot = path.resolve(applicationRoot, "../..");
@@ -19,26 +18,12 @@ await Promise.all([
   copyGovernedAsset(path.join(sourceRoot, "media"), path.join(publicRoot, "media")),
 ]);
 
-// Materialise the two owner-approved Capabilities illustrations from the
-// SAME editorial source used by the static GitHub Pages build. Do not serve
-// a stale, generic managed-app hero if hosting is moved to Next.js.
-const editorial = await readFile(path.join(repositoryRoot, "src/content/capabilities-editorial.html"), "utf8");
-const capabilitiesDir = path.join(publicRoot, "media", "capabilities");
-await mkdir(capabilitiesDir, { recursive: true });
-for (const [className, fileName, width] of [
-  ["ncap-vial-illustration", "vial-study.webp", 1200],
-  ["ncap-earth-illustration", "earth-horizon.webp", 1600],
-]) {
-  const start = editorial.indexOf(`<svg class="${className}"`);
-  const end = start >= 0 ? editorial.indexOf("</svg>", start) : -1;
-  assert.ok(start >= 0 && end > start, `Approved Capabilities artwork missing: ${className}`);
-  const svg = editorial.slice(start, end + "</svg>".length);
-  const image = await sharp(Buffer.from(svg, "utf8"))
-    .resize({ width, withoutEnlargement: true })
-    .webp({ quality: 77, effort: 5 })
-    .toBuffer();
-  assert.ok(image.length > 500, `Capabilities artwork is unexpectedly empty: ${className}`);
-  await writeFile(path.join(capabilitiesDir, fileName), image);
+// The approved photographic crops live in the governed media tree and are
+// copied verbatim above. Do not re-create them from retired SVG drawings.
+const approvedMedia = ["approved-vial-photo-800.webp", "approved-earth-horizon-crest.webp"];
+for (const file of approvedMedia) {
+  const image = await readFile(path.join(publicRoot, "media", "capabilities", file));
+  assert.ok(image.length > 500, `Approved photographic Capabilities image missing: ${file}`);
 }
 
 const logo = await readFile(path.join(publicRoot, "brand", "novapharm-healthcare-logo.svg"), "utf8");
