@@ -15,7 +15,7 @@ test("approved Capabilities editorial story is preserved in managed website", ()
     "From evidence", "to access.", "Four connected disciplines.",
     "Clear accountability.", "Start with one decision.",
     "Market-entry and", "Regulatory", "Clinical Research", "Governed",
-    "Regulated", "Market entry, regulatory, clinical and technology decisions",
+    "Regulated", "Market entry, regulatory, clinical and technology — connected to create real access",
   ]) {
     if (marker === "Regulated") continue; // Regulatory status is in the shared legal footer.
     assert.ok(canonical.includes(marker), `Canonical Capabilities editorial missing ${marker}`);
