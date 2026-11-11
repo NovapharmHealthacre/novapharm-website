@@ -46,6 +46,14 @@ def _read(table, pk, sk):
     return record.get("Item")
 
 
+def _whole(value, minimum=0):
+    if isinstance(value, bool) or not isinstance(value, (int, Decimal)) or value < minimum:
+        return None
+    if isinstance(value, Decimal) and (not value.is_finite() or value != value.to_integral_value()):
+        return None
+    return int(value)
+
+
 def _is_active(record):
     return isinstance(record, dict) and record.get("status") == "active"
 
@@ -74,13 +82,13 @@ def authorize(event, table, now=None, release_enabled=False):
         version = session.get("sessionVersion")
         if not isinstance(subject, str) or not SUBJECT.fullmatch(subject) or not isinstance(tenant_id, str) or not TENANT.fullmatch(tenant_id):
             return _deny("session_identity_invalid")
-        if not isinstance(version, int) or isinstance(version, bool) or version < 1:
+        if _whole(version, 1) is None:
             return _deny("session_version_invalid")
         issued, expires = _iso(session.get("issuedAt")), _iso(session.get("expiresAt"))
         if not issued or not expires or not issued <= now < expires or (expires - issued).total_seconds() > 43200:
             return _deny("session_expired")
         ttl = session.get("ttlEpoch")
-        if not isinstance(ttl, (int, Decimal)) or isinstance(ttl, bool) or int(ttl) <= int(now.timestamp()):
+        if _whole(ttl, 1) is None or int(ttl) <= int(now.timestamp()):
             return _deny("session_expired")
 
         tenant = _read(table, "TENANT#" + tenant_id, "META")
@@ -89,7 +97,7 @@ def authorize(event, table, now=None, release_enabled=False):
         if not _is_active(tenant) or tenant.get("tenantId") != tenant_id or tenant.get("contractAccepted") is not True or tenant.get("ownershipVerified") is not True or not SUBJECT.fullmatch(str(tenant.get("ownerSubject", ""))):
             return _deny("tenant_not_approved")
         limit, active = tenant.get("seatLimit"), tenant.get("activeSeatCount")
-        if not isinstance(limit, int) or not isinstance(active, int) or any(isinstance(x, bool) for x in (limit, active)) or limit < 1 or not 1 <= active <= limit:
+        if _whole(limit, 1) is None or _whole(active, 1) is None or not 1 <= int(active) <= int(limit):
             return _deny("tenant_seats_invalid")
         if not _is_active(member) or member.get("tenantId") != tenant_id or member.get("subject") != subject or member.get("approved") is not True or not SUBJECT.fullmatch(str(member.get("approvedBy", ""))):
             return _deny("membership_not_approved")
@@ -117,15 +125,15 @@ def authorize(event, table, now=None, release_enabled=False):
         if not isinstance(usage, dict) or usage.get("tenantId") != tenant_id or usage.get("subject") != subject or usage.get("period") != now.strftime("%Y-%m"):
             return _deny("usage_not_verified")
         used = usage.get("searchCount")
-        if not isinstance(used, int) or isinstance(used, bool) or used < 0:
+        if _whole(used) is None:
             return _deny("usage_not_verified")
         if plan == "enterprise":
             quota = bill.get("monthlySearchLimit")
-            if not isinstance(quota, int) or isinstance(quota, bool) or quota < 1:
+            if _whole(quota, 1) is None:
                 return _deny("contract_quota_missing")
-        if feature == "medicine-search" and used >= quota:
+        if feature == "medicine-search" and int(used) >= int(quota):
             return _deny("search_quota_reached")
-        return {"allowed": True, "code": "authorised", "tenantId": tenant_id, "subject": subject, "role": seat["role"], "plan": plan, "remainingSearches": max(0, quota - used)}
+        return {"allowed": True, "code": "authorised", "tenantId": tenant_id, "subject": subject, "role": seat["role"], "plan": plan, "remainingSearches": max(0, int(quota) - int(used))}
     except Exception:
         # Database and SDK failures must not cause permissive fallback.
         return _deny("authorization_unavailable")
