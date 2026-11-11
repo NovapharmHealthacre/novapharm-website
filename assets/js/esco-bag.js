@@ -180,6 +180,8 @@ async function checkPaymentReturn() {
     const info=await response.json();
     if(info.paid === true && info.status === "PAID"){
       checkoutStatus("Payment confirmed. Your order reference is " + order + ". Our team will confirm fulfilment.");
+    }else if(info.status === "CHECKOUT_EXPIRED"){
+      checkoutStatus("The checkout session expired without payment. Your Bag is saved for another attempt.");
     }else if(info.status === "PAYMENT_FAILED"){
       checkoutStatus("Payment was not completed. Your Bag is saved for another attempt.");
     }
