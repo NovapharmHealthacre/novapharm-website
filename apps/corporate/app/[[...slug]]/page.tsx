@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
+import { CapabilitiesEditorialPage } from "@/components/capabilities-editorial";
 import { ConciseHomePage } from "@/components/concise-home";
 import {
   ConciseCroPage,
@@ -111,6 +112,9 @@ export default async function CorporateRoute({ params }: RouteProps) {
   switch (slug) {
     case "":
       content = <ConciseHomePage />;
+      break;
+    case "capabilities":
+      content = <CapabilitiesEditorialPage />;
       break;
     case "services":
       content = <ConciseServicesPage />;

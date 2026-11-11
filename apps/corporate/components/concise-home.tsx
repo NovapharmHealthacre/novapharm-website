@@ -61,11 +61,11 @@ export function ConciseHomePage() {
           </div>
           <div className="npd-apple-product-grid">
             {featured.map((product) => (
-              <a className="npd-apple-product" href={"/products/nutraxin/" + product.slug + "/"} key={product.slug}>
+              <a className="npd-apple-product" href={`/products/nutraxin/${product.slug}/`} key={product.slug}>
                 <picture>
-                  <source srcSet={"/assets/media/products/nutraxin/" + product.imageBase + "-480.avif 480w, /assets/media/products/nutraxin/" + product.imageBase + "-800.avif 800w"} sizes="(max-width: 600px) 70vw, 25vw" type="image/avif" />
-                  <source srcSet={"/assets/media/products/nutraxin/" + product.imageBase + "-480.webp 480w, /assets/media/products/nutraxin/" + product.imageBase + "-800.webp 800w"} sizes="(max-width: 600px) 70vw, 25vw" type="image/webp" />
-                  <Image src={"/assets/media/products/nutraxin/" + product.imageBase + ".png"} alt={product.altText} width={700} height={700} unoptimized />
+                  <source srcSet={`/assets/media/products/nutraxin/${product.imageBase}-480.avif 480w, /assets/media/products/nutraxin/${product.imageBase}-800.avif 800w`} sizes="(max-width: 600px) 70vw, 25vw" type="image/avif" />
+                  <source srcSet={`/assets/media/products/nutraxin/${product.imageBase}-480.webp 480w, /assets/media/products/nutraxin/${product.imageBase}-800.webp 800w`} sizes="(max-width: 600px) 70vw, 25vw" type="image/webp" />
+                  <Image src={`/assets/media/products/nutraxin/${product.imageBase}.png`} alt={product.altText} width={700} height={700} unoptimized />
                 </picture>
                 <strong>{product.name}</strong>
                 <span>{product.packSize}</span>

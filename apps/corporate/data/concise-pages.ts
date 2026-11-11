@@ -22,8 +22,8 @@ const heroCopy: Readonly<Record<string, { readonly title: string; readonly intro
     intro: "Sourcing, quality, logistics, product assessment and digital operations—designed as one controlled B2B system.",
   },
   capabilities: {
-    title: "Four connected capabilities. One governed route to market.",
-    intro: "Services, regulatory and quality, clinical-development support and technology are organised around the decision a partner needs to make.",
+    title: "From evidence to access.",
+    intro: "Market entry, regulatory, clinical and technology — connected to create real access for medicines.",
   },
   "regulatory-services": {
     title: "Authorisation before supply.",

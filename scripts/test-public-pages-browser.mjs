@@ -282,7 +282,7 @@ for (const [engineName, browserType] of engines) {
               assert.equal(state.gridColumns, columns, `${label}: responsive capability columns incorrect`);
               assert.ok(state.vialVisible && state.earthVisible, `${label}: approved artwork absent or not visible`);
               assert.equal(state.earthBackground, "rgb(7, 22, 37)", `${label}: cinematic Earth stage absent`);
-              assert.ok(state.cssVersion.includes("20261111-capabilities-design-verified-v4"),
+              assert.ok(state.cssVersion.includes("20261111-capabilities-approved-photo-v5"),
                 `${label}: browser still uses stale Capabilities stylesheet`);
               assert.equal(state.ctaCount, 1, `${label}: capability enquiry CTA missing`);
             }

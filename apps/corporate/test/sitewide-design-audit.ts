@@ -9,10 +9,10 @@ import { leadership } from "../data/site";
 const origin = process.env.SITEWIDE_BASE_URL ?? "http://127.0.0.1:3178";
 const artifactDir = "../../artifacts/corporate-design-system";
 const routes = [
-  ...corporatePages.map(p => "/" + (p.slug ? p.slug + "/" : "")),
-  ...leadership.map(p => "/leadership/" + p.slug + "/"),
-  ...articles.map(p => "/news-insights/" + p.slug + "/"),
-  ...nutraxinRegister.products.map(p => "/products/nutraxin/" + p.slug + "/")
+  ...corporatePages.map(p => `/${p.slug ? `${p.slug}/` : ""}`),
+  ...leadership.map(p => `/leadership/${p.slug}/`),
+  ...articles.map(p => `/news-insights/${p.slug}/`),
+  ...nutraxinRegister.products.map(p => `/products/nutraxin/${p.slug}/`)
 ];
 const showcase = new Set([
   "/", "/about/", "/about/governance/", "/capabilities/", "/oncology/",
@@ -46,11 +46,11 @@ async function audit() {
           const errorsFromNetwork:string[]=[];
           page.on("pageerror", e=>errors.push(e.message));
           page.on("console", m=>{if(m.type()==="error")errors.push(m.text())});
-          page.on("response", r=>{if(r.status()>=400 && !r.request().isNavigationRequest())errorsFromNetwork.push(r.status()+" "+r.url())});
+          page.on("response", r=>{if(r.status()>=400 && !r.request().isNavigationRequest())errorsFromNetwork.push(`${r.status()} ${r.url()}`)});
           try {
             const response=await page.goto(origin+route,{waitUntil:"domcontentloaded",timeout:30000});
             const status=response?.status()??0;
-            if(status!==200){findings.push({route,viewport:vp.name,detail:"HTTP "+status});continue;}
+            if(status!==200){findings.push({route,viewport:vp.name,detail:`HTTP ${status}`});continue;}
             await page.locator("main").waitFor({state:"visible",timeout:10000});
             await page.evaluate(()=>document.fonts.ready);
             if(showcase.has(route) && (vp.name==="desktop-1440" || ["/","/contact/","/oncology/"].includes(route))) {
@@ -58,7 +58,7 @@ async function audit() {
               // Keep the exact same full-page evidence requirement and fail after 3 attempts.
               for (let attempt=1;attempt<=3;attempt++) {
                 try {
-                  await page.screenshot({path:artifactDir+"/"+safe(route)+"-"+vp.name+".png",fullPage:true,animations:"disabled",timeout:15000});
+                  await page.screenshot({path:`${artifactDir}/${safe(route)}-${vp.name}.png`,fullPage:true,animations:"disabled",timeout:15000});
                   break;
                 } catch (error) {
                   if (attempt===3 || !/Page\.captureScreenshot|Unable to capture screenshot/i.test(String(error))) throw error;
@@ -100,50 +100,50 @@ async function audit() {
               };
             });
             const faults:string[]=[];
-            if(data.h1s!==1)faults.push("H1 count: "+data.h1s);
+            if(data.h1s!==1)faults.push(`H1 count: ${data.h1s}`);
             if(!data.header||!data.footer||!data.logo)faults.push("Missing shared header/footer/brand");
             if(!data.intelligenceNav)faults.push("Primary navigation missing NovaPharm Intelligence");
-            if(data.scrollWidth>data.width+1)faults.push("Horizontal overflow: "+data.scrollWidth+"px");
+            if(data.scrollWidth>data.width+1)faults.push(`Horizontal overflow: ${data.scrollWidth}px`);
             if(data.headlineBounds && (data.headlineBounds.left < -1 || data.headlineBounds.right > data.width+2)) {
-              faults.push("Primary heading extends outside viewport: "+JSON.stringify(data.headlineBounds));
+              faults.push(`Primary heading extends outside viewport: ${JSON.stringify(data.headlineBounds)}`);
             }
             if(vp.width<=390 && data.headlineBounds && data.headlineBounds.fontSize<28) {
-              faults.push("Mobile H1 is unexpectedly small: "+data.headlineBounds.fontSize+"px");
+              faults.push(`Mobile H1 is unexpectedly small: ${data.headlineBounds.fontSize}px`);
             }
             if(vp.width<=390 && data.compactControls.length) {
-              faults.push("Primary interactive controls have undersized hit areas: "+JSON.stringify(data.compactControls.slice(0,5)));
+              faults.push(`Primary interactive controls have undersized hit areas: ${JSON.stringify(data.compactControls.slice(0,5))}`);
             }
-            if(!data.font.includes("apple-system"))faults.push("Unexpected font: "+data.font);
+            if(!data.font.includes("apple-system"))faults.push(`Unexpected font: ${data.font}`);
             if(!data.inkToken||!data.surfaceToken)faults.push("Missing shared design tokens");
-            if(data.navHeight<58||data.navHeight>80)faults.push("Inconsistent header: "+data.navHeight);
+            if(data.navHeight<58||data.navHeight>80)faults.push(`Inconsistent header: ${data.navHeight}`);
             if(!data.legal)faults.push("Regulated-supply disclosure missing");
             if(data.mainLength<70)faults.push("Insufficient public page content");
-            if(data.brokenImages.length)faults.push("Broken images: "+data.brokenImages.slice(0,5).join(" / "));
-            if(errors.length)faults.push("JavaScript console: "+errors.slice(0,4).join(" / "));
-            if(errorsFromNetwork.length)faults.push("Failed requests: "+errorsFromNetwork.slice(0,4).join(" / "));
+            if(data.brokenImages.length)faults.push(`Broken images: ${data.brokenImages.slice(0,5).join(" / ")}`);
+            if(errors.length)faults.push(`JavaScript console: ${errors.slice(0,4).join(" / ")}`);
+            if(errorsFromNetwork.length)faults.push(`Failed requests: ${errorsFromNetwork.slice(0,4).join(" / ")}`);
             if(route==="/"&&!data.h1Text.includes("Where it needs to be"))faults.push("Homepage proposition missing");
             records.push({route,viewport:vp.name,status,...data,issues:faults});
             for(const detail of faults)findings.push({route,viewport:vp.name,detail});
           } catch(e) {
-            findings.push({route,viewport:vp.name,detail:"Browser error: "+String(e)});
+            findings.push({route,viewport:vp.name,detail:`Browser error: ${String(e)}`});
           } finally {await page.close();}
         }
       } finally {await context.close();}
     }
   } finally {await browser.close();}
-  await writeFile(artifactDir+"/sitewide-audit.json",JSON.stringify({routeCount:routes.length,viewports:viewports.map(x=>x.name),findings,records},null,2)+"\n");
+  await writeFile(`${artifactDir}/sitewide-audit.json`,`${JSON.stringify({routeCount:routes.length,viewports:viewports.map(x=>x.name),findings,records},null,2)}\n`);
   const md=[
     "# NovaPharm public corporate design-system acceptance",
-    "All "+routes.length+" unique routes checked across compact mobile, mobile, tablet and desktop widths.",
-    "Findings: "+findings.length,
+    `All ${routes.length} unique routes checked across compact mobile, mobile, tablet and desktop widths.`,
+    `Findings: ${findings.length}`,
     "",
     "| Route | Viewport | Finding |",
     "|---|---|---|",
-    ...findings.map(x=>"| "+x.route+" | "+x.viewport+" | "+x.detail.replaceAll("|","/").slice(0,200)+" |"),
+    ...findings.map(x=>`| ${x.route} | ${x.viewport} | ${x.detail.replaceAll("|","/").slice(0,200)} |`),
     "",
     "The existing cross-engine axe acceptance remains a separate gate."
   ];
-  await writeFile(artifactDir+"/summary.md",md.join("\n")+"\n");
+  await writeFile(`${artifactDir}/summary.md`,`${md.join("\n")}\n`);
   console.log(JSON.stringify({routes:routes.length,checks:routes.length*viewports.length,findings:findings.length,first:findings.slice(0,24)},null,2));
   if(findings.length)process.exitCode=1;
 }

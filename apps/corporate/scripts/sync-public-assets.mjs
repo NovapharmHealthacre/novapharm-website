@@ -18,6 +18,14 @@ await Promise.all([
   copyGovernedAsset(path.join(sourceRoot, "media"), path.join(publicRoot, "media")),
 ]);
 
+// The approved photographic crops live in the governed media tree and are
+// copied verbatim above. Do not re-create them from retired SVG drawings.
+const approvedMedia = ["approved-vial-photo-800.webp", "approved-earth-horizon-crest.webp"];
+for (const file of approvedMedia) {
+  const image = await readFile(path.join(publicRoot, "media", "capabilities", file));
+  assert.ok(image.length > 500, `Approved photographic Capabilities image missing: ${file}`);
+}
+
 const logo = await readFile(path.join(publicRoot, "brand", "novapharm-healthcare-logo.svg"), "utf8");
 assert.match(logo, /#E3120B/i, "Official corporate logo does not use the approved identity red");
 assert.doesNotMatch(logo, /<text\b/i, "Official corporate logo must remain path-based");

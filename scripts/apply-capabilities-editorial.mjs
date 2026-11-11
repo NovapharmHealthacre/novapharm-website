@@ -15,23 +15,25 @@ for (const file of [
   if (!existsSync(file)) throw new Error("Approved Capabilities asset missing: " + file);
 }
 
-// Publish raster versions of the approved vector artwork. Browsers and
-// Safari's print engine receive self-contained WebP images, not inline SVG
-// or separate CSS backgrounds that can disappear from exported PDFs.
+// The earlier SVG raster looked schematic rather than the owner's approved
+// photorealistic reference. Embed the approved, source-cropped WebP photography
+// for robust Safari display and PDF export, while keeping the real image bytes
+// in the governed repository. No new rights or clinical claims are asserted.
 const sourceTemplate = readFileSync(templateFile, "utf8").trim();
 let template = sourceTemplate;
-for (const [className, width, height, alt] of [
-  ["ncap-vial-illustration", 1200, 458, "Illustrative pharmaceutical glass vial representing an evidence-led route to market"],
-  ["ncap-earth-illustration", 1600, 720, ""]
+for (const [className, file, width, height, alt] of [
+  ["ncap-vial-illustration", "assets/media/capabilities/approved-vial-photo-800.webp", 800, 224, "Photographic study of an unbranded clear medicine vial, taken from the owner-approved visual reference"],
+  ["ncap-earth-illustration", "assets/media/capabilities/approved-earth-horizon-crest.webp", 800, 53, ""],
 ]) {
   const expression = new RegExp('<svg class="' + className + '"[\\s\\S]*?<\\/svg>');
   const match = template.match(expression);
-  if (!match) throw new Error("Capabilities vector artwork missing: " + className);
-  const imageBuffer = await sharp(Buffer.from(match[0], "utf8"))
-    .resize({ width, withoutEnlargement: true })
-    .webp({ quality: 77, effort: 5 })
-    .toBuffer();
-  if (imageBuffer.length < 500) throw new Error("Capabilities raster artwork is unexpectedly empty: " + className);
+  if (!match) throw new Error("Capabilities artwork placeholder missing: " + className);
+  const imageBuffer = readFileSync(resolve(file));
+  if (imageBuffer.length < 500) throw new Error("Approved Capabilities image missing or empty: " + file);
+  const metadata = await sharp(imageBuffer).metadata();
+  if (metadata.format !== "webp" || metadata.width !== width) {
+    throw new Error("Approved Capabilities image format/size invalid: " + file);
+  }
   const image = '<img class="' + className + '" src="data:image/webp;base64,' + imageBuffer.toString("base64") +
     '" width="' + width + '" height="' + height + '" alt="' + alt + '" decoding="async">';
   template = template.replace(match[0], image);
@@ -44,7 +46,7 @@ if (!/^<main id="main"[\s\S]*<\/main>$/.test(template)) {
 const mainMatches = original.match(/<main\b[^>]*>[\s\S]*?<\/main>/g) || [];
 if (mainMatches.length !== 1) throw new Error("Expected exactly one Capabilities main element in generated shell.");
 let result = original.replace(mainMatches[0], template);
-if (!result.includes('href="' + stylesheet + '"')) {
+if (!result.includes('href="' + stylesheet + '"') && !result.includes('href="' + stylesheet + '?v=')) {
   result = result.replace("</head>", '  <link rel="stylesheet" href="' + stylesheet + '">\n</head>');
 }
 if ((result.match(/<h1\b/g) || []).length !== 1 ||

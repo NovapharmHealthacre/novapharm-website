@@ -191,6 +191,45 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
     await scrollThroughPage(page);
     await waitForImages(page, engine, route);
   }
+  if (route === "/capabilities/") {
+    const title = page.locator(".ncap-hero h1");
+    assert.equal((await title.innerText()).replace(/\s+/g, " ").trim(), "From evidence to access.",
+      `${engine} ${viewport.name}: managed Capabilities still shows legacy hero`);
+    assert.equal(await page.locator(".ncap-discipline").count(), 4,
+      `${engine} ${viewport.name}: approved disciplines absent`);
+    assert.equal(await page.locator(".ncap-earth h2").innerText(), "Start with one decision.",
+      `${engine} ${viewport.name}: approved closing story missing`);
+    assert.equal(await page.locator(".ncap-vial-illustration").count(), 1,
+      `${engine} ${viewport.name}: approved pharmaceutical vial missing`);
+    assert.equal(await page.locator(".ncap-earth-illustration").count(), 1,
+      `${engine} ${viewport.name}: approved Earth missing`);
+    const visual = await page.evaluate(() => {
+      const grid = document.querySelector(".ncap-grid");
+      const hero = document.querySelector(".ncap-hero h1");
+      const vial = document.querySelector(".ncap-vial-illustration") as HTMLImageElement | null;
+      const earth = document.querySelector(".ncap-earth-illustration") as HTMLImageElement | null;
+      const stage = document.querySelector(".ncap-earth");
+      return {
+        columns: grid ? getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/).length : 0,
+        headlineFont: hero ? getComputedStyle(hero).fontFamily : "",
+        stageColor: stage ? getComputedStyle(stage).backgroundColor : "",
+        vialLoaded: Boolean(vial?.complete && vial.naturalWidth > 100),
+        earthLoaded: Boolean(earth?.complete && earth.naturalWidth > 100),
+      };
+    });
+    const expectedColumns = viewport.width > 1200 ? 4 : viewport.width > 720 ? 2 : 1;
+    assert.equal(visual.columns, expectedColumns,
+      `${engine} ${viewport.name}: managed Capabilities responsive layout is wrong`);
+    assert.match(visual.headlineFont, /-apple-system|BlinkMacSystemFont|Helvetica Neue/i,
+      `${engine} ${viewport.name}: Capabilities was rendered with the old serif headings`);
+    assert.equal(visual.stageColor, "rgb(7, 22, 37)",
+      `${engine} ${viewport.name}: dark Earth section styling missing`);
+    if (keyViewport) {
+      assert.ok(visual.vialLoaded && visual.earthLoaded,
+        `${engine} ${viewport.name}: approved editorial artwork failed to load`);
+    }
+  }
+
   const layout = await page.evaluate(() => ({
     viewportWidth: document.documentElement.clientWidth,
     documentWidth: document.documentElement.scrollWidth,
@@ -280,7 +319,7 @@ async function verifyInteractions(page: Page, engine: string): Promise<void> {
   await page.waitForURL(/\/about\/$/);
   assert.equal(await page.locator("details.mobile-menu").getAttribute("open"), null, `${engine}: mobile menu did not close after navigation`);
 
-  await page.goto(baseUrl + "/contact/", { waitUntil: "domcontentloaded" });
+  await page.goto(`${baseUrl}/contact/`, { waitUntil: "domcontentloaded" });
   assert.equal(await page.getByRole("heading", { level: 1, name: "Let's talk." }).count(), 1, "approved contact hero missing");
   assert.equal(await page.getByRole("heading", { level: 2, name: "How can we help?" }).count(), 1, "approved form heading missing");
   assert.equal(await page.locator(".np-contact-reference-footer").count(), 1, "approved contact footer missing");

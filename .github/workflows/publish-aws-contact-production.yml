@@ -192,9 +192,11 @@ jobs:
           grep -Fq 'data-capabilities-editorial="approved-2026-11"' _site/capabilities/index.html
           grep -Fq 'class="npd-hero ncap-hero"' _site/capabilities/index.html
           grep -Fq 'class="ncap-vial-illustration" src="data:image/webp;base64,' _site/capabilities/index.html
+          grep -Fq 'class="ncap-vial-illustration" src="data:image/webp;base64,UklGRrQKA' _site/capabilities/index.html
           grep -Fq 'class="ncap-earth-illustration" src="data:image/webp;base64,' _site/capabilities/index.html
+          grep -Fq 'class="ncap-earth-illustration" src="data:image/webp;base64,UklGRooEA' _site/capabilities/index.html
           grep -Fq 'Start with one decision.' _site/capabilities/index.html
-          grep -Fq 'href="/assets/css/capabilities-editorial.css?v=20261111-capabilities-design-verified-v4"' _site/capabilities/index.html
+          grep -Fq 'href="/assets/css/capabilities-editorial.css?v=20261111-capabilities-approved-photo-v5"' _site/capabilities/index.html
           test -s _site/assets/css/capabilities-editorial.css
           grep -Fq '@media print' _site/assets/css/capabilities-editorial.css
           # Exact approved homepage image and styling must be in the artifact.
@@ -587,9 +589,11 @@ jobs:
               && grep -Fq 'data-capabilities-editorial="approved-2026-11"' /tmp/novapharm-live-capabilities.html \
               && grep -Fq 'class="npd-hero ncap-hero"' /tmp/novapharm-live-capabilities.html \
               && grep -Fq 'class="ncap-vial-illustration" src="data:image/webp;base64,' /tmp/novapharm-live-capabilities.html \
+              && grep -Fq 'class="ncap-vial-illustration" src="data:image/webp;base64,UklGRrQKA' /tmp/novapharm-live-capabilities.html \
               && grep -Fq 'class="ncap-earth-illustration" src="data:image/webp;base64,' /tmp/novapharm-live-capabilities.html \
+              && grep -Fq 'class="ncap-earth-illustration" src="data:image/webp;base64,UklGRooEA' /tmp/novapharm-live-capabilities.html \
               && grep -Fq 'Start with one decision.' /tmp/novapharm-live-capabilities.html \
-              && grep -Fq 'href="/assets/css/capabilities-editorial.css?v=20261111-capabilities-design-verified-v4"' /tmp/novapharm-live-capabilities.html; then
+              && grep -Fq 'href="/assets/css/capabilities-editorial.css?v=20261111-capabilities-approved-photo-v5"' /tmp/novapharm-live-capabilities.html; then
               curl --fail --silent --show-error --max-time 20 \
                 "https://novapharmhealthcare.com/assets/css/capabilities-editorial.css?capabilities-$GITHUB_SHA" \
                 -o /tmp/novapharm-live-capabilities.css
