@@ -167,21 +167,19 @@ export function prepareIntelligenceBillingAtomicCommit({
       receipt.signatureVerified !== true) return deny("signed_quarantined_event_required");
 
   const tpk = "TENANT#" + tenantId;
-  const pairs = {
-    ":active": s("active"), ":yes": b(true), ":tenant": s(tenantId),
-    ":subject": s(subject), ":customer": s(stripeCustomerId),
-    ":sub": s(stripeSubscriptionId),
-  };
   const tenantFence = check(tpk, "META",
     "#st = :active AND tenantId = :tenant AND contractAccepted = :yes AND ownershipVerified = :yes AND ownerSubject = :owner AND activeSeatCount = :seats AND seatLimit = :limit",
-    { ...pairs, ":owner": s(tenant.ownerSubject), ":seats": n(tenant.activeSeatCount), ":limit": n(tenant.seatLimit) },
+    { ":active": s("active"), ":tenant": s(tenantId), ":yes": b(true),
+      ":owner": s(tenant.ownerSubject), ":seats": n(tenant.activeSeatCount), ":limit": n(tenant.seatLimit) },
     { "#st": "status" });
   const memberFence = check("SUBJECT#" + subject, "TENANT#" + tenantId,
     "#st = :active AND tenantId = :tenant AND subject = :subject AND approved = :yes AND approvedBy = :by",
-    { ...pairs, ":by": s(member.approvedBy) }, { "#st": "status" });
+    { ":active": s("active"), ":tenant": s(tenantId), ":subject": s(subject),
+      ":yes": b(true), ":by": s(member.approvedBy) }, { "#st": "status" });
   const seatFence = check(tpk, "SEAT#" + subject,
     "#st = :active AND tenantId = :tenant AND subject = :subject AND sessionVersion = :sv AND contains(features, :feature) AND #role = :role",
-    { ...pairs, ":sv": n(seat.sessionVersion), ":feature": s("medicine-search"), ":role": s(seat.role) },
+    { ":active": s("active"), ":tenant": s(tenantId), ":subject": s(subject),
+      ":sv": n(seat.sessionVersion), ":feature": s("medicine-search"), ":role": s(seat.role) },
     { "#st": "status", "#role": "role" });
   const governanceFence = check("GOVERNANCE#PRODUCTION", "FEATURE#medicine-search",
     "customerLaunchAccepted = :yes AND sourceRightsApproved = :yes AND productionApproved = :yes AND approvedBy = :by AND revision = :rev",
