@@ -112,7 +112,10 @@ permissions:
 # Exact-main verification precedes build; a verified artifact may publish later
 # only when last successful Pages deployment and current main prove forward ancestry.
 concurrency:
-  group: novapharm-pages-verified-customer-publication-v2
+  # v3 isolates the guarded AWS-backed publisher from stale v2 Pages recovery locks.
+  # Preserve one active/one pending publisher, independent forward-only ancestry
+  # verification and every contact/commerce acceptance gate below.
+  group: novapharm-pages-verified-aws-customer-publication-v3
   cancel-in-progress: false
 
 jobs:

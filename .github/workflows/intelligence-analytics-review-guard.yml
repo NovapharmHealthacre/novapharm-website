@@ -7,6 +7,7 @@ on:
       - 'infrastructure/aws/glue_review_candidate_preflight.py'
       - 'infrastructure/aws/tests/test_analytics_review_preflight.py'
       - 'docs/data/evidence/nhsbsa-epd-apixaban-2026-08-candidate.ndjson'
+      - 'docs/data/evidence/nhsbsa-epd-publisher-metadata-202608.json'
       - '.github/workflows/intelligence-analytics-review-guard.yml'
       - 'scripts/aws/deploy-intelligence-analytics-review-script.sh'
   push:
@@ -16,6 +17,7 @@ on:
       - 'infrastructure/aws/glue_review_candidate_preflight.py'
       - 'infrastructure/aws/tests/test_analytics_review_preflight.py'
       - 'docs/data/evidence/nhsbsa-epd-apixaban-2026-08-candidate.ndjson'
+      - 'docs/data/evidence/nhsbsa-epd-publisher-metadata-202608.json'
       - '.github/workflows/intelligence-analytics-review-guard.yml'
   workflow_dispatch:
 
