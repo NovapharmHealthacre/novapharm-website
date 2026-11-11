@@ -64,3 +64,15 @@ test("Oncology visuals are isolated, responsive, and respect user accessibility 
   assert.match(css, /@media print/);
   assert.doesNotMatch(css, /body\[data-page="oncology"\]/);
 });
+
+
+test("Next.js Oncology stylesheet remains exactly in sync with the approved static design", () => {
+  const staticCss = readFileSync(path.join(root, "../../assets/css/oncology-hope-v2.css"), "utf8");
+  const matchingNextSelectors = staticCss
+    .replaceAll('body[data-page="oncology"] main.npoc-page', ".npoc-page")
+    .replaceAll('body[data-page="oncology"] .npoc-page', ".npoc-page")
+    .replace(/body\\[data-page="oncology"\\] \\.site-header\\.npd-header[^{]*\\{[^}]*\\}\\s*/g, "");
+  assert.ok(css.includes(matchingNextSelectors), "Next.js must inherit the exact owner-approved Oncology visual contract");
+  assert.match(component, /A Hope for\\{" "\}<br \\/>Tomorrow\\./);
+  assert.doesNotMatch(component, /Oncology demands|oncology-vial-handling/);
+});
