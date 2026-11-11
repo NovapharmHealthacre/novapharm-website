@@ -49,7 +49,7 @@
     "test:public-copy": "node scripts/test-public-copy-quality.mjs",
     "docs:enterprise": "node scripts/generate-enterprise-portal-docs.mjs",
     "prepare:release": "npm run build",
-    "validate": "node scripts/validate-owner-site.mjs && npm run seo:validate && node scripts/check-links.mjs && node scripts/validate-app.mjs && node scripts/validate-domain.mjs && node scripts/audit-public-claims.mjs && npm run test:technology-page && npm run test:nutraxin-showcase && npm run test:nutraxin-account-enquiry && npm run test:nutraxin-order-request && npm run test:nutraxin-retail-store && npm run test:nutraxin-consumer-account && npm run test:public-copy && npm run test:esco-catalogue && npm run test:global-distribution-foundation",
+    "validate": "node scripts/validate-owner-site.mjs && npm run seo:validate && node scripts/check-links.mjs && node scripts/validate-app.mjs && node scripts/validate-domain.mjs && node scripts/audit-public-claims.mjs && npm run test:technology-page && npm run test:nutraxin-showcase && npm run test:nutraxin-account-enquiry && npm run test:nutraxin-order-request && npm run test:nutraxin-retail-store && npm run test:nutraxin-consumer-account && npm run test:public-copy && npm run test:esco-catalogue && npm run test:global-distribution-foundation && npm run test:commerce-marketplace",
     "validate:site": "node scripts/validate-owner-site.mjs",
     "validate:app": "node scripts/validate-app.mjs",
     "validate:domain": "node scripts/validate-domain.mjs",
@@ -154,7 +154,8 @@
     "test:esco-catalogue": "node --test scripts/test-esco-catalogue.mjs scripts/test-esco-approved-experience.mjs scripts/test-esco-order-requests.mjs",
     "test:nutraxin-retail-store": "node --test scripts/test-nutraxin-retail-store.mjs",
     "test:nutraxin-consumer-account": "node --test scripts/test-nutraxin-consumer-account.mjs",
-    "test:global-distribution-foundation": "node scripts/test-global-distribution-foundation.mjs"
+    "test:global-distribution-foundation": "node scripts/test-global-distribution-foundation.mjs",
+    "test:commerce-marketplace": "node --test scripts/test-commerce-inventory-availability.mjs scripts/test-commerce-marketplace-core.mjs scripts/test-commerce-marketplace.mjs"
   },
   "engines": {
     "node": "24.x",
