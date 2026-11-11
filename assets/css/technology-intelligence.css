@@ -1034,7 +1034,7 @@ body[data-page="technology"] .np-intelligence {
   font-size: clamp(2rem,3.4vw,3.4rem);
   font-weight: 680;
   line-height: 1.09;
-  letter-spacing: -.045em;
+  letter-spacing: 0;
   margin: 9px 0 15px;
 }
 .np-intelligence .npi-directory-intro p:not(.npi-kicker) {
