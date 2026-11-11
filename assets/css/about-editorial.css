@@ -14,7 +14,7 @@ body[data-page="about"] .site-header .site-nav > a { text-decoration: none; }
 .np-about-page p { margin-block: 0; }
 .np-about-page .np-about-wrap { width: min(100% - 64px, 1250px); margin-inline: auto; }
 .np-about-page .np-about-intro { padding: clamp(86px, 10vw, 164px) 24px clamp(52px, 5.3vw, 78px); text-align: center; }
-.np-about-page .np-about-kicker { color: #777a80; font-size: 13px; font-weight: 650; text-transform: uppercase; letter-spacing: .23em; line-height: 1.5; }
+.np-about-page .np-about-kicker { color: #555b63; font-size: 13px; font-weight: 650; text-transform: uppercase; letter-spacing: .23em; line-height: 1.5; }
 .np-about-page .np-about-intro h1 { max-width: 1050px; margin: 25px auto 22px; font-size: clamp(48px, 6.45vw, 102px); font-weight: 650; line-height: 1.045; letter-spacing: -.068em; text-wrap: balance; }
 .np-about-page .np-about-intro .np-about-deck { max-width: 850px; margin: 0 auto; color: #66676b; font-size: clamp(19px, 1.75vw, 26px); line-height: 1.36; letter-spacing: -.025em; text-wrap: balance; }
 .np-about-page .np-about-image { margin: 0 auto; width: min(100%, 1800px); background: #f8f9fb; }
@@ -40,7 +40,7 @@ body[data-page="about"] .site-header .site-nav > a { text-decoration: none; }
 .np-about-page .np-about-principles p { max-width: 500px; margin-top: 10px; font-size: 17px; line-height: 1.55; color: #6e6e73; }
 .np-about-page .np-about-facts { padding: 42px 0; border-top: 1px solid #ececef; }
 .np-about-page .np-about-facts dl { margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; }
-.np-about-page .np-about-facts dt { color: #86868b; font-size: 13px; margin-bottom: 8px; }
+.np-about-page .np-about-facts dt { color: #555b63; font-size: 13px; margin-bottom: 8px; }
 .np-about-page .np-about-facts dd { margin: 0; color: #242426; font-size: 15px; line-height: 1.4; font-weight: 550; }
 .np-about-page .np-about-cta { padding: clamp(115px, 12vw, 190px) 20px; text-align: center; background: #f5f5f7; }
 .np-about-page .np-about-cta h2 { max-width: 900px; margin: 18px auto 30px; font-size: clamp(43px, 5vw, 76px); line-height: 1.09; letter-spacing: -.06em; font-weight: 650; text-wrap: balance; }
