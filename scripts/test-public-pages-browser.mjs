@@ -324,6 +324,36 @@ for (const [engineName, browserType] of engines) {
               }
               assert.equal(await page.locator(".np-products-stage-item").count(), 3,
                 `${engineName} ${viewport.name}: three-source product hero incomplete`);
+              const productsLayout = await page.evaluate(() => {
+                const heroActions = document.querySelector(".np-products-hero-actions");
+                const cta = document.querySelector(".npd-commerce-link");
+                const ctaStyle = cta ? getComputedStyle(cta) : null;
+                const photos = [...document.querySelectorAll(".np-products-stage-item img, .np-products-panel-art img")];
+                return {
+                  heroActionsDisplay: heroActions ? getComputedStyle(heroActions).display : "",
+                  heroActionLinks: heroActions?.querySelectorAll("a").length ?? 0,
+                  catalogueLink: Boolean(heroActions?.querySelector('a[href="/products/marketplace/"]')),
+                  ctaActions: cta?.querySelectorAll("a").length ?? 0,
+                  ctaPaddingTop: ctaStyle ? Number.parseFloat(ctaStyle.paddingTop) : 0,
+                  ctaWidth: cta?.getBoundingClientRect().width ?? 0,
+                  viewportWidth: document.documentElement.clientWidth,
+                  photosLoaded: photos.length >= 7 && photos.every((img) => img.complete && img.naturalWidth > 0)
+                };
+              });
+              assert.equal(productsLayout.heroActionsDisplay, "flex",
+                `${engineName} ${viewport.name}: Products hero actions are misaligned`);
+              assert.equal(productsLayout.heroActionLinks, 2,
+                `${engineName} ${viewport.name}: two Products hero actions required`);
+              assert.ok(productsLayout.catalogueLink,
+                `${engineName} ${viewport.name}: unified catalogue not discoverable from hero`);
+              assert.equal(productsLayout.ctaActions, 2,
+                `${engineName} ${viewport.name}: unified search and order tracking missing`);
+              assert.ok(productsLayout.ctaPaddingTop >= 32,
+                `${engineName} ${viewport.name}: commerce CTA styling not loaded`);
+              assert.ok(productsLayout.ctaWidth > 200 && productsLayout.ctaWidth <= productsLayout.viewportWidth + 1,
+                `${engineName} ${viewport.name}: commerce CTA extends beyond viewport`);
+              assert.ok(productsLayout.photosLoaded,
+                `${engineName} ${viewport.name}: Products photography did not load`);
             }
 
             await assertLayout(page, `${engineName} ${viewport.name} ${route.path}`);

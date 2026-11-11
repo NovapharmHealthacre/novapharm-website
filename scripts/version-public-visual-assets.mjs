@@ -18,7 +18,9 @@ for (const [page, extraStyles] of pages) {
       ? "20261111-capabilities-approved-photo-v5"
       : page === "oncology/index.html" && stylesheet === "oncology-hope-v2.css"
         ? "20261110-hope-for-tomorrow-v3"
-        : version;
+        : page === "products/index.html" && stylesheet === "products-editorial.css"
+          ? "20261111-products-layout-v4"
+          : version;
     const next = `href="${href}?v=${visualVersion}"`;
     if (html.includes(next)) continue;
     assert.equal(html.split(current).length - 1, 1, `${page}: required stylesheet should occur exactly once: ${href}`);

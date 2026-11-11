@@ -262,3 +262,36 @@ body[data-route="/products/"] .np-products-page { background:#fff; color:#111114
 .np-products-page .np-products-panel-art-esco img {
   clip-path:inset(2% 2% 2% 2%);
 }
+
+
+/* Products landing alignment v4: scoped to Products, no commercial-state changes. */
+.np-products-page .np-products-hero-actions{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:12px 28px;margin-top:28px}
+.np-products-page .np-products-hero-actions .np-products-hero-link{margin-top:0;min-height:44px}
+.np-products-page .np-products-hero-actions .np-products-link:first-child{font-weight:630}
+.np-products-page #np-products-collections{scroll-margin-top:94px}
+@media(min-width:641px){
+ .np-products-page .np-products-panel-inner{grid-template-columns:minmax(0,.94fr) minmax(0,1.06fr);gap:clamp(20px,3.2vw,52px)}
+ .np-products-page .np-products-panel-copy,.np-products-page .np-products-panel-art{min-width:0}
+}
+.np-products-page .np-products-stage-bed,.np-products-page .np-products-esco-bed{max-width:366px;max-height:367px}
+.np-products-page .np-products-stage-trolley,.np-products-page .np-products-esco-trolley{max-width:338px;max-height:334px}
+.np-products-page .np-products-panel-art-nutraxin img{height:100%;width:100%;right:0;bottom:-4%;object-position:center bottom}
+.np-products-page .np-products-panel-copy>:last-child{margin-bottom:0}
+/* The generated landing CTA does not load commerce-marketplace.css; supply its own styling. */
+.np-products-page .npd-commerce-link{width:min(1200px,calc(100% - 48px));max-width:none;margin:clamp(56px,7vw,92px) auto;padding:clamp(40px,5vw,72px) clamp(24px,5vw,68px);background:#f5f5f7;border-radius:28px;color:#1d1d1f;text-align:center}
+.np-products-page .npd-commerce-link p{margin:0 0 20px;color:#6e6e73;font-size:12px;font-weight:650;line-height:1.5;letter-spacing:.13em}
+.np-products-page .npd-commerce-link h2{max-width:850px;margin:0 auto 28px;color:#1d1d1f;font-size:clamp(34px,4.3vw,64px);line-height:1.07;letter-spacing:-.055em;font-weight:650;text-wrap:balance}
+.np-products-page .npd-commerce-link a{display:inline-flex;justify-content:center;align-items:center;min-height:44px;padding:10px 22px;margin:4px 8px;color:#06c;background:transparent;border-radius:999px;text-decoration:none;font-size:16px;font-weight:550;line-height:1.4}
+.np-products-page .npd-commerce-link a:first-of-type{color:#fff;background:#0071e3}
+.np-products-page .npd-commerce-link a:first-of-type:hover{background:#0077ed}
+.np-products-page .npd-commerce-link a:last-of-type:hover{text-decoration:underline;text-underline-offset:4px}
+@media(max-width:640px){
+ .np-products-page .np-products-hero-actions{gap:4px 20px;margin-top:20px}
+ .np-products-page .np-products-hero-actions .np-products-link{font-size:15px}
+ .np-products-page .np-products-panel-copy{padding:54px 0 12px}
+ .np-products-page .np-products-panel-art{min-height:clamp(230px,72vw,330px)}
+ .np-products-page .np-products-panel-art-nutraxin img{height:100%;width:100%;right:0;bottom:-3%}
+ .np-products-page .npd-commerce-link{width:calc(100% - 32px);margin:48px auto 54px;padding:38px 20px;border-radius:22px}
+ .np-products-page .npd-commerce-link h2{font-size:clamp(32px,9vw,44px)}
+ .np-products-page .npd-commerce-link a{width:100%;max-width:300px;margin:4px auto}
+}
