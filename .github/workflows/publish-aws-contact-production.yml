@@ -49,6 +49,10 @@ on:
       - 'src/content/site-content.mjs'
       - 'scripts/apply-global-distribution-foundation.mjs'
       - 'assets/css/global-distribution-editorial.css'
+      # Owner-approved original NASA photographic Markets hero and attribution.
+      - 'scripts/apply-markets-editorial.mjs'
+      - 'assets/css/markets-editorial.css'
+      - 'scripts/test-global-distribution-foundation.mjs'
       - 'assets/data/nutraxin-retail-catalogue.json'
       - 'scripts/apply-corporate-product-discipline.mjs'
       - 'technology/index.html'
@@ -627,7 +631,7 @@ jobs:
         run: |
           set -euo pipefail
           [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
-          for route in "" "capabilities/" "oncology/" "products/" "contact/"; do
+          for route in "" "capabilities/" "oncology/" "products/" "contact/" "markets/"; do
             verified=false
             for attempt in $(seq 1 10); do
               curl --fail --silent --show-error --location --max-time 15 \
@@ -642,7 +646,7 @@ jobs:
             done
             test "$verified" = true || { echo "::error::Customer-facing ${route:-home} does not match the approved source SHA"; exit 1; }
           done
-          echo 'The public origin serves the exact reviewed Git commit on all five critical routes.'
+          echo 'The public origin serves the exact reviewed Git commit on all six critical routes, including Markets.'
 
       - name: Verify full-scene Oncology hero and un-cropped mobile styling on live domain
         run: |
@@ -765,6 +769,20 @@ jobs:
             'https://novapharmhealthcare.com/assets/css/global-distribution-editorial.css' \
             -o /tmp/global-distribution-editorial.css
           grep -Fq 'White space, quiet typography' /tmp/global-distribution-editorial.css
+          # Confirm the original full-resolution NASA Expedition 70 photograph
+          # is published, not the earlier soft third-party preview.
+          grep -Fq 'data-markets-design="apple-photographic-approved-20261111"' /tmp/novapharm-markets.html
+          grep -Fq 'iss070e075895_lrg.jpg" width="5568" height="3712"' /tmp/novapharm-markets.html
+          grep -Fq 'href="/assets/css/markets-editorial.css?v=20261111-nasa-hd-1"' /tmp/novapharm-markets.html
+          if grep -Fq 'd2pn8kiwq2w21t.cloudfront.net' /tmp/novapharm-markets.html; then
+            echo '::error::Retired soft Markets hero remains live.'
+            exit 1
+          fi
+          curl --fail --silent --show-error --location --max-time 20 \
+            "https://novapharmhealthcare.com/assets/css/markets-editorial.css?source-$GITHUB_SHA" \
+            -o /tmp/novapharm-markets-editorial.css
+          grep -Fq 'NASA' /tmp/novapharm-markets-editorial.css
+          echo 'Full-resolution NASA Markets hero, credited source and responsive CSS verified live.'
           echo 'All three canonical commercial routes and Apple-inspired styling are live.'
 
           # Prove Distribution exists in the actual visible primary navigation on

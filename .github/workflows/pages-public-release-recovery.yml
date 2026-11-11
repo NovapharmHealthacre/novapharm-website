@@ -1,6 +1,8 @@
 name: Recover public GitHub Pages publication
 
 on:
+  # Manual, controlled recovery only. The AWS-backed publisher owns main-branch
+  # releases; duplicate push triggers compete for the same github-pages queue.
   pull_request:
     paths:
       - .github/workflows/pages-public-release-recovery.yml
@@ -240,10 +242,12 @@ jobs:
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "${DEPLOYED_URL%/}/assets/css/novapharm.bundle.css?${cache_key}-${attempt}" > /tmp/deployed-bundle.css || true
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "${DEPLOYED_URL%/}/regulatory-services/?${cache_key}-${attempt}" > /tmp/deployed-regulatory.html || true
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "${DEPLOYED_URL%/}/portal/?${cache_key}-${attempt}" > /tmp/deployed-portal.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "${DEPLOYED_URL%/}/markets/?${cache_key}-${attempt}" > /tmp/deployed-markets.html || true
             if grep -Fq 'Medicine. Where it needs to be' /tmp/deployed-home.html \
               && grep -Fq 'class="npd-apple-hero nph-earth-hero"' /tmp/deployed-home.html \
               && grep -Fq -- '--apple-pharma-public-contract: 3' /tmp/deployed-bundle.css \
               && grep -Fq 'regulatory-dossier-control' /tmp/deployed-regulatory.html \
+              && grep -Fq 'data-markets-design="apple-photographic-approved-20261111"' /tmp/deployed-markets.html \
               && ! grep -Fq 'data-ai-search-open' /tmp/deployed-home.html \
               && grep -Fq 'This public website never asks for a portal username, password or confidential company record' /tmp/deployed-portal.html \
               && ! grep -Fq 'data-login-form' /tmp/deployed-portal.html \
@@ -270,6 +274,7 @@ jobs:
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/contact/?${cache_key}-${attempt}" > /tmp/live-contact.html || true
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/account-application/?${cache_key}-${attempt}" > /tmp/live-account.html || true
             curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/portal/?${cache_key}-${attempt}" > /tmp/live-portal.html || true
+            curl --fail --silent --show-error --location -H 'Cache-Control: no-cache, no-store, max-age=0' "$LIVE_ORIGIN/markets/?${cache_key}-${attempt}" > /tmp/live-markets.html || true
             search_status=$(curl --silent --output /dev/null --write-out '%{http_code}' --location "$LIVE_ORIGIN/search/?${cache_key}-${attempt}" || true)
             ai_status=$(curl --silent --output /dev/null --write-out '%{http_code}' --location "$LIVE_ORIGIN/technology/ai-governance/?${cache_key}-${attempt}" || true)
 
@@ -278,6 +283,7 @@ jobs:
               && grep -Fq -- '--apple-pharma-public-contract: 3' /tmp/live-bundle.css \
               && grep -Fq 'regulatory-dossier-control' /tmp/live-regulatory.html \
               && grep -Fq '/assets/media/modules/regulatory-dossier-control.jpg' /tmp/live-regulatory.html \
+              && grep -Fq 'data-markets-design="apple-photographic-approved-20261111"' /tmp/live-markets.html \
               && ! grep -Fq 'data-ai-search-open' /tmp/live-home.html \
               && grep -Fq 'Prabhakar Vitthal Lahare' /tmp/live-cro.html \
               && grep -Fq 'A Hope for' /tmp/live-oncology.html \

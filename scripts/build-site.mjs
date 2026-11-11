@@ -26,6 +26,8 @@ await import("./apply-esco-catalogue.mjs");
 await import("./validate-contact-publication.mjs");
 await import("./activate-contact-intake.mjs");
 await import("./apply-global-distribution-foundation.mjs");
+// Materialize approved Markets before SEO, attribution and release registers are generated.
+await import("./apply-markets-editorial.mjs");
 await import("./enhance-seo-authority.mjs");
 await import("./reconcile-leadership-authority.mjs");
 await import("./reconcile-article-authority.mjs");
