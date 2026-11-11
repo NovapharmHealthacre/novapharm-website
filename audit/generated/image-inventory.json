@@ -2336,15 +2336,13 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 6,
-      "referenceCount": 7,
+      "usageCount": 4,
+      "referenceCount": 5,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "about/index.html",
         "creative-assets/asset-register.json",
-        "scripts/apply-about-editorial.mjs",
-        "scripts/apply-global-distribution-foundation.mjs",
-        "scripts/test-global-distribution-foundation.mjs"
+        "scripts/apply-about-editorial.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": "visual-candidate-015",
