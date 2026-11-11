@@ -38,7 +38,7 @@
           "PointInTimeRecoveryEnabled": true
         },
         "TimeToLiveSpecification": {
-          "AttributeName": "expiresAt",
+          "AttributeName": "ttlEpoch",
           "Enabled": true
         },
         "DeletionProtectionEnabled": true,
