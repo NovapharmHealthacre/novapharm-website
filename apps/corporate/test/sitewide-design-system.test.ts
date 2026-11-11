@@ -79,7 +79,7 @@ test("forensic page identity and privacy choices do not regress", () => {
   const capabilitiesCss = readFileSync(path.join(root, "../../assets/css/capabilities-editorial.css"), "utf8");
   assert.match(renderer, /page\.slug === "capabilities" \? "Capabilities"/,
     "Capabilities must never inherit the About NovaPharm breadcrumb");
-  assert.match(oncology, /Oncology demands\{" "\}<br \/>more than supply\./,
+  assert.match(oncology, /A Hope for\{" "\}<br \/>Tomorrow\./,
     "The Oncology H1 must have a spoken word boundary at its visual line break");
   assert.doesNotMatch(capabilitiesCss, /#767981/i,
     "Small Capabilities labels must not use the previously low-contrast grey");
