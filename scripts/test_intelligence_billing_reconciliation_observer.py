@@ -116,6 +116,14 @@ class ObserverTests(unittest.TestCase):
         self.assertEqual(result["subscriptions_created"], 0)
         self.assertEqual(result["external_emails_sent"], 0)
 
+    def test_live_account_checked_before_any_quarantine_scan(self):
+        from inspect import getsource
+        source = getsource(M.handler)
+        self.assertLess(source.index('account = fetch("account")'), source.index('run_observer(ddb, fetch)'))
+        self.assertIn("stripe_account_mismatch", source)
+        self.assertIn("except ReconciliationUnavailable as exc:", source)
+        self.assertIn("stripe_http_", getsource(M.read_live_stripe))
+
     def test_stripe_resource_allowlist(self):
         # Join harmless fragments at runtime; never commit real or complete API keys.
         fake = "rk_" + "live_" + ("x" * 48)
