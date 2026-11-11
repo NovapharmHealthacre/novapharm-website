@@ -1029,6 +1029,7 @@ body[data-page="technology"] .np-intelligence {
   gap: 24px;
   margin-bottom: 28px;
 }
+.np-intelligence .npi-directory-intro .npi-kicker { color: var(--npi-red-deep); } /* WCAG AA on #f5f5f7 */
 .np-intelligence .npi-directory-intro > div:first-child { max-width: 680px; }
 .np-intelligence .npi-directory-intro h3 {
   font-size: clamp(2rem,3.4vw,3.4rem);
