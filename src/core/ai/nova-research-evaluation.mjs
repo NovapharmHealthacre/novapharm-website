@@ -4,7 +4,7 @@
  * Dataset provenance, inter-rater agreement, licensing and external validity
  * must be assessed independently. Synthetic fixtures confer no production claim.
  */
-const ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{1,79}$/u;
+const ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,79}$/u;
 const TRUTH = Object.freeze(["supported", "contradicted", "insufficient"]);
 const OUTPUT = Object.freeze(["supported", "contradicted", "abstain"]);
 const MAX_CASES = 10000;
