@@ -1,0 +1,5 @@
+export const intelligenceCustomerOidc: Readonly<{ issuer: string; clientId: string; domain: string; callback: string; requiresTenantAcceptance: true; permitsPublicSignup: false }>;
+export function createCustomerLoginTransaction(options: { signingKey: string; nowMs?: number }): Readonly<{ authorizeUrl: string; transactionCookieValue: string; cookieMaxAgeSeconds: number; identityOnly: true; grantsTenantAccess: false }>;
+export function verifyCustomerLoginTransaction(options: { cookieValue: string; state: string; signingKey: string; nowMs?: number }): Readonly<{ verifier: string; nonce: string; grantsTenantAccess: false }>;
+export function exchangeCustomerAuthCode(options: { code: string; verifier: string; fetchImpl?: typeof fetch }): Promise<string>;
+export function verifyIntelligenceCustomerIdToken(options: { idToken: string; expectedNonce: string; fetchImpl?: typeof fetch; nowSeconds?: number }): Promise<Readonly<{ verifiedCognitoSubject: string; verifiedIssuer: string; identityVerified: true; mfaSessionAttestationRequired: true; tenantOwnershipVerified: false; subscriptionVerified: false; grantsTenantAccess: false }>>;
