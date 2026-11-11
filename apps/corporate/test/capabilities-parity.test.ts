@@ -27,10 +27,12 @@ test("approved Capabilities editorial story is preserved in managed website", ()
   assert.match(responsiveCSS, /ncap-managed/);
 });
 
-test("both approved Capabilities pictures are materialised from the canonical art", () => {
-  const images = ["vial-study.webp", "earth-horizon.webp"];
+test("both photographic Capabilities assets are copied byte-for-byte from the approved source", () => {
+  const images = ["approved-vial-photo-800.webp", "approved-earth-horizon-crest.webp"];
   for (const file of images) {
     const fullPath = path.join(root, "apps/corporate/public/assets/media/capabilities", file);
-    assert.ok(statSync(fullPath).size > 500, `Derived ${file} is missing`);
+    const original = path.join(root, "assets/media/capabilities", file);
+    assert.ok(statSync(fullPath).size > 500, `Approved ${file} is missing`);
+    assert.deepEqual(readFileSync(fullPath), readFileSync(original), `Approved asset copy differs: ${file}`);
   }
 });
