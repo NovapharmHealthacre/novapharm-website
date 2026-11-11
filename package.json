@@ -78,7 +78,7 @@
     "test:azure-sql-migrations": "node scripts/validate-azure-sql-migrations.mjs",
     "test:enterprise-migrations": "node scripts/test-enterprise-migrations.mjs",
     "test:enterprise-portal": "node scripts/test-enterprise-portal.mjs",
-    "test:medicines-intelligence": "node --test scripts/test-medicine-evidence-admission.mjs && node --test scripts/test-medicine-identity-relationships.mjs && node --test scripts/test-medicine-investigation-passport.mjs scripts/test-medicine-observed-change.mjs && node --test scripts/test-intelligence-evidence-graph.mjs && node scripts/test-medicines-intelligence-service.mjs && node scripts/test-intelligence-v1-api.mjs && node scripts/test-intelligence-readiness.mjs && node --test scripts/test-intelligence-uk-tender-discovery.mjs && node scripts/test-openfda-labels.mjs && node --test scripts/test-clinicaltrials-studies.mjs && node --test scripts/test-intelligence-customer-access.mjs && node --test scripts/test-intelligence-customer-sessions.mjs && node --test scripts/test-intelligence-customer-governance.mjs && node --test scripts/test-intelligence-subscription-entitlements.mjs && node --test scripts/test-intelligence-billing-events.mjs && node --test scripts/test-medicine-forecast-baseline.mjs scripts/test-medicine-forecast-interval-candidate.mjs",
+    "test:medicines-intelligence": "node --test scripts/test-medicine-evidence-admission.mjs && node --test scripts/test-medicine-identity-relationships.mjs && node --test scripts/test-medicine-investigation-passport.mjs scripts/test-medicine-observed-change.mjs && node --test scripts/test-intelligence-evidence-graph.mjs && node scripts/test-medicines-intelligence-service.mjs && node scripts/test-intelligence-v1-api.mjs && node scripts/test-intelligence-readiness.mjs && node --test scripts/test-intelligence-uk-tender-discovery.mjs && node scripts/test-openfda-labels.mjs && node --test scripts/test-clinicaltrials-studies.mjs && node --test scripts/test-intelligence-customer-access.mjs && node --test scripts/test-intelligence-customer-sessions.mjs && node --test scripts/test-intelligence-customer-governance.mjs && node --test scripts/test-intelligence-subscription-entitlements.mjs && node --test scripts/test-intelligence-billing-events.mjs && node --test scripts/test-medicine-forecast-baseline.mjs scripts/test-medicine-forecast-interval-candidate.mjs && node --test scripts/test-intelligence-private-evidence-storage.mjs",
     "test:medicines-bulk-ingestion": "node scripts/test-medicines-bulk-ingestion.mjs",
     "test:browser-validation-preparation": "node scripts/test-browser-validation-preparation.mjs",
     "test:entra-identity": "node scripts/test-entra-identity.mjs",
@@ -154,7 +154,7 @@
     "test:esco-catalogue": "node --test scripts/test-esco-catalogue.mjs scripts/test-esco-approved-experience.mjs scripts/test-esco-order-requests.mjs",
     "test:nutraxin-retail-store": "node --test scripts/test-nutraxin-retail-store.mjs",
     "test:nutraxin-consumer-account": "node --test scripts/test-nutraxin-consumer-account.mjs",
-    "test:global-distribution-foundation": "node scripts/test-global-distribution-foundation.mjs"
+    "test:global-distribution-foundation": "node scripts/test-global-distribution-foundation.mjs && node --test scripts/test-distribution-release-candidate.mjs"
   },
   "engines": {
     "node": "24.x",
