@@ -15,6 +15,7 @@ const checkoutResult = document.querySelector("[data-esco-checkout-status]");
 const orderRequestForm = document.querySelector("[data-esco-order-request-form]");
 const orderRequestSubmit = document.querySelector("[data-esco-order-request-submit]");
 const orderRequestReceipt = document.querySelector("[data-esco-order-request-receipt]");
+const boqExportButton = document.querySelector("[data-esco-export-boq]");
 const requestLookupForm = document.querySelector("[data-esco-request-lookup]");
 const requestLookupInput = document.querySelector("[data-esco-request-id]");
 const requestLookupState = document.querySelector("[data-esco-request-state]");
@@ -210,6 +211,34 @@ function node(tag, content, classname = "") {
   if (classname) element.className = classname;
   return element;
 }
+// CSV stays on the buyer's device: no supplier email, payment, customer data or public API call.
+function downloadBoq(lines, known, categoryNameById) {
+  const headers = ["ESCO catalogue reference", "NovaPharm internal SKU", "Manufacturer",
+    "ESCO manufacturer model", "Product", "Category", "Quantity",
+    "Exact specification / size / variant (buyer to complete)",
+    "Delivery requirement / location (buyer to complete)"];
+  const rows = lines.filter(item => known.has(item.id)).map(item => {
+    const product = known.get(item.id);
+    return [item.id, "NP-ESCO-" + item.id.slice(-4), "Eastern Surgical Company (ESCO)",
+      product.model || "", product.name, categoryNameById.get(item.id) || "", item.quantity, "", ""];
+  });
+  if (!rows.length) return;
+  const safeCsv = value => {
+    let cell = String(value ?? "").replace(/[\\r\\n]+/g, " ");
+    if (/^\\s*[=+@\\t]/.test(cell) || /^\\s*-(?!\\d)/.test(cell)) cell = "'" + cell;
+    return '"' + cell.replaceAll('"', '""') + '"';
+  };
+  const csv = [headers, ...rows].map(row => row.map(safeCsv).join(",")).join("\\r\\n") + "\\r\\n";
+  const url = URL.createObjectURL(new Blob([csv], {type:"text/csv;charset=utf-8"}));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "novapharm-esco-bill-of-quantities.csv";
+  link.style.display = "none";
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
 async function init() {
   if (!itemsRoot || !send || !totalNode) return;
   itemsRoot.replaceChildren(node("p", "Loading your Bag…", "esco-bag-message"));
@@ -226,6 +255,9 @@ async function init() {
       priceData?.checkoutEnabled !== false || priceData?.paymentCollectionEnabled !== false ||
       priceData?.requestQuoteOnly !== true) throw new Error("This Bag cannot verify safe ESCO catalogue authority");
   const all = catalogue.categories.flatMap((category) => category.entries);
+  const categoryNameById = new Map(catalogue.categories.flatMap(category =>
+    category.entries.map(product => [product.id, category.name])));
+
   const known = new Map(all.map(p => [p.id, p]));
   if (known.size !== 373) throw new Error("Duplicate catalogue item");
   let state = loadBag().filter(item => known.has(item.id) && Number.isFinite(priceData.guidePrices?.[item.id]?.guidePriceExVatGbp));
@@ -324,6 +356,7 @@ async function init() {
     send.setAttribute("aria-disabled", state.length ? "false" : "true");
     send.tabIndex = state.length ? 0 : -1;
     saveBag(state);
+    if (boqExportButton) boqExportButton.disabled = !state.length;
     renderPaymentEligibility(state);
   }
   itemsRoot.addEventListener("click", event => {
@@ -397,6 +430,8 @@ async function init() {
       renderPaymentEligibility(state);
     }
   });
+  if (boqExportButton) boqExportButton.addEventListener("click", () =>
+    downloadBoq(state, known, categoryNameById));
   if (requestLookupForm) requestLookupForm.addEventListener("submit", event => {
     event.preventDefault();
     void checkOrderRequestStatus(requestLookupInput?.value);
