@@ -303,7 +303,11 @@ try {
   assert.deepEqual(analytics.sourcePeriods, ["2026-06"]);
   assert.deepEqual(analytics.pagination, { page: 1, pageSize: 25, totalRows: 1, totalPages: 1 });
   assert.deepEqual(analytics.reconciliation, { applicable: true, tableTotal: 12, seriesTotal: 12, reconciles: true, seriesTruncated: false });
-  assert.equal(JSON.stringify(analytics).includes("999"), false);
+  // The validation-sample sentinel is a metric, not a string token: generatedAt
+  // milliseconds can legitimately contain "999" and must not make CI flaky.
+  assert.equal(analytics.rows.some((row) => row.items === 999 || row.metric_value === 999), false);
+  assert.equal(analytics.series.some((point) => point.items === 999 || point.metric_value === 999), false);
+  assert.notEqual(analytics.summary.totalItems, 999);
 
   const secondMedicineId = "medicine-11111111111111111111111111111111";
   await database.run(`INSERT INTO dim_medicine(
