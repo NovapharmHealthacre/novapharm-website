@@ -44,7 +44,7 @@ test("Oncology product safety, governance, imagery and progressive disclosure ar
   assert.match(component, /Illustrative programme categories only/);
   assert.match(component, /non-confidential opportunity summary/);
   assert.doesNotMatch(component, /<svg|lucide|oncology-editorial-gallery|specialty-pharmacy-handling|data-login-form|Buy now|In stock/i);
-  assert.match(component, /hope-tomorrow-portrait\\.jpg/);
+  assert.ok(component.includes("/assets/media/oncology/hope-tomorrow-portrait.jpg"));
   for (const image of ["hope-tomorrow-portrait.jpg", "solid-tumours.jpg", "haematological-cancers.jpg", "supportive-care.jpg"]) {
     const media = path.join(root, "../../assets/media/oncology", image);
     assert.ok(existsSync(media), `Missing approved image asset: ${media}`);
