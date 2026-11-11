@@ -38,7 +38,7 @@ permissions:
   statuses: write
 
 concurrency:
-  group: ${{ github.event_name == 'pull_request' && format('novapharm-pages-pr-{0}', github.head_ref) || 'novapharm-pages-production' }}
+  group: ${{ github.event_name == 'pull_request' && format('novapharm-pages-pr-{0}', github.head_ref) || 'novapharm-pages-verified-customer-publication-v2' }}
   cancel-in-progress: false
 
 env:
