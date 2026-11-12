@@ -698,3 +698,67 @@
 .npoc-page .npoc-governance .npoc-eyebrow { color:#655482; }
 .npoc-page .npoc-governance .npoc-matrix caption { color:#555361; }
 .npoc-page .npoc-governance .npoc-matrix :is(td,th) { border-bottom-color:#d0ced9; }
+
+/* Owner reference SS2 | 12 November 2026 | full-width hero and three-card composition */
+@media (min-width:1101px) {
+  .npoc-page section.npoc-hero.npoc-hope-hero {
+    min-height:clamp(520px,36.5vw,590px);
+    background:linear-gradient(102deg,#fff 0%,#faf9fe 37%,#f1eafb 73%,#fff3e8 100%);
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-visual {
+    inset:0 0 0 auto;
+    width:80%;
+    height:100%;
+    overflow:hidden;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.8) 22%,#000 32%);
+    mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.8) 22%,#000 32%);
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-visual img {
+    object-fit:contain;
+    object-position:right center;
+    /* The bitmap is letterboxed by contain; fade the bitmap itself so its
+       first painted pixel cannot create a vertical edge in Safari. */
+    -webkit-mask-image:linear-gradient(90deg,transparent 0%,transparent 34%,rgba(0,0,0,.5) 46%,rgba(0,0,0,.9) 56%,#000 62%);
+    mask-image:linear-gradient(90deg,transparent 0%,transparent 34%,rgba(0,0,0,.5) 46%,rgba(0,0,0,.9) 56%,#000 62%);
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-shade {
+    background:linear-gradient(90deg,#fff 0%,rgba(255,255,255,.98) 15%,rgba(255,255,255,.84) 28%,rgba(255,255,255,.28) 43%,transparent 60%);
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-content {
+    width:min(calc(100% - 11.4vw),1360px);
+    max-width:1360px;
+    padding-block:clamp(58px,4.7vw,82px);
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-copy {
+    width:min(46%,620px);
+    max-width:620px;
+  }
+  .npoc-page .npoc-hope-hero h1 {
+    font-size:clamp(70px,6.25vw,99px);
+    line-height:.98;
+    margin-bottom:23px;
+  }
+  .npoc-page .npoc-hope-hero .npoc-hero-lead {
+    font-size:clamp(19px,1.6vw,24px);
+    max-width:560px;
+  }
+  .npoc-page .npoc-hope-focus .npoc-focus-layout {
+    grid-template-columns:minmax(330px,.85fr) minmax(0,2.3fr);
+    column-gap:clamp(40px,3.4vw,55px);
+    align-items:start;
+  }
+  .npoc-page .npoc-hope-focus .npoc-focus-copy {
+    align-self:start;
+    padding-top:16px;
+  }
+  .npoc-page .npoc-hope-focus .npoc-focus-card {
+    height:clamp(265px,19vw,310px);
+  }
+  .npoc-page .npoc-hope-focus .npoc-focus-card span {
+    left:28px;
+    right:18px;
+    bottom:27px;
+    font-size:clamp(17px,1.35vw,21px);
+    text-transform:capitalize;
+  }
+}
