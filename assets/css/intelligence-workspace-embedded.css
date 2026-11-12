@@ -12,14 +12,14 @@
 .npi-workspace-live-experience .topline{display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.17em;font-weight:720;text-transform:uppercase;color:#6f6f76}
 .npi-workspace-live-experience .topline:before{content:"";width:24px;height:3px;background:var(--red);border-radius:3px}
 .npi-workspace-live-experience .intro-layout{display:flex;align-items:flex-end;gap:30px;justify-content:space-between}
-.npi-workspace-live-experience h1{margin:19px 0 15px;font-size:clamp(45px,5.55vw,79px);line-height:1.055;letter-spacing:-.058em;font-weight:680}
-.npi-workspace-live-experience .intro{max-width:760px;color:var(--muted);font-size:clamp(17px,1.6vw,20px);line-height:1.48;letter-spacing:-.016em;margin:0}
+.npi-workspace-live-experience h1{margin:19px 0 15px;font-size:clamp(45px,5.55vw,79px);line-height:1.055;letter-spacing:0;font-weight:680}
+.npi-workspace-live-experience .intro{max-width:760px;color:var(--muted);font-size:clamp(17px,1.6vw,20px);line-height:1.48;letter-spacing:0;margin:0}
 .npi-workspace-live-experience .count{text-align:right;flex:0 0 auto;color:var(--light);font-size:13px;line-height:1.8;white-space:nowrap;padding-bottom:5px}
-.npi-workspace-live-experience .count strong{color:var(--ink);font-size:24px;font-weight:660;letter-spacing:-.04em;margin-right:7px}
+.npi-workspace-live-experience .count strong{color:var(--ink);font-size:24px;font-weight:660;letter-spacing:0;margin-right:7px}
 .npi-workspace-live-experience .toolbar{margin-top:48px;display:flex;justify-content:space-between;gap:23px;border-bottom:1px solid #d8d8dc;align-items:flex-end}
 .npi-workspace-live-experience .tabs{display:flex;gap:clamp(16px,2.2vw,35px);overflow-x:auto;scrollbar-width:none}
 .npi-workspace-live-experience .tabs::-webkit-scrollbar{display:none}
-.npi-workspace-live-experience .tab{display:inline-flex;align-items:center;gap:7px;color:#77777c;background:none;border:0;border-bottom:2px solid transparent;padding:12px 0 18px;white-space:nowrap;font-size:13px;font-weight:570;letter-spacing:-.018em;min-height:55px}
+.npi-workspace-live-experience .tab{display:inline-flex;align-items:center;gap:7px;color:#77777c;background:none;border:0;border-bottom:2px solid transparent;padding:12px 0 18px;white-space:nowrap;font-size:13px;font-weight:570;letter-spacing:0;min-height:55px}
 .npi-workspace-live-experience .tab:hover{color:var(--ink)}
 .npi-workspace-live-experience .tab[aria-selected=true]{color:var(--ink);border-color:var(--ink);font-weight:690}
 .npi-workspace-live-experience .tab small{font-size:10px;color:#a4a4a9;font-weight:650;align-self:flex-start;transform:translateY(-2px)}
@@ -32,7 +32,7 @@
 .npi-workspace-live-experience .searchbox:focus-within{border-bottom-color:var(--ink)}
 .npi-workspace-live-experience .split{display:grid;grid-template-columns:minmax(0,.96fr) minmax(0,1.04fr);gap:clamp(36px,5vw,75px);padding-top:39px;align-items:start}
 .npi-workspace-live-experience .category-eyebrow{font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--red);font-weight:690;margin:2px 0 17px}
-.npi-workspace-live-experience .category-title{font-size:clamp(31px,3.0vw,42px);letter-spacing:-.045em;line-height:1.09;margin:0 0 12px;font-weight:670}
+.npi-workspace-live-experience .category-title{font-size:clamp(31px,3.0vw,42px);letter-spacing:0;line-height:1.09;margin:0 0 12px;font-weight:670}
 .npi-workspace-live-experience .category-description{margin:0 0 30px;min-height:49px;color:var(--muted);line-height:1.52;font-size:15px;max-width:505px}
 .npi-workspace-live-experience .result-caption{color:var(--muted);font-size:12px;margin:-15px 0 14px}
 .npi-workspace-live-experience .workspace-list{border-top:1px solid var(--line)}
@@ -41,7 +41,7 @@
 .npi-workspace-live-experience .num{width:32px;flex-shrink:0;font-size:11px;color:#aaaab0;font-variant-numeric:tabular-nums}
 .npi-workspace-live-experience .is-selected .num{color:var(--red)}
 .npi-workspace-live-experience .workspace-copy{flex:1;min-width:0}
-.npi-workspace-live-experience .workspace-name{font-size:clamp(16px,1.36vw,19px);font-weight:645;letter-spacing:-.034em;display:block;line-height:1.2}
+.npi-workspace-live-experience .workspace-name{font-size:clamp(16px,1.36vw,19px);font-weight:645;letter-spacing:0;display:block;line-height:1.2}
 .npi-workspace-live-experience .is-selected .workspace-name:after{content:"";display:inline-block;width:5px;height:5px;background:var(--red);border-radius:50%;margin:0 0 3px 10px}
 .npi-workspace-live-experience .workspace-caption{font-size:12px;line-height:1.4;color:#85858b;display:block;margin-top:6px}
 .npi-workspace-live-experience .workspace-arrow{font-size:23px;color:#a4a4a9;font-weight:300;transition:transform .2s}
@@ -55,7 +55,7 @@
 .npi-workspace-live-experience .stage-counter{font-size:11px;color:#86868b;font-variant-numeric:tabular-nums}
 .npi-workspace-live-experience .preview-frame{background:#fff;border-radius:15px;border:1px solid #e4e4e7;box-shadow:0 16px 38px rgba(34,43,64,.045);position:relative;overflow:hidden}
 .npi-workspace-live-experience .preview-chrome{display:flex;align-items:center;justify-content:space-between;min-height:53px;border-bottom:1px solid #ececf0;padding:0 22px;gap:10px}
-.npi-workspace-live-experience .mini-brand{font-size:16px;letter-spacing:-.065em;font-weight:750}
+.npi-workspace-live-experience .mini-brand{font-size:16px;letter-spacing:0;font-weight:750}
 .npi-workspace-live-experience .mini-brand i{font-style:normal;color:var(--red)}
 .npi-workspace-live-experience .mini-sub{margin-left:9px;color:#8e8e95;font-size:10px;letter-spacing:.005em;font-weight:500}
 .npi-workspace-live-experience .demo-label{display:inline-flex;align-items:center;gap:7px;color:#74747a;font-size:10px;font-weight:600;letter-spacing:.05em}
@@ -63,7 +63,7 @@
 .npi-workspace-live-experience .preview-content{padding:27px 23px 27px;min-height:470px}
 .npi-workspace-live-experience .preview-overline{color:#86868c;font-size:10px;font-weight:690;letter-spacing:.11em;text-transform:uppercase;margin:0 0 10px}
 .npi-workspace-live-experience .preview-head{display:flex;gap:20px;align-items:flex-start;justify-content:space-between}
-.npi-workspace-live-experience .preview-title{font-size:clamp(22px,2vw,29px);font-weight:690;letter-spacing:-.055em;line-height:1.12;margin:0}
+.npi-workspace-live-experience .preview-title{font-size:clamp(22px,2vw,29px);font-weight:690;letter-spacing:0;line-height:1.12;margin:0}
 .npi-workspace-live-experience .preview-description{font-size:12px;line-height:1.5;color:#85858a;margin:9px 0 0;max-width:375px}
 .npi-workspace-live-experience .sample-select{color:#58585e;border:1px solid #e6e6e9;border-radius:99px;padding:8px 20px 8px 12px;background:#fff;font-size:11px;max-width:148px;cursor:pointer}
 .npi-workspace-live-experience .mode-tabs{display:flex;gap:23px;margin-top:27px;border-bottom:1px solid var(--line)}
@@ -80,7 +80,7 @@
 .npi-workspace-live-experience .metric{border-right:1px solid #eeeef1;padding:4px 8px 4px 0;min-width:0}
 .npi-workspace-live-experience .metric:last-child{border-right:0}
 .npi-workspace-live-experience .metric-label{font-size:10px;color:#8f8f95;margin:0 0 11px}
-.npi-workspace-live-experience .metric-value{font-size:clamp(17px,1.9vw,25px);line-height:1;letter-spacing:-.05em;font-weight:690;overflow-wrap:anywhere}
+.npi-workspace-live-experience .metric-value{font-size:clamp(17px,1.9vw,25px);line-height:1;letter-spacing:0;font-weight:690;overflow-wrap:anywhere}
 .npi-workspace-live-experience .metric-delta{font-size:10px;color:var(--mint);margin-top:8px}
 .npi-workspace-live-experience .metric-delta.neutral{color:#94949a}
 .npi-workspace-live-experience .section-label{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;font-weight:690;margin:7px 0 13px;color:#4b4b50}
@@ -144,12 +144,12 @@
 .npi-workspace-live-experience .search-medicine{width:100%;border:1px solid #dcdce3;border-radius:10px;padding:13px 14px;font-size:13px;background:#fff;outline:0}
 .npi-workspace-live-experience .search-medicine:focus{border-color:#7ca9e5}
 .npi-workspace-live-experience .detail-pane{background:#f8f9fb;border:1px solid #eceef2;border-radius:12px;padding:16px;margin:15px 0}
-.npi-workspace-live-experience .detail-pane h4{margin:0 0 7px;font-size:16px;letter-spacing:-.03em}
+.npi-workspace-live-experience .detail-pane h4{margin:0 0 7px;font-size:16px;letter-spacing:0}
 .npi-workspace-live-experience .detail-pane p{font-size:11px;line-height:1.5;color:#7b7b84;margin:0}
-.npi-workspace-live-experience .big-index{font-size:35px;line-height:1;letter-spacing:-.055em;font-weight:700;margin:8px 0}
+.npi-workspace-live-experience .big-index{font-size:35px;line-height:1;letter-spacing:0;font-weight:700;margin:8px 0}
 .npi-workspace-live-experience .tiny-caps{font-size:10px;letter-spacing:.12em;color:#94949b;font-weight:680;text-transform:uppercase}
 .npi-workspace-live-experience .report-paper{border:1px solid #ebebef;background:linear-gradient(165deg,#fff,#f7f8fa);border-radius:8px;padding:19px 20px;min-height:185px}
-.npi-workspace-live-experience .report-paper h4{margin:14px 0 13px;font-size:24px;letter-spacing:-.04em}
+.npi-workspace-live-experience .report-paper h4{margin:14px 0 13px;font-size:24px;letter-spacing:0}
 .npi-workspace-live-experience .report-paper p{font-size:11px;color:#86868e}
 .npi-workspace-live-experience .report-line{height:6px;background:#e5e7ee;border-radius:3px;margin-top:13px;max-width:90%}
 .npi-workspace-live-experience .report-line.short{max-width:55%}
@@ -184,7 +184,7 @@
 .npi-workspace-live-experience .modal{position:fixed;inset:0;background:#16161a66;display:grid;place-items:center;z-index:100;padding:20px;backdrop-filter:blur(6px)}
 .npi-workspace-live-experience .modal-inner{position:relative;background:#fff;border-radius:22px;padding:36px;width:min(520px,100%);box-shadow:0 24px 90px #0002}
 .npi-workspace-live-experience .modal-close{position:absolute;top:18px;right:20px;width:36px;height:36px;border:0;background:#f0f0f2;border-radius:50%;font-size:22px;color:#666}
-.npi-workspace-live-experience .modal h3{font-size:31px;letter-spacing:-.045em;margin:0 20px 14px 0}
+.npi-workspace-live-experience .modal h3{font-size:31px;letter-spacing:0;margin:0 20px 14px 0}
 .npi-workspace-live-experience .modal p{font-size:14px;line-height:1.56;color:var(--muted)}
 .npi-workspace-live-experience .modal ul{font-size:13px;line-height:1.7;color:#56565c;padding-left:20px}
 .npi-workspace-live-experience .modal a{color:#266cbe;text-decoration:none}
@@ -228,7 +228,7 @@
 @media (prefers-reduced-motion:reduce){.npi-workspace-live-experience *,.npi-workspace-live-experience *::before,.npi-workspace-live-experience *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 .npi-workspace-live-experience{--red:#e3120b;--mint:#24836e;--focus:#0066cc}
 .npi-workspace-live-experience .section{max-width:1700px;padding:48px 34px 48px}
-.npi-workspace-live-experience h1{font-size:clamp(41px,4vw,62px);letter-spacing:-.057em;margin:13px 0 9px}
+.npi-workspace-live-experience h1{font-size:clamp(41px,4vw,62px);letter-spacing:0;margin:13px 0 9px}
 .npi-workspace-live-experience .intro{font-size:17px}
 .npi-workspace-live-experience .toolbar{margin-top:8px;justify-content:flex-end;border:0;margin-bottom:26px;min-height:36px}
 .npi-workspace-live-experience .app-layout{display:grid;grid-template-columns:195px minmax(0,1fr);gap:23px;align-items:start}
@@ -250,7 +250,7 @@
 .npi-workspace-live-experience .workspace{min-height:77px;padding:10px 1px 10px 0;gap:8px}
 .npi-workspace-live-experience .workspace:hover,.npi-workspace-live-experience .workspace.is-selected{padding-left:10px;background:#fcfcfd}
 .npi-workspace-live-experience .num{width:26px;font-size:10px}
-.npi-workspace-live-experience .workspace-name{font-size:15px;letter-spacing:-.025em}
+.npi-workspace-live-experience .workspace-name{font-size:15px;letter-spacing:0}
 .npi-workspace-live-experience .workspace-caption{font-size:11px;line-height:1.4}
 .npi-workspace-live-experience .workspace-arrow{font-size:20px}
 .npi-workspace-live-experience .stage{background:transparent;border-radius:0;padding:0;min-height:0;overflow:visible}
@@ -258,12 +258,12 @@
 .npi-workspace-live-experience .stage-top{padding:5px 7px 15px}
 .npi-workspace-live-experience .preview-frame{border:1px solid #e7e7e9;border-radius:23px;box-shadow:0 11px 38px rgba(28,28,39,.055);overflow:hidden}
 .npi-workspace-live-experience .preview-chrome{min-height:52px;padding:0 27px;background:linear-gradient(180deg,#fff,#fcfcfd)}
-.npi-workspace-live-experience .mini-brand{font-size:17px;letter-spacing:-.045em}
+.npi-workspace-live-experience .mini-brand{font-size:17px;letter-spacing:0}
 .npi-workspace-live-experience .mini-brand i{color:var(--red)}
 .npi-workspace-live-experience .demo-label{font-size:9px;letter-spacing:.11em;color:#777780}
 .npi-workspace-live-experience .demo-label:before{background:var(--red);height:5px;width:5px}
 .npi-workspace-live-experience .preview-content{padding:31px 28px 24px;min-height:535px}
-.npi-workspace-live-experience .preview-title{font-size:clamp(27px,2.4vw,37px);font-weight:690;letter-spacing:-.055em}
+.npi-workspace-live-experience .preview-title{font-size:clamp(27px,2.4vw,37px);font-weight:690;letter-spacing:0}
 .npi-workspace-live-experience .preview-description{font-size:12px}
 .npi-workspace-live-experience .preview-overline{color:#74747d;font-size:9px;letter-spacing:.12em}
 .npi-workspace-live-experience .mode-tabs{gap:clamp(13px,1.5vw,28px);margin-top:24px;overflow-x:auto;white-space:nowrap}
@@ -273,7 +273,7 @@
 .npi-workspace-live-experience .metric{border:1px solid #e9e9ed;border-radius:11px;padding:14px 11px;background:#fff}
 .npi-workspace-live-experience .metric:last-child{border-right:1px solid #e9e9ed}
 .npi-workspace-live-experience .metric-label{font-size:10px;line-height:1.4;margin-bottom:8px}
-.npi-workspace-live-experience .metric-value{font-size:clamp(18px,1.7vw,27px);letter-spacing:-.055em}
+.npi-workspace-live-experience .metric-value{font-size:clamp(18px,1.7vw,27px);letter-spacing:0}
 .npi-workspace-live-experience .metric-delta{font-size:9px}
 .npi-workspace-live-experience .chart-card{background:#fff;border-radius:12px;padding:14px}
 .npi-workspace-live-experience .supply-dashboard{margin:0}
@@ -456,3 +456,53 @@
 .npi-workspace-live-experience .npi-offset-top{margin-top:10px}
 .npi-workspace-live-experience .npi-medicine-match{width:100%;border-left:0;border-right:0;border-top:0;background:transparent;text-align:left;cursor:pointer}
 .npi-workspace-live-experience .npi-compact-empty{padding:22px 0}
+/* WCAG AA: muted workspace copy remains readable on white and near-white surfaces. */
+.npi-workspace-live-experience .tab:not([aria-selected="true"]),
+.npi-workspace-live-experience .tab small,
+.npi-workspace-live-experience .workspace:not(.is-selected) .num,
+.npi-workspace-live-experience .workspace-caption,
+.npi-workspace-live-experience .stage-kicker,
+.npi-workspace-live-experience .stage-counter,
+.npi-workspace-live-experience .preview-description,
+.npi-workspace-live-experience .mode-tab:not([aria-pressed="true"]),
+.npi-workspace-live-experience .tiny-caps,
+.npi-workspace-live-experience .record-row small,
+.npi-workspace-live-experience .detail-pane p,
+.npi-workspace-live-experience .demo-footer,
+.npi-workspace-live-experience .demo-footer span,
+.npi-workspace-live-experience .status-note {
+  color: #57575d;
+}
+
+/* WCAG AA: secondary labels in desktop rail, preview metrics, charts and extended workspace views. */
+.npi-workspace-live-experience .rail-label,
+.npi-workspace-live-experience .rail-foot,
+.npi-workspace-live-experience .searchbox input::placeholder,
+.npi-workspace-live-experience .searchbox button,
+.npi-workspace-live-experience .workspace-arrow,
+.npi-workspace-live-experience .mini-sub,
+.npi-workspace-live-experience .preview-overline,
+.npi-workspace-live-experience .metric-label,
+.npi-workspace-live-experience .metric-delta.neutral,
+.npi-workspace-live-experience .minor,
+.npi-workspace-live-experience .chart-label,
+.npi-workspace-live-experience .chart-legend,
+.npi-workspace-live-experience .seg-control button:not([aria-pressed="true"]),
+.npi-workspace-live-experience .micro,
+.npi-workspace-live-experience .filter-chip,
+.npi-workspace-live-experience .data-table thead,
+.npi-workspace-live-experience .workflow-num,
+.npi-workspace-live-experience .workflow-body span,
+.npi-workspace-live-experience .report-paper p,
+.npi-workspace-live-experience .timeline-item,
+.npi-workspace-live-experience .toggle-row small,
+.npi-workspace-live-experience .source-intro,
+.npi-workspace-live-experience .data-indicator,
+.npi-workspace-live-experience .legal,
+.npi-workspace-live-experience .demo-label,
+.npi-workspace-live-experience .supply-sample {
+  color: #57575d;
+}
+.npi-workspace-live-experience .pill.good { color: #145b48; }
+.npi-workspace-live-experience .pill.warn { color: #74451a; }
+.npi-workspace-live-experience .badge-inline { color: #78441e; }

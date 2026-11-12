@@ -295,3 +295,21 @@ assert.match(workspaceCss, /@media\(max-width:500px\)/, "The interactive experie
 for (const label of ["Medicine research", "Market intelligence", "Supply & regulation", "Strategy", "Decision tools"]) {
   assert.ok(workspaceJs.includes(label), "Missing interactive workspace discipline: " + label);
 }
+
+// The mobile WCAG AA acceptance requires readable secondary labels, not decorative low-contrast grey.
+for (const [label, css] of [["native section", workspaceEmbeddedCss], ["standalone experience", workspaceCss]]) {
+  assert.match(css, /WCAG AA: muted workspace copy remains readable/, label + " must carry its scoped contrast policy");
+  assert.match(css, /color:\s*#57575d\s*;/, label + " must use contrast-safe secondary text");
+  for (const selector of [".tab small", ".workspace-caption", ".stage-kicker", ".stage-counter", ".preview-description", ".tiny-caps", ".detail-pane p", ".demo-footer", ".status-note"]) {
+    assert.ok(css.includes(selector), label + " must explicitly cover " + selector);
+  }
+}
+
+// All secondary text in desktop rail and additional demo lenses must remain AA readable.
+for (const [label, css] of [["native", workspaceEmbeddedCss], ["standalone", workspaceCss]]) {
+  assert.match(css, /WCAG AA: secondary labels in desktop rail/, label + " must include extended contrast rules");
+  for (const selector of [".rail-label", ".rail-foot", ".metric-label", ".chart-legend", ".workflow-body span", ".timeline-item", ".source-intro", ".demo-label"]) {
+    assert.ok(css.includes(selector), label + " must cover " + selector);
+  }
+  assert.match(css, /\.pill\.good\s*\{\s*color:\s*#145b48\s*;/, label + " must preserve accessible positive-status colour");
+}
