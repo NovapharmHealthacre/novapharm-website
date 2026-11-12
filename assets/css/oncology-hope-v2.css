@@ -640,3 +640,36 @@ body[data-page="oncology"] main.npoc-page :is(.npoc-focus-card,.npoc-button,.npo
     background:linear-gradient(90deg,#fff 0%,rgba(255,255,255,.97) 18%,rgba(255,255,255,.78) 31%,rgba(255,255,255,.12) 49%,transparent 66%);
   }
 }
+
+/* Oncology responsive photo boundary closure | 12 Nov 2026 */
+@media (min-width:761px) and (max-width:1100px) {
+  body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-visual {
+    inset:0 0 0 auto;
+    width:90%;
+    height:100%;
+    overflow:hidden;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.12) 14%,rgba(0,0,0,.55) 30%,#000 51%);
+    mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.12) 14%,rgba(0,0,0,.55) 30%,#000 51%);
+  }
+  body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-visual img {
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:right center;
+    -webkit-mask-image:none;
+    mask-image:none;
+  }
+  body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-shade {
+    background:linear-gradient(90deg,#fff 0%,rgba(255,255,255,.96) 20%,rgba(255,255,255,.78) 32%,rgba(255,255,255,.12) 56%,transparent 75%);
+  }
+}
+@media (max-width:760px) {
+  body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-visual img {
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center center;
+    -webkit-mask-image:none;
+    mask-image:none;
+  }
+}
