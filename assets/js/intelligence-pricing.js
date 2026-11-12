@@ -1,4 +1,4 @@
-/* NovaPharm Intelligence plan comparison. UI-only: no checkout, tracking, storage or paid activation. */
+/* NovaPharm Intelligence GBP plan comparison and protected account entry. No checkout, tracking, storage, or paid activation. */
 (() => {
   "use strict";
   const section = document.getElementById("intelligence-pricing");
@@ -7,6 +7,8 @@
   const cards = Array.from(section.querySelectorAll("[data-npi-plan][data-monthly-gbp][data-annual-gbp]"));
   if (toggles.length !== 2 || cards.length !== 2) return;
   const money = new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 });
+  // A fixed, reviewed origin. Browser inputs cannot choose a Stripe price or payment URL.
+  const secureRegistration = "https://intelligence.novapharmhealthcare.com/auth/customer/register";
 
   const render = (cycle) => {
     if (!["monthly", "annual"].includes(cycle)) return;
@@ -24,6 +26,11 @@
       if (!price || !period || !explanation || !Number.isSafeInteger(monthly) || !Number.isSafeInteger(annual)) continue;
       price.textContent = money.format(cycle === "annual" ? Math.round(annual / 12) : monthly);
       period.textContent = cycle === "annual" ? "/ month equivalent" : "/ month";
+      const plan = card.getAttribute("data-npi-plan");
+      const action = card.querySelector("[data-npi-plan-cta]");
+      if ((plan === "starter" || plan === "professional") && action) {
+        action.href = secureRegistration + "?plan=" + plan + "&cycle=" + cycle;
+      }
       explanation.textContent = cycle === "annual"
         ? "Proposed annual commitment: " + money.format(annual) + "/year, billed annually after signed acceptance."
         : "Proposed monthly price. No payment requested.";
