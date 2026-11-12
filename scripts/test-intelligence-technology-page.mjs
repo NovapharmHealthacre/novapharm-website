@@ -326,3 +326,78 @@ for (const [label, css] of [["native", workspaceEmbeddedCss], ["standalone", wor
   }
   assert.match(css, /\.pill\.good\s*\{\s*color:\s*#145b48\s*;/, label + " must preserve accessible positive-status colour");
 }
+
+// The owner-approved editorial customer journey must be interactive, accessible and
+// reproducible from the canonical source, not a non-responsive raster screenshot.
+const journeyScript = read("assets/js/technology-journey.js");
+for (const [label, html] of [["source", source], ["published", published]]) {
+  const journeySection = html.slice(html.indexOf('class="npi-journey" data-npi-journey'), html.indexOf('class="npi-workspace-disclosure"'));
+  assert.ok(journeySection.includes('id="npi-journey-detail"'), label + ": missing live explanation");
+  assert.equal((journeySection.match(/data-npi-journey-step="\d+"/g) || []).length, 8, label + ": must show eight steps");
+  assert.equal((journeySection.match(/data-npi-journey-marker="\d+"/g) || []).length, 8, label + ": must show eight path markers");
+  assert.ok(journeySection.includes('aria-live="polite"'), label + ": selections must have an accessible announcement");
+  assert.ok(journeySection.includes('data-npi-journey-prev') && journeySection.includes('data-npi-journey-next'), label + ": missing controls");
+  assert.ok(journeySection.includes('href="#intelligence-workspace-directory"'), label + ": working concept link must remain local");
+  assert.ok(html.includes('src="/assets/js/technology-journey.js" defer'), label + ": journey script must be loaded");
+  assert.ok(!journeySection.includes('npi-workspace-grid'), label + ": legacy card grid must be removed");
+}
+assert.match(styles, /\.npi-journey-stages/);
+assert.match(styles, /prefers-reduced-motion/);
+assert.match(styles, /\.npi-journey-step:focus-visible/);
+assert.match(journeyScript, /addEventListener\("click"/);
+assert.match(journeyScript, /ArrowRight/);
+assert.doesNotMatch(journeyScript, /fetch\(|sendBeacon\(|\.submit\(/, "Journey is a presentation layer without outbound data");
+
+class JourneyNode {
+  constructor() {
+    this.dataset = {};
+    this.attrs = {};
+    this.handlers = {};
+    this.textContent = "";
+    this.disabled = false;
+    this.classList = { values: new Set(), toggle: (key, value) => value ? this.classList.values.add(key) : this.classList.values.delete(key) };
+  }
+  setAttribute(key, value) { this.attrs[key] = value; }
+  addEventListener(key, callback) { this.handlers[key] = callback; }
+  focus() { this.focused = true; }
+  scrollIntoView() { this.scrolled = true; }
+  fire(type, event = {}) { this.handlers[type]?.(event); }
+}
+const fakeSteps = Array.from({ length: 8 }, () => new JourneyNode());
+const fakeMarkers = Array.from({ length: 8 }, () => new JourneyNode());
+const fakeEls = {
+  "[data-npi-journey-prev]": new JourneyNode(),
+  "[data-npi-journey-next]": new JourneyNode(),
+  "[data-npi-journey-start]": new JourneyNode(),
+  "[data-npi-journey-title]": new JourneyNode(),
+  "[data-npi-journey-description]": new JourneyNode(),
+  "[data-npi-journey-status]": new JourneyNode(),
+  ".npi-journey-stages": new JourneyNode()
+};
+const fakeRoot = {
+  dataset: {},
+  querySelectorAll(selector) {
+    if (selector === "[data-npi-journey-step]") return fakeSteps;
+    if (selector === "[data-npi-journey-marker]") return fakeMarkers;
+    return [];
+  },
+  querySelector(selector) { return fakeEls[selector] || null; }
+};
+runInNewContext(journeyScript, {
+  document: { querySelector: key => key === "[data-npi-journey]" ? fakeRoot : null },
+  window: { matchMedia: () => ({ matches: false }) }
+});
+assert.equal(fakeEls["[data-npi-journey-title]"].textContent, "Medicine identity");
+assert.equal(fakeEls["[data-npi-journey-prev]"].disabled, true);
+fakeSteps[4].fire("click");
+assert.equal(fakeRoot.dataset.activeStage, "5");
+assert.equal(fakeEls["[data-npi-journey-title]"].textContent, "Supply, pricing & tenders");
+assert.equal(fakeSteps[4].attrs["aria-pressed"], "true");
+assert.equal(fakeSteps[0].attrs["aria-pressed"], "false");
+fakeSteps[4].fire("keydown", { key: "ArrowRight", preventDefault() {} });
+assert.equal(fakeRoot.dataset.activeStage, "6");
+fakeSteps[7].fire("click");
+assert.equal(fakeEls["[data-npi-journey-next]"].disabled, true);
+fakeEls["[data-npi-journey-start]"].fire("click");
+assert.equal(fakeRoot.dataset.activeStage, "1");
+assert.equal(fakeSteps[0].focused, true);

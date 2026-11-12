@@ -1299,3 +1299,322 @@ body[data-page="technology"] .np-intelligence {
 
 /* Hide the unselected, static plan link even when button display rules apply. */
 #intelligence-pricing .npi-plan-cta[hidden] { display: none !important; }
+
+/* Owner-approved 2026 workspace journey: immersive editorial photograph, no card UI. */
+.np-intelligence .npi-journey {
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+  width: 100vw;
+  max-width: 100vw;
+  min-height: 795px;
+  margin-left: calc(50% - 50vw);
+  color: #1d1d1f;
+  background: #f8f9fb;
+  overflow: hidden;
+}
+.np-intelligence .npi-journey-scene {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(90deg, #fafafa 0%, rgba(250,250,251,.95) 23%, rgba(250,250,251,.70) 49%, rgba(250,250,251,.18) 100%),
+    linear-gradient(0deg, #f8f9fb 5%, rgba(248,249,251,.91) 29%, rgba(248,249,251,.32) 66%, rgba(248,249,251,.06) 100%),
+    url("/assets/media/modules/technology-traceability.jpg");
+  background-size: cover, cover, cover;
+  background-position: center, center, center 40%;
+  filter: saturate(.75);
+}
+.np-intelligence .npi-journey-inner {
+  position: relative;
+  width: min(1460px, calc(100% - clamp(40px, 9vw, 152px)));
+  margin-inline: auto;
+  padding: clamp(76px, 7vw, 110px) 0 56px;
+}
+.np-intelligence .npi-journey-heading {
+  max-width: 810px;
+}
+.np-intelligence .npi-journey-eyebrow {
+  margin: 0 0 20px;
+  font-size: .83rem;
+  line-height: 1.4;
+  font-weight: 650;
+  letter-spacing: .09em;
+  color: #63646c;
+}
+.np-intelligence .npi-journey-heading h2 {
+  margin: 0;
+  color: #161617;
+  font-weight: 680;
+  letter-spacing: -.052em;
+  line-height: 1.06;
+  font-size: clamp(3rem, 5.55vw, 5.5rem);
+}
+.np-intelligence .npi-journey-heading > p:last-child {
+  margin: 22px 0 0;
+  max-width: 655px;
+  color: #5e6069;
+  font-size: clamp(1.04rem, 1.45vw, 1.32rem);
+  font-weight: 400;
+  line-height: 1.48;
+  letter-spacing: -.012em;
+}
+.np-intelligence .npi-journey-stages {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: clamp(9px, 1.2vw, 23px);
+  min-height: 310px;
+  align-items: end;
+  padding: 0 0 14px;
+  margin-top: 38px;
+}
+.np-intelligence .npi-journey-step {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  min-height: 140px;
+  padding: 10px 5px 7px;
+  margin: 0;
+  color: #232428;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  box-shadow: none;
+  text-align: left;
+  cursor: pointer;
+  transform: translateY(calc(var(--step) * -16px));
+  transition: opacity .22s ease, color .22s ease, transform .22s ease;
+}
+.np-intelligence .npi-journey-number {
+  display: block;
+  color: #676972;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.25;
+  transition: color .22s ease;
+}
+.np-intelligence .npi-journey-name {
+  display: block;
+  margin-top: 9px;
+  max-width: 190px;
+  font-size: clamp(1rem, 1.22vw, 1.27rem);
+  font-weight: 680;
+  line-height: 1.2;
+  letter-spacing: -.025em;
+}
+.np-intelligence .npi-journey-teaser {
+  display: block;
+  max-width: 205px;
+  margin-top: 12px;
+  color: #64666f;
+  font-size: clamp(.78rem, .87vw, .92rem);
+  line-height: 1.42;
+  font-weight: 400;
+}
+.np-intelligence .npi-journey-step:hover,
+.np-intelligence .npi-journey-step:focus-visible {
+  color: #005ac2;
+}
+.np-intelligence .npi-journey-step.is-active .npi-journey-number,
+.np-intelligence .npi-journey-step.is-active .npi-journey-name {
+  color: #0066cc;
+}
+.np-intelligence .npi-journey-step:focus-visible,
+.np-intelligence .npi-journey-controls button:focus-visible,
+.np-intelligence .npi-journey-see:focus-visible,
+.np-intelligence .npi-journey-explore:focus-visible {
+  outline: 3px solid #0066cc;
+  outline-offset: 3px;
+}
+.np-intelligence .npi-journey-line {
+  position: relative;
+  height: clamp(55px, 8vw, 112px);
+  margin-top: -12px;
+  pointer-events: none;
+}
+.np-intelligence .npi-journey-rail {
+  position: absolute;
+  left: 4%;
+  bottom: 12%;
+  width: 92%;
+  height: 1.3px;
+  background: rgba(95,103,118,.5);
+  transform-origin: left center;
+  transform: rotate(-2.65deg);
+}
+.np-intelligence .npi-journey-marker {
+  position: absolute;
+  left: calc(4% + var(--marker-index) * 13.142857%);
+  bottom: calc(12% + var(--marker-index) * 8%);
+  width: 11px;
+  height: 11px;
+  border: 2px solid #b4b9c3;
+  border-radius: 50%;
+  background: #fff;
+  transform: translate(-50%, 50%);
+  transition: background-color .2s ease, border-color .2s ease;
+}
+.np-intelligence .npi-journey-marker.is-active {
+  width: 14px;
+  height: 14px;
+  background: #0066cc;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px rgba(0,102,204,.2), 0 0 16px rgba(0,102,204,.28);
+}
+.np-intelligence .npi-journey-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 38px;
+  padding-top: 30px;
+  border-top: 1px solid rgba(140,145,154,.22);
+}
+.np-intelligence .npi-journey-detail {
+  width: min(660px, 100%);
+  min-height: 100px;
+}
+.np-intelligence .npi-journey-status {
+  margin: 0 0 9px;
+  color: #70747d;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .11em;
+}
+.np-intelligence .npi-journey-status span { margin-left: 11px; color: #0066cc; }
+.np-intelligence .npi-journey-detail h3 {
+  margin: 0 0 7px;
+  color: #1d1d1f;
+  font-size: clamp(1.38rem, 2vw, 1.9rem);
+  font-weight: 680;
+  line-height: 1.14;
+  letter-spacing: -.028em;
+}
+.np-intelligence .npi-journey-detail > p:last-child {
+  margin: 0;
+  max-width: 620px;
+  color: #65676e;
+  font-size: .97rem;
+  line-height: 1.52;
+}
+.np-intelligence .npi-journey-controls {
+  display: flex;
+  align-items: center;
+  gap: 27px;
+  flex: 0 0 auto;
+  padding-bottom: 5px;
+}
+.np-intelligence .npi-journey-navigation {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.np-intelligence .npi-journey-navigation button {
+  border: 1px solid #d0d3d9;
+  background: rgba(255,255,255,.55);
+  border-radius: 999px;
+  padding: 9px 15px;
+  min-height: 42px;
+  color: #202124;
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.np-intelligence .npi-journey-navigation button:disabled {
+  cursor: not-allowed;
+  opacity: .37;
+}
+.np-intelligence .npi-journey-see {
+  color: #0066cc;
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: .95rem;
+  font-weight: 600;
+}
+.np-intelligence .npi-journey-see:hover { text-decoration: underline; }
+.np-intelligence .npi-journey-explore {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 34px;
+  min-height: 45px;
+  padding: 10px 21px;
+  color: #fff;
+  background: #1d1d1f;
+  border: none;
+  border-radius: 999px;
+  font-size: .95rem;
+  line-height: 1.3;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color .2s ease, transform .2s ease;
+}
+.np-intelligence .npi-journey-explore:hover { background: #353538; transform: translateY(-1px); }
+.np-intelligence .npi-workspace-disclosure {
+  margin-top: 22px;
+}
+@media (max-width: 1100px) {
+  .np-intelligence .npi-journey-inner { width: calc(100% - 72px); }
+  .np-intelligence .npi-journey-stages { gap: 10px; }
+  .np-intelligence .npi-journey-step { transform: translateY(calc(var(--step) * -12px)); }
+  .np-intelligence .npi-journey-name { font-size: .99rem; }
+  .np-intelligence .npi-journey-teaser { font-size: .79rem; }
+}
+@media (max-width: 900px) {
+  .np-intelligence .npi-journey { min-height: unset; }
+  .np-intelligence .npi-journey-inner { width: calc(100% - 44px); padding: 60px 0 48px; }
+  .np-intelligence .npi-journey-scene {
+    background-image:
+      linear-gradient(90deg, rgba(250,250,251,.90), rgba(250,250,251,.68)),
+      linear-gradient(0deg, #f8f9fb 14%, rgba(248,249,251,.72) 72%, rgba(248,249,251,.5)),
+      url("/assets/media/modules/technology-traceability.jpg");
+  }
+  .np-intelligence .npi-journey-stages {
+    display: flex;
+    align-items: stretch;
+    gap: 13px;
+    min-height: 0;
+    margin-top: 40px;
+    padding: 4px 0 15px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+  }
+  .np-intelligence .npi-journey-step {
+    flex: 0 0 172px;
+    min-height: 164px;
+    padding: 12px;
+    transform: none;
+    background: rgba(255,255,255,.56);
+    border: 1px solid rgba(192,197,207,.52);
+    border-radius: 11px;
+    scroll-snap-align: center;
+  }
+  .np-intelligence .npi-journey-step.is-active {
+    border-color: #0066cc;
+    background: rgba(255,255,255,.90);
+  }
+  .np-intelligence .npi-journey-name { font-size: 1.07rem; }
+  .np-intelligence .npi-journey-teaser { font-size: .84rem; }
+  .np-intelligence .npi-journey-line { display: none; }
+  .np-intelligence .npi-journey-bottom { padding-top: 20px; flex-wrap: wrap; }
+}
+@media (max-width: 600px) {
+  .np-intelligence .npi-journey-inner { width: calc(100% - 36px); padding-top: 53px; padding-bottom: 42px; }
+  .np-intelligence .npi-journey-heading h2 { font-size: clamp(2.5rem, 11vw, 3.9rem); }
+  .np-intelligence .npi-journey-heading > p:last-child { font-size: 1.02rem; }
+  .np-intelligence .npi-journey-stages { margin-top: 32px; }
+  .np-intelligence .npi-journey-bottom { gap: 25px; }
+  .np-intelligence .npi-journey-controls { width: 100%; flex-wrap: wrap; justify-content: space-between; gap: 14px; }
+  .np-intelligence .npi-journey-detail { min-height: 133px; }
+  .np-intelligence .npi-journey-explore { margin-top: 27px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .np-intelligence .npi-journey-step,
+  .np-intelligence .npi-journey-explore,
+  .np-intelligence .npi-journey-marker { transition: none; }
+  .np-intelligence .npi-journey-explore:hover { transform: none; }
+}

@@ -291,21 +291,85 @@
 
   <section id="intelligence-workspaces" class="npi-section npi-workspaces" aria-labelledby="npi-workspaces-title">
     <div class="npi-wrap">
-      <div class="npi-section-heading">
-        <p class="npi-kicker">THE WORKSPACES</p>
-        <h2 id="npi-workspaces-title">From the molecule<br>to the market.</h2>
-        <p>Specialised perspectives organised around a shared medicine identity, with each capability released only when its underlying data and controls are ready.</p>
+      <div class="npi-journey" data-npi-journey data-active-stage="1">
+        <div class="npi-journey-scene" aria-hidden="true"></div>
+        <div class="npi-journey-inner">
+          <div class="npi-journey-heading">
+            <p class="npi-journey-eyebrow">THE WORKSPACES</p>
+            <h2 id="npi-workspaces-title">From the molecule<br>to the market.</h2>
+            <p>One connected journey, from a medicine's identity and evidence to market understanding and accountable decisions.</p>
+          </div>
+          <div class="npi-journey-stages" role="group" aria-label="Explore the eight intelligence workspaces">
+          <button class="npi-journey-step is-active" type="button" data-npi-journey-step="0" aria-label="Step 1 of 8: Medicine identity" aria-pressed="true" aria-controls="npi-journey-detail" style="--step:0">
+            <span class="npi-journey-number">01</span>
+            <span class="npi-journey-name">Medicine identity</span>
+            <span class="npi-journey-teaser">Know exactly which medicine you're studying.</span>
+          </button>
+          <button class="npi-journey-step" type="button" data-npi-journey-step="1" aria-label="Step 2 of 8: Evidence &amp; regulation" aria-pressed="false" aria-controls="npi-journey-detail" style="--step:1">
+            <span class="npi-journey-number">02</span>
+            <span class="npi-journey-name">Evidence &amp; regulation</span>
+            <span class="npi-journey-teaser">Bring the evidence into view.</span>
+          </button>
+          <button class="npi-journey-step" type="button" data-npi-journey-step="2" aria-label="Step 3 of 8: Market &amp; geography" aria-pressed="false" aria-controls="npi-journey-detail" style="--step:2">
+            <span class="npi-journey-number">03</span>
+            <span class="npi-journey-name">Market &amp; geography</span>
+            <span class="npi-journey-teaser">See where the opportunities are.</span>
+          </button>
+          <button class="npi-journey-step" type="button" data-npi-journey-step="3" aria-label="Step 4 of 8: Forecasts &amp; signals" aria-pressed="false" aria-controls="npi-journey-detail" style="--step:3">
+            <span class="npi-journey-number">04</span>
+            <span class="npi-journey-name">Forecasts &amp; signals</span>
+            <span class="npi-journey-teaser">Understand what may come next.</span>
+          </button>
+          <button class="npi-journey-step" type="button" data-npi-journey-step="4" aria-label="Step 5 of 8: Supply, pricing &amp; tenders" aria-pressed="false" aria-controls="npi-journey-detail" style="--step:4">
+            <span class="npi-journey-number">05</span>
+            <span class="npi-journey-name">Supply, pricing &amp; tenders</span>
+            <span class="npi-journey-teaser">Connect demand to supply.</span>
+          </button>
+          <button class="npi-journey-step" type="button" data-npi-journey-step="5" aria-label="Step 6 of 8: Biotech &amp; capital" aria-pressed="false" aria-controls="npi-journey-detail" style="--step:5">
+            <span class="npi-journey-number">06</span>
+            <span class="npi-journey-name">Biotech &amp; capital</span>
+            <span class="npi-journey-teaser">Discover what's developing.</span>
+          </button>
+          <button class="npi-journey-step" type="button" data-npi-journey-step="6" aria-label="Step 7 of 8: Portfolio &amp; decisions" aria-pressed="false" aria-controls="npi-journey-detail" style="--step:6">
+            <span class="npi-journey-number">07</span>
+            <span class="npi-journey-name">Portfolio &amp; decisions</span>
+            <span class="npi-journey-teaser">Turn insight into a decision.</span>
+          </button>
+          <button class="npi-journey-step" type="button" data-npi-journey-step="7" aria-label="Step 8 of 8: Reports &amp; integrations" aria-pressed="false" aria-controls="npi-journey-detail" style="--step:7">
+            <span class="npi-journey-number">08</span>
+            <span class="npi-journey-name">Reports &amp; integrations</span>
+            <span class="npi-journey-teaser">Take the intelligence with you.</span>
+          </button>
+          </div>
+          <div class="npi-journey-line" aria-hidden="true">
+            <span class="npi-journey-rail"></span>
+            <span data-npi-journey-marker="0" class="npi-journey-marker is-active" style="--marker-index:0"></span>
+            <span data-npi-journey-marker="1" class="npi-journey-marker" style="--marker-index:1"></span>
+            <span data-npi-journey-marker="2" class="npi-journey-marker" style="--marker-index:2"></span>
+            <span data-npi-journey-marker="3" class="npi-journey-marker" style="--marker-index:3"></span>
+            <span data-npi-journey-marker="4" class="npi-journey-marker" style="--marker-index:4"></span>
+            <span data-npi-journey-marker="5" class="npi-journey-marker" style="--marker-index:5"></span>
+            <span data-npi-journey-marker="6" class="npi-journey-marker" style="--marker-index:6"></span>
+            <span data-npi-journey-marker="7" class="npi-journey-marker" style="--marker-index:7"></span>
+          </div>
+          <div class="npi-journey-bottom">
+            <div id="npi-journey-detail" class="npi-journey-detail" aria-live="polite" aria-atomic="true">
+              <p class="npi-journey-status">SELECTED WORKSPACE <span data-npi-journey-status>01 / 08</span></p>
+              <h3 data-npi-journey-title>Medicine identity</h3>
+              <p data-npi-journey-description>Unify medicine identities, aliases and regulatory codes, with unresolved matches clearly flagged.</p>
+            </div>
+            <div class="npi-journey-controls">
+              <div class="npi-journey-navigation" aria-label="Journey navigation">
+                <button type="button" data-npi-journey-prev aria-label="Previous workspace" disabled>Previous</button>
+                <button type="button" data-npi-journey-next aria-label="Next workspace">Next</button>
+              </div>
+              <a class="npi-journey-see" href="#intelligence-workspace-directory">See it in action</a>
+            </div>
+          </div>
+          <button type="button" class="npi-journey-explore" data-npi-journey-start>Explore the journey</button>
+        </div>
       </div>
-      <div class="npi-workspace-grid">
-        <article><span>01</span><h3>Medicine identity</h3><p>Unify VTM, VMP, AMP, BNF, ATC, SNOMED CT and regulatory identifiers. Make ambiguous or unmatched records explicit.</p></article>
-        <article><span>02</span><h3>Evidence &amp; regulation</h3><p>Trace licences, evidence, scientific literature, regulatory developments, source dates and jurisdiction-specific interpretation.</p></article>
-        <article><span>03</span><h3>Market &amp; geography</h3><p>Examine observed demand, geographical variation, market structure and commercial context without confusing estimates with recorded facts.</p></article>
-        <article><span>04</span><h3>Forecasts &amp; signals</h3><p>Build explainable forecasts with accepted history, assumptions, backtests, intervals and monitored changes. No unsupported AI score.</p></article>
-        <article><span>05</span><h3>Supply, pricing &amp; tenders</h3><p>Connect sourcing intelligence, procurement notices, reimbursement, pricing and supply developments, with source-specific access rules.</p></article>
-        <article><span>06</span><h3>Biotech &amp; capital</h3><p>Investigate assets, clinical programmes, company developments and capital signals as a distinct research layer.</p></article>
-        <article><span>07</span><h3>Portfolio &amp; decisions</h3><p>Bring together opportunities, commercial assumptions, alternatives, watchlists and accountable decision records.</p></article>
-        <article><span>08</span><h3>Reports &amp; integrations</h3><p>Make governed outputs reusable through reports and future partner integrations, with permissions and traceability preserved.</p></article>
-      </div>
+      <script src="/assets/js/technology-journey.js" defer></script>
       <p class="npi-workspace-disclosure">These are intended product workspaces, not a statement that each module or dataset is commercially operational today.</p>
 
       <div class="npi-workspace-directory" id="intelligence-workspace-directory" aria-labelledby="npi-directory-title">

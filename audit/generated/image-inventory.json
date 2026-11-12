@@ -10,12 +10,12 @@
     "Null semantic or provenance fields are explicit gaps, not inferred approvals."
   ],
   "summary": {
-    "trackedAssetCount": 878,
+    "trackedAssetCount": 877,
     "byClassification": {
-      "KEEP": 878
+      "KEEP": 877
     },
     "byProvenanceStatus": {
-      "registered": 668,
+      "registered": 667,
       "registered-identical-delivery-copy": 12,
       "repository-generated-test-evidence": 198
     },
@@ -14028,11 +14028,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 5,
-      "referenceCount": 10,
+      "usageCount": 6,
+      "referenceCount": 12,
       "usageFiles": [
         "apps/corporate/components/page-renderer.tsx",
         "apps/corporate/data/pages.ts",
+        "assets/css/technology-intelligence.css",
         "creative-assets/module-media-asset-register.json",
         "seo/generated/social-image-register.json",
         "technology/index.html"
@@ -14426,48 +14427,6 @@
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
-      "path": "assets/media/portal/npi-human-portrait-approved.webp",
-      "canonicalDeliveryPath": "assets/media/portal/npi-human-portrait-approved.webp",
-      "format": "webp",
-      "bytes": 86844,
-      "width": 1050,
-      "height": 499,
-      "aspectRatio": 2.104208,
-      "sha256": "7f895e0b7c4ef21314b2555d972e4147cf675b98cc5b6272c708b6726e0b0950",
-      "perceptualHash": "4dcfd3d3f3e34f46",
-      "classification": "KEEP",
-      "provenanceStatus": "registered",
-      "source": "Owner-approved NovaPharm Intelligence sign-in mockup generated in ChatGPT on 12 November 2026; exact photographic lower-left crop extracted without overlaid form, branding or copy.",
-      "licence": "Original owner-directed NovaPharm visual creative for its public Intelligence sign-in page. No third-party stock or competitor assets.",
-      "reviewStatus": "Approved visual reference supplied 12 November 2026; preserve exact composition",
-      "technicalStatus": "checksum-verified original full-size design crop; SHA-256 7f895e0b7c4ef21314b2555d972e4147cf675b98cc5b6272c708b6726e0b0950; un-cropped image fit",
-      "provenanceRecord": null,
-      "semanticPurpose": "owner-approved-original-editorial-portal-photograph",
-      "routes": [
-        "intelligence.novapharmhealthcare.com/ secure portal"
-      ],
-      "focalPoint": null,
-      "registeredAltText": "",
-      "registeredCaption": "Decorative illustrative mother-and-daughter photograph. Not clinical or medicines-market evidence.",
-      "observedAltText": [],
-      "observedCaptions": [],
-      "responsiveDerivatives": [],
-      "observedLoading": [],
-      "observedFetchPriority": [],
-      "lcpRelevance": false,
-      "usageCount": 4,
-      "referenceCount": 5,
-      "usageFiles": [
-        "apps/portal/components/intelligence-sign-in.module.css",
-        "apps/portal/scripts/sync-public-assets.mjs",
-        "apps/portal/test/intelligence-human-entry.test.ts",
-        "creative-assets/asset-register.json"
-      ],
-      "exactDuplicateGroup": null,
-      "perceptualDuplicateCandidateGroup": null,
-      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
-    },
-    {
       "path": "assets/media/portal/npi-human-portrait-hd.avif",
       "canonicalDeliveryPath": "assets/media/portal/npi-human-portrait-hd.avif",
       "format": "heif",
@@ -14497,10 +14456,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 4,
+      "referenceCount": 4,
       "usageFiles": [
+        "apps/portal/components/intelligence-sign-in.module.css",
         "apps/portal/scripts/sync-public-assets.mjs",
+        "apps/portal/test/intelligence-human-entry.test.ts",
         "creative-assets/asset-register.json"
       ],
       "exactDuplicateGroup": null,
