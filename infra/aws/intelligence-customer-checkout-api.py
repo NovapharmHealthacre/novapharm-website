@@ -201,10 +201,12 @@ def accepted_records(db, sub, plan, cycle):
             "governance": governance, "release": release}
 
 def condition(pk, sk, expr, values):
-    return {"ConditionCheck": {"TableName": ACCESS_TABLE, "Key": key(pk, sk),
-        "ConditionExpression": expr,
-        "ExpressionAttributeNames": {"#status": "status"},
-        "ExpressionAttributeValues": values}}
+    check = {"TableName": ACCESS_TABLE, "Key": key(pk, sk),
+             "ConditionExpression": expr,
+             "ExpressionAttributeValues": values}
+    if "#status" in expr:
+        check["ExpressionAttributeNames"] = {"#status": "status"}
+    return {"ConditionCheck": check}
 
 def reserve(db, accepted, now):
     tenant_id, sub = accepted["tenantId"], accepted["sub"]
