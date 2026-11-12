@@ -69,6 +69,7 @@ for (const file of files) {
     "assets/css/global-distribution-editorial.css",
     "assets/css/homepage-editorial.css",
     "assets/css/intelligence-workspace-embedded.css",
+    "assets/css/intelligence-workspace-product.css",
     "assets/css/markets-editorial.css",
     "assets/css/novapharm.bundle.css",
     "assets/css/oncology-editorial.css",
