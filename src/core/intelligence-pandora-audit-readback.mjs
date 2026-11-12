@@ -116,6 +116,19 @@ export async function readPandoraDecisionHistory({
          !shaPattern.test(current.evidence_snapshot_sha256??""))
         throw deny("history_case_unavailable");
 
+      // Same-tenant membership is not enough for private case history.
+      // An analyst sees only their own case; independent reviewers see only
+      // cases they actually reviewed; owner may inspect cases awaiting their
+      // final action. Security admins may inspect for compliance and revocation.
+      const allowed=authority.role==="security_admin" ||
+        (authority.role==="analyst" && current.proposer_id===actor.subjectId) ||
+        (authority.role==="independent_reviewer" && current.reviewer_id===actor.subjectId) ||
+        (authority.role==="independent_approver" &&
+          actor.subjectId===environment.PANDORA_FINAL_APPROVER_SUBJECT_ID &&
+          (current.approver_id===actor.subjectId ||
+           ["approval_pending","under_review"].includes(current.status)));
+      if(!allowed)throw deny("history_case_access_denied");
+
       const cursor=events.find({
         tenant_id:request.tenantId,case_id:request.caseId
       },{session});
