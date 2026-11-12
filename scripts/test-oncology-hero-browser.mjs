@@ -70,6 +70,7 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
             portraitHeight:rect(image)?.height||0,
             layerWidth:rect(imageLayer)?.width||0,
             fade:[mask?.maskImage,mask?.webkitMaskImage].some(value=>typeof value==="string"&&value.includes("gradient")),
+            focusHeadingLines: (() => { const h=document.querySelector(".npoc-focus-copy h2"); return h ? Math.round(rect(h).height/parseFloat(getComputedStyle(h).lineHeight)) : 0; })(),
             cards:cards.map(card=>({
               x:rect(card)?.x||0,y:rect(card)?.y||0,
               width:rect(card)?.width||0,height:rect(card)?.height||0,
@@ -104,6 +105,7 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
           assert.ok(layout.heroHeight>=500 && layout.heroHeight<=635,`${label}: hero is not an editorial banner`);
           assert.ok(layout.cards.every(card=>card.width>=.18*layout.viewportWidth),`${label}: portfolio cards are too narrow`);
           assert.ok(layout.cards.every(card=>card.height<=325),`${label}: portfolio cards are too tall`);
+          assert.equal(layout.focusHeadingLines,2,`${label}: Selected Therapies / Real Impact must fit two editorial lines`);
           assert.ok(layout.cards[0].x<.37*layout.viewportWidth,`${label}: portfolio row has excess left whitespace`);
         }
         const destination=path.join(artifactDir,engine,viewport.name);
