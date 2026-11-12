@@ -6,6 +6,8 @@ import { NextRequest } from "next/server";
 import { createCustomerLoginTransaction, intelligenceCustomerOidc, verifyCustomerLoginTransaction } from "../../../src/core/intelligence-customer-oidc.mjs";
 import { GET as finishCustomerIdentity } from "../app/auth/callback/route";
 import { GET as startCustomerIdentity } from "../app/auth/customer/start/route";
+import { GET as openMfaSetup, POST as verifyMfaSetup } from "../app/auth/mfa/setup/route";
+import { createFounderMfaCookie, verifyFounderMfaCookie } from "../../../src/core/intelligence-founder-totp-enrolment.mjs";
 
 const key = "internal-test-customer-oidc-signing-key-not-for-production-use-123456";
 const source = (path: string) => readFileSync(new URL("../" + path, import.meta.url), "utf8");
@@ -71,6 +73,84 @@ test("callback refuses unsolicited or forged OAuth codes and clears transient co
   } finally {
     if (previous === undefined) delete process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
     else process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = previous;
+  }
+});
+
+test("MFA registration route rejects anonymous and cross-origin requests", async () => {
+  const invalid = new NextRequest("https://intelligence.novapharmhealthcare.com/auth/mfa/setup");
+  const page = await openMfaSetup(invalid);
+  assert.equal(page.status, 403);
+  assert.doesNotMatch(await page.text(), /Setup key/);
+  assert.equal(page.headers.get("cache-control"), "no-store, max-age=0");
+  const evil = new NextRequest("https://intelligence.novapharmhealthcare.com/auth/mfa/setup", {
+    method: "POST",
+    headers: { origin:"https://evil.invalid", "content-type":"application/x-www-form-urlencoded" },
+    body: "csrf=abc&code=123456",
+  });
+  const rejected = await verifyMfaSetup(evil);
+  assert.equal(rejected.status, 403);
+  assert.doesNotMatch(await rejected.text(), /Authenticator activated/);
+});
+
+test("signed founder-only bootstrap shows self-service TOTP key and verifies Cognito, with no customer cookie", async () => {
+  const old = process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
+  const priorFetch = globalThis.fetch;
+  process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = key;
+  const subject = "12345678-1234-4123-8123-123456789abc";
+  const accessToken = "a".repeat(220);
+  const sealed = createFounderMfaCookie({ accessToken, subject, signingKey:key });
+  const unsealed = verifyFounderMfaCookie({ cookieValue: sealed.cookieValue, signingKey:key });
+  const calls:string[] = [];
+  globalThis.fetch = (async (_url: URL | RequestInfo, init?:RequestInit) => {
+    assert.equal(String(_url), "https://cognito-idp.eu-north-1.amazonaws.com/");
+    const command = new Headers(init?.headers).get("X-Amz-Target")?.split(".").at(-1) ?? "";
+    const data = JSON.parse(String(init?.body));
+    assert.equal(data.AccessToken, accessToken);
+    calls.push(command);
+    const result = command === "GetUser"
+      ? { UserAttributes:[
+          {Name:"sub",Value:subject},
+          {Name:"email",Value:"vishal@novapharmhealthcare.com"},
+          {Name:"email_verified",Value:"true"}],
+          UserMFASettingList:[] }
+      : command === "AssociateSoftwareToken"
+        ? {SecretCode:"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"}
+        : command === "VerifySoftwareToken"
+          ? {Status:"SUCCESS"}
+          : {};
+    return new Response(JSON.stringify(result),{status:200});
+  }) as typeof fetch;
+  try {
+    const req = new NextRequest("https://intelligence.novapharmhealthcare.com/auth/mfa/setup",{
+      headers:{cookie:`__Host-npi_mfa_enrol=${sealed.cookieValue}`},
+    });
+    const page = await openMfaSetup(req);
+    assert.equal(page.status,200);
+    const html = await page.text();
+    assert.match(html,/ABCDEFGHIJKLMNOPQRSTUVWXYZ234567/);
+    assert.match(html,/Verify and activate MFA/);
+    assert.doesNotMatch(html,/__Host-npi_session|access_token|refresh_token/);
+    assert.doesNotMatch(html,new RegExp(accessToken));
+    assert.deepEqual(calls,["GetUser","AssociateSoftwareToken"]);
+    const form = new URLSearchParams({csrf:unsealed.csrf,code:"123456"});
+    const verifyReq = new NextRequest("https://intelligence.novapharmhealthcare.com/auth/mfa/setup",{
+      method:"POST",
+      headers:{
+        cookie:`__Host-npi_mfa_enrol=${sealed.cookieValue}`,
+        origin:"https://intelligence.novapharmhealthcare.com",
+        "content-type":"application/x-www-form-urlencoded",
+      },body:form.toString(),
+    });
+    const confirmed = await verifyMfaSetup(verifyReq);
+    assert.equal(confirmed.status,200);
+    assert.match(await confirmed.text(),/Authenticator activated/);
+    assert.match(confirmed.headers.get("set-cookie") ?? "",/__Host-npi_mfa_enrol=/);
+    assert.doesNotMatch(confirmed.headers.get("set-cookie") ?? "",/__Host-npi_session=/);
+    assert.deepEqual(calls,["GetUser","AssociateSoftwareToken","VerifySoftwareToken","SetUserMFAPreference"]);
+  } finally {
+    globalThis.fetch=priorFetch;
+    if(old===undefined)delete process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
+    else process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"]=old;
   }
 });
 
