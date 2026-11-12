@@ -190,20 +190,25 @@ export async function verifyIntelligenceCustomerIdToken({
       !Number.isSafeInteger(nowSeconds)) throw blocked("identity_claims_invalid");
   if (claims.email_verified !== true) throw blocked("identity_email_unverified");
   if (purpose === "mfa_enrolment") {
-    // Restricted first-login bootstrap only. This is NOT verified MFA,
-    // identity acceptance, a tenant session or a route to paid data.
-    // The signed token must prove the founder's Cognito password ceremony.
+    // This is a narrow first-time authenticator REGISTRATION only, never
+    // normal identity, MFA verification, a customer session, or data access.
+    // Amazon Cognito's ACR/AMR token-claim feature is rolling out gradually.
+    // Requiring 'pwd' in optional AMR blocks users who successfully signed
+    // in but whose pool does not emit a password-method claim. The actual
+    // founder principal and access token are independently checked by
+    // Cognito GetUser before issuing an enrolment-only 10-minute cookie.
+    // User must still register and VERIFY a TOTP before new sign-in.
     if (claims.email !== "vishal@novapharmhealthcare.com")
       throw blocked("mfa_enrolment_founder_email_mismatch");
-    // ACR is a report of the user's achieved factors. Requiring strictly
-    // level 1 incorrectly rejects valid recent PASSWORD sign-ins that
-    // Cognito classifies at a higher level (e.g. pwd + email OTP is LOA3).
-    // The actual signed password AMR, subject, issuer, audience, nonce and
-    // verified founder email remain mandatory; no application login granted.
-    if (!Array.isArray(claims.amr) || !claims.amr.includes("pwd"))
-      throw blocked("mfa_enrolment_password_proof_missing");
+    if (claims.amr !== undefined && (
+        !Array.isArray(claims.amr) || claims.amr.length > 10 ||
+        claims.amr.some(method =>
+          typeof method !== "string" ||
+          !["pwd", "otp", "mfa", "email_otp", "sms", "swk", "hwk"].includes(method))))
+      throw blocked("mfa_enrolment_method_unrecognised");
     if (claims.acr !== undefined &&
-        !["urn:cognito:loa:1", "urn:cognito:loa:3", "urn:cognito:loa:4"].includes(claims.acr))
+        !["urn:cognito:loa:1", "urn:cognito:loa:2",
+          "urn:cognito:loa:3", "urn:cognito:loa:4"].includes(claims.acr))
       throw blocked("mfa_enrolment_acr_incompatible");
     if (!Number.isSafeInteger(claims.auth_time) ||
         claims.auth_time > nowSeconds + 60 ||
