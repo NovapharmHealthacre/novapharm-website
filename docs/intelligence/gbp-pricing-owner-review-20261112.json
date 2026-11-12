@@ -1,15 +1,17 @@
 {
   "schemaVersion": 1,
-  "status": "OWNER_REVIEW_ONLY",
+  "status": "OWNER_PRICING_APPROVED_RELEASE_GATED",
   "ownerDecisionDate": "2026-11-12",
   "launchCurrency": "gbp",
   "stripeAccountId": "acct_1UZUNv2U9Y3sX5I2",
-  "ownerApproved": false,
-  "gbpStripePricesCreated": false,
-  "gbpPriceIdsApproved": false,
+  "ownerApproved": true,
+  "gbpStripePricesCreated": true,
+  "gbpPriceIdsApproved": true,
   "customerBillingEnabled": false,
   "customerAccessEnabled": false,
-  "approvedSaleCountries": [],
+  "approvedSaleCountries": [
+    "GB"
+  ],
   "proposedSaleCountries": [
     "GB"
   ],
@@ -27,31 +29,32 @@
       "monthly": {
         "amountMinor": 19900,
         "interval": "month",
-        "priceId": null
+        "priceId": "price_1Uati52U9Y3sX5I2RJuYixR9"
       },
       "annual": {
         "amountMinor": 203000,
         "interval": "year",
-        "priceId": null
+        "priceId": "price_1UatiF2U9Y3sX5I2mv1a22VN"
       }
     },
     "professional": {
       "monthly": {
         "amountMinor": 69900,
         "interval": "month",
-        "priceId": null
+        "priceId": "price_1UatiH2U9Y3sX5I2Pyqz3SpW"
       },
       "annual": {
         "amountMinor": 713000,
         "interval": "year",
-        "priceId": null
+        "priceId": "price_1UatiJ2U9Y3sX5I2CfJFkUnC"
       }
     },
     "enterprise": {
       "indicativeMonthlyMinor": 279900,
       "contractRequired": true,
-      "approvedPriceId": null,
+      "approvedPriceId": "price_1UatiL2U9Y3sX5I2gktsrNl5",
       "annual": null
     }
-  }
+  },
+  "verifiedPriceStatus": "inactive"
 }
