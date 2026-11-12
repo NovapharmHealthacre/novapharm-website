@@ -37,12 +37,20 @@ export async function verifyByteStream({chunks,expectedSha256,expectedBytes,maxB
  if(!SHA.test(expectedSha256??"")||!Number.isSafeInteger(expectedBytes)||expectedBytes<=0||
     expectedBytes>maxBytes)reject("invalid_expected_hash_or_size");
  const h=createHash("sha256");
- let bytes=0,lines=0,last=null,header=Buffer.alloc(0),headerDone=false;
+ let bytes=0,lines=0,logicalLineEndings=0,insideQuotes=false,last=null,header=Buffer.alloc(0),headerDone=false;
  for await(const val of chunks){
   const b=Buffer.from(val);
   bytes+=b.length;
   if(bytes>maxBytes||bytes>expectedBytes)reject("oversize_response");
-  h.update(b);for(let p=0;(p=b.indexOf(10,p))!==-1;p++)lines++;
+  h.update(b);
+  // Count CSV logical records across chunk boundaries; doubled quotes toggle
+  // twice, quoted newlines remain inside the current CSV field.
+  for(let p=0;p<b.length;){
+   const q=b.indexOf(34,p),nl=b.indexOf(10,p);
+   if(q<0&&nl<0)break;
+   if(q>=0&&(nl<0||q<nl)){insideQuotes=!insideQuotes;p=q+1;}
+   else{lines++;if(!insideQuotes)logicalLineEndings++;p=nl+1;}
+  }
   if(b.length)last=b.at(-1);
   if(!headerDone){
    const nl=b.indexOf(10);
@@ -54,12 +62,20 @@ export async function verifyByteStream({chunks,expectedSha256,expectedBytes,maxB
  }
  const got=h.digest("hex");
  if(bytes!==expectedBytes||got!==expectedSha256||!headerDone)reject("whole_csv_hash_or_size_mismatch");
+ if(insideQuotes)reject("unterminated_csv_quote");
+ const logicalCsvRecords=logicalLineEndings-(last===10?1:0);
+ if(!Number.isSafeInteger(logicalCsvRecords)||logicalCsvRecords<1)reject("missing_csv_records");
  const headerText=header.toString("utf8").replace(/^\uFEFF/u,"").replace(/\r$/u,"");
  const headers=headerText.split(",").map(s=>s.replace(/^"|"$/gu,"").trim());
  const required=["YEAR_MONTH","PRACTICE_CODE","BNF_PRESENTATION_CODE","ITEMS","NIC"];
  if(required.some(x=>!headers.includes(x)))reject("unexpected_full_csv_header");
  return Object.freeze({
   sha256:got,bytes,physical_newlines:lines,
+  csv_syntactic_record_count:logicalCsvRecords,
+  quoted_newline_count:lines-logicalLineEndings,
+  csv_row_schema_consistency_verified:false,
+  publisher_record_count_reconciled:false,
+  numeric_metric_totals_reconciled:false,
   physical_lines_may_not_equal_csv_records:true,
   csv_header_fields:headers,
   csv_header_verified:true,
@@ -111,7 +127,8 @@ async function main(args){
  await mkdir(out,{recursive:true,mode:0o700});
  await writeFile(join(out,"nhsbsa-epd-202608-full-integrity-receipt.json"),JSON.stringify(report,null,2)+"\n",{mode:0o600,flag:"wx"});
  console.log(JSON.stringify({status:report.status,bytes:report.bytes,sha256:report.sha256,
-  physical_newlines:report.physical_newlines,raw_stored:false,customer_publish_approved:false}));
+  physical_newlines:report.physical_newlines,syntactic_records:report.csv_syntactic_record_count,
+  raw_stored:false,customer_publish_approved:false}));
 }
 if(process.argv[1]&&new URL(import.meta.url).pathname.endsWith(process.argv[1].replaceAll("\\","/"))){
  await main(process.argv.slice(2));
