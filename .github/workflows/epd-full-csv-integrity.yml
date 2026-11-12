@@ -1,0 +1,42 @@
+name: NHSBSA EPD full CSV integrity verification
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/data/verify-epd-full-stream.mjs'
+      - 'scripts/test-epd-full-stream.mjs'
+      - '.github/workflows/epd-full-csv-integrity.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: epd-full-csv-integrity-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout without retained credentials
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Use Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24'
+      - name: Verify streaming hash contract offline
+        run: node --test scripts/test-epd-full-stream.mjs
+      - name: Verify network-disabled default
+        run: node scripts/data/verify-epd-full-stream.mjs
+      - name: Verify complete publisher CSV without persisting raw bytes
+        env:
+          EPD_RECEIPT_DIR: ${{ runner.temp }}/epd-source-integrity-only
+        run: node scripts/data/verify-epd-full-stream.mjs --execute --output "$EPD_RECEIPT_DIR"
+      - name: Upload checksum receipt only (one day)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: nhsbsa-epd-202608-full-stream-integrity
+          path: ${{ runner.temp }}/epd-source-integrity-only/nhsbsa-epd-202608-full-integrity-receipt.json
+          if-no-files-found: error
+          retention-days: 1
