@@ -19,7 +19,7 @@ test("founder experience remains session-verified and read-only", () => {
   assert.match(page,/result\["medicinesDataAccess"\] === false/u);
   assert.match(page,/founderWorkspaceCoverageValid/u);
   assert.match(page,/Acceptance pending/u);
-  assert.equal((page.match(/\\bunoptimized\\b/gu) ?? []).length, 2, "Photos must use direct allowed assets rather than the unexposed Next image optimizer");
+  assert.equal((page.match(/\bunoptimized\b/gu) ?? []).length, 2, "Photos must use direct allowed assets rather than the unexposed Next image optimizer");
   assert.doesNotMatch(page,/localStorage|sessionStorage|mock-user/u);
 });
 
