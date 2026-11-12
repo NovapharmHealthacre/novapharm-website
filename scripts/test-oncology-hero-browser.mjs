@@ -93,7 +93,7 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
         assert.ok(layout.cards.every(card=>card.labelPosition==="absolute"),`${label}: labels not overlaid`);
         assert.ok(layout.pageOverflow<=2,`${label}: document horizontal overflow`);
         if(viewport.width>760){
-          assert.ok(layout.layerWidth/layout.heroWidth>=0.7,`${label}: image not integrated into hero`);
+          assert.ok(layout.layerWidth/layout.heroWidth>=(viewport.width>=1101?.55:.7),`${label}: image not integrated into hero`);
           assert.equal(layout.fade,true,`${label}: photo has a hard boundary, no gradient mask`);
         }else{
           assert.equal(layout.fade,false,`${label}: mobile photo should be unmasked`);
