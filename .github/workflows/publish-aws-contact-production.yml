@@ -64,6 +64,12 @@ on:
       - 'assets/data/nutraxin-retail-catalogue.json'
       - 'scripts/apply-corporate-product-discipline.mjs'
       - 'technology/index.html'
+      # The interactive customer-facing workspace section and its published assets.
+      - 'technology/workspaces/**'
+      - 'assets/css/intelligence-workspace-embedded.css'
+      - 'assets/js/intelligence-workspace-embedded.js'
+      - 'assets/css/intelligence-workspace-product.css'
+      - 'assets/js/intelligence-workspace-product.js'
       - 'src/content/technology-intelligence.html'
       - 'assets/js/intelligence-live-research.js'
       - 'scripts/test-intelligence-live-public-research.mjs'
@@ -167,6 +173,16 @@ jobs:
           node scripts/stage-pages-artifact.mjs _site
           node --test scripts/test-intelligence-live-public-research.mjs
           test -s _site/technology/index.html
+          # Reject publication when the owner-approved interactive Technology experience
+          # or its CSP-safe native runtime is missing from the staged public artifact.
+          test -s _site/assets/css/intelligence-workspace-embedded.css
+          test -s _site/assets/js/intelligence-workspace-embedded.js
+          grep -Fq 'id="npi-exp-shell"' _site/technology/index.html
+          grep -Fq 'src="/assets/js/intelligence-workspace-embedded.js"' _site/technology/index.html
+          grep -Fq 'href="/assets/css/intelligence-workspace-embedded.css"' _site/technology/index.html
+          grep -Fq 'function renderSupplyMode(mode)' _site/assets/js/intelligence-workspace-embedded.js
+          grep -Fq 'ILLUSTRATIVE PRODUCT EXPERIENCE' _site/assets/js/intelligence-workspace-embedded.js
+          grep -Fq 'npi-workspace-live-experience' _site/assets/css/intelligence-workspace-embedded.css
           test -s _site/assets/js/intelligence-live-research.js
           grep -Fq 'data-npi-research' _site/technology/index.html
           grep -Fq 'src="/assets/js/intelligence-live-research.js"' _site/technology/index.html
@@ -851,6 +867,16 @@ jobs:
           # Public Intelligence directory must be present on the real customer domain.
           # Source/build success alone never certifies 22 published workspaces.
           grep -Fq 'id="intelligence-workspace-directory"' /tmp/npi-live-technology.html
+          # Source-level 22-entry counts are insufficient: also verify the native
+          # interactive UI and its shipped JS/CSS on the actual custom domain.
+          grep -Fq 'id="npi-exp-shell"' /tmp/npi-live-technology.html
+          grep -Fq 'src="/assets/js/intelligence-workspace-embedded.js"' /tmp/npi-live-technology.html
+          grep -Fq 'href="/assets/css/intelligence-workspace-embedded.css"' /tmp/npi-live-technology.html
+          curl --fail --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' "$LIVE_ORIGIN/assets/js/intelligence-workspace-embedded.js?$key" -o /tmp/npi-live-workspace-runtime.js
+          curl --fail --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' "$LIVE_ORIGIN/assets/css/intelligence-workspace-embedded.css?$key" -o /tmp/npi-live-workspace-styles.css
+          grep -Fq 'function renderSupplyMode(mode)' /tmp/npi-live-workspace-runtime.js
+          grep -Fq 'ILLUSTRATIVE PRODUCT EXPERIENCE' /tmp/npi-live-workspace-runtime.js
+          grep -Fq 'npi-workspace-live-experience' /tmp/npi-live-workspace-styles.css
           grep -Fq 'ALL 22 PROFESSIONAL WORKSPACES' /tmp/npi-live-technology.html
           test "$(grep -o 'data-npi-workspace="' /tmp/npi-live-technology.html | wc -l | tr -d '[:space:]')" -eq 22
           grep -Fq 'Public research is available separately' /tmp/npi-live-technology.html
