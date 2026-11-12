@@ -20,6 +20,20 @@ const REQUIRED_ACR = "urn:cognito:loa:4";
 // Keep the signed ID token fresh and require pwd + otp + mfa at completion.
 const MAX_AUTH_AGE_SECONDS = 900;
 const VALID_RANDOM = /^[A-Za-z0-9_-]{40,128}$/u;
+const APPROVED_SELF_SERVICE_PLANS = Object.freeze(["starter", "professional"]);
+const APPROVED_BILLING_CYCLES = Object.freeze(["monthly", "annual"]);
+
+function requestedBillingSelection(plan, cycle) {
+  if (plan === undefined && cycle === undefined) return null;
+  // Browser-provided pricing intent is never a Stripe price, tenant, contract,
+  // or entitlement. Bind only the four approved choices to the HMAC cookie.
+  if (typeof plan !== "string" || typeof cycle !== "string" ||
+      !APPROVED_SELF_SERVICE_PLANS.includes(plan) ||
+      !APPROVED_BILLING_CYCLES.includes(cycle)) {
+    throw blocked("customer_plan_selection_invalid");
+  }
+  return Object.freeze({ plan, cycle });
+}
 
 function blocked(code) {
   return Object.assign(new Error("Intelligence customer identity is unavailable."), { code });
@@ -47,13 +61,20 @@ export const intelligenceCustomerOidc = Object.freeze({
  * path=/, Max-Age=900. Cookie is signed, not encrypted, and does not
  * include any tenant, user, or clinical data.
  */
-export function createCustomerLoginTransaction({ signingKey, nowMs = Date.now() } = {}) {
+export function createCustomerLoginTransaction({
+  signingKey, nowMs = Date.now(), requestedPlan, requestedCycle,
+} = {}) {
   requireKey(signingKey);
   if (!Number.isSafeInteger(nowMs) || nowMs <= 0) throw blocked("invalid_clock");
+  const selection = requestedBillingSelection(requestedPlan, requestedCycle);
   const state = randomBytes(32).toString("base64url");
   const nonce = randomBytes(32).toString("base64url");
   const verifier = randomBytes(48).toString("base64url");
-  const raw = Buffer.from(JSON.stringify({ state, nonce, verifier, createdAt: nowMs }), "utf8").toString("base64url");
+  const transaction = {
+    state, nonce, verifier, createdAt: nowMs,
+    ...(selection ? { requestedPlan: selection.plan, requestedCycle: selection.cycle } : {}),
+  };
+  const raw = Buffer.from(JSON.stringify(transaction), "utf8").toString("base64url");
   const url = new URL("/oauth2/authorize", OIDC_DOMAIN);
   const params = {
     response_type: "code",
@@ -80,6 +101,7 @@ export function createCustomerLoginTransaction({ signingKey, nowMs = Date.now() 
     transactionCookieValue: raw + "." + sign(signingKey, raw),
     cookieMaxAgeSeconds: AGE_MS / 1000,
     identityOnly: true,
+    requestedPlanBoundToSignedCookie: selection !== null,
     grantsTenantAccess: false,
   });
 }
@@ -101,9 +123,15 @@ export function verifyCustomerLoginTransaction({ cookieValue, state, signingKey,
       !VALID_RANDOM.test(String(decoded.verifier || "")) ||
       !Number.isSafeInteger(decoded.createdAt) || decoded.createdAt > nowMs ||
       nowMs - decoded.createdAt > AGE_MS) throw blocked("transaction_expired_or_mismatched");
+  // Only independently verified HMAC data can supply this commercial intent
+  // after OAuth. No downstream paid Checkout or account grant is implied.
+  const selection = requestedBillingSelection(decoded.requestedPlan, decoded.requestedCycle);
   return Object.freeze({
     verifier: decoded.verifier, nonce: decoded.nonce,
-    createdAtMs: decoded.createdAt, grantsTenantAccess: false,
+    createdAtMs: decoded.createdAt,
+    requestedPlan: selection?.plan ?? null,
+    requestedCycle: selection?.cycle ?? null,
+    grantsTenantAccess: false,
   });
 }
 
