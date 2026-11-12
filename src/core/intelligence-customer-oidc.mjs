@@ -146,8 +146,12 @@ export async function verifyIntelligenceCustomerIdToken({
     header = JSON.parse(Buffer.from(parts[0], "base64url").toString("utf8"));
     claims = JSON.parse(Buffer.from(parts[1], "base64url").toString("utf8"));
   } catch { throw blocked("invalid_identity_token"); }
+  // Cognito JWKS key identifiers are not necessarily base64url. AWS uses
+  // standard base64-like kid values, including +, / and trailing = padding.
+  // Keep the kid bounded and exact-match ONLY against the pinned issuer's
+  // published RSA signing key. This never relaxes signature verification.
   if (header?.alg !== "RS256" || typeof header.kid !== "string" ||
-      !/^[A-Za-z0-9._-]{1,128}$/u.test(header.kid) ||
+      !/^[A-Za-z0-9+/=_-]{1,256}$/u.test(header.kid) ||
       typeof fetchImpl !== "function") throw blocked("identity_signature_invalid");
   const keys = await boundedJson(await fetchImpl(OIDC_ISSUER + "/.well-known/jwks.json", {
     method: "GET", cache: "no-store", redirect: "error", signal: AbortSignal.timeout(8000),
