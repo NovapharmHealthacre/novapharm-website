@@ -16,7 +16,7 @@ test("approved human secure entry uses the exact Intelligence brand and owner co
   assert.match(styles, /npi-human-portrait-hd\.avif/);
   assert.match(styles, /prefers-reduced-motion/);
   assert.match(styles, /max-width:760px/);
-  assert.ok(existsSync("../../assets/media/portal/npi-human-portrait-hd.avif"));
+  assert.ok(existsSync("../../assets/media/portal/npi-human-portrait-approved.webp"));
 });
 
 test("visual redesign preserves Cognito and customer security boundaries", () => {
