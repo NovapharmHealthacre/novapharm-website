@@ -120,7 +120,9 @@ def user_matches(user, subject):
     if not SUBJECT.fullmatch(str(subject or "")):
         return False
     attrs = {x.get("Name"): x.get("Value") for x in user.get("UserAttributes", [])}
-    return (attrs.get("sub") == subject
+    return (user.get("Enabled") is not False
+            and user.get("UserStatus") in (None, "CONFIRMED")
+            and attrs.get("sub") == subject
             and attrs.get("email") == FOUNDER_EMAIL
             and attrs.get("email_verified") == "true"
             and "SOFTWARE_TOKEN_MFA" in (user.get("UserMFASettingList") or [])
@@ -239,7 +241,7 @@ def mint(event, now, cognito, dynamodb, secret):
                 "TableName": TABLE, "Item": {
                     **key("FOUNDER_AUDIT#" + uuid.uuid4().hex),
                     "event": s("session-issued"), "createdEpoch": n(now),
-                    "tokenHash": s(digest), "ttlEpoch": n(now + 7 * 86400),
+                    "tokenHash": s(digest),
                 }, "ConditionExpression": "attribute_not_exists(PK)",
             }},
         ]
@@ -315,7 +317,7 @@ def logout(event, now, dynamodb):
                 "TableName": TABLE,
                 "Item": {**key("FOUNDER_AUDIT#" + uuid.uuid4().hex),
                          "event": s("session-revoked"), "tokenHash": s(digest),
-                         "createdEpoch": n(now), "ttlEpoch": n(now + 7 * 86400)},
+                         "createdEpoch": n(now)},
                 "ConditionExpression": "attribute_not_exists(PK)",
             }},
         ])
