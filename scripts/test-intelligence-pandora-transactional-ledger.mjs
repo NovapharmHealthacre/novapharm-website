@@ -4,6 +4,7 @@ import {
   commitPandoraMedicineDecision as commit, pandoraStagingCollections as names
 } from "../src/core/intelligence-pandora-transactional-ledger.mjs";
 import { pandoraUniqueIndexes, provisionPandoraStagingUniqueIndexes, verifyPandoraStagingUniqueIndexes } from "../src/data/atlas-pandora-staging-indexes.mjs";
+import { readPandoraDecisionHistory as readHistory } from "../src/core/intelligence-pandora-audit-readback.mjs";
 
 const now = "2026-11-12T10:00:00.000Z";
 const sha = value => value.repeat(64);
@@ -96,6 +97,19 @@ function fixture({
             ];
           } };
         },
+        find(query,options){
+          assert.ok(options?.session);
+          operations.push({op:"find",name});
+          let rows=state[name].filter(row=>matches(row,query));
+          return {
+            sort(sort){
+              if(sort.version===1) rows=rows.slice().sort((a,b)=>a.version-b.version);
+              return this;
+            },
+            limit(n){rows=rows.slice(0,n);return this;},
+            async toArray(){return rows;}
+          };
+        },
         async findOne(query, options) {
           assert.ok(options?.session);
           operations.push({op:"read",name});
@@ -179,6 +193,56 @@ test("owner-only final approval requires independent reviewer and exact verified
     request:request("approve",3),actor:actor("person-approver-001")
   })),error=>error.code==="ledger_disabled");
   assert.equal(p.getState()[names.events].length,0);
+});
+test("verified decision history readback detects tampering and requires access audit",async()=>{
+  const f=fixture();
+  await commit(input(f));
+  await commit(input(f,{request:request("review",2),actor:actor("person-reviewer-001")}));
+  await commit(input(f,{request:request("approve",3),actor:actor("person-approver-001")}));
+  const args={
+    db:f.db,client:f.client,
+    request:{caseId:record().case_id,tenantId:"tenant-001"},
+    actor:{...actor("person-security-001"),authorityRevision:"auth-v1"},
+    environment:{...environment,PANDORA_STAGING_HISTORY_READ_ENABLED:"true"},
+    now,
+    recordReadAudit:async ({eventId,session})=>{
+      assert.ok(session);return {committed:true,eventId};
+    }
+  };
+  const result=await readHistory(args);
+  assert.equal(result.verified,true);
+  assert.equal(result.version,4);
+  assert.equal(result.events.length,3);
+  assert.equal(result.events[2].status,"approved");
+  assert.equal(result.auditHeadSha256,f.getState()[names.cases][0].audit_head_sha256);
+  assert.equal(result.externalActionAllowed,false);
+  assert.equal(result.customerAccessGranted,false);
+  await assert.rejects(readHistory({...args,recordReadAudit:async()=>({committed:false})}),
+    error=>error.code==="history_read_audit_unavailable");
+  f.getState()[names.events][0].actor_id="tampered-reviewer";
+  await assert.rejects(readHistory(args),error=>error.code==="history_tampered");
+});
+test("history readback fails closed for missing role, tenant mismatch and malformed timeline",async()=>{
+  const f=fixture();
+  const base={
+    db:f.db,client:f.client,
+    request:{caseId:record().case_id,tenantId:"tenant-001"},
+    actor:{...actor("person-security-001"),authorityRevision:"auth-v1"},
+    environment:{...environment,PANDORA_STAGING_HISTORY_READ_ENABLED:"true"},
+    now,
+    recordReadAudit:async({eventId})=>({committed:true,eventId})
+  };
+  const first=await readHistory(base);
+  assert.equal(first.decisionStatus,"draft");
+  assert.equal(first.events.length,0);
+  await assert.rejects(readHistory({...base,actor:{...base.actor,tenantId:"tenant-other"}}),
+    error=>error.statusCode===403);
+  await assert.rejects(readHistory({...base,actor:{...base.actor,authorityRevision:"revoked-revision"}}),
+    error=>error.code==="history_authority_unavailable");
+  await assert.rejects(readHistory({...base,environment:{...environment}}),
+    error=>error.code==="history_disabled");
+  f.getState()[names.cases][0].status="approved";
+  await assert.rejects(readHistory(base),error=>error.code==="history_head_mismatch");
 });
 test("missing genuine source grant, revoked licence and duplicate evidence cannot commit",async()=>{
   for(const variant of [
