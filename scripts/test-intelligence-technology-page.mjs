@@ -276,6 +276,9 @@ const workspaceEmbeddedCss = read("assets/css/intelligence-workspace-embedded.cs
 const workspaceEmbeddedJs = read("assets/js/intelligence-workspace-embedded.js");
 for (const [label, html] of [["canonical source", source], ["published page", published]]) {
   assert.match(html, /id="npi-exp-shell"/, label + " must render the native interactive experience");
+  assert.equal((html.match(/<h1\b/g) || []).length, 1, label + " must have one document h1 after native workspace integration");
+  assert.match(html, /<section class="section" aria-labelledby="npi-directory-title">/, label + " native experience must use the existing visible section heading");
+  assert.doesNotMatch(html, /npi-exp-main-heading/, label + " must not introduce a duplicate hidden title");
   assert.match(html, /href="\/assets\/css\/intelligence-workspace-embedded\.css"/, label + " must load the scoped app styles");
   assert.match(html, /src="\/assets\/js\/intelligence-workspace-embedded\.js"/, label + " must load the CSP-safe app runtime");
   assert.match(html, /npi-directory-groups" hidden aria-hidden="true"/, label + " must not display the obsolete accordion");
