@@ -1,0 +1,55 @@
+name: Intelligence private subscription Checkout acceptance
+on:
+  pull_request:
+    paths:
+      - "infra/aws/intelligence-customer-checkout-api.py"
+      - "infra/aws/intelligence-customer-checkout-production.json"
+      - "scripts/aws/test-intelligence-customer-checkout-api.py"
+      - ".github/workflows/intelligence-private-checkout-acceptance.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "infra/aws/intelligence-customer-checkout-api.py"
+      - "infra/aws/intelligence-customer-checkout-production.json"
+      - "scripts/aws/test-intelligence-customer-checkout-api.py"
+      - ".github/workflows/intelligence-private-checkout-acceptance.yml"
+permissions:
+  contents: read
+jobs:
+  private-checkout:
+    name: Private Checkout security and no-charge acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile isolated Python Lambda
+        run: python -m py_compile infra/aws/intelligence-customer-checkout-api.py scripts/aws/test-intelligence-customer-checkout-api.py
+      - name: Run tenant, MFA, source-rights, contract and Stripe-negative tests
+        run: python scripts/aws/test-intelligence-customer-checkout-api.py
+      - name: Verify immutable, private, default-off infrastructure contract
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          spec=json.loads(Path("infra/aws/intelligence-customer-checkout-production.json").read_text())
+          resources=spec["Resources"]
+          assert resources["CheckoutLambda"]["Properties"]["Environment"]["Variables"]["NPI_SUBSCRIPTION_CHECKOUT_ENABLED"]=="false"
+          assert resources["CheckoutRoute"]["Properties"]["AuthorizationType"]=="JWT"
+          assert resources["CheckoutRoute"]["Properties"]["AuthorizerId"]=="sxo21g"
+          assert resources["CheckoutRoute"]["Properties"]["RouteKey"]=="POST /customer/subscription/checkout"
+          assert resources["CheckoutRoute"]["Properties"]["ApiId"]=="q2e6ztf8ic"
+          assert "CodeObjectVersion" in spec["Parameters"]
+          assert "SourceSha256" in spec["Parameters"]
+          assert resources["CheckoutLambda"]["Properties"]["Code"]["S3ObjectVersion"]=={"Ref":"CodeObjectVersion"}
+          src=Path("infra/aws/intelligence-customer-checkout-api.py").read_text()
+          assert "if not enabled:" in src
+          assert "stripeWebhookAndLedgerAccepted" in src
+          assert "sourceRightsApproved" in src
+          assert "condition(" in src
+          assert "stripe_checkout_response_invalid" in src
+          print("Private Checkout deployability: immutable artifact, JWT authorizer, production charge switch OFF")
+          PY
