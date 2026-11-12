@@ -15,6 +15,8 @@ Date of source review: 12 November 2026. **No new card-collection authorisations
 
 - **371** references still need individual payment release.
 - **300** of these do not identify a manufacturer model. All have NovaPharm internal IDs, but those are not manufacturer evidence.
+- The original **42-page ESCO Product Catalogue.pdf** contains **67 distinct model codes extractable as text**. Among the remaining 371, **31** of the 71 model-coded references match this source's extractable code text and **40 do not**. This is a text-presence check only; absence can reflect a different source, incomplete text extraction, a missing variant, or an incorrectly attributed website model. It must not be silently treated as verified supplier identification.
+- The original PDF's index names **10 catalogue groups**, while NovaPharm's indexed storefront has **12 website categories** and 373 expanded reference identities. A website reference is therefore not equivalent to a supplier-confirmed purchasable variant.
 - **33** of the remaining model-coded references have a matching printed model code in the supplied CE certificate annexures. This is **candidate documentary evidence**, not legal GB clearance.
 - **Two** of the model matches have divergent descriptions:
   - `ESCO-CAT-0054` is shown as Sharps Containers in the website source; the CE annex lists `ESS 004` under Instrument Tray.
