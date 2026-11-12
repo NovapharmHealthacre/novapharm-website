@@ -13,8 +13,8 @@ const signingKey = "a_private_server_signing_secret_minimum_32_characters_no_bro
 const second = 1_800_000_000;
 const { publicKey, privateKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
 const jwk = { ...publicKey.export({ format: "jwk" }), kid: "test_rsa_1", alg: "RS256", use: "sig" };
-const token = (claims, changeSignature = false) => {
-  const header = Buffer.from(JSON.stringify({ alg: "RS256", typ: "JWT", kid: jwk.kid })).toString("base64url");
+const token = (claims, changeSignature = false, kid = jwk.kid) => {
+  const header = Buffer.from(JSON.stringify({ alg: "RS256", typ: "JWT", kid })).toString("base64url");
   const body = Buffer.from(JSON.stringify(claims)).toString("base64url");
   const signature = signJwt("RSA-SHA256", Buffer.from(header + "." + body), privateKey).toString("base64url");
   return header + "." + body + "." + (changeSignature ? (signature[0] === "x" ? "y" : "x") + signature.slice(1) : signature);
@@ -122,6 +122,39 @@ test("signed ID JWT verifies exact issuer, audience, nonce and expiry but never 
   assert.equal(result.mfaVerified, true);
   assert.equal(result.mfaSessionAttestationRequired, false);
   assert.equal(result.grantsTenantAccess, false);
+});
+
+test("Cognito standard-base64 JWKS kids containing + / = still require valid RSA signature", async () => {
+  // Real Cognito signing-key identifiers can contain standard base64 symbols.
+  // Previous base64url-only regex rejected them BEFORE checking AWS JWKS.
+  const signerKid = "Cognito+RS256/KeyId==";
+  const publishedKey = { ...jwk, kid: signerKid };
+  const exactJwks = async (url) => {
+    assert.equal(url, intelligenceCustomerOidc.issuer + "/.well-known/jwks.json");
+    return { ok: true, text: async () => JSON.stringify({ keys: [publishedKey] }) };
+  };
+  const valid = token(validClaims, false, signerKid);
+  const verified = await verifyIntelligenceCustomerIdToken({
+    idToken: valid, expectedNonce: nonce, fetchImpl: exactJwks, nowSeconds: second,
+  });
+  assert.equal(verified.identityVerified, true);
+  assert.equal(verified.mfaVerified, true);
+  assert.equal(verified.grantsTenantAccess, false);
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken: token(validClaims, true, signerKid),
+    expectedNonce: nonce, fetchImpl: exactJwks, nowSeconds: second,
+  }), (error) => error.code === "identity_signature_invalid");
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken: valid, expectedNonce: nonce, fetchImpl: mockJwks, nowSeconds: second,
+  }), (error) => error.code === "identity_signing_key_missing");
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken: token(validClaims, false, "another/KeyId="),
+    expectedNonce: nonce, fetchImpl: exactJwks, nowSeconds: second,
+  }), (error) => error.code === "identity_signing_key_missing");
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken: token(validClaims, false, "invalid kid with spaces"),
+    expectedNonce: nonce, fetchImpl: exactJwks, nowSeconds: second,
+  }), (error) => error.code === "identity_signature_invalid");
 });
 
 test("first-login fresh password-plus-TOTP proof remains valid after eight minutes", async () => {
