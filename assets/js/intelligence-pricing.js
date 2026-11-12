@@ -28,8 +28,14 @@
       const monthlyLink = card.querySelector('[data-npi-plan-cta="monthly"]');
       const annualLink = card.querySelector('[data-npi-plan-cta="annual"]');
       if (monthlyLink && annualLink) {
-        monthlyLink.hidden = cycle !== "monthly";
-        annualLink.hidden = cycle !== "annual";
+        const useAnnual = cycle === "annual";
+        monthlyLink.hidden = useAnnual;
+        annualLink.hidden = !useAnnual;
+        // Inline-important visibility defeats stale CSS and Safari's cached
+        // display:flex rules. The HTML still has a safe monthly-only fallback
+        // when JavaScript does not run.
+        monthlyLink.style.setProperty("display", useAnnual ? "none" : "flex", "important");
+        annualLink.style.setProperty("display", useAnnual ? "flex" : "none", "important");
       }
       explanation.textContent = cycle === "annual"
         ? "Proposed annual commitment: " + money.format(annual) + "/year, billed annually after signed acceptance."
