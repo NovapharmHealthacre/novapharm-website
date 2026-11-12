@@ -672,8 +672,11 @@ function materialize(relative, route, main, metadata = null, template = null) {
   if (route === "/technology/" && !html.includes('src="/assets/js/intelligence-live-research.js"')) {
     html = html.replace("</body>", '<script src="/assets/js/intelligence-live-research.js" defer></script></body>');
   }
-  if (route === "/technology/" && !html.includes('src="/assets/js/intelligence-pricing.js"')) {
-    html = html.replace("</body>", '<script src="/assets/js/intelligence-pricing.js" defer></script></body>');
+  if (route === "/technology/") {
+    // Publish one versioned pricing script, even across successive rebuilds.
+    // Old cached JS does not know about the inline-hidden annual CTA.
+    html = html.replace(/<script src="\/assets\/js\/intelligence-pricing\.js(?:\?[^"]*)?" defer><\/script>/g, "");
+    html = html.replace("</body>", '<script src="/assets/js/intelligence-pricing.js?v=20261112-single-visible-v1" defer></script></body>');
   }
   if (route === "/contact/" && html.includes("data-email-enquiry-form")) {
     html = html.replace("</body>", '<script src="/assets/js/contact-email-draft.js" defer></script></body>');

@@ -374,6 +374,30 @@ for (const [engineName, browserType] of engines) {
             assert.deepEqual(consoleErrors, [], `${engineName} ${viewport.name} ${route.path}: console errors`);
 
             if (route.name === "technology") {
+              // Regression for Safari: CSS display:flex must never expose both
+              // month and year links at once. Test actual computed visibility.
+              const pricing = page.locator("#intelligence-pricing");
+              async function assertOnePlanAction(cycle) {
+                for (const plan of ["starter", "professional"]) {
+                  const card = pricing.locator('[data-npi-plan="' + plan + '"]');
+                  const allActions = card.locator(".npi-plan-cta");
+                  assert.equal(await allActions.count(), 2, plan + ": must retain two fixed allowlisted link destinations");
+                  const visible = card.locator(".npi-plan-cta:visible");
+                  assert.equal(await visible.count(), 1,
+                    engineName + " " + viewport.name + " " + plan + " " + cycle + ": exactly one visible pricing button");
+                  const expected = "https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=" + plan + "&cycle=" + cycle;
+                  assert.equal(await visible.first().getAttribute("href"), expected,
+                    plan + ": selected pricing link must match the chosen billing period");
+                  const inactive = card.locator('[data-npi-plan-cta="' + (cycle === "monthly" ? "annual" : "monthly") + '"]');
+                  assert.equal(await inactive.isVisible(), false, plan + ": unselected billing link must remain hidden");
+                }
+              }
+              await assertOnePlanAction("monthly");
+              await pricing.locator('[data-npi-billing="annual"]').click();
+              await assertOnePlanAction("annual");
+              await pricing.locator('[data-npi-billing="monthly"]').click();
+              await assertOnePlanAction("monthly");
+
               const medicineField = page.locator("[data-npi-query]");
               const marketField = page.locator("[data-npi-market]");
               const focusField = page.locator("[data-npi-focus]");
