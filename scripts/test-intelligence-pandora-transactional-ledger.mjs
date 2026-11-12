@@ -244,6 +244,29 @@ test("history readback fails closed for missing role, tenant mismatch and malfor
   f.getState()[names.cases][0].status="approved";
   await assert.rejects(readHistory(base),error=>error.code==="history_head_mismatch");
 });
+test("case history is inaccessible to unrelated same-tenant analyst or unassigned reviewer",async()=>{
+  const f=fixture({authorities:[
+    ...accounts(),identity("person-other-001","analyst")
+  ]});
+  const settings={
+    db:f.db,client:f.client,
+    request:{caseId:record().case_id,tenantId:"tenant-001"},
+    environment:{...environment,PANDORA_STAGING_HISTORY_READ_ENABLED:"true"},
+    now,
+    recordReadAudit:async ({eventId})=>({committed:true,eventId})
+  };
+  await assert.rejects(readHistory({...settings,actor:{
+    ...actor("person-other-001"),authorityRevision:"auth-v1"
+  }}),error=>error.code==="history_case_access_denied");
+  await assert.rejects(readHistory({...settings,actor:{
+    ...actor("person-reviewer-001"),authorityRevision:"auth-v1"
+  }}),error=>error.code==="history_case_access_denied");
+  const proposer=await readHistory({...settings,actor:{
+    ...actor("person-proposer-001"),authorityRevision:"auth-v1"
+  }});
+  assert.equal(proposer.verified,true);
+  assert.equal(proposer.decisionStatus,"draft");
+});
 test("missing genuine source grant, revoked licence and duplicate evidence cannot commit",async()=>{
   for(const variant of [
     {rights:[]},
