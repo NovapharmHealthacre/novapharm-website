@@ -107,6 +107,11 @@ test("source-row projection strips all unapproved fields, is deterministic and r
   assert.equal(fda.rows[0]._id, "drive-raw-fda-20261009-12345-6789");
   assert.equal(fda.rows[0].customer_publish_approved, false);
   assert.equal(fda.rows[0].accepted_observations, 0);
+  assert.equal(fda.rows[0].ai_processing_approved, false);
+  assert.equal(fda.rows[0].commercial_redistribution_approved, false);
+  assert.equal(fda.rows[0].production_promoted, false);
+  assert.equal(fda.rows[0].medicine_identity_accepted, false);
+  assert.equal(fda.rows[0].source_rights_grant_id, null);
   assert.equal(JSON.stringify(fda).includes("packaging"), false);
   assert.equal(JSON.stringify(fda).includes("marketing_category"), false);
   const ema = buildQuarantinedReviewProjection({ ...example("EMA_SHORTAGES"), ...ids });
