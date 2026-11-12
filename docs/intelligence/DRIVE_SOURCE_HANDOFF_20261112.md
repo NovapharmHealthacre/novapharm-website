@@ -47,3 +47,21 @@ The tests are also part of the test:medicines-intelligence npm script.
 ## Acceptance truth
 
 Atlas nova_medicine_evidence_staging and nova_source_rights_grants_staging were observed empty on 12 November 2026. No accepted medicine observations were created in this work. The NHSBSA staging source registry already contained the August 2026 resource locator and a one-row API schema probe; neither represents a complete publisher CSV download. No new paid service or live customer endpoint was enabled.
+
+
+## Additional actual source-row quarantine staging
+
+The complete two owner-controlled Drive JSON snapshots were downloaded to a private inspection runtime and checked by SHA-256 against the registered 2026-10-09 originals.
+
+A second Atlas collection was created, nova_drive_source_rows_quarantine_staging. After an oversized first request was rejected without inserting records, the minimal-field projected source rows were inserted in 16-record batches.
+
+Readback using Atlas count queries on 12 November 2026 verified:
+- 68 FDA NDC apixaban sample product rows in quarantine.
+- 85 EMA shortage event rows in quarantine.
+- 153 total projected source rows.
+- Zero rows with customer_publish_approved=true.
+- Zero rows with accepted_observations greater than zero.
+
+The source-row projection keeps only selected source keys, pharmaceutical product/shortage labels and essential QA dates. No arbitrary source payload, personal information, medicine decision, licensed terminology mapping or customer entitlement was added. The reusable, bounded projection contract is buildQuarantinedReviewProjection in the same source module.
+
+These are not 153 accepted canonical medicines: they are 68 US product NDC listings and 85 EMA shortage events with different grains. A validated EPD CSV, independent source rights and accepted identity relationships are still missing. No existing production collection was modified.
