@@ -39,7 +39,7 @@
   const fold=v=>String(v??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
   const element=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=String(text);return e;};
   const money=v=>Number.isSafeInteger(v)&&v>=0?'£'+(v/100).toFixed(2):'Ask for price';
-  const offerLabel=p=>p.brand==='Nutraxin'?'View product':'Explore and enquire';
+  const offerLabel=p=>p.brand==='Nutraxin'?'View product':'View product and add to Bag';
   const valid=p=>p&&typeof p.id==='string'&&typeof p.title==='string'&&['Nutraxin','ESCO'].includes(p.brand)&&p.availabilityQuantity===null&&p.cardCheckoutAuthority===false;
   const visible=()=>{
     const q=fold(search.value);
@@ -54,7 +54,7 @@
     compareArea.hidden=items.length===0;compareContent.replaceChildren();
     if(!items.length)return;
     const frame=element('div','mp-compare-scroll'),table=element('table');
-    const rows=[['Product',p=>p.title],['Brand',p=>p.brand],['Seller',p=>p.seller],['Category',p=>p.category],['SKU',p=>p.sku],['Model',p=>p.model||'Confirm with supplier'],['Pack',p=>p.pack||'Confirm variant'],['Listed price',p=>money(p.priceMinor)],['Price basis',p=>p.priceBasis],['Owner-confirmed stock',p=>stockLabel(p.sku)]];
+    const rows=[['Product',p=>p.title],['Brand',p=>p.brand],['Seller',p=>p.seller],['Category',p=>p.category],['SKU',p=>p.sku],['Model',p=>p.model||'NovaPharm internal SKU '+p.sku],['Pack',p=>p.pack||'Confirm variant'],['Listed price',p=>money(p.priceMinor)],['Price basis',p=>p.priceBasis],['Owner-confirmed stock',p=>stockLabel(p.sku)]];
     for(const [label,get] of rows){
       const tr=element('tr');tr.append(element('th','',label));
       for(const p of items)tr.append(element('td','',get(p)));
