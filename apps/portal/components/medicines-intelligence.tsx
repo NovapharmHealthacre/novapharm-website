@@ -685,6 +685,8 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     : navigationGroups;
   const searchId = useId();
   const searchFieldRef = useRef<HTMLInputElement>(null);
+  // A superseded deep-link restoration must never reintroduce an earlier medicine.
+  const selectionGenerationRef = useRef(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [searchResponse, setSearchResponse] = useState<SearchResponse | null>(null);
@@ -715,25 +717,26 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     const medicineId = new URLSearchParams(window.location.search).get("medicineId");
     if (!medicineId || !/^medicine-[a-f0-9]{32}$/u.test(medicineId)) return;
     let active = true;
+    const generation = selectionGenerationRef.current;
     const restore = async () => {
       setBusy(true);
       try {
         const next = await gatewayJson<MedicineDetail>(`enterprise/medicines/${encodeURIComponent(medicineId)}`);
-        if (!active) return;
+        if (!active || generation !== selectionGenerationRef.current) return;
         setDetail(next);
         const params = formSearchParams(emptyFilters);
         params.set("medicineId", medicineId);
         params.set("page", "1");
         params.set("pageSize", "50");
         const observed = await gatewayJson<AnalyticsResponse>(`enterprise/medicines/analytics?${params.toString()}`);
-        if (active) {
+        if (active && generation === selectionGenerationRef.current) {
           setAnalytics(observed);
           setAnalyticsStatus(observed.dataState === "accepted_facts" ? "Accepted observed history loaded for this identity." : "No accepted observed history available for this identity.");
         }
       } catch (error) {
-        if (active) setSearchStatus(professionalError(error));
+        if (active && generation === selectionGenerationRef.current) setSearchStatus(professionalError(error));
       } finally {
-        if (active) setBusy(false);
+        if (active && generation === selectionGenerationRef.current) setBusy(false);
       }
     };
     void restore();
@@ -761,6 +764,15 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
       setSearchStatus("Enter at least two characters.");
       return;
     }
+    // Prevent a fresh query (including a zero-result/error query) from displaying
+    // a previous medicine's identity, charts or accepted observation state.
+    selectionGenerationRef.current += 1;
+    setDetail(null);
+    setAnalytics(null);
+    setAnalyticsStatus("Previous medicine context cleared for the new search.");
+    const nextUrl = new URL(window.location.href);
+    nextUrl.searchParams.delete("medicineId");
+    window.history.replaceState(null, "", `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
     setBusy(true);
     setSearchStatus("Searching the governed medicine identity register.");
     setSearchResponse(null);
@@ -776,10 +788,13 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   }
 
   async function selectMedicine(medicineId: string) {
+    selectionGenerationRef.current += 1;
+    const generation = selectionGenerationRef.current;
     setBusy(true);
     setSearchStatus("Loading the selected identity and BNF hierarchy.");
     try {
       const next = await gatewayJson<MedicineDetail>(`enterprise/medicines/${encodeURIComponent(medicineId)}`);
+      if (generation !== selectionGenerationRef.current) return;
       setDetail(next);
       const nextUrl = new URL(window.location.href);
       nextUrl.searchParams.set("medicineId", next.medicine.medicineId);
@@ -794,19 +809,24 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
       setAnalyticsStatus("Checking accepted, non-sample source observations for this medicine.");
       try {
         const observed = await gatewayJson<AnalyticsResponse>(`enterprise/medicines/analytics?${params.toString()}`);
+        if (generation !== selectionGenerationRef.current) return;
         setAnalytics(observed);
         setAnalyticsStatus(observed.dataState === "accepted_facts"
           ? "Accepted observations loaded. Review source provenance, comparison and limitations."
           : "No accepted observed history available for this medicine under the selected filters.");
       } catch (error) {
-        setAnalytics(null);
-        setAnalyticsStatus(professionalError(error));
+        if (generation === selectionGenerationRef.current) {
+          setAnalytics(null);
+          setAnalyticsStatus(professionalError(error));
+        }
       }
     } catch (error) {
-      setDetail(null);
-      setSearchStatus(professionalError(error));
+      if (generation === selectionGenerationRef.current) {
+        setDetail(null);
+        setSearchStatus(professionalError(error));
+      }
     } finally {
-      setBusy(false);
+      if (generation === selectionGenerationRef.current) setBusy(false);
     }
   }
 
