@@ -59,7 +59,8 @@ test("verified isolated founder backend produces only a secure, short opaque fou
     forwarded = true;
     assert.equal(String(url), origin + "/founder/session");
     assert.equal(init?.method, "POST");
-    assert.equal((init?.headers as Record<string, string>)["Authorization"], "Bearer " + idToken);
+    assert.ok(init?.headers && typeof init.headers === "object");
+    assert.equal((init.headers as Record<string, string>)["Authorization"], `Bearer ${idToken}`);
     assert.equal(JSON.parse(String(init?.body)).accessToken, accessToken);
     return new Response(JSON.stringify({
       ok: true, code: "founder_session_active", role: "founder",
