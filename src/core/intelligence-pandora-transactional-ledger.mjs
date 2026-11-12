@@ -37,9 +37,11 @@ function requireConfig(environment, client, db) {
       environment.PANDORA_ALLOW_PUBLIC_ACCESS === "true") throw stop("ledger_disabled");
   if (typeof client?.startSession !== "function" || typeof db?.collection !== "function") throw stop("storage_unavailable");
   const entries = Object.values(pandoraStagingCollections).map(name => db.collection(name));
-  if (entries.some(item => typeof item?.findOne !== "function" && typeof item?.updateOne !== "function" &&
-      typeof item?.insertOne !== "function")) throw stop("storage_unavailable");
-  return Object.fromEntries(Object.keys(pandoraStagingCollections).map((key, i) => [key, entries[i]]));
+  const tables = Object.fromEntries(Object.keys(pandoraStagingCollections).map((key, i) => [key, entries[i]]));
+  if (["cases", "manifests", "authorities"].some(key => typeof tables[key]?.findOne !== "function") ||
+      ["cases", "authorities", "rights"].some(key => typeof tables[key]?.updateOne !== "function") ||
+      typeof tables.events?.insertOne !== "function") throw stop("storage_unavailable");
+  return tables;
 }
 
 function readCase(raw, requestedCase, requestedTenant) {
@@ -115,7 +117,8 @@ export async function commitPandoraMedicineDecision({
         tenant_id: record.tenantId, subject_id: actor.subjectId
       }, { session });
       if (!identity || identity.verified !== true || identity.mfa_verified !== true ||
-          identity.revoked_at != null || identity.session_expires_at == null ||
+          identity.revoked_at != null || !timePattern.test(identity.session_expires_at ?? "") ||
+          !Number.isFinite(Date.parse(identity.session_expires_at)) ||
           Date.parse(identity.session_expires_at) <= timeMs ||
           !subjectPattern.test(identity.authority_revision ?? "") ||
           !subjectPattern.test(identity.role ?? "")) throw stop("authority_unavailable");
