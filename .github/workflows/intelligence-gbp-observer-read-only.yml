@@ -1,0 +1,25 @@
+name: Intelligence live Stripe GBP reconciliation read-only contract
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/intelligence-billing-reconciliation-observer.py'
+      - 'scripts/test_intelligence_billing_reconciliation_observer.py'
+      - 'src/core/intelligence-live-stripe-catalog.mjs'
+      - '.github/workflows/intelligence-gbp-observer-read-only.yml'
+permissions:
+  contents: read
+jobs:
+  verify-gbp-observer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Verify GBP catalogue and fail-closed read-only billing observer
+        run: |
+          python3 -m py_compile infra/aws/intelligence-billing-reconciliation-observer.py
+          python3 -m unittest scripts/test_intelligence_billing_reconciliation_observer.py -v
+      - name: Preserve read-only and customer access denial
+        run: |
+          grep -Fq 'observe_only' infra/aws/intelligence-billing-reconciliation-observer.py
+          grep -Fq 'NPI_CUSTOMER_ACCESS_ENABLED' infra/aws/intelligence-billing-reconciliation-observer.py
+          grep -Fq 'grants_created' infra/aws/intelligence-billing-reconciliation-observer.py
