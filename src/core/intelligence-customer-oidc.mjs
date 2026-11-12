@@ -59,7 +59,9 @@ export function createCustomerLoginTransaction({ signingKey, nowMs = Date.now() 
     response_type: "code",
     client_id: CLIENT_ID,
     redirect_uri: CALLBACK,
-    scope: "openid email profile",
+    // User-admin scope permits only self-service Cognito identity operations;
+    // it is never a NovaPharm customer entitlement or administrator role.
+    scope: "openid email profile aws.cognito.signin.user.admin",
     code_challenge_method: "S256",
     code_challenge: createHash("sha256").update(verifier).digest("base64url"),
     state,
@@ -104,7 +106,7 @@ async function boundedJson(response, max = 80_000) {
   try { return JSON.parse(raw); } catch { throw blocked("identity_response_invalid"); }
 }
 
-export async function exchangeCustomerAuthCode({ code, verifier, fetchImpl = globalThis.fetch } = {}) {
+export async function exchangeCustomerAuthTokens({ code, verifier, fetchImpl = globalThis.fetch } = {}) {
   if (typeof code !== "string" || !/^[A-Za-z0-9._~-]{8,2048}$/u.test(code) ||
       typeof verifier !== "string" || !VALID_RANDOM.test(verifier) ||
       typeof fetchImpl !== "function") throw blocked("authorization_code_invalid");
@@ -125,8 +127,19 @@ export async function exchangeCustomerAuthCode({ code, verifier, fetchImpl = glo
       typeof tokens.id_token !== "string" || tokens.id_token.length > 16000) {
     throw blocked("identity_response_invalid");
   }
-  // No refresh/access tokens are returned from this boundary.
-  return tokens.id_token;
+  // Only short-lived id and access token are returned to the SERVER caller.
+  // Never expose either token to HTML/JavaScript, logs, redirect URLs or API.
+  if (typeof tokens.access_token !== "string" ||
+      tokens.access_token.length < 128 || tokens.access_token.length > 16000 ||
+      !/^[A-Za-z0-9._~-]+$/u.test(tokens.access_token)) {
+    throw blocked("identity_response_invalid");
+  }
+  return Object.freeze({ idToken: tokens.id_token, accessToken: tokens.access_token });
+}
+
+/** Legacy identity-only adapter; never returns an access token to the browser. */
+export async function exchangeCustomerAuthCode(args) {
+  return (await exchangeCustomerAuthTokens(args)).idToken;
 }
 
 /**
@@ -136,6 +149,7 @@ export async function exchangeCustomerAuthCode({ code, verifier, fetchImpl = glo
 export async function verifyIntelligenceCustomerIdToken({
   idToken, expectedNonce, fetchImpl = globalThis.fetch,
   nowSeconds = Math.floor(Date.now() / 1000),
+  purpose = "identity",
 } = {}) {
   if (typeof idToken !== "string" || idToken.length > 16000 ||
       typeof expectedNonce !== "string" || !VALID_RANDOM.test(expectedNonce)) throw blocked("invalid_identity_token");
@@ -175,6 +189,25 @@ export async function verifyIntelligenceCustomerIdToken({
       !Number.isSafeInteger(claims.iat) || claims.iat > nowSeconds + 60 ||
       !Number.isSafeInteger(nowSeconds)) throw blocked("identity_claims_invalid");
   if (claims.email_verified !== true) throw blocked("identity_email_unverified");
+  if (purpose === "mfa_enrolment") {
+    // Restricted first-login bootstrap only. This is NOT verified MFA,
+    // identity acceptance, a tenant session or a route to paid data.
+    // The signed token must prove the founder's Cognito password ceremony.
+    if (claims.email !== "vishal@novapharmhealthcare.com" ||
+        !Array.isArray(claims.amr) || !claims.amr.includes("pwd") ||
+        (claims.acr !== "urn:cognito:loa:1" && claims.acr !== undefined) ||
+        !Number.isSafeInteger(claims.auth_time) ||
+        claims.auth_time > nowSeconds + 60 ||
+        nowSeconds - claims.auth_time > 300) {
+      throw blocked("mfa_enrolment_not_authorised");
+    }
+    return Object.freeze({
+      mfaEnrolmentOnly: true, verifiedCognitoSubject: claims.sub,
+      identityVerified: false, mfaVerified: false,
+      grantsTenantAccess: false, subscriptionVerified: false,
+    });
+  }
+  if (purpose !== "identity") throw blocked("identity_claims_invalid");
   // Cognito Essentials computes ACR/AMR from the actual factors used.
   // Do not substitute pool MFA configuration or existing TOTP enrolment for
   // a signed assertion of password + TOTP authentication on THIS sign-in.

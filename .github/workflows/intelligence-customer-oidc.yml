@@ -4,7 +4,11 @@ on:
   pull_request:
     paths:
       - 'src/core/intelligence-customer-oidc.mjs'
+      - 'src/core/intelligence-founder-totp-enrolment.mjs'
+      - 'apps/portal/app/auth/callback/route.ts'
+      - 'apps/portal/app/auth/mfa/setup/route.ts'
       - 'scripts/test-intelligence-customer-oidc.mjs'
+      - 'scripts/test-intelligence-founder-totp-enrolment.mjs'
       - '.github/workflows/intelligence-customer-oidc.yml'
 
 permissions:
@@ -20,6 +24,9 @@ jobs:
         with:
           node-version: 24
       - name: Verify PKCE, HMAC transaction, signed Cognito claims and denial of tenant access
-        run: node --test scripts/test-intelligence-customer-oidc.mjs
+        run: |
+          node --check src/core/intelligence-customer-oidc.mjs
+          node --check src/core/intelligence-founder-totp-enrolment.mjs
+          node --test scripts/test-intelligence-customer-oidc.mjs scripts/test-intelligence-founder-totp-enrolment.mjs
       - name: Preserve enterprise release evidence
         run: npm run intelligence:requirements:validate
