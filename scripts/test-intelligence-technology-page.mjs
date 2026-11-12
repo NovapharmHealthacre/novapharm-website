@@ -272,14 +272,19 @@ console.log("NovaPharm Intelligence Technology page: source, public output, disc
 const workspacesHtml = read("technology/workspaces/index.html");
 const workspaceCss = read("assets/css/intelligence-workspace-product.css");
 const workspaceJs = read("assets/js/intelligence-workspace-product.js");
-const workspacesEmbed = read("assets/js/intelligence-workspace-embed.js");
+const workspaceEmbeddedCss = read("assets/css/intelligence-workspace-embedded.css");
+const workspaceEmbeddedJs = read("assets/js/intelligence-workspace-embedded.js");
 for (const [label, html] of [["canonical source", source], ["published page", published]]) {
-  assert.match(html, /id="npi-experience-iframe"/, label + " must embed the interactive experience");
-  assert.match(html, /src="\/technology\/workspaces\/\?embed=1"/, label + " must use the local same-origin experience");
+  assert.match(html, /id="npi-exp-shell"/, label + " must render the native interactive experience");
+  assert.match(html, /href="\/assets\/css\/intelligence-workspace-embedded\.css"/, label + " must load the scoped app styles");
+  assert.match(html, /src="\/assets\/js\/intelligence-workspace-embedded\.js"/, label + " must load the CSP-safe app runtime");
   assert.match(html, /npi-directory-groups" hidden aria-hidden="true"/, label + " must not display the obsolete accordion");
+  assert.doesNotMatch(html, /id="npi-experience-iframe"/, label + " must not depend on CSP-blocked frames");
 }
 assert.match(styles, /npi-workspace-live-experience/, "The shared style must include the embedded experience");
-assert.match(workspacesEmbed, /event\.origin !== window\.location\.origin/, "Only same-origin resize events may be trusted");
+assert.match(workspaceEmbeddedJs, /appRoot\.addEventListener\(\x27click\x27/, "Native app interactions must be scoped to the component");
+assert.match(workspaceEmbeddedCss, /npi-workspace-live-experience/, "Native app styles must not leak into the website");
+assert.doesNotMatch(workspaceEmbeddedJs, /style="/, "Native app previews must not depend on CSP-blocked inline styles");
 assert.match(workspaceJs, /function renderSupplyOverview\(\)/, "Supply Intelligence must have its own interactive product preview");
 assert.match(workspaceJs, /function renderSupplyMode\(mode\)/, "Supply Intelligence preview tabs must render distinct content");
 assert.match(workspaceJs, /ILLUSTRATIVE PRODUCT EXPERIENCE/, "Simulated figures must be identified as previews");
