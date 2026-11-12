@@ -14,6 +14,7 @@ const ALLOWED=new Set([
 ]);
 const reject=why=>{throw Object.assign(new Error("EPD full stream verification rejected: "+why),{code:"EPD_FULL_STREAM_DENIED"});};
 function officialUrl(v,base) {
+ if(typeof v!=="string"||!v.trim())reject("missing_resource_url");
  let u;
  try {u=new URL(v,base);}catch{reject("invalid_resource_url");}
  if(u.protocol!=="https:"||u.username||u.password||!ALLOWED.has(u.hostname)||u.hash)reject("unapproved_resource_origin");
@@ -41,7 +42,7 @@ export async function verifyByteStream({chunks,expectedSha256,expectedBytes,maxB
   const b=Buffer.from(val);
   bytes+=b.length;
   if(bytes>maxBytes||bytes>expectedBytes)reject("oversize_response");
-  h.update(b);lines+=b.reduce((n,v)=>n+(v===10),0);
+  h.update(b);for(let p=0;(p=b.indexOf(10,p))!==-1;p++)lines++;
   if(b.length)last=b.at(-1);
   if(!headerDone){
    const nl=b.indexOf(10);
