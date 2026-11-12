@@ -4,9 +4,9 @@
   const section = document.getElementById("intelligence-pricing");
   if (!section) return;
   const toggles = Array.from(section.querySelectorAll("[data-npi-billing]"));
-  const cards = Array.from(section.querySelectorAll("[data-npi-plan][data-monthly-inr][data-annual-inr]"));
+  const cards = Array.from(section.querySelectorAll("[data-npi-plan][data-monthly-gbp][data-annual-gbp]"));
   if (toggles.length !== 2 || cards.length !== 2) return;
-  const money = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
+  const money = new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 });
 
   const render = (cycle) => {
     if (!["monthly", "annual"].includes(cycle)) return;
@@ -16,8 +16,8 @@
       toggle.setAttribute("aria-pressed", String(selected));
     }
     for (const card of cards) {
-      const monthly = Number(card.getAttribute("data-monthly-inr"));
-      const annual = Number(card.getAttribute("data-annual-inr"));
+      const monthly = Number(card.getAttribute("data-monthly-gbp"));
+      const annual = Number(card.getAttribute("data-annual-gbp"));
       const price = card.querySelector("[data-npi-plan-price]");
       const period = card.querySelector("[data-npi-plan-period]");
       const explanation = card.querySelector("[data-npi-plan-billing]");
