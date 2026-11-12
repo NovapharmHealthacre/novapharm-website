@@ -56,7 +56,8 @@ jobs:
               "$origin/assets/media/technology/novapharm-intelligence-hero.avif?$key" -o /tmp/novapharm-intelligence-hero-live.avif || true
             if grep -Fq 'class="npi-hero npi-hero--editorial"' /tmp/novapharm-technology-live.html \
               && grep -Fq 'class="npi-hero-logo"><img src="/assets/brand/novapharm-intelligence-approved.svg"' /tmp/novapharm-technology-live.html \
-              && ! grep -Fq '<p class="npi-kicker">NOVAPHARM INTELLIGENCE</p>' /tmp/novapharm-technology-live.html \
+              # The closing CTA legitimately has the brand kicker; only an obsolete HERO is rejected.
+              && ! sed -n '/<section class="npi-hero npi-hero--editorial"/,/<\/section>/p' /tmp/novapharm-technology-live.html | grep -Fq '<p class="npi-kicker">NOVAPHARM INTELLIGENCE</p>' \
               && grep -Fq 'novapharm-intelligence-hero.avif' /tmp/novapharm-intelligence-live.css \
               && test -s /tmp/novapharm-intelligence-hero-live.avif \
               && grep -Fq 'id="intelligence-research"' /tmp/novapharm-technology-live.html \
