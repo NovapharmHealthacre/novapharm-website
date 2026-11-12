@@ -8,7 +8,8 @@ test("review manifest is GBP-only and cannot activate Stripe or customer access"
   assert.equal(m.launchCurrency,"gbp");
   for (const key of ["ownerApproved","gbpStripePricesCreated","gbpPriceIdsApproved"]) assert.equal(m[key],true);
   for (const key of ["customerBillingEnabled","customerAccessEnabled"]) assert.equal(m[key],false);
-  assert.equal(m.verifiedPriceStatus,"inactive");
+  assert.equal(m.verifiedPriceStatus,"active");
+  assert.equal(m.priceCatalogueActive,true);
   assert.deepEqual(m.approvedSaleCountries,["GB"]);
   assert.deepEqual(m.proposedSaleCountries,["GB"]);
   assert.equal(m.tax.stripeTaxAutomatic,true);
