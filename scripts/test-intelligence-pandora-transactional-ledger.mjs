@@ -80,6 +80,7 @@ function fixture({
   );
   const operations = [];
   const db = {
+    databaseName: "novapharm_staging",
     collection(name) {
       if (!(name in state)) throw Error("Unknown collection " + name);
       return {
@@ -222,7 +223,7 @@ test("stale versions, audit failure and impossible state changes roll back compl
 });
 test("private maintenance can provision and verify six genuinely unique index definitions",async()=>{
   const store=new Map();
-  const db={collection(name){
+  const db={databaseName:"novapharm_staging",collection(name){
     if(!store.has(name)) store.set(name,[]);
     return {
       async createIndex(keys,opts){
