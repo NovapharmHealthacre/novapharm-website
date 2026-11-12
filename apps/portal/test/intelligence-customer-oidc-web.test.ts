@@ -39,6 +39,10 @@ test("customer start uses the pinned Cognito public PKCE client and a signed HTT
     assert.equal(target.searchParams.get("response_type"), "code");
     assert.equal(target.searchParams.get("scope"), "openid email profile aws.cognito.signin.user.admin");
     assert.equal(target.searchParams.get("code_challenge_method"), "S256");
+    // After initial Cognito TOTP activation, never silently reuse the prior
+    // password-only managed-login session.
+    assert.equal(target.searchParams.get("prompt"), "login");
+    assert.equal(target.searchParams.get("max_age"), "0");
     assert.equal(target.searchParams.get("redirect_uri"), "https://intelligence.novapharmhealthcare.com/auth/callback");
     const cookie = result.headers.get("set-cookie") ?? "";
     assert.match(cookie, /__Host-npi_oidc_tx=/);
@@ -69,7 +73,8 @@ test("password reset uses Cognito /forgotPassword and a fresh signed PKCE transa
     assert.equal(target.searchParams.get("redirect_uri"), intelligenceCustomerOidc.callback);
     assert.equal(target.searchParams.get("response_type"), "code");
     assert.equal(target.searchParams.get("code_challenge_method"), "S256");
-    assert.equal(target.searchParams.get("max_age"), "900");
+    assert.equal(target.searchParams.get("max_age"), "0");
+    assert.equal(target.searchParams.get("prompt"), "login");
     assert.match(target.searchParams.get("state") ?? "", /^[A-Za-z0-9_-]{40,128}$/);
     const cookie = result.headers.get("set-cookie") ?? "";
     assert.match(cookie, /__Host-npi_oidc_tx=/);
