@@ -9,6 +9,9 @@ import {
   acknowledgeFounderManagedMfaOnly,
 } from "../../../../../src/core/intelligence-founder-managed-mfa-compat.mjs";
 import {
+  requestFounderPrivateSession,
+} from "../../../../../src/core/intelligence-founder-private-session-bridge.mjs";
+import {
   checkFounderEnrolled,
   checkFounderUnenrolled,
   createFounderMfaCookie,
@@ -59,11 +62,13 @@ function safeIdentityErrorCode(error: unknown): string {
   return typeof code === "string" && safeIdentityErrorCodes.has(code) ? code : "unclassified";
 }
 
-function resultPage(verified: boolean, approved = false, registeredButUnattested = false, founderProviderOnly = false): NextResponse {
-  const title = approved ? "Business account connected" : verified ? "Identity verified"
+function resultPage(verified: boolean, approved = false, registeredButUnattested = false, founderProviderOnly = false, founderSessionActive = false): NextResponse {
+  const title = founderSessionActive ? "Founder workspace ready" : approved ? "Business account connected" : verified ? "Identity verified"
     : founderProviderOnly ? "Cognito sign-in confirmed"
     : registeredButUnattested ? "Authenticator active" : "Sign-in could not be completed";
-  const message = approved
+  const message = founderSessionActive
+    ? "Your founder identity has been verified and a time-limited private workspace session is active. You can review the Medicines Terminal workspace catalogue. Research data, customer accounts, subscriptions and restricted actions remain protected by independent approval controls."
+    : approved
     ? "Your organisation, customer seat, subscription and secure session are verified. Continue to your account. Medicine datasets and research features remain restricted to separately accepted source rights."
     : verified
       ? "Your identity has been verified. Access to medicines intelligence requires a separately approved organisation, customer seat, and subscription. No workspace or paid access has been granted."
@@ -73,7 +78,7 @@ function resultPage(verified: boolean, approved = false, registeredButUnattested
         ? "Your authenticator is registered. Cognito has not yet provided proof of password plus authenticator verification for this sign-in. Start a fresh sign-in and complete both steps. No Medicines Terminal access has been granted."
         : "We could not complete this sign-in securely. Please start a new sign-in from NovaPharm Intelligence.";
   // Fixed server-authored markup: no user-controlled values or identity tokens are rendered.
-  const document = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title} | NovaPharm Intelligence</title><style>body{margin:0;background:#f5f5f7;color:#1d1d1f;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{max-width:680px;margin:13vh auto;padding:36px}.brand{font-size:14px;font-weight:650;letter-spacing:.03em}.panel{background:#fff;border-radius:26px;padding:clamp(24px,6vw,60px);margin-top:22px;box-shadow:0 12px 48px #0000000b}h1{font-size:clamp(32px,5vw,52px);letter-spacing:-.045em;line-height:1.06;margin:0 0 24px}p{color:#626268;font-size:17px;line-height:1.6}a{display:inline-block;margin-top:26px;color:#0066cc;font-weight:600;text-decoration:none}a:focus-visible{outline:3px solid #0066cc;outline-offset:6px}</style></head><body><main class="shell"><div class="brand">NovaPharm Intelligence</div><section class="panel"><h1>${title}</h1><p>${message}</p><a href="${verified || founderProviderOnly ? "/" : "/auth/customer/start"}">${verified ? "Return to the Medicines Terminal" : founderProviderOnly ? "Return to the Intelligence overview" : "Start a new secure sign-in"}</a></section></main></body></html>`;
+  const document = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title} | NovaPharm Intelligence</title><style>body{margin:0;background:#f5f5f7;color:#1d1d1f;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{max-width:680px;margin:13vh auto;padding:36px}.brand{font-size:14px;font-weight:650;letter-spacing:.03em}.panel{background:#fff;border-radius:26px;padding:clamp(24px,6vw,60px);margin-top:22px;box-shadow:0 12px 48px #0000000b}h1{font-size:clamp(32px,5vw,52px);letter-spacing:-.045em;line-height:1.06;margin:0 0 24px}p{color:#626268;font-size:17px;line-height:1.6}a{display:inline-block;margin-top:26px;color:#0066cc;font-weight:600;text-decoration:none}a:focus-visible{outline:3px solid #0066cc;outline-offset:6px}</style></head><body><main class="shell"><div class="brand">NovaPharm Intelligence</div><section class="panel"><h1>${title}</h1><p>${message}</p><a href="${founderSessionActive ? "/founder/" : verified || founderProviderOnly ? "/" : "/auth/customer/start"}">${founderSessionActive ? "Open the Medicines Terminal" : verified ? "Return to the Medicines Terminal" : founderProviderOnly ? "Return to the Intelligence overview" : "Start a new secure sign-in"}</a></section></main></body></html>`;
   return new NextResponse(document, {
     status: verified || registeredButUnattested || founderProviderOnly ? 200 : 401,
     headers: { ...securityHeaders, "Content-Type": "text/html; charset=utf-8" },
@@ -175,7 +180,19 @@ export async function GET(request: NextRequest): Promise<Response> {
           throw new Error("Unsafe identity-only acknowledgement.");
         }
         providerFounderOnly = true;
-        response = resultPage(false, false, false, true);
+        const founderSession = await requestFounderPrivateSession({
+          idToken, accessToken,
+          signingKey: process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] ?? "",
+        });
+        response = resultPage(false, false, false, true, founderSession !== null);
+        if (founderSession) {
+          response.cookies.set({
+            name: "__Host-npi_founder", value: founderSession.token,
+            path: "/", secure: true, httpOnly: true,
+            sameSite: "lax", maxAge: founderSession.maxAge,
+          });
+          console.info(JSON.stringify({ event: "npi_founder_shell_session_issued" }));
+        }
         console.info(JSON.stringify({
           event: "npi_founder_managed_cognito_identity_only_confirmed",
         }));
