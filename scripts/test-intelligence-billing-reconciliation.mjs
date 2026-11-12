@@ -10,7 +10,7 @@ const start = Date.parse("2026-11-01T00:00:00Z") / 1000;
 const end = Date.parse("2026-12-01T00:00:00Z") / 1000;
 const secret = "whsec_offline_synthetic_reconciliation_only";
 const customer = "cus_Synthetic123", sub = "sub_Synthetic123", invoice = "in_Synthetic123";
-const price = "price_1Ua7M92U9Y3sX5I2tVhCoFaq";
+const price = "price_1Uati52U9Y3sX5I2RJuYixR9";
 const mapping = { verifiedServerSide: true, tenantId: "tenant-owner", subject: "user-owner",
   stripeCustomerId: customer, stripeSubscriptionId: sub, stripeLiveMode: true,
   plan: "starter", cycle: "monthly" };
@@ -33,11 +33,11 @@ function verifiedEvent(type = "invoice.paid", id = invoice) {
 const stripeSubscription = { verifiedServerSide: true, providerSource: "stripe-live-api",
   livemode: true, object: "subscription", id: sub, customer, status: "active",
   latest_invoice: invoice, cancel_at_period_end: false,
-  items: { data: [{ quantity: 1, price: { id: price, currency: "inr" },
+  items: { data: [{ quantity: 1, price: { id: price, currency: "gbp" },
     current_period_start: start, current_period_end: end }] } };
 const paidInvoice = { verifiedServerSide: true, providerSource: "stripe-live-api",
   livemode: true, object: "invoice", id: invoice, customer, subscription: sub,
-  status: "paid", amount_paid: 2499900, currency: "inr" };
+  status: "paid", amount_paid: 19900, currency: "gbp" };
 const contract = { verifiedServerSide: true, accepted: true, tenantId: mapping.tenantId,
   subject: mapping.subject, plan: "starter", cycle: "monthly", stripePriceId: price };
 const riskLedger = { verifiedServerSide: true, tenantId: mapping.tenantId,
@@ -52,6 +52,28 @@ function denied(overrides, code) {
   assert.deepEqual(assessIntelligencePaidInvoice({ ...sample(), ...overrides }),
     { readyForAtomicCommit: false, grantsCustomerAccess: false, code });
 }
+test("owner-approved GBP invoices qualify for review but old INR or forged price IDs never qualify", () => {
+  const verified = assessIntelligencePaidInvoice(sample());
+  assert.equal(verified.readyForAtomicCommit, true);
+  assert.equal(verified.grantsCustomerAccess, false);
+  denied({ paidInvoice: { ...paidInvoice, currency: "inr" } },
+    "verified_current_paid_invoice_required");
+  denied({ stripeSubscription: { ...stripeSubscription, items: { data: [{
+    ...stripeSubscription.items.data[0],
+    price: { ...stripeSubscription.items.data[0].price, currency: "inr" },
+  }] } } }, "subscription_price_not_approved");
+  denied({ stripeSubscription: { ...stripeSubscription, items: { data: [{
+    ...stripeSubscription.items.data[0],
+    price: { id: "price_1Ua7M92U9Y3sX5I2tVhCoFaq", currency: "gbp" },
+  }] } } }, "subscription_price_not_approved");
+  denied({ paidInvoice: { ...paidInvoice, currency: "usd" } },
+    "verified_current_paid_invoice_required");
+  denied({ stripeSubscription: { ...stripeSubscription, items: { data: [{
+    ...stripeSubscription.items.data[0],
+    price: { ...stripeSubscription.items.data[0].price, currency: "eur" },
+  }] } } }, "subscription_price_not_approved");
+});
+
 test("paid invoice may be assessed only for a future atomic commit, never immediate access", () => {
   const value = assessIntelligencePaidInvoice(sample());
   assert.equal(value.readyForAtomicCommit, true);
@@ -107,10 +129,10 @@ test("current contract, period, source rights, isolation and ledger write approv
   denied({ release: { ...release, billingLedgerWriteAndReplayAccepted: false } }, "production_release_not_approved");
   assert.equal(assessIntelligencePaidInvoice({ ...sample(), stripeSubscription: {
     ...stripeSubscription, cancel_at_period_end: true } }).readyForAtomicCommit, true);
-  const enterprisePrice = "price_1Ua7MD2U9Y3sX5I2v7MQm0HS";
+  const enterprisePrice = "price_1UatiL2U9Y3sX5I2gktsrNl5";
   const enterprise = { ...sample(), trustedMapping: { ...mapping, plan: "enterprise" },
     stripeSubscription: { ...stripeSubscription, items: { data: [{
-      ...stripeSubscription.items.data[0], price: { id: enterprisePrice, currency: "inr" } }] } },
+      ...stripeSubscription.items.data[0], price: { id: enterprisePrice, currency: "gbp" } }] } },
     acceptedContract: { ...contract, plan: "enterprise", stripePriceId: enterprisePrice } };
   assert.equal(assessIntelligencePaidInvoice(enterprise).code, "contract_not_verified");
   enterprise.acceptedContract = { ...enterprise.acceptedContract,

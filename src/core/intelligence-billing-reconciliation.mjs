@@ -1,5 +1,5 @@
 /**
- * NovaPharm Intelligence: fail-closed, read-only paid invoice reconciliation.
+ * NovaPharm Intelligence: fail-closed, read-only GBP paid invoice reconciliation.
  *
  * This is a PURE assessment, not a consumer webhook or a production grant.
  * Caller must obtain the event from verifyIntelligenceBillingEvent, the Stripe
@@ -70,7 +70,7 @@ export function assessIntelligencePaidInvoice({
   const item = stripeSubscription.items?.data;
   if (!Array.isArray(item) || item.length !== 1 || item[0]?.quantity !== 1 ||
       typeof item[0]?.price?.id !== "string" ||
-      item[0]?.price?.currency !== "inr") return deny("subscription_price_not_approved");
+      item[0]?.price?.currency !== "gbp") return deny("subscription_price_not_approved");
 
   const plan = trustedMapping.plan;
   const cycle = trustedMapping.cycle;
@@ -88,7 +88,7 @@ export function assessIntelligencePaidInvoice({
       stripeObjectId(paidInvoice.subscription ?? paidInvoice.parent?.subscription_details?.subscription) !== trustedMapping.stripeSubscriptionId ||
       stripeObjectId(stripeSubscription.latest_invoice) !== paidInvoice.id ||
       paidInvoice.status !== "paid" || !Number.isSafeInteger(paidInvoice.amount_paid) ||
-      paidInvoice.amount_paid <= 0 || paidInvoice.currency !== "inr") {
+      paidInvoice.amount_paid <= 0 || paidInvoice.currency !== "gbp") {
     return deny("verified_current_paid_invoice_required");
   }
 

@@ -10,7 +10,7 @@ const stripeCustomerId = "cus_Synthetic123";
 const stripeSubscriptionId = "sub_Synthetic123";
 const invoiceId = "in_Synthetic123";
 const eventId = "evt_Synthetic123";
-const priceId = "price_1Ua7M92U9Y3sX5I2tVhCoFaq";
+const priceId = "price_1Uati52U9Y3sX5I2RJuYixR9";
 const now = "2026-11-11T10:05:00.000Z";
 function scenario() {
   const identity = { verifiedServerSide: true, tenantId, subject };
