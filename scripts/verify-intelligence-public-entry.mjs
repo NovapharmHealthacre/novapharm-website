@@ -35,7 +35,10 @@ function isSecureTransactionCookie(headers) {
     /;\s*SameSite=Lax(?:;|$)/iu.test(cookie) &&
     /;\s*Path=\/(?:;|$)/iu.test(cookie) &&
     !/;\s*Domain=/iu.test(cookie) &&
-    /;\s*Max-Age=300(?:;|$)/iu.test(cookie)
+    // 300 seconds is the currently deployed version-15 baseline; 900 is
+    // the bounded onboarding candidate. Accept either during the controlled
+    // rollout, but never an arbitrary or unbounded transaction lifetime.
+    /;\s*Max-Age=(?:300|900)(?:;|$)/iu.test(cookie)
   );
 }
 
@@ -46,9 +49,12 @@ export async function verifyIntelligencePublicEntry({ fetchImpl = globalThis.fet
   const page = await probe(fetchImpl, origin + "/");
   if (page.status !== 200) reject("login_page_not_public");
   const markup = await page.text();
+  const restrictedIdentityOnly = markup.includes("Invitation-only access") ||
+    (markup.includes("Create a business account") &&
+     markup.includes("Subscription checkout and medicines access become available only after"));
   if (markup.length > 2_000_000 ||
       !markup.includes("Understand the medicine") ||
-      !markup.includes("Invitation-only access") ||
+      !restrictedIdentityOnly ||
       !markup.includes("/auth/customer/start")) reject("login_copy_or_constraints_invalid");
 
   const companyPage = await probe(fetchImpl, corporate + "/technology/");
