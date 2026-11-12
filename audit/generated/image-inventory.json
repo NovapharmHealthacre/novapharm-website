@@ -10,12 +10,12 @@
     "Null semantic or provenance fields are explicit gaps, not inferred approvals."
   ],
   "summary": {
-    "trackedAssetCount": 875,
+    "trackedAssetCount": 876,
     "byClassification": {
-      "KEEP": 875
+      "KEEP": 876
     },
     "byProvenanceStatus": {
-      "registered": 665,
+      "registered": 666,
       "registered-identical-delivery-copy": 12,
       "repository-generated-test-evidence": 198
     },
@@ -1570,10 +1570,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 5,
-      "referenceCount": 7,
+      "usageCount": 6,
+      "referenceCount": 8,
       "usageFiles": [
         ".github/workflows/intelligence-live-smoke.yml",
+        "apps/portal/components/intelligence-sign-in.tsx",
         "creative-assets/asset-register.json",
         "scripts/test-intelligence-technology-page.mjs",
         "src/content/technology-intelligence.html",
@@ -14379,6 +14380,48 @@
         "docs/application-media-provenance.json",
         "oncology/index.html",
         "scripts/apply-corporate-product-discipline.mjs"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/media/portal/npi-human-portal.webp",
+      "canonicalDeliveryPath": "assets/media/portal/npi-human-portal.webp",
+      "format": "webp",
+      "bytes": 2486,
+      "width": 260,
+      "height": 228,
+      "aspectRatio": 1.140351,
+      "sha256": "acfc2a493e7f9035ae92c93dc09238f758e36c636fe3e7988ee3b7db56f8e596",
+      "perceptualHash": null,
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Cropped decorative mother-and-child artwork from the owner-supplied approved NovaPharm Secure Portal Sign-In visual (12 November 2026). Illustrative AI-generated design, not a photograph of an actual NovaPharm patient, family or clinician.",
+      "licence": "Owner-authorised NovaPharm Intelligence secure portal website use of original AI-generated NovaPharm project artwork.",
+      "reviewStatus": "Owner selected the exact human secure-portal reference, 12 November 2026.",
+      "technicalStatus": "owner-approved screenshot crop, performance-compressed WebP; decorative CSS only",
+      "provenanceRecord": null,
+      "semanticPurpose": "owner-approved-illustrative-portal-human-hero",
+      "routes": [
+        "https://intelligence.novapharmhealthcare.com/"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "",
+      "registeredCaption": "Decorative representative image; no healthcare, patient outcome or market evidence claimed.",
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 4,
+      "referenceCount": 4,
+      "usageFiles": [
+        "apps/portal/components/intelligence-sign-in.module.css",
+        "apps/portal/scripts/sync-public-assets.mjs",
+        "apps/portal/test/intelligence-human-entry.test.ts",
+        "creative-assets/asset-register.json"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
