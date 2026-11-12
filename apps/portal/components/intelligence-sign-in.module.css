@@ -47,6 +47,8 @@
 .navigation a:hover,.footerLinks a:hover,.recoveryAction:hover { text-decoration:underline; text-underline-offset:4px; }
 .headerAction { justify-self:end; display:inline-flex; align-items:center; justify-content:center; min-width:94px; min-height:41px; padding:10px 20px; border-radius:99px; background:#0d1118; color:#fff; text-decoration:none; font-size:14px; font-weight:600; }
 .headerAction:hover,.primaryAction:hover { background:#2d3340; }
+.headerAction { border:0; cursor:pointer; font:inherit; font-size:14px; font-weight:600; }
+.headerAction:disabled { opacity:.6; cursor:wait; }
 .layout { flex:1; min-height:670px; display:grid; grid-template-columns:minmax(0,1.38fr) minmax(400px,.94fr); align-items:start; gap:clamp(36px,7vw,130px); padding-top:clamp(60px,9vh,120px); }
 .intro { padding-top:clamp(4px,3vw,30px); max-width:830px; }
 .eyebrow { color:#738096; font-size:13px; line-height:1.4; letter-spacing:.33em; font-weight:640; margin:0 0 34px; }
