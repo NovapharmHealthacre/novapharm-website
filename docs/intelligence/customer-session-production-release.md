@@ -17,6 +17,40 @@ The callback logs only fixed phase/reason classifications such as `identity_emai
 
 Do not promote this fix to production until the signed exact-head application image is released to the established AWS Lambda alias and real browser first-login, TOTP and malicious/expired callback tests pass. A merged source fix is **not** a deployed fix. Do not grant customer seats, billing or dataset rights by changing this timeout.
 
+## Cognito JWT key identifier compatibility (12 November 2026)
+
+At approximately 13:04 IST the founder returned from Cognito with an OAuth
+callback that reached `id_token_verification`, then failed with the
+privacy-safe `identity_signature_invalid` code. A separate earlier set
+of failures showed `transaction_invalid`, which requires a fresh start and
+a present signed PKCE cookie.
+
+The Next.js ID-token verifier incorrectly used a **base64url-only** regular
+expression for the JWT header `kid`. Cognito public JWKS signing-key
+identifiers may use standard base64 characters `+`, `/` and trailing
+`=`, as documented by AWS in its official JWT verification examples.
+The verifier now accepts these characters in a bounded header key ID and
+still requires all of:
+
+- Exact expected RSA `RS256` algorithm.
+- Exact string match against a key from the fixed production Cognito
+  issuer's public `/.well-known/jwks.json` endpoint, with RSA signing
+  type and no `none` algorithm.
+- Successful cryptographic RSA SHA-256 verification of the raw JWT bytes.
+- Exact signed issuer, client audience, nonce, expiry, verified email and
+  required level-4 MFA claims. No customer rights granted by identity alone.
+
+Unit tests cover valid padded/base64 signing-key IDs, forged signatures,
+unknown IDs and invalid header characters. No JWT, OAuth code, user email,
+PKCE secret or cookie is stored in the test artifacts or logged.
+
+This is a **code candidate**, not a verified production sign-in. Require
+exact-head CI, image scanning, pinned Lambda alias release, negative
+callback tests and successful real MFA browser login before closing.
+
+AWS reference:
+https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-verifying-a-jwt.html
+
 ## Release controls
 
 Both CloudFormation parameters default to false: EnableCustomerRoutes and CustomerLaunchAccepted. The Next.js customer session exchange flag is absent/false unless set explicitly in reviewed production configuration.
