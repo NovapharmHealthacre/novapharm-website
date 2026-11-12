@@ -212,7 +212,9 @@ def reserve(db, accepted, now):
     tenant_id, sub = accepted["tenantId"], accepted["sub"]
     tpk = "TENANT#" + tenant_id
     intent_id = "intent_" + secrets.token_urlsafe(24)
-    expiry = now + 600
+    # Stripe Checkout remains open for one hour. A slightly longer owner lock
+    # prevents two simultaneously payable sessions for the same seat.
+    expiry = now + 3660
     items = [
       {"Put": {"TableName": ACCESS_TABLE, "Item": {
           **key("CHECKOUT#" + intent_id, "META"), "status": s("reserved"),
@@ -261,12 +263,13 @@ def reserve(db, accepted, now):
     db.transact_write_items(TransactItems=items, ClientRequestToken=secrets.token_hex(16))
     return intent_id
 
-def make_checkout(intent_id, accepted, live_key, stripe_post):
+def make_checkout(intent_id, accepted, live_key, stripe_post, now):
     if not (isinstance(live_key, str) and live_key.startswith(("sk_live_", "rk_live_")) and len(live_key) >= 20):
         raise RuntimeError("stripe_credential_unavailable")
     params = {
         "mode": "subscription", "customer": accepted["customer"],
         "client_reference_id": intent_id, "line_items[0][price]": accepted["price"],
+        "expires_at": str(now + 3600),
         "line_items[0][quantity]": "1", "automatic_tax[enabled]": "true",
         "tax_id_collection[enabled]": "true", "customer_update[address]": "auto",
         "success_url": "https://" + HOST + "/account/billing/return?session_id={CHECKOUT_SESSION_ID}",
@@ -326,7 +329,7 @@ def handle(event, *, db, secret_key, transport=stripe_post, now=None, enabled=Fa
         if not accepted:
             return reply(403, "customer_contract_or_tenant_not_accepted")
         intent = reserve(db, accepted, now)
-        session_id, url = make_checkout(intent, accepted, secret_key(), transport)
+        session_id, url = make_checkout(intent, accepted, secret_key(), transport, now)
         deliver(db, intent, session_id)
         # This URL is NOT a payment receipt. The webhook reconciling a paid
         # Stripe invoice is the ONLY route to a customer subscription grant.
