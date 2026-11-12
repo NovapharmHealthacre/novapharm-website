@@ -154,10 +154,27 @@ test("password-only founder proof enables TOTP setup but NEVER identity or custo
   assert.equal(p.identityVerified, false);
   assert.equal(p.mfaVerified, false);
   assert.equal(p.grantsTenantAccess, false);
+  // Cognito may classify a PASSWORD sign-in with an additional factor at LOA3.
+  // This is safe for first-time MFA enrolment only, NOT a customer login.
+  const strongerPassword = { ...firstLogin,
+    acr: "urn:cognito:loa:3", amr: ["pwd", "email_otp", "mfa"],
+  };
+  const strongerResult = await verifyIntelligenceCustomerIdToken({
+    idToken: token(strongerPassword), expectedNonce: nonce,
+    fetchImpl: mockJwks, nowSeconds: second, purpose: "mfa_enrolment",
+  });
+  assert.equal(strongerResult.mfaEnrolmentOnly, true);
+  assert.equal(strongerResult.identityVerified, false);
+  assert.equal(strongerResult.grantsTenantAccess, false);
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken: token(strongerPassword), expectedNonce: nonce,
+    fetchImpl: mockJwks, nowSeconds: second,
+  }), e => e.code === "identity_mfa_level_insufficient");
   for (const claims of [
     { ...firstLogin, email: "other@example.com" },
     { ...firstLogin, amr: ["email_otp"] },
-    { ...firstLogin, acr: "urn:cognito:loa:4" },
+    { ...firstLogin, acr: "urn:cognito:loa:2" },
+    { ...firstLogin, acr: "urn:untrusted:loa:3" },
     { ...firstLogin, auth_time: second - 301 },
     { ...firstLogin, email_verified: false },
   ]) {
@@ -165,6 +182,17 @@ test("password-only founder proof enables TOTP setup but NEVER identity or custo
       idToken: token(claims), expectedNonce: nonce,
       fetchImpl: mockJwks, nowSeconds: second, purpose: "mfa_enrolment",
     }));
+  }
+  for (const [claims, code] of [
+    [{ ...firstLogin, email: "unknown@example.com" }, "mfa_enrolment_founder_email_mismatch"],
+    [{ ...firstLogin, amr: ["email_otp"] }, "mfa_enrolment_password_proof_missing"],
+    [{ ...firstLogin, acr: "urn:cognito:loa:2" }, "mfa_enrolment_acr_incompatible"],
+    [{ ...firstLogin, auth_time: second - 301 }, "mfa_enrolment_auth_stale"],
+  ]) {
+    await assert.rejects(verifyIntelligenceCustomerIdToken({
+      idToken: token(claims), expectedNonce: nonce,
+      fetchImpl: mockJwks, nowSeconds: second, purpose: "mfa_enrolment",
+    }), e => e.code === code);
   }
   await assert.rejects(verifyIntelligenceCustomerIdToken({
     idToken: token(firstLogin, true), expectedNonce: nonce,
