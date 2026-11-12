@@ -42,6 +42,26 @@ assert(catalog.every(p=>p.availabilityQuantity===null&&p.cardCheckoutAuthority==
 const destination=join(root,'assets/data/commerce-marketplace.json');
 writeFileSync(destination,JSON.stringify({schema:'novapharm-public-merchant-discovery-v1',sourceScope:'owner-supplied-nutraxin-and-esco-catalogues',updatedAt:'2026-11-11',inventoryAuthority:'aws_dynamodb_owner_confirmed_read_only',notPaymentAuthority:true,
   search:true,comparisons:true,sellers:1,sourceProductCount:392,products:catalog},null,2)+'\n','utf8');
+// Search crawlers and no-JavaScript visitors need real links instead of an empty JS grid.
+// ESCO records link to their specific catalogue reference, not a claim of paid checkout.
+const htmlEscape=value=>String(value).replace(/[&<>"']/g,char=>({
+ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+})[char]);
+const browseGroups=[
+ {title:'Nutraxin food supplements',items:catalog.filter(p=>p.brand==='Nutraxin')},
+ ...esco.categories.map(group=>({title:'ESCO · '+group.name,items:catalog.filter(p=>p.brand==='ESCO'&&p.category===group.name)}))
+];
+assert.equal(browseGroups.reduce((total,group)=>total+group.items.length,0),392);
+const browseIndex='<details class="mp-source-index"><summary>Browse all 392 product records by name</summary>'+
+ '<p>Nutraxin links open individual product pages. ESCO links open a selected catalogue reference; payment and delivery require separate approval.</p>'+
+ '<div class="mp-source-index-groups">'+browseGroups.map(group=>
+   '<section class="mp-source-index-group"><h3>'+htmlEscape(group.title)+'</h3><ul>'+
+   group.items.map(p=>'<li><a class="mp-source-index-link" href="'+htmlEscape(p.href)+'">'+
+     htmlEscape(p.title)+' <small>'+htmlEscape(p.sku)+'</small></a></li>').join('')+
+   '</ul></section>'
+ ).join('')+'</div></details>';
+assert.equal((browseIndex.match(/class="mp-source-index-link"/g)||[]).length,392);
+
 const site=join(root,'products/index.html');
 const template=readFileSync(site,'utf8');
 const main=template.match(/<main\b[^>]*>[\s\S]*?<\/main>/);
@@ -56,7 +76,7 @@ const body=`<main id="main" class="mp-main" data-commerce-marketplace>
 <div><label for="mp-category">Category</label><select id="mp-category"><option value="all">All categories</option></select></div>
 <div><label for="mp-sort">Sort</label><select id="mp-sort"><option value="name">Product name</option><option value="brand">Portfolio</option></select></div></div>
 <div class="mp-status" role="status" aria-live="polite" id="mp-count">Loading the collection…</div>
-<div class="mp-grid" id="mp-grid"></div><div class="mp-more"><button id="mp-more" type="button" hidden>Show more products</button></div>
+<div class="mp-grid" id="mp-grid"></div><div class="mp-more"><button id="mp-more" type="button" hidden>Show more products</button></div>${browseIndex}
 </section><section class="mp-wrap mp-compare" aria-labelledby="mp-compare-title" id="mp-compare" hidden><div class="mp-heading"><p class="mp-eyebrow">PRODUCT COMPARISON</p><h2 id="mp-compare-title">Compare what matters.</h2><p>Prices may have different VAT and delivery treatments. Confirm final price at checkout or with NovaPharm.</p></div><div id="mp-compare-content"></div></section>
 <section class="mp-wrap mp-disclosure"><h2>Clearly governed.</h2><p>Each listing identifies its merchant, source and price basis. ESCO references are not necessarily saleable variants. NovaPharm confirms 10,000 warehouse units per catalogue record. This owner-attested quantity is shown from AWS inventory, not represented as an independent stock audit. Product-specific checkout, variant release, payment, dispatch and refund controls still apply.</p>
 <a href="/products/nutraxin/">Explore Nutraxin</a><a href="/products/esco/">Shop ESCO</a></section></main>`;
@@ -70,7 +90,7 @@ function removeInheritedProductMedia(html) {
   head=head.replace(/<meta\s+(?:property|name)="(?:og:image(?::[^"]*)?|twitter:image(?::[^"]*)?)"[^>]*>\s*/g,'');
   head=head.replace(/<meta\s+[^>]*product-portfolio-evidence\.jpg[^>]*>\s*/g,'');
   head=head.replace(/<script\s+type="application\/ld\+json"[^>]*>[\s\S]*?<\/script>/g, block=>
-    block.includes('product-portfolio-evidence.jpg')?'':block);
+    (block.includes('product-portfolio-evidence.jpg')||block.includes('"@type":"WebPage"')||block.includes('"@type":"CollectionPage"'))?'':block);
   if(head.includes('product-portfolio-evidence.jpg'))throw new Error('Products-only media remained in derived social metadata');
   return head+html.slice(headEnd);
 }
@@ -81,6 +101,53 @@ html=html.replace(/<meta name="description" content="[^"]*"/,'<meta name="descri
 html=html.replace('</head>','<link rel="stylesheet" href="/assets/css/commerce-marketplace.css"><script src="/assets/js/commerce-marketplace.js" defer></script></head>');
 assert(html.includes('data-commerce-marketplace')&&html.includes('commerce-marketplace.css'));
 html=removeInheritedProductMedia(html);
+// The derived marketplace must have its own canonical entity, social identity and
+// hreflang. Do not inherit the Products overview's WebPage or photo claims.
+const marketplaceUrl='https://novapharmhealthcare.com/products/marketplace/';
+const marketplaceDescription='Explore 392 NovaPharm catalogue records: 19 Nutraxin supplements and 373 ESCO healthcare equipment references. Ordering eligibility is confirmed per product.';
+const metaReplacements=[
+ [/^<meta property="og:url" content="[^"]*">/m,'<meta property="og:url" content="'+marketplaceUrl+'">'],
+ [/^<meta property="og:title" content="[^"]*">/m,'<meta property="og:title" content="Nutraxin & ESCO Marketplace | NovaPharm">'],
+ [/^<meta property="og:description" content="[^"]*">/m,'<meta property="og:description" content="'+marketplaceDescription+'">'],
+ [/^<meta name="twitter:title" content="[^"]*">/m,'<meta name="twitter:title" content="Nutraxin & ESCO Marketplace | NovaPharm">'],
+ [/^<meta name="twitter:description" content="[^"]*">/m,'<meta name="twitter:description" content="'+marketplaceDescription+'">']
+];
+for(const [pattern,replacement] of metaReplacements){
+ assert(pattern.test(html),'Missing inherited marketplace meta signal: '+String(pattern));
+ html=html.replace(pattern,replacement);
+}
+for(const language of ['en-GB','x-default']){
+ const from='<link rel="alternate" hreflang="'+language+'" href="https://novapharmhealthcare.com/products/">';
+ assert(html.includes(from),'Missing inherited hreflang '+language);
+ html=html.replace(from,'<link rel="alternate" hreflang="'+language+'" href="'+marketplaceUrl+'">');
+}
+const itemList={
+ '@type':'ItemList',numberOfItems:catalog.length,
+ itemListElement:catalog.map((p,i)=>({
+  '@type':'ListItem',position:i+1,name:p.title,url:'https://novapharmhealthcare.com'+p.href
+ }))
+};
+const collectionSchema={
+ '@context':'https://schema.org','@type':'CollectionPage',
+ '@id':marketplaceUrl+'#webpage',url:marketplaceUrl,
+ name:'Nutraxin & ESCO Marketplace | NovaPharm',
+ description:marketplaceDescription,inLanguage:'en-GB',
+ isPartOf:{'@id':'https://novapharmhealthcare.com/#website'},
+ about:{'@id':'https://novapharmhealthcare.com/#organization'},
+ mainEntity:itemList
+};
+assert(!html.includes('"@type":"Product"'),'Marketplace cannot claim ESCO saleable Product Offers');
+html=html.replace('</head>','<script type="application/ld+json">'+JSON.stringify(collectionSchema)+'</script></head>');
+
+// SEO enhancement generates the sitemap before this derived route is created.
+// Append only the public canonical discovery page, never per-SKU ESCO query URLs.
+const sitemapFile=join(root,'sitemap.xml');
+const currentSitemap=readFileSync(sitemapFile,'utf8');
+assert(currentSitemap.includes('</urlset>'),'Missing canonical sitemap root');
+const newEntry='<url><loc>'+marketplaceUrl+'</loc><lastmod>2026-11-12</lastmod></url>';
+const finalSitemap=currentSitemap.includes('<loc>'+marketplaceUrl+'</loc>')?
+ currentSitemap:currentSitemap.replace('</urlset>',newEntry+'</urlset>');
+writeFileSync(sitemapFile,finalSitemap,'utf8');
 const target=join(root,'products/marketplace/index.html');mkdirSync(dirname(target),{recursive:true});writeFileSync(target,html,'utf8');
 const callToAction='<section class="npd-commerce-link" aria-label="Unified product search"><p>ONE SEARCH. BOTH PORTFOLIOS.</p><h2>Explore the complete catalogue.</h2><a href="/products/marketplace/">Search all 392 products</a></section>';
 let productsIndex=template;
