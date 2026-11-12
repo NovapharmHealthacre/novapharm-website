@@ -16,6 +16,11 @@ const CALLBACK = "https://intelligence.novapharmhealthcare.com/auth/callback";
 // discarding the signed PKCE transaction; still expires after 15 minutes.
 const AGE_MS = 900_000;
 const REQUIRED_ACR = "urn:cognito:loa:4";
+// Permit initial MFA setup when the user has not yet enrolled a TOTP factor.
+// A fallback authentication level is a login-ceremony option, NOT a permission.
+// Cognito pool MFA=ON still requires TOTP enrolment, and the signed ID token
+// MUST satisfy REQUIRED_ACR with pwd+otp+mfa before identity is accepted.
+const INITIAL_ENROLMENT_ACR_FALLBACK = "urn:cognito:loa:1";
 // The Cognito authentication ceremony may include mandatory initial TOTP setup.
 // Keep the signed ID token fresh and require pwd + otp + mfa at completion.
 const MAX_AUTH_AGE_SECONDS = 900;
@@ -64,7 +69,7 @@ export function createCustomerLoginTransaction({ signingKey, nowMs = Date.now() 
     code_challenge: createHash("sha256").update(verifier).digest("base64url"),
     state,
     nonce,
-    acr_values: REQUIRED_ACR,
+    acr_values: [REQUIRED_ACR, INITIAL_ENROLMENT_ACR_FALLBACK].join(" "),
     max_age: String(MAX_AUTH_AGE_SECONDS),
   };
   for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value);

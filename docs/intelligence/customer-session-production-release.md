@@ -17,6 +17,37 @@ The callback logs only fixed phase/reason classifications such as `identity_emai
 
 Do not promote this fix to production until the signed exact-head application image is released to the established AWS Lambda alias and real browser first-login, TOTP and malicious/expired callback tests pass. A merged source fix is **not** a deployed fix. Do not grant customer seats, billing or dataset rights by changing this timeout.
 
+## Verified founder first-TOTP-enrolment recovery (12 November 2026)
+
+The founder's managed login returned `Invalid input: Invalid parameter in request`.
+AWS CloudTrail recorded four `login_POST` HTTP 400 `Unexpected exception`
+events at 07:08-07:09 UTC. The OAuth request carried `acr_values=urn:cognito:loa:4`
+while this account had **no independently confirmed TOTP enrolment**. The app
+client originally allowed only `ALLOW_USER_SRP_AUTH`; a subsequent AWS
+configuration update added `ALLOW_USER_AUTH`, preserving code-only OAuth
+and the exact production callback. A credential-free Cognito `USER_AUTH`
+negotiation then returned `SELECT_CHALLENGE` with password methods available.
+This is not evidence that actual browser sign-in succeeded.
+
+AWS documents that a step-up request cannot enrol factors a user has not
+already configured and that mandatory pool MFA remains a floor. For initial
+enrolment, the signed PKCE authorisation now requests ordered
+`acr_values=urn:cognito:loa:4 urn:cognito:loa:1`. Cognito may use the lower
+requested level only to initiate a first login and required authenticator
+enrolment; **this does not lower identity validation**. The pool requires MFA
+and the application's ID-token verifier still rejects every result without
+`acr=urn:cognito:loa:4` and `amr` containing **pwd, otp, mfa**, exact nonce,
+valid RSA signature, issuer, audience, verified email and fresh auth_time.
+No app session, tenant seat, medicine rights or subscription may be created
+by the fallback.
+
+This is a candidate until exact-head Node/portal tests, CodeQL, production
+image scan and Lambda production alias/signed browser acceptance pass. Cognito
+step-up rollout is gradual; if an actual signed token lacks ACR/AMR, deny
+identity without bypass. Source documentation:
+https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-step-up-authentication.html
+https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flows-selection-managedlogin.html
+
 ## Release controls
 
 Both CloudFormation parameters default to false: EnableCustomerRoutes and CustomerLaunchAccepted. The Next.js customer session exchange flag is absent/false unless set explicitly in reviewed production configuration.

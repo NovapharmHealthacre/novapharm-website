@@ -36,6 +36,8 @@ test("customer start uses the pinned Cognito public PKCE client and a signed HTT
     assert.equal(target.pathname, "/oauth2/authorize");
     assert.equal(target.searchParams.get("response_type"), "code");
     assert.equal(target.searchParams.get("code_challenge_method"), "S256");
+    assert.equal(target.searchParams.get("acr_values"), "urn:cognito:loa:4 urn:cognito:loa:1");
+    assert.equal(target.searchParams.get("max_age"), "900");
     assert.equal(target.searchParams.get("redirect_uri"), "https://intelligence.novapharmhealthcare.com/auth/callback");
     const cookie = result.headers.get("set-cookie") ?? "";
     assert.match(cookie, /__Host-npi_oidc_tx=/);
