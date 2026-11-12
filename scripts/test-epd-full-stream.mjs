@@ -10,6 +10,9 @@ test("offline complete stream digest verifies publisher bytes while refusing any
  const r=await verifyByteStream({chunks:parts(bytes),expectedBytes:bytes.length,expectedSha256:sha});
  assert.equal(r.bytes,bytes.length);assert.equal(r.sha256,sha);
  assert.equal(r.physical_newlines,2);
+ assert.equal(r.csv_syntactic_record_count,1);
+ assert.equal(r.quoted_newline_count,0);
+ assert.equal(r.publisher_record_count_reconciled,false);
  assert.equal(r.status,"full_csv_integrity_verified_private_only");
  assert.equal(r.accepted_observations,0);
  assert.equal(r.customer_publish_approved,false);
@@ -32,4 +35,25 @@ test("truncated CSV cannot become verified",async()=>{
  const truncated=bytes.subarray(0,bytes.length-10);
  await assert.rejects(()=>verifyByteStream({chunks:parts(truncated),
   expectedBytes:bytes.length,expectedSha256:sha}),/rejected/);
+});
+
+test("quoted newlines and escaped quote pairs do not inflate the CSV record count",async()=>{
+ const source=Buffer.from(
+  'YEAR_MONTH,PRACTICE_CODE,BNF_PRESENTATION_CODE,ITEMS,NIC,DESCRIPTION\n'+
+  '2026-08,ABC123,0208020Z0AAAFA,2,3.45,"Line 1\nLine 2 with ""quoted"" text"\n'
+ );
+ const result=await verifyByteStream({
+  chunks:parts(source),expectedBytes:source.length,
+  expectedSha256:createHash("sha256").update(source).digest("hex")
+ });
+ assert.equal(result.physical_newlines,3);
+ assert.equal(result.csv_syntactic_record_count,1);
+ assert.equal(result.quoted_newline_count,1);
+});
+test("unterminated quoted CSV is rejected although the checksum matches",async()=>{
+ const b=Buffer.from('YEAR_MONTH,PRACTICE_CODE,BNF_PRESENTATION_CODE,ITEMS,NIC\n"2026-08,ABC123,0208020Z0AAAFA,2,3.45\n');
+ await assert.rejects(()=>verifyByteStream({
+  chunks:parts(b),expectedBytes:b.length,
+  expectedSha256:createHash("sha256").update(b).digest("hex")
+ }),/rejected/);
 });
