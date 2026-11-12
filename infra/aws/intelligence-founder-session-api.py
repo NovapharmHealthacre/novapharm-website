@@ -211,7 +211,8 @@ def mint(event, now, cognito, dynamodb, secret):
     try:
         cognito_policy(cognito)
         current = cognito.get_user(AccessToken=access_token)
-        if not user_matches(current, subject):
+        admin = cognito.admin_get_user(UserPoolId=POOL, Username=FOUNDER_EMAIL)
+        if not user_matches(current, subject) or not user_matches(admin, subject):
             return deny(401, "founder_factor_not_verified")
         token = secrets.token_urlsafe(32)
         if not OPAQUE.fullmatch(token):
