@@ -77,7 +77,10 @@ for (const file of files) {
     "assets/css/novapharm.bundle.css",
     "assets/css/oncology-editorial.css",
     "assets/css/oncology-hope-v2.css",
-    "assets/css/products-editorial.css"
+    "assets/css/products-editorial.css",
+    // Technology Intelligence uses four bounded Apple-style editorial
+    // heading adjustments (-0.052em to -0.012em) under the same 0.08em cap.
+    "assets/css/technology-intelligence.css"
   ]);
   for (const match of source.matchAll(/\bletter-spacing\s*:\s*(-(?:\d+(?:\.\d+)?|\.\d+))([a-z%]*)/giu)) {
     const amount = Number(match[1]);
