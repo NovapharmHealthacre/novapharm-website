@@ -767,6 +767,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     // Prevent a fresh query (including a zero-result/error query) from displaying
     // a previous medicine's identity, charts or accepted observation state.
     selectionGenerationRef.current += 1;
+    const generation = selectionGenerationRef.current;
     setDetail(null);
     setAnalytics(null);
     setAnalyticsStatus("Previous medicine context cleared for the new search.");
@@ -778,12 +779,13 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     setSearchResponse(null);
     try {
       const next = await gatewayJson<SearchResponse>(`enterprise/medicines/search?q=${encodeURIComponent(query)}&limit=30`);
+      if (generation !== selectionGenerationRef.current) return;
       setSearchResponse(next);
       setSearchStatus(next.results.length ? `${next.results.length} matching medicine identities.` : "No current BNF identity matched that search.");
     } catch (error) {
-      setSearchStatus(professionalError(error));
+      if (generation === selectionGenerationRef.current) setSearchStatus(professionalError(error));
     } finally {
-      setBusy(false);
+      if (generation === selectionGenerationRef.current) setBusy(false);
     }
   }
 
