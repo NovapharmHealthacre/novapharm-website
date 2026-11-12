@@ -4,8 +4,8 @@ import Image from "next/image";
 import { type FormEvent, useEffect, useState } from "react";
 import {
   beginCognitoCardSignIn,
-  completeCognitoCardSignIn,
   type CardAuthResult,
+  completeCognitoCardSignIn,
   type TotpChallenge,
 } from "../lib/cognito-card-auth";
 import styles from "./intelligence-sign-in.module.css";
