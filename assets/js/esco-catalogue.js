@@ -205,7 +205,7 @@ if (root) {
     const add = dialog.querySelector("[data-esco-dialog-add]");
     const item = known.get(id);
     if (title) title.textContent = item.name;
-    if (model) model.textContent = (item.model || "Model to confirm") + " · " + card.dataset.escoCategory;
+    if (model) model.textContent = (item.model ? "ESCO model " + item.model : "NovaPharm internal SKU NP-ESCO-" + id.slice(-4)) + " · " + card.dataset.escoCategory;
     if (price) price.textContent = (readyPrices.has(id) ? "UK delivered " : "Base price ") +
       GBP.format((readyPrices.get(id) ?? item.guidePence) / 100) +
       (readyPrices.has(id) ? " ex VAT · secure checkout available" : " ex VAT · delivery confirmed before acceptance");
@@ -261,5 +261,11 @@ if (root) {
     persist(); render();
   });
   render();
-  syncShopAvailability().catch(() => { /* Catalogue remains available for enquiry. */ });
+  // Open the exact product selected in the unified marketplace. This is a
+  // catalogue navigation feature, never an authorisation to collect payment.
+  const directProductId = new URLSearchParams(window.location.search).get("product");
+  if (directProductId && /^ESCO-CAT-\\d{4}$/.test(directProductId) && known.has(directProductId)) {
+    openProductDetails(directProductId);
+  }
+  syncShopAvailability().catch(() => { /* Catalogue remains available for order requests. */ });
 }
