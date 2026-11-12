@@ -15,8 +15,6 @@ import time
 import uuid
 from datetime import datetime, timezone
 
-import boto3
-
 REGION = "eu-north-1"
 API_ID = "q2e6ztf8ic"
 DOMAIN = "intelligence.novapharmhealthcare.com"
@@ -343,6 +341,7 @@ def handler(event, _context):
     if len(secret) < 40:
         return deny(503, "service_unavailable")
     try:
+        import boto3
         return handle(event, now=int(time.time()),
             cognito=boto3.client("cognito-idp", region_name=REGION),
             dynamodb=boto3.client("dynamodb", region_name=REGION),
