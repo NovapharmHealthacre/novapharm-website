@@ -34,7 +34,7 @@ for(const category of esco.categories)for(const p of category.entries){
     stockStatus:'warehouse_reconciliation_pending',availabilityQuantity:null,cardCheckoutAuthority:false,
     image:photoIsMatched?mapping.path:'/assets/media/esco/previews/'+p.id.toLowerCase()+'.svg',
     photoCaption:photoIsMatched?'Supplier model-associated photograph; exact variant to confirm':'Original concept illustration; not a verified product photograph',
-    href:'/products/esco/#esco-catalogue'});
+    href:'/products/esco/?product='+encodeURIComponent(p.id)+'#esco-catalogue'});
 }
 assert.equal(catalog.length,392);assert.equal(new Set(catalog.map(p=>p.id)).size,392);
 assert.equal(new Set(catalog.map(p=>p.sku)).size,392);
@@ -59,7 +59,7 @@ const body=`<main id="main" class="mp-main" data-commerce-marketplace>
 <div class="mp-grid" id="mp-grid"></div><div class="mp-more"><button id="mp-more" type="button" hidden>Show more products</button></div>
 </section><section class="mp-wrap mp-compare" aria-labelledby="mp-compare-title" id="mp-compare" hidden><div class="mp-heading"><p class="mp-eyebrow">PRODUCT COMPARISON</p><h2 id="mp-compare-title">Compare what matters.</h2><p>Prices may have different VAT and delivery treatments. Confirm final price at checkout or with NovaPharm.</p></div><div id="mp-compare-content"></div></section>
 <section class="mp-wrap mp-disclosure"><h2>Clearly governed.</h2><p>Each listing identifies its merchant, source and price basis. ESCO references are not necessarily saleable variants. NovaPharm confirms 10,000 warehouse units per catalogue record. This owner-attested quantity is shown from AWS inventory, not represented as an independent stock audit. Product-specific checkout, variant release, payment, dispatch and refund controls still apply.</p>
-<a href="/products/nutraxin/">Explore Nutraxin</a><a href="/products/esco/">Explore ESCO</a></section></main>`;
+<a href="/products/nutraxin/">Explore Nutraxin</a><a href="/products/esco/">Shop ESCO</a></section></main>`;
 
 // A derived route must not inherit product-portfolio photography or Products-only
 // JSON-LD/social identity. The Products artwork is approved for that route alone.
