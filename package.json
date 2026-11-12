@@ -140,7 +140,7 @@
     "api:check": "npm run check --workspace=@novapharm/api",
     "portal:check": "npm run check --workspace=@novapharm/portal",
     "portal:test:browser": "node scripts/run-portal-browser-acceptance.mjs",
-    "portal:test:lighthouse": "node scripts/run-portal-lighthouse.mjs",
+    "portal:test:lighthouse": "node --test scripts/test-lighthouse-transient-retry.mjs && node scripts/run-portal-lighthouse.mjs",
     "status:check": "npm run check --workspace=@novapharm/status",
     "status:test:browser": "npm run test:browser --workspace=@novapharm/status",
     "status:test:lighthouse": "node scripts/run-status-lighthouse.mjs",

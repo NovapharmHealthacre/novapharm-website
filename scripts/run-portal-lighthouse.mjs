@@ -8,6 +8,7 @@ import lighthouse from "lighthouse";
 import desktopConfig from "lighthouse/core/config/desktop-config.js";
 import { chromium } from "playwright";
 import { assertBrowserValidationRoot } from "./browser-validation-runtime.mjs";
+import { withTransientLighthouseNavRetry } from "./lib/lighthouse-transient-retry.mjs";
 
 const repositoryRoot = resolve(process.cwd());
 const runtimeRoot = assertBrowserValidationRoot(join(tmpdir(), "novapharm-unified-portal-lighthouse-runtime"));
@@ -226,7 +227,10 @@ async function auditPageTrial(name, pathName, formFactor) {
 async function auditPage(name, pathName, formFactor) {
   const trials = [];
   for (let trial = 1; trial <= trialCount; trial += 1) {
-    trials.push(await auditPageTrial(name, pathName, formFactor));
+    trials.push(await withTransientLighthouseNavRetry(
+      () => auditPageTrial(name, pathName, formFactor),
+      { onRetry: () => new Promise((resolve) => setTimeout(resolve, 750)) },
+    ));
   }
   const summary = {
     name,
