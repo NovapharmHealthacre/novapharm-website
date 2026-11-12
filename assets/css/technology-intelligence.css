@@ -1281,20 +1281,18 @@ body[data-page="technology"] .np-intelligence {
   .np-intelligence .npi-hero--editorial .npi-hero-photo { background-image: none; }
 }
 
-/* Interactive intelligence workspace directory. The legacy accordion remains as non-active source context. */
+/* Native, CSP-compatible interactive intelligence workspace directory. */
 .np-intelligence .npi-workspace-directory {
   width: min(1460px, calc(100vw - 48px));
   max-width: none;
   margin-left: 50%;
   transform: translateX(-50%);
 }
-.np-intelligence .npi-workspace-directory .npi-directory-groups { display: none !important; }
-.np-intelligence .npi-workspace-live-experience { background: #fff; border-radius: 20px; overflow: hidden; margin-top: 26px; }
-.np-intelligence .npi-experience-iframe { width: 100%; display: block; height: 1000px; border: 0; background: #fff; }
-.np-intelligence .npi-experience-caption { padding: 8px 26px 20px; color: #6e6e73; font-size: .82rem; line-height: 1.5; }
-@media (max-width: 900px) {
-  .np-intelligence .npi-workspace-directory { width: min(100%, calc(100vw - 28px)); }
-  .np-intelligence .npi-workspace-live-experience { margin-top: 17px; border-radius: 13px; }
-  .np-intelligence .npi-experience-iframe { height: 1620px; }
-  .np-intelligence .npi-experience-caption { padding: 8px 14px 18px; }
+.np-intelligence .npi-workspace-directory .npi-directory-groups { display:none !important; }
+.np-intelligence .npi-workspace-directory .npi-workspace-live-experience {
+  display:block; margin-top:18px; background:#fff; border-radius:0; overflow:visible; width:100%;
+}
+@media (max-width:900px) {
+  .np-intelligence .npi-workspace-directory {width:min(100%,calc(100vw - 28px));}
+  .np-intelligence .npi-workspace-directory .npi-workspace-live-experience {margin-top:9px;}
 }
