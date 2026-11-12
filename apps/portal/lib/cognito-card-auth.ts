@@ -13,11 +13,11 @@ const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
 export type TotpChallenge = Readonly<{ email: string; session: string }>;
 export type CardAuthResult =
   | Readonly<{ kind: "mfa"; challenge: TotpChallenge }>
-  | Readonly<{ kind: "verified"; idToken: string }>
+  | Readonly<{ kind: "verified"; idToken: string; accessToken: string }>
   | Readonly<{ kind: "provider-required" }>;
 
 type CognitoPayload = {
-  AuthenticationResult?: { IdToken?: unknown };
+  AuthenticationResult?: { IdToken?: unknown; AccessToken?: unknown };
   ChallengeName?: unknown;
   Session?: unknown;
 };
@@ -59,11 +59,14 @@ function nextStep(
 ): CardAuthResult {
   if (reply.AuthenticationResult) {
     const idToken = reply.AuthenticationResult.IdToken;
+    const accessToken = reply.AuthenticationResult.AccessToken;
     // The pool is configured to require MFA. Deny unexpected token issuance
     // after the password alone; no client token can grant application access.
     if (!verifiedMfa || typeof idToken !== "string" ||
-        !/^[A-Za-z0-9._-]{100,16000}$/u.test(idToken)) return { kind: "provider-required" };
-    return { kind: "verified", idToken };
+        !/^[A-Za-z0-9._-]{100,16000}$/u.test(idToken) ||
+        typeof accessToken !== "string" ||
+        !/^[A-Za-z0-9._-]{100,16000}$/u.test(accessToken)) return { kind: "provider-required" };
+    return { kind: "verified", idToken, accessToken };
   }
   if (reply.ChallengeName === "SOFTWARE_TOKEN_MFA" &&
       typeof reply.Session === "string" &&
