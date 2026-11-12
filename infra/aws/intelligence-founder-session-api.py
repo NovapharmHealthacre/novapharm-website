@@ -254,85 +254,6 @@ def mint(event, now, cognito, dynamodb, secret):
         return deny(503, "founder_session_unavailable")
 
 
-
-def mint_from_iam(event, now, cognito, dynamodb):
-    """Only a scoped AWS IAM InvokeFunction principal can call this event.
-
-    No public API Gateway route accepts this action. The trusted portal
-    callback must first verify Cognito RSA signature, issuer/client, nonce,
-    exact owner email, and signed auth_time; AWS SigV4 authenticates that
-    execution role. Recheck Cognito's current TOTP policy and both account
-    and access-token identity before minting.
-    """
-    fields = {
-        "action", "subject", "signedAuthTimeSeconds",
-        "signedIssuedAtSeconds", "transactionCreatedAtMs",
-        "nonce", "accessToken",
-    }
-    if not isinstance(event, dict) or set(event) != fields:
-        return deny(401, "trusted_invoke_required")
-    subject = event.get("subject")
-    auth = event.get("signedAuthTimeSeconds")
-    issued = event.get("signedIssuedAtSeconds")
-    created = event.get("transactionCreatedAtMs")
-    nonce = event.get("nonce")
-    access_token = event.get("accessToken")
-    if (not SUBJECT.fullmatch(str(subject or "")) or type(auth) is not int
-            or type(issued) is not int or type(created) is not int
-            or auth < now - 150 or auth > now + 60
-            or issued < auth or issued > now + 60
-            or created > now * 1000 or now * 1000 - created > 900000
-            or auth * 1000 < created - 45000
-            or not re.fullmatch(r"[A-Za-z0-9_-]{22,64}", str(nonce or ""))
-            or not isinstance(access_token, str) or not 100 <= len(access_token) <= 8192):
-        return deny(401, "trusted_identity_stale_or_unverified")
-    try:
-        cognito_policy(cognito)
-        current = cognito.get_user(AccessToken=access_token)
-        admin = cognito.admin_get_user(UserPoolId=POOL, Username=FOUNDER_EMAIL)
-        if not user_matches(current, subject) or not user_matches(admin, subject):
-            return deny(401, "founder_factor_not_verified")
-        token = secrets.token_urlsafe(32)
-        if not OPAQUE.fullmatch(token):
-            return deny(503, "session_unavailable")
-        digest = hashlib.sha256(token.encode("ascii")).hexdigest()
-        session = {
-            **key("FOUNDER_SESSION#" + digest),
-            "subject": s(subject), "tokenHash": s(digest),
-            "scope": s(SCOPE), "status": s("active"),
-            "issuedEpoch": n(now), "ttlEpoch": n(now + TTL),
-            "identityProvider": s("cognito-oidc"),
-            "mfaAssurance": s("live-mandatory-password-totp-policy"),
-        }
-        audit = {
-            **key("FOUNDER_AUDIT#" + uuid.uuid4().hex),
-            "event": s("session-issued"), "createdEpoch": n(now),
-            "tokenHash": s(digest),
-        }
-        nonce_row = {
-            **key("FOUNDER_NONCE#" + nonce),
-            "ttlEpoch": n(now + 180), "status": s("consumed"),
-        }
-        dynamodb.transact_write_items(
-            TransactItems=[
-                {"Put": {"TableName": TABLE, "Item": nonce_row,
-                          "ConditionExpression": "attribute_not_exists(PK)"}},
-                {"Put": {"TableName": TABLE, "Item": session,
-                          "ConditionExpression": "attribute_not_exists(PK)"}},
-                {"Put": {"TableName": TABLE, "Item": audit,
-                          "ConditionExpression": "attribute_not_exists(PK)"}},
-            ],
-            ClientRequestToken=uuid.uuid4().hex,
-        )
-        return success("founder_session_active", {
-            "role": "founder", "scope": SCOPE,
-            "customerAccess": False, "medicinesDataAccess": False,
-        }, cookie=COOKIE + "=" + token +
-            "; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=" + str(TTL))
-    except Exception:
-        return deny(503, "founder_session_unavailable")
-
-
 def active(event, now, cognito, dynamodb):
     if not gateway(event, "/founder/session", "GET"):
         return deny(401, "unauthorised_gateway")
@@ -404,9 +325,7 @@ def logout(event, now, dynamodb):
         return deny(503, "logout_unavailable", clear=True)
 
 
-def handle(event, *, now, cognito, dynamodb, bridge_secret=""):
-    if isinstance(event, dict) and event.get("action") == "mint_founder_shell_from_iam" and "version" not in event:
-        return mint_from_iam(event, now, cognito, dynamodb)
+def handle(event, *, now, cognito, dynamodb, bridge_secret):
     ctx = event.get("requestContext") if isinstance(event, dict) else None
     route = ctx.get("routeKey") if isinstance(ctx, dict) else None
     if route == "POST /founder/session":
@@ -419,16 +338,14 @@ def handle(event, *, now, cognito, dynamodb, bridge_secret=""):
 
 
 def handler(event, _context):
-    # Only the AWS IAM InvokeFunction endpoint can deliver this direct event.
-    # API Gateway HTTP requests are separate v2.0 events with precise routes.
-    if (isinstance(event, dict) and event.get("action") == "mint_founder_shell_from_iam"
-            and os.environ.get("NPI_FOUNDER_IAM_MINT_ENABLED") != "true"):
-        return deny(503, "founder_session_not_released")
+    secret = os.environ.get("NPI_FOUNDER_BRIDGE_KEY", "")
+    if len(secret) < 40:
+        return deny(503, "service_unavailable")
     try:
         import boto3
         return handle(event, now=int(time.time()),
             cognito=boto3.client("cognito-idp", region_name=REGION),
             dynamodb=boto3.client("dynamodb", region_name=REGION),
-            bridge_secret="")
+            bridge_secret=secret)
     except Exception:
         return deny(503, "service_unavailable")
