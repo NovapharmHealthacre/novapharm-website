@@ -33,6 +33,18 @@ test("a new valid medicine search clears prior medicine, analytics and deep-link
   assert.match(source, /next\.results\.length \?/u);
 });
 
+test("late medicine search responses cannot overwrite the newer selected query", () => {
+  const source = between("async function searchMedicine(", "async function selectMedicine(");
+  const capture = source.indexOf("const generation = selectionGenerationRef.current;");
+  const networkRequest = source.indexOf("await gatewayJson<SearchResponse>");
+  const guard = source.indexOf("if (generation !== selectionGenerationRef.current) return;");
+  const display = source.indexOf("setSearchResponse(next);");
+  assert.ok(capture >= 0 && capture < networkRequest);
+  assert.ok(guard > networkRequest && guard < display);
+  assert.match(source, /if \(generation === selectionGenerationRef\.current\) setSearchStatus\(professionalError\(error\)\)/u);
+  assert.match(source, /if \(generation === selectionGenerationRef\.current\) setBusy\(false\)/u);
+});
+
 test("superseded deep-link restoration cannot restore stale identity or analytics", () => {
   const source = between("// Restore an authorised medicine selection", "function changeFilter(");
   assert.match(source, /const generation = selectionGenerationRef\.current/u);
