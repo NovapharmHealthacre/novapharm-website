@@ -2287,11 +2287,12 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 7,
-      "referenceCount": 22,
+      "usageCount": 8,
+      "referenceCount": 23,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "about/index.html",
+        "apps/portal/scripts/sync-public-assets.mjs",
         "creative-assets/asset-register.json",
         "scripts/apply-about-editorial.mjs",
         "scripts/apply-global-distribution-foundation.mjs",
@@ -10426,9 +10427,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
+        "apps/portal/scripts/sync-public-assets.mjs",
         "careers/index.html",
         "creative-assets/module-media-asset-register.json"
       ],
@@ -12016,9 +12018,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
+        "apps/portal/scripts/sync-public-assets.mjs",
         "creative-assets/module-media-asset-register.json",
         "investor-information/index.html"
       ],
@@ -12965,9 +12968,10 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 2,
       "usageFiles": [
+        "apps/portal/scripts/sync-public-assets.mjs",
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
@@ -13878,9 +13882,10 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 1,
-      "referenceCount": 1,
+      "usageCount": 2,
+      "referenceCount": 2,
       "usageFiles": [
+        "apps/portal/scripts/sync-public-assets.mjs",
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
@@ -22750,10 +22755,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
         ".github/workflows/intelligence-live-smoke.yml",
+        "apps/portal/scripts/sync-public-assets.mjs",
         "assets/css/technology-intelligence.css",
         "creative-assets/asset-register.json",
         "scripts/test-intelligence-technology-page.mjs"

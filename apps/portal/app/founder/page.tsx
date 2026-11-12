@@ -1,7 +1,10 @@
 import { cookies } from "next/headers";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { FounderLogoutButton } from "../../components/founder-logout-button";
+import { founderWorkspaceCategories, founderWorkspaceCoverageValid } from "../../data/founder-workspace-categories";
 import { intelligenceWorkspaceCatalogue } from "../../data/intelligence-workspaces";
+import styles from "./founder-experience.module.css";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -35,60 +38,109 @@ async function privateFounderSession(): Promise<boolean> {
 
 export default async function FounderShell() {
   if (!(await privateFounderSession())) redirect("/auth/customer/start");
-  const ready = intelligenceWorkspaceCatalogue.filter(w => w.state === "existing-read-only").length;
+  if (!founderWorkspaceCoverageValid) throw new Error("Founder workspace coverage is incomplete");
+  const ready = intelligenceWorkspaceCatalogue.filter(workspace => workspace.state === "existing-read-only").length;
+
   return (
-    <main style={{ background: "#f5f5f7", color: "#1d1d1f", minHeight: "100vh", fontFamily: "-apple-system, BlinkMacSystemFont, sans-serif" }}>
-      <div style={{ maxWidth: 1160, margin: "0 auto", padding: "42px clamp(22px,5vw,72px) 96px" }}>
-        <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 15, fontWeight: 650, letterSpacing: "-.02em" }}>NovaPharm Intelligence</span>
-          <span style={{ fontSize: 13, color: "#6e6e73" }}>Private founder session · Read-only</span>
+    <main className={styles.page}>
+      <header className={styles.siteHeader}>
+        <a className={styles.brand} href="#top" aria-label="NovaPharm Intelligence, back to top">
+          <strong>NovaPharm</strong> <span>Intelligence</span>
+        </a>
+        <nav className={styles.primaryNav} aria-label="Founder navigation">
+          <a href="#top" aria-current="page">Medicines Terminal</a>
+          <a href="#workspaces">Workspaces</a>
+          <a href="#readiness">Readiness</a>
+        </nav>
+        <div className={styles.session}>
+          <span>Private founder session</span>
           <FounderLogoutButton />
-        </header>
-        <section style={{ padding: "100px 0 72px", borderBottom: "1px solid #d2d2d7" }}>
-          <p style={{ fontSize: 15, color: "#6e6e73", margin: "0 0 24px" }}>Medicines Terminal</p>
-          <h1 style={{ fontSize: "clamp(46px,7vw,86px)", letterSpacing: "-.065em", lineHeight: 1.04, maxWidth: 900, margin: 0 }}>
-            Your workspace.
-            <span style={{ display: "block", color: "#86868b" }}>One connected view of medicine.</span>
-          </h1>
-          <p style={{ color: "#6e6e73", fontSize: 19, lineHeight: 1.55, maxWidth: 680, marginTop: 30 }}>
-            Secure founder access is active. Explore the workspace architecture and release evidence.
-            Live medicines intelligence remains restricted until its source and customer acceptance gates pass.
+        </div>
+      </header>
+
+      <section id="top" className={styles.hero} aria-labelledby="founder-hero-title">
+        <div className={styles.heroPhotography} aria-hidden="true">
+          <Image src="/assets/media/founder/hero-editorial.avif" alt="" fill priority unoptimized sizes="(max-width: 760px) 100vw, 65vw" />
+        </div>
+        <div className={styles.heroContent}>
+          <p className={styles.eyebrow}>Medicines Terminal</p>
+          <h1 id="founder-hero-title">From the molecule<br />to the market.</h1>
+          <p className={styles.heroLead}>
+            A single, connected workspace for medicines, markets, supply, regulation and investment.
           </p>
-          <p style={{ fontSize: 13, color: "#6e6e73", marginTop: 28 }}>
-            {intelligenceWorkspaceCatalogue.length} workspaces · {ready} read-only route contracts · {intelligenceWorkspaceCatalogue.length - ready} gated
-          </p>
-        </section>
-        <section style={{ paddingTop: 72 }}>
-          <h2 style={{ fontSize: 34, letterSpacing: "-.045em", margin: "0 0 12px" }}>The workspaces</h2>
-          <p style={{ color: "#6e6e73", maxWidth: 660, lineHeight: 1.6 }}>
-            Readiness is determined by verified source data, permissions and runtime functionality,
-            not by a visible navigation item. Expand any workspace to see its acceptance requirements.
-          </p>
-          <div style={{ marginTop: 40 }}>
-            {intelligenceWorkspaceCatalogue.map(workspace => (
-              <details key={workspace.slug} style={{ background: "#fff", marginBottom: 2, borderBottom: "1px solid #e8e8ed", padding: "26px 30px", borderRadius: 3 }}>
-                <summary style={{ cursor: "pointer", display: "flex", justifyContent: "space-between", gap: 30, fontSize: 18, fontWeight: 560, listStyle: "none" }}>
-                  <span>{workspace.title}</span>
-                  <span style={{ fontSize: 12, color: "#6e6e73", fontWeight: 450, alignSelf: "center", whiteSpace: "nowrap" }}>
-                    {workspace.state === "existing-read-only" ? "Read-only route" : "Acceptance pending"}
+          <div className={styles.actions}>
+            <a className={styles.primaryAction} href="#workspaces">Explore Medicines Terminal</a>
+            <a className={styles.secondaryAction} href="#readiness">View access status</a>
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.workspaceSection} id="workspaces" aria-labelledby="workspace-title">
+        <div className={styles.sectionHeader}>
+          <h2 id="workspace-title">The 22 Workspaces</h2>
+          <p>Organised into 5 connected intelligence sections.</p>
+        </div>
+        <div className={styles.categories}>
+          {founderWorkspaceCategories.map(category => {
+            const workspaces = category.slugs.map(slug => {
+              const found = intelligenceWorkspaceCatalogue.find(workspace => workspace.slug === slug);
+              if (!found) throw new Error("Unknown founder workspace: " + slug);
+              return found;
+            });
+            return (
+              <details className={styles.category} key={category.id} name="founder-workspace-category">
+                <summary className={styles.categorySummary}>
+                  <span className={styles.categoryImage}>
+                    <Image src={category.image} alt={category.imageAlt} fill unoptimized sizes="(max-width: 760px) 100vw, (max-width: 1170px) 33vw, 20vw" />
+                  </span>
+                  <span className={styles.categoryCopy}>
+                    <strong>{category.title}</strong>
+                    <span className={styles.categoryDescription}>{category.description}</span>
+                    <span className={styles.categoryCount}>{workspaces.length} workspaces · Explore</span>
                   </span>
                 </summary>
-                <p style={{ maxWidth: 720, color: "#6e6e73", lineHeight: 1.6, fontSize: 15 }}>{workspace.summary}</p>
-                <div style={{ color: "#86868b", fontSize: 13, borderTop: "1px solid #f1f1f3", paddingTop: 18 }}>
-                  <strong style={{ fontWeight: 600, color: "#1d1d1f" }}>Required before release</strong>
-                  <ul style={{ lineHeight: 1.9, paddingLeft: 18 }}>
-                    {workspace.requirements.map(item => <li key={item}>{item}</li>)}
-                  </ul>
+                <div className={styles.categoryDetails}>
+                  <p className={styles.categoryIntro}>
+                    The workspace directory reflects actual source permissions and release acceptance.
+                    Browsing a category does not grant access to restricted data.
+                  </p>
+                  <div className={styles.modules}>
+                    {workspaces.map(workspace => (
+                      <details className={styles.module} key={workspace.slug}>
+                        <summary>
+                          <strong>{workspace.title}</strong>
+                          <span>{workspace.state === "existing-read-only" ? "Read-only route" : "Acceptance pending"}</span>
+                        </summary>
+                        <div className={styles.moduleBody}>
+                          <p>{workspace.summary}</p>
+                          <p className={styles.requirementsTitle}>Required before release</p>
+                          <ul>{workspace.requirements.map(item => <li key={item}>{item}</li>)}</ul>
+                        </div>
+                      </details>
+                    ))}
+                  </div>
                 </div>
               </details>
-            ))}
-          </div>
-        </section>
-        <footer style={{ fontSize: 13, color: "#86868b", paddingTop: 54, lineHeight: 1.8 }}>
-          <p>Models forecast. AI explains. Humans decide.</p>
-          <p>This session does not authorize restricted medical data, purchases, recommendations or commercial actions.</p>
-        </footer>
-      </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className={styles.readiness} id="readiness" aria-labelledby="founder-readiness-title">
+        <div>
+          <h2 id="founder-readiness-title">Designed for decisions. Governed by evidence.</h2>
+          <p>Source provenance, identity permissions and operational acceptance determine which capabilities can be used.</p>
+        </div>
+        <div className={styles.readinessCount}>
+          <strong>{ready} read-only routes</strong>
+          <span>{intelligenceWorkspaceCatalogue.length - ready} awaiting acceptance</span>
+        </div>
+      </section>
+
+      <footer className={styles.footer}>
+        <p>Models forecast. AI explains. Humans decide.</p>
+        <p>This founder session does not authorise restricted medicines data, customer access, purchases or commercial actions.</p>
+      </footer>
     </main>
   );
 }
