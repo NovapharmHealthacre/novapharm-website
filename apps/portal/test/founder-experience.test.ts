@@ -24,7 +24,7 @@ test("founder experience remains session-verified and read-only", () => {
 
 test("founder photos are bundled locally rather than loaded from third-party trackers", () => {
   const sync = readFileSync("scripts/sync-public-assets.mjs","utf8");
-  for (const name of ["hero-editorial.jpg","medicine.jpg","market.jpg","supply.jpg","biotech.jpg","decisions.jpg"]) {
+  for (const name of ["hero-editorial.avif","medicine.jpg","market.jpg","supply.jpg","biotech.jpg","decisions.jpg"]) {
     assert.match(sync,new RegExp(name.replace(".","\\.")));
   }
   for (const category of founderWorkspaceCategories) {
