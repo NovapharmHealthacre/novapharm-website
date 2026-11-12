@@ -45,7 +45,9 @@ const accounts = () => [
 const environment = {
   ATLAS_ENVIRONMENT: "staging",
   PANDORA_STAGING_DECISION_LEDGER_ENABLED: "true",
-  PANDORA_STAGING_DECISION_AUDIT_ENABLED: "true"
+  PANDORA_STAGING_DECISION_AUDIT_ENABLED: "true",
+  PANDORA_OWNER_FINAL_APPROVAL_REQUIRED: "true",
+  PANDORA_FINAL_APPROVER_SUBJECT_ID: "person-approver-001"
 };
 const release = { verifiedServerSide: true, privateDecisionReviewApproved: true };
 const actor = (subjectId = "person-proposer-001") => ({
@@ -163,6 +165,20 @@ test("three independent people commit 3 transitions with a linked immutable audi
   assert.deepEqual(f.operations[0].options.writeConcern,{w:"majority",j:true});
   assert.equal(f.operations.filter(x=>x.name===names.rights&&x.op==="update").length,3);
   assert.doesNotMatch(JSON.stringify(events),/patient@example|sk_secret|raw_prompt/);
+});
+test("owner-only final approval requires independent reviewer and exact verified owner subject",async()=>{
+  const p=fixture({cases:[{...record(),status:"approval_pending",version:3,reviewer_id:"person-reviewer-001"}]});
+  const wrongOwner={...environment,PANDORA_FINAL_APPROVER_SUBJECT_ID:"person-security-001"};
+  await assert.rejects(commit(input(p,{
+    environment:wrongOwner,
+    request:request("approve",3),actor:actor("person-approver-001")
+  })),error=>error.code==="owner_final_approver_required");
+  const noOwner={...environment,PANDORA_FINAL_APPROVER_SUBJECT_ID:""};
+  await assert.rejects(commit(input(p,{
+    environment:noOwner,
+    request:request("approve",3),actor:actor("person-approver-001")
+  })),error=>error.code==="ledger_disabled");
+  assert.equal(p.getState()[names.events].length,0);
 });
 test("missing genuine source grant, revoked licence and duplicate evidence cannot commit",async()=>{
   for(const variant of [
