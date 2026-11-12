@@ -264,7 +264,7 @@ if (root) {
   // Open the exact product selected in the unified marketplace. This is a
   // catalogue navigation feature, never an authorisation to collect payment.
   const directProductId = new URLSearchParams(window.location.search).get("product");
-  if (directProductId && /^ESCO-CAT-\\d{4}$/.test(directProductId) && known.has(directProductId)) {
+  if (directProductId && /^ESCO-CAT-\d{4}$/.test(directProductId) && known.has(directProductId)) {
     openProductDetails(directProductId);
   }
   syncShopAvailability().catch(() => { /* Catalogue remains available for order requests. */ });
