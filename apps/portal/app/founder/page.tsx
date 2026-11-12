@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { FounderLogoutButton } from "../../components/founder-logout-button";
 import { redirect } from "next/navigation";
 import { intelligenceWorkspaceCatalogue } from "../../data/intelligence-workspaces";
 
@@ -41,6 +42,7 @@ export default async function FounderShell() {
         <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20, flexWrap: "wrap" }}>
           <span style={{ fontSize: 15, fontWeight: 650, letterSpacing: "-.02em" }}>NovaPharm Intelligence</span>
           <span style={{ fontSize: 13, color: "#6e6e73" }}>Private founder session · Read-only</span>
+          <FounderLogoutButton />
         </header>
         <section style={{ padding: "100px 0 72px", borderBottom: "1px solid #d2d2d7" }}>
           <p style={{ fontSize: 15, color: "#6e6e73", margin: "0 0 24px" }}>Medicines Terminal</p>
