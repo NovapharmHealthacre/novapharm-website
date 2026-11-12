@@ -49,12 +49,17 @@ export async function verifyIntelligencePublicEntry({ fetchImpl = globalThis.fet
   const page = await probe(fetchImpl, origin + "/");
   if (page.status !== 200) reject("login_page_not_public");
   const markup = await page.text();
-  const restrictedIdentityOnly = markup.includes("Invitation-only access") ||
-    (markup.includes("Create a business account") &&
-     markup.includes("Subscription checkout and medicines access become available only after"));
+  const legacyEntry = markup.includes("Understand the medicine") &&
+    (markup.includes("Invitation-only access") ||
+     (markup.includes("Create a business account") &&
+      markup.includes("Subscription checkout and medicines access become available only after")));
+  const approvedHumanEntry = markup.includes("A more human") &&
+    markup.includes("intelligence for") &&
+    markup.includes("medicine.") &&
+    markup.includes("Create a business account") &&
+    markup.includes("Your business email, password and verification are handled by NovaPharm");
   if (markup.length > 2_000_000 ||
-      !markup.includes("Understand the medicine") ||
-      !restrictedIdentityOnly ||
+      !(legacyEntry || approvedHumanEntry) ||
       !markup.includes("/auth/customer/start")) reject("login_copy_or_constraints_invalid");
 
   const companyPage = await probe(fetchImpl, corporate + "/technology/");
