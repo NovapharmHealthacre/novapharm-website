@@ -125,7 +125,7 @@ export function IntelligenceSignIn() {
             ) : (
               <>
                 <p className={styles["providerNote"]}>Your business email, password and verification are handled by NovaPharm&apos;s secure identity provider.</p>
-                <div className={styles["entryExplanation"]} aria-label="Secure sign-in steps">
+                <div className={styles["entryExplanation"]}>
                   <span>Business email</span>
                   <span>Password and verification</span>
                 </div>
