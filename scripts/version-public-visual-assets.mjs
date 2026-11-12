@@ -17,7 +17,7 @@ for (const [page, extraStyles] of pages) {
     const visualVersion = page === "capabilities/index.html" && stylesheet === "capabilities-editorial.css"
       ? "20261111-capabilities-approved-photo-v5"
       : page === "oncology/index.html" && stylesheet === "oncology-hope-v2.css"
-        ? "20261110-hope-for-tomorrow-v3"
+        ? "20261112-hope-reference-v4"
         : page === "products/index.html" && stylesheet === "products-editorial.css"
           ? "20261111-products-layout-v4"
           : version;
