@@ -92,7 +92,7 @@ async function activateApprovedCustomerSession(idToken: string): Promise<{ token
  * contract, application session, medicine permission, or subscription.
  */
 export async function GET(request: NextRequest): Promise<Response> {
-  let response: NextResponse;
+  let response: NextResponse = resultPage(false);
   let phase = "transaction";
   try {
     const code = request.nextUrl.searchParams.get("code") ?? "";
