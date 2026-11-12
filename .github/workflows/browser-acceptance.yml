@@ -87,6 +87,8 @@ jobs:
         run: npm run api:check && npm run portal:check
       - name: Run all portal roles, routes and responsive viewports
         run: npm run portal:test:browser
+      - name: Verify bounded Lighthouse trace retry contracts
+        run: node --test scripts/test-lighthouse-transient-navigation.mjs
       - name: Run portal Lighthouse acceptance
         run: npm run portal:test:lighthouse
       - name: Upload protected-portal acceptance evidence
