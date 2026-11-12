@@ -1,0 +1,31 @@
+name: Intelligence PANDORA transactional decision ledger
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/intelligence-pandora-transactional-ledger.mjs'
+      - 'scripts/test-intelligence-pandora-transactional-ledger.mjs'
+      - '.github/workflows/intelligence-pandora-transactional-ledger.yml'
+      - 'docs/intelligence/PANDORA_DECISION_LEDGER_ACCEPTANCE.md'
+  push:
+    branches: [main]
+    paths:
+      - 'src/core/intelligence-pandora-transactional-ledger.mjs'
+      - 'scripts/test-intelligence-pandora-transactional-ledger.mjs'
+      - '.github/workflows/intelligence-pandora-transactional-ledger.yml'
+permissions:
+  contents: read
+jobs:
+  private-ledger-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Syntax and regression contract
+        run: |
+          node --check src/core/intelligence-pandora-transactional-ledger.mjs
+          node --check scripts/test-intelligence-pandora-transactional-ledger.mjs
+          node --test scripts/test-intelligence-medicine-decision-review.mjs scripts/test-intelligence-pandora-transactional-ledger.mjs
