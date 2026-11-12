@@ -83,7 +83,7 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
         assert.match(layout.heading,/A Hope for\s*Tomorrow\./,`${label}: heading`);
         assert.equal(layout.hasAnnotation,false,`${label}: removed annotation returned`);
         assert.ok(layout.imageLoaded,`${label}: portrait did not load`);
-        assert.equal(layout.imageFit,viewport.width>=1101?"cover":"contain",`${label}: desktop photograph must fill its canvas without a letterbox seam; smaller screens preserve portrait framing`);
+        assert.equal(layout.imageFit,"cover",`${label}: photograph must fill its media canvas at every viewport without inset rectangular edges`);
         assert.ok(layout.portraitWidth>260 && layout.portraitHeight>200,`${label}: portrait collapsed`);
         assert.ok(layout.heroWidth>=layout.viewportWidth-2,`${label}: hero is not full width`);
         assert.equal(layout.cards.length,3,`${label}: three category images`);
