@@ -239,7 +239,7 @@ export function IntelligenceSignIn() {
               </div>
             ) : (
               <>
-                <p className={styles["providerNote"]}>
+                <p className={phase === "mfa" ? styles["providerNote"] : styles["srOnly"]}>
                   {phase === "mfa" ? "Enter the six-digit code from your authenticator app." :
                     "Sign in with your business email and password. Authenticator verification follows."}
                 </p>
@@ -267,7 +267,7 @@ export function IntelligenceSignIn() {
                         id="npi-email" className={styles["field"]} type="email"
                         name="username" autoComplete="username" required maxLength={254}
                         value={email} onChange={(event) => setEmail(event.target.value)}
-                        placeholder="Business email" disabled={busy}
+                        placeholder="Email" disabled={busy}
                       />
                       <div className={styles["passwordBox"]}>
                         <label className={styles["srOnly"]} htmlFor="npi-password">Password</label>
@@ -285,7 +285,7 @@ export function IntelligenceSignIn() {
                         </button>
                       </div>
                       <button className={styles["primaryAction"]} type="submit" disabled={busy || !email || !password}>
-                        {busy ? "Signing in…" : "Sign in securely"}
+                        {busy ? "Signing in…" : "Sign in"}
                       </button>
                     </>
                   )}
