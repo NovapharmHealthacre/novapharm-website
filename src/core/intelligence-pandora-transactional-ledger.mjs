@@ -36,7 +36,8 @@ function requireConfig(environment, client, db) {
       environment.PANDORA_STAGING_DECISION_AUDIT_ENABLED !== "true" ||
       environment.PANDORA_ALLOW_EXTERNAL_ACTIONS === "true" ||
       environment.PANDORA_ALLOW_PUBLIC_ACCESS === "true") throw stop("ledger_disabled");
-  if (typeof client?.startSession !== "function" || typeof db?.collection !== "function") throw stop("storage_unavailable");
+  if (typeof client?.startSession !== "function" || typeof db?.collection !== "function" ||
+      db.databaseName !== "novapharm_staging") throw stop("storage_unavailable");
   const entries = Object.values(pandoraStagingCollections).map(name => db.collection(name));
   const tables = Object.fromEntries(Object.keys(pandoraStagingCollections).map((key, i) => [key, entries[i]]));
   if (["cases", "manifests", "authorities"].some(key => typeof tables[key]?.findOne !== "function") ||
