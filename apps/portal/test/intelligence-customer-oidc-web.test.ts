@@ -4,10 +4,10 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { NextRequest } from "next/server";
 import { createCustomerLoginTransaction, intelligenceCustomerOidc, verifyCustomerLoginTransaction } from "../../../src/core/intelligence-customer-oidc.mjs";
+import { createFounderMfaCookie, verifyFounderMfaCookie } from "../../../src/core/intelligence-founder-totp-enrolment.mjs";
 import { GET as finishCustomerIdentity } from "../app/auth/callback/route";
 import { GET as startCustomerIdentity } from "../app/auth/customer/start/route";
 import { GET as openMfaSetup, POST as verifyMfaSetup } from "../app/auth/mfa/setup/route";
-import { createFounderMfaCookie, verifyFounderMfaCookie } from "../../../src/core/intelligence-founder-totp-enrolment.mjs";
 
 const key = "internal-test-customer-oidc-signing-key-not-for-production-use-123456";
 const source = (path: string) => readFileSync(new URL("../" + path, import.meta.url), "utf8");
