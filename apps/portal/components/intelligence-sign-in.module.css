@@ -51,7 +51,7 @@
 .headerAction:disabled { opacity:.6; cursor:wait; }
 .layout { flex:1; min-height:670px; display:grid; grid-template-columns:minmax(0,1.38fr) minmax(400px,.94fr); align-items:start; gap:clamp(36px,7vw,130px); padding-top:clamp(60px,9vh,120px); }
 .intro { padding-top:clamp(4px,3vw,30px); max-width:830px; }
-.eyebrow { color:#738096; font-size:13px; line-height:1.4; letter-spacing:.33em; font-weight:640; margin:0 0 34px; }
+.eyebrow { color:#5c6b81; font-size:13px; line-height:1.4; letter-spacing:.33em; font-weight:640; margin:0 0 34px; }
 .intro h1 { margin:0; max-width:830px; font-weight:390; line-height:1.04; font-size:clamp(46px,4.3vw,73px); letter-spacing:-.053em; }
 .intro h1 span { color:#626f84; font-weight:350; }
 .fineRule { width:195px; height:1px; background:#c4ccda; margin-top:30px; }
@@ -71,11 +71,11 @@
 }
 .logoInside { width:min(100%,330px); margin:0 auto 18px; }
 .signInCard h2 { font-size:16px; font-weight:480; letter-spacing:-.012em; color:#526075; margin:0 0 32px; line-height:1.45; }
-.providerNote { font-size:12px; line-height:1.55; color:#6d7a8d; margin:0 0 20px; }
+.providerNote { font-size:12px; line-height:1.55; color:#576579; margin:0 0 20px; }
 .entryExplanation { display:grid; gap:14px; margin-bottom:20px; }
 .entryExplanation span {
   display:flex; align-items:center; text-align:left;
-  padding:0 21px; min-height:49px; color:#808a9b;
+  padding:0 21px; min-height:49px; color:#5c687a;
   font-size:14px; background:rgba(255,255,255,.33);
   border:1px solid #d6dce7; border-radius:99px;
 }
