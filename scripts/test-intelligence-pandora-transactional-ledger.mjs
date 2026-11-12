@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   commitPandoraMedicineDecision as commit, pandoraStagingCollections as names
 } from "../src/core/intelligence-pandora-transactional-ledger.mjs";
+import { pandoraUniqueIndexes } from "../src/data/atlas-pandora-staging-indexes.mjs";
 
 const now = "2026-11-12T10:00:00.000Z";
 const sha = value => value.repeat(64);
@@ -72,7 +73,7 @@ function matches(row, query) {
 }
 function fixture({
   cases = [record()], manifests = [manifest()], authorities = accounts(),
-  rights = [grant()], events = [], failAudit = false
+  rights = [grant()], events = [], failAudit = false, failIndexes = false
 } = {}) {
   let state = Object.fromEntries(
     Object.entries(names).map(([key,name]) => [name, structuredClone({cases,manifests,authorities,rights,events}[key])])
@@ -82,6 +83,16 @@ function fixture({
     collection(name) {
       if (!(name in state)) throw Error("Unknown collection " + name);
       return {
+        listIndexes() {
+          return { async toArray() {
+            if (failIndexes) return [{name:"_id_",key:{_id:1},unique:true}];
+            return [
+              {name:"_id_",key:{_id:1},unique:true},
+              ...pandoraUniqueIndexes.filter(x=>x.collection===name)
+                .map(x=>({name:x.name,key:x.keys,unique:true}))
+            ];
+          } };
+        },
         async findOne(query, options) {
           assert.ok(options?.session);
           operations.push({op:"read",name});
@@ -208,6 +219,13 @@ test("stale versions, audit failure and impossible state changes roll back compl
   const badState=fixture();
   await assert.rejects(commit(input(badState,{request:request("approve",1),
     actor:actor("person-approver-001")})),error=>error.statusCode===403);
+});
+test("missing unique Atlas constraints prohibit every committed decision",async()=>{
+  const f=fixture({failIndexes:true});
+  await assert.rejects(commit(input(f)),error=>error.code==="missing_unique_index");
+  assert.equal(f.getState()[names.cases][0].version,1);
+  assert.equal(f.getState()[names.events].length,0);
+  assert.equal(f.operations.length,0);
 });
 test("default-off, no public mode, malicious selectors and revoked release never reach storage",async()=>{
   const variants=[
