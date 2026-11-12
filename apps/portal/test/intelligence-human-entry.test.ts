@@ -14,7 +14,7 @@ test("approved human secure entry uses the exact Intelligence brand and owner co
   assert.match(view, /intelligence for/);
   assert.match(view, /medicine\./);
   assert.match(view, /SECURE PORTAL/);
-  assert.match(styles, /npi-human-portrait-hd\.avif/);
+  assert.match(styles, /npi-human-portrait-approved\.webp/);
   assert.match(styles, /prefers-reduced-motion/);
   assert.match(styles, /max-width:760px/);
   assert.ok(existsSync("../../assets/media/portal/npi-human-portrait-approved.webp"));
@@ -39,5 +39,5 @@ test("visual redesign preserves Cognito and customer security boundaries", () =>
   assert.match(view, /beginCognitoCardSignIn/);
   assert.doesNotMatch(view, /localStorage|sessionStorage/);
   assert.doesNotMatch(view, /fetch\("\/auth\/customer\/login"|bypass|mock-user/);
-  assert.match(sync, /assets\/media\/portal\/npi-human-portrait-hd\.avif/);
+  assert.match(sync, /assets\/media\/portal\/npi-human-portrait-approved\.webp/);
 });
