@@ -17,6 +17,57 @@ The callback logs only fixed phase/reason classifications such as `identity_emai
 
 Do not promote this fix to production until the signed exact-head application image is released to the established AWS Lambda alias and real browser first-login, TOTP and malicious/expired callback tests pass. A merged source fix is **not** a deployed fix. Do not grant customer seats, billing or dataset rights by changing this timeout.
 
+## Root-cause correction: Cognito claim-rollout-safe first TOTP registration (12 November 2026, 14:50 IST)
+
+At 09:20:07 UTC on 12 November 2026, the real v20 callback failed
+`mfa_enrolment_identity / mfa_enrolment_password_proof_missing` while
+Cognito CloudTrail recorded a successful `verifyPassword_POST` at
+09:19:36 UTC. The login reached the fixed identity service and passed the
+signed token's issuer, audience, signature, nonce and email checks. The
+missing `pwd` in `amr` has **not** been proven to mean the user skipped
+password authentication: Cognito's ACR/AMR feature is still rolling out to
+pools, as explicitly noted in official AWS documentation. The application
+had wrongly coupled **initial TOTP registration** to a token claim that
+may be unavailable. The exact token's `amr` contents are intentionally
+not logged, so avoid claims about whether the array was absent or incomplete.
+
+This code separates two security decisions:
+
+1. **Limited first-time founder authenticator registration:** require
+   Cognito RSA-signed ID JWT from the exact production issuer, audience and
+   nonce; exact verified founder email; fresh signed `auth_time`
+   (within 300 seconds); optional known ACR/AMR values if present;
+   then use the associated access token to call **Cognito GetUser**,
+   verifying the matching subject, verified founder email, and **no
+   already-enrolled MFA method**. The encrypted 10-minute HttpOnly cookie
+   grants only the self-service `AssociateSoftwareToken`,
+   `VerifySoftwareToken` and `SetUserMFAPreference` sequence. Registration
+   completes only after the owner personally submits a TOTP code that Cognito
+   verifies. No customer session or medicine rights can be granted here.
+   This is an authenticated founder session; do not describe it as proof
+   of a password method when AMR is missing. Passwordless authenticated
+   accounts are allowed only this same self-enrolment capability that
+   their Cognito access token already authorizes, never application access.
+
+2. **Actual full MFA customer identity:** **unchanged**, requiring a
+   signed `acr=urn:cognito:loa:4` and `amr` containing
+   `pwd, otp, mfa`, recent `auth_time`, distinct tenant, subscription,
+   rights and revocation-fenced acceptance. If the pool still cannot
+   issue these claims after TOTP enrolment, this remains fail-closed and
+   requires an independent Cognito-provider-attested release design.
+   Neither a mere user MFA enrolment flag nor the pool MFA configuration
+   alone is an accepted replacement.
+
+Other callbacks at 09:12–09:16 UTC had `transaction_invalid` from stale
+or mismatched PKCE transactions; those are distinct and are **not** fixed
+by changing authentication claims. Avoid multiple simultaneous browser
+sign-ins. No password reset, bypass, or unapproved email is performed.
+
+Evidence: AWS CloudWatch private callback classifications, Cognito
+CloudTrail 09:19:36 UTC verifyPassword success, Cognito user confirmed with
+MFA ON, and official AWS step-up caveat:
+https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-step-up-authentication.html
+
 ## Founder password-proven MFA enrolment correction (12 November 2026, 14:32 IST)
 
 Live Lambda v19 reached `mfa_enrolment_identity` and rejected founder callbacks
