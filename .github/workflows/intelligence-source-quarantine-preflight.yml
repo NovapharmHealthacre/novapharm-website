@@ -1,0 +1,26 @@
+name: Intelligence source quarantine preflight
+on:
+  pull_request:
+    paths:
+      - "src/data/intelligence-source-quarantine-preflight.mjs"
+      - "scripts/test-intelligence-source-quarantine-preflight.mjs"
+      - ".github/workflows/intelligence-source-quarantine-preflight.yml"
+  push:
+    branches: [main]
+    paths:
+      - "src/data/intelligence-source-quarantine-preflight.mjs"
+      - "scripts/test-intelligence-source-quarantine-preflight.mjs"
+      - ".github/workflows/intelligence-source-quarantine-preflight.yml"
+permissions:
+  contents: read
+jobs:
+  offline-quarantine-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Offline quarantine contract and adversarial tests
+        run: node --test scripts/test-intelligence-source-quarantine-preflight.mjs
