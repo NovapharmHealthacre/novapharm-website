@@ -47,6 +47,10 @@ const safeIdentityErrorCodes = new Set([
   "cognito_mfa_request_rejected", "founder_subject_invalid",
   "mfa_action_invalid", "enrolment_cookie_too_large", "enrolment_invalid",
   "enrolment_key_unavailable",
+  "provider_identity_not_founder", "provider_identity_claims_incompatible",
+  "provider_identity_session_not_fresh",
+  "founder_provider_policy_not_attested", "founder_provider_identity_unattested",
+  "founder_provider_session_not_fresh", "mfa_existing_factor_not_attested",
 ]);
 
 function safeIdentityErrorCode(error: unknown): string {
@@ -175,9 +179,14 @@ export async function GET(request: NextRequest): Promise<Response> {
         console.info(JSON.stringify({
           event: "npi_founder_managed_cognito_identity_only_confirmed",
         }));
-      } catch {
-        // First-time founders still need TOTP enrolment. Incompatible or
-        // stale claims remain fail closed on the existing safe path.
+      } catch (compatibilityError: unknown) {
+        // No PII/JWT/OTP is logged: allowlisted error CLASS only.
+        console.info(JSON.stringify({
+          event: "npi_founder_provider_compatibility_denied",
+          reason: safeIdentityErrorCode(compatibilityError),
+        }));
+        // First-time founders still need TOTP enrolment. Explicit signed
+        // weak claims and stale identities remain fail closed.
         providerFounderOnly = false;
       }
       if (!providerFounderOnly) {
