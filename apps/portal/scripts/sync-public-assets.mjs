@@ -28,7 +28,7 @@ await cp(
 const founderTarget = path.resolve("public/assets/media/founder");
 await mkdir(founderTarget, { recursive: true });
 for (const [source, output] of [
-  ["assets/media/modules/insights-evidence-editorial-960.jpg", "hero-editorial.jpg"],
+  ["assets/media/technology/novapharm-intelligence-hero.avif", "hero-editorial.avif"],
   ["assets/media/modules/product-portfolio-evidence-960.jpg", "medicine.jpg"],
   ["assets/media/modules/technology-traceability-960.jpg", "market.jpg"],
   ["assets/media/about/novapharm-warehouse-original.jpg", "supply.jpg"],
