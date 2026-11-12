@@ -49,7 +49,7 @@ test("dedicated client uses code and PKCE with no access grant", () => {
   assert.equal(url.searchParams.get("redirect_uri"), intelligenceCustomerOidc.callback);
   assert.equal(url.searchParams.get("scope"), "openid email profile");
   assert.equal(url.searchParams.get("acr_values"), "urn:cognito:loa:4");
-  assert.equal(url.searchParams.get("max_age"), "300");
+  assert.equal(url.searchParams.get("max_age"), "900");
   const transaction = verifyCustomerLoginTransaction({
     signingKey, cookieValue: started.transactionCookieValue,
     state: url.searchParams.get("state"), nowMs: second * 1000 + 30_000,
@@ -68,7 +68,25 @@ test("tampering, forged state, expired transaction and wrong key reject", () => 
   assert.throws(() => verifyCustomerLoginTransaction({ signingKey, cookieValue: started.transactionCookieValue, state: "a".repeat(43), nowMs: now }));
   assert.throws(() => verifyCustomerLoginTransaction({ signingKey, cookieValue: started.transactionCookieValue + "tampered", state, nowMs: now }));
   assert.throws(() => verifyCustomerLoginTransaction({ signingKey: signingKey+"other", cookieValue: started.transactionCookieValue, state, nowMs: now }));
-  assert.throws(() => verifyCustomerLoginTransaction({ signingKey, cookieValue: started.transactionCookieValue, state, nowMs: now + 301000 }));
+  assert.throws(() => verifyCustomerLoginTransaction({ signingKey, cookieValue: started.transactionCookieValue, state, nowMs: now + 901000 }));
+});
+
+test("first-time password rotation and TOTP enrolment fit within 15-minute signed transaction", () => {
+  const startedAtMs = second * 1000;
+  const transaction = createCustomerLoginTransaction({ signingKey, nowMs: startedAtMs });
+  const state = new URL(transaction.authorizeUrl).searchParams.get("state");
+  assert.equal(transaction.cookieMaxAgeSeconds, 900);
+  const accepted = verifyCustomerLoginTransaction({
+    signingKey, cookieValue: transaction.transactionCookieValue,
+    state, nowMs: startedAtMs + 8 * 60_000,
+  });
+  assert.equal(accepted.grantsTenantAccess, false);
+  assert.throws(() => verifyCustomerLoginTransaction({
+    signingKey, cookieValue: transaction.transactionCookieValue,
+    state, nowMs: startedAtMs + 901_000,
+  }), e => e.code === "transaction_expired_or_mismatched");
+  const recentMfa = { ...validClaims, auth_time: second - 8 * 60 };
+  assert.ok(recentMfa.auth_time < second - 300);
 });
 
 test("server code exchange includes public client PKCE, no arbitrary token origin", async () => {
@@ -106,6 +124,16 @@ test("signed ID JWT verifies exact issuer, audience, nonce and expiry but never 
   assert.equal(result.grantsTenantAccess, false);
 });
 
+test("first-login fresh password-plus-TOTP proof remains valid after eight minutes", async () => {
+  const claims = { ...validClaims, auth_time: second - 480 };
+  const result = await verifyIntelligenceCustomerIdToken({
+    idToken: token(claims), expectedNonce: nonce, fetchImpl: mockJwks, nowSeconds: second,
+  });
+  assert.equal(result.identityVerified, true);
+  assert.equal(result.mfaVerified, true);
+  assert.equal(result.grantsTenantAccess, false);
+});
+
 test("forged JWT, wrong nonce, email, audience or expiry cannot pass", async () => {
   for (const [name,claims] of [
     ["wrong audience", { ...validClaims, aud: "unapproved-client" }],
@@ -118,7 +146,7 @@ test("forged JWT, wrong nonce, email, audience or expiry cannot pass", async () 
     ["weak acr", { ...validClaims, acr: "urn:cognito:loa:1" }],
     ["no MFA", { ...validClaims, amr: ["pwd"] }],
     ["missing TOTP", { ...validClaims, amr: ["pwd", "mfa"] }],
-    ["stale auth", { ...validClaims, auth_time: second - 301 }],
+    ["stale auth", { ...validClaims, auth_time: second - 901 }],
     ["future auth", { ...validClaims, auth_time: second + 120 }],
     ["missing auth time", { ...validClaims, auth_time: undefined }],
   ]) {
@@ -126,6 +154,16 @@ test("forged JWT, wrong nonce, email, audience or expiry cannot pass", async () 
       idToken: token(claims), expectedNonce: nonce, fetchImpl: mockJwks, nowSeconds: second,
     }), name);
   }
+  const emailFailure = { ...validClaims, email_verified: false };
+  await assert.rejects(
+    verifyIntelligenceCustomerIdToken({ idToken: token(emailFailure), expectedNonce: nonce, fetchImpl: mockJwks, nowSeconds: second }),
+    e => e.code === "identity_email_unverified"
+  );
+  const mfaFailure = { ...validClaims, amr: ["pwd"] };
+  await assert.rejects(
+    verifyIntelligenceCustomerIdToken({ idToken: token(mfaFailure), expectedNonce: nonce, fetchImpl: mockJwks, nowSeconds: second }),
+    e => e.code === "identity_mfa_level_insufficient"
+  );
   await assert.rejects(verifyIntelligenceCustomerIdToken({
     idToken: token(validClaims, true), expectedNonce: nonce, fetchImpl: mockJwks, nowSeconds: second,
   }));
