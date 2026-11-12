@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'src/core/intelligence-pandora-transactional-ledger.mjs'
+      - 'src/data/atlas-pandora-staging-indexes.mjs'
       - 'scripts/test-intelligence-pandora-transactional-ledger.mjs'
       - '.github/workflows/intelligence-pandora-transactional-ledger.yml'
       - 'docs/intelligence/PANDORA_DECISION_LEDGER_ACCEPTANCE.md'
@@ -11,6 +12,7 @@ on:
     branches: [main]
     paths:
       - 'src/core/intelligence-pandora-transactional-ledger.mjs'
+      - 'src/data/atlas-pandora-staging-indexes.mjs'
       - 'scripts/test-intelligence-pandora-transactional-ledger.mjs'
       - '.github/workflows/intelligence-pandora-transactional-ledger.yml'
 permissions:
@@ -27,5 +29,6 @@ jobs:
       - name: Syntax and regression contract
         run: |
           node --check src/core/intelligence-pandora-transactional-ledger.mjs
+          node --check src/data/atlas-pandora-staging-indexes.mjs
           node --check scripts/test-intelligence-pandora-transactional-ledger.mjs
           node --test scripts/test-intelligence-medicine-decision-review.mjs scripts/test-intelligence-pandora-transactional-ledger.mjs
