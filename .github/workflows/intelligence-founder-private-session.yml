@@ -32,17 +32,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: '24'
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
       - run: |
           set -euo pipefail
-          python -m py_compile infra/aws/intelligence-founder-session-api.py
-          python -m unittest discover -s scripts -p test_intelligence_founder_session_api.py -v
+          python3 -m py_compile infra/aws/intelligence-founder-session-api.py
+          python3 -m unittest discover -s scripts -p test_intelligence_founder_session_api.py -v
           node --check src/core/intelligence-founder-private-session-bridge.mjs
           node --test scripts/test-intelligence-founder-private-session-bridge.mjs
           node --test scripts/test-intelligence-customer-oidc.mjs scripts/test-intelligence-founder-totp-enrolment.mjs scripts/test-intelligence-founder-managed-mfa-compat.mjs
