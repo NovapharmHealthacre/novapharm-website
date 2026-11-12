@@ -9,6 +9,7 @@ on:
       - 'src/core/intelligence-founder-private-session-bridge.d.mts'
       - 'scripts/test-intelligence-founder-private-session-bridge.mjs'
       - 'apps/portal/app/founder/page.tsx'
+      - 'apps/portal/components/founder-logout-button.tsx'
       - 'apps/portal/app/auth/callback/route.ts'
       - '.github/workflows/intelligence-founder-private-session.yml'
   push:
@@ -20,6 +21,7 @@ on:
       - 'src/core/intelligence-founder-private-session-bridge.d.mts'
       - 'scripts/test-intelligence-founder-private-session-bridge.mjs'
       - 'apps/portal/app/founder/page.tsx'
+      - 'apps/portal/components/founder-logout-button.tsx'
       - 'apps/portal/app/auth/callback/route.ts'
       - '.github/workflows/intelligence-founder-private-session.yml'
 
