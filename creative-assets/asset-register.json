@@ -16,6 +16,23 @@
   },
   "assets": [
     {
+      "path": "assets/media/portal/npi-human-portrait-approved.webp",
+      "type": "owner-approved-original-editorial-portal-photograph",
+      "source": "Owner-approved NovaPharm Intelligence sign-in mockup generated in ChatGPT on 12 November 2026; exact photographic lower-left crop extracted without overlaid form, branding or copy.",
+      "licence": "Original owner-directed NovaPharm visual creative for its public Intelligence sign-in page. No third-party stock or competitor assets.",
+      "generated": true,
+      "modified": true,
+      "dimensions": "1050x499 WebP",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "intelligence.novapharmhealthcare.com/ secure portal"
+      ],
+      "altText": "",
+      "caption": "Decorative illustrative mother-and-daughter photograph. Not clinical or medicines-market evidence.",
+      "technicalStatus": "checksum-verified original full-size design crop; SHA-256 7f895e0b7c4ef21314b2555d972e4147cf675b98cc5b6272c708b6726e0b0950; un-cropped image fit",
+      "ownerApproval": "Approved visual reference supplied 12 November 2026; preserve exact composition"
+    },
+    {
       "path": "assets/media/technology/england-geography-concept.svg",
       "type": "original-schematic-product-preview",
       "source": "Original vector illustration authored for NovaPharm Intelligence Medicines Terminal preview, 7 November 2026. Schematic drawing, not official ONS or NHS boundary geometry.",
