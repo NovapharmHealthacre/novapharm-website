@@ -39,6 +39,7 @@ jobs:
           assert resources["CheckoutRoute"]["Properties"]["AuthorizerId"]=="sxo21g"
           assert resources["CheckoutRoute"]["Properties"]["RouteKey"]=="POST /customer/subscription/checkout"
           assert resources["CheckoutRoute"]["Properties"]["ApiId"]=="q2e6ztf8ic"
+          assert resources["CheckoutLambda"]["Properties"]["Handler"]=="checkout_api.handler"
           assert "CodeObjectVersion" in spec["Parameters"]
           assert "SourceSha256" in spec["Parameters"]
           assert resources["CheckoutLambda"]["Properties"]["Code"]["S3ObjectVersion"]=={"Ref":"CodeObjectVersion"}
