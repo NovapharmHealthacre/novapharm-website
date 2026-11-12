@@ -113,3 +113,69 @@ export function buildEpdResourceLocator({ resourceId, period, resourceName, revi
     rights_status: "dataset_specific_review_required",
   });
 }
+
+
+/**
+ * Bounded minimal-field source-row projection for Atlas PRIVATE quarantine.
+ * Never copies arbitrary raw properties, asserts rights or admits observations.
+ * Caller must use staging credentials and limited-size write batches.
+ */
+export function buildQuarantinedReviewProjection(input = {}) {
+  const manifest = buildDriveQuarantineManifest(input);
+  if (manifest.required_field_exceptions !== 0) fail("required source keys unresolved");
+  const data = JSON.parse(Buffer.from(input.rawBytes).toString("utf8"));
+  const records = input.dataset === "FDA_NDC" ? data.results : data.data;
+  if (!Array.isArray(records) || records.length !== manifest.record_count) {
+    fail("source count changed between inspections");
+  }
+  const clean = (v, max = 150) => typeof v === "string" && v.trim()
+    ? v.trim().slice(0, max) : null;
+  const seen = new Set();
+  const rows = records.map((r, index) => {
+    const fda = input.dataset === "FDA_NDC";
+    const key = fda ? r.product_ndc : r.shortage_url;
+    if (typeof key !== "string" || !key || seen.has(key)) fail("invalid row key");
+    seen.add(key);
+    const shared = {
+      workspace_id: "novapharm-internal-staging",
+      source_dataset: fda ? "FDA" : "EMA",
+      source_copy_sha256: manifest.sha256,
+      quarantine_drive_file_id: manifest.quarantine_file_id,
+      original_index: index,
+      record_key: key,
+      quarantine_status: "RAW_UNVALIDATED",
+      customer_publish_approved: false,
+      accepted_observations: 0,
+      source_rights_status: "REVIEW_REQUIRED",
+    };
+    if (fda) {
+      if (!/\bapixaban\b/iu.test(r.generic_name ?? "") || !clean(r.product_id)) {
+        fail("unverified FDA record");
+      }
+      return Object.freeze({
+        ...shared, _id: "drive-raw-fda-20261009-" + key,
+        product_ndc: key, generic_name: clean(r.generic_name),
+        product_id: clean(r.product_id), dosage_form: clean(r.dosage_form),
+        route: Array.isArray(r.route) ? r.route.filter(v => typeof v === "string")
+          .slice(0, 4).map(v => v.slice(0, 80)) : [],
+      });
+    }
+    let url;
+    try { url = new URL(key); } catch { fail("invalid EMA link"); }
+    if (url.protocol !== "https:" || url.hostname !== "www.ema.europa.eu" ||
+        url.username || url.password || url.hash || !clean(r.medicine_affected) ||
+        !clean(r.supply_shortage_status)) fail("invalid EMA record");
+    return Object.freeze({
+      ...shared, _id: "drive-raw-ema-20261009-" + String(index + 1).padStart(3, "0"),
+      shortage_url: key, medicine_affected: clean(r.medicine_affected),
+      shortage_status: clean(r.supply_shortage_status),
+      start_of_shortage_date: clean(r.start_of_shortage_date),
+      last_updated_date: clean(r.last_updated_date),
+    });
+  });
+  return Object.freeze({
+    manifestId: manifest._id, rowCount: rows.length,
+    status: "quarantine_projection_only", acceptedObservations: 0,
+    customerPublishApproved: false, rows: Object.freeze(rows),
+  });
+}
