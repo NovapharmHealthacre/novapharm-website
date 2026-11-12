@@ -835,6 +835,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
       setAnalyticsStatus("Select a medicine identity before running analytics.");
       return;
     }
+    const generation = selectionGenerationRef.current;
     const params = formSearchParams(filters);
     params.set("medicineId", detail.medicine.medicineId);
     params.set("page", "1");
@@ -843,18 +844,21 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     setAnalyticsStatus("Loading accepted non-sample facts from the governed analytical boundary.");
     try {
       const next = await gatewayJson<AnalyticsResponse>(`enterprise/medicines/analytics?${params.toString()}`);
+      if (generation !== selectionGenerationRef.current) return;
       setAnalytics(next);
       setAnalyticsStatus(next.dataState === "accepted_facts" ? `${next.pagination.totalRows.toLocaleString("en-GB")} accepted analytical rows matched this query.` : next.dataState === "source_not_ingested" ? "The selected national source has not completed a governed non-sample ingest." : "No accepted facts matched every selected filter.");
       setFiltersOpen(false);
     } catch (error) {
-      setAnalytics(null);
-      setAnalyticsStatus(professionalError(error));
+      if (generation === selectionGenerationRef.current) {
+        setAnalytics(null);
+        setAnalyticsStatus(professionalError(error));
+      }
     } finally {
-      setBusy(false);
+      if (generation === selectionGenerationRef.current) setBusy(false);
     }
   }
 
-  let central: ReactNode;
+    let central: ReactNode;
   if (current === "overview" || current === "medicine-search" || current === "medicine-overview" || current === "identity") central = <PlatformOverview analytics={analytics} detail={detail} snapshot={snapshot} />;
   else if (current === "geography") central = <><NearbyOrganisations /><EvidenceTable data={section(snapshot, "Practice population context")} /><EvidenceTable data={section(snapshot, "Pharmacy geography")} /></>;
   else if (current === "pharmacies") central = <section className={styles.routeWorkspace}><header><p className={styles.stateLabel}>Governed master</p><h1>All pharmacies</h1><p>Identity, geography and contact-evidence facts remain separate from medicine dispensing and marketing eligibility.</p></header><EvidenceTable data={section(snapshot, "Pharmacy geography")} /><EvidenceTable data={section(snapshot, "Pharmacy contact evidence")} /></section>;
