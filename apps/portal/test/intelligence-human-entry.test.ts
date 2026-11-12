@@ -28,7 +28,10 @@ test("visual redesign preserves Cognito and customer security boundaries", () =>
   assert.match(view, /fetch\("\/customer\/session"/);
   assert.match(view, /fetch\("\/customer\/logout"/);
   assert.match(view, /response\.ok/);
-  assert.doesNotMatch(view, /<input[^>]*type="password"|localStorage|sessionStorage/);
+  assert.match(view, /autoComplete="current-password"/);
+  assert.match(view, /completeCognitoCardSignIn/);
+  assert.match(view, /beginCognitoCardSignIn/);
+  assert.doesNotMatch(view, /localStorage|sessionStorage/);
   assert.doesNotMatch(view, /fetch\("\/auth\/customer\/login"|bypass|mock-user/);
   assert.match(sync, /assets\/media\/portal\/npi-human-portal\.webp/);
 });
