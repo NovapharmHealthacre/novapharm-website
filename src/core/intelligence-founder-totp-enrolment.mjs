@@ -1,10 +1,11 @@
 /**
  * Founder-only, self-service first-time TOTP setup.
  *
- * Cognito can issue a verified password-only ID/access token to a first-time
- * account without an enrolled MFA factor. Such tokens are NEVER NovaPharm
- * identity or customer acceptance. A signed founder-specific, short-lived
- * OIDC result may ONLY perform Cognito's own TOTP enrolment operations.
+ * Cognito can issue an authenticated ID/access token before first-time
+ * TOTP enrolment, while ACR/AMR claims may be unavailable during rollout.
+ * A signed founder-specific, nonce-bound, fresh Cognito identity may ONLY
+ * perform Cognito's own first-time TOTP enrolment operations. Such tokens
+ * are NEVER NovaPharm MFA proof, customer identity or customer acceptance.
  *
  * No AWS IAM credentials, password, refresh token or public browser JS.
  */
@@ -145,7 +146,7 @@ export async function confirmFounderTotp({ accessToken, userCode, fetchImpl } = 
 
 export const founderMfaSetupPolicy = Object.freeze({
   permittedScope: USER_ADMIN_SCOPE,
-  requiresFounderPasswordOnlySignedIdentity: true,
+  requiresVerifiedCognitoFounderSession: true,
   requiresPriorMfaUnenrolled: true,
   customerAccessGranted: false,
   mustReauthenticateAfterSetup: true,

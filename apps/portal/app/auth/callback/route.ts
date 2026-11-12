@@ -38,6 +38,7 @@ const safeIdentityErrorCodes = new Set([
   "mfa_enrolment_not_authorised", "mfa_enrolment_not_eligible",
   "mfa_enrolment_founder_email_mismatch",
   "mfa_enrolment_password_proof_missing",
+  "mfa_enrolment_method_unrecognised",
   "mfa_enrolment_acr_incompatible", "mfa_enrolment_auth_stale",
   "cognito_mfa_request_rejected", "founder_subject_invalid",
   "mfa_action_invalid", "enrolment_cookie_too_large", "enrolment_invalid",

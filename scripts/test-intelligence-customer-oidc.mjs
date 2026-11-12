@@ -135,7 +135,7 @@ test("OAuth exchange keeps the access token server-only for first-time MFA", asy
   }), e => e.code === "identity_response_invalid");
 });
 
-test("password-only founder proof enables TOTP setup but NEVER identity or customer acceptance", async () => {
+test("signed fresh founder Cognito session allows TOTP registration with or without AMR but never customer access", async () => {
   const firstLogin = { ...validClaims,
     email: "vishal@novapharmhealthcare.com",
     acr: "urn:cognito:loa:1",
@@ -170,10 +170,34 @@ test("password-only founder proof enables TOTP setup but NEVER identity or custo
     idToken: token(strongerPassword), expectedNonce: nonce,
     fetchImpl: mockJwks, nowSeconds: second,
   }), e => e.code === "identity_mfa_level_insufficient");
+  // ACR/AMR rollout is partial. Neither claim is required for the
+  // founder's limited self-service *registration*, but verified Cognito
+  // identity and fresh authentication are always mandatory.
+  const featureNotRolledOut = { ...firstLogin };
+  delete featureNotRolledOut.amr;
+  delete featureNotRolledOut.acr;
+  for (const firstTime of [
+    featureNotRolledOut,
+    { ...firstLogin, amr: [] },
+    { ...firstLogin, acr: "urn:cognito:loa:2", amr: ["email_otp"] },
+  ]) {
+    const limited = await verifyIntelligenceCustomerIdToken({
+      idToken: token(firstTime), expectedNonce: nonce,
+      fetchImpl: mockJwks, nowSeconds: second, purpose: "mfa_enrolment",
+    });
+    assert.equal(limited.mfaEnrolmentOnly, true);
+    assert.equal(limited.identityVerified, false);
+    assert.equal(limited.mfaVerified, false);
+    assert.equal(limited.grantsTenantAccess, false);
+    await assert.rejects(verifyIntelligenceCustomerIdToken({
+      idToken: token(firstTime), expectedNonce: nonce,
+      fetchImpl: mockJwks, nowSeconds: second,
+    }), e => e.code === "identity_mfa_level_insufficient");
+  }
   for (const claims of [
     { ...firstLogin, email: "other@example.com" },
-    { ...firstLogin, amr: ["email_otp"] },
-    { ...firstLogin, acr: "urn:cognito:loa:2" },
+    { ...firstLogin, amr: ["fed"] },
+    { ...firstLogin, amr: "pwd" },
     { ...firstLogin, acr: "urn:untrusted:loa:3" },
     { ...firstLogin, auth_time: second - 301 },
     { ...firstLogin, email_verified: false },
@@ -185,8 +209,8 @@ test("password-only founder proof enables TOTP setup but NEVER identity or custo
   }
   for (const [claims, code] of [
     [{ ...firstLogin, email: "unknown@example.com" }, "mfa_enrolment_founder_email_mismatch"],
-    [{ ...firstLogin, amr: ["email_otp"] }, "mfa_enrolment_password_proof_missing"],
-    [{ ...firstLogin, acr: "urn:cognito:loa:2" }, "mfa_enrolment_acr_incompatible"],
+    [{ ...firstLogin, amr: ["fed"] }, "mfa_enrolment_method_unrecognised"],
+    [{ ...firstLogin, acr: "urn:untrusted:loa:3" }, "mfa_enrolment_acr_incompatible"],
     [{ ...firstLogin, auth_time: second - 301 }, "mfa_enrolment_auth_stale"],
   ]) {
     await assert.rejects(verifyIntelligenceCustomerIdToken({
