@@ -99,6 +99,7 @@ def verified_principal(event, now):
         claims.get("acr") != "urn:cognito:loa:4" or
         claims.get("email_verified") not in (True, "true") or
         not isinstance(amr, list) or
+        not all(isinstance(method, str) for method in amr) or
         not {"pwd", "otp", "mfa"}.issubset(set(amr)) or
         auth_time <= 0 or auth_time > now + 60 or now - auth_time > 300):
         return None
@@ -122,6 +123,8 @@ def payload(event):
     except (ValueError, UnicodeError):
         return None
     if not isinstance(data, dict) or set(data) != {"plan", "cycle"}:
+        return None
+    if not isinstance(data["plan"], str) or not isinstance(data["cycle"], str):
         return None
     selection = (data["plan"], data["cycle"])
     return selection if selection in PRICES else None
@@ -221,21 +224,24 @@ def reserve(db, accepted, now):
           "expiresEpoch": n(expiry), "ttlEpoch": n(expiry + 3600)},
           "ConditionExpression": "attribute_not_exists(PK) OR expiresEpoch < :now",
           "ExpressionAttributeValues": {":now": n(now)}}},
-      condition(tpk, "META", "#status = :active AND contractAccepted = :yes AND ownershipVerified = :yes",
-        {":active": s("active"), ":yes": b(True)}),
+      condition(tpk, "META", "#status = :active AND contractAccepted = :yes AND ownershipVerified = :yes AND ownerSubject = :owner",
+        {":active": s("active"), ":yes": b(True), ":owner": s(accepted["tenant"]["ownerSubject"])}),
       condition("SUBJECT#" + sub, "TENANT#" + tenant_id,
         "#status = :active AND approved = :yes AND subject = :sub AND tenantId = :tenant",
         {":active": s("active"), ":yes": b(True), ":sub": s(sub), ":tenant": s(tenant_id)}),
       condition(tpk, "SEAT#" + sub,
-        "#status = :active AND contains(features, :medicine)",
-        {":active": s("active"), ":medicine": s(FEATURE)}),
+        "#status = :active AND contains(features, :medicine) AND #role = :role",
+        {":active": s("active"), ":medicine": s(FEATURE),
+         ":role": s(accepted["seat"]["role"])}),
       condition(tpk, "BILLING#" + sub,
         "#status = :pending AND stripeCustomerId = :customer AND version = :revision",
         {":pending": s("pending"), ":customer": s(accepted["customer"]),
          ":revision": n(accepted["billing"]["version"])}),
       condition(tpk, "CONTRACT#" + sub,
-        "accepted = :yes AND acceptedBy = :sub AND #plan = :plan AND #cycle = :cycle",
-        {":yes": b(True), ":sub": s(sub), ":plan": s(accepted["plan"]), ":cycle": s(accepted["cycle"])}),
+        "accepted = :yes AND acceptedBy = :sub AND #plan = :plan AND #cycle = :cycle AND stripePriceId = :price AND stripeCustomerId = :customer AND version = :contractVersion",
+        {":yes": b(True), ":sub": s(sub), ":plan": s(accepted["plan"]), ":cycle": s(accepted["cycle"]),
+         ":price": s(accepted["price"]), ":customer": s(accepted["customer"]),
+         ":contractVersion": s(accepted["contract"]["version"])}),
       condition(tpk, "OWNER#" + sub,
         "verified = :yes AND stripeCustomerId = :customer",
         {":yes": b(True), ":customer": s(accepted["customer"])}),
@@ -243,10 +249,12 @@ def reserve(db, accepted, now):
         "customerLaunchAccepted = :yes AND sourceRightsApproved = :yes AND productionApproved = :yes",
         {":yes": b(True)}),
       condition("GOVERNANCE#PRODUCTION", "BILLING#CHECKOUT",
-        "customerLaunchAccepted = :yes AND sourceRightsApproved = :yes AND stripeWebhookAndLedgerAccepted = :yes AND revision = :revision",
-        {":yes": b(True), ":revision": n(accepted["release"]["revision"])}),
+        "customerLaunchAccepted = :yes AND sourceRightsApproved = :yes AND stripeWebhookAndLedgerAccepted = :yes AND billingLedgerWriteAndReplayAccepted = :yes AND taxCodeAndRegistrationsAccepted = :yes AND productionRuntimeAccepted = :yes AND tenantIsolationAccepted = :yes AND serverSideContractAccepted = :yes AND revision = :revision AND stripeAccountId = :account",
+        {":yes": b(True), ":revision": n(accepted["release"]["revision"]),
+         ":account": s(LIVE_ACCOUNT)}),
     ]
     # Expression attribute names must be supplied for #plan/#cycle in contract.
+    items[4]["ConditionCheck"]["ExpressionAttributeNames"].update({"#role": "role"})
     items[6]["ConditionCheck"]["ExpressionAttributeNames"].update({"#plan": "plan", "#cycle": "cycle"})
     db.transact_write_items(TransactItems=items, ClientRequestToken=secrets.token_hex(16))
     return intent_id
