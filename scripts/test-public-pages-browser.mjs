@@ -382,7 +382,7 @@ for (const [engineName, browserType] of engines) {
                   const card = pricing.locator('[data-npi-plan="' + plan + '"]');
                   const allActions = card.locator(".npi-plan-cta");
                   assert.equal(await allActions.count(), 2, plan + ": must retain two fixed allowlisted link destinations");
-                  const visible = allActions.locator(":visible");
+                  const visible = card.locator(".npi-plan-cta:visible");
                   assert.equal(await visible.count(), 1,
                     engineName + " " + viewport.name + " " + plan + " " + cycle + ": exactly one visible pricing button");
                   const expected = "https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=" + plan + "&cycle=" + cycle;
