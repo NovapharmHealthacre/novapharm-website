@@ -6,13 +6,13 @@ import {
   verifyIntelligenceCustomerIdToken,
 } from "../../../../../src/core/intelligence-customer-oidc.mjs";
 import {
+  acknowledgeFounderManagedMfaOnly,
+} from "../../../../../src/core/intelligence-founder-managed-mfa-compat.mjs";
+import {
   checkFounderEnrolled,
   checkFounderUnenrolled,
   createFounderMfaCookie,
 } from "../../../../../src/core/intelligence-founder-totp-enrolment.mjs";
-import {
-  acknowledgeFounderManagedMfaOnly,
-} from "../../../../../src/core/intelligence-founder-managed-mfa-compat.mjs";
 
 export const dynamic = "force-dynamic";
 
