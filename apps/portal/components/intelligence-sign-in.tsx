@@ -12,11 +12,11 @@ type ApprovedCustomer = Readonly<{
 
 const publicSite = "https://novapharmhealthcare.com";
 const navigation = [
-  { label: "Platform", href: `${publicSite}/technology/` },
+  { label: "Platform", href: `${publicSite}/technology/#intelligence-platform` },
   { label: "Workspaces", href: `${publicSite}/technology/#intelligence-workspace-directory` },
   { label: "Data", href: `${publicSite}/technology/#intelligence-research` },
   { label: "Security", href: `${publicSite}/trust-centre/` },
-  { label: "Pricing", href: `${publicSite}/technology/#intelligence-plans` },
+  { label: "Pricing", href: `${publicSite}/technology/#intelligence-pricing` },
 ] as const;
 
 function IntelligenceLogo({ small = false }: Readonly<{ small?: boolean }>) {
