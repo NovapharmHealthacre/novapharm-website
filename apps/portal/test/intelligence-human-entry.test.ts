@@ -41,3 +41,15 @@ test("visual redesign preserves Cognito and customer security boundaries", () =>
   assert.doesNotMatch(view, /fetch\("\/auth\/customer\/login"|bypass|mock-user/);
   assert.match(sync, /assets\/media\/portal\/npi-human-portrait-approved\.webp/);
 });
+
+test("customer registration binds enumerated GBP plan and cycle to the signed identity transaction only", () => {
+  const route = source("app/auth/customer/register/route.ts");
+  const core = source("../../src/core/intelligence-customer-oidc.mjs");
+  assert.match(route, /request\?\.nextUrl\.searchParams\.get\("plan"\)/);
+  assert.match(route, /request\?\.nextUrl\.searchParams\.get\("cycle"\)/);
+  assert.match(route, /requestedPlan,/);
+  assert.match(route, /requestedCycle,/);
+  assert.match(core, /requestedBillingSelection/);
+  assert.match(core, /requestedPlanBoundToSignedCookie/);
+  assert.doesNotMatch(route, /checkout\.stripe\.com|createIntelligenceSubscriptionCheckout|billingGrant|grantAccess/);
+});

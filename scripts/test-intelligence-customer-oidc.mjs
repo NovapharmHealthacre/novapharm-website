@@ -63,6 +63,56 @@ test("dedicated client uses code and PKCE with no access grant", () => {
   assert.equal(intelligenceCustomerOidc.permitsPublicSignup, false);
 });
 
+test("GBP plan and billing period survive Cognito registration only as a signed, non-entitling selection", () => {
+  const nowMs = second * 1000;
+  for (const requestedPlan of ["starter", "professional"]) {
+    for (const requestedCycle of ["monthly", "annual"]) {
+      const txn = createCustomerLoginTransaction({
+        signingKey, nowMs, requestedPlan, requestedCycle,
+      });
+      assert.equal(txn.requestedPlanBoundToSignedCookie, true);
+      const url = new URL(txn.authorizeUrl);
+      assert.equal(url.searchParams.has("requestedPlan"), false);
+      assert.equal(url.searchParams.has("requestedCycle"), false);
+      assert.equal(url.searchParams.has("price"), false);
+      const verified = verifyCustomerLoginTransaction({
+        signingKey, cookieValue: txn.transactionCookieValue,
+        state: url.searchParams.get("state"), nowMs: nowMs + 30_000,
+      });
+      assert.equal(verified.requestedPlan, requestedPlan);
+      assert.equal(verified.requestedCycle, requestedCycle);
+      assert.equal(verified.grantsTenantAccess, false);
+      assert.equal("stripeCustomerId" in verified, false);
+      // Altering the signed cookie must never switch a plan or issue access.
+      const modifiedCookie = txn.transactionCookieValue.replace(/^[^.]+/u, "a".repeat(64));
+      assert.throws(() => verifyCustomerLoginTransaction({
+        signingKey, cookieValue: modifiedCookie,
+        state: url.searchParams.get("state"), nowMs: nowMs + 30_000,
+      }));
+    }
+  }
+  const defaultTxn = createCustomerLoginTransaction({ signingKey, nowMs });
+  const verifiedDefault = verifyCustomerLoginTransaction({
+    signingKey, cookieValue: defaultTxn.transactionCookieValue,
+    state: new URL(defaultTxn.authorizeUrl).searchParams.get("state"), nowMs: nowMs + 30_000,
+  });
+  assert.equal(verifiedDefault.requestedPlan, null);
+  assert.equal(verifiedDefault.requestedCycle, null);
+  assert.equal(defaultTxn.requestedPlanBoundToSignedCookie, false);
+  for (const selection of [
+    { requestedPlan: "enterprise", requestedCycle: "monthly" },
+    { requestedPlan: "starter", requestedCycle: "weekly" },
+    { requestedPlan: "starter" },
+    { requestedCycle: "annual" },
+    { requestedPlan: "__proto__", requestedCycle: "annual" },
+    { requestedPlan: null, requestedCycle: "monthly" },
+  ]) {
+    assert.throws(() => createCustomerLoginTransaction({
+      signingKey, nowMs, ...selection,
+    }), e => e.code === "customer_plan_selection_invalid");
+  }
+});
+
 test("tampering, forged state, expired transaction and wrong key reject", () => {
   const now = second * 1000;
   const started = createCustomerLoginTransaction({ signingKey, nowMs: now });
