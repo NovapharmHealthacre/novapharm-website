@@ -12,6 +12,7 @@ export function cognitoUserAction(
   fetchImpl?: typeof fetch
 ): Promise<Record<string, unknown>>;
 export function checkFounderUnenrolled(options: {accessToken: string; subject: string; fetchImpl?: typeof fetch}): Promise<true>;
+export function checkFounderEnrolled(options: {accessToken: string; subject: string; fetchImpl?: typeof fetch}): Promise<Readonly<{authenticatorRegistered: true; mfaVerifiedThisLogin: false; identityAccepted: false; grantsTenantAccess: false}>>;
 export function createFounderMfaCookie(options: {accessToken: string; subject: string; signingKey: string; nowMs?: number}): Readonly<{cookieValue: string; maxAgeSeconds: number}>;
 export function verifyFounderMfaCookie(options: {cookieValue: string; signingKey: string; nowMs?: number}): Readonly<{accessToken: string; subject: string; csrf: string}>;
 export function beginFounderTotp(options: {accessToken: string; subject: string; fetchImpl?: typeof fetch}): Promise<string>;
