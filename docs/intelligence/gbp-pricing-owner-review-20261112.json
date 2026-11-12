@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "status": "OWNER_REVIEW_ONLY",
+  "ownerDecisionDate": "2026-11-12",
+  "launchCurrency": "gbp",
+  "stripeAccountId": "acct_1UZUNv2U9Y3sX5I2",
+  "ownerApproved": false,
+  "gbpStripePricesCreated": false,
+  "gbpPriceIdsApproved": false,
+  "customerBillingEnabled": false,
+  "customerAccessEnabled": false,
+  "approvedSaleCountries": [],
+  "proposedSaleCountries": [
+    "GB"
+  ],
+  "tax": {
+    "stripeTaxAutomatic": true,
+    "collectTaxIds": true,
+    "priceTaxBehavior": "exclusive",
+    "ukStandardRateReferencePercent": 20,
+    "serviceTaxCode": "txcd_10103001",
+    "taxCodeRequiresAccountantApproval": true,
+    "nonUkTaxRequiresSeparateApproval": true
+  },
+  "plans": {
+    "starter": {
+      "monthly": {
+        "amountMinor": 19900,
+        "interval": "month",
+        "priceId": null
+      },
+      "annual": {
+        "amountMinor": 203000,
+        "interval": "year",
+        "priceId": null
+      }
+    },
+    "professional": {
+      "monthly": {
+        "amountMinor": 69900,
+        "interval": "month",
+        "priceId": null
+      },
+      "annual": {
+        "amountMinor": 713000,
+        "interval": "year",
+        "priceId": null
+      }
+    },
+    "enterprise": {
+      "indicativeMonthlyMinor": 279900,
+      "contractRequired": true,
+      "approvedPriceId": null,
+      "annual": null
+    }
+  }
+}
