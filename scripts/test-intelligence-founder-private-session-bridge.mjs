@@ -7,6 +7,7 @@ import {
 } from "../src/core/intelligence-founder-private-session-bridge.mjs";
 
 const key = "my-private-production-signing-key-".repeat(3);
+const bridgeSecret = "f".repeat(64);
 const idToken = "i".repeat(220);
 const accessToken = "a".repeat(240);
 const nowSeconds = 1800000000;
@@ -44,7 +45,7 @@ test("approved private service sets only an opaque 30-minute founder-shell cooki
   const token = "a".repeat(43);
   let called = 0;
   const r = await requestFounderPrivateSession({
-    idToken, accessToken, signingKey: key, nowSeconds, enabled: true,
+    idToken, accessToken, bridgeKey: bridgeSecret, nowSeconds, enabled: true,
     fetchImpl: async (url, options) => {
       called++;
       assert.equal(url, "https://intelligence.novapharmhealthcare.com/founder/session");
@@ -77,7 +78,7 @@ test("upstream customer approval or unsafe cookies always refuse founder session
   ];
   for (const cookie of cookies) {
     const r = await requestFounderPrivateSession({
-      idToken, accessToken, signingKey: key, nowSeconds, enabled: true,
+      idToken, accessToken, bridgeKey: bridgeSecret, nowSeconds, enabled: true,
       fetchImpl: async () => new Response(JSON.stringify({
         ok: true, code: "founder_session_active",
         role: "founder", scope: "founder-shell-read-only",
@@ -88,7 +89,7 @@ test("upstream customer approval or unsafe cookies always refuse founder session
   }
   for (const field of ["customerAccess", "medicinesDataAccess"]) {
     const r = await requestFounderPrivateSession({
-      idToken, accessToken, signingKey: key, nowSeconds, enabled: true,
+      idToken, accessToken, bridgeKey: bridgeSecret, nowSeconds, enabled: true,
       fetchImpl: async () => new Response(JSON.stringify({
         ok: true, code: "founder_session_active",
         role: "founder", scope: "founder-shell-read-only",
@@ -99,4 +100,31 @@ test("upstream customer approval or unsafe cookies always refuse founder session
     });
     assert.equal(r, null);
   }
+});
+
+test("independently generated founder key signs the bridge, never OIDC signer", () => {
+  const nonce = "3".repeat(22);
+  const h = founderSessionBridgeHeaders({
+    idToken, accessToken, bridgeKey: bridgeSecret, nowSeconds, nonce,
+  });
+  const message = [String(nowSeconds), nonce,
+    createHash("sha256").update(idToken, "ascii").digest("hex"),
+    createHash("sha256").update(accessToken, "ascii").digest("hex"),
+  ].join(".");
+  assert.equal(h["X-Npi-Founder-Proof"],
+    createHmac("sha256", bridgeSecret).update(message).digest("hex"));
+  assert.notEqual(h["X-Npi-Founder-Proof"],
+    founderSessionBridgeHeaders({idToken, accessToken, signingKey: key, nowSeconds, nonce})["X-Npi-Founder-Proof"]);
+});
+
+test("active founder release requires an independent strong secret and never calls upstream otherwise", async () => {
+  let invoked = 0;
+  for (const missingKey of [undefined, "", "short", "x".repeat(40), "a".repeat(64) + "\\n"]) {
+    const response = await requestFounderPrivateSession({
+      idToken, accessToken, signingKey: key, bridgeKey: missingKey, enabled: true,
+      fetchImpl: async () => { invoked++; throw new Error("upstream called without bridge secret"); },
+    });
+    assert.equal(response, null);
+  }
+  assert.equal(invoked, 0);
 });
