@@ -48,7 +48,9 @@ test("dedicated client uses code and PKCE with no access grant", () => {
   assert.equal(url.searchParams.get("client_id"), intelligenceCustomerOidc.clientId);
   assert.equal(url.searchParams.get("redirect_uri"), intelligenceCustomerOidc.callback);
   assert.equal(url.searchParams.get("scope"), "openid email profile");
-  assert.equal(url.searchParams.get("acr_values"), "urn:cognito:loa:4");
+  // ACR 1 is only a provider-side initial enrolment fallback. It MUST NOT
+  // grant a Cognito identity session, application seat or medicine access.
+  assert.equal(url.searchParams.get("acr_values"), "urn:cognito:loa:4 urn:cognito:loa:1");
   assert.equal(url.searchParams.get("max_age"), "900");
   const transaction = verifyCustomerLoginTransaction({
     signingKey, cookieValue: started.transactionCookieValue,
@@ -132,6 +134,17 @@ test("first-login fresh password-plus-TOTP proof remains valid after eight minut
   assert.equal(result.identityVerified, true);
   assert.equal(result.mfaVerified, true);
   assert.equal(result.grantsTenantAccess, false);
+});
+
+test("level-one onboarding can never be accepted as founder MFA or grant a customer identity", async () => {
+  const weak = { ...validClaims, acr: "urn:cognito:loa:1", amr: ["pwd"] };
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken: token(weak), expectedNonce: nonce, fetchImpl: mockJwks, nowSeconds: second,
+  }), error => error.code === "identity_mfa_level_insufficient");
+  const despiteMfaClaim = { ...validClaims, acr: "urn:cognito:loa:1", amr: ["pwd", "otp", "mfa"] };
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken: token(despiteMfaClaim), expectedNonce: nonce, fetchImpl: mockJwks, nowSeconds: second,
+  }), error => error.code === "identity_mfa_level_insufficient");
 });
 
 test("forged JWT, wrong nonce, email, audience or expiry cannot pass", async () => {
