@@ -6,6 +6,7 @@ import {
   createCustomerLoginTransaction,
   verifyCustomerLoginTransaction,
   exchangeCustomerAuthCode,
+  exchangeCustomerAuthTokens,
   verifyIntelligenceCustomerIdToken,
 } from "../src/core/intelligence-customer-oidc.mjs";
 
@@ -47,7 +48,7 @@ test("dedicated client uses code and PKCE with no access grant", () => {
   assert.equal(url.searchParams.get("code_challenge_method"), "S256");
   assert.equal(url.searchParams.get("client_id"), intelligenceCustomerOidc.clientId);
   assert.equal(url.searchParams.get("redirect_uri"), intelligenceCustomerOidc.callback);
-  assert.equal(url.searchParams.get("scope"), "openid email profile");
+  assert.equal(url.searchParams.get("scope"), "openid email profile aws.cognito.signin.user.admin");
   assert.equal(url.searchParams.get("acr_values"), "urn:cognito:loa:4");
   assert.equal(url.searchParams.get("max_age"), "900");
   const transaction = verifyCustomerLoginTransaction({
@@ -103,11 +104,72 @@ test("server code exchange includes public client PKCE, no arbitrary token origi
       assert.equal(body.get("grant_type"), "authorization_code");
       assert.equal(body.get("client_id"), intelligenceCustomerOidc.clientId);
       assert.equal(body.get("code_verifier"), "a".repeat(64));
-      return { ok: true, text: async () => JSON.stringify({ token_type: "Bearer", id_token: id, access_token: "must_not_be_returned" }) };
+      return { ok: true, text: async () => JSON.stringify({ token_type: "Bearer", id_token: id, access_token: "a".repeat(210) }) };
     },
   });
   assert.equal(result, id);
   await assert.rejects(exchangeCustomerAuthCode({ code: "bad", verifier: "a".repeat(64), fetchImpl: async () => ({}) }));
+});
+
+test("OAuth exchange keeps the access token server-only for first-time MFA", async () => {
+  const token = "a".repeat(220);
+  const res = await exchangeCustomerAuthTokens({
+    code: "auth_code_abcdefghij", verifier: "b".repeat(64),
+    fetchImpl: async () => ({
+      ok: true, text: async () => JSON.stringify({
+        token_type: "Bearer", id_token: "c".repeat(200), access_token: token,
+        refresh_token: "not_to_be_returned",
+      })
+    }),
+  });
+  assert.equal(res.accessToken, token);
+  assert.equal(res.idToken.length, 200);
+  assert.equal("refreshToken" in res, false);
+  await assert.rejects(exchangeCustomerAuthTokens({
+    code: "auth_code_abcdefghij", verifier: "b".repeat(64),
+    fetchImpl: async () => ({
+      ok: true, text: async () => JSON.stringify({
+        token_type: "Bearer", id_token: "c".repeat(200),
+      })
+    }),
+  }), e => e.code === "identity_response_invalid");
+});
+
+test("password-only founder proof enables TOTP setup but NEVER identity or customer acceptance", async () => {
+  const firstLogin = { ...validClaims,
+    email: "vishal@novapharmhealthcare.com",
+    acr: "urn:cognito:loa:1",
+    amr: ["pwd"],
+  };
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken: token(firstLogin), expectedNonce: nonce,
+    fetchImpl: mockJwks, nowSeconds: second,
+  }), e => e.code === "identity_mfa_level_insufficient");
+  const p = await verifyIntelligenceCustomerIdToken({
+    idToken: token(firstLogin), expectedNonce: nonce,
+    fetchImpl: mockJwks, nowSeconds: second, purpose: "mfa_enrolment",
+  });
+  assert.equal(p.mfaEnrolmentOnly, true);
+  assert.equal(p.verifiedCognitoSubject, validClaims.sub);
+  assert.equal(p.identityVerified, false);
+  assert.equal(p.mfaVerified, false);
+  assert.equal(p.grantsTenantAccess, false);
+  for (const claims of [
+    { ...firstLogin, email: "other@example.com" },
+    { ...firstLogin, amr: ["email_otp"] },
+    { ...firstLogin, acr: "urn:cognito:loa:4" },
+    { ...firstLogin, auth_time: second - 301 },
+    { ...firstLogin, email_verified: false },
+  ]) {
+    await assert.rejects(verifyIntelligenceCustomerIdToken({
+      idToken: token(claims), expectedNonce: nonce,
+      fetchImpl: mockJwks, nowSeconds: second, purpose: "mfa_enrolment",
+    }));
+  }
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken: token(firstLogin, true), expectedNonce: nonce,
+    fetchImpl: mockJwks, nowSeconds: second, purpose: "mfa_enrolment",
+  }));
 });
 
 test("signed ID JWT verifies exact issuer, audience, nonce and expiry but never grants access", async () => {

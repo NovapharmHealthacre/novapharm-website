@@ -1,10 +1,14 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import {
-  exchangeCustomerAuthCode,
+  exchangeCustomerAuthTokens,
   verifyCustomerLoginTransaction,
   verifyIntelligenceCustomerIdToken,
 } from "../../../../../src/core/intelligence-customer-oidc.mjs";
+import {
+  checkFounderUnenrolled,
+  createFounderMfaCookie,
+} from "../../../../../src/core/intelligence-founder-totp-enrolment.mjs";
 
 export const dynamic = "force-dynamic";
 
@@ -88,7 +92,7 @@ async function activateApprovedCustomerSession(idToken: string): Promise<{ token
  * contract, application session, medicine permission, or subscription.
  */
 export async function GET(request: NextRequest): Promise<Response> {
-  let response: NextResponse;
+  let response: NextResponse = resultPage(false);
   let phase = "transaction";
   try {
     const code = request.nextUrl.searchParams.get("code") ?? "";
@@ -99,27 +103,73 @@ export async function GET(request: NextRequest): Promise<Response> {
       signingKey: process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] ?? "",
     });
     phase = "code_exchange";
-    const idToken = await exchangeCustomerAuthCode({ code, verifier: transaction.verifier });
+    const { idToken, accessToken } = await exchangeCustomerAuthTokens({
+      code, verifier: transaction.verifier,
+    });
     phase = "id_token_verification";
-    const identity = await verifyIntelligenceCustomerIdToken({ idToken, expectedNonce: transaction.nonce });
-    if (identity.grantsTenantAccess !== false || identity.identityVerified !== true) throw new Error("Identity acceptance denied.");
-    // The public identity-only page remains available without account activation.
-    // Never issue a customer cookie without the independently approved session
-    // service returning an exact host-only, secure cookie after an atomic write.
-    const approved = request.nextUrl.hostname === "intelligence.novapharmhealthcare.com"
-      ? await activateApprovedCustomerSession(idToken)
-      : null;
-    response = resultPage(true, approved !== null);
-    if (approved) {
+    let identity: { grantsTenantAccess: boolean; identityVerified: boolean } | undefined;
+    try {
+      identity = await verifyIntelligenceCustomerIdToken({
+        idToken, expectedNonce: transaction.nonce,
+      });
+    } catch (error: unknown) {
+      // A Cognito password-only first sign-in can return valid tokens before
+      // the user has enrolled MFA. Never accept it as a verified customer.
+      if (!error || typeof error !== "object" ||
+          !("code" in error) || error.code !== "identity_mfa_level_insufficient") throw error;
+      if (request.nextUrl.origin !== "https://intelligence.novapharmhealthcare.com")
+        throw error;
+      phase = "mfa_enrolment_identity";
+      const pending = await verifyIntelligenceCustomerIdToken({
+        idToken, expectedNonce: transaction.nonce, purpose: "mfa_enrolment",
+      });
+      if (!pending.mfaEnrolmentOnly || pending.identityVerified ||
+          pending.grantsTenantAccess) throw new Error("Enrolment identity not eligible.");
+      phase = "mfa_enrolment_eligibility";
+      await checkFounderUnenrolled({
+        accessToken, subject: pending.verifiedCognitoSubject,
+      });
+      const sealed = createFounderMfaCookie({
+        accessToken, subject: pending.verifiedCognitoSubject,
+        signingKey: process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] ?? "",
+      });
+      response = NextResponse.redirect(
+        new URL("/auth/mfa/setup", request.nextUrl.origin), { status: 303 },
+      );
       response.cookies.set({
-        name: "__Host-npi_session",
-        value: approved.token,
+        name: "__Host-npi_mfa_enrol",
+        value: sealed.cookieValue,
         path: "/",
         httpOnly: true,
         secure: true,
         sameSite: "lax",
-        maxAge: approved.seconds,
+        maxAge: sealed.maxAgeSeconds,
       });
+      response.headers.set("Cache-Control", "no-store");
+      // No account acceptance, tenant cookie, OAuth token or sensitive user
+      // claims are ever emitted in response or operational diagnostics.
+      console.info(JSON.stringify({ event: "npi_founder_totp_enrolment_offered" }));
+    }
+    if (identity) {
+      if (identity.grantsTenantAccess !== false || identity.identityVerified !== true)
+        throw new Error("Identity acceptance denied.");
+      // Never issue a customer cookie without independently approved tenant,
+      // subscription, rights and revocation-fenced acceptance.
+      const approved = request.nextUrl.hostname === "intelligence.novapharmhealthcare.com"
+        ? await activateApprovedCustomerSession(idToken)
+        : null;
+      response = resultPage(true, approved !== null);
+      if (approved) {
+        response.cookies.set({
+          name: "__Host-npi_session",
+          value: approved.token,
+          path: "/",
+          httpOnly: true,
+          secure: true,
+          sameSite: "lax",
+          maxAge: approved.seconds,
+        });
+      }
     }
   } catch (error: unknown) {
     console.warn(JSON.stringify({
