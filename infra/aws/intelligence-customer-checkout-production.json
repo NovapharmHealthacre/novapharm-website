@@ -103,7 +103,7 @@
         "Architectures": [
           "x86_64"
         ],
-        "Handler": "intelligence-customer-checkout-api.handler",
+        "Handler": "checkout_api.handler",
         "Role": {
           "Fn::GetAtt": [
             "CheckoutRole",
