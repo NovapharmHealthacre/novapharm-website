@@ -43,7 +43,7 @@ test("customer start uses the pinned Cognito public PKCE client and a signed HTT
     assert.match(cookie, /Secure/);
     assert.match(cookie, /SameSite=lax/i);
     assert.match(cookie, /Path=\//);
-    assert.match(cookie, /Max-Age=300/);
+    assert.match(cookie, /Max-Age=900/);
     assert.doesNotMatch(cookie, /np_session|id_token|access_token|refresh_token/);
     assert.equal(result.headers.get("cache-control"), "no-store");
   } finally {
@@ -64,6 +64,8 @@ test("callback refuses unsolicited or forged OAuth codes and clears transient co
     assert.match(response.headers.get("set-cookie") ?? "", /Max-Age=0/);
     const body = await response.text();
     assert.match(body, /Sign-in could not be completed/);
+    assert.match(body, /Start a new secure sign-in/);
+    assert.doesNotMatch(body, /callback_denied|identity_email_unverified|identity_mfa_level_insufficient/);
     assert.doesNotMatch(body, /untrusted123456|verifiedCognitoSubject|id_token/);
   } finally {
     if (previous === undefined) delete process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
