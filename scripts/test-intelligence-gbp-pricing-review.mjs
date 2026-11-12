@@ -43,6 +43,11 @@ test("public marketing candidates are GBP and never a payment flow", () => {
   const js=read("assets/js/intelligence-pricing.js");
   assert.ok(js.includes('currency: "GBP"'));
   assert.doesNotMatch(js,/fetch[(]|sendBeacon|localStorage|sessionStorage|document[.]cookie/);
-  // The server catalogue is still INR-only, and cannot be promoted to a GBP release.
-  assert.ok(read("src/core/intelligence-live-stripe-catalog.mjs").includes('currency: "inr"'));
+  // The server catalogue now uses approved GBP IDs but remains release-gated.
+  const catalog = read("src/core/intelligence-live-stripe-catalog.mjs");
+  assert.ok(catalog.includes('currency: "gbp"'));
+  assert.ok(catalog.includes('"verifiedCustomerIdentityAndMfa"'));
+  assert.ok(catalog.includes('"stripeWebhookAndLedgerAccepted"'));
+  assert.ok(js.includes("secureRegistration"));
+  assert.ok(!js.includes("checkout.stripe.com"));
 });
