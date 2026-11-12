@@ -11706,10 +11706,9 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 1,
+      "referenceCount": 1,
       "usageFiles": [
-        "apps/portal/scripts/sync-public-assets.mjs",
         "creative-assets/module-media-asset-register.json"
       ],
       "exactDuplicateGroup": null,
@@ -22756,10 +22755,11 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 5,
+      "referenceCount": 5,
       "usageFiles": [
         ".github/workflows/intelligence-live-smoke.yml",
+        "apps/portal/scripts/sync-public-assets.mjs",
         "assets/css/technology-intelligence.css",
         "creative-assets/asset-register.json",
         "scripts/test-intelligence-technology-page.mjs"
