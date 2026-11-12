@@ -193,14 +193,22 @@ export async function verifyIntelligenceCustomerIdToken({
     // Restricted first-login bootstrap only. This is NOT verified MFA,
     // identity acceptance, a tenant session or a route to paid data.
     // The signed token must prove the founder's Cognito password ceremony.
-    if (claims.email !== "vishal@novapharmhealthcare.com" ||
-        !Array.isArray(claims.amr) || !claims.amr.includes("pwd") ||
-        (claims.acr !== "urn:cognito:loa:1" && claims.acr !== undefined) ||
-        !Number.isSafeInteger(claims.auth_time) ||
+    if (claims.email !== "vishal@novapharmhealthcare.com")
+      throw blocked("mfa_enrolment_founder_email_mismatch");
+    // ACR is a report of the user's achieved factors. Requiring strictly
+    // level 1 incorrectly rejects valid recent PASSWORD sign-ins that
+    // Cognito classifies at a higher level (e.g. pwd + email OTP is LOA3).
+    // The actual signed password AMR, subject, issuer, audience, nonce and
+    // verified founder email remain mandatory; no application login granted.
+    if (!Array.isArray(claims.amr) || !claims.amr.includes("pwd"))
+      throw blocked("mfa_enrolment_password_proof_missing");
+    if (claims.acr !== undefined &&
+        !["urn:cognito:loa:1", "urn:cognito:loa:3", "urn:cognito:loa:4"].includes(claims.acr))
+      throw blocked("mfa_enrolment_acr_incompatible");
+    if (!Number.isSafeInteger(claims.auth_time) ||
         claims.auth_time > nowSeconds + 60 ||
-        nowSeconds - claims.auth_time > 300) {
-      throw blocked("mfa_enrolment_not_authorised");
-    }
+        nowSeconds - claims.auth_time > 300)
+      throw blocked("mfa_enrolment_auth_stale");
     return Object.freeze({
       mfaEnrolmentOnly: true, verifiedCognitoSubject: claims.sub,
       identityVerified: false, mfaVerified: false,
