@@ -92,9 +92,13 @@ export function IntelligenceSignIn() {
           <nav className={styles["navigation"]} aria-label="NovaPharm Intelligence">
             {navigation.map(({ label, href }) => <a href={href} key={label}>{label}</a>)}
           </nav>
-          <a className={styles["headerAction"]} href={customer ? "/customer/" : "/auth/customer/start"}>
-            {customer ? "Workspace" : "Sign in"}
-          </a>
+          {customer ? (
+            <button className={styles["headerAction"]} type="button" onClick={() => { void signOut(); }} disabled={signingOut}>
+              {signingOut ? "Signing out" : "Sign out"}
+            </button>
+          ) : (
+            <a className={styles["headerAction"]} href="/auth/customer/start">Sign in</a>
+          )}
         </header>
 
         <div className={styles["layout"]}>
