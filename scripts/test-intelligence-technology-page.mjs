@@ -295,3 +295,12 @@ assert.match(workspaceCss, /@media\(max-width:500px\)/, "The interactive experie
 for (const label of ["Medicine research", "Market intelligence", "Supply & regulation", "Strategy", "Decision tools"]) {
   assert.ok(workspaceJs.includes(label), "Missing interactive workspace discipline: " + label);
 }
+
+// The mobile WCAG AA acceptance requires readable secondary labels, not decorative low-contrast grey.
+for (const [label, css] of [["native section", workspaceEmbeddedCss], ["standalone experience", workspaceCss]]) {
+  assert.match(css, /WCAG AA: muted workspace copy remains readable/, label + " must carry its scoped contrast policy");
+  assert.match(css, /color:\s*#57575d\s*;/, label + " must use contrast-safe secondary text");
+  for (const selector of [".tab small", ".workspace-caption", ".stage-kicker", ".stage-counter", ".preview-description", ".tiny-caps", ".detail-pane p", ".demo-footer", ".status-note"]) {
+    assert.ok(css.includes(selector), label + " must explicitly cover " + selector);
+  }
+}
