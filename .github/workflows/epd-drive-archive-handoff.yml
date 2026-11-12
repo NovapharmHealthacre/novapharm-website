@@ -32,11 +32,78 @@ jobs:
         env:
           PRIVATE_DIR: ${{ runner.temp }}/npi-epd-archive
         run: python3 tooling/python/verify_epd_zip_archive.py "$PRIVATE_DIR/EPD_SNOMED_202608_official_source.zip" "$PRIVATE_DIR/archive-verified-receipt.json"
-      - name: Upload private archive and source receipt for controlled Google Drive intake
+      - name: Split verified official archive into 80 MiB checksum-backed parts
+        env:
+          PRIVATE_DIR: ${{ runner.temp }}/npi-epd-archive
+        run: python3 tooling/python/split_verified_epd_archive.py "$PRIVATE_DIR/EPD_SNOMED_202608_official_source.zip" "$PRIVATE_DIR/archive-verified-receipt.json" "$PRIVATE_DIR/parts"
+      - name: Transfer temporary verified source part 00
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: epd-202608-private-verified-archive
-          path: ${{ runner.temp }}/npi-epd-archive/
+          name: epd-202608-verified-part-00
+          path: ${{ runner.temp }}/npi-epd-archive/parts/epd_202608_verified_archive_part_00.bin
           if-no-files-found: error
           retention-days: 1
           compression-level: 0
+      - name: Transfer temporary verified source part 01
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: epd-202608-verified-part-01
+          path: ${{ runner.temp }}/npi-epd-archive/parts/epd_202608_verified_archive_part_01.bin
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+      - name: Transfer temporary verified source part 02
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: epd-202608-verified-part-02
+          path: ${{ runner.temp }}/npi-epd-archive/parts/epd_202608_verified_archive_part_02.bin
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+      - name: Transfer temporary verified source part 03
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: epd-202608-verified-part-03
+          path: ${{ runner.temp }}/npi-epd-archive/parts/epd_202608_verified_archive_part_03.bin
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+      - name: Transfer temporary verified source part 04
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: epd-202608-verified-part-04
+          path: ${{ runner.temp }}/npi-epd-archive/parts/epd_202608_verified_archive_part_04.bin
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+      - name: Transfer temporary verified source part 05
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: epd-202608-verified-part-05
+          path: ${{ runner.temp }}/npi-epd-archive/parts/epd_202608_verified_archive_part_05.bin
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+      - name: Transfer temporary verified source part 06
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: epd-202608-verified-part-06
+          path: ${{ runner.temp }}/npi-epd-archive/parts/epd_202608_verified_archive_part_06.bin
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+      - name: Transfer temporary verified source part 07
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: epd-202608-verified-part-07
+          path: ${{ runner.temp }}/npi-epd-archive/parts/epd_202608_verified_archive_part_07.bin
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+      - name: Transfer SHA-256 reassembly manifest
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: epd-202608-verified-reassembly-manifest
+          path: ${{ runner.temp }}/npi-epd-archive/parts/source-reassembly-manifest.json
+          if-no-files-found: error
+          retention-days: 1
