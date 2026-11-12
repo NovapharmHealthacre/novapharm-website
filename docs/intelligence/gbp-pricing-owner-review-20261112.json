@@ -56,5 +56,6 @@
       "annual": null
     }
   },
-  "verifiedPriceStatus": "inactive"
+  "verifiedPriceStatus": "active",
+  "priceCatalogueActive": true
 }
