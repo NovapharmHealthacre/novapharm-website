@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { runInNewContext } from "node:vm";
+import { Script, runInNewContext } from "node:vm";
 
 const root = resolve(process.cwd());
 const read = (path) => readFileSync(resolve(root, path), "utf8");
@@ -78,6 +78,26 @@ assert.ok(published.includes('npi-terminal-trends'), "Published trends preview i
 assert.ok(styles.includes(".npi-dash-analytics-grid"), "Responsive analytical dashboard styling is missing");
 assert.ok(styles.includes(".npi-dash-brand-symbol"), "Proprietary Intelligence branding is missing");
 assert.ok(source.includes("data-medicines-terminal-preview"), "Owner-approved demo dashboard must be present");
+const experienceHtml = read("technology/experience/index.html");
+const experienceStyles = read("assets/css/intelligence-interactive-experience.css");
+const experienceScript = read("assets/js/intelligence-interactive-experience.js");
+assert.ok(source.includes('href="/technology/experience/"'), "Canonical Intelligence page must link to functional experience");
+assert.ok(published.includes('href="/technology/experience/"'), "Published Intelligence page must link to functional experience");
+assert.ok(styles.includes(".npi-experience-cta"), "Interactive experience entry must be styled");
+assert.ok(experienceHtml.includes("Medicine is complex.") && experienceHtml.includes("Understanding it shouldn't be."), "Experience must retain approved message");
+for (const requiredControl of ['id="mapMount"', 'id="regionButtons"', 'id="samplePeriod"', 'id="trendChart"', 'id="comparisonRegion"', 'id="resetView"', 'id="panel-evidence"']) {
+  assert.ok(experienceHtml.includes(requiredControl), "Interactive experience missing control: " + requiredControl);
+}
+assert.ok(experienceHtml.includes('href="/assets/css/intelligence-interactive-experience.css"'), "Public CSP requires external stylesheet");
+assert.ok(experienceHtml.includes('src="/assets/js/intelligence-interactive-experience.js"'), "Public CSP requires external script");
+assert.ok(!/<style\\b|<script>|\\sstyle="/i.test(experienceHtml), "Public preview must not use CSP-blocked inline scripts or styles");
+assert.ok(experienceStyles.includes("@media(max-width:520px)") && experienceStyles.includes("prefers-reduced-motion"), "Experience needs mobile and reduced-motion styling");
+new Script(experienceScript, { filename: "intelligence-interactive-experience.js" });
+assert.ok(experienceScript.includes("Regions_December_2025_Boundaries_EN_BSC"), "Experience must attribute and request regional boundaries");
+assert.ok(experienceScript.includes("buildFallback"), "Experience must remain usable without external regional geometry");
+assert.ok(!/localStorage|sessionStorage|sendBeacon|document[.]cookie/.test(experienceScript), "Public experience must not collect or persist customer records");
+assert.ok(experienceHtml.includes("simulated") && experienceHtml.includes("not NHS observations"), "Simulated prescribing examples must be labelled");
+
 assert.ok(source.includes("simulated figures") && published.includes("simulated figures"), "Both sources must disclose illustrative data");
 assert.ok(published.includes('src="/assets/js/medicines-terminal-preview.js"'), "Local sample chart script must load");
 assert.ok(materialiser.includes('src="/assets/js/medicines-terminal-preview.js"'), "Site generator must preserve chart interaction");
