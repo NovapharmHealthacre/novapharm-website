@@ -64,3 +64,20 @@ test('supplier ESCO photographs are shown only after rights and exact-variant ap
       assert.doesNotMatch(row.image,/^\/assets\/media\/esco\/esco-p[0-9]/);
   }
 });
+
+
+test('ESCO marketplace deep-links to selected Bag-ready product with separate payment authority',()=>{
+ const generator=read('scripts/generate-commerce-marketplace.mjs');
+ const marketplace=read('assets/js/commerce-marketplace.js');
+ const esco=read('assets/js/esco-catalogue.js');
+ const products=read('src/content/products-editorial.html');
+ assert(generator.includes("href:'/products/esco/?product='+encodeURIComponent(p.id)+'#esco-catalogue'"));
+ assert(marketplace.includes('View product and add to Bag'));
+ assert(!marketplace.includes('Explore and enquire'));
+ assert(marketplace.includes('cardCheckoutAuthority===false'));
+ assert(esco.includes('new URLSearchParams(window.location.search).get("product")'));
+ assert(esco.includes('known.has(directProductId)'));
+ assert(esco.includes('openProductDetails(directProductId)'));
+ assert(esco.includes('NovaPharm internal SKU NP-ESCO-'));
+ assert(products.includes('Shop ESCO'));
+});
