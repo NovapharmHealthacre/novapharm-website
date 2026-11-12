@@ -26,7 +26,24 @@ if(!execute){
   return body;
  }
  const [packageBytes,dataBytes]=await Promise.all([officialGet(source.packageUrl),officialGet(dataUrl)]);
- const receipt=validateEpdPublisherSample({packageBytes,dataBytes,observedAt:new Date().toISOString(),limit});
+ let receipt;
+ try {
+  receipt=validateEpdPublisherSample({packageBytes,dataBytes,observedAt:new Date().toISOString(),limit});
+ } catch(error) {
+  // No record values or contents enter CI logs: only schema keys and presence.
+  let sample={};
+  try {
+   const first=JSON.parse(dataBytes)?.result?.records?.[0]??{};
+   const names=["YEAR_MONTH","PRACTICE_CODE","BNF_PRESENTATION_CODE","ITEMS","NIC"];
+   sample={columns:Object.keys(first).slice(0,40),
+     required:names.map(name=>({name,present:Object.hasOwn(first,name),
+       type:typeof first[name],hasNonemptyValue:first[name]!==null&&first[name]!==""&&first[name]!==undefined})),
+     reportingPeriodShape:/^\d{6}$/u.test(String(first.YEAR_MONTH??""))?"YYYYMM":
+       /^\d{4}-\d{2}$/u.test(String(first.YEAR_MONTH??""))?"YYYY-MM":"other"};
+  } catch {}
+  console.error(JSON.stringify({step:"publisher_schema_validation",reason:error.code??"unknown",sample}));
+  throw error;
+ }
  await mkdir(out,{recursive:true,mode:0o700});
  await writeFile(join(out,"epd-quarantine.json"),JSON.stringify(receipt,null,2)+"\n",{flag:"wx",mode:0o600});
  // No raw publisher response, credentials, or source-wide files in the artifact.
