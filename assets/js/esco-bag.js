@@ -108,21 +108,30 @@ async function checkOrderRequestStatus(rawReference) {
     reportRequestState("Unable to confirm the request status right now. Keep your receipt reference.");
   }
 }
+// Payment approval comes exclusively from the private AWS readiness endpoint.
+// A mixed Bag can contain a payable subset and a separate quotation subset;
+// never include the quotation subset in a Stripe Checkout request.
+function paymentPartition(lines) {
+  const payable = paymentServiceReady ? lines.filter(item =>
+    approvedCatalogIds.has(item.id) && approvedUnitPricesPence.has(item.id) &&
+    Number.isSafeInteger(item.quantity) && item.quantity >= 1 && item.quantity <= MAX_CARD_QTY
+  ) : [];
+  const payableIds = new Set(payable.map(item => item.id));
+  return {payable, quoteOnly:lines.filter(item => !payableIds.has(item.id))};
+}
 function renderPaymentEligibility(lines) {
   if (!checkoutButton || !termsCheckbox) return;
-  const eligible = paymentServiceReady && lines.length > 0 &&
-    lines.every(item => approvedCatalogIds.has(item.id) && approvedUnitPricesPence.has(item.id) && item.quantity <= MAX_CARD_QTY);
-  const quoteOnly = paymentServiceReady
-    ? lines.filter(item => !approvedCatalogIds.has(item.id) || !approvedUnitPricesPence.has(item.id) || item.quantity > MAX_CARD_QTY)
-    : [];
-  // A disabled payment button for quote-only products creates a dead end.
-  // Show exactly one primary purchase path: Stripe for approved goods or
-  // a confirmed order request for every other catalogue reference.
+  const {payable, quoteOnly} = paymentPartition(lines);
+  const eligible = payable.length > 0;
   if (termsLabel) termsLabel.hidden = !eligible;
   checkoutButton.hidden = !eligible;
   checkoutButton.disabled = !eligible || !termsCheckbox.checked || sendingPayment;
-  if (orderRequestForm) orderRequestForm.hidden = eligible || !lines.length;
-  if (orderRequestSubmit) orderRequestSubmit.disabled = sendingOrderRequest || !lines.length;
+  checkoutButton.textContent = quoteOnly.length
+    ? "Pay securely for " + payable.length + (payable.length === 1 ? " eligible product" : " eligible products")
+    : "Continue to secure checkout";
+  // Request-only references remain orderable without charging a speculative amount.
+  if (orderRequestForm) orderRequestForm.hidden = quoteOnly.length === 0;
+  if (orderRequestSubmit) orderRequestSubmit.disabled = sendingOrderRequest || quoteOnly.length === 0;
   if (send) {
     send.textContent = eligible ? "Contact product support" : "Contact sales";
     send.classList.remove("esco-order-request-primary");
@@ -132,11 +141,16 @@ function renderPaymentEligibility(lines) {
       checkoutNote.textContent = "You can submit an order request for any product. Card payment is available only where a fixed UK-delivered price is authorised.";
     } else if (lines.length === 0) {
       checkoutNote.textContent = "Add products to your Bag to submit an order request or use immediate card payment for approved items.";
+    } else if (payable.length && quoteOnly.length) {
+      checkoutNote.textContent = "Two separate transactions: Stripe can collect payment for " +
+        payable.map(item => item.id).join(", ") +
+        " at the confirmed UK-delivered price, excluding VAT. The remaining " +
+        quoteOnly.map(item => item.id).join(", ") +
+        " require product and delivery confirmation before payment. The order request below contains only those remaining items.";
     } else if (quoteOnly.length) {
-      const codes = quoteOnly.map(item => item.id).join(", ");
       checkoutNote.textContent = "Submit your order request below. " + quoteOnly.length +
         (quoteOnly.length === 1 ? " selected reference (" : " selected references (") +
-        codes + ") require product and delivery confirmation before payment.";
+        quoteOnly.map(item => item.id).join(", ") + ") require product and delivery confirmation before payment.";
     } else {
       checkoutNote.textContent = "These prices include UK delivery, excluding VAT. Stripe confirms the final VAT and total before your card is charged.";
     }
@@ -144,8 +158,8 @@ function renderPaymentEligibility(lines) {
   if (readyShopLink) readyShopLink.hidden = !paymentServiceReady || quoteOnly.length === 0;
 }
 async function startCheckout(lines) {
-  if (sendingPayment || !checkoutApiOrigin || !paymentServiceReady || !termsCheckbox?.checked ||
-      !lines.length || !lines.every(item => approvedCatalogIds.has(item.id) && item.quantity <= MAX_CARD_QTY)) return;
+  const {payable} = paymentPartition(lines);
+  if (sendingPayment || !checkoutApiOrigin || !paymentServiceReady || !termsCheckbox?.checked || !payable.length) return;
   sendingPayment = true;
   renderPaymentEligibility(lines);
   checkoutStatus("Connecting securely to payment…");
@@ -154,12 +168,18 @@ async function startCheckout(lines) {
       method:"POST", credentials:"omit",
       headers:{"content-type":"application/json"},
       body: JSON.stringify({request_id:crypto.randomUUID(), accept_terms:true,
-        lines:lines.map(item=>({id:item.id, quantity:item.quantity}))})
+        lines:payable.map(item=>({id:item.id, quantity:item.quantity}))})
     });
     if (!response.ok) throw new Error("This order needs a confirmed product quotation before payment.");
     const data = await response.json();
     const redirect = new URL(data.checkoutUrl);
     if (redirect.protocol !== "https:" || redirect.hostname !== "checkout.stripe.com") throw new Error("Invalid secure payment destination.");
+    if (/^ESCO-[0-9a-f-]{36}$/.test(data.orderId)) {
+      try {
+        sessionStorage.setItem("novapharm-esco-payment:" + data.orderId,
+          JSON.stringify(payable.map(item => ({id:item.id, quantity:item.quantity}))));
+      } catch { /* Customer can still complete checkout without local storage. */ }
+    }
     window.location.assign(redirect.href);
   } catch (err) {
     checkoutStatus(err instanceof Error ? err.message : "Secure checkout is currently unavailable.");
@@ -167,7 +187,7 @@ async function startCheckout(lines) {
     renderPaymentEligibility(lines);
   }
 }
-async function checkPaymentReturn() {
+async function checkPaymentReturn(onPaid) {
   if (!checkoutApiOrigin) return;
   const query = new URLSearchParams(window.location.search);
   const order = query.get("order_id") || "";
@@ -179,6 +199,7 @@ async function checkPaymentReturn() {
     if(!response.ok)return;
     const info=await response.json();
     if(info.paid === true && info.status === "PAID"){
+      if (typeof onPaid === "function") onPaid(order);
       checkoutStatus("Payment confirmed. Your order reference is " + order + ". Our team will confirm fulfilment.");
     }else if(info.status === "CHECKOUT_EXPIRED"){
       checkoutStatus("The checkout session expired without payment. Your Bag is saved for another attempt.");
@@ -386,7 +407,9 @@ async function init() {
       return;
     }
     const fields = new FormData(orderRequestForm);
-    const lines = state.map(item => ({id:item.id, quantity:item.quantity}));
+    const {quoteOnly} = paymentPartition(state);
+    if (!quoteOnly.length) return;
+    const lines = quoteOnly.map(item => ({id:item.id, quantity:item.quantity}));
     if (!draftRequestId) draftRequestId = crypto.randomUUID();
     sendingOrderRequest = true;
     renderPaymentEligibility(state);
@@ -414,7 +437,10 @@ async function init() {
       const orderId = receipt.orderId;
       if (requestLookupInput) requestLookupInput.value = orderId;
       reportRequestState("Request received. Use this reference to check its status whenever needed.");
-      state = [];
+      // Successful quotation submission removes only the requested items.
+      // Any already-payment-approved items remain available in the Bag.
+      const requestedIds = new Set(lines.map(item => item.id));
+      state = state.filter(item => !requestedIds.has(item.id));
       saveBag(state);
       orderRequestForm.reset();
       draftRequestId = null;
@@ -442,7 +468,22 @@ async function init() {
   if (checkoutButton) checkoutButton.addEventListener("click", () => startCheckout(state));
   await configurePayment().catch(()=>{ paymentServiceReady=false; });
   render();
-  await checkPaymentReturn();
+  await checkPaymentReturn(orderId => {
+    // Remove paid lines only after the server confirms PAID. A redirect alone
+    // never proves settlement; changed quantities in the Bag remain untouched.
+    const key = "novapharm-esco-payment:" + orderId;
+    try {
+      const paidLines = JSON.parse(sessionStorage.getItem(key) || "[]");
+      if (Array.isArray(paidLines) && paidLines.length > 0 &&
+          paidLines.every(row => validId(row?.id) && Number.isSafeInteger(row?.quantity) && row.quantity > 0)) {
+        state = state.filter(item => !paidLines.some(row =>
+          row.id === item.id && row.quantity === item.quantity));
+        saveBag(state);
+        render();
+      }
+      sessionStorage.removeItem(key);
+    } catch { /* Never infer a payment from inaccessible local storage. */ }
+  });
 }
 init().catch(() => {
   if (itemsRoot) itemsRoot.replaceChildren(node("p", "Bag details are temporarily unavailable. Please use the ESCO enquiry link to contact our team.", "esco-bag-message"));

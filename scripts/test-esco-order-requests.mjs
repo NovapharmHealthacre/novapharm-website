@@ -69,3 +69,37 @@ test("customers can download a specification-based BOQ without sending any email
   assert.doesNotMatch(bag,/window\.location\.assign\([^;]*boq/i);
   assert.match(css,/\.esco-bag-boq:disabled/);
 });
+
+test("mixed ESCO Bags offer payable-only Stripe and a separate quotation",async()=>{
+ const {runInNewContext}=await import("node:vm");
+ const begin=bag.indexOf("function paymentPartition(lines) {");
+ const end=bag.indexOf("\nfunction renderPaymentEligibility(",begin);
+ assert.ok(begin>=0&&end>begin);
+ const context={
+   paymentServiceReady:true,
+   approvedCatalogIds:new Set(["ESCO-CAT-0003","ESCO-CAT-0048"]),
+   approvedUnitPricesPence:new Map([["ESCO-CAT-0003",71000],["ESCO-CAT-0048",16900]]),
+   MAX_CARD_QTY:1000
+ };
+ const partition=runInNewContext(bag.slice(begin,end)+"\npaymentPartition",context);
+ const lines=[
+   {id:"ESCO-CAT-0003",quantity:1},
+   {id:"ESCO-CAT-0048",quantity:4},
+   {id:"ESCO-CAT-0001",quantity:2},
+   {id:"ESCO-CAT-0020",quantity:1001}
+ ];
+ const mixed=partition(lines);
+ assert.deepEqual(mixed.payable.map(x=>x.id),["ESCO-CAT-0003","ESCO-CAT-0048"]);
+ assert.deepEqual(mixed.quoteOnly.map(x=>x.id),["ESCO-CAT-0001","ESCO-CAT-0020"]);
+ context.paymentServiceReady=false;
+ assert.equal(partition(lines).payable.length,0);
+ assert.equal(partition(lines).quoteOnly.length,4);
+ assert.match(bag,/lines:payable\.map\(item=>\(\{id:item\.id, quantity:item\.quantity\}\)\)/);
+ assert.match(bag,/const lines = quoteOnly\.map\(item => \(\{id:item\.id, quantity:item\.quantity\}\)\)/);
+ assert.match(bag,/checkoutButton\.textContent = quoteOnly\.length/);
+ assert.match(bag,/orderRequestForm\.hidden = quoteOnly\.length === 0/);
+ assert.match(bag,/Two separate transactions:/);
+ assert.match(bag,/if\(info\.paid === true && info\.status === "PAID"\)/);
+ assert.match(bag,/typeof onPaid === "function"/);
+ assert.match(bag,/row\.id === item\.id && row\.quantity === item\.quantity/);
+});
