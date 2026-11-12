@@ -107,7 +107,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       code, verifier: transaction.verifier,
     });
     phase = "id_token_verification";
-    let identity;
+    let identity: { grantsTenantAccess: boolean; identityVerified: boolean } | undefined;
     try {
       identity = await verifyIntelligenceCustomerIdToken({
         idToken, expectedNonce: transaction.nonce,
