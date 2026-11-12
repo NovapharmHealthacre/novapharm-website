@@ -60,7 +60,7 @@ export default async function FounderShell() {
 
       <section id="top" className={styles.hero} aria-labelledby="founder-hero-title">
         <div className={styles.heroPhotography} aria-hidden="true">
-          <Image src="/assets/media/founder/hero-editorial.avif" alt="" fill priority sizes="(max-width: 760px) 100vw, 65vw" />
+          <Image src="/assets/media/founder/hero-editorial.avif" alt="" fill priority unoptimized sizes="(max-width: 760px) 100vw, 65vw" />
         </div>
         <div className={styles.heroContent}>
           <p className={styles.eyebrow}>Medicines Terminal</p>
@@ -91,7 +91,7 @@ export default async function FounderShell() {
               <details className={styles.category} key={category.id} name="founder-workspace-category">
                 <summary className={styles.categorySummary}>
                   <span className={styles.categoryImage}>
-                    <Image src={category.image} alt={category.imageAlt} fill sizes="(max-width: 760px) 100vw, (max-width: 1170px) 33vw, 20vw" />
+                    <Image src={category.image} alt={category.imageAlt} fill unoptimized sizes="(max-width: 760px) 100vw, (max-width: 1170px) 33vw, 20vw" />
                   </span>
                   <span className={styles.categoryCopy}>
                     <strong>{category.title}</strong>
