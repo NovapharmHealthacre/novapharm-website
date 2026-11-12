@@ -97,3 +97,36 @@ h1{font-size:clamp(41px,4vw,62px);letter-spacing:-.057em;margin:13px 0 9px}
 .status-note {
   color: #57575d;
 }
+
+/* WCAG AA: secondary labels in desktop rail, preview metrics, charts and extended workspace views. */
+.rail-label,
+.rail-foot,
+.searchbox input::placeholder,
+.searchbox button,
+.workspace-arrow,
+.mini-sub,
+.preview-overline,
+.metric-label,
+.metric-delta.neutral,
+.minor,
+.chart-label,
+.chart-legend,
+.seg-control button:not([aria-pressed="true"]),
+.micro,
+.filter-chip,
+.data-table thead,
+.workflow-num,
+.workflow-body span,
+.report-paper p,
+.timeline-item,
+.toggle-row small,
+.source-intro,
+.data-indicator,
+.legal,
+.demo-label,
+.supply-sample {
+  color: #57575d;
+}
+.pill.good { color: #145b48; }
+.pill.warn { color: #74451a; }
+.badge-inline { color: #78441e; }
