@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
-import { FounderLogoutButton } from "../../components/founder-logout-button";
 import { redirect } from "next/navigation";
+import { FounderLogoutButton } from "../../components/founder-logout-button";
 import { intelligenceWorkspaceCatalogue } from "../../data/intelligence-workspaces";
 
 export const dynamic = "force-dynamic";
