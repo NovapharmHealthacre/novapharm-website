@@ -9,6 +9,7 @@
  */
 import { createHash, randomUUID } from "node:crypto";
 import { proposeMedicineDecisionTransition } from "./intelligence-medicine-decision-review.mjs";
+import { verifyPandoraStagingUniqueIndexes } from "../data/atlas-pandora-staging-indexes.mjs";
 
 export const pandoraStagingCollections = Object.freeze({
   cases: "nova_decision_cases_staging",
@@ -100,6 +101,9 @@ export async function commitPandoraMedicineDecision({
       !release?.verifiedServerSide || release.privateDecisionReviewApproved !== true ||
       !timePattern.test(now) || new Date(now).toISOString() !== now) throw stop("request_or_release_not_approved");
   const timeMs = Date.parse(now);
+  // Do not allow transactional commits without actual uniqueness guarantees.
+  // The index check is against the connected server, never a caller assertion.
+  await verifyPandoraStagingUniqueIndexes({ db, environment });
   const session = client.startSession();
   if (typeof session?.withTransaction !== "function" || typeof session?.endSession !== "function") throw stop("transaction_unavailable");
 
