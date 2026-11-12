@@ -456,3 +456,20 @@
 .npi-workspace-live-experience .npi-offset-top{margin-top:10px}
 .npi-workspace-live-experience .npi-medicine-match{width:100%;border-left:0;border-right:0;border-top:0;background:transparent;text-align:left;cursor:pointer}
 .npi-workspace-live-experience .npi-compact-empty{padding:22px 0}
+/* WCAG AA: muted workspace copy remains readable on white and near-white surfaces. */
+.npi-workspace-live-experience .tab:not([aria-selected="true"]),
+.npi-workspace-live-experience .tab small,
+.npi-workspace-live-experience .workspace:not(.is-selected) .num,
+.npi-workspace-live-experience .workspace-caption,
+.npi-workspace-live-experience .stage-kicker,
+.npi-workspace-live-experience .stage-counter,
+.npi-workspace-live-experience .preview-description,
+.npi-workspace-live-experience .mode-tab:not([aria-pressed="true"]),
+.npi-workspace-live-experience .tiny-caps,
+.npi-workspace-live-experience .record-row small,
+.npi-workspace-live-experience .detail-pane p,
+.npi-workspace-live-experience .demo-footer,
+.npi-workspace-live-experience .demo-footer span,
+.npi-workspace-live-experience .status-note {
+  color: #57575d;
+}
