@@ -3,6 +3,7 @@
 Only reads private archive, writes a small audit receipt. Does not extract source
 data, authorise terminology, publish customer data or admit medicine facts.
 """
+import csv
 import hashlib
 import json
 import pathlib
@@ -47,7 +48,8 @@ def verify_archive(archive_path: pathlib.Path, receipt_path: pathlib.Path) -> di
                     header += block[: max(0, 4096 - len(header))]
         if csv_bytes != EXPECTED_SIZE or csv_hash.hexdigest() != EXPECTED_SHA:
             raise ValueError("decompressed CSV differs from publisher checksum")
-        fields = header.split(b"\n", 1)[0].lstrip(b"\xef\xbb\xbf").decode("utf-8").strip().split(",")
+        raw_header = header.split(b"\n", 1)[0].lstrip(b"\xef\xbb\xbf").decode("utf-8").strip()
+        fields = [name.strip().strip('"').strip() for name in next(csv.reader([raw_header]))]
         if not set(("YEAR_MONTH", "PRACTICE_CODE", "BNF_PRESENTATION_CODE", "ITEMS", "NIC")).issubset(set(fields)):
             raise ValueError("unexpected EPD CSV header")
     report = {
