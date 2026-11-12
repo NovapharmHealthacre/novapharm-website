@@ -270,6 +270,8 @@ console.log("NovaPharm Intelligence Technology page: source, public output, disc
 
 // The interactive directory must be a customer-safe demonstration in both published routes.
 const workspacesHtml = read("technology/workspaces/index.html");
+const workspaceCss = read("assets/css/intelligence-workspace-product.css");
+const workspaceJs = read("assets/js/intelligence-workspace-product.js");
 const workspacesEmbed = read("assets/js/intelligence-workspace-embed.js");
 for (const [label, html] of [["canonical source", source], ["published page", published]]) {
   assert.match(html, /id="npi-experience-iframe"/, label + " must embed the interactive experience");
@@ -278,10 +280,10 @@ for (const [label, html] of [["canonical source", source], ["published page", pu
 }
 assert.match(styles, /npi-workspace-live-experience/, "The shared style must include the embedded experience");
 assert.match(workspacesEmbed, /event\.origin !== window\.location\.origin/, "Only same-origin resize events may be trusted");
-assert.match(workspacesHtml, /function renderSupplyOverview\(\)/, "Supply Intelligence must have its own interactive product preview");
-assert.match(workspacesHtml, /function renderSupplyMode\(mode\)/, "Supply Intelligence preview tabs must render distinct content");
-assert.match(workspacesHtml, /ILLUSTRATIVE PRODUCT EXPERIENCE/, "Simulated figures must be identified as previews");
-assert.match(workspacesHtml, /@media\(max-width:500px\)/, "The interactive experience must define small-screen layouts");
+assert.match(workspaceJs, /function renderSupplyOverview\(\)/, "Supply Intelligence must have its own interactive product preview");
+assert.match(workspaceJs, /function renderSupplyMode\(mode\)/, "Supply Intelligence preview tabs must render distinct content");
+assert.match(workspaceJs, /ILLUSTRATIVE PRODUCT EXPERIENCE/, "Simulated figures must be identified as previews");
+assert.match(workspaceCss, /@media\(max-width:500px\)/, "The interactive experience must define small-screen layouts");
 for (const label of ["Medicine research", "Market intelligence", "Supply & regulation", "Strategy", "Decision tools"]) {
-  assert.ok(workspacesHtml.includes(label), "Missing interactive workspace discipline: " + label);
+  assert.ok(workspaceJs.includes(label), "Missing interactive workspace discipline: " + label);
 }
