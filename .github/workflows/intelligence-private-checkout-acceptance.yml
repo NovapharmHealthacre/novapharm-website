@@ -22,17 +22,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6, immutable
       - name: Compile isolated Python Lambda
-        run: python -m py_compile infra/aws/intelligence-customer-checkout-api.py scripts/aws/test-intelligence-customer-checkout-api.py
+        run: python3 -m py_compile infra/aws/intelligence-customer-checkout-api.py scripts/aws/test-intelligence-customer-checkout-api.py
       - name: Run tenant, MFA, source-rights, contract and Stripe-negative tests
-        run: python scripts/aws/test-intelligence-customer-checkout-api.py
+        run: python3 scripts/aws/test-intelligence-customer-checkout-api.py
       - name: Verify immutable, private, default-off infrastructure contract
         run: |
-          python - <<'PY'
+          python3 - <<'PY'
           import json
           from pathlib import Path
           spec=json.loads(Path("infra/aws/intelligence-customer-checkout-production.json").read_text())
