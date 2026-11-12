@@ -35,6 +35,7 @@ test("customer start uses the pinned Cognito public PKCE client and a signed HTT
     assert.equal(target.origin, "https://novapharm-intelligence-production-eun1.auth.eu-north-1.amazoncognito.com");
     assert.equal(target.pathname, "/oauth2/authorize");
     assert.equal(target.searchParams.get("response_type"), "code");
+    assert.equal(target.searchParams.get("scope"), "openid email profile aws.cognito.signin.user.admin");
     assert.equal(target.searchParams.get("code_challenge_method"), "S256");
     assert.equal(target.searchParams.get("redirect_uri"), "https://intelligence.novapharmhealthcare.com/auth/callback");
     const cookie = result.headers.get("set-cookie") ?? "";
@@ -151,7 +152,7 @@ async function withCallbackMock(
   globalThis.fetch = (async (input: URL | RequestInfo, init?: RequestInit) => {
     const url = String(input);
     if (url === intelligenceCustomerOidc.domain + "/oauth2/token") {
-      return new Response(JSON.stringify({ token_type: "Bearer", id_token: proof.token }), {
+      return new Response(JSON.stringify({ token_type: "Bearer", id_token: proof.token, access_token: "a".repeat(220) }), {
         status: 200, headers: { "Content-Type": "application/json" },
       });
     }
