@@ -257,7 +257,7 @@ def reserve(db, accepted, now):
     ]
     # Expression attribute names must be supplied for #plan/#cycle in contract.
     items[4]["ConditionCheck"]["ExpressionAttributeNames"].update({"#role": "role"})
-    items[6]["ConditionCheck"]["ExpressionAttributeNames"].update({"#plan": "plan", "#cycle": "cycle"})
+    items[6]["ConditionCheck"].setdefault("ExpressionAttributeNames", {}).update({"#plan": "plan", "#cycle": "cycle"})
     db.transact_write_items(TransactItems=items, ClientRequestToken=secrets.token_hex(16))
     return intent_id
 
