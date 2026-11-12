@@ -60,6 +60,21 @@ test("selection cannot populate analytics after a subsequent search supersedes i
   assert.match(source, /if \(generation === selectionGenerationRef\.current\) setBusy\(false\)/u);
 });
 
+test("selecting a second medicine clears the previous evidence and stale deep-link before network I/O", () => {
+  const source = between("async function selectMedicine(", "async function runAnalytics(");
+  const invalidate = source.indexOf("selectionGenerationRef.current += 1;");
+  const clearMedicine = source.indexOf("setDetail(null);");
+  const clearAnalytics = source.indexOf("setAnalytics(null);");
+  const clearStatus = source.indexOf('setAnalyticsStatus("Previous medicine evidence cleared');
+  const clearDeepLink = source.indexOf('pendingUrl.searchParams.delete("medicineId");');
+  const request = source.indexOf("await gatewayJson<MedicineDetail>");
+  assert.ok(invalidate >= 0 && request > invalidate);
+  for (const index of [clearMedicine, clearAnalytics, clearStatus, clearDeepLink]) {
+    assert.ok(index > invalidate && index < request, "Old medicine content must not survive selection loading");
+  }
+  assert.ok(source.includes('window.history.replaceState(null, "", `${pendingUrl.pathname}${pendingUrl.search}${pendingUrl.hash}`);'));
+});
+
 test("in-flight analytical responses cannot refill facts after a subsequent medicine search", () => {
   const source = between("async function runAnalytics(", "let central: ReactNode;");
   assert.match(source, /const generation = selectionGenerationRef\.current/u);
