@@ -216,6 +216,7 @@ class Checkout(unittest.TestCase):
         self.assertEqual(params["customer"], CUSTOMER)
         self.assertEqual(params["line_items[0][price]"], PRICE)
         self.assertEqual(params["automatic_tax[enabled]"], "true")
+        self.assertEqual(params["expires_at"], str(NOW + 3600))
         self.assertEqual(params["tax_id_collection[enabled]"], "true")
         self.assertEqual(params["success_url"], "https://" + MODULE.HOST + "/account/billing/return?session_id={CHECKOUT_SESSION_ID}")
         self.assertNotIn("tenantId", params)
