@@ -473,3 +473,36 @@
 .npi-workspace-live-experience .status-note {
   color: #57575d;
 }
+
+/* WCAG AA: secondary labels in desktop rail, preview metrics, charts and extended workspace views. */
+.npi-workspace-live-experience .rail-label,
+.npi-workspace-live-experience .rail-foot,
+.npi-workspace-live-experience .searchbox input::placeholder,
+.npi-workspace-live-experience .searchbox button,
+.npi-workspace-live-experience .workspace-arrow,
+.npi-workspace-live-experience .mini-sub,
+.npi-workspace-live-experience .preview-overline,
+.npi-workspace-live-experience .metric-label,
+.npi-workspace-live-experience .metric-delta.neutral,
+.npi-workspace-live-experience .minor,
+.npi-workspace-live-experience .chart-label,
+.npi-workspace-live-experience .chart-legend,
+.npi-workspace-live-experience .seg-control button:not([aria-pressed="true"]),
+.npi-workspace-live-experience .micro,
+.npi-workspace-live-experience .filter-chip,
+.npi-workspace-live-experience .data-table thead,
+.npi-workspace-live-experience .workflow-num,
+.npi-workspace-live-experience .workflow-body span,
+.npi-workspace-live-experience .report-paper p,
+.npi-workspace-live-experience .timeline-item,
+.npi-workspace-live-experience .toggle-row small,
+.npi-workspace-live-experience .source-intro,
+.npi-workspace-live-experience .data-indicator,
+.npi-workspace-live-experience .legal,
+.npi-workspace-live-experience .demo-label,
+.npi-workspace-live-experience .supply-sample {
+  color: #57575d;
+}
+.npi-workspace-live-experience .pill.good { color: #145b48; }
+.npi-workspace-live-experience .pill.warn { color: #74451a; }
+.npi-workspace-live-experience .badge-inline { color: #78441e; }
