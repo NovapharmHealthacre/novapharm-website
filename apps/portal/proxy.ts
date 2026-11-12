@@ -7,7 +7,13 @@ const anonymousPaths = new Set(["/", "/portal/", "/auth/entra-complete/", "/heal
 export function proxy(request: NextRequest): NextResponse {
   const nonce = randomBytes(16).toString("base64");
   const secureRequest = request.nextUrl.protocol === "https:" || request.headers.get("x-forwarded-proto") === "https";
-  const policy = buildPublicSecurityPolicy({ nonce, secureTransport: secureRequest, indexable: false });
+  // Cognito's pinned user-pool API is the only external connection allowed
+  // for the owner-approved direct password + TOTP card on the Intelligence host.
+  const intelligenceHost = request.headers.get("host")?.split(":")[0]?.toLowerCase() === "intelligence.novapharmhealthcare.com";
+  const policy = buildPublicSecurityPolicy({
+    nonce, secureTransport: secureRequest, indexable: false,
+    connectSources: intelligenceHost ? ["https://cognito-idp.eu-north-1.amazonaws.com"] : [],
+  });
   const pathname = request.nextUrl.pathname.endsWith("/") ? request.nextUrl.pathname : `${request.nextUrl.pathname}/`;
 
   if (!pathname.startsWith("/gateway/") && !anonymousPaths.has(pathname) && !request.cookies.has("np_session")) {
