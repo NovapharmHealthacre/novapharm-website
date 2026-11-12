@@ -3,7 +3,7 @@ import {test} from "node:test";
 import {source,officialEpdSampleUrl,validateEpdPublisherSample} from "../src/data/nhsbsa-epd-bounded-quarantine.mjs";
 const r={id:source.resourceId,name:source.resourceName,datastore_active:true};
 const pkg={success:true,result:{name:source.dataset,license_id:"OGL-UK-3.0",resources:[r]}};
-const row={YEAR_MONTH:202608,PRACTICE_CODE:"ABC123",BNF_PRESENTATION_CODE:"0208020Z0AAAFA",ITEMS:13,NIC:47.4,SNOMED_CODE:"SECRET_TERM",extra:"EXCLUDED"};
+const row={YEAR_MONTH:"2026-08",PRACTICE_CODE:"ABC123",BNF_PRESENTATION_CODE:"0208020Z0AAAFA",ITEMS:13,NIC:47.4,SNOMED_CODE:"SECRET_TERM",extra:"EXCLUDED"};
 const data={success:true,result:{records:[row],total:18000000}};
 function validate(p=pkg,d=data,o={}){return validateEpdPublisherSample({packageBytes:JSON.stringify(p),dataBytes:JSON.stringify(d),observedAt:"2026-11-12T12:00:00.000Z",limit:2,...o});}
 test("official source allowlist, bounded limit and no arbitrary target",()=>{
