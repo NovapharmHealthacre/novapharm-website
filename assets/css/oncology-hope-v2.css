@@ -547,8 +547,8 @@ body[data-page="oncology"] main.npoc-page :is(.npoc-focus-card,.npoc-button,.npo
     background:linear-gradient(90deg,#fff 0%,rgba(255,255,255,.98) 15%,rgba(255,255,255,.84) 28%,rgba(255,255,255,.28) 43%,transparent 60%);
   }
   body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-content {
-    width:min(calc(100% - 11.4vw),1360px);
-    max-width:1360px;
+    width:min(calc(100% - 11.4vw),1600px);
+    max-width:1600px;
     padding-block:clamp(58px,4.7vw,82px);
   }
   body[data-page="oncology"] main.npoc-page .npoc-hope-hero .npoc-hero-copy {
