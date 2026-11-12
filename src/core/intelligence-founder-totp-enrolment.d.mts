@@ -1,7 +1,7 @@
 /** Server-only Cognito founder TOTP enrolment. Never an application session. */
 export const founderMfaSetupPolicy: Readonly<{
   permittedScope: string;
-  requiresFounderPasswordOnlySignedIdentity: true;
+  requiresVerifiedCognitoFounderSession: true;
   requiresPriorMfaUnenrolled: true;
   customerAccessGranted: false;
   mustReauthenticateAfterSetup: true;
