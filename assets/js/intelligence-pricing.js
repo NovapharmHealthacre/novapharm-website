@@ -1,4 +1,4 @@
-/* NovaPharm Intelligence plan comparison. UI-only: no checkout, tracking, storage or paid activation. */
+/* NovaPharm Intelligence GBP plan comparison and protected account entry. No checkout, tracking, storage, or paid activation. */
 (() => {
   "use strict";
   const section = document.getElementById("intelligence-pricing");
@@ -24,6 +24,13 @@
       if (!price || !period || !explanation || !Number.isSafeInteger(monthly) || !Number.isSafeInteger(annual)) continue;
       price.textContent = money.format(cycle === "annual" ? Math.round(annual / 12) : monthly);
       period.textContent = cycle === "annual" ? "/ month equivalent" : "/ month";
+      // Only toggle visibility of pre-approved, literal HTML links.
+      const monthlyLink = card.querySelector('[data-npi-plan-cta="monthly"]');
+      const annualLink = card.querySelector('[data-npi-plan-cta="annual"]');
+      if (monthlyLink && annualLink) {
+        monthlyLink.hidden = cycle !== "monthly";
+        annualLink.hidden = cycle !== "annual";
+      }
       explanation.textContent = cycle === "annual"
         ? "Proposed annual commitment: " + money.format(annual) + "/year, billed annually after signed acceptance."
         : "Proposed monthly price. No payment requested.";

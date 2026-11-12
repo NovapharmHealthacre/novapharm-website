@@ -178,17 +178,20 @@ for (const [label, markup] of [["source", source], ["published", published]]) {
   assert.ok(markup.includes("No payment will be collected here"), label + " must not imply production checkout");
   assert.ok(markup.includes("Proposed prices in GBP"), label + " must state the owner-review currency");
   assert.ok(markup.includes("actual tax depends"), label + " must not misrepresent a blanket VAT treatment");
-  assert.ok(markup.includes('href="/contact/?enquiry=General%20enquiry&amp;intelligencePlan=starter"'), label + " Starter must carry a strictly enumerated plan to the approved business-enquiry form");
-  assert.ok(markup.includes('href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20Intelligence%20Starter'), label + " Starter must offer a direct email fallback");
-  assert.ok(markup.includes('href="/contact/?enquiry=General%20enquiry&amp;intelligencePlan=professional"'), label + " Professional must carry a strictly enumerated plan to the approved business-enquiry form");
-  assert.ok(markup.includes('href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20Intelligence%20Professional'), label + " Professional must offer a direct email fallback");
+  assert.ok(markup.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=starter&amp;cycle=monthly" data-npi-plan-cta="monthly"'), label + " Starter monthly route must be fixed and secure");
+  assert.ok(markup.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=starter&amp;cycle=annual" data-npi-plan-cta="annual" hidden'), label + " Starter annual route must be fixed and initially hidden");
+  assert.ok(markup.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=professional&amp;cycle=monthly" data-npi-plan-cta="monthly"'), label + " Professional monthly route must be fixed and secure");
+  assert.ok(markup.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=professional&amp;cycle=annual" data-npi-plan-cta="annual" hidden'), label + " Professional annual route must be fixed and initially hidden");
   assert.ok(markup.includes('href="/contact/?enquiry=General%20enquiry&amp;intelligencePlan=enterprise"'), label + " Enterprise must carry a strictly enumerated plan to the approved business-enquiry form");
   assert.ok(markup.includes('href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20Intelligence%20Enterprise'), label + " Enterprise must offer a direct email fallback");
   assert.ok(!markup.includes('href="https://checkout.stripe.com'), label + " must not activate unverified checkout");
+  assert.ok(!markup.includes('href="/contact/?enquiry=General%20enquiry&amp;intelligencePlan=starter"'), label + " must not send Starter to contact");
+  assert.ok(!markup.includes('href="/contact/?enquiry=General%20enquiry&amp;intelligencePlan=professional"'), label + " must not send Professional to contact");
 }
 assert.ok(published.includes('src="/assets/js/intelligence-pricing.js"'), "Pricing module must be in the materialised site");
 assert.ok(materialiser.includes('src="/assets/js/intelligence-pricing.js"'), "Build must preserve the pricing module");
 assert.ok(styles.includes(".npi-pricing-grid") && styles.includes(".npi-billing-switch button:focus-visible"), "Responsive comparison and keyboard focus styles required");
+assert.ok(styles.includes("#intelligence-pricing .npi-plan-cta[hidden]"), "The unselected billing-period link must remain hidden");
 
 const pricingScript = read("assets/js/intelligence-pricing.js");
 
@@ -201,15 +204,17 @@ assert.ok(!contactIntake.includes("window.open"), "Plan intake must never silent
 
 assert.ok(!/XMLHttpRequest|sendBeacon|localStorage|sessionStorage|document[.]cookie|innerHTML|fetch[(]/.test(pricingScript), "Plan selector must not store or transmit prospect data");
 const priceElement = () => ({ textContent: "" });
-function pricedCard(monthly, annual) {
+function pricedCard(plan, monthly, annual) {
   const elements = {
     "[data-npi-plan-price]": priceElement(),
     "[data-npi-plan-period]": priceElement(),
-    "[data-npi-plan-billing]": priceElement()
+    "[data-npi-plan-billing]": priceElement(),
+    '[data-npi-plan-cta="monthly"]': { hidden: false },
+    '[data-npi-plan-cta="annual"]': { hidden: true }
   };
   return {
     elements,
-    getAttribute(name) { return name === "data-monthly-gbp" ? String(monthly) : name === "data-annual-gbp" ? String(annual) : null; },
+    getAttribute(name) { return name === "data-npi-plan" ? plan : name === "data-monthly-gbp" ? String(monthly) : name === "data-annual-gbp" ? String(annual) : null; },
     querySelector(selector) { return elements[selector] || null; }
   };
 }
@@ -224,8 +229,8 @@ function billingButton(cycle) {
     classList: { toggle() {} }
   };
 }
-const starter = pricedCard(199, 2030);
-const professional = pricedCard(699, 7130);
+const starter = pricedCard("starter", 199, 2030);
+const professional = pricedCard("professional", 699, 7130);
 const monthlyButton = billingButton("monthly");
 const annualButton = billingButton("annual");
 const pricingRoot = {
@@ -244,6 +249,8 @@ runInNewContext(pricingScript, {
 assert.equal(monthlyButton.attributes["aria-pressed"], "true");
 assert.equal(starter.elements["[data-npi-plan-price]"].textContent, "£199");
 assert.equal(professional.elements["[data-npi-plan-price]"].textContent, "£699");
+assert.equal(starter.elements['[data-npi-plan-cta="monthly"]'].hidden, false);
+assert.equal(professional.elements['[data-npi-plan-cta="monthly"]'].hidden, false);
 annualButton.listeners.click();
 assert.equal(annualButton.attributes["aria-pressed"], "true");
 assert.equal(monthlyButton.attributes["aria-pressed"], "false");
@@ -251,6 +258,10 @@ assert.equal(starter.elements["[data-npi-plan-price]"].textContent, "£169");
 assert.equal(professional.elements["[data-npi-plan-price]"].textContent, "£594");
 assert.ok(starter.elements["[data-npi-plan-billing]"].textContent.includes("£2,030"));
 assert.ok(professional.elements["[data-npi-plan-billing]"].textContent.includes("£7,130"));
+assert.equal(starter.elements['[data-npi-plan-cta="monthly"]'].hidden, true);
+assert.equal(starter.elements['[data-npi-plan-cta="annual"]'].hidden, false);
+assert.equal(professional.elements['[data-npi-plan-cta="monthly"]'].hidden, true);
+assert.equal(professional.elements['[data-npi-plan-cta="annual"]'].hidden, false);
 monthlyButton.listeners.click();
 assert.equal(starter.elements["[data-npi-plan-price]"].textContent, "£199");
 

@@ -1296,3 +1296,6 @@ body[data-page="technology"] .np-intelligence {
   .np-intelligence .npi-workspace-directory {width:min(100%,calc(100vw - 28px));}
   .np-intelligence .npi-workspace-directory .npi-workspace-live-experience {margin-top:9px;}
 }
+
+/* Hide the unselected, static plan link even when button display rules apply. */
+#intelligence-pricing .npi-plan-cta[hidden] { display: none !important; }
