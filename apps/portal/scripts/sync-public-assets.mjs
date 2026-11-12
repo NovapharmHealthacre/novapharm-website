@@ -15,4 +15,8 @@ await cp(
   path.join(repositoryRoot, "assets/media/portal/npi-human-portal.webp"),
   path.join(humanHeroTarget, "npi-human-portal.webp"),
 );
+await cp(
+  path.join(repositoryRoot, "assets/media/portal/npi-human-portrait-hd.avif"),
+  path.join(humanHeroTarget, "npi-human-portrait-hd.avif"),
+);
 console.log("Portal brand and approved public hero assets synchronised.");

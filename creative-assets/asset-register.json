@@ -531,6 +531,23 @@
       "caption": "Decorative representative image; no healthcare, patient outcome or market evidence claimed.",
       "technicalStatus": "owner-approved screenshot crop, performance-compressed WebP; decorative CSS only",
       "ownerApproval": "Owner selected the exact human secure-portal reference, 12 November 2026."
+    },
+    {
+      "path": "assets/media/portal/npi-human-portrait-hd.avif",
+      "type": "owner-approved-illustrative-portal-human-hero",
+      "source": "High-definition decorative crop of the owner-approved NovaPharm Intelligence secure portal human design, 12 November 2026, x=0-770,y=448-956 of the 1536x1024 selected concept. Illustrative design, not a patient or marketing-evidence photograph.",
+      "licence": "Owner-authorised original NovaPharm project artwork for the NovaPharm Intelligence secure portal under applicable OpenAI generated-content terms.",
+      "generated": true,
+      "modified": true,
+      "dimensions": "770x508 AVIF",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "https://intelligence.novapharmhealthcare.com/"
+      ],
+      "altText": "",
+      "caption": "Representative illustration only; no medicinal, clinical or patient outcome claims.",
+      "technicalStatus": "AVIF owner-approved cropped HD 770x508; 8650 bytes; no baked interface text",
+      "ownerApproval": "Owner selected the crisp final portal composition and requested its production implementation, 12 November 2026."
     }
   ],
   "missingApprovedAssets": [

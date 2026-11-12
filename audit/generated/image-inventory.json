@@ -10,12 +10,12 @@
     "Null semantic or provenance fields are explicit gaps, not inferred approvals."
   ],
   "summary": {
-    "trackedAssetCount": 876,
+    "trackedAssetCount": 877,
     "byClassification": {
-      "KEEP": 876
+      "KEEP": 877
     },
     "byProvenanceStatus": {
-      "registered": 666,
+      "registered": 667,
       "registered-identical-delivery-copy": 12,
       "repository-generated-test-evidence": 198
     },
@@ -14409,6 +14409,46 @@
       "focalPoint": null,
       "registeredAltText": "",
       "registeredCaption": "Decorative representative image; no healthcare, patient outcome or market evidence claimed.",
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 2,
+      "referenceCount": 2,
+      "usageFiles": [
+        "apps/portal/scripts/sync-public-assets.mjs",
+        "creative-assets/asset-register.json"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/media/portal/npi-human-portrait-hd.avif",
+      "canonicalDeliveryPath": "assets/media/portal/npi-human-portrait-hd.avif",
+      "format": "heif",
+      "bytes": 8650,
+      "width": 770,
+      "height": 508,
+      "aspectRatio": 1.515748,
+      "sha256": "bde8212cfe018eb86b8a8582a5a9cdd0cc7af9b59965339504d5afc79ce96abc",
+      "perceptualHash": null,
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "High-definition decorative crop of the owner-approved NovaPharm Intelligence secure portal human design, 12 November 2026, x=0-770,y=448-956 of the 1536x1024 selected concept. Illustrative design, not a patient or marketing-evidence photograph.",
+      "licence": "Owner-authorised original NovaPharm project artwork for the NovaPharm Intelligence secure portal under applicable OpenAI generated-content terms.",
+      "reviewStatus": "Owner selected the crisp final portal composition and requested its production implementation, 12 November 2026.",
+      "technicalStatus": "AVIF owner-approved cropped HD 770x508; 8650 bytes; no baked interface text",
+      "provenanceRecord": null,
+      "semanticPurpose": "owner-approved-illustrative-portal-human-hero",
+      "routes": [
+        "https://intelligence.novapharmhealthcare.com/"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "",
+      "registeredCaption": "Representative illustration only; no medicinal, clinical or patient outcome claims.",
       "observedAltText": [],
       "observedCaptions": [],
       "responsiveDerivatives": [],
