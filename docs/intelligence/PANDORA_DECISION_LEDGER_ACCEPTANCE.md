@@ -27,6 +27,16 @@ Inside one majority-acknowledged snapshot transaction the candidate:
 
 This candidate is **not** a complete knowledge graph, collaboration engine, commercial recommendation service, approved real-data case, or production application.
 
+## Staging provisioning performed 12 November 2026
+
+The following five **empty** collections were created successfully in MongoDB Atlas
+`novapharm_staging`: `nova_decision_cases_staging`, `nova_decision_manifests_staging`,
+`nova_decision_authorities_staging`, `nova_decision_rights_staging` and
+`nova_decision_events_staging`. No source grant, account, approved case, medicine
+observation or audit event was inserted. The connected collection-index tool does
+not expose the unique-index constraint required below; **index acceptance remains
+open and the ledger remains default-OFF**.
+
 ## Private staging storage schema and mandatory indexes
 
 Create only after assessing compatible MongoDB topology, service identity and storage privileges. These names are hard-coded in the candidate; **do not add broad wildcard application permissions**:
