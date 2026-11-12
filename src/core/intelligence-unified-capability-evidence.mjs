@@ -80,14 +80,16 @@ export function assessUnifiedIntelligenceCapabilityEvidence({
   const now = Date.parse(asOf);
   const accepted = new Set();
   const duplicates = new Set();
-  const seenReceiptIds = new Set();
+  const receiptCheck = new Map();
   for (const receipt of receipts) {
     if (!verifiedCandidate(receipt, workspaceId, now)) continue;
     // Conflicting receipts for the same check never establish release evidence.
-    if (seenReceiptIds.has(receipt.receiptId) || accepted.has(receipt.check)) {
+    if (receiptCheck.has(receipt.receiptId)) {
       duplicates.add(receipt.check);
+      duplicates.add(receiptCheck.get(receipt.receiptId));
     }
-    seenReceiptIds.add(receipt.receiptId);
+    if (accepted.has(receipt.check)) duplicates.add(receipt.check);
+    receiptCheck.set(receipt.receiptId, receipt.check);
     accepted.add(receipt.check);
   }
   const commonMissing = common.filter(check => !accepted.has(check) || duplicates.has(check));
