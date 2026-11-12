@@ -1,13 +1,16 @@
 """Contract tests for founder-only AWS IAM and DynamoDB-backed sessions."""
 import hashlib
 import hmac
+import importlib.util
 import json
-import sys
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "infra" / "aws"))
-import intelligence_founder_session_api as api
+source = Path(__file__).resolve().parents[1] / "infra" / "aws" / "intelligence-founder-session-api.py"
+spec = importlib.util.spec_from_file_location("intelligence_founder_session_api", source)
+assert spec is not None and spec.loader is not None
+api = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(api)
 
 NOW = 1800000000
 SUB = "19e16767-04f1-455b-b06b-4b84f1daa35e"
