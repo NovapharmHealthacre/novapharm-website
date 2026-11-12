@@ -321,11 +321,26 @@
           </div>
         </div>
         
-        <div class="npi-workspace-live-experience" aria-label="Interactive NovaPharm Intelligence workspaces">
-          <iframe class="npi-experience-iframe" id="npi-experience-iframe" title="Explore NovaPharm Intelligence: interactive previews using sample data" src="/technology/workspaces/?embed=1" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-          <script src="/assets/js/intelligence-workspace-embed.js" defer></script>
-          <p class="npi-experience-caption">Interactive product demonstration. Example records and figures are simulated, not production evidence or customer account data. Public research and protected sign-in remain separate.</p>
-        </div>
+        <link rel="stylesheet" href="/assets/css/intelligence-workspace-embedded.css">
+        <div class="npi-workspace-live-experience" id="npi-exp-shell">
+
+<section class="section" aria-labelledby="npi-exp-main-heading">
+  <div class="topline">NOVA / THE MEDICINES TERMINAL</div>
+  <div class="intro-layout"><div><h1 id="npi-exp-main-heading">Explore every workspace.</h1><p class="intro">One connected view of medicines, markets, supply, and the decisions that follow.</p></div><div class="count"><strong>22</strong> workspaces / 5 disciplines</div></div>
+  <div class="toolbar"><label class="searchbox"><span class="magnifier" aria-hidden="true"></span><input id="npi-exp-search" type="search" aria-label="Find a workspace" placeholder="Find a workspace" autocomplete="off"><button type="button" id="npi-exp-clear" aria-label="Clear search" hidden>×</button></label></div>
+  <div class="app-layout"><nav class="discipline-rail" aria-label="Workspace disciplines"><span class="rail-label">WORKSPACE DIRECTORY</span><div id="npi-exp-tabs" class="tabs" role="tablist" aria-label="Workspace disciplines"></div><p class="rail-foot">The Living Intelligence of Medicine.<br>Governed by evidence.</p></nav><div class="split"><div class="directory"><p id="npi-exp-category-eyebrow" class="category-eyebrow"></p><h2 id="npi-exp-category-title" class="category-title"></h2><p id="npi-exp-category-description" class="category-description"></p><p id="npi-exp-result-caption" class="result-caption" hidden></p><div class="workspace-list" id="npi-exp-workspace-list"></div></div>
+  <aside class="stage" id="npi-exp-stage" aria-label="Interactive workspace experience"><div class="stage-top"><span class="stage-kicker">PRODUCT EXPERIENCE / INTERACTIVE CONCEPT</span><span id="npi-exp-stage-counter" class="stage-counter"></span></div>
+    <div class="preview-frame"><div class="preview-chrome"><div class="mini-brand">NOVA<i>.</i><span class="mini-sub">Intelligence</span></div><div class="demo-label">DEMO DATA</div></div><div class="preview-content"><p class="preview-overline" id="npi-exp-preview-overline"></p><div class="preview-head"><div><h3 class="preview-title" id="npi-exp-preview-title"></h3><p class="preview-description" id="npi-exp-preview-description"></p></div><select id="npi-exp-medicine-select" class="sample-select" aria-label="Choose an illustrative medicine"><option value="apixaban">Apixaban</option><option value="ondansetron">Ondansetron</option><option value="cetirizine">Cetirizine</option></select></div><div id="npi-exp-mode-tabs" class="mode-tabs" aria-label="Preview modes"></div><div id="npi-exp-demo-content" class="demo-content" aria-live="polite"></div><div class="demo-footer"><span>Illustrative records. Not production evidence.</span><span id="npi-exp-mini-footer-status">Sample only</span></div></div></div>
+    <div class="stage-bottom"><span class="status-note">This is an interactive experience prototype, not an active data connection or customer entitlement.</span><button id="npi-exp-requirements" class="requirements" type="button">View access requirements <span>›</span></button></div>
+  </aside></div></div>
+  <div class="below"><p class="legal">Public workspace previews illustrate intended experiences. Sample figures, sample entities and workflows are not verified medicine observations, regulatory authorisations, clinical advice, supply commitments or executable commercial decisions.</p><div class="actions"><button id="npi-exp-protected" class="cta secondary" type="button">Protected sign-in</button><button id="npi-exp-official" class="cta primary" type="button">Official sources</button></div></div>
+</section>
+<div id="npi-exp-modal" class="modal" hidden><div class="modal-inner" role="dialog" aria-modal="true" aria-labelledby="npi-exp-modal-title"><button id="npi-exp-modal-close" class="modal-close" type="button" aria-label="Close dialog">×</button><div class="category-eyebrow" id="npi-exp-modal-eyebrow"></div><h3 id="npi-exp-modal-title"></h3><div id="npi-exp-modal-body"></div></div></div>
+<div class="mini-toast" id="npi-exp-toast" hidden role="status"></div>
+
+
+</div>
+        <script src="/assets/js/intelligence-workspace-embedded.js" defer></script>
         <div class="npi-directory-groups" hidden aria-hidden="true">
           <details class="npi-directory-group" open>
             <summary><span>Medicine research</span><span>6 workspaces</span></summary>
