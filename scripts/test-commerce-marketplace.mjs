@@ -81,3 +81,27 @@ test('ESCO marketplace deep-links to selected Bag-ready product with separate pa
  assert(esco.includes('NovaPharm internal SKU NP-ESCO-'));
  assert(products.includes('Shop ESCO'));
 });
+
+test('search engines can discover every product reference without executing JavaScript',()=>{
+ const html=read('products/marketplace/index.html');
+ const catalogue=JSON.parse(read('assets/data/commerce-marketplace.json')).products;
+ const links=[...html.matchAll(/class="mp-source-index-link" href="([^"]+)"/g)].map(m=>m[1].replaceAll('&amp;','&'));
+ assert.equal(links.length,392);
+ assert.equal(new Set(links).size,392);
+ for(const item of catalogue)assert(links.includes(item.href),'Missing indexable link for '+item.sku);
+ assert.match(html,/<summary>Browse all 392 product records by name<\/summary>/);
+ assert.match(html,/hreflang="en-GB" href="https:\/\/novapharmhealthcare.com\/products\/marketplace\/"/);
+ assert.match(html,/hreflang="x-default" href="https:\/\/novapharmhealthcare.com\/products\/marketplace\/"/);
+ assert.match(html,/property="og:url" content="https:\/\/novapharmhealthcare.com\/products\/marketplace\/"/);
+ assert.match(html,/name="twitter:title" content="Nutraxin &amp; ESCO Marketplace|name="twitter:title" content="Nutraxin & ESCO Marketplace/);
+ const schemas=[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m=>JSON.parse(m[1]));
+ const collection=schemas.find(x=>x['@type']==='CollectionPage'&&x.url==='https://novapharmhealthcare.com/products/marketplace/');
+ assert(collection,'Canonical marketplace CollectionPage schema missing');
+ assert.equal(collection.mainEntity['@type'],'ItemList');
+ assert.equal(collection.mainEntity.numberOfItems,392);
+ assert.equal(collection.mainEntity.itemListElement.length,392);
+ assert(!collection.mainEntity.itemListElement.some(x=>x.offers||x.availability),'Collection must not claim sales approval');
+ const sitemap=read('sitemap.xml');
+ assert(sitemap.includes('<loc>https://novapharmhealthcare.com/products/marketplace/</loc>'));
+ assert(!sitemap.includes('products/esco/?product='),'Per-record ESCO query links are not sitemap canonicals');
+});
