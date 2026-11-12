@@ -74,6 +74,7 @@ export function IntelligenceSignIn() {
               <>
                 <a className={styles["primary"]} href="/auth/customer/register">Create a business account</a>
                 <a className={styles["secondary"]} href="/auth/customer/start">Sign in</a>
+                <a className={styles["secondary"]} href="/auth/customer/start?mode=reset">Reset password</a>
               </>
             )}
             <a className={styles["secondary"]} href="https://novapharmhealthcare.com/technology/#intelligence-workspace-directory">Explore all 22 workspaces</a>
