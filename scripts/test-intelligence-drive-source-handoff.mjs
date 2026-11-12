@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import test from "node:test";
 import {
-  buildDriveQuarantineManifest, buildEpdResourceLocator
+  buildDriveQuarantineManifest, buildEpdResourceLocator, buildQuarantinedReviewProjection
 } from "../src/data/intelligence-drive-source-handoff.mjs";
 
 const ids = {
@@ -95,4 +95,38 @@ test("EPD 2026-08 locator is metadata only; requires actual downloaded and verif
   ]) {
     assert.throws(() => buildEpdResourceLocator({ ...input, ...changes }), /rejected/);
   }
+});
+
+
+test("source-row projection strips all unapproved fields, is deterministic and remains private", () => {
+  const fdaInput = { ...example("FDA_NDC"), ...ids };
+  const fda = buildQuarantinedReviewProjection(fdaInput);
+  assert.equal(fda.rowCount, 1);
+  assert.equal(fda.acceptedObservations, 0);
+  assert.equal(fda.customerPublishApproved, false);
+  assert.equal(fda.rows[0]._id, "drive-raw-fda-20261009-12345-6789");
+  assert.equal(fda.rows[0].customer_publish_approved, false);
+  assert.equal(fda.rows[0].accepted_observations, 0);
+  assert.equal(JSON.stringify(fda).includes("packaging"), false);
+  assert.equal(JSON.stringify(fda).includes("marketing_category"), false);
+  const ema = buildQuarantinedReviewProjection({ ...example("EMA_SHORTAGES"), ...ids });
+  assert.equal(ema.rows.length, 1);
+  assert.equal(ema.rows[0].shortage_status, "ongoing");
+  assert.equal(ema.rows[0].start_of_shortage_date, null);
+  assert.equal(ema.rows[0].customer_publish_approved, false);
+});
+
+test("source-row projection rejects EMA URLs outside the trusted publisher", () => {
+  const e = example("EMA_SHORTAGES");
+  const bad = JSON.parse(e.rawBytes.toString("utf8"));
+  bad.data[0].shortage_url = "https://example.com/en/shortages/invalid";
+  e.rawBytes = Buffer.from(JSON.stringify(bad), "utf8");
+  e.provenance = {
+    ...e.provenance, bytes: e.rawBytes.length,
+    sha256: createHash("sha256").update(e.rawBytes).digest("hex"),
+  };
+  assert.throws(
+    () => buildQuarantinedReviewProjection({ ...e, ...ids }),
+    /Drive staging handoff rejected/
+  );
 });
