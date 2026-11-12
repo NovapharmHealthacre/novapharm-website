@@ -9,6 +9,14 @@ Only if the frontend NPI_CUSTOMER_SESSION_API_ENABLED flag is true does it call 
 
 GET /customer/session rechecks live approval and returns only verified role and plan. POST /customer/logout uses exact same-origin checking and a transactional revocation with audit. Neither route exposes protected medicine, forecasting, NOVA or customer-commercial data.
 
+## Founder first-login recovery
+
+The Cognito-managed temporary password change and first authenticator-app enrolment can take longer than five minutes. The signed PKCE state, nonce and short-lived host-only cookie permit a **maximum 15-minute** authentication ceremony, with the same 15-minute signed `auth_time` freshness check. Every accepted ID token must still have a valid RSA signature, exact issuer/client/nonce, verified email and Cognito Essentials ACR `urn:cognito:loa:4` with `amr` containing `pwd`, `otp` and `mfa`. No password-only fallback is permitted. The application session and paid/medicine access remain separately disabled by default.
+
+The callback logs only fixed phase/reason classifications such as `identity_email_unverified`, `identity_mfa_level_insufficient` or `transaction_expired_or_mismatched`; no OAuth codes, states, secrets, emails, JWTs or URLs are logged. Failed sign-ins show a generic response and a link to begin a fresh authentication.
+
+Do not promote this fix to production until the signed exact-head application image is released to the established AWS Lambda alias and real browser first-login, TOTP and malicious/expired callback tests pass. A merged source fix is **not** a deployed fix. Do not grant customer seats, billing or dataset rights by changing this timeout.
+
 ## Release controls
 
 Both CloudFormation parameters default to false: EnableCustomerRoutes and CustomerLaunchAccepted. The Next.js customer session exchange flag is absent/false unless set explicitly in reviewed production configuration.

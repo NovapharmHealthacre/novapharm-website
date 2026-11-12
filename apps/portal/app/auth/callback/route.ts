@@ -15,6 +15,24 @@ const securityHeaders = {
   "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
 } as const;
 
+// Only these fixed classifications are allowed into operational logs. Never
+// log the callback URL, authorisation code, state, PKCE cookie, JWT or email.
+const safeIdentityErrorCodes = new Set([
+  "transaction_signing_key_unavailable", "transaction_invalid",
+  "transaction_expired_or_mismatched", "authorization_code_invalid",
+  "identity_provider_unavailable", "identity_response_too_large",
+  "identity_response_invalid", "invalid_identity_token",
+  "identity_signature_invalid", "identity_signing_key_missing",
+  "identity_claims_invalid", "identity_email_unverified",
+  "identity_mfa_level_insufficient", "identity_auth_stale",
+]);
+
+function safeIdentityErrorCode(error: unknown): string {
+  if (!error || typeof error !== "object" || !("code" in error)) return "unclassified";
+  const code = (error as { code: unknown }).code;
+  return typeof code === "string" && safeIdentityErrorCodes.has(code) ? code : "unclassified";
+}
+
 function resultPage(verified: boolean, approved = false): NextResponse {
   const title = approved ? "Business account connected" : verified ? "Identity verified" : "Sign-in could not be completed";
   const message = approved
@@ -23,7 +41,7 @@ function resultPage(verified: boolean, approved = false): NextResponse {
       ? "Your identity has been verified. Access to medicines intelligence requires a separately approved organisation, customer seat, and subscription. No workspace or paid access has been granted."
       : "We could not complete this sign-in securely. Please start a new sign-in from NovaPharm Intelligence.";
   // Fixed server-authored markup: no user-controlled values or identity tokens are rendered.
-  const document = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title} | NovaPharm Intelligence</title><style>body{margin:0;background:#f5f5f7;color:#1d1d1f;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{max-width:680px;margin:13vh auto;padding:36px}.brand{font-size:14px;font-weight:650;letter-spacing:.03em}.panel{background:#fff;border-radius:26px;padding:clamp(24px,6vw,60px);margin-top:22px;box-shadow:0 12px 48px #0000000b}h1{font-size:clamp(32px,5vw,52px);letter-spacing:-.045em;line-height:1.06;margin:0 0 24px}p{color:#626268;font-size:17px;line-height:1.6}a{display:inline-block;margin-top:26px;color:#0066cc;font-weight:600;text-decoration:none}a:focus-visible{outline:3px solid #0066cc;outline-offset:6px}</style></head><body><main class="shell"><div class="brand">NovaPharm Intelligence</div><section class="panel"><h1>${title}</h1><p>${message}</p><a href="/">Return to the Medicines Terminal</a></section></main></body></html>`;
+  const document = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title} | NovaPharm Intelligence</title><style>body{margin:0;background:#f5f5f7;color:#1d1d1f;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{max-width:680px;margin:13vh auto;padding:36px}.brand{font-size:14px;font-weight:650;letter-spacing:.03em}.panel{background:#fff;border-radius:26px;padding:clamp(24px,6vw,60px);margin-top:22px;box-shadow:0 12px 48px #0000000b}h1{font-size:clamp(32px,5vw,52px);letter-spacing:-.045em;line-height:1.06;margin:0 0 24px}p{color:#626268;font-size:17px;line-height:1.6}a{display:inline-block;margin-top:26px;color:#0066cc;font-weight:600;text-decoration:none}a:focus-visible{outline:3px solid #0066cc;outline-offset:6px}</style></head><body><main class="shell"><div class="brand">NovaPharm Intelligence</div><section class="panel"><h1>${title}</h1><p>${message}</p><a href="${verified ? "/" : "/auth/customer/start"}">${verified ? "Return to the Medicines Terminal" : "Start a new secure sign-in"}</a></section></main></body></html>`;
   return new NextResponse(document, {
     status: verified ? 200 : 401,
     headers: { ...securityHeaders, "Content-Type": "text/html; charset=utf-8" },
@@ -71,6 +89,7 @@ async function activateApprovedCustomerSession(idToken: string): Promise<{ token
  */
 export async function GET(request: NextRequest): Promise<Response> {
   let response: NextResponse;
+  let phase = "transaction";
   try {
     const code = request.nextUrl.searchParams.get("code") ?? "";
     const state = request.nextUrl.searchParams.get("state") ?? "";
@@ -79,7 +98,9 @@ export async function GET(request: NextRequest): Promise<Response> {
       state,
       signingKey: process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] ?? "",
     });
+    phase = "code_exchange";
     const idToken = await exchangeCustomerAuthCode({ code, verifier: transaction.verifier });
+    phase = "id_token_verification";
     const identity = await verifyIntelligenceCustomerIdToken({ idToken, expectedNonce: transaction.nonce });
     if (identity.grantsTenantAccess !== false || identity.identityVerified !== true) throw new Error("Identity acceptance denied.");
     // The public identity-only page remains available without account activation.
@@ -100,7 +121,12 @@ export async function GET(request: NextRequest): Promise<Response> {
         maxAge: approved.seconds,
       });
     }
-  } catch {
+  } catch (error: unknown) {
+    console.warn(JSON.stringify({
+      event: "npi_customer_oidc_callback_denied",
+      phase,
+      reason: safeIdentityErrorCode(error),
+    }));
     response = resultPage(false);
   }
   response.cookies.set({

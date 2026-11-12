@@ -12,9 +12,13 @@ const OIDC_DOMAIN = "https://novapharm-intelligence-production-eun1.auth.eu-nort
 const OIDC_ISSUER = "https://cognito-idp.eu-north-1.amazonaws.com/eu-north-1_jBL6hCUE2";
 const CLIENT_ID = "7c76122stt76k4d8cjvd7tf6ck";
 const CALLBACK = "https://intelligence.novapharmhealthcare.com/auth/callback";
-const AGE_MS = 300_000;
+// Allow password rotation and first-time authenticator enrolment without
+// discarding the signed PKCE transaction; still expires after 15 minutes.
+const AGE_MS = 900_000;
 const REQUIRED_ACR = "urn:cognito:loa:4";
-const MAX_AUTH_AGE_SECONDS = 300;
+// The Cognito authentication ceremony may include mandatory initial TOTP setup.
+// Keep the signed ID token fresh and require pwd + otp + mfa at completion.
+const MAX_AUTH_AGE_SECONDS = 900;
 const VALID_RANDOM = /^[A-Za-z0-9_-]{40,128}$/u;
 
 function blocked(code) {
@@ -40,7 +44,7 @@ export const intelligenceCustomerOidc = Object.freeze({
 
 /**
  * Bind start and callback with HttpOnly, Secure, SameSite=Lax cookie,
- * path=/auth/, Max-Age=300. Cookie is signed, not encrypted, and does not
+ * path=/, Max-Age=900. Cookie is signed, not encrypted, and does not
  * include any tenant, user, or clinical data.
  */
 export function createCustomerLoginTransaction({ signingKey, nowMs = Date.now() } = {}) {
@@ -157,17 +161,28 @@ export async function verifyIntelligenceCustomerIdToken({
       throw blocked("identity_signature_invalid");
     }
   } catch { throw blocked("identity_signature_invalid"); }
+  // Keep all token checks fail closed, but distinguish safe classes of identity
+  // rejection so production operators can diagnose onboarding without logging
+  // personal claims, tokens, PKCE secrets, or OAuth codes.
   if (claims?.iss !== OIDC_ISSUER || claims.aud !== CLIENT_ID ||
       claims.token_use !== "id" || claims.nonce !== expectedNonce ||
-      claims.email_verified !== true ||
       typeof claims.sub !== "string" || !/^[A-Za-z0-9-]{8,128}$/u.test(claims.sub) ||
-      claims.acr !== REQUIRED_ACR || !Array.isArray(claims.amr) ||
-      !["pwd", "otp", "mfa"].every((method) => claims.amr.includes(method)) ||
-      !Number.isSafeInteger(claims.auth_time) || claims.auth_time > nowSeconds + 60 ||
-      nowSeconds - claims.auth_time > MAX_AUTH_AGE_SECONDS ||
       !Number.isSafeInteger(claims.exp) || claims.exp <= nowSeconds ||
       !Number.isSafeInteger(claims.iat) || claims.iat > nowSeconds + 60 ||
       !Number.isSafeInteger(nowSeconds)) throw blocked("identity_claims_invalid");
+  if (claims.email_verified !== true) throw blocked("identity_email_unverified");
+  // Cognito Essentials computes ACR/AMR from the actual factors used.
+  // Do not substitute pool MFA configuration or existing TOTP enrolment for
+  // a signed assertion of password + TOTP authentication on THIS sign-in.
+  if (claims.acr !== REQUIRED_ACR || !Array.isArray(claims.amr) ||
+      !["pwd", "otp", "mfa"].every((method) => claims.amr.includes(method))) {
+    throw blocked("identity_mfa_level_insufficient");
+  }
+  if (!Number.isSafeInteger(claims.auth_time) ||
+      claims.auth_time > nowSeconds + 60 ||
+      nowSeconds - claims.auth_time > MAX_AUTH_AGE_SECONDS) {
+    throw blocked("identity_auth_stale");
+  }
   return Object.freeze({
     verifiedCognitoSubject: claims.sub,
     verifiedIssuer: OIDC_ISSUER,
