@@ -304,3 +304,12 @@ for (const [label, css] of [["native section", workspaceEmbeddedCss], ["standalo
     assert.ok(css.includes(selector), label + " must explicitly cover " + selector);
   }
 }
+
+// All secondary text in desktop rail and additional demo lenses must remain AA readable.
+for (const [label, css] of [["native", workspaceEmbeddedCss], ["standalone", workspaceCss]]) {
+  assert.match(css, /WCAG AA: secondary labels in desktop rail/, label + " must include extended contrast rules");
+  for (const selector of [".rail-label", ".rail-foot", ".metric-label", ".chart-legend", ".workflow-body span", ".timeline-item", ".source-intro", ".demo-label"]) {
+    assert.ok(css.includes(selector), label + " must cover " + selector);
+  }
+  assert.match(css, /\.pill\.good\s*\{\s*color:\s*#145b48\s*;/, label + " must preserve accessible positive-status colour");
+}
