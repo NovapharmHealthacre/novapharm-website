@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
@@ -17,6 +18,11 @@ test("approved human secure entry uses the exact Intelligence brand and owner co
   assert.match(styles, /prefers-reduced-motion/);
   assert.match(styles, /max-width:760px/);
   assert.ok(existsSync("../../assets/media/portal/npi-human-portrait-approved.webp"));
+  const image = readFileSync("../../assets/media/portal/npi-human-portrait-approved.webp");
+  assert.equal(image.length, 86844, "exact approved full-size photographic crop must ship");
+  assert.equal(createHash("sha256").update(image).digest("hex"), "7f895e0b7c4ef21314b2555d972e4147cf675b98cc5b6272c708b6726e0b0950");
+  assert.match(styles, /background-size:100% 100%/);
+  assert.doesNotMatch(styles, /background-size:cover/);
 });
 
 test("visual redesign preserves Cognito and customer security boundaries", () => {
