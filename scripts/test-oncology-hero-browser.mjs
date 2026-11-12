@@ -61,6 +61,8 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
             heading:heading?.textContent?.trim(),
             hasAnnotation:!!document.querySelector(".npoc-image-note"),
             heroWidth:rect(hero)?.width || 0,
+            heroHeight:rect(hero)?.height || 0,
+            copyX:rect(hero?.querySelector(".npoc-hero-copy"))?.x || 0,
             viewportWidth:innerWidth,
             imageLoaded:!!image?.complete && image.naturalWidth>0,
             imageFit:image?getComputedStyle(image).objectFit:null,
@@ -94,6 +96,15 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
           assert.equal(layout.fade,true,`${label}: photo has a hard boundary, no gradient mask`);
         }else{
           assert.equal(layout.fade,false,`${label}: mobile photo should be unmasked`);
+        }
+        // Screenshot SS2, 12 November: desktop hero text starts near the left
+        // margin and three balanced cards fill the remaining portfolio row.
+        if(viewport.width>=1101){
+          assert.ok(layout.copyX/layout.heroWidth<=.095,`${label}: hero content drifts too far right`);
+          assert.ok(layout.heroHeight>=500 && layout.heroHeight<=635,`${label}: hero is not an editorial banner`);
+          assert.ok(layout.cards.every(card=>card.width>=.19*layout.viewportWidth),`${label}: portfolio cards are too narrow`);
+          assert.ok(layout.cards.every(card=>card.height<=325),`${label}: portfolio cards are too tall`);
+          assert.ok(layout.cards[0].x<.37*layout.viewportWidth,`${label}: portfolio row has excess left whitespace`);
         }
         const destination=path.join(artifactDir,engine,viewport.name);
         await mkdir(destination,{recursive:true});
