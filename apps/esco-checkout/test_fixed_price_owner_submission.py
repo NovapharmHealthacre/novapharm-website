@@ -1,5 +1,6 @@
 import importlib.util
 import unittest
+from unittest.mock import patch
 from copy import deepcopy
 from pathlib import Path
 
@@ -84,7 +85,13 @@ class FixedPriceSubmissionContract(unittest.TestCase):
         saved = owner.prepare_fixed_price_owner_draft(original, owner_decisions())
         # All 373 are draft rows: two existing protected approvals remain in SSM,
         # neither acquires payment authority from this preparation.
-        released, blocked = merchant.evaluate(saved, lambda item: True)
+        expected_matrix = [
+            {"catalogue_id": row["catalogue_id"],
+             "owner_approved_catalogue_unit_price_ex_vat_gbp": "120.00"}
+            for row in saved["records"]
+        ]
+        with patch.object(merchant, "read_matrix", return_value=expected_matrix):
+            released, blocked = merchant.evaluate(saved, lambda item: True)
         self.assertEqual(released, {})
         self.assertEqual(len(blocked), 373)
 
