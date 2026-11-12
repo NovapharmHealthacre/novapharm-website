@@ -281,7 +281,11 @@ export function IntelligenceSignIn() {
                         <button type="button" className={styles["showPassword"]}
                           onClick={() => setShowPassword((previous) => !previous)}
                           aria-label={showPassword ? "Hide password" : "Show password"}>
-                          {showPassword ? "Hide" : "Show"}
+                          <svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M2.2 12s3.5-5.7 9.8-5.7 9.8 5.7 9.8 5.7-3.5 5.7-9.8 5.7S2.2 12 2.2 12Z" />
+                            <circle cx="12" cy="12" r="2.8" />
+                            {showPassword && <path d="m4 20 16-16" />}
+                          </svg>
                         </button>
                       </div>
                       <button className={styles["primaryAction"]} type="submit" disabled={busy || !email || !password}>
