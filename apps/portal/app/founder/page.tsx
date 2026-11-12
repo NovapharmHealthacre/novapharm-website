@@ -1,8 +1,9 @@
 import { cookies } from "next/headers";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { FounderLogoutButton } from "../../components/founder-logout-button";
-import { intelligenceWorkspaceCatalogue } from "../../data/intelligence-workspaces";
 import { founderWorkspaceCategories, founderWorkspaceCoverageValid } from "../../data/founder-workspace-categories";
+import { intelligenceWorkspaceCatalogue } from "../../data/intelligence-workspaces";
 import styles from "./founder-experience.module.css";
 
 export const dynamic = "force-dynamic";
@@ -59,7 +60,7 @@ export default async function FounderShell() {
 
       <section id="top" className={styles.hero} aria-labelledby="founder-hero-title">
         <div className={styles.heroPhotography} aria-hidden="true">
-          <img src="/assets/media/founder/hero-editorial.jpg" alt="" fetchPriority="high" />
+          <Image src="/assets/media/founder/hero-editorial.jpg" alt="" fill priority sizes="(max-width: 760px) 100vw, 65vw" />
         </div>
         <div className={styles.heroContent}>
           <p className={styles.eyebrow}>Medicines Terminal</p>
@@ -90,7 +91,7 @@ export default async function FounderShell() {
               <details className={styles.category} key={category.id} name="founder-workspace-category">
                 <summary className={styles.categorySummary}>
                   <span className={styles.categoryImage}>
-                    <img src={category.image} alt={category.imageAlt} loading="lazy" />
+                    <Image src={category.image} alt={category.imageAlt} fill sizes="(max-width: 760px) 100vw, (max-width: 1170px) 33vw, 20vw" />
                   </span>
                   <span className={styles.categoryCopy}>
                     <strong>{category.title}</strong>
