@@ -317,7 +317,7 @@ async function withCallbackMock(
         headers: { "set-cookie": "__Host-npi_session=" + "A".repeat(43) + "; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=3600" },
       });
     }
-    throw new Error("Unexpected network destination: " + url);
+    throw new Error(`Unexpected network destination: ${url}`);
   }) as typeof fetch;
   try {
     const response = await finishCustomerIdentity(proof.request);
