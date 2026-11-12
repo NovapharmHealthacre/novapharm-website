@@ -14428,7 +14428,7 @@
     {
       "path": "assets/media/portal/npi-human-portrait-hd.avif",
       "canonicalDeliveryPath": "assets/media/portal/npi-human-portrait-hd.avif",
-      "format": "avif",
+      "format": "heif",
       "bytes": 8650,
       "width": 770,
       "height": 508,
