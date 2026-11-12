@@ -67,6 +67,42 @@ PANDORA_STAGING_DECISION_AUDIT_ENABLED=true
 
 Keep `PANDORA_ALLOW_PUBLIC_ACCESS` and `PANDORA_ALLOW_EXTERNAL_ACTIONS` unset/false. Never put credentials, user sessions, patient records or privileged business data in GitHub.
 
+## Owner approval policy and verified 12 November 2026 NHSBSA licence
+
+The owner has approved themselves as **final human decision authority**.
+`PANDORA_OWNER_FINAL_APPROVAL_REQUIRED=true` is now mandatory for this
+staging candidate. Approval/rejection requires `PANDORA_FINAL_APPROVER_SUBJECT_ID`
+to equal the actor's **server-verified OIDC subject** and the actor must also
+hold the independently verified `independent_approver` role with MFA.
+**Do not set that subject value from a display name, raw request, e-mail
+address or a ChatGPT message.** It is still unconfigured until the real owner
+OIDC identity is verified. The independent reviewer must be a different
+principal than both proposer and owner-approver, not automatically the CEO.
+This user direction does not grant a role to any account and does not waive
+privacy, source rights or security checks.
+
+The NHSBSA English Prescribing Dataset with SNOMED Code publisher's live
+dataset page identifies UK **Open Government Licence v3.0**, requires exact
+attribution `NHSBSA Copyright 2021-2026`, and explicitly warns that
+third-party content remains under third-party copyright. Use only rights-
+approved NHSBSA-published fields and allow case review only after separate
+BNF/SNOMED/dm+d rights assessment, where those fields are needed. Official
+dataset: https://opendata.nhsbsa.net/dataset/english-prescribing-dataset-epd-with-snomed-code
+Official BNF-SNOMED mapping:
+https://opendata.nhsbsa.net/dataset/bnf-snomed-mapping
+No blanket rights or source grant are created by this policy note.
+
+## New readback implementation
+
+`src/core/intelligence-pandora-audit-readback.mjs` verifies every committed
+case event from genesis against the version sequence, permitted transitions,
+SHA-256 event digest, previous event digest and stored audit head. It requires
+a separate trusted, durable audit of each history read within the same
+transaction and a current MFA authority row. It is default-OFF, private
+staging-only, not a UI nor a production WORM audit. An attacker who can rewrite
+*all* chain records and the head could still forge the chain unless independent
+immutable retention and out-of-band anchors are enabled.
+
 ## Exit criteria before real deployment
 
 - [ ] Approve one legitimate source licence specifically for internal decision review and approved AI/data processing, with traceable owner, version, territory, permitted uses and expiry/revocation.
