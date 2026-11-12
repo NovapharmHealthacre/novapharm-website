@@ -17,6 +17,9 @@ const annexes = {
   "CE_ANNEX_3": "EHF 178S,EHF 179,EHF 150,EHF 170,EHF 171,EHF 162,EHF 146,EHF 163,ESS 049,EHF 157,EHF 143,EHF 124,EHF 158,EHF 160,EHF 104,EHF 133,EHF 153,EHF 154,EHF 156,EHF 149,EHF 119,ESL 029,ESL 024,ESL 152"
 };
 const normalize = value => String(value || "").trim().toUpperCase().replace(/\s+/g," ");
+// Extracted exact model-code text from the original 42-page "Product Catalogue.pdf".
+// Code absence from selectable PDF text is a review prompt, not proof that a product does not exist.
+const productPdfTextModels = new Set("EHD 082,EHD 084,EHD 086,EHD 087,EHD 088,EHD 089,EHD 089R,EHD 091,EHD 092,EHD 096,EHD 097,EHF 101,EHF 102,EHF 104,EHF 105,EHF 106,EHF 110,EHF 113,EHF 113P,EHF 115,EHF 124,EHF 128,EHF 133,EHF 135,EHF 136,EHF 138,EHF 139,EHF 140F,EHF 141K,EHF 142,EHF 143,EHF 146,EHF 149,EHF 149D,EHF 150,EHF 152,EHF 153,EHF 156,EHF 157,EHF 160,EHF 171,EHF 178S,EHF 179,ELP 110,ELP 111,ELP 112,ESE 1113,ESE 1120,ESE 1121,ESE 156,ESL 011,ESL 013,ESL 014,ESL 024,ESL 029,ESL 100,ESL 152,ESL 154,ESS 003,ESS 005,ESS 008,ESS 015,ESS 019,ESS 020,ESS 025,ESS 049,ESS 109".split(",").map(normalize));
 const certificateModels = new Map(Object.entries(annexes).flatMap(([annex,values]) =>
   values.split(",").map(model => [normalize(model),annex])));
 const descriptionConflicts = new Map([
@@ -54,6 +57,9 @@ export function buildEsco371Audit(catalogue=JSON.parse(readFileSync(resolve("ass
       catalogue_page:item.sourceIndexPage,
       manufacturer_model_as_supplied:item.model||null,
       manufacturer_model_missing:!item.model,
+      supplier_pdf_model_text_match:item.model ? productPdfTextModels.has(normalize(item.model)) : null,
+      supplier_pdf_model_text_basis:item.model ? (productPdfTextModels.has(normalize(item.model)) ?
+        "FOUND_IN_SUPPLIED_CATALOGUE_PDF_TEXT" : "NOT_FOUND_IN_SUPPLIED_CATALOGUE_PDF_TEXT") : "NO_MODEL_TO_MATCH",
       owner_approved_base_price_ex_vat_gbp:base,
       owner_approved_base_price_source:"ESCO_WEBSITE_BASE_2026_11_09",
       supplied_ce_certificate_candidate:annex?CERTIFICATE:null,
@@ -92,6 +98,9 @@ export function buildEsco371Audit(catalogue=JSON.parse(readFileSync(resolve("ass
     current_known_approved:2,
     unapproved_audited:371,
     missing_manufacturer_model:300,
+    supplier_pdf_distinct_model_codes:productPdfTextModels.size,
+    coded_references_matching_supplied_pdf_text:rows.filter(r=>r.supplier_pdf_model_text_match===true).length,
+    coded_references_not_matching_supplied_pdf_text:rows.filter(r=>r.supplier_pdf_model_text_match===false).length,
     ce_annex_model_candidates:matched.length,
     ce_annex_description_conflicts:conflicts.length,
     ce_model_candidate_only_not_uk_clearance:true,
@@ -100,7 +109,10 @@ export function buildEsco371Audit(catalogue=JSON.parse(readFileSync(resolve("ass
     merchant_base_approval_does_not_include_freight_or_tax:true,
     rows
   };
-  if(matched.length!==33 || conflicts.length!==2)throw Error("CE annex mapping requires source review");
+  if(matched.length!==33 || conflicts.length!==2 || productPdfTextModels.size!==67 ||
+     summary.coded_references_matching_supplied_pdf_text!==31 ||
+     summary.coded_references_not_matching_supplied_pdf_text!==40)
+    throw Error("Source PDF text/model reconciliation requires review");
   return summary;
 }
 function csvCell(value) {
@@ -111,7 +123,7 @@ function csvCell(value) {
 export function toCsv(report) {
   const columns=[
     "catalogue_id","internal_novapharm_sku","product","category",
-    "manufacturer_model_as_supplied","manufacturer_model_missing","owner_approved_base_price_ex_vat_gbp",
+    "manufacturer_model_as_supplied","manufacturer_model_missing","supplier_pdf_model_text_match","supplier_pdf_model_text_basis","owner_approved_base_price_ex_vat_gbp",
     "supplied_ce_certificate_candidate","supplied_ce_annex_candidate","certificate_description_conflict",
     "review_queue","mhra_registration_verified","gb_regulatory_classification_verified",
     "final_uk_delivered_price_ex_vat_gbp","gb_stripe_tax_code","warehouse_allocatable_units",
