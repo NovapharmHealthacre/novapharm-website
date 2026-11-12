@@ -792,6 +792,14 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   async function selectMedicine(medicineId: string) {
     selectionGenerationRef.current += 1;
     const generation = selectionGenerationRef.current;
+    // Selection changes ownership immediately. Never display the previous
+    // medicine's evidence or leave its identifier in the URL during loading.
+    setDetail(null);
+    setAnalytics(null);
+    setAnalyticsStatus("Previous medicine evidence cleared for the new selection.");
+    const pendingUrl = new URL(window.location.href);
+    pendingUrl.searchParams.delete("medicineId");
+    window.history.replaceState(null, "", `${pendingUrl.pathname}${pendingUrl.search}${pendingUrl.hash}`);
     setBusy(true);
     setSearchStatus("Loading the selected identity and BNF hierarchy.");
     try {
