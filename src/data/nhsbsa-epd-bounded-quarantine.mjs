@@ -39,7 +39,7 @@ export function validateEpdPublisherSample({packageBytes,dataBytes,observedAt,li
  const rows=records.map((r,index)=>{
   const required=["YEAR_MONTH","PRACTICE_CODE","BNF_PRESENTATION_CODE","ITEMS","NIC"];
   if(!plain(r)||required.some(k=>!Object.hasOwn(r,k))||
-     String(r.YEAR_MONTH)!=="202608"||!code(r.PRACTICE_CODE)||!code(r.BNF_PRESENTATION_CODE))deny("source_row_schema_or_period");
+     !["202608","2026-08"].includes(String(r.YEAR_MONTH))||!code(r.PRACTICE_CODE)||!code(r.BNF_PRESENTATION_CODE))deny("source_row_schema_or_period");
   const items=number(r.ITEMS,1e7),nic=number(r.NIC,1e7);
   if(!Number.isSafeInteger(items))deny("items_not_integer");
   const fingerprint=sha(JSON.stringify(r));
