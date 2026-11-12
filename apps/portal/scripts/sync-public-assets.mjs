@@ -23,4 +23,19 @@ await cp(
   path.join(repositoryRoot, "assets/media/portal/npi-human-portrait-approved.webp"),
   path.join(humanHeroTarget, "npi-human-portrait-approved.webp"),
 );
-console.log("Portal brand and approved public hero assets synchronised.");
+
+/* Founder visual assets are local first-party photographs, not mock capability data. */
+const founderTarget = path.resolve("public/assets/media/founder");
+await mkdir(founderTarget, { recursive: true });
+for (const [source, output] of [
+  ["assets/media/modules/insights-evidence-editorial-960.jpg", "hero-editorial.jpg"],
+  ["assets/media/modules/product-portfolio-evidence-960.jpg", "medicine.jpg"],
+  ["assets/media/modules/technology-traceability-960.jpg", "market.jpg"],
+  ["assets/media/about/novapharm-warehouse-original.jpg", "supply.jpg"],
+  ["assets/media/modules/careers-specialist-team-960.jpg", "biotech.jpg"],
+  ["assets/media/modules/investors-capital-readiness-960.jpg", "decisions.jpg"],
+]) {
+  await cp(path.join(repositoryRoot, source), path.join(founderTarget, output));
+}
+
+console.log("Portal brand, founder editorial photography and approved public hero assets synchronised.");
