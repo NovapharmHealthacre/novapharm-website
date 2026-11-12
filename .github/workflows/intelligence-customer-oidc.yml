@@ -5,10 +5,15 @@ on:
     paths:
       - 'src/core/intelligence-customer-oidc.mjs'
       - 'src/core/intelligence-founder-totp-enrolment.mjs'
+      - 'src/core/intelligence-founder-managed-mfa-compat.mjs'
+      - 'src/core/intelligence-founder-managed-mfa-compat.d.mts'
+      - 'src/core/intelligence-customer-oidc.d.mts'
       - 'apps/portal/app/auth/callback/route.ts'
       - 'apps/portal/app/auth/mfa/setup/route.ts'
       - 'scripts/test-intelligence-customer-oidc.mjs'
       - 'scripts/test-intelligence-founder-totp-enrolment.mjs'
+      - 'scripts/test-intelligence-founder-managed-mfa-compat.mjs'
+      - 'apps/portal/test/intelligence-customer-oidc-web.test.ts'
       - '.github/workflows/intelligence-customer-oidc.yml'
 
 permissions:
@@ -27,6 +32,7 @@ jobs:
         run: |
           node --check src/core/intelligence-customer-oidc.mjs
           node --check src/core/intelligence-founder-totp-enrolment.mjs
-          node --test scripts/test-intelligence-customer-oidc.mjs scripts/test-intelligence-founder-totp-enrolment.mjs
+          node --check src/core/intelligence-founder-managed-mfa-compat.mjs
+          node --test scripts/test-intelligence-customer-oidc.mjs scripts/test-intelligence-founder-totp-enrolment.mjs scripts/test-intelligence-founder-managed-mfa-compat.mjs
       - name: Preserve enterprise release evidence
         run: npm run intelligence:requirements:validate
