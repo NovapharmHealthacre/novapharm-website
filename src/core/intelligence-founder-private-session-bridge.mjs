@@ -14,7 +14,7 @@ export function deriveFounderBridgeKey(signingKey) {
 }
 
 export function founderSessionBridgeHeaders({
-  idToken, accessToken, signingKey, nowSeconds = Math.floor(Date.now() / 1000),
+  idToken, accessToken, signingKey, bridgeKey, nowSeconds = Math.floor(Date.now() / 1000),
   nonce = randomBytes(16).toString("base64url"),
 } = {}) {
   if (typeof idToken !== "string" || idToken.length < 100 ||
@@ -23,10 +23,14 @@ export function founderSessionBridgeHeaders({
       !/^[A-Za-z0-9_-]{22,64}$/u.test(nonce)) {
     throw new Error("Invalid founder bridge inputs.");
   }
-  const bridgeKey = deriveFounderBridgeKey(signingKey);
+  // Production uses a separate AWS-generated founder-only secret. The
+  // legacy derived key is retained solely for isolated compatibility tests.
+  const signer = bridgeKey === undefined ? deriveFounderBridgeKey(signingKey) : bridgeKey;
+  if (typeof signer !== "string" || !/^[A-Za-z0-9_-]{64,128}$/u.test(signer))
+    throw new Error("Founder bridge secret is not configured.");
   const digest = text => createHash("sha256").update(text, "ascii").digest("hex");
   const time = String(nowSeconds);
-  const proof = createHmac("sha256", bridgeKey)
+  const proof = createHmac("sha256", signer)
     .update([time, nonce, digest(idToken), digest(accessToken)].join("."))
     .digest("hex");
   return Object.freeze({
@@ -40,15 +44,19 @@ export function founderSessionBridgeHeaders({
 export async function requestFounderPrivateSession({
   idToken, accessToken,
   signingKey,
+  bridgeKey = process.env["NPI_FOUNDER_BRIDGE_KEY"],
   enabled = process.env["NPI_FOUNDER_SESSION_API_ENABLED"] === "true",
   fetchImpl = globalThis.fetch,
   nowSeconds,
 } = {}) {
   if (enabled !== true) return null;
-  const proof = founderSessionBridgeHeaders({
-    idToken, accessToken, signingKey, nowSeconds,
-  });
+  // Never mint a live founder session using the OIDC transaction signer.
+  // Missing/weak independent bridge configuration fails closed.
+  if (typeof bridgeKey !== "string" || !/^[A-Za-z0-9_-]{64,128}$/u.test(bridgeKey)) return null;
   try {
+    const proof = founderSessionBridgeHeaders({
+      idToken, accessToken, bridgeKey, nowSeconds,
+    });
     const response = await fetchImpl(FOUNDER_SESSION_ORIGIN + "/founder/session", {
       method: "POST", cache: "no-store", redirect: "error",
       headers: {

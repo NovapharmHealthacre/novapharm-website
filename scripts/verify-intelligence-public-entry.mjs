@@ -58,8 +58,17 @@ export async function verifyIntelligencePublicEntry({ fetchImpl = globalThis.fet
     markup.includes("medicine.") &&
     markup.includes("Create a business account") &&
     markup.includes("Your business email, password and verification are handled by NovaPharm");
+  // The new founder-facing password+TOTP card goes straight to the pinned
+  // Cognito USER_AUTH API. It must still show the approved account, recovery
+  // and secure-sign-in contracts; identity alone never grants a workspace.
+  const approvedCardEntry = markup.includes("A more human") &&
+    markup.includes("intelligence for") &&
+    markup.includes("medicine.") &&
+    markup.includes("Sign in with your business email and password. Authenticator verification follows.") &&
+    markup.includes("Create a business account") &&
+    markup.includes("/auth/customer/start?mode=reset");
   if (markup.length > 2_000_000 ||
-      !(legacyEntry || approvedHumanEntry) ||
+      !(legacyEntry || approvedHumanEntry || approvedCardEntry) ||
       !markup.includes("/auth/customer/start")) reject("login_copy_or_constraints_invalid");
 
   const companyPage = await probe(fetchImpl, corporate + "/technology/");

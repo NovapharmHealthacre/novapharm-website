@@ -2,8 +2,12 @@ import { randomBytes } from "node:crypto";
 import { buildPublicSecurityPolicy } from "@novapharm/security";
 import { type NextRequest, NextResponse } from "next/server";
 
-const anonymousPaths = new Set(["/", "/portal/", "/auth/entra-complete/", "/healthz/", "/auth/customer/start/", "/auth/customer/register/", "/auth/callback/", "/auth/mfa/setup/", "/customer/session/", "/customer/logout/"]);
+const anonymousPaths = new Set(["/", "/portal/", "/auth/entra-complete/", "/healthz/", "/auth/customer/start/", "/auth/customer/register/", "/auth/callback/", "/auth/mfa/setup/", "/auth/founder/exchange/", "/customer/session/", "/customer/logout/"]);
 /**
+ * /auth/founder/exchange/ is anonymous ONLY to the legacy np_session proxy
+ * guard: the API Gateway JWT authorizer, same-origin POST checks and remote
+ * founder-only backend still enforce real MFA and session issuance.
+ *
  * Only these paths may reach their own downstream founder session verifier.
  * They are NOT authenticated by proxy or by a cookie's mere presence.
  * /founder/ SSR always calls the independent, revocable founder-session API.

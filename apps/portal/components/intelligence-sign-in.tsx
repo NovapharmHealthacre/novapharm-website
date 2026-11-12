@@ -97,8 +97,37 @@ export function IntelligenceSignIn() {
       return;
     }
 
-    // Cognito returned a token only after verified TOTP. Token stays in a
-    // local closure and is never written to web storage, URL, HTML or logs.
+    // Both Cognito tokens exist only in this closure after mandatory TOTP.
+    // First try the independent founder-only exchange; no tenant, customer
+    // subscription or medicines entitlement is granted by this route.
+    try {
+      const founder = await fetch("/auth/founder/exchange", {
+        method: "POST",
+        credentials: "same-origin",
+        cache: "no-store",
+        redirect: "error",
+        headers: {
+          Authorization: `Bearer ${result.idToken}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ accessToken: result.accessToken }),
+      });
+      if (founder.ok) {
+        const granted: unknown = await founder.json();
+        if (granted && typeof granted === "object" &&
+            (granted as Record<string, unknown>)["ok"] === true &&
+            (granted as Record<string, unknown>)["code"] === "founder_session_active" &&
+            (granted as Record<string, unknown>)["scope"] === "founder-shell-read-only" &&
+            (granted as Record<string, unknown>)["customerAccess"] === false &&
+            (granted as Record<string, unknown>)["medicinesDataAccess"] === false) {
+          window.location.assign("/founder");
+          return;
+        }
+      }
+    } catch {
+      // Safe fall-through to the independently authorised customer-session gate.
+    }
     try {
       const response = await fetch("/customer/session", {
         method: "POST",

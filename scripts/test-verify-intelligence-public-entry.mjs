@@ -115,3 +115,22 @@ test("approved human portal copy retains secure identity and registration contra
   assert.equal(result.verified, true);
   assert.equal(result.customerTenantActivated, false);
 });
+
+test("direct Cognito PASSWORD + TOTP sign-in card is a valid guarded public entry", async () => {
+  const html = '<h1>A more human intelligence for medicine.</h1>' +
+    '<p>Sign in with your business email and password. Authenticator verification follows.</p>' +
+    '<a href="/auth/customer/start?mode=reset">Forgot your password?</a>' +
+    '<a href="/auth/customer/register">Create a business account</a>';
+  const h = mock({ [origin + "/"]: () => new Response(html, { status: 200 }) });
+  const result = await verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl });
+  assert.equal(result.verified, true);
+  assert.equal(result.customerTenantActivated, false);
+});
+
+test("uncontrolled direct Cognito card without recovery cannot pass public entry", async () => {
+  const html = '<h1>A more human intelligence for medicine.</h1>' +
+    '<p>Sign in with your business email and password. Authenticator verification follows.</p>' +
+    '<a href="/auth/customer/register">Create a business account</a>';
+  const h = mock({ [origin + "/"]: () => new Response(html, { status: 200 }) });
+  await assert.rejects(() => verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl }), /login_copy_or_constraints_invalid/u);
+});

@@ -4,6 +4,7 @@ import { beginCognitoCardSignIn, completeCognitoCardSignIn } from "../lib/cognit
 
 const session = "S".repeat(90);
 const token = ["A".repeat(120), "B".repeat(130), "C".repeat(130)].join(".");
+const accessToken = ["D".repeat(120), "E".repeat(130), "F".repeat(130)].join(".");
 
 function mockCognito(replies: Array<Record<string, unknown>>) {
   const calls: Array<{ url: string; init: RequestInit; body: Record<string, unknown> }> = [];
@@ -40,12 +41,15 @@ test("unexpected token after password only cannot be accepted", async () => {
 });
 
 test("TOTP is sent only to Cognito and a successful challenge returns identity token", async () => {
-  const h = mockCognito([{ AuthenticationResult: { IdToken: token } }]);
+  const h = mockCognito([{ AuthenticationResult: { IdToken: token, AccessToken: accessToken } }]);
   const result = await completeCognitoCardSignIn(
     { email: "founder@example.com", session }, "123456", h.fetchImpl,
   );
   assert.equal(result.kind, "verified");
-  if (result.kind === "verified") assert.equal(result.idToken, token);
+  if (result.kind === "verified") {
+    assert.equal(result.idToken, token);
+    assert.equal(result.accessToken, accessToken);
+  }
   assert.equal(h.calls[0]?.body["ChallengeName"], "SOFTWARE_TOKEN_MFA");
   assert.deepEqual(h.calls[0]?.body["ChallengeResponses"], {
     USERNAME: "founder@example.com", SOFTWARE_TOKEN_MFA_CODE: "123456",
@@ -79,5 +83,13 @@ test("invalid input is rejected before provider calls", async () => {
 test("account-reset and MFA setup challenges remain with managed Cognito login", async () => {
   const h = mockCognito([{ ChallengeName: "MFA_SETUP", Session: session }]);
   const result = await beginCognitoCardSignIn("founder@example.com", "password", h.fetchImpl);
+  assert.deepEqual(result, { kind: "provider-required" });
+});
+
+test("TOTP success without both tokens cannot issue any founder or customer session", async () => {
+  const h = mockCognito([{ AuthenticationResult: { IdToken: token } }]);
+  const result = await completeCognitoCardSignIn(
+    { email: "founder@example.com", session }, "123456", h.fetchImpl,
+  );
   assert.deepEqual(result, { kind: "provider-required" });
 });

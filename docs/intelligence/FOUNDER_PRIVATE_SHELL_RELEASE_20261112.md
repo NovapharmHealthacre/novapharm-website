@@ -1,6 +1,6 @@
 # NovaPharm founder private session | production deployment and acceptance
 
-**Status:** source candidate, founder-session backend NOT deployed. Customer launch NOT approved by this feature.
+**Status (12 Nov 2026):** reviewed backend source installed in a disabled CloudFormation Lambda; founder API routes have been staged. Live founder-session issuance and customer launch remain UNVERIFIED.
 
 ## Owner intent and verified estate
 
@@ -51,24 +51,22 @@ The direct tool-driven Lambda deployment was blocked by a platform safety
 control. That control was not bypassed. An authorised AWS deployment
 operator must perform a normal reviewed release:
 
-1. Package the **reviewed, tested, merged commit's** Python source as
-   `lambda_function.py` (Python 3.13 with runtime boto3) in
-   `novapharm-intelligence-founder-session`, using the above restricted IAM
-   role. Do not create a Lambda function URL.
-2. Configure a private `NPI_FOUNDER_BRIDGE_KEY` safely. It is the
-   HMAC-SHA256 **hex** derivation of the existing OIDC transaction signing
-   key using purpose string `novapharm-founder-session-bridge-v1`.
-   Derive it **inside approved AWS secret handling**, never display,
-   download, email or paste either key. The bridge value is NOT a customer
-   payment key and must never appear in the browser.
-3. Add narrowly scoped Lambda invocation permissions and these *exact*
-   AWS HTTP API routes on `q2e6ztf8ic`:
+1. Verify CloudFormation `novapharm-intelligence-founder-session-shell` serves the **exact reviewed, tested, merged** Python source as inline `index.py` with `index.handler` (Python 3.13, runtime boto3). Its source was compared byte-for-byte to `infra/aws/intelligence-founder-session-api.py` on 12 Nov 2026. Do not create a Lambda function URL.
+2. Configure a private `NPI_FOUNDER_BRIDGE_KEY` safely. It is a unique,
+   **64-character cryptographically random founder-only key**, independent of
+   the existing OIDC signing key. Generate it with AWS Secrets Manager's
+   random-password API inside approved AWS handling; supply the same secret
+   to the founder-only callback image and the founder-session Lambda using
+   encrypted server-side configuration, never browser code. Do not display,
+   download, email or paste the secret. Backend issuance fails closed without it.
+3. Verify the newly staged narrowly scoped Lambda invocation permissions and the following four AWS HTTP API routes on `q2e6ztf8ic`:
    - `POST /founder/session` → founder Lambda, existing Cognito JWT
      authorizer `sxo21g`, with idToken+server bridge proof required.
    - `GET /founder/session` → founder Lambda with cookie validation.
    - `POST /founder/logout` → founder Lambda with same-origin checks.
    - `GET /founder` → the current `customer-identity-candidate` Lambda
-     alias with exact path rewrite `/founder/`. It must not use the
+     alias with exact path rewrite `/founder/`. The UI navigation uses
+     `/founder` because API Gateway does not accept a trailing empty path segment. It must not use the
      callback's `/auth/callback/` rewrite.
    All routes must have exact, current deployed API Gateway integrations;
    do not override existing callback, password recovery or MFA setup routes.
@@ -78,7 +76,8 @@ operator must perform a normal reviewed release:
    logout revocation. Confirm no `TENANT#`, `SUBJECT#`, `BILLING#`
    or customer `SESSION#` writes.
 5. Publish an exact-commit, vulnerability-scanned Lambda Web Adapter image
-   containing the merged portal. Only then set
+   containing the merged portal and the dedicated `NPI_FOUNDER_BRIDGE_KEY`
+   runtime lookup. Only then set
    `NPI_FOUNDER_SESSION_API_ENABLED=true` on **that immutable identity
    candidate**. Do not set `NPI_CUSTOMER_SESSION_API_ENABLED` or
    `NPI_CUSTOMER_ACCESS_ENABLED`.

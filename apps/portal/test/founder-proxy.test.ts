@@ -46,3 +46,22 @@ test("founder route continues to require a revocable remote session, never cooki
   assert.match(page, /result\["customerAccess"\] === false/u);
   assert.match(page, /result\["medicinesDataAccess"\] === false/u);
 });
+
+test("Cognito card founder exchange reaches its API Gateway JWT + origin verifier without legacy board cookie", () => {
+  const request = new NextRequest(base + "/auth/founder/exchange", {
+    method: "POST",
+    headers: { origin: base, authorization: "Bearer invalid-test-token" },
+  });
+  const response = proxy(request);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("location"), null);
+  assert.equal(response.headers.get("cache-control"), "no-store");
+});
+
+test("only exact founder exchange route is allowlisted; adjacent unauthorised paths redirect", () => {
+  for (const path of ["/auth/founder/exchange-extra", "/auth/founder/session", "/auth/founder/admin"]) {
+    const response = proxy(new NextRequest(base + path));
+    assert.equal(response.status, 307);
+    assert.equal(new URL(response.headers.get("location") ?? "").pathname, "/");
+  }
+});
