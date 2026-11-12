@@ -35,7 +35,9 @@ function requireConfig(environment, client, db) {
       environment.PANDORA_STAGING_DECISION_LEDGER_ENABLED !== "true" ||
       environment.PANDORA_STAGING_DECISION_AUDIT_ENABLED !== "true" ||
       environment.PANDORA_ALLOW_EXTERNAL_ACTIONS === "true" ||
-      environment.PANDORA_ALLOW_PUBLIC_ACCESS === "true") throw stop("ledger_disabled");
+      environment.PANDORA_ALLOW_PUBLIC_ACCESS === "true" ||
+      environment.PANDORA_OWNER_FINAL_APPROVAL_REQUIRED !== "true" ||
+      !subjectPattern.test(environment.PANDORA_FINAL_APPROVER_SUBJECT_ID ?? "")) throw stop("ledger_disabled");
   if (typeof client?.startSession !== "function" || typeof db?.collection !== "function" ||
       db.databaseName !== "novapharm_staging") throw stop("storage_unavailable");
   const entries = Object.values(pandoraStagingCollections).map(name => db.collection(name));
@@ -101,6 +103,13 @@ export async function commitPandoraMedicineDecision({
       actor.tenantId !== request.tenantId || !subjectPattern.test(actor.subjectId) ||
       !release?.verifiedServerSide || release.privateDecisionReviewApproved !== true ||
       !timePattern.test(now) || new Date(now).toISOString() !== now) throw stop("request_or_release_not_approved");
+  // The owner is the only final decision approver. Their identity is a
+  // verified OIDC subject configured by the private authority, never a name,
+  // browser claim or self-assigned user profile. Review remains independent.
+  if (["approve", "reject"].includes(request.action) &&
+      actor.subjectId !== environment.PANDORA_FINAL_APPROVER_SUBJECT_ID) {
+    throw stop("owner_final_approver_required");
+  }
   const timeMs = Date.parse(now);
   // Do not allow transactional commits without actual uniqueness guarantees.
   // The index check is against the connected server, never a caller assertion.
