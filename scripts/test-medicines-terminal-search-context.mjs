@@ -47,3 +47,10 @@ test("selection cannot populate analytics after a subsequent search supersedes i
   assert.match(source, /if \(generation !== selectionGenerationRef\.current\) return;/u);
   assert.match(source, /if \(generation === selectionGenerationRef\.current\) setBusy\(false\)/u);
 });
+
+test("in-flight analytical responses cannot refill facts after a subsequent medicine search", () => {
+  const source = between("async function runAnalytics(", "let central: ReactNode;");
+  assert.match(source, /const generation = selectionGenerationRef\.current/u);
+  assert.match(source, /if \(generation !== selectionGenerationRef\.current\) return;/u);
+  assert.match(source, /if \(generation === selectionGenerationRef\.current\) setBusy\(false\)/u);
+});
