@@ -14028,11 +14028,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 5,
-      "referenceCount": 10,
+      "usageCount": 6,
+      "referenceCount": 12,
       "usageFiles": [
         "apps/corporate/components/page-renderer.tsx",
         "apps/corporate/data/pages.ts",
+        "assets/css/technology-intelligence.css",
         "creative-assets/module-media-asset-register.json",
         "seo/generated/social-image-register.json",
         "technology/index.html"
