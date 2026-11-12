@@ -33,6 +33,11 @@ export function validateEpdPublisherSample({packageBytes,dataBytes,observedAt,li
     pkg.license_id!=="OGL-UK-3.0"||!Array.isArray(pkg.resources))deny("publisher_package_mismatch");
  const matches=pkg.resources.filter(r=>r?.name===source.resourceName&&r?.id===source.resourceId);
  if(matches.length!==1||![true,"true"].includes(matches[0].datastore_active))deny("source_resource_not_current");
+ const declaredCsvSha=matches[0].sha256 || matches[0].hash;
+ const declaredCsvBytes=Number(matches[0].size);
+ if(typeof declaredCsvSha!=="string"||!/^[a-f0-9]{64}$/u.test(declaredCsvSha)||
+    !Number.isSafeInteger(declaredCsvBytes)||declaredCsvBytes<=0||declaredCsvBytes>20_000_000_000)
+   deny("publisher_csv_integrity_metadata_missing");
  const records=d?.result?.records;
  if(d?.success!==true||!Array.isArray(records)||records.length<1||records.length>limit)deny("invalid_datastore_response");
  const seen=new Set();
@@ -70,6 +75,9 @@ export function validateEpdPublisherSample({packageBytes,dataBytes,observedAt,li
   publisher_query_url:officialEpdSampleUrl(limit),publisher:"NHS Business Services Authority",
   publisher_licence_id:"OGL-UK-3.0",publisher_attribution:"NHSBSA Copyright 2021-2026",
   bounded_sample_count:rows.length,observed_at:observedAt,
+  publisher_declared_full_csv_sha256:declaredCsvSha,
+  publisher_declared_full_csv_bytes:declaredCsvBytes,
+  full_csv_sha256_independently_verified:false,
   full_month_csv_verified:false,full_month_row_count_verified:false,
   source_rights_grant_id:null,third_party_terminology_rights_accepted:false,
   accepted_observations:0,customer_publish_approved:false,ai_processing_approved:false,
