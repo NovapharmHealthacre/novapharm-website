@@ -25,11 +25,22 @@ if(process.argv.includes("--execute")){
   }
   break;
  }
- if(!res?.ok||res.status>=400)throw Error("Official ZIP HEAD unavailable");
- const n=Number(res.headers.get("content-length"));
- if(!Number.isSafeInteger(n)||n<1||n>10000000000)throw Error("ZIP size missing/invalid");
+ let n=Number(res?.headers.get("content-length")||0);
+ let method="HEAD",status=res?.status||0;
+ if(!res?.ok||!Number.isSafeInteger(n)||n<1){
+  // A one-byte range request discovers the size without downloading the ZIP.
+  const x=await fetch(final,{method:"GET",headers:{range:"bytes=0-0"},redirect:"error",signal:AbortSignal.timeout(30000)});
+  status=x.status;method="GET_RANGE";
+  const contentRange=x.headers.get("content-range")||"";
+  const match=/^bytes 0-0\/(\d+)$/u.exec(contentRange);
+  n=match?Number(match[1]):x.status===200?Number(x.headers.get("content-length")||0):0;
+  await x.body?.cancel();
+  if(!x.ok||!Number.isSafeInteger(n)||n<1||n>10000000000)
+    throw Error("Official ZIP size probe unavailable: HEAD "+res?.status+" GET_RANGE "+x.status);
+ }
+ if(n>10000000000)throw Error("ZIP exceeds cap");
  console.log(JSON.stringify({source:source.resourceName,origin:final.origin,
-  zip_declared_bytes:n,zip_size_mib:Math.round(n/1048576),raw_csv_expected_bytes:Number(r.size),
+  zip_declared_bytes:n,zip_size_mib:Math.round(n/1048576),probe_method:method,probe_status:status,raw_csv_expected_bytes:Number(r.size),
   requested_download:false,stored_bytes:0,customer_publish_approved:false}));
 }else{
  console.log(JSON.stringify({status:"dry_run_no_network",source:source.resourceName,stored_bytes:0}));
