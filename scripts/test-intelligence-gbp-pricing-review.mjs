@@ -4,10 +4,12 @@ import { readFileSync } from "node:fs";
 const read = p => readFileSync(new URL("../" + p, import.meta.url), "utf8");
 const m = JSON.parse(read("docs/intelligence/gbp-pricing-owner-review-20261112.json"));
 test("review manifest is GBP-only and cannot activate Stripe or customer access", () => {
-  assert.equal(m.status,"OWNER_REVIEW_ONLY");
+  assert.equal(m.status,"OWNER_PRICING_APPROVED_RELEASE_GATED");
   assert.equal(m.launchCurrency,"gbp");
-  for (const key of ["ownerApproved","gbpStripePricesCreated","gbpPriceIdsApproved","customerBillingEnabled","customerAccessEnabled"]) assert.equal(m[key],false);
-  assert.deepEqual(m.approvedSaleCountries,[]);
+  for (const key of ["ownerApproved","gbpStripePricesCreated","gbpPriceIdsApproved"]) assert.equal(m[key],true);
+  for (const key of ["customerBillingEnabled","customerAccessEnabled"]) assert.equal(m[key],false);
+  assert.equal(m.verifiedPriceStatus,"inactive");
+  assert.deepEqual(m.approvedSaleCountries,["GB"]);
   assert.deepEqual(m.proposedSaleCountries,["GB"]);
   assert.equal(m.tax.stripeTaxAutomatic,true);
   assert.equal(m.tax.collectTaxIds,true);
@@ -19,10 +21,11 @@ test("review-only prices are exact and cannot be mistaken for Stripe Price IDs",
   assert.deepEqual([p.starter.monthly.amountMinor,p.starter.annual.amountMinor,p.professional.monthly.amountMinor,p.professional.annual.amountMinor,p.enterprise.indicativeMonthlyMinor],[19900,203000,69900,713000,279900]);
   assert.equal(p.enterprise.contractRequired,true);
   assert.equal(p.enterprise.annual,null);
-  assert.equal(p.enterprise.approvedPriceId,null);
+  assert.equal(p.enterprise.approvedPriceId,"price_1UatiL2U9Y3sX5I2gktsrNl5");
+  assert.deepEqual([p.starter.monthly.priceId,p.starter.annual.priceId,p.professional.monthly.priceId,p.professional.annual.priceId],["price_1Uati52U9Y3sX5I2RJuYixR9","price_1UatiF2U9Y3sX5I2mv1a22VN","price_1UatiH2U9Y3sX5I2Pyqz3SpW","price_1UatiJ2U9Y3sX5I2CfJFkUnC"]);
   for (const plan of [p.starter,p.professional]) {
     assert.ok(Math.abs(1-plan.annual.amountMinor/(12*plan.monthly.amountMinor)-0.15)<0.002);
-    for (const price of [plan.monthly,plan.annual]) assert.equal(price.priceId,null);
+    for (const price of [plan.monthly,plan.annual]) assert.match(price.priceId,/^price_[A-Za-z0-9]+$/);
   }
 });
 test("public marketing candidates are GBP and never a payment flow", () => {
