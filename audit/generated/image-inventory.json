@@ -10,12 +10,12 @@
     "Null semantic or provenance fields are explicit gaps, not inferred approvals."
   ],
   "summary": {
-    "trackedAssetCount": 877,
+    "trackedAssetCount": 878,
     "byClassification": {
-      "KEEP": 877
+      "KEEP": 878
     },
     "byProvenanceStatus": {
-      "registered": 667,
+      "registered": 668,
       "registered-identical-delivery-copy": 12,
       "repository-generated-test-evidence": 198
     },
@@ -14394,7 +14394,7 @@
       "height": 228,
       "aspectRatio": 1.140351,
       "sha256": "acfc2a493e7f9035ae92c93dc09238f758e36c636fe3e7988ee3b7db56f8e596",
-      "perceptualHash": null,
+      "perceptualHash": "c0808c181050b0d7",
       "classification": "KEEP",
       "provenanceStatus": "registered",
       "source": "Cropped decorative mother-and-child artwork from the owner-supplied approved NovaPharm Secure Portal Sign-In visual (12 November 2026). Illustrative AI-generated design, not a photograph of an actual NovaPharm patient, family or clinician.",
@@ -14426,6 +14426,48 @@
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
     {
+      "path": "assets/media/portal/npi-human-portrait-approved.webp",
+      "canonicalDeliveryPath": "assets/media/portal/npi-human-portrait-approved.webp",
+      "format": "webp",
+      "bytes": 86844,
+      "width": 1050,
+      "height": 499,
+      "aspectRatio": 2.104208,
+      "sha256": "7f895e0b7c4ef21314b2555d972e4147cf675b98cc5b6272c708b6726e0b0950",
+      "perceptualHash": "4dcfd3d3f3e34f46",
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Owner-approved NovaPharm Intelligence sign-in mockup generated in ChatGPT on 12 November 2026; exact photographic lower-left crop extracted without overlaid form, branding or copy.",
+      "licence": "Original owner-directed NovaPharm visual creative for its public Intelligence sign-in page. No third-party stock or competitor assets.",
+      "reviewStatus": "Approved visual reference supplied 12 November 2026; preserve exact composition",
+      "technicalStatus": "checksum-verified original full-size design crop; SHA-256 7f895e0b7c4ef21314b2555d972e4147cf675b98cc5b6272c708b6726e0b0950; un-cropped image fit",
+      "provenanceRecord": null,
+      "semanticPurpose": "owner-approved-original-editorial-portal-photograph",
+      "routes": [
+        "intelligence.novapharmhealthcare.com/ secure portal"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "",
+      "registeredCaption": "Decorative illustrative mother-and-daughter photograph. Not clinical or medicines-market evidence.",
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 4,
+      "referenceCount": 5,
+      "usageFiles": [
+        "apps/portal/components/intelligence-sign-in.module.css",
+        "apps/portal/scripts/sync-public-assets.mjs",
+        "apps/portal/test/intelligence-human-entry.test.ts",
+        "creative-assets/asset-register.json"
+      ],
+      "exactDuplicateGroup": null,
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
       "path": "assets/media/portal/npi-human-portrait-hd.avif",
       "canonicalDeliveryPath": "assets/media/portal/npi-human-portrait-hd.avif",
       "format": "heif",
@@ -14434,7 +14476,7 @@
       "height": 508,
       "aspectRatio": 1.515748,
       "sha256": "bde8212cfe018eb86b8a8582a5a9cdd0cc7af9b59965339504d5afc79ce96abc",
-      "perceptualHash": null,
+      "perceptualHash": "cbc7899990f0f0ee",
       "classification": "KEEP",
       "provenanceStatus": "registered",
       "source": "High-definition decorative crop of the owner-approved NovaPharm Intelligence secure portal human design, 12 November 2026, x=0-770,y=448-956 of the 1536x1024 selected concept. Illustrative design, not a patient or marketing-evidence photograph.",
@@ -14455,12 +14497,10 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 4,
-      "referenceCount": 4,
+      "usageCount": 2,
+      "referenceCount": 2,
       "usageFiles": [
-        "apps/portal/components/intelligence-sign-in.module.css",
         "apps/portal/scripts/sync-public-assets.mjs",
-        "apps/portal/test/intelligence-human-entry.test.ts",
         "creative-assets/asset-register.json"
       ],
       "exactDuplicateGroup": null,
@@ -22688,7 +22728,7 @@
       "height": 1466,
       "aspectRatio": 0.993179,
       "sha256": "91a4be535ce6e3bb229cefd240dadebef19be89f63a53a642acbb748437d3418",
-      "perceptualHash": "d9fcfe9ea4ed4cd6",
+      "perceptualHash": "d9fcfebea4ed4cd6",
       "classification": "KEEP",
       "provenanceStatus": "registered",
       "source": "Owner-directed AI-generated Novapharm Intelligence concept, sharpened from generated approved hero composition, photographic crop without browser UI or text, 11 November 2026. Fictional illustrative scientist, not an identified person or clinical evidence.",
