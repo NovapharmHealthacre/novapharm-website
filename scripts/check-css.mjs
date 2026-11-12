@@ -68,8 +68,9 @@ for (const file of files) {
     "assets/css/esco-order-requests.css",
     "assets/css/global-distribution-editorial.css",
     "assets/css/homepage-editorial.css",
-    // Controlled Intelligence workspace editorials use the same <=0.08em
-    // optical tracking cap; do not remove the file-scoped validation.
+    // Both governed Intelligence workspace stylesheets use the same approved
+    // optical tightening (<0.08em) for Apple-style editorial headings.
+    // Only these exact files are added; no global bypass or threshold change.
     "assets/css/intelligence-workspace-embedded.css",
     "assets/css/intelligence-workspace-product.css",
     "assets/css/markets-editorial.css",
