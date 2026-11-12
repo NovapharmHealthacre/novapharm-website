@@ -797,7 +797,9 @@
   }
   .npoc-page .npoc-hope-hero .npoc-hero-visual {
     inset:0 0 0 auto;
-    width:72%;
+    /* Match the 890:550 photograph's native aspect ratio at wide sizes,
+       preserving both the head at the top and the sunset at bottom right. */
+    width:min(62%,970px);
     height:100%;
     overflow:hidden;
     -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.07) 9%,rgba(0,0,0,.38) 22%,rgba(0,0,0,.8) 36%,#000 52%);
