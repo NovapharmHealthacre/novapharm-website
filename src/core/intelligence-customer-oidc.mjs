@@ -101,7 +101,10 @@ export function verifyCustomerLoginTransaction({ cookieValue, state, signingKey,
       !VALID_RANDOM.test(String(decoded.verifier || "")) ||
       !Number.isSafeInteger(decoded.createdAt) || decoded.createdAt > nowMs ||
       nowMs - decoded.createdAt > AGE_MS) throw blocked("transaction_expired_or_mismatched");
-  return Object.freeze({ verifier: decoded.verifier, nonce: decoded.nonce, grantsTenantAccess: false });
+  return Object.freeze({
+    verifier: decoded.verifier, nonce: decoded.nonce,
+    createdAtMs: decoded.createdAt, grantsTenantAccess: false,
+  });
 }
 
 async function boundedJson(response, max = 80_000) {
@@ -194,6 +197,36 @@ export async function verifyIntelligenceCustomerIdToken({
       !Number.isSafeInteger(claims.iat) || claims.iat > nowSeconds + 60 ||
       !Number.isSafeInteger(nowSeconds)) throw blocked("identity_claims_invalid");
   if (claims.email_verified !== true) throw blocked("identity_email_unverified");
+  if (purpose === "founder_provider_identity") {
+    // AWS Cognito ACR/AMR rollout is not yet active for this production pool.
+    // This represents a verified Cognito USER IDENTITY ONLY, not proof from
+    // signed ACR/AMR claims and NEVER a customer session. A separate,
+    // provider-enforced MFA guard + exact token-bound GetUser is required
+    // before a founder-only acknowledgement may be rendered.
+    // Signed, explicit insufficient-MFA claims must always fail closed.
+    if (claims.email !== "vishal@novapharmhealthcare.com")
+      throw blocked("provider_identity_not_founder");
+    if (claims.acr !== undefined || claims.amr !== undefined)
+      throw blocked("provider_identity_claims_incompatible");
+    if (!Number.isSafeInteger(claims.auth_time) ||
+        claims.auth_time > nowSeconds + 60 ||
+        nowSeconds - claims.auth_time > 150 ||
+        claims.iat < claims.auth_time ||
+        nowSeconds - claims.iat > 150) {
+      throw blocked("provider_identity_session_not_fresh");
+    }
+    return Object.freeze({
+      founderProviderIdentityOnly: true,
+      verifiedCognitoSubject: claims.sub,
+      verifiedIssuer: OIDC_ISSUER,
+      signedAuthTimeSeconds: claims.auth_time,
+      signedIssuedAtSeconds: claims.iat,
+      identityVerified: false,
+      mfaVerifiedInSignedClaims: false,
+      grantsTenantAccess: false,
+      subscriptionVerified: false,
+    });
+  }
   if (purpose === "mfa_enrolment") {
     // This is a narrow first-time authenticator REGISTRATION only, never
     // normal identity, MFA verification, a customer session, or data access.
