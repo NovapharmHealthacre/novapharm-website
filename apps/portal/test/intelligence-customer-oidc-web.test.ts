@@ -52,6 +52,57 @@ test("customer start uses the pinned Cognito public PKCE client and a signed HTT
   }
 });
 
+test("password reset uses Cognito /forgotPassword and a fresh signed PKCE transaction", () => {
+  const previous = process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
+  process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = key;
+  try {
+    const request = new NextRequest("https://intelligence.novapharmhealthcare.com/auth/customer/start?mode=reset");
+    const result = startCustomerIdentity(request);
+    assert.equal(result.status, 302);
+    const target = new URL(result.headers.get("location") ?? "");
+    assert.equal(target.origin, intelligenceCustomerOidc.domain);
+    assert.equal(target.pathname, "/forgotPassword");
+    assert.equal(target.searchParams.get("client_id"), intelligenceCustomerOidc.clientId);
+    assert.equal(target.searchParams.get("redirect_uri"), intelligenceCustomerOidc.callback);
+    assert.equal(target.searchParams.get("response_type"), "code");
+    assert.equal(target.searchParams.get("code_challenge_method"), "S256");
+    assert.equal(target.searchParams.get("max_age"), "900");
+    assert.match(target.searchParams.get("state") ?? "", /^[A-Za-z0-9_-]{40,128}$/);
+    const cookie = result.headers.get("set-cookie") ?? "";
+    assert.match(cookie, /__Host-npi_oidc_tx=/);
+    assert.match(cookie, /HttpOnly/);
+    assert.match(cookie, /Secure/);
+    assert.match(cookie, /SameSite=lax/i);
+    assert.match(cookie, /Max-Age=900/);
+    assert.doesNotMatch(cookie, /Domain=/);
+    assert.equal(result.headers.get("cache-control"), "no-store");
+    assert.doesNotMatch(result.headers.get("location") ?? "", /password=|username=|email=|confirmation_code=/i);
+    // Unknown modes cannot inject paths or redirect the browser.
+    const ignored = startCustomerIdentity(new NextRequest(
+      "https://intelligence.novapharmhealthcare.com/auth/customer/start?mode=https://evil.example/",
+    ));
+    assert.equal(new URL(ignored.headers.get("location") ?? "").pathname, "/oauth2/authorize");
+  } finally {
+    if (previous === undefined) delete process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
+    else process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = previous;
+  }
+});
+
+test("password recovery fails closed if the server-side transaction key is unavailable", () => {
+  const previous = process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
+  delete process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
+  try {
+    const result = startCustomerIdentity(new NextRequest(
+      "https://intelligence.novapharmhealthcare.com/auth/customer/start?mode=reset",
+    ));
+    assert.equal(result.status, 503);
+    assert.equal(result.headers.get("location"), null);
+    assert.equal(result.headers.get("set-cookie"), null);
+  } finally {
+    if (previous !== undefined) process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = previous;
+  }
+});
+
 test("callback refuses unsolicited or forged OAuth codes and clears transient cookies", async () => {
   const previous = process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
   process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = key;
@@ -92,6 +143,7 @@ test("customer session never self-provisions an account and requires the private
   assert.match(proxy, /"\/auth\/customer\/start\/"/);
   assert.match(proxy, /"\/auth\/callback\/"/);
   assert.ok(source("components/intelligence-sign-in.tsx").includes('href="/auth/customer/start"'));
+  assert.ok(source("components/intelligence-sign-in.tsx").includes('href="/auth/customer/start?mode=reset"'));
   assert.match(portal, /verifiedPortalSession/);
   assert.match(source("components/portal-client.tsx"), /intelligencePortal \? <IntelligenceSignIn/);
 });
