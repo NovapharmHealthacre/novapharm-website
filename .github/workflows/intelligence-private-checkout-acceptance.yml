@@ -39,15 +39,16 @@ jobs:
           assert resources["CheckoutRoute"]["Properties"]["AuthorizerId"]=="sxo21g"
           assert resources["CheckoutRoute"]["Properties"]["RouteKey"]=="POST /customer/subscription/checkout"
           assert resources["CheckoutRoute"]["Properties"]["ApiId"]=="q2e6ztf8ic"
-          assert resources["CheckoutLambda"]["Properties"]["Handler"]=="checkout_api.handler"
-          assert "CodeObjectVersion" in spec["Parameters"]
+          assert resources["CheckoutLambda"]["Properties"]["Handler"]=="index.handler"
+          assert resources["CheckoutLambda"]["Properties"]["Code"]["ZipFile"]==Path("infra/aws/intelligence-customer-checkout-api.py").read_text()
           assert "SourceSha256" in spec["Parameters"]
-          assert resources["CheckoutLambda"]["Properties"]["Code"]["S3ObjectVersion"]=={"Ref":"CodeObjectVersion"}
+          assert "CodeBucket" not in spec["Parameters"]
+          assert "CodeObjectVersion" not in spec["Parameters"]
           src=Path("infra/aws/intelligence-customer-checkout-api.py").read_text()
           assert "if not enabled:" in src
           assert "stripeWebhookAndLedgerAccepted" in src
           assert "sourceRightsApproved" in src
           assert "condition(" in src
           assert "stripe_checkout_response_invalid" in src
-          print("Private Checkout deployability: immutable artifact, JWT authorizer, production charge switch OFF")
+          print("Private Checkout deployability: CloudFormation native verified source, JWT authorizer, production charge switch OFF")
           PY
