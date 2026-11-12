@@ -12,6 +12,11 @@ test("every unapproved ESCO catalogue identity is included exactly once",()=>{
   assert.equal(new Set(report.rows.map(x=>x.internal_novapharm_sku)).size,371);
   assert.ok(report.rows.every(x=>!["ESCO-CAT-0003","ESCO-CAT-0048"].includes(x.catalogue_id)));
   assert.equal(report.rows.filter(x=>x.manufacturer_model_missing).length,300);
+  assert.equal(report.supplier_pdf_distinct_model_codes,67);
+  assert.equal(report.coded_references_matching_supplied_pdf_text,31);
+  assert.equal(report.coded_references_not_matching_supplied_pdf_text,40);
+  assert.ok(report.rows.every(x=>x.manufacturer_model_missing ? x.supplier_pdf_model_text_match===null :
+    typeof x.supplier_pdf_model_text_match==="boolean"));
 });
 test("supplier certificates may identify candidate models but never authorise a GB sale",()=>{
   assert.equal(report.ce_annex_model_candidates,33);
