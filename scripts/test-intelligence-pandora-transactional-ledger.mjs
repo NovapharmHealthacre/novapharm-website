@@ -3,7 +3,7 @@ import test from "node:test";
 import {
   commitPandoraMedicineDecision as commit, pandoraStagingCollections as names
 } from "../src/core/intelligence-pandora-transactional-ledger.mjs";
-import { pandoraUniqueIndexes } from "../src/data/atlas-pandora-staging-indexes.mjs";
+import { pandoraUniqueIndexes, provisionPandoraStagingUniqueIndexes, verifyPandoraStagingUniqueIndexes } from "../src/data/atlas-pandora-staging-indexes.mjs";
 
 const now = "2026-11-12T10:00:00.000Z";
 const sha = value => value.repeat(64);
@@ -219,6 +219,27 @@ test("stale versions, audit failure and impossible state changes roll back compl
   const badState=fixture();
   await assert.rejects(commit(input(badState,{request:request("approve",1),
     actor:actor("person-approver-001")})),error=>error.statusCode===403);
+});
+test("private maintenance can provision and verify six genuinely unique index definitions",async()=>{
+  const store=new Map();
+  const db={collection(name){
+    if(!store.has(name)) store.set(name,[]);
+    return {
+      async createIndex(keys,opts){
+        assert.equal(opts.unique,true);
+        assert.equal(typeof opts.name,"string");
+        store.get(name).push({name:opts.name,key:keys,unique:true});
+        return opts.name;
+      },
+      listIndexes(){return {async toArray(){return store.get(name);}};}
+    };
+  }};
+  await assert.rejects(provisionPandoraStagingUniqueIndexes({db,environment}),
+    error=>error.code==="index_provision_disabled");
+  const approved={...environment,PANDORA_STAGING_INDEX_PROVISION_ENABLED:"true"};
+  const outcome=await provisionPandoraStagingUniqueIndexes({db,environment:approved});
+  assert.deepEqual(outcome,{verified:true,uniqueIndexCount:6});
+  assert.equal(await verifyPandoraStagingUniqueIndexes({db,environment:approved}),true);
 });
 test("missing unique Atlas constraints prohibit every committed decision",async()=>{
   const f=fixture({failIndexes:true});
