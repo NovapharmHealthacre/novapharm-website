@@ -1,11 +1,36 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import styles from "./intelligence-sign-in.module.css";
-import { PortalBrand } from "./portal-brand";
 
-/** Dedicated customer entry: never reuse the legacy password service. */
-type ApprovedCustomer = Readonly<{ role: "owner" | "admin" | "analyst" | "viewer"; plan: "starter" | "professional" | "enterprise" }>;
+/** Public presentation only. Cognito, verified sessions and entitlements remain server-owned. */
+type ApprovedCustomer = Readonly<{
+  role: "owner" | "admin" | "analyst" | "viewer";
+  plan: "starter" | "professional" | "enterprise";
+}>;
+
+const publicSite = "https://novapharmhealthcare.com";
+const navigation = [
+  { label: "Platform", href: `${publicSite}/technology/#intelligence-platform` },
+  { label: "Workspaces", href: `${publicSite}/technology/#intelligence-workspace-directory` },
+  { label: "Data", href: `${publicSite}/technology/#intelligence-research` },
+  { label: "Security", href: `${publicSite}/trust-centre/` },
+  { label: "Pricing", href: `${publicSite}/technology/#intelligence-pricing` },
+] as const;
+
+function IntelligenceLogo({ small = false }: Readonly<{ small?: boolean }>) {
+  return (
+    <Image
+      src="/assets/brand/novapharm-intelligence-approved.svg"
+      alt="NovaPharm Intelligence"
+      width={1950}
+      height={337}
+      priority
+      className={small ? styles["logoInside"] : styles["logoHeader"]}
+    />
+  );
+}
 
 export function IntelligenceSignIn() {
   const [customer, setCustomer] = useState<ApprovedCustomer | null>(null);
@@ -26,14 +51,14 @@ export function IntelligenceSignIn() {
       if (!body || typeof body !== "object") return;
       const result = body as Record<string, unknown>;
       if (result["ok"] !== true || result["code"] !== "active" ||
-          !["starter", "professional", "enterprise"].includes(String(result["plan"])) ||
-          !["owner", "admin", "analyst", "viewer"].includes(String(result["role"]))) return;
+        !["starter", "professional", "enterprise"].includes(String(result["plan"])) ||
+        !["owner", "admin", "analyst", "viewer"].includes(String(result["role"]))) return;
       if (mounted) setCustomer({
         role: result["role"] as ApprovedCustomer["role"],
         plan: result["plan"] as ApprovedCustomer["plan"],
       });
     }).catch(() => {
-      // Customer API absent or unavailable: public login remains invitation only.
+      // An unavailable customer API never grants access.
     });
     return () => { mounted = false; controller.abort(); };
   }, []);
@@ -42,48 +67,88 @@ export function IntelligenceSignIn() {
     if (signingOut) return;
     setSigningOut(true);
     try {
-      const result = await fetch("/customer/logout", {
-        method: "POST", credentials: "same-origin", cache: "no-store",
+      const response = await fetch("/customer/logout", {
+        method: "POST",
+        credentials: "same-origin",
+        cache: "no-store",
         headers: { Accept: "application/json" },
       });
-      if (!result.ok) return;
-      setCustomer(null);
+      if (response.ok) setCustomer(null);
     } catch {
-      // Never claim revocation without server acknowledgement.
+      // Do not claim that server revocation succeeded.
     } finally {
       setSigningOut(false);
     }
   }
+
   return (
     <main className={styles["page"]}>
-      <div className={styles["canvas"]}>
+      <div className={styles["portrait"]} aria-hidden="true" />
+      <div className={styles["shell"]}>
         <header className={styles["header"]}>
-          <PortalBrand />
-          <span>Medicines Terminal</span>
+          <a className={styles["brand"]} href="/" aria-label="NovaPharm Intelligence home">
+            <IntelligenceLogo />
+          </a>
+          <nav className={styles["navigation"]} aria-label="NovaPharm Intelligence">
+            {navigation.map(({ label, href }) => <a href={href} key={label}>{label}</a>)}
+          </nav>
+          {customer ? (
+            <button className={styles["headerAction"]} type="button" onClick={() => { void signOut(); }} disabled={signingOut}>
+              {signingOut ? "Signing out" : "Sign out"}
+            </button>
+          ) : (
+            <a className={styles["headerAction"]} href="/auth/customer/start">Sign in</a>
+          )}
         </header>
-        <section className={styles["hero"]} aria-labelledby="intelligence-signin-title">
-          <p className={styles["eyebrow"]}>NovaPharm Intelligence</p>
-          <h1 id="intelligence-signin-title">{customer ? "Your Medicines Terminal." : "Understand the medicine."}<span>{customer ? "Business account connected." : "Understand the market."}</span></h1>
-          <p className={styles["description"]}>{customer ? "Your approved customer session is active. Access to medicines evidence, forecasts and NOVA remains subject to independently accepted data and feature rights." : "A professional workspace for connected medicines evidence, with access governed by your organisation."}</p>
-          <div className={styles["actions"]}>
+
+        <div className={styles["layout"]}>
+          <section className={styles["intro"]} aria-labelledby="intelligence-signin-title">
+            <p className={styles["eyebrow"]}>SECURE PORTAL</p>
+            <h1 id="intelligence-signin-title">
+              {customer ? <>Your Medicines Terminal.<span>Protected by evidence.</span></> :
+                <>A more human<br />intelligence for <span>medicine.</span></>}
+            </h1>
+            <div className={styles["fineRule"]} aria-hidden="true" />
+            <p className={styles["introDescription"]}>
+              {customer ? "Your verified session is active. Data and workspaces remain governed by approved access rights." :
+                "Understand the medicine. Understand the market."}
+            </p>
+          </section>
+
+          <section className={styles["signInCard"]} aria-labelledby="intelligence-signin-card-title">
+            <IntelligenceLogo small />
+            <h2 id="intelligence-signin-card-title">{customer ? "Your secure workspace." : "Sign in to your secure workspace."}</h2>
             {customer ? (
-              <button className={styles["primary"]} type="button" onClick={() => { void signOut(); }} disabled={signingOut}>
-                {signingOut ? "Signing out" : "Sign out securely"}
-              </button>
+              <>
+                <p className={styles["sessionMessage"]}>Verified {customer.plan} subscription · {customer.role} seat.</p>
+                <p className={styles["providerNote"]}>Medicines data and NOVA are accessible only when the corresponding source and permission gates are approved.</p>
+                <button className={styles["primaryAction"]} type="button" onClick={() => { void signOut(); }} disabled={signingOut}>
+                  {signingOut ? "Signing out…" : "Sign out securely"}
+                </button>
+              </>
             ) : (
               <>
-                <a className={styles["primary"]} href="/auth/customer/register">Create a business account</a>
-                <a className={styles["secondary"]} href="/auth/customer/start">Sign in</a>
-                <a className={styles["secondary"]} href="/auth/customer/start?mode=reset">Reset password</a>
+                <p className={styles["providerNote"]}>Your business email, password and verification are handled by NovaPharm&apos;s secure identity provider.</p>
+                <div className={styles["entryExplanation"]}>
+                  <span>Business email</span>
+                  <span>Password and verification</span>
+                </div>
+                <a className={styles["primaryAction"]} href="/auth/customer/start">Sign in securely</a>
+                <a className={styles["recoveryAction"]} href="/auth/customer/start?mode=reset">Forgot your password?</a>
+                <div className={styles["divider"]}><span>or</span></div>
+                <a className={styles["createAction"]} href="/auth/customer/register">Create a business account</a>
               </>
             )}
-            <a className={styles["secondary"]} href="https://novapharmhealthcare.com/technology/#intelligence-workspace-directory">Explore all 22 workspaces</a>
-            <a className={styles["secondary"]} href="https://novapharmhealthcare.com/technology/#intelligence-research">Search official medicine sources</a>
+          </section>
+        </div>
+
+        <footer className={styles["footer"]}>
+          <span className={styles["purpose"]}>A more human intelligence for a healthier world.</span>
+          <div className={styles["footerLinks"]}>
+            <a href={`${publicSite}/technology/#intelligence-research`}>Official medicine sources</a>
+            <a href={`${publicSite}/legal/privacy/`}>How we protect business account information</a>
           </div>
-          <p className={styles["notice"]}>{customer ? `Verified ${customer.plan} subscription, ${customer.role} seat. Only accepted and licensed data will be released in the customer workspaces.` : "Create and verify a business identity with Cognito. Subscription checkout and medicines access become available only after organisation, contract, billing and dataset approvals."}</p>
-          <p className={styles["notice"]}><a href="https://novapharmhealthcare.com/legal/privacy/" target="_blank" rel="noopener noreferrer">How we protect business account information</a></p>
-        </section>
-        <footer className={styles["footer"]}><span>Medicine. Where it needs to be.</span><span>Protected professional access</span></footer>
+        </footer>
       </div>
     </main>
   );

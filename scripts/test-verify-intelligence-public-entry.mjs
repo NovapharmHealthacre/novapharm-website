@@ -105,3 +105,13 @@ test("corporate link, invitation caveat and callback denial are required",async(
   await assert.rejects(()=>verifyIntelligencePublicEntry({fetchImpl:h.fetchImpl}));
  }
 });
+
+test("approved human portal copy retains secure identity and registration contracts", async () => {
+  const html = '<h1>A more human intelligence for medicine.</h1>' +
+    '<p>Your business email, password and verification are handled by NovaPharm secure identity provider.</p>' +
+    '<a href="/auth/customer/start">Sign in securely</a><a href="/auth/customer/register">Create a business account</a>';
+  const h = mock({ [origin + "/"]: () => new Response(html, { status: 200 }) });
+  const result = await verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl });
+  assert.equal(result.verified, true);
+  assert.equal(result.customerTenantActivated, false);
+});
