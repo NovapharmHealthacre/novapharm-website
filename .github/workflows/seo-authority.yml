@@ -7,6 +7,9 @@ on:
       - "src/seo/**"
       - "scripts/build-site.mjs"
       - "scripts/enhance-seo-authority.mjs"
+      - "scripts/generate-commerce-marketplace.mjs"
+      - "scripts/test-commerce-marketplace.mjs"
+      - "assets/css/commerce-marketplace.css"
       - "scripts/validate-public-sitemaps.py"
       - "assets/js/consent-analytics.js"
       - "assets/js/cookie-consent.js"
@@ -56,6 +59,9 @@ jobs:
 
       - name: Build public authority system
         run: npm run build:public-only
+
+      - name: Verify 392 marketplace canonical discovery and structured data
+        run: node --test scripts/test-commerce-marketplace.mjs
 
       - name: Verify £0 native LinkedIn launch and public share links
         run: node scripts/test-native-organic-marketing.mjs
