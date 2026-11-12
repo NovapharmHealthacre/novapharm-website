@@ -106,11 +106,11 @@ html=removeInheritedProductMedia(html);
 const marketplaceUrl='https://novapharmhealthcare.com/products/marketplace/';
 const marketplaceDescription='Explore 392 NovaPharm catalogue records: 19 Nutraxin supplements and 373 ESCO healthcare equipment references. Ordering eligibility is confirmed per product.';
 const metaReplacements=[
- [/^<meta property="og:url" content="[^"]*">/m,'<meta property="og:url" content="'+marketplaceUrl+'">'],
- [/^<meta property="og:title" content="[^"]*">/m,'<meta property="og:title" content="Nutraxin & ESCO Marketplace | NovaPharm">'],
- [/^<meta property="og:description" content="[^"]*">/m,'<meta property="og:description" content="'+marketplaceDescription+'">'],
- [/^<meta name="twitter:title" content="[^"]*">/m,'<meta name="twitter:title" content="Nutraxin & ESCO Marketplace | NovaPharm">'],
- [/^<meta name="twitter:description" content="[^"]*">/m,'<meta name="twitter:description" content="'+marketplaceDescription+'">']
+ [/^\s*<meta property="og:url" content="[^"]*">/m,'<meta property="og:url" content="'+marketplaceUrl+'">'],
+ [/^\s*<meta property="og:title" content="[^"]*">/m,'<meta property="og:title" content="Nutraxin & ESCO Marketplace | NovaPharm">'],
+ [/^\s*<meta property="og:description" content="[^"]*">/m,'<meta property="og:description" content="'+marketplaceDescription+'">'],
+ [/^\s*<meta name="twitter:title" content="[^"]*">/m,'<meta name="twitter:title" content="Nutraxin & ESCO Marketplace | NovaPharm">'],
+ [/^\s*<meta name="twitter:description" content="[^"]*">/m,'<meta name="twitter:description" content="'+marketplaceDescription+'">']
 ];
 for(const [pattern,replacement] of metaReplacements){
  assert(pattern.test(html),'Missing inherited marketplace meta signal: '+String(pattern));
