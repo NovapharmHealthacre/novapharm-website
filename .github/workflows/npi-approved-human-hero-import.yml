@@ -1,0 +1,34 @@
+name: One-time import of owner-approved NovaPharm Intelligence portrait
+on:
+  push:
+    branches:
+      - fix/intelligence-approved-hero-composition-20261112
+permissions:
+  contents: write
+jobs:
+  import-photo:
+    if: "!contains(github.event.head_commit.message, '[npi-asset-ready]')"
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: true
+      - name: Fetch and verify exactly the approved photographic crop
+        env:
+          APPROVED_IMAGE_URL: https://at.adobe.com/uG3LODzC1Ic872yZ
+        run: |
+          set -euo pipefail
+          mkdir -p assets/media/portal
+          curl --fail --location --show-error --retry 3 --max-time 60 "$APPROVED_IMAGE_URL" -o assets/media/portal/npi-human-portrait-approved.webp
+          echo '7f895e0b7c4ef21314b2555d972e4147cf675b98cc5b6272c708b6726e0b0950  assets/media/portal/npi-human-portrait-approved.webp' | sha256sum -c -
+          test "$(wc -c < assets/media/portal/npi-human-portrait-approved.webp)" -eq 86844
+      - name: Save immutable image into the source tree and remove temporary import
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/media/portal/npi-human-portrait-approved.webp
+          git rm .github/workflows/npi-approved-human-hero-import.yml
+          git commit -m "asset(portal): preserve approved high-resolution photograph [npi-asset-ready]"
+          git push origin HEAD:fix/intelligence-approved-hero-composition-20261112
