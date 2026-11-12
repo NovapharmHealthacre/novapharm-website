@@ -514,6 +514,23 @@
       "caption": "Illustrative Earth-at-sunrise design image; not a factual satellite photograph.",
       "technicalStatus": "JPEG, 1400 x 305, 66,170 bytes; standalone local asset; copyright and provenance registered",
       "ownerApproval": "Approved for corporate homepage use; Distribution now uses the owner's real warehouse photograph, requested 11 November 2026."
+    },
+    {
+      "path": "assets/media/portal/npi-human-portal.webp",
+      "type": "owner-approved-illustrative-portal-human-hero",
+      "source": "Cropped decorative mother-and-child artwork from the owner-supplied approved NovaPharm Secure Portal Sign-In visual (12 November 2026). Illustrative AI-generated design, not a photograph of an actual NovaPharm patient, family or clinician.",
+      "licence": "Owner-authorised NovaPharm Intelligence secure portal website use of original AI-generated NovaPharm project artwork.",
+      "generated": true,
+      "modified": true,
+      "dimensions": "260x236 WebP",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "https://intelligence.novapharmhealthcare.com/"
+      ],
+      "altText": "",
+      "caption": "Decorative representative image; no healthcare, patient outcome or market evidence claimed.",
+      "technicalStatus": "owner-approved screenshot crop, performance-compressed WebP; decorative CSS only",
+      "ownerApproval": "Owner selected the exact human secure-portal reference, 12 November 2026."
     }
   ],
   "missingApprovedAssets": [
