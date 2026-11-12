@@ -17,6 +17,34 @@ The callback logs only fixed phase/reason classifications such as `identity_emai
 
 Do not promote this fix to production until the signed exact-head application image is released to the established AWS Lambda alias and real browser first-login, TOTP and malicious/expired callback tests pass. A merged source fix is **not** a deployed fix. Do not grant customer seats, billing or dataset rights by changing this timeout.
 
+## Founder password-proven MFA enrolment correction (12 November 2026, 14:32 IST)
+
+Live Lambda v19 reached `mfa_enrolment_identity` and rejected founder callbacks
+at 09:01:14 and 09:02:39 UTC with `mfa_enrolment_not_authorised`.
+Cognito CloudTrail separately recorded successful managed-login
+`verifyPassword_POST` steps around 09:00:54 and 09:02:20 UTC.
+The exact rejected claim value is **not** known; do not manufacture it.
+
+The earlier first-time enrolment verifier erroneously required **only**
+`acr=urn:cognito:loa:1`, even though AWS Cognito can produce a stronger
+ACR for password plus another completed factor. The enrollment-only branch
+now requires a valid Cognito-signed ID token, exact issuer/client/nonce,
+email_verified, exact founder email, signed `amr` containing `pwd`,
+the known Cognito ACR levels 1, 3 or 4 (or absent ACR), and `auth_time`
+no more than five minutes old. Passwordless email OTP (`amr` without
+`pwd`) and LOA2 are still rejected. Strict CUSTOMER level-4 TOTP
+verification and external tenant/seat/subscription rights remain unchanged.
+
+The privacy-safe rejection classification now distinguishes email mismatch,
+missing password proof, incompatible ACR and stale authentication. Neither
+JWTs nor identifiers, claims, codes, tokens, TOTP secrets, or PKCE transaction
+materials are logged. User still must personally register a valid TOTP, and
+complete a new level-4 password-plus-TOTP sign-in. No customer access is
+granted through first-time enrolment.
+
+Official reference:
+https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-step-up-authentication.html
+
 ## Cognito JWT key identifier compatibility (12 November 2026)
 
 At approximately 13:04 IST the founder returned from Cognito with an OAuth
