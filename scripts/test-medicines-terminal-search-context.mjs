@@ -28,7 +28,7 @@ test("a new valid medicine search clears prior medicine, analytics and deep-link
   for (const index of [clearMedicine, clearAnalytics, clearStatus, clearDeepLink]) {
     assert.ok(index > invalidate && index < networkRequest, "Previous-medicine content must clear before remote search");
   }
-  assert.match(source, /window\.history\.replaceState\(null, "", \`\$\{nextUrl\.pathname\}\$\{nextUrl\.search\}\$\{nextUrl\.hash\}\`\)/u);
+  assert.ok(source.includes('window.history.replaceState(null, "", `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);'));
   assert.match(source, /setSearchStatus\(professionalError\(error\)\)/u);
   assert.match(source, /next\.results\.length \?/u);
 });
