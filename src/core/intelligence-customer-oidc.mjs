@@ -161,17 +161,28 @@ export async function verifyIntelligenceCustomerIdToken({
       throw blocked("identity_signature_invalid");
     }
   } catch { throw blocked("identity_signature_invalid"); }
+  // Keep all token checks fail closed, but distinguish safe classes of identity
+  // rejection so production operators can diagnose onboarding without logging
+  // personal claims, tokens, PKCE secrets, or OAuth codes.
   if (claims?.iss !== OIDC_ISSUER || claims.aud !== CLIENT_ID ||
       claims.token_use !== "id" || claims.nonce !== expectedNonce ||
-      claims.email_verified !== true ||
       typeof claims.sub !== "string" || !/^[A-Za-z0-9-]{8,128}$/u.test(claims.sub) ||
-      claims.acr !== REQUIRED_ACR || !Array.isArray(claims.amr) ||
-      !["pwd", "otp", "mfa"].every((method) => claims.amr.includes(method)) ||
-      !Number.isSafeInteger(claims.auth_time) || claims.auth_time > nowSeconds + 60 ||
-      nowSeconds - claims.auth_time > MAX_AUTH_AGE_SECONDS ||
       !Number.isSafeInteger(claims.exp) || claims.exp <= nowSeconds ||
       !Number.isSafeInteger(claims.iat) || claims.iat > nowSeconds + 60 ||
       !Number.isSafeInteger(nowSeconds)) throw blocked("identity_claims_invalid");
+  if (claims.email_verified !== true) throw blocked("identity_email_unverified");
+  // Cognito Essentials computes ACR/AMR from the actual factors used.
+  // Do not substitute pool MFA configuration or existing TOTP enrolment for
+  // a signed assertion of password + TOTP authentication on THIS sign-in.
+  if (claims.acr !== REQUIRED_ACR || !Array.isArray(claims.amr) ||
+      !["pwd", "otp", "mfa"].every((method) => claims.amr.includes(method))) {
+    throw blocked("identity_mfa_level_insufficient");
+  }
+  if (!Number.isSafeInteger(claims.auth_time) ||
+      claims.auth_time > nowSeconds + 60 ||
+      nowSeconds - claims.auth_time > MAX_AUTH_AGE_SECONDS) {
+    throw blocked("identity_auth_stale");
+  }
   return Object.freeze({
     verifiedCognitoSubject: claims.sub,
     verifiedIssuer: OIDC_ISSUER,
