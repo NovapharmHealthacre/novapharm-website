@@ -35,7 +35,13 @@ The following five **empty** collections were created successfully in MongoDB At
 `nova_decision_events_staging`. No source grant, account, approved case, medicine
 observation or audit event was inserted. The connected collection-index tool does
 not expose the unique-index constraint required below; **index acceptance remains
-open and the ledger remains default-OFF**.
+open and the ledger remains default-OFF. The new
+`src/data/atlas-pandora-staging-indexes.mjs` can provision six unique indexes
+only from an approved private maintenance runtime explicitly setting
+`PANDORA_STAGING_INDEX_PROVISION_ENABLED=true`. The commit path now checks
+their actual `unique` status and exact keys before starting a transaction.
+Do not turn on decision commits until those indexes are really installed and
+the remaining security acceptance gates are met**.
 
 ## Private staging storage schema and mandatory indexes
 
