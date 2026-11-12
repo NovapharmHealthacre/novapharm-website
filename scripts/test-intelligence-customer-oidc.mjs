@@ -50,7 +50,8 @@ test("dedicated client uses code and PKCE with no access grant", () => {
   assert.equal(url.searchParams.get("redirect_uri"), intelligenceCustomerOidc.callback);
   assert.equal(url.searchParams.get("scope"), "openid email profile aws.cognito.signin.user.admin");
   assert.equal(url.searchParams.get("acr_values"), "urn:cognito:loa:4");
-  assert.equal(url.searchParams.get("max_age"), "900");
+  assert.equal(url.searchParams.get("max_age"), "0");
+  assert.equal(url.searchParams.get("prompt"), "login");
   const transaction = verifyCustomerLoginTransaction({
     signingKey, cookieValue: started.transactionCookieValue,
     state: url.searchParams.get("state"), nowMs: second * 1000 + 30_000,

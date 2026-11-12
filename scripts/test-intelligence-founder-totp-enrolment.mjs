@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  cognitoUserAction, checkFounderUnenrolled,
+  cognitoUserAction, checkFounderEnrolled, checkFounderUnenrolled,
   createFounderMfaCookie, verifyFounderMfaCookie,
   beginFounderTotp, confirmFounderTotp,
   founderMfaSetupPolicy,
@@ -35,6 +35,7 @@ function fakeCognito({ enrolled = false, mismatch = false, status = "SUCCESS" } 
             ? [{ Name: "sub", Value: "other-12345" }, ...attrs.slice(1)]
             : attrs,
           UserMFASettingList: enrolled ? ["SOFTWARE_TOKEN_MFA"] : [],
+          PreferredMfaSetting: enrolled ? "SOFTWARE_TOKEN_MFA" : undefined,
         }) };
       }
       if (action === "AssociateSoftwareToken") return {
@@ -96,6 +97,24 @@ test("Cognito GetUser requires same founder sub, verified email and no enrolled 
     accessToken,subject,fetchImpl:notAllowed,
   }),e=>e.code==="cognito_mfa_request_rejected");
 });
+test("already-enrolled founder is recognised without treating registration as session MFA",async()=>{
+  const source=fakeCognito({enrolled:true});
+  const result=await checkFounderEnrolled({
+    accessToken,subject,fetchImpl:source.fetchImpl,
+  });
+  assert.deepEqual(result,{
+    authenticatorRegistered:true,mfaVerifiedThisLogin:false,
+    identityAccepted:false,grantsTenantAccess:false,
+  });
+  assert.deepEqual(source.calls.map(x=>x.action),["GetUser"]);
+  for(const options of [{enrolled:false},{enrolled:true,mismatch:true}]) {
+    const bad=fakeCognito(options);
+    await assert.rejects(checkFounderEnrolled({
+      accessToken,subject,fetchImpl:bad.fetchImpl,
+    }),e=>e.code==="mfa_existing_factor_not_attested");
+  }
+});
+
 test("Cognito TOTP secret is generated only after verified user and OTP is actually checked",async()=>{
   const provider=fakeCognito();
   const secret=await beginFounderTotp({

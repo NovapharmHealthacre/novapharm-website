@@ -39,6 +39,10 @@ test("customer start uses the pinned Cognito public PKCE client and a signed HTT
     assert.equal(target.searchParams.get("response_type"), "code");
     assert.equal(target.searchParams.get("scope"), "openid email profile aws.cognito.signin.user.admin");
     assert.equal(target.searchParams.get("code_challenge_method"), "S256");
+    // After initial Cognito TOTP activation, never silently reuse the prior
+    // password-only managed-login session.
+    assert.equal(target.searchParams.get("prompt"), "login");
+    assert.equal(target.searchParams.get("max_age"), "0");
     assert.equal(target.searchParams.get("redirect_uri"), "https://intelligence.novapharmhealthcare.com/auth/callback");
     const cookie = result.headers.get("set-cookie") ?? "";
     assert.match(cookie, /__Host-npi_oidc_tx=/);
@@ -69,7 +73,8 @@ test("password reset uses Cognito /forgotPassword and a fresh signed PKCE transa
     assert.equal(target.searchParams.get("redirect_uri"), intelligenceCustomerOidc.callback);
     assert.equal(target.searchParams.get("response_type"), "code");
     assert.equal(target.searchParams.get("code_challenge_method"), "S256");
-    assert.equal(target.searchParams.get("max_age"), "900");
+    assert.equal(target.searchParams.get("max_age"), "0");
+    assert.equal(target.searchParams.get("prompt"), "login");
     assert.match(target.searchParams.get("state") ?? "", /^[A-Za-z0-9_-]{40,128}$/);
     const cookie = result.headers.get("set-cookie") ?? "";
     assert.match(cookie, /__Host-npi_oidc_tx=/);
@@ -321,6 +326,57 @@ async function withCallbackMock(
     else process.env["NPI_CUSTOMER_SESSION_API_ENABLED"] = oldFlag;
   }
 }
+
+test("enrolled founder with stale Cognito MFA claims gets safe fresh-sign-in response, never re-enrolment", async () => {
+  const oldKey = process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
+  const oldFetch = globalThis.fetch;
+  const proof = prepareCustomerProof({ firstLogin: true, internalOrigin: true });
+  const access = "a".repeat(220);
+  const calls: string[] = [];
+  process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = key;
+  globalThis.fetch = (async (input: URL | RequestInfo, init?: RequestInit) => {
+    const url = String(input);
+    if (url === intelligenceCustomerOidc.domain + "/oauth2/token") {
+      return new Response(JSON.stringify({
+        token_type: "Bearer", id_token: proof.token, access_token: access,
+      }), { status: 200 });
+    }
+    if (url === intelligenceCustomerOidc.issuer + "/.well-known/jwks.json") {
+      return new Response(JSON.stringify({ keys: [proof.jwk] }), { status: 200 });
+    }
+    if (url === "https://cognito-idp.eu-north-1.amazonaws.com/") {
+      assert.equal(new Headers(init?.headers).get("X-Amz-Target"),
+        "AWSCognitoIdentityProviderService.GetUser");
+      calls.push("GetUser");
+      return new Response(JSON.stringify({
+        UserAttributes: [
+          { Name: "sub", Value: "customer-verified-12345678" },
+          { Name: "email", Value: "vishal@novapharmhealthcare.com" },
+          { Name: "email_verified", Value: "true" },
+        ],
+        UserMFASettingList: ["SOFTWARE_TOKEN_MFA"],
+        PreferredMfaSetting: "SOFTWARE_TOKEN_MFA",
+      }), { status: 200 });
+    }
+    throw Error("Unexpected network request in registered-founder test");
+  }) as typeof fetch;
+  try {
+    const response = await finishCustomerIdentity(proof.request);
+    assert.equal(response.status, 200);
+    const html = await response.text();
+    assert.match(html, /Authenticator active/);
+    assert.match(html, /Cognito has not yet provided proof/);
+    assert.match(html, /\/auth\/customer\/start/);
+    assert.doesNotMatch(html, /Secure your account|Setup key|__Host-npi_session/);
+    const cookies = responseCookies(response).join(",");
+    assert.doesNotMatch(cookies, /__Host-npi_session|__Host-npi_mfa_enrol/);
+    assert.deepEqual(calls, ["GetUser", "GetUser"]);
+  } finally {
+    globalThis.fetch = oldFetch;
+    if (oldKey === undefined) delete process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
+    else process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = oldKey;
+  }
+});
 
 test("founder first-password callback on internal Lambda URL starts MFA, not a customer session", async () => {
   const oldKey = process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];

@@ -69,6 +69,32 @@ export async function checkFounderUnenrolled({ accessToken, subject, fetchImpl }
   return true;
 }
 
+/**
+ * Strongly identify a previously enrolled founder without treating the
+ * account's MFA enrolment as evidence of MFA on THIS OAuth transaction.
+ * This function must never approve a customer or create a session.
+ */
+export async function checkFounderEnrolled({ accessToken, subject, fetchImpl } = {}) {
+  if (!subjectPattern.test(subject ?? "")) throw blocked("founder_subject_invalid");
+  const user = await cognitoUserAction("GetUser", { AccessToken: accessToken }, fetchImpl);
+  const attributes = Array.isArray(user.UserAttributes) ? user.UserAttributes : [];
+  const foundSub = attributes.find(row => row?.Name === "sub")?.Value;
+  const foundEmail = attributes.find(row => row?.Name === "email")?.Value;
+  const verified = attributes.find(row => row?.Name === "email_verified")?.Value;
+  const methods = user.UserMFASettingList;
+  if (foundSub !== subject || foundEmail !== "vishal@novapharmhealthcare.com" ||
+      verified !== "true" || !Array.isArray(methods) ||
+      !methods.includes("SOFTWARE_TOKEN_MFA") ||
+      user.PreferredMfaSetting !== "SOFTWARE_TOKEN_MFA") {
+    throw blocked("mfa_existing_factor_not_attested");
+  }
+  // MFA registered != MFA used in this sign-in. No session accepted.
+  return Object.freeze({
+    authenticatorRegistered: true, mfaVerifiedThisLogin: false,
+    identityAccepted: false, grantsTenantAccess: false,
+  });
+}
+
 /** AES-256-GCM authenticated server-only HttpOnly host cookie; 10-minute TTL. */
 export function createFounderMfaCookie({ accessToken, subject, signingKey, nowMs = Date.now() } = {}) {
   if (!jwtShape.test(accessToken ?? "") || !subjectPattern.test(subject ?? "") ||

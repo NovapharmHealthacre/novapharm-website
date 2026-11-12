@@ -67,7 +67,12 @@ export function createCustomerLoginTransaction({ signingKey, nowMs = Date.now() 
     state,
     nonce,
     acr_values: REQUIRED_ACR,
-    max_age: String(MAX_AUTH_AGE_SECONDS),
+    // Cognito managed-login SSO can replay the pre-enrolment session even
+    // after TOTP is activated. Force an actual new authentication ceremony
+    // instead of silently accepting an old password-only Cognito cookie.
+    // This is not an MFA bypass: strict ACR4/AMR checks remain mandatory.
+    prompt: "login",
+    max_age: "0",
   };
   for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value);
   return Object.freeze({
