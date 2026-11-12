@@ -29,7 +29,10 @@ def chunk_archive(source:pathlib.Path,source_receipt:pathlib.Path,destination:pa
     with source.open("rb") as fp:
         i=0
         while True:
-            first=fp.read(min(CHUNK_BYTES,size-i*CHUNK_BYTES))
+            remaining_total = size - i * CHUNK_BYTES
+            if remaining_total <= 0:
+                break
+            first=fp.read(min(CHUNK_BYTES,remaining_total))
             if not first:break
             filename=f"epd_202608_verified_archive_part_{i:02d}.bin"
             digest=hashlib.sha256()
