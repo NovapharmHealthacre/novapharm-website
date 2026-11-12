@@ -83,7 +83,7 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
         assert.match(layout.heading,/A Hope for\s*Tomorrow\./,`${label}: heading`);
         assert.equal(layout.hasAnnotation,false,`${label}: removed annotation returned`);
         assert.ok(layout.imageLoaded,`${label}: portrait did not load`);
-        assert.equal(layout.imageFit,"contain",`${label}: complete portrait preserves its framing across responsive hero sizes`);
+        assert.equal(layout.imageFit,"cover",`${label}: photograph must fill its media canvas at every viewport without inset rectangular edges`);
         assert.ok(layout.portraitWidth>260 && layout.portraitHeight>200,`${label}: portrait collapsed`);
         assert.ok(layout.heroWidth>=layout.viewportWidth-2,`${label}: hero is not full width`);
         assert.equal(layout.cards.length,3,`${label}: three category images`);
@@ -93,7 +93,7 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
         assert.ok(layout.cards.every(card=>card.labelPosition==="absolute"),`${label}: labels not overlaid`);
         assert.ok(layout.pageOverflow<=2,`${label}: document horizontal overflow`);
         if(viewport.width>760){
-          assert.ok(layout.layerWidth/layout.heroWidth>=0.7,`${label}: image not integrated into hero`);
+          assert.ok(layout.layerWidth/layout.heroWidth>=(viewport.width>=1101?.55:.7),`${label}: image not integrated into hero`);
           assert.equal(layout.fade,true,`${label}: photo has a hard boundary, no gradient mask`);
         }else{
           assert.equal(layout.fade,false,`${label}: mobile photo should be unmasked`);

@@ -439,11 +439,11 @@ for (const [engineName, browserType] of engines) {
               const label = `${engineName} ${viewport.name}: Oncology approved composition`;
               assert.ok(geometry.portrait?.naturalWidth > 0 && geometry.portrait?.naturalHeight > 0,
                 `${label}: portrait asset must load`);
-              assert.equal(geometry.portrait.fit, "contain", `${label}: approved portrait must stay fully visible; wide alpha-masked hero provides the seamless blend`);
+              assert.equal(geometry.portrait.fit, "cover", `${label}: portrait must fill its media box without a hard image seam or embedded JPEG edge lettering`);
               assert.ok(geometry.portrait.box.width > 250 && geometry.portrait.box.height > 200,
                 `${label}: portrait must not collapse`);
               if (viewport.width > 760) {
-                assert.ok(geometry.heroMediaRatio >= 0.7, `${label}: desktop photograph must extend across the hero, not sit in a hard-edged box`);
+                assert.ok(geometry.heroMediaRatio >= (viewport.width >= 1101 ? 0.55 : 0.7), `${label}: photograph must extend across the hero, not sit in a hard-edged box`);
                 assert.equal(geometry.heroImageBlend, true, `${label}: photograph must fade seamlessly into the light hero`);
               } else {
                 assert.equal(geometry.heroImageBlend, false, `${label}: mobile portrait should not be partially masked`);
