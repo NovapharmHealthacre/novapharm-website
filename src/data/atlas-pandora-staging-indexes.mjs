@@ -31,7 +31,7 @@ function validIndex(index,spec){
 /** Block all case commits if ANY of these compound indexes is absent or non-unique. */
 export async function verifyPandoraStagingUniqueIndexes({db,environment=process.env}={}){
   requirePrivateEnvironment(environment);
-  if(typeof db?.collection!=="function") throw fail("index_store_unavailable");
+  if(typeof db?.collection!=="function" || db.databaseName!=="novapharm_staging") throw fail("index_store_unavailable");
   const byCollection=new Map();
   for(const spec of pandoraUniqueIndexes){
     if(!byCollection.has(spec.collection)){
@@ -51,7 +51,7 @@ export async function verifyPandoraStagingUniqueIndexes({db,environment=process.
 export async function provisionPandoraStagingUniqueIndexes({db,environment=process.env}={}){
   requirePrivateEnvironment(environment);
   if(environment.PANDORA_STAGING_INDEX_PROVISION_ENABLED!=="true") throw fail("index_provision_disabled");
-  if(typeof db?.collection!=="function") throw fail("index_store_unavailable");
+  if(typeof db?.collection!=="function" || db.databaseName!=="novapharm_staging") throw fail("index_store_unavailable");
   for(const spec of pandoraUniqueIndexes){
     const collection=db.collection(spec.collection);
     if(typeof collection?.createIndex!=="function") throw fail("index_writer_unavailable");
