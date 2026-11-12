@@ -171,6 +171,90 @@ class CheckoutSecurity(unittest.TestCase):
         req["headers"]["origin"]="https://evil.example"
         self.assertEqual(status(mod.handler(req))[0],403)
 
+    def test_checkout_expiry_is_not_card_failure(self):
+        # These cases represent signed Stripe lifecycle events, not browser claims.
+        outcome = mod.payment_event_outcome
+        self.assertEqual(outcome("checkout.session.expired", "unpaid"), "CHECKOUT_EXPIRED")
+        self.assertEqual(outcome("checkout.session.async_payment_failed", "unpaid"), "PAYMENT_FAILED")
+        self.assertEqual(outcome("checkout.session.completed", "paid"), "PAID")
+        self.assertEqual(outcome("checkout.session.async_payment_succeeded", "paid"), "PAID")
+        self.assertIsNone(outcome("checkout.session.completed", "unpaid"))
+        self.assertIsNone(outcome("checkout.session.async_payment_succeeded", "unpaid"))
+        with self.assertRaises(ValueError):
+            outcome("checkout.session.expired", "paid")
+        with self.assertRaises(ValueError):
+            outcome("checkout.session.async_payment_failed", "paid")
+        with self.assertRaises(ValueError):
+            outcome("unexpected.event", "unpaid")
+
+    def test_expired_checkout_return_has_distinct_status(self):
+        class Db:
+            def get_item(self, **kwargs):
+                return {"Item": {"brand": {"S": "ESCO"}, "state": {"S": "CHECKOUT_EXPIRED"}}}
+        with patch.object(mod, "ORDERS_TABLE", "esco-acceptance-ledger"), patch.object(
+            mod, "aws", return_value=Db()
+        ):
+            response = mod.order_status(
+                {"headers": {"origin": "https://novapharmhealthcare.com"}},
+                "ESCO-" + UUID)
+        code, payload = status(response)
+        self.assertEqual(code, 200)
+        self.assertEqual(payload["status"], "CHECKOUT_EXPIRED")
+        self.assertFalse(payload["paid"])
+
+    def test_signed_checkout_events_record_only_actual_paid_amount(self):
+        session_id = "cs_live_" + "A" * 24
+        order_id = "ESCO-" + UUID
+        class FakeLedger:
+            def __init__(self):
+                self.updated = None
+            def get_item(self, **kwargs):
+                return {"Item": {
+                    "sessionId": {"S": session_id},
+                    "basketHash": {"S": "basket-test"},
+                    "subtotalMinor": {"N": "71000"},
+                    "state": {"S": "CHECKOUT_OPEN"},
+                }}
+            def update_item(self, **kwargs):
+                self.updated = kwargs["ExpressionAttributeValues"]
+
+        cases = [
+            ("checkout.session.expired", "unpaid", "CHECKOUT_EXPIRED", "0"),
+            ("checkout.session.async_payment_failed", "unpaid", "PAYMENT_FAILED", "0"),
+            ("checkout.session.completed", "paid", "PAID", "71000"),
+            ("checkout.session.async_payment_succeeded", "paid", "PAID", "71000"),
+        ]
+        for event_type, payment_status, expected_state, expected_amount in cases:
+            with self.subTest(event_type=event_type):
+                db = FakeLedger()
+                signed = {
+                    "id": "evt_Abc123456",
+                    "livemode": True,
+                    "type": event_type,
+                    "data": {"object": {
+                        "id": session_id,
+                        "metadata": {"brand": "ESCO", "order_id": order_id,
+                                     "basket_hash": "basket-test"},
+                        "currency": "gbp",
+                        "client_reference_id": order_id,
+                        "livemode": True,
+                        "amount_subtotal": 71000,
+                        "amount_total": 71000,
+                        "payment_status": payment_status,
+                    }},
+                }
+                with patch.object(mod, "ORDERS_TABLE", "offline-ledger"), patch.object(
+                    mod, "WEBHOOK_SECRET_ID", "offline-secret"
+                ), patch.object(mod, "secret", return_value="whsec_offline"), patch.object(
+                    mod, "parse_signature", return_value=signed
+                ), patch.object(mod, "aws", return_value=db):
+                    response = mod.webhook({"headers": {"stripe-signature": "test"}, "body": "{}"})
+                code, body = status(response)
+                self.assertEqual(code, 200, body)
+                self.assertTrue(body["processed"])
+                self.assertEqual(db.updated[":new"]["S"], expected_state)
+                self.assertEqual(db.updated[":amt"]["N"], expected_amount)
+
     def test_bad_webhook_signature_never_updates_order(self):
         req=event("/stripe/webhook","POST",{"type":"checkout.session.completed"})
         req["headers"]["stripe-signature"]="t=1000000000,v1=0000"

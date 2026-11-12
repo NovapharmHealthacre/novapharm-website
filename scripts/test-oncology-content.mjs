@@ -55,8 +55,12 @@ const portraitRules = [...approvedLayout.matchAll(/\.npoc-hope-hero \.npoc-hero-
 assert.ok(portraitRules.length > 0, "Approved portrait selector must exist");
 assert.ok(portraitRules.some(([, declarations]) => /object-fit:\s*contain;/.test(declarations)),
   "Approved portrait must remain fully visible without cropping");
-assert.ok(portraitRules.every(([, declarations]) => !/object-fit:\s*cover;/.test(declarations)),
-  "No responsive portrait rule may crop the approved hero");
+assert.ok(portraitRules.some(([, declarations]) => /object-fit:\s*cover;/.test(declarations)),
+  "Desktop portrait must cover its image box without a sharp letterbox boundary");
+assert.match(approvedLayout, /Oncology production seam repair \| source-edge text suppression/,
+  "Latest reference repair must suppress text embedded at the JPEG's left edge");
+assert.match(approvedLayout, /object-position:right top;/,
+  "Full-bleed crop must preserve the head and facial framing");
 assert.match(approvedLayout, /\.npoc-hope-focus \.npoc-focus-card img\s*\{[^}]*object-fit:\s*cover;/,
   "Oncology supporting category photographs should retain their cropped card treatment");
 assert.match(approvedLayout, /-webkit-mask-image:none/, "Portrait masking must reset on mobile");

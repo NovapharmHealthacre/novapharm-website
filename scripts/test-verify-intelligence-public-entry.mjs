@@ -59,6 +59,30 @@ test("any anonymous private API success or redirect fails closed",async()=>{
   await assert.rejects(()=>verifyIntelligencePublicEntry({fetchImpl:h.fetchImpl}),/not_iam_protected/u);
  }
 });
+test("current governed account registration copy is a valid public entry, without access grants", async () => {
+  const html = '<h1>Understand the medicine</h1><p>Create a business account</p>' +
+    '<p>Subscription checkout and medicines access become available only after organisation approval.</p>' +
+    '<a href="/auth/customer/start">Sign in</a>';
+  const h = mock({
+    [origin + "/"]: () => new Response(html, { status: 200 }),
+    [origin + login]: () => new Response(null, {
+      status: 302,
+      headers: { location: redirect.toString(), "set-cookie": cookie.replace("Max-Age=300", "Max-Age=900") },
+    }),
+  });
+  const result = await verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl });
+  assert.equal(result.verified, true);
+  assert.equal(result.customerTenantActivated, false);
+});
+test("excessive PKCE cookie lifetime is never treated as a secure sign-in", async () => {
+  const h = mock({
+    [origin + login]: () => new Response(null, {
+      status: 302,
+      headers: { location: redirect.toString(), "set-cookie": cookie.replace("Max-Age=300", "Max-Age=1800") },
+    }),
+  });
+  await assert.rejects(() => verifyIntelligencePublicEntry({ fetchImpl: h.fetchImpl }), /secure_identity_start_not_available/u);
+});
 test("missing PKCE, insecure transaction cookie and wrong Cognito redirect fail",async()=>{
  const bad=new URL(redirect);bad.searchParams.delete("code_challenge");
  for(const [location,setCookie] of [

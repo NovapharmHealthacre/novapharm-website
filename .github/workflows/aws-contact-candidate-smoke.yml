@@ -1,4 +1,4 @@
-name: Verify AWS contact candidate remains safely disabled
+name: Verify AWS production contact health without customer submissions
 
 on:
   pull_request:
@@ -12,21 +12,16 @@ permissions:
   contents: read
 
 jobs:
-  fail-closed-smoke:
+  production-health-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Check deployed candidate health and disabled submissions
+      - name: Check production contact health without POST or external notifications
         env:
-          CANDIDATE_API: https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com
+          CONTACT_API: https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com
         run: |
           set -euo pipefail
           curl --fail --silent --show-error --retry 4 --retry-delay 3 --max-time 15 \
-            -H 'Cache-Control: no-cache' "$CANDIDATE_API/health" > health.json
-          jq -e '.service == "novapharm-contact-intake" and .environment == "production" and .ready == false and .acceptingPublicSubmissions == false' health.json
-          status=$(curl --silent --show-error --max-time 15 -o rejection.json -w '%{http_code}' \
-            -X POST "$CANDIDATE_API/contact" -H 'Origin: https://novapharmhealthcare.com' \
-            -H 'Content-Type: application/json' -H 'X-Novapharm-Intake: v1' --data '{}')
-          test "$status" = '503'
-          jq -e '.error == "Secure business enquiry intake is not yet activated"' rejection.json
-          echo 'Verified: AWS candidate endpoint online, public intake still disabled. No customer submission was sent.'
+            -H 'Cache-Control: no-cache' "$CONTACT_API/health" > health.json
+          jq -e '.service == "novapharm-contact-intake" and .environment == "production" and .ready == true and .acceptingPublicSubmissions == true' health.json
+          echo 'Verified current AWS production contact GET /health. No contact POST, customer submission or outbound email was performed.'

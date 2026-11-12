@@ -13,8 +13,8 @@ const signingKey = "a_private_server_signing_secret_minimum_32_characters_no_bro
 const second = 1_800_000_000;
 const { publicKey, privateKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
 const jwk = { ...publicKey.export({ format: "jwk" }), kid: "test_rsa_1", alg: "RS256", use: "sig" };
-const token = (claims, changeSignature = false) => {
-  const header = Buffer.from(JSON.stringify({ alg: "RS256", typ: "JWT", kid: jwk.kid })).toString("base64url");
+const token = (claims, changeSignature = false, kid = jwk.kid) => {
+  const header = Buffer.from(JSON.stringify({ alg: "RS256", typ: "JWT", kid })).toString("base64url");
   const body = Buffer.from(JSON.stringify(claims)).toString("base64url");
   const signature = signJwt("RSA-SHA256", Buffer.from(header + "." + body), privateKey).toString("base64url");
   return header + "." + body + "." + (changeSignature ? (signature[0] === "x" ? "y" : "x") + signature.slice(1) : signature);
@@ -49,7 +49,7 @@ test("dedicated client uses code and PKCE with no access grant", () => {
   assert.equal(url.searchParams.get("redirect_uri"), intelligenceCustomerOidc.callback);
   assert.equal(url.searchParams.get("scope"), "openid email profile");
   assert.equal(url.searchParams.get("acr_values"), "urn:cognito:loa:4");
-  assert.equal(url.searchParams.get("max_age"), "300");
+  assert.equal(url.searchParams.get("max_age"), "900");
   const transaction = verifyCustomerLoginTransaction({
     signingKey, cookieValue: started.transactionCookieValue,
     state: url.searchParams.get("state"), nowMs: second * 1000 + 30_000,
@@ -68,7 +68,25 @@ test("tampering, forged state, expired transaction and wrong key reject", () => 
   assert.throws(() => verifyCustomerLoginTransaction({ signingKey, cookieValue: started.transactionCookieValue, state: "a".repeat(43), nowMs: now }));
   assert.throws(() => verifyCustomerLoginTransaction({ signingKey, cookieValue: started.transactionCookieValue + "tampered", state, nowMs: now }));
   assert.throws(() => verifyCustomerLoginTransaction({ signingKey: signingKey+"other", cookieValue: started.transactionCookieValue, state, nowMs: now }));
-  assert.throws(() => verifyCustomerLoginTransaction({ signingKey, cookieValue: started.transactionCookieValue, state, nowMs: now + 301000 }));
+  assert.throws(() => verifyCustomerLoginTransaction({ signingKey, cookieValue: started.transactionCookieValue, state, nowMs: now + 901000 }));
+});
+
+test("first-time password rotation and TOTP enrolment fit within 15-minute signed transaction", () => {
+  const startedAtMs = second * 1000;
+  const transaction = createCustomerLoginTransaction({ signingKey, nowMs: startedAtMs });
+  const state = new URL(transaction.authorizeUrl).searchParams.get("state");
+  assert.equal(transaction.cookieMaxAgeSeconds, 900);
+  const accepted = verifyCustomerLoginTransaction({
+    signingKey, cookieValue: transaction.transactionCookieValue,
+    state, nowMs: startedAtMs + 8 * 60_000,
+  });
+  assert.equal(accepted.grantsTenantAccess, false);
+  assert.throws(() => verifyCustomerLoginTransaction({
+    signingKey, cookieValue: transaction.transactionCookieValue,
+    state, nowMs: startedAtMs + 901_000,
+  }), e => e.code === "transaction_expired_or_mismatched");
+  const recentMfa = { ...validClaims, auth_time: second - 8 * 60 };
+  assert.ok(recentMfa.auth_time < second - 300);
 });
 
 test("server code exchange includes public client PKCE, no arbitrary token origin", async () => {
@@ -106,6 +124,49 @@ test("signed ID JWT verifies exact issuer, audience, nonce and expiry but never 
   assert.equal(result.grantsTenantAccess, false);
 });
 
+test("Cognito standard-base64 JWKS kids containing + / = still require valid RSA signature", async () => {
+  // Real Cognito signing-key identifiers can contain standard base64 symbols.
+  // Previous base64url-only regex rejected them BEFORE checking AWS JWKS.
+  const signerKid = "Cognito+RS256/KeyId==";
+  const publishedKey = { ...jwk, kid: signerKid };
+  const exactJwks = async (url) => {
+    assert.equal(url, intelligenceCustomerOidc.issuer + "/.well-known/jwks.json");
+    return { ok: true, text: async () => JSON.stringify({ keys: [publishedKey] }) };
+  };
+  const valid = token(validClaims, false, signerKid);
+  const verified = await verifyIntelligenceCustomerIdToken({
+    idToken: valid, expectedNonce: nonce, fetchImpl: exactJwks, nowSeconds: second,
+  });
+  assert.equal(verified.identityVerified, true);
+  assert.equal(verified.mfaVerified, true);
+  assert.equal(verified.grantsTenantAccess, false);
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken: token(validClaims, true, signerKid),
+    expectedNonce: nonce, fetchImpl: exactJwks, nowSeconds: second,
+  }), (error) => error.code === "identity_signature_invalid");
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken: valid, expectedNonce: nonce, fetchImpl: mockJwks, nowSeconds: second,
+  }), (error) => error.code === "identity_signing_key_missing");
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken: token(validClaims, false, "another/KeyId="),
+    expectedNonce: nonce, fetchImpl: exactJwks, nowSeconds: second,
+  }), (error) => error.code === "identity_signing_key_missing");
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken: token(validClaims, false, "invalid kid with spaces"),
+    expectedNonce: nonce, fetchImpl: exactJwks, nowSeconds: second,
+  }), (error) => error.code === "identity_signature_invalid");
+});
+
+test("first-login fresh password-plus-TOTP proof remains valid after eight minutes", async () => {
+  const claims = { ...validClaims, auth_time: second - 480 };
+  const result = await verifyIntelligenceCustomerIdToken({
+    idToken: token(claims), expectedNonce: nonce, fetchImpl: mockJwks, nowSeconds: second,
+  });
+  assert.equal(result.identityVerified, true);
+  assert.equal(result.mfaVerified, true);
+  assert.equal(result.grantsTenantAccess, false);
+});
+
 test("forged JWT, wrong nonce, email, audience or expiry cannot pass", async () => {
   for (const [name,claims] of [
     ["wrong audience", { ...validClaims, aud: "unapproved-client" }],
@@ -118,7 +179,7 @@ test("forged JWT, wrong nonce, email, audience or expiry cannot pass", async () 
     ["weak acr", { ...validClaims, acr: "urn:cognito:loa:1" }],
     ["no MFA", { ...validClaims, amr: ["pwd"] }],
     ["missing TOTP", { ...validClaims, amr: ["pwd", "mfa"] }],
-    ["stale auth", { ...validClaims, auth_time: second - 301 }],
+    ["stale auth", { ...validClaims, auth_time: second - 901 }],
     ["future auth", { ...validClaims, auth_time: second + 120 }],
     ["missing auth time", { ...validClaims, auth_time: undefined }],
   ]) {
@@ -126,6 +187,16 @@ test("forged JWT, wrong nonce, email, audience or expiry cannot pass", async () 
       idToken: token(claims), expectedNonce: nonce, fetchImpl: mockJwks, nowSeconds: second,
     }), name);
   }
+  const emailFailure = { ...validClaims, email_verified: false };
+  await assert.rejects(
+    verifyIntelligenceCustomerIdToken({ idToken: token(emailFailure), expectedNonce: nonce, fetchImpl: mockJwks, nowSeconds: second }),
+    e => e.code === "identity_email_unverified"
+  );
+  const mfaFailure = { ...validClaims, amr: ["pwd"] };
+  await assert.rejects(
+    verifyIntelligenceCustomerIdToken({ idToken: token(mfaFailure), expectedNonce: nonce, fetchImpl: mockJwks, nowSeconds: second }),
+    e => e.code === "identity_mfa_level_insufficient"
+  );
   await assert.rejects(verifyIntelligenceCustomerIdToken({
     idToken: token(validClaims, true), expectedNonce: nonce, fetchImpl: mockJwks, nowSeconds: second,
   }));

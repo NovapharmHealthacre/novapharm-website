@@ -685,6 +685,8 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     : navigationGroups;
   const searchId = useId();
   const searchFieldRef = useRef<HTMLInputElement>(null);
+  // A superseded deep-link restoration must never reintroduce an earlier medicine.
+  const selectionGenerationRef = useRef(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [searchResponse, setSearchResponse] = useState<SearchResponse | null>(null);
@@ -715,25 +717,26 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     const medicineId = new URLSearchParams(window.location.search).get("medicineId");
     if (!medicineId || !/^medicine-[a-f0-9]{32}$/u.test(medicineId)) return;
     let active = true;
+    const generation = selectionGenerationRef.current;
     const restore = async () => {
       setBusy(true);
       try {
         const next = await gatewayJson<MedicineDetail>(`enterprise/medicines/${encodeURIComponent(medicineId)}`);
-        if (!active) return;
+        if (!active || generation !== selectionGenerationRef.current) return;
         setDetail(next);
         const params = formSearchParams(emptyFilters);
         params.set("medicineId", medicineId);
         params.set("page", "1");
         params.set("pageSize", "50");
         const observed = await gatewayJson<AnalyticsResponse>(`enterprise/medicines/analytics?${params.toString()}`);
-        if (active) {
+        if (active && generation === selectionGenerationRef.current) {
           setAnalytics(observed);
           setAnalyticsStatus(observed.dataState === "accepted_facts" ? "Accepted observed history loaded for this identity." : "No accepted observed history available for this identity.");
         }
       } catch (error) {
-        if (active) setSearchStatus(professionalError(error));
+        if (active && generation === selectionGenerationRef.current) setSearchStatus(professionalError(error));
       } finally {
-        if (active) setBusy(false);
+        if (active && generation === selectionGenerationRef.current) setBusy(false);
       }
     };
     void restore();
@@ -761,25 +764,47 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
       setSearchStatus("Enter at least two characters.");
       return;
     }
+    // Prevent a fresh query (including a zero-result/error query) from displaying
+    // a previous medicine's identity, charts or accepted observation state.
+    selectionGenerationRef.current += 1;
+    const generation = selectionGenerationRef.current;
+    setDetail(null);
+    setAnalytics(null);
+    setAnalyticsStatus("Previous medicine context cleared for the new search.");
+    const nextUrl = new URL(window.location.href);
+    nextUrl.searchParams.delete("medicineId");
+    window.history.replaceState(null, "", `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
     setBusy(true);
     setSearchStatus("Searching the governed medicine identity register.");
     setSearchResponse(null);
     try {
       const next = await gatewayJson<SearchResponse>(`enterprise/medicines/search?q=${encodeURIComponent(query)}&limit=30`);
+      if (generation !== selectionGenerationRef.current) return;
       setSearchResponse(next);
       setSearchStatus(next.results.length ? `${next.results.length} matching medicine identities.` : "No current BNF identity matched that search.");
     } catch (error) {
-      setSearchStatus(professionalError(error));
+      if (generation === selectionGenerationRef.current) setSearchStatus(professionalError(error));
     } finally {
-      setBusy(false);
+      if (generation === selectionGenerationRef.current) setBusy(false);
     }
   }
 
   async function selectMedicine(medicineId: string) {
+    selectionGenerationRef.current += 1;
+    const generation = selectionGenerationRef.current;
+    // Selection changes ownership immediately. Never display the previous
+    // medicine's evidence or leave its identifier in the URL during loading.
+    setDetail(null);
+    setAnalytics(null);
+    setAnalyticsStatus("Previous medicine evidence cleared for the new selection.");
+    const pendingUrl = new URL(window.location.href);
+    pendingUrl.searchParams.delete("medicineId");
+    window.history.replaceState(null, "", `${pendingUrl.pathname}${pendingUrl.search}${pendingUrl.hash}`);
     setBusy(true);
     setSearchStatus("Loading the selected identity and BNF hierarchy.");
     try {
       const next = await gatewayJson<MedicineDetail>(`enterprise/medicines/${encodeURIComponent(medicineId)}`);
+      if (generation !== selectionGenerationRef.current) return;
       setDetail(next);
       const nextUrl = new URL(window.location.href);
       nextUrl.searchParams.set("medicineId", next.medicine.medicineId);
@@ -794,19 +819,24 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
       setAnalyticsStatus("Checking accepted, non-sample source observations for this medicine.");
       try {
         const observed = await gatewayJson<AnalyticsResponse>(`enterprise/medicines/analytics?${params.toString()}`);
+        if (generation !== selectionGenerationRef.current) return;
         setAnalytics(observed);
         setAnalyticsStatus(observed.dataState === "accepted_facts"
           ? "Accepted observations loaded. Review source provenance, comparison and limitations."
           : "No accepted observed history available for this medicine under the selected filters.");
       } catch (error) {
-        setAnalytics(null);
-        setAnalyticsStatus(professionalError(error));
+        if (generation === selectionGenerationRef.current) {
+          setAnalytics(null);
+          setAnalyticsStatus(professionalError(error));
+        }
       }
     } catch (error) {
-      setDetail(null);
-      setSearchStatus(professionalError(error));
+      if (generation === selectionGenerationRef.current) {
+        setDetail(null);
+        setSearchStatus(professionalError(error));
+      }
     } finally {
-      setBusy(false);
+      if (generation === selectionGenerationRef.current) setBusy(false);
     }
   }
 
@@ -815,6 +845,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
       setAnalyticsStatus("Select a medicine identity before running analytics.");
       return;
     }
+    const generation = selectionGenerationRef.current;
     const params = formSearchParams(filters);
     params.set("medicineId", detail.medicine.medicineId);
     params.set("page", "1");
@@ -823,18 +854,21 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     setAnalyticsStatus("Loading accepted non-sample facts from the governed analytical boundary.");
     try {
       const next = await gatewayJson<AnalyticsResponse>(`enterprise/medicines/analytics?${params.toString()}`);
+      if (generation !== selectionGenerationRef.current) return;
       setAnalytics(next);
       setAnalyticsStatus(next.dataState === "accepted_facts" ? `${next.pagination.totalRows.toLocaleString("en-GB")} accepted analytical rows matched this query.` : next.dataState === "source_not_ingested" ? "The selected national source has not completed a governed non-sample ingest." : "No accepted facts matched every selected filter.");
       setFiltersOpen(false);
     } catch (error) {
-      setAnalytics(null);
-      setAnalyticsStatus(professionalError(error));
+      if (generation === selectionGenerationRef.current) {
+        setAnalytics(null);
+        setAnalyticsStatus(professionalError(error));
+      }
     } finally {
-      setBusy(false);
+      if (generation === selectionGenerationRef.current) setBusy(false);
     }
   }
 
-  let central: ReactNode;
+    let central: ReactNode;
   if (current === "overview" || current === "medicine-search" || current === "medicine-overview" || current === "identity") central = <PlatformOverview analytics={analytics} detail={detail} snapshot={snapshot} />;
   else if (current === "geography") central = <><NearbyOrganisations /><EvidenceTable data={section(snapshot, "Practice population context")} /><EvidenceTable data={section(snapshot, "Pharmacy geography")} /></>;
   else if (current === "pharmacies") central = <section className={styles.routeWorkspace}><header><p className={styles.stateLabel}>Governed master</p><h1>All pharmacies</h1><p>Identity, geography and contact-evidence facts remain separate from medicine dispensing and marketing eligibility.</p></header><EvidenceTable data={section(snapshot, "Pharmacy geography")} /><EvidenceTable data={section(snapshot, "Pharmacy contact evidence")} /></section>;

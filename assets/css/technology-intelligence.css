@@ -1281,6 +1281,22 @@ body[data-page="technology"] .np-intelligence {
   .np-intelligence .npi-hero--editorial .npi-hero-photo { background-image: none; }
 }
 
+/* Native, CSP-compatible interactive intelligence workspace directory. */
+.np-intelligence .npi-workspace-directory {
+  width: min(1460px, calc(100vw - 48px));
+  max-width: none;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+.np-intelligence .npi-workspace-directory .npi-directory-groups { display:none !important; }
+.np-intelligence .npi-workspace-directory .npi-workspace-live-experience {
+  display:block; margin-top:18px; background:#fff; border-radius:0; overflow:visible; width:100%;
+}
+@media (max-width:900px) {
+  .np-intelligence .npi-workspace-directory {width:min(100%,calc(100vw - 28px));}
+  .np-intelligence .npi-workspace-directory .npi-workspace-live-experience {margin-top:9px;}
+}
+
 /* Direct entry to the functional Medicines Terminal concept. */
 .np-intelligence .npi-experience-cta {
   display: inline-flex;
