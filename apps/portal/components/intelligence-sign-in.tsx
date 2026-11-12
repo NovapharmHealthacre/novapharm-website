@@ -239,7 +239,7 @@ export function IntelligenceSignIn() {
               </div>
             ) : (
               <>
-                <p className={styles["providerNote"]}>
+                <p className={phase === "mfa" ? styles["providerNote"] : styles["srOnly"]}>
                   {phase === "mfa" ? "Enter the six-digit code from your authenticator app." :
                     "Sign in with your business email and password. Authenticator verification follows."}
                 </p>
@@ -267,7 +267,7 @@ export function IntelligenceSignIn() {
                         id="npi-email" className={styles["field"]} type="email"
                         name="username" autoComplete="username" required maxLength={254}
                         value={email} onChange={(event) => setEmail(event.target.value)}
-                        placeholder="Business email" disabled={busy}
+                        placeholder="Email" disabled={busy}
                       />
                       <div className={styles["passwordBox"]}>
                         <label className={styles["srOnly"]} htmlFor="npi-password">Password</label>
@@ -281,11 +281,15 @@ export function IntelligenceSignIn() {
                         <button type="button" className={styles["showPassword"]}
                           onClick={() => setShowPassword((previous) => !previous)}
                           aria-label={showPassword ? "Hide password" : "Show password"}>
-                          {showPassword ? "Hide" : "Show"}
+                          <svg width="21" height="21" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M2.2 12s3.5-5.7 9.8-5.7 9.8 5.7 9.8 5.7-3.5 5.7-9.8 5.7S2.2 12 2.2 12Z" />
+                            <circle cx="12" cy="12" r="2.8" />
+                            {showPassword && <path d="m4 20 16-16" />}
+                          </svg>
                         </button>
                       </div>
                       <button className={styles["primaryAction"]} type="submit" disabled={busy || !email || !password}>
-                        {busy ? "Signing in…" : "Sign in securely"}
+                        {busy ? "Signing in…" : "Sign in"}
                       </button>
                     </>
                   )}
