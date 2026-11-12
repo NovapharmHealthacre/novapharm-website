@@ -7,8 +7,17 @@
   const cards = Array.from(section.querySelectorAll("[data-npi-plan][data-monthly-gbp][data-annual-gbp]"));
   if (toggles.length !== 2 || cards.length !== 2) return;
   const money = new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 });
-  // A fixed, reviewed origin. Browser inputs cannot choose a Stripe price or payment URL.
-  const secureRegistration = "https://intelligence.novapharmhealthcare.com/auth/customer/register";
+  // Exact allowlisted destinations: never form a payment URL from a browser value.
+  const approvedAccountDestinations = Object.freeze({
+    starter: Object.freeze({
+      monthly: "https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=starter&cycle=monthly",
+      annual: "https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=starter&cycle=annual"
+    }),
+    professional: Object.freeze({
+      monthly: "https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=professional&cycle=monthly",
+      annual: "https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=professional&cycle=annual"
+    })
+  });
 
   const render = (cycle) => {
     if (!["monthly", "annual"].includes(cycle)) return;
@@ -29,7 +38,7 @@
       const plan = card.getAttribute("data-npi-plan");
       const action = card.querySelector("[data-npi-plan-cta]");
       if ((plan === "starter" || plan === "professional") && action) {
-        action.href = secureRegistration + "?plan=" + plan + "&cycle=" + cycle;
+        action.href = approvedAccountDestinations[plan][cycle];
       }
       explanation.textContent = cycle === "annual"
         ? "Proposed annual commitment: " + money.format(annual) + "/year, billed annually after signed acceptance."
