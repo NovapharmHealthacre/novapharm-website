@@ -48,6 +48,6 @@ test("public marketing candidates are GBP and never a payment flow", () => {
   assert.ok(catalog.includes('currency: "gbp"'));
   assert.ok(catalog.includes('"verifiedCustomerIdentityAndMfa"'));
   assert.ok(catalog.includes('"stripeWebhookAndLedgerAccepted"'));
-  assert.ok(js.includes("secureRegistration"));
+  assert.ok(js.includes("approvedAccountDestinations"));
   assert.ok(!js.includes("checkout.stripe.com"));
 });
