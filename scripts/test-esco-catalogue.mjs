@@ -264,8 +264,9 @@ test("ESCO hero and product details stay in separate responsive grid tracks",()=
 test("ESCO Bag explains quote-only selections without authorising guide-price charges",()=>{
  const bag=readFileSync("assets/js/esco-bag.js","utf8");
  const shop=readFileSync("assets/js/esco-catalogue.js","utf8");
- assert.match(bag,/lines\.every\(item => approvedCatalogIds\.has\(item\.id\) && approvedUnitPricesPence\.has\(item\.id\) && item\.quantity <= MAX_CARD_QTY\)/);
- assert.match(bag,/quoteOnly = paymentServiceReady/);
+ assert.match(bag,/function paymentPartition\(lines\)/);
+ assert.match(bag,/approvedCatalogIds\.has\(item\.id\) && approvedUnitPricesPence\.has\(item\.id\)/);
+ assert.match(bag,/quoteOnly:lines\.filter\(item => !payableIds\.has\(item\.id\)\)/);
  assert.match(bag,/product and delivery confirmation before payment/i);
  assert.match(bag,/\/products\/esco\/\?availability=ready#esco-catalogue/);
  assert.match(shop,/get\("availability"\) === "ready"/);
@@ -292,7 +293,7 @@ test("ESCO Bag has no greyed checkout dead end and retains server-only payment a
  const bag=readFileSync("assets/js/esco-bag.js","utf8");
  const css=readFileSync("assets/css/esco-catalogue.css","utf8");
  assert.match(bag,/checkoutButton\.hidden = !eligible/);
- assert.match(bag,/orderRequestForm\.hidden = eligible \|\| !lines\.length/);
+ assert.match(bag,/orderRequestForm\.hidden = quoteOnly\.length === 0/);
  assert.match(bag,/Contact product support/);
  assert.match(bag,/approvedUnitPricesPence\.has\(item\.id\)/);
  assert.match(bag,/checkoutApiOrigin \+ "\/checkout"/);
