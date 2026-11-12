@@ -127,7 +127,7 @@ export async function createIntelligenceSubscriptionCheckout({
       body?.livemode !== true ||
       body?.mode !== "subscription" ||
       body?.customer !== prepared.customerId ||
-      body?.currency !== "inr" ||
+      body?.currency !== "gbp" ||
       typeof body?.url !== "string") {
     throw reject("stripe_checkout_response_invalid");
   }
