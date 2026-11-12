@@ -43,7 +43,7 @@ html=html.replace('</head>','<link rel="stylesheet" href="/assets/css/commerce-o
 html=removeInheritedProductMedia(html);
 const target=join(root,'products/track/index.html');mkdirSync(dirname(target),{recursive:true});writeFileSync(target,html,'utf8');
 assert(market.includes('<a href="/products/esco/">Shop ESCO</a>'));
-writeFileSync(marketPath,market.replace('<a href="/products/esco/">Explore ESCO</a>','<a href="/products/esco/">Explore ESCO</a><a href="/products/track/">Track an order</a>'),'utf8');
+writeFileSync(marketPath,market.replace('<a href="/products/esco/">Shop ESCO</a>','<a href="/products/esco/">Shop ESCO</a><a href="/products/track/">Track an order</a>'),'utf8');
 assert(template.includes('class="npd-commerce-link"'));
 writeFileSync(productsPath,template.replace('href="/products/marketplace/">Search all 392 products</a>','href="/products/marketplace/">Search all 392 products</a><a href="/products/track/">Track an order</a>'),'utf8');
 console.log('Generated privacy-safe, unified Nutraxin and ESCO order-status lookup.');
