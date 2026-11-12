@@ -267,3 +267,28 @@ assert.ok(styles.includes(".np-intelligence-local-nav .npi-local-login"), "Sign-
 assert.ok(styles.includes(".npi-research-access .npi-button"), "Research-area sign-in must have scoped button styling");
 
 console.log("NovaPharm Intelligence Technology page: source, public output, disclosures, CSS and build integration verified.");
+
+// The interactive directory must be a customer-safe demonstration in both published routes.
+const workspacesHtml = read("technology/workspaces/index.html");
+const workspaceCss = read("assets/css/intelligence-workspace-product.css");
+const workspaceJs = read("assets/js/intelligence-workspace-product.js");
+const workspaceEmbeddedCss = read("assets/css/intelligence-workspace-embedded.css");
+const workspaceEmbeddedJs = read("assets/js/intelligence-workspace-embedded.js");
+for (const [label, html] of [["canonical source", source], ["published page", published]]) {
+  assert.match(html, /id="npi-exp-shell"/, label + " must render the native interactive experience");
+  assert.match(html, /href="\/assets\/css\/intelligence-workspace-embedded\.css"/, label + " must load the scoped app styles");
+  assert.match(html, /src="\/assets\/js\/intelligence-workspace-embedded\.js"/, label + " must load the CSP-safe app runtime");
+  assert.match(html, /npi-directory-groups" hidden aria-hidden="true"/, label + " must not display the obsolete accordion");
+  assert.doesNotMatch(html, /id="npi-experience-iframe"/, label + " must not depend on CSP-blocked frames");
+}
+assert.match(styles, /npi-workspace-live-experience/, "The shared style must include the embedded experience");
+assert.match(workspaceEmbeddedJs, /appRoot\.addEventListener\(\x27click\x27/, "Native app interactions must be scoped to the component");
+assert.match(workspaceEmbeddedCss, /npi-workspace-live-experience/, "Native app styles must not leak into the website");
+assert.doesNotMatch(workspaceEmbeddedJs, /style="/, "Native app previews must not depend on CSP-blocked inline styles");
+assert.match(workspaceJs, /function renderSupplyOverview\(\)/, "Supply Intelligence must have its own interactive product preview");
+assert.match(workspaceJs, /function renderSupplyMode\(mode\)/, "Supply Intelligence preview tabs must render distinct content");
+assert.match(workspaceJs, /ILLUSTRATIVE PRODUCT EXPERIENCE/, "Simulated figures must be identified as previews");
+assert.match(workspaceCss, /@media\(max-width:500px\)/, "The interactive experience must define small-screen layouts");
+for (const label of ["Medicine research", "Market intelligence", "Supply & regulation", "Strategy", "Decision tools"]) {
+  assert.ok(workspaceJs.includes(label), "Missing interactive workspace discipline: " + label);
+}
