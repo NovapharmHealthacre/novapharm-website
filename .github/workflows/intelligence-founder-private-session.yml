@@ -1,0 +1,48 @@
+name: Founder private session acceptance
+
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/intelligence-founder-session-api.py'
+      - 'scripts/test_intelligence_founder_session_api.py'
+      - 'src/core/intelligence-founder-private-session-bridge.mjs'
+      - 'src/core/intelligence-founder-private-session-bridge.d.mts'
+      - 'scripts/test-intelligence-founder-private-session-bridge.mjs'
+      - 'apps/portal/app/founder/page.tsx'
+      - 'apps/portal/app/auth/callback/route.ts'
+      - '.github/workflows/intelligence-founder-private-session.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'infra/aws/intelligence-founder-session-api.py'
+      - 'scripts/test_intelligence_founder_session_api.py'
+      - 'src/core/intelligence-founder-private-session-bridge.mjs'
+      - 'src/core/intelligence-founder-private-session-bridge.d.mts'
+      - 'scripts/test-intelligence-founder-private-session-bridge.mjs'
+      - 'apps/portal/app/founder/page.tsx'
+      - 'apps/portal/app/auth/callback/route.ts'
+      - '.github/workflows/intelligence-founder-private-session.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  private-session:
+    name: Founder MFA policy, replay, revocation and isolation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: |
+          set -euo pipefail
+          python -m py_compile infra/aws/intelligence-founder-session-api.py
+          python -m unittest discover -s scripts -p test_intelligence_founder_session_api.py -v
+          node --check src/core/intelligence-founder-private-session-bridge.mjs
+          node --test scripts/test-intelligence-founder-private-session-bridge.mjs
+          node --test scripts/test-intelligence-customer-oidc.mjs scripts/test-intelligence-founder-totp-enrolment.mjs scripts/test-intelligence-founder-managed-mfa-compat.mjs
