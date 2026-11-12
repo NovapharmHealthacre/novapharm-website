@@ -65,7 +65,7 @@ export function acknowledgeFounderManagedMfaOnly({
   const issuedAtMs = signedFounderIdentity.signedIssuedAtSeconds * 1000;
   if (!Number.isSafeInteger(signedAuthMs) ||
       !Number.isSafeInteger(issuedAtMs) ||
-      signedAuthMs < transactionCreatedAtMs - 30_000 ||
+      signedAuthMs < transactionCreatedAtMs - 45_000 ||
       signedAuthMs > nowMs + 60_000 ||
       issuedAtMs < signedAuthMs ||
       issuedAtMs > nowMs + 60_000 ||
