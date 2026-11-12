@@ -15,20 +15,20 @@
 }
 .page * { box-sizing:border-box; }
 .portrait {
+  /* Approved 1050:499 editorial photograph: preserve its intrinsic composition. */
   position:absolute;
   z-index:-1;
-  pointer-events:none;
-  left:0;
-  bottom:66px;
-  width:min(1050px,63vw);
+  inset:auto auto 0 max(0px, calc((100vw - 1672px) / 2));
+  width:min(1050px, 64vw);
   aspect-ratio:1050 / 499;
-  background-image:url("/assets/media/portal/npi-human-portrait-approved.webp");
+  height:auto;
+  background-image:url("/assets/media/portal/npi-human-portrait-hd.avif");
   background-repeat:no-repeat;
-  background-size:100% 100%;
+  background-size:contain;
   background-position:left bottom;
-  /* The approved portrait is already composed; never crop it with cover. */
-  -webkit-mask-image:linear-gradient(to right,#000 0%,#000 83%,transparent 100%);
-  mask-image:linear-gradient(to right,#000 0%,#000 83%,transparent 100%);
+  -webkit-mask-image:linear-gradient(to right, #000 0%, #000 76%, transparent 100%);
+  mask-image:linear-gradient(to right, #000 0%, #000 76%, transparent 100%);
+  pointer-events:none;
 }
 .shell {
   position: relative;
