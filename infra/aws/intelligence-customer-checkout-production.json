@@ -1,0 +1,216 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "NovaPharm Intelligence signed-in GBP subscription Checkout (private fail-closed release). Deployment creates endpoint OFF; requires separate accepted evidence for first live charge.",
+  "Parameters": {
+    "CodeBucket": {
+      "Type": "String",
+      "AllowedPattern": "^[a-z0-9][a-z0-9.-]{3,62}$"
+    },
+    "CodeKey": {
+      "Type": "String",
+      "MinLength": 15
+    },
+    "CodeObjectVersion": {
+      "Type": "String",
+      "MinLength": 8
+    },
+    "SourceSha256": {
+      "Type": "String",
+      "AllowedPattern": "^[0-9a-f]{64}$"
+    },
+    "StripeSecretArn": {
+      "Type": "String",
+      "AllowedPattern": "^arn:aws:secretsmanager:eu-north-1:[0-9]{12}:secret:novapharm/production/stripe/secret-key-[A-Za-z0-9]{6}$"
+    }
+  },
+  "Resources": {
+    "CheckoutLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/novapharm-intelligence-subscription-checkout-private",
+        "RetentionInDays": 30
+      }
+    },
+    "CheckoutRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "novapharm-intelligence-subscription-checkout-private",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "intelligence-checkout-verified-dynamodb-and-secret",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "ReadAndReserveOnlyDedicatedLedger",
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:Query",
+                    "dynamodb:TransactWriteItems",
+                    "dynamodb:UpdateItem"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/novapharm-intelligence-customer-access"
+                  }
+                },
+                {
+                  "Sid": "ReadOneStripeLiveCredential",
+                  "Effect": "Allow",
+                  "Action": [
+                    "secretsmanager:GetSecretValue"
+                  ],
+                  "Resource": {
+                    "Ref": "StripeSecretArn"
+                  }
+                },
+                {
+                  "Sid": "WriteDedicatedLogsOnly",
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/novapharm-intelligence-subscription-checkout-private:*"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "CheckoutLambda": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": "novapharm-intelligence-subscription-checkout-private",
+        "Description": "Inert until real independently verified MFA, tenant, source, contract, Stripe invoice and atomic entitlement release gates. No customer emails.",
+        "Runtime": "python3.12",
+        "Architectures": [
+          "x86_64"
+        ],
+        "Handler": "intelligence-customer-checkout-api.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "CheckoutRole",
+            "Arn"
+          ]
+        },
+        "Timeout": 20,
+        "MemorySize": 256,
+        "Code": {
+          "S3Bucket": {
+            "Ref": "CodeBucket"
+          },
+          "S3Key": {
+            "Ref": "CodeKey"
+          },
+          "S3ObjectVersion": {
+            "Ref": "CodeObjectVersion"
+          }
+        },
+        "Environment": {
+          "Variables": {
+            "NPI_SUBSCRIPTION_CHECKOUT_ENABLED": "false",
+            "NPI_STRIPE_SECRET_ARN": {
+              "Ref": "StripeSecretArn"
+            }
+          }
+        },
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-intelligence"
+          },
+          {
+            "Key": "release",
+            "Value": "default-off-no-customer-charges"
+          }
+        ]
+      }
+    },
+    "CheckoutIntegration": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": "q2e6ztf8ic",
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "CheckoutLambda",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 20000
+      }
+    },
+    "CheckoutRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": "q2e6ztf8ic",
+        "RouteKey": "POST /customer/subscription/checkout",
+        "AuthorizationType": "JWT",
+        "AuthorizerId": "sxo21g",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CheckoutIntegration"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "GatewayInvokeCheckout": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "CheckoutLambda"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:q2e6ztf8ic/*/POST/customer/subscription/checkout"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "CheckoutRouteKey": {
+      "Value": "POST /customer/subscription/checkout"
+    },
+    "ChargingEnabled": {
+      "Value": "false"
+    },
+    "CheckoutFunctionArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "CheckoutLambda",
+          "Arn"
+        ]
+      }
+    },
+    "ImmutableSourceSha256": {
+      "Value": {
+        "Ref": "SourceSha256"
+      }
+    }
+  }
+}
