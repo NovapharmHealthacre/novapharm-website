@@ -7,6 +7,11 @@ on:
       - '.github/workflows/intelligence-live-smoke.yml'
       - 'src/content/technology-intelligence.html'
       - 'technology/index.html'
+      - 'technology/workspaces/**'
+      - 'assets/css/intelligence-workspace-embedded.css'
+      - 'assets/js/intelligence-workspace-embedded.js'
+      - 'assets/css/intelligence-workspace-product.css'
+      - 'assets/js/intelligence-workspace-product.js'
       - 'assets/css/technology-intelligence.css'
       - 'assets/js/intelligence-research-launcher.js'
       - 'scripts/apply-corporate-product-discipline.mjs'
@@ -38,6 +43,12 @@ jobs:
               "$origin/assets/css/technology-intelligence.css?$key" -o /tmp/novapharm-intelligence-live.css || true
             curl --fail --silent --show-error --location --max-time 15 \
               -H 'Cache-Control: no-cache, no-store, max-age=0' \
+              "$origin/assets/js/intelligence-workspace-embedded.js?$key" -o /tmp/novapharm-workspace-native.js || true
+            curl --fail --silent --show-error --location --max-time 15 \
+              -H 'Cache-Control: no-cache, no-store, max-age=0' \
+              "$origin/assets/css/intelligence-workspace-embedded.css?$key" -o /tmp/novapharm-workspace-native.css || true
+            curl --fail --silent --show-error --location --max-time 15 \
+              -H 'Cache-Control: no-cache, no-store, max-age=0' \
               "$origin/contact/?$key" -o /tmp/novapharm-contact-live.html || true
             # Verify the actual new hero image, not just an old text-compatible page.
             curl --fail --silent --show-error --location --max-time 15 \
@@ -53,6 +64,12 @@ jobs:
               && grep -Fq 'src="/assets/js/intelligence-research-launcher.js"' /tmp/novapharm-technology-live.html \
               && grep -Fq 'Search a medicine' /tmp/novapharm-technology-live.html \
               && grep -Fq 'id="intelligence-workspace-directory"' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'id="npi-exp-shell"' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'src="/assets/js/intelligence-workspace-embedded.js"' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'href="/assets/css/intelligence-workspace-embedded.css"' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'function renderSupplyMode(mode)' /tmp/novapharm-workspace-native.js \
+              && grep -Fq 'ILLUSTRATIVE PRODUCT EXPERIENCE' /tmp/novapharm-workspace-native.js \
+              && grep -Fq 'npi-workspace-live-experience' /tmp/novapharm-workspace-native.css \
               && grep -Fq 'ALL 22 PROFESSIONAL WORKSPACES' /tmp/novapharm-technology-live.html \
               && test "$(grep -o 'data-npi-workspace="' /tmp/novapharm-technology-live.html | wc -l | tr -d '[:space:]')" -eq 22 \
               && grep -Fq 'Protected workspace entry' /tmp/novapharm-technology-live.html \
