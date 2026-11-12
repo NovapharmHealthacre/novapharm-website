@@ -1,10 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
+import {
+  beginCognitoCardSignIn,
+  completeCognitoCardSignIn,
+  type CardAuthResult,
+  type TotpChallenge,
+} from "../lib/cognito-card-auth";
 import styles from "./intelligence-sign-in.module.css";
 
-/** Public presentation only. Cognito, verified sessions and entitlements remain server-owned. */
+/**
+ * Cognito handles credential verification and mandatory TOTP. A separate,
+ * server-verified customer session controls every workspace permission.
+ */
 type ApprovedCustomer = Readonly<{
   role: "owner" | "admin" | "analyst" | "viewer";
   plan: "starter" | "professional" | "enterprise";
@@ -32,36 +41,114 @@ function IntelligenceLogo({ small = false }: Readonly<{ small?: boolean }>) {
   );
 }
 
-export function IntelligenceSignIn() {
-  const [customer, setCustomer] = useState<ApprovedCustomer | null>(null);
-  const [signingOut, setSigningOut] = useState(false);
-
-  useEffect(() => {
-    let mounted = true;
-    const controller = new AbortController();
-    void fetch("/customer/session", {
+async function readVerifiedSession(): Promise<ApprovedCustomer | null> {
+  try {
+    const response = await fetch("/customer/session", {
       method: "GET",
       credentials: "same-origin",
       headers: { Accept: "application/json" },
       cache: "no-store",
-      signal: controller.signal,
-    }).then(async (response) => {
-      if (!response.ok) return;
-      const body: unknown = await response.json();
-      if (!body || typeof body !== "object") return;
-      const result = body as Record<string, unknown>;
-      if (result["ok"] !== true || result["code"] !== "active" ||
-        !["starter", "professional", "enterprise"].includes(String(result["plan"])) ||
-        !["owner", "admin", "analyst", "viewer"].includes(String(result["role"]))) return;
-      if (mounted) setCustomer({
-        role: result["role"] as ApprovedCustomer["role"],
-        plan: result["plan"] as ApprovedCustomer["plan"],
-      });
-    }).catch(() => {
-      // An unavailable customer API never grants access.
     });
-    return () => { mounted = false; controller.abort(); };
+    if (!response.ok) return null;
+    const body: unknown = await response.json();
+    if (!body || typeof body !== "object") return null;
+    const result = body as Record<string, unknown>;
+    if (result["ok"] !== true || result["code"] !== "active" ||
+        !["starter", "professional", "enterprise"].includes(String(result["plan"])) ||
+        !["owner", "admin", "analyst", "viewer"].includes(String(result["role"]))) return null;
+    return {
+      role: result["role"] as ApprovedCustomer["role"],
+      plan: result["plan"] as ApprovedCustomer["plan"],
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function IntelligenceSignIn() {
+  const [customer, setCustomer] = useState<ApprovedCustomer | null>(null);
+  const [signingOut, setSigningOut] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [code, setCode] = useState("");
+  const [challenge, setChallenge] = useState<TotpChallenge | null>(null);
+  const [phase, setPhase] = useState<"password" | "mfa" | "confirmed" | "managed">("password");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    void readVerifiedSession().then((session) => {
+      if (mounted) setCustomer(session);
+    });
+    return () => { mounted = false; };
   }, []);
+
+  async function completeProviderResult(result: CardAuthResult): Promise<void> {
+    if (result.kind === "mfa") {
+      setChallenge(result.challenge);
+      setPhase("mfa");
+      return;
+    }
+    if (result.kind === "provider-required") {
+      setChallenge(null);
+      setPhase("managed");
+      return;
+    }
+
+    // Cognito returned a token only after verified TOTP. Token stays in a
+    // local closure and is never written to web storage, URL, HTML or logs.
+    try {
+      const response = await fetch("/customer/session", {
+        method: "POST",
+        credentials: "same-origin",
+        cache: "no-store",
+        redirect: "error",
+        headers: {
+          Authorization: `Bearer ${result.idToken}`,
+          Accept: "application/json",
+        },
+      });
+      if (response.ok) {
+        const session = await readVerifiedSession();
+        if (session) {
+          setCustomer(session);
+          setChallenge(null);
+          setPhase("confirmed");
+          return;
+        }
+      }
+    } catch {
+      // Identity may be verified while the customer acceptance gate is closed.
+    }
+    setChallenge(null);
+    setPhase("confirmed");
+  }
+
+  async function submitCredentials(event: FormEvent<HTMLFormElement>): Promise<void> {
+    event.preventDefault();
+    if (busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      if (phase === "mfa" && challenge) {
+        const reply = await completeCognitoCardSignIn(challenge, code.trim());
+        setCode("");
+        await completeProviderResult(reply);
+      } else {
+        const reply = await beginCognitoCardSignIn(email, password);
+        setPassword("");
+        await completeProviderResult(reply);
+      }
+    } catch {
+      setPassword("");
+      setCode("");
+      setError("We could not complete this sign-in. Check your details and try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function signOut(): Promise<void> {
     if (signingOut) return;
@@ -73,13 +160,25 @@ export function IntelligenceSignIn() {
         cache: "no-store",
         headers: { Accept: "application/json" },
       });
-      if (response.ok) setCustomer(null);
+      if (response.ok) {
+        setCustomer(null);
+        setPhase("password");
+        setChallenge(null);
+      }
     } catch {
       // Do not claim that server revocation succeeded.
     } finally {
       setSigningOut(false);
     }
   }
+
+  const reset = () => {
+    setPassword("");
+    setCode("");
+    setChallenge(null);
+    setPhase("password");
+    setError("");
+  };
 
   return (
     <main className={styles["page"]}>
@@ -97,7 +196,7 @@ export function IntelligenceSignIn() {
               {signingOut ? "Signing out" : "Sign out"}
             </button>
           ) : (
-            <a className={styles["headerAction"]} href="/auth/customer/start">Sign in</a>
+            <a className={styles["headerAction"]} href="#intelligence-signin-card-title">Sign in</a>
           )}
         </header>
 
@@ -121,22 +220,84 @@ export function IntelligenceSignIn() {
             {customer ? (
               <>
                 <p className={styles["sessionMessage"]}>Verified {customer.plan} subscription · {customer.role} seat.</p>
-                <p className={styles["providerNote"]}>Medicines data and NOVA are accessible only when the corresponding source and permission gates are approved.</p>
+                <p className={styles["providerNote"]}>Medicines data and NOVA remain accessible only when source and permission gates are approved.</p>
                 <button className={styles["primaryAction"]} type="button" onClick={() => { void signOut(); }} disabled={signingOut}>
                   {signingOut ? "Signing out…" : "Sign out securely"}
                 </button>
               </>
+            ) : phase === "confirmed" ? (
+              <div role="status" className={styles["identityStatus"]}>
+                <p className={styles["successTitle"]}>Cognito sign-in completed.</p>
+                <p>Your credentials and authenticator have been accepted. Medicines Terminal access still requires an approved organisation, customer seat and subscription.</p>
+                <button className={styles["createAction"]} type="button" onClick={reset}>Return to sign-in</button>
+              </div>
+            ) : phase === "managed" ? (
+              <div className={styles["identityStatus"]}>
+                <p>Additional account setup or a password change is required. Complete it directly with the secure identity provider.</p>
+                <a className={styles["primaryAction"]} href="/auth/customer/start">Continue with Cognito</a>
+                <button className={styles["recoveryButton"]} type="button" onClick={reset}>Back to sign-in</button>
+              </div>
             ) : (
               <>
-                <p className={styles["providerNote"]}>Your business email, password and verification are handled by NovaPharm&apos;s secure identity provider.</p>
-                <div className={styles["entryExplanation"]}>
-                  <span>Business email</span>
-                  <span>Password and verification</span>
-                </div>
-                <a className={styles["primaryAction"]} href="/auth/customer/start">Sign in securely</a>
-                <a className={styles["recoveryAction"]} href="/auth/customer/start?mode=reset">Forgot your password?</a>
-                <div className={styles["divider"]}><span>or</span></div>
-                <a className={styles["createAction"]} href="/auth/customer/register">Create a business account</a>
+                <p className={styles["providerNote"]}>
+                  {phase === "mfa" ? "Enter the six-digit code from your authenticator app." :
+                    "Sign in with your business email and password. Authenticator verification follows."}
+                </p>
+                <form className={styles["signInForm"]} onSubmit={(event) => { void submitCredentials(event); }}>
+                  {phase === "mfa" ? (
+                    <>
+                      <label className={styles["srOnly"]} htmlFor="npi-totp">Authenticator code</label>
+                      <input
+                        id="npi-totp" className={styles["field"]} type="text"
+                        inputMode="numeric" pattern="[0-9]{6}" minLength={6} maxLength={6}
+                        autoComplete="one-time-code" value={code} required
+                        onChange={(event) => setCode(event.target.value.replace(/\D/gu, "").slice(0, 6))}
+                        placeholder="Six-digit authenticator code"
+                        disabled={busy}
+                      />
+                      <button className={styles["primaryAction"]} type="submit" disabled={busy || code.length !== 6}>
+                        {busy ? "Verifying…" : "Verify and sign in"}
+                      </button>
+                      <button className={styles["recoveryButton"]} type="button" onClick={reset}>Start again</button>
+                    </>
+                  ) : (
+                    <>
+                      <label className={styles["srOnly"]} htmlFor="npi-email">Business email</label>
+                      <input
+                        id="npi-email" className={styles["field"]} type="email"
+                        name="username" autoComplete="username" required maxLength={254}
+                        value={email} onChange={(event) => setEmail(event.target.value)}
+                        placeholder="Business email" disabled={busy}
+                      />
+                      <div className={styles["passwordBox"]}>
+                        <label className={styles["srOnly"]} htmlFor="npi-password">Password</label>
+                        <input
+                          id="npi-password" className={styles["field"]} name="password"
+                          type={showPassword ? "text" : "password"} autoComplete="current-password"
+                          required minLength={1} maxLength={1024} value={password}
+                          onChange={(event) => setPassword(event.target.value)}
+                          placeholder="Password" disabled={busy}
+                        />
+                        <button type="button" className={styles["showPassword"]}
+                          onClick={() => setShowPassword((previous) => !previous)}
+                          aria-label={showPassword ? "Hide password" : "Show password"}>
+                          {showPassword ? "Hide" : "Show"}
+                        </button>
+                      </div>
+                      <button className={styles["primaryAction"]} type="submit" disabled={busy || !email || !password}>
+                        {busy ? "Signing in…" : "Sign in securely"}
+                      </button>
+                    </>
+                  )}
+                  {error && <p className={styles["formError"]} role="alert">{error}</p>}
+                </form>
+                {phase === "password" && (
+                  <>
+                    <a className={styles["recoveryAction"]} href="/auth/customer/start?mode=reset">Forgot your password?</a>
+                    <div className={styles["divider"]}><span>or</span></div>
+                    <a className={styles["createAction"]} href="/auth/customer/register">Create a business account</a>
+                  </>
+                )}
               </>
             )}
           </section>
