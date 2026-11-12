@@ -225,6 +225,54 @@ test("signed fresh founder Cognito session allows TOTP registration with or with
   }));
 });
 
+test("signed fresh founder without Cognito ACR/AMR permits only restricted provider identity proof", async () => {
+  const withoutClaims = { ...validClaims,
+    email:"vishal@novapharmhealthcare.com",
+    auth_time:second - 25, iat:second - 15,
+  };
+  delete withoutClaims.acr;
+  delete withoutClaims.amr;
+  const r = await verifyIntelligenceCustomerIdToken({
+    idToken:token(withoutClaims), expectedNonce:nonce,
+    fetchImpl:mockJwks, nowSeconds:second, purpose:"founder_provider_identity",
+  });
+  assert.equal(r.founderProviderIdentityOnly,true);
+  assert.equal(r.identityVerified,false);
+  assert.equal(r.mfaVerifiedInSignedClaims,false);
+  assert.equal(r.grantsTenantAccess,false);
+  assert.equal(r.signedAuthTimeSeconds,second-25);
+  assert.equal(r.signedIssuedAtSeconds,second-15);
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken:token(withoutClaims), expectedNonce:nonce,
+    fetchImpl:mockJwks, nowSeconds:second,
+  }), e => e.code==="identity_mfa_level_insufficient");
+  for (const [name,claims] of [
+    ["signed lower acr",{...withoutClaims,acr:"urn:cognito:loa:1"}],
+    ["signed password-only amr",{...withoutClaims,amr:["pwd"]}],
+    ["wrong founder",{...withoutClaims,email:"other@example.com"}],
+    ["stale session",{...withoutClaims,auth_time:second-170}],
+    ["future issue",{...withoutClaims,iat:second+65}],
+    ["issue before auth",{...withoutClaims,iat:second-50}],
+    ["unverified email",{...withoutClaims,email_verified:false}],
+  ]) {
+    await assert.rejects(verifyIntelligenceCustomerIdToken({
+      idToken:token(claims), expectedNonce:nonce,
+      fetchImpl:mockJwks, nowSeconds:second,
+      purpose:"founder_provider_identity",
+    }),name);
+  }
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken:token(withoutClaims,true), expectedNonce:nonce,
+    fetchImpl:mockJwks, nowSeconds:second,
+    purpose:"founder_provider_identity",
+  }),e=>e.code==="identity_signature_invalid");
+  await assert.rejects(verifyIntelligenceCustomerIdToken({
+    idToken:token(withoutClaims), expectedNonce:"y".repeat(44),
+    fetchImpl:mockJwks, nowSeconds:second,
+    purpose:"founder_provider_identity",
+  }));
+});
+
 test("signed ID JWT verifies exact issuer, audience, nonce and expiry but never grants access", async () => {
   const result = await verifyIntelligenceCustomerIdToken({
     idToken: token(validClaims), expectedNonce: nonce,

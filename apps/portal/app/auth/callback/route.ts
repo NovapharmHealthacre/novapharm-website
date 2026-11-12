@@ -6,6 +6,9 @@ import {
   verifyIntelligenceCustomerIdToken,
 } from "../../../../../src/core/intelligence-customer-oidc.mjs";
 import {
+  acknowledgeFounderManagedMfaOnly,
+} from "../../../../../src/core/intelligence-founder-managed-mfa-compat.mjs";
+import {
   checkFounderEnrolled,
   checkFounderUnenrolled,
   createFounderMfaCookie,
@@ -44,6 +47,10 @@ const safeIdentityErrorCodes = new Set([
   "cognito_mfa_request_rejected", "founder_subject_invalid",
   "mfa_action_invalid", "enrolment_cookie_too_large", "enrolment_invalid",
   "enrolment_key_unavailable",
+  "provider_identity_not_founder", "provider_identity_claims_incompatible",
+  "provider_identity_session_not_fresh",
+  "founder_provider_policy_not_attested", "founder_provider_identity_unattested",
+  "founder_provider_session_not_fresh", "mfa_existing_factor_not_attested",
 ]);
 
 function safeIdentityErrorCode(error: unknown): string {
@@ -52,20 +59,23 @@ function safeIdentityErrorCode(error: unknown): string {
   return typeof code === "string" && safeIdentityErrorCodes.has(code) ? code : "unclassified";
 }
 
-function resultPage(verified: boolean, approved = false, registeredButUnattested = false): NextResponse {
+function resultPage(verified: boolean, approved = false, registeredButUnattested = false, founderProviderOnly = false): NextResponse {
   const title = approved ? "Business account connected" : verified ? "Identity verified"
+    : founderProviderOnly ? "Cognito sign-in confirmed"
     : registeredButUnattested ? "Authenticator active" : "Sign-in could not be completed";
   const message = approved
     ? "Your organisation, customer seat, subscription and secure session are verified. Continue to your account. Medicine datasets and research features remain restricted to separately accepted source rights."
     : verified
       ? "Your identity has been verified. Access to medicines intelligence requires a separately approved organisation, customer seat, and subscription. No workspace or paid access has been granted."
+      : founderProviderOnly
+        ? "Cognito has completed a new sign-in under its mandatory password and authenticator policy. Your founder identity was confirmed with a signed token and the live Cognito account. This is identity-only: no NovaPharm customer session, medicines data, or subscription access has been issued."
       : registeredButUnattested
         ? "Your authenticator is registered. Cognito has not yet provided proof of password plus authenticator verification for this sign-in. Start a fresh sign-in and complete both steps. No Medicines Terminal access has been granted."
         : "We could not complete this sign-in securely. Please start a new sign-in from NovaPharm Intelligence.";
   // Fixed server-authored markup: no user-controlled values or identity tokens are rendered.
-  const document = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title} | NovaPharm Intelligence</title><style>body{margin:0;background:#f5f5f7;color:#1d1d1f;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{max-width:680px;margin:13vh auto;padding:36px}.brand{font-size:14px;font-weight:650;letter-spacing:.03em}.panel{background:#fff;border-radius:26px;padding:clamp(24px,6vw,60px);margin-top:22px;box-shadow:0 12px 48px #0000000b}h1{font-size:clamp(32px,5vw,52px);letter-spacing:-.045em;line-height:1.06;margin:0 0 24px}p{color:#626268;font-size:17px;line-height:1.6}a{display:inline-block;margin-top:26px;color:#0066cc;font-weight:600;text-decoration:none}a:focus-visible{outline:3px solid #0066cc;outline-offset:6px}</style></head><body><main class="shell"><div class="brand">NovaPharm Intelligence</div><section class="panel"><h1>${title}</h1><p>${message}</p><a href="${verified ? "/" : "/auth/customer/start"}">${verified ? "Return to the Medicines Terminal" : "Start a new secure sign-in"}</a></section></main></body></html>`;
+  const document = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title} | NovaPharm Intelligence</title><style>body{margin:0;background:#f5f5f7;color:#1d1d1f;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{max-width:680px;margin:13vh auto;padding:36px}.brand{font-size:14px;font-weight:650;letter-spacing:.03em}.panel{background:#fff;border-radius:26px;padding:clamp(24px,6vw,60px);margin-top:22px;box-shadow:0 12px 48px #0000000b}h1{font-size:clamp(32px,5vw,52px);letter-spacing:-.045em;line-height:1.06;margin:0 0 24px}p{color:#626268;font-size:17px;line-height:1.6}a{display:inline-block;margin-top:26px;color:#0066cc;font-weight:600;text-decoration:none}a:focus-visible{outline:3px solid #0066cc;outline-offset:6px}</style></head><body><main class="shell"><div class="brand">NovaPharm Intelligence</div><section class="panel"><h1>${title}</h1><p>${message}</p><a href="${verified || founderProviderOnly ? "/" : "/auth/customer/start"}">${verified ? "Return to the Medicines Terminal" : founderProviderOnly ? "Return to the Intelligence overview" : "Start a new secure sign-in"}</a></section></main></body></html>`;
   return new NextResponse(document, {
-    status: verified || registeredButUnattested ? 200 : 401,
+    status: verified || registeredButUnattested || founderProviderOnly ? 200 : 401,
     headers: { ...securityHeaders, "Content-Type": "text/html; charset=utf-8" },
   });
 }
@@ -139,6 +149,47 @@ export async function GET(request: NextRequest): Promise<Response> {
       // been validated by Cognito and the server. Do not reject a legitimate
       // MFA bootstrap because Lambda's internal URL differs from the public
       // deployment origin.
+      phase = "provider_managed_mfa_identity";
+      let providerFounderOnly = false;
+      try {
+        // Strict first-party Cognito RS256 identity, new nonce, fresh auth_time
+        // and NO contradictory signed ACR/AMR claims. This fallback NEVER
+        // activates the customer session even if a future feature flag is on.
+        const signed = await verifyIntelligenceCustomerIdToken({
+          idToken, expectedNonce: transaction.nonce,
+          purpose: "founder_provider_identity",
+        });
+        phase = "provider_managed_mfa_factor";
+        const enrolled = await checkFounderEnrolled({
+          accessToken, subject: signed.verifiedCognitoSubject,
+        });
+        const acknowledged = acknowledgeFounderManagedMfaOnly({
+          signedFounderIdentity: signed,
+          cognitoEnrolledFounder: enrolled,
+          transactionCreatedAtMs: transaction.createdAtMs,
+        });
+        if (!acknowledged.cognitoFounderAuthenticated ||
+            acknowledged.applicationSessionIssued ||
+            acknowledged.customerAccessGranted ||
+            acknowledged.mfaProofInSignedToken) {
+          throw new Error("Unsafe identity-only acknowledgement.");
+        }
+        providerFounderOnly = true;
+        response = resultPage(false, false, false, true);
+        console.info(JSON.stringify({
+          event: "npi_founder_managed_cognito_identity_only_confirmed",
+        }));
+      } catch (compatibilityError: unknown) {
+        // No PII/JWT/OTP is logged: allowlisted error CLASS only.
+        console.info(JSON.stringify({
+          event: "npi_founder_provider_compatibility_denied",
+          reason: safeIdentityErrorCode(compatibilityError),
+        }));
+        // First-time founders still need TOTP enrolment. Explicit signed
+        // weak claims and stale identities remain fail closed.
+        providerFounderOnly = false;
+      }
+      if (!providerFounderOnly) {
       phase = "mfa_enrolment_identity";
       const pending = await verifyIntelligenceCustomerIdToken({
         idToken, expectedNonce: transaction.nonce, purpose: "mfa_enrolment",
@@ -185,6 +236,7 @@ export async function GET(request: NextRequest): Promise<Response> {
         });
         response.headers.set("Cache-Control", "no-store");
         console.info(JSON.stringify({ event: "npi_founder_totp_enrolment_offered" }));
+      }
       }
     }
     if (identity) {

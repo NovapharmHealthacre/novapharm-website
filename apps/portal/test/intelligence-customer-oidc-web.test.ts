@@ -235,7 +235,7 @@ test("customer session never self-provisions an account and requires the private
 });
 
 
-function prepareCustomerProof(options: { firstLogin?: boolean; internalOrigin?: boolean } = {}) {
+function prepareCustomerProof(options: { firstLogin?: boolean; internalOrigin?: boolean; noMfaClaims?: boolean } = {}) {
   const now = Math.floor(Date.now() / 1000);
   const started = createCustomerLoginTransaction({ signingKey: key });
   const state = new URL(started.authorizeUrl).searchParams.get("state") ?? "";
@@ -258,6 +258,10 @@ function prepareCustomerProof(options: { firstLogin?: boolean; internalOrigin?: 
     iat: now - 30,
     exp: now + 300,
   };
+  if (options.noMfaClaims) {
+    delete (claims as {acr?: string}).acr;
+    delete (claims as {amr?: string[]}).amr;
+  }
   const part1 = Buffer.from(JSON.stringify({ alg: "RS256", kid: jwk.kid })).toString("base64url");
   const part2 = Buffer.from(JSON.stringify(claims)).toString("base64url");
   const signature = signJwt("RSA-SHA256", Buffer.from(part1 + "." + part2), keys.privateKey).toString("base64url");
@@ -326,6 +330,69 @@ async function withCallbackMock(
     else process.env["NPI_CUSTOMER_SESSION_API_ENABLED"] = oldFlag;
   }
 }
+
+test("Cognito signed founder and enrolled TOTP without rollout claims receives identity-only acknowledgement", async () => {
+  const oldKey = process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
+  const oldFlag = process.env["NPI_CUSTOMER_SESSION_API_ENABLED"];
+  const oldFetch = globalThis.fetch;
+  const proof = prepareCustomerProof({ noMfaClaims:true, internalOrigin:true });
+  const access = "a".repeat(220);
+  let getUser = 0;
+  let attemptedCustomerSession = 0;
+  process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = key;
+  // Deliberately turn on a future flag: this fallback MUST NEVER call it.
+  process.env["NPI_CUSTOMER_SESSION_API_ENABLED"] = "true";
+  globalThis.fetch = (async (input: URL | RequestInfo, init?: RequestInit) => {
+    const url = String(input);
+    if (url === intelligenceCustomerOidc.domain + "/oauth2/token") {
+      return new Response(JSON.stringify({
+        token_type:"Bearer",id_token:proof.token,access_token:access,
+      }),{status:200});
+    }
+    if (url === intelligenceCustomerOidc.issuer + "/.well-known/jwks.json") {
+      return new Response(JSON.stringify({ keys:[proof.jwk] }),{status:200});
+    }
+    if (url === "https://cognito-idp.eu-north-1.amazonaws.com/") {
+      assert.equal(new Headers(init?.headers).get("X-Amz-Target"),
+        "AWSCognitoIdentityProviderService.GetUser");
+      getUser++;
+      return new Response(JSON.stringify({
+        UserAttributes:[
+          {Name:"sub",Value:"customer-verified-12345678"},
+          {Name:"email",Value:"vishal@novapharmhealthcare.com"},
+          {Name:"email_verified",Value:"true"},
+        ],
+        UserMFASettingList:["SOFTWARE_TOKEN_MFA"],
+        PreferredMfaSetting:"SOFTWARE_TOKEN_MFA",
+      }),{status:200});
+    }
+    if (url === "https://intelligence.novapharmhealthcare.com/customer/session") {
+      attemptedCustomerSession++;
+      throw Error("SECURITY REGRESSION: cannot activate identity-only session");
+    }
+    throw Error("Unexpected request in provider-managed MFA test");
+  }) as typeof fetch;
+  try {
+    const result=await finishCustomerIdentity(proof.request);
+    assert.equal(result.status,200);
+    const html=await result.text();
+    assert.match(html,/Cognito sign-in confirmed/);
+    assert.match(html,/no NovaPharm customer session/);
+    assert.match(html,/Return to the Intelligence overview/);
+    assert.doesNotMatch(html,/Business account connected/);
+    assert.doesNotMatch(html, /Setup key|Secure your account/);
+    const cookies=responseCookies(result).join(",");
+    assert.doesNotMatch(cookies,/__Host-npi_session=|__Host-npi_mfa_enrol=/);
+    assert.equal(getUser,1);
+    assert.equal(attemptedCustomerSession,0);
+  }finally{
+    globalThis.fetch=oldFetch;
+    if(oldKey===undefined)delete process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
+    else process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"]=oldKey;
+    if(oldFlag===undefined)delete process.env["NPI_CUSTOMER_SESSION_API_ENABLED"];
+    else process.env["NPI_CUSTOMER_SESSION_API_ENABLED"]=oldFlag;
+  }
+});
 
 test("enrolled founder with stale Cognito MFA claims gets safe fresh-sign-in response, never re-enrolment", async () => {
   const oldKey = process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
