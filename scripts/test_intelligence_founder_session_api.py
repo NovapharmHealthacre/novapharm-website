@@ -160,7 +160,7 @@ class FounderTests(unittest.TestCase):
         self.assertEqual(len([k for k in self.db.rows if k[0].startswith("SESSION#")]), 0)
         secret = self.get_secret(r)
         self.assertEqual(len(secret), 43)
-        self.assertNotIn(secret, json.dumps(self.db.rows))
+        self.assertNotIn(secret, json.dumps(list(self.db.rows.values())))
         live = self.call(event("GET", "/founder/session", secret))
         self.assertEqual(live["statusCode"], 200)
         self.assertEqual(json.loads(live["body"])["scope"], api.SCOPE)
