@@ -1,5 +1,6 @@
 import { all, nowIso, one } from "../data/database.mjs";
 import { internalAiGatewayStatus } from "./ai/ai-gateway.mjs";
+import { capabilityRequirements, sharedCapabilityRequirements } from "./intelligence-unified-capability-evidence.mjs";
 
 function requireExecutive(context) {
   if (!context?.accessScopes?.includes("board") && !context?.accessScopes?.includes("admin")) {
@@ -68,6 +69,16 @@ export async function intelligenceReleaseReadiness(context, environment = proces
       intendedAnalyticalWorkspaces: 22,
       productionOperational: false,
       limitations: ["Navigable views are not equivalent to accepted data services, licensed country coverage or deployed models."],
+    },
+    unifiedCapabilities: {
+      contract: "novapharm.intelligence.unified-capability-readiness.v1",
+      proofStore: "not_connected_to_independently_verified_runtime_proofs",
+      customerReleaseApproved: false,
+      groups: Object.entries(capabilityRequirements).map(([id, specific]) => ({
+        id, productionCertified: false,
+        status: "independent_production_acceptance_required",
+        requiredEvidence: [...sharedCapabilityRequirements, ...specific]
+      }))
     },
     production: {
       status: "not-certified",
