@@ -9,8 +9,8 @@ import {
   acknowledgeFounderManagedMfaOnly,
 } from "../../../../../src/core/intelligence-founder-managed-mfa-compat.mjs";
 import {
-  requestFounderPrivateSession,
-} from "../../../../../src/core/intelligence-founder-private-session-bridge.mjs";
+  requestFounderPrivateIamSession,
+} from "../../../../../src/core/intelligence-founder-iam-bridge.mjs";
 import {
   checkFounderEnrolled,
   checkFounderUnenrolled,
@@ -180,9 +180,10 @@ export async function GET(request: NextRequest): Promise<Response> {
           throw new Error("Unsafe identity-only acknowledgement.");
         }
         providerFounderOnly = true;
-        const founderSession = await requestFounderPrivateSession({
-          idToken, accessToken,
-          signingKey: process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] ?? "",
+        const founderSession = await requestFounderPrivateIamSession({
+          signedFounderIdentity: signed,
+          accessToken,
+          transactionCreatedAtMs: transaction.createdAtMs,
         });
         response = resultPage(false, false, false, true, founderSession !== null);
         if (founderSession) {
