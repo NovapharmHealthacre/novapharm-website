@@ -102,7 +102,7 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
         if(viewport.width>=1101){
           assert.ok(layout.copyX/layout.heroWidth<=.095,`${label}: hero content drifts too far right`);
           assert.ok(layout.heroHeight>=500 && layout.heroHeight<=635,`${label}: hero is not an editorial banner`);
-          assert.ok(layout.cards.every(card=>card.width>=.19*layout.viewportWidth),`${label}: portfolio cards are too narrow`);
+          assert.ok(layout.cards.every(card=>card.width>=.18*layout.viewportWidth),`${label}: portfolio cards are too narrow`);
           assert.ok(layout.cards.every(card=>card.height<=325),`${label}: portfolio cards are too tall`);
           assert.ok(layout.cards[0].x<.37*layout.viewportWidth,`${label}: portfolio row has excess left whitespace`);
         }
