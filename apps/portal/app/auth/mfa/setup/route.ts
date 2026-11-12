@@ -43,7 +43,11 @@ const read = (request: NextRequest) => verifyFounderMfaCookie({
 
 /** Founder-only Cognito TOTP setup: never a customer application session. */
 export async function GET(request: NextRequest): Promise<Response> {
-  if (request.nextUrl.origin !== domain) return errorPage();
+  // API Gateway can hand Next.js an internal URL, not the public origin.
+  // This route requires the authenticated AES-GCM MFA cookie and Cognito
+  // subject check; origin string comparison is not a credential.
+  // Responses are fixed to the production host by API Gateway routing.
+
   try {
     const session = read(request);
     // Only AWS Cognito can issue this key to an authenticated, MFA-unenrolled
@@ -69,8 +73,9 @@ export async function GET(request: NextRequest): Promise<Response> {
 }
 
 export async function POST(request: NextRequest): Promise<Response> {
-  if (request.nextUrl.origin !== domain ||
-      request.headers.get("origin") !== domain ||
+  // CSRF protection uses the browser-supplied Origin header, NOT the
+  // possibly-internal server URL created by Lambda Web Adapter.
+  if (request.headers.get("origin") !== domain ||
       request.headers.get("content-type")?.split(";")[0] !== "application/x-www-form-urlencoded") {
     return errorPage();
   }

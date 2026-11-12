@@ -121,7 +121,7 @@ test("signed founder-only bootstrap shows self-service TOTP key and verifies Cog
     return new Response(JSON.stringify(result),{status:200});
   }) as typeof fetch;
   try {
-    const req = new NextRequest("https://intelligence.novapharmhealthcare.com/auth/mfa/setup",{
+    const req = new NextRequest("http://localhost:4303/auth/mfa/setup",{
       headers:{cookie:`__Host-npi_mfa_enrol=${sealed.cookieValue}`},
     });
     const page = await openMfaSetup(req);
@@ -133,7 +133,7 @@ test("signed founder-only bootstrap shows self-service TOTP key and verifies Cog
     assert.doesNotMatch(html,new RegExp(accessToken));
     assert.deepEqual(calls,["GetUser","AssociateSoftwareToken"]);
     const form = new URLSearchParams({csrf:unsealed.csrf,code:"123456"});
-    const verifyReq = new NextRequest("https://intelligence.novapharmhealthcare.com/auth/mfa/setup",{
+    const verifyReq = new NextRequest("http://localhost:4303/auth/mfa/setup",{
       method:"POST",
       headers:{
         cookie:`__Host-npi_mfa_enrol=${sealed.cookieValue}`,
@@ -178,7 +178,7 @@ test("customer session never self-provisions an account and requires the private
 });
 
 
-function prepareCustomerProof() {
+function prepareCustomerProof(options: { firstLogin?: boolean; internalOrigin?: boolean } = {}) {
   const now = Math.floor(Date.now() / 1000);
   const started = createCustomerLoginTransaction({ signingKey: key });
   const state = new URL(started.authorizeUrl).searchParams.get("state") ?? "";
@@ -194,8 +194,9 @@ function prepareCustomerProof() {
     token_use: "id",
     sub: "customer-verified-12345678",
     email_verified: true,
-    acr: "urn:cognito:loa:4",
-    amr: ["pwd", "otp", "mfa"],
+    email: "vishal@novapharmhealthcare.com",
+    acr: options.firstLogin ? "urn:cognito:loa:1" : "urn:cognito:loa:4",
+    amr: options.firstLogin ? ["pwd"] : ["pwd", "otp", "mfa"],
     auth_time: now - 30,
     iat: now - 30,
     exp: now + 300,
@@ -206,7 +207,7 @@ function prepareCustomerProof() {
   const token = part1 + "." + part2 + "." + signature;
   const request = new NextRequest(
     new URL("/auth/callback?code=valid_test_authorization_code&state=" + encodeURIComponent(state),
-      "https://intelligence.novapharmhealthcare.com"),
+      options.internalOrigin ? "http://localhost:4303" : "https://intelligence.novapharmhealthcare.com"),
     { headers: { cookie: "__Host-npi_oidc_tx=" + started.transactionCookieValue } },
   );
   return { request, token, jwk };
@@ -268,6 +269,63 @@ async function withCallbackMock(
     else process.env["NPI_CUSTOMER_SESSION_API_ENABLED"] = oldFlag;
   }
 }
+
+test("founder first-password callback on internal Lambda URL starts MFA, not a customer session", async () => {
+  const oldKey = process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
+  const oldFlag = process.env["NPI_CUSTOMER_SESSION_API_ENABLED"];
+  const oldFetch = globalThis.fetch;
+  const proof = prepareCustomerProof({ firstLogin: true, internalOrigin: true });
+  const access = "a".repeat(220);
+  const calls: string[] = [];
+  process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = key;
+  delete process.env["NPI_CUSTOMER_SESSION_API_ENABLED"];
+  globalThis.fetch = (async (input: URL | RequestInfo, init?: RequestInit) => {
+    const url = String(input);
+    if (url === intelligenceCustomerOidc.domain + "/oauth2/token") {
+      return new Response(JSON.stringify({
+        token_type: "Bearer", id_token: proof.token, access_token: access,
+      }), { status: 200 });
+    }
+    if (url === intelligenceCustomerOidc.issuer + "/.well-known/jwks.json") {
+      return new Response(JSON.stringify({ keys: [proof.jwk] }), { status: 200 });
+    }
+    if (url === "https://cognito-idp.eu-north-1.amazonaws.com/") {
+      assert.equal(new Headers(init?.headers).get("X-Amz-Target"),
+        "AWSCognitoIdentityProviderService.GetUser");
+      calls.push("GetUser");
+      return new Response(JSON.stringify({
+        UserAttributes: [
+          { Name: "sub", Value: "customer-verified-12345678" },
+          { Name: "email", Value: "vishal@novapharmhealthcare.com" },
+          { Name: "email_verified", Value: "true" },
+        ],
+        UserMFASettingList: [],
+      }), { status: 200 });
+    }
+    throw Error("Unexpected network request in MFA bootstrap test");
+  }) as typeof fetch;
+  try {
+    assert.equal(proof.request.nextUrl.origin, "http://localhost:4303");
+    const response = await finishCustomerIdentity(proof.request);
+    assert.equal(response.status, 303);
+    assert.equal(response.headers.get("location"),
+      "https://intelligence.novapharmhealthcare.com/auth/mfa/setup");
+    const cookies = responseCookies(response).join(",");
+    assert.match(cookies, /__Host-npi_mfa_enrol=/);
+    assert.match(cookies, /HttpOnly/);
+    assert.match(cookies, /Secure/);
+    assert.doesNotMatch(cookies, /__Host-npi_session=/);
+    assert.doesNotMatch(cookies, /access_token|id_token|refresh_token/);
+    assert.doesNotMatch(cookies, new RegExp(access));
+    assert.deepEqual(calls, ["GetUser"]);
+  } finally {
+    globalThis.fetch = oldFetch;
+    if (oldKey === undefined) delete process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
+    else process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = oldKey;
+    if (oldFlag === undefined) delete process.env["NPI_CUSTOMER_SESSION_API_ENABLED"];
+    else process.env["NPI_CUSTOMER_SESSION_API_ENABLED"] = oldFlag;
+  }
+});
 
 test("signed Cognito identity alone never grants a customer session with feature gate off", async () => {
   await withCallbackMock("flag-off", (response, calls) => {

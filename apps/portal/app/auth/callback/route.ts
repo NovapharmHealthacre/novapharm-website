@@ -12,6 +12,12 @@ import {
 
 export const dynamic = "force-dynamic";
 
+// The API Gateway/Lambda Web Adapter forwards to an internal HTTP server.
+// NextRequest.nextUrl.origin can reflect that internal origin rather than the
+// already-pinned public OAuth callback origin. Never infer redirect targets
+// from internal URLs, caller Host or X-Forwarded-* headers.
+const FOUNDER_PUBLIC_ORIGIN = "https://intelligence.novapharmhealthcare.com";
+
 const securityHeaders = {
   "Cache-Control": "no-store",
   "Referrer-Policy": "no-referrer",
@@ -29,6 +35,10 @@ const safeIdentityErrorCodes = new Set([
   "identity_signature_invalid", "identity_signing_key_missing",
   "identity_claims_invalid", "identity_email_unverified",
   "identity_mfa_level_insufficient", "identity_auth_stale",
+  "mfa_enrolment_not_authorised", "mfa_enrolment_not_eligible",
+  "cognito_mfa_request_rejected", "founder_subject_invalid",
+  "mfa_action_invalid", "enrolment_cookie_too_large", "enrolment_invalid",
+  "enrolment_key_unavailable",
 ]);
 
 function safeIdentityErrorCode(error: unknown): string {
@@ -117,8 +127,10 @@ export async function GET(request: NextRequest): Promise<Response> {
       // the user has enrolled MFA. Never accept it as a verified customer.
       if (!error || typeof error !== "object" ||
           !("code" in error) || error.code !== "identity_mfa_level_insufficient") throw error;
-      if (request.nextUrl.origin !== "https://intelligence.novapharmhealthcare.com")
-        throw error;
+      // The exact OIDC callback URI and code/PKCE/state/nonce have already
+      // been validated by Cognito and the server. Do not reject a legitimate
+      // MFA bootstrap because Lambda's internal URL differs from the public
+      // deployment origin.
       phase = "mfa_enrolment_identity";
       const pending = await verifyIntelligenceCustomerIdToken({
         idToken, expectedNonce: transaction.nonce, purpose: "mfa_enrolment",
@@ -134,7 +146,7 @@ export async function GET(request: NextRequest): Promise<Response> {
         signingKey: process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] ?? "",
       });
       response = NextResponse.redirect(
-        new URL("/auth/mfa/setup", request.nextUrl.origin), { status: 303 },
+        new URL("/auth/mfa/setup", FOUNDER_PUBLIC_ORIGIN), { status: 303 },
       );
       response.cookies.set({
         name: "__Host-npi_mfa_enrol",
