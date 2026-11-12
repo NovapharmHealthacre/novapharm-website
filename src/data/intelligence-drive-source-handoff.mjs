@@ -145,6 +145,13 @@ export function buildQuarantinedReviewProjection(input = {}) {
       record_key: key,
       quarantine_status: "RAW_UNVALIDATED",
       customer_publish_approved: false,
+      ai_processing_approved: false,
+      commercial_redistribution_approved: false,
+      production_promoted: false,
+      medicine_identity_accepted: false,
+      publisher_authenticity_independently_verified: false,
+      source_rights_grant_id: null,
+      snapshot_date: input.snapshotDate,
       accepted_observations: 0,
       source_rights_status: "REVIEW_REQUIRED",
     };
