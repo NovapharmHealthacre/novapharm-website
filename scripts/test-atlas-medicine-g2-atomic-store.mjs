@@ -51,7 +51,7 @@ const sample = () => {
   };
 };
 function fake({ indexMissing = null, denyAuthority = false, denyRights = false,
-  denyIdentity = false, failAudit = false, hideQuarantineReadback = false } = {}) {
+  denyIdentity = false, denySource = false, failAudit = false, hideQuarantineReadback = false } = {}) {
   const names = Object.keys(keys);
   const data = Object.fromEntries(names.map(name => [name, []]));
   let started = 0, committed = 0, rolledBack = 0;
@@ -117,6 +117,13 @@ function fake({ indexMissing = null, denyAuthority = false, denyRights = false,
       assert.equal(claim.period,"2026-08");
       assert.equal(claim.rows[0].medicineIdentity,"medicine:reviewed:1");
       return !denyIdentity;
+    },
+    verifyTransactionSource: async receipt=>{
+      assert.equal(receipt.sourceId,source);
+      assert.equal(receipt.reportingPeriod,"2026-08");
+      assert.equal(receipt.rowCount,1);
+      assert.equal(receipt.reconciliationTotal,5);
+      return !denySource;
     }
   });
   return {store,data, stats:()=>({started,committed,rolledBack})};
@@ -261,6 +268,15 @@ test("independent exact temporal identity verification is mandatory before any G
   const sys=fake({denyIdentity:true});
   await assert.rejects(sys.store.commitAtomic(sample()),
     e=>e.code==="live_canonical_identity_unverified");
+  assert.ok(Object.values(sys.data).every(rows=>rows.length===0));
+  assert.deepEqual(sys.stats(),{started:1,committed:0,rolledBack:1});
+});
+
+
+test("independent publisher source receipt and reconciled partition is mandatory before any G2 write", async()=>{
+  const sys=fake({denySource:true});
+  await assert.rejects(sys.store.commitAtomic(sample()),
+    e=>e.code==="live_source_reconciliation_unverified");
   assert.ok(Object.values(sys.data).every(rows=>rows.length===0));
   assert.deepEqual(sys.stats(),{started:1,committed:0,rolledBack:1});
 });
