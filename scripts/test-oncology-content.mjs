@@ -75,10 +75,10 @@ for (const [name, stylesheet] of [["static",approvedLayout],["Next",nextLayout]]
   const desktopRule = responsiveImageRule(stylesheet,desktopMedia);
   const tabletRule = responsiveImageRule(stylesheet,tabletMedia);
   const mobileRule = responsiveImageRule(stylesheet,mobileMedia);
-  assert.match(desktopRule,/object-fit:\\s*cover;/,`${name}: desktop portrait must cover its hero canvas`);
-  assert.match(tabletRule,/object-fit:\\s*contain;/,`${name}: tablet portrait must preserve full framing`);
-  assert.match(mobileRule,/object-fit:\\s*contain;/,`${name}: mobile portrait must preserve full framing`);
-  assert.match(mobileRule,/-webkit-mask-image:\\s*linear-gradient/,`${name}: mobile must suppress source-edge lettering`);
+  assert.match(desktopRule,/object-fit:\s*cover;/,`${name}: desktop portrait must cover its hero canvas`);
+  assert.match(tabletRule,/object-fit:\s*contain;/,`${name}: tablet portrait must preserve full framing`);
+  assert.match(mobileRule,/object-fit:\s*contain;/,`${name}: mobile portrait must preserve full framing`);
+  assert.match(mobileRule,/-webkit-mask-image:\s*linear-gradient/,`${name}: mobile must suppress source-edge lettering`);
 }
 assert.match(approvedLayout, /grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/, "All three Oncology visuals share a grid row");
 assert.match(approvedLayout, /npoc-focus-card span/, "Image labels must overlay on the cards");
