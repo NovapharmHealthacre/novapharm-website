@@ -140,13 +140,14 @@ function readRequest(p) {
 
 export function createAtlasG2AtomicStore({
   client, database, verifyTransactionAuthority,
-  verifyTransactionRights, clock = Date.now
+  verifyTransactionRights, verifyTransactionIdentity, clock = Date.now
 } = {}) {
   if (database?.databaseName !== DB ||
     typeof database.collection !== "function" ||
     typeof client?.startSession !== "function" ||
     typeof verifyTransactionAuthority !== "function" ||
     typeof verifyTransactionRights !== "function" ||
+    typeof verifyTransactionIdentity !== "function" ||
     typeof clock !== "function") denied("trusted_atlas_runtime_required");
 
   const collections = Object.fromEntries(
@@ -200,6 +201,24 @@ export function createAtlasG2AtomicStore({
             await verifyTransactionRights(check, session) !== true) {
           denied("live_authority_or_rights_revoked");
         }
+        // Source rights do not establish that a particular code, strength,
+        // form, brand or effective-month resolves to this canonical identity.
+        // Independently re-check every exact identity against authority-owned
+        // temporal mappings within this transaction, never trust G1 boolean
+        // identity_proof fields or model-generated aliases.
+        const identityCheck = Object.freeze({
+          workspaceId: WORKSPACE, sourceId: p.sourceId,
+          sourceVersion: p.sourceVersion, resourceId: p.resourceId,
+          resourceSha256: p.resourceSha256, period: p.period,
+          rows: Object.freeze(p.records.map(row => Object.freeze({
+            rowId: row.row_id, provenanceSha256: row.provenance_sha256,
+            medicineIdentity: row.medicine_identity,
+            mappingRevision: row.identity_revision
+          })))
+        });
+        if (await verifyTransactionIdentity(identityCheck, session) !== true) {
+          denied("live_canonical_identity_unverified");
+        }
         const duplicate = await manifests.findOne({
           workspace_id: WORKSPACE, manifest_sha256: p.manifestSha256
         }, { session, projection: { _id: 1 } });
@@ -241,7 +260,8 @@ export function createAtlasG2AtomicStore({
         }
       });
     } catch (error) {
-      if (error?.code === "live_authority_or_rights_revoked") throw error;
+      if (error?.code === "live_authority_or_rights_revoked" ||
+          error?.code === "live_canonical_identity_unverified") throw error;
       denied("atomic_transaction_failed");
     }
     return Object.freeze({
