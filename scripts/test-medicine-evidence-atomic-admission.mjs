@@ -100,6 +100,12 @@ function adapters(input = sample()) {
       customerPublishApproved: false
     }),
     readBackCommit: async p => read(p),
+    quarantineCommitted: async p => ({
+      quarantined: true, workspaceId: p.workspaceId,
+      transactionId: p.transactionId, manifestSha256: p.manifestSha256,
+      eventId: p.eventId, reason: p.reason,
+      auditCommitted: true, customerPublishApproved: false
+    }),
     rights, read
   };
 }
@@ -239,21 +245,53 @@ test("false atomic receipt and missing independent audit readback prevent admitt
   }, "durable_audit_or_manifest_missing");
 });
 
-test("rights revoked after a durable transaction refuse release and require quarantine", async () => {
+test("rights revoked after a durable transaction are quarantined with an audit receipt", async () => {
   const input = sample(); const mock = adapters(input);
-  let checks = 0;
+  let checks = 0; const quarantines = [];
   await denied({ ...input, ...mock,
-    verifyCurrentRights: async () => (++checks === 1 ? mock.rights() : { ...mock.rights(), revoked: true })
+    verifyCurrentRights: async () => (++checks === 1 ? mock.rights() : { ...mock.rights(), revoked: true }),
+    quarantineCommitted: async p => {
+      quarantines.push(p);
+      return {
+        quarantined: true, workspaceId: p.workspaceId,
+        transactionId: p.transactionId, manifestSha256: p.manifestSha256,
+        eventId: p.eventId, reason: p.reason,
+        auditCommitted: true, customerPublishApproved: false
+      };
+    }
   }, "rights_revoked_after_commit");
   assert.equal(checks, 2);
+  assert.equal(quarantines.length, 1);
+  assert.equal(quarantines[0].reason, "rights_recheck_failed_after_commit");
 });
 
-test("authority revocation after commit prevents authorised result", async () => {
+test("authority recheck failure after commit is quarantined with an audit receipt", async () => {
+  const input = sample(); const mock = adapters(input);
+  let checks = 0; const quarantines = [];
+  await denied({ ...input, ...mock,
+    verifyCurrentAuthority: async () => ++checks === 1,
+    quarantineCommitted: async p => {
+      quarantines.push(p);
+      return {
+        quarantined: true, workspaceId: p.workspaceId,
+        transactionId: p.transactionId, manifestSha256: p.manifestSha256,
+        eventId: p.eventId, reason: p.reason,
+        auditCommitted: true, customerPublishApproved: false
+      };
+    }
+  }, "authority_revoked_after_commit");
+  assert.equal(checks, 2);
+  assert.equal(quarantines.length, 1);
+  assert.equal(quarantines[0].reason, "authority_recheck_failed_after_commit");
+});
+
+test("failed quarantine attestation prevents a successful admission result", async () => {
   const input = sample(); const mock = adapters(input);
   let checks = 0;
   await denied({ ...input, ...mock,
-    verifyCurrentAuthority: async () => ++checks === 1
-  }, "authority_revoked_after_commit");
+    verifyCurrentRights: async () => (++checks === 1 ? mock.rights() : { ...mock.rights(), revoked: true }),
+    quarantineCommitted: async () => ({ quarantined: true, customerPublishApproved: true })
+  }, "post_commit_quarantine_not_attested");
 });
 
 test("release timestamp and absent transactional adapters fail closed", async () => {
@@ -261,5 +299,7 @@ test("release timestamp and absent transactional adapters fail closed", async ()
   await denied({ ...input, ...mock, now: new Date("2026-11-12T12:03:00Z") },
     "release_freshness_invalid");
   await denied({ ...input, ...mock, commitAtomic: undefined },
+    "trusted_storage_adapters_required");
+  await denied({ ...input, ...mock, quarantineCommitted: undefined },
     "trusted_storage_adapters_required");
 });
