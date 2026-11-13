@@ -7,7 +7,7 @@ The `createAtlasG2AtomicStore` factory in `src/data/atlas-medicine-g2-atomic-sto
 ## Implementation contracts
 - One transaction writes every G1-verified private candidate row, its immutable source manifest and an append-only audit event, with **snapshot read concern**, **majority+journal write concern** and no partial write on callback denial or failed acknowledgment.
 - A separate majority-read verification checks the exact transaction's admitted row count, source manifest and audit receipt. It returns no acceptance on mismatch or unavailable database reads.
-- If later authority/rights/clock or durable readback fails, a second transaction changes all rows and the manifest to `quarantined_never_publish` and appends a quarantine audit. Failure of any write fails the transaction and denies an attestation.
+- If later authority/rights/clock or durable readback fails, a second transaction changes all rows and the manifest to `quarantined_never_publish` and appends a quarantine audit. It **then independently reads back** the majority-committed quarantined row count, manifest and audit event before returning any attestation. Failed writes or failed durable proof refuse success, even if quarantine may have committed.
 - The adapter revalidates full row allowlists, totals, row hashes, units and workspace before writes. A selected new transaction has no customer-publish authority.
 - An explicit **unique index** on every evidence row key, source-manifest key and audit-event key must exist before any G2 write. The live production-name collections currently have only nonunique indexes; therefore a real write MUST refuse.
 
@@ -40,3 +40,5 @@ These are **operator migration requirements**, not an instruction to create nonu
 
 ## Audit truth boundary
 Test doubles exercise transactional contracts. They are not an Atlas integration test or legal rights approval; the actual production collection counts remain zero. The `novapharm_intelligence_production` name does **not** mean a launch-ready database.
+
+**Remaining crash-consistency review:** independently prove retry/idempotency after a MongoDB `UnknownTransactionCommitResult`, coordinator process crash, delayed clock/source revocation and backup restoration before any live admission. A synthetic mock transaction cannot certify those behaviors.
