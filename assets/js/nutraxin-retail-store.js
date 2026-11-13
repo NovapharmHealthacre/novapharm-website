@@ -133,11 +133,21 @@ function emitRetailFunnelEvent(name) {
   }));
 }
 
+export function checkoutReturnOutcome(result) {
+  // Only a server-confirmed, reconciled paid order can clear the Bag.
+  if(result?.paid === true && result?.status === "PAID") return "paid";
+  if(result?.paid === false && result?.status === "CHECKOUT_EXPIRED") return "expired";
+  if(result?.paid === false && result?.status === "PAYMENT_FAILED") return "failed";
+  return "pending";
+}
+
 function runStore(data) {
   let bag = loadBag(data);
   let approvedRelease = false;
   let confirmedOrder = "";
   let awaitingOrder = "";
+  let closedOrder = "";
+  let closedOutcome = "";
   const productMap = new Map(data.products.map((p) => [p.sku, p]));
   const slugMap = new Map(data.products.map((p) => [p.slug, p]));
   const updateNav = () => {
@@ -239,6 +249,10 @@ function runStore(data) {
         checkout.textContent = confirmedOrder ? "Payment confirmed" : awaitingOrder ? "Payment pending" : ready ? (consumerAccess() ? "Continue with your account" : "Continue as guest") : "Checkout not available yet";
         explanation.textContent = confirmedOrder
           ? "Payment confirmed for order " + confirmedOrder + ". NovaPharm will process your order."
+          : closedOutcome === "expired"
+          ? "Checkout expired for order " + closedOrder + " without a completed payment. Your Bag is saved and you may start a new checkout."
+          : closedOutcome === "failed"
+          ? "Payment failed for order " + closedOrder + ". No successful payment has been recorded. Your Bag is saved so you may try again."
           : awaitingOrder
           ? "Payment status is being verified for order " + awaitingOrder + ". Please do not attempt another payment for this order."
           : ready
@@ -293,10 +307,21 @@ function runStore(data) {
           try {
             const r = await fetch(CHECKOUT_API_ORIGIN + "/status/" + encodeURIComponent(returnedOrder),{mode:"cors",credentials:"omit",cache:"no-store"});
             const result = r.ok ? await r.json() : null;
-            if (result?.paid === true) {
+            const outcome = checkoutReturnOutcome(result);
+            if (outcome === "paid") {
               confirmedOrder = returnedOrder;
               awaitingOrder = "";
+              closedOutcome = "";
               bag=[];saveBag(bag);updateNav();
+              try {sessionStorage.removeItem("np-retail-checkout-attempt");}catch{}
+              render();
+              return;
+            }
+            if (outcome === "expired" || outcome === "failed") {
+              // A signed payment outcome is authoritative; a redirect alone is not.
+              awaitingOrder = "";
+              closedOrder = returnedOrder;
+              closedOutcome = outcome;
               try {sessionStorage.removeItem("np-retail-checkout-attempt");}catch{}
               render();
               return;
