@@ -365,3 +365,41 @@ test("invalid trusted clock before commit blocks writes", async () => {
   }, "trusted_clock_invalid_before_commit");
   assert.equal(writes, 0);
 });
+
+test("failed post-commit readback requires durable quarantine before denial", async () => {
+  const input = sample();
+  const mock = adapters(input);
+  for (const readBackCommit of [
+    async () => { throw new Error("simulated database timeout"); },
+    async p => ({ ...mock.read(p), auditCommitted: false }),
+    async p => ({ ...mock.read(p), acceptedRows: 0 }),
+    async p => ({ ...mock.read(p), manifestSha256: h("e") })
+  ]) {
+    let quarantines = 0;
+    await denied({
+      ...input, ...mock, readBackCommit,
+      quarantineCommitted: async payload => {
+        quarantines += 1;
+        assert.equal(payload.reason, "durable_audit_or_manifest_missing");
+        assert.equal(payload.customerPublishApproved, false);
+        return mock.quarantineCommitted(payload);
+      }
+    }, "durable_audit_or_manifest_missing");
+    assert.equal(quarantines, 1);
+  }
+});
+
+test("post-commit readback failure never passes without verified quarantine audit", async () => {
+  const input = sample();
+  const mock = adapters(input);
+  await denied({
+    ...input, ...mock,
+    readBackCommit: async () => { throw new Error("simulated timeout"); },
+    quarantineCommitted: async () => ({ quarantined: true, auditCommitted: false })
+  }, "post_commit_quarantine_not_attested");
+  await denied({
+    ...input, ...mock,
+    readBackCommit: async () => { throw new Error("simulated timeout"); },
+    quarantineCommitted: async () => { throw new Error("simulated quarantine outage"); }
+  }, "post_commit_quarantine_failed");
+});
