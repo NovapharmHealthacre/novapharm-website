@@ -137,6 +137,35 @@ test("authoritative server fixtures can exercise the private atomic admission co
   assert.deepEqual([verified, writes, reads], [2, 1, 1]);
 });
 
+test("authority identity fields must be actual strings before any adapter is called", async () => {
+  for (const field of ["principalId", "authorityRevision"]) {
+    for (const value of [undefined, null, "", 123]) {
+      const input = sample();
+      input.authority = { ...input.authority, [field]: value };
+      let touched = 0;
+      await denied({
+        ...input,
+        verifyCurrentAuthority: async () => { touched += 1; return true; },
+        verifyCurrentRights: async () => { touched += 1; return adapters(input).rights(); },
+        commitAtomic: async () => { touched += 1; },
+        readBackCommit: async () => { touched += 1; }
+      }, "trusted_private_authority_required");
+      assert.equal(touched, 0);
+    }
+  }
+});
+
+test("numeric transaction identifiers are not accepted as durable commit receipts", async () => {
+  const input = sample();
+  const mock = adapters(input);
+  await denied({
+    ...input, ...mock,
+    commitAtomic: async p => ({
+      ...await mock.commitAtomic(p), transactionId: 123
+    })
+  }, "atomic_commit_not_attested");
+});
+
 test("missing, wrong-tenant, customer or untrusted session never reaches source rights or writes", async () => {
   for (const bad of [
     null, { ...sample().authority, workspaceId: "another-tenant" },
