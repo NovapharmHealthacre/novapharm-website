@@ -294,7 +294,7 @@ def account_orders(customer):
             if not summary or summary.get("customerSub")!={"S":customer["subject"]}:
                 continue
             state=summary.get("status",{}).get("S","PROCESSING")
-            if state not in ("PAID","CHECKOUT_OPEN","OPENING_CHECKOUT","APPROVED_FOR_PAYMENT","PAYMENT_FAILED"):
+            if state not in ("PAID","CHECKOUT_OPEN","OPENING_CHECKOUT","APPROVED_FOR_PAYMENT","PAYMENT_FAILED","CHECKOUT_EXPIRED"):
                 state="PROCESSING"
             orders.append({"orderId":order_id,"status":state})
         return reply(200,{"orders":orders})
@@ -321,7 +321,7 @@ def order_status(event, order_id):
         return error(404, "order_not_found")
     state = row.get("status", {}).get("S", "AWAITING_STRIPE")
     return reply(200, {"orderId":order_id,
-                       "status":state if state in ("PAID","CHECKOUT_OPEN","PAYMENT_FAILED","APPROVED_FOR_PAYMENT","OPENING_CHECKOUT") else "PROCESSING",
+                       "status":state if state in ("PAID","CHECKOUT_OPEN","PAYMENT_FAILED","CHECKOUT_EXPIRED","APPROVED_FOR_PAYMENT","OPENING_CHECKOUT") else "PROCESSING",
                        "paid":state=="PAID"})
 
 def handler(event, context):

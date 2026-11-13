@@ -26,7 +26,7 @@ ALLOWED = {
     "checkout.session.completed": "PAID",
     "checkout.session.async_payment_succeeded": "PAID",
     "checkout.session.async_payment_failed": "FAILED",
-    "checkout.session.expired": "FAILED"
+    "checkout.session.expired": "EXPIRED"
 }
 ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{5,99}$")
 EVENT_ID = re.compile(r"^evt_[A-Za-z0-9]+$")
@@ -93,8 +93,11 @@ def reconcile(event, stored):
         session.get("livemode") is not True):
         raise ValueError("Signed Checkout totals or owner do not reconcile")
     action = ALLOWED[event["type"]]
-    if action == "PAID" and session.get("payment_status") != "paid":
-        return None
+    if action == "PAID":
+        if session.get("payment_status") != "paid":
+            return None
+    elif session.get("payment_status") != "unpaid":
+        raise ValueError("Unpaid Checkout event contradicts payment status")
     return {"action": action, "sessionId": sid, "attemptId": attempt_id,
             "orderId": order_id, "eventId": event["id"]}
 
@@ -130,7 +133,9 @@ def record_once(event, payment):
              "ExpressionAttributeNames": {"#status": "status"},
              "ExpressionAttributeValues": {
                   ":checkoutOpen": {"S": "CHECKOUT_OPEN"},
-                  ":updated": {"S": "PAID" if payment["action"] == "PAID" else "PAYMENT_FAILED"},
+                  ":updated": {"S": ("PAID" if payment["action"] == "PAID" else
+                                   "CHECKOUT_EXPIRED" if payment["action"] == "EXPIRED" else
+                                   "PAYMENT_FAILED")},
                   ":event": {"S": payment["eventId"]},
                   ":session": {"S": payment["sessionId"]}}}}
     ]

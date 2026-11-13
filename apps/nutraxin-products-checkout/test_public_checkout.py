@@ -200,6 +200,10 @@ class ProductsPaymentTests(unittest.TestCase):
         before=API.handler(self.event("/status/"+order_id),None)
         self.assertEqual(before["statusCode"],200)
         self.assertFalse(json.loads(before["body"])["paid"])
+        DB.rows["ORDER#"+order_id]["status"]={"S":"CHECKOUT_EXPIRED"}
+        expired=API.handler(self.event("/status/"+order_id),None)
+        self.assertEqual(json.loads(expired["body"])["status"],"CHECKOUT_EXPIRED")
+        self.assertFalse(json.loads(expired["body"])["paid"])
         DB.rows["ORDER#"+order_id]["status"]={"S":"PAID"}
         after=API.handler(self.event("/status/"+order_id),None)
         self.assertTrue(json.loads(after["body"])["paid"])

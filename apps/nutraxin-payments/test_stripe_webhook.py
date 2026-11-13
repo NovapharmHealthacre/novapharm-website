@@ -141,9 +141,39 @@ class WebhookTests(unittest.TestCase):
             with self.assertRaises(DummyError):
                 WH.record_once(event(),details)
 
+    def test_expired_checkout_is_abandoned_not_failed_card_payment(self):
+        expiry=event()
+        expiry["type"]="checkout.session.expired"
+        expiry["data"]["object"]["payment_status"]="unpaid"
+        details=WH.reconcile(expiry,durable())
+        self.assertEqual(details["action"],"EXPIRED")
+        self.assertTrue(WH.record_once(expiry,details))
+        writes=DDB.transacted[0]
+        self.assertEqual(writes[1]["Update"]["ExpressionAttributeValues"][":status"]["S"],"EXPIRED")
+        self.assertEqual(writes[3]["Update"]["ExpressionAttributeValues"][":updated"]["S"],"CHECKOUT_EXPIRED")
+        self.assertEqual(writes[2]["Put"]["Item"]["eventType"]["S"],"NUTRAXIN_PAYMENT_EXPIRED")
+        self.assertEqual(writes[2]["Put"]["Item"]["status"]["S"],"PENDING_REVIEW")
+        failed=event()
+        failed["type"]="checkout.session.async_payment_failed"
+        failed["data"]["object"]["payment_status"]="unpaid"
+        self.assertEqual(WH.reconcile(failed,durable())["action"],"FAILED")
+        DDB.transacted.clear()
+        WH.record_once(failed,{"action":"FAILED",**{k:v for k,v in details.items() if k!="action"}})
+        self.assertEqual(DDB.transacted[0][3]["Update"]["ExpressionAttributeValues"][":updated"]["S"],"PAYMENT_FAILED")
+
+    def test_non_paid_event_cannot_reverse_paid_session(self):
+        for kind in ("checkout.session.expired","checkout.session.async_payment_failed"):
+            e=event()
+            e["type"]=kind
+            # A signed but contradictory lifecycle event must never be settled.
+            with self.assertRaises(ValueError):
+                WH.reconcile(e,durable())
+        self.assertEqual(DDB.transacted,[])
+
     def test_late_failed_event_cannot_reverse_already_paid_order(self):
         e=event()
         e["type"]="checkout.session.expired"
+        e["data"]["object"]["payment_status"]="unpaid"
         details=WH.reconcile(e,durable())
         order=details["orderId"]
         aid=details["attemptId"]
