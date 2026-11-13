@@ -41,12 +41,22 @@ const dig = r => {
   ];
   return createHash("sha256").update(JSON.stringify(order.map(k => [k,r[k] ?? null]))).digest("hex");
 };
+const requiredIndex = {
+  name: "rights_unique_exact_resource_revision",
+  unique: true,
+  key: {
+    workspace_id: 1, source_id: 1, source_version: 1,
+    resource_id: 1, resource_sha256: 1, rights_revision: 1
+  }
+};
 function setup(grants = [record()], overrides = {}) {
+  const { indexes = [requiredIndex], ...injections } = overrides;
   const queries = []; let verifications = 0;
   const db = { databaseName: "novapharm_intelligence_production",
     collection: name => {
       assert.equal(name, "npi_source_rights");
-      return {find: (query, opts) => {
+      return {listIndexes: () => ({toArray: async () => indexes}),
+        find: (query, opts) => {
         queries.push(query);
         assert.equal(opts.projection._id, 0);
         return {limit: n => {
@@ -67,7 +77,7 @@ function setup(grants = [record()], overrides = {}) {
   return {queries, calls: () => verifications,
     verify: createAtlasPrivateMedicineRightsVerifier({
       database: db, verifySignedGrant,
-      clock: () => at, ...overrides
+      clock: () => at, ...injections
     })};
 }
 test("production rights read is a strict private, read-only operation", async () => {
@@ -146,4 +156,21 @@ test("wrong database or absent independent verifier fail before any reads",()=>{
   assert.throws(()=>createAtlasPrivateMedicineRightsVerifier({
     database:{databaseName:"novapharm_intelligence_production",collection:()=>({find(){}})}
   }),/Trusted private/);
+});
+
+test("read refuses until the exact compound unique rights constraint exists", async () => {
+  const variants = [
+    [],
+    [{ ...requiredIndex, unique: false }],
+    [{ ...requiredIndex, key: { workspace_id: 1, source_id: 1 } }],
+    [{ ...requiredIndex, sparse: true }],
+    [{ ...requiredIndex, partialFilterExpression: { status: "active" } }],
+    [{ ...requiredIndex, collation: { locale: "en" } }]
+  ];
+  for (const indexes of variants) {
+    const s = setup([record()], { indexes });
+    assert.equal(await s.verify(request()), null);
+    assert.equal(s.queries.length, 0);
+    assert.equal(s.calls(), 0);
+  }
 });
