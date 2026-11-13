@@ -12,7 +12,6 @@ import { createHash, randomUUID } from "node:crypto";
 import { prepareOfficialMedicineEvidenceCandidate } from "./medicine-evidence-admission.mjs";
 
 const WORKSPACE = "novapharm-internal-staging";
-const SHA = /^[0-9a-f]{64}$/u;
 const ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$/u;
 const ISO = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/u;
 
@@ -28,8 +27,8 @@ function identity(authority) {
   return authority && typeof authority === "object" && !Array.isArray(authority) &&
     authority.verifiedBySessionService === true &&
     authority.workspaceId === WORKSPACE &&
-    ID.test(authority.principalId ?? "") &&
-    ID.test(authority.authorityRevision ?? "") &&
+    validId(authority.principalId) &&
+    validId(authority.authorityRevision) &&
     authority.customerAccess === false &&
     Array.isArray(authority.scopes) &&
     authority.scopes.some(s => s === "board" || s === "admin");
@@ -139,7 +138,7 @@ export async function admitPrivateOfficialMedicineEvidence({
   // enforce the checked workspace, status transition, idempotency and ledger.
   const written = await commitAtomic(payload);
   if (!written || written.committed !== true ||
-      !ID.test(written.transactionId ?? "") ||
+      !validId(written.transactionId) ||
       written.eventId !== eventId ||
       written.manifestSha256 !== manifestSha256 ||
       written.workspaceId !== WORKSPACE ||
