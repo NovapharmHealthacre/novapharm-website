@@ -239,6 +239,19 @@ for (const [engineName, browserType] of engines) {
             }
           });
           try {
+            if (route.name === "nutraxin-bag") {
+              // This suite serves public HTML on localhost, which is not an
+              // authorised origin for the production checkout API. Simulate
+              // only the read-only readiness response, fail closed, and keep
+              // all payment/authenticated endpoints strictly unmocked.
+              await page.route("https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com/readiness", async request => {
+                await request.fulfill({
+                  status: 200,
+                  contentType: "application/json",
+                  body: JSON.stringify({ checkout_ready: false, payment_collection_active: false, origin: "localhost" })
+                });
+              });
+            }
             const response = await page.goto(route.path, { waitUntil: "networkidle", timeout: 30_000 });
             assert.equal(response?.status(), 200, `${engineName} ${viewport.name} ${route.path}: navigation failed`);
             await page.locator("main").waitFor({ state: "visible", timeout: 15_000 });
