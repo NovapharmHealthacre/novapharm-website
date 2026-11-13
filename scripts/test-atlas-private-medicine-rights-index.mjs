@@ -103,3 +103,73 @@ test("corrupt inventory and wrong apply type deny", async () => {
   await assert.rejects(ensurePrivateMedicineRightsUniqueIndex({
     database:y.database,apply:"true"}),/Invalid migration mode/);
 });
+
+
+import {
+  ensureG2PrivateMedicineUniqueIndexes, g2MedicineUniqueIndexSpecs
+} from "../src/data/atlas-private-medicine-rights-index.mjs";
+
+function g2Fixture({missing = null, nonempty = null, conflicting = null} = {}) {
+  const collections = {};
+  let writes = 0, approvals = 0;
+  for (const [name, spec] of Object.entries(g2MedicineUniqueIndexSpecs)) {
+    const indexes = [{name: "_id_", key: {_id: 1}, unique: true}];
+    if (name !== missing && name !== conflicting) indexes.push({
+      name: spec.name, key: spec.keys, unique: true, collation: {locale:"simple"}
+    });
+    if (name === conflicting) indexes.push({name: spec.name, key: spec.keys, unique:false});
+    collections[name] = {
+      listIndexes:()=>({toArray:async()=>[...indexes]}),
+      countDocuments:async()=>name===nonempty ? 1 : 0,
+      createIndex:async(keys,opts)=>{
+        writes++;
+        assert.deepEqual(keys, spec.keys);
+        assert.equal(opts.unique, true);
+        assert.equal(opts.name, spec.name);
+        assert.deepEqual(opts.writeConcern, {w:"majority"});
+        indexes.push({name:opts.name,key:keys,unique:true,collation:opts.collation});
+        return opts.name;
+      }
+    };
+  }
+  const database = {databaseName:spec.database,
+    collection:name=>{assert.ok(collections[name]);return collections[name];}};
+  const authorizeMigration = async p=>{
+    approvals++;
+    assert.equal(p.rightsGranted,false);
+    assert.equal(p.customerAccessEnabled,false);
+    return true;
+  };
+  return {database,authorizeMigration,stats:()=>({writes,approvals})};
+}const names = Object.keys(g2MedicineUniqueIndexSpecs);
+test("three G2 compound constraints are dry-run verified without writes", async()=>{
+  const x=g2Fixture({missing:names[0]});
+  const result=await ensureG2PrivateMedicineUniqueIndexes({database:x.database});
+  assert.deepEqual(result.pending,[names[0]]);
+  assert.equal(x.stats().writes,0);
+});
+test("reviewed private G2 migration creates only missing indexes with exact unique majority options", async()=>{
+  const x=g2Fixture({missing:names[1]});
+  const result=await ensureG2PrivateMedicineUniqueIndexes({
+    database:x.database,apply:true,changeTicket:"NPI-CHANGE-G2-20261113",
+    authorizeMigration:x.authorizeMigration
+  });
+  assert.equal(result.status,"created_and_verified");
+  assert.deepEqual(result.applied,[names[1]]);
+  assert.deepEqual(x.stats(),{writes:1,approvals:1});
+});
+test("missing approval, nonempty data and conflicting G2 indexes deny writes",async()=>{
+  for(const defect of [{nonempty:names[2]},{conflicting:names[1]}]){
+    const x=g2Fixture({...defect,missing:names[0]});
+    await assert.rejects(ensureG2PrivateMedicineUniqueIndexes({
+      database:x.database,apply:true,changeTicket:"NPI-CHANGE-G2-20261113",
+      authorizeMigration:x.authorizeMigration
+    }),/Nonempty|Conflicting/);
+    assert.equal(x.stats().writes,0);
+  }
+  const x=g2Fixture({missing:names[0]});
+  await assert.rejects(ensureG2PrivateMedicineUniqueIndexes({
+    database:x.database,apply:true,changeTicket:"NPI-CHANGE-G2-20261113"
+  }),/authority required/);
+  assert.equal(x.stats().writes,0);
+});
