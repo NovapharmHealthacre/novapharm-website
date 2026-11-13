@@ -505,6 +505,7 @@ for (const [engineName, browserType] of engines) {
                 return {
                   portrait: portrait ? {
                     fit:getComputedStyle(portrait).objectFit,
+                     mask:[getComputedStyle(portrait).maskImage,getComputedStyle(portrait).webkitMaskImage].some((value) => typeof value === "string" && value.includes("gradient")),
                     naturalWidth:portrait.naturalWidth,
                     naturalHeight:portrait.naturalHeight,
                     box:getRect(portrait)
@@ -524,7 +525,9 @@ for (const [engineName, browserType] of engines) {
               const label = `${engineName} ${viewport.name}: Oncology approved composition`;
               assert.ok(geometry.portrait?.naturalWidth > 0 && geometry.portrait?.naturalHeight > 0,
                 `${label}: portrait asset must load`);
-              assert.equal(geometry.portrait.fit, "cover", `${label}: portrait must fill its media box without a hard image seam or embedded JPEG edge lettering`);
+              const expectedPortraitFit = viewport.width >= 1101 ? "cover" : "contain";
+              assert.equal(geometry.portrait.fit, expectedPortraitFit, `${label}: desktop cover; tablet/mobile preserve the complete portrait`);
+              assert.equal(geometry.portrait.mask, viewport.width <= 1100, `${label}: responsive portrait must feather the source JPEG edge or contained bounds`);
               assert.ok(geometry.portrait.box.width > 250 && geometry.portrait.box.height > 200,
                 `${label}: portrait must not collapse`);
               if (viewport.width > 760) {
