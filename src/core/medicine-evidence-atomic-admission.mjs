@@ -190,10 +190,18 @@ export async function admitPrivateOfficialMedicineEvidence({
       written.customerPublishApproved !== false) {
     deny("atomic_commit_not_attested");
   }
-  const read = await readBackCommit(Object.freeze({
-    transactionId: written.transactionId, workspaceId: WORKSPACE,
-    manifestSha256, eventId, expectedRows: candidate.rowCount
-  }));
+  // A confirmed write followed by missing, corrupt, or unavailable
+  // durable readback is an indeterminate post-commit state, not a safe
+  // pre-commit denial. Require audited quarantine before refusing admission.
+  let read = null;
+  try {
+    read = await readBackCommit(Object.freeze({
+      transactionId: written.transactionId, workspaceId: WORKSPACE,
+      manifestSha256, eventId, expectedRows: candidate.rowCount
+    }));
+  } catch {
+    read = null;
+  }
   if (!read || read.durable !== true ||
       read.workspaceId !== WORKSPACE ||
       read.transactionId !== written.transactionId ||
@@ -202,6 +210,8 @@ export async function admitPrivateOfficialMedicineEvidence({
       read.acceptedRows !== candidate.rowCount ||
       read.auditCommitted !== true ||
       read.customerPublishApproved !== false) {
+    await attestQuarantine(quarantineCommitted, written, manifestSha256, eventId,
+      "durable_audit_or_manifest_missing");
     deny("durable_audit_or_manifest_missing");
   }
 
