@@ -51,7 +51,7 @@ const sample = () => {
   };
 };
 function fake({ indexMissing = null, denyAuthority = false, denyRights = false,
-  failAudit = false } = {}) {
+  failAudit = false, hideQuarantineReadback = false } = {}) {
   const names = Object.keys(keys);
   const data = Object.fromEntries(names.map(name => [name, []]));
   let started = 0, committed = 0, rolledBack = 0;
@@ -61,7 +61,11 @@ function fake({ indexMissing = null, denyAuthority = false, denyRights = false,
       const valid = {name:"g2_unique", key:keys[name], unique:true};
       return {toArray:async()=>indexMissing === name ? [] : [{name:"_id_",key:{_id:1},unique:true},valid]};
     },
-    async findOne(filter) {return data[name].find(item=>matching(item,filter))??null;},
+    async findOne(filter) {
+      if (name === "npi_audit_events" && hideQuarantineReadback &&
+        filter.action === "medicine_evidence.quarantine") return null;
+      return data[name].find(item=>matching(item,filter))??null;
+    },
     async insertMany(records) {
       data[name].push(...structuredClone(records));
       return {acknowledged:true,insertedCount:records.length};
@@ -230,4 +234,18 @@ test("store cannot be constructed without a scoped Mongo client and external val
     database:{databaseName:"novapharm_intelligence_production",collection:()=>({})},
     client:{startSession(){}}
   }),e=>e.code==="trusted_atlas_runtime_required");
+});
+
+test("committed quarantine without an independently readable audit cannot attest success", async()=>{
+  const s=fake({hideQuarantineReadback:true}),p=sample();
+  const receipt=await s.store.commitAtomic(p);
+  await assert.rejects(s.store.quarantineCommitted({
+    workspaceId:workspace, transactionId:receipt.transactionId,
+    manifestSha256:receipt.manifestSha256, eventId:receipt.eventId,
+    reason:"rights_recheck_failed_after_commit",
+    customerPublishApproved:false
+  }),e=>e.code==="quarantine_durable_readback_failed");
+  assert.equal(s.data.npi_medicine_evidence[0].status,"quarantined_never_publish");
+  assert.equal(s.data.npi_evidence_manifests[0].status,"quarantined_never_publish");
+  assert.equal(s.data.npi_audit_events.length,2);
 });
