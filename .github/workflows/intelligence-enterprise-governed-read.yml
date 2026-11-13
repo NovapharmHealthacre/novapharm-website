@@ -7,6 +7,8 @@ on:
       - "scripts/test-intelligence-enterprise-governed-read.mjs"
       - "scripts/test-intelligence-enterprise-atlas-read-adapter.mjs"
       - "src/data/intelligence-enterprise-atlas-read-adapter.mjs"
+      - "src/core/intelligence-enterprise-vendor-probes.mjs"
+      - "scripts/test-intelligence-enterprise-vendor-probes.mjs"
       - ".github/workflows/intelligence-enterprise-governed-read.yml"
   workflow_dispatch:
 
@@ -28,5 +30,7 @@ jobs:
           node --check src/data/intelligence-enterprise-atlas-read-adapter.mjs
           node --check scripts/test-intelligence-enterprise-governed-read.mjs
           node --check scripts/test-intelligence-enterprise-atlas-read-adapter.mjs
+          node --check src/core/intelligence-enterprise-vendor-probes.mjs
+          node --check scripts/test-intelligence-enterprise-vendor-probes.mjs
       - name: Verify rights, tenancy, audit, revocation and no native-vendor activation
         run: npm run test:enterprise-integrations
