@@ -51,7 +51,7 @@ const sample = () => {
   };
 };
 function fake({ indexMissing = null, denyAuthority = false, denyRights = false,
-  failAudit = false, hideQuarantineReadback = false } = {}) {
+  denyIdentity = false, failAudit = false, hideQuarantineReadback = false } = {}) {
   const names = Object.keys(keys);
   const data = Object.fromEntries(names.map(name => [name, []]));
   let started = 0, committed = 0, rolledBack = 0;
@@ -111,7 +111,13 @@ function fake({ indexMissing = null, denyAuthority = false, denyRights = false,
   const store = createAtlasG2AtomicStore({
     client, database:db, clock:()=>now,
     verifyTransactionAuthority:async()=>!denyAuthority,
-    verifyTransactionRights:async()=>!denyRights
+    verifyTransactionRights:async()=>!denyRights,
+    verifyTransactionIdentity:async claim=>{
+      assert.equal(claim.workspaceId,workspace);
+      assert.equal(claim.period,"2026-08");
+      assert.equal(claim.rows[0].medicineIdentity,"medicine:reviewed:1");
+      return !denyIdentity;
+    }
   });
   return {store,data, stats:()=>({started,committed,rolledBack})};
 }
@@ -248,4 +254,13 @@ test("committed quarantine without an independently readable audit cannot attest
   assert.equal(s.data.npi_medicine_evidence[0].status,"quarantined_never_publish");
   assert.equal(s.data.npi_evidence_manifests[0].status,"quarantined_never_publish");
   assert.equal(s.data.npi_audit_events.length,2);
+});
+
+
+test("independent exact temporal identity verification is mandatory before any G2 write", async()=>{
+  const sys=fake({denyIdentity:true});
+  await assert.rejects(sys.store.commitAtomic(sample()),
+    e=>e.code==="live_canonical_identity_unverified");
+  assert.ok(Object.values(sys.data).every(rows=>rows.length===0));
+  assert.deepEqual(sys.stats(),{started:1,committed:0,rolledBack:1});
 });
