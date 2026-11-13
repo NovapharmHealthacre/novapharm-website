@@ -151,6 +151,8 @@ async function inspectLayout(page) {
       clippedContent: [...document.querySelectorAll(
         "main h1, main form input:not([type='hidden']), main form select, main form textarea, main form button"
       )].filter((element) => {
+        // Intentionally offscreen honeypot inputs must remain hidden for abuse protection.
+        if (element.closest('[aria-hidden="true"], .honeypot')) return false;
         const style = getComputedStyle(element);
         if (style.display === "none" || style.visibility === "hidden" || Number(style.opacity) === 0) return false;
         const rect = element.getBoundingClientRect();
