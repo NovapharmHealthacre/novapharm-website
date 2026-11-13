@@ -31,6 +31,21 @@ which had **zero active rights grants** at the last direct inspection.
   MFA, DynamoDB session authorization, G2 atomic commit, majority readback,
   quarantine, external legal approval, or genuine two-tenant tests.
 
+## Mandatory unique-index admission fence
+The implementation now queries the **actual** MongoDB `listIndexes` state
+before any positive rights read. It requires a non-sparse, non-partial,
+simple-collation **unique** index with the exact ordered keys:
+
+```json
+{"workspace_id":1,"source_id":1,"source_version":1,"resource_id":1,"resource_sha256":1,"rights_revision":1}
+```
+
+This constraint is **NOT present** on the live production-name collection
+as inspected on 13 November 2026. The available Atlas connector create-index
+operation cannot express `unique: true`; therefore no index was deceptively
+created. Until a reviewed database operator applies and verifies the unique
+index with an authorised migration, this read adapter returns **no grants**.
+
 ## Release sequence
 1. Independent counsel/qualified rights reviewer signs the exact NHSBSA,
    BNF, SNOMED and dm+d commercial and AI reuse scope, with expiry/revocation.
