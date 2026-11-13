@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
-import { safeBasket, catalogueIsSafe, publicPrice, basketSubtotal, MAX_PER_SKU } from "../assets/js/nutraxin-retail-store.js";
+import { safeBasket, catalogueIsSafe, publicPrice, basketSubtotal, checkoutReturnOutcome, MAX_PER_SKU } from "../assets/js/nutraxin-retail-store.js";
 
 const catalogue=JSON.parse(readFileSync("assets/data/nutraxin-retail-catalogue.json","utf8"));
 const canonical=JSON.parse(readFileSync("apps/corporate/data/nutraxin-product-register.json","utf8"));
@@ -159,4 +159,24 @@ test("Pages build generator preserves the canonical Nutraxin Bag journey",()=>{
  assert.match(generated,/Simple from start to finish\./);
  assert.match(generated,/Guest checkout available/);
  assert.match(generated,/nx-purchase-progress/);
+});
+
+test("Stripe return does not confuse expiry with payment failure or erase Bag",()=>{
+ assert.equal(checkoutReturnOutcome({status:"PAID",paid:true}),"paid");
+ assert.equal(checkoutReturnOutcome({status:"CHECKOUT_EXPIRED",paid:false}),"expired");
+ assert.equal(checkoutReturnOutcome({status:"PAYMENT_FAILED",paid:false}),"failed");
+ assert.equal(checkoutReturnOutcome({status:"CHECKOUT_OPEN",paid:false}),"pending");
+ assert.equal(checkoutReturnOutcome({status:"PAID",paid:false}),"pending");
+ assert.equal(checkoutReturnOutcome({status:"CHECKOUT_EXPIRED",paid:true}),"pending");
+ assert.equal(checkoutReturnOutcome(null),"pending");
+ const js=readFileSync("assets/js/nutraxin-retail-store.js","utf8");
+ const returned=js.split('const returnedOrder = query.get("order_id");')[1]?.split("// Products-site readiness")[0];
+ assert.match(returned,/checkoutReturnOutcome\(result\)/);
+ assert.match(returned,/outcome === "expired" \|\| outcome === "failed"/);
+ assert.match(returned,/closedOrder = returnedOrder/);
+ assert.match(returned,/if \(outcome === "paid"\)/);
+ assert.match(returned,/bag=\[\];saveBag\(bag\)/);
+ assert.equal(returned.split("bag=[];saveBag(bag)").length-1,1,"Only verified paid status may empty the bag");
+ assert.match(js,/Your Bag is saved and you may start a new checkout/);
+ assert.match(js,/No successful payment has been recorded/);
 });
