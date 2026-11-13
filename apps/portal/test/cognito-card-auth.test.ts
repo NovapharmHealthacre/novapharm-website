@@ -32,6 +32,13 @@ test("real password form calls only the exact Cognito pool and requires TOTP", a
   assert.equal(h.calls[0]?.init.cache, "no-store");
   assert.equal(h.calls[0]?.body["ClientId"], "7c76122stt76k4d8cjvd7tf6ck");
   assert.equal(h.calls[0]?.body["AuthFlow"], "USER_AUTH");
+  assert.deepEqual(h.calls[0]?.body["AuthParameters"], {
+    USERNAME: "founder@example.com",
+    PREFERRED_CHALLENGE: "PASSWORD",
+    PASSWORD: "not-a-real-secret",
+    TARGET_ACR_VALUES: "urn:cognito:loa:4",
+    MAX_AGE: "0",
+  });
 });
 
 test("unexpected token after password only cannot be accepted", async () => {
