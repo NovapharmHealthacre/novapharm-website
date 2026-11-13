@@ -70,6 +70,7 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
             portraitHeight:rect(image)?.height||0,
             layerWidth:rect(imageLayer)?.width||0,
             fade:[mask?.maskImage,mask?.webkitMaskImage].some(value=>typeof value==="string"&&value.includes("gradient")),
+            imageMask:image?[getComputedStyle(image).maskImage,getComputedStyle(image).webkitMaskImage].some(value=>typeof value==="string"&&value.includes("gradient")):false,
             focusHeadingLines: (() => { const h=document.querySelector(".npoc-focus-copy h2"); return h ? Math.round(rect(h).height/parseFloat(getComputedStyle(h).lineHeight)) : 0; })(),
             cards:cards.map(card=>({
               x:rect(card)?.x||0,y:rect(card)?.y||0,
@@ -83,7 +84,8 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
         assert.match(layout.heading,/A Hope for\s*Tomorrow\./,`${label}: heading`);
         assert.equal(layout.hasAnnotation,false,`${label}: removed annotation returned`);
         assert.ok(layout.imageLoaded,`${label}: portrait did not load`);
-        assert.equal(layout.imageFit,"cover",`${label}: photograph must fill its media canvas at every viewport without inset rectangular edges`);
+        const expectedFit=viewport.width>=1101?"cover":"contain";
+        assert.equal(layout.imageFit,expectedFit,`${label}: desktop uses seamless cover while tablet/mobile preserve the complete portrait`);
         assert.ok(layout.portraitWidth>260 && layout.portraitHeight>200,`${label}: portrait collapsed`);
         assert.ok(layout.heroWidth>=layout.viewportWidth-2,`${label}: hero is not full width`);
         assert.equal(layout.cards.length,3,`${label}: three category images`);
@@ -96,8 +98,9 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
           assert.ok(layout.layerWidth/layout.heroWidth>=(viewport.width>=1101?.55:.7),`${label}: image not integrated into hero`);
           assert.equal(layout.fade,true,`${label}: photo has a hard boundary, no gradient mask`);
         }else{
-          assert.equal(layout.fade,false,`${label}: mobile photo should be unmasked`);
+          assert.equal(layout.fade,false,`${label}: mobile photo should be unmasked at the parent layer`);
         }
+        assert.equal(layout.imageMask,viewport.width<=1100,`${label}: contained responsive portrait must feather its source edge or bounds`);
         // Screenshot SS2, 12 November: desktop hero text starts near the left
         // margin and three balanced cards fill the remaining portfolio row.
         if(viewport.width>=1101){
@@ -112,7 +115,7 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
         await mkdir(destination,{recursive:true});
         await page.locator(".npoc-hope-hero").screenshot({path:path.join(destination,"hero.png"),animations:"disabled"});
         await page.locator(".npoc-hope-focus").screenshot({path:path.join(destination,"focus.png"),animations:"disabled"});
-        console.log(`PASS ${label}: full-bleed hero, seamless desktop fade, uncut portrait, 3 aligned cards, no overflow`);
+        console.log(`PASS ${label}: desktop cover, responsive contained portrait, feathered edges, 3 aligned cards, no overflow`);
       }finally{await page.close();}
     }
   }finally{await browser.close();}
