@@ -23,7 +23,8 @@ const sources = [
   ["owner-corrections.css", null],
   ["corporate-product-discipline.css", null],
   ["contact-premium.css", null],
-  ["homepage-editorial.css", null]
+  ["homepage-editorial.css", null],
+  ["sitewide-layout-integrity.css", null]
 ];
 
 const sections = sources.map(([filename, layer]) => {

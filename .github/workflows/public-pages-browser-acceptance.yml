@@ -24,6 +24,7 @@ on:
       - scripts/programme/validate-leadership-titles.mjs
       - scripts/test-owner-corrections.mjs
       - scripts/test-public-pages-browser.mjs
+      - scripts/test-public-sitemap-geometry.mjs
       - package.json
       - package-lock.json
   push:
@@ -86,6 +87,11 @@ jobs:
         run: |
           python3 -m http.server 4310 --bind 127.0.0.1 > /tmp/novapharm-public-server.log 2>&1 &
           echo $! > /tmp/novapharm-public-server.pid
+      - name: Audit every public sitemap route and commerce shell geometry
+        env:
+          PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310
+          PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT: artifacts/public-pages-browser
+        run: node scripts/test-public-sitemap-geometry.mjs
       - name: Render layout, image and accessibility acceptance
         env:
           PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310

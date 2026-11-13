@@ -1,0 +1,71 @@
+/* Sitewide layout-integrity layer. Preserve each approved editorial art direction.
+   This layer prevents content clipping without changing hero crops or visual identity. */
+
+.npd-main :is(
+  .npd-numbered-grid, .npd-three-lanes, .npd-maturity, .npd-maturity-full,
+  .npd-split, .npd-regulatory-layout, .npd-contact-layout, .npd-account-layout,
+  .npd-product-hero-grid, .npd-product-grid, .npd-product-stage,
+  .npd-product-evidence, .npd-leadership-line, .npd-insight-secondary,
+  .npd-horizontal-steps, .npd-inline-facts, .npd-facts, .npd-product-meta,
+  .npd-composition
+) > *,
+.npd-footer :is(.npd-footer-top, .npd-footer-legal) > *,
+.np-intelligence :is(.npi-dash-analytics-grid, .npi-workspace-grid) > *,
+.mp-main :is(.mp-grid, .mp-toolbar, .mp-source-index-groups) > * {
+  min-width: 0;
+}
+
+.npd-main :is(p, li, dt, dd, figcaption),
+.npd-footer :is(p, li, a),
+.mp-main :is(.mp-card-meta, .mp-card-evidence, .mp-card h3) {
+  overflow-wrap: break-word;
+}
+
+.npd-main :is(input, select, textarea, fieldset),
+.mp-main :is(input, select, textarea) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Keep labels and their values aligned as a unit at desktop and tablet sizes. */
+.npd-main :is(.npd-facts, .npd-product-meta, .npd-composition) > div {
+  column-gap: clamp(12px, 2vw, 24px);
+  align-items: start;
+}
+
+.npd-main [id],
+.mp-main [id],
+.np-intelligence [id] {
+  scroll-margin-top: calc(var(--npd-header, 56px) + 28px);
+}
+
+@media (max-width: 600px) {
+  .npd-main :is(.npd-actions, .npd-product-card-actions) {
+    row-gap: 14px;
+  }
+  .npd-main :is(.npd-section-intro, .npd-product-copy, .npd-hero-copy) {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .mp-main .mp-card-actions {
+    row-gap: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  /* A long catalogue title must not squeeze Buy/Compare into tiny tap areas. */
+  .mp-main .mp-card-actions > :is(a, button) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 100%;
+    min-height: 44px;
+    text-align: center;
+  }
+}
+
+@media (forced-colors: active) {
+  .mp-main .mp-card-actions > :is(a, button) {
+    border: 1px solid ButtonText;
+  }
+}

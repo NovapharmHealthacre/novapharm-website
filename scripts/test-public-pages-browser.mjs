@@ -19,7 +19,13 @@ const routes = [
   { path: "/cro/", name: "cro", required: "Clinical" },
   { path: "/technology/", name: "technology", required: "Technology" },
   { path: "/products/", name: "products-overview", required: "Different products. One purpose." },
-  { path: "/products/nutraxin/", name: "nutraxin-collection", required: "Nutraxin" }
+  { path: "/products/nutraxin/", name: "nutraxin-collection", required: "Nutraxin" },
+  { path: "/products/nutraxin/vitamin-d3-120-tablets/", name: "nutraxin-detail", required: "Nutraxin Vitamin D3" },
+  { path: "/products/nutraxin/bag/", name: "nutraxin-bag", required: "Your Bag." },
+  { path: "/products/esco/", name: "esco-collection", required: "ESCO" },
+  { path: "/products/marketplace/", name: "marketplace", required: "Everything, together." },
+  { path: "/account-application/", name: "business-account", required: "An account is approved through evidence" },
+  { path: "/legal/privacy/", name: "privacy", required: "Privacy" }
 ];
 const routeViewports = [
   { name: "mobile-390", width: 390, height: 844 },
@@ -64,6 +70,41 @@ await waitForServer();
 let screenshots = 0;
 let axeRuns = 0;
 let geometryRuns = 0;
+
+// Only localhost UI acceptance uses fail-closed read-only readiness fixtures.
+// Production APIs intentionally reject this test origin; never mock payment,
+// account, customer data, or authenticated business endpoints here.
+async function mockLocalReadiness(page, pathname) {
+  if (pathname === "/products/marketplace/") {
+    // Public stock API rejects the CI localhost origin. Simulate an
+    // unverifiable read-only result, never trusted warehouse evidence.
+    await page.route(/^https:\/\/eyoj5e64zb\.execute-api\.eu-north-1\.amazonaws\.com\/stock\?skus=/, async request => {
+      await request.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({schema:"novapharm-commerce-stock-public-v1",notPaymentAuthority:true,items:[]})
+      });
+    });
+  }
+  const checkoutApi = pathname === "/products/nutraxin/bag/"
+    ? "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com/readiness"
+    : pathname.startsWith("/products/esco/")
+      ? "https://vflz5z5jfc.execute-api.eu-north-1.amazonaws.com/readiness"
+      : null;
+  if (!checkoutApi) return;
+  await page.route(checkoutApi, async request => {
+    await request.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        checkout_ready: false,
+        payment_collection_active: false,
+        approved_catalogue_ids: [],
+        origin: "localhost"
+      })
+    });
+  });
+}
 
 async function dismissConsent(page) {
   const reject = page.locator("[data-consent-action='reject']:visible").first();
@@ -139,7 +180,25 @@ async function inspectLayout(page) {
       unloadedImages: [...document.images]
         .filter((image) => !image.complete)
         .map((image) => image.currentSrc || image.src),
-      midWordBreaks: [...new Set(midWordBreaks)]
+      midWordBreaks: [...new Set(midWordBreaks)],
+      // A clipped main heading or form field may be hidden by overflow:clip
+      // without increasing document.scrollWidth. Inspect rendered geometry.
+      clippedContent: [...document.querySelectorAll(
+        "main h1, main form input:not([type='hidden']), main form select, main form textarea, main form button"
+      )].filter((element) => {
+        // Intentionally offscreen honeypot inputs must remain hidden for abuse protection.
+        if (element.closest('[aria-hidden="true"], .honeypot')) return false;
+        const style = getComputedStyle(element);
+        if (style.display === "none" || style.visibility === "hidden" || Number(style.opacity) === 0) return false;
+        const rect = element.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0 &&
+          (rect.left < -2 || rect.right > document.documentElement.clientWidth + 2);
+      }).slice(0, 12).map((element) => ({
+        node: element.tagName.toLowerCase(),
+        label: (element.textContent || element.getAttribute("aria-label") || element.getAttribute("name") || "").trim().slice(0, 60),
+        left: Math.round(element.getBoundingClientRect().left),
+        right: Math.round(element.getBoundingClientRect().right)
+      }))
     };
   });
 }
@@ -154,6 +213,7 @@ async function assertLayout(page, label) {
   assert.deepEqual(layout.brokenImages, [], `${label}: broken images found`);
   assert.deepEqual(layout.unloadedImages, [], `${label}: images did not finish loading`);
   assert.deepEqual(layout.midWordBreaks, [], `${label}: headings wrap inside a word`);
+  assert.deepEqual(layout.clippedContent, [], `${label}: primary heading or form controls extend beyond the viewport`);
 }
 
 async function assertFooterHeadings(page, label) {
@@ -214,6 +274,7 @@ for (const [engineName, browserType] of engines) {
             }
           });
           try {
+            await mockLocalReadiness(page, route.path);
             const response = await page.goto(route.path, { waitUntil: "networkidle", timeout: 30_000 });
             assert.equal(response?.status(), 200, `${engineName} ${viewport.name} ${route.path}: navigation failed`);
             await page.locator("main").waitFor({ state: "visible", timeout: 15_000 });
@@ -656,6 +717,7 @@ for (const [engineName, browserType] of engines) {
       });
       const page = await context.newPage();
       try {
+        await mockLocalReadiness(page, "/products/esco/");
         const response = await page.goto("/products/esco/", { waitUntil:"networkidle", timeout:30_000 });
         assert.equal(response?.status(), 200, `${engineName} ${viewport.name}: ESCO page unavailable`);
         await dismissConsent(page);

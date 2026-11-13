@@ -6,7 +6,7 @@
 .mp-eyebrow{margin:0 0 26px;font-size:.73rem;font-weight:650;letter-spacing:.15em;color:#6e6e73}
 .mp-hero h1{font-size:clamp(3.2rem,7.6vw,7.9rem);line-height:1.02;font-weight:680;letter-spacing:normal;margin:0}
 .mp-hero p:not(.mp-eyebrow){font-size:clamp(1.12rem,2.3vw,1.7rem);line-height:1.45;color:var(--mp-muted);max-width:650px;margin:30px auto 0;letter-spacing:normal}
-.mp-hero-meta{display:flex;justify-content:center;flex-wrap:wrap;gap:12px 28px;margin-top:49px;color:#77777b;font-size:.82rem}
+.mp-hero-meta{display:flex;justify-content:center;flex-wrap:wrap;gap:12px 28px;margin-top:49px;color:#62626a;font-size:.82rem}
 .mp-hero-meta span+span::before{content:"·";margin-right:25px;color:#a6a6ac}
 .mp-discovery,.mp-compare{padding-block:clamp(65px,7vw,112px)}
 .mp-heading{max-width:900px}.mp-heading h2,.mp-disclosure h2{font-size:clamp(2.3rem,4.5vw,4.9rem);line-height:1.07;font-weight:660;letter-spacing:normal;margin:0 0 20px}
