@@ -280,3 +280,91 @@ test("independent publisher source receipt and reconciled partition is mandatory
   assert.ok(Object.values(sys.data).every(rows=>rows.length===0));
   assert.deepEqual(sys.stats(),{started:1,committed:0,rolledBack:1});
 });
+
+
+test("end-to-end G1 validation through G2 and the private store remains nonpublishable", async()=>{
+  const {admitPrivateOfficialMedicineEvidence} = await import(
+    "../src/core/medicine-evidence-atomic-admission.mjs");
+  const prepared=sample();
+  const row=prepared.records[0];
+  const sourceRow={
+    source_id:row.source_id,source_version:row.source_version,
+    resource_id:row.resource_id,resource_sha256:row.resource_sha256,
+    row_id:row.row_id,row_sha256:row.provenance_sha256,
+    period:row.period,jurisdiction:row.jurisdiction,geography_id:row.geography_id,
+    metric:row.metric,unit:row.unit,value:row.value,
+    code_system:"BNF_PRESENTATION_CODE",source_code:"0302000N0BBAYBA",
+    medicine_identity:row.medicine_identity,
+    identity_proof:{
+      matchType:"verified_exact",verifiedByAuthority:true,
+      sourceCode:"0302000N0BBAYBA",codeSystem:"BNF_PRESENTATION_CODE",
+      medicineIdentity:row.medicine_identity,sourceVersion:row.source_version,
+      mappingRevision:row.identity_revision,referenceSha256:h("d")
+    }
+  };
+  const when="2026-11-13T12:00:00Z";
+  const snapshot={
+    sourceId:source,sourceVersion:row.source_version,resourceId:row.resource_id,
+    resourceSha256:row.resource_sha256,period:row.period,jurisdiction:"England",
+    sourceHashIndependentlyVerified:true,fullPartitionVerified:true,
+    expectedRows:1,expectedTotal:5,metric:"items",unit:"items",
+    expectedRowsDigest:hash(sourceRow.row_id+":"+sourceRow.row_sha256),
+    containsPatientData:false
+  };
+  const grant={
+    status:"active",verifiedByRightsAuthority:true,sourceId:source,
+    sourceVersion:row.source_version,resourceId:row.resource_id,
+    allowedPurposes:["private_observed_prescribing_ingestion"],
+    commercialAnalysisApproved:true,datasetReuseApproved:true,
+    termsSha256:h("e"),termsUrl:"https://opendata.nhsbsa.net/pages/terms-and-conditions",
+    rightsRevision:row.rights_revision,reviewerId:"fixture_independent",
+    reviewedAt:"2026-11-12T00:00:00Z",
+    validFrom:"2026-11-12T00:00:00Z",
+    thirdPartyTerminologyReuseApproved:true,
+    terminologyRightsRevision:"fixture-term-rights-v1"
+  };
+  const release={
+    environment:"private_staging",verifiedServerSide:true,
+    customerPublishingEnabled:false,allowPatientData:false,checkedAt:when
+  };
+  const authority={
+    verifiedBySessionService:true,workspaceId:workspace,
+    principalId:"board_member_001",authorityRevision:"board-review-001",
+    scopes:["board"],customerAccess:false
+  };
+  const verifyCurrentRights=async()=>({
+    verifiedByRightsAuthority:true,status:"active",revoked:false,
+    workspaceId:workspace,sourceId:source,sourceVersion:row.source_version,
+    resourceId:row.resource_id,resourceSha256:row.resource_sha256,
+    rightsRevision:grant.rightsRevision,termsSha256:grant.termsSha256,
+    terminologyRightsRevision:grant.terminologyRightsRevision,
+    datasetReuseApproved:true,commercialAnalysisApproved:true,
+    thirdPartyTerminologyReuseApproved:true,
+    allowedPurposes:["private_observed_prescribing_ingestion"],
+    checkedAt:when,validFrom:"2026-11-12T00:00:00Z"
+  });
+  const sys=fake();
+  const args={
+    snapshot,rows:[sourceRow],grant,release,authority,
+    verifyCurrentAuthority:async()=>true,verifyCurrentRights,
+    ...sys.store,now:new Date(when),clock:()=>Date.parse(when)
+  };
+  const admitted=await admitPrivateOfficialMedicineEvidence(args);
+  assert.equal(admitted.status,"privately_admitted_requires_independent_release");
+  assert.equal(admitted.acceptedPrivateRows,1);
+  assert.equal(admitted.customerPublishApproved,false);
+  assert.equal(admitted.productionCertified,false);
+  assert.equal(admitted.aiExecutionApproved,false);
+  assert.equal(sys.data.npi_medicine_evidence.length,1);
+  assert.equal(sys.data.npi_evidence_manifests.length,1);
+  assert.equal(sys.data.npi_audit_events.length,1);
+
+  // An identical scoped candidate with no independent live rights must not
+  // open a second transaction or accept a synthetic source grant.
+  const bad=fake();
+  await assert.rejects(admitPrivateOfficialMedicineEvidence({
+    ...args,...bad.store,verifyCurrentRights:async()=>null
+  }), e=>e.code==="rights_revoked_before_commit");
+  assert.equal(bad.stats().started,0);
+  assert.ok(Object.values(bad.data).every(v=>v.length===0));
+});
