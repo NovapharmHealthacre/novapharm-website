@@ -524,7 +524,7 @@ for (const [engineName, browserType] of engines) {
               const label = `${engineName} ${viewport.name}: Oncology approved composition`;
               assert.ok(geometry.portrait?.naturalWidth > 0 && geometry.portrait?.naturalHeight > 0,
                 `${label}: portrait asset must load`);
-              assert.equal(geometry.portrait.fit, "cover", `${label}: portrait must fill its media box without a hard image seam or embedded JPEG edge lettering`);
+              assert.equal(geometry.portrait.fit, viewport.width >= 1101 ? "cover" : "contain", `${label}: desktop must cover seamlessly while mobile and tablet preserve the portrait without exposing embedded JPEG edge lettering`);
               assert.ok(geometry.portrait.box.width > 250 && geometry.portrait.box.height > 200,
                 `${label}: portrait must not collapse`);
               if (viewport.width > 760) {
