@@ -507,6 +507,155 @@ test("founder first-password callback on internal Lambda URL starts MFA, not a c
   }
 });
 
+test("signed-MFA managed founder callback issues only the independently validated founder cookie", async () => {
+  const previous = {
+    signing: process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"],
+    founderFlag: process.env["NPI_FOUNDER_SESSION_API_ENABLED"],
+    founderBridge: process.env["NPI_FOUNDER_BRIDGE_KEY"],
+    customerFlag: process.env["NPI_CUSTOMER_SESSION_API_ENABLED"],
+  };
+  const originalFetch = globalThis.fetch;
+  const proof = prepareCustomerProof();
+  const access = "a".repeat(220);
+  const calls: string[] = [];
+  process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = key;
+  process.env["NPI_FOUNDER_SESSION_API_ENABLED"] = "true";
+  process.env["NPI_FOUNDER_BRIDGE_KEY"] = "b".repeat(64);
+  process.env["NPI_CUSTOMER_SESSION_API_ENABLED"] = "true";
+  globalThis.fetch = (async (input: URL | RequestInfo, init?: RequestInit) => {
+    const url = String(input);
+    if (url === intelligenceCustomerOidc.domain + "/oauth2/token") {
+      return new Response(JSON.stringify({
+        token_type: "Bearer", id_token: proof.token, access_token: access,
+      }), { status: 200 });
+    }
+    if (url === intelligenceCustomerOidc.issuer + "/.well-known/jwks.json") {
+      return new Response(JSON.stringify({ keys: [proof.jwk] }), { status: 200 });
+    }
+    if (url === "https://cognito-idp.eu-north-1.amazonaws.com/") {
+      calls.push("live_founder_GetUser");
+      assert.equal(new Headers(init?.headers).get("X-Amz-Target"),
+        "AWSCognitoIdentityProviderService.GetUser");
+      return new Response(JSON.stringify({
+        UserAttributes: [
+          { Name: "sub", Value: "customer-verified-12345678" },
+          { Name: "email", Value: "vishal@novapharmhealthcare.com" },
+          { Name: "email_verified", Value: "true" },
+        ],
+        UserMFASettingList: ["SOFTWARE_TOKEN_MFA"],
+        PreferredMfaSetting: "SOFTWARE_TOKEN_MFA",
+      }), { status: 200 });
+    }
+    if (url === "https://intelligence.novapharmhealthcare.com/founder/session") {
+      calls.push("private_founder_session");
+      assert.equal(init?.method, "POST");
+      assert.equal(new Headers(init?.headers).get("Authorization"), "Bearer " + proof.token);
+      assert.equal(JSON.parse(String(init?.body)).accessToken, access);
+      assert.match(new Headers(init?.headers).get("X-Npi-Founder-Proof") ?? "", /^[a-f0-9]{64}$/);
+      return new Response(JSON.stringify({
+        ok: true, code: "founder_session_active",
+        role: "founder", scope: "founder-shell-read-only",
+        customerAccess: false, medicinesDataAccess: false,
+      }), { status: 200, headers: {
+        "set-cookie": "__Host-npi_founder=" + "F".repeat(43) +
+          "; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=1800",
+      } });
+    }
+    throw new Error("Unexpected network destination, including forbidden customer activation: " + url);
+  }) as typeof fetch;
+  try {
+    const response = await finishCustomerIdentity(proof.request);
+    assert.equal(response.status, 200);
+    const body = await response.text();
+    assert.match(body, /Founder workspace ready/);
+    assert.ok(body.includes('href="/founder"'));
+    assert.equal(body.includes(proof.token), false);
+    const cookies = responseCookies(response).join(",");
+    assert.match(cookies, /__Host-npi_founder=/);
+    assert.doesNotMatch(cookies, /__Host-npi_session=/);
+    assert.deepEqual(calls, ["live_founder_GetUser", "private_founder_session"]);
+  } finally {
+    globalThis.fetch = originalFetch;
+    for (const [name, val] of [
+      ["NPI_OIDC_TRANSACTION_SIGNING_KEY", previous.signing],
+      ["NPI_FOUNDER_SESSION_API_ENABLED", previous.founderFlag],
+      ["NPI_FOUNDER_BRIDGE_KEY", previous.founderBridge],
+      ["NPI_CUSTOMER_SESSION_API_ENABLED", previous.customerFlag],
+    ] as const) {
+      if (val === undefined) delete process.env[name];
+      else process.env[name] = val;
+    }
+  }
+});
+
+test("signed-MFA founder without an independent backend session sees no paid-customer prompt or cookie", async () => {
+  const old = {
+    signing: process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"],
+    founderFlag: process.env["NPI_FOUNDER_SESSION_API_ENABLED"],
+    founderBridge: process.env["NPI_FOUNDER_BRIDGE_KEY"],
+    customerFlag: process.env["NPI_CUSTOMER_SESSION_API_ENABLED"],
+  };
+  const priorFetch = globalThis.fetch;
+  const proof = prepareCustomerProof();
+  const access = "a".repeat(220);
+  let attemptedFounder = 0;
+  let attemptedCustomer = 0;
+  process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = key;
+  process.env["NPI_FOUNDER_SESSION_API_ENABLED"] = "true";
+  process.env["NPI_FOUNDER_BRIDGE_KEY"] = "b".repeat(64);
+  process.env["NPI_CUSTOMER_SESSION_API_ENABLED"] = "true";
+  globalThis.fetch = (async (input: URL | RequestInfo) => {
+    const url = String(input);
+    if (url === intelligenceCustomerOidc.domain + "/oauth2/token")
+      return new Response(JSON.stringify({
+        token_type: "Bearer", id_token: proof.token, access_token: access,
+      }), { status: 200 });
+    if (url === intelligenceCustomerOidc.issuer + "/.well-known/jwks.json")
+      return new Response(JSON.stringify({ keys: [proof.jwk] }), { status: 200 });
+    if (url === "https://cognito-idp.eu-north-1.amazonaws.com/")
+      return new Response(JSON.stringify({
+        UserAttributes: [
+          { Name: "sub", Value: "customer-verified-12345678" },
+          { Name: "email", Value: "vishal@novapharmhealthcare.com" },
+          { Name: "email_verified", Value: "true" },
+        ],
+        UserMFASettingList: ["SOFTWARE_TOKEN_MFA"],
+        PreferredMfaSetting: "SOFTWARE_TOKEN_MFA",
+      }), { status: 200 });
+    if (url === "https://intelligence.novapharmhealthcare.com/founder/session") {
+      attemptedFounder++;
+      return new Response(JSON.stringify({ ok: false }), { status: 401 });
+    }
+    if (url === "https://intelligence.novapharmhealthcare.com/customer/session") {
+      attemptedCustomer++;
+      throw Error("Founder cannot auto-enrol into customer billing");
+    }
+    throw Error("Unexpected URL");
+  }) as typeof fetch;
+  try {
+    const response = await finishCustomerIdentity(proof.request);
+    assert.equal(response.status, 200);
+    const html = await response.text();
+    assert.match(html, /Cognito sign-in confirmed/);
+    assert.doesNotMatch(html, /organisation, customer seat, and subscription/);
+    assert.equal(attemptedFounder, 1);
+    assert.equal(attemptedCustomer, 0);
+    const cookies = responseCookies(response).join(",");
+    assert.doesNotMatch(cookies, /__Host-npi_founder=|__Host-npi_session=/);
+  } finally {
+    globalThis.fetch = priorFetch;
+    for (const [name, value] of [
+      ["NPI_OIDC_TRANSACTION_SIGNING_KEY", old.signing],
+      ["NPI_FOUNDER_SESSION_API_ENABLED", old.founderFlag],
+      ["NPI_FOUNDER_BRIDGE_KEY", old.founderBridge],
+      ["NPI_CUSTOMER_SESSION_API_ENABLED", old.customerFlag],
+    ] as const) {
+      if (value === undefined) delete process.env[name];
+      else process.env[name] = value;
+    }
+  }
+});
+
 test("signed Cognito identity alone never grants a customer session with feature gate off", async () => {
   await withCallbackMock("flag-off", (response, calls) => {
     assert.equal(response.status, 200);
