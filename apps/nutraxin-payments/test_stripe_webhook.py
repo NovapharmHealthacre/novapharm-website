@@ -201,6 +201,72 @@ class WebhookTests(unittest.TestCase):
             self.assertNotIn(kind,WH.ALLOWED)
         self.assertEqual(DDB.transacted,[])
 
+    def test_console_secret_line_terminators_verify_real_signature_contract(self):
+        e = event()
+        # Storefront affinity must remain true for legacy and current events.
+        e["data"]["object"]["metadata"]["order_id"] = "NUT-test-owned-order"
+        raw, signature = signed_payload(e)
+        request = {"requestContext":{"http":{"method":"POST"}},
+                   "headers":{"stripe-signature":signature},
+                   "body":raw.decode("utf-8")}
+        DDB.items[("STRIPE_SESSION#" + session()["id"], "META")] = durable()
+        with patch.object(WH.time, "time", return_value=1794151250), patch.object(
+            SECRET, "get_secret_value",
+            return_value={"SecretString":"whsec_" + "z" * 32 + "\r\n"}
+        ):
+            result = WH.handler(request, None)
+        self.assertEqual(result["statusCode"], 200, result["body"])
+        self.assertTrue(json.loads(result["body"])["applied"])
+        self.assertEqual(len(DDB.transacted), 1)
+        self.assertEqual(DDB.transacted[0][3]["Update"]["ExpressionAttributeValues"][":updated"]["S"],"PAID")
+        # Signature verification remains strict; never trim the signed payload.
+        with patch.object(WH.time, "time", return_value=1794151250), patch.object(
+            SECRET, "get_secret_value",
+            return_value={"SecretString":"whsec_" + "z" * 32 + "\r\n"}
+        ):
+            invalid = dict(request, body=raw.decode("utf-8") + " ")
+            self.assertEqual(WH.handler(invalid, None)["statusCode"], 400)
+
+    def test_foreign_stripe_checkout_is_acknowledged_only_after_signature_verification(self):
+        for name, metadata in (
+            ("esco", {"brand":"ESCO","order_id":"ESCO-11111111-1111-4111-8111-111111111111","basket_hash":"a"*64}),
+            ("intelligence", {"purpose":"subscription","source":"nova_intelligence"}),
+        ):
+            with self.subTest(name=name):
+                e = event()
+                e["type"] = "checkout.session.expired"
+                e["data"]["object"]["payment_status"] = "unpaid"
+                e["data"]["object"]["metadata"] = metadata
+                e["data"]["object"]["client_reference_id"] = metadata.get("order_id")
+                raw,sig = signed_payload(e)
+                request={"requestContext":{"http":{"method":"POST"}},
+                         "headers":{"stripe-signature":sig}, "body":raw.decode()}
+                with patch.object(WH.time, "time", return_value=1794151250), patch.object(
+                    SECRET, "get_secret_value",
+                    return_value={"SecretString":"whsec_"+"z"*32+"\n"}
+                ):
+                    result=WH.handler(request,None)
+                self.assertEqual(result["statusCode"],200)
+                self.assertEqual(json.loads(result["body"])["action"],"ignored_foreign_storefront")
+                self.assertEqual(DDB.transacted,[])
+                tampered=dict(request,headers={"stripe-signature":"t=1794151250,v1="+"0"*64})
+                with patch.object(WH.time,"time",return_value=1794151250):
+                    self.assertEqual(WH.handler(tampered,None)["statusCode"],400)
+
+    def test_missing_nutraxin_durable_session_retries_instead_of_dropping_payment(self):
+        e=event()
+        e["data"]["object"]["metadata"]["order_id"]="NUT-aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
+        raw,sig=signed_payload(e)
+        request={"requestContext":{"http":{"method":"POST"}},
+                 "headers":{"stripe-signature":sig},"body":raw.decode()}
+        with patch.object(WH.time,"time",return_value=1794151250), patch.object(
+            SECRET, "get_secret_value", return_value={"SecretString":"whsec_"+"z"*32}
+        ):
+            result=WH.handler(request,None)
+        self.assertEqual(result["statusCode"],503)
+        self.assertEqual(json.loads(result["body"])["error"],"payment_attempt_not_available")
+        self.assertEqual(DDB.transacted,[])
+
     def test_handler_does_not_accept_unsigned_or_non_post(self):
         self.assertEqual(WH.handler({"requestContext":{"http":{"method":"GET"}}},None)["statusCode"],405)
         self.assertEqual(WH.handler({"requestContext":{"http":{"method":"POST"}},
