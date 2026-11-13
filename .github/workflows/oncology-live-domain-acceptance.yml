@@ -43,7 +43,7 @@ jobs:
             -H 'Cache-Control: no-cache, no-store' \
             "https://novapharmhealthcare.com/oncology/?$cache" \
             -o /tmp/novapharm-live-oncology.html
-          grep -Fq 'href="/assets/css/oncology-hope-v2.css?v=20261112-hope-seamless-v6"' \
+          grep -Fq 'href="/assets/css/oncology-hope-v2.css?v=20261113-hope-responsive-v7"' \
             /tmp/novapharm-live-oncology.html
           curl --fail --silent --show-error --location --max-time 25 \
             -H 'Cache-Control: no-cache, no-store' \
