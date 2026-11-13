@@ -9,7 +9,7 @@
 const CAPABILITIES = new Set(["foundry_ops","cloud_security","pharma_markets","nova_research"]);
 const WORKSPACE = /^[a-z0-9][a-z0-9_-]{2,63}$/u;
 const ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$/u;
-const ISO = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/u;
+const ISO = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/u;
 const PURPOSE = "enterprise_internal_research";
 const RECORD_KEYS = [
   "recordId","workspaceId","capability","sourceId","sourceVersion",
