@@ -64,7 +64,7 @@ assert.match(approvedLayout, /object-position:right top;/,
   "Full-bleed crop must preserve the head and facial framing");
 assert.match(approvedLayout, /\.npoc-hope-focus \.npoc-focus-card img\s*\{[^}]*object-fit:\s*cover;/,
   "Oncology supporting category photographs should retain their cropped card treatment");
-assert.match(approvedLayout, /-webkit-mask-image:none/, "Portrait masking must reset on mobile");
+assert.match(approvedLayout.slice(approvedLayout.lastIndexOf("@media(max-width:760px)")), /-webkit-mask-image:linear-gradient\(90deg/, "Mobile source-edge text must remain feathered");
 assert.match(approvedLayout, /grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/, "All three Oncology visuals share a grid row");
 assert.match(approvedLayout, /npoc-focus-card span/, "Image labels must overlay on the cards");
 
