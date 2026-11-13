@@ -241,12 +241,21 @@ class FounderTests(unittest.TestCase):
             self.assertEqual(response["statusCode"], 401)
             self.assertEqual(json.loads(response["body"])["code"], expected)
             line = log.getvalue()
-            entry = json.loads(line)
-            self.assertEqual(entry, {
+            entries = [json.loads(value) for value in line.splitlines() if value]
+            self.assertEqual(entries[-1], {
                 "event": "npi_founder_session_denied",
                 "classification": expected,
                 "http_status": 401,
             })
+            if variant == "invalid_claims":
+                self.assertEqual(entries[0], {
+                    "event": "npi_founder_signed_identity_denied",
+                    "classification": "jwt_founder_email_mismatch",
+                    "http_status": 401,
+                })
+                self.assertEqual(len(entries), 2)
+            else:
+                self.assertEqual(len(entries), 1)
             self.assertNotIn(api.FOUNDER_EMAIL, line)
             self.assertNotIn(ID_TOKEN, line)
             self.assertNotIn(ACCESS_TOKEN, line)
@@ -325,6 +334,86 @@ class FounderTests(unittest.TestCase):
             "http_status": 503,
         })
         self.assertNotIn("untrusted_token_with_secret", captured.getvalue())
+
+
+    def test_signed_founder_claim_rejection_classifies_without_weakening_401(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+        cases = [
+            ("claims_missing", lambda x: x["requestContext"]["authorizer"].pop("jwt"),
+             "jwt_claims_missing"),
+            ("time_invalid", lambda x: x["requestContext"]["authorizer"]["jwt"]["claims"].update({"iat": "invalid"}),
+             "jwt_time_claims_invalid"),
+            ("issuer", lambda x: x["requestContext"]["authorizer"]["jwt"]["claims"].update({"iss": "forged"}),
+             "jwt_issuer_mismatch"),
+            ("audience", lambda x: x["requestContext"]["authorizer"]["jwt"]["claims"].update({"aud": "wrong"}),
+             "jwt_audience_mismatch"),
+            ("token_use", lambda x: x["requestContext"]["authorizer"]["jwt"]["claims"].update({"token_use": "access"}),
+             "jwt_token_type_invalid"),
+            ("email", lambda x: x["requestContext"]["authorizer"]["jwt"]["claims"].update({"email": "unknown@example.invalid"}),
+             "jwt_founder_email_mismatch"),
+            ("unverified", lambda x: x["requestContext"]["authorizer"]["jwt"]["claims"].update({"email_verified": "false"}),
+             "jwt_email_unverified"),
+            ("subject", lambda x: x["requestContext"]["authorizer"]["jwt"]["claims"].update({"sub": "x"}),
+             "jwt_subject_invalid"),
+            ("stale", lambda x: x["requestContext"]["authorizer"]["jwt"]["claims"].update({"auth_time": str(NOW - 240)}),
+             "jwt_auth_time_stale"),
+            ("iat", lambda x: x["requestContext"]["authorizer"]["jwt"]["claims"].update({"iat": str(NOW - 60)}),
+             "jwt_iat_order_invalid"),
+            ("expiration", lambda x: x["requestContext"]["authorizer"]["jwt"]["claims"].update({"exp": str(NOW - 1)}),
+             "jwt_expiration_invalid"),
+            ("mfa_partial", lambda x: x["requestContext"]["authorizer"]["jwt"]["claims"].update({"acr": "urn:cognito:loa:4"}),
+             "jwt_mfa_claims_partial"),
+            ("mfa_acr", lambda x: x["requestContext"]["authorizer"]["jwt"]["claims"].update({"acr": "urn:cognito:loa:1", "amr": ["pwd"]}),
+             "jwt_mfa_acr_insufficient"),
+            ("mfa_amr", lambda x: x["requestContext"]["authorizer"]["jwt"]["claims"].update({"acr": "urn:cognito:loa:4", "amr": "bad["}),
+             "jwt_mfa_factors_insufficient"),
+            ("mfa_factors", lambda x: x["requestContext"]["authorizer"]["jwt"]["claims"].update({"acr": "urn:cognito:loa:4", "amr": ["pwd"]}),
+             "jwt_mfa_factors_insufficient"),
+        ]
+        for label, modify, expected in cases:
+            with self.subTest(label=label):
+                request = start_event()
+                modify(request)
+                captured = StringIO()
+                with redirect_stdout(captured):
+                    response = self.call(request)
+                self.assertEqual(response["statusCode"], 401)
+                self.assertNotIn("Set-Cookie", response["headers"])
+                self.assertEqual(json.loads(response["body"])["code"], "signed_founder_identity_required")
+                entries = [json.loads(line) for line in captured.getvalue().splitlines()]
+                self.assertEqual(entries, [
+                    {"event": "npi_founder_signed_identity_denied",
+                     "classification": expected, "http_status": 401},
+                    {"event": "npi_founder_session_denied",
+                     "classification": "signed_founder_identity_required",
+                     "http_status": 401},
+                ])
+                self.assertNotIn(api.FOUNDER_EMAIL, captured.getvalue())
+                self.assertNotIn(ID_TOKEN, captured.getvalue())
+                self.assertNotIn(ACCESS_TOKEN, captured.getvalue())
+                self.assertNotIn(SECRET, captured.getvalue())
+                self.assertNotIn("unknown@example.invalid", captured.getvalue())
+
+    def test_signed_mfa_claims_are_supported_only_when_both_assurance_factors_match(self):
+        request = start_event()
+        claims = request["requestContext"]["authorizer"]["jwt"]["claims"]
+        claims["acr"] = "urn:cognito:loa:4"
+        claims["amr"] = ["pwd", "otp", "mfa"]
+        self.assertEqual(self.call(request)["statusCode"], 200)
+
+    def test_identity_diagnostic_allowlist_refuses_untrusted_log_content(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+        captured = StringIO()
+        with redirect_stdout(captured):
+            api.identity_denied("UNTRUSTED_USER_TOKEN_VALUE")
+        self.assertEqual(json.loads(captured.getvalue()), {
+            "event": "npi_founder_signed_identity_denied",
+            "classification": "jwt_claims_missing",
+            "http_status": 401,
+        })
+        self.assertNotIn("UNTRUSTED_USER_TOKEN_VALUE", captured.getvalue())
 
 
 if __name__ == "__main__":
