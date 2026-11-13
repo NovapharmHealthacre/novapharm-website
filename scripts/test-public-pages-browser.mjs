@@ -19,7 +19,13 @@ const routes = [
   { path: "/cro/", name: "cro", required: "Clinical" },
   { path: "/technology/", name: "technology", required: "Technology" },
   { path: "/products/", name: "products-overview", required: "Different products. One purpose." },
-  { path: "/products/nutraxin/", name: "nutraxin-collection", required: "Nutraxin" }
+  { path: "/products/nutraxin/", name: "nutraxin-collection", required: "Nutraxin" },
+  { path: "/products/nutraxin/vitamin-d3-120-tablets/", name: "nutraxin-detail", required: "Nutraxin Vitamin D3" },
+  { path: "/products/nutraxin/bag/", name: "nutraxin-bag", required: "Your Bag." },
+  { path: "/products/esco/", name: "esco-collection", required: "ESCO" },
+  { path: "/products/marketplace/", name: "marketplace", required: "Everything, together." },
+  { path: "/account-application/", name: "business-account", required: "An account is approved through evidence" },
+  { path: "/legal/privacy/", name: "privacy", required: "Privacy" }
 ];
 const routeViewports = [
   { name: "mobile-390", width: 390, height: 844 },
@@ -139,7 +145,23 @@ async function inspectLayout(page) {
       unloadedImages: [...document.images]
         .filter((image) => !image.complete)
         .map((image) => image.currentSrc || image.src),
-      midWordBreaks: [...new Set(midWordBreaks)]
+      midWordBreaks: [...new Set(midWordBreaks)],
+      // A clipped main heading or form field may be hidden by overflow:clip
+      // without increasing document.scrollWidth. Inspect rendered geometry.
+      clippedContent: [...document.querySelectorAll(
+        "main h1, main form input:not([type='hidden']), main form select, main form textarea, main form button"
+      )].filter((element) => {
+        const style = getComputedStyle(element);
+        if (style.display === "none" || style.visibility === "hidden" || Number(style.opacity) === 0) return false;
+        const rect = element.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0 &&
+          (rect.left < -2 || rect.right > document.documentElement.clientWidth + 2);
+      }).slice(0, 12).map((element) => ({
+        node: element.tagName.toLowerCase(),
+        label: (element.textContent || element.getAttribute("aria-label") || element.getAttribute("name") || "").trim().slice(0, 60),
+        left: Math.round(element.getBoundingClientRect().left),
+        right: Math.round(element.getBoundingClientRect().right)
+      }))
     };
   });
 }
@@ -154,6 +176,7 @@ async function assertLayout(page, label) {
   assert.deepEqual(layout.brokenImages, [], `${label}: broken images found`);
   assert.deepEqual(layout.unloadedImages, [], `${label}: images did not finish loading`);
   assert.deepEqual(layout.midWordBreaks, [], `${label}: headings wrap inside a word`);
+  assert.deepEqual(layout.clippedContent, [], `${label}: primary heading or form controls extend beyond the viewport`);
 }
 
 async function assertFooterHeadings(page, label) {
