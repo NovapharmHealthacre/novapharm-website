@@ -135,7 +135,7 @@ class Checkout(unittest.TestCase):
             {"aud": "wrong-client"}, {"token_use": "access"},
             {"email_verified": "false"}, {"auth_time": str(NOW - 350)},
             {"sub": "user@fake"}, {"iss": "https://untrusted.example"},
-            {"sub": "other-bad-sub"},
+            {"sub": "x"},
         ]:
             db = FakeDb()
             result = self.invoke(db, event(claims=claims))
