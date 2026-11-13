@@ -28,8 +28,8 @@ function identity(authority) {
   return authority && typeof authority === "object" && !Array.isArray(authority) &&
     authority.verifiedBySessionService === true &&
     authority.workspaceId === WORKSPACE &&
-    ID.test(authority.principalId ?? "") &&
-    ID.test(authority.authorityRevision ?? "") &&
+    typeof authority.principalId === "string" && ID.test(authority.principalId) &&
+    typeof authority.authorityRevision === "string" && ID.test(authority.authorityRevision) &&
     authority.customerAccess === false &&
     Array.isArray(authority.scopes) &&
     authority.scopes.some(s => s === "board" || s === "admin");
@@ -63,6 +63,35 @@ function immutable(rows) {
   return Object.freeze(rows.map(row => Object.freeze({ ...row })));
 }
 
+async function quarantineCommittedEvidence(quarantineAtomic, written, eventId, manifestSha256, rowCount, reason) {
+  let receipt;
+  try {
+    receipt = await quarantineAtomic(Object.freeze({
+      contract: "novapharm.private-medicine-quarantine.v1",
+      workspaceId: WORKSPACE,
+      transactionId: written.transactionId,
+      eventId,
+      manifestSha256,
+      expectedRows: rowCount,
+      reason,
+      customerPublishApproved: false
+    }));
+  } catch {
+    deny("quarantine_after_commit_unconfirmed");
+  }
+  if (!receipt || receipt.quarantined !== true ||
+      receipt.workspaceId !== WORKSPACE ||
+      receipt.transactionId !== written.transactionId ||
+      receipt.eventId !== eventId ||
+      receipt.manifestSha256 !== manifestSha256 ||
+      receipt.quarantinedRows !== rowCount ||
+      receipt.auditCommitted !== true ||
+      receipt.customerPublishApproved !== false) {
+    deny("quarantine_after_commit_unconfirmed");
+  }
+  deny(reason);
+}
+
 /**
  * G2 candidate -> private admitted record set. The commit adapter MUST
  * atomically write every candidate row, a source manifest and an append-only
@@ -75,7 +104,7 @@ function immutable(rows) {
 export async function admitPrivateOfficialMedicineEvidence({
   snapshot, rows, grant, release, authority,
   verifyCurrentRights, verifyCurrentAuthority, commitAtomic, readBackCommit,
-  now = new Date()
+  quarantineAtomic, now = new Date()
 } = {}) {
   if (!identity(authority)) deny("trusted_private_authority_required");
   if (!(now instanceof Date) || !Number.isFinite(now.getTime()) ||
@@ -83,7 +112,7 @@ export async function admitPrivateOfficialMedicineEvidence({
       Math.abs(now.getTime() - Date.parse(release.checkedAt)) > 60_000) {
     deny("release_freshness_invalid");
   }
-  if ([verifyCurrentRights, verifyCurrentAuthority, commitAtomic, readBackCommit]
+  if ([verifyCurrentRights, verifyCurrentAuthority, commitAtomic, readBackCommit, quarantineAtomic]
     .some(f => typeof f !== "function")) deny("trusted_storage_adapters_required");
 
   const candidate = prepareOfficialMedicineEvidenceCandidate({ snapshot, rows, grant, release });
@@ -139,7 +168,7 @@ export async function admitPrivateOfficialMedicineEvidence({
   // enforce the checked workspace, status transition, idempotency and ledger.
   const written = await commitAtomic(payload);
   if (!written || written.committed !== true ||
-      !ID.test(written.transactionId ?? "") ||
+      typeof written.transactionId !== "string" || !ID.test(written.transactionId) ||
       written.eventId !== eventId ||
       written.manifestSha256 !== manifestSha256 ||
       written.workspaceId !== WORKSPACE ||
@@ -164,10 +193,18 @@ export async function admitPrivateOfficialMedicineEvidence({
 
   // A late revocation cannot turn a committed record into an authorised read.
   if (await verifyCurrentAuthority(Object.freeze({ ...check })) !== true) {
-    deny("authority_revoked_after_commit");
+    await quarantineCommittedEvidence(
+      quarantineAtomic, written, eventId, manifestSha256, candidate.rowCount,
+      "authority_revoked_after_commit"
+    );
   }
   const after = await verifyCurrentRights(Object.freeze({ ...check }));
-  if (!liveRights(after, candidate, grant, now.getTime())) deny("rights_revoked_after_commit");
+  if (!liveRights(after, candidate, grant, now.getTime())) {
+    await quarantineCommittedEvidence(
+      quarantineAtomic, written, eventId, manifestSha256, candidate.rowCount,
+      "rights_revoked_after_commit"
+    );
+  }
 
   return Object.freeze({
     contract: "novapharm.private-medicine-atomic-admission.v1",
