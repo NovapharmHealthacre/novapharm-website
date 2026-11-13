@@ -5,6 +5,7 @@ Source of truth: Cognito-authorized OAuth code flow, live enforced PASSWORD
 sessions. Sessions grant ONLY the founder-shell scope, never medicines data,
 customer seats, subscriptions, tender actions or billing.
 """
+import base64
 import hashlib
 import hmac
 import json
@@ -201,6 +202,49 @@ def identity_denied(reason):
     }, separators=(",", ":")), flush=True)
 
 
+def trusted_gateway_raw_amr(event, gateway_claims):
+    """Recover original MFA methods only from the token API Gateway verified.
+
+    HTTP API Gateway can re-encode array-valued JWT claims in its integration
+    context. The identitySource is the Authorization bearer token, validated
+    by the pinned JWT authorizer before this Lambda executes. Never treat a
+    decoded JWT as independently verified: require exact agreement with the
+    gateway's independently validated identity and time claims, then apply
+    the identical strict level-4, pwd + otp + mfa requirement.
+    """
+    headers = {k.lower(): v for k, v in (event.get("headers") or {}).items()}
+    authorization = headers.get("authorization")
+    if not isinstance(authorization, str) or not re.fullmatch(
+            r"Bearer [A-Za-z0-9._-]{100,16000}", authorization):
+        return None
+    pieces = authorization[7:].split(".")
+    if len(pieces) != 3 or not re.fullmatch(r"[A-Za-z0-9_-]{20,12000}", pieces[1]):
+        return None
+    try:
+        original = json.loads(base64.urlsafe_b64decode(
+            pieces[1] + "=" * (-len(pieces[1]) % 4)).decode("utf-8"))
+    except (ValueError, UnicodeDecodeError, TypeError):
+        return None
+    if not isinstance(original, dict):
+        return None
+    for field in ("iss", "aud", "token_use", "email", "sub", "acr"):
+        if original.get(field) != gateway_claims.get(field):
+            return None
+    for field in ("iat", "exp", "auth_time"):
+        if str(original.get(field)) != str(gateway_claims.get(field)):
+            return None
+    if original.get("email_verified") not in ("true", True):
+        return None
+    if gateway_claims.get("email_verified") not in ("true", True):
+        return None
+    methods = original.get("amr")
+    if (not isinstance(methods, list) or len(methods) > 8
+            or not all(isinstance(x, str) and
+                       re.fullmatch(r"[a-z_]{2,20}", x) for x in methods)):
+        return None
+    return methods
+
+
 def verified_jwt(event, now):
     """Return verified signed subject and fixed rejection class, never claims.
 
@@ -248,8 +292,15 @@ def verified_jwt(event, now):
             try:
                 amr = json.loads(amr) if amr.startswith("[") else amr.split(",")
             except (ValueError, TypeError):
-                return None, "jwt_mfa_amr_invalid"
+                # API Gateway sometimes changes an array claim's representation.
+                # Do not accept its malformed value or relax the MFA requirement;
+                # consult the exact bearer JWT already checked by the authorizer.
+                amr = None
         if not isinstance(amr, list):
+            amr = trusted_gateway_raw_amr(event, claims)
+        if not isinstance(amr, list):
+            return None, "jwt_mfa_amr_invalid"
+        if not all(isinstance(method, str) for method in amr):
             return None, "jwt_mfa_amr_invalid"
         if not {"pwd", "otp", "mfa"}.issubset(set(amr)):
             return None, "jwt_mfa_factors_insufficient"
