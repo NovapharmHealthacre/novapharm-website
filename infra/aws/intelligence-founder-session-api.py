@@ -65,6 +65,24 @@ def success(code, fields=None, cookie=None):
     return response
 
 
+def internal_failure(stage):
+    # Only fixed, developer-authored stage identifiers are allowed.
+    # No exceptions, subjects, headers, identity attributes or secrets.
+    permitted = (
+        "cognito_pool_policy", "cognito_access_user", "cognito_admin_user",
+        "session_build", "ddb_atomic_session_write", "ddb_session_read",
+        "cognito_pool_policy_read", "cognito_admin_user_read",
+        "ddb_logout_write",
+    )
+    if stage not in permitted:
+        stage = "unclassified"
+    print(json.dumps({
+        "event": "npi_founder_internal_failure",
+        "stage": stage,
+        "http_status": 503,
+    }, separators=(",", ":")), flush=True)
+
+
 def s(value):
     return {"S": str(value)}
 
@@ -221,12 +239,16 @@ def mint(event, now, cognito, dynamodb, secret):
             or not isinstance(access_token, str) or not 100 <= len(access_token) <= 8192
             or not bridge_valid(event, id_token, access_token, secret, now)):
         return deny(401, "server_bridge_required")
+    stage = "cognito_pool_policy"
     try:
         cognito_policy(cognito)
+        stage = "cognito_access_user"
         current = cognito.get_user(AccessToken=access_token)
+        stage = "cognito_admin_user"
         admin = cognito.admin_get_user(UserPoolId=POOL, Username=FOUNDER_EMAIL)
         if not user_matches(current, subject) or not user_matches(admin, subject):
             return deny(401, "founder_factor_not_verified")
+        stage = "session_build"
         token = secrets.token_urlsafe(32)
         if not OPAQUE.fullmatch(token):
             return deny(503, "session_unavailable")
@@ -257,6 +279,7 @@ def mint(event, now, cognito, dynamodb, secret):
                 }, "ConditionExpression": "attribute_not_exists(PK)",
             }},
         ]
+        stage = "ddb_atomic_session_write"
         dynamodb.transact_write_items(TransactItems=ddb_rows, ClientRequestToken=uuid.uuid4().hex)
         return success("founder_session_active", {
             "role": "founder", "scope": SCOPE,
@@ -264,6 +287,7 @@ def mint(event, now, cognito, dynamodb, secret):
         }, cookie=COOKIE + "=" + token + "; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=" + str(TTL))
     except Exception:
         # No issuer, event, secret, token or personal details in response/logs.
+        internal_failure(stage)
         return deny(503, "founder_session_unavailable")
 
 
@@ -274,6 +298,7 @@ def active(event, now, cognito, dynamodb):
     if not secret:
         return deny(401, "founder_session_required")
     digest = hashlib.sha256(secret.encode("ascii")).hexdigest()
+    stage = "ddb_session_read"
     try:
         item = dynamodb.get_item(TableName=TABLE,
             Key=key("FOUNDER_SESSION#" + digest), ConsistentRead=True).get("Item")
@@ -290,7 +315,9 @@ def active(event, now, cognito, dynamodb):
                 or not SUBJECT.fullmatch(str(subject or ""))
                 or issued > now or expiry <= now or expiry - issued > TTL):
             return deny(401, "founder_session_revoked_or_expired")
+        stage = "cognito_pool_policy_read"
         cognito_policy(cognito)
+        stage = "cognito_admin_user_read"
         user = cognito.admin_get_user(UserPoolId=POOL, Username=FOUNDER_EMAIL)
         if user.get("Enabled") is not True or user.get("UserStatus") != "CONFIRMED" or not user_matches(user, subject):
             return deny(401, "founder_account_not_active")
@@ -299,6 +326,7 @@ def active(event, now, cognito, dynamodb):
             "customerAccess": False, "medicinesDataAccess": False,
         })
     except Exception:
+        internal_failure(stage)
         return deny(503, "founder_session_unavailable")
 
 
@@ -335,6 +363,7 @@ def logout(event, now, dynamodb):
         ])
         return success("signed_out", cookie=COOKIE + "=; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=0")
     except Exception:
+        internal_failure("ddb_logout_write")
         return deny(503, "logout_unavailable", clear=True)
 
 
