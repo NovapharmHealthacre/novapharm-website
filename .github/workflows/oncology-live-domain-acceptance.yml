@@ -1,0 +1,66 @@
+name: Oncology live custom-domain Chromium and WebKit acceptance
+
+on:
+  workflow_run:
+    workflows: ["Publish verified AWS-backed contact form"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: oncology-live-domain-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: false
+
+jobs:
+  verify-live-oncology:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out the exact successfully published source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Set up Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Install Chromium and Safari WebKit
+        run: npx playwright install --with-deps chromium webkit
+      - name: Verify exact live Oncology HTML and stylesheet bytes
+        env:
+          EXPECTED_SHA: ${{ github.event.workflow_run.head_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          cache="oncology-live-$EXPECTED_SHA-$(date +%s)"
+          curl --fail --silent --show-error --location --max-time 25 \
+            -H 'Cache-Control: no-cache, no-store' \
+            "https://novapharmhealthcare.com/oncology/?$cache" \
+            -o /tmp/novapharm-live-oncology.html
+          grep -Fq 'href="/assets/css/oncology-hope-v2.css?v=20261112-hope-seamless-v6"' \
+            /tmp/novapharm-live-oncology.html
+          curl --fail --silent --show-error --location --max-time 25 \
+            -H 'Cache-Control: no-cache, no-store' \
+            "https://novapharmhealthcare.com/assets/css/oncology-hope-v2.css?$cache" \
+            -o /tmp/novapharm-live-oncology.css
+          cmp assets/css/oncology-hope-v2.css /tmp/novapharm-live-oncology.css
+          echo "Exact published Oncology HTML and CSS verified for $EXPECTED_SHA."
+      - name: Capture live custom-domain Oncology in Chromium and Safari WebKit
+        env:
+          PUBLIC_PAGES_BASE_URL: https://novapharmhealthcare.com
+          ONCOLOGY_HERO_ARTIFACT_ROOT: artifacts/oncology-live-hero
+        run: node scripts/test-oncology-hero-browser.mjs
+      - name: Upload live Oncology desktop and mobile screenshots
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: oncology-live-hero-${{ github.event.workflow_run.head_sha }}
+          path: artifacts/oncology-live-hero
+          if-no-files-found: warn
+          retention-days: 14
