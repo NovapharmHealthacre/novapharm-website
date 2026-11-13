@@ -87,6 +87,7 @@ function requireCommitPayload(p) {
       !ident(row.identity_revision) || !ident(row.geography_id) ||
       !sha(row.provenance_sha256) || row.jurisdiction !== "England" ||
       !["items", "quantity", "nic", "actual_cost"].includes(row.metric) ||
+      row.unit !== ({ items: "items", quantity: "units", nic: "GBP", actual_cost: "GBP" })[row.metric] ||
       !Number.isFinite(row.value) || row.value < 0 ||
       ids.has(row.row_id) || hashes.has(row.provenance_sha256)) {
       denied("invalid_g2_source_row");
