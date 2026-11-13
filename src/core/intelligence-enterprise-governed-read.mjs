@@ -44,7 +44,12 @@ const denied = () => Object.assign(
   { code: "enterprise_research_denied", statusCode: 403 }
 );
 const digest = value => createHash("sha256").update(value).digest("hex");
-const date = x => typeof x === "string" && ISO.test(x) && Number.isFinite(Date.parse(x));
+const date = x => {
+  if (typeof x !== "string" || !ISO.test(x)) return false;
+  const t = Date.parse(x);
+  // Reject calendar overflow (e.g. 30 February) silently normalized by Date.parse.
+  return Number.isFinite(t) && new Date(t).toISOString().slice(0, 19) === x.slice(0, 19);
+};
 const validId = x => typeof x === "string" && ID.test(x);
 const exactFields = (obj, fields) =>
   obj && typeof obj === "object" && !Array.isArray(obj) &&
@@ -61,7 +66,7 @@ function validPayload(kind, p) {
     case "security_finding":
       return validId(p.findingId) &&
         ["critical", "high", "medium", "low", "informational"].includes(p.severity) &&
-        ["open", "mitigated", "resolved", "risk_accepted"].includes(p.disposition);
+        ["open", "mitigated", "resolved"].includes(p.disposition);
     case "market_observation":
       return validId(p.metricId) && typeof p.value === "number" && Number.isFinite(p.value) &&
         Math.abs(p.value) <= 1e12 && validId(p.unit) &&
@@ -83,6 +88,8 @@ function validRecord(row, workspaceId, capability, kind, asOf, now) {
     row.payloadSha256 === digest(JSON.stringify(row.payload)) &&
     date(row.observedAt) && date(row.recordedAt) &&
     Date.parse(row.observedAt) <= Date.parse(asOf) &&
+    Date.parse(row.recordedAt) <= Date.parse(asOf) &&
+    Date.parse(row.observedAt) <= Date.parse(row.recordedAt) &&
     Date.parse(row.recordedAt) <= now;
 }
 function validGrant(grant, row, capability, workspaceId, now) {
@@ -114,7 +121,8 @@ export async function readGovernedEnterpriseRecords({
   limit = 20, nativeVendor = false
 } = {}) {
   if (!authority || authority.verified !== true ||
-      !validId(authority.principalId) || !WORKSPACE.test(authority.workspaceId ?? "") ||
+      !validId(authority.principalId) || typeof authority.workspaceId !== "string" ||
+      !WORKSPACE.test(authority.workspaceId) ||
       !validId(authority.authorityRevision) ||
       !Array.isArray(authority.accessScopes) ||
       !authority.accessScopes.some(role => ["board", "admin", "intelligence:research"].includes(role)) ||
