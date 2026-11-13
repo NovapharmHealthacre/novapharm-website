@@ -561,3 +561,24 @@ main :is(input, select, textarea, fieldset) {
 }
 main :is(p, li, dd, figcaption) { overflow-wrap: break-word; }
 main [id] { scroll-margin-top: calc(var(--header) + 24px); }
+
+
+/* The public contact route uses a mailto-only form without .contact-form.
+   Preserve the bordered outer labels and strip nested native borders on both
+   public and managed routes. Higher specificity than the global input reset. */
+.np-contact-reference .np-contact-reference-field :is(input:not([type="checkbox"]), select, textarea) {
+  min-width: 0;
+  width: 100%;
+  min-height: 25px;
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.np-contact-reference .np-contact-reference-field :is(input, select, textarea):focus-visible {
+  border: 0;
+  outline: none;
+  box-shadow: none;
+}
