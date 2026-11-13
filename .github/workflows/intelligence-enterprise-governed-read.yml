@@ -5,6 +5,8 @@ on:
     paths:
       - "src/core/intelligence-enterprise-governed-read.mjs"
       - "scripts/test-intelligence-enterprise-governed-read.mjs"
+      - "scripts/test-intelligence-enterprise-atlas-read-adapter.mjs"
+      - "src/data/intelligence-enterprise-atlas-read-adapter.mjs"
       - ".github/workflows/intelligence-enterprise-governed-read.yml"
   workflow_dispatch:
 
@@ -23,6 +25,8 @@ jobs:
       - name: Validate enterprise research source and test syntax
         run: |
           node --check src/core/intelligence-enterprise-governed-read.mjs
+          node --check src/data/intelligence-enterprise-atlas-read-adapter.mjs
           node --check scripts/test-intelligence-enterprise-governed-read.mjs
+          node --check scripts/test-intelligence-enterprise-atlas-read-adapter.mjs
       - name: Verify rights, tenancy, audit, revocation and no native-vendor activation
-        run: node --test scripts/test-intelligence-enterprise-governed-read.mjs
+        run: npm run test:enterprise-integrations
