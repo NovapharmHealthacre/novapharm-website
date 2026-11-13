@@ -85,7 +85,8 @@ class FakeDb:
 def event(plan="starter", cycle="monthly", claims=None, extras=None):
     identity = {
         "iss": MODULE.ISSUER, "aud": MODULE.CLIENT_ID, "token_use": "id",
-        "acr": "urn:cognito:loa:4", "amr": '["pwd","otp","mfa"]',
+        # Cognito managed ID tokens typically do not include ACR or AMR;
+        # enforced user-pool MFA + AdminGetUser are independently checked.
         "auth_time": str(NOW - 20), "email_verified": "true", "sub": SUB,
     }
     if claims:
@@ -114,7 +115,9 @@ class Checkout(unittest.TestCase):
     def invoke(self, db, incoming, **kwargs):
         return MODULE.handle(incoming, db=db, now=NOW, enabled=True,
                              secret_key=lambda: "sk_live_synthetic_mock_123456789",
-                             transport=transport_ok, **kwargs)
+                             transport=transport_ok,
+                             mfa_check=kwargs.pop("mfa_check", lambda _sub: True),
+                             **kwargs)
 
     def test_off_is_inert_even_with_fully_approved_fixture(self):
         db = FakeDb()
@@ -129,16 +132,59 @@ class Checkout(unittest.TestCase):
 
     def test_bad_principal_and_mfa_never_read_or_charge(self):
         for claims in [
-            {"acr": "urn:cognito:loa:1"}, {"amr": '["pwd"]'},
+            {"aud": "wrong-client"}, {"token_use": "access"},
             {"email_verified": "false"}, {"auth_time": str(NOW - 350)},
             {"sub": "user@fake"}, {"iss": "https://untrusted.example"},
-            {"amr": '[{"obj":"not hashable"}]'},
+            {"sub": "other-bad-sub"},
         ]:
             db = FakeDb()
             result = self.invoke(db, event(claims=claims))
             self.assertEqual(result["statusCode"], 403)
             self.assertEqual(db.reads, 0)
             self.assertEqual(db.writes, [])
+
+    def test_cognito_requires_enforced_pool_mfa_not_optional_jwt_acr_or_amr(self):
+        class Identity:
+            def __init__(self, *, enabled=True, enrolled=True, verified=True, pool_on=True):
+                self.enabled, self.enrolled = enabled, enrolled
+                self.verified, self.pool_on = verified, pool_on
+            def describe_user_pool(self, **kwargs):
+                assert kwargs["UserPoolId"] == MODULE.POOL_ID
+                return {"UserPool": {"MfaConfiguration": "ON" if self.pool_on else "OFF"}}
+            def admin_get_user(self, **kwargs):
+                assert kwargs["UserPoolId"] == MODULE.POOL_ID
+                assert kwargs["Username"] == SUB
+                return {
+                    "UserStatus": "CONFIRMED", "Enabled": self.enabled,
+                    "UserMFASettingList": ["SOFTWARE_TOKEN_MFA"] if self.enrolled else [],
+                    "UserAttributes": [
+                        {"Name": "sub", "Value": SUB},
+                        {"Name": "email_verified", "Value": "true" if self.verified else "false"},
+                    ],
+                }
+        self.assertTrue(MODULE.verified_required_cognito_mfa(Identity(), SUB))
+        for changes in [{"enabled": False}, {"enrolled": False},
+                        {"verified": False}, {"pool_on": False}]:
+            self.assertFalse(MODULE.verified_required_cognito_mfa(Identity(**changes), SUB))
+        # Missing ACR and AMR is normal Cognito, so normal verified ID JWT
+        # only passes if independent Cognito pool/user MFA also passes.
+        normal = event()
+        self.assertNotIn("acr", normal["requestContext"]["authorizer"]["jwt"]["claims"])
+        self.assertNotIn("amr", normal["requestContext"]["authorizer"]["jwt"]["claims"])
+        db = FakeDb()
+        no_mfa = self.invoke(db, normal, mfa_check=lambda _sub: False)
+        self.assertEqual(no_mfa["statusCode"], 403)
+        self.assertEqual(db.reads, 0)
+        self.assertEqual(db.writes, [])
+        for mode in [None, lambda _sub: False, lambda _sub: None]:
+            result = MODULE.handle(
+                normal, db=db, secret_key=lambda: "sk_live_mock_123456789",
+                now=NOW, enabled=True, mfa_check=mode, transport=transport_ok,
+            )
+            self.assertEqual(result["statusCode"], 403)
+            self.assertEqual(db.reads, 0)
+        good = self.invoke(FakeDb(), normal)
+        self.assertEqual(good["statusCode"], 200)
 
     def test_bad_plan_and_extra_fields_never_read(self):
         for incoming in [
@@ -197,7 +243,8 @@ class Checkout(unittest.TestCase):
         db = FakeDb()
         result = MODULE.handle(event(), db=db, now=NOW, enabled=True,
             secret_key=lambda: "sk_live_synthetic_mock_123456789",
-            transport=lambda *_: {"id": "cs_live_ABC12345", "livemode": False})
+            transport=lambda *_: {"id": "cs_live_ABC12345", "livemode": False},
+            mfa_check=lambda _sub: True)
         self.assertEqual(result["statusCode"], 503)
         self.assertEqual([x[0] for x in db.writes], ["reserve"])
         self.assertNotIn("checkoutUrl", json.loads(result["body"]))
@@ -208,7 +255,8 @@ class Checkout(unittest.TestCase):
             calls.append((url, dict(__import__("urllib.parse", fromlist=["parse_qsl"]).parse_qsl(body.decode())), headers))
             return transport_ok(url, body, headers)
         result = MODULE.handle(event(), db=FakeDb(), now=NOW, enabled=True,
-            secret_key=lambda: "sk_live_synthetic_mock_123456789", transport=capture)
+            secret_key=lambda: "sk_live_synthetic_mock_123456789",
+            transport=capture, mfa_check=lambda _sub: True)
         self.assertEqual(result["statusCode"], 200)
         api, params, headers = calls[0]
         self.assertEqual(api, "https://api.stripe.com/v1/checkout/sessions")
