@@ -63,6 +63,21 @@ test("duplicate/conflicting check receipts block the affected capability", () =>
   assert.ok(report.capabilities.every(c => c.missingChecks.includes("source_rights")));
 });
 
+test("missing or non-string receipt identity fields never satisfy a candidate check", () => {
+  for (const field of ["receiptId", "independentVerifierId", "approverId"]) {
+    for (const value of [undefined, null, "", 123]) {
+      const candidate = receipt("source_rights", 1, { [field]: value });
+      const report = assessUnifiedIntelligenceCapabilityEvidence({
+        workspaceId, asOf, receipts: [candidate]
+      });
+      assert.ok(
+        report.capabilities.every(c => c.coveredCandidateChecks === 0),
+        `invalid ${field} must not count as a receipt`
+      );
+    }
+  }
+});
+
 test("invalid input fails closed", () => {
   assert.throws(() => assessUnifiedIntelligenceCapabilityEvidence({workspaceId:"../../unsafe",asOf}), /Invalid/);
   assert.throws(() => assessUnifiedIntelligenceCapabilityEvidence({workspaceId,asOf:"tomorrow"}), /Invalid/);
