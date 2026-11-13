@@ -139,6 +139,25 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertTrue(decoded[:2]==bytes([255,216]))
         self.assertGreater(len(decoded),50000)
 
+    def test_live_portal_origin_matches_deployed_cloudformation_template(self):
+        template = json.loads((ROOT / "infra/aws/nutraxin-customer-staging-stack.json").read_text())
+        values = template["Resources"]["AppFunction"]["Properties"]["Environment"]["Variables"]
+        self.assertEqual(values["BASE_URL"], "https://portal.novapharmhealthcare.com")
+
+        # A reverse proxy can forward the gateway Host rather than the
+        # public browser Host. Accept our exact configured origin regardless.
+        event = self.event("/login", "POST", origin="https://portal.example.invalid")
+        event["headers"]["host"] = "wgy9p7ad0d.execute-api.eu-north-1.amazonaws.com"
+        event["body"] = "mode=signup&email=invalid"
+        response = PORTAL.handler(event, None)
+        self.assertEqual(response["statusCode"], 400)
+        self.assertEqual(json.loads(response["body"])["error"], "invalid_login_email")
+
+        event["headers"]["origin"] = "https://untrusted.example.invalid"
+        denied = PORTAL.handler(event, None)
+        self.assertEqual(denied["statusCode"], 403)
+        self.assertEqual(json.loads(denied["body"])["error"], "invalid_login_origin")
+
     def test_approved_account_landing_and_personal_signup(self):
         policy=PORTAL.reply(200,PORTAL.PAGE,"text/html")["headers"]["content-security-policy"]
         self.assertIn("form-action 'self' https://synthetic.auth.eu-north-1.amazoncognito.com",policy)
