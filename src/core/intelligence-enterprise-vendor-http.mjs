@@ -62,6 +62,7 @@ async function boundedJson(response,url,limit){
  if(!response||typeof response.status!=="number"||
   response.redirected===true)throw denied();
  if(response.url && response.url!==url)throw denied();
+ if(response.status>=300 && response.status<400)throw denied();
  // Do not read or expose any server error body; it may contain credentials.
  if(response.status!==200)return {status:response.status,json:null};
  const contentType=response.headers?.get?.("content-type");
