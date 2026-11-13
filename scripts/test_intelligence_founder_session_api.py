@@ -258,5 +258,74 @@ class FounderTests(unittest.TestCase):
         self.assertEqual(self.call(event("POST", "/founder/grant"))["statusCode"], 404)
 
 
+    def test_internal_503_stages_are_redacted_and_never_grant_sessions(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+
+        def explode(**_kwargs):
+            raise RuntimeError("SECRET_TOKEN_PASSWORD_NEVER_LOG_THIS")
+
+        for stage, method in (
+            ("cognito_pool_policy", "describe_user_pool"),
+            ("cognito_access_user", "get_user"),
+            ("cognito_admin_user", "admin_get_user"),
+            ("ddb_atomic_session_write", None),
+        ):
+            self.cognito, self.db = Cognito(), Dynamo()
+            if method is None:
+                self.db.fail = True
+            else:
+                setattr(self.cognito, method, explode)
+            output = StringIO()
+            with redirect_stdout(output):
+                response = self.login()
+            self.assertEqual(response["statusCode"], 503)
+            self.assertNotIn("Set-Cookie", response["headers"])
+            lines = [json.loads(line) for line in output.getvalue().splitlines() if line]
+            self.assertEqual(lines, [
+                {"event": "npi_founder_internal_failure", "stage": stage, "http_status": 503},
+                {"event": "npi_founder_session_denied",
+                 "classification": "founder_session_unavailable", "http_status": 503},
+            ])
+            self.assertNotIn("SECRET_TOKEN_PASSWORD_NEVER_LOG_THIS", output.getvalue())
+            self.assertNotIn(api.FOUNDER_EMAIL, output.getvalue())
+            self.assertNotIn(SECRET, output.getvalue())
+
+    def test_founder_session_read_and_logout_failures_have_fixed_private_stages(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+
+        for route, method, stage in (
+            ("/founder/session", "GET", "ddb_session_read"),
+            ("/founder/logout", "POST", "ddb_logout_write"),
+        ):
+            self.cognito, self.db = Cognito(), Dynamo()
+            cookie = self.get_secret(self.login())
+            self.db.fail = True
+            captured = StringIO()
+            with redirect_stdout(captured):
+                result = self.call(event(method, route, cookie))
+            self.assertEqual(result["statusCode"], 503)
+            rows = [json.loads(line) for line in captured.getvalue().splitlines() if line]
+            self.assertEqual(rows[0], {
+                "event": "npi_founder_internal_failure", "stage": stage, "http_status": 503,
+            })
+            self.assertNotIn(api.FOUNDER_EMAIL, captured.getvalue())
+            self.assertNotIn(SECRET, captured.getvalue())
+
+    def test_internal_failure_stage_is_allowlisted_not_user_controlled(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+        captured = StringIO()
+        with redirect_stdout(captured):
+            api.internal_failure("untrusted_token_with_secret")
+        self.assertEqual(json.loads(captured.getvalue()), {
+            "event": "npi_founder_internal_failure",
+            "stage": "unclassified",
+            "http_status": 503,
+        })
+        self.assertNotIn("untrusted_token_with_secret", captured.getvalue())
+
+
 if __name__ == "__main__":
     unittest.main()
