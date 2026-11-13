@@ -92,10 +92,7 @@ test("invalid, redirected, oversized and non-JSON responses are denied",async()=
  ];
  for(const response of wrong){
   const http=createStrictEnterpriseVendorTransport({fetchImpl:async()=>response});
-  if(response.status===302){
-   const v=await http(foundryGet);
-   assert.equal(v.status,302); // caller treats any non-200 as denied
-  }else await assert.rejects(http({...foundryGet,maxBytes:1024}),deny);
+  await assert.rejects(http({...foundryGet,maxBytes:1024}),deny);
  }
 });
 
