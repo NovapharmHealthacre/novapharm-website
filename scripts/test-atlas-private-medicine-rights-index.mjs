@@ -159,8 +159,11 @@ test("reviewed private G2 migration creates only missing indexes with exact uniq
   assert.deepEqual(x.stats(),{writes:1,approvals:1});
 });
 test("missing approval, nonempty data and conflicting G2 indexes deny writes",async()=>{
-  for(const defect of [{nonempty:names[2]},{conflicting:names[1]}]){
-    const x=g2Fixture({...defect,missing:names[0]});
+  for(const defect of [
+    {nonempty:names[2], missing:names[2]},
+    {conflicting:names[1], missing:names[0]}
+  ]){
+    const x=g2Fixture(defect);
     await assert.rejects(ensureG2PrivateMedicineUniqueIndexes({
       database:x.database,apply:true,changeTicket:"NPI-CHANGE-G2-20261113",
       authorizeMigration:x.authorizeMigration
