@@ -132,7 +132,7 @@ function g2Fixture({missing = null, nonempty = null, conflicting = null} = {}) {
       }
     };
   }
-  const database = {databaseName:spec.database,
+  const database = {databaseName:medicineRightsUniqueIndexSpec.database,
     collection:name=>{assert.ok(collections[name]);return collections[name];}};
   const authorizeMigration = async p=>{
     approvals++;
