@@ -27,3 +27,22 @@ Procedure:
 
 No rights, customer entitlement, medicine observations, payments, emails,
 public API routes or model processing are enabled by this change.
+
+
+## G2 evidence/manifest/audit unique-index migration
+
+The G2 atomic store (PR #587) independently requires real MongoDB unique indexes
+for npi_medicine_evidence (workspace/source/version/resource/row_id),
+npi_evidence_manifests (workspace/manifest SHA), and npi_audit_events
+(workspace/event_id). All three currently lack the required unique constraints,
+and their production collection counts were zero at the last live readback.
+
+The additional ensureG2PrivateMedicineUniqueIndexes helper checks all three
+collections **without writing by default**. It refuses conflicting/nonunique
+indexes, nonempty collections and missing separate authority, and creates only
+missing indexes with explicit unique:true and majority acknowledgment after
+independent approval. Every new index receives an independent listIndexes
+readback. Multi-index creation is not a single atomic migration: on any error,
+stop and reconcile partially created indexes; never blindly drop one.
+No real source rights, records, identities, customer access or billing are
+created by this helper.
