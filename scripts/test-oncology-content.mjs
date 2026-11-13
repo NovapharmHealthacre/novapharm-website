@@ -12,6 +12,7 @@ const html = source("oncology/index.html");
 const visible = visibleTextFromHtml(html);
 const css = source("assets/css/oncology-editorial.css");
 const approvedLayout = source("assets/css/oncology-hope-v2.css");
+const nextLayout = source("apps/corporate/app/oncology-editorial.css");
 
 assert.deepEqual(navigation.find(([, href]) => href === "/oncology/"), ["Oncology","/oncology/"]);
 assert.ok(pageMeta.oncology?.title.includes("Oncology"));
@@ -44,7 +45,7 @@ assert.match(html, /id="scope-boundary"/);
 assert.match(html, /id="oncology-faqs"/);
 assert.match(html, /href="\/contact\/\?enquiry=Oncology%20%26%20specialist%20medicines"/);
 assert.match(html, /href="\/assets\/css\/oncology-editorial\.css(?:\?v=[^"]+)?"/);
-assert.match(html, /href="\/assets\/css\/oncology-hope-v2\.css(?:\?v=[^"]+)?"/, "Cache-safe approved layout stylesheet must load");
+assert.match(html, /href="\/assets\/css\/oncology-hope-v2\.css\?v=20261112-hope-seamless-v6"/, "Responsive framing correction must use a fresh cache version");
 assert.ok(html.indexOf("oncology-hope-v2.css") > html.indexOf("oncology-editorial.css"), "Approved style must follow original stylesheet");
 assert.match(approvedLayout, /object-fit:contain/, "Portrait must preserve its full framing");
 assert.match(approvedLayout, /-webkit-mask-image:linear-gradient/, "Desktop image must blend into one continuous hero");
@@ -63,7 +64,20 @@ assert.match(approvedLayout, /object-position:right top;/,
   "Full-bleed crop must preserve the head and facial framing");
 assert.match(approvedLayout, /\.npoc-hope-focus \.npoc-focus-card img\s*\{[^}]*object-fit:\s*cover;/,
   "Oncology supporting category photographs should retain their cropped card treatment");
-assert.match(approvedLayout, /-webkit-mask-image:none/, "Portrait masking must reset on mobile");
+const responsiveImageRule = (stylesheet, mediaPattern) => {
+  const pattern = new RegExp(`${mediaPattern}\\s*\\{[\\s\\S]*?\\.npoc-hope-hero \\.npoc-hero-visual img\\s*\\{([^}]*)\\}`, "g");
+  return [...stylesheet.matchAll(pattern)].at(-1)?.[1] ?? "";
+};
+const tabletMedia = "@media\\s*\\(min-width:761px\\)\\s*and\\s*\\(max-width:1100px\\)";
+const mobileMedia = "@media\\s*\\(max-width:760px\\)";
+for (const [name, stylesheet] of [["static",approvedLayout],["Next",nextLayout]]) {
+  const tabletRule = responsiveImageRule(stylesheet,tabletMedia);
+  const mobileRule = responsiveImageRule(stylesheet,mobileMedia);
+  assert.match(tabletRule,/object-fit:\\s*contain;/,`${name}: tablet portrait must preserve full framing`);
+  assert.match(mobileRule,/object-fit:\\s*contain;/,`${name}: mobile portrait must preserve full framing`);
+  assert.match(mobileRule,/-webkit-mask-image:\\s*linear-gradient/,`${name}: mobile must suppress source-edge lettering`);
+}
+assert.match(approvedLayout, /object-fit:cover;/, "Desktop must cover the portrait canvas");
 assert.match(approvedLayout, /grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/, "All three Oncology visuals share a grid row");
 assert.match(approvedLayout, /npoc-focus-card span/, "Image labels must overlay on the cards");
 
