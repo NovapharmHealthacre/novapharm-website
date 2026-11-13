@@ -706,6 +706,9 @@ jobs:
               && curl --fail --silent --show-error --location --max-time 20 \
                 "https://novapharmhealthcare.com/assets/css/oncology-hope-v2.css?${cache}" -o /tmp/live-hope-oncology.css \
               && grep -Fq 'object-fit:cover' /tmp/live-hope-oncology.css \
+              && grep -Fq 'object-fit:contain' /tmp/live-hope-oncology.css \
+              && grep -Fq '@media (max-width:760px)' /tmp/live-hope-oncology.css \
+              && grep -Fq '@media (min-width:761px) and (max-width:1100px)' /tmp/live-hope-oncology.css \
               && grep -Fq 'Owner-approved reference SS2' /tmp/live-hope-oncology.css; then
               echo 'Approved full-scene Oncology hero, crop rule and no retired disclaimer verified live.'
               break
