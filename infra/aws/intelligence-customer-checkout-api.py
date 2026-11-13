@@ -20,7 +20,8 @@ from urllib.parse import urlparse
 
 API_ID = "q2e6ztf8ic"
 HOST = "intelligence.novapharmhealthcare.com"
-ISSUER = "https://cognito-idp.eu-north-1.amazonaws.com/eu-north-1_jBL6hCUE2"
+POOL_ID = "eu-north-1_jBL6hCUE2"
+ISSUER = "https://cognito-idp.eu-north-1.amazonaws.com/" + POOL_ID
 CLIENT_ID = "7c76122stt76k4d8cjvd7tf6ck"
 ACCESS_TABLE = "novapharm-intelligence-customer-access"
 LIVE_ACCOUNT = "acct_1UZUNv2U9Y3sX5I2"
@@ -88,23 +89,48 @@ def verified_principal(event, now):
     if not isinstance(claims, dict):
         return None
     try:
-        amr = claims.get("amr")
-        if isinstance(amr, str):
-            amr = json.loads(amr) if amr.startswith("[") else [v.strip() for v in amr.split(",")]
         auth_time = int(claims.get("auth_time", "0"))
     except (TypeError, ValueError):
         return None
+    # Cognito managed sign-in issues verified JWTs WITHOUT requiring ACR/AMR
+    # claims. The HTTP API JWT authorizer verifies its signature and audience,
+    # while this Lambda independently checks Cognito enforced MFA (below).
+    # Never regard an optional, browser-controlled claim as proof of MFA.
     if (claims.get("iss") != ISSUER or claims.get("aud") != CLIENT_ID or
         claims.get("token_use") != "id" or
-        claims.get("acr") != "urn:cognito:loa:4" or
         claims.get("email_verified") not in (True, "true") or
-        not isinstance(amr, list) or
-        not all(isinstance(method, str) for method in amr) or
-        not {"pwd", "otp", "mfa"}.issubset(set(amr)) or
         auth_time <= 0 or auth_time > now + 60 or now - auth_time > 300):
         return None
     sub = claims.get("sub")
     return sub if isinstance(sub, str) and SUBJECT.fullmatch(sub) else None
+
+def verified_required_cognito_mfa(cognito, sub):
+    """Check independently enforced user-pool MFA and enrolled TOTP.
+
+    This succeeds only for the production Cognito pool with required MFA ON,
+    a confirmed enabled user, verified email and enrolled software token.
+    With MFA required, a recent Cognito ID token issued by its managed login
+    cannot bypass the second factor. Optional ACR/AMR claims are not treated
+    as authentication evidence.
+    """
+    if not SUBJECT.fullmatch(str(sub or "")) or cognito is None:
+        return False
+    try:
+        config = cognito.describe_user_pool(UserPoolId=POOL_ID)
+        if config.get("UserPool", {}).get("MfaConfiguration") != "ON":
+            return False
+        account = cognito.admin_get_user(UserPoolId=POOL_ID, Username=sub)
+        attrs = {a.get("Name"): a.get("Value") for a in account.get("UserAttributes", [])}
+        return bool(
+            account.get("UserStatus") == "CONFIRMED" and
+            account.get("Enabled") is True and
+            attrs.get("sub") == sub and
+            attrs.get("email_verified") == "true" and
+            "SOFTWARE_TOKEN_MFA" in account.get("UserMFASettingList", [])
+        )
+    except Exception:
+        return False
+
 
 def payload(event):
     headers = {k.lower(): v for k, v in (event.get("headers") or {}).items()}
@@ -311,7 +337,8 @@ def deliver(db, intent_id, session_id):
         ExpressionAttributeNames={"#status": "status"},
         ExpressionAttributeValues={":reserved": s("reserved"), ":open": s("open"), ":session": s(session_id)})
 
-def handle(event, *, db, secret_key, transport=stripe_post, now=None, enabled=False):
+def handle(event, *, db, secret_key, transport=stripe_post, now=None,
+           enabled=False, mfa_check=None):
     # This is first, BEFORE any DynamoDB or Stripe operation.
     if not enabled:
         return reply(503, "subscription_checkout_not_released")
@@ -321,6 +348,14 @@ def handle(event, *, db, secret_key, transport=stripe_post, now=None, enabled=Fa
     sub = verified_principal(event, now)
     if not sub:
         return reply(403, "identity_not_verified")
+    if not callable(mfa_check):
+        return reply(403, "required_cognito_mfa_not_verified")
+    try:
+        mfa_ok = mfa_check(sub) is True
+    except Exception:
+        mfa_ok = False
+    if not mfa_ok:
+        return reply(403, "required_cognito_mfa_not_verified")
     selected = payload(event)
     if not selected:
         return reply(400, "plan_or_cycle_invalid")
@@ -347,6 +382,8 @@ def handler(event, _context):
     if not arn.startswith("arn:aws:secretsmanager:eu-north-1:"):
         return reply(503, "subscription_checkout_not_released")
     db = boto3.client("dynamodb", region_name="eu-north-1")
+    cognito = boto3.client("cognito-idp", region_name="eu-north-1")
     def secret_key():
         return boto3.client("secretsmanager", region_name="eu-north-1").get_secret_value(SecretId=arn)["SecretString"]
-    return handle(event, db=db, secret_key=secret_key, enabled=True)
+    return handle(event, db=db, secret_key=secret_key, enabled=True,
+                  mfa_check=lambda sub: verified_required_cognito_mfa(cognito, sub))

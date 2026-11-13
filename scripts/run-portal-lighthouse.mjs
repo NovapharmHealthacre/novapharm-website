@@ -8,6 +8,7 @@ import lighthouse from "lighthouse";
 import desktopConfig from "lighthouse/core/config/desktop-config.js";
 import { chromium } from "playwright";
 import { assertBrowserValidationRoot } from "./browser-validation-runtime.mjs";
+import { runLighthouseWithNavigationRetry } from "./lighthouse-transient-navigation.mjs";
 
 const repositoryRoot = resolve(process.cwd());
 const runtimeRoot = assertBrowserValidationRoot(join(tmpdir(), "novapharm-unified-portal-lighthouse-runtime"));
@@ -199,10 +200,11 @@ async function auditPageTrial(name, pathName, formFactor) {
     formFactor,
     disableStorageReset: true,
   };
-  const result = await lighthouse(`${portalOrigin}${pathName}`, flags, formFactor === "desktop" ? desktopConfig : undefined);
-  if (!result) throw new Error(`Lighthouse returned no result for ${name}.`);
+  const result = await runLighthouseWithNavigationRetry(
+    () => lighthouse(`${portalOrigin}${pathName}`, flags, formFactor === "desktop" ? desktopConfig : undefined),
+    name,
+  );
   const lhr = result.lhr;
-  if (lhr.runtimeError) throw new Error(`${name}: ${lhr.runtimeError.message}`);
   return {
     name,
     path: pathName,

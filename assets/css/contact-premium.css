@@ -420,3 +420,22 @@ body:has(.np-contact-reference) .site-header .site-nav a[aria-current="page"] { 
   .np-contact-reference .np-contact-reference-field { border-color: CanvasText; }
   .np-contact-reference .np-contact-reference-submit { border: 1px solid ButtonText; }
 }
+
+
+/* Managed contact: one accessible field outline, not stacked label + input
+   borders. The outer field handles focus-within; input stays keyboard-focusable. */
+.np-contact-reference .contact-form .np-contact-reference-field :is(input:not([type="checkbox"]), select, textarea) {
+  min-width: 0;
+  min-height: 25px;
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.np-contact-reference .contact-form .np-contact-reference-field :is(input, select, textarea):focus-visible {
+  outline: none;
+  border: 0;
+  box-shadow: none;
+}

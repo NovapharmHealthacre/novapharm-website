@@ -544,3 +544,41 @@ input::placeholder, textarea::placeholder { color: #6e6e76; }
   .cookie-banner .cookie-actions .button { min-height: 44px; }
   .cookie-banner .cookie-actions .button:last-child { grid-column: 1 / -1; }
 }
+
+
+/* Shared layout integrity for corporate routes. The homepage, Oncology, and
+   Contact retain their individual image direction and editorial composition. */
+main :is(
+  .narrative-grid, .editorial-split, .product-grid, .article-grid,
+  .legal-grid, .field-grid, .process-grid, .decision-grid,
+  .roadmap-track, .technology-stages, .partner-preview-grid
+) > * {
+  min-width: 0;
+}
+main :is(input, select, textarea, fieldset) {
+  min-width: 0;
+  max-width: 100%;
+}
+main :is(p, li, dd, figcaption) { overflow-wrap: break-word; }
+main [id] { scroll-margin-top: calc(var(--header) + 24px); }
+
+
+/* The public contact route uses a mailto-only form without .contact-form.
+   Preserve the bordered outer labels and strip nested native borders on both
+   public and managed routes. Higher specificity than the global input reset. */
+.np-contact-reference .np-contact-reference-field :is(input:not([type="checkbox"]), select, textarea) {
+  min-width: 0;
+  width: 100%;
+  min-height: 25px;
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.np-contact-reference .np-contact-reference-field :is(input, select, textarea):focus-visible {
+  border: 0;
+  outline: none;
+  box-shadow: none;
+}

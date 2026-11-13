@@ -725,9 +725,15 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/portal/"] {
 body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"] {
   font-size: 0;
 }
-body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]::after {
+/* Keep the visible Intelligence label inside the link's layout box.
+   ::after is reserved for the underline; using it as copy pushed the
+   label underneath the Contact link on the approved homepage. */
+body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]::before {
   content: "Intelligence";
   font-size: clamp(.88rem, 1.08vw, 1.18rem);
+}
+body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]::after {
+  content: "";
 }
 :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .brand:focus-visible,
 :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header a:focus-visible {
