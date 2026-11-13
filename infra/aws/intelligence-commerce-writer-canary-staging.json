@@ -1,0 +1,92 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Private isolated commerce evidence writer IAM/canary for acceptance only. Does not change live exporter function or scheduled destination.",
+  "Resources": {
+    "CanaryLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/novapharm-commerce-evidence-isolation-canary",
+        "RetentionInDays": 14
+      }
+    },
+    "ScopedCommerceDestinationGrant": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "NovaPharmIsolatedCommerceEvidenceCanary",
+        "Roles": [
+          "novapharm-production-commerce-evidence-EvidenceRole-GNet28VHTjmN"
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "WriteOnlyApprovedNewCommercePrefix",
+              "Effect": "Allow",
+              "Action": [
+                "s3:PutObject"
+              ],
+              "Resource": "arn:aws:s3:::novapharm-commerce-evidence-250675045172-eu-north-1/commerce/owner-attestations/*"
+            },
+            {
+              "Sid": "WriteOnlyCanaryLogs",
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": "arn:aws:logs:eu-north-1:250675045172:log-group:/aws/lambda/novapharm-commerce-evidence-isolation-canary:*"
+            }
+          ]
+        }
+      }
+    },
+    "PrivateWriterCanary": {
+      "Type": "AWS::Lambda::Function",
+      "DependsOn": [
+        "CanaryLogGroup",
+        "ScopedCommerceDestinationGrant"
+      ],
+      "Properties": {
+        "FunctionName": "novapharm-commerce-evidence-isolation-canary",
+        "Description": "AWS-IAM invoke-only isolated S3 writer/cross-prefix denial acceptance. No public event sources or customer data.",
+        "Runtime": "python3.12",
+        "Handler": "index.handler",
+        "Role": "arn:aws:iam::250675045172:role/novapharm-production-commerce-evidence-EvidenceRole-GNet28VHTjmN",
+        "Timeout": 15,
+        "MemorySize": 128,
+        "Environment": {
+          "Variables": {
+            "EVIDENCE_BUCKET": "novapharm-commerce-evidence-250675045172-eu-north-1"
+          }
+        },
+        "Code": {
+          "ZipFile": "\"\"\"Private owner-authorised IAM/S3 isolated commerce writer acceptance only.\n\nNo customer data, external email, checkout, source medicine rights or live producer cutover.\nThis handler must remain AWS-invoke-only, without Function URL or API Gateway.\n\"\"\"\nimport datetime\nimport hashlib\nimport json\nimport os\nimport re\nimport uuid\n\nimport boto3\nfrom botocore.exceptions import ClientError\n\nBUCKET = os.environ[\"EVIDENCE_BUCKET\"]\nBASE = \"commerce/owner-attestations/_isolation-probes/\"\nNOT_COMMERCE = \"intelligence/_isolation-probes/\"\nS3 = boto3.client(\"s3\", region_name=\"eu-north-1\")\n\ndef _put(key, body):\n    raw = json.dumps(body, separators=(\",\", \":\"), sort_keys=True).encode(\"utf-8\")\n    response = S3.put_object(\n        Bucket=BUCKET, Key=key, Body=raw, ContentType=\"application/json\",\n        ServerSideEncryption=\"AES256\", IfNoneMatch=\"*\",\n        Metadata={\"evidence-type\": \"private-security-canary\", \"customer-data\": \"false\"},\n    )\n    return {\"key\": key, \"sha256\": hashlib.sha256(raw).hexdigest(), \"etag\": response.get(\"ETag\")}\n\ndef handler(event, context):\n    if not isinstance(event, dict) or event.get(\"operation\") != \"verify-isolation\":\n        return {\"passed\": False, \"code\": \"not_authorized_canary_operation\"}\n    if set(event) != {\"operation\", \"review_ticket\"}:\n        return {\"passed\": False, \"code\": \"unexpected_event_fields\"}\n    ticket = event.get(\"review_ticket\")\n    if not isinstance(ticket, str) or not re.fullmatch(r\"[A-Za-z0-9_.:-]{8,72}\", ticket):\n        return {\"passed\": False, \"code\": \"invalid_review_ticket\"}\n    nonce = uuid.uuid4().hex\n    at = datetime.datetime.now(datetime.timezone.utc).isoformat()\n    evidence = {\n        \"schema\": \"novapharm.security.commerce_writer_canary.v1\",\n        \"generated_at_utc\": at,\n        \"source\": \"isolated-invocation-no-public-endpoint\",\n        \"review_ticket\": ticket,\n        \"customer_data\": False,\n        \"medicine_data\": False,\n        \"sales_transactions\": 0,\n        \"production_release_accepted\": False,\n    }\n    # Prove a commerce writer cannot cross into the separate Intelligence namespace.\n    bad_key = NOT_COMMERCE + nonce + \".json\"\n    try:\n        _put(bad_key, evidence)\n    except ClientError as error:\n        if error.response.get(\"Error\", {}).get(\"Code\") != \"AccessDenied\":\n            return {\"passed\": False, \"code\": \"unexpected_forbidden_write_error\",\n                    \"aws_error\": error.response.get(\"Error\", {}).get(\"Code\", \"unknown\")}\n    else:\n        return {\"passed\": False, \"code\": \"FORBIDDEN_CROSS_WORKLOAD_WRITE_SUCCEEDED\",\n                \"unexpected_object\": bad_key}\n    good_key = BASE + nonce + \".json\"\n    try:\n        accepted = _put(good_key, evidence)\n    except ClientError as error:\n        return {\"passed\": False, \"code\": \"authorized_commerce_write_failed\",\n                \"aws_error\": error.response.get(\"Error\", {}).get(\"Code\", \"unknown\")}\n    return {\"passed\": True, \"code\": \"isolated_writer_contract_verified\",\n            \"authorized_key\": accepted[\"key\"], \"authorized_sha256\": accepted[\"sha256\"],\n            \"forbidden_cross_workload\": \"AccessDenied\",\n            \"production_exporter_cutover\": False, \"customer_access_enabled\": False}\n"
+        },
+        "Tags": [
+          {
+            "Key": "application",
+            "Value": "novapharm-commerce"
+          },
+          {
+            "Key": "release-boundary",
+            "Value": "private-canary-no-customer-traffic"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "CanaryFunctionName": {
+      "Value": {
+        "Ref": "PrivateWriterCanary"
+      }
+    },
+    "ExpectedEvidenceBucket": {
+      "Value": "novapharm-commerce-evidence-250675045172-eu-north-1"
+    },
+    "LiveExporterUntouched": {
+      "Value": "true"
+    }
+  }
+}
