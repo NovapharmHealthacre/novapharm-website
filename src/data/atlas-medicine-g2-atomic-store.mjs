@@ -140,7 +140,8 @@ function readRequest(p) {
 
 export function createAtlasG2AtomicStore({
   client, database, verifyTransactionAuthority,
-  verifyTransactionRights, verifyTransactionIdentity, clock = Date.now
+  verifyTransactionRights, verifyTransactionIdentity,
+  verifyTransactionSource, clock = Date.now
 } = {}) {
   if (database?.databaseName !== DB ||
     typeof database.collection !== "function" ||
@@ -148,6 +149,7 @@ export function createAtlasG2AtomicStore({
     typeof verifyTransactionAuthority !== "function" ||
     typeof verifyTransactionRights !== "function" ||
     typeof verifyTransactionIdentity !== "function" ||
+    typeof verifyTransactionSource !== "function" ||
     typeof clock !== "function") denied("trusted_atlas_runtime_required");
 
   const collections = Object.fromEntries(
@@ -219,6 +221,19 @@ export function createAtlasG2AtomicStore({
         if (await verifyTransactionIdentity(identityCheck, session) !== true) {
           denied("live_canonical_identity_unverified");
         }
+        // A source snapshot boolean in G1 is insufficient for G2. Check
+        // an independently signed publisher receipt, partition digest,
+        // exact period and controlled metric total while still private.
+        const sourceCheck = Object.freeze({
+          workspaceId: WORKSPACE, sourceId: p.sourceId,
+          sourceVersion: p.sourceVersion, resourceId: p.resourceId,
+          resourceSha256: p.resourceSha256, reportingPeriod: p.period,
+          rowCount: p.rowCount, rowsDigest: p.rowsDigest,
+          reconciliationTotal: p.reconciliationTotal
+        });
+        if (await verifyTransactionSource(sourceCheck, session) !== true) {
+          denied("live_source_reconciliation_unverified");
+        }
         const duplicate = await manifests.findOne({
           workspace_id: WORKSPACE, manifest_sha256: p.manifestSha256
         }, { session, projection: { _id: 1 } });
@@ -261,7 +276,8 @@ export function createAtlasG2AtomicStore({
       });
     } catch (error) {
       if (error?.code === "live_authority_or_rights_revoked" ||
-          error?.code === "live_canonical_identity_unverified") throw error;
+          error?.code === "live_canonical_identity_unverified" ||
+          error?.code === "live_source_reconciliation_unverified") throw error;
       denied("atomic_transaction_failed");
     }
     return Object.freeze({
