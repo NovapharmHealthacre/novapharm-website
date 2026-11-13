@@ -443,14 +443,14 @@ class FounderTests(unittest.TestCase):
                 self.assertEqual(captured.getvalue(), "")
                 self.assertIn("Set-Cookie", response["headers"])
 
-        for label, methods, raw_change in (
-            ("missing_mfa", ["pwd", "otp"], None),
-            ("weak_password_only", ["pwd"], None),
-            ("email_mismatch", ["pwd", "otp", "mfa"], {"email": "untrusted@example.invalid"}),
-            ("audience_mismatch", ["pwd", "otp", "mfa"], {"aud": "wrong"}),
-            ("auth_time_mismatch", ["pwd", "otp", "mfa"], {"auth_time": NOW - 999}),
-            ("invalid_method_type", ["pwd", 123, "mfa"], None),
-            ("missing_raw_amr", None, None),
+        for label, methods, raw_change, expected_class in (
+            ("missing_mfa", ["pwd", "otp"], None, "jwt_mfa_factors_insufficient"),
+            ("weak_password_only", ["pwd"], None, "jwt_mfa_factors_insufficient"),
+            ("email_mismatch", ["pwd", "otp", "mfa"], {"email": "untrusted@example.invalid"}, "jwt_mfa_amr_invalid"),
+            ("audience_mismatch", ["pwd", "otp", "mfa"], {"aud": "wrong"}, "jwt_mfa_amr_invalid"),
+            ("auth_time_mismatch", ["pwd", "otp", "mfa"], {"auth_time": NOW - 999}, "jwt_mfa_amr_invalid"),
+            ("invalid_method_type", ["pwd", 123, "mfa"], None, "jwt_mfa_amr_invalid"),
+            ("missing_raw_amr", None, None, "jwt_mfa_amr_invalid"),
         ):
             with self.subTest(label=label):
                 self.db = Dynamo()
@@ -462,7 +462,7 @@ class FounderTests(unittest.TestCase):
                 self.assertNotIn("Set-Cookie", response["headers"])
                 self.assertEqual(self.db.rows, {})
                 entries = [json.loads(v) for v in captured.getvalue().splitlines()]
-                self.assertEqual(entries[0]["classification"], "jwt_mfa_amr_invalid")
+                self.assertEqual(entries[0]["classification"], expected_class)
                 self.assertNotIn(api.FOUNDER_EMAIL, captured.getvalue())
                 self.assertNotIn("untrusted@example.invalid", captured.getvalue())
                 self.assertNotIn(request["headers"]["authorization"], captured.getvalue())
