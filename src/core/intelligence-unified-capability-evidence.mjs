@@ -52,7 +52,7 @@ function validId(value) {
 }
 function validDate(value) {
   return typeof value === "string" &&
-    /^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d(?:\\.\\d{1,3})?Z$/u.test(value) &&
+    /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/u.test(value) &&
     Number.isFinite(Date.parse(value));
 }
 function verifiedCandidate(receipt, workspaceId, now) {
