@@ -229,6 +229,11 @@ test("customer session never self-provisions an account and requires the private
   assert.match(proxy, /"\/auth\/customer\/start\/"/);
   assert.match(proxy, /"\/auth\/callback\/"/);
   assert.ok(source("components/intelligence-sign-in.tsx").includes('href="/auth/customer/start"'));
+  // The founder-only recovery path must never demand a paid customer seat.
+  const signIn = source("components/intelligence-sign-in.tsx");
+  assert.match(signIn, /founder-unavailable/);
+  assert.match(signIn, /independent secure session/);
+  assert.match(signIn, /not a request to purchase a customer subscription/);
   assert.ok(source("components/intelligence-sign-in.tsx").includes('href="/auth/customer/start?mode=reset"'));
   assert.match(portal, /verifiedPortalSession/);
   assert.match(source("components/portal-client.tsx"), /intelligencePortal \? <IntelligenceSignIn/);

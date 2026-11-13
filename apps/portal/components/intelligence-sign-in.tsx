@@ -73,7 +73,7 @@ export function IntelligenceSignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const [code, setCode] = useState("");
   const [challenge, setChallenge] = useState<TotpChallenge | null>(null);
-  const [phase, setPhase] = useState<"password" | "mfa" | "confirmed" | "managed">("password");
+  const [phase, setPhase] = useState<"password" | "mfa" | "confirmed" | "managed" | "founder-unavailable">("password");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -150,6 +150,13 @@ export function IntelligenceSignIn() {
       }
     } catch {
       // Identity may be verified while the customer acceptance gate is closed.
+    }
+    // A verified founder identity is NOT an unapproved customer.
+    // Keep the founder recovery path separate from the paid customer gate.
+    if (email.trim().toLowerCase() === "vishal@novapharmhealthcare.com") {
+      setChallenge(null);
+      setPhase("founder-unavailable");
+      return;
     }
     setChallenge(null);
     setPhase("confirmed");
@@ -259,6 +266,13 @@ export function IntelligenceSignIn() {
                 <p className={styles["successTitle"]}>Cognito sign-in completed.</p>
                 <p>Your credentials and authenticator have been accepted. Medicines Terminal access still requires an approved organisation, customer seat and subscription.</p>
                 <button className={styles["createAction"]} type="button" onClick={reset}>Return to sign-in</button>
+              </div>
+            ) : phase === "founder-unavailable" ? (
+              <div role="status" className={styles["identityStatus"]}>
+                <p className={styles["successTitle"]}>Secure founder sign-in completed.</p>
+                <p>The founder workspace could not establish its independent secure session. This is not a request to purchase a customer subscription.</p>
+                <a className={styles["primaryAction"]} href="/auth/customer/start">Continue with Cognito sign-in</a>
+                <button className={styles["recoveryButton"]} type="button" onClick={reset}>Return to sign-in</button>
               </div>
             ) : phase === "managed" ? (
               <div className={styles["identityStatus"]}>

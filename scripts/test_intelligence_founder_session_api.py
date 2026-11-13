@@ -223,6 +223,36 @@ class FounderTests(unittest.TestCase):
         self.db.fail = True
         self.assertEqual(self.call(event("POST", "/founder/logout", token))["statusCode"], 503)
 
+    def test_founder_denial_telemetry_is_redacted_and_does_not_grant_access(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+        for variant, expected in (
+            ("invalid_claims", "signed_founder_identity_required"),
+            ("invalid_bridge", "server_bridge_required"),
+        ):
+            request = start_event()
+            if variant == "invalid_claims":
+                request["requestContext"]["authorizer"]["jwt"]["claims"]["email"] = "untrusted@example.invalid"
+            else:
+                request["headers"]["x-npi-founder-proof"] = "0" * 64
+            log = StringIO()
+            with redirect_stdout(log):
+                response = self.call(request)
+            self.assertEqual(response["statusCode"], 401)
+            self.assertEqual(json.loads(response["body"])["code"], expected)
+            line = log.getvalue()
+            entry = json.loads(line)
+            self.assertEqual(entry, {
+                "event": "npi_founder_session_denied",
+                "classification": expected,
+                "http_status": 401,
+            })
+            self.assertNotIn(api.FOUNDER_EMAIL, line)
+            self.assertNotIn(ID_TOKEN, line)
+            self.assertNotIn(ACCESS_TOKEN, line)
+            self.assertNotIn(SECRET, line)
+            self.assertNotIn("untrusted@example.invalid", line)
+
     def test_only_required_routes_exist(self):
         self.assertEqual(self.call(event("GET", "/customer/session"))["statusCode"], 404)
         self.assertEqual(self.call(event("POST", "/founder/grant"))["statusCode"], 404)
