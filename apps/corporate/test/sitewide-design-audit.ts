@@ -84,7 +84,7 @@ async function audit() {
                 mainLength:document.querySelector("main")?.textContent?.trim().length??0,
                 brokenImages:[...document.images].filter(x=>x.complete&&x.naturalWidth===0).map(x=>x.currentSrc),
                 clippedControls:[...document.querySelectorAll("main form input:not([type=hidden]), main form select, main form textarea, main form button")]
-                  .filter(el=>{const css=getComputedStyle(el);if(css.display==="none"||css.visibility==="hidden"||Number(css.opacity)===0)return false;
+                  .filter(el=>{if(el.closest('[aria-hidden="true"], .honeypot'))return false;const css=getComputedStyle(el);if(css.display==="none"||css.visibility==="hidden"||Number(css.opacity)===0)return false;
                     const b=el.getBoundingClientRect();return b.width>0&&b.height>0&&(b.left< -2||b.right>document.documentElement.clientWidth+2);})
                   .map(el=>({tag:el.tagName.toLowerCase(),name:el.getAttribute("name")||el.getAttribute("aria-label")||""})).slice(0,8),
                 // Inspect the rendered heading and actual controls, not only the
