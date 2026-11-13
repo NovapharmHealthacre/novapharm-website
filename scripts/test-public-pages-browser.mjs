@@ -75,6 +75,17 @@ let geometryRuns = 0;
 // Production APIs intentionally reject this test origin; never mock payment,
 // account, customer data, or authenticated business endpoints here.
 async function mockLocalReadiness(page, pathname) {
+  if (pathname === "/products/marketplace/") {
+    // Public stock API rejects the CI localhost origin. Simulate an
+    // unverifiable read-only result, never trusted warehouse evidence.
+    await page.route(/^https:\/\/eyoj5e64zb\.execute-api\.eu-north-1\.amazonaws\.com\/stock\?skus=/, async request => {
+      await request.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({schema:"novapharm-commerce-stock-public-v1",notPaymentAuthority:true,items:[]})
+      });
+    });
+  }
   const checkoutApi = pathname === "/products/nutraxin/bag/"
     ? "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com/readiness"
     : pathname.startsWith("/products/esco/")
