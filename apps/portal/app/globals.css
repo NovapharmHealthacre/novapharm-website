@@ -487,3 +487,27 @@ td[data-state="blocked"], td[data-state="failed"], td[data-state="suspended"] { 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
+
+
+/* Responsive layout integrity for authenticated workspace shells.
+   No changes to identity, session state, entitlements or approved sign-in art. */
+:where(.workspace-shell, .workspace-main, .workspace-content, .intelligence-content,
+  .login-layout, .login-panel, .focused-layout, .focused-panel) {
+  min-width: 0;
+}
+:where(.metric-grid, .intelligence-field-grid, .medicine-identifiers,
+  .availability-ledger, .intelligence-query-summary dl) > * {
+  min-width: 0;
+}
+:where(.workspace-content, .login-panel, .intelligence-content) :is(p, li, dt, dd) {
+  overflow-wrap: break-word;
+}
+:where(.workspace-content, .login-panel, .intelligence-content) :is(input, select, textarea, fieldset) {
+  min-width: 0;
+  max-width: 100%;
+}
+@media (max-width: 600px) {
+  .workspace-content :where(.available-actions, .intelligence-query-actions) {
+    row-gap: 12px;
+  }
+}
