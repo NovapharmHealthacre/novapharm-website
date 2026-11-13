@@ -851,3 +851,25 @@
     mask-image:none;
   }
 }
+
+
+/* Owner constraint | keep the complete portrait at tablet and mobile sizes.
+   Desktop alone uses cover to remove the JPEG's internal left-edge lettering.
+   The responsive image mask hides those source-edge pixels without cropping
+   the face or sunset. */
+@media (min-width:761px) and (max-width:1100px) {
+  .npoc-page .npoc-hope-hero .npoc-hero-visual img {
+    object-fit:contain;
+    object-position:right center;
+    -webkit-mask-image:none;
+    mask-image:none;
+  }
+}
+@media (max-width:760px) {
+  .npoc-page .npoc-hope-hero .npoc-hero-visual img {
+    object-fit:contain;
+    object-position:center center;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.6) 4%,#000 10%);
+    mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.6) 4%,#000 10%);
+  }
+}
