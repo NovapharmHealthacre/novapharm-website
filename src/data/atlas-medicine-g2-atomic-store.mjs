@@ -327,7 +327,36 @@ export function createAtlasG2AtomicStore({
     } catch {
       denied("quarantine_transaction_failed");
     }
-    // This confirms the transaction, not a source rights grant or customer release.
+    // An acknowledged transaction does not substitute for independent durable
+    // readback. A missing quarantine manifest/audit cannot attest success.
+    const scope = {
+      workspace_id: WORKSPACE, transaction_id: p.transactionId,
+      manifest_sha256: p.manifestSha256
+    };
+    const majority = { readConcern: { level: "majority" } };
+    let proof;
+    try {
+      const [manifest, receipt] = await Promise.all([
+        manifests.findOne({ ...scope, event_id: p.eventId,
+          status: QUARANTINED, customer_publish_approved: false }, majority),
+        audit.findOne({ ...scope, event_id: quarantineEvent,
+          original_event_id: p.eventId,
+          action: "medicine_evidence.quarantine", reason: p.reason,
+          customer_publish_approved: false }, majority)
+      ]);
+      const quarantined = await evidence.countDocuments({
+        ...scope, status: QUARANTINED,
+        customer_publish_approved: false
+      }, majority);
+      proof = manifest && receipt &&
+        Number.isSafeInteger(manifest.row_count) &&
+        quarantined === manifest.row_count &&
+        manifest.row_count >= 1;
+    } catch {
+      proof = false;
+    }
+    if (!proof) denied("quarantine_durable_readback_failed");
+    // This confirms the quarantine transaction, not a rights grant or release.
     return Object.freeze({
       quarantined: true, workspaceId: WORKSPACE,
       transactionId: p.transactionId, manifestSha256: p.manifestSha256,
