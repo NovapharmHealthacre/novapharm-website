@@ -379,6 +379,41 @@ def request_base(event):
     trusted={urllib.parse.urlsplit(BASE_URL).netloc,"portal.novapharmhealthcare.com"}
     return "https://"+host if host in trusted else BASE_URL
 
+# Customer signup is a browser-origin-sensitive action. The public custom
+# domain and its exact AWS API endpoint are the only authorised live origins.
+# Do not trust wildcard subdomains or forwarded host headers.
+LOGIN_ORIGIN_ALLOWLIST = frozenset({
+    BASE_URL,
+    "https://portal.novapharmhealthcare.com",
+    "https://wgy9p7ad0d.execute-api.eu-north-1.amazonaws.com",
+})
+
+def canonical_login_origin(value):
+    if not isinstance(value,str) or len(value)>300:
+        return ""
+    try:
+        url=urllib.parse.urlsplit(value)
+        if (url.scheme.lower()!="https" or not url.hostname or
+            url.username is not None or url.password is not None or
+            url.port not in (None,443) or url.path not in ("","/") or
+            url.query or url.fragment):
+            return ""
+        return "https://"+url.hostname.lower()
+    except (AttributeError,ValueError):
+        return ""
+
+def log_denied_login_origin(origin,headers):
+    # Diagnostic metadata only: never log email, form body, state or cookies.
+    try: hostname=(urllib.parse.urlsplit(origin).hostname or "").lower()
+    except ValueError: hostname=""
+    safe_host=re.sub(r"[^a-z0-9.:-]","",(headers.get("host") or "").lower())[:110]
+    safe_origin=re.sub(r"[^a-z0-9.-]","",hostname)[:110]
+    print("login_origin_rejected",json.dumps({
+        "origin_host":safe_origin or "missing_or_invalid",
+        "request_host":safe_host or "missing",
+        "configured_base":urllib.parse.urlsplit(BASE_URL).hostname
+    },separators=(",",":")))
+
 def login(event):
     method=(event.get("requestContext",{}).get("http",{}).get("method") or "GET").upper()
     parameters=event.get("queryStringParameters") or {}
@@ -387,7 +422,8 @@ def login(event):
     if method=="POST":
         headers={str(k).lower():str(v) for k,v in (event.get("headers") or {}).items()}
         origin=headers.get("origin")
-        if origin and origin not in (BASE_URL,request_base(event)):
+        if origin and canonical_login_origin(origin) not in LOGIN_ORIGIN_ALLOWLIST:
+            log_denied_login_origin(origin,headers)
             return error(403,"invalid_login_origin")
         body=event.get("body") or ""
         if event.get("isBase64Encoded"):
