@@ -20,6 +20,33 @@ const fields = [
   "revoked", "dataset_reuse_approved", "commercial_analysis_approved",
   "third_party_terminology_reuse_approved", "valid_from", "valid_until"
 ];
+// The existing production collection has no unique grant index yet. Refuse
+// positive rights receipts until that operational migration is independently
+// installed and verified against MongoDB's actual listIndexes metadata.
+const requiredUniqueKeys = Object.freeze({
+  workspace_id: 1, source_id: 1, source_version: 1,
+  resource_id: 1, resource_sha256: 1, rights_revision: 1
+});
+async function hasRequiredUniqueIndex(collection) {
+  if (typeof collection?.listIndexes !== "function") return false;
+  try {
+    const cursor = collection.listIndexes();
+    if (typeof cursor?.toArray !== "function") return false;
+    const indexes = await cursor.toArray();
+    if (!Array.isArray(indexes) || indexes.length > 32) return false;
+    const requiredKeys = Object.entries(requiredUniqueKeys);
+    return indexes.some(index =>
+      index && index.unique === true &&
+      index.sparse !== true &&
+      index.partialFilterExpression == null &&
+      (index.collation == null || index.collation.locale === "simple") &&
+      index.key && typeof index.key === "object" &&
+      JSON.stringify(Object.entries(index.key)) === JSON.stringify(requiredKeys)
+    );
+  } catch {
+    return false;
+  }
+}
 const projection = Object.freeze(Object.fromEntries([
   ["_id", 0], ...fields.map(field => [field, 1])
 ]));
@@ -93,6 +120,7 @@ export function createAtlasPrivateMedicineRightsVerifier({
   }
   return async function verifyCurrentRights(request) {
     if (!validQuery(request)) return null;
+    if (!(await hasRequiredUniqueIndex(collection))) return null;
     // Exact scalar selectors only; no untrusted operators or dynamic projection.
     const query = Object.freeze({
       workspace_id: WORKSPACE,
