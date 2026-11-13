@@ -544,3 +544,20 @@ input::placeholder, textarea::placeholder { color: #6e6e76; }
   .cookie-banner .cookie-actions .button { min-height: 44px; }
   .cookie-banner .cookie-actions .button:last-child { grid-column: 1 / -1; }
 }
+
+
+/* Shared layout integrity for corporate routes. The homepage, Oncology, and
+   Contact retain their individual image direction and editorial composition. */
+main :is(
+  .narrative-grid, .editorial-split, .product-grid, .article-grid,
+  .legal-grid, .field-grid, .process-grid, .decision-grid,
+  .roadmap-track, .technology-stages, .partner-preview-grid
+) > * {
+  min-width: 0;
+}
+main :is(input, select, textarea, fieldset) {
+  min-width: 0;
+  max-width: 100%;
+}
+main :is(p, li, dd, figcaption) { overflow-wrap: break-word; }
+main [id] { scroll-margin-top: calc(var(--header) + 24px); }
