@@ -17,7 +17,6 @@ import { randomUUID } from "node:crypto";
 
 const ID=/^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$/u;
 const WORKSPACE=/^[a-z0-9][a-z0-9_-]{2,63}$/u;
-const ISO=/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/u;
 const prismaHosts=new Set([
  "api.prismacloud.io","api2.prismacloud.io","api3.prismacloud.io",
  "api4.prismacloud.io","api.anz.prismacloud.io","api.eu.prismacloud.io",
@@ -33,11 +32,6 @@ function deny(){
  });
 }
 const validId=x=>typeof x==="string"&&ID.test(x);
-const date=x=>{
- if(typeof x!=="string"||!ISO.test(x))return false;
- const n=Date.parse(x);
- return Number.isFinite(n)&&new Date(n).toISOString().slice(0,19)===x.slice(0,19);
-};
 function originFor(vendor,value){
  if(typeof value!=="string" || value.length>250)throw deny();
  let url;
@@ -61,6 +55,10 @@ function authorityOkay(x){
 function token(value){
  return typeof value==="string" && value.length>8 && value.length<=8192 &&
   !/\s/u.test(value);
+}
+async function safeCall(callback,value){
+ try{return await callback(value);}
+ catch{throw deny();}
 }
 async function safeRequest(httpRequest,request){
  try {return await httpRequest(request);}
@@ -97,19 +95,20 @@ export async function probeEnterpriseVendor({
   authorityRevision:authority.authorityRevision,vendor,
   purpose:"vendor_read_only_inventory",origin:base};
  async function allowed(){
-  return await verifyCurrentAuthority(context)===true &&
-   await verifyEntitlement(context)===true;
+  return await safeCall(verifyCurrentAuthority,context)===true &&
+   await safeCall(verifyEntitlement,context)===true;
  }
  if(!await allowed())throw deny();
  const eventId=randomUUID();
- const acknowledgement=await recordAudit({
+ const acknowledgement=await safeCall(recordAudit,{
   ...context,eventId,action:"vendor.inventory_probe.preflight",
   credentialsStored:false,resultsStored:false,customerVisible:false
  });
  if(acknowledgement?.committed!==true||acknowledgement.eventId!==eventId)throw deny();
  if(!await allowed())throw deny();
- const credentials=await resolveCredentials(context);
+ const credentials=await safeCall(resolveCredentials,context);
  if(!credentialsOkay(vendor,credentials))throw deny();
+ if(!await allowed())throw deny();
  // HTTP is an independently approved private server transport. The only
  // allowed paths are constants below: never take a model/user-supplied path.
  let auth,read;
@@ -142,7 +141,7 @@ export async function probeEnterpriseVendor({
  if(!Array.isArray(items)||items.length>500)throw deny();
  if(!await allowed())throw deny();
  const completionEventId=randomUUID();
- const completion=await recordAudit({
+ const completion=await safeCall(recordAudit,{
   ...context,eventId:completionEventId,preflightEventId:eventId,
   action:"vendor.inventory_probe.completed",
   resourceCount:items.length,credentialsStored:false,
