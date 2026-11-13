@@ -12,7 +12,7 @@
 
 G1 `prepareOfficialMedicineEvidenceCandidate` checks exact-source metadata, verified identity proof, accepted terminology rights, source rows, reconciliation totals and hashes. Its outputs remain *candidate*, not approved customer evidence.
 
-G2 `admitPrivateOfficialMedicineEvidence` requires a live, server-verified board/admin authority for the internal workspace, fresh independently attested source and third-party terminology rights, a single atomic evidence+manifest+audit transaction through a trusted backend adapter, independent durable readback, and revocation rechecks before and after commit. It returns private status and **never** enables customer publishing, model egress or regulated decisions. Synthetic tests cannot attest to live grants.
+G2 `admitPrivateOfficialMedicineEvidence` requires a live, server-verified board/admin authority for the internal workspace, fresh independently attested source and third-party terminology rights, a single atomic evidence+manifest+audit transaction through a trusted backend adapter, independent durable readback, and revocation rechecks before and after commit. If a post-commit authority or rights recheck is false or indeterminate, a separate durable quarantine+audit adapter must attest the quarantine before the function returns a refusal; missing or failed quarantine attestation remains a hard failure. It returns private status and **never** enables customer publishing, model egress or regulated decisions. Synthetic tests cannot attest to live grants.
 
 These contracts were ported from unresolved PR #547 onto current main because #547 had become merge-conflicted. PR #547 should not be merged blindly.
 
