@@ -65,6 +65,32 @@ function immutable(rows) {
   return Object.freeze(rows.map(row => Object.freeze({ ...row })));
 }
 
+async function attestQuarantine(adapter, written, manifestSha256, eventId, reason) {
+  let result;
+  try {
+    result = await adapter(Object.freeze({
+      transactionId: written.transactionId,
+      workspaceId: WORKSPACE,
+      manifestSha256,
+      eventId,
+      reason,
+      customerPublishApproved: false
+    }));
+  } catch {
+    deny("post_commit_quarantine_failed");
+  }
+  if (!result || result.quarantined !== true ||
+      result.workspaceId !== WORKSPACE ||
+      result.transactionId !== written.transactionId ||
+      result.manifestSha256 !== manifestSha256 ||
+      result.eventId !== eventId ||
+      result.reason !== reason ||
+      result.auditCommitted !== true ||
+      result.customerPublishApproved !== false) {
+    deny("post_commit_quarantine_not_attested");
+  }
+}
+
 /**
  * G2 candidate -> private admitted record set. The commit adapter MUST
  * atomically write every candidate row, a source manifest and an append-only
@@ -77,7 +103,7 @@ function immutable(rows) {
 export async function admitPrivateOfficialMedicineEvidence({
   snapshot, rows, grant, release, authority,
   verifyCurrentRights, verifyCurrentAuthority, commitAtomic, readBackCommit,
-  now = new Date()
+  quarantineCommitted, now = new Date()
 } = {}) {
   if (!identity(authority)) deny("trusted_private_authority_required");
   if (!(now instanceof Date) || !Number.isFinite(now.getTime()) ||
@@ -85,8 +111,10 @@ export async function admitPrivateOfficialMedicineEvidence({
       Math.abs(now.getTime() - Date.parse(release.checkedAt)) > 60_000) {
     deny("release_freshness_invalid");
   }
-  if ([verifyCurrentRights, verifyCurrentAuthority, commitAtomic, readBackCommit]
-    .some(f => typeof f !== "function")) deny("trusted_storage_adapters_required");
+  if ([verifyCurrentRights, verifyCurrentAuthority, commitAtomic, readBackCommit,
+    quarantineCommitted].some(f => typeof f !== "function")) {
+    deny("trusted_storage_adapters_required");
+  }
 
   const candidate = prepareOfficialMedicineEvidenceCandidate({ snapshot, rows, grant, release });
   if (candidate.status !== "candidate_validated_not_accepted" ||
@@ -164,12 +192,31 @@ export async function admitPrivateOfficialMedicineEvidence({
     deny("durable_audit_or_manifest_missing");
   }
 
-  // A late revocation cannot turn a committed record into an authorised read.
-  if (await verifyCurrentAuthority(Object.freeze({ ...check })) !== true) {
+  // A late or indeterminate recheck cannot leave a committed candidate
+  // available for later promotion. Require a durable quarantine + audit receipt.
+  let authorityStillValid = false;
+  try {
+    authorityStillValid = await verifyCurrentAuthority(Object.freeze({ ...check })) === true;
+  } catch {
+    authorityStillValid = false;
+  }
+  if (!authorityStillValid) {
+    await attestQuarantine(quarantineCommitted, written, manifestSha256, eventId,
+      "authority_recheck_failed_after_commit");
     deny("authority_revoked_after_commit");
   }
-  const after = await verifyCurrentRights(Object.freeze({ ...check }));
-  if (!liveRights(after, candidate, grant, now.getTime())) deny("rights_revoked_after_commit");
+
+  let after = null;
+  try {
+    after = await verifyCurrentRights(Object.freeze({ ...check }));
+  } catch {
+    after = null;
+  }
+  if (!liveRights(after, candidate, grant, now.getTime())) {
+    await attestQuarantine(quarantineCommitted, written, manifestSha256, eventId,
+      "rights_recheck_failed_after_commit");
+    deny("rights_revoked_after_commit");
+  }
 
   return Object.freeze({
     contract: "novapharm.private-medicine-atomic-admission.v1",
