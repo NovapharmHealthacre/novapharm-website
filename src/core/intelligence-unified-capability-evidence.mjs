@@ -47,18 +47,21 @@ const allChecks = new Set([
   ...common, ...Object.values(capabilityRequirements).flat()
 ]);
 
+function validId(value) {
+  return typeof value === "string" && idPattern.test(value);
+}
 function validDate(value) {
   return typeof value === "string" &&
-    /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/u.test(value) &&
+    /^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d(?:\\.\\d{1,3})?Z$/u.test(value) &&
     Number.isFinite(Date.parse(value));
 }
 function verifiedCandidate(receipt, workspaceId, now) {
   return receipt && typeof receipt === "object" && !Array.isArray(receipt) &&
     allChecks.has(receipt.check) && receipt.workspaceId === workspaceId &&
     receipt.verdict === "verified" && receipt.testFixture === false &&
-    receipt.revoked !== true && idPattern.test(receipt.receiptId) &&
-    idPattern.test(receipt.independentVerifierId) &&
-    idPattern.test(receipt.approverId) &&
+    receipt.revoked !== true && validId(receipt.receiptId) &&
+    validId(receipt.independentVerifierId) &&
+    validId(receipt.approverId) &&
     receipt.independentVerifierId !== receipt.approverId &&
     digestPattern.test(receipt.evidenceSha256) &&
     validDate(receipt.verifiedAt) && validDate(receipt.expiresAt) &&
