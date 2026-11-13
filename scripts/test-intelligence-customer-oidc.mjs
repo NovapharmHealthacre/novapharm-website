@@ -49,7 +49,7 @@ test("dedicated client uses code and PKCE with no access grant", () => {
   assert.equal(url.searchParams.get("client_id"), intelligenceCustomerOidc.clientId);
   assert.equal(url.searchParams.get("redirect_uri"), intelligenceCustomerOidc.callback);
   assert.equal(url.searchParams.get("scope"), "openid email profile aws.cognito.signin.user.admin");
-  assert.equal(url.searchParams.get("acr_values"), "urn:cognito:loa:4");
+  assert.equal(url.searchParams.get("acr_values"), "urn:cognito:loa:4 urn:cognito:loa:1");
   assert.equal(url.searchParams.get("max_age"), "0");
   assert.equal(url.searchParams.get("prompt"), "login");
   const transaction = verifyCustomerLoginTransaction({
