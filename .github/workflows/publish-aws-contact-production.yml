@@ -240,7 +240,7 @@ jobs:
           # The approved Oncology design and its exact mobile CSS are deployment prerequisites.
           node scripts/test-oncology-content.mjs
           test -s _site/assets/css/oncology-hope-v2.css
-          grep -Fq 'href="/assets/css/oncology-hope-v2.css?v=20261112-hope-seamless-v5"' _site/oncology/index.html
+          grep -Fq 'href="/assets/css/oncology-hope-v2.css?v=20261113-hope-responsive-v6"' _site/oncology/index.html
           grep -Fq 'A Hope for<br>Tomorrow.' _site/oncology/index.html
           ! grep -Fq 'Illustrative creative image. No patient, treatment result or NovaPharm facility is depicted.' _site/oncology/index.html
           grep -Fq 'grid-template-columns:repeat(3,minmax(220px,1fr))' _site/assets/css/oncology-hope-v2.css
@@ -691,7 +691,7 @@ jobs:
           done
           echo 'The public origin serves the exact reviewed Git commit on all six critical routes, including Markets.'
 
-      - name: Verify full-scene Oncology hero and un-cropped mobile styling on live domain
+      - name: Verify full-scene Oncology hero and contained responsive portrait on live domain
         run: |
           set -euo pipefail
           for attempt in $(seq 1 18); do
@@ -701,13 +701,15 @@ jobs:
               "https://novapharmhealthcare.com/oncology/?${cache}" -o /tmp/live-hope-oncology.html \
               && grep -Fq 'class="npoc-hero npoc-hope-hero"' /tmp/live-hope-oncology.html \
               && grep -Fq 'A Hope for<br>Tomorrow.' /tmp/live-hope-oncology.html \
-              && grep -Fq 'href="/assets/css/oncology-hope-v2.css?v=20261112-hope-seamless-v5"' /tmp/live-hope-oncology.html \
+              && grep -Fq 'href="/assets/css/oncology-hope-v2.css?v=20261113-hope-responsive-v6"' /tmp/live-hope-oncology.html \
               && ! grep -Fq 'Illustrative creative image. No patient, treatment result or NovaPharm facility is depicted.' /tmp/live-hope-oncology.html \
               && curl --fail --silent --show-error --location --max-time 20 \
                 "https://novapharmhealthcare.com/assets/css/oncology-hope-v2.css?${cache}" -o /tmp/live-hope-oncology.css \
               && grep -Fq 'object-fit:cover' /tmp/live-hope-oncology.css \
+              && grep -Fq 'object-fit:contain' /tmp/live-hope-oncology.css \\
+              && grep -Fq 'height:min(310px,61.8vw)' /tmp/live-hope-oncology.css \\
               && grep -Fq 'Owner-approved reference SS2' /tmp/live-hope-oncology.css; then
-              echo 'Approved full-scene Oncology hero, crop rule and no retired disclaimer verified live.'
+              echo 'Approved desktop full-bleed hero, tablet/mobile contained portrait, source-edge feathering and no retired disclaimer verified live.'
               break
             fi
             if test "$attempt" -eq 18; then
