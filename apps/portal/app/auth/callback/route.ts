@@ -80,7 +80,7 @@ function resultPage(verified: boolean, approved = false, registeredButUnattested
   // Fixed server-authored markup: no user-controlled values or identity tokens are rendered.
   const document = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title} | NovaPharm Intelligence</title><style>body{margin:0;background:#f5f5f7;color:#1d1d1f;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{max-width:680px;margin:13vh auto;padding:36px}.brand{font-size:14px;font-weight:650;letter-spacing:.03em}.panel{background:#fff;border-radius:26px;padding:clamp(24px,6vw,60px);margin-top:22px;box-shadow:0 12px 48px #0000000b}h1{font-size:clamp(32px,5vw,52px);letter-spacing:-.045em;line-height:1.06;margin:0 0 24px}p{color:#626268;font-size:17px;line-height:1.6}a{display:inline-block;margin-top:26px;color:#0066cc;font-weight:600;text-decoration:none}a:focus-visible{outline:3px solid #0066cc;outline-offset:6px}</style></head><body><main class="shell"><div class="brand">NovaPharm Intelligence</div><section class="panel"><h1>${title}</h1><p>${message}</p><a href="${founderSessionActive ? "/founder" : verified || founderProviderOnly ? "/" : "/auth/customer/start"}">${founderSessionActive ? "Open the Medicines Terminal" : verified ? "Return to the Medicines Terminal" : founderProviderOnly ? "Return to the Intelligence overview" : "Start a new secure sign-in"}</a></section></main></body></html>`;
   return new NextResponse(document, {
-    status: verified || registeredButUnattested || founderProviderOnly ? 200 : 401,
+    status: founderSessionActive || verified || registeredButUnattested || founderProviderOnly ? 200 : 401,
     headers: { ...securityHeaders, "Content-Type": "text/html; charset=utf-8" },
   });
 }
@@ -140,7 +140,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       code, verifier: transaction.verifier,
     });
     phase = "id_token_verification";
-    let identity: { grantsTenantAccess: boolean; identityVerified: boolean } | undefined;
+    let identity: { grantsTenantAccess: boolean; identityVerified: boolean; verifiedCognitoSubject?: string } | undefined;
     try {
       identity = await verifyIntelligenceCustomerIdToken({
         idToken, expectedNonce: transaction.nonce,
@@ -259,22 +259,61 @@ export async function GET(request: NextRequest): Promise<Response> {
     if (identity) {
       if (identity.grantsTenantAccess !== false || identity.identityVerified !== true)
         throw new Error("Identity acceptance denied.");
-      // Never issue a customer cookie without independently approved tenant,
-      // subscription, rights and revocation-fenced acceptance.
-      const approved = request.nextUrl.hostname === "intelligence.novapharmhealthcare.com"
-        ? await activateApprovedCustomerSession(idToken)
-        : null;
-      response = resultPage(true, approved !== null);
-      if (approved) {
-        response.cookies.set({
-          name: "__Host-npi_session",
-          value: approved.token,
-          path: "/",
-          httpOnly: true,
-          secure: true,
-          sameSite: "lax",
-          maxAge: approved.seconds,
+      // Identity and MFA were independently verified by signed Cognito JWT
+      // and nonce. Separately identify the pinned founder via live GetUser;
+      // factor registration alone is NEVER sufficient to issue a session.
+      // The private founder Lambda still performs its own signed-claims,
+      // factor, HMAC and revocation-fenced issuance checks.
+      let founderMatched = false;
+      if (typeof identity.verifiedCognitoSubject === "string") {
+        try {
+          const registered = await checkFounderEnrolled({
+            accessToken, subject: identity.verifiedCognitoSubject,
+          });
+          founderMatched = registered.authenticatorRegistered === true &&
+            registered.mfaVerifiedThisLogin === false &&
+            registered.grantsTenantAccess === false;
+        } catch {
+          // Not a verified founder or provider lookup unavailable. No
+          // automatic privileges, and ordinary customer access remains
+          // subject to its own independent tenant and subscription gate.
+        }
+      }
+      if (founderMatched) {
+        phase = "verified_founder_session";
+        const founderSession = await requestFounderPrivateSession({
+          idToken, accessToken,
+          bridgeKey: process.env["NPI_FOUNDER_BRIDGE_KEY"] ?? "",
         });
+        response = resultPage(false, false, false, true, founderSession !== null);
+        if (founderSession) {
+          response.cookies.set({
+            name: "__Host-npi_founder", value: founderSession.token,
+            path: "/", secure: true, httpOnly: true,
+            sameSite: "lax", maxAge: founderSession.maxAge,
+          });
+          console.info(JSON.stringify({ event: "npi_founder_shell_session_issued" }));
+        } else {
+          console.info(JSON.stringify({ event: "npi_founder_session_not_issued" }));
+        }
+      } else {
+        // Never issue a customer cookie without independently approved tenant,
+        // subscription, rights and revocation-fenced acceptance.
+        const approved = request.nextUrl.hostname === "intelligence.novapharmhealthcare.com"
+          ? await activateApprovedCustomerSession(idToken)
+          : null;
+        response = resultPage(true, approved !== null);
+        if (approved) {
+          response.cookies.set({
+            name: "__Host-npi_session",
+            value: approved.token,
+            path: "/",
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax",
+            maxAge: approved.seconds,
+          });
+        }
       }
     }
   } catch (error: unknown) {
