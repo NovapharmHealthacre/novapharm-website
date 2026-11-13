@@ -65,10 +65,12 @@ test("invalid principal, vendor mode, date or mandatory callbacks fail before st
  for(const props of [
   {authority:{...authority,verified:false}},
   {authority:{...authority,workspaceId:"../../wrong"}},
+  {authority:{...authority,workspaceId:{toString:()=>"tenant_alpha"}}},
   {authority:{...authority,accessScopes:["customer"]}},
   {authority:{...authority,principalId:"xx"}},
   {capability:"unregistered_vendor"}, {nativeVendor:true},
-  {limit:21}, {limit:0}, {asOf:"invalid"}, {asOf:"2026-12-12T00:00:00Z"},
+  {limit:21}, {limit:0}, {asOf:"invalid"}, {asOf:"2026-02-30T00:00:00Z"},
+  {asOf:"2026-12-12T00:00:00Z"},
   {recordAudit:null}
  ]){
   let called=0;
@@ -103,6 +105,8 @@ test("wrong tenant, duplicates, synthetic, altered, future and unapproved observ
   [sample(cap,{payload:{...payloads[cap],value:999}})],
   [sample(cap,{observedAt:"2026-11-15T08:00:00Z"})],
   [sample(cap,{recordedAt:"2026-11-14T08:00:00Z"})],
+  [sample(cap,{recordedAt:"2026-11-12T18:00:00Z"})],
+  [sample(cap,{observedAt:"2026-11-12T11:00:00Z",recordedAt:"2026-11-12T10:00:00Z"})],
   [sample(cap,{payload:{...payloads[cap],observationType:"forecast"},
    payloadSha256:hash({...payloads[cap],observationType:"forecast"})})],
   [sample(cap,{payload:{...payloads[cap],value:Infinity},
@@ -146,6 +150,7 @@ test("schema validation denies invalid payloads in each capability",async()=>{
  const bad=[
   ["foundry_ops",{subjectId:"medicine_001",predicate:"prescribe",objectId:"code_001"}],
   ["cloud_security",{findingId:"finding_001",severity:"unknown",disposition:"open"}],
+  ["cloud_security",{findingId:"finding_001",severity:"high",disposition:"risk_accepted"}],
   ["pharma_markets",{metricId:"metric_001",value:12,unit:"items",observationType:"synthetic",region:"GB"}],
   ["nova_research",{evidenceId:"evidence_001",contentSha256:"invalid"}]
  ];
