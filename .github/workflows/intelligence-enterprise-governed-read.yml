@@ -1,0 +1,28 @@
+name: Intelligence enterprise governed read acceptance
+
+on:
+  pull_request:
+    paths:
+      - "src/core/intelligence-enterprise-governed-read.mjs"
+      - "scripts/test-intelligence-enterprise-governed-read.mjs"
+      - ".github/workflows/intelligence-enterprise-governed-read.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  governed-read-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Validate enterprise research source and test syntax
+        run: |
+          node --check src/core/intelligence-enterprise-governed-read.mjs
+          node --check scripts/test-intelligence-enterprise-governed-read.mjs
+      - name: Verify rights, tenancy, audit, revocation and no native-vendor activation
+        run: node --test scripts/test-intelligence-enterprise-governed-read.mjs
