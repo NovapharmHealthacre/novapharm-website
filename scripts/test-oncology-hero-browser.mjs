@@ -64,6 +64,8 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
           const rect=node=>node?.getBoundingClientRect();
           const mask=imageLayer?getComputedStyle(imageLayer):null;
           const imageStyle=image?getComputedStyle(image):null;
+          const imageRect=rect(image);
+          const copyRect=rect(hero?.querySelector(".npoc-hero-copy"));
           const cardTrack=document.querySelector(".npoc-focus-cards");
           return {
             heading:heading?.textContent?.trim(),
@@ -77,8 +79,11 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
             portraitWidth:rect(image)?.width||0,
             portraitHeight:rect(image)?.height||0,
             layerWidth:rect(imageLayer)?.width||0,
+            imageAspect:imageRect?.width && imageRect?.height ? imageRect.width/imageRect.height : 0,
+            mobileCopyGap:copyRect && imageRect ? copyRect.top-imageRect.bottom : 0,
             fade:[mask?.maskImage,mask?.webkitMaskImage].some(value=>typeof value==="string"&&value.includes("gradient")),
             imageMask:[imageStyle?.maskImage,imageStyle?.webkitMaskImage].some(value=>typeof value==="string"&&value.includes("gradient")),
+            imageMaskCss:[imageStyle?.maskImage,imageStyle?.webkitMaskImage].filter(Boolean).join(" "),
             cardTrackScrollLeft:cardTrack?.scrollLeft||0,
             firstCardLabel:cards[0]?.querySelector("span")?.textContent?.trim()||"",
             focusHeadingLines: (() => { const h=document.querySelector(".npoc-focus-copy h2"); return h ? Math.round(rect(h).height/parseFloat(getComputedStyle(h).lineHeight)) : 0; })(),
@@ -109,6 +114,9 @@ for (const [engine, browserType] of [["chromium",chromium],["webkit",webkit]]) {
         }else{
           assert.equal(layout.fade,false,`${label}: mobile outer photo layer should remain unmasked`);
           assert.equal(layout.imageMask,true,`${label}: mobile image edge must fade out embedded source lettering`);
+          assert.ok(layout.imageMaskCss.includes("8%") && layout.imageMaskCss.includes("14%"),`${label}: source-edge letters must be fully suppressed before portrait detail begins`);
+          assert.ok(Math.abs(layout.imageAspect-(890/550))<0.04,`${label}: mobile portrait must retain its native 890:550 frame without letterboxing`);
+          assert.ok(layout.mobileCopyGap>=0 && layout.mobileCopyGap<=36,`${label}: mobile copy must follow the portrait without an artificial white gap`);
           assert.equal(layout.cardTrackScrollLeft,0,`${label}: mobile portfolio carousel must start at the first card`);
           assert.equal(layout.firstCardLabel,"Solid tumours",`${label}: first mobile portfolio card must be visible`);
           assert.ok(layout.cards[0].x>=0 && layout.cards[0].x+layout.cards[0].width<=layout.viewportWidth+1,`${label}: first mobile card is clipped at initial scroll position`);
