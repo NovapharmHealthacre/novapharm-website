@@ -71,6 +71,30 @@ let screenshots = 0;
 let axeRuns = 0;
 let geometryRuns = 0;
 
+// Only localhost UI acceptance uses fail-closed read-only readiness fixtures.
+// Production APIs intentionally reject this test origin; never mock payment,
+// account, customer data, or authenticated business endpoints here.
+async function mockLocalReadiness(page, pathname) {
+  const checkoutApi = pathname === "/products/nutraxin/bag/"
+    ? "https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com/readiness"
+    : pathname.startsWith("/products/esco/")
+      ? "https://vflz5z5jfc.execute-api.eu-north-1.amazonaws.com/readiness"
+      : null;
+  if (!checkoutApi) return;
+  await page.route(checkoutApi, async request => {
+    await request.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        checkout_ready: false,
+        payment_collection_active: false,
+        approved_catalogue_ids: [],
+        origin: "localhost"
+      })
+    });
+  });
+}
+
 async function dismissConsent(page) {
   const reject = page.locator("[data-consent-action='reject']:visible").first();
   if (await reject.count()) {
@@ -239,19 +263,7 @@ for (const [engineName, browserType] of engines) {
             }
           });
           try {
-            if (route.name === "nutraxin-bag") {
-              // This suite serves public HTML on localhost, which is not an
-              // authorised origin for the production checkout API. Simulate
-              // only the read-only readiness response, fail closed, and keep
-              // all payment/authenticated endpoints strictly unmocked.
-              await page.route("https://7cs8kxkj5d.execute-api.eu-north-1.amazonaws.com/readiness", async request => {
-                await request.fulfill({
-                  status: 200,
-                  contentType: "application/json",
-                  body: JSON.stringify({ checkout_ready: false, payment_collection_active: false, origin: "localhost" })
-                });
-              });
-            }
+            await mockLocalReadiness(page, route.path);
             const response = await page.goto(route.path, { waitUntil: "networkidle", timeout: 30_000 });
             assert.equal(response?.status(), 200, `${engineName} ${viewport.name} ${route.path}: navigation failed`);
             await page.locator("main").waitFor({ state: "visible", timeout: 15_000 });
@@ -694,6 +706,7 @@ for (const [engineName, browserType] of engines) {
       });
       const page = await context.newPage();
       try {
+        await mockLocalReadiness(page, "/products/esco/");
         const response = await page.goto("/products/esco/", { waitUntil:"networkidle", timeout:30_000 });
         assert.equal(response?.status(), 200, `${engineName} ${viewport.name}: ESCO page unavailable`);
         await dismissConsent(page);
