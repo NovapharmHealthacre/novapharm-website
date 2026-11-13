@@ -209,9 +209,7 @@
             "DDB_TABLE": {
               "Ref": "CustomerTable"
             },
-            "BASE_URL": {
-              "Fn::Sub": "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
-            },
+            "BASE_URL": "https://portal.novapharmhealthcare.com",
             "ORDER_ALERT_TOPIC_ARN": "arn:aws:sns:eu-north-1:250675045172:novapharm-staging-contact-receipt-alerts",
             "PRODUCTION_CHECKOUT_FUNCTION": "novapharm-production-nutraxin-approved-checkout",
             "DIRECT_SHOP_PAYMENTS_ENABLED": "false",
