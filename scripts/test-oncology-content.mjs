@@ -80,7 +80,7 @@ for (const [name, stylesheet] of [["static",approvedLayout],["Next",nextLayout]]
   assert.match(mobileRule,/object-fit:\s*contain;/,`${name}: mobile portrait must preserve full framing`);
   assert.match(mobileRule,/-webkit-mask-image:\s*linear-gradient/,`${name}: mobile must suppress source-edge lettering`);
   assert.match(mobileRule,/transparent 8%.*#000 14%/,`${name}: mobile mask must fully hide the JPEG's left-edge lettering`);
-  assert.match(stylesheet,/aspect-ratio:890\\/550;/,`${name}: mobile canvas must follow the portrait's native aspect ratio`);
+  assert.match(stylesheet,/aspect-ratio:890\/550;/,`${name}: mobile canvas must follow the portrait's native aspect ratio`);
   assert.match(stylesheet,/padding:22px 0 54px;/,`${name}: mobile copy must follow the portrait in normal flow`);
 }
 assert.match(approvedLayout, /grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/, "All three Oncology visuals share a grid row");
