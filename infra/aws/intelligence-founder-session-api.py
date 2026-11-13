@@ -32,6 +32,19 @@ SCOPE = "founder-shell-read-only"
 
 
 def deny(status, code, clear=False):
+    # Diagnostic classes only. Never record identity claims, login credentials,
+    # authorisation headers, cookies, tokens, MFA codes, subjects or exceptions.
+    # Customer / medicines entitlements are unchanged by this telemetry.
+    if code in (
+        "unauthorised_gateway", "signed_founder_identity_required",
+        "server_bridge_required", "founder_factor_not_verified",
+        "founder_session_unavailable",
+    ):
+        print(json.dumps({
+            "event": "npi_founder_session_denied",
+            "classification": code,
+            "http_status": status,
+        }, separators=(",", ":")), flush=True)
     headers = {
         "Cache-Control": "no-store", "Pragma": "no-cache",
         "Content-Type": "application/json; charset=utf-8",
