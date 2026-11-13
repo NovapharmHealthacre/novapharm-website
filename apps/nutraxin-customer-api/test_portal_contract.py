@@ -158,6 +158,33 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertEqual(denied["statusCode"], 403)
         self.assertEqual(json.loads(denied["body"])["error"], "invalid_login_origin")
 
+    def test_known_live_https_origins_are_allowed_without_trusting_lookalikes(self):
+        accepted=(
+            "https://portal.novapharmhealthcare.com",
+            "https://PORTAL.NOVAPHARMHEALTHCARE.COM:443",
+            "https://wgy9p7ad0d.execute-api.eu-north-1.amazonaws.com",
+        )
+        for origin in accepted:
+            event=self.event("/login","POST",origin=origin)
+            event["headers"]["host"]="wgy9p7ad0d.execute-api.eu-north-1.amazonaws.com"
+            event["body"]="mode=signup&email=invalid"
+            response=PORTAL.handler(event,None)
+            self.assertEqual(response["statusCode"],400,origin)
+            self.assertEqual(json.loads(response["body"])["error"],"invalid_login_email",origin)
+        for origin in (
+            "https://portal.novapharmhealthcare.com.attacker.example",
+            "http://portal.novapharmhealthcare.com",
+            "https://untrusted.example",
+            "null",
+            "https://portal.novapharmhealthcare.com.evil.invalid/",
+            "https://portal.novapharmhealthcare.com:444",
+        ):
+            event=self.event("/login","POST",origin=origin)
+            event["body"]="mode=signup&email=invalid"
+            response=PORTAL.handler(event,None)
+            self.assertEqual(response["statusCode"],403,origin)
+            self.assertEqual(json.loads(response["body"])["error"],"invalid_login_origin",origin)
+
     def test_approved_account_landing_and_personal_signup(self):
         policy=PORTAL.reply(200,PORTAL.PAGE,"text/html")["headers"]["content-security-policy"]
         self.assertIn("form-action 'self' https://synthetic.auth.eu-north-1.amazoncognito.com",policy)
