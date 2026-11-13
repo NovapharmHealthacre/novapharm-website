@@ -76,6 +76,21 @@ async function audit() {
                 title:document.title, h1s:h1s.length,h1Text:h1s[0]?.textContent?.trim()??"",
                 header:!!header,footer:!!footer,logo:!!document.querySelector('header img[alt="NovaPharm Healthcare"]'),
                 intelligenceNav:!!document.querySelector('header .desktop-nav a[href="/technology/"]'),
+                homeNavLabel:(()=>{
+                  const link=document.querySelector('.desktop-nav a[href="/technology/"]') as HTMLElement|null;
+                  if(!link||!link.getClientRects().length)return null;
+                  const contact=document.querySelector('.desktop-nav a[href="/contact/"]') as HTMLElement|null;
+                  return {before:getComputedStyle(link,"::before").content,
+                    after:getComputedStyle(link,"::after").content,
+                    right:link.getBoundingClientRect().right,
+                    contactLeft:contact?.getBoundingClientRect().left??0};
+                })(),
+                managedContactBorders:(()=>{
+                  const field=document.querySelector(".np-contact-reference .np-contact-reference-field");
+                  const input=field?.querySelector('input:not([type="hidden"]), select, textarea');
+                  if(!field||!input)return null;
+                  return {field:getComputedStyle(field).borderTopWidth,input:getComputedStyle(input).borderTopWidth};
+                })(),
                 navHeight:header?Math.round(header.getBoundingClientRect().height):0,
                 font:body.fontFamily,inkToken:root.getPropertyValue("--nph-ink").trim(),
                 surfaceToken:root.getPropertyValue("--nph-silver").trim(),
@@ -127,6 +142,15 @@ async function audit() {
             if(errors.length)faults.push(`JavaScript console: ${errors.slice(0,4).join(" / ")}`);
             if(errorsFromNetwork.length)faults.push(`Failed requests: ${errorsFromNetwork.slice(0,4).join(" / ")}`);
             if(route==="/"&&!data.h1Text.includes("Where it needs to be"))faults.push("Homepage proposition missing");
+            if(route==="/"&&vp.width>=1440){
+              const nav=data.homeNavLabel;
+              if(!nav||nav.before!=='"Intelligence"'||nav.after!=='""')
+                faults.push(`Homepage Intelligence label uses incorrect pseudo-element: ${JSON.stringify(nav)}`);
+              if(nav&&nav.contactLeft<nav.right-1)
+                faults.push(`Homepage Intelligence and Contact links overlap: ${JSON.stringify(nav)}`);
+            }
+            if(route==="/contact/"&&data.managedContactBorders&&data.managedContactBorders.input!=="0px")
+              faults.push(`Contact form renders nested input outlines: ${JSON.stringify(data.managedContactBorders)}`);
             records.push({route,viewport:vp.name,status,...data,issues:faults});
             for(const detail of faults)findings.push({route,viewport:vp.name,detail});
           } catch(e) {
