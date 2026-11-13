@@ -568,8 +568,8 @@ test("signed-MFA managed founder callback issues only the independently validate
     assert.equal(response.status, 200);
     const body = await response.text();
     assert.match(body, /Founder workspace ready/);
-    assert.match(body, /href="\\/founder"/);
-    assert.doesNotMatch(body, new RegExp(proof.token.replace(/[.*+?^\u0024{}()|[\]\\]/g, "\\test("signed Cognito identity alone never grants a customer session with feature gate off", async () => {")));
+    assert.ok(body.includes('href="/founder"'));
+    assert.equal(body.includes(proof.token), false);
     const cookies = responseCookies(response).join(",");
     assert.match(cookies, /__Host-npi_founder=/);
     assert.doesNotMatch(cookies, /__Host-npi_session=/);
