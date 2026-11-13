@@ -14,6 +14,9 @@ import { prepareOfficialMedicineEvidenceCandidate } from "./medicine-evidence-ad
 const WORKSPACE = "novapharm-internal-staging";
 const ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$/u;
 const ISO = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/u;
+function validId(value) {
+  return typeof value === "string" && ID.test(value);
+}
 
 function deny(code) {
   throw Object.assign(new Error("Private medicine evidence admission refused."), {
