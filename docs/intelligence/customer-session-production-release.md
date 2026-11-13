@@ -13,6 +13,26 @@ GET /customer/session rechecks live approval and returns only verified role and 
 
 The Cognito-managed temporary password change and first authenticator-app enrolment can take longer than five minutes. The signed PKCE state, nonce and short-lived host-only cookie permit a **maximum 15-minute** authentication ceremony, with the same 15-minute signed `auth_time` freshness check. Every accepted ID token must still have a valid RSA signature, exact issuer/client/nonce, verified email and Cognito Essentials ACR `urn:cognito:loa:4` with `amr` containing `pwd`, `otp` and `mfa`. No password-only fallback is permitted. The application session and paid/medicine access remain separately disabled by default.
 
+## First-time TOTP enrolment request
+
+The founder's current first-login flow requests only Cognito ACR level 4. Cognito can reject that request before a user with no enrolled TOTP factor can reach the mandatory first-time enrolment ceremony.
+
+This change requests `urn:cognito:loa:4 urn:cognito:loa:1` in that order, while preserving `prompt=login` and `max_age=0` so a prior password-only managed-login session is not silently reused. The lower ACR is a provider-side onboarding request only; it is not an accepted application identity.
+
+## Security boundary remains unchanged
+
+- Normal identity still requires a Cognito-signed ACR 4 token with `pwd`, `otp` and `mfa`, exact issuer/client/nonce, verified founder email and fresh `auth_time`.
+- A lower-level or missing-ACR token is routed only to the existing first-time enrolment branch. Cognito `GetUser` must independently match the founder subject/email and confirm no MFA method is enrolled before the 10-minute enrolment-only cookie is issued.
+- The owner must personally scan/use the authenticator and submit a valid six-digit code to Cognito `VerifySoftwareToken`; the app cannot enrol, verify or invent a code on the owner's behalf.
+- Enrolment grants no founder application session, customer seat, medicine data, paid subscription, source rights or NOVA inference access. A fresh password+TOTP login is still required afterwards.
+- No credentials, TOTP secrets, reset codes, JWTs, PKCE values or tokens are logged.
+
+## CI correction
+
+The earlier PR #513 production-readiness failure is traced to the CSS validator rejecting existing `-0.08em` editorial tracking in the two governed Intelligence workspace stylesheets. Current main contains the narrowly file-scoped allowlist capped at `-0.08em`; this PR does not weaken or alter that validator.
+
+Require all exact-head production readiness, OIDC, CodeQL, dependency, secure Portal, Chromium/WebKit and unified browser checks to pass before any merge. This PR is source-only; AWS deployment remains separately gated by verified £0 credit coverage, immutable image scanning, Lambda alias/rollback checks and owner-side MFA acceptance.
+
 The callback logs only fixed phase/reason classifications such as `identity_email_unverified`, `identity_mfa_level_insufficient` or `transaction_expired_or_mismatched`; no OAuth codes, states, secrets, emails, JWTs or URLs are logged. Failed sign-ins show a generic response and a link to begin a fresh authentication.
 
 Do not promote this fix to production until the signed exact-head application image is released to the established AWS Lambda alias and real browser first-login, TOTP and malicious/expired callback tests pass. A merged source fix is **not** a deployed fix. Do not grant customer seats, billing or dataset rights by changing this timeout.
