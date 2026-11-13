@@ -179,44 +179,81 @@ def bridge_valid(event, id_token, access_token, secret, now):
     return hmac.compare_digest(expected, signature)
 
 
+# Do not expand these labels with claim values, email, token content or headers.
+JWT_DENIAL_CLASSES = frozenset((
+    "jwt_claims_missing", "jwt_time_claims_invalid", "jwt_issuer_mismatch",
+    "jwt_audience_mismatch", "jwt_token_type_invalid",
+    "jwt_founder_email_mismatch", "jwt_email_unverified",
+    "jwt_subject_invalid", "jwt_auth_time_stale", "jwt_iat_order_invalid",
+    "jwt_expiration_invalid", "jwt_mfa_claims_partial",
+    "jwt_mfa_acr_insufficient", "jwt_mfa_amr_invalid",
+    "jwt_mfa_factors_insufficient",
+))
+
+
+def identity_denied(reason):
+    if reason not in JWT_DENIAL_CLASSES:
+        reason = "jwt_claims_missing"
+    print(json.dumps({
+        "event": "npi_founder_signed_identity_denied",
+        "classification": reason,
+        "http_status": 401,
+    }, separators=(",", ":")), flush=True)
+
+
 def verified_jwt(event, now):
-    """API Gateway JWT authorizer is the cryptographic signature authority."""
+    """Return verified signed subject and fixed rejection class, never claims.
+
+    The API Gateway JWT authorizer remains the sole signature authority.
+    Every check preserves the original fail-closed decision; only the
+    operator-visible, non-sensitive classification is new.
+    """
     authorizer = (event.get("requestContext") or {}).get("authorizer") or {}
     claims = (authorizer.get("jwt") or {}).get("claims") or {}
-    if not isinstance(claims, dict):
-        return None
+    if not isinstance(claims, dict) or not claims:
+        return None, "jwt_claims_missing"
     try:
         auth_time = int(claims.get("auth_time", "0"))
         iat = int(claims.get("iat", "0"))
         exp = int(claims.get("exp", "0"))
     except (TypeError, ValueError):
-        return None
+        return None, "jwt_time_claims_invalid"
     sub = claims.get("sub")
-    if (claims.get("iss") != ISSUER or claims.get("aud") != CLIENT
-            or claims.get("token_use") != "id"
-            or claims.get("email") != FOUNDER_EMAIL
-            or claims.get("email_verified") not in ("true", True)
-            or not SUBJECT.fullmatch(str(sub or ""))
-            or auth_time < now - 180 or auth_time > now + 60
-            or iat < auth_time or iat > now + 60
-            or exp <= now or exp > now + 3600):
-        return None
+    if claims.get("iss") != ISSUER:
+        return None, "jwt_issuer_mismatch"
+    if claims.get("aud") != CLIENT:
+        return None, "jwt_audience_mismatch"
+    if claims.get("token_use") != "id":
+        return None, "jwt_token_type_invalid"
+    if claims.get("email") != FOUNDER_EMAIL:
+        return None, "jwt_founder_email_mismatch"
+    if claims.get("email_verified") not in ("true", True):
+        return None, "jwt_email_unverified"
+    if not SUBJECT.fullmatch(str(sub or "")):
+        return None, "jwt_subject_invalid"
+    if auth_time < now - 180 or auth_time > now + 60:
+        return None, "jwt_auth_time_stale"
+    if iat < auth_time or iat > now + 60:
+        return None, "jwt_iat_order_invalid"
+    if exp <= now or exp > now + 3600:
+        return None, "jwt_expiration_invalid"
     # Explicit weak/unknown signed MFA claims must never be overridden.
     acr, amr = claims.get("acr"), claims.get("amr")
     if (acr is None) != (amr is None):
-        return None
+        return None, "jwt_mfa_claims_partial"
     if acr is not None:
         if acr != "urn:cognito:loa:4":
-            return None
+            return None, "jwt_mfa_acr_insufficient"
         if isinstance(amr, str):
             try:
                 amr = json.loads(amr) if amr.startswith("[") else amr.split(",")
             except (ValueError, TypeError):
-                return None
-        if not isinstance(amr, list) or not {"pwd", "otp", "mfa"}.issubset(set(amr)):
-            return None
-    return sub
-
+                return None, "jwt_mfa_amr_invalid"
+        if not isinstance(amr, list):
+            return None, "jwt_mfa_amr_invalid"
+        if not {"pwd", "otp", "mfa"}.issubset(set(amr)):
+            return None, "jwt_mfa_factors_insufficient"
+    return sub, None
 
 def mint(event, now, cognito, dynamodb, secret):
     if not gateway(event, "/founder/session", "POST"):
@@ -225,8 +262,9 @@ def mint(event, now, cognito, dynamodb, secret):
         # The private Next.js Lambda callback initiates POST server-side.
         return deny(403, "browser_issuance_denied")
     claims = (event.get("requestContext", {}).get("authorizer") or {}).get("jwt", {}).get("claims", {})
-    subject = verified_jwt(event, now)
+    subject, identity_denial = verified_jwt(event, now)
     if not subject:
+        identity_denied(identity_denial)
         return deny(401, "signed_founder_identity_required")
     headers = {k.lower(): v for k, v in (event.get("headers") or {}).items()}
     id_token = str(headers.get("authorization", "")).removeprefix("Bearer ")
