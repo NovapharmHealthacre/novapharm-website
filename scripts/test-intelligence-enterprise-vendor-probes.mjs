@@ -171,7 +171,7 @@ test("missing credentials, failed authentication and unavailable inventory fail 
 });
 
 test("late source entitlement revocation prevents inventory data release",async()=>{
- for(const rejectAt of [2,3,4,5]){
+ for(const rejectAt of [2,3,4,5,6]){
   let checks=0;
   const {inputs}=setup("palantir_foundry",{
    verifyEntitlement:async()=>++checks!==rejectAt
@@ -196,6 +196,23 @@ test("audit completion refusal, oversized inventory and network errors are denie
   catch(e){
    assert.equal(e.message,"Enterprise vendor probe was denied.");
    assert.equal(e.message.includes("secret-token-safe-001"),false);
+  }
+ }
+});
+
+test("provider credential and authority callback errors never leak sensitive messages",async()=>{
+ for(const overrides of [
+  {resolveCredentials:async()=>{throw Error("secret-token-safe-001 leak");}},
+  {verifyEntitlement:async()=>{throw Error("secret-token-safe-001 leak");}},
+  {verifyCurrentAuthority:async()=>{throw Error("secret-token-safe-001 leak");}},
+  {recordAudit:async()=>{throw Error("secret-token-safe-001 leak");}}
+ ]){
+  const {inputs}=setup("palantir_foundry",overrides);
+  try{await probeEnterpriseVendor(inputs);assert.fail("Expected vendor probe denial");}
+  catch(err){
+   assert.equal(err.code,"enterprise_vendor_probe_denied");
+   assert.equal(err.message,"Enterprise vendor probe was denied.");
+   assert.equal(err.message.includes("secret-token-safe-001"),false);
   }
  }
 });
