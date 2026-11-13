@@ -62,6 +62,10 @@ function token(value){
  return typeof value==="string" && value.length>8 && value.length<=8192 &&
   !/\s/u.test(value);
 }
+async function safeRequest(httpRequest,request){
+ try {return await httpRequest(request);}
+ catch {throw deny();}
+}
 function credentialsOkay(vendor,c){
  return c && typeof c==="object" && !Array.isArray(c) &&
   (vendor==="palantir_foundry" ?
@@ -114,22 +118,22 @@ export async function probeEnterpriseVendor({
    grant_type:"client_credentials",client_id:credentials.clientId,
    client_secret:credentials.clientSecret,scope:"api:ontologies-read"
   }).toString();
-  auth=await httpRequest({url:base+"/multipass/api/oauth2/token",method:"POST",
+  auth=await safeRequest(httpRequest,{url:base+"/multipass/api/oauth2/token",method:"POST",
    headers:{"content-type":"application/x-www-form-urlencoded"},body,
    redirect:"error",timeoutMs:5000,maxBytes:32768});
   if(!validReply(auth)||!token(auth.json.access_token))throw deny();
   if(!await allowed())throw deny();
-  read=await httpRequest({url:base+"/api/v2/ontologies",method:"GET",
+  read=await safeRequest(httpRequest,{url:base+"/api/v2/ontologies",method:"GET",
    headers:{authorization:"Bearer "+auth.json.access_token,accept:"application/json"},
    redirect:"error",timeoutMs:5000,maxBytes:32768});
  }else{
-  auth=await httpRequest({url:base+"/login",method:"POST",
+  auth=await safeRequest(httpRequest,{url:base+"/login",method:"POST",
    headers:{"content-type":"application/json"},
    body:JSON.stringify({username:credentials.accessKeyId,password:credentials.secretKey}),
    redirect:"error",timeoutMs:5000,maxBytes:32768});
   if(!validReply(auth)||!token(auth.json.token))throw deny();
   if(!await allowed())throw deny();
-  read=await httpRequest({url:base+"/cloud",method:"GET",
+  read=await safeRequest(httpRequest,{url:base+"/cloud",method:"GET",
    headers:{"x-redlock-auth":auth.json.token,accept:"application/json"},
    redirect:"error",timeoutMs:5000,maxBytes:32768});
  }
@@ -137,19 +141,21 @@ export async function probeEnterpriseVendor({
  const items=vendor==="palantir_foundry"?read.json?.data:read.json;
  if(!Array.isArray(items)||items.length>500)throw deny();
  if(!await allowed())throw deny();
+ const completionEventId=randomUUID();
  const completion=await recordAudit({
-  ...context,eventId,action:"vendor.inventory_probe.completed",
+  ...context,eventId:completionEventId,preflightEventId:eventId,
+  action:"vendor.inventory_probe.completed",
   resourceCount:items.length,credentialsStored:false,
   resultsStored:false,customerVisible:false
  });
- if(completion?.committed!==true||completion.eventId!==eventId)throw deny();
+ if(completion?.committed!==true||completion.eventId!==completionEventId)throw deny();
  if(!await allowed())throw deny();
  return {
   contract:"novapharm.intelligence.vendor-inventory-probe.v1",
   vendor,scope:"read_only_service_inventory",
   providerConnectivityObserved:true,productionCertified:false,
   customerReleaseApproved:false,dataLicenceForReuseVerified:false,
-  workspaceId:authority.workspaceId,probeEventId:eventId,
+  workspaceId:authority.workspaceId,probeEventId:completionEventId,
   resourceCount:items.length,
   evidenceStatus:"connectivity_only_no_data_acceptance"
  };
