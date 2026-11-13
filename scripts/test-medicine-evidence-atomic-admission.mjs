@@ -100,6 +100,12 @@ function adapters(input = sample()) {
       customerPublishApproved: false
     }),
     readBackCommit: async p => read(p),
+    quarantineAtomic: async p => ({
+      quarantined: true, workspaceId: p.workspaceId,
+      transactionId: p.transactionId, eventId: p.eventId,
+      manifestSha256: p.manifestSha256, quarantinedRows: p.expectedRows,
+      auditCommitted: true, customerPublishApproved: false
+    }),
     rights, read
   };
 }
@@ -140,6 +146,8 @@ test("authoritative server fixtures can exercise the private atomic admission co
 test("missing, wrong-tenant, customer or untrusted session never reaches source rights or writes", async () => {
   for (const bad of [
     null, { ...sample().authority, workspaceId: "another-tenant" },
+    { ...sample().authority, principalId: 123 },
+    { ...sample().authority, authorityRevision: 123 },
     { ...sample().authority, customerAccess: true },
     { ...sample().authority, verifiedBySessionService: false },
     { ...sample().authority, scopes: ["founder-shell-read-only"] },
@@ -203,6 +211,9 @@ test("false atomic receipt and missing independent audit readback prevent admitt
     commitAtomic: async p => ({ ...await mock.commitAtomic(p), manifestSha256: h("f") })
   }, "atomic_commit_not_attested");
   await denied({ ...input, ...mock,
+    commitAtomic: async p => ({ ...await mock.commitAtomic(p), transactionId: 123 })
+  }, "atomic_commit_not_attested");
+  await denied({ ...input, ...mock,
     readBackCommit: async p => ({ ...mock.read(p), auditCommitted: false })
   }, "durable_audit_or_manifest_missing");
   await denied({ ...input, ...mock,
@@ -210,21 +221,43 @@ test("false atomic receipt and missing independent audit readback prevent admitt
   }, "durable_audit_or_manifest_missing");
 });
 
-test("rights revoked after a durable transaction refuse release and require quarantine", async () => {
+test("rights revoked after a durable transaction are atomically quarantined and audited", async () => {
   const input = sample(); const mock = adapters(input);
-  let checks = 0;
+  let checks = 0, quarantines = 0;
   await denied({ ...input, ...mock,
-    verifyCurrentRights: async () => (++checks === 1 ? mock.rights() : { ...mock.rights(), revoked: true })
+    verifyCurrentRights: async () => (++checks === 1 ? mock.rights() : { ...mock.rights(), revoked: true }),
+    quarantineAtomic: async p => {
+      quarantines += 1;
+      assert.equal(p.reason, "rights_revoked_after_commit");
+      return mock.quarantineAtomic(p);
+    }
   }, "rights_revoked_after_commit");
   assert.equal(checks, 2);
+  assert.equal(quarantines, 1);
 });
 
-test("authority revocation after commit prevents authorised result", async () => {
+test("authority revocation after commit atomically quarantines and audits", async () => {
+  const input = sample(); const mock = adapters(input);
+  let checks = 0, quarantines = 0;
+  await denied({ ...input, ...mock,
+    verifyCurrentAuthority: async () => ++checks === 1,
+    quarantineAtomic: async p => {
+      quarantines += 1;
+      assert.equal(p.reason, "authority_revoked_after_commit");
+      return mock.quarantineAtomic(p);
+    }
+  }, "authority_revoked_after_commit");
+  assert.equal(checks, 2);
+  assert.equal(quarantines, 1);
+});
+
+test("late revocation fails closed when quarantine cannot be independently attested", async () => {
   const input = sample(); const mock = adapters(input);
   let checks = 0;
   await denied({ ...input, ...mock,
-    verifyCurrentAuthority: async () => ++checks === 1
-  }, "authority_revoked_after_commit");
+    verifyCurrentRights: async () => (++checks === 1 ? mock.rights() : { ...mock.rights(), revoked: true }),
+    quarantineAtomic: async () => ({ quarantined: true, auditCommitted: false })
+  }, "quarantine_after_commit_unconfirmed");
 });
 
 test("release timestamp and absent transactional adapters fail closed", async () => {
@@ -232,5 +265,7 @@ test("release timestamp and absent transactional adapters fail closed", async ()
   await denied({ ...input, ...mock, now: new Date("2026-11-12T12:03:00Z") },
     "release_freshness_invalid");
   await denied({ ...input, ...mock, commitAtomic: undefined },
+    "trusted_storage_adapters_required");
+  await denied({ ...input, ...mock, quarantineAtomic: undefined },
     "trusted_storage_adapters_required");
 });
