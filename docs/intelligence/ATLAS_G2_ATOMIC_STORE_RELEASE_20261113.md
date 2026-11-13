@@ -2,7 +2,7 @@
 
 **Status:** source and synthetic security-contract tests only. **Not deployed**, **not source-authorised** and **not customer-accessible**. This does not create rights, credentials, indexes, patient records, subscriptions, source admissions or AI inference.
 
-The `createAtlasG2AtomicStore` factory in `src/data/atlas-medicine-g2-atomic-store.mjs` accepts a **trusted, private** existing MongoDB client and the exact production-name database, plus two independently trusted runtime callbacks for live authority and rights. It provides the three ports required by `admitPrivateOfficialMedicineEvidence`: `commitAtomic`, `readBackCommit` and `quarantineCommitted`.
+The `createAtlasG2AtomicStore` factory in `src/data/atlas-medicine-g2-atomic-store.mjs` accepts a **trusted, private** existing MongoDB client and the exact production-name database, plus three independently trusted runtime callbacks: live board/admin authority, source/terminology rights, and an exact temporal canonical medicine identity verifier. The identity verifier must independently check each source row's product/strength/form/brand mapping and valid reporting month, not trust caller-provided proof flags. It provides the three ports required by `admitPrivateOfficialMedicineEvidence`: `commitAtomic`, `readBackCommit` and `quarantineCommitted`.
 
 ## Implementation contracts
 - One transaction writes every G1-verified private candidate row, its immutable source manifest and an append-only audit event, with **snapshot read concern**, **majority+journal write concern** and no partial write on callback denial or failed acknowledgment.
