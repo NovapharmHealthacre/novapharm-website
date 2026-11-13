@@ -12,6 +12,7 @@ const html = source("oncology/index.html");
 const visible = visibleTextFromHtml(html);
 const css = source("assets/css/oncology-editorial.css");
 const approvedLayout = source("assets/css/oncology-hope-v2.css");
+const nextLayout = source("apps/corporate/app/oncology-editorial.css");
 
 assert.deepEqual(navigation.find(([, href]) => href === "/oncology/"), ["Oncology","/oncology/"]);
 assert.ok(pageMeta.oncology?.title.includes("Oncology"));
@@ -44,11 +45,11 @@ assert.match(html, /id="scope-boundary"/);
 assert.match(html, /id="oncology-faqs"/);
 assert.match(html, /href="\/contact\/\?enquiry=Oncology%20%26%20specialist%20medicines"/);
 assert.match(html, /href="\/assets\/css\/oncology-editorial\.css(?:\?v=[^"]+)?"/);
-assert.match(html, /href="\/assets\/css\/oncology-hope-v2\.css(?:\?v=[^"]+)?"/, "Cache-safe approved layout stylesheet must load");
+assert.match(html, /href="\/assets\/css\/oncology-hope-v2\.css\?v=20261113-hope-responsive-v6"/, "Responsive Oncology CSS must be cache-versioned");
 assert.ok(html.indexOf("oncology-hope-v2.css") > html.indexOf("oncology-editorial.css"), "Approved style must follow original stylesheet");
 assert.match(approvedLayout, /object-fit:contain/, "Portrait must preserve its full framing");
 assert.match(approvedLayout, /-webkit-mask-image:linear-gradient/, "Desktop image must blend into one continuous hero");
-assert.match(approvedLayout, /width:72%/, "Approved desktop portrait must use the seamless 72% composition");
+assert.match(approvedLayout, /width:min\(62%,970px\)/, "Approved desktop portrait must retain its capped full-bleed composition");
 // Match actual CSS selectors. A double-escaped regex here silently matches
 // nothing and incorrectly fails even when the portrait is fully visible.
 const portraitRules = [...approvedLayout.matchAll(/\.npoc-hope-hero \.npoc-hero-visual img\s*\{([^}]*)\}/g)];
@@ -66,6 +67,30 @@ assert.match(approvedLayout, /\.npoc-hope-focus \.npoc-focus-card img\s*\{[^}]*o
 assert.match(approvedLayout, /-webkit-mask-image:none/, "Portrait masking must reset on mobile");
 assert.match(approvedLayout, /grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/, "All three Oncology visuals share a grid row");
 assert.match(approvedLayout, /npoc-focus-card span/, "Image labels must overlay on the cards");
+
+function assertResponsivePortraitRules(layout, label) {
+  const desktopStart = layout.lastIndexOf("@media (min-width:1101px)");
+  const tabletStart = layout.lastIndexOf("@media (min-width:761px) and (max-width:1100px)");
+  const mobileStart = layout.lastIndexOf("@media(max-width:760px)");
+  assert.ok(desktopStart >= 0 && tabletStart > desktopStart && mobileStart > tabletStart,
+    label + ": responsive portrait rules must be ordered desktop, tablet, mobile");
+  assert.match(layout.slice(desktopStart, tabletStart), /object-fit:cover;/,
+    label + ": desktop must use full-bleed cover");
+  assert.match(layout.slice(desktopStart, tabletStart), /object-position:right top;/,
+    label + ": desktop crop must protect the head and sunset");
+  assert.match(layout.slice(tabletStart, mobileStart), /object-fit:contain;/,
+    label + ": tablet must preserve the complete portrait");
+  assert.match(layout.slice(tabletStart, mobileStart), /-webkit-mask-image:linear-gradient\(180deg/,
+    label + ": tablet must feather the contained image's vertical bounds");
+  assert.match(layout.slice(mobileStart), /object-fit:contain;/,
+    label + ": mobile must preserve the complete portrait");
+  assert.match(layout.slice(mobileStart), /height:min\(310px,61\.8vw\)/,
+    label + ": mobile image canvas must follow the portrait's native aspect ratio");
+  assert.match(layout.slice(mobileStart), /height:min\(280px,61\.8vw\)/,
+    label + ": compact mobile image canvas must follow the portrait's native aspect ratio");
+}
+assertResponsivePortraitRules(approvedLayout, "Static CSS");
+assertResponsivePortraitRules(nextLayout, "Next.js CSS");
 
 // The previous annotation cleanup must never consume the remainder of a media query.
 // Validate the intact mobile track, responsive card height and balanced stylesheet braces.
@@ -106,4 +131,4 @@ for (const asset of provenance.assets) {
     assert.equal(checksum, derivative.sha256, derivative.path+" checksum");
   }
 }
-console.log("Oncology editorial contract passed: six axes, four programmes, six gated readiness rows, six FAQs, responsive scoped CSS and truthful regulatory boundaries.");
+console.log("Oncology editorial contract passed: desktop cover, tablet/mobile contain, three aligned portfolio images and truthful regulatory boundaries.");
