@@ -83,6 +83,10 @@ async function audit() {
                 legal:document.body.textContent?.includes("Regulated wholesale supply has not commenced")??false,
                 mainLength:document.querySelector("main")?.textContent?.trim().length??0,
                 brokenImages:[...document.images].filter(x=>x.complete&&x.naturalWidth===0).map(x=>x.currentSrc),
+                clippedControls:[...document.querySelectorAll("main form input:not([type=hidden]), main form select, main form textarea, main form button")]
+                  .filter(el=>{const css=getComputedStyle(el);if(css.display==="none"||css.visibility==="hidden"||Number(css.opacity)===0)return false;
+                    const b=el.getBoundingClientRect();return b.width>0&&b.height>0&&(b.left< -2||b.right>document.documentElement.clientWidth+2);})
+                  .map(el=>({tag:el.tagName.toLowerCase(),name:el.getAttribute("name")||el.getAttribute("aria-label")||""})).slice(0,8),
                 // Inspect the rendered heading and actual controls, not only the
                 // document scroll width (which can hide clipped content).
                 headlineBounds: (() => {
@@ -119,6 +123,7 @@ async function audit() {
             if(!data.legal)faults.push("Regulated-supply disclosure missing");
             if(data.mainLength<70)faults.push("Insufficient public page content");
             if(data.brokenImages.length)faults.push(`Broken images: ${data.brokenImages.slice(0,5).join(" / ")}`);
+            if(data.clippedControls.length)faults.push(`Form controls clipped by viewport: ${JSON.stringify(data.clippedControls)}`);
             if(errors.length)faults.push(`JavaScript console: ${errors.slice(0,4).join(" / ")}`);
             if(errorsFromNetwork.length)faults.push(`Failed requests: ${errorsFromNetwork.slice(0,4).join(" / ")}`);
             if(route==="/"&&!data.h1Text.includes("Where it needs to be"))faults.push("Homepage proposition missing");
