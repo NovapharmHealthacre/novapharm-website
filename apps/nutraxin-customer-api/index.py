@@ -1264,12 +1264,19 @@ def retail_sale_authorised(pricing):
     if not isinstance(pricing,dict):
         return False
     assumptions=pricing.get("model_assumptions") or {}
+    # Owner-operated products need no unrelated reseller/supplier approval.
+    # An owner assertion is explicitly labelled, never presented as verified
+    # third-party evidence. Tax, consumer terms, and delivery stay fail-closed.
+    fbo = (pricing.get("food_business_registration_verified") is True or
+           pricing.get("food_business_registration_owner_attested") is True)
+    fulfilment = (pricing.get("manufacturer_fulfilment_commitment_verified") is True or
+                   pricing.get("owner_direct_fulfilment_authorised") is True)
+    uk_dispatch = (pricing.get("uk_dispatch_service_verified") is True or
+                   pricing.get("owner_uk_dispatch_committed") is True)
     return (pricing.get("retail_sales_authorised") is True and
             pricing.get("vat_registration_verified") is True and
-            pricing.get("food_business_registration_verified") is True and
+            fbo and fulfilment and uk_dispatch and
             pricing.get("consumer_terms_verified") is True and
-            pricing.get("manufacturer_fulfilment_commitment_verified") is True and
-            pricing.get("uk_dispatch_service_verified") is True and
             assumptions.get("uk_delivery_charge_pence")==0 and
             assumptions.get("uk_delivery_cost_borne_by_seller") is True)
 
