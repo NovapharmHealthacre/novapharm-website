@@ -2,7 +2,10 @@ name: Reconcile governed image inventory (isolated branch only)
 
 on:
   push:
-    branches: [codex/security-dependencies-20261106]
+    branches:
+      - codex/security-dependencies-20261106
+      # Generate a review artifact only; the apply job remains on its original branch.
+      - codex/corporate-responsive-20261114
     paths:
       - '.github/workflows/reconcile-image-inventory-candidate.yml'
 
