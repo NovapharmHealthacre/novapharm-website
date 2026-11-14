@@ -53,7 +53,9 @@ const sample = () => {
 };
 function fake({ indexMissing = null, denyAuthority = false, denyRights = false,
   denyIdentity = false, denySource = false, failAudit = false,
-  hideQuarantineReadback = false, verifyIdentityCallback = null } = {}) {
+  hideQuarantineReadback = false, hideAdmissionReadback = false,
+  unknownCommitAfterWrite = false, unknownCommitBeforeWrite = false,
+  verifyIdentityCallback = null } = {}) {
   const names = Object.keys(keys);
   const data = Object.fromEntries(names.map(name => [name, []]));
   let started = 0, committed = 0, rolledBack = 0;
@@ -64,8 +66,11 @@ function fake({ indexMissing = null, denyAuthority = false, denyRights = false,
       return {toArray:async()=>indexMissing === name ? [] : [{name:"_id_",key:{_id:1},unique:true},valid]};
     },
     async findOne(filter) {
-      if (name === "npi_audit_events" && hideQuarantineReadback &&
-        filter.action === "medicine_evidence.quarantine") return null;
+      if (name === "npi_audit_events" &&
+        ((hideQuarantineReadback && filter.action === "medicine_evidence.quarantine") ||
+         (hideAdmissionReadback && filter.action === "medicine_evidence.private_admission"))) {
+        return null;
+      }
       return data[name].find(item=>matching(item,filter))??null;
     },
     async insertMany(records) {
@@ -100,11 +105,22 @@ function fake({ indexMissing = null, denyAuthority = false, denyRights = false,
         assert.equal(config.writeConcern.j,true);
         assert.equal(config.readConcern.level,"snapshot");
         const old=structuredClone(data);
-        try {const value=await work();committed++;return value;}
+        const uncertain = () => Object.assign(
+          new Error("simulated unknown transaction commit result"),
+          {errorLabels:["UnknownTransactionCommitResult"]}
+        );
+        if (unknownCommitBeforeWrite) throw uncertain();
+        let value;
+        try {value=await work();}
         catch(e) {
           for(const name of names)data[name]=old[name];
           rolledBack++;throw e;
         }
+        committed++;
+        // Simulate a lost server acknowledgment AFTER durable commit, not a
+        // failed transaction callback. No rollback occurs in this branch.
+        if (unknownCommitAfterWrite) throw uncertain();
+        return value;
       },
       async endSession() {}
     };
@@ -405,4 +421,49 @@ test("G2 rejects ambiguous or forged source codes before any database writes",as
       e=>e.code==="invalid_g2_source_row");
     assert.equal(sys.stats().started,0);
   }
+});
+
+test("unknown Mongo commit acknowledgment recovers only from matching durable majority evidence", async()=>{
+  const sys=fake({unknownCommitAfterWrite:true}), input=sample();
+  const receipt=await sys.store.commitAtomic(input);
+  assert.equal(receipt.committed,true);
+  assert.equal(receipt.customerPublishApproved,false);
+  assert.equal(sys.data.npi_medicine_evidence.length,1);
+  assert.equal(sys.data.npi_evidence_manifests.length,1);
+  assert.equal(sys.data.npi_audit_events.length,1);
+  assert.deepEqual(sys.stats(),{started:1,committed:1,rolledBack:0});
+  const proof=await sys.store.readBackCommit({
+    workspaceId:workspace,transactionId:receipt.transactionId,
+    manifestSha256:receipt.manifestSha256,
+    eventId:receipt.eventId,expectedRows:1
+  });
+  assert.equal(proof?.durable,true);
+  assert.equal(proof?.customerPublishApproved,false);
+});
+
+test("unknown commit with missing independent audit never claims success", async()=>{
+  const sys=fake({unknownCommitAfterWrite:true,hideAdmissionReadback:true});
+  await assert.rejects(sys.store.commitAtomic(sample()),
+    err=>err.code==="atomic_commit_outcome_unknown");
+  // The transaction may have committed: record it as ambiguous and require
+  // operator reconciliation, not an unsafe automatic second write.
+  assert.equal(sys.data.npi_medicine_evidence.length,1);
+  assert.equal(sys.data.npi_evidence_manifests.length,1);
+  assert.equal(sys.data.npi_audit_events.length,1);
+  assert.deepEqual(sys.stats(),{started:1,committed:1,rolledBack:0});
+});
+
+test("unknown commit label before any write does not permit fake success", async()=>{
+  const sys=fake({unknownCommitBeforeWrite:true});
+  await assert.rejects(sys.store.commitAtomic(sample()),
+    err=>err.code==="atomic_commit_outcome_unknown");
+  assert.ok(Object.values(sys.data).every(rows=>rows.length===0));
+  assert.deepEqual(sys.stats(),{started:1,committed:0,rolledBack:0});
+});
+
+test("ordinary transaction errors never use unknown-commit recovery",async()=>{
+  const sys=fake({denyRights:true});
+  await assert.rejects(sys.store.commitAtomic(sample()),
+    err=>err.code==="live_authority_or_rights_revoked");
+  assert.deepEqual(sys.stats(),{started:1,committed:0,rolledBack:1});
 });
