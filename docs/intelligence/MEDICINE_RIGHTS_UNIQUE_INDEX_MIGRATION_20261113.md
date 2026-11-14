@@ -46,3 +46,7 @@ readback. Multi-index creation is not a single atomic migration: on any error,
 stop and reconcile partially created indexes; never blindly drop one.
 No real source rights, records, identities, customer access or billing are
 created by this helper.
+
+## Concurrent writer / approval-window safety
+
+The migration helpers repeat both `listIndexes` and the empty-collection check **after** independent operator approval and immediately before each index write. This rejects observed new grants, G2 evidence or conflicting indexes that arrive after the first preflight. Three CI regression cases simulate grants, index conflicts and medicine evidence arriving during the approval window. This is a **time-of-check/time-of-use mitigation, not an atomic lock**: the authorised maintenance process must independently fence every writer (including jobs and change streams), verify a backup/restore plan and repeat post-creation index inspection. No live index migration has been performed by this code change.
