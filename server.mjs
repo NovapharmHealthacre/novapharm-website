@@ -1014,6 +1014,7 @@ export async function handleRequest(request, response) {
         url.searchParams.get("q") || "",
         enterpriseContext(session),
         Number(url.searchParams.get("limit") || 30),
+        Number(url.searchParams.get("page") || 1),
       ));
       return;
     }

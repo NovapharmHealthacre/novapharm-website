@@ -47,6 +47,7 @@ type SearchResponse = Readonly<{
   sourcePeriod: string | null;
   demandFactsIncluded: false;
   results: readonly MedicineSearchResult[];
+  pagination: Readonly<{ page: number; pageSize: number; totalRows: number; totalPages: number }>;
   dataFreshness: string | null;
 }>;
 
@@ -778,10 +779,29 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     setSearchStatus("Searching the governed medicine identity register.");
     setSearchResponse(null);
     try {
-      const next = await gatewayJson<SearchResponse>(`enterprise/medicines/search?q=${encodeURIComponent(query)}&limit=30`);
+      const next = await gatewayJson<SearchResponse>(`enterprise/medicines/search?q=${encodeURIComponent(query)}&limit=30&page=1`);
       if (generation !== selectionGenerationRef.current) return;
       setSearchResponse(next);
-      setSearchStatus(next.results.length ? `${next.results.length} matching medicine identities.` : "No current BNF identity matched that search.");
+      setSearchStatus(next.pagination.totalRows ? `${next.pagination.totalRows} matching current identities. Page ${next.pagination.page} of ${next.pagination.totalPages}.` : "No current BNF identity matched that search.");
+    } catch (error) {
+      if (generation === selectionGenerationRef.current) setSearchStatus(professionalError(error));
+    } finally {
+      if (generation === selectionGenerationRef.current) setBusy(false);
+    }
+  }
+
+  async function searchMedicinePage(page: number) {
+    const current = searchResponse;
+    if (!current || page < 1 || page > current.pagination.totalPages || page === current.pagination.page) return;
+    selectionGenerationRef.current += 1;
+    const generation = selectionGenerationRef.current;
+    setBusy(true);
+    setSearchStatus(`Loading medicine identities, page ${page}.`);
+    try {
+      const next = await gatewayJson<SearchResponse>(`enterprise/medicines/search?q=${encodeURIComponent(current.query)}&limit=${current.pagination.pageSize}&page=${page}`);
+      if (generation !== selectionGenerationRef.current) return;
+      setSearchResponse(next);
+      setSearchStatus(`Showing page ${next.pagination.page} of ${next.pagination.totalPages}, ${next.pagination.totalRows} current identities.`);
     } catch (error) {
       if (generation === selectionGenerationRef.current) setSearchStatus(professionalError(error));
     } finally {
@@ -902,8 +922,8 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     <section className={styles.product}>
       <header className={`${styles.topbar} medicine-search-workspace`}>
         <button className={styles.mobileMenu} type="button" onClick={() => setMenuOpen(true)}>Navigation</button>
-        <search className={styles.search}><form onSubmit={searchMedicine}><label className={styles.srOnly} htmlFor={searchId}>Medicine name, brand or code</label><input ref={searchFieldRef} id={searchId} aria-keyshortcuts="Meta+K Control+K" title="Search medicines (⌘K / Ctrl+K)" name="medicine" type="search" minLength={2} maxLength={120} autoComplete="off" spellCheck={false} placeholder="Search medicine, BNF, SNOMED, dm+d, brand or supplier" required /><button type="submit" disabled={busy}>Search</button></form>
-          {searchResponse ? <section className={`${styles.searchResults} medicine-search-results`} aria-label="Medicine search results"><header><h2>Current identity matches</h2><p>{searchResponse.source}{searchResponse.sourcePeriod ? `, ${searchResponse.sourcePeriod}` : ""}</p></header>{searchResponse.results.length ? <ul>{searchResponse.results.map((result) => <li key={result.medicineId}><button type="button" onClick={() => void selectMedicine(result.medicineId)} disabled={busy}><strong>{result.canonicalName}</strong><span>{result.presentationCode || "BNF presentation code not recorded"}{result.chemicalSubstance ? ` | ${result.chemicalSubstance}` : ""}</span></button></li>)}</ul> : <p>No current BNF identity matched. Try a generic, brand, product or BNF code.</p>}</section> : null}
+        <search className={styles.search}><form onSubmit={searchMedicine}><label className={styles.srOnly} htmlFor={searchId}>Medicine name, brand or code</label><input ref={searchFieldRef} id={searchId} aria-keyshortcuts="Meta+K Control+K" title="Search medicines (⌘K / Ctrl+K)" name="medicine" type="search" minLength={2} maxLength={120} autoComplete="off" spellCheck={false} placeholder="Search current medicine, product name or BNF code" required /><button type="submit" disabled={busy}>Search</button></form>
+          {searchResponse ? <section className={`${styles.searchResults} medicine-search-results`} aria-label="Medicine search results"><header><h2>Current identity matches</h2><p>{searchResponse.source}{searchResponse.sourcePeriod ? `, ${searchResponse.sourcePeriod}` : ""}</p></header>{searchResponse.results.length ? <ul>{searchResponse.results.map((result) => <li key={result.medicineId}><button type="button" onClick={() => void selectMedicine(result.medicineId)} disabled={busy}><strong>{result.canonicalName}</strong><span>{result.presentationCode || "BNF presentation code not recorded"}{result.chemicalSubstance ? ` | ${result.chemicalSubstance}` : ""}</span></button></li>)}</ul> : <p>No current BNF identity matched. Try a generic, brand, product or BNF code.</p>}{searchResponse.pagination.totalPages > 1 ? <nav aria-label="Medicine search result pages"><button type="button" disabled={busy || searchResponse.pagination.page === 1} onClick={() => void searchMedicinePage(searchResponse.pagination.page - 1)}>Previous</button><span>Page {searchResponse.pagination.page} of {searchResponse.pagination.totalPages} · {searchResponse.pagination.totalRows} identities</span><button type="button" disabled={busy || searchResponse.pagination.page >= searchResponse.pagination.totalPages} onClick={() => void searchMedicinePage(searchResponse.pagination.page + 1)}>Next</button></nav> : null}</section> : null}
         </search>
         <div className={styles.topActions}><span>Latest accepted period</span><button type="button" onClick={() => setFiltersOpen(true)}>Filters</button><button className="icon-command" type="button" onClick={() => void onRefresh()} disabled={loading}>Refresh</button><button type="button" aria-label="Sign out" onClick={() => void onLogout()}>Sign out</button></div>
       </header>
