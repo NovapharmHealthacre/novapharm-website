@@ -22,7 +22,7 @@
   margin: 0;
   color: #151515;
   font: 500 clamp(40px, 5.2vw, 72px)/1.06 Arial, "Helvetica Neue", sans-serif;
-  letter-spacing: -.055em;
+  letter-spacing: 0;
 }
 
 .lede {
@@ -30,7 +30,7 @@
   margin: 22px 0 0;
   color: #626269;
   font: 400 clamp(17px, 1.7vw, 21px)/1.5 Arial, "Helvetica Neue", sans-serif;
-  letter-spacing: -.015em;
+  letter-spacing: 0;
 }
 
 .plans {
@@ -60,7 +60,7 @@
   margin: 0 0 17px;
   color: #1d1d1f;
   font: 600 clamp(21px, 2vw, 27px)/1.2 Arial, "Helvetica Neue", sans-serif;
-  letter-spacing: -.035em;
+  letter-spacing: 0;
 }
 
 .price,
@@ -76,7 +76,7 @@
 .trialPrice strong {
   color: #111;
   font: 650 clamp(30px, 2.6vw, 40px)/1.1 Arial, "Helvetica Neue", sans-serif;
-  letter-spacing: -.05em;
+  letter-spacing: 0;
 }
 
 .pricePeriod,
