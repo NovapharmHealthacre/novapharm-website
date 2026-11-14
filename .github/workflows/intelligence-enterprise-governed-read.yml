@@ -11,6 +11,8 @@ on:
       - "scripts/test-intelligence-enterprise-vendor-probes.mjs"
       - "src/core/intelligence-enterprise-vendor-http.mjs"
       - "scripts/test-intelligence-enterprise-vendor-http.mjs"
+      - "src/core/intelligence-enterprise-evidence-views.mjs"
+      - "scripts/test-intelligence-enterprise-evidence-views.mjs"
       - ".github/workflows/intelligence-enterprise-governed-read.yml"
   workflow_dispatch:
 
@@ -36,5 +38,7 @@ jobs:
           node --check scripts/test-intelligence-enterprise-vendor-probes.mjs
           node --check src/core/intelligence-enterprise-vendor-http.mjs
           node --check scripts/test-intelligence-enterprise-vendor-http.mjs
+          node --check src/core/intelligence-enterprise-evidence-views.mjs
+          node --check scripts/test-intelligence-enterprise-evidence-views.mjs
       - name: Verify rights, tenancy, audit, revocation and no native-vendor activation
         run: npm run test:enterprise-integrations
