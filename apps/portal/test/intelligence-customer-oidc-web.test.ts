@@ -38,6 +38,7 @@ test("customer start uses the pinned Cognito public PKCE client and a signed HTT
     assert.equal(target.pathname, "/oauth2/authorize");
     assert.equal(target.searchParams.get("response_type"), "code");
     assert.equal(target.searchParams.get("scope"), "openid email profile aws.cognito.signin.user.admin");
+    assert.equal(target.searchParams.get("acr_values"), "urn:cognito:loa:4 urn:cognito:loa:1");
     assert.equal(target.searchParams.get("code_challenge_method"), "S256");
     // After initial Cognito TOTP activation, never silently reuse the prior
     // password-only managed-login session.

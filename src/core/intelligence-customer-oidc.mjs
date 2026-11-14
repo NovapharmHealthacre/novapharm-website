@@ -16,6 +16,9 @@ const CALLBACK = "https://intelligence.novapharmhealthcare.com/auth/callback";
 // discarding the signed PKCE transaction; still expires after 15 minutes.
 const AGE_MS = 900_000;
 const REQUIRED_ACR = "urn:cognito:loa:4";
+// Cognito may need a lower provider request only to start first-time TOTP setup.
+// The callback still rejects this level for identity, sessions and all access.
+const INITIAL_ENROLMENT_ACR_FALLBACK = "urn:cognito:loa:1";
 // The Cognito authentication ceremony may include mandatory initial TOTP setup.
 // Keep the signed ID token fresh and require pwd + otp + mfa at completion.
 const MAX_AUTH_AGE_SECONDS = 900;
@@ -87,7 +90,7 @@ export function createCustomerLoginTransaction({
     code_challenge: createHash("sha256").update(verifier).digest("base64url"),
     state,
     nonce,
-    acr_values: REQUIRED_ACR,
+    acr_values: [REQUIRED_ACR, INITIAL_ENROLMENT_ACR_FALLBACK].join(" "),
     // Cognito managed-login SSO can replay the pre-enrolment session even
     // after TOTP is activated. Force an actual new authentication ceremony
     // instead of silently accepting an old password-only Cognito cookie.

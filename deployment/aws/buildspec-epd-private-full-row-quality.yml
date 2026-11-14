@@ -1,0 +1,31 @@
+version: 0.2
+env:
+  shell: bash
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+  pre_build:
+    commands:
+      - |
+        set -euo pipefail
+        : "${EXPECTED_SHA:?Immutable source SHA required}"
+        [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
+        test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+        test "${RUN_PRIVATE_QA:-0}" = 1
+        python3 -m unittest discover -s tooling/python -p test_verify_epd_private_full_quality.py -v
+  build:
+    commands:
+      - |
+        set -euo pipefail
+        tmp="$(mktemp -d -p /tmp npi-private-epd-qa-XXXXXX)"
+        chmod 700 "$tmp"
+        trap 'rm -rf "$tmp"' EXIT
+        bucket="novapharm-staging-foundation-quarantinebucket-knggqkn5aqoq"
+        key="governed-intake/nhsbsa/EPD_SNOMED_202608/raw/EPD_SNOMED_202608-6b0b99e22968ac2f7eb730511fd3c3b9d59a1e47acd814053c573a8976ca5551.zip"
+        aws s3 cp "s3://$bucket/$key" "$tmp/private-source.zip" --only-show-errors --region eu-north-1
+        python3 tooling/python/verify_epd_private_full_quality.py "$tmp/private-source.zip"
+        echo 'Private full-row source QA matched independent audit. No source data or released medicines exported.'
+  post_build:
+    commands:
+      - echo 'Only a small, blocked source-quality receipt may exist in versioned private S3.'

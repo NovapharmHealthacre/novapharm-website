@@ -1,0 +1,49 @@
+version: 0.2
+env:
+  shell: bash
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+  pre_build:
+    commands:
+      - |
+        set -euo pipefail
+        : "${EXPECTED_SHA:?Immutable Git source SHA required}"
+        [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
+        test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+        python3 -m unittest discover -s tooling/python -p test_nhsbsa_source_metadata_monitor.py -v
+  build:
+    commands:
+      - |
+        set -euo pipefail
+        test "${RUN_METADATA_MONITOR_DEPLOY:-0}" = 1
+        python3 - <<'PY'
+        import zipfile
+        source = 'tooling/python/nhsbsa_source_metadata_monitor.py'
+        with zipfile.ZipFile('/tmp/npi-nhsbsa-source-metadata-monitor.zip', 'w', compression=zipfile.ZIP_DEFLATED) as z:
+            z.write(source, 'nhsbsa_source_metadata_monitor.py')
+        PY
+        target="novapharm-intelligence-source-metadata-monitor"
+        region="eu-north-1"
+        role="arn:aws:iam::250675045172:role/novapharm-intelligence-source-metadata-monitor"
+        if aws lambda get-function --function-name "$target" --region "$region" >/dev/null 2>&1; then
+          aws lambda update-function-code --function-name "$target" --zip-file fileb:///tmp/npi-nhsbsa-source-metadata-monitor.zip --publish --region "$region" >/tmp/npi-metadata-deployed.json
+          aws lambda wait function-updated --function-name "$target" --region "$region"
+          aws lambda update-function-configuration --function-name "$target" --environment "Variables={SOURCE_COMMIT=$EXPECTED_SHA}" --region "$region" >/dev/null
+          aws lambda wait function-updated --function-name "$target" --region "$region"
+        else
+          aws lambda create-function --function-name "$target" \
+            --description "Official NHSBSA EPD publisher metadata-only checks to private, release-blocked S3" \
+            --runtime python3.13 --handler nhsbsa_source_metadata_monitor.handler \
+            --role "$role" --timeout 45 --memory-size 256 \
+            --zip-file fileb:///tmp/npi-nhsbsa-source-metadata-monitor.zip \
+            --environment "Variables={SOURCE_COMMIT=$EXPECTED_SHA}" \
+            --publish --region "$region" >/tmp/npi-metadata-deployed.json
+          aws lambda wait function-active --function-name "$target" --region "$region"
+        fi
+        aws lambda get-function-configuration --function-name "$target" --region "$region" --query '{Name:FunctionName,State:State,LastUpdateStatus:LastUpdateStatus,Version:Version,CodeSha256:CodeSha256,SourceCommit:Environment.Variables.SOURCE_COMMIT}' --output json
+        rm -f /tmp/npi-nhsbsa-source-metadata-monitor.zip
+  post_build:
+    commands:
+      - echo 'Only private Lambda metadata code deployed. EventBridge schedule and actual invocations require separate verification.'

@@ -1,0 +1,41 @@
+name: NHSBSA EPD private full-row QA acceptance
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/python/verify_epd_private_full_quality.py'
+      - 'tooling/python/test_verify_epd_private_full_quality.py'
+      - 'deployment/aws/buildspec-epd-private-full-row-quality.yml'
+      - '.github/workflows/nhsbsa-epd-private-full-row-quality.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/python/verify_epd_private_full_quality.py'
+      - 'tooling/python/test_verify_epd_private_full_quality.py'
+      - 'deployment/aws/buildspec-epd-private-full-row-quality.yml'
+      - '.github/workflows/nhsbsa-epd-private-full-row-quality.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  quality-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Offline synthetic source integrity, quality and release refusal
+        run: |
+          python3 -m py_compile tooling/python/verify_epd_private_full_quality.py
+          python3 -m unittest discover -s tooling/python -p test_verify_epd_private_full_quality.py -v
+      - name: Confirm AWS private-only gate
+        run: |
+          grep -q 'RUN_PRIVATE_QA' deployment/aws/buildspec-epd-private-full-row-quality.yml
+          grep -q 'customer_publish_approved.*False' tooling/python/verify_epd_private_full_quality.py
+          grep -q 'production_promoted.*False' tooling/python/verify_epd_private_full_quality.py
+          echo "No NHSBSA source bytes in CI, no customer release."

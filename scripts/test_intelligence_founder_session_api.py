@@ -1,4 +1,5 @@
 """Contract tests for founder-only AWS IAM and DynamoDB-backed sessions."""
+import base64
 import hashlib
 import hmac
 import importlib.util
@@ -401,6 +402,70 @@ class FounderTests(unittest.TestCase):
         claims["acr"] = "urn:cognito:loa:4"
         claims["amr"] = ["pwd", "otp", "mfa"]
         self.assertEqual(self.call(request)["statusCode"], 200)
+
+    def test_gateway_array_claim_normalization_requires_original_verified_bearer(self):
+        # This unit-test mock stands in for API Gateway's signed-JWT authorizer.
+        # A caller cannot supply its synthetic claims through the real HTTP API.
+        from contextlib import redirect_stdout
+        from io import StringIO
+
+        def request_with_original_methods(methods, gateway_amr, raw_change=None):
+            request = start_event()
+            claims = request["requestContext"]["authorizer"]["jwt"]["claims"]
+            claims.update({"acr": "urn:cognito:loa:4", "amr": gateway_amr})
+            original = {**claims, "amr": methods}
+            original["email_verified"] = True
+            if raw_change:
+                original.update(raw_change)
+            part = lambda value: base64.urlsafe_b64encode(value).rstrip(b"=").decode()
+            token = ".".join((
+                part(b'{"alg":"RS256","typ":"JWT"}'),
+                part(json.dumps(original, separators=(",", ":")).encode()),
+                "s" * 72,
+            ))
+            request["headers"]["authorization"] = "Bearer " + token
+            nonce = request["headers"]["x-npi-founder-nonce"]
+            digest = lambda text: hashlib.sha256(text.encode("ascii")).hexdigest()
+            message = ".".join([str(NOW), nonce, digest(token), digest(ACCESS_TOKEN)]).encode("ascii")
+            request["headers"]["x-npi-founder-proof"] = hmac.new(
+                SECRET.encode(), message, hashlib.sha256).hexdigest()
+            return request
+
+        for shape in ("[pwd, otp, mfa]", {"opaque": "gateway_array"}):
+            with self.subTest(shape=type(shape).__name__):
+                self.db = Dynamo()
+                request = request_with_original_methods(["pwd", "otp", "mfa"], shape)
+                captured = StringIO()
+                with redirect_stdout(captured):
+                    response = self.call(request)
+                self.assertEqual(response["statusCode"], 200)
+                self.assertEqual(json.loads(response["body"])["scope"], api.SCOPE)
+                self.assertEqual(captured.getvalue(), "")
+                self.assertIn("Set-Cookie", response["headers"])
+
+        for label, methods, raw_change, expected_class in (
+            ("missing_mfa", ["pwd", "otp"], None, "jwt_mfa_factors_insufficient"),
+            ("weak_password_only", ["pwd"], None, "jwt_mfa_factors_insufficient"),
+            ("email_mismatch", ["pwd", "otp", "mfa"], {"email": "untrusted@example.invalid"}, "jwt_mfa_amr_invalid"),
+            ("audience_mismatch", ["pwd", "otp", "mfa"], {"aud": "wrong"}, "jwt_mfa_amr_invalid"),
+            ("auth_time_mismatch", ["pwd", "otp", "mfa"], {"auth_time": NOW - 999}, "jwt_mfa_amr_invalid"),
+            ("invalid_method_type", ["pwd", 123, "mfa"], None, "jwt_mfa_amr_invalid"),
+            ("missing_raw_amr", None, None, "jwt_mfa_amr_invalid"),
+        ):
+            with self.subTest(label=label):
+                self.db = Dynamo()
+                request = request_with_original_methods(methods, "[pwd, otp, mfa]", raw_change)
+                captured = StringIO()
+                with redirect_stdout(captured):
+                    response = self.call(request)
+                self.assertEqual(response["statusCode"], 401)
+                self.assertNotIn("Set-Cookie", response["headers"])
+                self.assertEqual(self.db.rows, {})
+                entries = [json.loads(v) for v in captured.getvalue().splitlines()]
+                self.assertEqual(entries[0]["classification"], expected_class)
+                self.assertNotIn(api.FOUNDER_EMAIL, captured.getvalue())
+                self.assertNotIn("untrusted@example.invalid", captured.getvalue())
+                self.assertNotIn(request["headers"]["authorization"], captured.getvalue())
 
     def test_identity_diagnostic_allowlist_refuses_untrusted_log_content(self):
         from contextlib import redirect_stdout

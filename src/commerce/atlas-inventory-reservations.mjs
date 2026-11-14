@@ -21,16 +21,22 @@ export function createAtlasReservationRepository({client,database,clock=()=>new 
     const existing=await coll('stock_reservations').findOne({_id:req.reservationId},{session});
     if(existing){
       if(!equalRequest(existing,req))throw new Error('Idempotency key reused for different basket');
+      // An expired hold cannot be resurrected by retrying a stale idempotency
+      // key. The caller must use a new reservation after release/reassessment.
+      if(existing.status==='reserved' && (!Number.isFinite(Date.parse(existing.expiresAt)) ||
+          Date.parse(existing.expiresAt)<=now.getTime())){
+        throw new Error('Expired reservation cannot be reused');
+      }
       return {reservationId:existing._id,status:existing.status,expiresAt:existing.expiresAt,alreadyExisted:true};
     }
-    const [product,offer,position,compliance,price,policy]=await Promise.all([
-      coll('products').findOne({_id:req.productId},{session}),
-      coll('seller_offers').findOne({_id:req.offerId},{session}),
-      coll('inventory_positions').findOne({_id:req.productId},{session}),
-      coll('product_compliance').findOne({_id:req.productId},{session}),
-      coll('prices').findOne({_id:req.productId},{session}),
-      coll('checkout_rules').findOne({_id:req.brand},{session})
-    ]);
+    // MongoDB forbids parallel operations on the same transaction session.
+    // Keep all snapshot reads serial, including the subsequent lots cursor.
+    const product=await coll('products').findOne({_id:req.productId},{session});
+    const offer=await coll('seller_offers').findOne({_id:req.offerId},{session});
+    const position=await coll('inventory_positions').findOne({_id:req.productId},{session});
+    const compliance=await coll('product_compliance').findOne({_id:req.productId},{session});
+    const price=await coll('prices').findOne({_id:req.productId},{session});
+    const policy=await coll('checkout_rules').findOne({_id:req.brand},{session});
     // Release evidence is read from private data; browser-supplied claims are ignored.
     const releasedLots=await coll('inventory_lots').find({productId:req.productId,warehouseId:position?.warehouseId,status:'released',releaseVerified:true,expiryDate:{$gt:now.toISOString()}},{session}).toArray();
     const releasedQuantity=releasedLots.reduce((total,lot)=>{
