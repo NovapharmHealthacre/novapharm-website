@@ -942,5 +942,85 @@ class PortalSecurityTests(unittest.TestCase):
                          (ROOT / "apps/nutraxin-customer-api/index.py").read_text().strip())
         self.assertIn("OFF", template["Outputs"]["CommercialCheckoutStatus"]["Value"])
 
+    def test_unified_products_catalogue_has_no_inferred_sale_or_images(self):
+        old_session=PORTAL.session
+        old_groups=COGNITO.groups
+        PORTAL.session=lambda _: {"username":"browsing","sub":"one-account","email":"browse@example.invalid"}
+        COGNITO.groups=[]
+        try:
+            page=PORTAL.handler(self.event("/portal/products/"),None)
+            self.assertEqual(page["statusCode"],200)
+            self.assertIn("My Products.",page["body"])
+            self.assertIn('src="/customer-products.js"',page["body"])
+            self.assertIn("shop-basket",page["body"])
+            self.assertIn("novapharm-healthcare-logo.svg",page["body"])
+            script=PORTAL.handler(self.event("/customer-products.js"),None)
+            self.assertEqual(script["statusCode"],200)
+            self.assertIn("api/customer/quote-requests",script["body"])
+            self.assertNotIn("innerHTML",script["body"])
+            response=PORTAL.handler(self.event("/api/customer/products"),None)
+            self.assertEqual(response["statusCode"],200)
+            data=json.loads(response["body"])
+            self.assertEqual(data["total"],392)
+            self.assertEqual(data["collection_counts"],{"nutraxin":19,"esco":373})
+            self.assertFalse(data["business_request_approved"])
+            self.assertFalse(data["binding_checkout_enabled"])
+            self.assertEqual(len({x["sku"] for x in data["products"]}),392)
+            self.assertTrue(all(x["image_url"] is None for x in data["products"] if x["collection"]=="esco"))
+            self.assertTrue(all(x["image_url"] for x in data["products"] if x["collection"]=="nutraxin"))
+            self.assertTrue(all(x["ordering_status"]=="request_review_only" for x in data["products"]))
+        finally:
+            PORTAL.session=old_session
+            COGNITO.groups=old_groups
+
+    def test_unified_mixed_basket_is_scoped_nonbinding_and_no_email(self):
+        old_session=PORTAL.session
+        old_table=PORTAL.TABLE
+        old_groups=COGNITO.groups
+        class Ledger:
+            def __init__(self):self.items=[]
+            def put_item(self,**kw):self.items.append(kw["Item"])
+        ledger=Ledger()
+        PORTAL.TABLE=ledger
+        PORTAL.session=lambda _: {"username":"approved","sub":"tenant-42","email":"approved@example.invalid"}
+        request_id="c26d07da-7ed0-4c5b-8a94-0e2a8824ac41"
+        def request(lines,origin="https://portal.example.invalid"):
+            e=self.event("/api/customer/quote-requests","POST",origin=origin)
+            e["headers"]["content-type"]="application/json"
+            e["headers"]["sec-fetch-site"]="same-origin"
+            e["body"]=json.dumps({"request_id":request_id,"lines":lines})
+            return PORTAL.handler(e,None)
+        lines=[{"sku":"NUT-UK-VD3-T120","quantity":2},{"sku":"ESCO-CAT-0001","quantity":3}]
+        try:
+            COGNITO.groups=[]
+            self.assertEqual(request(lines)["statusCode"],403)
+            COGNITO.groups=[PORTAL.APPROVED_GROUP]
+            self.assertEqual(request(lines,"https://evil.invalid")["statusCode"],403)
+            self.assertEqual(request([lines[0],lines[0]])["statusCode"],400)
+            self.assertEqual(request([{"sku":"ESCO-CAT-9999","quantity":2}])["statusCode"],400)
+            self.assertEqual(request([{"sku":"ESCO-CAT-0001","quantity":True}])["statusCode"],400)
+            self.assertEqual(request([{"sku":"ESCO-CAT-0001","quantity":10001}])["statusCode"],400)
+            self.assertEqual(len(ledger.items),0)
+            accepted=request(lines)
+            self.assertEqual(accepted["statusCode"],201)
+            info=json.loads(accepted["body"])
+            self.assertEqual(info["receipt_id"],"NPQ-"+request_id)
+            self.assertFalse(info["financially_binding"])
+            self.assertFalse(info["payment_enabled"])
+            self.assertEqual(len(ledger.items),1)
+            record=ledger.items[0]
+            self.assertEqual(record["pk"],"USER#tenant-42")
+            self.assertEqual(record["sk"],"RQ#"+request_id)
+            self.assertEqual(record["status"],"PENDING_MANUAL_REVIEW")
+            self.assertFalse(record["inventory_reserved"])
+            self.assertFalse(record["vat_invoice_created"])
+            self.assertEqual({x["collection"] for x in record["lines"]},{"esco","nutraxin"})
+            self.assertTrue(record["no_sns_or_customer_email"])
+            self.assertNotIn("payment_intent",str(record))
+        finally:
+            PORTAL.session=old_session
+            PORTAL.TABLE=old_table
+            COGNITO.groups=old_groups
+
 if __name__ == "__main__":
     unittest.main()
