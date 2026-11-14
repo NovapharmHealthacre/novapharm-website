@@ -108,6 +108,41 @@ class PortalSecurityTests(unittest.TestCase):
             e["body"] = json.dumps(body)
         return e
 
+    def test_nutraxin_checkout_terms_layout_and_portal_payment_return(self):
+        previous=PORTAL.session
+        PORTAL.session=lambda event:{
+            "username":"synthetic-personal","sub":"synthetic-personal-sub",
+            "email":"customer@example.invalid","expires_at":PORTAL.now()+3600}
+        try:
+            page=PORTAL.handler(self.event("/portal/products/"),None)
+            self.assertEqual(page["statusCode"],200)
+            body=page["body"]
+            for expected in ('id="shop-repeat-section"',
+                             'aria-labelledby="shop-repeat-title" hidden',
+                             'class="shop-retail-consent-copy"',
+                             'id="shop-payment-refresh"',
+                             ".shop-retail-consent{display:grid;",
+                             'id="shop-retail-checkout"',
+                             'id="shop-retail-terms"',
+                             "Repeat a business request.",
+                             "Nutraxin retail sales use Stripe Checkout"):
+                self.assertIn(expected,body)
+            self.assertNotIn("No payment is collected here.",body)
+            js=PORTAL.CUSTOMER_PRODUCTS_JS
+            for signal in ("sessionStorage.setItem(basketKey",
+                           "restoreBasket();","handleRetailReturn();",
+                           "/api/retail/order-status/","d.paid===true",
+                           "repeatSection.hidden=!qualified",
+                           "Check payment status"):
+                self.assertIn(signal,js)
+        finally:
+            PORTAL.session=previous
+
+    def test_server_records_fixed_retail_channel_for_private_stripe_worker(self):
+        source=(ROOT/"apps/nutraxin-customer-api/index.py").read_text()
+        self.assertIn('"checkoutChannel": {"S": "PORTAL_RETAIL"}',source)
+        self.assertNotIn("window.location.assign(data.checkoutUrl)",PORTAL.CUSTOMER_PRODUCTS_JS)
+
     def test_unified_customer_routes_are_server_authenticated(self):
         self.assertEqual(len(PORTAL.CUSTOMER_WORKSPACE_MODULES),18)
         self.assertEqual(len(PORTAL.CUSTOMER_WORKSPACE_ROUTES),18)
