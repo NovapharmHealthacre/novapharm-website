@@ -12,6 +12,8 @@ on:
       - 'scripts/test-atlas-g2-unique-index-migration.mjs'
       - 'scripts/test-intelligence-ecr-lambda-retention.mjs'
       - 'scripts/test-intelligence-g1-g2-handoff.mjs'
+      - 'src/core/intelligence-private-rights-signature.mjs'
+      - 'scripts/test-intelligence-private-rights-signature.mjs'
       - 'infra/aws/intelligence-ecr-protected-lifecycle-policy.json'
       - '.github/workflows/intelligence-g1-g2-integrated-admission.yml'
       - 'package.json'
@@ -28,6 +30,8 @@ on:
       - 'scripts/test-atlas-g2-unique-index-migration.mjs'
       - 'scripts/test-intelligence-ecr-lambda-retention.mjs'
       - 'scripts/test-intelligence-g1-g2-handoff.mjs'
+      - 'src/core/intelligence-private-rights-signature.mjs'
+      - 'scripts/test-intelligence-private-rights-signature.mjs'
       - 'infra/aws/intelligence-ecr-protected-lifecycle-policy.json'
       - '.github/workflows/intelligence-g1-g2-integrated-admission.yml'
       - 'package.json'
@@ -52,4 +56,5 @@ jobs:
             scripts/test-atlas-medicine-g2-atomic-store.mjs \
             scripts/test-atlas-g2-unique-index-migration.mjs \
             scripts/test-intelligence-ecr-lambda-retention.mjs \
-            scripts/test-intelligence-g1-g2-handoff.mjs
+            scripts/test-intelligence-g1-g2-handoff.mjs \
+            scripts/test-intelligence-private-rights-signature.mjs
