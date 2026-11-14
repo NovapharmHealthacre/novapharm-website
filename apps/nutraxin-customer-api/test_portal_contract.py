@@ -773,6 +773,38 @@ class PortalSecurityTests(unittest.TestCase):
         finally:
             PORTAL.PAYMENT_DDB,PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED,PORTAL.CHECKOUT_LAMBDA=old
 
+    def test_owner_direct_retail_declarations_remove_unnecessary_supplier_gates(self):
+        # Owner declarations are sufficient for the *internal* ownership,
+        # food-business and dispatch policies without pretending a third party
+        # verified them. VAT and the customer terms remain independent gates.
+        flags={
+            "retail_sales_authorised":True,
+            "vat_registration_verified":True,
+            "food_business_registration_owner_attested":True,
+            "owner_direct_fulfilment_authorised":True,
+            "owner_uk_dispatch_committed":True,
+            "consumer_terms_verified":True,
+            "model_assumptions":{
+                "uk_delivery_charge_pence":0,
+                "uk_delivery_cost_borne_by_seller":True,
+            },
+        }
+        self.assertTrue(PORTAL.retail_sale_authorised(flags))
+        for name in ("retail_sales_authorised","vat_registration_verified",
+                     "food_business_registration_owner_attested",
+                     "owner_direct_fulfilment_authorised",
+                     "owner_uk_dispatch_committed","consumer_terms_verified"):
+            denied=dict(flags)
+            denied.pop(name)
+            self.assertFalse(PORTAL.retail_sale_authorised(denied), name)
+        quote_only=dict(flags)
+        quote_only["vat_registration_verified"]=False
+        self.assertFalse(PORTAL.retail_sale_authorised(quote_only))
+        wrong_shipping=dict(flags)
+        wrong_shipping["model_assumptions"]={"uk_delivery_charge_pence":200,
+                                             "uk_delivery_cost_borne_by_seller":True}
+        self.assertFalse(PORTAL.retail_sale_authorised(wrong_shipping))
+
     def test_nutraxin_public_site_credentials_cors_and_preflight(self):
         e=self.event("/api/retail/checkout","OPTIONS",origin="https://novapharmhealthcare.com")
         r=PORTAL.handler(e,None)
