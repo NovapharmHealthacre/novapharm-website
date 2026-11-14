@@ -29,7 +29,7 @@ export const WMS_CONTROL_LAYERS = Object.freeze([
     code: "orchestration",
     label: "Order orchestration",
     evidence: "Authorised order, accepted 3PL execution events and carrier proof",
-    destination: "employee.orders",
+    destination: "employee.purchasing",
   }),
   Object.freeze({
     code: "intelligence",
