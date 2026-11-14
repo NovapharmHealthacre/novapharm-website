@@ -21,6 +21,8 @@ test("production and ordinary staging cannot create enterprise binding orders", 
     { NODE_ENV: "staging", ...fakeApproval },
     { NODE_ENV: "development", ...fakeApproval },
     { NODE_ENV: "test", ...fakeApproval },
+    { NODE_ENV: "test", NOVAPHARM_DOMAIN_VALIDATION_MODE: "true", DATABASE_PATH: "/var/data/live.sqlite" },
+    { NODE_ENV: "production", NOVAPHARM_DOMAIN_VALIDATION_MODE: "true", DATABASE_PATH: "/tmp/novapharm-domain-aaaa/validation.sqlite" },
   ]) {
     assert.throws(
       () => assertEnterpriseOrderSubmissionAllowed(env),
@@ -40,6 +42,16 @@ test("only isolated synthetic/browser validation can create test records", () =>
     assert.equal(allowed.productionTransactionAuthorised, false);
     assert.equal(allowed.environment, "isolated_synthetic_validation");
   }
+});
+
+test("explicit isolated domain fixture stays synthetic and never authorises production", () => {
+  const allowed = assertEnterpriseOrderSubmissionAllowed({
+    NODE_ENV: "test",
+    NOVAPHARM_DOMAIN_VALIDATION_MODE: "true",
+    DATABASE_PATH: "/tmp/novapharm-domain-A1b2c3/validation.sqlite",
+  });
+  assert.equal(allowed.productionTransactionAuthorised, false);
+  assert.equal(allowed.environment, "isolated_synthetic_validation");
 });
 
 test("commercial and medicine release gates cannot be represented as enabled", () => {
