@@ -31,7 +31,7 @@ function escapedLike(value) {
 async function medicineSearchRows(term, limit, page) {
   // An expired alias must never resolve to a current medicine identity.
   const escaped = escapedLike(term);
-  const matchParams = [term, `${{escaped}%`, `%${{escaped}%`];
+  const matchParams = [term, `${escaped}%`, `%${escaped}%`];
   const matchedSql = `WITH matched AS (
     SELECT candidate.medicine_id,
       MIN(CASE WHEN candidate.normalised_alias = ? THEN 0
@@ -43,9 +43,9 @@ async function medicineSearchRows(term, limit, page) {
       AND candidate.normalised_alias LIKE ? ESCAPE '\\'
     GROUP BY candidate.medicine_id
   )`;
-  const count = await one(`${{matchedSql} SELECT COUNT(*) AS total_rows FROM matched`, ...matchParams);
+  const count = await one(`${matchedSql} SELECT COUNT(*) AS total_rows FROM matched`, ...matchParams);
   const totalRows = Number(count?.total_rows || 0);
-  const rows = await all(`${{matchedSql}
+  const rows = await all(`${matchedSql}
     SELECT dm.medicine_id, dm.canonical_name,
       MAX(CASE WHEN aliases.alias_type = 'BNF_PRESENTATION_CODE' THEN aliases.alias_text END) AS bnf_presentation_code,
       MAX(CASE WHEN aliases.alias_type = 'BNF_PRODUCT' THEN aliases.alias_text END) AS product_name,
