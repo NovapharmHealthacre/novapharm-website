@@ -676,7 +676,7 @@ function materialize(relative, route, main, metadata = null, template = null) {
     // Publish one versioned pricing script, even across successive rebuilds.
     // Old cached JS does not know about the inline-hidden annual CTA.
     html = html.replace(/<script src="\/assets\/js\/intelligence-pricing\.js(?:\?[^"]*)?" defer><\/script>/g, "");
-    html = html.replace("</body>", '<script src="/assets/js/intelligence-pricing.js?v=20261112-single-visible-v1" defer></script></body>');
+    html = html.replace("</body>", '<script src="/assets/js/intelligence-pricing.js?v=20261114-approved-trial-v1" defer></script></body>');
   }
   if (route === "/contact/" && html.includes("data-email-enquiry-form")) {
     html = html.replace("</body>", '<script src="/assets/js/contact-email-draft.js" defer></script></body>');

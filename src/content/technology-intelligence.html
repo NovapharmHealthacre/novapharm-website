@@ -552,13 +552,29 @@
   <section id="intelligence-pricing" class="npi-section npi-pricing" aria-labelledby="npi-pricing-title">
     <div class="npi-wrap">
       <div class="npi-pricing-intro">
-        <p class="npi-kicker">PLANNED SUBSCRIPTIONS</p>
-        <h2 id="npi-pricing-title">One platform.<br>Three ways to begin.</h2>
-        <p>Focused research, connected team intelligence and bespoke governed infrastructure. Choose the proposed scope that fits your organisation.</p>
-        <p class="npi-pricing-release" role="note"><strong>Commercial preview:</strong> these are proposed UK-market GBP launch prices for owner review, not live subscriptions. Features and access remain subject to product activation, licences, scope and a signed agreement. No payment will be collected here. Starter and Professional selection opens protected Intelligence account registration. Live Stripe checkout and account access remain unavailable until verified release acceptance.</p>
-        <div class="npi-billing-switch" role="group" aria-label="Compare proposed subscription billing">
+        <p class="npi-kicker">APPROVED COMMERCIAL PLANS</p>
+        <h2 id="npi-pricing-title">One platform.<br>Your way in.</h2>
+        <p>Start with 30 days free when enrolment opens. Choose a paid plan only if you decide to continue.</p>
+        <p class="npi-pricing-release" role="note"><strong>Approved offer, not yet enrolling:</strong> the 30-day Starter trial and published monthly GBP prices have owner approval, but these are not live subscriptions. New customer signup and paid checkout remain closed until verified organisation ownership, MFA, medicine source rights, security and billing acceptance. No payment will be collected here.</p>
+        <div class="npi-billing-switch" role="group" aria-label="Compare monthly and indicative annual subscription prices">
           <button class="is-selected" type="button" data-npi-billing="monthly" aria-pressed="true">Monthly</button>
-          <button type="button" data-npi-billing="annual" aria-pressed="false">Annual <span>Save 15%</span></button>
+          <button type="button" data-npi-billing="annual" aria-pressed="false">Annual <span>Indicative</span></button>
+        </div>
+      </div>
+      <div class="npi-trial-offer" data-npi-starter-trial="approved" aria-label="Approved 30-day Starter free trial">
+        <div class="npi-trial-offer-lead">
+          <p class="npi-kicker">STARTER / INTRODUCTORY OFFER</p>
+          <h3>30 days free.<br>Then it is your choice.</h3>
+          <p>One trial per verified organisation. Explore the approved Starter experience once customer access is released.</p>
+        </div>
+        <div class="npi-trial-offer-detail">
+          <div class="npi-trial-offer-price"><strong>£0</strong><span>for 30 days</span></div>
+          <ul aria-label="Free trial terms">
+            <li><strong>25 total</strong> governed medicine searches during your trial</li>
+            <li>No credit card required</li>
+            <li>No automatic subscription or charges</li>
+          </ul>
+          <p class="npi-trial-offer-status">Enrolment opens after production approval</p>
         </div>
       </div>
       <div class="npi-pricing-grid" data-npi-pricing-grid>
@@ -566,9 +582,9 @@
           <div class="npi-plan-heading"><h3>Starter</h3></div>
           <p class="npi-plan-description">For focused medicine research and source-led exploration.</p>
           <div class="npi-plan-price"><strong data-npi-plan-price>£199</strong><span data-npi-plan-period>/ month</span></div>
-          <p class="npi-plan-billing" data-npi-plan-billing>Proposed monthly price. No payment requested.</p>
-          <a class="npi-plan-cta" href="https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=starter&amp;cycle=monthly" data-npi-plan-cta="monthly">Continue securely</a>
-          <a class="npi-plan-cta" href="https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=starter&amp;cycle=annual" data-npi-plan-cta="annual" hidden style="display:none !important">Continue securely</a>
+          <p class="npi-plan-billing" data-npi-plan-billing>Approved monthly price. No payment requested; checkout is not open.</p>
+          <span class="npi-plan-cta npi-plan-cta-pending" data-npi-plan-cta="monthly" aria-disabled="true">Enrolment not yet open</span>
+          <span class="npi-plan-cta npi-plan-cta-pending" data-npi-plan-cta="annual" aria-disabled="true" hidden style="display:none !important">Enrolment not yet open</span>
           <ul class="npi-plan-features">
             <li>Up to 25 governed medicine searches per month, once activated</li>
             <li>Source-separated medicine identity and overview where accepted</li>
@@ -576,15 +592,15 @@
             <li>Clear provenance, jurisdiction and data limitations</li>
             <li>Professional onboarding by agreement</li>
           </ul>
-          <p class="npi-plan-scope">Proposed single-user entry tier. No forecasts or private commercial data.</p>
+          <p class="npi-plan-scope">Starter entry tier. No forecasts or private commercial data. Access subject to activation.</p>
         </article>
         <article class="npi-plan npi-plan-featured" data-npi-plan="professional" data-monthly-gbp="699" data-annual-gbp="7130">
           <div class="npi-plan-heading"><h3>Professional</h3><span class="npi-plan-tag">Recommended for teams</span></div>
           <p class="npi-plan-description">For market-access and commercial teams that work across evidence and geography.</p>
           <div class="npi-plan-price"><strong data-npi-plan-price>£699</strong><span data-npi-plan-period>/ month</span></div>
-          <p class="npi-plan-billing" data-npi-plan-billing>Proposed monthly price. No payment requested.</p>
-          <a class="npi-plan-cta" href="https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=professional&amp;cycle=monthly" data-npi-plan-cta="monthly">Continue securely</a>
-          <a class="npi-plan-cta" href="https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=professional&amp;cycle=annual" data-npi-plan-cta="annual" hidden style="display:none !important">Continue securely</a>
+          <p class="npi-plan-billing" data-npi-plan-billing>Approved monthly price. No payment requested; checkout is not open.</p>
+          <span class="npi-plan-cta npi-plan-cta-pending" data-npi-plan-cta="monthly" aria-disabled="true">Enrolment not yet open</span>
+          <span class="npi-plan-cta npi-plan-cta-pending" data-npi-plan-cta="annual" aria-disabled="true" hidden style="display:none !important">Enrolment not yet open</span>
           <ul class="npi-plan-features">
             <li>Up to 250 governed medicine searches per month, once activated</li>
             <li>Medicines Terminal and source-backed regulatory research</li>
@@ -611,7 +627,7 @@
           <p class="npi-plan-scope">No implied unlimited processing, production SLA or custom data coverage.</p>
         </article>
       </div>
-      <p class="npi-pricing-footnote">Proposed prices in GBP, excluding applicable VAT and any separately licensed third-party data. UK VAT is normally 20% where due; actual tax depends on the supply, customer status and location and must be validated through Stripe Tax. Annual equivalents reflect approximately 15% proposed savings. All prices, billing start and access require written owner and contract acceptance. Nothing on this page creates a subscription or constitutes a purchase.</p>
+      <p class="npi-pricing-footnote">Approved monthly prices in GBP, excluding applicable VAT and any separately licensed third-party data. UK VAT is normally 20% where due; actual tax depends on the supply, customer status and location and must be validated through Stripe Tax. Annual equivalents are indicative and subject to separate acceptance. Billing start and access require completed customer, legal and technical acceptance. Nothing on this page creates a subscription or constitutes a purchase.</p>
       <p class="npi-pricing-footnote">Data sources, 22 workspace navigation, NOVA AI and governed forecasts are at different validation stages. <a href="#intelligence-roadmap">Review current product maturity</a> before requesting access.</p>
     </div>
   </section>
