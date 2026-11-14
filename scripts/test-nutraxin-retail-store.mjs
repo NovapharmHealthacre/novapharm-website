@@ -89,7 +89,7 @@ test("owner-authorized chargeable price displays only under approved retail poli
 test("when approved, the Bag subtotal is correctly calculated in integer pence",()=>{
  const products=catalogue.products.map((p,i)=>({...p,retail_price_pence:i===0?1234:i===1?2299:null,retail_net_pence:i===0?1028:i===1?1916:null}));
  const approved={...catalogue,price_authority:"approved_consumer_retail",products};
- assert.equal(basketSubtotal([{sku:products[0].sku,quantity:2},{sku:products[1].sku,quantity:1}],approved),4766);
+ assert.equal(basketSubtotal([{sku:products[0].sku,quantity:2},{sku:products[1].sku,quantity:1}],approved),4767);
  assert.equal(basketSubtotal([{sku:products[2].sku,quantity:1}],approved),null);
  assert.equal(basketSubtotal([{sku:"NOT_REAL",quantity:1}],approved),null);
 });
