@@ -11,7 +11,7 @@ import { customerModules } from "@novapharm/portal-contracts";
 const paths = Object.freeze([
   {
     title: "Account & finances",
-    modules: ["customer.account", "customer.invoices", "customer.statements", "customer.settings"],
+    modules: ["customer.dashboard", "customer.account", "customer.invoices", "customer.statements", "customer.settings"],
   },
   {
     title: "Products & orders",
