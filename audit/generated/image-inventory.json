@@ -15897,9 +15897,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 9,
+      "usageCount": 6,
+      "referenceCount": 10,
       "usageFiles": [
+        "apps/portal/components/customer-commerce-workspace.tsx",
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/nutraxin/collagen-gold-30-tablets/index.html",
@@ -16397,9 +16398,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 4,
-      "referenceCount": 8,
+      "usageCount": 5,
+      "referenceCount": 9,
       "usageFiles": [
+        "apps/portal/components/customer-commerce-workspace.tsx",
         "docs/nutraxin-media-provenance.json",
         "products/nutraxin/index.html",
         "products/nutraxin/magnesium-complex-60-tablets/index.html",
@@ -18144,9 +18146,10 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 5,
-      "referenceCount": 7,
+      "usageCount": 6,
+      "referenceCount": 8,
       "usageFiles": [
+        "apps/portal/components/customer-commerce-workspace.tsx",
         "docs/nutraxin-media-provenance.json",
         "index.html",
         "products/nutraxin/index.html",
