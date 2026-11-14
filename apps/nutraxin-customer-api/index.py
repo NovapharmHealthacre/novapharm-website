@@ -1443,6 +1443,7 @@ body.editorial-customer{background:#fff;color:#1d1d1f;overflow-x:hidden}
     if route=="/portal/products/":
         css+=('''
 /* Full-width editorial product grid. Basket lives in one accessible, optional drawer. */
+body.editorial-customer{overflow-x:clip}
 .editorial-customer .editorial-topbar{position:sticky;top:0;z-index:50;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
 .editorial-customer .shop-layout{display:block}
 .editorial-customer .shop-header{margin-bottom:25px;max-width:950px}
