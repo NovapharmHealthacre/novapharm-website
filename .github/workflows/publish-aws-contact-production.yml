@@ -313,14 +313,14 @@ jobs:
           # synthetic production receipts. Never submit an accepted enquiry
           # from this publisher. Test GET health and rejected anonymous POST only.
           node --test scripts/test-no-email-release-guard.mjs
-          [[ "$CONTACT_ORIGIN" =~ ^https://[a-z0-9]+\\.execute-api\\.eu-north-1\\.amazonaws\\.com$ ]] || exit 1
-          curl --fail --silent --show-error --max-time 15 \\
-            -H "Cache-Control: no-cache" \\
+          [[ "$CONTACT_ORIGIN" =~ ^https://[a-z0-9]+\.execute-api\.eu-north-1\.amazonaws\.com$ ]] || exit 1
+          curl --fail --silent --show-error --max-time 15 \
+            -H "Cache-Control: no-cache" \
             "$CONTACT_ORIGIN/health" -o /tmp/novapharm-contact-health.json
           jq -e '.service == "novapharm-contact-intake" and .ready == true and .environment == "production"' /tmp/novapharm-contact-health.json
           # This request is rejected before storage/SNS; it cannot be a valid enquiry.
-          rejected=$(curl --silent --show-error --max-time 15 -o /tmp/novapharm-anon.json -w '%{http_code}' \\
-            -X POST "$CONTACT_ORIGIN/contact" \\
+          rejected=$(curl --silent --show-error --max-time 15 -o /tmp/novapharm-anon.json -w '%{http_code}' \
+            -X POST "$CONTACT_ORIGIN/contact" \
             -H 'Content-Type: application/json' -d '{}' )
           test "$rejected" = "403"
           echo 'AWS contact health and anonymous rejection verified without email or persisted enquiry.'
