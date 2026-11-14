@@ -98,3 +98,15 @@
  .distribution-employee-hero h1{font-size:clamp(2.6rem,10vw,4rem)}
 }
 @media(prefers-reduced-motion:reduce){.employee-distribution-shell *{scroll-behavior:auto!important}}
+
+.distribution-employee-all{padding:46px 3px 24px;max-width:1240px}
+.distribution-employee-all h2{margin:0 0 12px;font-size:clamp(1.8rem,3vw,2.7rem);letter-spacing:-.05em}
+.distribution-employee-all>p{font-size:.9rem;color:#66666f;line-height:1.6;max-width:74ch}
+.distribution-employee-all ul{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 30px;
+ margin:25px 0 0;padding:0;list-style:none}
+.distribution-employee-all li{border-top:1px solid #e2e2e5}
+.distribution-employee-all li a{display:block;min-height:48px;padding:15px 0;font-size:.88rem;
+ color:#343438;text-decoration:none}
+.distribution-employee-all li a:hover{color:#a20e1a;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:890px){.distribution-employee-all ul{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:570px){.distribution-employee-all ul{grid-template-columns:1fr}}
