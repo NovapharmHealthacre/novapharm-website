@@ -1,4 +1,5 @@
 import { all, one } from "../data/database.mjs";
+import { reviewRecordedWarehouseLedger } from "./wms-control-tower.mjs";
 
 function section(title, columns, rows, emptyState, { source = "Canonical application database", description = "" } = {}) {
   return { title, description, columns, rows, emptyState, source, rowCount: rows.length };
@@ -270,6 +271,7 @@ export function rollingWarehouseView(snapshot) {
   const todayKey = today.toISOString().slice(0, 10);
   const horizonKey = horizon.toISOString().slice(0, 10);
   const ledger = snapshot.sections.find((item) => item.title === "Inventory ledger")?.rows || [];
+  const wms = reviewRecordedWarehouseLedger(ledger, { asOf: today.toISOString() });
   const expired = ledger.filter((row) => row.expiry_date && row.expiry_date < todayKey).length;
   const expiring = ledger.filter((row) => row.expiry_date && row.expiry_date >= todayKey && row.expiry_date <= horizonKey).length;
   const metrics = snapshot.metrics.filter((item) => !["expiring", "expired"].includes(item.key));
@@ -278,11 +280,26 @@ export function rollingWarehouseView(snapshot) {
     metrics: [
       ...metrics,
       metric("expiring", "Expiring in 90 days", expiring),
-      metric("expired", "Expired batches", expired)
+      metric("expired", "Expired batches", expired),
+      metric("wms-review-flags", "Observed WMS exception flags", wms.findings.length)
+    ],
+    sections: [
+      ...snapshot.sections,
+      section(
+        "Warehouse exception review",
+        [["reason", "Review trigger", "status"], ["sku", "SKU"], ["batchNumber", "Batch"],
+          ["locationCode", "Location"], ["expiryDate", "Expiry"], ["evidenceState", "Evidence state", "status"]],
+        wms.findings.slice(0, 120),
+        "No exception is visible in the recorded ledger. This is not confirmation of reconciled stock.",
+        { source: "Derived from the unverified legacy inventory ledger",
+          description: "Read-only exception screening; not live 3PL confirmation or a pick, pack, ATP or dispatch instruction." }
+      )
     ],
     notices: [
       ...snapshot.notices,
-      `Expiry posture is evaluated against the current UTC date with a rolling 90-day horizon ending ${horizonKey}; no fixed calendar cutoff is used.`
+      `Expiry posture is evaluated against the current UTC date with a rolling 90-day horizon ending ${horizonKey}; no fixed calendar cutoff is used.`,
+      "WMS control tower: legacy ledger rows have not been reconciled to a trusted Polar Speed/UPS warehouse snapshot. Zero displayed exceptions does not verify stock.",
+      "FEFO, temperature, recall, quarantine and batch checks are review controls only. Reservation, order release and warehouse dispatch remain disabled."
     ]
   };
 }
