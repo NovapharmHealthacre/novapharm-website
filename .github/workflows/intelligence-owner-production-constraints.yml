@@ -1,0 +1,47 @@
+name: NovaPharm £0 incremental owner constraints
+
+on:
+  pull_request:
+    paths:
+      - "config/intelligence/owner-production-constraints.json"
+      - "config/portal/owner-zero-incremental-release.json"
+      - "src/core/portal-owner-zero-spend.mjs"
+      - "scripts/test-portal-owner-zero-spend.mjs"
+      - "src/core/intelligence-owner-production-constraints.mjs"
+      - "scripts/test-intelligence-owner-production-constraints.mjs"
+      - "infra/aws/intelligence-dedicated-ingress-candidate.json"
+      - ".github/workflows/intelligence-owner-production-constraints.yml"
+  push:
+    branches: [main]
+    paths:
+      - "config/intelligence/owner-production-constraints.json"
+      - "config/portal/owner-zero-incremental-release.json"
+      - "src/core/portal-owner-zero-spend.mjs"
+      - "scripts/test-portal-owner-zero-spend.mjs"
+      - "src/core/intelligence-owner-production-constraints.mjs"
+      - "scripts/test-intelligence-owner-production-constraints.mjs"
+      - "infra/aws/intelligence-dedicated-ingress-candidate.json"
+      - ".github/workflows/intelligence-owner-production-constraints.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  review-no-budget-release-gate:
+    name: No vendor purchases or production activation without owner approval
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: "24"
+      - name: Verify syntax
+        run: |
+          node --check src/core/intelligence-owner-production-constraints.mjs
+          node --check scripts/test-intelligence-owner-production-constraints.mjs
+          node --check src/core/portal-owner-zero-spend.mjs
+          node --check scripts/test-portal-owner-zero-spend.mjs
+      - name: Reject unapproved vendor, infrastructure, data and customer activation flags
+        run: node --test scripts/test-intelligence-owner-production-constraints.mjs scripts/test-portal-owner-zero-spend.mjs

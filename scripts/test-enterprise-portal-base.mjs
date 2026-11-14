@@ -256,6 +256,66 @@ try {
     assert.equal((await request({ url: `/api/enterprise/modules/${moduleCode}`, headers: jsonHeaders(loginResult.session) })).statusCode, 200);
   }
 
+  // Exercise every governed R1 read model through the actual in-process HTTP
+  // router, not only the catalogue metadata or frontend route mapper. All data
+  // below is synthetic/local-validation and must never be claimed as production.
+  const { portalModules } = await import("../src/core/portal-module-catalog.mjs");
+  assert.equal(portalModules.length, 54);
+  const adminValidationLogin = await login("vishal@novapharmhealthcare.com", replacementPassword, "admin", "127.20.0.19");
+  assert.equal(adminValidationLogin.statusCode, 200);
+  const authorisedModuleSessions = {
+    customer: customerLogin.session,
+    employee: employeeLogin.session,
+    executive: boardLogin.session,
+    admin: adminValidationLogin.session
+  };
+  const wrongRoleSessions = {
+    customer: employeeLogin.session,
+    employee: customerLogin.session,
+    executive: customerLogin.session,
+    admin: customerLogin.session
+  };
+  let readModelsAccepted = 0;
+  let hiddenModulesDenied = 0;
+  let wrongRolesDenied = 0;
+  for (const module of portalModules) {
+    const endpoint = `/api/enterprise/modules/${module.code}`;
+    const expectedStatus = module.visibleInNavigation ? 200 : 404;
+    const accepted = await request({
+      url: endpoint,
+      headers: jsonHeaders(authorisedModuleSessions[module.area])
+    });
+    assert.equal(accepted.statusCode, expectedStatus,
+      `${module.code}: authorised read model must be available only if released: ${JSON.stringify(accepted.payload).slice(0, 350)}`);
+    if (expectedStatus === 200) {
+      assert.equal(accepted.payload.module.code, module.code, `${module.code}: no cross-module dispatch`);
+      assert.equal(accepted.payload.module.releaseClassification, "informational_only",
+        `${module.code}: must remain informational-only`);
+      assert.equal(accepted.payload.readOnly, true, `${module.code}: unapproved writes must remain disabled`);
+      assert.deepEqual(accepted.payload.actions, [], `${module.code}: no unreleased mutation actions`);
+      assert.ok(Array.isArray(accepted.payload.notices), `${module.code}: missing data/release notice`);
+      if (module.area === "customer") {
+        assert.equal(JSON.stringify(accepted.payload).includes("TEST-OTHER-CUSTOMER-ORDER"), false,
+          `${module.code}: synthetic second-customer record leaked into first-customer read model`);
+      }
+      readModelsAccepted++;
+    } else {
+      hiddenModulesDenied++;
+    }
+
+    const wrongRole = await request({
+      url: endpoint,
+      headers: jsonHeaders(wrongRoleSessions[module.area])
+    });
+    assert.equal(wrongRole.statusCode, module.visibleInNavigation ? 403 : 404,
+      `${module.code}: cross-role access must fail closed`);
+    wrongRolesDenied++;
+  }
+  assert.equal(readModelsAccepted, 48);
+  assert.equal(hiddenModulesDenied, 6);
+  assert.equal(wrongRolesDenied, 54);
+  console.log(`54-module synthetic R1 API sweep passed: ${readModelsAccepted} read-only visible routes, ${hiddenModulesDenied} hidden, ${wrongRolesDenied} wrong-role denials; no real production connections inferred.`);
+
   const ownerEmployeeLogin = await login("vishal@novapharmhealthcare.com", replacementPassword, "employee", "127.20.0.20");
   const nutraxinProduct = await one("SELECT id FROM products WHERE source_system = 'owner_supplied_nutraxin_catalogue' ORDER BY sku LIMIT 1");
   for (const status of ["review", "approved"]) {

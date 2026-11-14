@@ -1,0 +1,36 @@
+{
+  "contract": "novapharm.portal.zero-incremental.v1",
+  "decisionDate": "2026-11-14",
+  "currency": "GBP",
+  "additionalMonthlyCap": 0,
+  "infrastructureMode": "existing_active_services_only",
+  "costGuarantee": "not_proven",
+  "permittedEngineering": [
+    "read_only_cloud_inventory",
+    "repository_work_and_ci",
+    "isolated_security_testing",
+    "reuse_existing_free_tier_without_upgrade",
+    "nonproduction_no_ingress_design"
+  ],
+  "prohibitedOperations": {
+    "createNewRecurringPaidResources": true,
+    "increaseReservedCompute": true,
+    "createPaidLoadBalancersOrNat": true,
+    "upgradeAtlasFromFree": true,
+    "addPaidMonitoringOrBackups": true,
+    "activatePublicDomainCutover": true,
+    "activateOrdersOrPayments": true,
+    "grantUnverifiedTenantOrRoleAccess": true,
+    "sendExternalMessages": true
+  },
+  "acceptance": {
+    "persistentTenantSessionBackend": "not_verified",
+    "customerExistingIdentityLink": "not_verified",
+    "employeeBoardMfaAndRbac": "not_verified",
+    "customer18ModuleDataAuthority": "not_verified",
+    "stockRightsTaxAndOrderAcceptance": "not_verified",
+    "publicIngressWithoutIncrementalCost": "not_verified",
+    "exactShaProductionSecurityAndRollback": "not_verified"
+  },
+  "productionSignoff": "not_granted"
+}

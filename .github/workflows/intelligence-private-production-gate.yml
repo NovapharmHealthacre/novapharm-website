@@ -6,6 +6,9 @@ on:
     paths:
       - '.github/workflows/intelligence-private-production-gate.yml'
   workflow_dispatch:
+  schedule:
+    # Daily no-credential live ingress smoke; never deploys or enables customer release.
+    - cron: '17 5 * * *'
 
 permissions:
   contents: read

@@ -1,0 +1,26 @@
+name: Intelligence private source CloudTrail selector plan
+on:
+  pull_request:
+    paths:
+      - 'src/core/intelligence-s3-quarantine-audit-selector-plan.mjs'
+      - 'scripts/test-intelligence-s3-quarantine-audit-selector-plan.mjs'
+      - 'docs/intelligence/S3_ARCHIVE_CLOUDTRAIL_DATA_EVENT_GAP_20261114.md'
+      - '.github/workflows/intelligence-epd-quarantine-cloudtrail-audit-plan.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/core/intelligence-s3-quarantine-audit-selector-plan.mjs'
+      - 'scripts/test-intelligence-s3-quarantine-audit-selector-plan.mjs'
+      - '.github/workflows/intelligence-epd-quarantine-cloudtrail-audit-plan.yml'
+permissions:
+  contents: read
+jobs:
+  selector-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+      - run: node --test scripts/test-intelligence-s3-quarantine-audit-selector-plan.mjs

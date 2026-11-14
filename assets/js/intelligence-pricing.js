@@ -38,8 +38,8 @@
         annualLink.style.setProperty("display", useAnnual ? "flex" : "none", "important");
       }
       explanation.textContent = cycle === "annual"
-        ? "Proposed annual commitment: " + money.format(annual) + "/year, billed annually after signed acceptance."
-        : "Proposed monthly price. No payment requested.";
+        ? "Indicative annual equivalent: " + money.format(annual) + "/year, subject to contractual acceptance."
+        : "Approved monthly price. No payment requested; enrolment is not yet open.";
     }
   };
   for (const toggle of toggles) {

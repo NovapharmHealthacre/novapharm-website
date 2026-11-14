@@ -125,6 +125,10 @@ export function prepareOfficialMedicineEvidenceCandidate({ snapshot, rows, grant
     records.push(Object.freeze({
       workspace_id: "novapharm-internal-staging",
       medicine_identity: row.medicine_identity,
+      // Preserve exact code-system and publisher identifier for independent
+      // G2 temporal mapping verification. Never infer from a display name.
+      code_system: row.code_system,
+      source_code: row.source_code,
       source_id: row.source_id,
       source_version: row.source_version,
       resource_id: row.resource_id,

@@ -124,7 +124,7 @@ test("live-shaped Foundry integration composes with private rights and audit gat
   workspaceId:"tenant_alpha",authorityRevision:"revision_001",accessScopes:["admin"]};
  const report=await probeEnterpriseVendor({
   vendor:"palantir_foundry",origin:palantir,authority,
-  resolveCredentials:async()=>({clientId:"client_001",clientSecret:"secret-token-00001"}),
+  resolveCredentials:async()=>({clientId:"client_001",clientSecret:"secret-token-00001",oauthScope:"api:use-ontologies-read"}),
   verifyEntitlement:async()=>true,verifyCurrentAuthority:async()=>true,
   recordAudit:async(event)=>({committed:true,eventId:event.eventId}),
   httpRequest,clock:()=>Date.parse("2026-11-13T17:00:00Z")

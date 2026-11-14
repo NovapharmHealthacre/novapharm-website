@@ -3,6 +3,7 @@ import base64
 import importlib.util
 import json
 import os
+import re
 from pathlib import Path
 import sys
 import types
@@ -100,6 +101,199 @@ class PortalSecurityTests(unittest.TestCase):
             e["body"] = json.dumps(body)
         return e
 
+    def test_unified_customer_routes_are_server_authenticated(self):
+        self.assertEqual(len(PORTAL.CUSTOMER_WORKSPACE_MODULES),18)
+        self.assertEqual(len(PORTAL.CUSTOMER_WORKSPACE_ROUTES),18)
+        for _,route,_ in PORTAL.CUSTOMER_WORKSPACE_MODULES:
+            response=PORTAL.handler(self.event(route),None)
+            self.assertEqual(response["statusCode"],302,route)
+            self.assertEqual(response["headers"]["location"],"https://portal.example.invalid/")
+            self.assertNotIn("customer@example",response["body"])
+        for route in ("/employee/dashboard/","/portal/executive-platform/","/admin/dashboard/"):
+            response=PORTAL.handler(self.event(route),None)
+            self.assertEqual(response["statusCode"],403,route)
+            self.assertEqual(json.loads(response["body"])["error"],"workforce_or_admin_identity_required")
+
+    def test_active_personal_identity_gets_18_module_navigation_without_trade_elevation(self):
+        previous=PORTAL.session
+        PORTAL.session=lambda event: {
+            "username":"synthetic-personal","sub":"synthetic-personal-sub",
+            "email":"customer+test@example.invalid","expires_at":PORTAL.now()+3600}
+        try:
+            for label,route,_ in PORTAL.CUSTOMER_WORKSPACE_MODULES:
+                result=PORTAL.handler(self.event(route),None)
+                self.assertEqual(result["statusCode"],200,(label,route))
+                self.assertIn("no-store",result["headers"]["cache-control"])
+                self.assertIn('name="robots" content="noindex,nofollow"',result["body"])
+                self.assertIn(label,result["body"])
+                self.assertNotIn("Stripe Checkout",result["body"])
+            dashboard=PORTAL.handler(self.event("/portal/dashboard/"),None)
+            self.assertEqual(dashboard["body"].count('class="tile"'),0)
+            self.assertIn('class="editorial-customer"',dashboard["body"])
+            self.assertIn('class="editorial-hero"',dashboard["body"])
+            self.assertIn("Everything you need.",dashboard["body"])
+            self.assertIn("The rest, within reach.",dashboard["body"])
+            self.assertIn('class="editorial-topnav"',dashboard["body"])
+            self.assertIn("novapharm-healthcare-logo.svg",dashboard["body"])
+            for image in ("vitamin-d3-120-tablets-480.webp",
+                          "vitamin-c-1000mg-30-tablets-480.webp",
+                          "magnesium-complex-60-tablets-480.webp"):
+                self.assertIn("https://novapharmhealthcare.com/assets/media/products/nutraxin/"+image,
+                              dashboard["body"])
+            for label,href,_ in PORTAL.CUSTOMER_WORKSPACE_MODULES:
+                self.assertIn('href="'+href+'"',dashboard["body"],label)
+            self.assertNotIn('data:image/',dashboard["body"])
+            self.assertNotIn('<script',dashboard["body"])
+            self.assertIn('name="signup_csrf"',dashboard["body"])
+            self.assertIn("Product images are illustrative catalogue references",dashboard["body"])
+            self.assertIn("frame-ancestors 'none'",dashboard["headers"]["content-security-policy"])
+            self.assertIn("customer+test@example.invalid",dashboard["body"])
+            products=PORTAL.handler(self.event("/portal/products/"),None)["body"]
+            self.assertIn("Nutraxin",products)
+            self.assertIn("ESCO Anand",products)
+            self.assertIn("not approved saleable variants",products)
+            history=PORTAL.handler(self.event("/portal/orders/"),None)["body"]
+            self.assertIn("separately approved trade account",history)
+            self.assertNotIn("APPROVED_FOR_PAYMENT",history)
+        finally:
+            PORTAL.session=previous
+
+    def test_revoked_or_unverified_customer_cannot_open_private_modules(self):
+        previous=PORTAL.session
+        PORTAL.session=lambda event: {
+            "username":"test-user","sub":"test-user-sub","email":"test@example.invalid"}
+        try:
+            for field,invalid in (
+                ("enabled",False),
+                ("user_status","UNCONFIRMED"),
+                ("verified_email",False)):
+                old=getattr(COGNITO,field)
+                setattr(COGNITO,field,invalid)
+                try:
+                    response=PORTAL.handler(self.event("/portal/account/"),None)
+                    self.assertEqual(response["statusCode"],403,field)
+                    self.assertNotIn("test@example.invalid",response["body"])
+                finally:setattr(COGNITO,field,old)
+        finally:
+            PORTAL.session=previous
+
+    def test_customer_account_escapes_user_content_and_never_exposes_raw_html(self):
+        previous=PORTAL.session
+        PORTAL.session=lambda event: {
+            "username":"test-user","sub":"test-sub",
+            "email":'<img src=x onerror=alert("exfiltrate")>'}
+        try:
+            body=PORTAL.handler(self.event("/portal/account/"),None)["body"]
+            self.assertNotIn('<img src=x',body)
+            self.assertIn("&lt;img src=x",body)
+            self.assertNotIn("window.location",body)
+        finally:
+            PORTAL.session=previous
+
+    def test_business_request_history_is_scoped_by_signed_in_customer_sub(self):
+        previous_session=PORTAL.session
+        previous_table=PORTAL.TABLE
+        COGNITO.groups=[PORTAL.APPROVED_GROUP]
+        class AuditedTable:
+            def query(self,**kwargs):
+                self_args=kwargs.get("KeyConditionExpression")
+                if self_args!=("eq","pk","USER#sub-owner"):
+                    raise AssertionError("Wrong tenant query scope")
+                return {"Items":[{"pk":"USER#sub-owner","sk":"RQ#111",
+                    "receipt_id":"NUT-111","status":"PENDING_MANUAL_CONFIRMATION"}]}
+        PORTAL.TABLE=AuditedTable()
+        PORTAL.session=lambda event: {
+            "username":"approved","sub":"sub-owner","email":"approved@example.invalid"}
+        try:
+            page=PORTAL.handler(self.event("/portal/orders/"),None)
+            self.assertEqual(page["statusCode"],200)
+            self.assertIn("NUT-111",page["body"])
+            self.assertIn("Not financially binding",page["body"])
+            self.assertNotIn("Pay securely",page["body"])
+        finally:
+            PORTAL.session=previous_session
+            PORTAL.TABLE=previous_table
+
+    def test_opaque_origin_logout_uses_fresh_host_only_csrf_token(self):
+        previous=PORTAL.session
+        PORTAL.session=lambda event: {"username":"synthetic","sub":"synthetic-sub",
+            "email":"synthetic@example.invalid","expires_at":PORTAL.now()+3600}
+        try:
+            landing=PORTAL.handler(self.event("/portal/dashboard/"),None)
+            token=re.search(r'name="signup_csrf" value="([A-Za-z0-9_-]{43})"',landing["body"])
+            self.assertIsNotNone(token)
+            proof=token.group(1)
+            self.assertIn("Secure",landing["cookies"][0])
+            event=self.event("/logout","POST",origin="null")
+            event["cookies"]=["__Host-np_signup_csrf="+proof]
+            event["headers"]["sec-fetch-site"]="same-origin"
+            event["body"]="signup_csrf="+proof
+            result=PORTAL.handler(event,None)
+            self.assertEqual(result["statusCode"],302)
+            self.assertIn("/logout?",result["headers"]["location"])
+            event["body"]="signup_csrf=invalid"
+            self.assertEqual(PORTAL.handler(event,None)["statusCode"],403)
+            event["body"]="signup_csrf="+proof
+            event["headers"]["origin"]="https://evil.example.invalid"
+            self.assertEqual(PORTAL.handler(event,None)["statusCode"],403)
+            event["headers"]["origin"]="null"
+            event["headers"]["sec-fetch-site"]="cross-site"
+            self.assertEqual(PORTAL.handler(event,None)["statusCode"],403)
+        finally:
+            PORTAL.session=previous
+
+    def test_safari_base64_encoded_logout_is_accepted_only_with_host_csrf(self):
+        # Match AWS HTTP API v2 form delivery, not only the synthetic plain
+        # form used in the original logout regression test.
+        token="A"*43
+        form="signup_csrf="+token
+        encoded=base64.b64encode(form.encode("utf-8")).decode("ascii")
+        def request(origin="null", body=encoded, cookie=True, source="same-origin"):
+            event=self.event("/logout","POST",origin=origin)
+            event["headers"]["host"]="portal.novapharmhealthcare.com"
+            event["headers"]["content-type"]="application/x-www-form-urlencoded"
+            event["headers"]["sec-fetch-site"]=source
+            event["isBase64Encoded"]=True
+            event["body"]=body
+            event["cookies"]=["__Host-np_signup_csrf="+token] if cookie else []
+            return PORTAL.handler(event,None)
+        for origin in ("null",""):
+            successful=request(origin)
+            self.assertEqual(successful["statusCode"],302)
+            self.assertIn("/logout?",successful["headers"]["location"])
+            self.assertTrue(any(c.startswith("__Host-np_session=;") for c in successful.get("cookies",[])))
+        for origin in ("https://attacker.example.invalid",
+                       "https://portal.novapharmhealthcare.com.attacker.invalid"):
+            denied=request(origin)
+            self.assertEqual(denied["statusCode"],403)
+            self.assertEqual(json.loads(denied["body"])["error"],"invalid_origin")
+        for change in (
+            {"cookie":False}, {"body":"not-base64!!!"},
+            {"body":base64.b64encode(b"\xff\xff").decode("ascii")},
+            {"body":base64.b64encode(b"signup_csrf=wrong").decode("ascii")},
+            {"body":"A"*600}, {"source":"cross-site"},
+        ):
+            denied=request(**change)
+            self.assertEqual(denied["statusCode"],403,change)
+        # A genuine HTTPS same-origin form remains compatible with existing
+        # customer sessions, including API Gateway's encoded transport.
+        allowed=request("https://portal.novapharmhealthcare.com")
+        self.assertEqual(allowed["statusCode"],302)
+
+    def test_root_signin_preserved_and_legacy_nutraxin_shop_not_portal_home(self):
+        page=PORTAL.handler(self.event("/"),None)
+        self.assertEqual(page["statusCode"],200)
+        self.assertIn('<body class="unified-root">',page["body"])
+        self.assertIn(".unified-root .retail-shop{display:none!important}",page["body"])
+        self.assertIn('name="signup_csrf"',page["body"])
+        self.assertIn("customer account, authorised products",page["body"])
+        self.assertIn('window.location.replace("/portal/dashboard/")',PORTAL.APP)
+        legacy=PORTAL.handler(self.event("/products/nutraxin/"),None)
+        self.assertEqual(legacy["statusCode"],200)
+        self.assertNotIn('<body class="unified-root">',legacy["body"])
+        self.assertIn('id="retail-grid"',legacy["body"])
+        self.assertIn('name="signup_csrf"',legacy["body"])
+
     def test_19_product_catalogue_has_no_public_wholesale_prices(self):
         self.assertEqual(len(PORTAL.PRODUCTS), 19)
         self.assertNotIn("qty24_price_pence", PORTAL.PAGE)
@@ -138,6 +332,103 @@ class PortalSecurityTests(unittest.TestCase):
         decoded=base64.b64decode(image["body"])
         self.assertTrue(decoded[:2]==bytes([255,216]))
         self.assertGreater(len(decoded),50000)
+
+    def test_live_portal_origin_matches_deployed_cloudformation_template(self):
+        template = json.loads((ROOT / "infra/aws/nutraxin-customer-staging-stack.json").read_text())
+        values = template["Resources"]["AppFunction"]["Properties"]["Environment"]["Variables"]
+        self.assertEqual(values["BASE_URL"], "https://portal.novapharmhealthcare.com")
+
+        # A reverse proxy can forward the gateway Host rather than the
+        # public browser Host. Accept our exact configured origin regardless.
+        event = self.event("/login", "POST", origin="https://portal.example.invalid")
+        event["headers"]["host"] = "wgy9p7ad0d.execute-api.eu-north-1.amazonaws.com"
+        event["body"] = "mode=signup&email=invalid"
+        response = PORTAL.handler(event, None)
+        self.assertEqual(response["statusCode"], 400)
+        self.assertEqual(json.loads(response["body"])["error"], "invalid_login_email")
+
+        event["headers"]["origin"] = "https://untrusted.example.invalid"
+        denied = PORTAL.handler(event, None)
+        self.assertEqual(denied["statusCode"], 403)
+        self.assertEqual(json.loads(denied["body"])["error"], "invalid_login_origin")
+
+    def test_safari_opaque_origin_uses_host_only_csrf_proof(self):
+        landing=PORTAL.handler(self.event("/"),None)
+        self.assertEqual(landing["statusCode"],200)
+        self.assertIn('name="signup_csrf"',landing["body"])
+        match=re.search(r'name="signup_csrf" value="([A-Za-z0-9_-]{43})"',landing["body"])
+        self.assertIsNotNone(match)
+        token=match.group(1)
+        self.assertTrue(any(c.startswith("__Host-np_signup_csrf=") and
+                            "Secure" in c and "HttpOnly" in c and "SameSite=Lax" in c
+                            for c in landing.get("cookies",[])))
+        csrf_cookie=[c.split(";",1)[0] for c in landing["cookies"]
+                     if c.startswith("__Host-np_signup_csrf=")]
+        self.assertEqual(len(csrf_cookie),1)
+
+        event=self.event("/login","POST",origin="null")
+        event["headers"]["host"]="portal.novapharmhealthcare.com"
+        event["headers"]["sec-fetch-site"]="same-origin"
+        event["cookies"]=csrf_cookie
+        event["body"]="mode=signup&email=invalid&signup_csrf="+token
+        accepted=PORTAL.handler(event,None)
+        self.assertEqual(accepted["statusCode"],400)
+        self.assertEqual(json.loads(accepted["body"])["error"],"invalid_login_email")
+
+        # The same proof works for privacy browsers omitting Origin.
+        event["headers"].pop("origin")
+        without_origin=PORTAL.handler(event,None)
+        self.assertEqual(without_origin["statusCode"],400)
+        self.assertEqual(json.loads(without_origin["body"])["error"],"invalid_login_email")
+
+        # A forged, missing or stale token must never get past origin validation.
+        event["headers"]["origin"]="null"
+        event["cookies"]=[]
+        missing=PORTAL.handler(event,None)
+        self.assertEqual(missing["statusCode"],403)
+        event["cookies"]=csrf_cookie
+        event["body"]="mode=signup&email=invalid&signup_csrf="+"X"*43
+        tampered=PORTAL.handler(event,None)
+        self.assertEqual(tampered["statusCode"],403)
+        event["body"]="mode=signup&email=invalid&signup_csrf="+token
+        event["headers"]["origin"]="https://attacker.example.invalid"
+        explicit_attack=PORTAL.handler(event,None)
+        self.assertEqual(explicit_attack["statusCode"],403)
+        event["headers"]["origin"]="null"
+        event["headers"]["sec-fetch-site"]="cross-site"
+        cross_site=PORTAL.handler(event,None)
+        self.assertEqual(cross_site["statusCode"],403)
+        event["headers"]["sec-fetch-site"]="same-origin"
+        event["headers"]["referer"]="https://attacker.example.invalid/form"
+        bad_referer=PORTAL.handler(event,None)
+        self.assertEqual(bad_referer["statusCode"],403)
+
+    def test_known_live_https_origins_are_allowed_without_trusting_lookalikes(self):
+        accepted=(
+            "https://portal.novapharmhealthcare.com",
+            "https://PORTAL.NOVAPHARMHEALTHCARE.COM:443",
+            "https://wgy9p7ad0d.execute-api.eu-north-1.amazonaws.com",
+        )
+        for origin in accepted:
+            event=self.event("/login","POST",origin=origin)
+            event["headers"]["host"]="wgy9p7ad0d.execute-api.eu-north-1.amazonaws.com"
+            event["body"]="mode=signup&email=invalid"
+            response=PORTAL.handler(event,None)
+            self.assertEqual(response["statusCode"],400,origin)
+            self.assertEqual(json.loads(response["body"])["error"],"invalid_login_email",origin)
+        for origin in (
+            "https://portal.novapharmhealthcare.com.attacker.example",
+            "http://portal.novapharmhealthcare.com",
+            "https://untrusted.example",
+            "null",
+            "https://portal.novapharmhealthcare.com.evil.invalid/",
+            "https://portal.novapharmhealthcare.com:444",
+        ):
+            event=self.event("/login","POST",origin=origin)
+            event["body"]="mode=signup&email=invalid"
+            response=PORTAL.handler(event,None)
+            self.assertEqual(response["statusCode"],403,origin)
+            self.assertEqual(json.loads(response["body"])["error"],"invalid_login_origin",origin)
 
     def test_approved_account_landing_and_personal_signup(self):
         policy=PORTAL.reply(200,PORTAL.PAGE,"text/html")["headers"]["content-security-policy"]
@@ -650,6 +941,86 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertEqual(template["Resources"]["AppFunction"]["Properties"]["Code"]["ZipFile"].strip(),
                          (ROOT / "apps/nutraxin-customer-api/index.py").read_text().strip())
         self.assertIn("OFF", template["Outputs"]["CommercialCheckoutStatus"]["Value"])
+
+    def test_unified_products_catalogue_has_no_inferred_sale_or_images(self):
+        old_session=PORTAL.session
+        old_groups=COGNITO.groups
+        PORTAL.session=lambda _: {"username":"browsing","sub":"one-account","email":"browse@example.invalid"}
+        COGNITO.groups=[]
+        try:
+            page=PORTAL.handler(self.event("/portal/products/"),None)
+            self.assertEqual(page["statusCode"],200)
+            self.assertIn("My Products.",page["body"])
+            self.assertIn('src="/customer-products.js"',page["body"])
+            self.assertIn("shop-basket",page["body"])
+            self.assertIn("novapharm-healthcare-logo.svg",page["body"])
+            script=PORTAL.handler(self.event("/customer-products.js"),None)
+            self.assertEqual(script["statusCode"],200)
+            self.assertIn("api/customer/quote-requests",script["body"])
+            self.assertNotIn("innerHTML",script["body"])
+            response=PORTAL.handler(self.event("/api/customer/products"),None)
+            self.assertEqual(response["statusCode"],200)
+            data=json.loads(response["body"])
+            self.assertEqual(data["total"],392)
+            self.assertEqual(data["collection_counts"],{"nutraxin":19,"esco":373})
+            self.assertFalse(data["business_request_approved"])
+            self.assertFalse(data["binding_checkout_enabled"])
+            self.assertEqual(len({x["sku"] for x in data["products"]}),392)
+            self.assertTrue(all(x["image_url"] is None for x in data["products"] if x["collection"]=="esco"))
+            self.assertTrue(all(x["image_url"] for x in data["products"] if x["collection"]=="nutraxin"))
+            self.assertTrue(all(x["ordering_status"]=="request_review_only" for x in data["products"]))
+        finally:
+            PORTAL.session=old_session
+            COGNITO.groups=old_groups
+
+    def test_unified_mixed_basket_is_scoped_nonbinding_and_no_email(self):
+        old_session=PORTAL.session
+        old_table=PORTAL.TABLE
+        old_groups=COGNITO.groups
+        class Ledger:
+            def __init__(self):self.items=[]
+            def put_item(self,**kw):self.items.append(kw["Item"])
+        ledger=Ledger()
+        PORTAL.TABLE=ledger
+        PORTAL.session=lambda _: {"username":"approved","sub":"tenant-42","email":"approved@example.invalid"}
+        request_id="c26d07da-7ed0-4c5b-8a94-0e2a8824ac41"
+        def request(lines,origin="https://portal.example.invalid"):
+            e=self.event("/api/customer/quote-requests","POST",origin=origin)
+            e["headers"]["content-type"]="application/json"
+            e["headers"]["sec-fetch-site"]="same-origin"
+            e["body"]=json.dumps({"request_id":request_id,"lines":lines})
+            return PORTAL.handler(e,None)
+        lines=[{"sku":"NUT-UK-VD3-T120","quantity":2},{"sku":"ESCO-CAT-0001","quantity":3}]
+        try:
+            COGNITO.groups=[]
+            self.assertEqual(request(lines)["statusCode"],403)
+            COGNITO.groups=[PORTAL.APPROVED_GROUP]
+            self.assertEqual(request(lines,"https://evil.invalid")["statusCode"],403)
+            self.assertEqual(request([lines[0],lines[0]])["statusCode"],400)
+            self.assertEqual(request([{"sku":"ESCO-CAT-9999","quantity":2}])["statusCode"],400)
+            self.assertEqual(request([{"sku":"ESCO-CAT-0001","quantity":True}])["statusCode"],400)
+            self.assertEqual(request([{"sku":"ESCO-CAT-0001","quantity":10001}])["statusCode"],400)
+            self.assertEqual(len(ledger.items),0)
+            accepted=request(lines)
+            self.assertEqual(accepted["statusCode"],201)
+            info=json.loads(accepted["body"])
+            self.assertEqual(info["receipt_id"],"NPQ-"+request_id)
+            self.assertFalse(info["financially_binding"])
+            self.assertFalse(info["payment_enabled"])
+            self.assertEqual(len(ledger.items),1)
+            record=ledger.items[0]
+            self.assertEqual(record["pk"],"USER#tenant-42")
+            self.assertEqual(record["sk"],"RQ#"+request_id)
+            self.assertEqual(record["status"],"PENDING_MANUAL_REVIEW")
+            self.assertFalse(record["inventory_reserved"])
+            self.assertFalse(record["vat_invoice_created"])
+            self.assertEqual({x["collection"] for x in record["lines"]},{"esco","nutraxin"})
+            self.assertTrue(record["no_sns_or_customer_email"])
+            self.assertNotIn("payment_intent",str(record))
+        finally:
+            PORTAL.session=old_session
+            PORTAL.TABLE=old_table
+            COGNITO.groups=old_groups
 
 if __name__ == "__main__":
     unittest.main()
