@@ -12,11 +12,14 @@ const policy = JSON.parse(readFileSync(
 const denial = { code: "intelligence_owner_constraints_denied", statusCode: 403 };
 const copy = () => structuredClone(policy);
 
-test("owner's exact vendor-neutral, budget-not-approved decision is preserved", () => {
+test("owner's exact vendor-neutral, zero incremental spend decision is preserved", () => {
   const decision = validateOwnerProductionConstraints(copy());
   assert.equal(decision.vendorMode, "vendor_neutral_only");
   assert.equal(decision.engineeringMayContinueWithinListedScope, true);
   assert.equal(decision.nextMilestone, "private_read_only_pilot");
+  assert.equal(decision.additionalMonthlyCapGbp, 0);
+  assert.equal(decision.existingSubscriptionsOnly, true);
+  assert.equal(decision.independentlyProvenZeroIncrementalCostRequired, true);
   for (const key of [
     "budgetApproved", "nativeVendorConnectionApproved",
     "licensedDataAdmissionApproved", "productionDeploymentApproved",
@@ -37,8 +40,11 @@ test("no unapproved operational permission may be enabled by changing config", (
 
 test("no imaginary budget cap, vendor account, signoff or release status is accepted", () => {
   const mutations = [
-    p => { p.initialInfrastructureBudget.monthlyCapGbp = 500; },
+    p => { p.initialInfrastructureBudget.monthlyCapGbp = 0.01; },
+    p => { p.initialInfrastructureBudget.monthlyCapGbp = null; },
     p => { p.initialInfrastructureBudget.status = "approved"; },
+    p => { p.initialInfrastructureBudget.existingSubscriptionsOnly = false; },
+    p => { p.initialInfrastructureBudget.newChargeableResourceProvisioning = true; },
     p => { p.vendorStrategy = "native_vendor"; },
     p => { p.enterpriseVendorAccounts = "configured"; },
     p => { p.productionSignoff = "approved"; },
