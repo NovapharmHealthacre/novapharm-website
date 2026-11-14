@@ -151,7 +151,7 @@ export async function inspectNhsbsaEpdPrivateApi({
     publisherDeclaredCsvSha256: selected.declaredSha256,
     sampleLimit: limit, sampleRows: Object.freeze(projected),
     matchedRowsInBoundedSample: projected.length, observedAt: checkedAt,
-    attribution: "NHSBSA Copyright 2025",
+    attribution: "NHSBSA Copyright 2021-2026",
     publisherLicence: "Open Government Licence 3.0 (NHSBSA-owned content only)",
     fullDatasetReconciled: false, sourceRightsVerified: false,
     thirdPartyTerminologyRightsVerified: false, medicineIdentityAccepted: false,
