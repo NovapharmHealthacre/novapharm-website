@@ -28,6 +28,7 @@ function offer(sku, collection = "nutraxin", extra = {}) {
   return {
     sku, collection, customerId: customer.customerId, productClass: "consumer",
     entitled: true, rightsVerified: true, saleStatus: "approved",
+    allowedChannels: ["business", "personal"], market: "GB",
     minQuantity: 1, maxQuantity: 10, currency: "GBP",
     unitPriceMinor: 1250, priceApproved: true,
     availableToPromiseVerified: true, availableQuantity: 30,
