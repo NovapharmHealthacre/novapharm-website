@@ -864,6 +864,64 @@ void load();
 })();'''
 
 
+def customer_activity_summary(principal):
+    """A small, truthful account activity snapshot from the existing request ledger.
+
+    Numbers represent only the most recent 20 rows of each request type. They
+    are not all-time order counts, revenue, shipment KPIs or warehouse promises.
+    Tenant comes only from a verified server Cognito session.
+    """
+    account_pk="USER#"+principal["sub"]
+    def recent(prefix):
+        try:
+            response=TABLE.query(
+                KeyConditionExpression=Key("pk").eq(account_pk) & Key("sk").begins_with(prefix),
+                Limit=20,ScanIndexForward=False,ConsistentRead=True)
+        except (ClientError,KeyError,TypeError,ValueError):
+            return None
+        if not isinstance(response,dict) or not isinstance(response.get("Items"),list):
+            return None
+        return [row for row in response["Items"]
+                if isinstance(row,dict) and row.get("pk")==account_pk and
+                str(row.get("sk","")).startswith(prefix)][:20]
+
+    cases=recent("CASE#")
+    trade=approved(principal["username"])
+    requests=recent("RQ#") if trade else []
+    def activity_cell(title,records,href,when_empty):
+        if records is None:
+            value="Unavailable"
+            note="Account activity could not be verified. No count has been inferred."
+        elif not trade and href=="/portal/orders/":
+            value="Trade access required"
+            note="Business purchasing history requires a separately qualified trade account."
+        else:
+            value=str(len(records))
+            note="In the most recent 20 saved records. Not an all-time total."
+            if not records:
+                note=when_empty
+        return (
+            '<article class="editorial-activity-card"><p class="editorial-activity-label">'+title+'</p>'
+            '<p class="editorial-activity-value">'+html.escape(value,quote=True)+'</p>'
+            '<p class="editorial-activity-note">'+html.escape(note,quote=True)+'</p>'
+            '<a href="'+href+'">Open '+title.lower()+'</a></article>')
+    cards=(
+        activity_cell("Purchase requests",requests,"/portal/orders/",
+                      "No purchasing requests were found in the recent history.")+
+        activity_cell("Support enquiries",cases,"/portal/support/",
+                      "No support enquiries were found in the recent history.")
+    )
+    return ('<section class="editorial-activity" aria-labelledby="editorial-account-activity">'
+            '<div class="editorial-inner"><div class="editorial-section-title">'
+            '<h2 id="editorial-account-activity">Your account. At a glance.</h2>'
+            '<p>Only saved information from your signed-in account.</p></div>'
+            '<div class="editorial-activity-grid">'+cards+'</div>'
+            '<p class="editorial-activity-disclaimer">These are customer requests, not accepted '
+            'orders, paid transactions, stock reservations or delivery commitments. '
+            'Verified shipment data will appear only after an authorised carrier integration.</p>'
+            '</div></section>')
+
+
 def customer_workspace(event,route):
     """A non-binding customer-facing navigation step using existing services.
 
@@ -918,6 +976,7 @@ def customer_workspace(event,route):
             '<img src="'+product_base+'magnesium-complex-60-tablets-480.webp" width="180" height="228" '
             'alt="Nutraxin Magnesium Complex package" decoding="async">')
         head=""
+        account_activity=customer_activity_summary(principal)
         body=(
             '<section class="editorial-hero" aria-labelledby="editorial-welcome">'
             '<div class="editorial-inner editorial-hero-grid">'
@@ -930,6 +989,7 @@ def customer_workspace(event,route):
             '<div class="editorial-hero-media"><div class="editorial-product-photos">'+hero_images+'</div>'
             '<p>Genuine pack photographs from the NovaPharm Nutraxin catalogue</p></div>'
             '</div></section>'
+            +account_activity+
             '<section class="editorial-benefits" aria-labelledby="editorial-day">'
             '<div class="editorial-inner"><div class="editorial-section-title">'
             '<h2 id="editorial-day">Designed around your day.</h2>'
@@ -1230,6 +1290,16 @@ body.editorial-customer{background:#fff;color:#1d1d1f;overflow-x:hidden}
 .editorial-customer .editorial-hero-media>p{margin:8px 0 0;text-align:right;
  font-size:11px;color:#595960;line-height:1.4}
 .editorial-customer .editorial-benefits{padding:63px 0 72px}
+.editorial-customer .editorial-activity{padding:45px 0 15px;background:#fff}
+.editorial-customer .editorial-activity-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.editorial-customer .editorial-activity-card{border-radius:20px;background:#f5f5f7;padding:clamp(24px,3vw,35px);min-width:0}
+.editorial-customer .editorial-activity-label{font-size:12px;letter-spacing:.1em;color:#66666d;text-transform:uppercase;font-weight:680;margin:0 0 15px}
+.editorial-customer .editorial-activity-value{font-size:clamp(30px,3.3vw,42px);line-height:1.13;font-weight:650;letter-spacing:-.055em;color:#1d1d1f;margin:0 0 11px}
+.editorial-customer .editorial-activity-note{font-size:13px;line-height:1.6;color:#626269;margin:0 0 18px}
+.editorial-customer .editorial-activity-card a{font-size:13px;font-weight:650;color:#9f101c;text-decoration:underline;text-underline-offset:4px}
+.editorial-customer .editorial-activity-disclaimer{color:#66666c;font-size:12px;line-height:1.7;margin:20px 0 0;max-width:860px}
+@media(max-width:650px){.editorial-customer .editorial-activity-grid{grid-template-columns:1fr}.editorial-customer .editorial-activity{padding:35px 0 8px}}
+
 .editorial-customer .editorial-section-title{display:flex;justify-content:space-between;align-items:center;gap:20px;
  margin-bottom:26px}
 .editorial-customer .editorial-section-title h2,.editorial-customer .editorial-links h2{margin:0;
