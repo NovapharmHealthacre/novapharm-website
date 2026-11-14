@@ -633,7 +633,7 @@ def list_customer_quote_requests(event,user):
         return error(503,"request_history_unavailable")
     visible=[]
     for item in records:
-        if not str(item.get("sk","")).startswith("RQ#"):
+        if item.get("pk")!="USER#"+user["sub"] or not str(item.get("sk","")).startswith("RQ#"):
             continue
         raw=item.get("lines")
         if not isinstance(raw,list) or not 1<=len(raw)<=30:
