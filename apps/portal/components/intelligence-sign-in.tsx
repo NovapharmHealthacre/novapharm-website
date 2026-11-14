@@ -73,7 +73,7 @@ export function IntelligenceSignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const [code, setCode] = useState("");
   const [challenge, setChallenge] = useState<TotpChallenge | null>(null);
-  const [phase, setPhase] = useState<"password" | "mfa" | "confirmed" | "managed" | "founder-unavailable">("password");
+  const [phase, setPhase] = useState<"password" | "mfa" | "confirmed" | "identity-only" | "managed" | "founder-unavailable">("password");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -159,7 +159,7 @@ export function IntelligenceSignIn() {
       return;
     }
     setChallenge(null);
-    setPhase("confirmed");
+    setPhase("identity-only");
   }
 
   async function submitCredentials(event: FormEvent<HTMLFormElement>): Promise<void> {
@@ -261,10 +261,18 @@ export function IntelligenceSignIn() {
                   {signingOut ? "Signing out…" : "Sign out securely"}
                 </button>
               </>
+            ) : phase === "identity-only" ? (
+              <div role="status" className={styles["identityStatus"]}>
+                <p className={styles["successTitle"]}>Additional secure verification needed.</p>
+                <p>A Cognito sign-in response was received, but no approved NovaPharm Intelligence workspace session was established. This does not confirm that an authenticator is enrolled or that MFA has been verified by the workspace.</p>
+                <p>To register or verify your authenticator, continue through the secure Cognito sign-in. Medicines Terminal access is separately authorised.</p>
+                <a className={styles["primaryAction"]} href="/auth/customer/start">Continue with Cognito</a>
+                <button className={styles["recoveryButton"]} type="button" onClick={reset}>Return to sign-in</button>
+              </div>
             ) : phase === "confirmed" ? (
               <div role="status" className={styles["identityStatus"]}>
-                <p className={styles["successTitle"]}>Cognito sign-in completed.</p>
-                <p>Your credentials and authenticator have been accepted. Medicines Terminal access still requires an approved organisation, customer seat and subscription.</p>
+                <p className={styles["successTitle"]}>Approved customer session established.</p>
+                <p>The customer session endpoint has verified a permitted workspace session. Medicines datasets still require separately accepted source rights.</p>
                 <button className={styles["createAction"]} type="button" onClick={reset}>Return to sign-in</button>
               </div>
             ) : phase === "founder-unavailable" ? (
@@ -276,7 +284,7 @@ export function IntelligenceSignIn() {
               </div>
             ) : phase === "managed" ? (
               <div className={styles["identityStatus"]}>
-                <p>Additional account setup or a password change is required. Complete it directly with the secure identity provider.</p>
+                <p>Cognito requires further account setup, authenticator enrollment or verification. Complete it directly with the secure identity provider. No Medicines Terminal session has been granted.</p>
                 <a className={styles["primaryAction"]} href="/auth/customer/start">Continue with Cognito</a>
                 <button className={styles["recoveryButton"]} type="button" onClick={reset}>Back to sign-in</button>
               </div>
