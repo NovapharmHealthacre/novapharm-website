@@ -734,6 +734,7 @@ body.editorial-customer{background:#fff;color:#1d1d1f;overflow-x:hidden}
 .editorial-customer .editorial-topnav a[aria-current=page]{color:#19191b;border-bottom-color:#b70c1a;font-weight:670}
 .editorial-customer .editorial-topnav a:hover,.editorial-customer .editorial-account a:hover{color:#ad111d}
 .editorial-customer .editorial-account{display:flex;align-items:center;gap:18px;white-space:nowrap}
+.editorial-customer .editorial-user-email{display:inline-block;max-width:165px;overflow:hidden;text-overflow:ellipsis;font-size:11px;color:#55555c}
 .editorial-customer .editorial-account>a{font-size:12px;color:#57575e}
 .editorial-customer .editorial-account .logout-form button{background:#fff;color:#242427;border:1px solid #dedee2;
  padding:9px 16px}
@@ -800,6 +801,7 @@ body.editorial-customer{background:#fff;color:#1d1d1f;overflow-x:hidden}
  font-size:12px;color:#55555c;line-height:1.5}
 .editorial-customer .editorial-footer a{text-decoration:underline;text-underline-offset:3px}
 @media(max-width:1130px){
+ .editorial-customer .editorial-user-email{display:none}
  .editorial-customer .editorial-topbar{flex-wrap:wrap;gap:12px}
  .editorial-customer .editorial-topnav{order:3;width:100%;overflow-x:auto;justify-content:flex-start;gap:25px}
  .editorial-customer .editorial-account{margin-left:auto}
@@ -854,7 +856,8 @@ body.editorial-customer{background:#fff;color:#1d1d1f;overflow-x:hidden}
             '<a href="/portal/products/">Products</a><a href="/portal/orders/">Orders</a>'
             '<a href="/portal/invoices/">Finance</a><a href="/portal/documents/">Documents</a>'
             '<a href="/portal/support/">Support</a></nav>'
-            '<div class="editorial-account"><a href="/portal/account/">My account</a>'+logout_form+'</div>'
+            '<div class="editorial-account"><span class="editorial-user-email">'+email+'</span>'
+            '<a href="/portal/account/">My account</a>'+logout_form+'</div>'
             '</header><main class="editorial-main">'+body+'</main>'
             '<footer class="editorial-footer">Only approved customer records and services are available. '
             'Product images are illustrative catalogue references, not confirmation of stock, price or trade rights.'
