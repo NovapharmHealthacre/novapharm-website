@@ -15,7 +15,8 @@ const ledgerLot = {
   available_quantity: 85, quarantine_quantity: 5,
 };
 const lot = (overrides = {}) => ({
-  tenantId, siteId, sku: "NUTRAXIN-001", batchNumber: "BATCH-001",
+  tenantId, siteId, ownerId: "NOVAPHARM-STOCK-OWNER", locationId: "BIN-001",
+  sku: "NUTRAXIN-001", batchNumber: "BATCH-001",
   expiryDate: "2027-05-01", qualityStatus: "released",
   temperatureStatus: "verified_in_range", recallStatus: "clear",
   onHand: 100, reserved: 10, quarantined: 5, damaged: 0, ...overrides,
@@ -142,4 +143,16 @@ test("empty or absent 3PL source is never interpreted as operational integration
   const missing = reviewQualified3plSnapshot({}, options);
   assert.equal(missing.state, "blocked");
   assert.equal(missing.reportedOnHand, null);
+});
+
+test("same batch may be represented in independently identified bins and owners", () => {
+  const bins = [lot(), lot({locationId:"BIN-002",onHand:50,reserved:0,quarantined:0})];
+  const out = reviewQualified3plSnapshot(feed(bins), options);
+  assert.equal(out.state,"candidate_for_independent_review");
+  assert.equal(out.lotsReviewed,2);
+  assert.equal(out.reportedOnHand,150);
+  assert.equal(out.reportedReleased,135);
+  assert.deepEqual(new Set(out.fefoReviewCandidates.map(x=>x.locationId)),new Set(["BIN-001","BIN-002"]));
+  for(const bad of [lot({ownerId:null}),lot({locationId:null})])
+    assert.equal(reviewQualified3plSnapshot(feed([bad]),options).state,"blocked");
 });
