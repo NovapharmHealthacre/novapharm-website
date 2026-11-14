@@ -73,6 +73,11 @@ export function verifyInternalPilotMfaCookie({
   const expected = allowedEmail(expectedEmail);
   const key = keyFor(signingKey);
   const [,n,encrypted,tag] = cookieValue.split(".");
+  // Reject non-canonical base64url encodings, including variations of
+  // unused trailing bits that decode to the same authenticated tag.
+  for (const part of [n, encrypted, tag]) {
+    if (Buffer.from(part, "base64url").toString("base64url") !== part) throw fail();
+  }
   let p;
   try {
     const decipher = createDecipheriv("aes-256-gcm",key,Buffer.from(n,"base64url"));
