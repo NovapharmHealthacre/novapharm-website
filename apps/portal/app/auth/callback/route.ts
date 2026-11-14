@@ -12,6 +12,10 @@ import {
   requestFounderPrivateSession,
 } from "../../../../../src/core/intelligence-founder-private-session-bridge.mjs";
 import {
+  checkInternalPilotUnenrolled,
+  createInternalPilotMfaCookie,
+} from "../../../../../src/core/intelligence-internal-pilot-mfa.mjs";
+import {
   checkFounderEnrolled,
   checkFounderUnenrolled,
   createFounderMfaCookie,
@@ -54,6 +58,8 @@ const safeIdentityErrorCodes = new Set([
   "provider_identity_session_not_fresh",
   "founder_provider_policy_not_attested", "founder_provider_identity_unattested",
   "founder_provider_session_not_fresh", "mfa_existing_factor_not_attested",
+  "pilot_mfa_identity_not_allowed", "pilot_mfa_claims_incompatible",
+  "pilot_mfa_auth_stale", "pilot_mfa_denied",
 ]);
 
 function safeIdentityErrorCode(error: unknown): string {
@@ -154,6 +160,52 @@ export async function GET(request: NextRequest): Promise<Response> {
       // been validated by Cognito and the server. Do not reject a legitimate
       // MFA bootstrap because Lambda's internal URL differs from the public
       // deployment origin.
+      // A signed, email-verified internal pilot may bootstrap ONLY its own
+      // Cognito authenticator. No founder or customer identity is issued.
+      // All other users follow the unchanged founder path below.
+      let pilotMfaOffered = false;
+      if (process.env["NPI_INTERNAL_PILOT_MFA_ENABLED"] === "true" &&
+          typeof process.env["NPI_INTERNAL_PILOT_MFA_EMAIL"] === "string") {
+        try {
+          const allowedEmail = process.env["NPI_INTERNAL_PILOT_MFA_EMAIL"];
+          const pilot = await verifyIntelligenceCustomerIdToken({
+            idToken, expectedNonce: transaction.nonce,
+            purpose: "internal_pilot_mfa_enrolment",
+            pilotMfaEmail: allowedEmail,
+          });
+          if (!pilot.pilotMfaEnrolmentOnly || pilot.identityVerified ||
+              pilot.grantsTenantAccess || pilot.grantsFounderAccess) {
+            throw new Error("Restricted pilot identity denied.");
+          }
+          await checkInternalPilotUnenrolled({
+            accessToken, subject: pilot.verifiedCognitoSubject,
+            expectedEmail: allowedEmail,
+          });
+          const sealed = createInternalPilotMfaCookie({
+            accessToken, subject: pilot.verifiedCognitoSubject,
+            expectedEmail: allowedEmail,
+            signingKey: process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] ?? "",
+          });
+          response = NextResponse.redirect(
+            new URL("/auth/internal/mfa/setup", FOUNDER_PUBLIC_ORIGIN),
+            { status: 303 },
+          );
+          response.cookies.set({
+            name: "__Host-npi_internal_mfa", value: sealed.cookieValue,
+            path: "/", secure: true, httpOnly: true, sameSite: "lax",
+            maxAge: sealed.maxAgeSeconds,
+          });
+          response.headers.set("Cache-Control", "no-store");
+          pilotMfaOffered = true;
+          console.info(JSON.stringify({ event:"npi_internal_pilot_mfa_enrolment_offered" }));
+        } catch (pilotError: unknown) {
+          console.info(JSON.stringify({
+            event:"npi_internal_pilot_mfa_enrolment_denied",
+            reason: safeIdentityErrorCode(pilotError),
+          }));
+        }
+      }
+      if (!pilotMfaOffered) {
       phase = "provider_managed_mfa_identity";
       let providerFounderOnly = false;
       try {
@@ -255,6 +307,7 @@ export async function GET(request: NextRequest): Promise<Response> {
         console.info(JSON.stringify({ event: "npi_founder_totp_enrolment_offered" }));
       }
       }
+      } // All other sign-ins retain the existing founder-only flow.
     }
     if (identity) {
       if (identity.grantsTenantAccess !== false || identity.identityVerified !== true)
