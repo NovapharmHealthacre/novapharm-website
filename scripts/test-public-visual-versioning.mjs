@@ -431,7 +431,7 @@ for (const spec of [
     assert.deepEqual(assignments, spec.fromBuild ? ['bundle_css_sha256="$EXPECTED_BUNDLE_CSS_SHA256"']
       : [`${spec.variable}="$(sha256sum ${cssFile})"`, `${spec.variable}="\${${spec.variable}%% *}"`]);
     const validations = spec.fromBuild ? shell.filter(line => line.includes('[[ "$bundle_css_sha256" =~')) : [];
-    if (spec.fromBuild) assert.deepEqual(validations, ['[[ "$bundle_css_sha256" =~ ^[0-9a-f]{64}$ ]]']);
+    if (spec.fromBuild) assert.deepEqual(validations, ['[[ "$bundle_css_sha256" =~ ^[0-9a-f]{64}$ ]] || exit 1']);
     const checks = shell.filter(line => line.includes(`href=\\\"/${spec.asset}?v=${spec.version}&amp;sha256=\${${spec.variable}}`));
     assert.equal(checks.length, 1);
     const pattern = checks[0].match(/grep -Fq ("(?:\\.|[^"\\])*")/)?.[1];
@@ -612,4 +612,21 @@ test("build receipt is emitted only after all staged bundle links match and is f
   }
   write(root, `_site/${bundle}`, "");
   assert.notEqual(inspect().status, 0);
+});
+
+test("invalid deployment receipts stop before any ancestry command executes", t => {
+  const { root } = fixture(t);
+  const fence = workflowStepShell(publishWorkflow, "Prove forward-only release ancestry and deploy evidence").join("\n");
+  const marker = join(root, "ancestry-command-called.txt");
+  const code = `node() { printf 'called\\n' >> "$PROBE_OUTPUT"; }\n${fence}`;
+  const inspect = receipt => spawnSync("bash", ["-c", code], { cwd: root, encoding: "utf8", timeout: 5000,
+    env: { PATH: process.env.PATH, PROBE_OUTPUT: marker, ...(receipt === undefined ? {} : { EXPECTED_BUNDLE_CSS_SHA256: receipt }) } });
+  for (const receipt of [undefined, "", "invalid", "a".repeat(40), "A".repeat(64)]) {
+    const result = inspect(receipt);
+    assert.equal(result.error, undefined);
+    assert.notEqual(result.status, 0, "Invalid receipt must make the actual fence fail");
+    assert.equal(spawnSync("test", ["-e", marker]).status, 1, "Invalid receipt reached the ancestry command");
+  }
+  assert.equal(inspect(hash("synthetic staged bundle")).status, 0);
+  assert.equal(readFileSync(marker, "utf8"), "called\n");
 });

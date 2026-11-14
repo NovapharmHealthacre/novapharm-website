@@ -368,7 +368,7 @@ jobs:
           test -s _site/assets/css/novapharm.bundle.css
           bundle_css_sha256="$(sha256sum _site/assets/css/novapharm.bundle.css)"
           bundle_css_sha256="${bundle_css_sha256%% *}"
-          [[ "$bundle_css_sha256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$bundle_css_sha256" =~ ^[0-9a-f]{64}$ ]] || exit 1
           for page in index.html capabilities/index.html oncology/index.html products/index.html; do
             test -s "_site/$page"
             grep -Fq "href=\"/assets/css/novapharm.bundle.css?v=20261111-forensic-design-v3&amp;sha256=${bundle_css_sha256}\"" "_site/$page"
@@ -400,7 +400,7 @@ jobs:
           EXPECTED_BUNDLE_CSS_SHA256: ${{ needs.build-and-verify.outputs.bundle_css_sha256 }}
         run: |
           set -euo pipefail
-          [[ "$EXPECTED_BUNDLE_CSS_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$EXPECTED_BUNDLE_CSS_SHA256" =~ ^[0-9a-f]{64}$ ]] || exit 1
           node scripts/check-pages-monotonic-release.mjs
       - name: Publish verified Pages artifact
         id: ship
@@ -747,7 +747,7 @@ jobs:
         run: |
           set -euo pipefail
           bundle_css_sha256="$EXPECTED_BUNDLE_CSS_SHA256"
-          [[ "$bundle_css_sha256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$bundle_css_sha256" =~ ^[0-9a-f]{64}$ ]] || exit 1
           verified=false
           for attempt in $(seq 1 18); do
             verified=true
