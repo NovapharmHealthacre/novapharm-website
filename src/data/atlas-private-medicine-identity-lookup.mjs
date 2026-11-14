@@ -30,10 +30,10 @@ const validTime = x => typeof x === "string" && ISO.test(x) &&
 const validId = x => typeof x === "string" && IDENT.test(x);
 const cleanName = x => typeof x === "string" && x.trim().length >= 2 &&
   x.trim().length <= 300 && !/[\u0000-\u001F]/u.test(x);
-const approvedSession = (x, principalId, asOf) => x?.verified === true &&
+const approvedSession = (x, principalId, now) => x?.verified === true &&
   x.workspaceId === PILOT_WORKSPACE && x.principalId === principalId &&
   x.role === "board" && validId(x.authorityRevision) &&
-  validTime(x.expiresAt) && Date.parse(x.expiresAt) > Date.parse(asOf);
+  validTime(x.expiresAt) && Date.parse(x.expiresAt) > now;
 function checkRow(row, { sourceCode, codeSystem, asOf }) {
   if (!row || typeof row !== "object" || Array.isArray(row) ||
       Object.keys(row).some(k => !FIELDS.includes(k)) ||
@@ -77,7 +77,7 @@ export function createPrivateAtlasMedicineIdentityLookup({
     }
     const context = Object.freeze({ principalId, workspaceId, purpose: PURPOSE, asOf });
     const session = await verifyPrivateSession(context);
-    if (!approvedSession(session, principalId, asOf)) throw denied("private_session_not_accepted");
+    if (!approvedSession(session, principalId, now)) throw denied("private_session_not_accepted");
     const filter = {
       workspace_id: PILOT_WORKSPACE, code_system: codeSystem,
       normalized_code: sourceCode, jurisdiction: "England",
@@ -110,13 +110,15 @@ export function createPrivateAtlasMedicineIdentityLookup({
           rights.rightsRevision !== row.rights_revision ||
           rights.allowedPurpose !== PURPOSE ||
           !validTime(rights.checkedAt) ||
+          Date.parse(rights.checkedAt) > now ||
+          now - Date.parse(rights.checkedAt) > 60_000 ||
           (rights.validUntil != null &&
-            (!validTime(rights.validUntil) || Date.parse(rights.validUntil) <= Date.parse(asOf)))) {
+            (!validTime(rights.validUntil) || Date.parse(rights.validUntil) <= now))) {
         throw denied("source_rights_not_accepted");
       }
     }
     const rechecked = await verifyPrivateSession(context);
-    if (!approvedSession(rechecked, principalId, asOf) ||
+    if (!approvedSession(rechecked, principalId, now) ||
         rechecked.authorityRevision !== session.authorityRevision) {
       throw denied("session_revoked_during_read");
     }
