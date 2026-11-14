@@ -61,6 +61,15 @@ function liveRights(receipt, candidate, grant, now) {
     (receipt.validUntil == null ||
       (timestamp(receipt.validUntil) && Date.parse(receipt.validUntil) > now));
 }
+function clockTime(clock) {
+  try {
+    const ms = clock();
+    return Number.isSafeInteger(ms) && ms >= 0 ? ms : null;
+  } catch {
+    return null;
+  }
+}
+
 function immutable(rows) {
   return Object.freeze(rows.map(row => Object.freeze({ ...row })));
 }
@@ -103,7 +112,7 @@ async function attestQuarantine(adapter, written, manifestSha256, eventId, reaso
 export async function admitPrivateOfficialMedicineEvidence({
   snapshot, rows, grant, release, authority,
   verifyCurrentRights, verifyCurrentAuthority, commitAtomic, readBackCommit,
-  quarantineCommitted, now = new Date()
+  quarantineCommitted, now = new Date(), clock = Date.now
 } = {}) {
   if (!identity(authority)) deny("trusted_private_authority_required");
   if (!(now instanceof Date) || !Number.isFinite(now.getTime()) ||
@@ -112,7 +121,7 @@ export async function admitPrivateOfficialMedicineEvidence({
     deny("release_freshness_invalid");
   }
   if ([verifyCurrentRights, verifyCurrentAuthority, commitAtomic, readBackCommit,
-    quarantineCommitted].some(f => typeof f !== "function")) {
+    quarantineCommitted, clock].some(f => typeof f !== "function")) {
     deny("trusted_storage_adapters_required");
   }
 
@@ -136,7 +145,11 @@ export async function admitPrivateOfficialMedicineEvidence({
     deny("authority_revoked_before_commit");
   }
   const before = await verifyCurrentRights(Object.freeze({ ...check }));
-  if (!liveRights(before, candidate, grant, now.getTime())) deny("rights_revoked_before_commit");
+  const beforeTime = clockTime(clock);
+  if (beforeTime === null || Math.abs(beforeTime - now.getTime()) > 60_000) {
+    deny("trusted_clock_invalid_before_commit");
+  }
+  if (!liveRights(before, candidate, grant, beforeTime)) deny("rights_revoked_before_commit");
 
   const manifestSha256 = createHash("sha256").update(JSON.stringify([
     "novapharm.private-source-admission.v1", WORKSPACE, candidate.sourceId,
@@ -177,10 +190,18 @@ export async function admitPrivateOfficialMedicineEvidence({
       written.customerPublishApproved !== false) {
     deny("atomic_commit_not_attested");
   }
-  const read = await readBackCommit(Object.freeze({
-    transactionId: written.transactionId, workspaceId: WORKSPACE,
-    manifestSha256, eventId, expectedRows: candidate.rowCount
-  }));
+  // A confirmed write followed by missing, corrupt, or unavailable
+  // durable readback is an indeterminate post-commit state, not a safe
+  // pre-commit denial. Require audited quarantine before refusing admission.
+  let read = null;
+  try {
+    read = await readBackCommit(Object.freeze({
+      transactionId: written.transactionId, workspaceId: WORKSPACE,
+      manifestSha256, eventId, expectedRows: candidate.rowCount
+    }));
+  } catch {
+    read = null;
+  }
   if (!read || read.durable !== true ||
       read.workspaceId !== WORKSPACE ||
       read.transactionId !== written.transactionId ||
@@ -189,6 +210,8 @@ export async function admitPrivateOfficialMedicineEvidence({
       read.acceptedRows !== candidate.rowCount ||
       read.auditCommitted !== true ||
       read.customerPublishApproved !== false) {
+    await attestQuarantine(quarantineCommitted, written, manifestSha256, eventId,
+      "durable_audit_or_manifest_missing");
     deny("durable_audit_or_manifest_missing");
   }
 
@@ -212,7 +235,15 @@ export async function admitPrivateOfficialMedicineEvidence({
   } catch {
     after = null;
   }
-  if (!liveRights(after, candidate, grant, now.getTime())) {
+  // A durable commit can outlive its earlier rights receipt. Recheck wall time
+  // after asynchronous verification, never reuse the request timestamp.
+  const afterTime = clockTime(clock);
+  if (afterTime === null || afterTime < beforeTime) {
+    await attestQuarantine(quarantineCommitted, written, manifestSha256, eventId,
+      "clock_recheck_failed_after_commit");
+    deny("trusted_clock_invalid_after_commit");
+  }
+  if (!liveRights(after, candidate, grant, afterTime)) {
     await attestQuarantine(quarantineCommitted, written, manifestSha256, eventId,
       "rights_recheck_failed_after_commit");
     deny("rights_revoked_after_commit");

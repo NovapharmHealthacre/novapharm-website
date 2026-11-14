@@ -1,0 +1,55 @@
+name: Intelligence G1 G2 integrated admission contract
+on:
+  pull_request:
+    paths:
+      - 'src/core/medicine-evidence-*.mjs'
+      - 'src/data/atlas-private-medicine-rights.mjs'
+      - 'src/data/atlas-medicine-g2-atomic-store.mjs'
+      - 'src/data/atlas-g2-unique-index-migration.mjs'
+      - 'scripts/test-medicine-evidence-*.mjs'
+      - 'scripts/test-atlas-private-medicine-rights.mjs'
+      - 'scripts/test-atlas-medicine-g2-atomic-store.mjs'
+      - 'scripts/test-atlas-g2-unique-index-migration.mjs'
+      - 'scripts/test-intelligence-ecr-lambda-retention.mjs'
+      - 'scripts/test-intelligence-g1-g2-handoff.mjs'
+      - 'infra/aws/intelligence-ecr-protected-lifecycle-policy.json'
+      - '.github/workflows/intelligence-g1-g2-integrated-admission.yml'
+      - 'package.json'
+  push:
+    branches: [main]
+    paths:
+      - 'src/core/medicine-evidence-*.mjs'
+      - 'src/data/atlas-private-medicine-rights.mjs'
+      - 'src/data/atlas-medicine-g2-atomic-store.mjs'
+      - 'src/data/atlas-g2-unique-index-migration.mjs'
+      - 'scripts/test-medicine-evidence-*.mjs'
+      - 'scripts/test-atlas-private-medicine-rights.mjs'
+      - 'scripts/test-atlas-medicine-g2-atomic-store.mjs'
+      - 'scripts/test-atlas-g2-unique-index-migration.mjs'
+      - 'scripts/test-intelligence-ecr-lambda-retention.mjs'
+      - 'scripts/test-intelligence-g1-g2-handoff.mjs'
+      - 'infra/aws/intelligence-ecr-protected-lifecycle-policy.json'
+      - '.github/workflows/intelligence-g1-g2-integrated-admission.yml'
+      - 'package.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  integrated-private-admission:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+      - name: Verify integrated G1-G2 candidate, rights, storage, schema and retention
+        run: |
+          node --test \
+            scripts/test-medicine-evidence-admission.mjs \
+            scripts/test-medicine-evidence-atomic-admission.mjs \
+            scripts/test-atlas-private-medicine-rights.mjs \
+            scripts/test-atlas-medicine-g2-atomic-store.mjs \
+            scripts/test-atlas-g2-unique-index-migration.mjs \
+            scripts/test-intelligence-ecr-lambda-retention.mjs \
+            scripts/test-intelligence-g1-g2-handoff.mjs
