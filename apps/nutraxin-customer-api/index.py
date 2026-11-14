@@ -379,6 +379,88 @@ def request_base(event):
     trusted={urllib.parse.urlsplit(BASE_URL).netloc,"portal.novapharmhealthcare.com"}
     return "https://"+host if host in trusted else BASE_URL
 
+# Customer signup is a browser-origin-sensitive action. The public custom
+# domain and its exact AWS API endpoint are the only authorised live origins.
+# Do not trust wildcard subdomains or forwarded host headers.
+LOGIN_ORIGIN_ALLOWLIST = frozenset({
+    BASE_URL,
+    "https://portal.novapharmhealthcare.com",
+    "https://wgy9p7ad0d.execute-api.eu-north-1.amazonaws.com",
+})
+
+def canonical_login_origin(value):
+    if not isinstance(value,str) or len(value)>300:
+        return ""
+    try:
+        url=urllib.parse.urlsplit(value)
+        if (url.scheme.lower()!="https" or not url.hostname or
+            url.username is not None or url.password is not None or
+            url.port not in (None,443) or url.path not in ("","/") or
+            url.query or url.fragment):
+            return ""
+        return "https://"+url.hostname.lower()
+    except (AttributeError,ValueError):
+        return ""
+
+def log_denied_login_origin(origin,headers):
+    # Diagnostic metadata only: never log email, form body, state or cookies.
+    try: hostname=(urllib.parse.urlsplit(origin).hostname or "").lower()
+    except ValueError: hostname=""
+    safe_host=re.sub(r"[^a-z0-9.:-]","",(headers.get("host") or "").lower())[:110]
+    safe_origin=re.sub(r"[^a-z0-9.-]","",hostname)[:110]
+    print("login_origin_rejected",json.dumps({
+        "origin_host":safe_origin or "missing_or_invalid",
+        "origin_class": "opaque_null" if origin=="null" else ("absent" if not origin else "non_https_or_invalid"),
+        "request_host":safe_host or "missing",
+        "configured_base":urllib.parse.urlsplit(BASE_URL).hostname
+    },separators=(",",":")))
+
+def signup_landing_page():
+    # Mint an unguessable, host-only double-submit token to protect form POSTs
+    # when privacy-preserving browsers send an opaque (null) Origin header.
+    token=secrets.token_urlsafe(32)
+    marker='<input type="hidden" name="mode" value="signup">'
+    if PAGE.count(marker)!=1:
+        raise RuntimeError("signup form missing")
+    html=PAGE.replace(marker,marker+'\n<input type="hidden" name="signup_csrf" value="'+token+'">',1)
+    return reply(200,html,"text/html; charset=utf-8",
+                 cookies=[cookie("__Host-np_signup_csrf",token,900)])
+
+def verified_signup_csrf(event,fields,headers):
+    supplied=fields.get("signup_csrf",[""])[0]
+    stored=cookies(event).get("__Host-np_signup_csrf","")
+    if not (isinstance(supplied,str) and isinstance(stored,str) and
+            len(supplied)==43 and
+            re.fullmatch(r"[A-Za-z0-9_-]{43}",supplied) and
+            hmac.compare_digest(supplied,stored)):
+        return False
+    # Fetch Metadata adds protection on browsers that send it.
+    if headers.get("sec-fetch-site","").lower() not in ("","same-origin","none"):
+        return False
+    referer=headers.get("referer","")
+    if referer:
+        try:
+            uri=urllib.parse.urlsplit(referer)
+            if (uri.scheme.lower()!="https" or not uri.hostname or
+                uri.username is not None or uri.password is not None or
+                uri.port not in (None,443) or
+                "https://"+uri.hostname.lower() not in LOGIN_ORIGIN_ALLOWLIST):
+                return False
+        except (AttributeError,ValueError):
+            return False
+    return True
+
+def login_origin_authorized(event,fields,headers):
+    origin=headers.get("origin","")
+    if canonical_login_origin(origin) in LOGIN_ORIGIN_ALLOWLIST:
+        return True
+    # Opaque/no-Origin requests require the independent, same-host secret.
+    # Never bypass an explicit untrusted HTTP(S) Origin with a form token.
+    if origin in ("","null") and verified_signup_csrf(event,fields,headers):
+        return True
+    log_denied_login_origin(origin,headers)
+    return False
+
 def login(event):
     method=(event.get("requestContext",{}).get("http",{}).get("method") or "GET").upper()
     parameters=event.get("queryStringParameters") or {}
@@ -386,9 +468,6 @@ def login(event):
     email=""
     if method=="POST":
         headers={str(k).lower():str(v) for k,v in (event.get("headers") or {}).items()}
-        origin=headers.get("origin")
-        if origin and origin not in (BASE_URL,request_base(event)):
-            return error(403,"invalid_login_origin")
         body=event.get("body") or ""
         if event.get("isBase64Encoded"):
             try: body=base64.b64decode(body,validate=True).decode("utf-8")
@@ -397,6 +476,8 @@ def login(event):
             return error(400,"invalid_login_form")
         try: fields=urllib.parse.parse_qs(body,keep_blank_values=True,max_num_fields=4)
         except ValueError: return error(400,"invalid_login_form")
+        if not login_origin_authorized(event,fields,headers):
+            return error(403,"invalid_login_origin")
         signup=fields.get("mode",[""])[0]=="signup"
         email=fields.get("email",[""])[0].strip()
         if not re.fullmatch(r"[^\s@/<>]{1,64}@[^\s@/<>]{1,189}",email):
@@ -799,7 +880,7 @@ def retail_checkout(event, customer):
 def handler(event,context):
     method=(event.get("requestContext",{}).get("http",{}).get("method") or "GET").upper()
     path=event.get("rawPath") or "/"
-    if method=="GET" and path=="/":return reply(200,PAGE,"text/html; charset=utf-8")
+    if method=="GET" and path=="/":return signup_landing_page()
     if method=="GET" and path=="/assets/earth-horizon-approved.jpg":return {"statusCode":200,"isBase64Encoded":True,"headers":{"content-type":"image/jpeg","cache-control":"public, max-age=604800","x-content-type-options":"nosniff","cross-origin-resource-policy":"same-origin"},"body":EARTH_APPROVED_JPEG_BASE64}
     if method=="GET" and path=="/app.js":return reply(200,APP,"text/javascript; charset=utf-8")
     if method in ("GET","POST") and path=="/login":return login(event)
