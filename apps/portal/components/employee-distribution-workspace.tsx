@@ -107,6 +107,30 @@ export function EmployeeDistributionWorkspace({ moduleCode }: Readonly<{ moduleC
           <div><strong>Fulfilment</strong><span>FEFO review only; no automatic reservation or dispatch</span></div>
         </div>
       </section>
+      <section className="distribution-wms-journeys" aria-labelledby="employee-wms-workflows">
+        <p className="distribution-employee-overline">CONTROLLED WAREHOUSE OPERATIONS</p>
+        <h2 id="employee-wms-workflows">From receipt to proof of delivery.</h2>
+        <p>Three evidence-led workstreams support our warehouse partners. Each transition must be
+          tied to the correct stock owner, site, product, batch and responsible decision.</p>
+        <div className="distribution-wms-journey-list">
+          <article><span>01 / INBOUND</span><h3>Receive and reconcile.</h3>
+            <p>Match supplier purchase orders and advance shipment notices against actual
+              warehouse receipts. Flag shortages, excess quantities and damage for quality review.</p></article>
+          <article><span>02 / QUALITY</span><h3>Control every exception.</h3>
+            <p>Keep returns isolated, preserve batch traceability and identify potential
+              recall exposure. Only authorised quality decisions may change stock status.</p></article>
+          <article><span>03 / FULFILMENT</span><h3>Follow every movement.</h3>
+            <p>Reconcile allocation, picking, packing, carrier handover, delivery evidence
+              and 3PL charges before treating a shipment as completed.</p></article>
+        </div>
+        <p className="distribution-wms-footnote">Operational data source: no independently authenticated
+          Polar Speed/UPS inventory feed is configured. These controls cannot submit receiving
+          adjustments, reservations, dispatch instructions or recall communications.</p>
+        {modules.get("employee.quality")
+          ? <a className="distribution-employee-link" href={modules.get("employee.quality")?.route}>
+              Open quality workspace
+            </a> : null}
+      </section>
     </section>;
   }
 
