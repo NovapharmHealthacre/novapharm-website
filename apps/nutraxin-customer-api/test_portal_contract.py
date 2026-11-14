@@ -196,6 +196,34 @@ class PortalSecurityTests(unittest.TestCase):
             PORTAL.session=previous_session
             PORTAL.TABLE=previous_table
 
+    def test_opaque_origin_logout_uses_fresh_host_only_csrf_token(self):
+        previous=PORTAL.session
+        PORTAL.session=lambda event: {"username":"synthetic","sub":"synthetic-sub",
+            "email":"synthetic@example.invalid","expires_at":PORTAL.now()+3600}
+        try:
+            landing=PORTAL.handler(self.event("/portal/dashboard/"),None)
+            token=re.search(r'name="signup_csrf" value="([A-Za-z0-9_-]{43})"',landing["body"])
+            self.assertIsNotNone(token)
+            proof=token.group(1)
+            self.assertIn("Secure",landing["cookies"][0])
+            event=self.event("/logout","POST",origin="null")
+            event["cookies"]=["__Host-np_signup_csrf="+proof]
+            event["headers"]["sec-fetch-site"]="same-origin"
+            event["body"]="signup_csrf="+proof
+            result=PORTAL.handler(event,None)
+            self.assertEqual(result["statusCode"],302)
+            self.assertIn("/logout?",result["headers"]["location"])
+            event["body"]="signup_csrf=invalid"
+            self.assertEqual(PORTAL.handler(event,None)["statusCode"],403)
+            event["body"]="signup_csrf="+proof
+            event["headers"]["origin"]="https://evil.example.invalid"
+            self.assertEqual(PORTAL.handler(event,None)["statusCode"],403)
+            event["headers"]["origin"]="null"
+            event["headers"]["sec-fetch-site"]="cross-site"
+            self.assertEqual(PORTAL.handler(event,None)["statusCode"],403)
+        finally:
+            PORTAL.session=previous
+
     def test_root_signin_preserved_and_legacy_nutraxin_shop_not_portal_home(self):
         page=PORTAL.handler(self.event("/"),None)
         self.assertEqual(page["statusCode"],200)
