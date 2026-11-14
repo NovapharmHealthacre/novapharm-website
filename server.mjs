@@ -817,7 +817,9 @@ export async function handleRequest(request, response) {
     if (pathname === "/api/portal/session" && request.method === "GET") {
       const session = await getSession(request);
       if (!session) return json(response, 401, { error: "Authentication required." });
-      json(response, 200, { user: { username: session.username, displayName: session.displayName, role: session.role, accessType: session.accessType, accessScopes: session.accessScopes, mustChangePassword: session.mustChangePassword } });
+      json(response, 200, { user: { username: session.username, displayName: session.displayName, role: session.role, accessType: session.accessType, accessScopes: session.accessScopes, mustChangePassword: session.mustChangePassword,
+        // Server-owned canonical account association; never trust a browser-provided customer id.
+        customerAccountLinked: session.accessType === "customer" && Boolean(enterpriseContext(session).customerId) } });
       return;
     }
 
