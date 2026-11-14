@@ -451,10 +451,23 @@ for (const [engineName, browserType] of engines) {
                   plan + ": exactly one clear customer action");
                 const action = card.locator(".npi-plan-cta");
                 const href = await action.getAttribute("href");
-                assert.ok(href?.startsWith("/contact/?"), plan + ": action must lead to the governed enquiry experience");
-                assert.ok(href?.includes("intelligencePlan="), plan + ": action must include the requested plan");
-                assert.ok(!href?.includes("checkout") && !href?.includes("/auth/customer/register"),
-                  plan + ": no unverified paid checkout or registration");
+                if (plan === "enterprise") {
+                  assert.ok(href?.startsWith("/contact/?") && href.includes("intelligencePlan=enterprise"),
+                    "Enterprise must remain a contractual sales enquiry");
+                } else {
+                  assert.ok(href?.startsWith("https://intelligence.novapharmhealthcare.com/auth/customer/register"),
+                    plan + ": route to protected Cognito registration, not contact or Stripe directly");
+                  if (plan === "trial") {
+                    assert.equal(new URL(href ?? "").searchParams.has("plan"), false, "Free trial requires no payment selection");
+                  } else {
+                    assert.equal(new URL(href ?? "").searchParams.get("plan"), plan);
+                    assert.equal(new URL(href ?? "").searchParams.get("cycle"), "monthly");
+                    const login = card.locator(".npi-plan-existing");
+                    assert.equal(await login.count(), 1, plan + ": existing customers get a sign-in path");
+                    const loginHref = await login.getAttribute("href");
+                    assert.equal(new URL(loginHref ?? "").searchParams.get("plan"), plan);
+                  }
+                }
               }
               const freeTrial = grid.locator('[data-npi-plan="trial"][data-npi-starter-trial="approved"]');
               assert.match(await freeTrial.innerText(), /Free Trial/);
