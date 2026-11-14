@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import catalogue from "../../corporate/data/nutraxin-product-register.json";
-import { destinationAfterPortalLogin, nutraxinOrderProducts, nutraxinProductForSelection, recognisedNutraxinSku, validatedNutraxinIntentQuery, validatedCustomerCommerceIntentQuery } from "../data/nutraxin-order-intent";
+import { destinationAfterPortalLogin, nutraxinOrderProducts, nutraxinProductForSelection, recognisedNutraxinSku, validatedCustomerCommerceIntentQuery, validatedNutraxinIntentQuery } from "../data/nutraxin-order-intent";
 
 test("ordering handoff recognises precisely the nineteen governed Nutraxin SKUs", () => {
   assert.equal(Object.keys(nutraxinOrderProducts).length, 19);
