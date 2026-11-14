@@ -242,6 +242,8 @@ test("public Intelligence sign-in uses hosted Cognito for enrollment and cannot 
   assert.match(card, /setPhase\("identity-only"\);/u,
     "Unapproved direct sign-ins must show an identity-only state.");
   assert.match(card, /phase === "identity-only"/u);
+  assert.match(card, /if \(result\.kind === "provider-required"\)[\s\S]*?window\.location\.assign\("\/auth\/customer\/start"\)/u,
+    "Cognito MFA_SETUP or other provider-required steps must hand off to hosted enrollment.");
   assert.match(card, /href="\/auth\/customer\/start"/u,
     "Identity-only users must have a secure, first-time MFA enrollment path.");
   assert.match(card, /does not confirm that an authenticator is enrolled/u);
