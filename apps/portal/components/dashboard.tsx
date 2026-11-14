@@ -179,7 +179,11 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
       <header className="workspace-topbar"><button className="menu-button" type="button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu aria-hidden="true" /></button><search><form className="portal-search" onSubmit={search}><Search aria-hidden="true" /><label className="sr-only" htmlFor="portal-search">Search authorised records</label><input id="portal-search" name="query" placeholder="Search" autoComplete="off" /><button type="submit">Search</button>{searchOpen ? <div className="search-results"><button className="search-close" type="button" aria-label="Close search results" onClick={() => setSearchOpen(false)}><X aria-hidden="true" /></button>{searchResults.length ? searchResults.map((result) => <a key={`${result.type}-${result.reference}`} href={result.route}><strong>{result.title}</strong><span>{result.type} · {result.reference}{result.status ? ` · ${readable(result.status)}` : ""}</span></a>) : <p>No authorised records found.</p>}</div> : null}</form></search><div className="user-summary"><span>{user?.displayName ?? "Secure user"}</span><small>{user ? readable(user.accessType) : "Verifying"}</small><button type="button" onClick={logout} aria-label="Sign out"><LogOut aria-hidden="true" /></button></div></header>
       <div className="workspace-content">
         <header className="module-heading"><div><p className="eyebrow">{areaLabels[module.area]} / {module.releaseClassificationLabel}</p><h1>{module.title}</h1><p>{module.purpose}</p></div><button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data"><RefreshCw aria-hidden="true" /><span>Refresh</span></button></header>
-        {user && snapshot ? <CustomerCommerceWorkspace moduleCode={module.code} /> : null}
+        {/* Static customer workspace navigation is non-sensitive and SSR-gated by
+            PortalPage's verified session. Render at first paint instead of
+            injecting it after async API data; customer records stay below
+            the independent user+snapshot authorization boundary. */}
+        <CustomerCommerceWorkspace moduleCode={module.code} />
         {user && snapshot && selectedNutraxinProduct ? <section className="nutraxin-selection-panel" aria-labelledby="nutraxin-selection-title">
           <p className="nutraxin-selection-kicker">MY PRODUCTS / SELECTED REFERENCE</p>
           <h2 id="nutraxin-selection-title">{selectedNutraxinProduct.name}</h2>
