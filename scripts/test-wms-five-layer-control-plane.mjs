@@ -12,7 +12,7 @@ const fixture=(sections=[],dataState="synthetic")=>({
 test("five and only five independent control layers are present",()=>{
   assert.deepEqual(WMS_CONTROL_LAYERS.map(x=>x.code),
     ["commercial","inventory","quality","orchestration","intelligence"]);
-  assert.equal(new Set(WMS_CONTROL_LAYERS.map(x=>x.destination)).size,3);
+  assert.equal(new Set(WMS_CONTROL_LAYERS.map(x=>x.destination)).size,5);
 });
 test("warehouse-employee-only response cannot issue binding operations",()=>{
   const r=reviewWmsFiveLayerObservations(fixture([
