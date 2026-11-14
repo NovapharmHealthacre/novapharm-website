@@ -148,16 +148,19 @@ export function createAtlasPrivateMedicineRightsVerifier({
     } catch {
       return null;
     }
+    // The independent signing service can finish AFTER the first rights
+    // lookup clock sample. Judge its receipt against a fresh trusted timestamp,
+    // not the earlier lookup time, while rejecting rollback and stale proofs.
+    const postCheck = safeTime(clock);
+    if (postCheck === null || postCheck < now ||
+      postCheck - now > 60_000) return null;
     // Signer identity and signature verification MUST be external and current.
     if (!signed || signed.verifiedSignature !== true ||
       signed.grantDigestSha256 !== digest ||
       !validId(signed.verifierId) ||
       signed.revoked !== false ||
       !validUtc(signed.checkedAt) ||
-      Date.parse(signed.checkedAt) > now ||
-      now - Date.parse(signed.checkedAt) > 60_000) return null;
-    const postCheck = safeTime(clock);
-    if (postCheck === null || postCheck < now ||
+      Date.parse(signed.checkedAt) > postCheck ||
       postCheck - Date.parse(signed.checkedAt) > 60_000 ||
       (g.valid_until != null && Date.parse(g.valid_until) <= postCheck)) return null;
     return Object.freeze({
