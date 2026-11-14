@@ -74,6 +74,45 @@ class PaymentContracts(unittest.TestCase):
         FAKE_DB.items.clear()
         FAKE_DB.writes.clear()
 
+    def test_portal_payment_returns_to_fixed_private_domain(self):
+        previous=CHECKOUT.urllib.request.urlopen
+        calls=[]
+        class FakeResponse:
+            def __enter__(self):return self
+            def __exit__(self,*args):return False
+            def read(self,n):
+                return json.dumps({"id":"cs_live_"+"a"*18,
+                    "url":"https://checkout.stripe.com/c/pay_synthetic",
+                    "livemode":True,"mode":"payment","currency":"gbp",
+                    "amount_total":12600}).encode()
+        def fake_open(req,timeout=12):
+            calls.append(CHECKOUT.urllib.parse.parse_qs(req.data.decode()))
+            return FakeResponse()
+        CHECKOUT.urllib.request.urlopen=fake_open
+        try:
+            record=approved_record()
+            portal_record=dict(record)
+            portal_record["checkoutChannel"]=CHECKOUT.s("PORTAL_RETAIL")
+            portal=CHECKOUT.details(portal_record,record["orderId"]["S"],"customer_123456")
+            self.assertEqual(portal["checkoutChannel"],"PORTAL_RETAIL")
+            CHECKOUT.stripe_session(portal,"attempt_portal")
+            x=calls[-1]
+            self.assertEqual(x["success_url"][0],
+                "https://portal.novapharmhealthcare.com/portal/products/?checkout=return&order_id="+record["orderId"]["S"])
+            self.assertEqual(x["cancel_url"][0],
+                "https://portal.novapharmhealthcare.com/portal/products/?checkout=cancelled&order_id="+record["orderId"]["S"])
+            public=CHECKOUT.details(record,record["orderId"]["S"],"customer_123456")
+            self.assertEqual(public["checkoutChannel"],"PUBLIC_STORE")
+            CHECKOUT.stripe_session(public,"attempt_public")
+            self.assertTrue(calls[-1]["success_url"][0].startswith(
+                "https://novapharmhealthcare.com/products/nutraxin/bag/"))
+            invalid=dict(record)
+            invalid["checkoutChannel"]=CHECKOUT.s("https://malicious.invalid")
+            with self.assertRaises(CHECKOUT.NotReady):
+                CHECKOUT.details(invalid,record["orderId"]["S"],"customer_123456")
+        finally:
+            CHECKOUT.urllib.request.urlopen=previous
+
     def test_live_secret_trailing_crlf_normalized_and_bad_key_rejected(self):
         previous_secrets=CHECKOUT.sm
         previous_open=CHECKOUT.urllib.request.urlopen

@@ -22,6 +22,7 @@ REGION = os.environ.get("AWS_REGION", "eu-north-1")
 LEDGER = os.environ["PAYMENT_LEDGER_TABLE"]
 KEY_ID = os.environ["STRIPE_API_KEY_SECRET_ID"]
 SUCCESS_ORIGIN = "https://novapharmhealthcare.com"
+PORTAL_ORIGIN = "https://portal.novapharmhealthcare.com"
 MAX_PENCE = 99_999_999
 ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{5,99}$")
 SESSION = re.compile(r"^cs_live_[A-Za-z0-9]+$")
@@ -133,8 +134,12 @@ def details(order, order_id, subject):
         gross += amount
     if (shipping > 0) != has_delivery or gross != total:
         raise NotReady("Final approved tax, shipping and line items do not reconcile")
+    channel = order.get("checkoutChannel")
+    if channel is not None and channel != s("PORTAL_RETAIL"):
+        raise NotReady("Unknown checkout return channel")
     return {"orderId": order_id, "customerSub": subject, "customerId": subject,
-            "quoteVersion": quote, "totalGrossMinor": total, "lines": lines}
+            "quoteVersion": quote, "totalGrossMinor": total, "lines": lines,
+            "checkoutChannel": "PORTAL_RETAIL" if channel else "PUBLIC_STORE"}
 
 
 def stripe_session(order, attempt):
@@ -148,6 +153,15 @@ def stripe_session(order, attempt):
         raise NotReady("Stripe live restricted credentials are unavailable")
     # Stripe API 2026-09-30.endive removed payment_method_types from Checkout Sessions.
     # Stripe now selects supported methods; the verified account has active card payments.
+    # The return domain comes from the approved order record, never a browser
+    # or API-supplied URL. Public storefront checkout remains unchanged.
+    if order.get("checkoutChannel") == "PORTAL_RETAIL":
+        redirect_base = PORTAL_ORIGIN + "/portal/products/"
+        success_url = redirect_base + "?checkout=return&order_id=" + urllib.parse.quote(order["orderId"])
+        cancel_url = redirect_base + "?checkout=cancelled&order_id=" + urllib.parse.quote(order["orderId"])
+    else:
+        success_url = SUCCESS_ORIGIN + "/products/nutraxin/bag/?checkout=return&session_id={CHECKOUT_SESSION_ID}&order_id=" + urllib.parse.quote(order["orderId"])
+        cancel_url = SUCCESS_ORIGIN + "/products/nutraxin/bag/?checkout=cancelled"
     form = {
         "mode": "payment",
         "client_reference_id": order["orderId"],
@@ -155,8 +169,8 @@ def stripe_session(order, attempt):
         "shipping_address_collection[allowed_countries][0]": "GB",
         "phone_number_collection[enabled]": "true",
         "metadata[delivery_charge_minor]": "0",
-        "success_url": SUCCESS_ORIGIN + "/products/nutraxin/bag/?checkout=return&session_id={CHECKOUT_SESSION_ID}&order_id=" + urllib.parse.quote(order["orderId"]),
-        "cancel_url": SUCCESS_ORIGIN + "/products/nutraxin/bag/?checkout=cancelled",
+        "success_url": success_url,
+        "cancel_url": cancel_url,
         "automatic_tax[enabled]": "false",
         "metadata[order_id]": order["orderId"],
         "metadata[customer_id]": order["customerId"],

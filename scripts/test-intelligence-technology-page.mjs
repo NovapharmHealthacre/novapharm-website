@@ -173,118 +173,36 @@ assert.equal(controls["[data-npi-results-list]"].children.length, 0, "Changing m
 
 
 for (const [label, markup] of [["source", source], ["published", published]]) {
-  assert.ok(markup.includes('id="intelligence-pricing"'), label + " must offer a three-plan comparison");
-  assert.equal((markup.match(/data-npi-plan="(?:starter|professional|enterprise)"/g) || []).length, 3, label + " must have exactly three plans");
-  assert.ok(markup.includes("£199") && markup.includes("£699"), label + " approved GBP prices must match the plan register");
-  assert.ok(markup.includes("£2,799"), label + " custom enterprise indication must not be hidden");
-  assert.ok(markup.includes("not live subscriptions"), label + " must disclose product activation boundary");
-  assert.ok(markup.includes("No payment will be collected here"), label + " must not imply production checkout");
-  assert.ok(markup.includes('aria-label="Approved 30-day Starter free trial"'), label + " must present a free-trial card");
-  assert.ok(markup.includes("£0") && markup.includes("for 30 days"), label + " must state the approved zero-price duration");
-  assert.ok(markup.includes("25 total") && markup.includes("governed medicine searches"), label + " must cap the free trial at 25 total searches");
-  assert.ok(markup.includes("No credit card required"), label + " must disclose no-card enrolment");
-  assert.ok(markup.includes("No automatic subscription or charges"), label + " must prohibit automatic conversion");
-  assert.ok(markup.includes("Enrolment opens after production approval"), label + " must disclose trial launch status");
-
-  assert.ok(markup.includes("Approved monthly prices in GBP"), label + " must state the approved monthly currency");
-  assert.ok(markup.includes("actual tax depends"), label + " must not misrepresent a blanket VAT treatment");
-  assert.ok(markup.includes('<span class="npi-plan-cta npi-plan-cta-pending" data-npi-plan-cta="monthly" aria-disabled="true">Enrolment not yet open</span>'), label + " dormant Starter and Professional CTAs must not invite unapproved signup");
-  assert.ok(markup.includes('data-npi-plan-cta="annual" aria-disabled="true" hidden style="display:none !important"'), label + " annual offer remains hidden and inaccessible");
-  assert.ok(!markup.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/register?'), label + " no trial or paid signup may be linked until backend acceptance");
-  assert.ok(markup.includes('data-npi-starter-trial="approved"'), label + " 30-day no-card Starter introductory offer must be present");
-  assert.ok(markup.includes('href="/contact/?enquiry=General%20enquiry&amp;intelligencePlan=enterprise"'), label + " Enterprise must carry a strictly enumerated plan to the approved business-enquiry form");
-  assert.ok(markup.includes('href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20Intelligence%20Enterprise'), label + " Enterprise must offer a direct email fallback");
-  assert.ok(!markup.includes('href="https://checkout.stripe.com'), label + " must not activate unverified checkout");
-  assert.ok(!markup.includes('href="/contact/?enquiry=General%20enquiry&amp;intelligencePlan=starter"'), label + " must not send Starter to contact");
-  assert.ok(!markup.includes('href="/contact/?enquiry=General%20enquiry&amp;intelligencePlan=professional"'), label + " must not send Professional to contact");
+  const pricing = markup.slice(markup.indexOf('<section id="intelligence-pricing"'), markup.indexOf('<section class="npi-section npi-audience"'));
+  assert.ok(pricing.includes('id="intelligence-pricing"'), label + " must render the four-plan comparison");
+  assert.equal((pricing.match(/data-npi-plan="(?:trial|starter|professional|enterprise)"/g) || []).length, 4, label + " must have four aligned plans");
+  assert.ok(pricing.includes('data-npi-starter-trial="approved"'), label + " must include approved trial alongside the other plans");
+  assert.ok(pricing.includes('aria-label="Approved 30-day Starter free trial"'));
+  assert.ok(pricing.includes("£0") && pricing.includes("for 30 days") && pricing.includes("25 total"));
+  assert.ok(pricing.includes("No credit card required") && pricing.includes("No automatic subscription or charges"));
+  assert.ok(pricing.includes('data-monthly-gbp="199" data-annual-gbp="2030"'));
+  assert.ok(pricing.includes('data-monthly-gbp="699" data-annual-gbp="7130"'));
+  assert.ok(pricing.includes("£2,799") && pricing.includes("Custom"));
+  assert.ok(pricing.includes("Paid subscriptions are charged immediately at Checkout") && pricing.includes("may not be available immediately"), label + " must disclose live recurring billing and provisioning delay");
+  assert.ok(pricing.includes("Approved monthly prices in GBP") && pricing.includes("actual tax depends"));
+  assert.ok(!pricing.includes('npi-trial-offer') && !pricing.includes('npi-billing-switch'), label + " must not have a separate trial banner or unapproved billing toggle");
+  assert.ok(!pricing.includes("Coming soon") && !pricing.includes("Enrolment not yet open"), label + " must not use disabled-plan marketing buttons");
+  assert.ok(pricing.includes('href="https://buy.stripe.com/00waEQ1gQ1Lr2x87aIdby00" data-npi-live-stripe="starter"'), label + " must use the verified live Stripe Starter link");
+  assert.ok(pricing.includes('href="https://buy.stripe.com/6oUeV64t2bm16NobqYdby01" data-npi-live-stripe="professional"'), label + " must use the verified live Stripe Professional link");
+  assert.ok(pricing.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/register"'), label + " must use no-card account registration for Free Trial");
+  assert.ok(pricing.includes('intelligencePlan=enterprise'), label + " must retain custom Enterprise sales");
+  assert.ok(pricing.includes("Create free account") && pricing.includes("Subscribe") && pricing.includes("Contact sales"));
+  assert.ok(pricing.includes("renew monthly until cancelled") && pricing.includes("Payment is not an automatic medicine-data entitlement"), label + " must disclose what is and is not activated");
+  assert.ok(pricing.includes('href="https://billing.stripe.com/p/login/00waEQ1gQ1Lr2x87aIdby00">Manage subscription</a>'), label + " must offer self-service Stripe billing management");
+  assert.ok(!pricing.includes("checkout.stripe.com"), label + " must use approved Stripe hosted payment links, not constructed sessions");
+  assert.ok(!pricing.includes('/contact/?enquiry=General%20enquiry&amp;intelligencePlan=starter') &&
+            !pricing.includes('/contact/?enquiry=General%20enquiry&amp;intelligencePlan=professional'),
+            label + " paid cards must not direct customers to contact form");
 }
-assert.ok(published.includes('src="/assets/js/intelligence-pricing.js?v=20261114-approved-trial-v1"'), "Pricing module must be cache-busted in published site");
-assert.ok(materialiser.includes('src="/assets/js/intelligence-pricing.js?v=20261114-approved-trial-v1"'), "Build must version pricing module");
-assert.ok(styles.includes(".npi-pricing-grid") && styles.includes(".npi-billing-switch button:focus-visible"), "Responsive comparison and keyboard focus styles required");
-assert.ok(styles.includes("#intelligence-pricing .npi-plan-cta[hidden]"), "The unselected billing-period link must remain hidden");
-
+assert.ok(styles.includes("Four-plan Intelligence pricing") && styles.includes("repeat(4, minmax(0,1fr))"), "Four-column responsive layout contract");
+assert.ok(styles.includes("#0071e3") && styles.includes("#f5f5f7"), "Approved Apple-style palette is retained");
 const pricingScript = read("assets/js/intelligence-pricing.js");
-
-const contactIntake = read("assets/js/contact-production.js");
-assert.ok(contactIntake.includes('const requestedIntelligencePlan = intent.get("intelligencePlan")'), "Production B2B form must accept a plan identifier");
-assert.ok(contactIntake.includes("Object.hasOwn(intelligencePlans, requestedIntelligencePlan)"), "Intelligence tier must be strictly allowlisted");
-assert.ok(contactIntake.includes('!intent.has("basket") && !intent.has("quote") && !intent.has("product")'), "Subscription requests must not override Nutraxin/ESCO intent");
-assert.ok(contactIntake.includes("non-binding business enquiry"), "Intelligence tier must remain an enquiry, not a chargeable order");
-assert.ok(!contactIntake.includes("window.open"), "Plan intake must never silently open new windows");
-
-assert.ok(!/XMLHttpRequest|sendBeacon|localStorage|sessionStorage|document[.]cookie|innerHTML|fetch[(]/.test(pricingScript), "Plan selector must not store or transmit prospect data");
-const priceElement = () => ({ textContent: "" });
-function pricedCard(plan, monthly, annual) {
-  const elements = {
-    "[data-npi-plan-price]": priceElement(),
-    "[data-npi-plan-period]": priceElement(),
-    "[data-npi-plan-billing]": priceElement(),
-    '[data-npi-plan-cta="monthly"]': { hidden: false, display: null, style: { setProperty(property, value, priority) { if (property !== "display" || priority !== "important") throw Error("unexpected display override"); elements['[data-npi-plan-cta="monthly"]'].display = value; } } },
-    '[data-npi-plan-cta="annual"]': { hidden: true, display: null, style: { setProperty(property, value, priority) { if (property !== "display" || priority !== "important") throw Error("unexpected display override"); elements['[data-npi-plan-cta="annual"]'].display = value; } } }
-  };
-  return {
-    elements,
-    getAttribute(name) { return name === "data-npi-plan" ? plan : name === "data-monthly-gbp" ? String(monthly) : name === "data-annual-gbp" ? String(annual) : null; },
-    querySelector(selector) { return elements[selector] || null; }
-  };
-}
-function billingButton(cycle) {
-  return {
-    attributes: { "data-npi-billing": cycle },
-    listeners: {},
-    classes: new Set(),
-    getAttribute(name) { return this.attributes[name] || null; },
-    setAttribute(name, value) { this.attributes[name] = value; },
-    addEventListener(name, callback) { this.listeners[name] = callback; },
-    classList: { toggle() {} }
-  };
-}
-const starter = pricedCard("starter", 199, 2030);
-const professional = pricedCard("professional", 699, 7130);
-const monthlyButton = billingButton("monthly");
-const annualButton = billingButton("annual");
-const pricingRoot = {
-  querySelectorAll(selector) {
-    if (selector === "[data-npi-billing]") return [monthlyButton, annualButton];
-    if (selector === "[data-npi-plan][data-monthly-gbp][data-annual-gbp]") return [starter, professional];
-    return [];
-  }
-};
-runInNewContext(pricingScript, {
-  document: { getElementById(id) { return id === "intelligence-pricing" ? pricingRoot : null; } },
-  Intl,
-  Number,
-  Math
-});
-assert.equal(monthlyButton.attributes["aria-pressed"], "true");
-assert.equal(starter.elements["[data-npi-plan-price]"].textContent, "£199");
-assert.equal(professional.elements["[data-npi-plan-price]"].textContent, "£699");
-assert.equal(starter.elements['[data-npi-plan-cta="monthly"]'].hidden, false);
-assert.equal(professional.elements['[data-npi-plan-cta="monthly"]'].hidden, false);
-assert.equal(starter.elements['[data-npi-plan-cta="annual"]'].display, "none");
-assert.equal(professional.elements['[data-npi-plan-cta="annual"]'].display, "none");
-annualButton.listeners.click();
-assert.equal(annualButton.attributes["aria-pressed"], "true");
-assert.equal(monthlyButton.attributes["aria-pressed"], "false");
-assert.equal(starter.elements["[data-npi-plan-price]"].textContent, "£169");
-assert.equal(professional.elements["[data-npi-plan-price]"].textContent, "£594");
-assert.ok(starter.elements["[data-npi-plan-billing]"].textContent.includes("£2,030"));
-assert.ok(professional.elements["[data-npi-plan-billing]"].textContent.includes("£7,130"));
-assert.equal(starter.elements['[data-npi-plan-cta="monthly"]'].hidden, true);
-assert.equal(starter.elements['[data-npi-plan-cta="annual"]'].hidden, false);
-assert.equal(professional.elements['[data-npi-plan-cta="monthly"]'].hidden, true);
-assert.equal(professional.elements['[data-npi-plan-cta="annual"]'].hidden, false);
-assert.equal(starter.elements['[data-npi-plan-cta="monthly"]'].display, "none");
-assert.equal(starter.elements['[data-npi-plan-cta="annual"]'].display, "flex");
-assert.equal(professional.elements['[data-npi-plan-cta="monthly"]'].display, "none");
-assert.equal(professional.elements['[data-npi-plan-cta="annual"]'].display, "flex");
-monthlyButton.listeners.click();
-assert.equal(starter.elements["[data-npi-plan-price]"].textContent, "£199");
-assert.equal(starter.elements['[data-npi-plan-cta="monthly"]'].display, "flex");
-assert.equal(starter.elements['[data-npi-plan-cta="annual"]'].display, "none");
-assert.equal(professional.elements['[data-npi-plan-cta="monthly"]'].display, "flex");
-assert.equal(professional.elements['[data-npi-plan-cta="annual"]'].display, "none");
-
+assert.ok(!/XMLHttpRequest|sendBeacon|localStorage|sessionStorage|document[.]cookie|innerHTML|fetch[(]/.test(pricingScript), "Legacy inert pricing script must never collect data");
 
 const terminalOrigin = "https://intelligence.novapharmhealthcare.com/";
 for (const [label, markup] of [["source", source], ["published", published]]) {

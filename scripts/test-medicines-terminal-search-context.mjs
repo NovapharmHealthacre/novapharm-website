@@ -30,7 +30,15 @@ test("a new valid medicine search clears prior medicine, analytics and deep-link
   }
   assert.ok(source.includes('window.history.replaceState(null, "", `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);'));
   assert.match(source, /setSearchStatus\(professionalError\(error\)\)/u);
-  assert.match(source, /next\.results\.length \?/u);
+  assert.match(source, /next\.pagination\.totalRows\s*\?/u);
+});
+
+test("an empty medicine identity catalogue cannot masquerade as a genuine no-match", () => {
+  const search = between("async function searchMedicine(", "async function searchMedicinePage(");
+  assert.match(search, /next\.catalogueState === "no_current_repository_identities"/u);
+  assert.match(search, /No current medicine identities are loaded/u);
+  assert.match(component, /searchResponse\.catalogueState === "no_current_repository_identities"/u);
+  assert.match(component, /Results remain unavailable until source approval and ingestion/u);
 });
 
 test("late medicine search responses cannot overwrite the newer selected query", () => {
@@ -80,4 +88,18 @@ test("in-flight analytical responses cannot refill facts after a subsequent medi
   assert.match(source, /const generation = selectionGenerationRef\.current/u);
   assert.match(source, /if \(generation !== selectionGenerationRef\.current\) return;/u);
   assert.match(source, /if \(generation === selectionGenerationRef\.current\) setBusy\(false\)/u);
+});
+
+test("search pagination is server-backed and fenced against stale response updates", () => {
+  const source = between("async function searchMedicinePage(", "async function selectMedicine(");
+  assert.match(source, /selectionGenerationRef\.current \+= 1/u);
+  assert.match(source, /page < 1 \|\| page > current\.pagination\.totalPages/u);
+  assert.match(source, /enterprise\/medicines\/search\?q=/u);
+  assert.match(source, /&page=\$\{page\}/u);
+  const request = source.indexOf("await gatewayJson<SearchResponse>");
+  const guard = source.indexOf("if (generation !== selectionGenerationRef.current) return;");
+  const update = source.indexOf("setSearchResponse(next);");
+  assert.ok(request >= 0 && guard > request && update > guard);
+  assert.match(component, /aria-label="Medicine search result pages"/u);
+  assert.match(component, /searchResponse\.pagination\.totalPages > 1/u);
 });

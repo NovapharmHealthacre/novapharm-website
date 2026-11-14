@@ -52,6 +52,7 @@ import {
   transitionProductLifecycle
 } from "./src/core/enterprise-domain-service.mjs";
 import { medicineIdentityDetail, nearbyHealthcareOrganisations, queryMedicineAnalytics, searchMedicines } from "./src/core/medicines-intelligence-service.mjs";
+import { inspectNhsbsaEpdPrivateApi } from "./src/core/intelligence-nhsbsa-epd-private-api.mjs";
 import { intelligenceReleaseReadiness } from "./src/core/intelligence-release-readiness.mjs";
 import { discoverUkTenderNotices } from "./src/core/intelligence-uk-tender-discovery.mjs";
 import { searchOpenFdaLabels } from "./src/core/regulatory/openfda-labels.mjs";
@@ -998,6 +999,25 @@ export async function handleRequest(request, response) {
       return;
     }
 
+    if (pathname === "/api/v1/intelligence/sources/nhsbsa/epd/private-probe" && request.method === "GET") {
+      if (!await rateLimit(request, "nhsbsa-private-source-probe", 4, 60 * 1000)) {
+        return json(response, 429, { error: "Publisher source-review rate limit reached." });
+      }
+      const session = await scopedAuthentication(request, response, ["board"]);
+      if (!session) return;
+      if (process.env.NPI_NHSBSA_PRIVATE_API_PROBE_ENABLED !== "true") {
+        return json(response, 503, { error: "Private official-source review has not been activated." });
+      }
+      json(response, 200, await inspectNhsbsaEpdPrivateApi({
+        period: url.searchParams.get("period"),
+        presentationCode: url.searchParams.get("presentationCode"),
+        limit: Number(url.searchParams.get("limit") || 2),
+        serverVerifiedBoardSession: true,
+        privateReviewEnabled: true,
+      }));
+      return;
+    }
+
     if (pathname === "/api/v1/intelligence/readiness" && request.method === "GET") {
       if (!await rateLimit(request, "intelligence-readiness", 30, 60 * 1000)) return json(response, 429, { error: "Too many readiness requests. Try again shortly." });
       const session = await scopedAuthentication(request, response, ["board"]);
@@ -1014,6 +1034,7 @@ export async function handleRequest(request, response) {
         url.searchParams.get("q") || "",
         enterpriseContext(session),
         Number(url.searchParams.get("limit") || 30),
+        Number(url.searchParams.get("page") || 1),
       ));
       return;
     }

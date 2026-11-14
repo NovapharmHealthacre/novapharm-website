@@ -255,7 +255,7 @@ async function inspectModule(
     } else {
       await page.locator(".icon-command:not(:disabled)").waitFor({ state: "visible", timeout: 20_000 });
     }
-    const expectedHeading = module.code === "executive.nhs-data" ? "Search a medicine" : module.code === "customer.dashboard" ? "Everything for your NovaPharm business." : module.title;
+    const expectedHeading = module.code === "executive.nhs-data" ? "Search a medicine" : module.code === "customer.dashboard" ? "Everything for your NovaPharm business." : module.code === "employee.dashboard" ? "One network. Clear decisions." : module.code === "employee.orders" ? "Telesales, without friction." : module.title;
     assert.equal(await page.locator("h1").textContent(), expectedHeading);
     assert.equal(await page.locator(".workflow-status").textContent(), "");
     assert.match(await page.locator('meta[name="robots"]').getAttribute("content") ?? "", /noindex/);
@@ -330,9 +330,12 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     const page = await employeeContext.newPage();
     await page.goto(`${portalOrigin}/employee/dashboard/`, { waitUntil: "domcontentloaded" });
     await page.locator(".data-context").waitFor();
-    await page.getByRole("button", { name: "Open navigation" }).click();
-    assert.match(await page.locator(".workspace-sidebar").getAttribute("class") ?? "", /open/);
-    await page.getByRole("button", { name: "Close navigation" }).click();
+    // The new text-first employee header replaces the legacy icon-driven drawer.
+    // All 13 governed employee routes must remain keyboard-accessible on mobile.
+    await page.getByRole("navigation", { name: "Employee distribution navigation" }).waitFor();
+    assert.equal(await page.locator(".distribution-employee-all a").count(), 13,
+      engine + ": all 13 employee workspaces must remain accessible");
+    await page.getByRole("link", { name: "Telesales", exact: true }).waitFor();
     await page.getByLabel("Search authorised records").fill("Nutraxin");
     await page.locator('.portal-search > button[type="submit"]').click();
     await page.locator(".search-results").waitFor();
@@ -438,16 +441,17 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     assert.equal(await page.getByLabel("Medicine name, brand or code").getAttribute("aria-keyshortcuts"), "Meta+K Control+K");
     await page.getByLabel("Medicine name, brand or code").fill("Apixaban");
     await page.locator(".medicine-search-workspace").getByRole("button", { name: "Search", exact: true }).click();
-    await page.getByText("No current BNF identity matched that search.", { exact: true }).waitFor();
+    await page.getByText("This search environment has no current medicine identities loaded. Results remain unavailable until source approval and ingestion.", { exact: true }).waitFor();
     await captureInteractionState(page, engine, desktopViewport, "interaction.medicines-empty-search");
 
     const validationMedicineId = "medicine-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     await page.route("**/gateway/enterprise/medicines/**", async (route) => {
       const requestUrl = new URL(route.request().url());
       const response = requestUrl.pathname.endsWith("/search") ? {
-        query: "Repository validation medicine", source: "Repository validation fixture", sourcePeriod: "2026-06", demandFactsIncluded: false,
+        query: "Repository validation medicine", source: "Repository validation fixture", sourcePeriod: "2026-06", catalogueState: "current_repository_identities_present", demandFactsIncluded: false,
         results: [{ medicineId: validationMedicineId, canonicalName: "Repository validation medicine", presentationCode: "0208020Z0AAACAC", productName: "Validation medicine", productCode: "0208020Z0AA", chemicalSubstance: "Validation substance", chemicalSubstanceCode: "0208020Z0", identityStatus: "bnf_current_identity_only" }],
         dataFreshness: "2026-08-24T00:00:00.000Z",
+        pagination: { page: Number(requestUrl.searchParams.get("page") || 1), pageSize: Number(requestUrl.searchParams.get("limit") || 30), totalRows: 1, totalPages: 1 },
       } : requestUrl.pathname.endsWith("/analytics") ? {
         query: { dataset: "epd", metric: "items", page: 1, pageSize: 50, sortBy: requestUrl.searchParams.get("sortBy") || "month_key", sortDirection: requestUrl.searchParams.get("sortDirection") || "desc" }, source: "Repository validation fixture", sourcePeriods: ["2026-06"], dataState: "accepted_facts",
         rows: [{ month_key: "2026-06", medicine_id: validationMedicineId, canonical_name: "Repository validation medicine", practice_code: "A00001", practice_name: "Repository validation practice", practice_postcode: "SW1A 2AA", icb_code: "Q00", icb_name: "Repository validation ICB", region_code: "Y00", region_name: "Repository validation region", items: 12, quantity: 24, nic: 36, actual_cost: 30, registered_population: 1200, metric_value: 12 }],

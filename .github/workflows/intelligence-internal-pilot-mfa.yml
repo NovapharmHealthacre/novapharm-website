@@ -1,0 +1,41 @@
+name: Intelligence internal pilot authenticator enrollment
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/intelligence-internal-pilot-mfa.mjs'
+      - 'src/core/intelligence-customer-oidc.mjs'
+      - 'apps/portal/app/auth/callback/route.ts'
+      - 'apps/portal/proxy.ts'
+      - 'apps/portal/app/auth/internal/mfa/setup/route.ts'
+      - 'scripts/test-intelligence-internal-pilot-mfa.mjs'
+      - 'docs/intelligence/INTERNAL_PILOT_MFA_ONBOARDING_20261114.md'
+      - '.github/workflows/intelligence-internal-pilot-mfa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pilot-mfa:
+    name: Signed pilot MFA / no customer or founder access
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+      - name: Check server-side pilot and Cognito OIDC syntax
+        run: |
+          node --check src/core/intelligence-internal-pilot-mfa.mjs
+          node --check src/core/intelligence-customer-oidc.mjs
+          node --check scripts/test-intelligence-internal-pilot-mfa.mjs
+      - name: Run isolated signed pilot and MFA registration tests
+        run: node --test scripts/test-intelligence-internal-pilot-mfa.mjs scripts/test-intelligence-customer-oidc.mjs
+      - name: Validate default OFF and separate host-only cookie
+        run: |
+          grep -F 'NPI_INTERNAL_PILOT_MFA_ENABLED' apps/portal/app/auth/callback/route.ts
+          grep -F '__Host-npi_internal_mfa' apps/portal/app/auth/internal/mfa/setup/route.ts
+          grep -F 'grantsTenantAccess: false' src/core/intelligence-customer-oidc.mjs
+          grep -F 'customerAccessGranted:false' src/core/intelligence-internal-pilot-mfa.mjs

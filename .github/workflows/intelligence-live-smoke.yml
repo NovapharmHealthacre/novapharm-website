@@ -61,9 +61,22 @@ jobs:
             curl --fail --silent --show-error --location --max-time 15 \
               -H 'Cache-Control: no-cache, no-store, max-age=0' \
               "$origin/assets/media/technology/novapharm-intelligence-hero.avif?$key" -o /tmp/novapharm-intelligence-hero-live.avif || true
+            # Scope the retired-label check to the hero. Pricing and other
+            # sections may legitimately use the same brand kicker text.
+            sed -n '/<section class="npi-hero/,/<section id="intelligence-research"/p' \
+              /tmp/novapharm-technology-live.html > /tmp/novapharm-intelligence-hero-markup.html
             if grep -Fq 'class="npi-hero npi-hero--editorial"' /tmp/novapharm-technology-live.html \
               && grep -Fq 'class="npi-hero-logo"><img src="/assets/brand/novapharm-intelligence-approved.svg"' /tmp/novapharm-technology-live.html \
-              && ! grep -Fq '<p class="npi-kicker">NOVAPHARM INTELLIGENCE</p>' /tmp/novapharm-technology-live.html \
+              && ! grep -Fq '<p class="npi-kicker">NOVAPHARM INTELLIGENCE</p>' /tmp/novapharm-intelligence-hero-markup.html \
+              && grep -Fq 'id="intelligence-pricing"' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'Intelligence. Made simple.' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'data-npi-plan="trial"' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'data-npi-plan="starter"' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'data-npi-plan="professional"' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'data-npi-plan="enterprise"' /tmp/novapharm-technology-live.html \
+              && test "$(grep -o 'data-npi-plan="' /tmp/novapharm-technology-live.html | wc -l | tr -d '[:space:]')" -eq 4 \
+              && grep -Fq 'Request free trial' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'Request Professional' /tmp/novapharm-technology-live.html \
               && grep -Fq 'novapharm-intelligence-hero.avif' /tmp/novapharm-intelligence-live.css \
               && test -s /tmp/novapharm-intelligence-hero-live.avif \
               && grep -Fq 'id="intelligence-research"' /tmp/novapharm-technology-live.html \
@@ -86,7 +99,7 @@ jobs:
               && grep -Fq '.npi-research-form' /tmp/novapharm-intelligence-live.css \
               && grep -Fq 'data-live-b2b-enquiry-form' /tmp/novapharm-contact-live.html \
               && ! grep -Fq 'data-email-enquiry-form' /tmp/novapharm-contact-live.html; then
-              echo "Live Technology research HTML, launcher, responsive stylesheet and AWS-backed Contact passed."
+              echo "Live Technology four-plan pricing, research, workspace and AWS-backed Contact passed."
               exit 0
             fi
             sleep 10

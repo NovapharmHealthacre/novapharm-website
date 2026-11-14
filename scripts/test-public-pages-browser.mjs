@@ -435,39 +435,58 @@ for (const [engineName, browserType] of engines) {
             assert.deepEqual(consoleErrors, [], `${engineName} ${viewport.name} ${route.path}: console errors`);
 
             if (route.name === "technology") {
-              // Regression for Safari: CSS display:flex must never expose both
-              // month and year links at once. Test actual computed visibility.
+              // Four-plan comparison: verify exact live subscription links and
+              // transparent payment terms in Chromium/WebKit, not the retired trial banner
+              // and obsolete annual-price toggle.
               const pricing = page.locator("#intelligence-pricing");
-              async function assertOnePlanAction(cycle) {
-                for (const plan of ["starter", "professional"]) {
-                  const card = pricing.locator('[data-npi-plan="' + plan + '"]');
-                  const allActions = card.locator(".npi-plan-cta");
-                  assert.equal(await allActions.count(), 2, plan + ": preserve two documented billing-cycle comparisons");
-                  const visible = card.locator(".npi-plan-cta:visible");
-                  assert.equal(await visible.count(), 1,
-                    engineName + " " + viewport.name + " " + plan + " " + cycle + ": exactly one visible pricing status");
-                  assert.equal(await visible.first().getAttribute("data-npi-plan-cta"), cycle,
-                    plan + ": selected pricing status must match the chosen billing period");
-                  assert.equal(await visible.first().getAttribute("aria-disabled"), "true",
-                    plan + ": signup cannot be offered before customer and data acceptance");
-                  assert.equal(await visible.first().getAttribute("href"), null,
-                    plan + ": dormant plan status cannot link to an unavailable registration route");
-                  const inactive = card.locator('[data-npi-plan-cta="' + (cycle === "monthly" ? "annual" : "monthly") + '"]');
-                  assert.equal(await inactive.isVisible(), false, plan + ": unselected billing link must remain hidden");
+              const grid = pricing.locator("[data-npi-pricing-grid]");
+              const plans = ["trial", "starter", "professional", "enterprise"];
+              assert.equal(await grid.locator(".npi-plan").count(), 4,
+                engineName + " " + viewport.name + ": four pricing plans must be visible");
+              for (const plan of plans) {
+                const card = grid.locator('[data-npi-plan="' + plan + '"]');
+                assert.equal(await card.count(), 1, plan + ": precisely one plan card");
+                assert.equal(await card.isVisible(), true, plan + ": plan must be visible");
+                assert.equal(await card.locator(".npi-plan-cta:visible").count(), 1,
+                  plan + ": exactly one clear customer action");
+                const action = card.locator(".npi-plan-cta");
+                const href = await action.getAttribute("href");
+                if (plan === "starter" || plan === "professional") {
+                  const expected = plan === "starter" ? "https://buy.stripe.com/00waEQ1gQ1Lr2x87aIdby00" : "https://buy.stripe.com/6oUeV64t2bm16NobqYdby01";
+                  assert.equal(href, expected, plan + ": use the exact verified live Stripe-hosted Checkout link");
+                  assert.equal(await action.getAttribute("data-npi-live-stripe"), plan,
+                    plan + ": billing link must be plan-specific");
+                } else if (plan === "trial") {
+                  assert.equal(href, "https://intelligence.novapharmhealthcare.com/auth/customer/register",
+                    "No-card free-trial account entry must never trigger Stripe billing");
+                } else {
+                  assert.ok(href?.startsWith("/contact/?") && href.includes("intelligencePlan=enterprise"),
+                    "Enterprise needs a custom contract, not an assumed price");
                 }
               }
-              const freeTrial = pricing.locator('[data-npi-starter-trial="approved"]');
-              assert.equal(await freeTrial.count(), 1, "Technology page must show exactly one 30-day Starter introductory offer");
-              assert.match(await freeTrial.innerText(), /30 days free/);
+              const freeTrial = grid.locator('[data-npi-plan="trial"][data-npi-starter-trial="approved"]');
+              assert.match(await freeTrial.innerText(), /Free Trial/);
+              assert.match(await freeTrial.innerText(), /for 30 days/);
               assert.match(await freeTrial.innerText(), /25 total/);
               assert.match(await freeTrial.innerText(), /No credit card required/);
               assert.match(await freeTrial.innerText(), /No automatic subscription or charges/);
-              assert.equal(await freeTrial.locator("a[href]").count(), 0, "dormant trial cannot link to unverified customer registration");
-              await assertOnePlanAction("monthly");
-              await pricing.locator('[data-npi-billing="annual"]').click();
-              await assertOnePlanAction("annual");
-              await pricing.locator('[data-npi-billing="monthly"]').click();
-              await assertOnePlanAction("monthly");
+              assert.equal(await pricing.locator(".npi-trial-offer").count(), 0,
+                "The trial must not have its own banner above the four plans");
+              assert.equal(await pricing.locator("[data-npi-billing]").count(), 0,
+                "No unapproved annual-price comparison should be displayed");
+              const style = await grid.evaluate((element) => ({
+                columns: getComputedStyle(element).gridTemplateColumns.split(" ").filter(Boolean).length,
+                gap: getComputedStyle(element).columnGap,
+              }));
+              const expectedColumns = viewport.width > 1120 ? 4 : viewport.width > 640 ? 2 : 1;
+              assert.equal(style.columns, expectedColumns,
+                engineName + " " + viewport.name + ": responsive pricing columns must match viewport");
+              assert.equal(await pricing.getByText("Paid subscriptions are charged immediately at Checkout", { exact: false }).count(), 1,
+                "Pricing section must transparently disclose immediate recurring billing");
+              assert.equal(await pricing.getByText("may not be available immediately", { exact: false }).count(), 1,
+                "Pricing section must disclose that workspace provisioning is separate");
+              assert.equal(await pricing.getByRole("link", { name: "Manage subscription" }).getAttribute("href"),
+                "https://billing.stripe.com/p/login/00waEQ1gQ1Lr2x87aIdby00", "Customers must be able to manage and cancel subscriptions in Stripe");
 
               const medicineField = page.locator("[data-npi-query]");
               const marketField = page.locator("[data-npi-market]");
