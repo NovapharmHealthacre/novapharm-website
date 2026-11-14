@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import sharp from "sharp";
+import { parse } from "parse5";
 
 // Idempotent, build-final owner approval. Preserve the generator's current
 // shared header, navigation, structured data and regulated footer verbatim.
@@ -46,6 +47,13 @@ if (!/^<main id="main"[\s\S]*<\/main>$/.test(template)) {
 const mainMatches = original.match(/<main\b[^>]*>[\s\S]*?<\/main>/g) || [];
 if (mainMatches.length !== 1) throw new Error("Expected exactly one Capabilities main element in generated shell.");
 let result = original.replace(mainMatches[0], template);
+// This interior must not inherit homepage-only header spacing from its shell.
+const document = parse(result, { sourceCodeLocationInfo: true });
+const html = document.childNodes.find(node => node.tagName === "html");
+const body = html?.childNodes.find(node => node.tagName === "body");
+const pageMarker = body?.sourceCodeLocation?.attrs?.["data-page"];
+if (!pageMarker) throw new Error("Capabilities shell is missing its body page context.");
+result = result.slice(0, pageMarker.startOffset) + 'data-page="capabilities"' + result.slice(pageMarker.endOffset);
 if (!result.includes('href="' + stylesheet + '"') && !result.includes('href="' + stylesheet + '?v=')) {
   result = result.replace("</head>", '  <link rel="stylesheet" href="' + stylesheet + '">\n</head>');
 }

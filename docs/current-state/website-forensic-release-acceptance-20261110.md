@@ -1,5 +1,31 @@
 # NovaPharm Healthcare: forensic website release acceptance
 
+## 14 November 2026: Review-Only Promotion Boundary
+
+The owner authorised a separate GitHub branch and pull request only: no merge, deployment, AWS change, payment or email. Review branch `codex/corporate-responsive-20261114` preserves the exact original `ec828468e03f24413ef798609b9ac4961e01c6b7` base; later main changes are not overwritten or silently merged. The original Documents checkout is preserved because macOS marked its Git metadata dataless and reads stalled. Eighteen explicitly owned files were byte-verified into a fresh internal-storage checkout before continuation; no flags, permissions or protected storage were altered.
+
+Final scoped source regressions include the fixed Capabilities body marker, a one-character Tracking head-rendering correction, and exact semantic-version-plus-CSS-digest publication assertions, including independent retail themes and Distribution/Markets. The existing visual CI workflow now runs those tests before its unchanged deterministic build and release guards. A pull request is not live publication or final acceptance. Full generated-page, cross-browser and deployment results remain explicit gates.
+
+---
+
+## 13 November 2026: Live Reconciliation And Responsive Repair Candidate
+
+The owner paused AWS/login work and prioritised the existing corporate design, not new notifications or another redesign. The approved photography, identity, legal boundaries and business/checkout logic remain unchanged. This section supersedes dated publication assumptions only where fresh observations below establish a result; the historical entries follow unchanged.
+
+**VERIFIED, existing live release:** successful protected publisher [43444501529](https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/43444501529) identifies `ec828468e03f24413ef798609b9ac4961e01c6b7`. Eleven real-domain routes at 320/390/768/1440px report that source marker. The Capabilities v5 photographs, dimensions, four service links and 1/2/4-column composition are observed live in Chromium at 390/768/1440px. Issue #418's old unpublished-copy observation is superseded for those observations, not its remaining WebKit or managed-app gates. The downloaded public artifact is preserved; its Contact HTML exactly matches a fresh live HTTP retrieval.
+
+**VERIFIED, local candidate only:** reproduce and repair the 1280px fixed-navigation/no-menu gap, inconsistent 54/56 versus 60/68px header tokens, clipped specialist-medicines heading, low-contrast ESCO photo/source notices, light Oncology table caption and 15px contact field text. Exact-breakpoint follow-up also reproduces Capabilities inheriting homepage header spacing through `data-page="home"`; its generator now sets the correct page context while preserving header/footer markup. Original failures and boundary diagnostics remain in the scoped receipt. Fixed typography uses explicit sizes; no brand, approved image or business-flow replacement.
+
+**Publication control:** the existing CSS versioner is being upgraded to bind local stylesheet URLs to their exact byte digests, retaining approved semantic versions and strict staged/live checks. This is cache consistency, not an atomic deployment guarantee or proof that a changed stylesheet is live. The current candidate must pass exact-head CI and independent release review before any promotion.
+
+**BLOCKED:** F02/F09/F13/F14 fixes require reviewed publication and live re-verification; F04/F16/F18 require final exact-candidate artifact, CI, promotion and rollback acceptance. The observed public artifact has 69 self-canonical index routes, no missing local references, one H1 per route and valid JSON-LD syntax, but metadata exceptions remain on ESCO Bag, Marketplace, Tracking and the noindex service-unavailable page. Some late-generated pages lack the source stamp. F04/F07 are not closed. No origin/Cognito/IAM/payment/contact delivery behaviour was changed.
+
+**NOT TESTED in this cycle:** Safari/WebKit/Firefox, physical devices, full zoom/forced-colour/screen-reader acceptance, current managed-app deployment parity, real authenticated portal access, contact persistence/inbox delivery or payment settlement. Source tests and the loopback visual preview are not these outcomes. All F01-F18 checkboxes remain subject to their complete mandatory evidence, not partial observations.
+
+Scoped source, original publication artifact, browser measurements/screenshots, failures, dependency versions and continuation evidence: `outputs/corporate-responsive-20261113-v1` in the approved Codex workspace. Branch `codex/corporate-responsive-20261113`; do not merge stale or overlapping candidates. The owner must separately authorise production promotion; AWS access remains owner-controlled and paused.
+
+---
+
 **Date:** 10 November 2026  
 **Tracking issue:** #367  
 **Evidence baseline:** [Browser audit 42851250465](https://github.com/NovapharmHealthacre/novapharm-website/actions/runs/42851250465)  

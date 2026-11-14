@@ -333,7 +333,8 @@
 .esco-storefront .esco-product:hover{transform:translateY(-3px);box-shadow:0 16px 38px rgba(0,0,0,.065)}
 .esco-product-visual{aspect-ratio:4/3;min-height:0;background:#f5f6f8;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .esco-storefront .esco-product-visual .esco-product-image{width:100%;height:100%;object-fit:contain;margin:0!important;aspect-ratio:4/3!important;padding:16px 20px;background:transparent;border:0;border-radius:0}
-.esco-product-visual .esco-product-art-caption{position:absolute;bottom:9px;left:10px;right:10px;text-align:center;padding:5px 7px;background:rgba(255,255,255,.91);border-radius:6px;font-size:.62rem;color:#7e8590;line-height:1.3;margin:0;min-height:0}
+.esco-product-visual .esco-product-art-caption{position:absolute;bottom:9px;left:10px;right:10px;text-align:center;padding:5px 7px;background:rgba(255,255,255,.96);border-radius:6px;font-size:.75rem;color:#5f6671;line-height:1.4;margin:0;min-height:0}
+.esco-storefront .esco-source{color:#5f6671}
 .esco-product-body{display:flex;flex-direction:column;flex:1;padding:22px 22px 20px}
 .esco-product-kicker{text-transform:uppercase;letter-spacing:.10em;color:#62626a;font-size:.64rem;font-weight:680;margin:0 0 11px}
 .esco-storefront .esco-product h4{color:#1d1d1f;font-size:1.22rem;line-height:1.19;font-weight:680;letter-spacing:0;min-height:0;margin:0 0 8px}
@@ -430,7 +431,7 @@
   .esco-storefront .esco-product{display:grid;grid-template-columns:128px minmax(0,1fr);align-items:stretch;border-radius:18px;min-height:210px}
   .esco-product-visual{aspect-ratio:auto;min-height:0}
   .esco-storefront .esco-product-visual .esco-product-image{object-fit:contain;padding:10px;aspect-ratio:1/1!important}
-  .esco-product-visual .esco-product-art-caption{font-size:.57rem;bottom:8px;padding:4px}
+  .esco-product-visual .esco-product-art-caption{font-size:.75rem;bottom:8px;padding:4px}
   .esco-product-body{padding:15px 13px 14px}
   .esco-storefront .esco-product h4{font-size:1.03rem}
   .esco-product-kicker{font-size:.58rem;margin-bottom:8px}
