@@ -174,3 +174,38 @@ test("read refuses until the exact compound unique rights constraint exists", as
     assert.equal(s.calls(), 0);
   }
 });
+
+test("a fresh signature issued after the initial database lookup is valid at the second trusted clock read",async()=>{
+  let ticks=0;
+  const proof=setup([record()],{
+    clock:()=>at+(ticks++===0?0:2_000),
+    verifySignedGrant:async input=>({
+      verifiedSignature:true,grantDigestSha256:input.grantDigestSha256,
+      verifierId:"independent_authority_001",revoked:false,
+      checkedAt:new Date(at+1_000).toISOString()
+    })
+  });
+  const result=await proof.verify(request());
+  assert.equal(result?.verifiedByRightsAuthority,true);
+  assert.equal(result.checkedAt,new Date(at+2_000).toISOString());
+  assert.equal(ticks,2);
+});
+
+test("post-verification clock rejects future-signed, expired and overlong signer operations",async()=>{
+  for(const [offset,signOffset] of [
+    [2_000, 3_000], // future-dated signer receipt
+    [61_000, 0], // signing check took too long
+    [70_000, 68_000] // fresh receipt but excessive DB-to-signature delay
+  ]){
+    let ticks=0;
+    const proof=setup([record()],{
+      clock:()=>at+(ticks++===0?0:offset),
+      verifySignedGrant:async input=>({
+        verifiedSignature:true,grantDigestSha256:input.grantDigestSha256,
+        verifierId:"independent_authority_001",revoked:false,
+        checkedAt:new Date(at+signOffset).toISOString()
+      })
+    });
+    assert.equal(await proof.verify(request()),null);
+  }
+});
