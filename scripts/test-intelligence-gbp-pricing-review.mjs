@@ -40,6 +40,7 @@ test("four-plan public marketing uses active GBP Stripe payment links, without a
     assert.ok(s.includes('data-npi-starter-trial="approved"') && s.includes("No automatic subscription or charges"));
     assert.ok(s.includes("Paid subscriptions are charged immediately at Checkout") && s.includes("Payment is not an automatic medicine-data entitlement"));
     assert.ok(s.includes("Create free account") && s.includes("Contact sales"));
+    assert.ok(s.includes('href="https://billing.stripe.com/p/login/00waEQ1gQ1Lr2x87aIdby00">Manage subscription</a>'));
     assert.ok(s.includes('href="https://buy.stripe.com/00waEQ1gQ1Lr2x87aIdby00" data-npi-live-stripe="starter"'));
     assert.ok(s.includes('href="https://buy.stripe.com/6oUeV64t2bm16NobqYdby01" data-npi-live-stripe="professional"'));
     assert.ok(!s.includes('/contact/?enquiry=General%20enquiry&amp;intelligencePlan=starter'));
