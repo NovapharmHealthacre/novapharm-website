@@ -25,6 +25,7 @@ export async function generateMetadata({ params }: Readonly<{
     description: "NovaPharm Distribution: authorised commercial, warehouse, quality and order-management workspaces.",
     icons: {
       icon: [{ url: "/assets/brand/novapharm-distribution-mark.svg", type: "image/svg+xml" }],
+      apple: "/assets/brand/novapharm-distribution-apple-touch-icon.png",
     },
   };
 }
