@@ -11,6 +11,7 @@ import { CustomerCommerceWorkspace } from "./customer-commerce-workspace";
 import { EmployeeDistributionWorkspace } from "./employee-distribution-workspace";
 import { MedicinesIntelligence } from "./medicines-intelligence";
 import { PortalBrand } from "./portal-brand";
+import { DistributionBrand } from "./distribution-brand";
 
 type Metric = Readonly<{ key: string; label: string; value: number; format?: string; href?: string | null }>;
 type Column = readonly [string, string, string?];
@@ -192,7 +193,7 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
           </nav>
         </> : null}
         {isEditorialEmployeeDistribution ? <>
-          <PortalBrand home={areaLandingRoutes.employee} />
+          <DistributionBrand home={areaLandingRoutes.employee} />
           <nav className="employee-primary-nav" aria-label="Employee distribution navigation">
             {(["employee.dashboard", "employee.orders", "employee.customers", "employee.warehouse", "employee.finance", "employee.quality"] as const).map((code) => {
               const entry = navigation.find((candidate) => candidate.code === code);
