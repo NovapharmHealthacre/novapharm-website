@@ -101,6 +101,143 @@ class PortalSecurityTests(unittest.TestCase):
             e["body"] = json.dumps(body)
         return e
 
+    def test_unified_customer_routes_are_server_authenticated(self):
+        self.assertEqual(len(PORTAL.CUSTOMER_WORKSPACE_MODULES),18)
+        self.assertEqual(len(PORTAL.CUSTOMER_WORKSPACE_ROUTES),18)
+        for _,route,_ in PORTAL.CUSTOMER_WORKSPACE_MODULES:
+            response=PORTAL.handler(self.event(route),None)
+            self.assertEqual(response["statusCode"],302,route)
+            self.assertEqual(response["headers"]["location"],"https://portal.example.invalid/")
+            self.assertNotIn("customer@example",response["body"])
+        for route in ("/employee/dashboard/","/portal/executive-platform/","/admin/dashboard/"):
+            response=PORTAL.handler(self.event(route),None)
+            self.assertEqual(response["statusCode"],403,route)
+            self.assertEqual(json.loads(response["body"])["error"],"workforce_or_admin_identity_required")
+
+    def test_active_personal_identity_gets_18_module_navigation_without_trade_elevation(self):
+        previous=PORTAL.session
+        PORTAL.session=lambda event: {
+            "username":"synthetic-personal","sub":"synthetic-personal-sub",
+            "email":"customer+test@example.invalid","expires_at":PORTAL.now()+3600}
+        try:
+            for label,route,_ in PORTAL.CUSTOMER_WORKSPACE_MODULES:
+                result=PORTAL.handler(self.event(route),None)
+                self.assertEqual(result["statusCode"],200,(label,route))
+                self.assertIn("no-store",result["headers"]["cache-control"])
+                self.assertIn('name="robots" content="noindex,nofollow"',result["body"])
+                self.assertIn(label,result["body"])
+                self.assertNotIn("Stripe Checkout",result["body"])
+            dashboard=PORTAL.handler(self.event("/portal/dashboard/"),None)
+            self.assertEqual(dashboard["body"].count('class="tile"'),17)
+            self.assertIn("customer+test@example.invalid",dashboard["body"])
+            products=PORTAL.handler(self.event("/portal/products/"),None)["body"]
+            self.assertIn("Nutraxin",products)
+            self.assertIn("ESCO Anand",products)
+            self.assertIn("remain unverified",products)
+            history=PORTAL.handler(self.event("/portal/orders/"),None)["body"]
+            self.assertIn("separately approved trade account",history)
+            self.assertNotIn("APPROVED_FOR_PAYMENT",history)
+        finally:
+            PORTAL.session=previous
+
+    def test_revoked_or_unverified_customer_cannot_open_private_modules(self):
+        previous=PORTAL.session
+        PORTAL.session=lambda event: {
+            "username":"test-user","sub":"test-user-sub","email":"test@example.invalid"}
+        try:
+            for field,invalid in (
+                ("enabled",False),
+                ("user_status","UNCONFIRMED"),
+                ("verified_email",False)):
+                old=getattr(COGNITO,field)
+                setattr(COGNITO,field,invalid)
+                try:
+                    response=PORTAL.handler(self.event("/portal/account/"),None)
+                    self.assertEqual(response["statusCode"],403,field)
+                    self.assertNotIn("test@example.invalid",response["body"])
+                finally:setattr(COGNITO,field,old)
+        finally:
+            PORTAL.session=previous
+
+    def test_customer_account_escapes_user_content_and_never_exposes_raw_html(self):
+        previous=PORTAL.session
+        PORTAL.session=lambda event: {
+            "username":"test-user","sub":"test-sub",
+            "email":'<img src=x onerror=alert("exfiltrate")>'}
+        try:
+            body=PORTAL.handler(self.event("/portal/account/"),None)["body"]
+            self.assertNotIn('<img src=x',body)
+            self.assertIn("&lt;img src=x",body)
+            self.assertNotIn("window.location",body)
+        finally:
+            PORTAL.session=previous
+
+    def test_business_request_history_is_scoped_by_signed_in_customer_sub(self):
+        previous_session=PORTAL.session
+        previous_table=PORTAL.TABLE
+        COGNITO.groups=[PORTAL.APPROVED_GROUP]
+        class AuditedTable:
+            def query(self,**kwargs):
+                self_args=kwargs.get("KeyConditionExpression")
+                if self_args!=("eq","pk","USER#sub-owner"):
+                    raise AssertionError("Wrong tenant query scope")
+                return {"Items":[{"pk":"USER#sub-owner","sk":"RQ#111",
+                    "receipt_id":"NUT-111","status":"PENDING_MANUAL_CONFIRMATION"}]}
+        PORTAL.TABLE=AuditedTable()
+        PORTAL.session=lambda event: {
+            "username":"approved","sub":"sub-owner","email":"approved@example.invalid"}
+        try:
+            page=PORTAL.handler(self.event("/portal/orders/"),None)
+            self.assertEqual(page["statusCode"],200)
+            self.assertIn("NUT-111",page["body"])
+            self.assertIn("Not financially binding",page["body"])
+            self.assertNotIn("Pay securely",page["body"])
+        finally:
+            PORTAL.session=previous_session
+            PORTAL.TABLE=previous_table
+
+    def test_opaque_origin_logout_uses_fresh_host_only_csrf_token(self):
+        previous=PORTAL.session
+        PORTAL.session=lambda event: {"username":"synthetic","sub":"synthetic-sub",
+            "email":"synthetic@example.invalid","expires_at":PORTAL.now()+3600}
+        try:
+            landing=PORTAL.handler(self.event("/portal/dashboard/"),None)
+            token=re.search(r'name="signup_csrf" value="([A-Za-z0-9_-]{43})"',landing["body"])
+            self.assertIsNotNone(token)
+            proof=token.group(1)
+            self.assertIn("Secure",landing["cookies"][0])
+            event=self.event("/logout","POST",origin="null")
+            event["cookies"]=["__Host-np_signup_csrf="+proof]
+            event["headers"]["sec-fetch-site"]="same-origin"
+            event["body"]="signup_csrf="+proof
+            result=PORTAL.handler(event,None)
+            self.assertEqual(result["statusCode"],302)
+            self.assertIn("/logout?",result["headers"]["location"])
+            event["body"]="signup_csrf=invalid"
+            self.assertEqual(PORTAL.handler(event,None)["statusCode"],403)
+            event["body"]="signup_csrf="+proof
+            event["headers"]["origin"]="https://evil.example.invalid"
+            self.assertEqual(PORTAL.handler(event,None)["statusCode"],403)
+            event["headers"]["origin"]="null"
+            event["headers"]["sec-fetch-site"]="cross-site"
+            self.assertEqual(PORTAL.handler(event,None)["statusCode"],403)
+        finally:
+            PORTAL.session=previous
+
+    def test_root_signin_preserved_and_legacy_nutraxin_shop_not_portal_home(self):
+        page=PORTAL.handler(self.event("/"),None)
+        self.assertEqual(page["statusCode"],200)
+        self.assertIn('<body class="unified-root">',page["body"])
+        self.assertIn(".unified-root .retail-shop{display:none!important}",page["body"])
+        self.assertIn('name="signup_csrf"',page["body"])
+        self.assertIn("customer account, authorised products",page["body"])
+        self.assertIn('window.location.replace("/portal/dashboard/")',PORTAL.APP)
+        legacy=PORTAL.handler(self.event("/products/nutraxin/"),None)
+        self.assertEqual(legacy["statusCode"],200)
+        self.assertNotIn('<body class="unified-root">',legacy["body"])
+        self.assertIn('id="retail-grid"',legacy["body"])
+        self.assertIn('name="signup_csrf"',legacy["body"])
+
     def test_19_product_catalogue_has_no_public_wholesale_prices(self):
         self.assertEqual(len(PORTAL.PRODUCTS), 19)
         self.assertNotIn("qty24_price_pence", PORTAL.PAGE)

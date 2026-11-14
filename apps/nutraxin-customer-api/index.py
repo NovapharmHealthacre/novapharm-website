@@ -6,6 +6,7 @@ SSM provisional price list. No payment, stock or VAT-invoice authority.
 """
 import base64
 import hashlib
+import html
 import hmac
 import json
 import os
@@ -184,7 +185,7 @@ async function renderHistory(){
   status.textContent="Request history is temporarily unavailable. Please try again later.";
  }
 }
-async function init(){try{const session=await read("/api/session");retailAuthenticated=!!session.authenticated;if(!session.authenticated){show("signed-out");return;}if(!session.approved){$("pending-email").textContent="Signed in as "+session.email+".";show("pending");return;}const cat=await read("/api/catalogue");$("welcome").textContent="Signed in as "+session.email+".";render(cat.products);show("approved");void renderHistory();}catch(e){$("signed-out").append(node("p","fine","Could not load your secure account. Please retry sign-in."));}}
+async function init(){try{const session=await read("/api/session");retailAuthenticated=!!session.authenticated;if(!session.authenticated){show("signed-out");return;}if(document.body.classList.contains("unified-root")){window.location.replace("/portal/dashboard/");return;}if(!session.approved){$("pending-email").textContent="Signed in as "+session.email+".";show("pending");return;}const cat=await read("/api/catalogue");$("welcome").textContent="Signed in as "+session.email+".";render(cat.products);show("approved");void renderHistory();}catch(e){$("signed-out").append(node("p","fine","Could not load your secure account. Please retry sign-in."));}}
 $("order-form").addEventListener("submit",async function(event){event.preventDefault();const lines=[...$("products").querySelectorAll("input")].filter(i=>Number(i.value)>0).map(i=>({sku:i.name,quantity:Number(i.value)}));if(!lines.length){$("message").textContent="Select at least one product and quantity.";return;}const button=$("send");button.disabled=true;$("message").textContent="Submitting your request securely…";try{const r=await fetch("/api/order-requests",{method:"POST",credentials:"same-origin",cache:"no-store",headers:{"Content-Type":"application/json"},body:JSON.stringify({lines:lines,request_id:crypto.randomUUID()})});const data=await r.json();if(!r.ok||!data.receipt_id)throw new Error(data.error||"No receipt confirmed.");$("message").textContent="Request received: "+data.receipt_id+". Provisional products "+money(data.net_total_pence)+" + illustrative UK VAT at 20% "+money(data.indicative_vat_pence)+" = "+money(data.indicative_gross_total_pence)+". Indicative UK delivery charge £0 (included in the existing price model). No payment taken or VAT charged; NovaPharm will confirm availability and terms.";button.disabled=false;void renderHistory();}catch(e){$("message").textContent="Submission not confirmed. "+(e.message||"Please retry.");button.disabled=false;}});
 // A saved bag is a local selection, not a paid or accepted order.
 const retailStorageKey="novapharm.nutraxin.bag.v1";
@@ -259,7 +260,7 @@ if(returnQuery.get("checkout")==="return"&&returnQuery.get("order_id")){
   }).catch(()=>{$("retail-checkout-message").textContent="Your payment status is not yet available. Please check with NovaPharm before trying another card.";});
  }
 }
-void retailCollection();
+if(!document.body.classList.contains("unified-root"))void retailCollection();
 init();
 })();"""
 
@@ -415,15 +416,25 @@ def log_denied_login_origin(origin,headers):
         "configured_base":urllib.parse.urlsplit(BASE_URL).hostname
     },separators=(",",":")))
 
-def signup_landing_page():
-    # Mint an unguessable, host-only double-submit token to protect form POSTs
-    # when privacy-preserving browsers send an opaque (null) Origin header.
+def signup_landing_page(legacy=False):
+    # The unified entry is customer-account-first, not the Nutraxin shop.
+    # The old commerce UI remains reachable at an explicit compatibility
+    # route until its current customer sessions can be migrated safely.
     token=secrets.token_urlsafe(32)
     marker='<input type="hidden" name="mode" value="signup">'
     if PAGE.count(marker)!=1:
         raise RuntimeError("signup form missing")
-    html=PAGE.replace(marker,marker+'\n<input type="hidden" name="signup_csrf" value="'+token+'">',1)
-    return reply(200,html,"text/html; charset=utf-8",
+    content=PAGE.replace(marker,marker+'\n<input type="hidden" name="signup_csrf" value="'+token+'">',1)
+    if not legacy:
+        content=content.replace('<body>','<body class="unified-root">',1)
+        content=content.replace('</style>',
+          '.unified-root .retail-shop{display:none!important}'+
+          '.unified-root .account-browse{display:none!important}</style>',1)
+        content=content.replace(
+          'Create your account to shop, manage orders and access business services with clarity and ease.',
+          'Sign in to manage your customer account, authorised products, order requests, documents and support in one governed workspace. Employee and Board accounts require independent approval.',1)
+        content=content.replace('Continue browsing products','Explore NovaPharm products',1)
+    return reply(200,content,"text/html; charset=utf-8",
                  cookies=[cookie("__Host-np_signup_csrf",token,900)])
 
 def verified_signup_csrf(event,fields,headers):
@@ -532,11 +543,150 @@ def callback(event):
         "sub":attributes["sub"],"username":principal["Username"],
         "email":attributes.get("email",""),"expires_at":now()+3600},
         ConditionExpression="attribute_not_exists(pk)")
-    return redirect(old.get("return_to") or request_base(event)+"/",
+    return redirect(old.get("return_to") or request_base(event)+"/portal/dashboard/",
         [cookie("__Host-np_session",handle,3600),cookie("__Host-np_txn","",0)])
 
+
+# Exact public customer routes from packages/portal-contracts/src/module-catalog.json.
+# This is a bounded compatibility workspace on the CURRENT Cognito/DynamoDB
+# customer service; it is NOT the 54-module Enterprise Portal production release.
+CUSTOMER_WORKSPACE_MODULES = (
+    ("Customer Dashboard","/portal/dashboard/","account"),
+    ("My Account","/portal/account/","account"),
+    ("My Orders","/portal/orders/","orders"),
+    ("My Invoices","/portal/invoices/","finance"),
+    ("My Statements","/portal/statements/","finance"),
+    ("My Products","/portal/products/","products"),
+    ("Price Lists","/portal/price-lists/","products"),
+    ("Stock Availability","/portal/stock-availability/","products"),
+    ("Order Tracking","/portal/order-tracking/","orders"),
+    ("Delivery Tracking","/portal/delivery-tracking/","orders"),
+    ("Returns","/portal/returns/","orders"),
+    ("Quality Complaints","/portal/quality-complaints/","support"),
+    ("Documents","/portal/documents/","support"),
+    ("Support Tickets","/portal/support/","support"),
+    ("Regulatory Documents","/portal/regulatory-documents/","support"),
+    ("Downloads","/portal/downloads/","support"),
+    ("Customer Analytics","/portal/analytics/","account"),
+    ("Settings","/portal/settings/","account")
+)
+CUSTOMER_WORKSPACE_ROUTES = {route: (title,area) for title,route,area in CUSTOMER_WORKSPACE_MODULES}
+
+def verified_personal_session(principal):
+    """Customer identity from a server-issued, revocable DynamoDB session.
+    Check Cognito enabled/confirmed/verified status on every protected page.
+    Customer access never confers employee, board, admin or trade approvals.
+    """
+    if not principal or not isinstance(principal.get("username"),str):
+        return False
+    try:
+        record=COGNITO.admin_get_user(Username=principal["username"],UserPoolId=POOL_ID)
+        attrs={x["Name"]:x["Value"] for x in record.get("UserAttributes",[])}
+        return (record.get("Enabled") is True and
+            record.get("UserStatus")=="CONFIRMED" and
+            attrs.get("email_verified")=="true")
+    except (ClientError,KeyError,TypeError):
+        return False
+
+def customer_workspace(event,route):
+    """A non-binding customer-facing navigation step using existing services.
+
+    Only genuine account email and approved customer's OWN request history
+    are available. No fabricated invoices, stock, sale rights or permissions.
+    """
+    principal=session(event)
+    if not principal:
+        return redirect(request_base(event)+"/")
+    if not verified_personal_session(principal):
+        return error(403,"verified_customer_required")
+    if route not in CUSTOMER_WORKSPACE_ROUTES:
+        return error(404,"not_found")
+    title,group=CUSTOMER_WORKSPACE_ROUTES[route]
+    email=html.escape(str(principal.get("email") or ""),quote=True)
+    nav="".join(
+        '<a href="'+href+'"'+(' aria-current="page"' if href==route else '')+'>'+
+        html.escape(label,quote=True)+'</a>'
+        for label,href,_ in CUSTOMER_WORKSPACE_MODULES)
+    csrf=secrets.token_urlsafe(32)
+    logout_form=('<form method="post" action="/logout" class="logout-form">'
+        '<input type="hidden" name="signup_csrf" value="'+csrf+'">'
+        '<button type="submit">Sign out</button></form>')
+    if route=="/portal/dashboard/":
+        head='<p class="muted">Your verified customer account, products, requests, documents and support in one place. Only released services and records can be used.</p>'
+        cards="".join(
+            '<a class="tile" href="'+href+'"><b>'+html.escape(label,quote=True)+
+            '</b><span>Open customer workspace</span></a>'
+            for label,href,_ in CUSTOMER_WORKSPACE_MODULES if href!=route)
+        body='<div class="tiles">'+cards+'</div>'
+    elif route=="/portal/account/":
+        head='<p class="muted">Verified personal account. Trade status and organisation access are separately approved.</p>'
+        body='<div class="tile"><b>Email</b><span>'+email+'</span><span>Identity verified with the existing NovaPharm customer provider</span></div>'
+    elif route=="/portal/orders/":
+        head='<p class="muted">Only your own non-binding business order requests can be shown here. A request is not a confirmed order or invoice.</p>'
+        if approved(principal["username"]):
+            try:
+                response=TABLE.query(KeyConditionExpression=Key("pk").eq("USER#"+principal["sub"]),
+                    Limit=20,ScanIndexForward=False)
+                items=[x for x in response.get("Items",[]) if str(x.get("sk","")).startswith("RQ#")]
+                records="".join('<li><strong>'+html.escape(str(x.get("receipt_id") or "Request"),quote=True)+
+                    '</strong> · '+html.escape(str(x.get("status") or "Pending review").replace("_"," ").lower(),quote=True)+
+                    ' · Not financially binding</li>' for x in items)
+                body='<div class="tile"><b>Order requests</b><ul>'+records+'</ul></div>' if records else '<p class="empty">No business order requests found for this account.</p>'
+            except (ClientError,KeyError,TypeError):
+                body='<p class="empty">Request history is temporarily unavailable. No order status has been inferred.</p>'
+        else:
+            body='<p class="empty">Personal account active. Business request history requires a separately approved trade account.</p>'
+    elif route=="/portal/products/":
+        head='<p class="muted">Nutraxin and ESCO Anand are collections within the same customer workspace, not independent ordering accounts.</p>'
+        body=('<div class="tiles"><section class="tile"><b>Nutraxin</b><span>Nutrition and wellness references</span>'
+            '<small>Stock, sale eligibility and prices require verified approval.</small></section>'
+            '<section class="tile"><b>ESCO Anand</b><span>Medical and surgical product references</span>'
+            '<small>Trade eligibility, market authorisation and available stock remain unverified.</small></section></div>')
+    else:
+        head='<p class="muted">This customer module is reserved in the unified portal architecture.</p>'
+        body='<p class="empty">Live records and transactions are not connected for this module. No invoice, stock, delivery, support ticket or financial statement is represented as available.</p>'
+    if route in ("/portal/price-lists/","/portal/stock-availability/"):
+        body='<p class="empty">Account-specific prices and physical stock are not verified for live ordering. No binding catalogue or stock guarantee is provided.</p>'
+    css=('''*{box-sizing:border-box}body{margin:0;background:#f6f6f7;color:#151515;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+a{color:inherit;text-decoration:none}a:focus-visible,button:focus-visible{outline:3px solid #ad0b18;outline-offset:3px}
+header{background:#fff;border-bottom:1px solid #e6e6e9;padding:20px clamp(20px,5vw,70px);display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}.account-actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap}.logout-form{margin:0}.logout-form button{cursor:pointer;background:#191919;color:#fff;padding:10px 18px;border-radius:999px;border:0;font:inherit;font-size:12px}
+.brand{font-size:20px;letter-spacing:-.05em;font-weight:750}.brand small{display:block;letter-spacing:.23em;font-size:9px;font-weight:500}
+.headermeta{font-size:12px;color:#62636d;overflow-wrap:anywhere}.layout{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:calc(100svh - 77px)}
+aside{background:white;border-right:1px solid #e6e6e9;padding:30px 14px}aside p{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#898992;padding:0 14px}
+aside a{display:block;padding:12px 14px;border-radius:11px;font-size:13px;color:#404049}aside a:hover,aside a[aria-current=page]{background:#f5f0f1;color:#a30917;font-weight:650}
+main{max-width:1100px;width:100%;padding:clamp(26px,5vw,70px);margin:0 auto}.eyebrow{font-size:11px;letter-spacing:.2em;font-weight:750;color:#a30917;text-transform:uppercase}
+h1{letter-spacing:-.045em;line-height:1.08;font-size:clamp(30px,4vw,54px);margin:12px 0}h2{font-size:20px}.muted{color:#6e6e76;line-height:1.65;max-width:75ch}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-top:30px}.tile{border:1px solid #e8e8ea;border-radius:16px;padding:24px;background:white;display:flex;flex-direction:column;gap:11px}
+.tile b{font-size:15px}.tile span,.tile small{font-size:12px;color:#777881;line-height:1.5}.tile:hover{border-color:#c6a9ad}
+.empty{background:#fff;border:1px solid #e8e8ea;padding:25px;border-radius:14px;color:#74747d;line-height:1.6;margin:30px 0}
+ul{padding-left:19px;line-height:1.8;color:#555}footer{padding:30px;color:#85858d;font-size:12px}
+@media(max-width:740px){.layout{display:block}aside{display:flex;overflow-x:auto;gap:4px;padding:10px;border-right:0;border-bottom:1px solid #e8e8ea}aside p{display:none}aside a{white-space:nowrap;padding:10px}main{padding:28px 18px}}
+''')
+    document=('<!doctype html><html lang="en-GB"><head><meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">'
+        '<title>'+html.escape(title,quote=True)+' | NovaPharm Customer Portal</title><style>'+css+'</style></head><body>'
+        '<header><a class="brand" href="/portal/dashboard/">NOVAPHARM<small>HEALTHCARE</small></a>'
+        '<div class="account-actions"><span class="headermeta">'+email+'</span>'+logout_form+'</div></header>'
+        '<div class="layout"><aside aria-label="Customer navigation"><p>Customer workspace</p>'+nav+'</aside>'
+        '<main><p class="eyebrow">NOVAPHARM / CUSTOMER WORKSPACE</p><h1>'+html.escape(title,quote=True)+'</h1>'+
+        head+body+'<footer>Available modules reflect released records only. This does not grant trade, employee, board or administrator privileges.'
+        ' · <a href="https://novapharmhealthcare.com/legal/privacy/">Privacy</a></footer></main></div></body></html>')
+    return reply(200,document,"text/html; charset=utf-8",
+                 cookies=[cookie("__Host-np_signup_csrf",csrf,900)])
+
 def logout(event):
-    if (event.get("headers") or {}).get("origin","")!=request_base(event):return error(403,"invalid_origin")
+    headers={str(k).lower():str(v) for k,v in (event.get("headers") or {}).items()}
+    origin=headers.get("origin","")
+    if canonical_login_origin(origin) not in LOGIN_ORIGIN_ALLOWLIST:
+        if origin not in ("","null") or event.get("isBase64Encoded"):
+            return error(403,"invalid_origin")
+        raw_form=event.get("body") or ""
+        if not isinstance(raw_form,str) or len(raw_form)>300:
+            return error(403,"invalid_origin")
+        try: form=urllib.parse.parse_qs(raw_form,keep_blank_values=True,max_num_fields=2)
+        except ValueError:return error(403,"invalid_origin")
+        if not verified_signup_csrf(event,form,headers):
+            return error(403,"invalid_origin")
     raw=cookies(event).get("__Host-np_session","")
     if raw:TABLE.delete_item(Key={"pk":"SESSION#"+h(raw),"sk":"META"})
     query=urllib.parse.urlencode({"client_id":CLIENT_ID,"logout_uri":request_base(event)+"/"})
@@ -881,6 +1031,14 @@ def handler(event,context):
     method=(event.get("requestContext",{}).get("http",{}).get("method") or "GET").upper()
     path=event.get("rawPath") or "/"
     if method=="GET" and path=="/":return signup_landing_page()
+    if method=="GET" and path in ("/products/nutraxin/","/products/nutraxin"):
+        return signup_landing_page(legacy=True)
+    if method=="GET" and path.rstrip("/")+"/" in CUSTOMER_WORKSPACE_ROUTES:
+        return customer_workspace(event,path.rstrip("/")+"/")
+    # A consumer Cognito account must never grant staff, board or admin access.
+    if method=="GET" and path.rstrip("/")+"/" in (
+        "/employee/dashboard/","/portal/executive-platform/","/admin/dashboard/"):
+        return error(403,"workforce_or_admin_identity_required")
     if method=="GET" and path=="/assets/earth-horizon-approved.jpg":return {"statusCode":200,"isBase64Encoded":True,"headers":{"content-type":"image/jpeg","cache-control":"public, max-age=604800","x-content-type-options":"nosniff","cross-origin-resource-policy":"same-origin"},"body":EARTH_APPROVED_JPEG_BASE64}
     if method=="GET" and path=="/app.js":return reply(200,APP,"text/javascript; charset=utf-8")
     if method in ("GET","POST") and path=="/login":return login(event)
