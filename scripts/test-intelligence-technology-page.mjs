@@ -172,16 +172,23 @@ assert.equal(controls["[data-npi-results-list]"].children.length, 0, "Changing m
 for (const [label, markup] of [["source", source], ["published", published]]) {
   assert.ok(markup.includes('id="intelligence-pricing"'), label + " must offer a three-plan comparison");
   assert.equal((markup.match(/data-npi-plan="(?:starter|professional|enterprise)"/g) || []).length, 3, label + " must have exactly three plans");
-  assert.ok(markup.includes("£199") && markup.includes("£699"), label + " proposed GBP owner-review prices must match the plan register");
+  assert.ok(markup.includes("£199") && markup.includes("£699"), label + " approved GBP prices must match the plan register");
   assert.ok(markup.includes("£2,799"), label + " custom enterprise indication must not be hidden");
   assert.ok(markup.includes("not live subscriptions"), label + " must disclose product activation boundary");
   assert.ok(markup.includes("No payment will be collected here"), label + " must not imply production checkout");
-  assert.ok(markup.includes("Proposed prices in GBP"), label + " must state the owner-review currency");
+  assert.ok(markup.includes('aria-label="Approved 30-day Starter free trial"'), label + " must present a free-trial card");
+  assert.ok(markup.includes("£0") && markup.includes("for 30 days"), label + " must state the approved zero-price duration");
+  assert.ok(markup.includes("25 total") && markup.includes("governed medicine searches"), label + " must cap the free trial at 25 total searches");
+  assert.ok(markup.includes("No credit card required"), label + " must disclose no-card enrolment");
+  assert.ok(markup.includes("No automatic subscription or charges"), label + " must prohibit automatic conversion");
+  assert.ok(markup.includes("Enrolment opens after production approval"), label + " must disclose trial launch status");
+
+  assert.ok(markup.includes("Approved monthly prices in GBP"), label + " must state the approved monthly currency");
   assert.ok(markup.includes("actual tax depends"), label + " must not misrepresent a blanket VAT treatment");
-  assert.ok(markup.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=starter&amp;cycle=monthly" data-npi-plan-cta="monthly"'), label + " Starter monthly route must be fixed and secure");
-  assert.ok(markup.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=starter&amp;cycle=annual" data-npi-plan-cta="annual" hidden style="display:none !important"'), label + " Starter annual route must be fixed and initially hidden");
-  assert.ok(markup.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=professional&amp;cycle=monthly" data-npi-plan-cta="monthly"'), label + " Professional monthly route must be fixed and secure");
-  assert.ok(markup.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=professional&amp;cycle=annual" data-npi-plan-cta="annual" hidden style="display:none !important"'), label + " Professional annual route must be fixed and initially hidden");
+  assert.ok(markup.includes('<span class="npi-plan-cta npi-plan-cta-pending" data-npi-plan-cta="monthly" aria-disabled="true">Enrolment not yet open</span>'), label + " dormant Starter and Professional CTAs must not invite unapproved signup");
+  assert.ok(markup.includes('data-npi-plan-cta="annual" aria-disabled="true" hidden style="display:none !important"'), label + " annual offer remains hidden and inaccessible");
+  assert.ok(!markup.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/register?'), label + " no trial or paid signup may be linked until backend acceptance");
+  assert.ok(markup.includes('data-npi-starter-trial="approved"'), label + " 30-day no-card Starter introductory offer must be present");
   assert.ok(markup.includes('href="/contact/?enquiry=General%20enquiry&amp;intelligencePlan=enterprise"'), label + " Enterprise must carry a strictly enumerated plan to the approved business-enquiry form");
   assert.ok(markup.includes('href="mailto:vishal@novapharmhealthcare.com?subject=NovaPharm%20Intelligence%20Enterprise'), label + " Enterprise must offer a direct email fallback");
   assert.ok(!markup.includes('href="https://checkout.stripe.com'), label + " must not activate unverified checkout");
