@@ -27,7 +27,7 @@ function setup(vendor="palantir_foundry",overrides={}){
   resolveCredentials:async()=>{
    events.push({step:"credentials"});
    return vendor==="palantir_foundry"?
-    {clientId:"foundry_client_001",clientSecret:"secret-token-safe-001"}:
+    {clientId:"foundry_client_001",clientSecret:"secret-token-safe-001",oauthScope:"api:use-ontologies-read"}:
     {accessKeyId:"prisma_user_001",secretKey:"secret-token-safe-001"};
   },
   httpRequest:async request=>{
@@ -61,7 +61,7 @@ test("Palantir Foundry probe sends read-only OAuth scope and ontology-list reque
  assert.equal(http.length,2);
  assert.equal(http[0].method,"POST");
  assert.equal(http[0].url,"https://novapharm.palantirfoundry.com/multipass/api/oauth2/token");
- assert.equal(new URLSearchParams(http[0].body).get("scope"),"api:ontologies-read");
+ assert.equal(new URLSearchParams(http[0].body).get("scope"),"api:use-ontologies-read");
  assert.equal(new URLSearchParams(http[0].body).get("grant_type"),"client_credentials");
  assert.equal(http[1].method,"GET");
  assert.equal(http[1].url,"https://novapharm.palantirfoundry.com/api/v2/ontologies");
@@ -214,5 +214,32 @@ test("provider credential and authority callback errors never leak sensitive mes
    assert.equal(err.message,"Enterprise vendor probe was denied.");
    assert.equal(err.message.includes("secret-token-safe-001"),false);
   }
+ }
+});
+
+test("Foundry restricted and legacy scopes must be explicitly approved by credential authority",async()=>{
+ const {inputs:restricted}=setup("palantir_foundry");
+ const candidate=await probeEnterpriseVendor(restricted);
+ assert.equal(candidate.providerConnectivityObserved,true);
+ const {inputs:legacy,events}=setup("palantir_foundry",{
+  resolveCredentials:async()=>({
+   clientId:"foundry_client_001",clientSecret:"secret-token-safe-001",
+   oauthScope:"api:ontologies-read"
+  })
+ });
+ await probeEnterpriseVendor(legacy);
+ const tokenCall=events.filter(x=>x.step==="http")[0].request;
+ assert.equal(new URLSearchParams(tokenCall.body).get("scope"),"api:ontologies-read");
+ for(const oauthScope of ["api:ontologies-write","api:use-ontologies-write",
+   "api:ontologies-read api:ontologies-write","",undefined]){
+  let http=0;
+  const {inputs}=setup("palantir_foundry",{
+   resolveCredentials:async()=>({
+    clientId:"foundry_client_001",clientSecret:"secret-token-safe-001",oauthScope
+   }),
+   httpRequest:async()=>{http++;return {status:200,json:{}};}
+  });
+  await assert.rejects(probeEnterpriseVendor(inputs),deny);
+  assert.equal(http,0);
  }
 });
