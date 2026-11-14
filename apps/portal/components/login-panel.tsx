@@ -2,7 +2,7 @@
 
 import { Building2, KeyRound, ShieldCheck, Users } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
-import { destinationAfterPortalLogin, validatedNutraxinIntentQuery } from "../data/nutraxin-order-intent";
+import { destinationAfterPortalLogin, validatedCustomerCommerceIntentQuery } from "../data/nutraxin-order-intent";
 import { isPortalAccessType, landingRouteForAccess } from "../data/routes";
 import { professionalError, protectedMutation } from "../lib/gateway";
 import { PortalBrand } from "./portal-brand";
@@ -21,7 +21,7 @@ export function LoginPanel() {
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
   const [selectionQuery, setSelectionQuery] = useState("");
-  useEffect(() => setSelectionQuery(validatedNutraxinIntentQuery(window.location.search)), []);
+  useEffect(() => setSelectionQuery(validatedCustomerCommerceIntentQuery(window.location.search)), []);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -35,7 +35,7 @@ export function LoginPanel() {
         accessType,
       });
       if (!isPortalAccessType(result.accessType) || result.accessType !== accessType) throw new Error("The authorised portal area did not match the requested workspace.");
-      const selection = validatedNutraxinIntentQuery(window.location.search);
+      const selection = validatedCustomerCommerceIntentQuery(window.location.search);
       window.location.assign(result.mustChangePassword ? `/portal/change-password/${selection}` : destinationAfterPortalLogin(result.accessType, selection, landingRouteForAccess(result.accessType)));
     } catch (error) {
       setStatus(professionalError(error));
@@ -70,7 +70,7 @@ export function LoginPanel() {
           <Icon aria-hidden="true" /><span>{label}</span>
         </label>)}
       </fieldset>
-      {accessType === "customer" && selectionQuery ? <p className="order-intent-login-note">Your selected Nutraxin product will be ready to review in your customer workspace after sign-in.</p> : null}
+      {accessType === "customer" && selectionQuery ? <p className="order-intent-login-note">Your product selection will open in My Products after sign-in. Pricing, stock and ordering remain subject to account-specific release checks.</p> : null}
       <form className="login-form" onSubmit={submit}>
         <label htmlFor="username">Username or business email</label>
         <input id="username" name="username" autoComplete="username" required maxLength={160} />
