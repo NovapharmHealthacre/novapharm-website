@@ -27,6 +27,19 @@ const workAreas = [
     description: "Review approved contract terms and account controls.", prominence: "secondary" },
 ] as const;
 
+const wmsControlAreas = [
+  { code: "employee.orders", title: "Commercial control",
+    detail: "Customer, price, purchase-order and credit evidence. An enquiry is not a binding order." },
+  { code: "employee.warehouse", title: "Inventory visibility",
+    detail: "Recorded lot, expiry, stock-owner and movement evidence. Ledger balances are not confirmed ATP." },
+  { code: "employee.quality", title: "Quality and release",
+    detail: "Quarantine, returns, deviations, CAPA and recall decisions remain with authorised quality." },
+  { code: "employee.purchasing", title: "Order orchestration",
+    detail: "Supplier receipt, carrier and 3PL fulfilment evidence; no automatic reservation or dispatch." },
+  { code: "employee.dashboard", title: "Distribution intelligence",
+    detail: "Investigate exceptions and data readiness; OTIF and profitability require reconciled data." },
+] as const;
+
 const process = [
   ["01", "Verify the caller", "Confirm the authorised business contact and employee assignment."],
   ["02", "Locate the product", "Use exact SKU, strength, pack, market and product classification."],
@@ -96,6 +109,16 @@ export function EmployeeDistributionWorkspace({ moduleCode }: Readonly<{ moduleC
         <p>Every batch. Accounted for. One view across warehouse evidence, quality holds, expiry exposure
           and inventory movements. Clarity before action.</p>
       </header>
+      <nav className="distribution-wms-control-nav" aria-label="Five WMS control layers">
+        {wmsControlAreas.map((area, index) => {
+          const entry = modules.get(area.code);
+          return entry ? <a key={area.code} href={entry.route}
+            aria-current={moduleCode === area.code ? "page" : undefined}>
+            <span>{String(index + 1).padStart(2, "0")} / {area.title}</span>
+            <small>{area.detail}</small>
+          </a> : null;
+        })}
+      </nav>
       <section className="distribution-wms-status" aria-label="Warehouse data authority">
         <p className="distribution-employee-overline">SOURCE AND OPERATING AUTHORITY</p>
         <h2>Verification before availability.</h2>
