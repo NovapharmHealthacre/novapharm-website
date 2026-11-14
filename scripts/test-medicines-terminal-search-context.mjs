@@ -81,3 +81,17 @@ test("in-flight analytical responses cannot refill facts after a subsequent medi
   assert.match(source, /if \(generation !== selectionGenerationRef\.current\) return;/u);
   assert.match(source, /if \(generation === selectionGenerationRef\.current\) setBusy\(false\)/u);
 });
+
+test("search pagination is server-backed and fenced against stale response updates", () => {
+  const source = between("async function searchMedicinePage(", "async function selectMedicine(");
+  assert.match(source, /selectionGenerationRef\.current \+= 1/u);
+  assert.match(source, /page < 1 \|\| page > current\.pagination\.totalPages/u);
+  assert.match(source, /enterprise\/medicines\/search\?q=/u);
+  assert.match(source, /&page=\$\{page\}/u);
+  const request = source.indexOf("await gatewayJson<SearchResponse>");
+  const guard = source.indexOf("if (generation !== selectionGenerationRef.current) return;");
+  const update = source.indexOf("setSearchResponse(next);");
+  assert.ok(request >= 0 && guard > request && update > guard);
+  assert.match(component, /aria-label="Medicine search result pages"/u);
+  assert.match(component, /searchResponse\.pagination\.totalPages > 1/u);
+});
