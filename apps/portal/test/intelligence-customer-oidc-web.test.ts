@@ -7,8 +7,8 @@ import { createCustomerLoginTransaction, intelligenceCustomerOidc, verifyCustome
 import { createFounderMfaCookie, verifyFounderMfaCookie } from "../../../src/core/intelligence-founder-totp-enrolment.mjs";
 import { GET as finishCustomerIdentity } from "../app/auth/callback/route";
 import { GET as startCustomerIdentity } from "../app/auth/customer/start/route";
-import { GET as openMfaSetup, POST as verifyMfaSetup } from "../app/auth/mfa/setup/route";
 import { GET as openInternalPilotSetup } from "../app/auth/internal/mfa/setup/route";
+import { GET as openMfaSetup, POST as verifyMfaSetup } from "../app/auth/mfa/setup/route";
 
 const key = "internal-test-customer-oidc-signing-key-not-for-production-use-123456";
 const source = (path: string) => readFileSync(new URL("../" + path, import.meta.url), "utf8");
