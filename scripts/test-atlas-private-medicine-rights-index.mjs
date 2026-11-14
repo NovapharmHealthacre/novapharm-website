@@ -177,3 +177,39 @@ test("missing approval, nonempty data and conflicting G2 indexes deny writes",as
   }),/authority required/);
   assert.equal(x.stats().writes,0);
 });
+
+
+test("source rights refuse a grant inserted after independent operator approval", async()=>{
+  const x=fake();
+  let reads=0;
+  x.collection.countDocuments=async()=>++reads === 1 ? 0 : 1;
+  await assert.rejects(ensurePrivateMedicineRightsUniqueIndex({
+    database:x.database,apply:true,changeTicket:"NPI-CHANGE-20261113",
+    authorizeMigration:x.approval
+  }),/changed during migration approval/);
+  assert.deepEqual(x.totals(),{writes:0,authorizations:1});
+});
+test("source rights refuse a conflicting index created during independent approval", async()=>{
+  const x=fake();
+  let reads=0;
+  x.collection.listIndexes=()=>({toArray:async()=> {
+    reads++;
+    return reads===1 ? [{name:"_id_",key:{_id:1},unique:true}] :
+      [{name:spec.name,key:spec.keys,unique:false}];
+  }});
+  await assert.rejects(ensurePrivateMedicineRightsUniqueIndex({
+    database:x.database,apply:true,changeTicket:"NPI-CHANGE-20261113",
+    authorizeMigration:x.approval
+  }),/changed during migration approval/);
+  assert.equal(x.totals().writes,0);
+});
+test("G2 refuses newly inserted evidence after an approved read-only preflight",async()=>{
+  const x=g2Fixture({missing:names[0]});
+  let reads=0;
+  x.database.collection(names[0]).countDocuments=async()=>++reads===1?0:1;
+  await assert.rejects(ensureG2PrivateMedicineUniqueIndexes({
+    database:x.database,apply:true,changeTicket:"NPI-CHANGE-G2-20261113",
+    authorizeMigration:x.authorizeMigration
+  }),/G2 collection changed during migration approval/);
+  assert.equal(x.stats().writes,0);
+});
