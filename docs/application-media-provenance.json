@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "reviewedAt": "2026-11-10",
+  "reviewedAt": "2026-11-14",
   "policy": {
     "scope": "Application identity, founder social-preview and retired fallback assets not covered by the corporate photography registers.",
     "noThirdPartyRuntimeRequests": true,
@@ -86,13 +86,72 @@
       "reviewStatus": "approved-existing-application-asset"
     },
     {
-      "path": "assets/brand/pharmascope-logo.svg",
-      "id": "pharmascope-primary-logo",
-      "source": "Owner-supplied PharmaScope Logo Asset Pack; 02_web/primary_transparent/pharmascope-logo.svg",
-      "licence": "Owner-authorised PharmaScope product-identity use",
-      "semanticPurpose": "Primary PharmaScope wordmark for light analytical surfaces",
+      "path": "assets/brand/novapharm-distribution-apple-touch-icon.png",
+      "id": "novapharm-distribution-apple-touch-icon",
+      "source": "Owner-supplied NovaPharm Distribution Official Logo Kit v1.0 (14 November 2026); original 180px PNG with verified SHA-256",
+      "semanticPurpose": "Route-scoped iOS home-screen icon for the Distribution workspace",
+      "reviewStatus": "checksum-verified-owner-approved-source",
+      "licence": "Owner-authorised NovaPharm Distribution WMS product-identity use",
       "pageUsage": [
-        "Protected PharmaScope application identity"
+        "/employee/dashboard/",
+        "/employee/orders/",
+        "/employee/warehouse/"
+      ]
+    },
+    {
+      "path": "assets/brand/novapharm-distribution-mark.svg",
+      "id": "novapharm-distribution-mark",
+      "source": "Owner-supplied NovaPharm Distribution Official Logo Kit v1.0 (14 November 2026); official white-backed N mark for browser icons",
+      "semanticPurpose": "Route-scoped NovaPharm Distribution favicon",
+      "reviewStatus": "checksum-verified-owner-approved-source",
+      "licence": "Owner-authorised NovaPharm Distribution WMS product-identity use",
+      "pageUsage": [
+        "/employee/dashboard/",
+        "/employee/orders/",
+        "/employee/warehouse/"
+      ]
+    },
+    {
+      "path": "assets/brand/novapharm-distribution-reverse.svg",
+      "id": "novapharm-distribution-wordmark-white",
+      "source": "Owner-supplied NovaPharm Distribution Official Logo Kit v1.0 (14 November 2026); approved white outlined vector optimised for dark website surfaces",
+      "semanticPurpose": "Reverse WMS product wordmark reserved for dark navigation surfaces",
+      "reviewStatus": "owner-approved-optimised-first-party-vector",
+      "licence": "Owner-authorised NovaPharm Distribution WMS product-identity use",
+      "pageUsage": []
+    },
+    {
+      "path": "assets/brand/novapharm-distribution.svg",
+      "id": "novapharm-distribution-wordmark-graphite",
+      "source": "Owner-supplied NovaPharm Distribution Official Logo Kit v1.0 (14 November 2026); approved graphite outlined vector optimised for website delivery",
+      "semanticPurpose": "Primary graphite WMS product wordmark for accessible employee operations navigation",
+      "reviewStatus": "owner-approved-optimised-first-party-vector",
+      "licence": "Owner-authorised NovaPharm Distribution WMS product-identity use",
+      "pageUsage": [
+        "/employee/dashboard/",
+        "/employee/orders/",
+        "/employee/warehouse/"
+      ]
+    },
+    {
+      "path": "assets/brand/pharmascope-app-icon-1024.png",
+      "id": "pharmascope-app-icon-master",
+      "source": "Owner-supplied PharmaScope Logo Asset Pack; 04_apple_app_icons/AppIcon/AppIcon-1024x1024.png",
+      "licence": "Owner-authorised PharmaScope product-identity use",
+      "semanticPurpose": "Store and native-application icon master; not evidence of a submitted application",
+      "pageUsage": [
+        "Native release asset register"
+      ],
+      "reviewStatus": "checksum-verified-owner-approved-source"
+    },
+    {
+      "path": "assets/brand/pharmascope-helix.svg",
+      "id": "pharmascope-helix-mode",
+      "source": "Owner-supplied PharmaScope Logo Asset Pack; 08_visual_system/Helix/helix-mark.svg",
+      "licence": "Owner-authorised PharmaScope product-identity use",
+      "semanticPurpose": "Helix analysis-mode identity for longitudinal and forecast intelligence",
+      "pageUsage": [
+        "Protected PharmaScope analysis-mode control"
       ],
       "reviewStatus": "checksum-verified-owner-approved-source"
     },
@@ -106,6 +165,26 @@
         "Protected PharmaScope left navigation"
       ],
       "reviewStatus": "checksum-verified-owner-approved-source"
+    },
+    {
+      "path": "assets/brand/pharmascope-logo.svg",
+      "id": "pharmascope-primary-logo",
+      "source": "Owner-supplied PharmaScope Logo Asset Pack; 02_web/primary_transparent/pharmascope-logo.svg",
+      "licence": "Owner-authorised PharmaScope product-identity use",
+      "semanticPurpose": "Primary PharmaScope wordmark for light analytical surfaces",
+      "pageUsage": [
+        "Protected PharmaScope application identity"
+      ],
+      "reviewStatus": "checksum-verified-owner-approved-source"
+    },
+    {
+      "path": "assets/brand/pharmascope-open-graph-1200x630-dark.jpg",
+      "id": "pharmascope-open-graph-dark",
+      "source": "Owner-supplied PharmaScope Logo Asset Pack; 05_social_profile/pharmascope-open-graph-1200x630-dark.jpg",
+      "licence": "Owner-authorised PharmaScope product-identity use",
+      "semanticPurpose": "Governed PharmaScope social-preview master for a future authorised public product surface",
+      "pageUsage": [],
+      "reviewStatus": "checksum-verified-owner-approved-source-not-published"
     },
     {
       "path": "assets/brand/pharmascope-pulse.svg",
@@ -130,44 +209,15 @@
       "reviewStatus": "checksum-verified-owner-approved-source"
     },
     {
-      "path": "assets/brand/pharmascope-helix.svg",
-      "id": "pharmascope-helix-mode",
-      "source": "Owner-supplied PharmaScope Logo Asset Pack; 08_visual_system/Helix/helix-mark.svg",
-      "licence": "Owner-authorised PharmaScope product-identity use",
-      "semanticPurpose": "Helix analysis-mode identity for longitudinal and forecast intelligence",
+      "path": "assets/media/oncology/haematological-cancers.jpg",
+      "id": "oncology-hope-haematological-cancers",
+      "source": "Owner-approved generative artwork in ChatGPT conversation, 10 November 2026",
+      "licence": "Owner-approved project creative; downstream publishing subject to generative-asset usage terms",
+      "semanticPurpose": "AI-created scientific visual illustrating haematological cancer strategic category, not an approved medicine",
       "pageUsage": [
-        "Protected PharmaScope analysis-mode control"
+        "/oncology/"
       ],
-      "reviewStatus": "checksum-verified-owner-approved-source"
-    },
-    {
-      "path": "assets/brand/pharmascope-app-icon-1024.png",
-      "id": "pharmascope-app-icon-master",
-      "source": "Owner-supplied PharmaScope Logo Asset Pack; 04_apple_app_icons/AppIcon/AppIcon-1024x1024.png",
-      "licence": "Owner-authorised PharmaScope product-identity use",
-      "semanticPurpose": "Store and native-application icon master; not evidence of a submitted application",
-      "pageUsage": [
-        "Native release asset register"
-      ],
-      "reviewStatus": "checksum-verified-owner-approved-source"
-    },
-    {
-      "path": "assets/brand/pharmascope-open-graph-1200x630-dark.jpg",
-      "id": "pharmascope-open-graph-dark",
-      "source": "Owner-supplied PharmaScope Logo Asset Pack; 05_social_profile/pharmascope-open-graph-1200x630-dark.jpg",
-      "licence": "Owner-authorised PharmaScope product-identity use",
-      "semanticPurpose": "Governed PharmaScope social-preview master for a future authorised public product surface",
-      "pageUsage": [],
-      "reviewStatus": "checksum-verified-owner-approved-source-not-published"
-    },
-    {
-      "path": "assets/media/products/licensed-image-pending.svg",
-      "id": "retired-product-image-fallback",
-      "source": "Original repository-authored neutral fallback SVG",
-      "licence": "Original NovaPharm project work",
-      "semanticPurpose": "Retired pre-materialisation fallback retained for deterministic recovery only",
-      "pageUsage": [],
-      "reviewStatus": "retired-not-permitted-in-production-render"
+      "reviewStatus": "approved-illustrative-B2B-editorial-no-actual-product-or-clinical-outcome"
     },
     {
       "path": "assets/media/oncology/hope-tomorrow-portrait.jpg",
@@ -192,17 +242,6 @@
       "reviewStatus": "approved-illustrative-B2B-editorial-no-actual-product-or-clinical-outcome"
     },
     {
-      "path": "assets/media/oncology/haematological-cancers.jpg",
-      "id": "oncology-hope-haematological-cancers",
-      "source": "Owner-approved generative artwork in ChatGPT conversation, 10 November 2026",
-      "licence": "Owner-approved project creative; downstream publishing subject to generative-asset usage terms",
-      "semanticPurpose": "AI-created scientific visual illustrating haematological cancer strategic category, not an approved medicine",
-      "pageUsage": [
-        "/oncology/"
-      ],
-      "reviewStatus": "approved-illustrative-B2B-editorial-no-actual-product-or-clinical-outcome"
-    },
-    {
       "path": "assets/media/oncology/supportive-care.jpg",
       "id": "oncology-hope-supportive-care",
       "source": "Owner-approved generative artwork in ChatGPT conversation, 10 November 2026",
@@ -212,6 +251,15 @@
         "/oncology/"
       ],
       "reviewStatus": "approved-illustrative-B2B-editorial-no-actual-product-or-clinical-outcome"
+    },
+    {
+      "path": "assets/media/products/licensed-image-pending.svg",
+      "id": "retired-product-image-fallback",
+      "source": "Original repository-authored neutral fallback SVG",
+      "licence": "Original NovaPharm project work",
+      "semanticPurpose": "Retired pre-materialisation fallback retained for deterministic recovery only",
+      "pageUsage": [],
+      "reviewStatus": "retired-not-permitted-in-production-render"
     }
   ]
 }
