@@ -1,0 +1,27 @@
+name: Intelligence 22-workspace anonymous route contract
+on:
+  pull_request:
+    paths:
+      - 'apps/portal/data/intelligence-workspaces.ts'
+      - '.github/workflows/intelligence-private-production-gate.yml'
+      - 'scripts/test-intelligence-private-production-gate.mjs'
+      - '.github/workflows/intelligence-22-anonymous-route-contract.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/portal/data/intelligence-workspaces.ts'
+      - '.github/workflows/intelligence-private-production-gate.yml'
+      - 'scripts/test-intelligence-private-production-gate.mjs'
+      - '.github/workflows/intelligence-22-anonymous-route-contract.yml'
+permissions:
+  contents: read
+jobs:
+  route-boundary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+      - run: node --test scripts/test-intelligence-private-production-gate.mjs
