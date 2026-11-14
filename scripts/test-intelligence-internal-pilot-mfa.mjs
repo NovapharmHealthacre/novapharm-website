@@ -80,6 +80,47 @@ test("a signed, exact, email-verified Cognito pilot only gets a setup identity",
   assert.equal(result.mfaVerified,false);
 });
 
+test("a verified but unenrolled pilot must be offered TOTP before identity-only acknowledgement", async () => {
+  // Reproduce a Cognito account whose JWT has sufficient ACR/AMR identity
+  // claims but GetUser has not registered any authenticator.
+  const claimsWithStrongAcr = {
+    ...claims, acr: "urn:cognito:loa:4", amr: ["pwd", "otp", "mfa"],
+  };
+  const verified = await verifyIntelligenceCustomerIdToken({
+    idToken: jwt(claimsWithStrongAcr), expectedNonce: nonce, fetchImpl: jwks,
+    nowSeconds: Math.floor(now / 1000),
+    purpose: "internal_pilot_mfa_enrolment", pilotMfaEmail: email,
+  });
+  assert.equal(verified.pilotMfaEnrolmentOnly, true);
+  assert.equal(verified.grantsTenantAccess, false);
+  const calls = [];
+  assert.equal((await checkInternalPilotUnenrolled({
+    accessToken, subject: verified.verifiedCognitoSubject, expectedEmail: email,
+    fetchImpl: mock(calls, data([])),
+  })).eligible, true);
+  assert.deepEqual(calls, ["GetUser"]);
+
+  const callback = readFileSync(
+    new URL("../apps/portal/app/auth/callback/route.ts", import.meta.url),
+    "utf8",
+  );
+  const exchange = callback.indexOf("const { idToken, accessToken } = await exchangeCustomerAuthTokens");
+  const precheck = callback.indexOf('phase = "internal_pilot_mfa_preidentity_check"');
+  const general = callback.indexOf('phase = "id_token_verification"', precheck);
+  const branch = callback.slice(precheck, general);
+  assert.ok(exchange >= 0 && exchange < precheck && precheck < general,
+    "Pilot unenrolled check must be performed before general signed identity acceptance.");
+  assert.match(branch, /checkInternalPilotUnenrolled/u);
+  assert.match(branch, /purpose: "internal_pilot_mfa_enrolment"/u);
+  assert.match(branch, /pilotMfaEmail: allowedEmail/u);
+  assert.match(branch, /name: "__Host-npi_internal_mfa"/u);
+  assert.match(branch, /name: "__Host-npi_oidc_tx"/u);
+  assert.match(branch, /maxAge: 0/u);
+  assert.match(branch, /return response;/u);
+  assert.ok(!branch.includes("activateApprovedCustomerSession"));
+  assert.ok(!branch.includes("requestFounderPrivateSession"));
+});
+
 test("wrong allowlist, unverified email, stale auth or contradictory MFA claims fail closed", async () => {
   for(const [modified,allowed] of [
     [claims,null],
