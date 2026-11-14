@@ -45,7 +45,7 @@ test("server session decision enforces module area and password-replacement boun
   assert.equal(sessionDecision(customerView, user), "deny");
   assert.equal(sessionDecision(customerView, customerUser), "allow");
   assert.equal(sessionDecision(customerView, { ...customerUser, customerAccountLinked: false }), "deny");
-  assert.equal(sessionDecision(customerView, { ...customerUser, customerAccountLinked: undefined }), "deny");
+  assert.equal(sessionDecision(customerView, { ...user, role: "client", accessType: "customer", accessScopes: ["customer"] }), "deny");
   assert.equal(sessionDecision(customerView, { ...customerUser, accessScopes: ["admin"], customerAccountLinked: false }), "deny");
 });
 
