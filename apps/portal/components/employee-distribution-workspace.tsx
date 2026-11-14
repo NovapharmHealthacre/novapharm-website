@@ -88,6 +88,28 @@ export function EmployeeDistributionWorkspace({ moduleCode }: Readonly<{ moduleC
     </section>;
   }
 
+  if (moduleCode === "employee.warehouse") {
+    return <section className="distribution-employee" aria-labelledby="employee-wms-title">
+      <header className="distribution-employee-hero distribution-employee-hero-small">
+        <p className="distribution-employee-overline">NOVAPHARM / WAREHOUSE CONTROL TOWER</p>
+        <h1 id="employee-wms-title">Every batch. Accounted for.</h1>
+        <p>One view across warehouse evidence, quality holds, expiry exposure
+          and inventory movements. Clarity before action.</p>
+      </header>
+      <section className="distribution-wms-status" aria-label="Warehouse data authority">
+        <p className="distribution-employee-overline">SOURCE AND OPERATING AUTHORITY</p>
+        <h2>Verification before availability.</h2>
+        <p>Inventory shown below is recorded ledger evidence, not a confirmed Polar Speed
+          or UPS warehouse balance. A catalogue item is not available-to-promise stock.</p>
+        <div className="distribution-wms-principles">
+          <div><strong>Inventory</strong><span>Site- and batch-level reconciliation required</span></div>
+          <div><strong>Quality</strong><span>Release, expiry, quarantine, recall and temperature reviewed</span></div>
+          <div><strong>Fulfilment</strong><span>FEFO review only; no automatic reservation or dispatch</span></div>
+        </div>
+      </section>
+    </section>;
+  }
+
   if (moduleCode === "employee.orders") {
     return <section className="distribution-employee" aria-labelledby="employee-telesales-title">
       <header className="distribution-employee-hero distribution-employee-hero-small">
