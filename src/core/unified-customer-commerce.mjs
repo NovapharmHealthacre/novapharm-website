@@ -88,6 +88,9 @@ export function planUnifiedCustomerCommerce({ customer, basket, offers, release 
         !Object.hasOwn(UNIFIED_COLLECTIONS, offer.collection) ||
         !validClasses.has(offer.productClass) ||
         offer.entitled !== true || offer.rightsVerified !== true ||
+        !Array.isArray(offer.allowedChannels) ||
+        !offer.allowedChannels.includes(customer.channel) ||
+        (customer.channel === "personal" && offer.productClass !== "consumer") ||
         (offer.productClass !== "consumer" && customer.businessApproved !== true)) {
       // Do not distinguish a nonexistent SKU from another tenant's SKU.
       return result("blocked", "unavailable_or_unauthorised_product");
@@ -97,6 +100,12 @@ export function planUnifiedCustomerCommerce({ customer, basket, offers, release 
         offer.maxQuantity < offer.minQuantity ||
         line.quantity < offer.minQuantity || line.quantity > offer.maxQuantity) {
       return result("blocked", "quantity_outside_approved_terms");
+    }
+    if (offer.saleStatus !== "approved") {
+      return result("blocked", "unavailable_or_unauthorised_product");
+    }
+    if (offer.currency !== "GBP" || offer.market !== "GB") {
+      return result("blocked", "market_or_currency_not_approved");
     }
     if (offer.productClass === "medicine" &&
         (release?.regulatedSalesApproved !== true || customer.businessApproved !== true)) {
@@ -120,8 +129,7 @@ export function planUnifiedCustomerCommerce({ customer, basket, offers, release 
     if (offer.availableToPromiseVerified !== true ||
         !Number.isSafeInteger(offer.availableQuantity) ||
         offer.availableQuantity < line.quantity ||
-        offer.fulfilmentVerified !== true ||
-        offer.saleStatus !== "approved") blocked = true;
+        offer.fulfilmentVerified !== true) blocked = true;
     legs.set(groupKey, group);
   }
 
