@@ -22,7 +22,7 @@ const AUDIT = "npi_audit_events";
 const ACTIVE = "privately_admitted_not_published";
 const QUARANTINED = "quarantined_never_publish";
 
-const indexRequirements = Object.freeze({
+export const atlasG2RequiredUniqueIndexKeys = Object.freeze({
   [EVIDENCE]: Object.freeze({
     workspace_id: 1, source_id: 1, source_version: 1,
     resource_id: 1, row_id: 1
@@ -30,6 +30,7 @@ const indexRequirements = Object.freeze({
   [MANIFEST]: Object.freeze({ workspace_id: 1, manifest_sha256: 1 }),
   [AUDIT]: Object.freeze({ workspace_id: 1, event_id: 1 })
 });
+const indexRequirements = atlasG2RequiredUniqueIndexKeys;
 
 const inputRowFields = new Set([
   "workspace_id", "medicine_identity", "code_system", "source_code",
