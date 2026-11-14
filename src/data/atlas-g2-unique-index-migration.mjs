@@ -95,6 +95,9 @@ export async function applyAtlasG2UniqueIndexes({
 } = {}) {
   validateDatabase(database);
   if (typeof verifyMigrationAuthority !== "function") throw deny("approval_callback_missing");
+  if (afterVerifiedIndex !== undefined && typeof afterVerifiedIndex !== "function") {
+    throw deny("invalid_audit_callback");
+  }
   const preflight = await inspectAtlasG2UniqueIndexes({ database });
   if (preflight.ready) return Object.freeze({
     contract: "novapharm.intelligence.atlas-g2-index-migration.v1",
@@ -126,7 +129,6 @@ export async function applyAtlasG2UniqueIndexes({
     if (!verified.compliant) throw deny("index_creation_unverified");
     changed.push(spec.collection);
     if (afterVerifiedIndex !== undefined) {
-      if (typeof afterVerifiedIndex !== "function") throw deny("invalid_audit_callback");
       const audit = await afterVerifiedIndex(Object.freeze({
         collection: spec.collection, indexName: INDEX,
         operatorId: auth.operatorId, changeTicket: auth.changeTicket,
