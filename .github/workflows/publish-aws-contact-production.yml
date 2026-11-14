@@ -129,6 +129,8 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    outputs:
+      bundle_css_sha256: ${{ steps.public_css.outputs.bundle_css_sha256 }}
     steps:
       - name: Checkout exactly approved main
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -359,6 +361,19 @@ jobs:
           ! grep -Fq 'This public information release does not collect or transmit enquiry details' _site/contact/index.html
           grep -Fq 'This public website never asks for a portal username, password or confidential company record' _site/portal/index.html
           ! grep -Fq 'type="password"' _site/portal/index.html
+      - name: Bind staged shared stylesheet to deployment receipt
+        id: public_css
+        run: |
+          set -euo pipefail
+          test -s _site/assets/css/novapharm.bundle.css
+          bundle_css_sha256="$(sha256sum _site/assets/css/novapharm.bundle.css)"
+          bundle_css_sha256="${bundle_css_sha256%% *}"
+          [[ "$bundle_css_sha256" =~ ^[0-9a-f]{64}$ ]] || exit 1
+          for page in index.html capabilities/index.html oncology/index.html products/index.html; do
+            test -s "_site/$page"
+            grep -Fq "href=\"/assets/css/novapharm.bundle.css?v=20261111-forensic-design-v3&amp;sha256=${bundle_css_sha256}\"" "_site/$page"
+          done
+          printf 'bundle_css_sha256=%s\n' "$bundle_css_sha256" >> "$GITHUB_OUTPUT"
       - name: Configure GitHub Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
       - name: Upload exact verified Pages artifact
@@ -382,8 +397,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           EXPECTED_SHA: ${{ github.event_name == 'push' && github.sha || inputs.expected_sha }}
+          EXPECTED_BUNDLE_CSS_SHA256: ${{ needs.build-and-verify.outputs.bundle_css_sha256 }}
         run: |
           set -euo pipefail
+          [[ "$EXPECTED_BUNDLE_CSS_SHA256" =~ ^[0-9a-f]{64}$ ]] || exit 1
           node scripts/check-pages-monotonic-release.mjs
       - name: Publish verified Pages artifact
         id: ship
@@ -725,10 +742,12 @@ jobs:
           done
 
       - name: Verify supplied official logo and secure header on four live pages
+        env:
+          EXPECTED_BUNDLE_CSS_SHA256: ${{ needs.build-and-verify.outputs.bundle_css_sha256 }}
         run: |
           set -euo pipefail
-          bundle_css_sha256="$(sha256sum assets/css/novapharm.bundle.css)"
-          bundle_css_sha256="${bundle_css_sha256%% *}"
+          bundle_css_sha256="$EXPECTED_BUNDLE_CSS_SHA256"
+          [[ "$bundle_css_sha256" =~ ^[0-9a-f]{64}$ ]] || exit 1
           verified=false
           for attempt in $(seq 1 18); do
             verified=true
