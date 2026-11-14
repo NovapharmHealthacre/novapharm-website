@@ -5,6 +5,8 @@ export type PortalUser = Readonly<{
   accessType: string;
   accessScopes: readonly string[];
   mustChangePassword: boolean;
+  /** Set true only by the trusted session API after a canonical customer account link. */
+  customerAccountLinked?: boolean;
 }>;
 
 type ErrorPayload = { error?: string; code?: string };
