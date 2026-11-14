@@ -114,8 +114,10 @@ test("a verified but unenrolled pilot must be offered TOTP before identity-only 
   assert.match(branch, /purpose: "internal_pilot_mfa_enrolment"/u);
   assert.match(branch, /pilotMfaEmail: allowedEmail/u);
   assert.match(branch, /name: "__Host-npi_internal_mfa"/u);
-  assert.match(branch, /name: "__Host-npi_oidc_tx"/u);
-  assert.match(branch, /maxAge: 0/u);
+  assert.doesNotMatch(branch, /name: "__Host-npi_oidc_tx"/u,
+    "The pilot's 303 handoff must issue one Set-Cookie to Safari.");
+  assert.match(callback, /if \(!pilotEnrollmentRedirectIssued\)/u,
+    "Legacy transaction clearing must still happen for other sign-in outcomes.");
   assert.match(branch, /return response;/u);
   assert.ok(!branch.includes("activateApprovedCustomerSession"));
   assert.ok(!branch.includes("requestFounderPrivateSession"));
@@ -230,4 +232,39 @@ test("callback requires an explicit server-side opt-in, independent pilot route 
     "Never bypass all internal authentication routes.");
   assert.match(route, /verifyInternalPilotMfaCookie/u,
     "The downstream page must still authenticate the user-bound encrypted MFA cookie.");
+});
+
+
+test("public Intelligence sign-in uses hosted Cognito for enrollment and cannot label identity-only tokens as verified MFA", () => {
+  const card = readFileSync(new URL("../apps/portal/components/intelligence-sign-in.tsx", import.meta.url), "utf8");
+  const flow = readFileSync(new URL("../apps/portal/lib/cognito-card-auth.ts", import.meta.url), "utf8");
+  assert.match(flow, /return nextStep\(reply, username, false\);/u,
+    "Password-only Cognito response must never count as authenticator verification.");
+  assert.match(flow, /if \(!verifiedMfa \|\|/u);
+  assert.match(card, /setPhase\("identity-only"\);/u,
+    "Unapproved direct sign-ins must show an identity-only state.");
+  assert.match(card, /phase === "identity-only"/u);
+  assert.match(card, /if \(result\.kind === "provider-required"\)[\s\S]*?window\.location\.assign\("\/auth\/customer\/start"\)/u,
+    "Cognito MFA_SETUP or other provider-required steps must hand off to hosted enrollment.");
+  assert.match(card, /href="\/auth\/customer\/start"/u,
+    "Identity-only users must have a secure, first-time MFA enrollment path.");
+  assert.match(card, /does not confirm that an authenticator is enrolled/u);
+  assert.doesNotMatch(card, /Your credentials and authenticator have been accepted/u,
+    "Client-only proof must not claim server-confirmed authenticator acceptance.");
+});
+
+test("MFA enrollment handoff keeps a single cookie and logs only sanitized denial phases", () => {
+  const callback = readFileSync(new URL("../apps/portal/app/auth/callback/route.ts", import.meta.url), "utf8");
+  const setup = readFileSync(new URL("../apps/portal/app/auth/internal/mfa/setup/route.ts", import.meta.url), "utf8");
+  const pre = callback.slice(
+    callback.indexOf('phase = "internal_pilot_mfa_preidentity_check"'),
+    callback.indexOf('phase = "id_token_verification"'));
+  assert.match(pre, /name: "__Host-npi_internal_mfa"/u);
+  assert.doesNotMatch(pre, /name: "__Host-npi_oidc_tx"/u);
+  assert.match(callback, /pilotEnrollmentRedirectIssued = true/u);
+  assert.match(callback, /if \(!pilotEnrollmentRedirectIssued\)/u);
+  assert.match(setup, /npi_internal_pilot_totp_setup_denied/u);
+  assert.match(setup, /cookiePresent:request\.cookies\.has/u);
+  assert.match(setup, /phase = "cognito_enrollment"/u);
+  assert.doesNotMatch(setup, /console\.(?:log|warn|info)\([^\n]*(?:accessToken|SecretCode|UserCode|cookieValue)/u);
 });

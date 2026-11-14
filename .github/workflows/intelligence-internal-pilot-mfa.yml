@@ -6,6 +6,8 @@ on:
       - 'src/core/intelligence-internal-pilot-mfa.mjs'
       - 'src/core/intelligence-customer-oidc.mjs'
       - 'apps/portal/app/auth/callback/route.ts'
+      - 'apps/portal/components/intelligence-sign-in.tsx'
+      - 'apps/portal/lib/cognito-card-auth.ts'
       - 'apps/portal/proxy.ts'
       - 'apps/portal/app/auth/internal/mfa/setup/route.ts'
       - 'scripts/test-intelligence-internal-pilot-mfa.mjs'

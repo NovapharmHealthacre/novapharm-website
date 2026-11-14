@@ -133,6 +133,10 @@ async function activateApprovedCustomerSession(idToken: string): Promise<{ token
 export async function GET(request: NextRequest): Promise<Response> {
   let response: NextResponse = resultPage(false);
   let phase = "transaction";
+  // During an MFA-only redirect, send only the encrypted enrollment cookie.
+  // The signed OIDC transaction cookie expires independently within 15 minutes.
+  // A second Set-Cookie on the same 303 can be mishandled by intermediary adapters.
+  let pilotEnrollmentRedirectIssued = false;
   try {
     const code = request.nextUrl.searchParams.get("code") ?? "";
     const state = request.nextUrl.searchParams.get("state") ?? "";
@@ -185,10 +189,9 @@ export async function GET(request: NextRequest): Promise<Response> {
           path: "/", secure: true, httpOnly: true, sameSite: "lax",
           maxAge: sealed.maxAgeSeconds,
         });
-        response.cookies.set({
-          name: "__Host-npi_oidc_tx", value: "", path: "/",
-          httpOnly: true, secure: true, sameSite: "lax", maxAge: 0,
-        });
+        // Keep the OIDC transaction until its short natural expiry rather
+        // than sending a second Set-Cookie alongside the enrollment cookie.
+        // Authorisation codes are single-use, and this is not a login session.
         response.headers.set("Cache-Control", "no-store");
         console.info(JSON.stringify({
           event: "npi_internal_pilot_mfa_preidentity_enrolment_offered",
@@ -256,6 +259,7 @@ export async function GET(request: NextRequest): Promise<Response> {
           });
           response.headers.set("Cache-Control", "no-store");
           pilotMfaOffered = true;
+          pilotEnrollmentRedirectIssued = true;
           console.info(JSON.stringify({ event:"npi_internal_pilot_mfa_enrolment_offered" }));
         } catch (pilotError: unknown) {
           console.info(JSON.stringify({
@@ -436,14 +440,16 @@ export async function GET(request: NextRequest): Promise<Response> {
     }));
     response = resultPage(false);
   }
-  response.cookies.set({
-    name: "__Host-npi_oidc_tx",
-    value: "",
-    path: "/",
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    maxAge: 0,
-  });
+  if (!pilotEnrollmentRedirectIssued) {
+    response.cookies.set({
+      name: "__Host-npi_oidc_tx",
+      value: "",
+      path: "/",
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      maxAge: 0,
+    });
+  }
   return response;
 }
