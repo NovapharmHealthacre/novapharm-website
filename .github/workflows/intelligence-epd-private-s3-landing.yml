@@ -1,0 +1,43 @@
+name: EPD governed AWS private archive landing contract
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/python/publish_verified_epd_quarantine.py'
+      - 'tooling/python/test_publish_verified_epd_quarantine.py'
+      - 'deployment/aws/buildspec-intelligence-private-source-archive.yml'
+      - '.github/workflows/intelligence-epd-private-s3-landing.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/python/publish_verified_epd_quarantine.py'
+      - 'tooling/python/test_publish_verified_epd_quarantine.py'
+      - 'deployment/aws/buildspec-intelligence-private-source-archive.yml'
+      - '.github/workflows/intelligence-epd-private-s3-landing.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  integrity-contract:
+    name: Offline private source hash and release boundary tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Static parser and synthetic failure tests (no source download)
+        run: |
+          python3 -m py_compile tooling/python/publish_verified_epd_quarantine.py
+          python3 -m unittest discover -s tooling/python -p test_publish_verified_epd_quarantine.py -v
+      - name: Guard against production release in the private S3 landing configuration
+        run: |
+          grep -q 'customer_publish_approved.*False' tooling/python/publish_verified_epd_quarantine.py
+          grep -q 'production_promoted.*False' tooling/python/publish_verified_epd_quarantine.py
+          grep -q 'RUN_PRIVATE_ARCHIVE' deployment/aws/buildspec-intelligence-private-source-archive.yml
+          grep -q 'git rev-parse HEAD' deployment/aws/buildspec-intelligence-private-source-archive.yml
+          echo "Synthetic private archive transport contract only; no rights grant or customer release."

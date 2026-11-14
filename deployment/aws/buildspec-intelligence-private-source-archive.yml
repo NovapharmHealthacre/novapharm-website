@@ -1,0 +1,42 @@
+version: 0.2
+
+env:
+  shell: bash
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+      python: 3.11
+    commands:
+      - python3 -m pip install --disable-pip-version-check --quiet 'boto3==1.40.65'
+  pre_build:
+    commands:
+      - |
+        set -euo pipefail
+        : "${EXPECTED_SHA:?Exact GitHub source SHA is mandatory}"
+        test "${#EXPECTED_SHA}" -eq 40
+        [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
+        test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+        test "${RUN_PRIVATE_ARCHIVE:-0}" = 1
+        test "${AWS_DEFAULT_REGION:-}" = eu-north-1
+        echo "Private NHSBSA source ZIP acquisition; publisher and Drive hashes pinned. No customer publication."
+        node --check scripts/data/archive-epd-official-zip.mjs
+        python3 -m unittest discover -s tooling/python -p 'test_publish_verified_epd_quarantine.py' -v
+  build:
+    commands:
+      - |
+        set -euo pipefail
+        PRIVATE_DIR="$(mktemp -d -p /tmp npi-epd-private-XXXXXX)"
+        chmod 700 "$PRIVATE_DIR"
+        trap 'rm -rf "$PRIVATE_DIR"' EXIT
+        node scripts/data/archive-epd-official-zip.mjs --out "$PRIVATE_DIR"
+        python3 tooling/python/verify_epd_zip_archive.py \
+          "$PRIVATE_DIR/EPD_SNOMED_202608_official_source.zip" \
+          "$PRIVATE_DIR/archive-verified-receipt.json"
+        python3 tooling/python/publish_verified_epd_quarantine.py \
+          "$PRIVATE_DIR/EPD_SNOMED_202608_official_source.zip" \
+          "$PRIVATE_DIR/archive-verified-receipt.json"
+  post_build:
+    commands:
+      - echo 'Raw source and integrity receipt remain in private, versioned S3 quarantine only; rights and production gates remain blocked.'
