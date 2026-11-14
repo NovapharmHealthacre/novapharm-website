@@ -1,15 +1,19 @@
 # Staging-only AWS portal build. No secrets, credentials, or customer data in image.
-FROM node:24-bookworm-slim AS builder
+FROM node:24-alpine AS builder
 WORKDIR /workspace
+# Apply Alpine security fixes before compiling the exact release source.
+RUN apk upgrade --no-cache
 COPY . .
 RUN npm ci --ignore-scripts
 RUN npm run build --workspace=@novapharm/portal
 
-FROM node:24-bookworm-slim AS runtime
+FROM node:24-alpine AS runtime
 ENV NODE_ENV=production \
     PORT=4303 \
     HOSTNAME=0.0.0.0
 WORKDIR /app
+# Minimise runtime OS packages; upgrade packages to currently patched builds.
+RUN apk upgrade --no-cache
 COPY --from=builder --chown=node:node /workspace/apps/portal/.next/standalone/ /app/
 # Next.js standalone omits hashed JS and CSS; ship these immutable assets with the matching build.
 COPY --from=builder --chown=node:node /workspace/apps/portal/.next/static/ /app/apps/portal/.next/static/
