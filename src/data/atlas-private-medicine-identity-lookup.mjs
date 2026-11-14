@@ -10,7 +10,8 @@ const DATABASE = "novapharm_intelligence_production";
 const PILOT_WORKSPACE = "novapharm-internal-staging";
 const PURPOSE = "private_medicine_identity_research";
 const CODES = new Set(["BNF_PRESENTATION_CODE", "SNOMED_CODE"]);
-const ISO = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/u;
+// Canonical UTC whole-second timestamps preserve lexical Mongo comparisons.
+const ISO = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/u;
 const IDENT = /^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$/u;
 const CODE = /^[A-Za-z0-9][A-Za-z0-9.-]{1,63}$/u;
 const SHA = /^[0-9a-f]{64}$/u;
@@ -25,8 +26,8 @@ const denied = (reason = "identity_read_denied") => Object.assign(
   new Error("Private medicine identity read denied."), { code: reason, statusCode: 403 },
 );
 const validTime = x => typeof x === "string" && ISO.test(x) &&
-  Number.isFinite(Date.parse(x)) && new Date(Date.parse(x)).toISOString() ===
-  (x.includes(".") ? x.replace(/\.0+Z$/u, ".000Z") : x.replace(/Z$/u, ".000Z"));
+  Number.isFinite(Date.parse(x)) &&
+  new Date(Date.parse(x)).toISOString().replace(".000Z", "Z") === x;
 const validId = x => typeof x === "string" && IDENT.test(x);
 const cleanName = x => typeof x === "string" && x.trim().length >= 2 &&
   x.trim().length <= 300 && !/[\u0000-\u001F]/u.test(x);
