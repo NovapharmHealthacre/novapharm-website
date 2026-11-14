@@ -8,6 +8,7 @@ import { createFounderMfaCookie, verifyFounderMfaCookie } from "../../../src/cor
 import { GET as finishCustomerIdentity } from "../app/auth/callback/route";
 import { GET as startCustomerIdentity } from "../app/auth/customer/start/route";
 import { GET as openMfaSetup, POST as verifyMfaSetup } from "../app/auth/mfa/setup/route";
+import { GET as openInternalPilotSetup } from "../app/auth/internal/mfa/setup/route";
 
 const key = "internal-test-customer-oidc-signing-key-not-for-production-use-123456";
 const source = (path: string) => readFileSync(new URL("../" + path, import.meta.url), "utf8");
@@ -241,7 +242,7 @@ test("customer session never self-provisions an account and requires the private
 });
 
 
-function prepareCustomerProof(options: { firstLogin?: boolean; internalOrigin?: boolean; noMfaClaims?: boolean } = {}) {
+function prepareCustomerProof(options: { firstLogin?: boolean; internalOrigin?: boolean; noMfaClaims?: boolean; pilotEmail?: string } = {}) {
   const now = Math.floor(Date.now() / 1000);
   const started = createCustomerLoginTransaction({ signingKey: key });
   const state = new URL(started.authorizeUrl).searchParams.get("state") ?? "";
@@ -257,7 +258,7 @@ function prepareCustomerProof(options: { firstLogin?: boolean; internalOrigin?: 
     token_use: "id",
     sub: "customer-verified-12345678",
     email_verified: true,
-    email: "vishal@novapharmhealthcare.com",
+    email: options.pilotEmail ?? "vishal@novapharmhealthcare.com",
     acr: options.firstLogin ? "urn:cognito:loa:1" : "urn:cognito:loa:4",
     amr: options.firstLogin ? ["pwd"] : ["pwd", "otp", "mfa"],
     auth_time: now - 30,
@@ -693,4 +694,83 @@ test("untrusted session service cookie with Domain attribute is discarded", asyn
     assert.equal(calls, 1);
     assert.doesNotMatch(responseCookies(response).join(","), /__Host-npi_session=/);
   });
+});
+
+
+test("pilot callback's one 303 cookie survives the next internal setup request", async () => {
+  const previous = {
+    key: process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"],
+    enabled: process.env["NPI_INTERNAL_PILOT_MFA_ENABLED"],
+    email: process.env["NPI_INTERNAL_PILOT_MFA_EMAIL"],
+  };
+  const priorFetch = globalThis.fetch;
+  const pilotEmail = "internal-cookie-handoff@example.org";
+  const proof = prepareCustomerProof({ internalOrigin: true, pilotEmail });
+  const accessToken = "a".repeat(220);
+  const subject = "customer-verified-12345678";
+  const calls: string[] = [];
+  process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = key;
+  process.env["NPI_INTERNAL_PILOT_MFA_ENABLED"] = "true";
+  process.env["NPI_INTERNAL_PILOT_MFA_EMAIL"] = pilotEmail;
+  globalThis.fetch = (async (input: URL | RequestInfo, init?: RequestInit) => {
+    const url = String(input);
+    if (url === intelligenceCustomerOidc.domain + "/oauth2/token")
+      return new Response(JSON.stringify({
+        token_type: "Bearer", id_token: proof.token, access_token: accessToken,
+      }), { status: 200 });
+    if (url === intelligenceCustomerOidc.issuer + "/.well-known/jwks.json")
+      return new Response(JSON.stringify({ keys: [proof.jwk] }), { status: 200 });
+    if (url === "https://cognito-idp.eu-north-1.amazonaws.com/") {
+      const command = new Headers(init?.headers).get("X-Amz-Target")?.split(".").at(-1);
+      const payload = JSON.parse(String(init?.body));
+      assert.equal(payload.AccessToken, accessToken);
+      calls.push(String(command));
+      if (command === "GetUser") {
+        return new Response(JSON.stringify({
+          UserAttributes: [
+            { Name: "sub", Value: subject },
+            { Name: "email", Value: pilotEmail },
+            { Name: "email_verified", Value: "true" },
+          ],
+          UserMFASettingList: [],
+        }), { status: 200 });
+      }
+      if (command === "AssociateSoftwareToken")
+        return new Response(JSON.stringify({ SecretCode: "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567" }), { status: 200 });
+    }
+    throw new Error("Forbidden destination in pilot handoff test: " + url);
+  }) as typeof fetch;
+  try {
+    const callback = await finishCustomerIdentity(proof.request);
+    assert.equal(callback.status, 303);
+    assert.equal(callback.headers.get("location"),
+      "https://intelligence.novapharmhealthcare.com/auth/internal/mfa/setup");
+    const setCookies = responseCookies(callback);
+    assert.equal(setCookies.length, 1, "Pilot 303 must issue exactly one browser cookie");
+    assert.match(setCookies[0], /^__Host-npi_internal_mfa=/u);
+    assert.doesNotMatch(setCookies[0], /__Host-npi_oidc_tx|__Host-npi_session|__Host-npi_founder/u);
+    assert.match(setCookies[0], /HttpOnly/u);
+    assert.match(setCookies[0], /Secure/u);
+    assert.match(setCookies[0], /SameSite=Lax/iu);
+    const followup = new NextRequest("http://localhost:4303/auth/internal/mfa/setup", {
+      headers: { cookie: setCookies[0]!.split(";")[0] },
+    });
+    const setup = await openInternalPilotSetup(followup);
+    assert.equal(setup.status, 200);
+    const html = await setup.text();
+    assert.match(html, /Secure your test account/u);
+    assert.match(html, /Setup key/u);
+    assert.doesNotMatch(html, /__Host-npi_session|__Host-npi_founder/u);
+    assert.deepEqual(calls, ["GetUser", "GetUser", "AssociateSoftwareToken"]);
+  } finally {
+    globalThis.fetch = priorFetch;
+    for (const [name, value] of [
+      ["NPI_OIDC_TRANSACTION_SIGNING_KEY", previous.key],
+      ["NPI_INTERNAL_PILOT_MFA_ENABLED", previous.enabled],
+      ["NPI_INTERNAL_PILOT_MFA_EMAIL", previous.email],
+    ] as const) {
+      if (value === undefined) delete process.env[name];
+      else process.env[name] = value;
+    }
+  }
 });
