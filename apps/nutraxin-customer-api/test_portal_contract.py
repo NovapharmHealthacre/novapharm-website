@@ -1321,5 +1321,92 @@ class PortalSecurityTests(unittest.TestCase):
         self.assertFalse(PORTAL.retail_sale_authorised(wrong_shipping))
 
 
+
+    def test_dashboard_activity_strict_customer_isolation(self):
+        old_session,old_table,old_groups=PORTAL.session,PORTAL.TABLE,COGNITO.groups
+        PORTAL.session=lambda _: {"username":"approved","sub":"buyer-A",
+                                  "email":"buyer-a@example.invalid"}
+        COGNITO.groups=[PORTAL.APPROVED_GROUP]
+        calls=[]
+        class ScopedLedger:
+            def query(self,**params):
+                condition=params.get("KeyConditionExpression")
+                allowed=[
+                    ("and",("eq","pk","USER#buyer-A"),("begins_with","sk","RQ#")),
+                    ("and",("eq","pk","USER#buyer-A"),("begins_with","sk","CASE#"))
+                ]
+                if condition not in allowed:
+                    raise AssertionError("Unscoped account activity query")
+                if params.get("Limit")!=20 or params.get("ConsistentRead") is not True:
+                    raise AssertionError("Activity query must be bounded and consistent")
+                calls.append(condition)
+                if condition==allowed[0]:
+                    return {"Items":[
+                        {"pk":"USER#buyer-A","sk":"RQ#a","receipt_id":"NPQ-A"},
+                        {"pk":"USER#buyer-B","sk":"RQ#b","receipt_id":"NPQ-B"},
+                        {"pk":"USER#buyer-A","sk":"CASE#unrelated","receipt_id":"NPS-X"}
+                    ]}
+                return {"Items":[
+                    {"pk":"USER#buyer-A","sk":"CASE#a","reference":"NPS-A"},
+                    {"pk":"USER#buyer-B","sk":"CASE#b","reference":"NPS-B"}
+                ]}
+        PORTAL.TABLE=ScopedLedger()
+        try:
+            response=PORTAL.handler(self.event("/portal/dashboard/"),None)
+            self.assertEqual(response["statusCode"],200)
+            body=response["body"]
+            self.assertIn("Your account. At a glance.",body)
+            self.assertIn("Purchase requests",body)
+            self.assertIn("Support enquiries",body)
+            self.assertEqual(body.count('class="editorial-activity-value">1</p>'),2)
+            self.assertIn("In the most recent 20 saved records",body)
+            self.assertIn("not accepted orders",body)
+            self.assertEqual(len(calls),2)
+            self.assertNotIn("NPQ-B",body)
+            self.assertNotIn("NPS-B",body)
+        finally:
+            PORTAL.session,PORTAL.TABLE,COGNITO.groups=old_session,old_table,old_groups
+
+    def test_dashboard_activity_denies_unapproved_trade_data(self):
+        old_session,old_table,old_groups=PORTAL.session,PORTAL.TABLE,COGNITO.groups
+        PORTAL.session=lambda _: {"username":"personal","sub":"buyer-A",
+                                  "email":"customer@example.invalid"}
+        COGNITO.groups=[]
+        class PersonalCaseLedger:
+            def query(self,**params):
+                condition=params.get("KeyConditionExpression")
+                if condition!=("and",("eq","pk","USER#buyer-A"),("begins_with","sk","CASE#")):
+                    raise AssertionError("Personal customer read trade request history")
+                return {"Items":[]}
+        PORTAL.TABLE=PersonalCaseLedger()
+        try:
+            response=PORTAL.handler(self.event("/portal/dashboard/"),None)
+            self.assertEqual(response["statusCode"],200)
+            self.assertIn("Trade access required",response["body"])
+            self.assertIn("No support enquiries were found",response["body"])
+            self.assertNotIn("0 accepted orders",response["body"])
+        finally:
+            PORTAL.session,PORTAL.TABLE,COGNITO.groups=old_session,old_table,old_groups
+
+    def test_dashboard_activity_unavailable_is_not_misreported_as_zero(self):
+        old_session,old_table,old_groups=PORTAL.session,PORTAL.TABLE,COGNITO.groups
+        PORTAL.session=lambda _: {"username":"approved","sub":"buyer-A",
+                                  "email":"customer@example.invalid"}
+        COGNITO.groups=[PORTAL.APPROVED_GROUP]
+        class UnavailableLedger:
+            def query(self,**params):
+                raise PORTAL.ClientError({"Error":{"Code":"ServiceUnavailable","Message":"Temporary"}},
+                                         "Query")
+        PORTAL.TABLE=UnavailableLedger()
+        try:
+            response=PORTAL.handler(self.event("/portal/dashboard/"),None)
+            self.assertEqual(response["statusCode"],200)
+            self.assertEqual(response["body"].count('class="editorial-activity-value">Unavailable</p>'),2)
+            self.assertIn("No count has been inferred.",response["body"])
+            self.assertNotIn('class="editorial-activity-value">0</p>',response["body"])
+        finally:
+            PORTAL.session,PORTAL.TABLE,COGNITO.groups=old_session,old_table,old_groups
+
+
 if __name__ == "__main__":
     unittest.main()
