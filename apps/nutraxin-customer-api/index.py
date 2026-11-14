@@ -612,12 +612,69 @@ def customer_workspace(event,route):
         '<input type="hidden" name="signup_csrf" value="'+csrf+'">'
         '<button type="submit">Sign out</button></form>')
     if route=="/portal/dashboard/":
-        head='<p class="muted">Your verified customer account, products, requests, documents and support in one place. Only released services and records can be used.</p>'
-        cards="".join(
-            '<a class="tile" href="'+href+'"><b>'+html.escape(label,quote=True)+
-            '</b><span>Open customer workspace</span></a>'
-            for label,href,_ in CUSTOMER_WORKSPACE_MODULES if href!=route)
-        body='<div class="tiles">'+cards+'</div>'
+        # Only customer-owned, governed links. This is a design refresh of the
+        # live transitional customer BFF, not an activation of blocked records.
+        groups=(
+            ("Orders & finance", (
+                "/portal/orders/","/portal/order-tracking/","/portal/delivery-tracking/",
+                "/portal/invoices/","/portal/statements/","/portal/price-lists/")),
+            ("Products & quality", (
+                "/portal/products/","/portal/stock-availability/",
+                "/portal/regulatory-documents/","/portal/quality-complaints/","/portal/returns/")),
+            ("Account & support", (
+                "/portal/account/","/portal/support/","/portal/documents/",
+                "/portal/downloads/","/portal/analytics/","/portal/settings/")),
+        )
+        service_index="".join(
+            '<section class="editorial-group"><h3>'+html.escape(name,quote=True)+'</h3><ul>'+
+            "".join('<li><a href="'+href+'">'+
+                html.escape(CUSTOMER_WORKSPACE_ROUTES[href][0],quote=True)+
+                '</a></li>' for href in links)+'</ul></section>'
+            for name,links in groups)
+        # First-party packshots from the approved NovaPharm Nutraxin catalogue;
+        # not generated imagery, and not evidence of stock or trade eligibility.
+        product_base="https://novapharmhealthcare.com/assets/media/products/nutraxin/"
+        hero_images=(
+            '<img src="'+product_base+'vitamin-d3-120-tablets-480.webp" width="180" height="228" '
+            'alt="Nutraxin Vitamin D3 package" decoding="async" fetchpriority="high">'+
+            '<img src="'+product_base+'vitamin-c-1000mg-30-tablets-480.webp" width="180" height="228" '
+            'alt="Nutraxin Vitamin C package" decoding="async">'+
+            '<img src="'+product_base+'magnesium-complex-60-tablets-480.webp" width="180" height="228" '
+            'alt="Nutraxin Magnesium Complex package" decoding="async">')
+        head=""
+        body=(
+            '<section class="editorial-hero" aria-labelledby="editorial-welcome">'
+            '<div class="editorial-inner editorial-hero-grid">'
+            '<div class="editorial-hero-copy"><p class="editorial-kicker">YOUR NOVAPHARM WORKSPACE</p>'
+            '<h1 id="editorial-welcome">Everything you need.<br>In one place.</h1>'
+            '<p class="editorial-intro">Products, order requests, documents and support. '
+            'Simply organised around you.</p>'
+            '<div class="editorial-actions"><a class="editorial-primary" href="/portal/products/">Explore products</a>'
+            '<a class="editorial-secondary" href="/portal/orders/">View your orders</a></div></div>'
+            '<div class="editorial-hero-media"><div class="editorial-product-photos">'+hero_images+'</div>'
+            '<p>Genuine pack photographs from the NovaPharm Nutraxin catalogue</p></div>'
+            '</div></section>'
+            '<section class="editorial-benefits" aria-labelledby="editorial-day">'
+            '<div class="editorial-inner"><div class="editorial-section-title">'
+            '<h2 id="editorial-day">Designed around your day.</h2>'
+            '<p>Only what matters. Right where you expect it.</p></div>'
+            '<div class="editorial-features"><article class="editorial-feature editorial-feature-products">'
+            '<div class="editorial-feature-copy"><p class="editorial-tag">PRODUCTS</p>'
+            '<h3>Products &amp; ordering.</h3><p>Explore authorised product information, '
+            'and manage eligible requests.</p><a href="/portal/products/">View products</a></div>'
+            '<img src="'+product_base+'vitamin-d3-120-tablets-480.webp" width="180" height="228" '
+            'alt="Nutraxin Vitamin D3 package from the official catalogue" loading="lazy"></article>'
+            '<article class="editorial-feature editorial-feature-documents">'
+            '<div class="editorial-feature-copy"><p class="editorial-tag">DOCUMENTS</p>'
+            '<h3>Quality. Documented.</h3>'
+            '<p>Find regulatory documents and support in your secure workspace. '
+            'Only released records are accessible.</p>'
+            '<a href="/portal/documents/">Open documents</a></div></article>'
+            '</div></div></section>'
+            '<section class="editorial-links" aria-labelledby="editorial-rest">'
+            '<div class="editorial-inner"><h2 id="editorial-rest">The rest, within reach.</h2>'
+            '<div class="editorial-groups">'+service_index+'</div></div></section>'
+        )
     elif route=="/portal/account/":
         head='<p class="muted">Verified personal account. Trade status and organisation access are separately approved.</p>'
         body='<div class="tile"><b>Email</b><span>'+email+'</span><span>Identity verified with the existing NovaPharm customer provider</span></div>'
@@ -662,7 +719,149 @@ h1{letter-spacing:-.045em;line-height:1.08;font-size:clamp(30px,4vw,54px);margin
 ul{padding-left:19px;line-height:1.8;color:#555}footer{padding:30px;color:#85858d;font-size:12px}
 @media(max-width:740px){.layout{display:block}aside{display:flex;overflow-x:auto;gap:4px;padding:10px;border-right:0;border-bottom:1px solid #e8e8ea}aside p{display:none}aside a{white-space:nowrap;padding:10px}main{padding:28px 18px}}
 ''')
-    document=('<!doctype html><html lang="en-GB"><head><meta charset="utf-8">'
+    if route=="/portal/dashboard/":
+        css+=('''
+/* Transitional customer-only editorial view: no changes to data or identity. */
+body.editorial-customer{background:#fff;color:#1d1d1f;overflow-x:hidden}
+.editorial-customer .editorial-topbar{padding:13px clamp(22px,5vw,76px);min-height:73px;
+ display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid #e9e9eb;
+ background:rgba(255,255,255,.96)}
+.editorial-customer .editorial-logo{display:inline-flex;align-items:center;flex-shrink:0}
+.editorial-customer .editorial-logo img{display:block;width:197px;max-width:100%;height:auto}
+.editorial-customer .editorial-topnav{display:flex;align-items:center;justify-content:center;gap:clamp(14px,2.1vw,33px)}
+.editorial-customer .editorial-topnav a{font-size:13px;font-weight:540;color:#48484b;white-space:nowrap;
+ border-bottom:2px solid transparent;padding:8px 0}
+.editorial-customer .editorial-topnav a[aria-current=page]{color:#19191b;border-bottom-color:#b70c1a;font-weight:670}
+.editorial-customer .editorial-topnav a:hover,.editorial-customer .editorial-account a:hover{color:#ad111d}
+.editorial-customer .editorial-account{display:flex;align-items:center;gap:18px;white-space:nowrap}
+.editorial-customer .editorial-account>a{font-size:12px;color:#57575e}
+.editorial-customer .editorial-account .logout-form button{background:#fff;color:#242427;border:1px solid #dedee2;
+ padding:9px 16px}
+.editorial-customer .editorial-account .logout-form button:hover{background:#f5f5f7}
+.editorial-customer .editorial-inner{width:min(1380px,100%);margin:0 auto;padding-left:clamp(22px,5vw,76px);
+ padding-right:clamp(22px,5vw,76px)}
+.editorial-customer .editorial-main{max-width:none;margin:0;padding:0}
+.editorial-customer .editorial-hero{background:#f5f5f7}
+.editorial-customer .editorial-hero-grid{min-height:470px;display:grid;grid-template-columns:1.12fr 1fr;
+ gap:25px;align-items:center;padding-top:60px;padding-bottom:55px}
+.editorial-customer .editorial-kicker,.editorial-customer .editorial-tag{margin:0 0 22px;
+ color:#55555c;letter-spacing:.2em;font-size:11px;font-weight:700}
+.editorial-customer .editorial-hero h1{max-width:740px;margin:0;color:#1d1d1f;
+ font-size:clamp(43px,5.45vw,78px);font-weight:680;letter-spacing:-.065em;line-height:1.03}
+.editorial-customer .editorial-intro{font-size:clamp(16px,1.45vw,20px);line-height:1.52;
+ max-width:530px;color:#595960;margin:22px 0 0}
+.editorial-customer .editorial-actions{display:flex;align-items:center;gap:20px;margin-top:28px;flex-wrap:wrap}
+.editorial-customer .editorial-actions a{display:inline-block;font-size:13px;font-weight:650}
+.editorial-customer .editorial-primary{color:#fff;background:#1d1d1f;padding:13px 22px;border-radius:999px}
+.editorial-customer .editorial-primary:hover{background:#39393d}
+.editorial-customer .editorial-secondary{color:#ab101d}
+.editorial-customer .editorial-hero-media{min-width:0;align-self:center;text-align:center}
+.editorial-customer .editorial-product-photos{display:flex;align-items:flex-end;justify-content:center;
+ height:300px;gap:0;padding:0 8px}
+.editorial-customer .editorial-product-photos img{display:block;width:34%;height:100%;object-fit:contain;
+ filter:drop-shadow(0 14px 14px rgba(24,24,25,.13))}
+.editorial-customer .editorial-product-photos img:nth-child(2){width:36%;height:90%;margin-left:-4%;position:relative;z-index:2}
+.editorial-customer .editorial-product-photos img:nth-child(3){width:34%;height:79%;margin-left:-4%}
+.editorial-customer .editorial-hero-media>p{margin:8px 0 0;text-align:right;
+ font-size:11px;color:#595960;line-height:1.4}
+.editorial-customer .editorial-benefits{padding:63px 0 72px}
+.editorial-customer .editorial-section-title{display:flex;justify-content:space-between;align-items:center;gap:20px;
+ margin-bottom:26px}
+.editorial-customer .editorial-section-title h2,.editorial-customer .editorial-links h2{margin:0;
+ color:#1d1d1f;font-size:clamp(27px,2.5vw,37px);line-height:1.2;letter-spacing:-.045em}
+.editorial-customer .editorial-section-title p{font-size:13px;color:#595960;margin:0}
+.editorial-customer .editorial-features{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.editorial-customer .editorial-feature{border-radius:21px;min-height:286px;overflow:hidden;position:relative;
+ padding:33px;background:#f5f5f7}
+.editorial-customer .editorial-feature-copy{position:relative;z-index:1;max-width:67%}
+.editorial-customer .editorial-feature .editorial-tag{font-size:10px;margin-bottom:14px}
+.editorial-customer .editorial-feature h3{margin:0;color:#1d1d1f;font-size:clamp(23px,2.2vw,34px);
+ line-height:1.13;letter-spacing:-.04em}
+.editorial-customer .editorial-feature-copy>p:not(.editorial-tag){font-size:14px;color:#57575e;line-height:1.55;
+ margin:14px 0 20px}
+.editorial-customer .editorial-feature a{color:#a40c19;font-size:13px;font-weight:650}
+.editorial-customer .editorial-feature-products>img{position:absolute;right:18px;bottom:-10px;
+ width:32%;height:80%;object-fit:contain;filter:drop-shadow(0 13px 12px rgba(30,30,35,.12))}
+.editorial-customer .editorial-feature-documents{background:#1e1e21}
+.editorial-customer .editorial-feature-documents h3{color:#fff}
+.editorial-customer .editorial-feature-documents .editorial-tag{color:#ceced1}
+.editorial-customer .editorial-feature-documents .editorial-feature-copy>p:not(.editorial-tag){color:#dadadd}
+.editorial-customer .editorial-feature-documents a{color:#fff;text-decoration:underline;text-underline-offset:5px}
+.editorial-customer .editorial-feature-documents .editorial-feature-copy{max-width:85%}
+.editorial-customer .editorial-links{padding:57px 0 67px;background:#f5f5f7}
+.editorial-customer .editorial-links h2{margin-bottom:24px}
+.editorial-customer .editorial-groups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(22px,4.5vw,65px)}
+.editorial-customer .editorial-group h3{font-size:14px;margin:0 0 12px;color:#1d1d1f}
+.editorial-customer .editorial-group ul{list-style:none;margin:0;padding:0;border-top:1px solid #d0d0d5}
+.editorial-customer .editorial-group li{border-bottom:1px solid #d0d0d5}
+.editorial-customer .editorial-group a{display:block;padding:12px 0;color:#44444a;font-size:13px}
+.editorial-customer .editorial-group a:hover{color:#a40c19;text-decoration:underline;text-underline-offset:3px}
+.editorial-customer .editorial-footer{background:#fff;padding:23px clamp(22px,5vw,76px);
+ font-size:12px;color:#55555c;line-height:1.5}
+.editorial-customer .editorial-footer a{text-decoration:underline;text-underline-offset:3px}
+@media(max-width:1130px){
+ .editorial-customer .editorial-topbar{flex-wrap:wrap;gap:12px}
+ .editorial-customer .editorial-topnav{order:3;width:100%;overflow-x:auto;justify-content:flex-start;gap:25px}
+ .editorial-customer .editorial-account{margin-left:auto}
+ .editorial-customer .editorial-hero-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:750px){
+ .editorial-customer .editorial-logo img{width:175px}
+ .editorial-customer .editorial-topbar{padding:12px 20px}
+ .editorial-customer .editorial-hero-grid{display:flex;flex-direction:column;align-items:stretch;
+ padding-top:42px;padding-bottom:33px;min-height:0;gap:25px}
+ .editorial-customer .editorial-hero h1{font-size:clamp(39px,8vw,58px)}
+ .editorial-customer .editorial-hero-media{width:100%}
+ .editorial-customer .editorial-product-photos{height:225px;max-width:570px;margin:auto}
+ .editorial-customer .editorial-section-title{display:block}
+ .editorial-customer .editorial-section-title p{margin:11px 0 0}
+ .editorial-customer .editorial-features{grid-template-columns:1fr}
+ .editorial-customer .editorial-groups{grid-template-columns:1fr 1fr}
+}
+@media(max-width:500px){
+ .editorial-customer .editorial-logo img{width:135px}
+ .editorial-customer .editorial-topbar{gap:7px}
+ .editorial-customer .editorial-account{gap:10px}
+ .editorial-customer .editorial-account>a{font-size:11px}
+ .editorial-customer .editorial-account .logout-form button{font-size:11px;padding:8px 11px}
+ .editorial-customer .editorial-topnav{gap:19px}
+ .editorial-customer .editorial-topnav a{font-size:12px}
+ .editorial-customer .editorial-hero h1{font-size:clamp(37px,10vw,47px);letter-spacing:-.052em}
+ .editorial-customer .editorial-product-photos{height:190px}
+ .editorial-customer .editorial-benefits{padding:42px 0}
+ .editorial-customer .editorial-feature{min-height:280px;padding:25px}
+ .editorial-customer .editorial-feature-copy{max-width:75%}
+ .editorial-customer .editorial-feature h3{font-size:26px}
+ .editorial-customer .editorial-groups{grid-template-columns:1fr}
+ .editorial-customer .editorial-links{padding:41px 0 51px}
+}
+@media(max-width:350px){
+ .editorial-customer .editorial-logo img{width:119px}
+ .editorial-customer .editorial-account{gap:6px}
+ .editorial-customer .editorial-account .logout-form button{padding:7px 8px}
+}
+''')
+    if route=="/portal/dashboard/":
+        document=('<!doctype html><html lang="en-GB"><head><meta charset="utf-8">'
+            '<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">'
+            '<title>Customer Dashboard | NovaPharm Healthcare</title><style>'+css+'</style></head>'
+            '<body class="editorial-customer"><header class="editorial-topbar">'
+            '<a class="editorial-logo" href="/portal/dashboard/" aria-label="NovaPharm Customer Dashboard">'
+            '<img src="https://novapharmhealthcare.com/assets/brand/novapharm-healthcare-logo.svg" '
+            'width="197" height="26" alt="NovaPharm Healthcare"></a>'
+            '<nav class="editorial-topnav" aria-label="Customer navigation">'
+            '<a href="/portal/dashboard/" aria-current="page">Overview</a>'
+            '<a href="/portal/products/">Products</a><a href="/portal/orders/">Orders</a>'
+            '<a href="/portal/invoices/">Finance</a><a href="/portal/documents/">Documents</a>'
+            '<a href="/portal/support/">Support</a></nav>'
+            '<div class="editorial-account"><a href="/portal/account/">My account</a>'+logout_form+'</div>'
+            '</header><main class="editorial-main">'+body+'</main>'
+            '<footer class="editorial-footer">Only approved customer records and services are available. '
+            'Product images are illustrative catalogue references, not confirmation of stock, price or trade rights.'
+            ' · <a href="https://novapharmhealthcare.com/legal/privacy/">Privacy</a></footer>'
+            '</body></html>')
+    else:
+        document=('<!doctype html><html lang="en-GB"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">'
         '<title>'+html.escape(title,quote=True)+' | NovaPharm Customer Portal</title><style>'+css+'</style></head><body>'
         '<header><a class="brand" href="/portal/dashboard/">NOVAPHARM<small>HEALTHCARE</small></a>'
