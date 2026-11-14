@@ -300,11 +300,10 @@ async function employeeSnapshot(module) {
       FROM inventory_movements im JOIN products p ON p.id = im.product_id LEFT JOIN batches b ON b.id = im.batch_id
       ORDER BY im.occurred_at DESC LIMIT 40`);
     return baseSnapshot(module, { metrics: [
-      metric("available", "Released available", balances.reduce((sum, row) => sum + Number(row.available_quantity), 0)),
-      metric("quarantine", "Quarantine", balances.reduce((sum, row) => sum + Number(row.quarantine_quantity), 0)),
+      metric("quarantine", "Recorded quarantine (unverified)", balances.reduce((sum, row) => sum + Number(row.quarantine_quantity), 0)),
       metric("ledger-records", "Recorded inventory positions", balances.length)
     ], sections: [
-      section("Inventory ledger", [["location_code", "Location"], ["sku", "SKU"], ["product_name", "Product"], ["batch_number", "Batch"], ["expiry_date", "Expiry"], ["release_status", "Quality status", "status"], ["available_quantity", "Available", "number"], ["reserved_quantity", "Reserved", "number"], ["quarantine_quantity", "Quarantine", "number"]], balances, "No inventory balances are recorded."),
+      section("Inventory ledger", [["location_code", "Location"], ["sku", "SKU"], ["product_name", "Product"], ["batch_number", "Batch"], ["expiry_date", "Expiry"], ["release_status", "Quality status", "status"], ["available_quantity", "Recorded availability, not ATP", "number"], ["reserved_quantity", "Reserved", "number"], ["quarantine_quantity", "Quarantine", "number"]], balances, "No inventory balances are recorded."),
       section("Stock movements", [["occurred_at", "Time"], ["movement_type", "Movement", "status"], ["sku", "SKU"], ["batch_number", "Batch"], ["quantity", "Quantity", "number"], ["reference_type", "Reference type"], ["reference_id", "Reference"]], movements, "No stock movements are recorded.")
     ], notices: ["Synthetic locations represent a third-party warehouse validation model; NovaPharm-owned warehousing is not claimed."] });
   }
