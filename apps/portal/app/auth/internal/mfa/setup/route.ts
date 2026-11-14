@@ -34,8 +34,10 @@ function read(request:NextRequest) {
 
 /** Only a fresh, encrypted, email-verified internal pilot can start TOTP. */
 export async function GET(request:NextRequest):Promise<Response> {
+  let phase: "enrollment_cookie" | "cognito_enrollment" = "enrollment_cookie";
   try {
     const session = read(request);
+    phase = "cognito_enrollment";
     const secret = await beginInternalPilotTotp({
       accessToken: session.accessToken, subject: session.subject,
       expectedEmail: session.expectedEmail,
@@ -49,8 +51,17 @@ export async function GET(request:NextRequest):Promise<Response> {
       + '<label for="code">Authenticator code</label>'
       + '<input id="code" name="code" type="text" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" minlength="6" required>'
       + '<button type="submit">Verify and activate MFA</button></form>';
+    console.info(JSON.stringify({event:"npi_internal_pilot_totp_setup_ready"}));
     return new NextResponse(shell("Secure your test account", body), {status:200, headers});
-  } catch { return error(); }
+  } catch {
+    // Fixed classes only: never log cookie values, Cognito tokens, usernames,
+    // authenticator keys, signed claims, one-time codes or their hashes.
+    console.warn(JSON.stringify({
+      event:"npi_internal_pilot_totp_setup_denied",
+      phase, cookiePresent:request.cookies.has("__Host-npi_internal_mfa"),
+    }));
+    return error();
+  }
 }
 export async function POST(request:NextRequest):Promise<Response> {
   if (request.headers.get("origin") !== ORIGIN ||
