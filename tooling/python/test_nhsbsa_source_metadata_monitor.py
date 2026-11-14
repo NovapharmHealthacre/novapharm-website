@@ -79,8 +79,8 @@ class SourceMonitorTests(unittest.TestCase):
         got = m.collect_snapshot(json.dumps(raw).encode(), observed_at=NOW)
         self.assertEqual(got["status"], "BLOCKED_BASELINE_SOURCE_CHANGED_OR_MISSING")
         raw["result"]["resources"][0]["name"] = "other_dataset"
-        got = m.collect_snapshot(json.dumps(raw).encode(), observed_at=NOW)
-        self.assertEqual(got["status"], "BLOCKED_BASELINE_SOURCE_CHANGED_OR_MISSING")
+        with self.assertRaisesRegex(ValueError, "no_epd_period_bearing_resources"):
+            m.collect_snapshot(json.dumps(raw).encode(), observed_at=NOW)
 
     def test_bad_package_duplicate_period_bad_hash_and_large_body_are_rejected(self):
         raw = json.loads(fixture())
