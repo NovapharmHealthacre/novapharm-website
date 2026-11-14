@@ -12,3 +12,9 @@ Production prerequisites: finish issue #433 including customer-session callbacks
 Analytics proposal: privacy-governed signup -> approved first query -> day 7 activated -> trial completion -> explicit paid conversion -> paid retention at days 30/90; also provider cost per activated organisation, refusal/revocation rate, and search quota. Do not send emails or publish trial offer as available without owner release signoff.
 
 The unified customer portal and Nutraxin/ESCO checkout are unaffected.
+
+## Source-only conditional DynamoDB transaction preparation
+
+`src/core/intelligence-trial-ledger.mjs` now prepares (without executing) a two-item DynamoDB conditional transaction for the permanent one-trial-per-organisation sentinel and cumulative usage record. It also prepares a three-item search reservation transaction: verify active/expiry and subject; conditionally increment the 25-search total; and write a unique request ID for replay suppression. The private backend must still implement strongly consistent loading, safe retries, audit/recovery, customer-session binding, denial on transaction failure and cost controls. Transaction preparation is NOT ledger activation, entitlement issuance or an approved customer launch.
+
+The permanent sentinel is intentionally never TTL-deleted. A 30-day trial cannot be renewed by creating a second account. The existing source and tenant access gates remain independently authoritative.
