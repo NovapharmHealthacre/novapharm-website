@@ -231,3 +231,20 @@ test("callback requires an explicit server-side opt-in, independent pilot route 
   assert.match(route, /verifyInternalPilotMfaCookie/u,
     "The downstream page must still authenticate the user-bound encrypted MFA cookie.");
 });
+
+
+test("public Intelligence sign-in uses hosted Cognito for enrollment and cannot label identity-only tokens as verified MFA", () => {
+  const card = readFileSync(new URL("../apps/portal/components/intelligence-sign-in.tsx", import.meta.url), "utf8");
+  const flow = readFileSync(new URL("../apps/portal/lib/cognito-card-auth.ts", import.meta.url), "utf8");
+  assert.match(flow, /return nextStep\(reply, username, false\);/u,
+    "Password-only Cognito response must never count as authenticator verification.");
+  assert.match(flow, /if \(!verifiedMfa \|\|/u);
+  assert.match(card, /setPhase\("identity-only"\);/u,
+    "Unapproved direct sign-ins must show an identity-only state.");
+  assert.match(card, /phase === "identity-only"/u);
+  assert.match(card, /href="\/auth\/customer\/start"/u,
+    "Identity-only users must have a secure, first-time MFA enrollment path.");
+  assert.match(card, /does not confirm that an authenticator is enrolled/u);
+  assert.doesNotMatch(card, /Your credentials and authenticator have been accepted/u,
+    "Client-only proof must not claim server-confirmed authenticator acceptance.");
+});
