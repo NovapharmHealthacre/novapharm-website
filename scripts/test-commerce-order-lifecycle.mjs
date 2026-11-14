@@ -1,3 +1,4 @@
+import './test-b2b-assisted-order.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {transitionOrder,orderTrackingPublicView,aggregateReconciledOrders} from '../src/commerce/order-lifecycle.mjs';
