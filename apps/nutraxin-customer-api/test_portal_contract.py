@@ -151,7 +151,7 @@ class PortalSecurityTests(unittest.TestCase):
             products=PORTAL.handler(self.event("/portal/products/"),None)["body"]
             self.assertIn("Nutraxin",products)
             self.assertIn("ESCO Anand",products)
-            self.assertIn("remain unverified",products)
+            self.assertIn("not approved saleable variants",products)
             history=PORTAL.handler(self.event("/portal/orders/"),None)["body"]
             self.assertIn("separately approved trade account",history)
             self.assertNotIn("APPROVED_FOR_PAYMENT",history)
