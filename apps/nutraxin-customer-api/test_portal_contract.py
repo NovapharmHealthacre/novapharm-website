@@ -780,6 +780,45 @@ class PortalSecurityTests(unittest.TestCase):
         finally:
             PORTAL.PAYMENT_DDB,PORTAL.DIRECT_SHOP_PAYMENTS_ENABLED,PORTAL.CHECKOUT_LAMBDA=old
 
+    def test_owner_declared_stripe_gb_tax_basis_is_fail_closed(self):
+        saved_ssm=PORTAL.SSM
+        saved_param=PORTAL.OWNER_ATTESTATION_PARAMETER
+        owner={
+            "schema":"novapharm.nutraxin.owner_attestation.v1",
+            "product_owner_authorised":True,
+            "food_business_registration_owner_attested":True,
+            "owner_direct_fulfilment_authorised":True,
+            "owner_uk_dispatch_committed":True,
+            "stripe_gb_standard_tax_registration_active":True,
+            "owner_authorized_stripe_gb_tax_basis":True,
+            "consumer_terms_owner_approved":True,
+            "vat_rate_bps":2000,
+            "payment_collection_authorised":True,
+        }
+        class OwnerSSM:
+            def get_parameter(self, **kw):
+                if kw.get("Name")=="/synthetic/merchant":
+                    return {"Parameter":{"Value":json.dumps(owner)}}
+                return saved_ssm.get_parameter(**kw)
+        try:
+            PORTAL.SSM=OwnerSSM()
+            PORTAL.OWNER_ATTESTATION_PARAMETER="/synthetic/merchant"
+            pricing=json.loads(saved_ssm.get_parameter()["Parameter"]["Value"])
+            pricing["owner_retail_sale_authorised"]=True
+            self.assertTrue(PORTAL.retail_sale_authorised(pricing))
+            for key in ("stripe_gb_standard_tax_registration_active",
+                        "owner_authorized_stripe_gb_tax_basis",
+                        "consumer_terms_owner_approved","payment_collection_authorised"):
+                value=owner.pop(key)
+                self.assertFalse(PORTAL.retail_sale_authorised(pricing),key)
+                owner[key]=value
+            owner["vat_rate_bps"]=0
+            self.assertFalse(PORTAL.retail_sale_authorised(pricing))
+            self.assertNotIn("vat_number",json.dumps(owner).lower())
+        finally:
+            PORTAL.SSM=saved_ssm
+            PORTAL.OWNER_ATTESTATION_PARAMETER=saved_param
+
     def test_nutraxin_public_site_credentials_cors_and_preflight(self):
         e=self.event("/api/retail/checkout","OPTIONS",origin="https://novapharmhealthcare.com")
         r=PORTAL.handler(e,None)
