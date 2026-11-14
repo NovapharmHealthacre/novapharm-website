@@ -330,9 +330,12 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     const page = await employeeContext.newPage();
     await page.goto(`${portalOrigin}/employee/dashboard/`, { waitUntil: "domcontentloaded" });
     await page.locator(".data-context").waitFor();
-    await page.getByRole("button", { name: "Open navigation" }).click();
-    assert.match(await page.locator(".workspace-sidebar").getAttribute("class") ?? "", /open/);
-    await page.getByRole("button", { name: "Close navigation" }).click();
+    // The new text-first employee header replaces the legacy icon-driven drawer.
+    // All 13 governed employee routes must remain keyboard-accessible on mobile.
+    await page.getByRole("navigation", { name: "Employee distribution navigation" }).waitFor();
+    assert.equal(await page.locator(".distribution-employee-all a").count(), 13,
+      engine + ": all 13 employee workspaces must remain accessible");
+    await page.getByRole("link", { name: "Telesales", exact: true }).waitFor();
     await page.getByLabel("Search authorised records").fill("Nutraxin");
     await page.locator('.portal-search > button[type="submit"]').click();
     await page.locator(".search-results").waitFor();
