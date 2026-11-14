@@ -485,6 +485,8 @@ for (const [engineName, browserType] of engines) {
                 "Pricing section must transparently disclose immediate recurring billing");
               assert.equal(await pricing.getByText("may not be available immediately", { exact: false }).count(), 1,
                 "Pricing section must disclose that workspace provisioning is separate");
+              assert.equal(await pricing.getByRole("link", { name: "Manage subscription" }).getAttribute("href"),
+                "https://billing.stripe.com/p/login/00waEQ1gQ1Lr2x87aIdby00", "Customers must be able to manage and cancel subscriptions in Stripe");
 
               const medicineField = page.locator("[data-npi-query]");
               const marketField = page.locator("[data-npi-market]");
