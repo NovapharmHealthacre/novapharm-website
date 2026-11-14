@@ -9,6 +9,9 @@ export function sessionDecision(view: PortalView, user: PortalUser | null): Port
   if (view.kind !== "module") return "allow";
   if (!user || !Array.isArray(user.accessScopes)) return "deny";
   if (user.mustChangePassword) return "change-password";
+  // A customer scope alone is not a canonical account/tenant data authority.
+  // Even an administrator must use a separately authorised customer link.
+  if (view.module.area === "customer" && user.customerAccountLinked !== true) return "deny";
   const required = areaScopes[view.module.area];
   return user.accessScopes.includes(required) || user.accessScopes.includes("admin") ? "allow" : "deny";
 }
