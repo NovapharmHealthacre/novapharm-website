@@ -27,6 +27,10 @@ test("Customer dashboard owns the shared collections and has no independent Nutr
   assert.match(component, /ESCO Anand/);
   assert.match(component, /module\.route/);
   assert.match(dashboard, /CustomerCommerceWorkspace/);
+  // The static navigation must exist on first paint; never wait for an API
+  // response to inject a tall module index and shift the mobile viewport.
+  assert.match(dashboard, /module\.area === "customer"/);
+  assert.doesNotMatch(dashboard, /user && snapshot \? <CustomerCommerceWorkspace/);
   assert.doesNotMatch(component, /https?:\/\/[^"\s]*checkout|\/api\/retail\/checkout/);
   assert.doesNotMatch(component, /localStorage|sessionStorage|document\.cookie/);
 });
