@@ -8,6 +8,10 @@
  */
 const endpoint = "https://cognito-idp.eu-north-1.amazonaws.com/";
 const clientId = "7c76122stt76k4d8cjvd7tf6ck";
+// The founder backend verifies signed Cognito assurance level 4 and pwd+otp+mfa.
+// USER_AUTH must explicitly request these claims; a completed challenge alone
+// does not permit session issuance.
+const founderTargetAcr = "urn:cognito:loa:4";
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
 
 export type TotpChallenge = Readonly<{ email: string; session: string }>;
@@ -95,6 +99,8 @@ export async function beginCognitoCardSignIn(
       USERNAME: username,
       PREFERRED_CHALLENGE: "PASSWORD",
       PASSWORD: password,
+      TARGET_ACR_VALUES: founderTargetAcr,
+      MAX_AGE: "0",
     },
   }, fetchImpl);
 
