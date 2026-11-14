@@ -26,6 +26,7 @@ const sample = () => {
   const row = {
     workspace_id: workspace,
     medicine_identity: "medicine:reviewed:1",
+    code_system: "BNF_PRESENTATION_CODE", source_code: "0208020Z0AAAAAA",
     source_id: source, source_version: "epd-snomed-2026-08",
     resource_id: "partition-001", resource_sha256: h("a"),
     row_id: "official-row-001", provenance_sha256: h("b"),
@@ -51,7 +52,8 @@ const sample = () => {
   };
 };
 function fake({ indexMissing = null, denyAuthority = false, denyRights = false,
-  denyIdentity = false, denySource = false, failAudit = false, hideQuarantineReadback = false } = {}) {
+  denyIdentity = false, denySource = false, failAudit = false,
+  hideQuarantineReadback = false, verifyIdentityCallback = null } = {}) {
   const names = Object.keys(keys);
   const data = Object.fromEntries(names.map(name => [name, []]));
   let started = 0, committed = 0, rolledBack = 0;
@@ -116,6 +118,9 @@ function fake({ indexMissing = null, denyAuthority = false, denyRights = false,
       assert.equal(claim.workspaceId,workspace);
       assert.equal(claim.period,"2026-08");
       assert.equal(claim.rows[0].medicineIdentity,"medicine:reviewed:1");
+      assert.equal(claim.rows[0].codeSystem,"BNF_PRESENTATION_CODE");
+      assert.equal(claim.rows[0].sourceCode,"0208020Z0AAAAAA");
+      if (verifyIdentityCallback) return verifyIdentityCallback(claim);
       return !denyIdentity;
     },
     verifyTransactionSource: async receipt=>{
@@ -367,4 +372,37 @@ test("end-to-end G1 validation through G2 and the private store remains nonpubli
   }), e=>e.code==="rights_revoked_before_commit");
   assert.equal(bad.stats().started,0);
   assert.ok(Object.values(bad.data).every(v=>v.length===0));
+});
+
+test("G2 exposes exact source scheme, code and mapping revision to trusted identity authority",async()=>{
+  let check=null;
+  const sys=fake({verifyIdentityCallback: async value => {
+    check=value;return true;
+  }});
+  await sys.store.commitAtomic(sample());
+  assert.equal(check.sourceId,"nhsbsa_english_prescribing");
+  assert.equal(check.sourceVersion,"epd-snomed-2026-08");
+  assert.equal(check.period,"2026-08");
+  assert.deepEqual(check.rows.map(row=>({
+    system:row.codeSystem, code:row.sourceCode,
+    mapping:row.mappingRevision, canonical:row.medicineIdentity
+  })),[{
+    system:"BNF_PRESENTATION_CODE", code:"0208020Z0AAAAAA",
+    mapping:"mapping-version-001",canonical:"medicine:reviewed:1"
+  }]);
+});
+
+test("G2 rejects ambiguous or forged source codes before any database writes",async()=>{
+  for(const change of [
+    row=>{delete row.source_code;},
+    row=>{row.source_code="";},
+    row=>{row.code_system="SNOMED_UNVERIFIED";},
+    row=>{row.source_code={$ne:""};},
+    row=>{delete row.code_system;}
+  ]) {
+    const sys=fake(),p=sample();change(p.records[0]);
+    await assert.rejects(sys.store.commitAtomic(p),
+      e=>e.code==="invalid_g2_source_row");
+    assert.equal(sys.stats().started,0);
+  }
 });
