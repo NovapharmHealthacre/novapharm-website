@@ -25,6 +25,7 @@ test("HTTPS ingress rejects public/indexable production portal responses", () =>
   assert.deepEqual(assignments, [
     "https://intelligence.novapharmhealthcare.com",
     "https://intelligence.novapharmhealthcare.com",
+    "https://intelligence.novapharmhealthcare.com",
   ]);
   assert.match(source, /NUTRAXIN \/ CUSTOMER ACCOUNT\|Welcome to Nutraxin/u);
   assert.match(source, /getent ahostsv4/u);
@@ -79,7 +80,7 @@ test("production HTTPS acceptance explicitly denies all 22 authenticated Intelli
   assert.deepEqual(new Set(tested), new Set(defined));
   assert.ok(source.includes("Deny anonymous access to every one of the 22 private workspaces"));
   assert.ok(source.includes('if ! [[ "$status" =~ ^(301|302|303|307|308|401|403)$ ]]'));
-  assert.ok(source.includes("'cache-control:.*no-store'"));
+  assert.ok(source.includes("'^cache-control:.*no-store'"));
   assert.ok(source.includes("grep -qx '{\"message\":\"Forbidden\"}'"));
   assert.ok(source.includes("All 22 protected workspace paths rejected anonymous access"));
 });
