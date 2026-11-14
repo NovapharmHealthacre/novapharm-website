@@ -182,4 +182,11 @@ test("callback requires an explicit server-side opt-in, independent pilot route 
   assert.match(route,/confirmInternalPilotTotp/u);
   assert.ok(!route.includes("__Host-npi_session"));
   assert.ok(!route.includes("__Host-npi_founder"));
+  const proxy = readFileSync(new URL("../apps/portal/proxy.ts", import.meta.url),"utf8");
+  assert.match(proxy, /"\/auth\/internal\/mfa\/setup\/"/u,
+    "The legacy portal proxy must permit the cookie-protected MFA route to execute.");
+  assert.ok(!proxy.includes('"/auth/internal/"'),
+    "Never bypass all internal authentication routes.");
+  assert.match(route, /verifyInternalPilotMfaCookie/u,
+    "The downstream page must still authenticate the user-bound encrypted MFA cookie.");
 });
