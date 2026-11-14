@@ -1,5 +1,12 @@
 # AWS / MongoDB Atlas production cost-estimate inputs (no spending authorised)
 
+## Owner update: strict GBP 0 incremental spending cap (14 November 2026)
+
+This worksheet now has an explicit constraint: **no additional monthly charge is authorised**. Existing AWS services and Atlas FREE clusters may be inspected or reused only when actual incremental usage charges remain independently proven to be **GBP 0**. The existing AWS budget alert is configured in USD and is not a hard cost-prevention permission. Pay-per-request usage, egress, logs and AWS free credits must not be assumed free indefinitely.
+
+Do **not** submit an ECS desired-count increase, ALB/NAT provisioning, dedicated public API deployment, customer order billing, database upgrade or increased storage and backups based on this worksheet. If a complete, secure Portal cannot be hosted within existing no-incremental-cost capacity, preserve the working public registration and keep the Enterprise Portal in private engineering mode.
+
+
 **Status: estimation worksheet only. All proposed paid changes unapproved as of 14 November 2026.** Do not treat an inventory resource as free, or a list price as an approved budget.
 
 ## Working requirements
