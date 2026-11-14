@@ -1015,6 +1015,45 @@ def customer_workspace(event,route):
             '<ol id="case-history" class="case-history-list"><li>Loading your enquiries…</li></ol>'
             '</section></div><script src="/customer-support.js" defer></script>'
         )
+    elif route=="/portal/order-tracking/":
+        head=('<p class="muted">Track your submitted purchase requests in one place. '
+              'These are not warehouse orders and no delivery date is confirmed.</p>')
+        if approved(principal["username"]):
+            try:
+                result=TABLE.query(
+                    KeyConditionExpression=Key("pk").eq("USER#"+principal["sub"]) & Key("sk").begins_with("RQ#"),
+                    Limit=10,ScanIndexForward=False,ConsistentRead=True)
+                records=[]
+                for item in result.get("Items",[]):
+                    if str(item.get("pk"))!="USER#"+principal["sub"] or not str(item.get("sk","")).startswith("RQ#"):
+                        continue
+                    ref=html.escape(str(item.get("receipt_id") or "Request"),quote=True)
+                    received=int(item.get("created_at",0))
+                    stamp=time.strftime("%d %b %Y",time.gmtime(received)) if received>0 else "Date unavailable"
+                    current=str(item.get("status") or "PENDING_MANUAL_REVIEW")
+                    label={
+                        "PENDING_MANUAL_REVIEW":"Received — awaiting manual review",
+                        "PENDING_MANUAL_CONFIRMATION":"Received — awaiting manual confirmation",
+                        "APPROVED_FOR_PAYMENT":"Commercial next step reviewed — not dispatched",
+                    }.get(current,"Under manual review — no dispatch verified")
+                    records.append(
+                        '<li class="request-tracking-row"><strong>'+ref+'</strong>'
+                        '<span class="request-tracking-date">'+html.escape(stamp)+'</span>'
+                        '<p class="request-tracking-status">'+html.escape(label)+'</p>'
+                        '<p>No stock allocation, carrier tracking or delivery date is represented by this record.</p>'
+                        '</li>')
+                body=(
+                    '<section aria-labelledby="request-tracking-heading">'
+                    '<h2 id="request-tracking-heading">Your recent requests</h2>'
+                    '<ol class="request-tracking-list">'+''.join(records)+'</ol>'
+                    '</section><p class="tracking-note">For an update about a request, '
+                    '<a href="/portal/support/">contact Support &amp; Supply Enquiries</a>. '
+                    'Carrier events will appear only after a verified warehouse integration is released.</p>'
+                ) if records else '<p class="empty">No saved purchasing requests for this account yet. <a href="/portal/products/">Browse products</a> to prepare a request.</p>'
+            except (ClientError,KeyError,TypeError,ValueError,OverflowError):
+                body='<p class="empty">Request tracking is temporarily unavailable. No fulfilment status has been inferred.</p>'
+        else:
+            body='<p class="empty">Tracking requires a separately approved business account. No shipping information is available for this personal account.</p>'
     elif route=="/portal/products/":
         head=""
         body=(
@@ -1303,6 +1342,15 @@ body.editorial-customer{background:#fff;color:#1d1d1f;overflow-x:hidden}
 .shop-repeat-item small{font-size:11px;color:#69696f}
 .shop-repeat-select{background:transparent;border:0;color:#a01520;font-size:12px;font-weight:630;cursor:pointer;padding:6px 0}
 .shop-repeat-section button:focus-visible{outline:3px solid #0071e3;outline-offset:3px}
+.request-tracking-list{padding:0;list-style:none;margin:22px 0;max-width:900px;border-top:1px solid #dddddf}
+.request-tracking-row{display:grid;gap:8px;padding:22px 0;border-bottom:1px solid #dddddf}
+.request-tracking-row strong{font-size:17px;color:#1d1d1f}
+.request-tracking-date{font-size:12px;color:#77777e}
+.request-tracking-status{font-size:15px;font-weight:640;color:#1d1d1f;margin:0}
+.request-tracking-row>p:last-child{font-size:12px;color:#6e6e73;line-height:1.55;margin:0}
+.tracking-note{font-size:14px;color:#6e6e73;line-height:1.6;max-width:900px;margin-top:30px}
+.tracking-note a{color:#a30917;text-decoration:underline;text-underline-offset:3px}
+
 
 .shop-basket>button:not(:disabled):hover{background:#37373a}
 .shop-basket>a{display:block;font-size:12px;color:#a20e1a;margin:13px 0}
