@@ -30,7 +30,15 @@ test("a new valid medicine search clears prior medicine, analytics and deep-link
   }
   assert.ok(source.includes('window.history.replaceState(null, "", `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);'));
   assert.match(source, /setSearchStatus\(professionalError\(error\)\)/u);
-  assert.match(source, /next\.pagination\.totalRows \?/u);
+  assert.match(source, /next\.pagination\.totalRows\s*\?/u);
+});
+
+test("an empty medicine identity catalogue cannot masquerade as a genuine no-match", () => {
+  const search = between("async function searchMedicine(", "async function searchMedicinePage(");
+  assert.match(search, /next\.catalogueState === "no_current_repository_identities"/u);
+  assert.match(search, /No current medicine identities are loaded/u);
+  assert.match(component, /searchResponse\.catalogueState === "no_current_repository_identities"/u);
+  assert.match(component, /Results remain unavailable until source approval and ingestion/u);
 });
 
 test("late medicine search responses cannot overwrite the newer selected query", () => {
