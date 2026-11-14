@@ -1618,3 +1618,79 @@ body[data-page="technology"] .np-intelligence {
   .np-intelligence .npi-journey-marker { transition: none; }
   .np-intelligence .npi-journey-explore:hover { transform: none; }
 }
+
+
+/* Owner-approved 30-day trial. Informational until governed customer enrolment is live. */
+.np-intelligence .npi-trial-offer {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+  gap: clamp(24px, 4vw, 60px);
+  align-items: center;
+  margin: 0 0 30px;
+  padding: clamp(27px, 4vw, 52px);
+  background: #fff;
+  border: 1px solid #e3d7d6;
+  border-left: 4px solid #e3120b;
+  border-radius: 22px;
+  box-shadow: 0 12px 30px rgba(30, 28, 30, .045);
+}
+.np-intelligence .npi-trial-offer .npi-kicker { color: #a31915; margin-bottom: 14px; }
+.np-intelligence .npi-trial-offer h3 {
+  color: #1d1d1f;
+  font-size: clamp(2rem, 3.3vw, 3.35rem);
+  font-weight: 650;
+  line-height: 1.13;
+  letter-spacing: -.035em;
+  margin: 0 0 19px;
+}
+.np-intelligence .npi-trial-offer-lead > p:not(.npi-kicker) {
+  max-width: 420px;
+  color: #55555c;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.np-intelligence .npi-trial-offer-price {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.np-intelligence .npi-trial-offer-price strong {
+  color: #191919;
+  font-size: clamp(3.5rem, 5vw, 5rem);
+  line-height: 1;
+  letter-spacing: -.06em;
+}
+.np-intelligence .npi-trial-offer-price span { color: #626269; font-size: 1rem; }
+.np-intelligence .npi-trial-offer-detail ul {
+  margin: 0;
+  padding-left: 19px;
+  color: #404046;
+  font-size: .91rem;
+  line-height: 1.75;
+}
+.np-intelligence .npi-trial-offer-status {
+  margin: 20px 0 0;
+  color: #a31915;
+  font-size: .84rem;
+  font-weight: 700;
+}
+.np-intelligence .npi-plan-cta-pending,
+.np-intelligence .npi-plan-featured .npi-plan-cta-pending {
+  background: #ececef;
+  border-color: #d6d6dc;
+  color: #56565f;
+  cursor: not-allowed;
+  user-select: none;
+}
+.np-intelligence .npi-plan-cta-pending:hover,
+.np-intelligence .npi-plan-featured .npi-plan-cta-pending:hover {
+  background: #ececef;
+  color: #56565f;
+}
+@media (max-width: 860px) {
+  .np-intelligence .npi-trial-offer { grid-template-columns: 1fr; }
+}
+@media (max-width: 540px) {
+  .np-intelligence .npi-trial-offer { border-radius: 17px; gap: 18px; }
+}
