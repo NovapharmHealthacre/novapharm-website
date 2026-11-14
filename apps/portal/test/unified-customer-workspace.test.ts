@@ -36,3 +36,16 @@ test("Customer collection handoff does not change employee, board or admin login
   assert.match(login, /isPortalAccessType\(result\.accessType\)/);
   assert.match(login, /result\.accessType !== accessType/);
 });
+
+
+test("static customer workspace occupies initial SSR-authorised layout before async records", () => {
+  const page = readFileSync(path.join(process.cwd(), "app/[[...slug]]/page.tsx"), "utf8");
+  assert.match(page, /verifiedPortalSession/);
+  assert.match(page, /sessionDecision/);
+  assert.match(page, /if \(decision !== "allow"\) redirect\("\/"\)/);
+  assert.match(dashboard, /<CustomerCommerceWorkspace moduleCode=\{module\.code\} \/>/);
+  assert.doesNotMatch(dashboard, /\{user && snapshot \? <CustomerCommerceWorkspace/);
+  // Public, account-neutral module navigation is safe to reserve in the first
+  // render. Only the separate protected snapshot component holds private data.
+  assert.doesNotMatch(component, /gatewayJson|protectedMutation|fetch\(|localStorage|sessionStorage/);
+});
