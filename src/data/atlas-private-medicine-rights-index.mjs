@@ -70,6 +70,13 @@ export async function ensurePrivateMedicineRightsUniqueIndex({
     unique: true, customerAccessEnabled: false, rightsGranted: false
   }));
   if (approval !== true) throw new Error("Independent migration approval denied");
+  // Approval and operator review can take time. Refuse if new grants or
+  // conflicting indexes appeared after the initial read-only preflight.
+  const latest = await readIndexes(collection);
+  if (latest.some(i => i?.name === INDEX_NAME || exactKeys(i)) ||
+      await collection.countDocuments({}, {limit: 1}) !== 0) {
+    throw new Error("Rights collection changed during migration approval");
+  }
   if (typeof collection.createIndex !== "function") throw new Error("Index writer unavailable");
   const created = await collection.createIndex(KEYS, {
     name: INDEX_NAME, unique: true, sparse: false,
@@ -168,6 +175,15 @@ export async function ensureG2PrivateMedicineUniqueIndexes({
   if (verified !== true) throw new Error("Independent migration approval denied");
   const applied = [];
   for (const {collectionName, spec, collection} of pending) {
+    // G2 index creation is not an atomic multi-collection operation. Recheck
+    // each exact collection immediately before its independently authorised
+    // index write; a stale preflight must never approve a newly occupied set.
+    const latest = await readIndexes(collection);
+    if (latest.some(index => index?.name === spec.name ||
+        matchesG2(index, spec.keys)) ||
+        await collection.countDocuments({}, {limit: 1}) !== 0) {
+      throw new Error("G2 collection changed during migration approval");
+    }
     if (typeof collection.createIndex !== "function") {
       throw new Error("Private G2 unique index writer unavailable");
     }
