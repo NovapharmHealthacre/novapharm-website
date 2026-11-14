@@ -180,15 +180,20 @@ for (const [label, markup] of [["source", source], ["published", published]]) {
   assert.ok(pricing.includes('data-monthly-gbp="199" data-annual-gbp="2030"'));
   assert.ok(pricing.includes('data-monthly-gbp="699" data-annual-gbp="7130"'));
   assert.ok(pricing.includes("£2,799") && pricing.includes("Custom"));
-  assert.ok(pricing.includes("not live subscriptions") && pricing.includes("No payment will be collected here"));
+  assert.ok(pricing.includes("Paid subscriptions are charged immediately at Checkout") && pricing.includes("may not be available immediately"), label + " must disclose live recurring billing and provisioning delay");
   assert.ok(pricing.includes("Approved monthly prices in GBP") && pricing.includes("actual tax depends"));
   assert.ok(!pricing.includes('npi-trial-offer') && !pricing.includes('npi-billing-switch'), label + " must not have a separate trial banner or unapproved billing toggle");
   assert.ok(!pricing.includes("Coming soon") && !pricing.includes("Enrolment not yet open"), label + " must not use disabled-plan marketing buttons");
-  for (const plan of ["starter","professional","enterprise"]) {
-    assert.ok(pricing.includes('intelligencePlan=' + plan), label + " must send named plans to approved enquiry intake");
-  }
-  assert.ok(pricing.includes("Request free trial") && pricing.includes("Request Starter") && pricing.includes("Request Professional") && pricing.includes("Contact sales"));
-  assert.ok(!pricing.includes("checkout.stripe.com") && !pricing.includes('/auth/customer/register'), label + " must never promise unverified checkout");
+  assert.ok(pricing.includes('href="https://buy.stripe.com/00waEQ1gQ1Lr2x87aIdby00" data-npi-live-stripe="starter"'), label + " must use the verified live Stripe Starter link");
+  assert.ok(pricing.includes('href="https://buy.stripe.com/6oUeV64t2bm16NobqYdby01" data-npi-live-stripe="professional"'), label + " must use the verified live Stripe Professional link");
+  assert.ok(pricing.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/register"'), label + " must use no-card account registration for Free Trial");
+  assert.ok(pricing.includes('intelligencePlan=enterprise'), label + " must retain custom Enterprise sales");
+  assert.ok(pricing.includes("Create free account") && pricing.includes("Subscribe") && pricing.includes("Contact sales"));
+  assert.ok(pricing.includes("renew monthly until cancelled") && pricing.includes("Payment is not an automatic medicine-data entitlement"), label + " must disclose what is and is not activated");
+  assert.ok(!pricing.includes("checkout.stripe.com"), label + " must use approved Stripe hosted payment links, not constructed sessions");
+  assert.ok(!pricing.includes('/contact/?enquiry=General%20enquiry&amp;intelligencePlan=starter') &&
+            !pricing.includes('/contact/?enquiry=General%20enquiry&amp;intelligencePlan=professional'),
+            label + " paid cards must not direct customers to contact form");
 }
 assert.ok(styles.includes("Four-plan Intelligence pricing") && styles.includes("repeat(4, minmax(0,1fr))"), "Four-column responsive layout contract");
 assert.ok(styles.includes("#0071e3") && styles.includes("#f5f5f7"), "Approved Apple-style palette is retained");
