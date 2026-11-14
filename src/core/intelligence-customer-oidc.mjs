@@ -188,7 +188,7 @@ export async function exchangeCustomerAuthCode(args) {
 export async function verifyIntelligenceCustomerIdToken({
   idToken, expectedNonce, fetchImpl = globalThis.fetch,
   nowSeconds = Math.floor(Date.now() / 1000),
-  purpose = "identity",
+  purpose = "identity", pilotMfaEmail = null,
 } = {}) {
   if (typeof idToken !== "string" || idToken.length > 16000 ||
       typeof expectedNonce !== "string" || !VALID_RANDOM.test(expectedNonce)) throw blocked("invalid_identity_token");
@@ -255,6 +255,41 @@ export async function verifyIntelligenceCustomerIdToken({
       identityVerified: false,
       mfaVerifiedInSignedClaims: false,
       grantsTenantAccess: false,
+      subscriptionVerified: false,
+    });
+  }
+  if (purpose === "internal_pilot_mfa_enrolment") {
+    // Only a server-supplied pilot allowlist may reach this restricted
+    // identity bootstrap. A signed, verified Cognito account is required.
+    // It NEVER becomes MFA proof, a founder account, customer seat or
+    // source-rights approval, even with a valid password-only token.
+    if (typeof pilotMfaEmail !== "string" ||
+        !/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/u.test(pilotMfaEmail) ||
+        typeof claims.email !== "string" ||
+        claims.email.toLowerCase() !== pilotMfaEmail.toLowerCase()) {
+      throw blocked("pilot_mfa_identity_not_allowed");
+    }
+    if (claims.acr !== undefined &&
+        !["urn:cognito:loa:1", "urn:cognito:loa:2",
+          "urn:cognito:loa:3", "urn:cognito:loa:4"].includes(claims.acr)) {
+      throw blocked("pilot_mfa_claims_incompatible");
+    }
+    if (claims.amr !== undefined &&
+        (!Array.isArray(claims.amr) || claims.amr.length > 10 ||
+         claims.amr.some(m => typeof m !== "string" ||
+           !["pwd", "otp", "mfa", "email_otp", "sms", "swk", "hwk"].includes(m)))) {
+      throw blocked("pilot_mfa_claims_incompatible");
+    }
+    if (!Number.isSafeInteger(claims.auth_time) ||
+        claims.auth_time > nowSeconds + 60 ||
+        nowSeconds - claims.auth_time > 300 ||
+        claims.iat < claims.auth_time) {
+      throw blocked("pilot_mfa_auth_stale");
+    }
+    return Object.freeze({
+      pilotMfaEnrolmentOnly: true, verifiedCognitoSubject: claims.sub,
+      identityVerified: false, mfaVerified: false,
+      grantsTenantAccess: false, grantsFounderAccess: false,
       subscriptionVerified: false,
     });
   }
