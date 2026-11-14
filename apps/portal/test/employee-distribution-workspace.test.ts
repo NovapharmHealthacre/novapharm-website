@@ -51,3 +51,17 @@ test("the existing employee warehouse route renders the evidence-first WMS contr
   assert.match(stylesheet, /\.distribution-wms-principles/);
   assert.doesNotMatch(workspace, /warehouseCommandIssued|reserveStock\(|createDispatch\(/);
 });
+
+test("WMS page describes real operating journeys without claiming live 3PL execution", () => {
+  for (const phrase of [
+    "From receipt to proof of delivery.",
+    "Receive and reconcile.",
+    "Control every exception.",
+    "Follow every movement.",
+    "no independently authenticated",
+    "Only authorised quality decisions",
+  ]) assert.ok(workspace.includes(phrase), phrase);
+  assert.match(stylesheet, /\.distribution-wms-journey-list/);
+  assert.match(stylesheet, /@media\(max-width:780px\)/);
+  assert.doesNotMatch(workspace, /receiveStock\(|issueRecall\(|placePurchaseOrder\(/);
+});
