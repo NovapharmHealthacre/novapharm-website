@@ -1022,5 +1022,46 @@ class PortalSecurityTests(unittest.TestCase):
             PORTAL.TABLE=old_table
             COGNITO.groups=old_groups
 
+    def test_portal_retail_checkout_is_separate_from_business_qualification(self):
+        # The retail offer remains server-gated and no B2B group is required
+        # solely to see a conditional retail checkout option.
+        readiness = PORTAL.handler(self.event("/api/retail/readiness"), None)
+        self.assertEqual(readiness["statusCode"], 200)
+        flags = json.loads(readiness["body"])
+        self.assertFalse(flags["checkout_ready"])
+        self.assertFalse(flags["payment_collection_active"])
+
+        previous = PORTAL.session
+        PORTAL.session = lambda event: {
+            "username": "retail-only-customer", "sub": "retail-only-sub",
+            "email": "retail@example.invalid", "expires_at": PORTAL.now()+3600
+        }
+        try:
+            document = PORTAL.handler(self.event("/portal/products/"), None)
+            self.assertEqual(document["statusCode"], 200)
+            html = document["body"]
+            self.assertIn('id="shop-retail"', html)
+            self.assertIn('id="shop-retail-checkout" type="button" disabled', html)
+            self.assertIn('id="shop-retail-terms" type="checkbox"', html)
+            self.assertIn("https://novapharmhealthcare.com/legal/terms/", html)
+            self.assertIn('id="shop-submit" type="button" disabled', html)
+            self.assertIn("Request business verification", html)
+            self.assertIn("ESCO references are not approved saleable variants", html)
+            js = PORTAL.CUSTOMER_PRODUCTS_JS
+            self.assertIn('fetch("/api/retail/readiness"', js)
+            self.assertIn('fetch("/api/retail/catalogue"', js)
+            self.assertIn('fetch("/api/retail/checkout"', js)
+            self.assertIn('fetch("/api/customer/quote-requests"', js)
+            self.assertIn('!retailReady||!retailOnly()', js)
+            self.assertIn('retailTerms.checked', js)
+            self.assertIn('checkout.stripe.com', js)
+            self.assertIn('pendingQuoteId', js)
+            self.assertIn('pendingRetailId', js)
+            self.assertIn("retailPanel.hidden=!canRetail", js)
+            self.assertIn("data.checkout_enabled!==true", js)
+            self.assertIn('window.location.assign(dest.href)', js)
+        finally:
+            PORTAL.session = previous
+
 if __name__ == "__main__":
     unittest.main()
