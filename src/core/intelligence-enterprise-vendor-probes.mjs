@@ -10,7 +10,9 @@
  * Production transport must enforce TLS validation, no redirects, private-network
  * deny lists, response-size and duration ceilings, and no logging of credentials.
  *
- * Palantir docs: /multipass/api/oauth2/token, scope api:ontologies-read
+ * Palantir docs: /multipass/api/oauth2/token. Restricted Developer Console
+ * apps use api:use-ontologies-read; approved legacy standalone clients can
+ * use api:ontologies-read. Caller must provide the *approved* account scope.
  * Palo Alto docs: /login, x-redlock-auth, GET /cloud.
  */
 import { randomUUID } from "node:crypto";
@@ -24,6 +26,8 @@ const prismaHosts=new Set([
  "api.sg.prismacloud.io","api.uk.prismacloud.io","api.ind.prismacloud.io"
 ]);
 const VENDORS=Object.freeze(["palantir_foundry","palo_alto_prisma","bloomberg_data_license"]);
+const FOUNDRY_SCOPES=new Set(["api:use-ontologies-read","api:ontologies-read"]);
+
 export const supportedEnterpriseVendorProbes=VENDORS;
 
 function deny(){
@@ -67,7 +71,7 @@ async function safeRequest(httpRequest,request){
 function credentialsOkay(vendor,c){
  return c && typeof c==="object" && !Array.isArray(c) &&
   (vendor==="palantir_foundry" ?
-   validId(c.clientId)&&token(c.clientSecret) :
+   validId(c.clientId)&&token(c.clientSecret)&&FOUNDRY_SCOPES.has(c.oauthScope) :
    validId(c.accessKeyId)&&token(c.secretKey));
 }
 function validReply(reply){
@@ -115,7 +119,7 @@ export async function probeEnterpriseVendor({
  if(vendor==="palantir_foundry"){
   const body=new URLSearchParams({
    grant_type:"client_credentials",client_id:credentials.clientId,
-   client_secret:credentials.clientSecret,scope:"api:ontologies-read"
+   client_secret:credentials.clientSecret,scope:credentials.oauthScope
   }).toString();
   auth=await safeRequest(httpRequest,{url:base+"/multipass/api/oauth2/token",method:"POST",
    headers:{"content-type":"application/x-www-form-urlencoded"},body,
