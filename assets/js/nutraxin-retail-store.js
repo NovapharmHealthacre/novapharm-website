@@ -66,20 +66,20 @@ export function merchantSaleReady(product, data) {
 export function basketSubtotal(bag, data) {
   if (!catalogueIsSafe(data) || !bag.length) return null;
   const products = new Map(data.products.map((p) => [p.sku, p]));
-  const approved = data.price_authority === "approved_consumer_retail";
   let sum = 0;
   for (const { sku, quantity } of bag) {
     const product = products.get(sku);
     const gross = publicPrice(product, data);
     if (gross === null || !Number.isSafeInteger(quantity) || quantity < 1 || quantity > MAX_PER_SKU) return null;
-    if (approved) {
+    if (data.price_authority === "approved_consumer_retail") {
       if (!Number.isSafeInteger(product.retail_net_pence) || product.retail_net_pence <= 0) return null;
-      sum += product.retail_net_pence * quantity;
-    } else sum += gross * quantity;
+      if (gross !== product.retail_net_pence + Math.round(product.retail_net_pence * 20 / 100)) return null;
+    }
+    // Same published per-unit gross in the public store, portal and worker.
+    sum += gross * quantity;
     if (!Number.isSafeInteger(sum)) return null;
   }
-  // Match the production server's exact rule: sum net items, then round 20% VAT once.
-  return approved ? Math.round(sum * 120 / 100) : sum;
+  return sum;
 }
 
 export const formatGBP = (pence) => new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(pence / 100);
