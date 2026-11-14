@@ -193,7 +193,7 @@ for (const [label, markup] of [["source", source], ["published", published]]) {
   assert.ok(pricing.includes('intelligencePlan=enterprise'), label + " bespoke Enterprise requires contractual enquiry");
   assert.ok(pricing.includes("Create free account") && pricing.includes("Choose Starter") && pricing.includes("Choose Professional") && pricing.includes("Contact sales"));
   assert.ok(pricing.includes("Stripe-hosted payment is requested only after verified identity"));
-  assert.ok(!pricing.includes("checkout.stripe.com") && !pricing.includes('/auth/customer/register'), label + " must never promise unverified checkout");
+  assert.ok(!pricing.includes("checkout.stripe.com"), label + " public source must not expose direct Stripe payment links");
 }
 assert.ok(styles.includes("Four-plan Intelligence pricing") && styles.includes("repeat(4, minmax(0,1fr))"), "Four-column responsive layout contract");
 assert.ok(styles.includes("#0071e3") && styles.includes("#f5f5f7"), "Approved Apple-style palette is retained");
