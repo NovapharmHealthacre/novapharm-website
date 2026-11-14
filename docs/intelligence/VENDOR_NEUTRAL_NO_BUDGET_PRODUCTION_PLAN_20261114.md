@@ -1,5 +1,14 @@
 # Vendor-neutral, no-new-budget production plan — 14 November 2026
 
+## Updated owner spending decision — £0 additional monthly cost
+
+On 14 November 2026 the owner clarified that NovaPharm must use only its **already-active AWS services and existing MongoDB Atlas FREE tiers**, with an **additional monthly spending cap of GBP 0**. This is an instruction not to purchase or provision new billable resources; it is **not** a promise that AWS subscriptions or free-tier quotas guarantee zero usage charges. The previously unapproved positive-spend budget is not replaced with a positive allowance.
+
+`config/intelligence/owner-production-constraints.json` and `config/portal/owner-zero-incremental-release.json` enforce this in source CI. Any new always-on compute, load balancer, paid backup, NAT/endpoint, paid Atlas upgrade, monitored paid tier, payment processing, or domain cutover stays OFF until separate financially sound evidence and product/security approval. Existing service use is reviewable only if independently demonstrated to incur **GBP 0 incremental charges**; a theoretical estimate alone cannot authorise deployment. GitHub and cloud-side IAM/financial controls must enforce these gates independently.
+
+The public unified portal is still blocked on real tenant/session links and secure access to the 18 module authorities. Existing working Nutraxin account registration is preserved. See `docs/portal/ZERO_INCREMENTAL_RELEASE_PLAN_20261114.md`.
+
+
 ## Decision and boundaries
 
 NovaPharm owner decision: **No enterprise vendor accounts; implement vendor-neutral capabilities first. No approved monthly AWS/Atlas infrastructure budget.**
