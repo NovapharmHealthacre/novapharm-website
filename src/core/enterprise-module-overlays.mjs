@@ -1,6 +1,7 @@
 import { all, one } from "../data/database.mjs";
 import { reviewRecordedWarehouseLedger } from "./wms-control-tower.mjs";
 import { reviewWmsFiveLayerObservations } from "./wms-five-layer-readiness.mjs";
+import { reviewWmsOperationalExceptionWorklist } from "./wms-operational-exception-worklist.mjs";
 
 function section(title, columns, rows, emptyState, { source = "Canonical application database", description = "" } = {}) {
   return { title, description, columns, rows, emptyState, source, rowCount: rows.length };
@@ -384,6 +385,11 @@ export function rollingWarehouseView(snapshot) {
   const horizonKey = horizon.toISOString().slice(0, 10);
   const ledger = snapshot.sections.find((item) => item.title === "Inventory ledger")?.rows || [];
   const wms = reviewRecordedWarehouseLedger(ledger, { asOf: today.toISOString() });
+  const triage = reviewWmsOperationalExceptionWorklist({
+    ...snapshot,
+    sections: [...snapshot.sections,
+      { title: "Warehouse exception review", rows: wms.findings.slice(0, 120) }],
+  });
   const expired = ledger.filter((row) => row.expiry_date && row.expiry_date < todayKey).length;
   const expiring = ledger.filter((row) => row.expiry_date && row.expiry_date >= todayKey && row.expiry_date <= horizonKey).length;
   const metrics = snapshot.metrics.filter((item) => !["expiring", "expired"].includes(item.key));
@@ -405,13 +411,22 @@ export function rollingWarehouseView(snapshot) {
         "No exception is visible in the recorded ledger. This is not confirmation of reconciled stock.",
         { source: "Derived from the unverified legacy inventory ledger",
           description: "Read-only exception screening; not live 3PL confirmation or a pick, pack, ATP or dispatch instruction." }
+      ),
+      section("NovaPharm Distribution exception worklist",
+        [["priority", "Review priority", "status"], ["domain", "Control area"],
+          ["reference", "Recorded reference"], ["signal", "Observed issue"],
+          ["reviewOwner", "Suggested review team"], ["evidenceState", "Evidence quality", "status"]],
+        triage.rows, "No exceptions appear in the bounded application samples. This does not establish a healthy warehouse network.",
+        { source: "Derived from employee-authorised application evidence only",
+          description: "Priorities are screening suggestions, not formal case severity or instructions to release, reserve, dispatch, invoice or notify anyone." }
       )
     ],
     notices: [
       ...snapshot.notices,
       `Expiry posture is evaluated against the current UTC date with a rolling 90-day horizon ending ${horizonKey}; no fixed calendar cutoff is used.`,
       "WMS control tower: legacy ledger rows have not been reconciled to a trusted Polar Speed/UPS warehouse snapshot. Zero displayed exceptions does not verify stock.",
-      "FEFO, temperature, recall, quarantine and batch checks are review controls only. Reservation, order release and warehouse dispatch remain disabled."
+      "FEFO, temperature, recall, quarantine and batch checks are review controls only. Reservation, order release and warehouse dispatch remain disabled.",
+      "NovaPharm Distribution worklist: limited recent records across seven application sections; missing feeds and zero flags are unknown, never verified healthy or available-to-promise."
     ]
   };
 }
