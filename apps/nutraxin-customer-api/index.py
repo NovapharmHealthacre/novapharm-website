@@ -607,6 +607,10 @@ def customer_workspace(event,route):
         '<a href="'+href+'"'+(' aria-current="page"' if href==route else '')+'>'+
         html.escape(label,quote=True)+'</a>'
         for label,href,_ in CUSTOMER_WORKSPACE_MODULES)
+    csrf=secrets.token_urlsafe(32)
+    logout_form=('<form method="post" action="/logout" class="logout-form">'
+        '<input type="hidden" name="signup_csrf" value="'+csrf+'">'
+        '<button type="submit">Sign out</button></form>')
     if route=="/portal/dashboard/":
         head='<p class="muted">Your verified customer account, products, requests, documents and support in one place. Only released services and records can be used.</p>'
         cards="".join(
@@ -645,7 +649,7 @@ def customer_workspace(event,route):
         body='<p class="empty">Account-specific prices and physical stock are not verified for live ordering. No binding catalogue or stock guarantee is provided.</p>'
     css=('''*{box-sizing:border-box}body{margin:0;background:#f6f6f7;color:#151515;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
 a{color:inherit;text-decoration:none}a:focus-visible,button:focus-visible{outline:3px solid #ad0b18;outline-offset:3px}
-header{background:#fff;border-bottom:1px solid #e6e6e9;padding:20px clamp(20px,5vw,70px);display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+header{background:#fff;border-bottom:1px solid #e6e6e9;padding:20px clamp(20px,5vw,70px);display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}.account-actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap}.logout-form{margin:0}.logout-form button{cursor:pointer;background:#191919;color:#fff;padding:10px 18px;border-radius:999px;border:0;font:inherit;font-size:12px}
 .brand{font-size:20px;letter-spacing:-.05em;font-weight:750}.brand small{display:block;letter-spacing:.23em;font-size:9px;font-weight:500}
 .headermeta{font-size:12px;color:#62636d;overflow-wrap:anywhere}.layout{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:calc(100svh - 77px)}
 aside{background:white;border-right:1px solid #e6e6e9;padding:30px 14px}aside p{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#898992;padding:0 14px}
@@ -662,15 +666,27 @@ ul{padding-left:19px;line-height:1.8;color:#555}footer{padding:30px;color:#85858
         '<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">'
         '<title>'+html.escape(title,quote=True)+' | NovaPharm Customer Portal</title><style>'+css+'</style></head><body>'
         '<header><a class="brand" href="/portal/dashboard/">NOVAPHARM<small>HEALTHCARE</small></a>'
-        '<span class="headermeta">'+email+'</span></header>'
+        '<div class="account-actions"><span class="headermeta">'+email+'</span>'+logout_form+'</div></header>'
         '<div class="layout"><aside aria-label="Customer navigation"><p>Customer workspace</p>'+nav+'</aside>'
         '<main><p class="eyebrow">NOVAPHARM / CUSTOMER WORKSPACE</p><h1>'+html.escape(title,quote=True)+'</h1>'+
         head+body+'<footer>Available modules reflect released records only. This does not grant trade, employee, board or administrator privileges.'
         ' · <a href="https://novapharmhealthcare.com/legal/privacy/">Privacy</a></footer></main></div></body></html>')
-    return reply(200,document,"text/html; charset=utf-8")
+    return reply(200,document,"text/html; charset=utf-8",
+                 cookies=[cookie("__Host-np_signup_csrf",csrf,900)])
 
 def logout(event):
-    if (event.get("headers") or {}).get("origin","")!=request_base(event):return error(403,"invalid_origin")
+    headers={str(k).lower():str(v) for k,v in (event.get("headers") or {}).items()}
+    origin=headers.get("origin","")
+    if canonical_login_origin(origin) not in LOGIN_ORIGIN_ALLOWLIST:
+        if origin not in ("","null") or event.get("isBase64Encoded"):
+            return error(403,"invalid_origin")
+        raw_form=event.get("body") or ""
+        if not isinstance(raw_form,str) or len(raw_form)>300:
+            return error(403,"invalid_origin")
+        try: form=urllib.parse.parse_qs(raw_form,keep_blank_values=True,max_num_fields=2)
+        except ValueError:return error(403,"invalid_origin")
+        if not verified_signup_csrf(event,form,headers):
+            return error(403,"invalid_origin")
     raw=cookies(event).get("__Host-np_session","")
     if raw:TABLE.delete_item(Key={"pk":"SESSION#"+h(raw),"sk":"META"})
     query=urllib.parse.urlencode({"client_id":CLIENT_ID,"logout_uri":request_base(event)+"/"})
