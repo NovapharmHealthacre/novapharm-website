@@ -805,6 +805,48 @@ class PortalSecurityTests(unittest.TestCase):
                                              "uk_delivery_cost_borne_by_seller":True}
         self.assertFalse(PORTAL.retail_sale_authorised(wrong_shipping))
 
+    def test_stripe_owner_declaration_without_vat_number_exposure(self):
+        prior=PORTAL.OWNER_ATTESTATION_PARAMETER
+        fake=PORTAL.SSM
+        flags={
+            "schema":"novapharm.nutraxin.owner_attestation.v1",
+            "product_owner_authorised":True,
+            "retail_sales_authorised":True,
+            "food_business_registration_owner_attested":True,
+            "owner_direct_fulfilment_authorised":True,
+            "owner_uk_dispatch_committed":True,
+            "stripe_gb_standard_tax_registration_active":True,
+            "owner_authorized_stripe_gb_tax_basis":True,
+            "consumer_terms_owner_approved":True,
+            "vat_rate_bps":2000,
+            "payment_collection_authorised":True,
+        }
+        class MerchantSSM:
+            def get_parameter(self, **kw):
+                if kw.get("Name")=="/synthetic/merchant":
+                    return {"Parameter":{"Value":json.dumps(flags)}}
+                return fake.get_parameter(**kw)
+        try:
+            PORTAL.OWNER_ATTESTATION_PARAMETER="/synthetic/merchant"
+            PORTAL.SSM=MerchantSSM()
+            quote=json.loads(fake.get_parameter()["Parameter"]["Value"])
+            quote["owner_retail_sale_authorised"]=True
+            self.assertTrue(PORTAL.retail_sale_authorised(quote))
+            for field in ("stripe_gb_standard_tax_registration_active",
+                          "owner_authorized_stripe_gb_tax_basis",
+                          "consumer_terms_owner_approved",
+                          "payment_collection_authorised",
+                          "owner_direct_fulfilment_authorised"):
+                value=flags.pop(field)
+                self.assertFalse(PORTAL.retail_sale_authorised(quote),field)
+                flags[field]=value
+            flags["vat_rate_bps"]=0
+            self.assertFalse(PORTAL.retail_sale_authorised(quote))
+            self.assertNotIn("vat_number",json.dumps(flags).lower())
+        finally:
+            PORTAL.OWNER_ATTESTATION_PARAMETER=prior
+            PORTAL.SSM=fake
+
     def test_nutraxin_public_site_credentials_cors_and_preflight(self):
         e=self.event("/api/retail/checkout","OPTIONS",origin="https://novapharmhealthcare.com")
         r=PORTAL.handler(e,None)
