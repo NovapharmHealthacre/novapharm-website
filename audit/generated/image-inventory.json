@@ -1203,10 +1203,14 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 4,
+      "usageCount": 7,
+      "referenceCount": 8,
       "usageFiles": [
+        "apps/portal/components/distribution-brand.tsx",
+        "apps/portal/scripts/sync-public-assets.mjs",
+        "apps/portal/test/distribution-brand.test.ts",
         "creative-assets/asset-register.json",
+        "docs/commerce/novapharm-distribution-portal-brand-2026-11-14.md",
         "scripts/apply-global-distribution-foundation.mjs",
         "scripts/test-global-distribution-foundation.mjs"
       ],

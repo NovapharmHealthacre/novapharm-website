@@ -19,8 +19,8 @@ const workAreas = [
     description: "Locate qualified business customers without using consumer credentials.", prominence: "secondary" },
   { code: "employee.products", label: "Product catalogue",
     description: "Confirm exact product identity, pack and release classification.", prominence: "secondary" },
-  { code: "employee.warehouse", label: "Stock & warehouse",
-    description: "Inspect approved inventory evidence; declarations are not available-to-promise.", prominence: "secondary" },
+  { code: "employee.warehouse", label: "NovaPharm Distribution",
+    description: "Warehouse control tower for recorded stock, expiry, quality and distribution evidence.", prominence: "secondary" },
   { code: "employee.purchasing", label: "Purchasing",
     description: "Coordinate qualified suppliers, sourcing and order exceptions.", prominence: "secondary" },
   { code: "employee.finance", label: "Finance & credit",
@@ -76,7 +76,7 @@ export function EmployeeDistributionWorkspace({ moduleCode }: Readonly<{ moduleC
   if (moduleCode === "employee.dashboard") {
     return <section className="distribution-employee" aria-labelledby="distribution-employee-title">
       <header className="distribution-employee-hero">
-        <p className="distribution-employee-overline">NOVAPHARM / DISTRIBUTION OPERATIONS</p>
+        <p className="distribution-employee-overline">NOVAPHARM DISTRIBUTION / OPERATIONS</p>
         <h1 id="distribution-employee-title">One network. Clear decisions.</h1>
         <p>Customers, products, procurement and fulfilment. A single operational workspace,
           with accountable approvals at every step.</p>
@@ -104,7 +104,7 @@ export function EmployeeDistributionWorkspace({ moduleCode }: Readonly<{ moduleC
   if (moduleCode === "employee.warehouse") {
     return <section className="distribution-employee" aria-labelledby="employee-wms-title">
       <header className="distribution-employee-hero distribution-employee-hero-small">
-        <p className="distribution-employee-overline">NOVAPHARM / WAREHOUSE CONTROL TOWER</p>
+        <p className="distribution-employee-overline">NOVAPHARM DISTRIBUTION / WAREHOUSE CONTROL TOWER</p>
         <h1 id="employee-wms-title">Warehouse &amp; Inventory</h1>
         <p>Every batch. Accounted for. One view across warehouse evidence, quality holds, expiry exposure
           and inventory movements. Clarity before action.</p>
@@ -160,7 +160,7 @@ export function EmployeeDistributionWorkspace({ moduleCode }: Readonly<{ moduleC
   if (moduleCode === "employee.orders") {
     return <section className="distribution-employee" aria-labelledby="employee-telesales-title">
       <header className="distribution-employee-hero distribution-employee-hero-small">
-        <p className="distribution-employee-overline">NOVAPHARM / CUSTOMER DISTRIBUTION</p>
+        <p className="distribution-employee-overline">NOVAPHARM DISTRIBUTION / CUSTOMER ORDERS</p>
         <h1 id="employee-telesales-title">Telesales, without friction.</h1>
         <p>One assisted-order process, aligned with the customer's own account.
           Every request must be verified before it becomes an order.</p>
