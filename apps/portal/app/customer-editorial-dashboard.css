@@ -171,3 +171,27 @@
     font-size:.75rem;padding:7px 10px;height:34px;min-height:34px
   }
 }
+
+/* Small phones: let the approved product photographs breathe and protect
+   navigation/sign-out against 320px-wide screens. */
+@media(max-width:550px){
+  .customer-editorial-dashboard .customer-editorial-products{
+    min-height:460px;display:block
+  }
+  .customer-editorial-dashboard .customer-editorial-products .customer-editorial-feature-copy{
+    max-width:100%;min-height:235px
+  }
+  .customer-editorial-dashboard .customer-editorial-products .customer-editorial-feature-copy>a{
+    margin-top:16px;padding-top:0
+  }
+  .customer-editorial-dashboard .customer-editorial-packshots{
+    width:84%;height:43%;right:8%;bottom:9px
+  }
+}
+@media(max-width:390px){
+  .customer-editorial-dashboard .workspace-topbar{padding:12px;column-gap:8px}
+  .customer-editorial-dashboard .workspace-topbar>.portal-brand{width:132px}
+  .customer-editorial-dashboard .user-summary{gap:5px}
+  .customer-editorial-dashboard .user-summary button,
+  .customer-editorial-dashboard .user-summary .icon-command{padding:6px 8px;font-size:.7rem}
+}
