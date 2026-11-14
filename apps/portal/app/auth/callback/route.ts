@@ -12,14 +12,14 @@ import {
   requestFounderPrivateSession,
 } from "../../../../../src/core/intelligence-founder-private-session-bridge.mjs";
 import {
-  checkInternalPilotUnenrolled,
-  createInternalPilotMfaCookie,
-} from "../../../../../src/core/intelligence-internal-pilot-mfa.mjs";
-import {
   checkFounderEnrolled,
   checkFounderUnenrolled,
   createFounderMfaCookie,
 } from "../../../../../src/core/intelligence-founder-totp-enrolment.mjs";
+import {
+  checkInternalPilotUnenrolled,
+  createInternalPilotMfaCookie,
+} from "../../../../../src/core/intelligence-internal-pilot-mfa.mjs";
 
 export const dynamic = "force-dynamic";
 
