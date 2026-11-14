@@ -1135,5 +1135,82 @@ class PortalSecurityTests(unittest.TestCase):
             PORTAL.session,PORTAL.TABLE=previous_session,previous_table
 
 
+
+    def test_repeat_request_history_is_trade_approved_and_partition_scoped(self):
+        old_session,old_table,old_groups=PORTAL.session,PORTAL.TABLE,COGNITO.groups
+        PORTAL.session=lambda event: {"username":"approved","sub":"tenant-A","email":"approved@example.invalid"}
+        COGNITO.groups=[PORTAL.APPROVED_GROUP]
+        class ScopedHistory:
+            def query(self,**kw):
+                expected=("and",("eq","pk","USER#tenant-A"),("begins_with","sk","RQ#"))
+                if kw.get("KeyConditionExpression")!=expected:
+                    raise AssertionError("Request history accessed outside account or unbounded sort key")
+                if kw.get("Limit")!=20 or kw.get("ConsistentRead") is not True:
+                    raise AssertionError("Expected bounded, consistent account query")
+                return {"Items":[{"pk":"USER#tenant-A","sk":"RQ#original",
+                    "receipt_id":"NPQ-original","status":"PENDING_MANUAL_REVIEW",
+                    "created_at":1700000000,"lines":[
+                        {"sku":"NUT-UK-VD3-T120","quantity":2,"collection":"nutraxin"},
+                        {"sku":"ESCO-CAT-0001","quantity":3,"collection":"esco"}]},
+                    {"pk":"USER#tenant-A","sk":"CASE#not-an-order",
+                    "receipt_id":"NPS-case","lines":[{"sku":"NUT-UK-VD3-T120","quantity":1}]}]}
+        PORTAL.TABLE=ScopedHistory()
+        try:
+            response=PORTAL.handler(self.event("/api/customer/quote-requests"),None)
+            self.assertEqual(response["statusCode"],200)
+            data=json.loads(response["body"])
+            self.assertEqual(len(data["requests"]),1)
+            record=data["requests"][0]
+            self.assertEqual(record["receipt_id"],"NPQ-original")
+            self.assertEqual(record["lines"],[
+                {"sku":"NUT-UK-VD3-T120","quantity":2},
+                {"sku":"ESCO-CAT-0001","quantity":3}])
+            self.assertFalse(record["financially_binding"])
+            self.assertTrue(record["price_and_availability_revalidated_on_new_request"])
+            self.assertNotIn("payment_intent",response["body"])
+            self.assertNotIn("tenant-B",response["body"])
+        finally:
+            PORTAL.session,PORTAL.TABLE,COGNITO.groups=old_session,old_table,old_groups
+
+    def test_repeat_request_never_bypasses_trade_approval_or_customer_identity(self):
+        old_session,old_groups,old_table=PORTAL.session,COGNITO.groups,PORTAL.TABLE
+        PORTAL.session=lambda event: {"username":"approved","sub":"tenant-A"}
+        COGNITO.groups=[]
+        class FailIfQueried:
+            def query(self,**kw):raise AssertionError("Unapproved account accessed request database")
+        PORTAL.TABLE=FailIfQueried()
+        try:
+            self.assertEqual(PORTAL.handler(self.event("/api/customer/quote-requests"),None)["statusCode"],403)
+            COGNITO.groups=[PORTAL.APPROVED_GROUP]
+            COGNITO.verified_email=False
+            self.assertEqual(PORTAL.handler(self.event("/api/customer/quote-requests"),None)["statusCode"],403)
+            COGNITO.verified_email=True
+            PORTAL.session=lambda event: None
+            self.assertEqual(PORTAL.handler(self.event("/api/customer/quote-requests"),None)["statusCode"],401)
+        finally:
+            PORTAL.session,COGNITO.groups,PORTAL.TABLE=old_session,old_groups,old_table
+            COGNITO.verified_email=True
+
+    def test_repeat_request_is_visible_and_requires_fresh_submission(self):
+        old_session=PORTAL.session
+        PORTAL.session=lambda event: {"username":"verified","sub":"tenant-A",
+                                     "email":"customer@example.invalid"}
+        try:
+            page=PORTAL.handler(self.event("/portal/products/"),None)
+            self.assertEqual(page["statusCode"],200)
+            self.assertIn('id="shop-repeat"',page["body"])
+            self.assertIn('id="shop-repeat-list"',page["body"])
+            script=PORTAL.handler(self.event("/customer-products.js"),None)
+            self.assertEqual(script["statusCode"],200)
+            code=script["body"]
+            self.assertIn('fetch("/api/customer/quote-requests"',code)
+            self.assertIn("async function loadRepeatRequests()",code)
+            self.assertIn("Review the current references and quantities",code)
+            self.assertIn("submit.addEventListener",code)
+            self.assertNotIn("innerHTML",code)
+        finally:
+            PORTAL.session=old_session
+
+
 if __name__ == "__main__":
     unittest.main()
