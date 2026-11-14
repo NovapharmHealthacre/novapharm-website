@@ -4,6 +4,8 @@ import { tmpdir } from "node:os";
 
 const tempDir = mkdtempSync(join(tmpdir(), "novapharm-domain-"));
 process.env.DATABASE_PATH = join(tempDir, "validation.sqlite");
+if (process.env.NODE_ENV === "production") throw new Error("Domain fixture may not run in production mode.");
+process.env.NOVAPHARM_DOMAIN_VALIDATION_MODE = "true";
 
 const {
   activateCustomer,
