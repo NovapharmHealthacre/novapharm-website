@@ -65,3 +65,11 @@ test("native IAM gateway denial is narrowly bounded when AWS omits Lambda cache 
   assert.match(source, /cache-control:\.\*no-store/iu);
   assert.doesNotMatch(source, /authorizationType: NONE|BYPASS_AUTH|ALLOW_ANONYMOUS/u);
 });
+
+test("daily live ingress acceptance remains read-only and never self-activates a customer release", () => {
+  assert.match(source, /schedule:\s*\n\s*# Daily no-credential live ingress smoke; never deploys or enables customer release\.\s*\n\s*- cron: '17 5 \* \* \*'/u);
+  assert.match(source, /permissions:\s*\n\s*contents: read/u);
+  assert.doesNotMatch(source, /\b(?:workflow_run|repository_dispatch|pull_request_target):/u);
+  assert.doesNotMatch(source, /aws (?:lambda update-function|ecs update-service|cloudformation deploy)|stripe\.com\/v1|github\.com\/repos\/[^ ]+\/dispatches/u);
+  assert.match(source, /Production acceptance still requires a credentialed board session/u);
+});
