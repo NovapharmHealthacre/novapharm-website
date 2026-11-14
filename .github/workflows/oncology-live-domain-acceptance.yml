@@ -38,12 +38,14 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          oncology_css_sha256="$(sha256sum assets/css/oncology-hope-v2.css)"
+          oncology_css_sha256="${oncology_css_sha256%% *}"
           cache="oncology-live-$EXPECTED_SHA-$(date +%s)"
           curl --fail --silent --show-error --location --max-time 25 \
             -H 'Cache-Control: no-cache, no-store' \
             "https://novapharmhealthcare.com/oncology/?$cache" \
             -o /tmp/novapharm-live-oncology.html
-          grep -Fq 'href="/assets/css/oncology-hope-v2.css?v=20261113-hope-responsive-v7"' \
+          grep -Fq "href=\"/assets/css/oncology-hope-v2.css?v=20261113-hope-responsive-v7&amp;sha256=${oncology_css_sha256}\"" \
             /tmp/novapharm-live-oncology.html
           curl --fail --silent --show-error --location --max-time 25 \
             -H 'Cache-Control: no-cache, no-store' \

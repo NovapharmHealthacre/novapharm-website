@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 
@@ -7,6 +8,8 @@ const read = (p) => readFileSync(resolve(root, p), "utf8");
 const master = read("src/content/nutraxin-showcase.html").trim();
 const page = read("products/nutraxin/index.html");
 const css = read("assets/css/nutraxin-lineup.css");
+const publicNutraxinCssSha256 = createHash("sha256").update(readFileSync(resolve(root, "assets/css/nutraxin-lineup.css"))).digest("hex");
+const expectedNutraxinCssHref = `href="/assets/css/nutraxin-lineup.css?v=20261111-forensic-design-v3&amp;sha256=${publicNutraxinCssSha256}"`;
 const script = read("scripts/apply-corporate-product-discipline.mjs");
 const register = JSON.parse(read("apps/corporate/data/nutraxin-product-register.json"));
 const corporateRenderer = read("apps/corporate/components/page-renderer.tsx");
@@ -43,7 +46,7 @@ for (let index = 0; index < originalCards.length; index++) {
 assert.equal((page.match(/class="nx-product-card-shell"/g) || []).length, 19, "Exactly one publisher wrapper per approved catalogue card");
 assert.equal((page.match(/class="nx-product-publisher"/g) || []).length, 19, "Exactly one publisher evidence reference per product");
 assert.ok(page.includes(master.slice(0, master.indexOf('<a class="nx-product-card"'))), "Published introduction must preserve the approved master layout");
-assert.ok(page.includes('href="/assets/css/nutraxin-lineup.css"'),"Scoped CSS must load");
+assert.ok(page.includes(expectedNutraxinCssHref), "Published Nutraxin stylesheet must match its exact CSS bytes and approved version");
 assert.ok(script.includes('const original = read("src/content/nutraxin-showcase.html")'),"Site build must preserve the master layout");
 assert.ok(script.includes('href="/assets/css/nutraxin-lineup.css"'),"Site build must preserve the scoped stylesheet");
 assert.ok(script.includes('<div class="nx-product-card-shell">${card}<div class="nx-product-publisher">'), "Site build must preserve official publisher evidence alongside every original card");

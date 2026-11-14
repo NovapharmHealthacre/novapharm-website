@@ -1290,8 +1290,8 @@
         "high"
       ],
       "lcpRelevance": true,
-      "usageCount": 86,
-      "referenceCount": 216,
+      "usageCount": 88,
+      "referenceCount": 218,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "404.html",
@@ -1367,8 +1367,10 @@
         "scripts/enhance-seo-authority.mjs",
         "scripts/programme/validate-brand-assets.mjs",
         "scripts/test-owner-corrections.mjs",
+        "scripts/test-public-visual-versioning.mjs",
         "scripts/validate-app.mjs",
         "scripts/validate-site.mjs",
+        "scripts/version-public-visual-assets.mjs",
         "seo/generated/entity-register.json",
         "seo/structured-data-register.md",
         "service-unavailable/index.html",
@@ -2383,11 +2385,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
         "apps/corporate/components/capabilities-editorial.tsx",
-        "scripts/apply-capabilities-editorial.mjs"
+        "scripts/apply-capabilities-editorial.mjs",
+        "scripts/test-corporate-responsive-repairs.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
@@ -2423,11 +2426,12 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 2,
-      "referenceCount": 2,
+      "usageCount": 3,
+      "referenceCount": 3,
       "usageFiles": [
         "apps/corporate/components/capabilities-editorial.tsx",
-        "scripts/apply-capabilities-editorial.mjs"
+        "scripts/apply-capabilities-editorial.mjs",
+        "scripts/test-corporate-responsive-repairs.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,

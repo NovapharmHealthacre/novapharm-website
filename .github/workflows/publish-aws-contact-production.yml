@@ -179,7 +179,9 @@ jobs:
           test -s _site/assets/js/intelligence-workspace-embedded.js
           grep -Fq 'id="npi-exp-shell"' _site/technology/index.html
           grep -Fq 'src="/assets/js/intelligence-workspace-embedded.js"' _site/technology/index.html
-          grep -Fq 'href="/assets/css/intelligence-workspace-embedded.css"' _site/technology/index.html
+          technology_css_sha256="$(sha256sum _site/assets/css/intelligence-workspace-embedded.css)"
+          technology_css_sha256="${technology_css_sha256%% *}"
+          grep -Fq "href=\"/assets/css/intelligence-workspace-embedded.css?v=20261111-forensic-design-v3&amp;sha256=${technology_css_sha256}\"" _site/technology/index.html
           grep -Fq 'function renderSupplyMode(mode)' _site/assets/js/intelligence-workspace-embedded.js
           grep -Fq 'ILLUSTRATIVE PRODUCT EXPERIENCE' _site/assets/js/intelligence-workspace-embedded.js
           grep -Fq 'npi-workspace-live-experience' _site/assets/css/intelligence-workspace-embedded.css
@@ -189,10 +191,12 @@ jobs:
           grep -Fq 'US regulatory and trial searches send the medicine term' _site/technology/index.html
           grep -Fq '5pcszvyqm1.execute-api.eu-north-1.amazonaws.com' _site/assets/js/intelligence-live-research.js
           # Three commercial routes must be included in the same verified release.
+          distribution_css_sha256="$(sha256sum _site/assets/css/global-distribution-editorial.css)"
+          distribution_css_sha256="${distribution_css_sha256%% *}"
           for route in distribution market-access markets; do
             test -s "_site/$route/index.html"
             grep -Fq 'Regulated pharmaceutical wholesale supply has not commenced' "_site/$route/index.html"
-            grep -Fq 'href="/assets/css/global-distribution-editorial.css"' "_site/$route/index.html"
+            grep -Fq "href=\"/assets/css/global-distribution-editorial.css?v=20261111-forensic-design-v3&amp;sha256=${distribution_css_sha256}\"" "_site/$route/index.html"
             grep -Fq "https://novapharmhealthcare.com/$route/" _site/sitemap.xml
           done
           # Distribution's premium release must not silently fall back to the old page.
@@ -229,7 +233,9 @@ jobs:
           grep -Fq 'class="ncap-earth-illustration" src="data:image/webp;base64,' _site/capabilities/index.html
           grep -Fq 'class="ncap-earth-illustration" src="data:image/webp;base64,UklGRooEA' _site/capabilities/index.html
           grep -Fq 'Start with one decision.' _site/capabilities/index.html
-          grep -Fq 'href="/assets/css/capabilities-editorial.css?v=20261111-capabilities-approved-photo-v5"' _site/capabilities/index.html
+          capabilities_css_sha256="$(sha256sum _site/assets/css/capabilities-editorial.css)"
+          capabilities_css_sha256="${capabilities_css_sha256%% *}"
+          grep -Fq "href=\"/assets/css/capabilities-editorial.css?v=20261111-capabilities-approved-photo-v5&amp;sha256=${capabilities_css_sha256}\"" _site/capabilities/index.html
           test -s _site/assets/css/capabilities-editorial.css
           grep -Fq '@media print' _site/assets/css/capabilities-editorial.css
           # Exact approved homepage image and styling must be in the artifact.
@@ -240,7 +246,9 @@ jobs:
           # The approved Oncology design and its exact mobile CSS are deployment prerequisites.
           node scripts/test-oncology-content.mjs
           test -s _site/assets/css/oncology-hope-v2.css
-          grep -Fq 'href="/assets/css/oncology-hope-v2.css?v=20261113-hope-responsive-v7"' _site/oncology/index.html
+          oncology_css_sha256="$(sha256sum _site/assets/css/oncology-hope-v2.css)"
+          oncology_css_sha256="${oncology_css_sha256%% *}"
+          grep -Fq "href=\"/assets/css/oncology-hope-v2.css?v=20261113-hope-responsive-v7&amp;sha256=${oncology_css_sha256}\"" _site/oncology/index.html
           grep -Fq 'A Hope for<br>Tomorrow.' _site/oncology/index.html
           ! grep -Fq 'Illustrative creative image. No patient, treatment result or NovaPharm facility is depicted.' _site/oncology/index.html
           grep -Fq 'grid-template-columns:repeat(3,minmax(220px,1fr))' _site/assets/css/oncology-hope-v2.css
@@ -280,7 +288,9 @@ jobs:
           grep -Fq 'href="/products/nutraxin/"' _site/products/index.html
           grep -Fq 'href="/products/esco/"' _site/products/index.html
           grep -Fq 'href="/products/strategic-portfolio/"' _site/products/index.html
-          grep -Fq 'href="/assets/css/products-editorial.css?v=20261111-products-layout-v4"' _site/products/index.html
+          products_css_sha256="$(sha256sum _site/assets/css/products-editorial.css)"
+          products_css_sha256="${products_css_sha256%% *}"
+          grep -Fq "href=\"/assets/css/products-editorial.css?v=20261111-products-layout-v4&amp;sha256=${products_css_sha256}\"" _site/products/index.html
           test -s _site/assets/css/products-editorial.css
           grep -Fq 'PRODUCTS UNIFIED HERO 2026-11-10' _site/assets/css/products-editorial.css
           grep -Fq 'ESCO Anand' _site/products/index.html
@@ -605,6 +615,8 @@ jobs:
       - name: Verify approved Capabilities Earth, pharmaceutical vial and layout on the live domain
         run: |
           set -euo pipefail
+          capabilities_css_sha256="$(sha256sum assets/css/capabilities-editorial.css)"
+          capabilities_css_sha256="${capabilities_css_sha256%% *}"
           for attempt in $(seq 1 18); do
             url="https://novapharmhealthcare.com/capabilities/?capabilities-$GITHUB_SHA-$attempt-$(date +%s)"
             if curl --fail --silent --show-error --location --max-time 20 \
@@ -617,7 +629,7 @@ jobs:
               && grep -Fq 'class="ncap-earth-illustration" src="data:image/webp;base64,' /tmp/novapharm-live-capabilities.html \
               && grep -Fq 'class="ncap-earth-illustration" src="data:image/webp;base64,UklGRooEA' /tmp/novapharm-live-capabilities.html \
               && grep -Fq 'Start with one decision.' /tmp/novapharm-live-capabilities.html \
-              && grep -Fq 'href="/assets/css/capabilities-editorial.css?v=20261111-capabilities-approved-photo-v5"' /tmp/novapharm-live-capabilities.html; then
+              && grep -Fq "href=\"/assets/css/capabilities-editorial.css?v=20261111-capabilities-approved-photo-v5&amp;sha256=${capabilities_css_sha256}\"" /tmp/novapharm-live-capabilities.html; then
               curl --fail --silent --show-error --max-time 20 \
                 "https://novapharmhealthcare.com/assets/css/capabilities-editorial.css?capabilities-$GITHUB_SHA" \
                 -o /tmp/novapharm-live-capabilities.css
@@ -681,6 +693,8 @@ jobs:
       - name: Verify full-scene Oncology hero and un-cropped mobile styling on live domain
         run: |
           set -euo pipefail
+          oncology_css_sha256="$(sha256sum assets/css/oncology-hope-v2.css)"
+          oncology_css_sha256="${oncology_css_sha256%% *}"
           for attempt in $(seq 1 18); do
             cache="hope-${GITHUB_SHA}-${attempt}-$(date +%s)"
             if curl --fail --silent --show-error --location --max-time 20 \
@@ -688,7 +702,7 @@ jobs:
               "https://novapharmhealthcare.com/oncology/?${cache}" -o /tmp/live-hope-oncology.html \
               && grep -Fq 'class="npoc-hero npoc-hope-hero"' /tmp/live-hope-oncology.html \
               && grep -Fq 'A Hope for<br>Tomorrow.' /tmp/live-hope-oncology.html \
-              && grep -Fq 'href="/assets/css/oncology-hope-v2.css?v=20261113-hope-responsive-v7"' /tmp/live-hope-oncology.html \
+              && grep -Fq "href=\"/assets/css/oncology-hope-v2.css?v=20261113-hope-responsive-v7&amp;sha256=${oncology_css_sha256}\"" /tmp/live-hope-oncology.html \
               && ! grep -Fq 'Illustrative creative image. No patient, treatment result or NovaPharm facility is depicted.' /tmp/live-hope-oncology.html \
               && curl --fail --silent --show-error --location --max-time 20 \
                 "https://novapharmhealthcare.com/assets/css/oncology-hope-v2.css?${cache}" -o /tmp/live-hope-oncology.css \
@@ -713,6 +727,8 @@ jobs:
       - name: Verify supplied official logo and secure header on four live pages
         run: |
           set -euo pipefail
+          bundle_css_sha256="$(sha256sum assets/css/novapharm.bundle.css)"
+          bundle_css_sha256="${bundle_css_sha256%% *}"
           verified=false
           for attempt in $(seq 1 18); do
             verified=true
@@ -726,7 +742,7 @@ jobs:
                 break
               fi
               sed -n '/<header class="site-header npd-header"/,/<\/header>/p' "$target" > /tmp/owner-final-header.html
-              if ! grep -Fq 'href="/assets/css/novapharm.bundle.css?v=20261111-forensic-design-v3"' "$target" \
+              if ! grep -Fq "href=\"/assets/css/novapharm.bundle.css?v=20261111-forensic-design-v3&amp;sha256=${bundle_css_sha256}\"" "$target" \
                 || ! grep -Fq '<picture class="brand-logo"><img src="/assets/brand/novapharm-healthcare-logo.png"' /tmp/owner-final-header.html \
                 || ! grep -Fq 'href="https://portal.novapharmhealthcare.com/"' /tmp/owner-final-header.html; then
                 verified=false
@@ -780,6 +796,10 @@ jobs:
       - name: Verify live Global Distribution, Market Access and Markets pages
         run: |
           set -euo pipefail
+          distribution_css_sha256="$(sha256sum assets/css/global-distribution-editorial.css)"
+          distribution_css_sha256="${distribution_css_sha256%% *}"
+          markets_css_sha256="$(sha256sum assets/css/markets-editorial.css)"
+          markets_css_sha256="${markets_css_sha256%% *}"
           for route in distribution market-access markets; do
             verified=false
             for attempt in $(seq 1 18); do
@@ -787,7 +807,7 @@ jobs:
               if curl --fail --silent --show-error --location --max-time 15 \
                   -H 'Cache-Control: no-cache, no-store' "$url" -o "/tmp/novapharm-$route.html" \
                 && grep -Fq 'Regulated pharmaceutical wholesale supply has not commenced' "/tmp/novapharm-$route.html" \
-                && grep -Fq 'href="/assets/css/global-distribution-editorial.css"' "/tmp/novapharm-$route.html" \
+                && grep -Fq "href=\"/assets/css/global-distribution-editorial.css?v=20261111-forensic-design-v3&amp;sha256=${distribution_css_sha256}\"" "/tmp/novapharm-$route.html" \
                 && grep -Fq "https://novapharmhealthcare.com/$route/" "/tmp/novapharm-$route.html"; then
                 verified=true
                 break
@@ -809,7 +829,7 @@ jobs:
           # is published, not the earlier soft third-party preview.
           grep -Fq 'data-markets-design="apple-photographic-approved-20261111"' /tmp/novapharm-markets.html
           grep -Fq 'iss070e075895_lrg.jpg" width="5568" height="3712"' /tmp/novapharm-markets.html
-          grep -Fq 'href="/assets/css/markets-editorial.css?v=20261111-nasa-hd-1"' /tmp/novapharm-markets.html
+          grep -Fq "href=\"/assets/css/markets-editorial.css?v=20261111-nasa-hd-1&amp;sha256=${markets_css_sha256}\"" /tmp/novapharm-markets.html
           if grep -Fq 'd2pn8kiwq2w21t.cloudfront.net' /tmp/novapharm-markets.html; then
             echo '::error::Retired soft Markets hero remains live.'
             exit 1
@@ -852,6 +872,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          technology_css_sha256="$(sha256sum assets/css/intelligence-workspace-embedded.css)"
+          technology_css_sha256="${technology_css_sha256%% *}"
           key="npi-intel-$GITHUB_SHA-$(date +%s)"
           curl --fail --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' "$LIVE_ORIGIN/technology/?$key" -o /tmp/npi-live-technology.html
           curl --fail --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' "$LIVE_ORIGIN/assets/js/intelligence-live-research.js?$key" -o /tmp/npi-live-intelligence.js
@@ -864,7 +886,7 @@ jobs:
           # interactive UI and its shipped JS/CSS on the actual custom domain.
           grep -Fq 'id="npi-exp-shell"' /tmp/npi-live-technology.html
           grep -Fq 'src="/assets/js/intelligence-workspace-embedded.js"' /tmp/npi-live-technology.html
-          grep -Fq 'href="/assets/css/intelligence-workspace-embedded.css"' /tmp/npi-live-technology.html
+          grep -Fq "href=\"/assets/css/intelligence-workspace-embedded.css?v=20261111-forensic-design-v3&amp;sha256=${technology_css_sha256}\"" /tmp/npi-live-technology.html
           curl --fail --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' "$LIVE_ORIGIN/assets/js/intelligence-workspace-embedded.js?$key" -o /tmp/npi-live-workspace-runtime.js
           curl --fail --silent --show-error --location --max-time 20 -H 'Cache-Control: no-cache' "$LIVE_ORIGIN/assets/css/intelligence-workspace-embedded.css?$key" -o /tmp/npi-live-workspace-styles.css
           grep -Fq 'function renderSupplyMode(mode)' /tmp/npi-live-workspace-runtime.js

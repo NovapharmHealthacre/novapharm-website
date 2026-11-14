@@ -12,7 +12,7 @@
   --npd-system: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --npd-container: 1200px;
   --npd-copy: 720px;
-  --npd-header: 56px;
+  --npd-header: 68px;
   --font: var(--npd-system);
   --serif: var(--npd-system);
   --container: var(--npd-container);
@@ -20,7 +20,7 @@
 }
 
 html {
-  scroll-padding-top: 112px;
+  scroll-padding-top: calc(var(--npd-header) + 56px);
   background: var(--npd-white);
 }
 
@@ -104,11 +104,18 @@ body[data-page="home"] .npd-header-inner.header-inner {
 
 .npd-global-nav.site-nav,
 body[data-page="home"] .npd-global-nav.site-nav {
+  position: static;
+  inset: auto;
   display: flex;
   align-items: stretch;
   justify-content: flex-end;
   gap: 0;
   height: var(--npd-header);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
 }
 
 .npd-global-nav.site-nav > a:not(.btn),
@@ -1754,11 +1761,13 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 760px) {
   :root {
-    --npd-header: 54px;
+    --npd-header: 60px;
   }
+}
 
+@media (max-width: 600px) {
   .container {
     width: calc(100% - 44px);
   }

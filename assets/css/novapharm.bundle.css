@@ -6542,8 +6542,9 @@ body[data-page="home"] .final-cta h2 { max-width: 840px; }
   color: var(--np-text);
 }
 
-:focus-visible {
-  outline: 3px solid rgba(180, 35, 46, 0.36);
+/* High-contrast keyboard focus: never rely on a translucent outline against white. */
+:where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 3px solid #0a66c2;
   outline-offset: 3px;
 }
 
@@ -7045,7 +7046,7 @@ body[data-page="cro"] .cro-leadership-proof {
   --npd-system: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --npd-container: 1200px;
   --npd-copy: 720px;
-  --npd-header: 56px;
+  --npd-header: 68px;
   --font: var(--npd-system);
   --serif: var(--npd-system);
   --container: var(--npd-container);
@@ -7053,7 +7054,7 @@ body[data-page="cro"] .cro-leadership-proof {
 }
 
 html {
-  scroll-padding-top: 112px;
+  scroll-padding-top: calc(var(--npd-header) + 56px);
   background: var(--npd-white);
 }
 
@@ -7137,11 +7138,18 @@ body[data-page="home"] .npd-header-inner.header-inner {
 
 .npd-global-nav.site-nav,
 body[data-page="home"] .npd-global-nav.site-nav {
+  position: static;
+  inset: auto;
   display: flex;
   align-items: stretch;
   justify-content: flex-end;
   gap: 0;
   height: var(--npd-header);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
 }
 
 .npd-global-nav.site-nav > a:not(.btn),
@@ -8529,8 +8537,8 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-footer-notices p {
   margin: 10px 0;
   color: var(--npd-muted);
-  font-size: 11px;
-  line-height: 1.45;
+  font-size: 12px;
+  line-height: 1.55;
 }
 
 .npd-footer-bottom {
@@ -8541,7 +8549,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   padding-top: 18px;
   border-top: 1px solid var(--npd-line);
   color: var(--npd-muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .npd-footer-bottom a {
@@ -8787,11 +8795,13 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 760px) {
   :root {
-    --npd-header: 54px;
+    --npd-header: 60px;
   }
+}
 
+@media (max-width: 600px) {
   .container {
     width: calc(100% - 44px);
   }
@@ -9046,6 +9056,11 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px 20px;
   }
+  .npd-footer-legal :where(a, button) {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
 
   .npd-footer-bottom {
     flex-direction: column;
@@ -9080,6 +9095,29 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 
   .npd-product-card:hover {
     transform: none;
+  }
+}
+
+/* Respect platform accessibility choices without changing normal brand presentation. */
+@media (prefers-reduced-transparency: reduce) {
+  .npd-header.site-header,
+  .npd-local-nav,
+  .npd-global-nav.site-nav {
+    background: #ffffff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --npd-text: #252b30;
+    --npd-muted: #394047;
+    --npd-line: #858c93;
+  }
+
+  .npd-footer-bottom {
+    font-size: 12px;
   }
 }
 
@@ -9253,7 +9291,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   }
 }
 
-/* Source: corporate-product-discipline.css / refreshed global navigation */
+
 /* 2026-11 Apple-inspired NovaPharm global navigation; no third-party assets. */
 @media (min-width: 1181px) {
   .npd-header.site-header { overflow: visible; }
@@ -9338,3 +9376,1514 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   .npd-header .npd-mega { background: #fff; backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
 @media print { .npd-mega { display: none !important; } }
+
+/* External Nutraxin catalogue references: publisher information, not NovaPharm stock or sale. */
+.npd-product-detail .npd-publisher-action {margin-top:18px;font-size:.89rem;line-height:1.5}
+.npd-product-detail .npd-publisher-action a {display:inline-block;color:#3f4248;text-decoration:underline;text-underline-offset:3px;font-weight:600}
+.npd-product-detail .npd-publisher-action p {font-size:.76rem;color:#62656a;max-width:50ch;margin:9px 0 0}
+
+
+/* Owner-approved corporate identity and direct secure access | 2026-11-10.
+   Use the supplied red master PNG, not a glyph-dependent vector fallback. */
+.npd-header .brand .brand-logo img {
+  display:block;
+  width:100%;
+  height:auto;
+  object-fit:contain;
+  object-position:left center;
+}
+.npd-global-nav.site-nav > a[href="https://portal.novapharmhealthcare.com/"] {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  align-self:center;
+  min-height:35px;
+  margin-left:10px;
+  padding:0 15px;
+  border:1px solid #d6d6db;
+  border-radius:999px;
+  background:#fff;
+  color:#1d1d1f;
+  font-weight:610;
+}
+.npd-global-nav.site-nav > a[href="https://portal.novapharmhealthcare.com/"]:hover,
+.npd-global-nav.site-nav > a[href="https://portal.novapharmhealthcare.com/"]:focus-visible {
+  background:#f5f5f7;
+  border-color:#99999f;
+  color:#111113;
+}
+@media (max-width:1050px) {
+  .npd-global-nav.site-nav > a[href="https://portal.novapharmhealthcare.com/"] {
+    margin-left:0;
+    padding:12px 18px;
+    border-radius:12px;
+    min-height:44px;
+  }
+}
+
+/* Forensic static consent: non-obscuring, keyboard-accessible notice.
+   Keep consent before main; no banners covering contact fields or oncology copy. */
+.cookie-banner {
+  position: relative;
+  inset: auto;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 18px 24px;
+  border: 0;
+  border-bottom: 1px solid #dfe1e5;
+  border-radius: 0;
+  background: #f5f5f7;
+  box-shadow: none;
+}
+.cookie-banner-inner {
+  max-width: 1200px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 22px;
+}
+.cookie-banner .cookie-actions { align-items: center; }
+.cookie-banner .cookie-actions .btn { min-height: 44px; }
+@media (max-width: 900px) {
+  .cookie-banner-inner { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .cookie-banner { padding: 15px 20px; }
+}
+@media (max-width: 620px) {
+  .cookie-banner { padding: 14px 16px; }
+  .cookie-banner .cookie-actions { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .cookie-banner .cookie-actions .btn:last-child { grid-column: 1 / -1; }
+}
+
+/* Source: contact-premium.css */
+/* NovaPharm Contact — premium, accessible, privacy-first corporate routing.
+   Shared by the public static build and the managed Corporate application.
+   Independent of Apple trademarks, fonts or copyrighted UI assets. */
+.np-contact { --np-contact-ink: #1d1d1f; --np-contact-muted: #5f6168; --np-contact-line: #dcdde1; --np-contact-blue: #1559a8; --np-contact-soft: #f5f5f7; color: var(--np-contact-ink); background: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+.np-contact * { box-sizing: border-box; }
+.np-contact h1, .np-contact h2, .np-contact h3 { color: var(--np-contact-ink); font-family: inherit; font-weight: 650; line-height: 1.12; letter-spacing: 0; }
+.np-contact a { text-underline-offset: .2em; }
+.np-contact .np-contact-shell { width: min(1180px, calc(100% - 48px)); margin-inline: auto; }
+.np-contact-hero { padding: clamp(76px, 11vw, 146px) 0 clamp(64px, 8vw, 110px); background: var(--np-contact-soft); text-align: center; }
+.np-contact-kicker { display: block; margin: 0 0 18px; color: #53565c; font-size: 12px; font-weight: 710; letter-spacing: .1em; text-transform: uppercase; }
+.np-contact-hero h1 { max-width: 1000px; margin: 0 auto 20px; font-size: clamp(43px, 6.4vw, 80px); }
+.np-contact-lead { max-width: 690px; margin: 0 auto; color: #56585d; font-size: clamp(17px, 1.85vw, 22px); line-height: 1.5; }
+.np-contact-topics { padding: clamp(72px, 8vw, 116px) 0; }
+.np-contact-sectionhead { max-width: 710px; margin-bottom: 42px; }
+.np-contact-sectionhead h2 { margin: 0 0 14px; font-size: clamp(32px, 3.5vw, 49px); }
+.np-contact-sectionhead p { max-width: 630px; margin: 0; color: var(--np-contact-muted); font-size: 17px; line-height: 1.6; }
+.np-contact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.np-contact-topic { display: flex; flex-direction: column; min-height: 206px; gap: 13px; padding: clamp(24px, 3vw, 36px); color: inherit; background: var(--np-contact-soft); border: 1px solid transparent; border-radius: 20px; text-decoration: none; transition: transform 220ms ease, border-color 220ms ease, background 220ms ease; }
+.np-contact-topic:hover { transform: translateY(-3px); background: #fff; border-color: #cbd1d9; }
+.np-contact-topic:focus-visible { outline: 3px solid #1559a8; outline-offset: 4px; }
+.np-contact-topic strong { display: block; font-size: clamp(20px, 2.05vw, 27px); font-weight: 650; letter-spacing: 0; line-height: 1.2; }
+.np-contact-topic .np-contact-topic-copy { display: block; max-width: 40ch; color: #51545a; font-size: 15px; line-height: 1.55; }
+.np-contact-topic .np-contact-topic-action { display: inline-block; margin-top: auto; color: var(--np-contact-blue); font-weight: 650; font-size: 14px; }
+.np-contact-destination { padding: 80px 0 100px; background: #fff; border-top: 1px solid var(--np-contact-line); }
+.np-contact-destination-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(28px, 7vw, 98px); align-items: start; }
+.np-contact-destination h2 { margin: 0 0 16px; font-size: clamp(30px, 3.2vw, 44px); }
+.np-contact-destination p { font-size: 16px; line-height: 1.6; color: var(--np-contact-muted); }
+.np-contact-email-panel, .np-contact-form-panel { padding: clamp(26px, 4vw, 42px); background: var(--np-contact-soft); border-radius: 22px; }
+.np-contact-email-panel h3, .np-contact-form-panel h3 { margin: 0 0 12px; font-size: 27px; }
+.np-contact-email-panel p { margin-bottom: 26px; }
+.np-contact-primary { display: inline-flex; justify-content: center; align-items: center; min-height: 48px; padding: 12px 22px; border-radius: 100px; background: #1559a8; color: #fff!important; text-decoration: none; font-size: 15px; font-weight: 670; transition: background 160ms ease; }
+.np-contact-primary:hover { background: #104781; }
+.np-contact-primary:focus-visible { outline: 3px solid #1559a8; outline-offset: 4px; }
+.np-contact-email-address { display: block; overflow-wrap: anywhere; margin-top: 18px; font-size: 14px; }
+.np-contact-small { margin-top: 16px; font-size: 13px!important; color: #606369!important; }
+.np-contact-safety { padding: 32px 0 70px; background: #fff; border-top: 1px solid var(--np-contact-line); }
+.np-contact-safety-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(28px, 5vw, 70px); }
+.np-contact-safety h3 { margin: 0 0 13px; font-size: 21px; }
+.np-contact-safety p { margin: 0; font-size: 15px; line-height: 1.65; color: #555a60; }
+.np-contact-safety a { color: var(--np-contact-blue); }
+.np-contact-form-panel .contact-workflow { max-width: none; }
+.np-contact-form-panel .contact-form { display: grid; gap: 20px; }
+.np-contact-form-panel .field-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+.np-contact-form-panel .contact-form label { min-width: 0; }
+.np-contact-form-panel .contact-form label > span { display: block; margin: 0 0 7px; font-size: 14px; font-weight: 620; }
+.np-contact-form-panel .contact-form :is(input:not([type="checkbox"]), select, textarea) { display: block; width: 100%; min-height: 49px; padding: 12px 14px; border: 1px solid #aeb5bf; border-radius: 11px; background: #fff; color: #1d1d1f; font: inherit; font-size: 15px; }
+.np-contact-form-panel .contact-form textarea { min-height: 142px; resize: vertical; }
+.np-contact-form-panel .contact-form :is(input, select, textarea):focus-visible { border-color: #1559a8; outline: 3px solid rgba(21,89,168,.22); outline-offset: 1px; }
+.np-contact-form-panel .contact-form .check-row { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.5; }
+.np-contact-form-panel .contact-form .check-row input { margin-top: 4px; flex: 0 0 auto; }
+.np-contact-form-panel .contact-form .check-row span { display: inline; font-weight: 400; }
+.np-contact-form-panel .contact-form .button-primary { min-height: 48px; width: fit-content; padding: 10px 25px; border: 0; border-radius: 30px; background: #1559a8; color: #fff; cursor: pointer; }
+.np-contact-form-panel .contact-form .button-primary:disabled { opacity: .55; cursor: wait; }
+.np-contact-form-panel .form-status { margin-top: 12px; }
+.np-contact-form-panel .field-note { font-size: 13px; line-height: 1.55; color: #565a60; }
+@media (max-width: 850px) { .np-contact-grid, .np-contact-destination-layout { grid-template-columns: 1fr; } .np-contact-topic { min-height: 160px; } .np-contact-safety-grid { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .np-contact .np-contact-shell { width: calc(100% - 36px); } .np-contact-hero { padding-block: 75px 68px; } .np-contact-topics { padding-block: 66px; } .np-contact-grid { gap: 12px; } .np-contact-topic { padding: 24px; border-radius: 16px; } .np-contact-destination { padding-block: 64px; } .np-contact-email-panel, .np-contact-form-panel { border-radius: 18px; } .np-contact-form-panel .field-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .np-contact-topic, .np-contact-primary { transition: none; } .np-contact-topic:hover { transform: none; } }
+
+
+/*
+ * Owner-approved contact reference, 7 November 2026.
+ * Scoped to the contact route. Public email composition is never presented
+ * as an accepted server submission. Managed submissions retain verification.
+ */
+.np-contact.np-contact-reference {
+  --np-contact-ink: #1d1d1f;
+  --np-contact-muted: #6e6e73;
+  --np-contact-line: #c5c6cc;
+  --np-contact-soft: #f5f5f7;
+  --np-contact-blue: #006fe6;
+  width: 100%;
+  overflow: clip;
+  background: #fff;
+  color: var(--np-contact-ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+.np-contact-reference * { box-sizing: border-box; }
+.np-contact-reference .np-contact-reference-shell {
+  width: min(914px, calc(100% - 48px));
+  margin-inline: auto;
+}
+.np-contact-reference-hero {
+  padding: clamp(64px, 7vw, 82px) 0 62px;
+  text-align: center;
+  background: #fff;
+}
+.np-contact-reference-kicker {
+  display: block;
+  margin: 0 0 15px;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.4;
+  color: #61636b;
+}
+.np-contact-reference .np-contact-reference-hero h1 {
+  max-width: none;
+  margin: 0;
+  color: var(--np-contact-ink);
+  font-family: inherit;
+  font-weight: 720;
+  font-size: clamp(47px, 5.1vw, 70px);
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+.np-contact-reference-hero p {
+  margin: 20px auto 0;
+  max-width: 640px;
+  color: var(--np-contact-muted);
+  font-size: clamp(18px, 2vw, 23px);
+  font-weight: 400;
+  line-height: 1.34;
+  letter-spacing: 0;
+}
+.np-contact-reference-content { padding: 0 0 55px; background: #fff; }
+.np-contact-reference-heading { margin: 0 0 25px; }
+.np-contact-reference .np-contact-reference-heading h2 {
+  margin: 0 0 4px;
+  color: var(--np-contact-ink);
+  font-family: inherit;
+  font-size: clamp(23px, 2.1vw, 26px);
+  font-weight: 690;
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+.np-contact-reference-heading p {
+  margin: 0;
+  max-width: none;
+  color: var(--np-contact-muted);
+  font-size: 15px;
+  line-height: 1.55;
+}
+.np-contact-reference-form {
+  display: block;
+  width: 100%;
+  max-width: none;
+}
+.np-contact-reference-grid,
+.np-contact-reference-extra {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 20px;
+  width: 100%;
+}
+.np-contact-reference-extra { margin-top: 18px; }
+.np-contact-reference .np-contact-reference-field {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  min-height: 61px;
+  margin: 0;
+  padding: 8px 16px;
+  border: 1px solid var(--np-contact-line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--np-contact-ink);
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.np-contact-reference .np-contact-reference-field:focus-within {
+  border-color: #006fe6;
+  box-shadow: 0 0 0 3px rgba(0, 111, 230, 0.13);
+}
+.np-contact-reference .np-contact-reference-field > span {
+  display: block;
+  margin: 0 0 1px;
+  color: #666972;
+  font-size: 11px;
+  line-height: 1.45;
+  font-weight: 450;
+  letter-spacing: 0;
+}
+.np-contact-reference .np-contact-reference-field :is(input, select, textarea) {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  min-height: 25px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #24242a;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 450;
+  box-shadow: none;
+  appearance: auto;
+}
+.np-contact-reference .np-contact-reference-field :is(input, select, textarea):focus,
+.np-contact-reference .np-contact-reference-field :is(input, select, textarea):focus-visible {
+  outline: none;
+  border: 0;
+  box-shadow: none;
+}
+.np-contact-reference .np-contact-reference-field :is(input, textarea)::placeholder { color: #62646a; opacity: 1; }
+.np-contact-reference .np-contact-reference-field select:invalid { color: #62646a; }
+.np-contact-reference .np-contact-reference-full { margin-top: 18px; }
+.np-contact-reference .np-contact-reference-message {
+  min-height: 132px;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+.np-contact-reference .np-contact-reference-message textarea {
+  display: block;
+  flex: 1 1 auto;
+  min-height: 86px;
+  max-height: 360px;
+  resize: vertical;
+}
+.np-contact-reference-warning {
+  margin: 13px 0 0;
+  max-width: none;
+  color: #5e636c;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.np-contact-reference .np-contact-reference-confirmations {
+  display: grid;
+  gap: 8px;
+  margin-top: 15px;
+}
+.np-contact-reference .np-contact-reference-confirmations .check-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #4c5158;
+  font-weight: 400;
+}
+.np-contact-reference-confirmations input[type="checkbox"] {
+  flex: 0 0 auto;
+  width: 17px;
+  height: 17px;
+  margin: 2px 0 0;
+  accent-color: var(--np-contact-blue);
+}
+.np-contact-reference-confirmations .check-row span { display: inline; font-size: inherit; font-weight: inherit; }
+/* Live AWS form: two distinct, consistently aligned consent rows.
+   Keep a fixed checkbox column so wrapped text never flows under the input. */
+.np-contact-reference .np-contact-reference-confirmations[aria-label="Enquiry confirmations"] {
+  gap: 12px;
+  margin-top: 22px;
+}
+.np-contact-reference .np-contact-reference-confirmations .np-contact-reference-consent {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: start;
+  column-gap: 12px;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  color: #4c5158;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.55;
+  cursor: pointer;
+}
+.np-contact-reference .np-contact-reference-confirmations .np-contact-reference-consent > input[type="checkbox"] {
+  display: block;
+  box-sizing: border-box;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+  margin: 1px 0 0;
+  padding: 0;
+  appearance: auto;
+  accent-color: var(--np-contact-blue);
+  box-shadow: none;
+}
+.np-contact-reference .np-contact-reference-confirmations .np-contact-reference-consent > input[type="checkbox"]:focus-visible {
+  outline: 3px solid rgba(0, 111, 230, .35);
+  outline-offset: 3px;
+}
+.np-contact-reference .np-contact-reference-confirmations .np-contact-reference-consent > span {
+  display: block;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+.np-contact-reference-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-top: 22px;
+}
+.np-contact-reference-actions > div { flex: 1 1 auto; min-width: 0; }
+.np-contact-reference .np-contact-reference-privacy,
+.np-contact-reference .np-contact-reference-mode {
+  margin: 0;
+  max-width: 620px;
+  color: #6b6c72;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.np-contact-reference .np-contact-reference-mode { margin-top: 5px; }
+.np-contact-reference .np-contact-reference-actions a,
+.np-contact-reference .np-contact-reference-safety a,
+.np-contact-reference .np-contact-reference-confirmations a { color: #465d81; text-decoration: underline; text-underline-offset: .15em; }
+.np-contact-reference .np-contact-reference-submit {
+  flex: 0 0 auto;
+  width: 160px;
+  min-height: 43px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--np-contact-blue);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+.np-contact-reference .np-contact-reference-submit:hover { background: #005cbd; }
+.np-contact-reference .np-contact-reference-submit:focus-visible {
+  outline: 3px solid #005cbd;
+  outline-offset: 3px;
+}
+.np-contact-reference .np-contact-reference-submit:disabled { opacity: .6; cursor: wait; }
+.np-contact-reference-status {
+  margin: 12px 0 0;
+  color: #62666e;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.np-contact-reference-status p { margin: 0; font-size: inherit; }
+.np-contact-reference-safety { padding: 0 0 31px; background: #fff; }
+.np-contact-reference-safety p {
+  max-width: 914px;
+  margin: 0;
+  color: #6d7078;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.np-contact-reference-safety a { color: #465d81; }
+.np-contact-reference-footer {
+  padding: 35px 0 38px;
+  background: #f5f5f7;
+}
+.np-contact-reference-footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 36px;
+}
+.np-contact-reference-footer strong {
+  display: block;
+  font-family: inherit;
+  color: #1d1d1f;
+  font-size: 19px;
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+.np-contact-reference-footer p,
+.np-contact-reference-footer small {
+  display: block;
+  margin: 4px 0 0;
+  color: #62646a;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.np-contact-reference-footer small { font-size: 11px; }
+.np-contact-reference-footer nav {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding-top: 10px;
+}
+.np-contact-reference-footer nav a {
+  color: #64676d;
+  font-size: 12px;
+  text-decoration: none;
+}
+.np-contact-reference-footer nav a:hover { color: #1d1d1f; text-decoration: underline; }
+
+/* Do not show two unrelated footers on this deliberately standalone page. */
+body:has(.np-contact-reference) .site-footer:not(.np-contact-reference-footer) { display: none; }
+body:has(.np-contact-reference) .site-header {
+  min-height: 52px;
+  background: #fff;
+  box-shadow: none;
+  border-bottom: 1px solid #e8e8ed;
+}
+body:has(.np-contact-reference) .site-header .header-inner { min-height: 52px; }
+body:has(.np-contact-reference) .site-header .site-nav a { font-weight: 500; }
+body:has(.np-contact-reference) .site-header .site-nav a[aria-current="page"] { font-weight: 700; }
+
+@media (max-width: 700px) {
+  .np-contact-reference-hero { padding: 75px 0 55px; }
+  .np-contact-reference .np-contact-reference-shell { width: calc(100% - 36px); }
+  .np-contact-reference-hero p { font-size: 18px; }
+  .np-contact-reference-content { padding-bottom: 39px; }
+  .np-contact-reference-grid,
+  .np-contact-reference-extra { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .np-contact-reference-extra { margin-top: 12px; }
+  .np-contact-reference .np-contact-reference-full { margin-top: 12px; }
+  .np-contact-reference-actions { align-items: stretch; flex-direction: column; gap: 16px; }
+  .np-contact-reference .np-contact-reference-submit { width: 100%; min-height: 46px; }
+  .np-contact-reference-footer-inner { flex-direction: column; gap: 22px; }
+  .np-contact-reference-footer nav { padding-top: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .np-contact-reference .np-contact-reference-submit,
+  .np-contact-reference .np-contact-reference-field { transition: none; }
+}
+@media (forced-colors: active) {
+  .np-contact-reference .np-contact-reference-field { border-color: CanvasText; }
+  .np-contact-reference .np-contact-reference-submit { border: 1px solid ButtonText; }
+}
+
+
+/* Managed contact: one accessible field outline, not stacked label + input
+   borders. The outer field handles focus-within; input stays keyboard-focusable. */
+.np-contact-reference .contact-form .np-contact-reference-field :is(input:not([type="checkbox"]), select, textarea) {
+  min-width: 0;
+  min-height: 25px;
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.np-contact-reference .contact-form .np-contact-reference-field :is(input, select, textarea):focus-visible {
+  outline: none;
+  border: 0;
+  box-shadow: none;
+}
+
+/* Source: homepage-editorial.css */
+/*
+ * NovaPharm editorial homepage, 2026-11-07.
+ * Scoped to the homepage. Keep the clinical, product and secure-workspace
+ * design contracts unchanged. Uses system fonts, not proprietary Apple assets.
+ */
+body[data-page="home"] {
+  --nph-ink: #111113;
+  --nph-muted: #66666b;
+  --nph-silver: #f5f5f7;
+  --nph-line: #e7e7eb;
+  --nph-blue: #0066cc;
+  background: #fff;
+  color: var(--nph-ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+body[data-page="home"] .npd-apple-home { overflow: clip; }
+body[data-page="home"] .npd-apple-home :where(section, figure, article, aside) { min-width: 0; }
+body[data-page="home"] .npd-apple-home :where(h1, h2, h3) {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  color: var(--nph-ink);
+  font-weight: 650;
+  letter-spacing: 0;
+  text-transform: none;
+  text-wrap: balance;
+}
+body[data-page="home"] .npd-apple-home :where(p, h1, h2, h3) { margin-top: 0; }
+body[data-page="home"] .npd-apple-home :where(p) { text-wrap: pretty; }
+body[data-page="home"] .npd-header {
+  background: rgba(255,255,255,.88);
+  -webkit-backdrop-filter: saturate(160%) blur(18px);
+  backdrop-filter: saturate(160%) blur(18px);
+  border-bottom: 1px solid rgba(17,17,19,.06);
+  box-shadow: none;
+}
+body[data-page="home"] .npd-header .site-nav a {
+  font-size: .82rem;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+body[data-page="home"] .npd-apple-eyebrow {
+  margin: 0 0 22px;
+  font-size: .72rem;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: .13em;
+  color: #6e6e73;
+}
+body[data-page="home"] .npd-apple-home :where(h2) {
+  font-size: clamp(2.65rem, 4.8vw, 5.5rem);
+  line-height: 1.08;
+}
+body[data-page="home"] .npd-apple-home :where(h3) {
+  font-size: clamp(1.3rem, 1.7vw, 1.9rem);
+  line-height: 1.18;
+}
+body[data-page="home"] .npd-apple-home :where(p):not(.npd-apple-eyebrow):not(.npd-apple-footnote):not(.npd-apple-status) {
+  line-height: 1.5;
+}
+body[data-page="home"] .npd-apple-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 34px;
+}
+body[data-page="home"] .npd-apple-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 13px 26px;
+  border: 1px solid #111113;
+  border-radius: 999px;
+  background: #111113;
+  color: #fff;
+  font-size: .94rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
+}
+body[data-page="home"] .npd-apple-button:hover {
+  background: #343438;
+  border-color: #343438;
+  color: #fff;
+  transform: translateY(-1px);
+}
+body[data-page="home"] .npd-apple-link,
+body[data-page="home"] .npd-apple-text-link {
+  color: var(--nph-blue);
+  font-weight: 600;
+  font-size: .98rem;
+  line-height: 1.5;
+  text-underline-offset: .28em;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+body[data-page="home"] .npd-apple-link:hover,
+body[data-page="home"] .npd-apple-text-link:hover {
+  color: #004f9d;
+  border-bottom-color: currentColor;
+}
+body[data-page="home"] .npd-apple-home a:focus-visible {
+  outline: 3px solid #0066cc;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+body[data-page="home"] .npd-apple-hero {
+  background: radial-gradient(ellipse at 74% 78%, #edf1f6 0%, #f9fafb 35%, #fff 70%);
+}
+body[data-page="home"] .npd-apple-hero-inner {
+  display: grid;
+  grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
+  align-items: center;
+  gap: clamp(36px, 5vw, 90px);
+  min-height: min(790px, calc(100svh - 70px));
+  padding-top: clamp(84px, 9vw, 138px);
+  padding-bottom: clamp(84px, 10vw, 146px);
+}
+body[data-page="home"] .npd-apple-hero-copy { max-width: 610px; }
+body[data-page="home"] .npd-apple-hero h1 {
+  margin: 0;
+  color: #0a0a0c;
+  font-size: clamp(3.5rem, 6.4vw, 6.7rem);
+  line-height: 1.005;
+  letter-spacing: 0;
+  font-weight: 700;
+}
+body[data-page="home"] .npd-apple-hero h1 span { color: #6e6e73; }
+body[data-page="home"] .npd-apple-lead {
+  margin: 30px 0 0;
+  max-width: 560px;
+  font-size: clamp(1.15rem, 1.45vw, 1.43rem);
+  color: #505056;
+  line-height: 1.48;
+}
+body[data-page="home"] .npd-apple-status {
+  margin: 36px 0 0;
+  max-width: 540px;
+  color: #6e6e73;
+  font-size: .82rem;
+  line-height: 1.55;
+}
+body[data-page="home"] .npd-apple-hero-art {
+  margin: 0;
+  align-self: center;
+  min-width: 0;
+}
+body[data-page="home"] .npd-apple-hero-art picture,
+body[data-page="home"] .npd-apple-hero-art img {
+  display: block;
+  width: 100%;
+}
+body[data-page="home"] .npd-apple-hero-art img {
+  aspect-ratio: 4/4.3;
+  max-height: 630px;
+  object-fit: cover;
+  object-position: 59% center;
+  border-radius: 30px;
+  background: #e9edf3;
+  box-shadow: 0 24px 65px rgba(35,47,60,.09);
+}
+body[data-page="home"] .npd-apple-hero-art figcaption,
+body[data-page="home"] .npd-apple-oncology-art figcaption {
+  margin-top: 12px;
+  color: #55555b;
+  font-size: .72rem;
+  line-height: 1.45;
+}
+body[data-page="home"] .npd-apple-center {
+  max-width: 860px;
+  text-align: center;
+  margin-inline: auto;
+}
+body[data-page="home"] .npd-apple-center > p:not(.npd-apple-eyebrow):not(.npd-apple-footnote) {
+  max-width: 750px;
+  margin: 24px auto 0;
+  color: #6e6e73;
+  font-size: clamp(1.05rem, 1.45vw, 1.35rem);
+}
+body[data-page="home"] .npd-apple-manifesto {
+  padding: clamp(100px, 13vw, 195px) 0;
+  background: #fff;
+}
+body[data-page="home"] .npd-apple-manifesto h2 {
+  max-width: 860px;
+  margin: 0 auto;
+  font-size: clamp(3rem, 5.6vw, 6.15rem);
+}
+body[data-page="home"] .npd-apple-oncology {
+  background: #080b11;
+  color: #f5f5f7;
+  padding: clamp(76px, 9vw, 148px) 0;
+}
+body[data-page="home"] .npd-apple-feature-grid {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: clamp(40px, 6vw, 100px);
+  align-items: center;
+}
+body[data-page="home"] .npd-apple-feature-copy { max-width: 570px; }
+body[data-page="home"] .npd-apple-feature-copy h2 { margin-bottom: 25px; }
+body[data-page="home"] .npd-apple-oncology .npd-apple-feature-copy h2 {
+  font-size: 52px;
+  letter-spacing: 0;
+}
+body[data-page="home"] .npd-apple-feature-copy > p:not(.npd-apple-eyebrow):not(.npd-apple-footnote) {
+  max-width: 510px;
+  margin-bottom: 30px;
+  color: #58585f;
+  font-size: clamp(1.05rem, 1.5vw, 1.32rem);
+}
+body[data-page="home"] .npd-apple-oncology .npd-apple-eyebrow { color: #b3b3bd; }
+body[data-page="home"] .npd-apple-oncology :where(h2) { color: #fff; }
+body[data-page="home"] .npd-apple-oncology .npd-apple-feature-copy > p:not(.npd-apple-eyebrow) {
+  color: #bbbcc5;
+}
+body[data-page="home"] .npd-apple-oncology .npd-apple-text-link { color: #7cb7ff; }
+body[data-page="home"] .npd-apple-oncology-art { margin: 0; }
+body[data-page="home"] .npd-apple-oncology-art picture,
+body[data-page="home"] .npd-apple-oncology-art img { display: block; width: 100%; }
+body[data-page="home"] .npd-apple-oncology-art img {
+  aspect-ratio: 1.18;
+  object-fit: cover;
+  border-radius: 26px;
+  background: #111820;
+}
+body[data-page="home"] .npd-apple-oncology-art figcaption { color: #9296a1; }
+body[data-page="home"] .npd-apple-products {
+  padding: clamp(92px, 11vw, 170px) 0 clamp(80px, 9vw, 130px);
+  background: var(--nph-silver);
+}
+body[data-page="home"] .npd-apple-product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(12px, 1.6vw, 24px);
+  margin-top: clamp(44px, 6vw, 78px);
+}
+body[data-page="home"] .npd-apple-product {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(24px, 3vw, 42px) clamp(14px, 2vw, 30px) 36px;
+  min-width: 0;
+  min-height: 425px;
+  background: #fff;
+  border-radius: 24px;
+  color: #161618;
+  text-decoration: none;
+  text-align: center;
+  transition: transform .2s ease;
+}
+body[data-page="home"] .npd-apple-product:hover { transform: translateY(-4px); }
+body[data-page="home"] .npd-apple-product picture {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  flex: 1;
+  min-height: 230px;
+}
+body[data-page="home"] .npd-apple-product picture img {
+  width: min(100%, 245px);
+  height: 245px;
+  max-width: 100%;
+  object-fit: contain;
+}
+body[data-page="home"] .npd-apple-product strong {
+  display: block;
+  margin-top: 25px;
+  font-size: 1.06rem;
+  font-weight: 650;
+  line-height: 1.35;
+}
+body[data-page="home"] .npd-apple-product span {
+  display: block;
+  margin-top: 8px;
+  color: #74747a;
+  font-size: .87rem;
+}
+body[data-page="home"] .npd-apple-product-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 26px;
+  margin-top: 38px;
+}
+body[data-page="home"] .npd-apple-footnote {
+  color: #595960;
+  font-size: .78rem;
+  line-height: 1.55;
+}
+body[data-page="home"] .npd-apple-products > .container > .npd-apple-footnote {
+  max-width: 760px;
+  margin: 26px auto 0;
+  text-align: center;
+}
+body[data-page="home"] .npd-apple-intelligence {
+  padding: clamp(92px, 10vw, 170px) 0;
+  background: #fff;
+}
+body[data-page="home"] .npd-apple-intelligence .npd-apple-footnote {
+  margin-top: 30px;
+  max-width: 510px;
+}
+body[data-page="home"] .npd-apple-nova-art {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 540px;
+  padding: clamp(30px, 4vw, 60px);
+  border-radius: 30px;
+  background: radial-gradient(circle at 76% 23%, #263447, #111821 38%, #090c11 80%);
+  box-shadow: 0 25px 75px rgba(11,19,28,.14);
+  color: #fff;
+  overflow: hidden;
+}
+body[data-page="home"] .npd-apple-nova-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  color: #8e9bb0;
+  font-size: .68rem;
+  letter-spacing: .14em;
+  font-weight: 600;
+}
+body[data-page="home"] .npd-apple-nova-wordmark {
+  font-size: clamp(5.6rem, 10vw, 10rem);
+  font-weight: 690;
+  line-height: 1.1;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+body[data-page="home"] .npd-apple-nova-wordmark span { color: #72aaff; }
+body[data-page="home"] .npd-apple-nova-art > p {
+  margin: 0;
+  font-size: clamp(1.12rem, 1.55vw, 1.48rem);
+  color: #d7dfeb;
+}
+body[data-page="home"] .npd-apple-nova-divider {
+  height: 1px;
+  background: rgba(255,255,255,.18);
+  margin-top: clamp(50px, 7vw, 110px);
+}
+body[data-page="home"] .npd-apple-nova-taxonomy {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 18px;
+  color: #a9b7c8;
+  font-size: .74rem;
+}
+body[data-page="home"] .npd-apple-sourcing {
+  padding: clamp(96px, 11vw, 170px) 0;
+  background: #fff;
+}
+body[data-page="home"] .npd-apple-section-lead {
+  max-width: 790px;
+  margin-bottom: clamp(45px, 5vw, 76px);
+}
+body[data-page="home"] .npd-apple-section-lead > p:not(.npd-apple-eyebrow) {
+  max-width: 650px;
+  margin-top: 24px;
+  color: #6e6e73;
+  font-size: 1.2rem;
+}
+body[data-page="home"] .npd-apple-sourcing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  border-top: 1px solid #d2d2d7;
+  margin-bottom: 40px;
+}
+body[data-page="home"] .npd-apple-sourcing-grid article {
+  padding: 32px 35px 44px 0;
+  border-right: 1px solid #e7e7eb;
+}
+body[data-page="home"] .npd-apple-sourcing-grid article + article { padding-left: 35px; }
+body[data-page="home"] .npd-apple-sourcing-grid article:last-child { border-right: 0; }
+body[data-page="home"] .npd-apple-sourcing-grid article > span {
+  font-size: .86rem;
+  color: #595960;
+}
+body[data-page="home"] .npd-apple-sourcing-grid h3 { margin: 26px 0 16px; }
+body[data-page="home"] .npd-apple-sourcing-grid p { color: #6e6e73; font-size: .98rem; }
+body[data-page="home"] .npd-apple-governance {
+  padding: clamp(90px, 10vw, 150px) 0;
+  background: #f5f5f7;
+}
+body[data-page="home"] .npd-apple-governance-grid {
+  display: grid;
+  grid-template-columns: minmax(0,1.05fr) minmax(0,.95fr);
+  align-items: center;
+  gap: clamp(40px, 7vw, 110px);
+}
+body[data-page="home"] .npd-apple-governance-grid > div > p:not(.npd-apple-eyebrow) {
+  max-width: 580px;
+  margin: 24px 0 28px;
+  font-size: 1.16rem;
+  color: #66666b;
+}
+body[data-page="home"] .npd-apple-regulatory-notice {
+  background: #fff;
+  border: 1px solid #ebebee;
+  border-radius: 28px;
+  padding: clamp(30px, 4vw, 55px);
+}
+body[data-page="home"] .npd-apple-regulatory-notice h3 { margin: 0 0 21px; }
+body[data-page="home"] .npd-apple-regulatory-notice p:last-child { color: #66666b; }
+body[data-page="home"] .npd-apple-contact {
+  padding: clamp(120px, 15vw, 215px) 0;
+  text-align: center;
+  background: #fff;
+}
+body[data-page="home"] .npd-apple-contact .npd-apple-actions-centered { justify-content: center; }
+body[data-page="home"] .npd-apple-contact .npd-apple-footnote {
+  max-width: 660px;
+  margin: 40px auto 0;
+}
+@media (max-width: 1100px) {
+  body[data-page="home"] .npd-apple-oncology .npd-apple-feature-copy h2 { font-size: 36px; }
+}
+@media (max-width: 1000px) {
+  body[data-page="home"] .npd-apple-hero-inner { min-height: 0; }
+  body[data-page="home"] .npd-apple-hero h1 { font-size: clamp(3.4rem, 6vw, 5rem); }
+  body[data-page="home"] .npd-apple-nova-art { min-height: 450px; }
+}
+@media (max-width: 800px) {
+  body[data-page="home"] .npd-apple-hero-inner,
+  body[data-page="home"] .npd-apple-feature-grid,
+  body[data-page="home"] .npd-apple-governance-grid {
+    grid-template-columns: minmax(0,1fr);
+  }
+  body[data-page="home"] .npd-apple-hero-inner { padding-top: 72px; padding-bottom: 80px; gap: 48px; }
+  body[data-page="home"] .npd-apple-hero-copy { max-width: 700px; }
+  body[data-page="home"] .npd-apple-hero-art img { aspect-ratio: 16/10; max-height: 440px; }
+  body[data-page="home"] .npd-apple-oncology .npd-apple-oncology-art { max-width: 730px; }
+  body[data-page="home"] .npd-apple-product { min-height: 350px; }
+  body[data-page="home"] .npd-apple-product picture { min-height: 185px; }
+  body[data-page="home"] .npd-apple-product picture img { height: 185px; }
+}
+@media (max-width: 600px) {
+  body[data-page="home"] .npd-apple-hero h1 { font-size: clamp(3rem, 11vw, 4.1rem); letter-spacing: 0; }
+  body[data-page="home"] .npd-apple-home h2 { font-size: clamp(2.5rem, 10vw, 3.7rem); }
+  body[data-page="home"] .npd-apple-oncology .npd-apple-feature-copy h2 { font-size: 32px; }
+  body[data-page="home"] .npd-apple-eyebrow { margin-bottom: 17px; font-size: .66rem; }
+  body[data-page="home"] .npd-apple-hero-inner { padding-top: 60px; padding-bottom: 70px; }
+  body[data-page="home"] .npd-apple-lead { margin-top: 24px; }
+  body[data-page="home"] .npd-apple-actions { align-items: flex-start; gap: 17px; }
+  body[data-page="home"] .npd-apple-button { min-height: 44px; }
+  body[data-page="home"] .npd-apple-hero-art img { aspect-ratio: 4/3; border-radius: 22px; }
+  body[data-page="home"] .npd-apple-product-grid { grid-template-columns: 1fr; gap: 12px; }
+  body[data-page="home"] .npd-apple-product { min-height: 340px; padding-top: 22px; }
+  body[data-page="home"] .npd-apple-product picture { min-height: 205px; }
+  body[data-page="home"] .npd-apple-product picture img { height: 205px; }
+  body[data-page="home"] .npd-apple-nova-art { min-height: 390px; padding: 26px; border-radius: 20px; }
+  body[data-page="home"] .npd-apple-nova-wordmark { font-size: clamp(4.8rem, 16vw, 7rem); }
+  body[data-page="home"] .npd-apple-nova-taxonomy { justify-content: flex-start; }
+  body[data-page="home"] .npd-apple-sourcing-grid { grid-template-columns: 1fr; }
+  body[data-page="home"] .npd-apple-sourcing-grid article,
+  body[data-page="home"] .npd-apple-sourcing-grid article + article {
+    border-right: 0;
+    border-bottom: 1px solid #e7e7eb;
+    padding: 28px 0;
+  }
+  body[data-page="home"] .npd-apple-sourcing-grid article:last-child { border-bottom: 0; }
+  body[data-page="home"] .npd-apple-product-links { flex-direction: column; align-items: center; gap: 13px; }
+  body[data-page="home"] .npd-apple-contact .npd-apple-actions { justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-page="home"] .npd-apple-home *,
+  body[data-page="home"] .npd-apple-home *::before,
+  body[data-page="home"] .npd-apple-home *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media print {
+  body[data-page="home"] .npd-apple-home section { background: #fff !important; color: #000 !important; padding-block: 30px; }
+  body[data-page="home"] .npd-apple-home h2 { color: #000 !important; }
+  body[data-page="home"] .npd-apple-nova-art { display: none; }
+  body[data-page="home"] .npd-apple-product-grid { grid-template-columns: repeat(3,1fr); }
+}
+
+/* WCAG 2.2 AA: subdued text must remain readable against both white and #f5f5f7. */
+body[data-page="home"] .npd-apple-products .npd-apple-footnote,
+body[data-page="home"] .npd-apple-products .npd-apple-product span {
+  color: #57575d;
+}
+body[data-page="home"] .npd-apple-hero-art figcaption,
+body[data-page="home"] .npd-apple-sourcing-grid article > span {
+  color: #55555b;
+}
+
+
+/* Approved Earth-at-sunrise hero only (10 Nov 2026). All other homepage sections remain unchanged. */
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: block;
+  min-height: clamp(660px, calc(100svh - 64px), 885px);
+  background: linear-gradient(180deg, #fff 0%, #fbfcff 54%, #edf5ff 83%, #d9eafa 100%);
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-hero-content {
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  margin-inline: auto;
+  width: min(100%, 1500px);
+  max-width: 1500px;
+  padding: clamp(76px, 8vw, 126px) clamp(20px, 4vw, 70px) 340px;
+  text-align: center;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .npd-apple-eyebrow {
+  margin: 0 0 clamp(28px, 3vw, 39px);
+  font-size: .76rem;
+  letter-spacing: .23em;
+  line-height: 1.4;
+  font-weight: 600;
+  color: #545861;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero h1 {
+  margin: 0;
+  max-width: 1430px;
+  color: #08090b;
+  font-size: clamp(3rem, 5.28vw, 5.6rem);
+  font-weight: 700;
+  line-height: 1.055;
+  letter-spacing: -.052em;
+  text-wrap: balance;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .npd-apple-lead {
+  margin: clamp(20px, 2vw, 28px) 0 0;
+  max-width: 900px;
+  font-size: clamp(1.125rem, 1.64vw, 1.6rem);
+  font-weight: 400;
+  line-height: 1.4;
+  color: #68686f;
+  text-wrap: balance;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .npd-apple-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: clamp(30px, 3.5vw, 49px);
+  gap: 16px;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-primary,
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-secondary {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .7em;
+  min-height: 48px;
+  border-radius: 999px;
+  border: 1px solid #111113;
+  padding: 12px 26px;
+  font-size: .96rem;
+  font-weight: 550;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-primary {
+  color: #fff;
+  background: #111113;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-secondary {
+  color: #111113;
+  background: rgba(255,255,255,.78);
+  border-color: #909298;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-primary:hover {
+  background: #33343a;
+  border-color: #33343a;
+  color: #fff;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-secondary:hover {
+  background: #fff;
+  border-color: #111113;
+  color: #111113;
+}
+:is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-hero-landscape {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1100 / 229;
+  max-height: none;
+  object-fit: cover;
+  object-position: center bottom;
+  pointer-events: none;
+  user-select: none;
+}
+@media (max-width: 760px) {
+  :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero {
+    min-height: min(780px, 100svh);
+  }
+  :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-hero-content {
+    padding: 84px 20px 310px;
+  }
+  :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero h1 {
+    max-width: 560px;
+    font-size: clamp(2.85rem, 9.5vw, 4.5rem);
+    letter-spacing: -.045em;
+  }
+  :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .npd-apple-lead {
+    max-width: 440px;
+    font-size: 1.12rem;
+  }
+  :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .npd-apple-actions {
+    gap: 12px;
+    margin-top: 28px;
+  }
+  :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-primary,
+  :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-secondary {
+    font-size: .85rem;
+    padding: 11px 15px;
+    min-height: 44px;
+  }
+  :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero .nph-earth-hero-landscape {
+    left: 50%;
+    width: 200%;
+    height: 290px;
+    transform: translateX(-50%);
+    object-position: center bottom;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(body[data-page="home"] .npd-apple-home, .nph-editorial-home) .nph-earth-hero a { transition: none; }
+}
+
+
+
+/* Owner-approved 10 Nov 2026 reference alignment.
+   Homepage only. All corporate identity, commerce and secure portal surfaces outside
+   the homepage retain their existing appearance. The letterform is typographic,
+   not a change to the registered NovaPharm brand assets. */
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header {
+  position: relative;
+  z-index: 20;
+  height: 68px;
+  min-height: 68px;
+  background: rgba(255,255,255,.98);
+  border-bottom: 1px solid #e2e5e9;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .header-inner {
+  box-sizing: border-box;
+  width: calc(100% - clamp(36px, 10.8vw, 192px));
+  max-width: none;
+  min-height: 68px;
+  height: 68px;
+  padding: 0;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+}
+/* Official brand identity: never substitute a generated NOVAPHARM wordmark. */
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header:not(.npd-header) .brand {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  min-width: 0;
+  min-height: 44px;
+  width: clamp(170px, 15vw, 218px);
+  text-decoration: none;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .brand > picture,
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .brand > img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: left center;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .brand::after {
+  content: none;
+  display: none;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .site-nav,
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .desktop-nav {
+  align-items: center;
+  gap: clamp(18px, 2.8vw, 52px);
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .site-nav > a,
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .desktop-nav > a {
+  color: #151518;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: clamp(.88rem, 1.08vw, 1.18rem);
+  font-weight: 450;
+  line-height: 1.2;
+  letter-spacing: -.012em;
+  white-space: nowrap;
+  padding-block: 14px;
+  text-decoration: none;
+}
+body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/news-insights/"],
+body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/portal/"] {
+  display: none;
+}
+body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"] {
+  font-size: 0;
+}
+body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]::after {
+  content: "Intelligence";
+  font-size: clamp(.88rem, 1.08vw, 1.18rem);
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .brand:focus-visible,
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header a:focus-visible {
+  outline: 3px solid #0066cc;
+  outline-offset: 4px;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero {
+  display: block;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  height: auto;
+  min-height: clamp(760px, calc(100svh - 68px), 910px);
+  background:
+    radial-gradient(ellipse at 68% 74%, rgba(255,243,215,.24), transparent 36%),
+    linear-gradient(180deg, #ffffff 0%, #fcfdff 35%, #f4f8ff 59%, #e0edfc 100%);
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-hero-content {
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1600px;
+  min-height: 0;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(91px, 6.2vw, 111px) 24px 0;
+  text-align: center;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .npd-apple-eyebrow {
+  margin: 0 0 clamp(29px, 2.75vw, 45px);
+  color: #3d424a;
+  font-size: clamp(.78rem, 1.1vw, 1.2rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: .27em;
+  text-transform: uppercase;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero h1 {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0;
+  color: #07080b;
+  font-size: clamp(3.15rem, 5.05vw, 5.95rem);
+  font-weight: 720;
+  line-height: 1.055;
+  letter-spacing: -.052em;
+  text-wrap: balance;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .npd-apple-lead {
+  width: 100%;
+  max-width: 1100px;
+  margin: clamp(15px, 1.30vw, 25px) 0 0;
+  color: #62646a;
+  font-size: clamp(1.15rem, 1.89vw, 2.12rem);
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -.018em;
+  text-wrap: balance;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .npd-apple-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(13px, 1.7vw, 32px);
+  margin: clamp(29px, 2.35vw, 43px) 0 0;
+  flex-wrap: wrap;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero :is(.nph-earth-primary,.nph-earth-secondary) {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .65em;
+  min-height: clamp(46px, 3.05vw, 56px);
+  border: 1px solid #121215;
+  border-radius: 999px;
+  padding: 12px clamp(24px, 2.4vw, 44px);
+  font-size: clamp(.92rem, 1.20vw, 1.27rem);
+  font-weight: 530;
+  line-height: 1.15;
+  letter-spacing: -.018em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-primary {
+  background: #0a0a0c;
+  border-color: #0a0a0c;
+  color: white;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-secondary {
+  background: rgba(255,255,255,.86);
+  border-color: #73767c;
+  color: #111114;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-primary:hover {
+  background: #333439;
+  border-color: #333439;
+  color: #fff;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-secondary:hover {
+  background: #fff;
+  border-color: #111114;
+  color: #111114;
+}
+:is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-hero-landscape {
+  display: block;
+  position: absolute;
+  z-index: 1;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  aspect-ratio: 1400 / 305;
+  object-fit: cover;
+  object-position: center bottom;
+  transform: none;
+  user-select: none;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.75) 9%, #000 18%);
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.75) 9%, #000 18%);
+}
+@media (min-width: 761px) and (max-width: 1120px) {
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .header-inner {
+    width: calc(100% - 64px);
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .site-nav,
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .desktop-nav {
+    gap: 17px;
+  }
+}
+@media (max-width: 760px) {
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header,
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .header-inner {
+    min-height: 60px;
+    height: 60px;
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header .header-inner {
+    width: calc(100% - 36px);
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .site-header:not(.npd-header) .brand {
+    width: min(190px, calc(100vw - 100px));
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero {
+    min-height: clamp(695px, calc(100svh - 60px), 810px);
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-hero-content {
+    padding: clamp(80px, 16vw, 116px) 22px 0;
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .npd-apple-eyebrow {
+    font-size: .72rem;
+    letter-spacing: .19em;
+    margin-bottom: 31px;
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero h1 {
+    font-size: clamp(2.8rem, 9vw, 4.6rem);
+    line-height: 1.08;
+    letter-spacing: -.047em;
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .npd-apple-lead {
+    max-width: 540px;
+    font-size: clamp(1.1rem, 3.75vw, 1.5rem);
+    line-height: 1.45;
+    margin-top: 22px;
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .npd-apple-actions {
+    gap: 12px;
+    margin-top: 28px;
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero :is(.nph-earth-primary,.nph-earth-secondary) {
+    min-height: 45px;
+    padding: 10px 16px;
+    font-size: clamp(.81rem, 3.2vw, .97rem);
+  }
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero .nph-earth-hero-landscape {
+    left: 50%;
+    width: max(900px, 245%);
+    height: auto;
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(body[data-page="home"],body:has(.nph-editorial-home)) .npd-apple-home .nph-earth-hero a {
+    transition: none;
+  }
+}
+
+/* Source: sitewide-layout-integrity.css */
+/* Sitewide layout-integrity layer. Preserve each approved editorial art direction.
+   This layer prevents content clipping without changing hero crops or visual identity. */
+
+.npd-main :is(
+  .npd-numbered-grid, .npd-three-lanes, .npd-maturity, .npd-maturity-full,
+  .npd-split, .npd-regulatory-layout, .npd-contact-layout, .npd-account-layout,
+  .npd-product-hero-grid, .npd-product-grid, .npd-product-stage,
+  .npd-product-evidence, .npd-leadership-line, .npd-insight-secondary,
+  .npd-horizontal-steps, .npd-inline-facts, .npd-facts, .npd-product-meta,
+  .npd-composition
+) > *,
+.npd-footer :is(.npd-footer-top, .npd-footer-legal) > *,
+.np-intelligence :is(.npi-dash-analytics-grid, .npi-workspace-grid) > *,
+.mp-main :is(.mp-grid, .mp-toolbar, .mp-source-index-groups) > * {
+  min-width: 0;
+}
+
+.npd-main :is(p, li, dt, dd, figcaption),
+.npd-footer :is(p, li, a),
+.mp-main :is(.mp-card-meta, .mp-card-evidence, .mp-card h3) {
+  overflow-wrap: break-word;
+}
+
+.npd-main :is(input, select, textarea, fieldset),
+.mp-main :is(input, select, textarea) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Keep labels and their values aligned as a unit at desktop and tablet sizes. */
+.npd-main :is(.npd-facts, .npd-product-meta, .npd-composition) > div {
+  column-gap: clamp(12px, 2vw, 24px);
+  align-items: start;
+}
+
+.npd-main [id],
+.mp-main [id],
+.np-intelligence [id] {
+  scroll-margin-top: calc(var(--npd-header, 56px) + 28px);
+}
+
+@media (max-width: 600px) {
+  .npd-main :is(.npd-actions, .npd-product-card-actions) {
+    row-gap: 14px;
+  }
+  .npd-main :is(.npd-section-intro, .npd-product-copy, .npd-hero-copy) {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .mp-main .mp-card-actions {
+    row-gap: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  /* A long catalogue title must not squeeze Buy/Compare into tiny tap areas. */
+  .mp-main .mp-card-actions > :is(a, button) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 100%;
+    min-height: 44px;
+    text-align: center;
+  }
+}
+
+@media (forced-colors: active) {
+  .mp-main .mp-card-actions > :is(a, button) {
+    border: 1px solid ButtonText;
+  }
+}

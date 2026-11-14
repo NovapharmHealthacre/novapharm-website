@@ -214,6 +214,7 @@ body[data-page="oncology"] .npoc-page .npoc-governance .npoc-eyebrow,body[data-p
 body[data-page="oncology"] .npoc-page .npoc-pathway li{border-color:#c7c7d0}
 body[data-page="oncology"] .npoc-page .npoc-matrix{border-color:#c7c7d0}
 body[data-page="oncology"] .npoc-page .npoc-matrix table{color:#3d3d45}
+body[data-page="oncology"] .npoc-page .npoc-governance .npoc-matrix caption{color:#555361}
 body[data-page="oncology"] .npoc-page .npoc-matrix :is(td,th){border-bottom-color:#d6d6df}
 @media(max-width:1040px){
  body[data-page="oncology"] .npoc-focus-layout{grid-template-columns:1fr;gap:30px}
