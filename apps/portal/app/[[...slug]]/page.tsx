@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { PortalClient } from "../../components/portal-client";
@@ -5,6 +6,24 @@ import { resolvePortalView } from "../../data/routes";
 import { sessionDecision, verifiedPortalSession } from "../../lib/server-session";
 
 export const dynamic = "force-dynamic";
+
+/** Product metadata only: the corporate and customer identities stay unchanged. */
+export async function generateMetadata({ params }: Readonly<{
+  params: Promise<{ slug?: string[] }>;
+}>): Promise<Metadata> {
+  const { slug = [] } = await params;
+  const view = resolvePortalView(slug.length ? `/${slug.join("/")}/` : "/");
+  if (view?.kind !== "module" || ![
+    "employee.dashboard", "employee.orders", "employee.warehouse",
+  ].includes(view.module.code)) return {};
+
+  return {
+    title: view.module.code === "employee.warehouse"
+      ? "NovaPharm Distribution | Warehouse & Inventory"
+      : "NovaPharm Distribution | Employee Operations",
+    description: "NovaPharm Distribution: governed warehouse, commercial, quality and fulfilment operations.",
+  };
+}
 
 export default async function PortalPage({ params }: Readonly<{ params: Promise<{ slug?: string[] }> }>) {
   const { slug = [] } = await params;

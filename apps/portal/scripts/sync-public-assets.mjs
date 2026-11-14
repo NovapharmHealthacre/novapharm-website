@@ -1,7 +1,9 @@
-import { cp, mkdir, rm } from "node:fs/promises";
+import { access, cp, mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 
 const repositoryRoot = path.resolve(process.cwd(), "../..");
+// Refuse to package an employee app without the published owner-approved mark.
+await access(path.join(repositoryRoot, "assets/brand/novapharm-distribution-logo.svg"));
 const brandTarget = path.resolve("public/assets/brand");
 await rm(brandTarget, { recursive: true, force: true });
 await mkdir(brandTarget, { recursive: true });
