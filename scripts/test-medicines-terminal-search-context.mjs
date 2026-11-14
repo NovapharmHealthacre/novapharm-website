@@ -30,7 +30,7 @@ test("a new valid medicine search clears prior medicine, analytics and deep-link
   }
   assert.ok(source.includes('window.history.replaceState(null, "", `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);'));
   assert.match(source, /setSearchStatus\(professionalError\(error\)\)/u);
-  assert.match(source, /next\.results\.length \?/u);
+  assert.match(source, /next\.pagination\.totalRows \?/u);
 });
 
 test("late medicine search responses cannot overwrite the newer selected query", () => {
