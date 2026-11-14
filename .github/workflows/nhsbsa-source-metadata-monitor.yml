@@ -1,0 +1,39 @@
+name: Governed NHSBSA publisher metadata monitor acceptance
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/python/nhsbsa_source_metadata_monitor.py'
+      - 'tooling/python/test_nhsbsa_source_metadata_monitor.py'
+      - '.github/workflows/nhsbsa-source-metadata-monitor.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/python/nhsbsa_source_metadata_monitor.py'
+      - 'tooling/python/test_nhsbsa_source_metadata_monitor.py'
+      - '.github/workflows/nhsbsa-source-metadata-monitor.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  offline-source-metadata-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Verify syntax and synthetic fail-closed release boundaries
+        run: |
+          python3 -m py_compile tooling/python/nhsbsa_source_metadata_monitor.py
+          python3 -m unittest discover -s tooling/python -p 'test_nhsbsa_source_metadata_monitor.py' -v
+      - name: Assert metadata-only source and no customer-side effects
+        run: |
+          grep -q 'customer_publish_approved.*False' tooling/python/nhsbsa_source_metadata_monitor.py
+          grep -q 'production_promoted.*False' tooling/python/nhsbsa_source_metadata_monitor.py
+          grep -q 'PREFIX = "governed-intake/nhsbsa/source-monitor/v1"' tooling/python/nhsbsa_source_metadata_monitor.py
+          echo "Publisher metadata only. No source ZIP, CSV, Atlas, external AI, email or customer release."
