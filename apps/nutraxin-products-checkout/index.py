@@ -140,14 +140,16 @@ def direct_checkout(event, customer_subject=None):
         unit = price_by_sku[sku]
         if unit <= 0 or unit > 99999999:
             return error(503, "invalid_seller_price")
-        previous_gross = gross
+        # Consumer catalogue, portal and Stripe all charge exactly the same
+        # published unit price, including VAT rounded per unit.
+        unit_gross = unit + (unit * 20 + 50) // 100
         net += unit * quantity
-        gross = (net * 120 + 50) // 100
+        gross += unit_gross * quantity
         if gross > 99999999:
             return error(422, "basket_exceeds_stripe_payment_limit")
         ordered.append({"sku": sku, "quantity": quantity,
                         "name": PRODUCTS[sku][0] + " (UK VAT included)",
-                        "grossMinor": gross - previous_gross})
+                        "grossMinor": unit_gross * quantity})
     tax = gross - net
     if tax < 0 or gross != net + tax:
         return error(503, "failed_total_reconciliation")
@@ -156,7 +158,7 @@ def direct_checkout(event, customer_subject=None):
         separators=(",", ":")).encode()).hexdigest()
     receipt = "NUT-" + request_id
     subject = customer_subject or ("guest_" + request_id.replace("-", ""))
-    quote_version = "ownerprice_v6_" + basket_hash[:24]
+    quote_version = "ownerprice_v7_unitvat_" + basket_hash[:20]
     item = {
         "pk": {"S": "ORDER#" + receipt}, "sk": {"S": "SUMMARY"},
         "orderId": {"S": receipt}, "customerSub": {"S": subject},
@@ -218,7 +220,8 @@ def direct_checkout(event, customer_subject=None):
             return error(503, "order_creation_unavailable")
         if (prior.get("customerSub") != item["customerSub"] or
             prior.get("basketHash") != item["basketHash"] or
-            prior.get("quoteVersion") != item["quoteVersion"]):
+            prior.get("quoteVersion") != item["quoteVersion"] or
+            prior.get("totalGrossMinor") != item["totalGrossMinor"]):
             return error(409, "request_id_already_used")
         if prior.get("status", {}).get("S") == "PAID":
             return reply(200, {"orderId": receipt, "status": "PAID", "already_paid": True})
