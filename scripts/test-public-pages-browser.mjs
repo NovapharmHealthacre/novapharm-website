@@ -435,8 +435,8 @@ for (const [engineName, browserType] of engines) {
             assert.deepEqual(consoleErrors, [], `${engineName} ${viewport.name} ${route.path}: console errors`);
 
             if (route.name === "technology") {
-              // Four-plan comparison: verify real layout and non-binding access
-              // actions in Chromium/WebKit, rather than the removed trial banner
+              // Four-plan comparison: verify exact live subscription links and
+              // transparent payment terms in Chromium/WebKit, not the retired trial banner
               // and obsolete annual-price toggle.
               const pricing = page.locator("#intelligence-pricing");
               const grid = pricing.locator("[data-npi-pricing-grid]");
@@ -451,10 +451,18 @@ for (const [engineName, browserType] of engines) {
                   plan + ": exactly one clear customer action");
                 const action = card.locator(".npi-plan-cta");
                 const href = await action.getAttribute("href");
-                assert.ok(href?.startsWith("/contact/?"), plan + ": action must lead to the governed enquiry experience");
-                assert.ok(href?.includes("intelligencePlan="), plan + ": action must include the requested plan");
-                assert.ok(!href?.includes("checkout") && !href?.includes("/auth/customer/register"),
-                  plan + ": no unverified paid checkout or registration");
+                if (plan === "starter" || plan === "professional") {
+                  const expected = plan === "starter" ? "https://buy.stripe.com/00waEQ1gQ1Lr2x87aIdby00" : "https://buy.stripe.com/6oUeV64t2bm16NobqYdby01";
+                  assert.equal(href, expected, plan + ": use the exact verified live Stripe-hosted Checkout link");
+                  assert.equal(await action.getAttribute("data-npi-live-stripe"), plan,
+                    plan + ": billing link must be plan-specific");
+                } else if (plan === "trial") {
+                  assert.equal(href, "https://intelligence.novapharmhealthcare.com/auth/customer/register",
+                    "No-card free-trial account entry must never trigger Stripe billing");
+                } else {
+                  assert.ok(href?.startsWith("/contact/?") && href.includes("intelligencePlan=enterprise"),
+                    "Enterprise needs a custom contract, not an assumed price");
+                }
               }
               const freeTrial = grid.locator('[data-npi-plan="trial"][data-npi-starter-trial="approved"]');
               assert.match(await freeTrial.innerText(), /Free Trial/);
@@ -473,8 +481,10 @@ for (const [engineName, browserType] of engines) {
               const expectedColumns = viewport.width > 1120 ? 4 : viewport.width > 640 ? 2 : 1;
               assert.equal(style.columns, expectedColumns,
                 engineName + " " + viewport.name + ": responsive pricing columns must match viewport");
-              assert.equal(await pricing.getByText("No payment will be collected here", { exact: false }).count(), 1,
-                "Pricing section must disclose non-binding enquiries");
+              assert.equal(await pricing.getByText("Paid subscriptions are charged immediately at Checkout", { exact: false }).count(), 1,
+                "Pricing section must transparently disclose immediate recurring billing");
+              assert.equal(await pricing.getByText("may not be available immediately", { exact: false }).count(), 1,
+                "Pricing section must disclose that workspace provisioning is separate");
 
               const medicineField = page.locator("[data-npi-query]");
               const marketField = page.locator("[data-npi-market]");
