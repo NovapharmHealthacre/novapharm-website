@@ -26,6 +26,7 @@ CLIENT_ID = os.environ["CUSTOMER_CLIENT_ID"]
 COGNITO_DOMAIN = os.environ["COGNITO_DOMAIN"]
 BASE_URL = os.environ["BASE_URL"].rstrip("/")
 PRICES_PARAMETER = os.environ["PRICES_PARAMETER"]
+OWNER_ATTESTATION_PARAMETER = os.environ.get("OWNER_ATTESTATION_PARAMETER", "")
 APPROVED_GROUP = "nutraxin-approved-business-customer"
 TABLE = boto3.resource("dynamodb", region_name=REGION).Table(os.environ["DDB_TABLE"])
 COGNITO = boto3.client("cognito-idp", region_name=REGION)
@@ -829,7 +830,7 @@ def customer_workspace(event,route):
             '<h3 id="shop-retail-title">Secure Nutraxin checkout</h3>'
             '<p id="shop-retail-total" class="shop-retail-total"></p>'
             '<label class="shop-retail-consent"><input id="shop-retail-terms" type="checkbox">'
-            ' I have read the <a href="https://novapharmhealthcare.com/legal/terms/" target="_blank" rel="noopener noreferrer">UK shopping terms</a> '
+            ' I have read the <a href="https://novapharmhealthcare.com/legal/terms/#nutraxin-consumer-sales" target="_blank" rel="noopener noreferrer">UK shopping terms</a> '
             'and accept the stated delivery arrangements, which may take up to 30 days.</label>'
             '<button id="shop-retail-checkout" type="button" disabled>Continue to secure checkout</button>'
             '</section>'
@@ -1259,6 +1260,18 @@ def retail_cors(event, response):
                         "vary":"Origin"})
     return response
 
+def owner_retail_attestation():
+    """Read private owner tax decision without exposing a VAT number."""
+    if not OWNER_ATTESTATION_PARAMETER:
+        return None
+    try:
+        response = SSM.get_parameter(Name=OWNER_ATTESTATION_PARAMETER, WithDecryption=True)
+        d = json.loads(response["Parameter"]["Value"])
+        return d if d.get("schema") == "novapharm.nutraxin.owner_attestation.v1" else None
+    except (ClientError, ValueError, TypeError, KeyError):
+        return None
+
+
 def retail_sale_authorised(pricing):
     # A provisional B2B price alone cannot authorise binding consumer payment.
     if not isinstance(pricing,dict):
@@ -1273,12 +1286,28 @@ def retail_sale_authorised(pricing):
                    pricing.get("owner_direct_fulfilment_authorised") is True)
     uk_dispatch = (pricing.get("uk_dispatch_service_verified") is True or
                    pricing.get("owner_uk_dispatch_committed") is True)
-    return (pricing.get("retail_sales_authorised") is True and
-            pricing.get("vat_registration_verified") is True and
-            fbo and fulfilment and uk_dispatch and
-            pricing.get("consumer_terms_verified") is True and
-            assumptions.get("uk_delivery_charge_pence")==0 and
-            assumptions.get("uk_delivery_cost_borne_by_seller") is True)
+    merchant=owner_retail_attestation()
+    # Stripe GB tax registration is self-declared by the merchant. No VAT ID
+    # enters source control, application logs, customer JSON or ChatGPT.
+    # Separate, explicit owner tax and sale decisions must be recorded.
+    stripe_owner_basis=(isinstance(merchant,dict) and
+        merchant.get("product_owner_authorised") is True and
+        merchant.get("food_business_registration_owner_attested") is True and
+        merchant.get("owner_direct_fulfilment_authorised") is True and
+        merchant.get("owner_uk_dispatch_committed") is True and
+        merchant.get("stripe_gb_standard_tax_registration_active") is True and
+        merchant.get("owner_authorized_stripe_gb_tax_basis") is True and
+        merchant.get("consumer_terms_owner_approved") is True and
+        merchant.get("vat_rate_bps")==2000 and
+        merchant.get("payment_collection_authorised") is True)
+    existing_verified_basis=(pricing.get("retail_sales_authorised") is True and
+        pricing.get("vat_registration_verified") is True and
+        fbo and fulfilment and uk_dispatch and
+        pricing.get("consumer_terms_verified") is True)
+    return ((stripe_owner_basis or existing_verified_basis) and
+        pricing.get("owner_retail_sale_authorised") is True and
+        assumptions.get("uk_delivery_charge_pence")==0 and
+        assumptions.get("uk_delivery_cost_borne_by_seller") is True)
 
 def retail_readiness():
     if not DIRECT_SHOP_PAYMENTS_ENABLED or PAYMENT_DDB is None or CHECKOUT_LAMBDA is None:
