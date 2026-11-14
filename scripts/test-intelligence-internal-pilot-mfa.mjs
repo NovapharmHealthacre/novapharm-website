@@ -114,8 +114,10 @@ test("a verified but unenrolled pilot must be offered TOTP before identity-only 
   assert.match(branch, /purpose: "internal_pilot_mfa_enrolment"/u);
   assert.match(branch, /pilotMfaEmail: allowedEmail/u);
   assert.match(branch, /name: "__Host-npi_internal_mfa"/u);
-  assert.match(branch, /name: "__Host-npi_oidc_tx"/u);
-  assert.match(branch, /maxAge: 0/u);
+  assert.doesNotMatch(branch, /name: "__Host-npi_oidc_tx"/u,
+    "The pilot's 303 handoff must issue one Set-Cookie to Safari.");
+  assert.match(callback, /if \(!pilotEnrollmentRedirectIssued\)/u,
+    "Legacy transaction clearing must still happen for other sign-in outcomes.");
   assert.match(branch, /return response;/u);
   assert.ok(!branch.includes("activateApprovedCustomerSession"));
   assert.ok(!branch.includes("requestFounderPrivateSession"));
@@ -249,4 +251,20 @@ test("public Intelligence sign-in uses hosted Cognito for enrollment and cannot 
   assert.match(card, /does not confirm that an authenticator is enrolled/u);
   assert.doesNotMatch(card, /Your credentials and authenticator have been accepted/u,
     "Client-only proof must not claim server-confirmed authenticator acceptance.");
+});
+
+test("MFA enrollment handoff keeps a single cookie and logs only sanitized denial phases", () => {
+  const callback = readFileSync(new URL("../apps/portal/app/auth/callback/route.ts", import.meta.url), "utf8");
+  const setup = readFileSync(new URL("../apps/portal/app/auth/internal/mfa/setup/route.ts", import.meta.url), "utf8");
+  const pre = callback.slice(
+    callback.indexOf('phase = "internal_pilot_mfa_preidentity_check"'),
+    callback.indexOf('phase = "id_token_verification"'));
+  assert.match(pre, /name: "__Host-npi_internal_mfa"/u);
+  assert.doesNotMatch(pre, /name: "__Host-npi_oidc_tx"/u);
+  assert.match(callback, /pilotEnrollmentRedirectIssued = true/u);
+  assert.match(callback, /if \(!pilotEnrollmentRedirectIssued\)/u);
+  assert.match(setup, /npi_internal_pilot_totp_setup_denied/u);
+  assert.match(setup, /cookiePresent:request\.cookies\.has/u);
+  assert.match(setup, /phase = "cognito_enrollment"/u);
+  assert.doesNotMatch(setup, /console\.(?:log|warn|info)\([^\n]*(?:accessToken|SecretCode|UserCode|cookieValue)/u);
 });
