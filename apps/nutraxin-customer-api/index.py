@@ -678,10 +678,20 @@ def logout(event):
     headers={str(k).lower():str(v) for k,v in (event.get("headers") or {}).items()}
     origin=headers.get("origin","")
     if canonical_login_origin(origin) not in LOGIN_ORIGIN_ALLOWLIST:
-        if origin not in ("","null") or event.get("isBase64Encoded"):
+        # Privacy-preserving browsers may send Origin: null/absent. API Gateway
+        # HTTP API v2 can Base64-encode application/x-www-form-urlencoded.
+        # Decode that transport representation BEFORE applying the existing
+        # same-host double-submit CSRF, Fetch Metadata and Referer checks.
+        # Explicit foreign origins are never eligible for the fallback.
+        if origin not in ("","null"):
             return error(403,"invalid_origin")
         raw_form=event.get("body") or ""
-        if not isinstance(raw_form,str) or len(raw_form)>300:
+        if not isinstance(raw_form,str) or len(raw_form)>512:
+            return error(403,"invalid_origin")
+        if event.get("isBase64Encoded"):
+            try: raw_form=base64.b64decode(raw_form,validate=True).decode("utf-8")
+            except (ValueError,UnicodeError):return error(403,"invalid_origin")
+        if len(raw_form)>300:
             return error(403,"invalid_origin")
         try: form=urllib.parse.parse_qs(raw_form,keep_blank_values=True,max_num_fields=2)
         except ValueError:return error(403,"invalid_origin")
