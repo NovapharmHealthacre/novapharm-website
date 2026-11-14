@@ -112,11 +112,13 @@ test("encrypted short-lived pilot cookie is not founder-compatible and rejects t
   assert.equal(opened.subject,subject);
   assert.equal(opened.expectedEmail,email);
   assert.equal(opened.csrf.length,43);
+  const parts = sealed.cookieValue.split(".");
+  parts[2] = (parts[2][0] === "A" ? "B" : "A") + parts[2].slice(1);
   for(const params of [
     {expectedEmail:"wrong@example.org"},
     {signingKey:"invalid-secret-padding-that-must-not-work-123"},
     {nowMs:now+601000},
-    {cookieValue:sealed.cookieValue.slice(0,-1)+"x"},
+    {cookieValue:parts.join(".")},
   ]) assert.throws(()=>verifyInternalPilotMfaCookie({
     cookieValue:sealed.cookieValue,signingKey,expectedEmail:email,nowMs:now,...params,
   }));
