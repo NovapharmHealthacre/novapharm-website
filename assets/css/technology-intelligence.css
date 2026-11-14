@@ -1640,7 +1640,7 @@ body[data-page="technology"] .np-intelligence {
   font-size: clamp(2rem, 3.3vw, 3.35rem);
   font-weight: 650;
   line-height: 1.13;
-  letter-spacing: -.035em;
+  letter-spacing: 0;
   margin: 0 0 19px;
 }
 .np-intelligence .npi-trial-offer-lead > p:not(.npi-kicker) {
@@ -1659,7 +1659,7 @@ body[data-page="technology"] .np-intelligence {
   color: #191919;
   font-size: clamp(3.5rem, 5vw, 5rem);
   line-height: 1;
-  letter-spacing: -.06em;
+  letter-spacing: 0;
 }
 .np-intelligence .npi-trial-offer-price span { color: #626269; font-size: 1rem; }
 .np-intelligence .npi-trial-offer-detail ul {
