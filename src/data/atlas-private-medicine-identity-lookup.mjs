@@ -13,7 +13,12 @@ const CODES = new Set(["BNF_PRESENTATION_CODE", "SNOMED_CODE"]);
 // Canonical UTC whole-second timestamps preserve lexical Mongo comparisons.
 const ISO = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/u;
 const IDENT = /^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$/u;
-const CODE = /^[A-Za-z0-9][A-Za-z0-9.-]{1,63}$/u;
+const EXACT_BNF_PRESENTATION = /^[A-Z0-9]{15}$/u;
+const EXACT_SNOMED_CONCEPT = /^[0-9]{6,18}$/u;
+const validExactCode = (system, code) =>
+  typeof code === "string" && (system === "BNF_PRESENTATION_CODE"
+    ? EXACT_BNF_PRESENTATION.test(code)
+    : system === "SNOMED_CODE" && EXACT_SNOMED_CONCEPT.test(code));
 const SHA = /^[0-9a-f]{64}$/u;
 const FIELDS = Object.freeze([
   "workspace_id", "identity_id", "canonical_name", "code_system", "normalized_code",
@@ -35,6 +40,19 @@ const approvedSession = (x, principalId, now) => x?.verified === true &&
   x.workspaceId === PILOT_WORKSPACE && x.principalId === principalId &&
   x.role === "board" && validId(x.authorityRevision) &&
   validTime(x.expiresAt) && Date.parse(x.expiresAt) > now;
+function currentRights(rights, row, now) {
+  return rights?.verified === true && rights.active === true &&
+    rights.workspaceId === PILOT_WORKSPACE &&
+    rights.sourceId === row.source_id &&
+    rights.sourceVersion === row.source_version &&
+    rights.rightsRevision === row.rights_revision &&
+    rights.allowedPurpose === PURPOSE &&
+    validTime(rights.checkedAt) &&
+    Date.parse(rights.checkedAt) <= now &&
+    now - Date.parse(rights.checkedAt) <= 60_000 &&
+    (rights.validUntil == null ||
+      (validTime(rights.validUntil) && Date.parse(rights.validUntil) > now));
+}
 function checkRow(row, { sourceCode, codeSystem, asOf }) {
   if (!row || typeof row !== "object" || Array.isArray(row) ||
       Object.keys(row).some(k => !FIELDS.includes(k)) ||
@@ -46,6 +64,7 @@ function checkRow(row, { sourceCode, codeSystem, asOf }) {
       !validId(row.identity_revision) || !validId(row.rights_revision) ||
       !SHA.test(row.source_resource_sha256) || !validTime(row.effective_from) ||
       !validTime(row.verified_at) ||
+      Date.parse(row.verified_at) > Date.parse(asOf) ||
       Date.parse(row.effective_from) > Date.parse(asOf) ||
       (row.effective_to !== null && (!validTime(row.effective_to) ||
         Date.parse(row.effective_to) <= Date.parse(asOf)))) {
@@ -68,12 +87,12 @@ export function createPrivateAtlasMedicineIdentityLookup({
   }
   async function lookup({ principalId, workspaceId, codeSystem, sourceCode, asOf } = {}) {
     if (workspaceId !== PILOT_WORKSPACE || !validId(principalId) ||
-        !CODES.has(codeSystem) || typeof sourceCode !== "string" ||
-        !CODE.test(sourceCode) || !validTime(asOf)) {
+        !CODES.has(codeSystem) || !validExactCode(codeSystem, sourceCode) ||
+        !validTime(asOf)) {
       throw denied("invalid_exact_identity_request");
     }
     const now = clock();
-    if (!Number.isFinite(now) || Date.parse(asOf) > now) {
+    if (!Number.isSafeInteger(now) || now <= 0 || Date.parse(asOf) > now) {
       throw denied("invalid_exact_identity_request");
     }
     const context = Object.freeze({ principalId, workspaceId, purpose: PURPOSE, asOf });
@@ -98,30 +117,31 @@ export function createPrivateAtlasMedicineIdentityLookup({
     // Conflicts are not sorted or guessed into one medicine.
     const state = rows.length === 0 ? "no_accepted_identity" :
       rows.length > 1 ? "multiple_current_mappings_require_review" : "accepted_identity_source_checked";
-    if (rows.length === 1) {
-      const row = rows[0];
+    // Even ambiguous mappings may contain licensed terminology: do not
+    // reveal the existence of multiple current rows without checking rights
+    // on every underlying publisher/version/revision first.
+    const checkedGrants = [];
+    for (const row of rows) {
       const rights = await verifyCurrentSourceRights(Object.freeze({
         ...context, sourceId: row.source_id,
         sourceVersion: row.source_version, rightsRevision: row.rights_revision,
       }));
-      if (!rights || rights.verified !== true || rights.active !== true ||
-          rights.workspaceId !== PILOT_WORKSPACE ||
-          rights.sourceId !== row.source_id ||
-          rights.sourceVersion !== row.source_version ||
-          rights.rightsRevision !== row.rights_revision ||
-          rights.allowedPurpose !== PURPOSE ||
-          !validTime(rights.checkedAt) ||
-          Date.parse(rights.checkedAt) > now ||
-          now - Date.parse(rights.checkedAt) > 60_000 ||
-          (rights.validUntil != null &&
-            (!validTime(rights.validUntil) || Date.parse(rights.validUntil) <= now))) {
+      const checkedAt = clock();
+      if (!Number.isSafeInteger(checkedAt) || checkedAt < now ||
+          !currentRights(rights, row, checkedAt)) {
         throw denied("source_rights_not_accepted");
       }
+      checkedGrants.push({ rights, row });
     }
     const rechecked = await verifyPrivateSession(context);
-    if (!approvedSession(rechecked, principalId, now) ||
+    const afterReadNow = clock();
+    if (!Number.isSafeInteger(afterReadNow) || afterReadNow < now ||
+        !approvedSession(rechecked, principalId, afterReadNow) ||
         rechecked.authorityRevision !== session.authorityRevision) {
       throw denied("session_revoked_during_read");
+    }
+    if (checkedGrants.some(({ rights, row }) => !currentRights(rights, row, afterReadNow))) {
+      throw denied("source_rights_revoked_during_read");
     }
     const audit = await recordReadAudit(Object.freeze({
       ...context, codeSystem, sourceCode, state,
@@ -130,6 +150,12 @@ export function createPrivateAtlasMedicineIdentityLookup({
     }));
     if (!audit || audit.committed !== true || !validId(audit.eventId)) {
       throw denied("read_audit_unavailable");
+    }
+    const responseNow = clock();
+    if (!Number.isSafeInteger(responseNow) || responseNow < afterReadNow ||
+        !approvedSession(rechecked, principalId, responseNow) ||
+        checkedGrants.some(({ rights, row }) => !currentRights(rights, row, responseNow))) {
+      throw denied("authority_expired_before_response");
     }
     const row = rows.length === 1 ? rows[0] : null;
     return Object.freeze({
