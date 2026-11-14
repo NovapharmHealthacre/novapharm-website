@@ -1203,9 +1203,10 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 3,
-      "referenceCount": 4,
+      "usageCount": 4,
+      "referenceCount": 6,
       "usageFiles": [
+        ".github/workflows/publish-aws-contact-production.yml",
         "creative-assets/asset-register.json",
         "scripts/apply-global-distribution-foundation.mjs",
         "scripts/test-global-distribution-foundation.mjs"
