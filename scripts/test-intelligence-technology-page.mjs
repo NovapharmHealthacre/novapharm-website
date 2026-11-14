@@ -195,8 +195,8 @@ for (const [label, markup] of [["source", source], ["published", published]]) {
   assert.ok(!markup.includes('href="/contact/?enquiry=General%20enquiry&amp;intelligencePlan=starter"'), label + " must not send Starter to contact");
   assert.ok(!markup.includes('href="/contact/?enquiry=General%20enquiry&amp;intelligencePlan=professional"'), label + " must not send Professional to contact");
 }
-assert.ok(published.includes('src="/assets/js/intelligence-pricing.js?v=20261112-single-visible-v1"'), "Pricing module must be cache-busted in published site");
-assert.ok(materialiser.includes('src="/assets/js/intelligence-pricing.js?v=20261112-single-visible-v1"'), "Build must version pricing module");
+assert.ok(published.includes('src="/assets/js/intelligence-pricing.js?v=20261114-approved-trial-v1"'), "Pricing module must be cache-busted in published site");
+assert.ok(materialiser.includes('src="/assets/js/intelligence-pricing.js?v=20261114-approved-trial-v1"'), "Build must version pricing module");
 assert.ok(styles.includes(".npi-pricing-grid") && styles.includes(".npi-billing-switch button:focus-visible"), "Responsive comparison and keyboard focus styles required");
 assert.ok(styles.includes("#intelligence-pricing .npi-plan-cta[hidden]"), "The unselected billing-period link must remain hidden");
 
