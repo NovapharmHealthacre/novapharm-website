@@ -133,6 +133,21 @@ async function requireUniqueIndexes(collections) {
   }
 }
 
+// MongoDB may report an uncertain commit acknowledgment after the server
+// already durably committed. Only recover from the explicit driver label and
+// only when an independent majority read proves the full manifest/evidence/
+// audit tuple for THIS transaction and event.
+function unknownCommitResult(error) {
+  try {
+    if (typeof error?.hasErrorLabel === "function" &&
+      error.hasErrorLabel("UnknownTransactionCommitResult") === true) return true;
+  } catch {
+    return false;
+  }
+  return Array.isArray(error?.errorLabels) &&
+    error.errorLabels.includes("UnknownTransactionCommitResult");
+}
+
 function readRequest(p) {
   return p && typeof p === "object" && p.workspaceId === WORKSPACE &&
     ident(p.transactionId) && sha(p.manifestSha256) &&
@@ -280,10 +295,28 @@ export function createAtlasG2AtomicStore({
         }
       });
     } catch (error) {
-      if (error?.code === "live_authority_or_rights_revoked" ||
-          error?.code === "live_canonical_identity_unverified" ||
-          error?.code === "live_source_reconciliation_unverified") throw error;
-      denied("atomic_transaction_failed");
+      if (unknownCommitResult(error)) {
+        const receipt = await readBackCommit({
+          workspaceId: WORKSPACE,
+          transactionId,
+          manifestSha256: p.manifestSha256,
+          eventId: p.eventId,
+          expectedRows: p.rowCount
+        });
+        // Never assume that a driver error label is proof of a commit.
+        // Fail closed, flag operator reconciliation, and do not retry a
+        // possibly committed write without exact manifest inspection.
+        if (!receipt || receipt.durable !== true ||
+            receipt.auditCommitted !== true ||
+            receipt.customerPublishApproved !== false) {
+          denied("atomic_commit_outcome_unknown");
+        }
+      } else {
+        if (error?.code === "live_authority_or_rights_revoked" ||
+            error?.code === "live_canonical_identity_unverified" ||
+            error?.code === "live_source_reconciliation_unverified") throw error;
+        denied("atomic_transaction_failed");
+      }
     }
     return Object.freeze({
       committed: true, transactionId, workspaceId: WORKSPACE,
