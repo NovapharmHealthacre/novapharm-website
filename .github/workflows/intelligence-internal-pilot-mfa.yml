@@ -6,6 +6,7 @@ on:
       - 'src/core/intelligence-internal-pilot-mfa.mjs'
       - 'src/core/intelligence-customer-oidc.mjs'
       - 'apps/portal/app/auth/callback/route.ts'
+      - 'apps/portal/proxy.ts'
       - 'apps/portal/app/auth/internal/mfa/setup/route.ts'
       - 'scripts/test-intelligence-internal-pilot-mfa.mjs'
       - 'docs/intelligence/INTERNAL_PILOT_MFA_ONBOARDING_20261114.md'
