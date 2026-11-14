@@ -152,6 +152,7 @@ class PortalSecurityTests(unittest.TestCase):
                 'aria-controls="shop-basket-drawer"',
                 'aria-haspopup="dialog" aria-expanded="false"',
                 'id="shop-nav-count"',
+                'class="shop-basket-symbol" aria-hidden="true"',
                 'id="shop-basket-backdrop" class="shop-basket-backdrop" hidden',
                 'id="shop-basket-drawer" class="shop-basket" role="dialog"',
                 'aria-modal="true"',
