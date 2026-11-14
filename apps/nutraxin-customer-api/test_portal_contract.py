@@ -138,6 +138,53 @@ class PortalSecurityTests(unittest.TestCase):
         finally:
             PORTAL.session=previous
 
+    def test_products_top_basket_uses_accessible_dialog_without_permanent_sidebar(self):
+        previous=PORTAL.session
+        PORTAL.session=lambda event:{
+            "username":"synthetic-personal","sub":"synthetic-personal-sub",
+            "email":"customer@example.invalid","expires_at":PORTAL.now()+3600}
+        try:
+            response=PORTAL.handler(self.event("/portal/products/"),None)
+            self.assertEqual(response["statusCode"],200)
+            body=response["body"]
+            for required in (
+                'id="shop-basket-open"',
+                'aria-controls="shop-basket-drawer"',
+                'aria-haspopup="dialog" aria-expanded="false"',
+                'id="shop-nav-count"',
+                'id="shop-basket-backdrop" class="shop-basket-backdrop" hidden',
+                'id="shop-basket-drawer" class="shop-basket" role="dialog"',
+                'aria-modal="true"',
+                'id="shop-basket-close"',
+                '.editorial-customer .shop-layout{display:block}',
+                'position:sticky;top:0;z-index:50;',
+                '#shop-basket-drawer[hidden],#shop-basket-backdrop[hidden]{display:none!important}',
+                'id="shop-retail-checkout"',
+                'id="shop-submit"'):
+                self.assertIn(required,body)
+            self.assertNotIn('<aside class="shop-basket"',body)
+            self.assertNotIn('position:sticky;top:22px;border:1px solid',body.split('/* Full-width editorial product grid.')[1])
+            for signal in (
+                'function openBasket(){','function closeBasket(){',
+                'function basketKeyboard(event){',
+                'basketToggle.addEventListener("click",openBasket)',
+                'basketClose.addEventListener("click",closeBasket)',
+                'basketBackdrop.addEventListener("click",closeBasket)',
+                'document.addEventListener("keydown",basketKeyboard)',
+                'navCount.textContent=String(quantity)',
+                'basketToggle.setAttribute("aria-label"',
+                'if(q.get("checkout")==="cancelled"){openBasket();',
+                'if(q.get("checkout")==="return"){openBasket();',
+                'sessionStorage.setItem(basketKey',
+                'fetch("/api/retail/checkout"',
+                'd.paid===true&&d.status==="PAID"'):
+                self.assertIn(signal,PORTAL.CUSTOMER_PRODUCTS_JS)
+            # Existing application routes other than Products must not expose a dummy basket.
+            account=PORTAL.handler(self.event("/portal/account/"),None)
+            self.assertNotIn('id="shop-basket-open"',account["body"])
+        finally:
+            PORTAL.session=previous
+
     def test_server_records_fixed_retail_channel_for_private_stripe_worker(self):
         source=(ROOT/"apps/nutraxin-customer-api/index.py").read_text()
         self.assertIn('"checkoutChannel": {"S": "PORTAL_RETAIL"}',source)
@@ -1034,7 +1081,7 @@ class PortalSecurityTests(unittest.TestCase):
         try:
             page=PORTAL.handler(self.event("/portal/products/"),None)
             self.assertEqual(page["statusCode"],200)
-            self.assertIn("My Products.",page["body"])
+            self.assertIn('id="customer-products-title">Products</h1>',page["body"])
             self.assertIn('src="/customer-products.js"',page["body"])
             self.assertIn("shop-basket",page["body"])
             self.assertIn("novapharm-healthcare-logo.svg",page["body"])
