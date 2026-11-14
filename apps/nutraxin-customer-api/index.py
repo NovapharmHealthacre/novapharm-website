@@ -1451,9 +1451,11 @@ body.editorial-customer{background:#fff;color:#1d1d1f;overflow-x:hidden}
 .editorial-customer .shop-catalogue{width:100%;min-width:0}
 .editorial-customer .shop-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
 .editorial-customer .shop-card-visual{height:clamp(180px,19vw,265px)}
-.editorial-customer .shop-basket-open{display:inline-flex;align-items:center;gap:9px;padding:9px 17px;min-height:40px;border:1px solid #e5e5e8;border-radius:999px;background:#f5f5f7;color:#1d1d1f;font:inherit;font-size:13px;font-weight:650;white-space:nowrap;cursor:pointer}
-.editorial-customer .shop-basket-open:hover,.editorial-customer .shop-basket-open[aria-expanded=true]{background:#e9e9ed}
-.editorial-customer .shop-basket-open span{font-variant-numeric:tabular-nums}
+.editorial-customer .shop-basket-open{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:7px 10px;min-height:40px;border:1px solid transparent;border-radius:999px;background:transparent;color:#1d1d1f;font:inherit;white-space:nowrap;cursor:pointer}
+.editorial-customer .shop-basket-open:hover,.editorial-customer .shop-basket-open[aria-expanded=true]{background:#f5f5f7}
+.editorial-customer .shop-basket-symbol{position:relative;display:inline-block;width:19px;height:18px;margin-top:5px;border:1.6px solid #1d1d1f;border-radius:3px}
+.editorial-customer .shop-basket-symbol:before{content:"";position:absolute;left:4px;right:4px;top:-8px;height:9px;border:1.6px solid #1d1d1f;border-bottom:0;border-radius:8px 8px 0 0}
+.editorial-customer #shop-nav-count{display:inline-grid;place-items:center;min-width:21px;height:21px;padding:0 5px;border-radius:999px;background:#1d1d1f;color:#fff;font-size:11px;font-weight:650;font-variant-numeric:tabular-nums}
 .editorial-customer .shop-basket-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.28);z-index:98}
 .editorial-customer #shop-basket-drawer{position:fixed!important;inset:0 0 0 auto;width:min(475px,100vw);height:100dvh;max-height:100dvh;overflow-y:auto;z-index:99;background:#fff;border:0;border-left:1px solid #dedee3;border-radius:0;box-shadow:-15px 0 65px rgba(0,0,0,.13);padding:clamp(21px,3vw,34px);overscroll-behavior:contain}
 #shop-basket-drawer[hidden],#shop-basket-backdrop[hidden]{display:none!important}
@@ -1514,7 +1516,7 @@ body.editorial-customer{background:#fff;color:#1d1d1f;overflow-x:hidden}
             '<a href="/portal/account/">My account</a>'+
             ('<button id="shop-basket-open" class="shop-basket-open" type="button" '
              'aria-controls="shop-basket-drawer" aria-haspopup="dialog" aria-expanded="false" '
-             'aria-label="Basket, 0 units">Basket <span id="shop-nav-count" '
+             'aria-label="Basket, 0 units" title="Open basket"><span class="shop-basket-symbol" aria-hidden="true"></span><span id="shop-nav-count" '
              'aria-live="polite" aria-atomic="true">0</span></button>'
              if route=="/portal/products/" else '')+logout_form+'</div>'
             '</header><main class="editorial-main">'+body+'</main>'
