@@ -62,7 +62,7 @@ function fake({ records = [row], sessionValues = [session, session], rights = gr
       observed.audits.push(context);
       return audit;
     },
-    clock: () => time,
+    clock: (() => { let tick = 0; return () => typeof time === "function" ? time(tick++) : time; })(),
   });
   return { service, observed };
 }
@@ -171,4 +171,82 @@ test("unapproved or wrong-tenant result rows and hidden fields are never returne
 test("a missing durable read audit refuses to disclose identity", async () => {
   const { service } = fake({ audit: { committed: false } });
   await assert.rejects(service.lookup(request), rejects("read_audit_unavailable"));
+});
+
+test("only exact 15-character BNF presentation and numeric SNOMED codes can enter a query", async () => {
+  const badCodes = [
+    { codeSystem: "BNF_PRESENTATION_CODE", sourceCode: "0208020Z0AAA" },
+    { codeSystem: "BNF_PRESENTATION_CODE", sourceCode: "0208020z0AAAAAA" },
+    { codeSystem: "BNF_PRESENTATION_CODE", sourceCode: "0208020Z0AAAAAA " },
+    { codeSystem: "SNOMED_CODE", sourceCode: "CODE-UNKNOWN" },
+    { codeSystem: "SNOMED_CODE", sourceCode: "12345" },
+    { codeSystem: "SNOMED_CODE", sourceCode: "1234567890123456789" },
+  ];
+  for (const invalid of badCodes) {
+    const { service, observed } = fake();
+    await assert.rejects(service.lookup({ ...request, ...invalid }),
+      rejects("invalid_exact_identity_request"));
+    assert.equal(observed.queries, 0);
+  }
+  const validCode = "123456789";
+  const validSystem = "SNOMED_CODE";
+  const { service } = fake({ records: [{
+    ...row, code_system: validSystem, normalized_code: validCode,
+  }] });
+  const result = await service.lookup({
+    ...request, codeSystem: validSystem, sourceCode: validCode,
+  });
+  assert.equal(result.identity.sourceCode, validCode);
+});
+
+test("a conflicting second identity still requires current rights for every source", async () => {
+  const otherRow = {
+    ...row, identity_id: "medicine_002", source_id: "publisher_002",
+    source_version: "2026-10", rights_revision: "rights-v2",
+  };
+  const { service, observed } = fake({
+    records: [row, otherRow],
+    rights: grant,
+  });
+  await assert.rejects(service.lookup(request),
+    rejects("source_rights_not_accepted"));
+  assert.equal(observed.rights.length, 2);
+  assert.equal(observed.audits.length, 0);
+});
+
+test("historical as-of identity cannot cite evidence verified after that time", async () => {
+  const { service, observed } = fake({
+    records: [{ ...row, verified_at: "2026-11-14T17:50:00Z" }],
+  });
+  await assert.rejects(service.lookup(request),
+    rejects("source_identity_unverified"));
+  assert.equal(observed.audits.length, 0);
+});
+
+test("session expiry during a slow rights check aborts even after a valid initial check", async () => {
+  const { service, observed } = fake({
+    time: tick => tick >= 2 ? NOW + 3_700_000 : NOW,
+  });
+  await assert.rejects(service.lookup(request),
+    rejects("session_revoked_during_read"));
+  assert.equal(observed.audits.length, 0);
+});
+
+test("session expiry after durable audit cannot result in an identity response", async () => {
+  const { service, observed } = fake({
+    time: tick => tick >= 3 ? NOW + 3_700_000 : NOW,
+  });
+  await assert.rejects(service.lookup(request),
+    rejects("authority_expired_before_response"));
+  assert.equal(observed.audits.length, 1);
+});
+
+test("source-rights expiry after audit blocks the final output", async () => {
+  const { service, observed } = fake({
+    rights: { ...grant, validUntil: "2026-11-14T18:00:30Z" },
+    time: tick => tick >= 3 ? NOW + 40_000 : NOW,
+  });
+  await assert.rejects(service.lookup(request),
+    rejects("authority_expired_before_response"));
+  assert.equal(observed.audits.length, 1);
 });
