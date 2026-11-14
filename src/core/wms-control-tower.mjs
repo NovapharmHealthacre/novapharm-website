@@ -135,11 +135,12 @@ export function reviewQualified3plSnapshot(packet = {}, {
   for (const lot of packet.lots) {
     if (!object(lot) || lot.tenantId !== tenantId || lot.siteId !== siteId ||
         !goodId(lot.sku) || !goodId(lot.batchNumber) ||
+        !goodId(lot.ownerId) || !goodId(lot.locationId) ||
         !Number.isFinite(utcDay(lot.expiryDate))) {
       reasons.push("invalid_or_cross_tenant_lot");
       break;
     }
-    const key = lot.sku + "|" + lot.batchNumber;
+    const key = lot.ownerId + "|" + lot.locationId + "|" + lot.sku + "|" + lot.batchNumber;
     if (seen.has(key)) { reasons.push("duplicate_lot"); break; }
     seen.add(key);
     const fields = ["onHand", "reserved", "quarantined", "damaged"];
@@ -160,7 +161,8 @@ export function reviewQualified3plSnapshot(packet = {}, {
       if (!Number.isSafeInteger(released)) { reasons.push("stock_quantity_overflow"); break; }
       if (releasable > 0) eligible.push(Object.freeze({
         sku: lot.sku, batchNumber: lot.batchNumber,
-        siteId, expiryDate: lot.expiryDate,
+        siteId, ownerId: lot.ownerId, locationId: lot.locationId,
+        expiryDate: lot.expiryDate,
         // Suggested FEFO sequence only; cannot reserve, ship or promise stock.
         quantityForQualityReview: releasable,
       }));
