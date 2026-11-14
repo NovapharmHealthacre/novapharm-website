@@ -143,3 +143,11 @@
 .distribution-wms-control-nav a:focus-visible{outline:3px solid #0071e3;outline-offset:2px}
 @media(max-width:570px){.distribution-wms-control-nav{grid-template-columns:1fr 1fr;gap:0 12px}.distribution-wms-control-nav a{min-height:146px}}
 @media(max-width:360px){.distribution-wms-control-nav{grid-template-columns:1fr}.distribution-wms-control-nav a{min-height:auto}}
+
+/* Official NovaPharm Distribution wordmark: preserve ratio and keyboard focus. */
+.employee-distribution-shell .workspace-topbar > .distribution-brand img{
+  display:block;width:100%;height:auto;aspect-ratio:2307/408;object-fit:contain;
+}
+.employee-distribution-shell .workspace-topbar > .distribution-brand:focus-visible{
+  outline:3px solid #0071e3;outline-offset:4px;border-radius:3px;
+}
