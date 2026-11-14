@@ -170,7 +170,7 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
     ? nutraxinProductForSelection(window.location.search) : null;
   const navigation = modulesByArea[module.area];
   const isEditorialCustomerDashboard = module.code === "customer.dashboard";
-  const isEditorialEmployeeDistribution = module.code === "employee.dashboard" || module.code === "employee.orders";
+  const isEditorialEmployeeDistribution = module.code === "employee.dashboard" || module.code === "employee.orders" || module.code === "employee.warehouse";
   const isEditorialPortal = isEditorialCustomerDashboard || isEditorialEmployeeDistribution;
   return <main className={isEditorialCustomerDashboard ? "workspace-shell customer-editorial-dashboard"
     : isEditorialEmployeeDistribution ? "workspace-shell employee-distribution-shell" : "workspace-shell"}>
