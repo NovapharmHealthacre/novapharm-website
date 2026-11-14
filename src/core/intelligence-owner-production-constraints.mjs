@@ -61,9 +61,17 @@ export function validateOwnerProductionConstraints(policy) {
     policy.productionSignoff !== "not_granted"
   ) throw fail();
 
-  if (!exactly(policy.initialInfrastructureBudget, ["status", "monthlyCapGbp"]) ||
-    policy.initialInfrastructureBudget.status !== "not_approved" ||
-    policy.initialInfrastructureBudget.monthlyCapGbp !== null
+  // The owner permits existing subscriptions only, capped at GBP 0
+  // additional monthly spend. This authorises no new metered usage or
+  // public production activation and is not an AWS cost guarantee.
+  if (!exactly(policy.initialInfrastructureBudget, [
+    "status", "monthlyCapGbp", "existingSubscriptionsOnly",
+    "newChargeableResourceProvisioning"
+  ]) ||
+    policy.initialInfrastructureBudget.status !== "zero_additional_spend_only" ||
+    policy.initialInfrastructureBudget.monthlyCapGbp !== 0 ||
+    policy.initialInfrastructureBudget.existingSubscriptionsOnly !== true ||
+    policy.initialInfrastructureBudget.newChargeableResourceProvisioning !== false
   ) throw fail();
 
   if (!exactly(policy.productionPermissions, EXPECTED_FLAGS) ||
@@ -83,6 +91,9 @@ export function validateOwnerProductionConstraints(policy) {
     nextMilestone: "private_read_only_pilot",
     engineeringMayContinueWithinListedScope: true,
     budgetApproved: false,
+    additionalMonthlyCapGbp: 0,
+    existingSubscriptionsOnly: true,
+    independentlyProvenZeroIncrementalCostRequired: true,
     nativeVendorConnectionApproved: false,
     licensedDataAdmissionApproved: false,
     productionDeploymentApproved: false,
