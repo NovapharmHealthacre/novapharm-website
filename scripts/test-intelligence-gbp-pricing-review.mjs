@@ -35,7 +35,10 @@ test("public marketing candidates are GBP and never a payment flow", () => {
     assert.ok(s.includes('data-monthly-gbp="199" data-annual-gbp="2030"'));
     assert.ok(s.includes('data-monthly-gbp="699" data-annual-gbp="7130"'));
     assert.ok(s.includes("£2,799"));
-    assert.ok(s.includes("Proposed prices in GBP"));
+    assert.ok(s.includes("Approved monthly prices in GBP"));
+    assert.ok(s.includes('data-npi-starter-trial="approved"'));
+    assert.ok(s.includes("No automatic subscription or charges"));
+    assert.doesNotMatch(s, /href="https:\/\/intelligence\.novapharmhealthcare\.com\/auth\/customer\/register\?/);
     assert.ok(s.includes("not live subscriptions"));
     assert.ok(s.includes("No payment will be collected here"));
     assert.doesNotMatch(s,/data-(monthly|annual)-inr|checkout[.]stripe[.]com/);
