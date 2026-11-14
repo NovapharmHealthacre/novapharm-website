@@ -421,32 +421,37 @@ for (const spec of [
   { file: publishWorkflow, step: "Prove default public website is noncollecting", variable: "products_css_sha256", staged: true, asset: "assets/css/products-editorial.css", version: "20261111-products-layout-v4" },
   { file: publishWorkflow, step: "Verify approved Capabilities Earth, pharmaceutical vial and layout on the live domain", variable: "capabilities_css_sha256", asset: "assets/css/capabilities-editorial.css", version: "20261111-capabilities-approved-photo-v5" },
   { file: publishWorkflow, step: "Verify full-scene Oncology hero and un-cropped mobile styling on live domain", variable: "oncology_css_sha256", asset: "assets/css/oncology-hope-v2.css", version: "20261113-hope-responsive-v7" },
-  { file: publishWorkflow, step: "Verify supplied official logo and secure header on four live pages", variable: "bundle_css_sha256", asset: bundle, version: defaultVersion }
+  { file: publishWorkflow, step: "Verify supplied official logo and secure header on four live pages", variable: "bundle_css_sha256", fromBuild: true, asset: bundle, version: defaultVersion }
 ]) {
   test(`actual Bash acceptance guard rejects stale, wrong-version and missing hashes: ${spec.variable} ${spec.staged ? "staged" : "live"} ${spec.file}`, t => {
     const { root } = fixture(t);
     const shell = workflowStepShell(spec.file, spec.step);
     const assignments = shell.filter(line => line.trim().startsWith(`${spec.variable}=`));
     const cssFile = `${spec.staged ? "_site/" : ""}${spec.asset}`;
-    assert.deepEqual(assignments, [`${spec.variable}="$(sha256sum ${cssFile})"`, `${spec.variable}="\${${spec.variable}%% *}"`]);
+    assert.deepEqual(assignments, spec.fromBuild ? ['bundle_css_sha256="$EXPECTED_BUNDLE_CSS_SHA256"']
+      : [`${spec.variable}="$(sha256sum ${cssFile})"`, `${spec.variable}="\${${spec.variable}%% *}"`]);
+    const validations = spec.fromBuild ? shell.filter(line => line.includes('[[ "$bundle_css_sha256" =~')) : [];
+    if (spec.fromBuild) assert.deepEqual(validations, ['[[ "$bundle_css_sha256" =~ ^[0-9a-f]{64}$ ]]']);
     const checks = shell.filter(line => line.includes(`href=\\\"/${spec.asset}?v=${spec.version}&amp;sha256=\${${spec.variable}}`));
     assert.equal(checks.length, 1);
     const pattern = checks[0].match(/grep -Fq ("(?:\\.|[^"\\])*")/)?.[1];
     assert.ok(pattern, "Missing exact fixed-string grep assertion");
     // Execute only the real digest assignments and grep expression, never a workflow body.
-    const code = ["set -euo pipefail", ...assignments, `grep -Fq ${pattern} "$1"`].join("\n");
+    const code = ["set -euo pipefail", ...assignments, ...validations, `grep -Fq ${pattern} "$1"`].join("\n");
     const bytes = Buffer.from("/* synthetic workflow CSS */\r\nbody { color: #abcdef; }\r\n");
     write(root, cssFile, bytes);
     const htmlFile = join(root, "strict-workflow-fixture.html");
     for (const [name, href, accepted] of strictHrefCases(spec.asset, spec.version, hash(bytes))) {
       writeFileSync(htmlFile, `<link rel="stylesheet" ${href}>`);
-      const result = spawnSync("bash", ["-c", code, "strict-css-test", htmlFile], { cwd: root, encoding: "utf8", timeout: 5000 });
+      const result = spawnSync("bash", ["-c", code, "strict-css-test", htmlFile], { cwd: root, encoding: "utf8", timeout: 5000,
+        env: { ...process.env, EXPECTED_BUNDLE_CSS_SHA256: hash(readFileSync(join(root, cssFile))) } });
       assert.equal(result.error, undefined);
       assert.equal(result.status === 0, accepted, `${name}: ${result.stderr}`);
     }
     writeFileSync(htmlFile, `<link rel="stylesheet" href="/${spec.asset}?v=${spec.version}&amp;sha256=${hash(bytes)}">`);
     write(root, cssFile, Buffer.concat([bytes, Buffer.from("/* newer staged/local CSS */")]));
-    const stale = spawnSync("bash", ["-c", code, "strict-css-test", htmlFile], { cwd: root, encoding: "utf8", timeout: 5000 });
+    const stale = spawnSync("bash", ["-c", code, "strict-css-test", htmlFile], { cwd: root, encoding: "utf8", timeout: 5000,
+      env: { ...process.env, EXPECTED_BUNDLE_CSS_SHA256: hash(readFileSync(join(root, cssFile))) } });
     assert.equal(stale.status, 1, stale.stderr);
   });
 }
@@ -549,4 +554,62 @@ test("live Technology pricing checks match current markup and reject retired cal
   assert.equal(inspect(canonical.replaceAll("Create free account", "Request free trial")), 1, "Retired trial action must not pass");
   assert.equal(inspect(canonical.replaceAll("Subscribe", "Request Professional")), 1, "Retired paid action must not pass");
   assert.equal(inspect(canonical.replaceAll('data-npi-plan="trial"', 'data-npi-plan="missing"')), 1, "Missing trial plan must not pass");
+});
+
+test("deployment bundle guard binds generated staged bytes rather than stale checkout bytes", t => {
+  const { root } = fixture(t);
+  const shell = workflowStepShell(publishWorkflow, "Verify supplied official logo and secure header on four live pages");
+  const assignments = shell.filter(line => line.trim().startsWith("bundle_css_sha256="));
+  const validations = shell.filter(line => line.includes('[[ "$bundle_css_sha256" =~'));
+  const pattern = shell.find(line => line.includes("href=\\\"/assets/css/novapharm.bundle.css?"))?.match(/grep -Fq ("(?:\\.|[^"\\])*")/)?.[1];
+  assert.ok(pattern);
+  const code = ["set -euo pipefail", ...assignments, ...validations, `grep -Fq ${pattern} "$1"`].join("\n");
+  const staged = "/* generated from reviewed configuration, not the checkout cache */";
+  write(root, bundle, "/* older checked-in generated bundle */");
+  const htmlFile = join(root, "deployed.html");
+  writeFileSync(htmlFile, `<link rel="stylesheet" href="/${bundle}?v=${defaultVersion}&amp;sha256=${hash(staged)}">`);
+  const inspect = receipt => spawnSync("bash", ["-c", code, "staged-digest-test", htmlFile], {
+    cwd: root, encoding: "utf8", timeout: 5000,
+    env: { ...process.env, EXPECTED_BUNDLE_CSS_SHA256: receipt },
+  });
+  const accepted = inspect(hash(staged));
+  assert.equal(accepted.error, undefined);
+  assert.equal(accepted.status, 0, "The published generated bundle must be checked against the build receipt");
+  for (const receipt of ["", "invalid", hash("older build"), hash(staged).slice(0, 40)]) {
+    assert.notEqual(inspect(receipt).status, 0, "Missing, malformed or stale build receipt must fail closed");
+  }
+  write(root, bundle, "/* another stale checkout cache must not influence the receipt */");
+  assert.equal(inspect(hash(staged)).status, 0);
+});
+
+test("build receipt is emitted only after all staged bundle links match and is fenced before deployment", t => {
+  const { root } = fixture(t);
+  const workflow = read(sourceRoot, publishWorkflow);
+  assert.match(workflow, /bundle_css_sha256: \$\{\{ steps\.public_css\.outputs\.bundle_css_sha256 \}\}/);
+  assert.equal((workflow.match(/EXPECTED_BUNDLE_CSS_SHA256: \$\{\{ needs\.build-and-verify\.outputs\.bundle_css_sha256 \}\}/g) ?? []).length, 2);
+  const producer = workflowStepShell(publishWorkflow, "Bind staged shared stylesheet to deployment receipt").join("\n");
+  const fence = workflowStepShell(publishWorkflow, "Prove forward-only release ancestry and deploy evidence").join("\n");
+  assert.ok(fence.includes('[[ "$EXPECTED_BUNDLE_CSS_SHA256" =~ ^[0-9a-f]{64}$ ]]'));
+  assert.ok(workflow.indexOf("Bind staged shared stylesheet to deployment receipt") < workflow.indexOf("Upload exact verified Pages artifact"));
+  assert.ok(workflow.indexOf("Prove forward-only release ancestry and deploy evidence") < workflow.indexOf("Publish verified Pages artifact"));
+  const bytes = "/* synthetic build output */";
+  write(root, `_site/${bundle}`, bytes);
+  const html = `<link rel="stylesheet" href="/${bundle}?v=${defaultVersion}&amp;sha256=${hash(bytes)}">`;
+  const pages = ["index.html", "capabilities/index.html", "oncology/index.html", "products/index.html"];
+  for (const page of pages) write(root, `_site/${page}`, html);
+  const output = join(root, "output.txt");
+  const inspect = () => spawnSync("bash", ["-c", producer], { cwd: root, encoding: "utf8", timeout: 5000, env: { ...process.env, GITHUB_OUTPUT: output } });
+  const valid = inspect();
+  assert.equal(valid.error, undefined);
+  assert.equal(valid.status, 0, valid.stderr);
+  assert.equal(readFileSync(output, "utf8"), `bundle_css_sha256=${hash(bytes)}\n`);
+  rmSync(output);
+  for (const page of pages) {
+    write(root, `_site/${page}`, html.replace(hash(bytes), hash("stale output")));
+    assert.notEqual(inspect().status, 0, page);
+    assert.equal(spawnSync("test", ["-e", output]).status, 1, "No receipt may be emitted after refusal");
+    write(root, `_site/${page}`, html);
+  }
+  write(root, `_site/${bundle}`, "");
+  assert.notEqual(inspect().status, 0);
 });
