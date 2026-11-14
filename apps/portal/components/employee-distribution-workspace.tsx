@@ -36,7 +36,7 @@ const process = [
 ] as const;
 
 function WorkAreaCards() {
-  return <div className="distribution-employee-grid" aria-label="Distribution operations">
+  return <div className="distribution-employee-grid">
     {workAreas.map((area) => {
       const entry = modules.get(area.code);
       if (!entry) return null;
