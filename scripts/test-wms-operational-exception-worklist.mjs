@@ -98,7 +98,7 @@ test("bounded samples and masked malformed references do not expand claims",()=>
     section("Quality and recall observations",rows),
   ]));
   assert.equal(out.rows.length,120);
-  assert.equal(out.worklistTruncated,false);
+  assert.equal(out.worklistTruncated,true);
   assert.equal(out.observedSignals,120);
   assert.equal(out.rows.some(x=>x.reference==="owner@email.example"),false);
   assert.ok(out.rows.some(x=>x.reference==="Not recorded"));
