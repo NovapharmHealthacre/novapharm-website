@@ -255,7 +255,7 @@ async function inspectModule(
     } else {
       await page.locator(".icon-command:not(:disabled)").waitFor({ state: "visible", timeout: 20_000 });
     }
-    const expectedHeading = module.code === "executive.nhs-data" ? "Search a medicine" : module.code === "customer.dashboard" ? "Everything for your NovaPharm business." : module.title;
+    const expectedHeading = module.code === "executive.nhs-data" ? "Search a medicine" : module.code === "customer.dashboard" ? "Everything for your NovaPharm business." : module.code === "employee.dashboard" ? "One network. Clear decisions." : module.code === "employee.orders" ? "Telesales, without friction." : module.title;
     assert.equal(await page.locator("h1").textContent(), expectedHeading);
     assert.equal(await page.locator(".workflow-status").textContent(), "");
     assert.match(await page.locator('meta[name="robots"]').getAttribute("content") ?? "", /noindex/);
