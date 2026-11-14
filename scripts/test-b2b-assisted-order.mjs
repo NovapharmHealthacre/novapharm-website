@@ -55,7 +55,7 @@ test('browser fields cannot set price, stock, VAT, payment or account',()=>{
 test('invalid quantities and idempotency identifiers are rejected',()=>{
   for (const quantity of [-1,0,1.5,10001,'1',Infinity])
     assert.throws(()=>make({requestedLines:[{sku:'NUT-UK-VD3-T120',quantity}]}),/quantity/);
-  assert.throws(()=>make({requestId:'bad'}),/idempotency/);
+  assert.throws(()=>make({requestId:'!!'}),/idempotency/);
   assert.throws(()=>make({requestedLines:Array.from({length:51},(_,i)=>({sku:'NUT-UK-VD3-T120',quantity:i+1}))}),/1 to 50/);
 });
 test('customer projection redacts staff and caller identifiers and private pricing',()=>{
