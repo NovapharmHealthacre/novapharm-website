@@ -128,7 +128,25 @@ class PortalSecurityTests(unittest.TestCase):
                 self.assertIn(label,result["body"])
                 self.assertNotIn("Stripe Checkout",result["body"])
             dashboard=PORTAL.handler(self.event("/portal/dashboard/"),None)
-            self.assertEqual(dashboard["body"].count('class="tile"'),17)
+            self.assertEqual(dashboard["body"].count('class="tile"'),0)
+            self.assertIn('class="editorial-customer"',dashboard["body"])
+            self.assertIn('class="editorial-hero"',dashboard["body"])
+            self.assertIn("Everything you need.",dashboard["body"])
+            self.assertIn("The rest, within reach.",dashboard["body"])
+            self.assertIn('class="editorial-topnav"',dashboard["body"])
+            self.assertIn("novapharm-healthcare-logo.svg",dashboard["body"])
+            for image in ("vitamin-d3-120-tablets-480.webp",
+                          "vitamin-c-1000mg-30-tablets-480.webp",
+                          "magnesium-complex-60-tablets-480.webp"):
+                self.assertIn("https://novapharmhealthcare.com/assets/media/products/nutraxin/"+image,
+                              dashboard["body"])
+            for label,href,_ in PORTAL.CUSTOMER_WORKSPACE_MODULES:
+                self.assertIn('href="'+href+'"',dashboard["body"],label)
+            self.assertNotIn('data:image/',dashboard["body"])
+            self.assertNotIn('<script',dashboard["body"])
+            self.assertIn('name="signup_csrf"',dashboard["body"])
+            self.assertIn("Product images are illustrative catalogue references",dashboard["body"])
+            self.assertIn("frame-ancestors 'none'",dashboard["headers"]["content-security-policy"])
             self.assertIn("customer+test@example.invalid",dashboard["body"])
             products=PORTAL.handler(self.event("/portal/products/"),None)["body"]
             self.assertIn("Nutraxin",products)
