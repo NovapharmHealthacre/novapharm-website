@@ -155,6 +155,16 @@ class ProductsPaymentTests(unittest.TestCase):
         API.SHOP_ENABLED=False
         self.assertFalse(json.loads(API.handler(self.event("/readiness"),None)["body"])["checkout_ready"])
         self.assertEqual(API.handler(self.event("/checkout","POST",self.basket()),None)["statusCode"],503)
+    def test_per_unit_vat_rounding_aligns_with_portal_at_quantity_three(self):
+        basket={**self.basket(),"lines":[{"sku":"NUT-UK-VD3-T120","quantity":3}]}
+        response=API.handler(self.event("/checkout","POST",basket),None)
+        self.assertEqual(response["statusCode"],200,response["body"])
+        row=DB.rows["ORDER#NUT-"+self.ID]
+        self.assertEqual(row["productNetMinor"]["N"],"2700")
+        self.assertEqual(row["taxMinor"]["N"],"540")
+        self.assertEqual(row["totalGrossMinor"]["N"],"3240")
+        self.assertEqual(json.loads(row["approvedLinesJson"]["S"])[0]["grossMinor"],3240)
+
     def test_uk_owner_price_vat_delivery_and_guest_only_no_stock_claim(self):
         x=API.handler(self.event("/checkout","POST",self.basket()),None)
         self.assertEqual(x["statusCode"],200)
