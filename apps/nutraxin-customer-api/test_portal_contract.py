@@ -224,6 +224,44 @@ class PortalSecurityTests(unittest.TestCase):
         finally:
             PORTAL.session=previous
 
+    def test_safari_base64_encoded_logout_is_accepted_only_with_host_csrf(self):
+        # Match AWS HTTP API v2 form delivery, not only the synthetic plain
+        # form used in the original logout regression test.
+        token="A"*43
+        form="signup_csrf="+token
+        encoded=base64.b64encode(form.encode("utf-8")).decode("ascii")
+        def request(origin="null", body=encoded, cookie=True, source="same-origin"):
+            event=self.event("/logout","POST",origin=origin)
+            event["headers"]["host"]="portal.novapharmhealthcare.com"
+            event["headers"]["content-type"]="application/x-www-form-urlencoded"
+            event["headers"]["sec-fetch-site"]=source
+            event["isBase64Encoded"]=True
+            event["body"]=body
+            event["cookies"]=["__Host-np_signup_csrf="+token] if cookie else []
+            return PORTAL.handler(event,None)
+        for origin in ("null",""):
+            successful=request(origin)
+            self.assertEqual(successful["statusCode"],302)
+            self.assertIn("/logout?",successful["headers"]["location"])
+            self.assertTrue(any(c.startswith("__Host-np_session=;") for c in successful.get("cookies",[])))
+        for origin in ("https://attacker.example.invalid",
+                       "https://portal.novapharmhealthcare.com.attacker.invalid"):
+            denied=request(origin)
+            self.assertEqual(denied["statusCode"],403)
+            self.assertEqual(json.loads(denied["body"])["error"],"invalid_origin")
+        for change in (
+            {"cookie":False}, {"body":"not-base64!!!"},
+            {"body":base64.b64encode(b"\xff\xff").decode("ascii")},
+            {"body":base64.b64encode(b"signup_csrf=wrong").decode("ascii")},
+            {"body":"A"*600}, {"source":"cross-site"},
+        ):
+            denied=request(**change)
+            self.assertEqual(denied["statusCode"],403,change)
+        # A genuine HTTPS same-origin form remains compatible with existing
+        # customer sessions, including API Gateway's encoded transport.
+        allowed=request("https://portal.novapharmhealthcare.com")
+        self.assertEqual(allowed["statusCode"],302)
+
     def test_root_signin_preserved_and_legacy_nutraxin_shop_not_portal_home(self):
         page=PORTAL.handler(self.event("/"),None)
         self.assertEqual(page["statusCode"],200)
