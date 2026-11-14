@@ -107,3 +107,14 @@ export function assessDistributionReleaseCandidate(input = {}) {
     failures: Object.freeze(blocks)
   });
 }
+
+// Source-backed stage readiness and international network metrics share the
+// existing regulated distribution candidate entrypoint. Neither authorises sales.
+export {
+  DISTRIBUTION_STAGES,
+  TERRITORY_RELEASE_CONTROLS,
+  reviewGlobalDistributionStages,
+  reviewFederatedTerritoryCandidate,
+  measureVerifiedDistributionService,
+  reviewReplenishmentSuggestion
+} from './distribution-network-controls.mjs';
