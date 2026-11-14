@@ -26,5 +26,9 @@ jobs:
           node-version: 24
       - name: Check public research JS syntax
         run: node --check assets/js/intelligence-research-launcher.js
+      - name: Install pinned dependencies for the deterministic public build
+        run: npm ci --ignore-scripts
+      - name: Build deterministic public pages before published-output assertions
+        run: npm run build:public-only
       - name: Run Technology page source, privacy and behaviour contracts
         run: node scripts/test-intelligence-technology-page.mjs

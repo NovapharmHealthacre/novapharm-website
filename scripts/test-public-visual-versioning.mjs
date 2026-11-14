@@ -512,3 +512,18 @@ test("commerce pages already present in a later SEO register are not duplicated"
   assert.equal(read(root, registerFile), originalRegister);
   assert.match(passed(run(root)), /0 pages changed/);
 });
+
+for (const [file, command] of [
+  ["intelligence-three-plan-public-pricing.yml", "npm run test:technology-page"],
+  ["intelligence-gbp-pricing-review.yml", "node scripts/test-intelligence-technology-page.mjs"],
+  ["intelligence-research-acceptance.yml", "node scripts/test-intelligence-technology-page.mjs"],
+]) {
+  test(`published-page workflow builds the actual public output before checking content keys: ${file}`, () => {
+    const source = read(sourceRoot, `.github/workflows/${file}`);
+    const install = source.indexOf("run: npm ci");
+    const build = source.indexOf("run: npm run build:public-only");
+    const check = source.indexOf(`run: ${command}`);
+    assert.ok(install >= 0 && build > install && check > build);
+    assert.doesNotMatch(source, /NOVAPHARM_CONTACT_RELEASE_ACCEPTED|NOVAPHARM_CONTACT_API_ORIGIN/);
+  });
+}

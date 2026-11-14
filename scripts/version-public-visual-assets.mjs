@@ -127,7 +127,7 @@ for (const page of pages) {
   }
   const canonicals = linkNodes.filter(node => tokens(attr(node, "rel")).includes("canonical"));
   assert.equal(canonicals.length, 1, `${page.file}: expected exactly one canonical link`);
-  assert.equal(canonicals[0].parentNode, head, `${page.file}: canonical link must be in head`);
+  assert.ok(canonicals[0].parentNode === head, `${page.file}: canonical link must be in head`);
   assert.equal(attr(canonicals[0], "href"), page.canonical, `${page.file}: HTML canonical disagrees with SEO register`);
 
   if (requiredPages.has(page.file)) {

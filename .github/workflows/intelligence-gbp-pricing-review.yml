@@ -23,5 +23,9 @@ jobs:
           node-version: 24
       - name: Preserve GBP-only preview and no payment activation
         run: node --test scripts/test-intelligence-gbp-pricing-review.mjs
+      - name: Install pinned dependencies for the deterministic public build
+        run: npm ci --ignore-scripts
+      - name: Build deterministic public pages before published-output assertions
+        run: npm run build:public-only
       - name: Verify public three-plan card functionality
         run: node scripts/test-intelligence-technology-page.mjs
