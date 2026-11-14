@@ -8,10 +8,10 @@ import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { areaLabels, areaLandingRoutes, areaScopes } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError, protectedMutation } from "../lib/gateway";
 import { CustomerCommerceWorkspace } from "./customer-commerce-workspace";
+import { DistributionBrand } from "./distribution-brand";
 import { EmployeeDistributionWorkspace } from "./employee-distribution-workspace";
 import { MedicinesIntelligence } from "./medicines-intelligence";
 import { PortalBrand } from "./portal-brand";
-import { DistributionBrand } from "./distribution-brand";
 
 type Metric = Readonly<{ key: string; label: string; value: number; format?: string; href?: string | null }>;
 type Column = readonly [string, string, string?];
