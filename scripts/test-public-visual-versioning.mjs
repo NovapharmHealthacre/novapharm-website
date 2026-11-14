@@ -351,10 +351,15 @@ const sourceRoot = fileURLToPath(new URL("../", import.meta.url));
 const { runInNewContext } = await import("node:vm");
 for (const spec of [
   { file: "scripts/test-oncology-content.mjs", asset: "assets/css/oncology-hope-v2.css", version: "20261113-hope-responsive-v7", declarations: ["const approvedLayoutSha256 ="], check: "assert.ok(html.includes(`href=\"/assets/css/oncology-hope-v2.css?" },
-  { file: "scripts/test-owner-corrections.mjs", asset: bundle, version: defaultVersion, declarations: ["const publicCssSha256 =", "const expectedPublicCssHref ="], check: "if (!page.includes(expectedPublicCssHref))" }
+  { file: "scripts/test-owner-corrections.mjs", asset: bundle, version: defaultVersion, declarations: ["const publicCssSha256 =", "const expectedPublicCssHref ="], check: "if (!page.includes(expectedPublicCssHref))" },
+  { file: "scripts/test-intelligence-technology-page.mjs", asset: "assets/css/technology-intelligence.css", version: defaultVersion, declarations: ["const publicTechnologyCssSha256 =", "const expectedTechnologyCssHref ="], check: "assert.ok(published.includes(expectedTechnologyCssHref)" },
+  { file: "scripts/test-intelligence-technology-page.mjs", asset: "assets/css/intelligence-workspace-embedded.css", version: defaultVersion, declarations: ["const publicEmbeddedCssSha256 =", "const expectedEmbeddedCssHref ="], check: "assert.ok(html.includes(expectedEmbeddedCssHref)" },
+  { file: "scripts/test-nutraxin-showcase.mjs", asset: "assets/css/nutraxin-lineup.css", version: defaultVersion, declarations: ["const publicNutraxinCssSha256 =", "const expectedNutraxinCssHref ="], check: "assert.ok(page.includes(expectedNutraxinCssHref)" },
+  { file: "scripts/test-global-distribution-foundation.mjs", asset: "assets/css/markets-editorial.css", version: "20261111-nasa-hd-1", declarations: ["const publicMarketsCssSha256 =", "const expectedMarketsCssHref ="], check: "assert.ok(html.includes(expectedMarketsCssHref)" }
 ]) {
   test(`actual JS acceptance assertion requires exact semantic label and full CSS bytes: ${spec.file}`, t => {
     const { root } = fixture(t);
+    const readFixtureFile = (file, ...options) => readFileSync(isAbsolute(file) ? file : join(root, file), ...options);
     const bytes = Buffer.from("\ufeff/* synthetic strict acceptance */\r\nbody { color: #fedcba; }\r\n");
     write(root, spec.asset, bytes);
     const lines = read(sourceRoot, spec.file).split("\n");
@@ -368,13 +373,13 @@ for (const spec of [
     const code = [...declarations, checks[0]].join("\n");
     for (const [name, href, accepted] of strictHrefCases(spec.asset, spec.version, hash(bytes))) {
       const html = `<link rel="stylesheet" ${href}>`;
-      const execute = () => runInNewContext(code, { createHash, readFileSync, join, root, html, page: html, route: "synthetic", assert, fail: message => { throw new Error(message); } }, { timeout: 1000 });
+      const execute = () => runInNewContext(code, { createHash, readFileSync: readFixtureFile, join, resolve, root, html, published: html, page: html, label: "published page", route: "synthetic", assert, fail: message => { throw new Error(message); } }, { timeout: 1000 });
       if (accepted) assert.doesNotThrow(execute, name);
       else assert.throws(execute, undefined, name);
     }
     write(root, spec.asset, Buffer.concat([bytes, Buffer.from("/* newer synthetic CSS */")]));
     const staleHtml = `<link rel="stylesheet" href="/${spec.asset}?v=${spec.version}&amp;sha256=${hash(bytes)}">`;
-    assert.throws(() => runInNewContext(code, { createHash, readFileSync, join, root, html: staleHtml, page: staleHtml, route: "synthetic", assert, fail: message => { throw new Error(message); } }, { timeout: 1000 }));
+    assert.throws(() => runInNewContext(code, { createHash, readFileSync: readFixtureFile, join, resolve, root, html: staleHtml, published: staleHtml, page: staleHtml, label: "published page", route: "synthetic", assert, fail: message => { throw new Error(message); } }, { timeout: 1000 }));
   });
 }
 
@@ -404,6 +409,7 @@ function workflowStepShell(file, name) {
 
 const publishWorkflow = ".github/workflows/publish-aws-contact-production.yml";
 for (const spec of [
+  { file: ".github/workflows/intelligence-live-smoke.yml", step: "Confirm exact research page, assets and protected-business contact", variable: "workspace_css_sha256", asset: "assets/css/intelligence-workspace-embedded.css", version: defaultVersion },
   { file: publishWorkflow, step: "Prove default public website is noncollecting", variable: "distribution_css_sha256", staged: true, asset: "assets/css/global-distribution-editorial.css", version: defaultVersion },
   { file: publishWorkflow, step: "Verify live Global Distribution, Market Access and Markets pages", variable: "distribution_css_sha256", asset: "assets/css/global-distribution-editorial.css", version: defaultVersion },
   { file: publishWorkflow, step: "Verify live Global Distribution, Market Access and Markets pages", variable: "markets_css_sha256", asset: "assets/css/markets-editorial.css", version: "20261111-nasa-hd-1" },

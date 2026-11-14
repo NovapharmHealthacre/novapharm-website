@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { runInNewContext } from "node:vm";
@@ -8,6 +9,8 @@ const read = (path) => readFileSync(resolve(root, path), "utf8");
 const source = read("src/content/technology-intelligence.html");
 const published = read("technology/index.html");
 const styles = read("assets/css/technology-intelligence.css");
+const publicTechnologyCssSha256 = createHash("sha256").update(readFileSync(resolve(root, "assets/css/technology-intelligence.css"))).digest("hex");
+const expectedTechnologyCssHref = `href="/assets/css/technology-intelligence.css?v=20261111-forensic-design-v3&amp;sha256=${publicTechnologyCssSha256}"`;
 const materialiser = read("scripts/apply-corporate-product-discipline.mjs");
 const metadata = read("src/content/site-content.mjs");
 
@@ -49,7 +52,7 @@ assert.equal((source.match(/<main\b/g) || []).length, 1, "Exactly one main landm
 assert.equal((source.match(/<\/main>/g) || []).length, 1, "Main landmark is closed");
 assert.equal((source.match(/<section\b/g) || []).length, (source.match(/<\/section>/g) || []).length, "Sections are balanced");
 assert.ok(source.includes('id="intelligence-roadmap"'));
-assert.ok(published.includes('href="/assets/css/technology-intelligence.css"'));
+assert.ok(published.includes(expectedTechnologyCssHref), "Published Technology stylesheet must match its exact CSS bytes and approved version");
 assert.ok(published.includes('<link rel="canonical" href="https://novapharmhealthcare.com/technology/">'));
 assert.ok(published.includes("<title>NovaPharm Intelligence"));
 assert.ok(metadata.includes('title: "NovaPharm Intelligence | Medicines, Evidence & Analytics"'));
@@ -296,13 +299,19 @@ const workspacesHtml = read("technology/workspaces/index.html");
 const workspaceCss = read("assets/css/intelligence-workspace-product.css");
 const workspaceJs = read("assets/js/intelligence-workspace-product.js");
 const workspaceEmbeddedCss = read("assets/css/intelligence-workspace-embedded.css");
+const publicEmbeddedCssSha256 = createHash("sha256").update(readFileSync(resolve(root, "assets/css/intelligence-workspace-embedded.css"))).digest("hex");
+const expectedEmbeddedCssHref = `href="/assets/css/intelligence-workspace-embedded.css?v=20261111-forensic-design-v3&amp;sha256=${publicEmbeddedCssSha256}"`;
 const workspaceEmbeddedJs = read("assets/js/intelligence-workspace-embedded.js");
 for (const [label, html] of [["canonical source", source], ["published page", published]]) {
   assert.match(html, /id="npi-exp-shell"/, label + " must render the native interactive experience");
   assert.equal((html.match(/<h1\b/g) || []).length, 1, label + " must have one document h1 after native workspace integration");
   assert.match(html, /<section class="section" aria-labelledby="npi-directory-title">/, label + " native experience must use the existing visible section heading");
   assert.doesNotMatch(html, /npi-exp-main-heading/, label + " must not introduce a duplicate hidden title");
-  assert.match(html, /href="\/assets\/css\/intelligence-workspace-embedded\.css"/, label + " must load the scoped app styles");
+  if (label === "published page") {
+    assert.ok(html.includes(expectedEmbeddedCssHref), label + " must load the exact content-bound scoped app styles");
+  } else {
+    assert.match(html, /href="\/assets\/css\/intelligence-workspace-embedded\.css"/, label + " must load the scoped app styles");
+  }
   assert.match(html, /src="\/assets\/js\/intelligence-workspace-embedded\.js"/, label + " must load the CSP-safe app runtime");
   assert.match(html, /npi-directory-groups" hidden aria-hidden="true"/, label + " must not display the obsolete accordion");
   assert.doesNotMatch(html, /id="npi-experience-iframe"/, label + " must not depend on CSP-blocked frames");

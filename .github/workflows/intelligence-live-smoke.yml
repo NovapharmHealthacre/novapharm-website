@@ -25,10 +25,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 7
     steps:
+      - name: Checkout expected public source for exact stylesheet verification
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
       - name: Confirm exact research page, assets and protected-business contact
         shell: bash
         run: |
           set -euo pipefail
+          workspace_css_sha256="$(sha256sum assets/css/intelligence-workspace-embedded.css)"
+          workspace_css_sha256="${workspace_css_sha256%% *}"
           origin="https://novapharmhealthcare.com"
           for attempt in $(seq 1 15); do
             key="intelligence-${GITHUB_SHA}-${GITHUB_RUN_ID}-${attempt}-$(date +%s)"
@@ -66,7 +73,8 @@ jobs:
               && grep -Fq 'id="intelligence-workspace-directory"' /tmp/novapharm-technology-live.html \
               && grep -Fq 'id="npi-exp-shell"' /tmp/novapharm-technology-live.html \
               && grep -Fq 'src="/assets/js/intelligence-workspace-embedded.js"' /tmp/novapharm-technology-live.html \
-              && grep -Fq 'href="/assets/css/intelligence-workspace-embedded.css"' /tmp/novapharm-technology-live.html \
+              && grep -Fq "href=\"/assets/css/intelligence-workspace-embedded.css?v=20261111-forensic-design-v3&amp;sha256=${workspace_css_sha256}\"" /tmp/novapharm-technology-live.html \
+              && cmp -s assets/css/intelligence-workspace-embedded.css /tmp/novapharm-workspace-native.css \
               && grep -Fq 'function renderSupplyMode(mode)' /tmp/novapharm-workspace-native.js \
               && grep -Fq 'ILLUSTRATIVE PRODUCT EXPERIENCE' /tmp/novapharm-workspace-native.js \
               && grep -Fq 'npi-workspace-live-experience' /tmp/novapharm-workspace-native.css \
