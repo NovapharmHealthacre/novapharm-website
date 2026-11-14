@@ -92,8 +92,8 @@ export function EmployeeDistributionWorkspace({ moduleCode }: Readonly<{ moduleC
     return <section className="distribution-employee" aria-labelledby="employee-wms-title">
       <header className="distribution-employee-hero distribution-employee-hero-small">
         <p className="distribution-employee-overline">NOVAPHARM / WAREHOUSE CONTROL TOWER</p>
-        <h1 id="employee-wms-title">Every batch. Accounted for.</h1>
-        <p>One view across warehouse evidence, quality holds, expiry exposure
+        <h1 id="employee-wms-title">Warehouse &amp; Inventory</h1>
+        <p>Every batch. Accounted for. One view across warehouse evidence, quality holds, expiry exposure
           and inventory movements. Clarity before action.</p>
       </header>
       <section className="distribution-wms-status" aria-label="Warehouse data authority">
