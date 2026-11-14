@@ -132,7 +132,7 @@ function g2Fixture({missing = null, nonempty = null, conflicting = null} = {}) {
       }
     };
   }
-  const database = {databaseName:medicineRightsUniqueIndexSpec.database,
+  const database = {databaseName:spec.database,
     collection:name=>{assert.ok(collections[name]);return collections[name];}};
   const authorizeMigration = async p=>{
     approvals++;
@@ -141,7 +141,8 @@ function g2Fixture({missing = null, nonempty = null, conflicting = null} = {}) {
     return true;
   };
   return {database,authorizeMigration,stats:()=>({writes,approvals})};
-}const names = Object.keys(g2MedicineUniqueIndexSpecs);
+}
+const names = Object.keys(g2MedicineUniqueIndexSpecs);
 test("three G2 compound constraints are dry-run verified without writes", async()=>{
   const x=g2Fixture({missing:names[0]});
   const result=await ensureG2PrivateMedicineUniqueIndexes({database:x.database});
