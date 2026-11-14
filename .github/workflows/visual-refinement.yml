@@ -55,7 +55,9 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Verify responsive repairs and content-bound CSS publication
-        run: node --test scripts/test-corporate-responsive-repairs.mjs scripts/test-public-visual-versioning.mjs
+        run: |
+          node --test scripts/test-corporate-responsive-repairs.mjs
+          node --test scripts/test-public-visual-versioning.mjs
 
       - name: Build the deterministic public-only visual release
         run: npm run build:public-only

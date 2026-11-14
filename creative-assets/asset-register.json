@@ -67,6 +67,23 @@
       "ownerApproval": "owner-directed website integration"
     },
     {
+      "path": "assets/brand/novapharm-distribution-logo.svg",
+      "type": "owner-approved-product-wordmark",
+      "source": "Owner-supplied NovaPharm Distribution Official Logo Kit (3), 01_Master_Vector/NovaPharm_Distribution_Graphite_Transparent.svg, 14 November 2026. Optimised SVG delivery derivative checked against approved artwork.",
+      "licence": "Owner-authorised NovaPharm Distribution brand identity use; source rights controlled by NovaPharm Healthcare Ltd",
+      "generated": false,
+      "modified": true,
+      "dimensions": "SVG viewBox 0 0 2307 408",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "/distribution/"
+      ],
+      "altText": "NovaPharm Distribution",
+      "caption": "Official NovaPharm Distribution graphite wordmark",
+      "technicalStatus": "source-kit-derived-precise-vector; visual fidelity verified against source",
+      "ownerApproval": "Owner-directed official Distribution tab integration, 14 November 2026"
+    },
+    {
       "path": "assets/media/technology/novapharm-intelligence-hero.avif",
       "type": "original-corporate-editorial-hero",
       "source": "Owner-directed AI-generated Novapharm Intelligence concept, sharpened from generated approved hero composition, photographic crop without browser UI or text, 11 November 2026. Fictional illustrative scientist, not an identified person or clinical evidence.",

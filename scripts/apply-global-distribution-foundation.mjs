@@ -28,7 +28,7 @@ const pages = [
 <section class="npd-hero ndist-hero" aria-labelledby="ndist-title" data-distribution-design="20261111-real-warehouse">
   <img class="ndist-hero-warehouse" src="/assets/media/about/novapharm-warehouse-original.jpg" width="1600" height="580" fetchpriority="high" decoding="async" alt="Actual warehouse exterior photograph supplied by NovaPharm, with loading bays and glazed frontage">
   <div class="container ndist-hero-inner">
-    <p class="ndist-eyebrow">NovaPharm Distribution</p>
+    <img class="ndist-brand-logo" src="/assets/brand/novapharm-distribution-logo.svg" width="2307" height="408" alt="NovaPharm Distribution" fetchpriority="high" decoding="async">
     <h1 id="ndist-title">Global distribution<br>for modern healthcare.</h1>
     <p class="ndist-hero-lead">A qualified approach to healthcare distribution, connecting medicine sourcing, product-specific temperature control, responsible market access and accountable logistics partners.</p>
     <div class="ndist-hero-actions">
