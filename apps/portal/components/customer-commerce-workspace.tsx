@@ -36,7 +36,7 @@ export function CustomerCommerceWorkspace({ moduleCode }: Readonly<{ moduleCode:
     return <section className="unified-customer-hub customer-editorial-hub" aria-labelledby="customer-workspace-title">
       <div className="customer-editorial-hero">
         <p className="customer-editorial-eyebrow">CUSTOMER WORKSPACE</p>
-        <h1 id="customer-workspace-title">Everything for your<br />NovaPharm business.</h1>
+        <h1 id="customer-workspace-title">Everything for your{" "}<br />NovaPharm business.</h1>
         <p>Products, orders, documents and support — all in one place.</p>
         <div className="customer-editorial-actions">
           {products ? <a className="customer-action-primary" href={products.route}>Browse products</a> : null}
