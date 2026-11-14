@@ -168,7 +168,8 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
   const selectedNutraxinProduct = typeof window !== "undefined" && module.code === "customer.products"
     ? nutraxinProductForSelection(window.location.search) : null;
   const navigation = modulesByArea[module.area];
-  return <main className="workspace-shell">
+  const isEditorialCustomerDashboard = module.code === "customer.dashboard";
+  return <main className={isEditorialCustomerDashboard ? "workspace-shell customer-editorial-dashboard" : "workspace-shell"}>
     <aside className={menuOpen ? "workspace-sidebar open" : "workspace-sidebar"}>
       <div className="sidebar-brand"><PortalBrand home={areaLandingRoutes[module.area]} /><button type="button" aria-label="Close navigation" onClick={() => setMenuOpen(false)}><X aria-hidden="true" /></button></div>
       <p className="sidebar-label">{areaLabels[module.area]} workspace</p>
@@ -176,7 +177,17 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
       <div className="sidebar-security"><ShieldCheck aria-hidden="true" /><span>Server-enforced access<br />No public caching</span></div>
     </aside>
     <section className="workspace-main">
-      <header className="workspace-topbar"><button className="menu-button" type="button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu aria-hidden="true" /></button><search><form className="portal-search" onSubmit={search}><Search aria-hidden="true" /><label className="sr-only" htmlFor="portal-search">Search authorised records</label><input id="portal-search" name="query" placeholder="Search" autoComplete="off" /><button type="submit">Search</button>{searchOpen ? <div className="search-results"><button className="search-close" type="button" aria-label="Close search results" onClick={() => setSearchOpen(false)}><X aria-hidden="true" /></button>{searchResults.length ? searchResults.map((result) => <a key={`${result.type}-${result.reference}`} href={result.route}><strong>{result.title}</strong><span>{result.type} · {result.reference}{result.status ? ` · ${readable(result.status)}` : ""}</span></a>) : <p>No authorised records found.</p>}</div> : null}</form></search><div className="user-summary"><span>{user?.displayName ?? "Secure user"}</span><small>{user ? readable(user.accessType) : "Verifying"}</small><button type="button" onClick={logout} aria-label="Sign out"><LogOut aria-hidden="true" /></button></div></header>
+      <header className="workspace-topbar">
+        {isEditorialCustomerDashboard ? <>
+          <PortalBrand home={areaLandingRoutes.customer} />
+          <nav className="customer-primary-nav" aria-label="Customer workspace primary navigation">
+            {(["customer.dashboard", "customer.products", "customer.orders", "customer.documents", "customer.support"] as const).map((code) => {
+              const entry = navigation.find((candidate) => candidate.code === code);
+              return entry ? <a key={entry.code} href={entry.route} aria-current={entry.code === module.code ? "page" : undefined}>{entry.code === "customer.dashboard" ? "Overview" : entry.title.replace(/^My /, "")}</a> : null;
+            })}
+          </nav>
+        </> : null}
+        <button className="menu-button" type="button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu aria-hidden="true" /></button><search><form className="portal-search" onSubmit={search}><Search aria-hidden="true" /><label className="sr-only" htmlFor="portal-search">Search authorised records</label><input id="portal-search" name="query" placeholder="Search" autoComplete="off" /><button type="submit">Search</button>{searchOpen ? <div className="search-results"><button className="search-close" type="button" aria-label="Close search results" onClick={() => setSearchOpen(false)}><X aria-hidden="true" /></button>{searchResults.length ? searchResults.map((result) => <a key={`${result.type}-${result.reference}`} href={result.route}><strong>{result.title}</strong><span>{result.type} · {result.reference}{result.status ? ` · ${readable(result.status)}` : ""}</span></a>) : <p>No authorised records found.</p>}</div> : null}</form></search><div className="user-summary"><span>{user?.displayName ?? "Secure user"}</span><small>{user ? readable(user.accessType) : "Verifying"}</small><button type="button" onClick={logout} aria-label="Sign out">{isEditorialCustomerDashboard ? "Sign out" : <LogOut aria-hidden="true" />}</button></div></header>
       <div className="workspace-content">
         <header className="module-heading"><div><p className="eyebrow">{areaLabels[module.area]} / {module.releaseClassificationLabel}</p><h1>{module.title}</h1><p>{module.purpose}</p></div><button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data"><RefreshCw aria-hidden="true" /><span>Refresh</span></button></header>
         {/* Customer navigation is static and server-route-protected: reserve its
