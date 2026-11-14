@@ -69,6 +69,9 @@ export async function verifiedPortalSession({
     if (typeof fields["displayName"] !== "string" || typeof fields["role"] !== "string") return null;
     if (typeof fields["accessType"] !== "string" || typeof fields["mustChangePassword"] !== "boolean") return null;
     if (!Array.isArray(fields["accessScopes"]) || !fields["accessScopes"].every((scope: unknown) => typeof scope === "string")) return null;
+    if (fields["customerAccountLinked"] !== undefined && typeof fields["customerAccountLinked"] !== "boolean") return null;
+    // A signed session with a customer scope does not establish account ownership.
+    if (fields["accessType"] === "customer" && fields["customerAccountLinked"] !== true) return null;
     return user as PortalUser;
   } catch {
     return null;
