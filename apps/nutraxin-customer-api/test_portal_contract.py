@@ -1153,7 +1153,9 @@ class PortalSecurityTests(unittest.TestCase):
                         {"sku":"NUT-UK-VD3-T120","quantity":2,"collection":"nutraxin"},
                         {"sku":"ESCO-CAT-0001","quantity":3,"collection":"esco"}]},
                     {"pk":"USER#tenant-A","sk":"CASE#not-an-order",
-                    "receipt_id":"NPS-case","lines":[{"sku":"NUT-UK-VD3-T120","quantity":1}]}]}
+                    "receipt_id":"NPS-case","lines":[{"sku":"NUT-UK-VD3-T120","quantity":1}]},
+                    {"pk":"USER#tenant-B","sk":"RQ#cross-account",
+                    "receipt_id":"NPQ-other-tenant","lines":[{"sku":"NUT-UK-VD3-T120","quantity":1}]}]}
         PORTAL.TABLE=ScopedHistory()
         try:
             response=PORTAL.handler(self.event("/api/customer/quote-requests"),None)
