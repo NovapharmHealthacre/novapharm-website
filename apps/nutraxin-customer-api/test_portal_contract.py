@@ -168,7 +168,10 @@ class PortalSecurityTests(unittest.TestCase):
                 self.assertIn("no-store",result["headers"]["cache-control"])
                 self.assertIn('name="robots" content="noindex,nofollow"',result["body"])
                 self.assertIn(label,result["body"])
-                self.assertNotIn("Stripe Checkout",result["body"])
+                if route=="/portal/products/":
+                    self.assertIn("Nutraxin retail sales use Stripe Checkout",result["body"])
+                else:
+                    self.assertNotIn("Stripe Checkout",result["body"])
             dashboard=PORTAL.handler(self.event("/portal/dashboard/"),None)
             self.assertEqual(dashboard["body"].count('class="tile"'),0)
             self.assertIn('class="editorial-customer"',dashboard["body"])
