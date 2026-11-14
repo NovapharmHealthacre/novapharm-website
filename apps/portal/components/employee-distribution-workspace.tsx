@@ -50,6 +50,15 @@ function WorkAreaCards() {
   </div>;
 }
 
+function AllOperations() {
+  return <section className="distribution-employee-all" aria-labelledby="employee-operations-all">
+    <h2 id="employee-operations-all">All operations.</h2>
+    <p>Every service stays within its existing governed employee route. Availability depends on the verified data source.</p>
+    <ul>{employeeModules.filter((entry) => entry.visibleInNavigation).map((entry) =>
+      <li key={entry.code}><a href={entry.route}>{entry.title}</a></li>)}</ul>
+  </section>;
+}
+
 export function EmployeeDistributionWorkspace({ moduleCode }: Readonly<{ moduleCode: string }>) {
   if (moduleCode === "employee.dashboard") {
     return <section className="distribution-employee" aria-labelledby="distribution-employee-title">
@@ -68,6 +77,7 @@ export function EmployeeDistributionWorkspace({ moduleCode }: Readonly<{ moduleC
         </div>
       </header>
       <WorkAreaCards />
+      <AllOperations />
       <section className="distribution-employee-notice" aria-label="Operating status">
         <strong>Controlled release.</strong>
         <p>Only verified, role-authorised records are actionable. The full enterprise portal,
@@ -96,6 +106,7 @@ export function EmployeeDistributionWorkspace({ moduleCode }: Readonly<{ moduleC
           </li>)}
         </ol>
       </section>
+      <AllOperations />
       <section className="distribution-employee-notice" aria-label="Current service availability">
         <strong>Assisted order submission is not active.</strong>
         <p>The shared telesales request contract is source-tested. An authenticated workforce
