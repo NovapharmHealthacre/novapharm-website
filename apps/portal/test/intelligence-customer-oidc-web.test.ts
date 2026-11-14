@@ -12,6 +12,30 @@ import { GET as openMfaSetup, POST as verifyMfaSetup } from "../app/auth/mfa/set
 const key = "internal-test-customer-oidc-signing-key-not-for-production-use-123456";
 const source = (path: string) => readFileSync(new URL("../" + path, import.meta.url), "utf8");
 
+test("paid sign-in selection remains in a signed, no-store Cognito transaction", () => {
+  const previous = process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
+  process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = key;
+  try {
+    const response = startCustomerIdentity(new NextRequest(
+      "https://intelligence.novapharmhealthcare.com/auth/customer/start?plan=professional&cycle=monthly",
+    ));
+    assert.equal(response.status, 302);
+    const cookie = response.cookies.get("__Host-npi_oidc_tx");
+    assert.ok(cookie);
+    const destination = new URL(response.headers.get("location") ?? "");
+    const verified = verifyCustomerLoginTransaction({
+      cookieValue: cookie.value, state: destination.searchParams.get("state"),
+      signingKey: key,
+    });
+    assert.equal(verified.requestedPlan, "professional");
+    assert.equal(verified.requestedCycle, "monthly");
+    assert.equal(verified.grantsTenantAccess, false);
+  } finally {
+    if (previous === undefined) delete process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
+    else process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] = previous;
+  }
+});
+
 test("customer start is fail-closed without server signing key", () => {
   const previous = process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
   delete process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"];
