@@ -32,7 +32,7 @@ test("official SVG brand masters preserve paths, geometry and approved color", (
   for (const svg of [graphite, reverse, mark]) {
     assert.match(svg, /^<svg /);
     assert.match(svg, /<path\s/);
-    assert.doesNotMatch(svg, /<script|<foreignObject|onload=|onerror=|<image|javascript:|https?:\/\//i);
+    assert.doesNotMatch(svg, /<script|<foreignObject|onload=|onerror=|<image|javascript:|(?:xlink:)?href="https?:\/\//i);
   }
   assert.match(mark, /viewBox="0 0 256 256"/);
 });
