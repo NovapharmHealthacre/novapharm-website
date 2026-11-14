@@ -255,7 +255,7 @@ async function inspectModule(
     } else {
       await page.locator(".icon-command:not(:disabled)").waitFor({ state: "visible", timeout: 20_000 });
     }
-    const expectedHeading = module.code === "executive.nhs-data" ? "Search a medicine" : module.title;
+    const expectedHeading = module.code === "executive.nhs-data" ? "Search a medicine" : module.code === "customer.dashboard" ? "Everything for your NovaPharm business." : module.title;
     assert.equal(await page.locator("h1").textContent(), expectedHeading);
     assert.equal(await page.locator(".workflow-status").textContent(), "");
     assert.match(await page.locator('meta[name="robots"]').getAttribute("content") ?? "", /noindex/);
@@ -267,6 +267,11 @@ async function inspectModule(
     } else {
       assert.equal(await page.locator('img[alt="NovaPharm Healthcare"]').count(), 1);
       assert.match(await page.locator('img[alt="NovaPharm Healthcare"]').getAttribute("src") ?? "", /novapharm-healthcare-logo\.svg/);
+      if (module.code === "customer.dashboard") {
+        assert.equal(await page.locator(".customer-editorial-packshots img").count(), 3);
+        assert.equal(await page.locator(".customer-primary-nav a").count(), 5);
+        await page.locator(".customer-editorial-hero h1").waitFor({ state: "visible" });
+      }
     }
     const expectedDataState = module.code === "executive.nhs-data" ? "No governed intelligence data loaded" : "Synthetic validation data";
     assert.equal(await page.getByText(expectedDataState, { exact: true }).count(), 1);
