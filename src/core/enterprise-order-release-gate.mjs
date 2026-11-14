@@ -35,7 +35,7 @@ export function assertEnterpriseOrderSubmissionAllowed(env = process.env) {
   const isolatedDomainFixture =
     env.NOVAPHARM_DOMAIN_VALIDATION_MODE === "true" &&
     typeof env.DATABASE_PATH === "string" &&
-    /(?:^|\\/)novapharm-domain-[a-zA-Z0-9]+\\/validation\\.sqlite$/.test(env.DATABASE_PATH);
+    /(?:^|\/)novapharm-domain-[a-zA-Z0-9]+\/validation\.sqlite$/.test(env.DATABASE_PATH);
 
   const syntheticValidation =
     env.NODE_ENV !== "production" &&
