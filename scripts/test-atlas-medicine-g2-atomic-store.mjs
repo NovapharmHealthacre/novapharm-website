@@ -298,11 +298,11 @@ test("end-to-end G1 validation through G2 and the private store remains nonpubli
     row_id:row.row_id,row_sha256:row.provenance_sha256,
     period:row.period,jurisdiction:row.jurisdiction,geography_id:row.geography_id,
     metric:row.metric,unit:row.unit,value:row.value,
-    code_system:"BNF_PRESENTATION_CODE",source_code:"0302000N0BBAYBA",
+    code_system:row.code_system,source_code:row.source_code,
     medicine_identity:row.medicine_identity,
     identity_proof:{
       matchType:"verified_exact",verifiedByAuthority:true,
-      sourceCode:"0302000N0BBAYBA",codeSystem:"BNF_PRESENTATION_CODE",
+      sourceCode:row.source_code,codeSystem:row.code_system,
       medicineIdentity:row.medicine_identity,sourceVersion:row.source_version,
       mappingRevision:row.identity_revision,referenceSha256:h("d")
     }
