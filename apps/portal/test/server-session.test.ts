@@ -14,6 +14,15 @@ const user: PortalUser = {
   accessScopes: ["board"],
   mustChangePassword: false,
 };
+const customerUser: PortalUser = {
+  ...user,
+  username: "linked-customer-001",
+  displayName: "Linked Customer",
+  role: "client",
+  accessType: "customer",
+  accessScopes: ["customer"],
+  customerAccountLinked: true,
+};
 const boardView = resolvePortalView("/portal/executive-platform/medicines-intelligence/medicine-search/");
 const customerView = resolvePortalView("/portal/dashboard/");
 if (!boardView || boardView.kind !== "module" || !customerView || customerView.kind !== "module") {
@@ -34,6 +43,30 @@ test("server session decision enforces module area and password-replacement boun
   assert.equal(sessionDecision(boardView, { ...user, accessScopes: ["admin"] }), "allow");
   assert.equal(sessionDecision(boardView, { ...user, mustChangePassword: true }), "change-password");
   assert.equal(sessionDecision(customerView, user), "deny");
+  assert.equal(sessionDecision(customerView, customerUser), "allow");
+  assert.equal(sessionDecision(customerView, { ...customerUser, customerAccountLinked: false }), "deny");
+  assert.equal(sessionDecision(customerView, { ...user, role: "client", accessType: "customer", accessScopes: ["customer"] }), "deny");
+  assert.equal(sessionDecision(customerView, { ...customerUser, accessScopes: ["admin"], customerAccountLinked: false }), "deny");
+});
+
+test("customer session API must attest a canonical account link before exposing its workspace", async () => {
+  let called = 0;
+  const lookup = async (customerAccountLinked: unknown) => verifiedPortalSession({
+    cookieValue,
+    apiOrigin: "https://api.novapharmhealthcare.com",
+    production: true,
+    fetchImpl: async () => {
+      called++;
+      return Response.json({ user: { ...customerUser, customerAccountLinked } });
+    },
+  });
+  assert.deepEqual(await lookup(true), customerUser);
+  assert.equal(await lookup(false), null);
+  assert.equal(await lookup(undefined), null);
+  assert.equal(await lookup("true"), null);
+  assert.equal(called, 4);
+  const backend = readFileSync("../../server.mjs", "utf8");
+  assert.match(backend, /customerAccountLinked: session\.accessType === "customer" && Boolean\(enterpriseContext\(session\)\.customerId\)/);
 });
 
 test("valid session lookup queries a fixed HTTPS backend without forwarding other cookies", async () => {
