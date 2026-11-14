@@ -1305,7 +1305,8 @@ def retail_sale_authorised(pricing):
         fbo and fulfilment and uk_dispatch and
         pricing.get("consumer_terms_verified") is True)
     return ((stripe_owner_basis or existing_verified_basis) and
-        pricing.get("owner_retail_sale_authorised") is True and
+        (pricing.get("owner_retail_sale_authorised") is True or
+         pricing.get("retail_sales_authorised") is True) and
         assumptions.get("uk_delivery_charge_pence")==0 and
         assumptions.get("uk_delivery_cost_borne_by_seller") is True)
 
