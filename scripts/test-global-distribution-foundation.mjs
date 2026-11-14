@@ -1,9 +1,12 @@
 import { readFileSync, statSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { strict as assert } from "node:assert";
 import { runInNewContext } from "node:vm";
 import { navigation } from "../src/content/site-content.mjs";
 
 const routes = ["distribution", "market-access", "markets"];
+const publicMarketsCssSha256 = createHash("sha256").update(readFileSync("assets/css/markets-editorial.css")).digest("hex");
+const expectedMarketsCssHref = `href="/assets/css/markets-editorial.css?v=20261111-nasa-hd-1&amp;sha256=${publicMarketsCssSha256}"`;
 const artDirection = JSON.parse(readFileSync("config/module-art-direction.json", "utf8"));
 const earthApproval = artDirection.assets.find((asset) => asset.id === "home-earth-horizon");
 assert.deepEqual(earthApproval?.allowedRoutes, ["/"],
@@ -35,7 +38,7 @@ for (const slug of routes) {
     assert.match(html, /Five regions\. Five different pathways\./);
     assert.match(html, /Local permissions\.<br>Shared standards\./);
     assert.match(html, /Where should medicine go next\?/);
-    assert.match(html, /href="\/assets\/css\/markets-editorial\.css\?v=20261111-nasa-hd-1"/);
+    assert.ok(html.includes(expectedMarketsCssHref), "Published Markets stylesheet must retain its approved label and exact CSS bytes");
     assert.match(html, /https:\/\/assets\.science\.nasa\.gov\/content\/dam\/science\/esd\/eo\/images\/imagerecords\/152000\/152693\/iss070e075895_lrg\.jpg/);
     assert.match(html, /width="5568" height="3712" fetchpriority="high"/);
     assert.match(html, /NASA Expedition 70 crew/);
