@@ -441,14 +441,14 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     assert.equal(await page.getByLabel("Medicine name, brand or code").getAttribute("aria-keyshortcuts"), "Meta+K Control+K");
     await page.getByLabel("Medicine name, brand or code").fill("Apixaban");
     await page.locator(".medicine-search-workspace").getByRole("button", { name: "Search", exact: true }).click();
-    await page.getByText("No current BNF identity matched that search.", { exact: true }).waitFor();
+    await page.getByText("This search environment has no current medicine identities loaded. Results remain unavailable until source approval and ingestion.", { exact: true }).waitFor();
     await captureInteractionState(page, engine, desktopViewport, "interaction.medicines-empty-search");
 
     const validationMedicineId = "medicine-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     await page.route("**/gateway/enterprise/medicines/**", async (route) => {
       const requestUrl = new URL(route.request().url());
       const response = requestUrl.pathname.endsWith("/search") ? {
-        query: "Repository validation medicine", source: "Repository validation fixture", sourcePeriod: "2026-06", demandFactsIncluded: false,
+        query: "Repository validation medicine", source: "Repository validation fixture", sourcePeriod: "2026-06", catalogueState: "current_repository_identities_present", demandFactsIncluded: false,
         results: [{ medicineId: validationMedicineId, canonicalName: "Repository validation medicine", presentationCode: "0208020Z0AAACAC", productName: "Validation medicine", productCode: "0208020Z0AA", chemicalSubstance: "Validation substance", chemicalSubstanceCode: "0208020Z0", identityStatus: "bnf_current_identity_only" }],
         dataFreshness: "2026-08-24T00:00:00.000Z",
         pagination: { page: Number(requestUrl.searchParams.get("page") || 1), pageSize: Number(requestUrl.searchParams.get("limit") || 30), totalRows: 1, totalPages: 1 },

@@ -8,6 +8,12 @@ process.env.DATABASE_PATH = databasePath;
 const database = await import("../src/data/database.mjs");
 
 try {
+  // An unpopulated source catalogue is not the same as a valid zero-result search.
+  const emptyService = await import("../src/core/medicines-intelligence-service.mjs");
+  const emptyCatalogueSearch = await emptyService.searchMedicines("Apixaban", { accessScopes: ["board"] }, 10);
+  assert.deepEqual(emptyCatalogueSearch.results, []);
+  assert.equal(emptyCatalogueSearch.catalogueState, "no_current_repository_identities");
+  assert.equal(emptyCatalogueSearch.sourcePeriod, null);
   const sourceId = "nhsbsa.bnf-current";
   const medicineId = "medicine-0123456789abcdef0123456789abcdef";
   const importedAt = "2026-08-24T04:27:00.000Z";
@@ -226,6 +232,7 @@ try {
 
   const search = await service.searchMedicines("Apixaban", context, 10);
   assert.equal(search.results.length, 1);
+  assert.equal(search.catalogueState, "current_repository_identities_present");
   assert.equal(search.results[0].medicineId, medicineId);
   assert.equal(search.results[0].chemicalSubstance, "Apixaban");
   assert.equal(search.demandFactsIncluded, false);
@@ -234,6 +241,8 @@ try {
   assert.equal(containsSearch.results[0].medicineId, medicineId);
   const endedSearch = await service.searchMedicines("Retired governed presentation", context, 10);
   assert.equal(endedSearch.results.length, 0);
+  assert.equal(endedSearch.catalogueState, "current_repository_identities_present",
+    "No-match against a loaded repository must not claim the whole catalogue is missing.");
 
   const detail = await service.medicineIdentityDetail(medicineId, context);
   assert.equal(detail.hierarchy.length, 2);
