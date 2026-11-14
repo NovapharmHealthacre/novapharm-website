@@ -304,42 +304,26 @@ jobs:
           test -s _site/assets/js/contact-production.js
           test -s _site/assets/js/account-request-production.js
           test -s _site/assets/css/account-request.css
-      - name: Validate deployed AWS API and record one synthetic business receipt
+      - name: Verify production contact API without sending notifications
         env:
           CONTACT_ORIGIN: ${{ github.event_name == 'push' && 'https://h4dc1e4u57.execute-api.eu-north-1.amazonaws.com' || inputs.contact_api_origin }}
         run: |
           set -euo pipefail
+          # Explicit owner instruction: NO EMAIL to anyone, including SNS
+          # synthetic production receipts. Never submit an accepted enquiry
+          # from this publisher. Test GET health and rejected anonymous POST only.
+          node --test scripts/test-no-email-release-guard.mjs
           [[ "$CONTACT_ORIGIN" =~ ^https://[a-z0-9]+\.execute-api\.eu-north-1\.amazonaws\.com$ ]] || exit 1
           curl --fail --silent --show-error --max-time 15 \
             -H "Cache-Control: no-cache" \
             "$CONTACT_ORIGIN/health" -o /tmp/novapharm-contact-health.json
           jq -e '.service == "novapharm-contact-intake" and .ready == true and .environment == "production"' /tmp/novapharm-contact-health.json
+          # This request is rejected before storage/SNS; it cannot be a valid enquiry.
           rejected=$(curl --silent --show-error --max-time 15 -o /tmp/novapharm-anon.json -w '%{http_code}' \
             -X POST "$CONTACT_ORIGIN/contact" \
             -H 'Content-Type: application/json' -d '{}' )
           test "$rejected" = "403"
-          echo '{
-            "name":"SYNTHETIC-NOVAPHARM-QA",
-            "email":"synthetic@example.com",
-            "company":"NovaPharm QA",
-            "role":"Release acceptance",
-            "country":"United Kingdom",
-            "telephone":"",
-            "enquiryType":"General enquiry",
-            "message":"SYNTHETIC DATA. Verified AWS release acceptance for NovaPharm business enquiry route.",
-            "website":"",
-            "privacyAcknowledgement":"yes",
-            "safetyConfirmation":"yes"
-          }' > /tmp/novapharm-qa-input.json
-          outcome=$(curl --silent --show-error --max-time 15 -o /tmp/novapharm-qa-receipt.json -w '%{http_code}' \
-            -X POST "$CONTACT_ORIGIN/contact" \
-            -H 'Origin: https://novapharmhealthcare.com' \
-            -H 'Content-Type: application/json' \
-            -H 'X-Novapharm-Intake: v1' \
-            --data-binary @/tmp/novapharm-qa-input.json)
-          test "$outcome" = "201"
-          jq -e '.ok == true and .persisted == true and .notificationAccepted == true and (.receiptId | test("^[0-9a-f-]{36}$"))' /tmp/novapharm-qa-receipt.json
-          echo "Synthetic AWS durable storage and accepted notification confirmed."
+          echo 'AWS contact health and anonymous rejection verified without email or persisted enquiry.'
       - name: Activate contact on staged Pages artifact only
         env:
           NOVAPHARM_CONTACT_RELEASE_ACCEPTED: "yes"
