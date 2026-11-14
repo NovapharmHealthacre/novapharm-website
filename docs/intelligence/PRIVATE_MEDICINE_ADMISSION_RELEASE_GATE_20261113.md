@@ -14,6 +14,12 @@ G1 `prepareOfficialMedicineEvidenceCandidate` checks exact-source metadata, veri
 
 G2 `admitPrivateOfficialMedicineEvidence` requires a live, server-verified board/admin authority for the internal workspace, fresh independently attested source and third-party terminology rights, a single atomic evidence+manifest+audit transaction through a trusted backend adapter, independent durable readback, and revocation rechecks before and after commit. If a post-commit authority or rights recheck is false or indeterminate, a separate durable quarantine+audit adapter must attest the quarantine before the function returns a refusal; missing or failed quarantine attestation remains a hard failure. It returns private status and **never** enables customer publishing, model egress or regulated decisions. Synthetic tests cannot attest to live grants.
 
+### Additional post-commit freshness fence (PR #574, unmerged)
+
+G2 must sample **trusted server wall-clock time again after the asynchronous durable commit and rights recheck**, not reuse the request's initial `now`. A stale `checkedAt` receipt, rights `validUntil` crossed during the transaction, invalid clock or wall-clock rollback must deny private promotion. If the data was already committed, the denial must be paired with independently durable **quarantine plus audit**; a failed quarantine attestation remains an error. The clock-injection seam exists only for deterministic synthetic contract tests and must never be controlled by a browser, tenant request or source payload.
+
+This is a code-and-test candidate only until the exact SHA is independently reviewed, merged, deployed to a trusted private backend, and exercised against a properly permissioned Atlas transaction adapter. A passing unit test never attests to real source grants or accepted data.
+
 These contracts were ported from unresolved PR #547 onto current main because #547 had become merge-conflicted. PR #547 should not be merged blindly.
 
 ## Actual next gate (cannot be forged)
