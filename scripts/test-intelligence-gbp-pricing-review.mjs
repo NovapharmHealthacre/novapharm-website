@@ -38,8 +38,8 @@ test("four-plan public marketing is GBP-only and does not activate checkout", ()
     assert.ok(s.includes('data-monthly-gbp="699" data-annual-gbp="7130"'));
     assert.ok(s.includes("£2,799") && s.includes("Approved monthly prices in GBP"));
     assert.ok(s.includes('data-npi-starter-trial="approved"') && s.includes("No automatic subscription or charges"));
-    assert.ok(s.includes("not live subscriptions") && s.includes("No payment will be collected here"));
-    assert.ok(s.includes("Request free trial") && s.includes("Contact sales"));
+    assert.ok(s.includes("paid checkout currently remains separately gated") && s.includes("No payment is collected by this page"));
+    assert.ok(s.includes("Create free account") && s.includes("Choose Starter") && s.includes("Choose Professional") && s.includes("Contact sales"));
     assert.ok(!s.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/register?'));
     assert.doesNotMatch(s,/data-(monthly|annual)-inr|checkout[.]stripe[.]com/);
   }
