@@ -108,7 +108,7 @@ test("selected publisher resource is exact and bounded, returned fields exclude 
   assert.equal(result.customerAccessEnabled, false);
   assert.equal(result.fullDatasetReconciled, false);
   assert.equal(result.status, "private_unapproved_publisher_api_sample");
-  assert.equal(result.attribution, "NHSBSA Copyright 2025");
+  assert.equal(result.attribution, "NHSBSA Copyright 2021-2026");
 });
 
 test("a dated period is strictly scoped to publisher metadata, never another server", async () => {
