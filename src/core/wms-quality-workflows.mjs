@@ -33,6 +33,7 @@ export function reviewInboundReceipt({
      !goodId(received.providerEvidenceId)||!goodTime(received.recordedAt)||
      Date.parse(received.recordedAt)>Date.parse(asOf)||
      !Array.isArray(expected.lines)||!Array.isArray(received.lines)||
+     expected.lines.length===0||received.lines.length===0||
      expected.lines.length>5000||received.lines.length>5000)
     return fail(["unverified_asn_or_physical_receipt"]);
   const issue=[];
