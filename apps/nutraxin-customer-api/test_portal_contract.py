@@ -3,6 +3,7 @@ import base64
 import importlib.util
 import json
 import os
+import re
 from pathlib import Path
 import sys
 import types
@@ -138,6 +139,103 @@ class PortalSecurityTests(unittest.TestCase):
         decoded=base64.b64decode(image["body"])
         self.assertTrue(decoded[:2]==bytes([255,216]))
         self.assertGreater(len(decoded),50000)
+
+    def test_live_portal_origin_matches_deployed_cloudformation_template(self):
+        template = json.loads((ROOT / "infra/aws/nutraxin-customer-staging-stack.json").read_text())
+        values = template["Resources"]["AppFunction"]["Properties"]["Environment"]["Variables"]
+        self.assertEqual(values["BASE_URL"], "https://portal.novapharmhealthcare.com")
+
+        # A reverse proxy can forward the gateway Host rather than the
+        # public browser Host. Accept our exact configured origin regardless.
+        event = self.event("/login", "POST", origin="https://portal.example.invalid")
+        event["headers"]["host"] = "wgy9p7ad0d.execute-api.eu-north-1.amazonaws.com"
+        event["body"] = "mode=signup&email=invalid"
+        response = PORTAL.handler(event, None)
+        self.assertEqual(response["statusCode"], 400)
+        self.assertEqual(json.loads(response["body"])["error"], "invalid_login_email")
+
+        event["headers"]["origin"] = "https://untrusted.example.invalid"
+        denied = PORTAL.handler(event, None)
+        self.assertEqual(denied["statusCode"], 403)
+        self.assertEqual(json.loads(denied["body"])["error"], "invalid_login_origin")
+
+    def test_safari_opaque_origin_uses_host_only_csrf_proof(self):
+        landing=PORTAL.handler(self.event("/"),None)
+        self.assertEqual(landing["statusCode"],200)
+        self.assertIn('name="signup_csrf"',landing["body"])
+        match=re.search(r'name="signup_csrf" value="([A-Za-z0-9_-]{43})"',landing["body"])
+        self.assertIsNotNone(match)
+        token=match.group(1)
+        self.assertTrue(any(c.startswith("__Host-np_signup_csrf=") and
+                            "Secure" in c and "HttpOnly" in c and "SameSite=Lax" in c
+                            for c in landing.get("cookies",[])))
+        csrf_cookie=[c.split(";",1)[0] for c in landing["cookies"]
+                     if c.startswith("__Host-np_signup_csrf=")]
+        self.assertEqual(len(csrf_cookie),1)
+
+        event=self.event("/login","POST",origin="null")
+        event["headers"]["host"]="portal.novapharmhealthcare.com"
+        event["headers"]["sec-fetch-site"]="same-origin"
+        event["cookies"]=csrf_cookie
+        event["body"]="mode=signup&email=invalid&signup_csrf="+token
+        accepted=PORTAL.handler(event,None)
+        self.assertEqual(accepted["statusCode"],400)
+        self.assertEqual(json.loads(accepted["body"])["error"],"invalid_login_email")
+
+        # The same proof works for privacy browsers omitting Origin.
+        event["headers"].pop("origin")
+        without_origin=PORTAL.handler(event,None)
+        self.assertEqual(without_origin["statusCode"],400)
+        self.assertEqual(json.loads(without_origin["body"])["error"],"invalid_login_email")
+
+        # A forged, missing or stale token must never get past origin validation.
+        event["headers"]["origin"]="null"
+        event["cookies"]=[]
+        missing=PORTAL.handler(event,None)
+        self.assertEqual(missing["statusCode"],403)
+        event["cookies"]=csrf_cookie
+        event["body"]="mode=signup&email=invalid&signup_csrf="+"X"*43
+        tampered=PORTAL.handler(event,None)
+        self.assertEqual(tampered["statusCode"],403)
+        event["body"]="mode=signup&email=invalid&signup_csrf="+token
+        event["headers"]["origin"]="https://attacker.example.invalid"
+        explicit_attack=PORTAL.handler(event,None)
+        self.assertEqual(explicit_attack["statusCode"],403)
+        event["headers"]["origin"]="null"
+        event["headers"]["sec-fetch-site"]="cross-site"
+        cross_site=PORTAL.handler(event,None)
+        self.assertEqual(cross_site["statusCode"],403)
+        event["headers"]["sec-fetch-site"]="same-origin"
+        event["headers"]["referer"]="https://attacker.example.invalid/form"
+        bad_referer=PORTAL.handler(event,None)
+        self.assertEqual(bad_referer["statusCode"],403)
+
+    def test_known_live_https_origins_are_allowed_without_trusting_lookalikes(self):
+        accepted=(
+            "https://portal.novapharmhealthcare.com",
+            "https://PORTAL.NOVAPHARMHEALTHCARE.COM:443",
+            "https://wgy9p7ad0d.execute-api.eu-north-1.amazonaws.com",
+        )
+        for origin in accepted:
+            event=self.event("/login","POST",origin=origin)
+            event["headers"]["host"]="wgy9p7ad0d.execute-api.eu-north-1.amazonaws.com"
+            event["body"]="mode=signup&email=invalid"
+            response=PORTAL.handler(event,None)
+            self.assertEqual(response["statusCode"],400,origin)
+            self.assertEqual(json.loads(response["body"])["error"],"invalid_login_email",origin)
+        for origin in (
+            "https://portal.novapharmhealthcare.com.attacker.example",
+            "http://portal.novapharmhealthcare.com",
+            "https://untrusted.example",
+            "null",
+            "https://portal.novapharmhealthcare.com.evil.invalid/",
+            "https://portal.novapharmhealthcare.com:444",
+        ):
+            event=self.event("/login","POST",origin=origin)
+            event["body"]="mode=signup&email=invalid"
+            response=PORTAL.handler(event,None)
+            self.assertEqual(response["statusCode"],403,origin)
+            self.assertEqual(json.loads(response["body"])["error"],"invalid_login_origin",origin)
 
     def test_approved_account_landing_and_personal_signup(self):
         policy=PORTAL.reply(200,PORTAL.PAGE,"text/html")["headers"]["content-security-policy"]
