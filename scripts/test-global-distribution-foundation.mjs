@@ -53,6 +53,9 @@ for (const slug of routes) {
     // The public page must contain the approved actual media, not solely a
     // mockup, stock photo, unsupported carrier logo or copy-only proposal.
     assert.match(html, /data-distribution-design="20261111-real-warehouse"/);
+    assert.ok(html.includes('class="ndist-brand-logo" src="/assets/brand/novapharm-distribution-logo.svg"'), "Distribution hero must use the official logo asset");
+    assert.match(html, /alt="NovaPharm Distribution"/, "Official logo requires descriptive alt text");
+    assert.ok(statSync("assets/brand/novapharm-distribution-logo.svg").size > 4000, "Official logo asset must be present and nonempty");
     assert.match(html, /<h1 id="ndist-title">Global distribution<br>for modern healthcare\.<\/h1>/);
     assert.match(html, /class="ndist-hero-warehouse" src="\/assets\/media\/about\/novapharm-warehouse-original\.jpg"/);
     assert.doesNotMatch(html, /class="ndist-hero-earth"|<img[^>]+src="\/assets\/media\/home\/earth-reference-1400\.jpg"/);

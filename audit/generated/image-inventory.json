@@ -10,12 +10,12 @@
     "Null semantic or provenance fields are explicit gaps, not inferred approvals."
   ],
   "summary": {
-    "trackedAssetCount": 878,
+    "trackedAssetCount": 879,
     "byClassification": {
-      "KEEP": 878
+      "KEEP": 879
     },
     "byProvenanceStatus": {
-      "registered": 668,
+      "registered": 669,
       "registered-identical-delivery-copy": 12,
       "repository-generated-test-evidence": 198
     },
@@ -1170,6 +1170,47 @@
         "trust-centre/index.html"
       ],
       "exactDuplicateGroup": "exact-006",
+      "perceptualDuplicateCandidateGroup": null,
+      "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
+    },
+    {
+      "path": "assets/brand/novapharm-distribution-logo.svg",
+      "canonicalDeliveryPath": "assets/brand/novapharm-distribution-logo.svg",
+      "format": "svg",
+      "bytes": 9869,
+      "width": 2307,
+      "height": 408,
+      "aspectRatio": 5.654412,
+      "sha256": "99246e38e75a1ae378d0b47471c50be999b3ef24a59e613b6ea7ae5d12d4958b",
+      "perceptualHash": null,
+      "classification": "KEEP",
+      "provenanceStatus": "registered",
+      "source": "Owner-supplied NovaPharm Distribution Official Logo Kit (3), 01_Master_Vector/NovaPharm_Distribution_Graphite_Transparent.svg, 14 November 2026. Optimised SVG delivery derivative checked against approved artwork.",
+      "licence": "Owner-authorised NovaPharm Distribution brand identity use; source rights controlled by NovaPharm Healthcare Ltd",
+      "reviewStatus": "Owner-directed official Distribution tab integration, 14 November 2026",
+      "technicalStatus": "source-kit-derived-precise-vector; visual fidelity verified against source",
+      "provenanceRecord": null,
+      "semanticPurpose": "owner-approved-product-wordmark",
+      "routes": [
+        "/distribution/"
+      ],
+      "focalPoint": null,
+      "registeredAltText": "NovaPharm Distribution",
+      "registeredCaption": "Official NovaPharm Distribution graphite wordmark",
+      "observedAltText": [],
+      "observedCaptions": [],
+      "responsiveDerivatives": [],
+      "observedLoading": [],
+      "observedFetchPriority": [],
+      "lcpRelevance": false,
+      "usageCount": 3,
+      "referenceCount": 4,
+      "usageFiles": [
+        "creative-assets/asset-register.json",
+        "scripts/apply-global-distribution-foundation.mjs",
+        "scripts/test-global-distribution-foundation.mjs"
+      ],
+      "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
       "budgetReview": "WITHIN_PHYSICAL_FILE_CEILING"
     },
