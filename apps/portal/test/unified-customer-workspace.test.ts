@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
-import { customerModules, employeeModules, executiveModules, adminModules } from "@novapharm/portal-contracts";
+import { adminModules, customerModules, employeeModules, executiveModules } from "@novapharm/portal-contracts";
 import { areaLandingRoutes, landingRouteForAccess } from "../data/routes";
 
 const component = readFileSync(path.join(process.cwd(), "components/customer-commerce-workspace.tsx"), "utf8");
