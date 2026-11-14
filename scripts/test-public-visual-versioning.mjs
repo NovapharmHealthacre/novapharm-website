@@ -527,3 +527,26 @@ for (const [file, command] of [
     assert.doesNotMatch(source, /NOVAPHARM_CONTACT_RELEASE_ACCEPTED|NOVAPHARM_CONTACT_API_ORIGIN/);
   });
 }
+
+test("live Technology pricing checks match current markup and reject retired calls to action", t => {
+  const { root } = fixture(t);
+  const lines = workflowStepShell(".github/workflows/intelligence-live-smoke.yml", "Confirm exact research page, assets and protected-business contact");
+  const start = lines.findIndex(line => line.includes("grep -Fq 'id=\"intelligence-pricing\"'"));
+  const end = lines.findIndex((line, index) => index > start && line.includes("grep -Fq 'novapharm-intelligence-hero.avif'"));
+  assert.ok(start >= 0 && end > start);
+  const checks = lines.slice(start, end).map(line => line.match(/grep -Fq ('[^']+') \/tmp\/novapharm-technology-live\.html/)?.[1]).filter(Boolean);
+  assert.equal(checks.length, 8, "Keep the pricing heading, four plan identities and two current action checks");
+  const canonical = read(sourceRoot, "src/content/technology-intelligence.html");
+  const htmlFile = join(root, "current-technology.html");
+  const code = ["set -euo pipefail", ...checks.map(pattern => `grep -Fq ${pattern} "$1"`)].join("\n");
+  const inspect = markup => {
+    writeFileSync(htmlFile, markup);
+    const result = spawnSync("bash", ["-c", code, "pricing-live-check", htmlFile], { encoding: "utf8", timeout: 5000 });
+    assert.equal(result.error, undefined);
+    return result.status;
+  };
+  assert.equal(inspect(canonical), 0, "The actual live workflow must accept current canonical pricing markup");
+  assert.equal(inspect(canonical.replaceAll("Create free account", "Request free trial")), 1, "Retired trial action must not pass");
+  assert.equal(inspect(canonical.replaceAll("Subscribe", "Request Professional")), 1, "Retired paid action must not pass");
+  assert.equal(inspect(canonical.replaceAll('data-npi-plan="trial"', 'data-npi-plan="missing"')), 1, "Missing trial plan must not pass");
+});

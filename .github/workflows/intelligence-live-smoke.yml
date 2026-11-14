@@ -75,8 +75,8 @@ jobs:
               && grep -Fq 'data-npi-plan="professional"' /tmp/novapharm-technology-live.html \
               && grep -Fq 'data-npi-plan="enterprise"' /tmp/novapharm-technology-live.html \
               && test "$(grep -o 'data-npi-plan="' /tmp/novapharm-technology-live.html | wc -l | tr -d '[:space:]')" -eq 4 \
-              && grep -Fq 'Request free trial' /tmp/novapharm-technology-live.html \
-              && grep -Fq 'Request Professional' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'Create free account' /tmp/novapharm-technology-live.html \
+              && grep -Fq 'Subscribe' /tmp/novapharm-technology-live.html \
               && grep -Fq 'novapharm-intelligence-hero.avif' /tmp/novapharm-intelligence-live.css \
               && test -s /tmp/novapharm-intelligence-hero-live.avif \
               && grep -Fq 'id="intelligence-research"' /tmp/novapharm-technology-live.html \
