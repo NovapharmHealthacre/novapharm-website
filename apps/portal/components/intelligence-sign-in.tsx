@@ -92,8 +92,12 @@ export function IntelligenceSignIn() {
       return;
     }
     if (result.kind === "provider-required") {
+      // The in-card Cognito protocol cannot complete first-time authenticator
+      // registration or password rotation. Continue immediately through the
+      // signed, server-side PKCE/OIDC flow instead of trapping the user here.
       setChallenge(null);
       setPhase("managed");
+      window.location.assign("/auth/customer/start");
       return;
     }
 
