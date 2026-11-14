@@ -32,8 +32,9 @@ const indexRequirements = Object.freeze({
 });
 
 const inputRowFields = new Set([
-  "workspace_id", "medicine_identity", "source_id", "source_version",
-  "resource_id", "resource_sha256", "row_id", "provenance_sha256",
+  "workspace_id", "medicine_identity", "code_system", "source_code",
+  "source_id", "source_version", "resource_id", "resource_sha256",
+  "row_id", "provenance_sha256",
   "period", "jurisdiction", "geography_id", "metric", "unit", "value",
   "evidence_type", "identity_revision", "rights_revision", "status"
 ]);
@@ -84,6 +85,8 @@ function requireCommitPayload(p) {
       row.status !== "candidate_not_accepted" ||
       row.evidence_type !== "observed_fact" ||
       !ident(row.medicine_identity) || !ident(row.row_id) ||
+      !["BNF_PRESENTATION_CODE", "SNOMED_CODE"].includes(row.code_system) ||
+      !ident(row.source_code) ||
       !ident(row.identity_revision) || !ident(row.geography_id) ||
       !sha(row.provenance_sha256) || row.jurisdiction !== "England" ||
       !["items", "quantity", "nic", "actual_cost"].includes(row.metric) ||
@@ -215,6 +218,8 @@ export function createAtlasG2AtomicStore({
           rows: Object.freeze(p.records.map(row => Object.freeze({
             rowId: row.row_id, provenanceSha256: row.provenance_sha256,
             medicineIdentity: row.medicine_identity,
+            codeSystem: row.code_system,
+            sourceCode: row.source_code,
             mappingRevision: row.identity_revision
           })))
         });
