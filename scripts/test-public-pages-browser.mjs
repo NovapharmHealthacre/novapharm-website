@@ -442,17 +442,27 @@ for (const [engineName, browserType] of engines) {
                 for (const plan of ["starter", "professional"]) {
                   const card = pricing.locator('[data-npi-plan="' + plan + '"]');
                   const allActions = card.locator(".npi-plan-cta");
-                  assert.equal(await allActions.count(), 2, plan + ": must retain two fixed allowlisted link destinations");
+                  assert.equal(await allActions.count(), 2, plan + ": preserve two documented billing-cycle comparisons");
                   const visible = card.locator(".npi-plan-cta:visible");
                   assert.equal(await visible.count(), 1,
-                    engineName + " " + viewport.name + " " + plan + " " + cycle + ": exactly one visible pricing button");
-                  const expected = "https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=" + plan + "&cycle=" + cycle;
-                  assert.equal(await visible.first().getAttribute("href"), expected,
-                    plan + ": selected pricing link must match the chosen billing period");
+                    engineName + " " + viewport.name + " " + plan + " " + cycle + ": exactly one visible pricing status");
+                  assert.equal(await visible.first().getAttribute("data-npi-plan-cta"), cycle,
+                    plan + ": selected pricing status must match the chosen billing period");
+                  assert.equal(await visible.first().getAttribute("aria-disabled"), "true",
+                    plan + ": signup cannot be offered before customer and data acceptance");
+                  assert.equal(await visible.first().getAttribute("href"), null,
+                    plan + ": dormant plan status cannot link to an unavailable registration route");
                   const inactive = card.locator('[data-npi-plan-cta="' + (cycle === "monthly" ? "annual" : "monthly") + '"]');
                   assert.equal(await inactive.isVisible(), false, plan + ": unselected billing link must remain hidden");
                 }
               }
+              const freeTrial = pricing.locator('[data-npi-starter-trial="approved"]');
+              assert.equal(await freeTrial.count(), 1, "Technology page must show exactly one 30-day Starter introductory offer");
+              assert.match(await freeTrial.innerText(), /30 days free/);
+              assert.match(await freeTrial.innerText(), /25 total/);
+              assert.match(await freeTrial.innerText(), /No credit card required/);
+              assert.match(await freeTrial.innerText(), /No automatic subscription or charges/);
+              assert.equal(await freeTrial.locator("a[href]").count(), 0, "dormant trial cannot link to unverified customer registration");
               await assertOnePlanAction("monthly");
               await pricing.locator('[data-npi-billing="annual"]').click();
               await assertOnePlanAction("annual");
