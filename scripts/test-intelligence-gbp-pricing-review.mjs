@@ -29,7 +29,7 @@ test("review-only prices are exact and cannot be mistaken for Stripe Price IDs",
     for (const price of [plan.monthly,plan.annual]) assert.match(price.priceId,/^price_[A-Za-z0-9]+$/);
   }
 });
-test("four-plan public marketing is GBP-only and does not activate checkout", () => {
+test("four-plan public marketing uses active GBP Stripe payment links, without activating customer entitlements", () => {
   for (const path of ["src/content/technology-intelligence.html","technology/index.html"]) {
     const s = read(path);
     assert.ok(s.includes('data-npi-plan="trial"'));
@@ -38,8 +38,12 @@ test("four-plan public marketing is GBP-only and does not activate checkout", ()
     assert.ok(s.includes('data-monthly-gbp="699" data-annual-gbp="7130"'));
     assert.ok(s.includes("£2,799") && s.includes("Approved monthly prices in GBP"));
     assert.ok(s.includes('data-npi-starter-trial="approved"') && s.includes("No automatic subscription or charges"));
-    assert.ok(s.includes("not live subscriptions") && s.includes("No payment will be collected here"));
-    assert.ok(s.includes("Request free trial") && s.includes("Contact sales"));
+    assert.ok(s.includes("Paid subscriptions are charged immediately at Checkout") && s.includes("Payment is not an automatic medicine-data entitlement"));
+    assert.ok(s.includes("Create free account") && s.includes("Contact sales"));
+    assert.ok(s.includes('href="https://billing.stripe.com/p/login/00waEQ1gQ1Lr2x87aIdby00">Manage subscription</a>'));
+    assert.ok(s.includes('href="https://buy.stripe.com/00waEQ1gQ1Lr2x87aIdby00" data-npi-live-stripe="starter"'));
+    assert.ok(s.includes('href="https://buy.stripe.com/6oUeV64t2bm16NobqYdby01" data-npi-live-stripe="professional"'));
+    assert.ok(!s.includes('/contact/?enquiry=General%20enquiry&amp;intelligencePlan=starter'));
     assert.ok(!s.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/register?'));
     assert.doesNotMatch(s,/data-(monthly|annual)-inr|checkout[.]stripe[.]com/);
   }
