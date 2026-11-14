@@ -683,6 +683,142 @@ def submit_customer_purchase_request(event,user):
                      "inventory_reserved":False,
                      "notice":"Account-linked product enquiry recorded. NovaPharm must review availability, legal supply rights, tax, fulfilment and pricing. No order accepted or payment taken."})
 
+
+def customer_support_cases(event,user):
+    """Read only this verified customer's non-clinical support cases."""
+    if not verified_personal_session(user):
+        return error(403,"verified_customer_required")
+    try:
+        records=TABLE.query(
+            KeyConditionExpression=Key("pk").eq("USER#"+user["sub"]) & Key("sk").begins_with("CASE#"),
+            Limit=20,ScanIndexForward=False,ConsistentRead=True).get("Items",[])
+    except ClientError:
+        return error(503,"support_history_unavailable")
+    cases=[{"reference":row.get("reference"),"category":row.get("category"),
+            "subject":row.get("subject"),"status":row.get("status"),
+            "created_at":int(row.get("created_at",0))}
+           for row in records if row.get("sk","").startswith("CASE#")]
+    return reply(200,{"cases":cases,"scope":"verified_customer_only",
+                       "notice":"Service enquiries are not binding orders or confirmed availability."})
+
+
+def submit_customer_support_case(event,user):
+    """Write an account-scoped support request. No auto-action, mail or regulated complaint processing."""
+    if not verified_personal_session(user):
+        return error(403,"verified_customer_required")
+    headers={str(k).lower():str(v) for k,v in (event.get("headers") or {}).items()}
+    if (headers.get("origin")!=request_base(event) or
+        headers.get("sec-fetch-site","").lower() not in ("","same-origin","none") or
+        headers.get("content-type","").split(";",1)[0].strip().lower()!="application/json"):
+        return error(403,"invalid_origin_or_content_type")
+    if event.get("isBase64Encoded"):
+        return error(400,"invalid_payload")
+    raw=event.get("body") or ""
+    if not isinstance(raw,str) or len(raw)>4096:
+        return error(413,"request_too_large")
+    try:
+        data=json.loads(raw)
+    except (TypeError,ValueError):
+        return error(400,"invalid_json")
+    if not isinstance(data,dict) or set(data)!={"case_id","category","subject","details"}:
+        return error(400,"invalid_request")
+    case_id=data["case_id"]
+    if not isinstance(case_id,str) or not re.fullmatch(
+        r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}",case_id):
+        return error(400,"invalid_case_id")
+    category=data["category"]
+    if category not in ("account","order_request","product_availability","technical"):
+        return error(400,"invalid_category")
+    subject=data["subject"]; details=data["details"]
+    if not isinstance(subject,str) or not isinstance(details,str):
+        return error(400,"invalid_content")
+    subject=subject.strip();details=details.strip()
+    if not (5<=len(subject)<=120 and 20<=len(details)<=1200):
+        return error(400,"invalid_content_length")
+    if any(ord(c)<32 and c not in "\n\r\t" for c in subject+details):
+        return error(400,"invalid_control_character")
+    fingerprint=hashlib.sha256(json.dumps(
+        [category,subject,details],ensure_ascii=False,separators=(",",":")).encode()).hexdigest()
+    reference="NPS-"+case_id
+    record={"pk":"USER#"+user["sub"],"sk":"CASE#"+case_id,
+            "reference":reference,"status":"RECEIVED_AWAITING_REVIEW",
+            "category":category,"subject":subject,"details":details,
+            "created_at":now(),"expires_at":now()+30*86400,
+            "request_hash":fingerprint,"financially_binding":False,
+            "inventory_reserved":False,"customer_email_sent":False,
+            "staff_notification_sent":False,"regulated_quality_report":False}
+    try:
+        TABLE.put_item(Item=record,ConditionExpression="attribute_not_exists(pk)")
+    except ClientError as exc:
+        if exc.response.get("Error",{}).get("Code")!="ConditionalCheckFailedException":
+            return error(503,"support_case_unavailable")
+        try:
+            old=TABLE.get_item(Key={"pk":record["pk"],"sk":record["sk"]},
+                               ConsistentRead=True).get("Item")
+        except ClientError:
+            return error(503,"support_case_unavailable")
+        if not old or old.get("request_hash")!=fingerprint:
+            return error(409,"case_id_reused_with_different_content")
+        reference=old.get("reference",reference)
+    return reply(201,{"reference":reference,"status":"RECEIVED_AWAITING_REVIEW",
+                      "notice":"Your enquiry has been recorded for manual review. No order, stock reservation, delivery promise or payment was created."})
+
+
+CUSTOMER_SUPPORT_JS = r'''(()=>{
+"use strict";
+const node=id=>document.getElementById(id);
+const form=node("case-form"),list=node("case-history"),status=node("case-status"),button=node("case-submit");
+function message(value){status.textContent=value;}
+function row(item){
+  const li=document.createElement("li");
+  li.className="case-history-row";
+  const title=document.createElement("strong");title.textContent=item.subject||"Support enquiry";
+  const meta=document.createElement("p");
+  const date=Number(item.created_at)>0?new Date(Number(item.created_at)*1000).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}):"Date unavailable";
+  meta.textContent=(item.reference||"Case")+" · "+date;
+  const state=document.createElement("span");state.className="case-state";state.textContent="Received · awaiting review";
+  li.append(title,meta,state);return li;
+}
+async function load(){
+  list.replaceChildren();
+  const loading=document.createElement("li");loading.textContent="Loading your enquiries…";list.append(loading);
+  try{
+    const response=await fetch("/api/customer/support-cases",{credentials:"same-origin",cache:"no-store"});
+    if(!response.ok)throw Error("unavailable");
+    const result=await response.json();
+    list.replaceChildren();
+    if(!Array.isArray(result.cases)||!result.cases.length){
+      const empty=document.createElement("li");empty.textContent="No support enquiries on this account yet.";list.append(empty);return;
+    }
+    for(const item of result.cases)list.append(row(item));
+  }catch{
+    list.replaceChildren();const failure=document.createElement("li");failure.textContent="Your support history is temporarily unavailable.";list.append(failure);
+  }
+}
+if(form)form.addEventListener("submit",async event=>{
+  event.preventDefault();
+  if(!form.reportValidity())return;
+  button.disabled=true;
+  message("Recording your support enquiry…");
+  const values=new FormData(form);
+  const payload={case_id:crypto.randomUUID(),category:values.get("category"),
+    subject:String(values.get("subject")||""),details:String(values.get("details")||"")};
+  try{
+    const response=await fetch("/api/customer/support-cases",{
+      method:"POST",credentials:"same-origin",cache:"no-store",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(payload)});
+    if(!response.ok)throw Error("not recorded");
+    const result=await response.json();
+    message("Enquiry recorded: "+result.reference+". Our team must review it before any action.");
+    form.reset();await load();
+  }catch{message("Your enquiry could not be recorded. Please try again.");}
+  finally{button.disabled=false;}
+});
+void load();
+})();'''
+
+
 def customer_workspace(event,route):
     """A non-binding customer-facing navigation step using existing services.
 
@@ -798,6 +934,42 @@ def customer_workspace(event,route):
                 body='<p class="empty">Request history is temporarily unavailable. No order status has been inferred.</p>'
         else:
             body='<p class="empty">Personal account active. Business request history requires a separately approved trade account.</p>'
+    elif route=="/portal/support/":
+        head=""
+        body=(
+            '<div class="support-description"><p>Ask about an account, an existing order request, '
+            'product availability or a technical issue. Each enquiry receives a private reference '
+            'for your account. Availability and delivery remain unconfirmed until reviewed.</p></div>'
+            '<div class="support-grid">'
+            '<section class="support-card" aria-labelledby="support-new-heading"><p class="support-overline">NEW ENQUIRY</p>'
+            '<h2 id="support-new-heading">How can we help?</h2>'
+            '<form id="case-form" class="support-form">'
+            '<label for="case-category">What do you need help with?</label>'
+            '<select id="case-category" name="category" required>'
+            '<option value="order_request">Order request</option>'
+            '<option value="product_availability">Product availability</option>'
+            '<option value="account">My account</option>'
+            '<option value="technical">Technical support</option></select>'
+            '<label for="case-subject">Subject</label>'
+            '<input id="case-subject" name="subject" type="text" required minlength="5" maxlength="120" '
+            'placeholder="Briefly describe your question" autocomplete="off">'
+            '<label for="case-details">Tell us more</label>'
+            '<textarea id="case-details" name="details" minlength="20" maxlength="1200" required '
+            'placeholder="Include a NovaPharm request reference if applicable." rows="6"></textarea>'
+            '<p class="support-privacy">Do not include patient details, medical emergencies, '
+            'adverse events or product-quality complaints here. These require dedicated '
+            'clinical or quality reporting channels. No email is sent automatically.</p>'
+            '<button type="submit" id="case-submit">Submit enquiry</button>'
+            '<p id="case-status" class="support-message" role="status" aria-live="polite"></p>'
+            '</form></section>'
+            '<section class="support-card support-history" aria-labelledby="case-history-heading">'
+            '<p class="support-overline">YOUR ACCOUNT</p>'
+            '<h2 id="case-history-heading">Recent enquiries.</h2>'
+            '<p>Only enquiries saved under your signed-in account appear here. '
+            'A receipt means your enquiry was recorded, not that a request has been resolved.</p>'
+            '<ol id="case-history" class="case-history-list"><li>Loading your enquiries…</li></ol>'
+            '</section></div><script src="/customer-support.js" defer></script>'
+        )
     elif route=="/portal/products/":
         head=""
         body=(
@@ -852,7 +1024,56 @@ ul{padding-left:19px;line-height:1.8;color:#555}footer{padding:30px;color:#85858
 .customer-order-details{margin:6px 0 10px;color:#57575f;font-size:12px;line-height:1.5}
 @media(max-width:740px){.layout{display:block}aside{display:flex;overflow-x:auto;gap:4px;padding:10px;border-right:0;border-bottom:1px solid #e8e8ea}aside p{display:none}aside a{white-space:nowrap;padding:10px}main{padding:28px 18px}}
 ''')
-    if route in ("/portal/dashboard/","/portal/products/"):
+    css+=('''
+/* Unified customer experience: restrained editorial hierarchy, accessible controls. */
+.customer-service{padding:clamp(40px,5vw,72px) clamp(22px,5vw,76px) 90px;
+  max-width:1380px;margin:0 auto;min-height:60vh}
+.customer-service .eyebrow{color:#727277;letter-spacing:.18em;font-size:11px;margin:0 0 15px}
+.customer-service h1{font-size:clamp(44px,5.2vw,70px);font-weight:650;letter-spacing:-.064em;
+  line-height:1.05;margin:0 0 20px;color:#1d1d1f}
+.customer-service .empty{background:#f5f5f7;border:0;color:#66666d;
+  font-size:15px;line-height:1.7;border-radius:20px;padding:30px}
+.customer-service .muted{color:#696970;line-height:1.55}
+.customer-service .tile{background:#f5f5f7;border:0;border-radius:20px}
+.customer-service .tile:hover{border:0}
+.customer-service footer{padding:35px 0 0;color:#68686f;border-top:1px solid #e8e8eb}
+.support-description>p{font-size:clamp(16px,1.5vw,20px);line-height:1.5;color:#66666c;
+  max-width:840px;margin:0 0 39px}
+.support-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,.9fr);gap:22px}
+.support-card{border-radius:24px;background:#f5f5f7;padding:clamp(25px,3vw,42px);min-width:0}
+.support-card .support-overline{font-size:11px;font-weight:700;letter-spacing:.19em;color:#8b151e;margin:0 0 14px}
+.support-card h2{font-size:clamp(25px,2.3vw,34px);font-weight:650;
+  letter-spacing:-.045em;line-height:1.12;margin:0 0 27px}
+.support-form{display:flex;flex-direction:column}
+.support-form label{color:#424249;font-size:13px;font-weight:620;margin:12px 0 8px}
+.support-form input,.support-form textarea,.support-form select{
+  display:block;width:100%;font:inherit;font-size:15px;color:#1d1d1f;
+  background:#fff;border:1px solid #d5d5da;border-radius:12px;padding:14px 15px;
+  min-height:47px;line-height:1.5;outline-offset:3px}
+.support-form textarea{resize:vertical;min-height:140px}
+.support-form input:focus-visible,.support-form textarea:focus-visible,
+.support-form select:focus-visible{outline:3px solid #8f1d25}
+.support-privacy{color:#62626b;font-size:12px;line-height:1.65;margin:19px 0}
+.support-form button{appearance:none;border:0;border-radius:999px;
+  color:#fff;background:#1d1d1f;padding:14px 24px;min-height:48px;
+  font:inherit;font-size:14px;font-weight:600;cursor:pointer;align-self:flex-start}
+.support-form button:hover{background:#37373b}
+.support-form button:disabled{opacity:.55;cursor:wait}
+.support-message{font-size:13px;color:#5b5b63;line-height:1.5;min-height:20px}
+.support-history>p:not(.support-overline){color:#696971;font-size:14px;line-height:1.6;margin-top:-8px}
+.case-history-list{list-style:none;margin:28px 0 0;padding:0;border-top:1px solid #d4d4d9}
+.case-history-list li{padding:17px 0;border-bottom:1px solid #d7d7dc;
+  color:#696970;font-size:13px;line-height:1.5}
+.case-history-row strong{display:block;color:#29292d;font-size:15px;margin-bottom:7px}
+.case-history-row p{margin:0 0 9px;font-size:12px;color:#66666c}
+.case-state{font-size:12px;color:#8b151e}
+@media(max-width:830px){.support-grid{grid-template-columns:1fr}}
+@media(max-width:520px){.customer-service{padding:35px 20px 55px}
+ .support-card{border-radius:18px;padding:24px}
+ .support-form button{width:100%}}
+@media(prefers-reduced-motion:reduce){.support-grid *{scroll-behavior:auto!important}}
+''')
+    if route in CUSTOMER_WORKSPACE_ROUTES:
         css+=('''
 /* Transitional customer-only editorial view: no changes to data or identity. */
 body.editorial-customer{background:#fff;color:#1d1d1f;overflow-x:hidden}
@@ -1031,7 +1252,12 @@ body.editorial-customer{background:#fff;color:#1d1d1f;overflow-x:hidden}
 @media(max-width:580px){.shop-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.shop-card-visual{height:150px}.shop-card-body{padding:13px}.shop-product-name{font-size:14px}.shop-filters{grid-template-columns:1fr 1fr}.shop-hero{max-width:100%}}
 @media(max-width:370px){.shop-grid{grid-template-columns:1fr}.shop-card-visual{height:170px}}
 ''')
-    if route in ("/portal/dashboard/","/portal/products/"):
+    if route not in ("/portal/dashboard/","/portal/products/"):
+        body=('<section class="customer-service" aria-labelledby="customer-module-title">'
+              '<p class="eyebrow">NOVAPHARM / CUSTOMER WORKSPACE</p>'
+              '<h1 id="customer-module-title">'+html.escape(title,quote=True)+'</h1>'
+              +head+body+'</section>')
+    if route in CUSTOMER_WORKSPACE_ROUTES:
         document=('<!doctype html><html lang="en-GB"><head><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">'
             '<title>'+html.escape(title,quote=True)+' | NovaPharm Healthcare</title><style>'+css+'</style></head>'
@@ -1442,6 +1668,7 @@ def handler(event,context):
     if method=="GET" and path=="/assets/earth-horizon-approved.jpg":return {"statusCode":200,"isBase64Encoded":True,"headers":{"content-type":"image/jpeg","cache-control":"public, max-age=604800","x-content-type-options":"nosniff","cross-origin-resource-policy":"same-origin"},"body":EARTH_APPROVED_JPEG_BASE64}
     if method=="GET" and path=="/app.js":return reply(200,APP,"text/javascript; charset=utf-8")
     if method=="GET" and path=="/customer-products.js":return reply(200,CUSTOMER_PRODUCTS_JS,"text/javascript; charset=utf-8")
+    if method=="GET" and path=="/customer-support.js":return reply(200,CUSTOMER_SUPPORT_JS,"text/javascript; charset=utf-8")
     if method in ("GET","POST") and path=="/login":return login(event)
     if method=="GET" and path=="/auth/callback":return callback(event)
     if method=="POST" and path=="/logout":return logout(event)
@@ -1480,6 +1707,10 @@ def handler(event,context):
             return reply(200,{"authenticated":True,"approved":approved(customer["username"]),
                 "email":customer.get("email","")})
         if not customer:return error(401,"login_required")
+        if method=="GET" and path=="/api/customer/support-cases":
+            return customer_support_cases(event,customer)
+        if method=="POST" and path=="/api/customer/support-cases":
+            return submit_customer_support_case(event,customer)
         if method=="GET" and path=="/api/customer/products":
             return customer_product_catalogue(event,customer)
         if method=="POST" and path=="/api/customer/quote-requests":
