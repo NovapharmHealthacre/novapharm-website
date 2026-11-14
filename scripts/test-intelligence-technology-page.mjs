@@ -180,15 +180,20 @@ for (const [label, markup] of [["source", source], ["published", published]]) {
   assert.ok(pricing.includes('data-monthly-gbp="199" data-annual-gbp="2030"'));
   assert.ok(pricing.includes('data-monthly-gbp="699" data-annual-gbp="7130"'));
   assert.ok(pricing.includes("£2,799") && pricing.includes("Custom"));
-  assert.ok(pricing.includes("not live subscriptions") && pricing.includes("No payment will be collected here"));
+  assert.ok(pricing.includes("paid checkout currently remains separately gated") && pricing.includes("No payment is collected by this page"));
   assert.ok(pricing.includes("Approved monthly prices in GBP") && pricing.includes("actual tax depends"));
   assert.ok(!pricing.includes('npi-trial-offer') && !pricing.includes('npi-billing-switch'), label + " must not have a separate trial banner or unapproved billing toggle");
   assert.ok(!pricing.includes("Coming soon") && !pricing.includes("Enrolment not yet open"), label + " must not use disabled-plan marketing buttons");
-  for (const plan of ["starter","professional","enterprise"]) {
-    assert.ok(pricing.includes('intelligencePlan=' + plan), label + " must send named plans to approved enquiry intake");
+  for (const plan of ["starter","professional"]) {
+    assert.ok(pricing.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/register?plan=' + plan + '&amp;cycle=monthly"'), label + " paid plan must use secure Cognito registration with fixed plan and cycle");
+    assert.ok(pricing.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/start?plan=' + plan + '&amp;cycle=monthly"'), label + " existing customers must have matching signed sign-in entry");
+    assert.ok(!pricing.includes('/contact/?enquiry=General%20enquiry&amp;intelligencePlan=' + plan), label + " paid plans must not fall back to contact form");
   }
-  assert.ok(pricing.includes("Request free trial") && pricing.includes("Request Starter") && pricing.includes("Request Professional") && pricing.includes("Contact sales"));
-  assert.ok(!pricing.includes("checkout.stripe.com") && !pricing.includes('/auth/customer/register'), label + " must never promise unverified checkout");
+  assert.ok(pricing.includes('href="https://intelligence.novapharmhealthcare.com/auth/customer/register"'), label + " free trial must initiate no-card identity registration");
+  assert.ok(pricing.includes('intelligencePlan=enterprise'), label + " bespoke Enterprise requires contractual enquiry");
+  assert.ok(pricing.includes("Create free account") && pricing.includes("Choose Starter") && pricing.includes("Choose Professional") && pricing.includes("Contact sales"));
+  assert.ok(pricing.includes("Stripe-hosted payment is requested only after verified identity"));
+  assert.ok(!pricing.includes("checkout.stripe.com"), label + " public source must not expose direct Stripe payment links");
 }
 assert.ok(styles.includes("Four-plan Intelligence pricing") && styles.includes("repeat(4, minmax(0,1fr))"), "Four-column responsive layout contract");
 assert.ok(styles.includes("#0071e3") && styles.includes("#f5f5f7"), "Approved Apple-style palette is retained");
