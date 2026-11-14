@@ -111,6 +111,7 @@ test("partial migration resumes safely without replacing already correct unique 
   const sys = fake({ indexes: { [names[0]]: [goodIndex(names[0])] } });
   const result = await applyAtlasG2UniqueIndexes({
     database: sys.database, verifyMigrationAuthority: permitted,
+    afterVerifiedIndex: async () => ({ persisted: true }),
   });
   assert.equal(result.ready, true);
   assert.deepEqual(result.changed, names.slice(1));
@@ -157,6 +158,7 @@ test("wrong database and failed native driver readback never claim completion", 
   const sys = fake({ overrideCreateIndex: ({ options }) => options.name });
   await assert.rejects(applyAtlasG2UniqueIndexes({
     database: sys.database, verifyMigrationAuthority: permitted,
+    afterVerifiedIndex: async () => ({ persisted: true }),
   }), denied("index_creation_unverified"));
   assert.equal(sys.writes.length, 1);
 });
@@ -171,4 +173,12 @@ test("missing durable migration audit fails closed and never declares release", 
   const state = await inspectAtlasG2UniqueIndexes({ database: sys.database });
   assert.equal(state.ready, false);
   assert.equal(state.customerReleaseApproved, false);
+});
+
+test("missing durable audit callback denies migration before the first write", async () => {
+  const sys = fake();
+  await assert.rejects(applyAtlasG2UniqueIndexes({
+    database: sys.database, verifyMigrationAuthority: permitted,
+  }), denied("durable_migration_audit_required"));
+  assert.deepEqual(sys.writes, []);
 });
