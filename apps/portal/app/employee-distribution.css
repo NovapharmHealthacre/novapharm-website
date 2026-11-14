@@ -110,3 +110,13 @@
 .distribution-employee-all li a:hover{color:#a20e1a;text-decoration:underline;text-underline-offset:3px}
 @media(max-width:890px){.distribution-employee-all ul{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:570px){.distribution-employee-all ul{grid-template-columns:1fr}}
+
+/* Warehouse control tower: no stock illustrations, icons or fake KPI cards. */
+.distribution-wms-status{max-width:1120px;border-top:1px solid #dadadd;border-bottom:1px solid #dadadd;padding:27px 0 34px;margin-bottom:25px}
+.distribution-wms-status h2{font-size:clamp(1.6rem,2.5vw,2.7rem);letter-spacing:-.045em;line-height:1.14;font-weight:640;margin:0 0 12px}
+.distribution-wms-status>p:not(.distribution-employee-overline){font-size:.94rem;line-height:1.7;color:#626269;max-width:76ch;margin:0}
+.distribution-wms-principles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;margin-top:32px}
+.distribution-wms-principles>div{border-top:1px solid #e0e0e3;padding-top:18px;display:flex;flex-direction:column;gap:9px}
+.distribution-wms-principles strong{font-size:.95rem;font-weight:640}
+.distribution-wms-principles span{font-size:.83rem;color:#66666c;line-height:1.55}
+@media(max-width:570px){.distribution-wms-principles{grid-template-columns:1fr;gap:16px}}
