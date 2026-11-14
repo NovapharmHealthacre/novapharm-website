@@ -14,6 +14,7 @@ const requiredPages = new Map([
   ["products/index.html", ["products-editorial.css"]]
 ]);
 const semanticVersions = new Map([
+  ["about/index.html:assets/css/about-editorial.css", "20261111-about-aa-contrast-v1"],
   ["capabilities/index.html:assets/css/capabilities-editorial.css", "20261111-capabilities-approved-photo-v5"],
   ["oncology/index.html:assets/css/oncology-hope-v2.css", "20261113-hope-responsive-v7"],
   ["products/index.html:assets/css/products-editorial.css", "20261111-products-layout-v4"],
@@ -81,8 +82,15 @@ function replaceHref(html, node, href, page) {
 
 const register = JSON.parse(readFileSync(localFile("seo/generated/page-metadata-register.json"), "utf8"));
 assert.ok(Array.isArray(register) && register.length > 0, "Canonical page register must be a nonempty array");
+const pages = [...register];
+// These staged commerce pages are not supplied by the earlier SEO register.
+// Version their existing self-canonical HTML without inventing SEO records.
+for (const route of ["/products/esco/bag/", "/products/marketplace/", "/products/track/"]) {
+  const file = `${route.slice(1)}index.html`;
+  if (!register.some(page => page?.file === file)) pages.push({ route, file, canonical: `${origin}${route}` });
+}
 const seen = new Set();
-for (const page of register) {
+for (const page of pages) {
   assert.ok(page && typeof page === "object", "Invalid canonical page record");
   assert.equal(typeof page.route, "string", "Canonical route missing");
   assert.match(page.route, /^\/(?:[a-zA-Z0-9_-]+\/)*$/, "Unsafe canonical route in SEO register");
@@ -97,7 +105,7 @@ for (const file of requiredPages.keys()) assert.ok(seen.has(file), `Required can
 const assets = new Map();
 const plans = [];
 let links = 0;
-for (const page of register) {
+for (const page of pages) {
   const full = localFile(page.file);
   const bytes = readFileSync(full);
   assert.ok(isUtf8(bytes), `${page.file}: canonical HTML must be UTF-8`);
