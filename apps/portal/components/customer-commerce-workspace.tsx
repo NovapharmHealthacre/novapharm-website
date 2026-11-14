@@ -51,7 +51,7 @@ export function CustomerCommerceWorkspace({ moduleCode }: Readonly<{ moduleCode:
             <p>Browse your authorised catalogue, review account-specific pricing and manage order requests.</p>
             {products ? <a href={products.route}>Explore products</a> : null}
           </div>
-          <div className="customer-editorial-packshots" role="group" aria-label="Nutraxin catalogue product photographs">
+          <div className="customer-editorial-packshots">
             <Image src="/assets/media/products/nutraxin/vitamin-d3-120-tablets-480.webp" alt="Nutraxin Vitamin D3 pack" width={180} height={228} unoptimized />
             <Image src="/assets/media/products/nutraxin/magnesium-complex-60-tablets-480.webp" alt="Nutraxin Magnesium Complex pack" width={180} height={228} unoptimized />
             <Image src="/assets/media/products/nutraxin/collagen-gold-30-tablets-480.webp" alt="Nutraxin Collagen Gold pack" width={180} height={228} unoptimized />
