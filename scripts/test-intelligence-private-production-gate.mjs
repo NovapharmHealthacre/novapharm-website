@@ -25,6 +25,7 @@ test("HTTPS ingress rejects public/indexable production portal responses", () =>
   assert.deepEqual(assignments, [
     "https://intelligence.novapharmhealthcare.com",
     "https://intelligence.novapharmhealthcare.com",
+    "https://intelligence.novapharmhealthcare.com",
   ]);
   assert.match(source, /NUTRAXIN \/ CUSTOMER ACCOUNT\|Welcome to Nutraxin/u);
   assert.match(source, /getent ahostsv4/u);
@@ -72,4 +73,22 @@ test("daily live ingress acceptance remains read-only and never self-activates a
   assert.doesNotMatch(source, /\b(?:workflow_run|repository_dispatch|pull_request_target):/u);
   assert.doesNotMatch(source, /aws (?:lambda update-function|ecs update-service|cloudformation deploy)|stripe\.com\/v1|github\.com\/repos\/[^ ]+\/dispatches/u);
   assert.match(source, /Production acceptance still requires a credentialed board session/u);
+});
+
+test("production HTTPS acceptance explicitly denies all 22 authenticated Intelligence deep links", () => {
+  const catalogue = readFileSync("apps/portal/data/intelligence-workspaces.ts", "utf8");
+  const defined = [...catalogue.matchAll(/\{ slug: "([^"]+)", title: "[^"]+", group: "[^"]+", state: "(?:existing-read-only|gated)"/gu)]
+    .map(x => x[1]);
+  assert.equal(defined.length, 22);
+  assert.equal(new Set(defined).size, 22);
+  const block = source.match(/workspace_slugs=\(\s*([\s\S]*?)\s*\)/u);
+  assert.ok(block, "production workflow must enumerate every private workspace");
+  const tested = [...block[1].matchAll(/^\s*'([^']+)'\s*$/gmu)].map(x => x[1]);
+  assert.equal(tested.length, 22);
+  assert.deepEqual(new Set(tested), new Set(defined));
+  assert.ok(source.includes("Deny anonymous access to every one of the 22 private workspaces"));
+  assert.ok(source.includes('if ! [[ "$status" =~ ^(301|302|303|307|308|401|403)$ ]]'));
+  assert.ok(source.includes("'^cache-control:.*no-store'"));
+  assert.ok(source.includes("grep -qx '{\"message\":\"Forbidden\"}'"));
+  assert.ok(source.includes("All 22 protected workspace paths rejected anonymous access"));
 });
