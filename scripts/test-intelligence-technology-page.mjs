@@ -190,6 +190,7 @@ for (const [label, markup] of [["source", source], ["published", published]]) {
   assert.ok(pricing.includes('intelligencePlan=enterprise'), label + " must retain custom Enterprise sales");
   assert.ok(pricing.includes("Create free account") && pricing.includes("Subscribe") && pricing.includes("Contact sales"));
   assert.ok(pricing.includes("renew monthly until cancelled") && pricing.includes("Payment is not an automatic medicine-data entitlement"), label + " must disclose what is and is not activated");
+  assert.ok(pricing.includes('href="https://billing.stripe.com/p/login/00waEQ1gQ1Lr2x87aIdby00">Manage subscription</a>'), label + " must offer self-service Stripe billing management");
   assert.ok(!pricing.includes("checkout.stripe.com"), label + " must use approved Stripe hosted payment links, not constructed sessions");
   assert.ok(!pricing.includes('/contact/?enquiry=General%20enquiry&amp;intelligencePlan=starter') &&
             !pricing.includes('/contact/?enquiry=General%20enquiry&amp;intelligencePlan=professional'),
