@@ -1,7 +1,18 @@
-import { cp, mkdir, rm } from "node:fs/promises";
+import { access, cp, mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 
 const repositoryRoot = path.resolve(process.cwd(), "../..");
+const requiredDistributionBrandAssets = [
+  "novapharm-distribution.svg",
+  "novapharm-distribution-reverse.svg",
+  "novapharm-distribution-mark.svg",
+  "novapharm-distribution-apple-touch-icon.png",
+];
+// Detect missing approved WMS artwork before rewriting a standalone portal's
+// public assets. There is no third-party runtime image dependency.
+for (const asset of requiredDistributionBrandAssets) {
+  await access(path.join(repositoryRoot, "assets/brand", asset));
+}
 const brandTarget = path.resolve("public/assets/brand");
 await rm(brandTarget, { recursive: true, force: true });
 await mkdir(brandTarget, { recursive: true });
