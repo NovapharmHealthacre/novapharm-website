@@ -145,6 +145,65 @@ export async function GET(request: NextRequest): Promise<Response> {
     const { idToken, accessToken } = await exchangeCustomerAuthTokens({
       code, verifier: transaction.verifier,
     });
+    // Check the exact operator-approved internal pilot before normal identity
+    // acceptance. Some Cognito pools emit ACR/AMR values that satisfy the
+    // general identity verifier even when GetUser still reports NO registered
+    // authenticator. That token must never skip the pilot's real TOTP setup.
+    //
+    // A new signed JWT, correct nonce, verified email, fresh password sign-in,
+    // pinned account subject and an unenrolled Cognito GetUser are all required.
+    // This is enrollment-only: no founder/customer/medicine permission is issued.
+    if (process.env["NPI_INTERNAL_PILOT_MFA_ENABLED"] === "true" &&
+        typeof process.env["NPI_INTERNAL_PILOT_MFA_EMAIL"] === "string") {
+      try {
+        phase = "internal_pilot_mfa_preidentity_check";
+        const allowedEmail = process.env["NPI_INTERNAL_PILOT_MFA_EMAIL"];
+        const pilot = await verifyIntelligenceCustomerIdToken({
+          idToken, expectedNonce: transaction.nonce,
+          purpose: "internal_pilot_mfa_enrolment",
+          pilotMfaEmail: allowedEmail,
+        });
+        if (!pilot.pilotMfaEnrolmentOnly || pilot.identityVerified ||
+            pilot.grantsTenantAccess || pilot.grantsFounderAccess) {
+          throw new Error("Restricted internal identity check failed.");
+        }
+        await checkInternalPilotUnenrolled({
+          accessToken, subject: pilot.verifiedCognitoSubject,
+          expectedEmail: allowedEmail,
+        });
+        const sealed = createInternalPilotMfaCookie({
+          accessToken, subject: pilot.verifiedCognitoSubject,
+          expectedEmail: allowedEmail,
+          signingKey: process.env["NPI_OIDC_TRANSACTION_SIGNING_KEY"] ?? "",
+        });
+        response = NextResponse.redirect(
+          new URL("/auth/internal/mfa/setup", FOUNDER_PUBLIC_ORIGIN),
+          { status: 303 },
+        );
+        response.cookies.set({
+          name: "__Host-npi_internal_mfa", value: sealed.cookieValue,
+          path: "/", secure: true, httpOnly: true, sameSite: "lax",
+          maxAge: sealed.maxAgeSeconds,
+        });
+        response.cookies.set({
+          name: "__Host-npi_oidc_tx", value: "", path: "/",
+          httpOnly: true, secure: true, sameSite: "lax", maxAge: 0,
+        });
+        response.headers.set("Cache-Control", "no-store");
+        console.info(JSON.stringify({
+          event: "npi_internal_pilot_mfa_preidentity_enrolment_offered",
+        }));
+        return response;
+      } catch (pilotError: unknown) {
+        // Non-pilot users and already enrolled accounts continue through
+        // the unchanged signed identity/founder checks. Never log JWTs,
+        // emails, OIDC codes, cookies, authenticator secrets or OTPs.
+        console.info(JSON.stringify({
+          event: "npi_internal_pilot_mfa_preidentity_denied",
+          reason: safeIdentityErrorCode(pilotError),
+        }));
+      }
+    }
     phase = "id_token_verification";
     let identity: { grantsTenantAccess: boolean; identityVerified: boolean; verifiedCognitoSubject?: string } | undefined;
     try {
