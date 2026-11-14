@@ -30,9 +30,18 @@ export const ENTERPRISE_ORDER_RELEASE = Object.freeze({
  * bodies, user roles, customer input, or unreviewed environment overrides.
  */
 export function assertEnterpriseOrderSubmissionAllowed(env = process.env) {
+  // Domain CI runs against an explicitly-created throwaway SQLite path.
+  // This is not an enablement flag for a shared staging or production database.
+  const isolatedDomainFixture =
+    env.NOVAPHARM_DOMAIN_VALIDATION_MODE === "true" &&
+    typeof env.DATABASE_PATH === "string" &&
+    /(?:^|\\/)novapharm-domain-[a-zA-Z0-9]+\\/validation\\.sqlite$/.test(env.DATABASE_PATH);
+
   const syntheticValidation =
     env.NODE_ENV !== "production" &&
-    (env.LOCAL_PORTAL_MODE === "true" || env.BROWSER_VALIDATION_MODE === "true");
+    (env.LOCAL_PORTAL_MODE === "true" ||
+      env.BROWSER_VALIDATION_MODE === "true" ||
+      isolatedDomainFixture);
 
   if (syntheticValidation) {
     return Object.freeze({
