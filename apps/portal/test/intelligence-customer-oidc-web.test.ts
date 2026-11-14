@@ -747,13 +747,15 @@ test("pilot callback's one 303 cookie survives the next internal setup request",
       "https://intelligence.novapharmhealthcare.com/auth/internal/mfa/setup");
     const setCookies = responseCookies(callback);
     assert.equal(setCookies.length, 1, "Pilot 303 must issue exactly one browser cookie");
-    assert.match(setCookies[0], /^__Host-npi_internal_mfa=/u);
-    assert.doesNotMatch(setCookies[0], /__Host-npi_oidc_tx|__Host-npi_session|__Host-npi_founder/u);
-    assert.match(setCookies[0], /HttpOnly/u);
-    assert.match(setCookies[0], /Secure/u);
-    assert.match(setCookies[0], /SameSite=Lax/iu);
+    const pilotCookie = setCookies[0];
+    assert.ok(pilotCookie, "Signed enrollment cookie must be present");
+    assert.match(pilotCookie, /^__Host-npi_internal_mfa=/u);
+    assert.doesNotMatch(pilotCookie, /__Host-npi_oidc_tx|__Host-npi_session|__Host-npi_founder/u);
+    assert.match(pilotCookie, /HttpOnly/u);
+    assert.match(pilotCookie, /Secure/u);
+    assert.match(pilotCookie, /SameSite=Lax/iu);
     const followup = new NextRequest("http://localhost:4303/auth/internal/mfa/setup", {
-      headers: { cookie: setCookies[0]!.split(";")[0] },
+      headers: { cookie: pilotCookie.split(";")[0] ?? "" },
     });
     const setup = await openInternalPilotSetup(followup);
     assert.equal(setup.status, 200);
