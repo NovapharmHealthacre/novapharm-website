@@ -1212,5 +1212,43 @@ class PortalSecurityTests(unittest.TestCase):
             PORTAL.session=old_session
 
 
+
+    def test_order_tracking_reads_only_real_customer_requests_without_dispatch_claims(self):
+        previous_session,previous_table,previous_groups=PORTAL.session,PORTAL.TABLE,COGNITO.groups
+        PORTAL.session=lambda _: {"username":"approved","sub":"tenant-A","email":"buyer@example.invalid"}
+        COGNITO.groups=[PORTAL.APPROVED_GROUP]
+        class OwnRequests:
+            def query(self,**kwargs):
+                expected=("and",("eq","pk","USER#tenant-A"),("begins_with","sk","RQ#"))
+                if kwargs.get("KeyConditionExpression")!=expected:
+                    raise AssertionError("Tracking query escaped customer request partition")
+                if kwargs.get("Limit")!=10:
+                    raise AssertionError("Tracking history is not bounded")
+                return {"Items":[
+                    {"pk":"USER#tenant-A","sk":"RQ#111","receipt_id":"NPQ-111",
+                     "status":"PENDING_MANUAL_REVIEW","created_at":1700000000},
+                    {"pk":"USER#tenant-B","sk":"RQ#222","receipt_id":"NPQ-222",
+                     "status":"APPROVED_FOR_PAYMENT","created_at":1700000000}
+                ]}
+        PORTAL.TABLE=OwnRequests()
+        try:
+            response=PORTAL.handler(self.event("/portal/order-tracking/"),None)
+            self.assertEqual(response["statusCode"],200)
+            body=response["body"]
+            self.assertIn("NPQ-111",body)
+            self.assertNotIn("NPQ-222",body)
+            self.assertIn("Received — awaiting manual review",body)
+            self.assertIn("No stock allocation",body)
+            self.assertIn("Support &amp; Supply Enquiries",body)
+            self.assertNotIn("Shipped —",body)
+            COGNITO.groups=[]
+            denied=PORTAL.handler(self.event("/portal/order-tracking/"),None)
+            self.assertEqual(denied["statusCode"],200)
+            self.assertIn("separately approved business account",denied["body"])
+            self.assertNotIn("NPQ-111",denied["body"])
+        finally:
+            PORTAL.session,PORTAL.TABLE,COGNITO.groups=previous_session,previous_table,previous_groups
+
+
 if __name__ == "__main__":
     unittest.main()
