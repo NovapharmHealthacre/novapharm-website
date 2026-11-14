@@ -25,6 +25,7 @@ test("HTTPS ingress rejects public/indexable production portal responses", () =>
   assert.deepEqual(assignments, [
     "https://intelligence.novapharmhealthcare.com",
     "https://intelligence.novapharmhealthcare.com",
+    "https://intelligence.novapharmhealthcare.com",
   ]);
   assert.match(source, /NUTRAXIN \/ CUSTOMER ACCOUNT\|Welcome to Nutraxin/u);
   assert.match(source, /getent ahostsv4/u);
