@@ -71,7 +71,14 @@ BOTO3 = types.ModuleType("boto3")
 BOTO3.resource = lambda *args, **kw: types.SimpleNamespace(Table=lambda name: DDB)
 BOTO3.client = lambda name, **kw: COGNITO if name == "cognito-idp" else DummySSM()
 KEY_MOD = types.ModuleType("boto3.dynamodb.conditions")
-KEY_MOD.Key = lambda name: types.SimpleNamespace(eq=lambda value: ("eq", name, value))
+class DummyCondition(tuple):
+    def __and__(self, other):
+        return ("and", tuple(self), tuple(other))
+
+KEY_MOD.Key = lambda name: types.SimpleNamespace(
+    eq=lambda value: DummyCondition(("eq", name, value)),
+    begins_with=lambda value: DummyCondition(("begins_with", name, value))
+)
 sys.modules["boto3"] = BOTO3
 sys.modules["boto3.dynamodb"] = types.ModuleType("boto3.dynamodb")
 sys.modules["boto3.dynamodb.conditions"] = KEY_MOD
@@ -1021,6 +1028,112 @@ class PortalSecurityTests(unittest.TestCase):
             PORTAL.session=old_session
             PORTAL.TABLE=old_table
             COGNITO.groups=old_groups
+
+
+    def test_customer_modules_share_apple_inspired_header_and_support_form(self):
+        old_session=PORTAL.session
+        PORTAL.session=lambda event: {"username":"verified","sub":"sub-A","email":"verified@example.invalid"}
+        try:
+            for path in ("/portal/dashboard/","/portal/products/","/portal/orders/",
+                         "/portal/documents/","/portal/support/"):
+                response=PORTAL.handler(self.event(path),None)
+                self.assertEqual(response["statusCode"],200,path)
+                body=response["body"]
+                self.assertIn('class="editorial-customer"',body)
+                self.assertIn("novapharm-healthcare-logo.svg",body)
+                self.assertIn("editorial-topnav",body)
+                self.assertIn("customer",body.lower())
+            support=PORTAL.handler(self.event("/portal/support/"),None)["body"]
+            self.assertIn('id="case-form"',support)
+            self.assertIn('src="/customer-support.js"',support)
+            self.assertIn("Do not include patient details",support)
+            self.assertNotIn("Support ticket created.",support)
+            js=PORTAL.handler(self.event("/customer-support.js"),None)
+            self.assertEqual(js["statusCode"],200)
+            self.assertIn("/api/customer/support-cases",js["body"])
+            self.assertIn("textContent",js["body"])
+            self.assertNotIn("innerHTML",js["body"])
+        finally:
+            PORTAL.session=old_session
+
+    def test_support_cases_are_verified_scoped_nonbinding_and_do_not_send_email(self):
+        old_session=PORTAL.session
+        PORTAL.session=lambda event: {"username":"verified","sub":"sub-owner","email":"owner@example.invalid"}
+        case_id="aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
+        payload={"case_id":case_id,"category":"product_availability",
+                 "subject":"Availability enquiry","details":"Please check this reference and advise if supply can be confirmed."}
+        try:
+            event=self.event("/api/customer/support-cases","POST",payload)
+            event["headers"]["content-type"]="application/json"
+            response=PORTAL.handler(event,None)
+            self.assertEqual(response["statusCode"],201)
+            message=json.loads(response["body"])
+            self.assertEqual(message["status"],"RECEIVED_AWAITING_REVIEW")
+            self.assertEqual(message["reference"],"NPS-"+case_id)
+            self.assertEqual(len(DDB.items),1)
+            saved=DDB.items[0]
+            self.assertEqual(saved["pk"],"USER#sub-owner")
+            self.assertEqual(saved["sk"],"CASE#"+case_id)
+            self.assertFalse(saved["financially_binding"])
+            self.assertFalse(saved["inventory_reserved"])
+            self.assertFalse(saved["customer_email_sent"])
+            self.assertFalse(saved["staff_notification_sent"])
+            self.assertFalse(saved["regulated_quality_report"])
+            self.assertNotIn("payment_intent",str(saved))
+        finally:
+            PORTAL.session=old_session
+
+    def test_support_api_denies_cross_origin_bad_schema_and_unverified_customer(self):
+        old_session=PORTAL.session
+        PORTAL.session=lambda event: {"username":"verified","sub":"sub-owner"}
+        case_id="aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
+        good={"case_id":case_id,"category":"order_request","subject":"Need help with request",
+              "details":"Please review my existing request and its latest status."}
+        try:
+            wrong_origin=self.event("/api/customer/support-cases","POST",good,"https://other.invalid")
+            wrong_origin["headers"]["content-type"]="application/json"
+            self.assertEqual(PORTAL.handler(wrong_origin,None)["statusCode"],403)
+            for malformed in ({**good,"account_id":"different-customer"},
+                              {**good,"category":"quality_complaint"},
+                              {**good,"details":"too short"},
+                              {**good,"case_id":"not-a-uuid"}):
+                call=self.event("/api/customer/support-cases","POST",malformed)
+                call["headers"]["content-type"]="application/json"
+                self.assertEqual(PORTAL.handler(call,None)["statusCode"],400)
+            unauthenticated=self.event("/api/customer/support-cases")
+            PORTAL.session=lambda event:None
+            self.assertEqual(PORTAL.handler(unauthenticated,None)["statusCode"],401)
+            PORTAL.session=lambda event: {"username":"verified","sub":"sub-owner"}
+            COGNITO.enabled=False
+            self.assertEqual(PORTAL.handler(self.event("/api/customer/support-cases"),None)["statusCode"],403)
+            self.assertEqual(len(DDB.items),0)
+        finally:
+            PORTAL.session=old_session
+
+    def test_support_cases_query_never_reads_another_customer_partition(self):
+        previous_session,previous_table=PORTAL.session,PORTAL.TABLE
+        PORTAL.session=lambda event: {"username":"verified","sub":"tenant-A"}
+        class ScopeTable:
+            def query(self,**kwargs):
+                self_args=kwargs.get("KeyConditionExpression")
+                self_test=("and",("eq","pk","USER#tenant-A"),("begins_with","sk","CASE#"))
+                if self_args!=self_test:
+                    raise AssertionError("Case records accessed outside current account")
+                return {"Items":[{"pk":"USER#tenant-A","sk":"CASE#aaa",
+                                  "reference":"NPS-test","category":"account",
+                                  "subject":"Account update enquiry","status":"RECEIVED_AWAITING_REVIEW",
+                                  "created_at":1700000000}]}
+        PORTAL.TABLE=ScopeTable()
+        try:
+            response=PORTAL.handler(self.event("/api/customer/support-cases"),None)
+            self.assertEqual(response["statusCode"],200)
+            items=json.loads(response["body"])["cases"]
+            self.assertEqual(len(items),1)
+            self.assertEqual(items[0]["reference"],"NPS-test")
+            self.assertNotIn("tenant-B",response["body"])
+        finally:
+            PORTAL.session,PORTAL.TABLE=previous_session,previous_table
+
 
 if __name__ == "__main__":
     unittest.main()
