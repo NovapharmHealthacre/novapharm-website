@@ -132,3 +132,14 @@
 .distribution-wms-journey-list article p{font-size:.89rem;color:#65656c;line-height:1.62;margin:0}
 .distribution-wms-footnote{font-size:.83rem;color:#66666d;max-width:80ch;padding:18px 0;border-top:1px solid #eee;line-height:1.65}
 @media(max-width:780px){.distribution-wms-journey-list{grid-template-columns:1fr;gap:10px}}
+
+/* Five connected domain views; readable editorial navigation, no icons. */
+.distribution-wms-control-nav{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:0 18px;max-width:1230px;padding:8px 0 29px}
+.distribution-wms-control-nav a{display:flex;flex-direction:column;gap:9px;padding:19px 2px 17px;border-top:1px solid #dcdce0;color:#242428;text-decoration:none;min-height:128px}
+.distribution-wms-control-nav a span{font-size:.91rem;letter-spacing:-.02em;font-weight:650}
+.distribution-wms-control-nav a small{color:#717178;line-height:1.5;font-size:.78rem}
+.distribution-wms-control-nav a[aria-current="page"]{border-top:2px solid #b51822;padding-top:18px}
+.distribution-wms-control-nav a:hover span{text-decoration:underline;text-underline-offset:4px}
+.distribution-wms-control-nav a:focus-visible{outline:3px solid #0071e3;outline-offset:2px}
+@media(max-width:570px){.distribution-wms-control-nav{grid-template-columns:1fr 1fr;gap:0 12px}.distribution-wms-control-nav a{min-height:146px}}
+@media(max-width:360px){.distribution-wms-control-nav{grid-template-columns:1fr}.distribution-wms-control-nav a{min-height:auto}}
