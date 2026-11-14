@@ -113,6 +113,9 @@ export async function applyAtlasG2UniqueIndexes({
       typeof auth.changeTicket !== "string" || !/^[a-zA-Z0-9._:-]{4,128}$/u.test(auth.changeTicket)) {
     throw deny("independent_approval_required");
   }
+  if (typeof afterVerifiedIndex !== "function") {
+    throw deny("durable_migration_audit_required");
+  }
   const changed = [];
   for (const spec of preflight.checks) {
     // Re-inspect immediately before each create; abort if the system changed.
@@ -128,13 +131,11 @@ export async function applyAtlasG2UniqueIndexes({
     const verified = await inspectCollection(database, spec.collection);
     if (!verified.compliant) throw deny("index_creation_unverified");
     changed.push(spec.collection);
-    if (afterVerifiedIndex !== undefined) {
-      const audit = await afterVerifiedIndex(Object.freeze({
-        collection: spec.collection, indexName: INDEX,
-        operatorId: auth.operatorId, changeTicket: auth.changeTicket,
-      }));
-      if (!audit || audit.persisted !== true) throw deny("migration_audit_failed");
-    }
+    const audit = await afterVerifiedIndex(Object.freeze({
+      collection: spec.collection, indexName: INDEX,
+      operatorId: auth.operatorId, changeTicket: auth.changeTicket,
+    }));
+    if (!audit || audit.persisted !== true) throw deny("migration_audit_failed");
   }
   const finish = await inspectAtlasG2UniqueIndexes({ database });
   if (!finish.ready) throw deny("migration_incomplete");
