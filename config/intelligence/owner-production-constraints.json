@@ -1,0 +1,35 @@
+{
+  "contract": "novapharm.intelligence.owner-constraints.v1",
+  "decisionDate": "2026-11-14",
+  "vendorStrategy": "vendor_neutral_only",
+  "enterpriseVendorAccounts": "none",
+  "initialInfrastructureBudget": {
+    "status": "zero_additional_spend_only",
+    "monthlyCapGbp": 0,
+    "existingSubscriptionsOnly": true,
+    "newChargeableResourceProvisioning": false
+  },
+  "engineeringTarget": "private_read_only_pilot",
+  "productionPermissions": {
+    "provisionNewPaidInfrastructure": false,
+    "purchaseVendorLicenses": false,
+    "activateNativePalantir": false,
+    "activateNativePrisma": false,
+    "activateNativeBloomberg": false,
+    "admitUnapprovedMedicineData": false,
+    "enableCustomerSubscriptions": false,
+    "enableCustomerBilling": false,
+    "sendExternalEmail": false,
+    "activatePublicCustomerAccess": false,
+    "cutOverPortalDnsOrApiMapping": false
+  },
+  "acceptedEngineeringScope": [
+    "repository_changes",
+    "code_review_and_ci",
+    "unit_and_isolated_security_tests",
+    "read_only_inventory_and_verification",
+    "source_rights_and_security_documentation",
+    "reversible_nonproduction_design"
+  ],
+  "productionSignoff": "not_granted"
+}
