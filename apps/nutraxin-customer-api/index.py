@@ -774,15 +774,25 @@ def customer_workspace(event,route):
         head='<p class="muted">Verified personal account. Trade status and organisation access are separately approved.</p>'
         body='<div class="tile"><b>Email</b><span>'+email+'</span><span>Identity verified with the existing NovaPharm customer provider</span></div>'
     elif route=="/portal/orders/":
-        head='<p class="muted">Only your own non-binding business order requests can be shown here. A request is not a confirmed order or invoice.</p>'
+        head='<p class="muted">Review your Nutraxin and ESCO purchasing requests in one account. Request receipts are not accepted orders, invoices or guaranteed deliveries.</p><p><a href="/portal/products/">Browse products and create a request</a></p>'
         if approved(principal["username"]):
             try:
                 response=TABLE.query(KeyConditionExpression=Key("pk").eq("USER#"+principal["sub"]),
                     Limit=20,ScanIndexForward=False)
                 items=[x for x in response.get("Items",[]) if str(x.get("sk","")).startswith("RQ#")]
-                records="".join('<li><strong>'+html.escape(str(x.get("receipt_id") or "Request"),quote=True)+
+                records="".join(
+                    '<li><strong>'+html.escape(str(x.get("receipt_id") or "Request"),quote=True)+
                     '</strong> · '+html.escape(str(x.get("status") or "Pending review").replace("_"," ").lower(),quote=True)+
-                    ' · Not financially binding</li>' for x in items)
+                    ' · Not financially binding'+
+                    ('<div class="customer-order-details">'+
+                      html.escape("; ".join(
+                        str(line.get("quantity",1))+" × "+
+                        (PRODUCTS[line["sku"]][0] if line.get("sku") in PRODUCTS
+                         else ESCO_CUSTOMER_INDEX[line["sku"]][1] if line.get("sku") in ESCO_CUSTOMER_INDEX
+                         else str(line.get("sku","Unknown reference")))
+                        for line in x.get("lines",[])[:8] if isinstance(line,dict))[:700],quote=True)+
+                      '</div>' if isinstance(x.get("lines"),list) and x.get("lines") else '')+
+                    '</li>' for x in items)
                 body='<div class="tile"><b>Order requests</b><ul>'+records+'</ul></div>' if records else '<p class="empty">No business order requests found for this account.</p>'
             except (ClientError,KeyError,TypeError):
                 body='<p class="empty">Request history is temporarily unavailable. No order status has been inferred.</p>'
@@ -838,6 +848,7 @@ h1{letter-spacing:-.045em;line-height:1.08;font-size:clamp(30px,4vw,54px);margin
 .tile b{font-size:15px}.tile span,.tile small{font-size:12px;color:#777881;line-height:1.5}.tile:hover{border-color:#c6a9ad}
 .empty{background:#fff;border:1px solid #e8e8ea;padding:25px;border-radius:14px;color:#74747d;line-height:1.6;margin:30px 0}
 ul{padding-left:19px;line-height:1.8;color:#555}footer{padding:30px;color:#85858d;font-size:12px}
+.customer-order-details{margin:6px 0 10px;color:#57575f;font-size:12px;line-height:1.5}
 @media(max-width:740px){.layout{display:block}aside{display:flex;overflow-x:auto;gap:4px;padding:10px;border-right:0;border-bottom:1px solid #e8e8ea}aside p{display:none}aside a{white-space:nowrap;padding:10px}main{padding:28px 18px}}
 ''')
     if route in ("/portal/dashboard/","/portal/products/"):
