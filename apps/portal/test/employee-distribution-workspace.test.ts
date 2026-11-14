@@ -65,3 +65,14 @@ test("WMS page describes real operating journeys without claiming live 3PL execu
   assert.match(stylesheet, /@media\(max-width:780px\)/);
   assert.doesNotMatch(workspace, /receiveStock\(|issueRecall\(|placePurchaseOrder\(/);
 });
+
+test("five WMS decision layers stay inside already-governed employee routes", () => {
+  for (const title of [
+    "Commercial control", "Inventory visibility", "Quality and release",
+    "Order orchestration", "Distribution intelligence",
+  ]) assert.ok(workspace.includes(title), title);
+  assert.match(workspace, /aria-label="Five WMS control layers"/);
+  assert.match(workspace, /modules\.get\(area\.code\)/);
+  assert.match(stylesheet, /\.distribution-wms-control-nav a:focus-visible/);
+  assert.doesNotMatch(workspace, /<button[^>]+onClick[^>]+(?:reserve|dispatch|release)/i);
+});
