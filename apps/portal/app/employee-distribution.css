@@ -1,0 +1,112 @@
+/* NovaPharm Distribution — premium employee experience.
+   Restrained typography, clear task hierarchy, no decorative iconography.
+   Authorisation stays in the existing server-side employee and tenant guards. */
+.employee-distribution-shell.workspace-shell{display:block;background:#fff;color:#1d1d1f;min-height:100vh}
+.employee-distribution-shell .workspace-sidebar{display:none}
+.employee-distribution-shell .workspace-main{width:100%;min-width:0;background:#fff}
+.employee-distribution-shell .workspace-topbar{
+ display:grid;grid-template-columns:minmax(160px,225px) minmax(0,1fr) minmax(135px,205px) auto;
+ align-items:center;gap:clamp(12px,2vw,24px);min-height:84px;
+ padding:12px clamp(22px,5vw,76px);background:#fff;border-bottom:1px solid #e8e8ed;
+}
+.employee-distribution-shell .workspace-topbar>.portal-brand{display:block;width:min(215px,100%);margin:0}
+.employee-distribution-shell .workspace-topbar>.portal-brand img{display:block;width:100%;height:auto}
+.employee-distribution-shell .workspace-topbar>.menu-button{display:none}
+.employee-distribution-shell .employee-primary-nav{display:flex;justify-content:center;gap:clamp(14px,2vw,30px);overflow-x:auto;align-items:center}
+.employee-distribution-shell .employee-primary-nav a{font-size:.82rem;color:#48484c;font-weight:500;text-decoration:none;white-space:nowrap;
+ padding:10px 0;border-bottom:2px solid transparent}
+.employee-distribution-shell .employee-primary-nav a[aria-current="page"]{font-weight:680;border-color:#b5121f;color:#1d1d1f}
+.employee-distribution-shell .employee-primary-nav a:hover{color:#a90e1c}
+.employee-distribution-shell .workspace-topbar search{min-width:0;max-width:205px}
+.employee-distribution-shell .portal-search{grid-template-columns:minmax(0,1fr) auto;gap:5px}
+.employee-distribution-shell .portal-search svg{display:none}
+.employee-distribution-shell .portal-search input{font-size:.8rem;min-width:0;border:0;border-bottom:1px solid #dadade;min-height:36px}
+.employee-distribution-shell .portal-search>button{background:#f5f5f7;border:0;font-size:.75rem;min-height:36px}
+.employee-distribution-shell .user-summary{display:flex;align-items:center;gap:10px}
+.employee-distribution-shell .user-summary span{max-width:130px;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:.78rem}
+.employee-distribution-shell .user-summary small{display:none}
+.employee-distribution-shell .user-summary button{width:auto;height:38px;min-height:38px;padding:7px 16px;border-radius:999px;background:#1d1d1f;color:white;border:0;font-size:.8rem}
+.employee-distribution-shell .user-summary .icon-command{width:auto;min-width:0;color:#1d1d1f;background:#fff;border:1px solid #d5d5da}
+.employee-distribution-shell .workspace-content{width:min(1510px,100%);max-width:1510px;margin:0 auto;padding:0 clamp(20px,5vw,76px) 70px}
+.employee-distribution-shell .module-heading{display:none}
+.distribution-employee{color:#1d1d1f}
+.distribution-employee-hero{padding:clamp(55px,6vw,95px) 3px clamp(45px,5vw,80px)}
+.distribution-employee-hero-small{padding-bottom:45px}
+.distribution-employee-overline{font-size:11px!important;letter-spacing:.19em;color:#96131e!important;font-weight:720;margin:0 0 18px!important}
+.distribution-employee-hero h1{font-size:clamp(3rem,5.6vw,6rem);letter-spacing:-.067em;
+ line-height:1.01;font-weight:650;max-width:1020px;margin:0}
+.distribution-employee-hero>p:not(.distribution-employee-overline){font-size:clamp(1.05rem,1.55vw,1.4rem);
+ color:#696970;line-height:1.55;max-width:800px;margin:24px 0 0}
+.distribution-employee-links{display:flex;align-items:center;flex-wrap:wrap;gap:22px;margin-top:30px}
+.distribution-employee-links a{font-size:.91rem;text-decoration:none;font-weight:600}
+.distribution-employee-button{display:inline-flex;align-items:center;min-height:47px;border-radius:999px;background:#1d1d1f;
+ color:#fff;padding:13px 25px}
+.distribution-employee-button:hover{background:#343438}
+.distribution-employee-link,.distribution-employee-card a,.distribution-employee-notice a{color:#a20e1a}
+.distribution-employee-link:hover,.distribution-employee-card a:hover,.distribution-employee-notice a:hover{text-decoration:underline;text-underline-offset:3px}
+.distribution-employee-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.distribution-employee-card{min-width:0;background:#f5f5f7;border-radius:22px;padding:clamp(24px,3vw,35px);
+ min-height:250px;display:flex;flex-direction:column;align-items:flex-start}
+.distribution-employee-card.primary{background:#222226;color:#fff}
+.distribution-employee-card.primary .distribution-employee-overline{color:#dddddf!important}
+.distribution-employee-card.primary>p:not(.distribution-employee-overline){color:#d7d7dc}
+.distribution-employee-card.primary a{color:#fff}
+.distribution-employee-card h3{font-size:clamp(1.5rem,2vw,2.1rem);font-weight:640;letter-spacing:-.045em;
+ line-height:1.13;margin:0 0 13px}
+.distribution-employee-card>p:not(.distribution-employee-overline){margin:0 0 26px;font-size:.88rem;color:#66666d;line-height:1.55}
+.distribution-employee-card a{margin-top:auto;font-size:.89rem;text-decoration:none;font-weight:650}
+.distribution-employee-process{padding:30px 0 45px;max-width:1050px}
+.distribution-employee-process h2{font-size:clamp(2rem,3vw,3.1rem);line-height:1.12;
+ letter-spacing:-.052em;font-weight:650;margin:0 0 28px}
+.distribution-employee-process ol{margin:0;padding:0;list-style:none;border-top:1px solid #d8d8df}
+.distribution-employee-process li{display:grid;grid-template-columns:65px minmax(0,1fr);gap:20px;
+ padding:20px 0;border-bottom:1px solid #e6e6ea;align-items:start}
+.distribution-employee-step{font-size:1.4rem;letter-spacing:-.04em;font-weight:650;color:#9a111b}
+.distribution-employee-process h3{font-size:1.12rem;font-weight:650;margin:0 0 6px}
+.distribution-employee-process li p{font-size:.89rem;color:#68686e;margin:0;line-height:1.55}
+.distribution-employee-notice{padding:26px 0;border-top:1px solid #d8d8df;margin-top:35px;max-width:1050px}
+.distribution-employee-notice strong{font-size:.98rem}
+.distribution-employee-notice p{font-size:.88rem;color:#606066;line-height:1.65;max-width:90ch}
+.distribution-employee-notice a{font-size:.86rem;font-weight:600;text-decoration:none}
+.employee-distribution-shell a:focus-visible,.employee-distribution-shell button:focus-visible{
+ outline:3px solid #0071e3;outline-offset:3px}
+@media(max-width:1170px){
+ .employee-distribution-shell .workspace-topbar{grid-template-columns:190px 1fr auto}
+ .employee-distribution-shell .workspace-topbar search{grid-column:2;grid-row:2;max-width:none}
+ .employee-distribution-shell .user-summary{grid-column:3;grid-row:1/span 2}
+ .employee-distribution-shell .user-summary span{display:none}
+ .employee-distribution-shell .employee-primary-nav{justify-content:flex-end}
+}
+@media(max-width:890px){
+ .employee-distribution-shell .workspace-topbar{grid-template-columns:1fr auto;gap:10px;padding:15px 20px}
+ .employee-distribution-shell .workspace-topbar>.portal-brand{width:190px;grid-column:1;grid-row:1}
+ .employee-distribution-shell .user-summary{grid-column:2;grid-row:1}
+ .employee-distribution-shell .employee-primary-nav{grid-column:1/-1;grid-row:2;justify-content:flex-start}
+ .employee-distribution-shell .workspace-topbar search{grid-column:1/-1;grid-row:3}
+ .distribution-employee-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:570px){
+ .employee-distribution-shell .workspace-content{padding:0 19px 40px}
+ .employee-distribution-shell .workspace-topbar>.portal-brand{width:155px}
+ .employee-distribution-shell .employee-primary-nav{gap:20px}
+ .employee-distribution-shell .employee-primary-nav a{font-size:.78rem}
+ .employee-distribution-shell .user-summary{gap:6px}
+ .employee-distribution-shell .user-summary button{padding:6px 9px;min-height:34px;height:34px;font-size:.72rem}
+ .distribution-employee-grid{grid-template-columns:1fr}
+ .distribution-employee-card{min-height:225px}
+ .distribution-employee-hero{padding:45px 0}
+ .distribution-employee-hero h1{font-size:clamp(2.6rem,10vw,4rem)}
+}
+@media(prefers-reduced-motion:reduce){.employee-distribution-shell *{scroll-behavior:auto!important}}
+
+.distribution-employee-all{padding:46px 3px 24px;max-width:1240px}
+.distribution-employee-all h2{margin:0 0 12px;font-size:clamp(1.8rem,3vw,2.7rem);letter-spacing:-.05em}
+.distribution-employee-all>p{font-size:.9rem;color:#66666f;line-height:1.6;max-width:74ch}
+.distribution-employee-all ul{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 30px;
+ margin:25px 0 0;padding:0;list-style:none}
+.distribution-employee-all li{border-top:1px solid #e2e2e5}
+.distribution-employee-all li a{display:block;min-height:48px;padding:15px 0;font-size:.88rem;
+ color:#343438;text-decoration:none}
+.distribution-employee-all li a:hover{color:#a20e1a;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:890px){.distribution-employee-all ul{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:570px){.distribution-employee-all ul{grid-template-columns:1fr}}

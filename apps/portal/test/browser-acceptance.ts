@@ -255,7 +255,7 @@ async function inspectModule(
     } else {
       await page.locator(".icon-command:not(:disabled)").waitFor({ state: "visible", timeout: 20_000 });
     }
-    const expectedHeading = module.code === "executive.nhs-data" ? "Search a medicine" : module.code === "customer.dashboard" ? "Everything for your NovaPharm business." : module.title;
+    const expectedHeading = module.code === "executive.nhs-data" ? "Search a medicine" : module.code === "customer.dashboard" ? "Everything for your NovaPharm business." : module.code === "employee.dashboard" ? "One network. Clear decisions." : module.code === "employee.orders" ? "Telesales, without friction." : module.title;
     assert.equal(await page.locator("h1").textContent(), expectedHeading);
     assert.equal(await page.locator(".workflow-status").textContent(), "");
     assert.match(await page.locator('meta[name="robots"]').getAttribute("content") ?? "", /noindex/);
@@ -330,9 +330,12 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     const page = await employeeContext.newPage();
     await page.goto(`${portalOrigin}/employee/dashboard/`, { waitUntil: "domcontentloaded" });
     await page.locator(".data-context").waitFor();
-    await page.getByRole("button", { name: "Open navigation" }).click();
-    assert.match(await page.locator(".workspace-sidebar").getAttribute("class") ?? "", /open/);
-    await page.getByRole("button", { name: "Close navigation" }).click();
+    // The new text-first employee header replaces the legacy icon-driven drawer.
+    // All 13 governed employee routes must remain keyboard-accessible on mobile.
+    await page.getByRole("navigation", { name: "Employee distribution navigation" }).waitFor();
+    assert.equal(await page.locator(".distribution-employee-all a").count(), 13,
+      engine + ": all 13 employee workspaces must remain accessible");
+    await page.getByRole("link", { name: "Telesales", exact: true }).waitFor();
     await page.getByLabel("Search authorised records").fill("Nutraxin");
     await page.locator('.portal-search > button[type="submit"]').click();
     await page.locator(".search-results").waitFor();

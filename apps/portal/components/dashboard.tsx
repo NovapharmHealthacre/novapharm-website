@@ -8,6 +8,7 @@ import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { areaLabels, areaLandingRoutes, areaScopes } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError, protectedMutation } from "../lib/gateway";
 import { CustomerCommerceWorkspace } from "./customer-commerce-workspace";
+import { EmployeeDistributionWorkspace } from "./employee-distribution-workspace";
 import { MedicinesIntelligence } from "./medicines-intelligence";
 import { PortalBrand } from "./portal-brand";
 
@@ -169,8 +170,11 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
     ? nutraxinProductForSelection(window.location.search) : null;
   const navigation = modulesByArea[module.area];
   const isEditorialCustomerDashboard = module.code === "customer.dashboard";
-  return <main className={isEditorialCustomerDashboard ? "workspace-shell customer-editorial-dashboard" : "workspace-shell"}>
-    {!isEditorialCustomerDashboard ? <aside className={menuOpen ? "workspace-sidebar open" : "workspace-sidebar"}>
+  const isEditorialEmployeeDistribution = module.code === "employee.dashboard" || module.code === "employee.orders";
+  const isEditorialPortal = isEditorialCustomerDashboard || isEditorialEmployeeDistribution;
+  return <main className={isEditorialCustomerDashboard ? "workspace-shell customer-editorial-dashboard"
+    : isEditorialEmployeeDistribution ? "workspace-shell employee-distribution-shell" : "workspace-shell"}>
+    {!isEditorialPortal ? <aside className={menuOpen ? "workspace-sidebar open" : "workspace-sidebar"}>
       <div className="sidebar-brand"><PortalBrand home={areaLandingRoutes[module.area]} /><button type="button" aria-label="Close navigation" onClick={() => setMenuOpen(false)}><X aria-hidden="true" /></button></div>
       <p className="sidebar-label">{areaLabels[module.area]} workspace</p>
       <nav aria-label={`${areaLabels[module.area]} portal`}><ul>{navigation.map((entry) => <li key={entry.code}><a className={entry.code === module.code ? "active" : ""} href={entry.route} aria-current={entry.code === module.code ? "page" : undefined}><span>{entry.title}</span><small>{entry.releaseClassificationLabel}</small></a></li>)}</ul></nav>
@@ -187,14 +191,27 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
             })}
           </nav>
         </> : null}
-        <button className="menu-button" type="button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu aria-hidden="true" /></button><search><form className="portal-search" onSubmit={search}><Search aria-hidden="true" /><label className="sr-only" htmlFor="portal-search">Search authorised records</label><input id="portal-search" name="query" placeholder="Search" autoComplete="off" /><button type="submit">Search</button>{searchOpen ? <div className="search-results"><button className="search-close" type="button" aria-label="Close search results" onClick={() => setSearchOpen(false)}><X aria-hidden="true" /></button>{searchResults.length ? searchResults.map((result) => <a key={`${result.type}-${result.reference}`} href={result.route}><strong>{result.title}</strong><span>{result.type} · {result.reference}{result.status ? ` · ${readable(result.status)}` : ""}</span></a>) : <p>No authorised records found.</p>}</div> : null}</form></search><div className="user-summary"><span>{user?.displayName ?? "Secure user"}</span><small>{user ? readable(user.accessType) : "Verifying"}</small>{isEditorialCustomerDashboard ? <button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data">Refresh</button> : null}<button type="button" onClick={logout} aria-label="Sign out">{isEditorialCustomerDashboard ? "Sign out" : <LogOut aria-hidden="true" />}</button></div></header>
+        {isEditorialEmployeeDistribution ? <>
+          <PortalBrand home={areaLandingRoutes.employee} />
+          <nav className="employee-primary-nav" aria-label="Employee distribution navigation">
+            {(["employee.dashboard", "employee.orders", "employee.customers", "employee.warehouse", "employee.finance", "employee.quality"] as const).map((code) => {
+              const entry = navigation.find((candidate) => candidate.code === code);
+              return entry ? <a key={entry.code} href={entry.route}
+                aria-current={entry.code === module.code ? "page" : undefined}>{entry.code === "employee.dashboard" ? "Overview"
+                  : entry.code === "employee.orders" ? "Telesales" : entry.title}</a> : null;
+            })}
+          </nav>
+        </> : null}
+        <button className="menu-button" type="button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu aria-hidden="true" /></button><search><form className="portal-search" onSubmit={search}><Search aria-hidden="true" /><label className="sr-only" htmlFor="portal-search">Search authorised records</label><input id="portal-search" name="query" placeholder="Search" autoComplete="off" /><button type="submit">Search</button>{searchOpen ? <div className="search-results"><button className="search-close" type="button" aria-label="Close search results" onClick={() => setSearchOpen(false)}><X aria-hidden="true" /></button>{searchResults.length ? searchResults.map((result) => <a key={`${result.type}-${result.reference}`} href={result.route}><strong>{result.title}</strong><span>{result.type} · {result.reference}{result.status ? ` · ${readable(result.status)}` : ""}</span></a>) : <p>No authorised records found.</p>}</div> : null}</form></search><div className="user-summary"><span>{user?.displayName ?? "Secure user"}</span><small>{user ? readable(user.accessType) : "Verifying"}</small>{isEditorialPortal ? <button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data">Refresh</button> : null}<button type="button" onClick={logout} aria-label="Sign out">{isEditorialPortal ? "Sign out" : <LogOut aria-hidden="true" />}</button></div></header>
       <div className="workspace-content">
-        {!isEditorialCustomerDashboard ? <header className="module-heading"><div><p className="eyebrow">{areaLabels[module.area]} / {module.releaseClassificationLabel}</p><h1>{module.title}</h1><p>{module.purpose}</p></div><button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data"><RefreshCw aria-hidden="true" /><span>Refresh</span></button></header> : null}
+        {!isEditorialPortal ? <header className="module-heading"><div><p className="eyebrow">{areaLabels[module.area]} / {module.releaseClassificationLabel}</p><h1>{module.title}</h1><p>{module.purpose}</p></div><button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data"><RefreshCw aria-hidden="true" /><span>Refresh</span></button></header> : null}
         {/* Customer navigation is static and server-route-protected: reserve its
             layout before data fetch resolves to prevent mobile CLS. It does not
             include account records, prices, orders, or entitlements. */}
         {module.area === "customer" && (module.code === "customer.dashboard" || module.code === "customer.products")
           ? <CustomerCommerceWorkspace moduleCode={module.code} /> : null}
+        {module.area === "employee" && isEditorialEmployeeDistribution
+          ? <EmployeeDistributionWorkspace moduleCode={module.code} /> : null}
         {user && snapshot && selectedNutraxinProduct ? <section className="nutraxin-selection-panel" aria-labelledby="nutraxin-selection-title">
           <p className="nutraxin-selection-kicker">MY PRODUCTS / SELECTED REFERENCE</p>
           <h2 id="nutraxin-selection-title">{selectedNutraxinProduct.name}</h2>
