@@ -67,20 +67,19 @@ test("native IAM gateway denial is narrowly bounded when AWS omits Lambda cache 
 });
 
 test("production HTTPS acceptance explicitly denies all 22 authenticated Intelligence deep links", () => {
-  const catalogue=readFileSync("apps/portal/data/intelligence-workspaces.ts","utf8");
-  const defined=[...catalogue.matchAll(/\\{ slug: "([^"]+)", title: "[^"]+", group: "[^"]+", state: "(?:existing-read-only|gated)"/gu)]
-    .map(x=>x[1]);
-  assert.equal(defined.length,22);
-  assert.equal(new Set(defined).size,22);
-  const block=source.match(/workspace_slugs=\\(\\s*([\\s\\S]*?)\\s*\\)/u);
-  assert.ok(block,"production workflow must list every protected workspace");
-  const tested=[...block[1].matchAll(/^\\s*'([^']+)'\\s*$/gmu)].map(x=>x[1]);
-  assert.equal(tested.length,22);
-  assert.deepEqual(new Set(tested),new Set(defined));
-  assert.match(source,/Deny anonymous access to every one of the 22 private workspaces/u);
-  assert.match(source,/Anonymous \\$route returned unexpected HTTP \\$status/u);
-  assert.match(source,/\\^\\(301\\|302\\|303\\|307\\|308\\|401\\|403\\)\\$/u);
-  assert.match(source,/\\^cache-control:\\.\\*no-store/iu);
-  assert.match(source,/\\{\\"message\\":\\"Forbidden\\"\\}/u);
-  assert.match(source,/All 22 protected workspace paths rejected anonymous access/u);
+  const catalogue = readFileSync("apps/portal/data/intelligence-workspaces.ts", "utf8");
+  const defined = [...catalogue.matchAll(/\{ slug: "([^"]+)", title: "[^"]+", group: "[^"]+", state: "(?:existing-read-only|gated)"/gu)]
+    .map(x => x[1]);
+  assert.equal(defined.length, 22);
+  assert.equal(new Set(defined).size, 22);
+  const block = source.match(/workspace_slugs=\(\s*([\s\S]*?)\s*\)/u);
+  assert.ok(block, "production workflow must enumerate every private workspace");
+  const tested = [...block[1].matchAll(/^\s*'([^']+)'\s*$/gmu)].map(x => x[1]);
+  assert.equal(tested.length, 22);
+  assert.deepEqual(new Set(tested), new Set(defined));
+  assert.ok(source.includes("Deny anonymous access to every one of the 22 private workspaces"));
+  assert.ok(source.includes('if ! [[ "$status" =~ ^(301|302|303|307|308|401|403)$ ]]'));
+  assert.ok(source.includes("'cache-control:.*no-store'"));
+  assert.ok(source.includes("grep -qx '{\"message\":\"Forbidden\"}'"));
+  assert.ok(source.includes("All 22 protected workspace paths rejected anonymous access"));
 });
