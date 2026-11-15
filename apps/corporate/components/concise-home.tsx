@@ -65,7 +65,7 @@ export function ConciseHomePage() {
                 <picture>
                   <source srcSet={`/assets/media/products/nutraxin/${product.imageBase}-480.avif 480w, /assets/media/products/nutraxin/${product.imageBase}-800.avif 800w`} sizes="(max-width: 600px) 70vw, 25vw" type="image/avif" />
                   <source srcSet={`/assets/media/products/nutraxin/${product.imageBase}-480.webp 480w, /assets/media/products/nutraxin/${product.imageBase}-800.webp 800w`} sizes="(max-width: 600px) 70vw, 25vw" type="image/webp" />
-                  <Image src={`/assets/media/products/nutraxin/${product.imageBase}.png`} alt={product.altText} width={700} height={700} unoptimized />
+                  <Image src={`/assets/media/products/nutraxin/${product.imageBase}.png`} alt={product.altText} width={product.imageBase === "collagen-gold-30-tablets" ? 980 : 700} height={product.imageBase === "collagen-gold-30-tablets" ? 654 : 700} unoptimized />
                 </picture>
                 <strong>{product.name}</strong>
                 <span>{product.packSize}</span>

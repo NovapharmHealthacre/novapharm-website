@@ -23,6 +23,10 @@ assert.equal(ranges.length,6,"The approved catalogue must contain six ranges");
 assert.equal((master.match(/class="nx-product-card"/g)||[]).length,19,"All 19 product cards must appear exactly once");
 assert.equal((master.match(/class="nx-range-section nx-range-section-/g)||[]).length,6,"All six ranges must appear");
 assert.equal((master.match(/<h1\b/g)||[]).length,1,"One page title");
+assert.match(master, /collagen-gold-30-tablets\\.png"[^>]*width="980" height="654"/,
+  "Original Collagen Gold 30 tablets pack must declare its real 980x654 raster ratio");
+assert.match(page, /collagen-gold-30-tablets\\.png"[^>]*width="980" height="654"/,
+  "Published Collagen Gold 30 tablets pack must preserve real raster ratio");
 assert.ok(master.includes("Wellness, without the noise.") && page.includes("Wellness, without the noise."), "The Nutraxin product-led message must be published");
 const organicTitle = "Nutraxin UK Supplements | Explore 19 Products | NovaPharm";
 assert.ok(page.includes(`<title>${organicTitle}</title>`), "Nutraxin must have accurate consumer-facing organic search title");
