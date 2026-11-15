@@ -51,7 +51,7 @@ for (const [file, source] of Object.entries(sources)) {
 
 // Customer-supplied destinations and immutable order snapshots require explicit approval gates.
 const addressChanges = sources["011_customer_address_requests.sql"];
-assert.match(addressChanges, /dbo\\.customer_account_addresses/i);
+assert.match(addressChanges, /dbo\.customer_account_addresses/i);
 assert.match(addressChanges, /pending_review/i);
 assert.match(addressChanges, /ON DELETE CASCADE/i);
 assert.match(addressChanges, /created_by/i);
