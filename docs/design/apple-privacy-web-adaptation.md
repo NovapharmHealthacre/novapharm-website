@@ -35,6 +35,20 @@ Status: source implementation candidate, **not** an independent legal audit or p
 - **Health/patient information:** this B2B website does not invite patient-identifiable data; a future controlled clinical/safety workflow requires its own legal, quality and privacy validation.
 - **Legal obligations:** final UK GDPR/PECR notices, UK Data (Use and Access) Act applicability, DPA records, Google terms, transfers, processor agreements, rights fulfilment and retention require named owner sign-off and external legal review where appropriate.
 
+## Cross-estate privacy coverage — 15 November 2026
+
+| Surface | What is implemented in this PR | What still needs live acceptance |
+| --- | --- | --- |
+| Static corporate Privacy and Cookies | Long-form notice, privacy choices and consent contract | GitHub Pages publication plus real browser cookie/network inspection |
+| Next.js Corporate Privacy | Privacy controls and shared consent format | Deployed browser acceptance |
+| Technology Privacy | Minimal-data and browser-permission disclosures | Independent local legal review |
+| Founder Privacy | Email rights and permissions clarification, without analytics | External-link and hosting review |
+| Status | Visible Privacy notice link and sanitised service text | Live response monitoring |
+| Portal login | Privacy and rights links, no marketing prerequisite | Real sessions, role isolation and MFA validation |
+| Intelligence / Distribution modules | Existing protected access logic remains unchanged | Application-specific data-flow, processor, retention and permission verification |
+
+Apple UIKit, Core Location, Keychain and App Tracking Transparency are native frameworks, not web-browser capabilities. This change adapts the underlying privacy principles without claiming proprietary Apple protections.
+
 ## Release acceptance checklist
 
 - [ ] Static and Next.js Privacy/Cookies routes tested in desktop/mobile Safari/WebKit and Chromium; headings, links, dialogs, focus return, keyboard-only flow and content contrast inspected.
