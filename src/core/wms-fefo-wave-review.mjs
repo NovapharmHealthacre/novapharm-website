@@ -114,6 +114,13 @@ export function reviewFefoWaveCandidates({
     seen.add(key);
   }
 
+  // Matching SKU with a different base unit is a hard review failure, not
+  // an apparent inventory shortfall or implicit BOX-to-EA conversion.
+  if (orderLines.some((line) => allLots.some((lot) =>
+    lot.sku === line.sku && lot.baseUom !== line.baseUom))) {
+    return base("blocked", ["order_unit_and_warehouse_base_unit_mismatch"]);
+  }
+
   const candidates = screening.fefoReviewCandidates.filter((lot) => lot.ownerId === ownerId)
     .map((lot) => ({
       ...lot,
