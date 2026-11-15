@@ -6,6 +6,7 @@ import styles from "./professional-workspaces.module.css";
 
 export type ProfessionalWorkspaceKind =
   | "observed-market"
+  | "signals"
   | "regulatory-intelligence"
   | "tender-intelligence"
   | "portfolio"
@@ -81,6 +82,12 @@ const workflows: Readonly<Record<ProfessionalWorkspaceKind, Readonly<{
     headline: "Observe before you forecast.",
     description: "Examine separate EPD or PCA observations for one medicine. A chart is not a national market estimate without matching coverage, units, periods and source rights.",
     checks: ["Resolve the medicine identity", "Reconcile source, measure and geography", "Confirm permitted analytical use"],
+  },
+  signals: {
+    title: "Signals",
+    headline: "Observed changes need independent verification.",
+    description: "Review a hypothetical threshold against the selected medicine\'s accepted, comparable observed-change evidence. No shortage, pricing movement or supply interruption is inferred.",
+    checks: ["Confirm comparable source periods, units and reconciliation", "Review false positives and alternative explanations", "Require human approval before any event publication or notification"],
   },
   "regulatory-intelligence": {
     title: "Regulatory intelligence",
@@ -294,7 +301,7 @@ export function ProfessionalWorkspace({ kind, detail, analytics }: WorkspaceProp
       : kind === "observed-market" ? "primary_care"
         : kind === "decision-workspace" ? "decision"
           : kind === "portfolio" ? "opportunity"
-            : kind === "alerts" ? "forecast" : "decision";
+            : kind === "alerts" || kind === "signals" ? "forecast" : "decision";
   const lens = passport?.lenses.find((item) => item.id === relatedLens);
   return <section className={styles.workspace} aria-label={workflow.title}>
     <header className={styles.intro}>
@@ -309,7 +316,7 @@ export function ProfessionalWorkspace({ kind, detail, analytics }: WorkspaceProp
       <ol>{workflow.checks.map((check) => <li key={check}>{check}</li>)}</ol>
     </div>
     {kind === "tender-intelligence" ? <TenderResearch /> : null}
-    {kind === "alerts" ? <AlertPreview analytics={analytics} /> : null}
+    {kind === "alerts" || kind === "signals" ? <AlertPreview analytics={analytics} /> : null}
     {kind === "reports" || kind === "decision-workspace" ? <DraftReport kind={kind} detail={detail} analytics={analytics} /> : null}
     {kind === "portfolio" ? <p className={styles.disclaimer}>Portfolio records are not writable until tenant ownership, authorised product rights and durable audit history are proven. No stock or marketing authorisation is inferred.</p> : null}
     {kind === "observed-market" ? <p className={styles.disclaimer}>Use the source-separated filters and charts in the connected market view. Do not combine EPD, PCA, secondary care or private commercial volumes.</p> : null}
