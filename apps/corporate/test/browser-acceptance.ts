@@ -303,7 +303,9 @@ async function verifyInteractions(page: Page, engine: string): Promise<void> {
   await banner.getByRole("button", { name: "Reject non-essential" }).click();
   await banner.waitFor({ state: "hidden" });
   const storedConsent = await page.evaluate(() => JSON.parse(localStorage.getItem("np_cookie_consent") ?? "null"));
-  assert.deepEqual(storedConsent.categories, { preferences: false, analytics: false, marketing: false }, `${engine}: rejection was not preserved`);
+  assert.deepEqual(storedConsent.categories, { necessary: true, preferences: false, analytics: false, marketing: false }, `${engine}: rejection was not preserved`);
+  assert.equal(storedConsent.version, "2026-11-15-v1.3", `${engine}: consent must use the active shared schema`);
+  assert.match(storedConsent.id, /^[a-f0-9-]{16,64}$/i, `${engine}: consent must carry a valid random record id`);
   assert.deepEqual(await page.context().cookies(), [], `${engine}: non-essential cookies were set after rejection`);
   await page.getByRole("button", { name: "Cookie settings" }).click();
   await dialog.waitFor({ state: "visible" });
@@ -365,10 +367,10 @@ async function runEngine(name: string, browserType: BrowserType): Promise<void> 
       });
       await context.addInitScript(() => {
         localStorage.setItem("np_cookie_consent", JSON.stringify({
-          version: "2026-07-v2",
-          categories: { preferences: false, analytics: false, marketing: false },
-          timestamp: "2026-07-30T00:00:00.000Z",
-          preferenceId: "browser-acceptance",
+          version: "2026-11-15-v1.3",
+          categories: { necessary: true, preferences: false, analytics: false, marketing: false },
+          timestamp: new Date().toISOString(),
+          id: "bbbbbbbb-cccc-4ddd-8eee-ffffffffffff",
         }));
       });
       try {
