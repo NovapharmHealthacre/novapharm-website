@@ -80,6 +80,22 @@ test("native-only APIs are not misrepresented as website implementations", () =>
 });
 
 
+test("AWS-backed production publication checks live privacy notice and consent parity", () => {
+  const publisher = source(".github/workflows/publish-aws-contact-production.yml");
+  assert.match(publisher, /node --test scripts\/test-apple-privacy-contract\.mjs/);
+  for (const evidence of [
+    'Verify Apple privacy notice and consent version on the live domain',
+    'id="privacy-by-design"',
+    'id="privacy-controls"',
+    '2026-11-15-v1.3',
+    '/legal/privacy/',
+    '/legal/cookies/',
+    '/assets/js/cookie-consent.js'
+  ]) {
+    assert.ok(publisher.includes(evidence), `Public privacy acceptance gate is missing: ${evidence}`);
+  }
+});
+
 test("privacy access and browser-permission boundaries span the public estate and secure login", () => {
   const technology = source("apps/technology/app/privacy/page.tsx");
   const founder = source("apps/founder/content/pages/privacy.md");
