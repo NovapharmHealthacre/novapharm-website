@@ -79,8 +79,11 @@ test("shelf life, recall, temperature, quality and expired lots cannot be picked
     lot({locationId:"BIN-005",batchNumber:"EXPIRED",expiryDate:"2026-11-01"}),
   ];
   const r=review(lots);
+  // With no qualified lots, the upstream provider screening fails closed.
+  // A blocked reconciliation does not assert a computed shortfall.
+  assert.equal(r.status,"blocked");
   assert.equal(r.proposedPicks.length,0);
-  assert.equal(r.shortfalls[0].unfilledUnits,20);
+  assert.equal(r.shortfalls.length,0);
   assert.equal(r.availableToPromise,null);
 });
 
