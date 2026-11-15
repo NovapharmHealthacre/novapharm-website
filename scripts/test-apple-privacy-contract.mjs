@@ -30,6 +30,9 @@ test("the UI never pre-authorises inactive advertising or marketing providers", 
   const staticUi = source("assets/js/cookie-consent.js");
   const nextUi = source("apps/corporate/components/cookie-controls.tsx");
   assert.match(staticUi, /name="marketing" disabled/);
+  assert.match(staticUi, /marketing: false/);
+  const forged = saveConsent({ setItem() {} }, { marketing: true }, { now: new Date(), id: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee" });
+  assert.equal(forged.categories.marketing, false);
   assert.match(staticUi, /if \(action === "accept"\) choose\(\{ preferences: false, analytics: true, marketing: false \}\)/);
   assert.match(nextUi, /Marketing tracking unavailable/);
   assert.doesNotMatch(nextUi, /marketing: true/);
