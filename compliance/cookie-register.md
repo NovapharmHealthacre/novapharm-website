@@ -1,8 +1,8 @@
 # Cookie and browser-storage register
 
 Owner: NovaPharm Healthcare Ltd Board  
-Version: 1.1  
-Source audit: 14 July 2026  
+Version: 1.3  
+Source audit: 15 November 2026 (source reconciliation; browser/network acceptance still required)  
 Method completed: source search, generated response-header inspection, generated-page inspection and automated consent-state tests  
 Release gate: browser cookie, local-storage and network inspection on the private preview and production origins
 
@@ -12,7 +12,12 @@ Release gate: browser cookie, local-storage and network inspection on the privat
 | `np_session` | NovaPharm | Secure HttpOnly cookie | Maintain the requested authenticated, role-scoped session | Strictly necessary | 30 minutes of inactivity or 8 hours absolute, with earlier revocation | First party | No for requested portal service | None by itself |
 | `np_cookie_consent` | NovaPharm | Local storage | Remember notice version, selected categories, timestamp and random preference ID | Strictly necessary preference record | 180 days | First party | No; needed to remember the user's choice | None by itself |
 
-No analytics, tag-manager, advertising, social-pixel or marketing technology is enabled. The Content Security Policy contains no Google Analytics or Tag Manager origin. Authenticated portal pages do not load analytics.
+Optional Google Analytics 4 is present in the static public-site implementation, but its provider script is gated behind an affirmative, version-valid Analytics choice and valid owner-provided measurement ID. It is prohibited on legal, account, contact, admin, checkout-completion and protected portal routes by the runtime route allowlist. No advertising pixel or marketing tag is approved. The newer corporate app uses the same consent record and does not directly load a GA4 provider.
+    
+| `_ga`, `_ga_*` | Google Analytics 4 | First-party cookie | Optional public visits and coarse interactions | Analytics | Configured up to 90 days, subject to browser limits | Google | Yes, before provider load | Review Google processing and international transfers |
+| `novapharm-public-ai` | NovaPharm | IndexedDB | Opt-in local semantic retrieval cache; no query or answer saved | Optional feature | Until user clears cache or browser removes it | First party | Yes, feature-specific choice | No transfer by the cache itself |
+
+The consent record key is `np_cookie_consent`; the current website consent schema is `2026-11-15-v1.3`. Validity is limited to 180 days, and missing, malformed, expired and superseded records fail closed. The public browser UI does not pre-authorise a future marketing provider.
 
 Any proposed technology must be added to this register, tested as blocked before consent, reviewed for data minimisation and international transfers, and released only after the privacy and cookie notices are updated.
 
