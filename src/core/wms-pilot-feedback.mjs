@@ -132,3 +132,36 @@ export async function submitWmsPilotFeedback(input, context, { env = process.env
     shipmentAuthorised: false,
   };
 }
+
+/**
+ * Owner review is deliberately separate from individual tester access.
+ * Admin scope AND an admin-mode session are mandatory. This is not a
+ * production warehouse dashboard and is bounded to the pilot's staging DB.
+ */
+export async function summariseWmsPilotFeedback(context, { env = process.env } = {}) {
+  requirePilot(context, env);
+  if (context.accessType !== "admin" || !context.accessScopes.includes("admin"))
+    throw error(403, "Only an approved pilot administrator may review other testers.");
+  const rows = await all(`SELECT tester_username, workspace_code, result, feedback_note, updated_at
+    FROM wms_pilot_feedback ORDER BY updated_at DESC, workspace_code ASC LIMIT 200`);
+  const counts = { working: 0, broken: 0, needs_improvement: 0 };
+  for (const row of rows) {
+    if (Object.hasOwn(counts, row.result)) counts[row.result]++;
+  }
+  return {
+    pilot: "novapharm-distribution-private-uat",
+    dataMode: "synthetic_only",
+    limitedToLatest: 200,
+    sampleLimited: true,
+    sampledReports: rows.length,
+    counts,
+    reports: rows.map((row) => ({
+      testerUsername: row.tester_username,
+      workspaceCode: row.workspace_code,
+      result: row.result,
+      note: row.feedback_note,
+      updatedAt: row.updated_at,
+    })),
+    warehouseExecutionEnabled: false,
+  };
+}
