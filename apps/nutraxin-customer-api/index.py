@@ -6,6 +6,7 @@ SSM provisional price list. No payment, stock or VAT-invoice authority.
 """
 import base64
 import hashlib
+from decimal import Decimal
 import html
 import hmac
 import json
@@ -986,8 +987,9 @@ def account_detail_response(event, principal, method):
     except ClientError:
         return error(503,"account_unavailable")
     version=existing.get("version",0)
-    if type(version) is not int or not 0<=version<=100000000:
+    if type(version) not in (int,Decimal) or version!=int(version) or not 0<=version<=100000000:
         return error(503,"account_unavailable")
+    version=int(version)
     profile=existing.get("profile") or {"fullName":"","phone":"","organisationName":""}
     addresses=existing.get("addresses") or []
     if not isinstance(profile,dict) or not isinstance(addresses,list) or len(addresses)>10:
