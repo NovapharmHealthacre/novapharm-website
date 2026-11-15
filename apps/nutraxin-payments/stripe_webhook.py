@@ -96,6 +96,45 @@ def attr_value(item, key, attr_type="S"):
     return field[attr_type]
 
 
+def stripe_delivery_snapshot(session):
+    """Capture minimal signed Checkout shipping fields for private fulfilment review.
+
+    Stripe Checkout is a source of submitted contact/location details, not an
+    independently verified recipient or permission to send goods. Missing or
+    unsuitable details must not erase a paid event or release any shipment.
+    """
+    info = session.get("collected_information")
+    info = info if isinstance(info, dict) else {}
+    details = info.get("shipping_details") or session.get("shipping_details")
+    contact = session.get("customer_details")
+    contact = contact if isinstance(contact, dict) else {}
+    if not isinstance(details, dict) or not isinstance(details.get("address"), dict):
+        return None
+
+    def field(value, limit, required=False):
+        if not isinstance(value, str) or len(value) > limit:
+            return None
+        v = value.strip()
+        return v if (v and not any(ord(c) < 32 or ord(c) == 127 for c in v)) else None
+
+    address = details["address"]
+    recipient = field(details.get("name"), 160, True)
+    line1 = field(address.get("line1"), 200, True)
+    city = field(address.get("city"), 120, True)
+    postcode = field(address.get("postal_code"), 32, True)
+    phone = field(contact.get("phone") or details.get("phone"), 40, True)
+    if (address.get("country") != "GB" or
+        not all((recipient, line1, city, postcode, phone)) or len(postcode) < 2):
+        return None
+    return {
+        "recipientName": recipient, "contactPhone": phone,
+        "line1": line1, "line2": field(address.get("line2"), 200),
+        "city": city, "region": field(address.get("state"), 120),
+        "postcode": postcode, "countryCode": "GB",
+        "source": "stripe_collected_information", "status": "requires_fulfilment_review"
+    }
+
+
 def reconcile(event, stored):
     session = event.get("data", {}).get("object", {})
     if not isinstance(session, dict) or not SESSION_ID.fullmatch(str(session.get("id", ""))):
@@ -123,7 +162,8 @@ def reconcile(event, stored):
     elif session.get("payment_status") != "unpaid":
         raise ValueError("Unpaid Checkout event contradicts payment status")
     return {"action": action, "sessionId": sid, "attemptId": attempt_id,
-            "orderId": order_id, "eventId": event["id"]}
+            "orderId": order_id, "eventId": event["id"],
+            "delivery": stripe_delivery_snapshot(session) if action == "PAID" else None}
 
 
 def record_once(event, payment):
@@ -132,6 +172,22 @@ def record_once(event, payment):
                    "sk": {"S": "ATTEMPT#" + payment["attemptId"]}}
     outbox_key = {"pk": {"S": "ORDER#" + payment["orderId"]},
                   "sk": {"S": "PAYMENT_EVENT#" + payment["eventId"]}}
+    delivery = payment.get("delivery") if payment["action"] == "PAID" else None
+    delivery_state = "COLLECTED_PENDING_REVIEW" if delivery else (
+        "REVIEW_REQUIRED" if payment["action"] == "PAID" else "NOT_PAID")
+    summary_values = {":checkoutOpen": {"S": "CHECKOUT_OPEN"},
+                      ":updated": {"S": ("PAID" if payment["action"] == "PAID" else
+                                         "CHECKOUT_EXPIRED" if payment["action"] == "EXPIRED" else
+                                         "PAYMENT_FAILED")},
+                      ":event": {"S": payment["eventId"]},
+                      ":session": {"S": payment["sessionId"]},
+                      ":deliveryState": {"S": delivery_state}}
+    summary_update = "SET #status = :updated, lastStripeEventId = :event, deliveryAddressState = :deliveryState"
+    if delivery:
+        # Minimal PII remains only in the private encrypted order ledger.
+        # The payment outbox and public order-status responses never contain it.
+        summary_update += ", deliverySnapshotJson = :delivery"
+        summary_values[":delivery"] = {"S": json.dumps(delivery, separators=(",", ":"))}
     writes = [
         {"Put": {"TableName": LEDGER, "Item": {**event_key,
              "sessionId": {"S": payment["sessionId"]},
@@ -152,16 +208,10 @@ def record_once(event, payment):
         {"Update": {"TableName": LEDGER,
              "Key": {"pk": {"S": "ORDER#" + payment["orderId"]},
                      "sk": {"S": "SUMMARY"}},
-             "UpdateExpression": "SET #status = :updated, lastStripeEventId = :event",
+             "UpdateExpression": summary_update,
              "ConditionExpression": "#status = :checkoutOpen AND stripeSessionId = :session",
              "ExpressionAttributeNames": {"#status": "status"},
-             "ExpressionAttributeValues": {
-                  ":checkoutOpen": {"S": "CHECKOUT_OPEN"},
-                  ":updated": {"S": ("PAID" if payment["action"] == "PAID" else
-                                   "CHECKOUT_EXPIRED" if payment["action"] == "EXPIRED" else
-                                   "PAYMENT_FAILED")},
-                  ":event": {"S": payment["eventId"]},
-                  ":session": {"S": payment["sessionId"]}}}}
+             "ExpressionAttributeValues": summary_values}}
     ]
     try:
         ddb.transact_write_items(TransactItems=writes)
