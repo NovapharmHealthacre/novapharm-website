@@ -25,6 +25,7 @@ if (navToggle && siteNav) {
     if (visibleLabel) visibleLabel.textContent = isOpen ? "Close" : "Menu";
   };
 
+  navToggle.setAttribute("aria-label", "Open navigation");
   navToggle.addEventListener("click", () => setNavigation(!siteNav.classList.contains("open")));
   siteNav.addEventListener("click", (event) => {
     if (event.target.closest("a")) setNavigation(false);
