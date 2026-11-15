@@ -1,10 +1,12 @@
 import { mkdir, writeFile, readFile } from "node:fs/promises";
 import path from "node:path";
 import { chromium, webkit } from "playwright";
+import AxeBuilder from "@axe-core/playwright";
 
 /**
- * Lightweight all-route geometry census. Detailed accessibility, business-flow
- * and image acceptance stay in test-public-pages-browser.mjs.
+ * All-route geometry and serious/critical WCAG 2.2 Axe census (Chromium).
+ * Detailed business-flow and cross-engine accessibility acceptance remain in
+ * test-public-pages-browser.mjs and test-intelligence-accessibility-browser.mjs.
  * No authentication, payments, emails, or external APIs are exercised.
  */
 const baseUrl = process.env.PUBLIC_PAGES_BASE_URL ?? "http://127.0.0.1:4310";
@@ -96,8 +98,23 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
               h1Count:headings.length, hasHeader:!!header, hasFooter:!!footer, offscreen, images
             };
           });
+          // Check every sitemap route in Chromium; curated pages receive
+          // separate cross-engine tests. Automated Axe is not a substitute for AT.
+          const axe = engine === "chromium"
+            ? await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze()
+            : null;
+          const severeAxeFindings = (axe?.violations ?? [])
+            .filter((violation) => ["serious", "critical"].includes(violation.impact))
+            .flatMap((violation) => violation.nodes.map((node) =>
+              `${violation.id}: ${violation.help} at ${node.target.join(", ")}`));
+          const accessibility = {
+            audited: Boolean(axe),
+            axeViolations: axe?.violations.length ?? null,
+            seriousCriticalFindings: severeAxeFindings
+          };
           const issues=[];
           if(response?.status()!==200) issues.push("HTTP "+(response?.status()??0));
+          if(severeAxeFindings.length) issues.push(...severeAxeFindings.map((finding) => "WCAG Axe: " + finding));
           if(result.mainLength<50)issues.push("Missing or empty main content");
           if(result.h1Count!==1)issues.push("Expected one main heading; found "+result.h1Count);
           if(!result.hasHeader||!result.hasFooter)issues.push("Missing shared page chrome");
@@ -114,7 +131,7 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
           if(result.images.some(img=>img.missingAlt))issues.push("Image missing explicit alt attribute");
           const lowDensity=result.images.filter(img=>img.lowDensity).map(img=>img.src).slice(0,12);
           records.push({route,engine,viewport:width,deviceScaleFactor:scale,
-            status:response?.status()??0,...result,lowDensity,issues});
+            status:response?.status()??0,...result,lowDensity,accessibility,issues});
           for(const issue of issues) failures.push({route,engine,viewport:width,issue});
         } catch(error) {
           failures.push({route,engine,viewport:width,issue:String(error)});
@@ -133,6 +150,7 @@ const summary = {routes:routes.length,checks:routes.length*matrix.length,failure
 await writeFile(path.join(artifactRoot,"public-sitemap-geometry.json"),JSON.stringify(summary,null,2)+"\n");
 console.log(JSON.stringify({routes:routes.length,checks:summary.checks,
   imagesChecked:records.reduce((sum,x)=>sum+x.images.length,0),
+  auditedRoutes:records.filter(x=>x.accessibility.audited).length,
   highDensityAdvisories:records.reduce((sum,x)=>sum+x.lowDensity.length,0),
   findings:failures.length,first:failures.slice(0,20)},null,2));
 if(failures.length)process.exitCode=1;
