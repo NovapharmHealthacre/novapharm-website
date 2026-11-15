@@ -22,7 +22,9 @@ if (siteRoutes.length < 50 || routes.length !== siteRoutes.length + extras.filte
   throw new Error("Public sitemap is unexpectedly incomplete or contains conflicting entries.");
 }
 const matrix = [
-  // Two engines and two high-density contexts. Detailed spot tests cover tablet/1x.
+  // 320px reflow models 400% desktop zoom; 390px mobile, 1440px desktop.
+  // Detailed spot tests also cover tablet and curated keyboard interactions.
+  { engine: "chromium", browser: chromium, width: 320, height: 720, scale: 2 },
   { engine: "chromium", browser: chromium, width: 390, height: 844, scale: 3 },
   { engine: "webkit", browser: webkit, width: 1440, height: 900, scale: 2 }
 ];
@@ -112,6 +114,66 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
             axeViolations: axe?.violations.length ?? null,
             seriousCriticalFindings: severeAxeFindings
           };
+          // Human review evidence for WCAG 2.2 2.5.8 and 2.4.11. Small inline
+          // text links can satisfy exceptions, so raw dimensions are advisories.
+          // Focus occlusion checks use real browser geometry after focus and
+          // preserve a bounded set of examples for review instead of guessing.
+          const inputAudit = engine === "chromium" && width === 390
+            ? await page.evaluate(() => {
+              const candidates = [...document.querySelectorAll(
+                'a[href],button:not([disabled]),input:not([type=hidden]):not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex="0"]'
+              )].filter((node) => {
+                if (node.closest('[aria-hidden="true"],[hidden],.honeypot')) return false;
+                const st = getComputedStyle(node);
+                const r = node.getBoundingClientRect();
+                return st.display !== "none" && st.visibility !== "hidden" && Number(st.opacity) > 0 && r.width > 0 && r.height > 0;
+              });
+              const smallTargets = candidates.filter((node) => {
+                const box = node.getBoundingClientRect();
+                return box.width < 24 || box.height < 24;
+              }).slice(0, 20).map((node) => {
+                const r = node.getBoundingClientRect();
+                return {
+                  tag: node.tagName.toLowerCase(),
+                  text: (node.getAttribute("aria-label") || node.textContent || "").trim().slice(0, 70),
+                  width: Math.round(r.width), height: Math.round(r.height),
+                  inlineText: node.tagName === "A" && getComputedStyle(node).display === "inline"
+                };
+              });
+              const occludedFocus = [];
+              // Bounded representative keyboard-focus inspection. A desktop
+              // screen reader still needs a separate manual release sign-off.
+              for (const node of candidates.slice(0, 35)) {
+                node.focus();
+                if (document.activeElement !== node) continue;
+                const r = node.getBoundingClientRect();
+                const left = Math.max(r.left, 0), top = Math.max(r.top, 0);
+                const right = Math.min(r.right, innerWidth), bottom = Math.min(r.bottom, innerHeight);
+                if (left >= right || top >= bottom) {
+                  occludedFocus.push({tag:node.tagName, text:(node.textContent||"").trim().slice(0,40), reason:"outside viewport"});
+                  continue;
+                }
+                const points = [
+                  [left+(right-left)*.5, top+(bottom-top)*.5],
+                  [left+(right-left)*.2, top+(bottom-top)*.2],
+                  [left+(right-left)*.8, top+(bottom-top)*.8]
+                ];
+                const visible = points.some(([x,y]) => {
+                  const hit = document.elementFromPoint(x,y);
+                  return hit && (node === hit || node.contains(hit));
+                });
+                if (!visible) occludedFocus.push({
+                  tag:node.tagName, text:(node.getAttribute("aria-label")||node.textContent||"").trim().slice(0,50),
+                  reason:"entirely covered by another rendered element"
+                });
+              }
+              return {
+                focusCandidates: candidates.length,
+                smallTargetAdvisories: smallTargets,
+                focusOcclusionCandidates: occludedFocus.slice(0,20)
+              };
+            })
+            : null;
           const issues=[];
           if(response?.status()!==200) issues.push("HTTP "+(response?.status()??0));
           if(severeAxeFindings.length) issues.push(...severeAxeFindings.map((finding) => "WCAG Axe: " + finding));
@@ -131,7 +193,7 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
           if(result.images.some(img=>img.missingAlt))issues.push("Image missing explicit alt attribute");
           const lowDensity=result.images.filter(img=>img.lowDensity).map(img=>img.src).slice(0,12);
           records.push({route,engine,viewport:width,deviceScaleFactor:scale,
-            status:response?.status()??0,...result,lowDensity,accessibility,issues});
+            status:response?.status()??0,...result,lowDensity,accessibility,inputAudit,issues});
           for(const issue of issues) failures.push({route,engine,viewport:width,issue});
         } catch(error) {
           failures.push({route,engine,viewport:width,issue:String(error)});
@@ -151,6 +213,8 @@ await writeFile(path.join(artifactRoot,"public-sitemap-geometry.json"),JSON.stri
 console.log(JSON.stringify({routes:routes.length,checks:summary.checks,
   imagesChecked:records.reduce((sum,x)=>sum+x.images.length,0),
   auditedRoutes:records.filter(x=>x.accessibility.audited).length,
+  targetAdvisories:records.reduce((sum,x)=>sum+(x.inputAudit?.smallTargetAdvisories.length??0),0),
+  focusOcclusionAdvisories:records.reduce((sum,x)=>sum+(x.inputAudit?.focusOcclusionCandidates.length??0),0),
   highDensityAdvisories:records.reduce((sum,x)=>sum+x.lowDensity.length,0),
   findings:failures.length,first:failures.slice(0,20)},null,2));
 if(failures.length)process.exitCode=1;
