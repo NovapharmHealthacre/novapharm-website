@@ -23,6 +23,8 @@ WMS_PILOT_DATA_MODE=synthetic
 WMS_PILOT_ALLOWLIST=<comma-separated exact approved staging usernames>
 ```
 
+Build the **dedicated staging portal frontend** with `NEXT_PUBLIC_WMS_PILOT_UI_ENABLED=true`. Default builds omit this setting and make **no** pilot-feedback API requests (including no admin-summary requests). This UI flag is not a permission grant: all backend server flags, verified sessions, staging isolation and allowlisting remain mandatory. The backend sends `canViewAdminSummary` from the authenticated server context so normal employees never automatically request the admin-only endpoint.
+
 Never commit real usernames or passwords to this repository. Put them in runtime secrets/environment config via the approved deployment method. If any variable is missing, feedback GET/POST is unavailable. A user-supplied query string or browser storage cannot activate the feature.
 
 Staging employee accounts must have individually verified credentials and server-side role-scoped sessions, enforced password-change/MFA policies and effective revocation. Do not share one test account between people or grant friends production employee access. **All data in this pilot must be synthetic and non-confidential.**
