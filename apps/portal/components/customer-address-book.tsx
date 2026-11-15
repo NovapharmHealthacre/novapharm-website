@@ -110,7 +110,7 @@ export function CustomerAddressBook() {
         <div><span>Business account</span><strong>{book.account.lifecycleStatus === "active" ? "Account record active" : "Under review"}</strong><small>Trading and product permissions are checked separately.</small></div>
         <div><span>Address verification</span><strong>Review required</strong><small>A delivery address does not verify company identity or authorise a sale.</small></div>
       </div>
-      <div className="customer-address-business" aria-label="Company account and verification details">
+      <div className="customer-address-business" role="group" aria-label="Company account and verification details">
         <h3>Business information</h3>
         <p>These details come from NovaPharm's account records. Address changes do not independently verify a company.</p>
         <dl className="customer-address-business-grid">
