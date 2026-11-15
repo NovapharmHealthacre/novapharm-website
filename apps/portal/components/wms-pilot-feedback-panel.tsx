@@ -21,6 +21,14 @@ type FeedbackResponse = Readonly<{
   warehouseExecutionEnabled: false;
   entries: FeedbackEntry[];
 }>;
+type PilotAdminSummary = Readonly<{
+  dataMode: "synthetic_only";
+  warehouseExecutionEnabled: false;
+  sampledReports: number;
+  sampleLimited: boolean;
+  counts: Readonly<Record<FeedbackResult, number>>;
+  reports: ReadonlyArray<FeedbackEntry & { testerUsername: string }>;
+}>;
 const resultLabels: Record<FeedbackResult, string> = {
   working: "Working",
   broken: "Not working",
@@ -31,6 +39,7 @@ const initialWorkspace = workspaces[0]?.code ?? "control-tower";
 export function WmsPilotFeedbackPanel() {
   const [readState, setReadState] = useState<"loading" | "available" | "unavailable">("loading");
   const [entries, setEntries] = useState<FeedbackEntry[]>([]);
+  const [adminSummary, setAdminSummary] = useState<PilotAdminSummary | null>(null);
   const [workspaceCode, setWorkspaceCode] = useState(initialWorkspace);
   const [result, setResult] = useState<FeedbackResult>("working");
   const [note, setNote] = useState("");
@@ -50,6 +59,14 @@ export function WmsPilotFeedbackPanel() {
         setReadState("available");
       })
       .catch(() => { if (!cancelled) setReadState("unavailable"); });
+    // This endpoint fails closed for ordinary employees. No tester can
+    // request another tester's feedback by altering browser state.
+    gatewayJson<PilotAdminSummary>("enterprise/wms/pilot-feedback-summary")
+      .then((response) => {
+        if (!cancelled && response.dataMode === "synthetic_only" &&
+            response.warehouseExecutionEnabled === false) setAdminSummary(response);
+      })
+      .catch(() => { /* Deliberate: only server-authorised admin sessions see the summary. */ });
     return () => { cancelled = true; };
   }, []);
 
@@ -143,6 +160,30 @@ export function WmsPilotFeedbackPanel() {
         </div>
       </div>
     </div> : null}
+    {readState === "available" && adminSummary ? <section
+      className="distribution-wms-pilot-admin" aria-label="Administrator pilot review">
+      <h3>Private pilot review</h3>
+      <p>Only the approved pilot administrator can review reports across test accounts.
+        These are software observations, not verified warehouse incidents or QMS cases.</p>
+      <div className="distribution-wms-pilot-admin-stats">
+        <span><strong>{adminSummary.counts.working}</strong> Working</span>
+        <span><strong>{adminSummary.counts.broken}</strong> Not working</span>
+        <span><strong>{adminSummary.counts.needs_improvement}</strong> Needs improvement</span>
+      </div>
+      <div className="distribution-wms-pilot-table">
+        <table>
+          <thead><tr><th scope="col">Tester</th><th scope="col">Workspace</th>
+            <th scope="col">Result</th><th scope="col">Observation</th></tr></thead>
+          <tbody>{adminSummary.reports.map((entry) =>
+            <tr key={entry.testerUsername + ":" + entry.workspaceCode}>
+              <td>{entry.testerUsername}</td><td>{entry.workspaceCode}</td>
+              <td>{resultLabels[entry.result]}</td><td>{entry.note || "No note provided"}</td>
+            </tr>)}</tbody>
+        </table>
+      </div>
+      <p>Showing {adminSummary.sampledReports} recent reports at most.
+        This is a bounded pilot review, not a complete production analytics service.</p>
+    </section> : null}
     <p className="distribution-wms-pilot-bottom">
       Pilot results do not prove the live 3PL, customer orders or quality systems are ready.
       All warehouse execution functions remain separately gated.
