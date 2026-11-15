@@ -59,14 +59,14 @@ export const designSystemCss = String.raw`
 .np-search input,.np-field input,.np-field select,.np-field textarea,.np-file-upload input{width:100%;max-width:100%;min-height:44px;border:1px solid #98a2b3;border-radius:4px;padding:.7rem .8rem;font:inherit}
 .np-filters{border:0;padding:0}
 .np-state{border-inline-start:4px solid #667085;padding:1rem 1.25rem;background:#f8fafc}
-.np-state--error{border-color:#E3120B}
+.np-state--error{border-color:#9e1b47}
 .np-state--loading{border-color:#0b69ff}
 .np-portal-controls{padding-bottom:1.5rem;border-bottom:1px solid #d8dde4}
 .np-file-upload{border:1px dashed #98a2b3;padding:1.25rem}
 .np-status{display:inline-flex;align-items:center;min-height:1.75rem;padding:.2rem .55rem;border:1px solid #98a2b3;border-radius:4px;font-weight:650}
 .np-status--positive{border-color:#267a54;color:#175c3d}
 .np-status--warning{border-color:#9a6700;color:#7a4f00}
-.np-status--critical{border-color:#E3120B;color:#9f1239}
+.np-status--critical{border-color:#9e1b47;color:#9e1b47}
 .np-audit-history{list-style:none;padding:0}
 .np-audit-history li{padding:1rem 0;border-bottom:1px solid #d8dde4}
 .np-audit-history time{font-variant-numeric:tabular-nums;color:#667085}
