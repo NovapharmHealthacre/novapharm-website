@@ -114,6 +114,48 @@ class WebhookTests(unittest.TestCase):
         self.assertEqual(writes[3]["Update"]["ExpressionAttributeValues"][":updated"]["S"],"PAID")
         self.assertIn("stripeSessionId = :session",writes[3]["Update"]["ConditionExpression"])
 
+
+    def test_paid_checkout_captures_stripe_shipping_for_private_fulfilment_review(self):
+        e = event()
+        e["data"]["object"]["collected_information"] = {
+            "shipping_details": {"name": "Warehouse goods in", "address": {
+                "line1": "10 Business Park", "line2": "Unit 2", "city": "London",
+                "state": "Greater London", "postal_code": "SW1A 1AA", "country": "GB"
+            }}
+        }
+        e["data"]["object"]["customer_details"] = {"phone": "+44 20 1234 5678"}
+        payment = WH.reconcile(e, durable())
+        self.assertEqual(payment["delivery"]["postcode"], "SW1A 1AA")
+        self.assertEqual(payment["delivery"]["source"], "stripe_collected_information")
+        self.assertTrue(WH.record_once(e, payment))
+        writes = DDB.transacted[0]
+        summary = writes[3]["Update"]
+        self.assertEqual(summary["ExpressionAttributeValues"][":deliveryState"]["S"],
+                         "COLLECTED_PENDING_REVIEW")
+        private_snapshot = json.loads(summary["ExpressionAttributeValues"][":delivery"]["S"])
+        self.assertEqual(private_snapshot["recipientName"], "Warehouse goods in")
+        self.assertEqual(private_snapshot["status"], "requires_fulfilment_review")
+        self.assertNotIn("deliverySnapshotJson", str(writes[2]["Put"]["Item"]))
+        self.assertNotIn("SW1A 1AA", str(writes[2]["Put"]["Item"]))
+
+    def test_missing_or_foreign_shipping_never_becomes_dispatchable(self):
+        for country in ("US", "", "GB"):
+            e = event()
+            e["data"]["object"]["collected_information"] = {
+                "shipping_details": {"name": "Not verified", "address": {
+                    "line1": "1 Wrong Lane", "city": "Town",
+                    "postal_code": "99999" if country != "GB" else "", "country": country
+                }}
+            }
+            e["data"]["object"]["customer_details"] = {"phone": "+44 20 1234 5678"}
+            p = WH.reconcile(e, durable())
+            self.assertIsNone(p["delivery"])
+            self.assertTrue(WH.record_once(e, p))
+            summary = DDB.transacted[-1][3]["Update"]
+            self.assertEqual(summary["ExpressionAttributeValues"][":deliveryState"]["S"], "REVIEW_REQUIRED")
+            self.assertNotIn(":delivery", summary["ExpressionAttributeValues"])
+        self.assertEqual(len(DDB.transacted), 3)
+
     def test_two_distinct_paid_events_same_session_are_idempotent(self):
         details=WH.reconcile(event(),durable())
         order=details["orderId"]
