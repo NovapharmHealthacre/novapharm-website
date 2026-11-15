@@ -7,6 +7,7 @@ import "./customer-editorial-dashboard.css";
 import "./employee-distribution.css";
 import "../../../assets/css/novapharm-hig-colours.css";
 import "../../../assets/css/symbol-system.css";
+import "../../../assets/css/apple-hig-layout.css";
 import "../../../assets/css/novapharm-apple-27-web-adaptation.css";
 
 export const metadata: Metadata = {

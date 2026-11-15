@@ -11155,6 +11155,37 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
   }
 }
 
+/*
+ * NOVAPHARM / BRAND PRESENTATION
+ * Content-first identity consistent with Apple HIG Branding, without copying
+ * Apple trademarks or interfering with portal authentication or product UI.
+ * The official owner-supplied logo files are never recoloured or redrawn.
+ */
+:where(a.brand, a.portal-brand, a.distribution-brand, a.pharmascope-brand) {
+  max-width: 100%;
+  min-width: 0;
+}
+:where(a.brand, a.portal-brand, a.distribution-brand, a.pharmascope-brand) :where(img, svg) {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+:where(a.brand, a.portal-brand, a.distribution-brand, a.pharmascope-brand):focus-visible {
+  outline: 3px solid var(--np-color-focus, #0066cc);
+  outline-offset: 4px;
+}
+@media (prefers-contrast: more) {
+  :where(a.brand, a.portal-brand, a.distribution-brand, a.pharmascope-brand):focus-visible {
+    outline-width: 4px;
+  }
+}
+@media (forced-colors: active) {
+  :where(a.brand, a.portal-brand, a.distribution-brand, a.pharmascope-brand):focus-visible {
+    outline: 3px solid Highlight;
+  }
+}
+
 /* Source: symbol-system.css */
 /*
  * NovaPharm web symbol contract, adapted from Apple's HIG principles.
@@ -11335,4 +11366,141 @@ svg.np-symbol--busy { animation: np-symbol-working 1000ms linear infinite; }
 .esco-storefront .esco-product-visual {
   max-inline-size: 100%;
   overflow-wrap: break-word;
+}
+
+/* Source: apple-hig-layout.css */
+/* NovaPharm HIG Layout Contract v1 (2026-11-15)
+ * Apple HIG principles adapted for HTML/CSS, not a port of SwiftUI.
+ * This file is deliberately colour- and font-neutral. It can be shared by
+ * the public site, Next.js corporate, Technology, Status, and 54-module portal.
+ * Product artwork, custom WMS canvases and protected workflows retain their
+ * own approved presentation and behaviour.
+ */
+:root {
+  --np-layout-contract: 1;
+  --np-layout-max: 1200px;
+  --np-layout-reading: 68ch;
+  --np-layout-gutter: clamp(20px, 4vw, 56px);
+  --np-layout-gap: clamp(16px, 2vw, 32px);
+  --np-layout-section-space: clamp(56px, 8vw, 112px);
+  --np-layout-touch: 44px;
+}
+
+/* Width is governed by the available container, never by a device name.
+   Logical properties preserve the reading direction for translated UIs. */
+.np-hig-container {
+  box-sizing: border-box;
+  width: min(100%, var(--np-layout-max));
+  margin-inline: auto;
+  padding-inline:
+    max(var(--np-layout-gutter), env(safe-area-inset-left, 0px))
+    max(var(--np-layout-gutter), env(safe-area-inset-right, 0px));
+}
+.np-hig-measure { max-inline-size: var(--np-layout-reading); }
+.np-hig-section { padding-block: var(--np-layout-section-space); }
+.np-hig-stack { display: grid; gap: var(--np-layout-gap); min-inline-size: 0; }
+.np-hig-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: var(--np-layout-gap);
+}
+.np-hig-grid > *, .np-hig-stack > *,
+.np-hig-split > *, .np-hig-equal-actions > * { min-inline-size: 0; }
+.np-hig-split {
+  display: grid;
+  grid-template-columns: minmax(0, min(38%, 420px)) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(24px, 4vw, 64px);
+}
+.np-hig-equal-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  align-items: stretch;
+  gap: 12px;
+}
+.np-hig-equal-actions > :is(a, button, [role="button"]) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: var(--np-layout-touch);
+  min-inline-size: 0;
+  white-space: normal;
+  text-align: center;
+  overflow-wrap: break-word;
+}
+.np-hig-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.np-hig-actions > :is(button, a, [role="button"]) { min-block-size: var(--np-layout-touch); }
+.np-hig-table-region {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.np-hig-table-region:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.np-hig-table-region > table { inline-size: 100%; border-collapse: collapse; }
+.np-hig-table-region :is(th, td) { text-align: start; vertical-align: top; }
+.np-hig-disclosure > summary {
+  cursor: pointer;
+  min-block-size: var(--np-layout-touch);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.np-hig-disclosure[open] > :not(summary) { margin-block-start: 16px; }
+
+/* Existing routes: structural guards, without overriding approved section
+   designs, brand colours, product image focal points or data density. */
+:where(.npd-main, .mp-main, .np-intelligence, .workspace-content, .workspace-main, .employee-distribution-shell, .status-main, #main-content) {
+  min-inline-size: 0;
+}
+:where(.npd-main, .mp-main, .np-intelligence, .workspace-content, #main-content)
+  :is(.npd-split, .npd-product-hero-grid, .npd-product-grid,
+      .npd-regulatory-layout, .npd-contact-layout, .npd-account-layout,
+      .npd-three-lanes, .npd-numbered-grid, .npi-workspace-grid,
+      .metric-grid, .action-grid, .data-section, .dashboard-grid) > * {
+  min-inline-size: 0;
+}
+:where(.npd-main, .mp-main, .np-intelligence, .workspace-content, #main-content)
+  :is(p, li, dt, dd, figcaption, .module-notice, .data-context) {
+  overflow-wrap: break-word;
+}
+:where(.workspace-content, .npd-main, .mp-main, #main-content)
+  :is(input, select, textarea, fieldset) {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+:where(.workspace-content, .npd-main, .mp-main, #main-content)
+  :is([id], h1, h2, h3) { scroll-margin-block-start: 6rem; }
+
+/* Tables must scroll inside a declared data region, not push an entire
+   dashboard beyond the viewport. Existing dense data tables are untouched. */
+:where(.workspace-content, .np-intelligence) :is(.np-table-scroll, .table-scroll, .data-table-wrapper) {
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  overflow-x: auto;
+}
+
+/* Narrow windows and enlarged text recompose content instead of hiding it. */
+@media (max-width: 760px) {
+  .np-hig-split { grid-template-columns: minmax(0, 1fr); }
+  .np-hig-equal-actions { grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); }
+  :where(.workspace-content) :is(.module-heading, .module-actions, .filter-actions) {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 420px) {
+  .np-hig-container { --np-layout-gutter: 20px; }
+  .np-hig-equal-actions { grid-template-columns: minmax(0, 1fr); }
+  .np-hig-actions > :is(a, button, [role="button"]) {
+    flex: 1 1 100%;
+    justify-content: center;
+    text-align: center;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .np-hig-disclosure, .np-hig-split, .np-hig-grid { scroll-behavior: auto; }
+}
+@media (forced-colors: active) {
+  .np-hig-equal-actions > :is(a, button, [role="button"]) { border: 1px solid ButtonText; }
 }
