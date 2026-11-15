@@ -132,7 +132,7 @@ const revealAll = () => {
   revealObserver?.disconnect();
   revealNodes.forEach((node) => node.classList.add("is-visible"));
 };
-if (revealNodes.length && !motionPreference.matches && !saveData && typeof window.IntersectionObserver === "function") {
+if (revealNodes.length && !motionPreference.matches && !saveData && typeof IntersectionObserver !== "undefined" && typeof window.IntersectionObserver === "function") {
   try {
     revealObserver = new window.IntersectionObserver((entries, observer) => {
       for (const entry of entries) {
