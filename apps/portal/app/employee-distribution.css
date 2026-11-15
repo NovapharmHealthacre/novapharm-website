@@ -196,3 +196,12 @@
 .distribution-wms-pilot-table td[data-outcome="needs_improvement"]{color:#73521f;font-weight:650}
 @media(max-width:850px){.distribution-wms-pilot-grid{grid-template-columns:1fr}}
 @media(max-width:650px){.distribution-wms-pilot-steps{grid-template-columns:1fr}.distribution-wms-pilot-steps li{padding:16px}}
+
+.distribution-wms-pilot-admin{margin-top:26px;padding:24px;border:1px solid #dedee3;border-radius:14px;background:#fff}
+.distribution-wms-pilot-admin h3{margin:0 0 9px;font-size:1.18rem}
+.distribution-wms-pilot-admin>p{max-width:90ch;font-size:.81rem;color:#595961;line-height:1.55}
+.distribution-wms-pilot-admin-stats{display:flex;gap:18px;flex-wrap:wrap;padding:17px 0}
+.distribution-wms-pilot-admin-stats span{font-size:.82rem;color:#4e4e56}
+.distribution-wms-pilot-admin-stats strong{font-variant-numeric:tabular-nums;font-size:1.14rem;margin-right:5px}
+.distribution-wms-pilot-admin .distribution-wms-pilot-table{max-width:100%;overflow-x:auto}
+.distribution-wms-pilot-admin .distribution-wms-pilot-table td{min-width:120px;max-width:340px;overflow-wrap:anywhere}
