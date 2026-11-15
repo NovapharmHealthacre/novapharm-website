@@ -15,6 +15,9 @@ test("My Account shows address and contact collection, not a second storefront",
   assert.match(dashboard, /module\.code === "customer\.account"[\s\S]*CustomerAddressBook/);
   for (const field of ["recipientName", "contactPhone", "line1", "city", "postcode", "countryCode", "deliveryInstructions"]) assert.match(component, new RegExp(field));
   assert.match(component, /Address submitted for review/);
+  assert.match(component, /Withdraw request/);
+  assert.match(component, /Remove address/);
+  assert.match(server, /disableCustomerAddress\(addressDisableMatch\[1\], enterpriseContext\(session\)\)/);
   assert.doesNotMatch(component, /localStorage|sessionStorage|checkout\.stripe\.com/);
 });
 test("address routes require a signed account session, CSRF and admin decision", () => {
