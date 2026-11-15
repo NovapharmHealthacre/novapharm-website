@@ -76,3 +76,32 @@
     font-synthesis: none;
   }
 }
+@layer base {
+  :root {
+    --np-type-body-size: 1rem;
+    --np-type-caption-size: 0.875rem;
+    --np-type-lead-size: clamp(1.125rem, 1.6vw, 1.375rem);
+    --np-type-display-size: clamp(2.75rem, 6vw, 5.75rem);
+    --np-type-section-size: clamp(1.875rem, 4vw, 4.25rem);
+    --np-type-reading-leading: 1.65;
+    --np-type-interface-leading: 1.45;
+    --np-type-measure: 68ch;
+  }
+  body, :where(main, article, section) { font-optical-sizing: auto; }
+  :where(h1, h2, h3, h4) { font-optical-sizing: auto; overflow-wrap: break-word; }
+  :where(.prose, .article-body, [data-typography="reading"]) :where(p, li, dd) {
+    max-width: var(--np-type-measure);
+    line-height: var(--np-type-reading-leading);
+  }
+  :where(figcaption, .source-note, [data-typography="caption"]) {
+    font-size: var(--np-type-caption-size);
+    line-height: var(--np-type-interface-leading);
+  }
+  :where(table) :where(th, td) { font-variant-numeric: tabular-nums; overflow-wrap: break-word; }
+  @media (max-width: 640px) {
+    :where(main, article, h1, h2, h3, p, li) {
+      min-width: 0;
+      overflow-wrap: break-word;
+    }
+  }
+}
