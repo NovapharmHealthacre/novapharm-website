@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'src/data/atlas-private-medicine-rights-index.mjs'
+      - 'src/data/atlas-private-medicine-rights.mjs'
+      - 'scripts/test-atlas-private-medicine-rights.mjs'
       - 'src/data/atlas-g2-unique-index-migration.mjs'
       - 'src/data/atlas-medicine-g2-atomic-store.mjs'
       - 'scripts/test-atlas-private-medicine-rights-index.mjs'
@@ -14,6 +16,8 @@ on:
     branches: [main]
     paths:
       - 'src/data/atlas-private-medicine-rights-index.mjs'
+      - 'src/data/atlas-private-medicine-rights.mjs'
+      - 'scripts/test-atlas-private-medicine-rights.mjs'
       - 'src/data/atlas-g2-unique-index-migration.mjs'
       - 'src/data/atlas-medicine-g2-atomic-store.mjs'
       - 'scripts/test-atlas-private-medicine-rights-index.mjs'
@@ -37,9 +41,11 @@ jobs:
       - name: Validate syntax and fail-closed schema contracts
         run: |
           node --check src/data/atlas-private-medicine-rights-index.mjs
+          node --check src/data/atlas-private-medicine-rights.mjs
           node --check src/data/atlas-g2-unique-index-migration.mjs
           node --test \
             scripts/test-atlas-private-medicine-rights-index.mjs \
+            scripts/test-atlas-private-medicine-rights.mjs \
             scripts/test-atlas-g2-unique-index-migration.mjs \
             scripts/test-atlas-medicine-g2-atomic-store.mjs
       - name: Release boundary remains source-only
