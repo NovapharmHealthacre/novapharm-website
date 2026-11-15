@@ -25,6 +25,7 @@ const sources = [
   ["contact-premium.css", null],
   ["homepage-editorial.css", null],
   ["sitewide-layout-integrity.css", null],
+  ["novapharm-hig-colours.css", null],
   ["apple-hig-layout.css", null]
 ];
 
