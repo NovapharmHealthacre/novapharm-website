@@ -15,6 +15,14 @@
   --np-type-compact: -apple-system, BlinkMacSystemFont, "Arial Narrow", "Segoe UI", Arial, sans-serif;
   --np-type-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
   --np-type-editorial: "New York", "Iowan Old Style", Georgia, serif;
+  --np-type-body-size: 1rem;
+  --np-type-caption-size: 0.875rem;
+  --np-type-lead-size: clamp(1.125rem, 1.6vw, 1.375rem);
+  --np-type-display-size: clamp(2.75rem, 6vw, 5.75rem);
+  --np-type-section-size: clamp(1.875rem, 4vw, 4.25rem);
+  --np-type-reading-leading: 1.65;
+  --np-type-interface-leading: 1.45;
+  --np-type-measure: 68ch;
   font-family: var(--np-type-ui);
   color: var(--ink);
   background: var(--soft);
@@ -107,3 +115,20 @@ body, button, input, select, textarea { font-family: var(--np-type-ui); }
 }
 :where(.dense-table, [data-typography="compact"]) { font-family: var(--np-type-compact); }
 :where(.editorial-pullquote, [data-typography="editorial"]) { font-family: var(--np-type-editorial); }
+/* Readable incident and uptime updates across device widths and zoom levels. */
+:where(body, main, article) { font-optical-sizing: auto; }
+:where(h1, h2, h3, h4) { font-optical-sizing: auto; overflow-wrap: break-word; }
+:where(.incident-body, .incident-description, [data-typography="reading"]) {
+  line-height: var(--np-type-reading-leading);
+  max-width: var(--np-type-measure);
+}
+:where(.status-meta, .data-freshness, [data-typography="caption"]) {
+  line-height: var(--np-type-interface-leading);
+}
+:where(table) :where(th, td) { font-variant-numeric: tabular-nums; overflow-wrap: break-word; }
+@media (max-width: 640px) {
+  :where(h1, h2, h3, p, li, td, th) { min-width: 0; overflow-wrap: break-word; }
+}
+@media (prefers-contrast: more) {
+  :where(.status-meta, .data-freshness) { color: var(--ink); }
+}

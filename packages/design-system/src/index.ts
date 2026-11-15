@@ -10,6 +10,21 @@ export const designTokens = Object.freeze({
     novapharmRedText: "#B30E09",
     focus: "#0b69ff"
   }),
+  typography: Object.freeze({
+    uiFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    compactFamily: "ui-sans-serif, system-ui, -apple-system, sans-serif",
+    monoFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+    editorialFamily: "ui-serif, 'Iowan Old Style', Charter, Georgia, serif",
+    body: "1rem",
+    caption: "0.875rem",
+    lead: "clamp(1.125rem, 1.6vw, 1.375rem)",
+    display: "clamp(2.75rem, 6vw, 5.75rem)",
+    section: "clamp(1.875rem, 4vw, 4.25rem)",
+    readingLeading: 1.65,
+    interfaceLeading: 1.45,
+    readingMeasure: "68ch",
+    opticalSizing: "auto"
+  }),
   radius: Object.freeze({ small: "4px", card: "8px" }),
   motion: Object.freeze({ immediate: "0ms", fast: "160ms", standard: "280ms", maximum: "480ms" }),
   layout: Object.freeze({ columns: 12, readingMeasure: "70ch", contentMax: "1440px", touchTarget: "44px" })

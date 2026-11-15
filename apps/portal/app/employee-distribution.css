@@ -290,3 +290,29 @@
 .distribution-wms-pilot-admin-stats strong{font-variant-numeric:tabular-nums;font-size:1.14rem;margin-right:5px}
 .distribution-wms-pilot-admin .distribution-wms-pilot-table{max-width:100%;overflow-x:auto}
 .distribution-wms-pilot-admin .distribution-wms-pilot-table td{min-width:120px;max-width:340px;overflow-wrap:anywhere}
+
+/* HIG legibility contract for the operational terminal, preserving data density. */
+.employee-distribution-shell :where(h1, h2, h3, h4) {
+  font-optical-sizing: auto;
+  overflow-wrap: break-word;
+}
+.employee-distribution-shell :where(p, .task-description, .activity-description, [data-typography="reading"]) {
+  font-optical-sizing: auto;
+  line-height: var(--np-type-reading-leading, 1.65);
+}
+.employee-distribution-shell :where(.task-reference, .audit-reference, .location-code, .sku, .batch-id) {
+  font-variant-ligatures: none;
+  font-family: var(--np-type-mono, ui-monospace, Menlo, Consolas, monospace);
+}
+@media (max-width: 640px) {
+  .employee-distribution-shell :where(h1, h2, h3, p, label, td, th) {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .employee-distribution-shell :where(.action-row, .toolbar-actions) { flex-wrap: wrap; }
+}
+@media (prefers-contrast: more) {
+  .employee-distribution-shell :where(.task-description, .activity-description) {
+    color: var(--portal-ink, #1d1d1f);
+  }
+}
