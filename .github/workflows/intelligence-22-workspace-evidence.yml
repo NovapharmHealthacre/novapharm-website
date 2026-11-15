@@ -7,6 +7,8 @@ on:
       - 'src/core/intelligence-unified-capability-evidence.mjs'
       - 'apps/portal/data/intelligence-workspaces.ts'
       - 'apps/portal/components/medicines-intelligence.tsx'
+      - 'apps/portal/components/observed-medicine-workspaces.tsx'
+      - 'scripts/test-intelligence-observed-extension-workspaces.mjs'
       - 'apps/portal/components/clinical-trials-discovery.tsx'
       - 'apps/portal/components/professional-workspaces.tsx'
       - 'scripts/test-intelligence-biotech-signal-workspaces.mjs'
@@ -33,4 +35,4 @@ jobs:
           node --check src/core/intelligence-22-workspace-readiness.mjs
           node --check scripts/test-intelligence-22-workspace-readiness.mjs
       - name: Validate every module cannot auto-promote to production
-        run: node --test scripts/test-intelligence-22-workspace-readiness.mjs scripts/test-intelligence-unified-capability-evidence.mjs scripts/test-intelligence-biotech-signal-workspaces.mjs
+        run: node --test scripts/test-intelligence-22-workspace-readiness.mjs scripts/test-intelligence-unified-capability-evidence.mjs scripts/test-intelligence-biotech-signal-workspaces.mjs scripts/test-intelligence-observed-extension-workspaces.mjs
