@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
+import "../../../assets/css/symbol-system.css";
 import "./apple-pharma-portal.css";
 import "./nutraxin-order-journey.css";
 import "./customer-editorial-dashboard.css";
