@@ -202,6 +202,40 @@
 @media(max-width:420px){.distribution-wms-evidence-stats article{padding:19px 13px;min-height:130px}.distribution-wms-evidence-bar-row>span{font-size:.7rem}}
 @media(prefers-reduced-motion:reduce){.distribution-wms-evidence-studio *{scroll-behavior:auto!important;transition:none!important}}
 
+/* Hypothetical resource planning. No iconography or production-looking task controls. */
+.distribution-wms-capacity-studio{max-width:1260px;padding:45px 0 50px;border-top:1px solid #dddde2}
+.distribution-wms-capacity-heading h2{font-size:clamp(1.8rem,3vw,3.1rem);font-weight:650;letter-spacing:-.052em;line-height:1.13;margin:0 0 15px}
+.distribution-wms-capacity-heading>p:not(.distribution-employee-overline){font-size:.87rem;line-height:1.65;color:#575761;max-width:80ch}
+.distribution-wms-capacity-body{display:grid;grid-template-columns:minmax(270px,.85fr) minmax(0,1.45fr);gap:26px;margin-top:30px}
+.distribution-wms-capacity-inputs,.distribution-wms-capacity-output{border:1px solid #dedee3;border-radius:16px;padding:clamp(18px,3vw,27px);min-width:0}
+.distribution-wms-capacity-inputs{background:#fafafb}
+.distribution-wms-capacity-output{background:white}
+.distribution-wms-capacity-body h3{margin:0 0 19px;font-size:1.12rem;letter-spacing:-.03em}
+.distribution-wms-capacity-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.distribution-wms-capacity-fields label{display:flex;flex-direction:column;gap:7px;font-size:.74rem;color:#55555d;font-weight:550}
+.distribution-wms-capacity-fields input{width:100%;min-width:0;background:white;border:1px solid #cccdd3;border-radius:8px;padding:9px 11px;min-height:40px;font-size:.87rem;font-variant-numeric:tabular-nums}
+.distribution-wms-capacity-fields input:focus-visible,.distribution-wms-capacity-reset:focus-visible{outline:3px solid #0071e3;outline-offset:2px}
+.distribution-wms-capacity-reset{background:transparent;border:1px solid #a7a7ac;border-radius:20px;min-height:37px;padding:8px 16px;margin-top:22px;cursor:pointer;color:#1d1d1f}
+.distribution-wms-capacity-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:#e8e8ed;border:1px solid #e8e8ed;border-radius:11px;overflow:hidden}
+.distribution-wms-capacity-metrics>div{background:#fafafb;display:flex;flex-direction:column;gap:6px;padding:17px;min-width:0}
+.distribution-wms-capacity-metrics span{font-size:.75rem;color:#585860}
+.distribution-wms-capacity-metrics strong{font-size:1.75rem;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.distribution-wms-capacity-metrics small{color:#676770;font-size:.72rem}
+.distribution-wms-capacity-utilisation{padding:24px 0}
+.distribution-wms-capacity-utilisation>div:first-child{display:flex;justify-content:space-between;gap:20px;font-size:.87rem}
+.distribution-wms-capacity-meter{height:11px;background:#e9e9ec;border-radius:7px;margin:13px 0 10px;overflow:hidden}
+.distribution-wms-capacity-meter span{display:block;height:100%;background:#343439;border-radius:7px}
+.distribution-wms-capacity-utilisation p,.distribution-wms-capacity-disclaimer{color:#5f5f68;font-size:.78rem;line-height:1.55}
+.distribution-wms-capacity-output h4{font-size:.83rem;margin:0 0 10px}
+.distribution-wms-capacity-zones{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.distribution-wms-capacity-zones>div{padding:18px 13px;min-height:74px;border-radius:9px;background:#f5f5f7;display:flex;flex-direction:column;gap:10px}
+.distribution-wms-capacity-zones strong{font-size:.81rem}
+.distribution-wms-capacity-zones span{font-size:.78rem;color:#5e5e67}
+.distribution-wms-capacity-disclaimer{border-top:1px solid #e9e9ed;padding-top:17px;margin-top:23px}
+@media(max-width:940px){.distribution-wms-capacity-body{grid-template-columns:1fr}}
+@media(max-width:520px){.distribution-wms-capacity-fields{grid-template-columns:1fr 1fr}.distribution-wms-capacity-zones{grid-template-columns:1fr}.distribution-wms-capacity-zones>div{min-height:60px}}
+@media(max-width:360px){.distribution-wms-capacity-fields{grid-template-columns:1fr}}
+
 /* Private Distribution UAT: real authenticated feedback, zero warehouse execution. */
 .distribution-wms-pilot{max-width:1260px;margin:32px 0;padding:44px 0;border-top:1px solid #dedee2;color:#1d1d1f}
 .distribution-wms-pilot-header h2{font-size:clamp(1.8rem,3.3vw,3.2rem);font-weight:660;line-height:1.15;letter-spacing:-.052em;margin:0 0 13px}
