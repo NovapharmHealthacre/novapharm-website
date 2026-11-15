@@ -52,6 +52,7 @@ import {
   transitionProductLifecycle
 } from "./src/core/enterprise-domain-service.mjs";
 import { medicineIdentityDetail, nearbyHealthcareOrganisations, queryMedicineAnalytics, searchMedicines } from "./src/core/medicines-intelligence-service.mjs";
+import { listWmsPilotFeedback, submitWmsPilotFeedback } from "./src/core/wms-pilot-feedback.mjs";
 import { inspectNhsbsaEpdPrivateApi } from "./src/core/intelligence-nhsbsa-epd-private-api.mjs";
 import { intelligenceReleaseReadiness } from "./src/core/intelligence-release-readiness.mjs";
 import { discoverUkTenderNotices } from "./src/core/intelligence-uk-tender-discovery.mjs";
@@ -1070,6 +1071,20 @@ export async function handleRequest(request, response) {
       return;
     }
 
+    if (pathname === "/api/enterprise/wms/pilot-feedback" && request.method === "GET") {
+      const session = await scopedAuthentication(request, response, ["employee"]);
+      if (!session) return;
+      json(response, 200, await listWmsPilotFeedback(enterpriseContext(session)));
+      return;
+    }
+    if (pathname === "/api/enterprise/wms/pilot-feedback" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
+      if (!await rateLimit(request, "wms-pilot-feedback", 20, 60 * 60 * 1000)) return json(response, 429, { error: "Too many feedback updates. Try again later." });
+      const session = await scopedAuthentication(request, response, ["employee"]);
+      if (!session) return;
+      json(response, 201, { feedback: await submitWmsPilotFeedback(await readBody(request), enterpriseContext(session)) });
+      return;
+    }
     if (pathname === "/api/enterprise/customer/support" && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired. Refresh and try again." });
       if (!await rateLimit(request, "customer-support", 20, 60 * 60 * 1000)) return json(response, 429, { error: "Too many support requests. Try again later." });
