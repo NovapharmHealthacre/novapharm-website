@@ -79,7 +79,7 @@ for (const token of ['aria-busy={saving}', 'scope="row"', 'aria-label="Your work
   assert.ok(wmsPilot.includes(token), `Private WMS feedback accessibility missing ${token}`);
 }
 const wmsEvidence = read("apps/portal/components/wms-recorded-evidence-studio.tsx");
-for (const token of ['role="region"', 'scope="row"', 'Showing {worklist.length} matching recorded exceptions']) {
+for (const token of ['aria-label="Scrollable recorded WMS exceptions"', 'scope="row"', 'Showing {worklist.length} matching recorded exceptions']) {
   assert.ok(wmsEvidence.includes(token), `Private WMS evidence accessibility missing ${token}`);
 }
 
