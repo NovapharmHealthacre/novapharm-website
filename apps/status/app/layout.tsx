@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
+import "../../../assets/css/apple-hig-layout.css";
 
 export const metadata: Metadata = {
   title: "Service Status | NovaPharm Healthcare",
