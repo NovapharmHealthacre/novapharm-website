@@ -115,6 +115,10 @@ export function WmsPilotFeedbackPanel() {
       <li><strong>02 / Check the behaviour</strong><span>Verify navigation, data labels, filters, accessibility and error handling.</span></li>
       <li><strong>03 / Submit feedback</strong><span>Choose the outcome and explain what happened. Retest after each release.</span></li>
     </ol>
+    <p className="distribution-wms-pilot-privacy">
+      No passwords, patient information, personal contact details, API secrets or live order data.
+      This is software testing feedback, not a QMS safety report.
+    </p>
     {readState === "loading" ? <p role="status">Checking private pilot access…</p> : null}
     {readState === "unavailable" ? <div className="distribution-wms-pilot-locked" role="status">
       <strong>Private pilot not activated for this account.</strong>
@@ -140,10 +144,6 @@ export function WmsPilotFeedbackPanel() {
         <textarea id="distribution-pilot-note" rows={4} maxLength={600}
           value={note} onChange={(event) => setNote(event.target.value)}
           placeholder="Describe the steps you tried and what you expected to happen."/>
-        <p className="distribution-wms-pilot-privacy">
-          No passwords, patient information, personal contact details, API secrets or live order data.
-          This is software testing feedback, not a QMS safety report.
-        </p>
         <button type="submit" disabled={saving || (result !== "working" && note.trim().length < 8)}>
           {saving ? "Saving observation…" : "Save test observation"}
         </button>
@@ -183,7 +183,7 @@ export function WmsPilotFeedbackPanel() {
           <thead><tr><th scope="col">Tester</th><th scope="col">Workspace</th>
             <th scope="col">Result</th><th scope="col">Observation</th></tr></thead>
           <tbody>{adminSummary.reports.map((entry) =>
-            <tr key={entry.testerUsername + ":" + entry.workspaceCode}>
+            <tr key={`${entry.testerUsername}:${entry.workspaceCode}`}>
               <td>{entry.testerUsername}</td><td>{entry.workspaceCode}</td>
               <td>{resultLabels[entry.result]}</td><td>{entry.note || "No note provided"}</td>
             </tr>)}</tbody>
