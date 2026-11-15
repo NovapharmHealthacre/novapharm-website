@@ -22,7 +22,7 @@ function field(input, key, required = false) {
 }
 export function normaliseCustomerAddress(input) {
   if (!input || typeof input !== "object" || Array.isArray(input)) throw invalid("Address must be an object.");
-  if (!["delivery", "billing"].includes(input.addressKind)) throw invalid("Address type must be delivery or billing.");
+  if (!["delivery", "billing"].includes(input.addressKind)) throw invalid("Invalid address type. Choose delivery or billing.");
   const countryCode = String(input.countryCode ?? "").trim().toUpperCase();
   if (!/^[A-Z]{2}$/.test(countryCode)) throw invalid("Use a two-letter country code.");
   const result = {
