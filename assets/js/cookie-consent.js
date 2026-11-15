@@ -87,9 +87,10 @@ function initialiseConsentInterface() {
 
   const openDialog = () => {
     const record = readConsent(window.localStorage);
-    for (const category of ["preferences", "analytics", "marketing"]) {
+    for (const category of ["preferences", "analytics"]) {
       preferenceForm.elements[category].checked = categoryAllowed(record, category);
     }
+    preferenceForm.elements.marketing.checked = false;
     if (typeof dialog.showModal === "function") dialog.showModal();
     else dialog.setAttribute("open", "");
   };
@@ -105,7 +106,7 @@ function initialiseConsentInterface() {
   };
 
   const handleAction = (action) => {
-    if (action === "accept") choose({ preferences: true, analytics: true, marketing: false });
+    if (action === "accept") choose({ preferences: false, analytics: true, marketing: false });
     if (action === "reject") choose(DEFAULT_CATEGORIES);
     if (action === "manage") openDialog();
     if (action === "close") closeDialog();
