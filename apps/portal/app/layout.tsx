@@ -6,6 +6,7 @@ import "./nutraxin-order-journey.css";
 import "./customer-editorial-dashboard.css";
 import "./employee-distribution.css";
 import "../../../assets/css/novapharm-hig-colours.css";
+import "../../../assets/css/novapharm-hig-materials.css";
 
 export const metadata: Metadata = {
   title: "NovaPharm Secure Portal",
