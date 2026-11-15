@@ -65,4 +65,22 @@ const workspace = read("technology/workspaces/index.html");
 assert.match(workspace, /<main class="section"/, "Standalone Intelligence preview requires a main landmark");
 assert.match(workspace, /id="tabs" class="tabs" role="group"/, "Standalone category selection must be a labelled button group");
 
+// Security-sensitive React workspaces: require accessible UI metadata without
+// changing protected endpoints, access scopes, price calculation or WMS authority.
+const liveLogin = read("apps/portal/components/login-panel.tsx");
+assert.ok(liveLogin.includes('aria-busy={busy}'), "React sign-in must expose the in-progress state");
+assert.ok(liveLogin.includes('role="status" aria-live="polite"'), "React sign-in must announce outcomes");
+const medicines = read("apps/portal/components/medicines-intelligence.tsx");
+for (const token of ['aria-expanded={menuOpen}', 'aria-expanded={filtersOpen}', 'aria-controls="medicines-navigation-panel"', 'aria-controls="medicines-context-panel"', 'closeOnEscape']) {
+  assert.ok(medicines.includes(token), `Authenticated Intelligence navigation missing ${token}`);
+}
+const wmsPilot = read("apps/portal/components/wms-pilot-feedback-panel.tsx");
+for (const token of ['aria-busy={saving}', 'scope="row"', 'role="region" aria-label="Your workspace results']) {
+  assert.ok(wmsPilot.includes(token), `Private WMS feedback accessibility missing ${token}`);
+}
+const wmsEvidence = read("apps/portal/components/wms-recorded-evidence-studio.tsx");
+for (const token of ['role="region"', 'scope="row"', 'Showing {worklist.length} matching recorded exceptions']) {
+  assert.ok(wmsEvidence.includes(token), `Private WMS evidence accessibility missing ${token}`);
+}
+
 console.log("Apple HIG accessibility web contracts: verified source, bundle, labels, focus, motion and landmarks.");
