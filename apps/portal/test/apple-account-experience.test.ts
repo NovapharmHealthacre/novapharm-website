@@ -21,6 +21,8 @@ test("every governed portal login and landing view has optional, actionable acco
   assert.match(login, /<AccountAccessHelp audience=\{accessType\}/);
   assert.match(intelligence, /<AccountAccessHelp audience="intelligence"/);
   assert.match(dashboard, /<AccountAccessHelp audience=\{module\.area === "executive" \? "board" : module\.area\} authenticated/);
+  assert.doesNotMatch(dashboard, /user && snapshot && module\.route === areaLandingRoutes/);
+  assert.match(dashboard, /guidance is rendered immediately/);
 });
 
 test("password entry supports credential managers and accessible show-hide without browser persistence", () => {
