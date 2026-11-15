@@ -3,6 +3,7 @@
   const root=document.querySelector('[data-commerce-marketplace]');
   if(!root)return;
   const search=root.querySelector('#mp-search'),brand=root.querySelector('#mp-brand'),category=root.querySelector('#mp-category');
+  const clearSearch=root.querySelector('#mp-clear'),searchScope=root.querySelector('#mp-search-scope');
   const sort=root.querySelector('#mp-sort'),grid=root.querySelector('#mp-grid'),counter=root.querySelector('#mp-count');
   const more=root.querySelector('#mp-more'),compareArea=root.querySelector('#mp-compare'),compareContent=root.querySelector('#mp-compare-content');
   let products=[],displayed=24;const selected=new Set();
@@ -46,7 +47,16 @@
     const b=brand.value,c=category.value;
     const found=products.filter(p=>(b==='all'||p.brand===b)&&(c==='all'||p.category===c)&&
       (!q||fold([p.title,p.brand,p.sku,p.model,p.category,p.subcategory,p.pack].filter(Boolean).join(' ')).includes(q)));
-    found.sort((a,b)=>sort.value==='brand'?(a.brand.localeCompare(b.brand)||a.title.localeCompare(b.title)):a.title.localeCompare(b.title));
+    const relevance=(p)=>{
+      if(!q)return 0;
+      const title=fold(p.title),sku=fold(p.sku),model=fold(p.model);
+      if(title===q||sku===q||model===q)return 0;
+      if(title.startsWith(q)||sku.startsWith(q)||model.startsWith(q))return 1;
+      if(title.includes(q)||sku.includes(q)||model.includes(q))return 2;
+      return 3;
+    };
+    found.sort((a,b)=>sort.value==='brand'?(a.brand.localeCompare(b.brand)||a.title.localeCompare(b.title)):
+      sort.value==='relevance'&&q?(relevance(a)-relevance(b)||a.title.localeCompare(b.title)):a.title.localeCompare(b.title));
     return found;
   };
   function renderCompare(){
@@ -105,6 +115,12 @@
   }
   function render(){
     const found=visible();
+    if(clearSearch)clearSearch.hidden=!search.value;
+    if(searchScope){
+      const portfolio=brand.value==='all'?'Nutraxin and ESCO Anand':brand.value==='ESCO'?'ESCO Anand':'Nutraxin';
+      const currentCategory=category.value==='all'?'all categories':category.value;
+      searchScope.textContent='Search scope: '+portfolio+', '+currentCategory+'. Filters apply immediately. No search history is stored.';
+    }
     counter.textContent=found.length+' results across the governed catalogue';
     grid.replaceChildren(...found.slice(0,displayed).map(card));
     void loadStock(found.slice(0,displayed));
@@ -112,6 +128,7 @@
     if(!found.length)grid.append(element('p','mp-card-meta','No products match. Try another search term or select a different collection.'));
   }
   search.addEventListener('input',()=>{displayed=24;render();});
+  if(clearSearch)clearSearch.addEventListener('click',()=>{search.value='';displayed=24;render();search.focus();});
   brand.addEventListener('change',()=>{displayed=24;refreshCategories();render();});
   category.addEventListener('change',()=>{displayed=24;render();});
   sort.addEventListener('change',render);
