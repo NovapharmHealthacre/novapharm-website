@@ -163,3 +163,41 @@
 .distribution-wms-workspace-map-disclaimer{font-size:.8rem;color:#73737a;line-height:1.6;max-width:95ch;border-top:1px solid #ededf0;padding:19px 0 0}
 @media(max-width:830px){.distribution-wms-workspace-map-groups{grid-template-columns:1fr;gap:26px}}
 @media(max-width:420px){.distribution-wms-workspace-map-groups li{align-items:flex-start;gap:8px}.distribution-wms-workspace-map-groups li>a,.distribution-wms-workspace-map-groups .distribution-wms-awaiting-source{font-size:.74rem}}
+
+/* NovaPharm Distribution - authenticated read-only intelligence, no decorative iconography. */
+.distribution-wms-evidence-studio{max-width:1260px;padding:44px 0 48px;margin:14px 0 28px;border-top:1px solid #e3e3e6;color:#1d1d1f}
+.distribution-wms-evidence-heading h2{font-size:clamp(1.9rem,3.4vw,3.4rem);line-height:1.1;letter-spacing:-.058em;font-weight:660;margin:0 0 16px}
+.distribution-wms-evidence-heading>p:not(.distribution-employee-overline){font-size:.91rem;color:#717179;line-height:1.65;max-width:80ch}
+.distribution-wms-evidence-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:#e4e4e8;border:1px solid #e4e4e8;border-radius:17px;overflow:hidden;margin:30px 0 37px}
+.distribution-wms-evidence-stats article{padding:25px 20px;background:#fff;display:flex;flex-direction:column;min-height:145px;gap:8px}
+.distribution-wms-evidence-stats article span{font-size:.74rem;color:#66666e}
+.distribution-wms-evidence-stats article strong{font-size:clamp(1.45rem,2.1vw,2rem);letter-spacing:-.055em;font-weight:670}
+.distribution-wms-evidence-stats article small{font-size:.73rem;color:#616169;line-height:1.4}
+.distribution-wms-evidence-chart{background:#f7f7f9;border:1px solid #ececf0;border-radius:17px;padding:clamp(20px,3vw,31px);margin-bottom:28px}
+.distribution-wms-evidence-chart h3,.distribution-wms-evidence-exceptions h3{font-size:clamp(1.25rem,1.8vw,1.8rem);letter-spacing:-.045em;font-weight:650;margin:0 0 10px}
+.distribution-wms-evidence-chart>p,.distribution-wms-evidence-exceptions-heading p{font-size:.83rem;color:#626269;line-height:1.6;max-width:80ch;margin:0 0 25px}
+.distribution-wms-evidence-bar-row{display:grid;grid-template-columns:minmax(100px,165px) minmax(0,1fr) 46px;gap:17px;align-items:center;min-height:43px}
+.distribution-wms-evidence-bar-row>span{font-size:.8rem;font-weight:550}
+.distribution-wms-evidence-bar-row>small{font-size:.78rem;text-align:right;color:#66666e;font-variant-numeric:tabular-nums}
+.distribution-wms-evidence-bar-track{height:12px;border-radius:4px;background:#e7e7eb;overflow:hidden}
+.distribution-wms-evidence-bar{height:100%;border-radius:4px;background:#1d1d1f}
+.distribution-wms-evidence-footnote{font-size:.77rem;color:#606069;line-height:1.55;margin:22px 0 0;max-width:98ch}
+.distribution-wms-evidence-exceptions{padding:26px 0;border-top:1px solid #e6e6ea;border-bottom:1px solid #e6e6ea}
+.distribution-wms-evidence-exceptions-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+.distribution-wms-evidence-filters{display:flex;gap:5px;flex-wrap:wrap;border:0;margin:0;padding:0;min-width:0}
+.distribution-wms-evidence-filters button{background:#f5f5f7;color:#36363b;border:1px solid #e6e6e9;border-radius:20px;min-height:35px;padding:8px 14px;font-size:.76rem;cursor:pointer}
+.distribution-wms-evidence-filters button[aria-pressed="true"]{background:#1d1d1f;color:#fff;border-color:#1d1d1f}
+.distribution-wms-evidence-filters button:focus-visible,.distribution-wms-evidence-search input:focus-visible{outline:3px solid #0071e3;outline-offset:2px}
+.distribution-wms-evidence-search{display:flex;flex-direction:column;gap:7px;font-size:.76rem;color:#55555d;margin-bottom:17px;max-width:480px}
+.distribution-wms-evidence-search input{border:1px solid #d4d4da;border-radius:9px;min-height:39px;padding:10px 13px;font-size:.85rem;color:#1d1d1f;background:#fff}
+.distribution-wms-evidence-table-scroll{overflow-x:auto;border:1px solid #e6e6ea;border-radius:11px}
+.distribution-wms-evidence-table-scroll:focus-visible{outline:3px solid #0071e3;outline-offset:2px}
+.distribution-wms-evidence-table-scroll table{width:100%;border-collapse:collapse;text-align:left;font-size:.8rem}
+.distribution-wms-evidence-table-scroll th{background:#f7f7f9;padding:14px 15px;font-size:.72rem;color:#606069;white-space:nowrap;font-weight:600}
+.distribution-wms-evidence-table-scroll td{padding:13px 15px;border-top:1px solid #ebebee;color:#4d4d54;vertical-align:top}
+.distribution-wms-evidence-table-scroll td[data-priority="high"]{color:#9d1723;font-weight:650}
+.distribution-wms-evidence-table-scroll td[data-priority="standard"]{color:#565661;font-weight:600}
+@media(max-width:960px){.distribution-wms-evidence-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.distribution-wms-evidence-exceptions-heading{flex-direction:column}.distribution-wms-evidence-bar-row{grid-template-columns:102px minmax(0,1fr) 30px;gap:9px}}
+@media(max-width:420px){.distribution-wms-evidence-stats article{padding:19px 13px;min-height:130px}.distribution-wms-evidence-bar-row>span{font-size:.7rem}}
+@media(prefers-reduced-motion:reduce){.distribution-wms-evidence-studio *{scroll-behavior:auto!important;transition:none!important}}
