@@ -594,6 +594,12 @@ test("build receipt is emitted only after all staged bundle links match and is f
   assert.ok(workflow.indexOf("Prove forward-only release ancestry and deploy evidence") < workflow.indexOf("Publish verified Pages artifact"));
   const bytes = "/* synthetic build output */";
   write(root, `_site/${bundle}`, bytes);
+  // Keep synthetic fixture aligned with the release gate for the official Distribution logo.
+  const distributionLogo = "assets/brand/novapharm-distribution-logo.svg";
+  const distributionLogoBytes = `<svg xmlns="http://www.w3.org/2000/svg"><text>NovaPharm Distribution</text></svg>`;
+  write(root, distributionLogo, distributionLogoBytes);
+  write(root, `_site/${distributionLogo}`, distributionLogoBytes);
+  write(root, "_site/distribution/index.html", `<img src="/${distributionLogo}" alt="NovaPharm Distribution">`);
   const html = `<link rel="stylesheet" href="/${bundle}?v=${defaultVersion}&amp;sha256=${hash(bytes)}">`;
   const pages = ["index.html", "capabilities/index.html", "oncology/index.html", "products/index.html"];
   for (const page of pages) write(root, `_site/${page}`, html);
