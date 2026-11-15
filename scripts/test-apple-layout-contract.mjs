@@ -40,6 +40,11 @@ test("layout contract applies to the full portal catalogue, not just a showcase 
   assert.deepEqual([...new Set(catalog.map((entry) => entry.area))].sort(), ["admin", "customer", "employee", "executive"]);
   assert.match(css, /\.workspace-content/);
   assert.match(css, /\.np-intelligence/);
+  const portal = read("apps/portal/components/dashboard.tsx");
+  assert.match(portal, /className="metric-grid np-hig-grid"/);
+  assert.match(portal, /className="table-region np-hig-table-region" tabIndex=\{0\}/);
+  const intelligence = read("apps/portal/data/intelligence-workspaces.ts");
+  assert.equal((intelligence.match(/slug: "/g) ?? []).length, 22, "Intelligence route catalogue changed");
 });
 
 test("custom SwiftUI code is a reference, not a web runtime dependency", () => {
