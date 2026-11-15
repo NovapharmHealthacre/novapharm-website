@@ -39,4 +39,30 @@ for (const path of ["index.html", "legal/accessibility/index.html"]) {
   assert.match(html, /class="skip-link"\s+href="#main"/, `${path}: skip to content missing`);
   assert.match(html, /<main\s+id="main"/, `${path}: accessible main landmark missing`);
 }
+// Prevent a regression in authentication announcements and the public 22-workspace preview.
+// These are additive source contracts; real browser/assistive-technology testing is separate.
+const login = read("assets/js/portal-login.js");
+assert.match(login, /setAttribute\("aria-live", "polite"\)/, "Portal sign-in needs a polite screen-reader status announcement");
+assert.match(login, /setAttribute\("aria-busy", "true"\)/, "Portal sign-in should communicate in-flight authentication");
+for (const path of ["assets/js/portal-login.js", "assets/js/intelligence-workspace-product.js", "assets/js/intelligence-workspace-embedded.js"]) {
+  execFileSync(process.execPath, ["--check", resolve(path)], { stdio: "pipe" });
+}
+for (const [scriptPath, cssPath] of [
+  ["assets/js/intelligence-workspace-product.js", "assets/css/intelligence-workspace-product.css"],
+  ["assets/js/intelligence-workspace-embedded.js", "assets/css/intelligence-workspace-embedded.css"]
+]) {
+  const js = read(scriptPath);
+  const css = read(cssPath);
+  assert.match(js, /setAttribute\('role','group'\)/, `${scriptPath}: render accessible category button groups`);
+  assert.match(js, /aria-pressed="${state.category/, `${scriptPath}: selected category must be announced`);
+  assert.match(js, /class="chart-data"/, `${scriptPath}: chart must offer a data table`);
+  assert.match(js, /e\.key!=='Tab'/, `${scriptPath}: modal must trap keyboard navigation`);
+  assert.match(css, /\.tab\[aria-pressed=true\]/, `${cssPath}: selected category state must remain visible`);
+  assert.match(css, /\.chart-data summary:focus-visible/, `${cssPath}: chart data summary needs visible focus`);
+  assert.ok(!/aria-selected/.test(css), `${cssPath}: no obsolete ARIA tab styling`);
+}
+const workspace = read("technology/workspaces/index.html");
+assert.match(workspace, /<main class="section"/, "Standalone Intelligence preview requires a main landmark");
+assert.match(workspace, /id="tabs" class="tabs" role="group"/, "Standalone category selection must be a labelled button group");
+
 console.log("Apple HIG accessibility web contracts: verified source, bundle, labels, focus, motion and landmarks.");
