@@ -7,6 +7,7 @@ import { nutraxinProductForSelection } from "../data/nutraxin-order-intent";
 import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { areaLabels, areaLandingRoutes, areaScopes } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError, protectedMutation } from "../lib/gateway";
+import { AccountAccessHelp } from "./account-access-help";
 import { CustomerCommerceWorkspace } from "./customer-commerce-workspace";
 import { DistributionBrand } from "./distribution-brand";
 import { EmployeeDistributionWorkspace } from "./employee-distribution-workspace";
@@ -205,6 +206,8 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
         </> : null}
         <button className="menu-button np-icon-control" type="button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu aria-hidden="true" className="np-symbol" /></button><search><form className="portal-search" onSubmit={search}><Search aria-hidden="true" className="np-symbol" /><label className="sr-only" htmlFor="portal-search">Search authorised records</label><input id="portal-search" name="query" placeholder="Search" autoComplete="off" /><button type="submit">Search</button>{searchOpen ? <div className="search-results"><button className="search-close np-icon-control" type="button" aria-label="Close search results" onClick={() => setSearchOpen(false)}><X aria-hidden="true" className="np-symbol" /></button>{searchResults.length ? searchResults.map((result) => <a key={`${result.type}-${result.reference}`} href={result.route}><strong>{result.title}</strong><span>{result.type} · {result.reference}{result.status ? ` · ${readable(result.status)}` : ""}</span></a>) : <p>No authorised records found.</p>}</div> : null}</form></search><div className="user-summary"><span>{user?.displayName ?? "Secure user"}</span><small>{user ? readable(user.accessType) : "Verifying"}</small>{isEditorialPortal ? <button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data">Refresh</button> : null}<button type="button" onClick={logout} aria-label="Sign out">{isEditorialPortal ? "Sign out" : <LogOut aria-hidden="true" className="np-symbol" />}</button></div></header>
       <div className="workspace-content">
+        {user && snapshot && module.route === areaLandingRoutes[module.area]
+          ? <AccountAccessHelp audience={module.area === "executive" ? "board" : module.area} authenticated /> : null}
         {!isEditorialPortal ? <header className="module-heading"><div><p className="eyebrow">{areaLabels[module.area]} / {module.releaseClassificationLabel}</p><h1>{module.title}</h1><p>{module.purpose}</p></div><button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data"><RefreshCw aria-hidden="true" className={loading ? "np-symbol np-symbol--busy" : "np-symbol"} /><span>Refresh</span></button></header> : null}
         {/* Customer navigation is static and server-route-protected: reserve its
             layout before data fetch resolves to prevent mobile CLS. It does not
