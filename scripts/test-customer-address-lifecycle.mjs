@@ -84,10 +84,25 @@ test("address lifecycle: verified customer owns changes and approved ship-to is 
     assert.ok(Object.isFrozen(approved));
     await assert.rejects(resolveCustomerShipTo(customerTwo, request.id), /not been approved/);
 
-    assert.equal((await address.disableCustomerAddress(request.id, sessionOne)).status, "disabled");
-    await assert.rejects(resolveCustomerShipTo(customerOne, request.id), /not been approved/);
-    assert.equal(approved.postcode, "SW1A 1AA", "Past order snapshot remains immutable after address removal.");
-    await assert.rejects(address.disableCustomerAddress(request.id, sessionTwo), /Address not found/);
+    const revised = await address.submitCustomerAddress({
+      ...payload, replacesAddressId: request.id, postcode: "SW1A 2AB", label: "Updated goods-in"
+    }, sessionOne);
+    assert.equal(revised.status, "pending_review");
+    assert.equal(revised.replacesAddressId, request.id);
+    assert.equal((await resolveCustomerShipTo(customerOne, request.id)).postcode, "SW1A 1AA",
+      "Old location must remain approved while an edit is awaiting review.");
+    await assert.rejects(address.submitCustomerAddress({
+      ...payload, replacesAddressId: request.id, label: "Duplicate update"
+    }, sessionOne), /already awaits review/);
+    await assert.rejects(resolveCustomerShipTo(customerOne, revised.id), /not been approved/);
+    assert.equal((await address.decideCustomerAddress(revised.id, "approve", "owner")).status, "approved");
+    await assert.rejects(resolveCustomerShipTo(customerOne, request.id), /not been approved/,
+      "Approving an edit must retire the previous version.");
+    assert.equal((await resolveCustomerShipTo(customerOne, revised.id)).postcode, "SW1A 2AB");
+    assert.equal(approved.postcode, "SW1A 1AA", "Prior ship-to snapshot must remain immutable.");
+    assert.equal((await address.disableCustomerAddress(revised.id, sessionOne)).status, "disabled");
+    await assert.rejects(resolveCustomerShipTo(customerOne, revised.id), /not been approved/);
+    await assert.rejects(address.disableCustomerAddress(revised.id, sessionTwo), /Address not found/);
 
     const pending = await address.submitCustomerAddress({ ...payload, label: "Backup depot", isDefault: false }, sessionOne);
     assert.equal((await address.decideCustomerAddress(pending.id, "reject", "owner")).status, "rejected");
