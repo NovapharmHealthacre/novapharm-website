@@ -688,6 +688,10 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     : navigationGroups;
   const searchId = useId();
   const searchFieldRef = useRef<HTMLInputElement>(null);
+  const searchResultsId = useId();
+  const searchHelpId = useId();
+  const issuedSearchRef = useRef("");
+  const [searchText, setSearchText] = useState("");
   const menuToggleRef = useRef<HTMLButtonElement>(null);
   const filterToggleRef = useRef<HTMLButtonElement>(null);
   const menuCloseRef = useRef<HTMLButtonElement>(null);
@@ -775,7 +779,13 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
         searchFieldRef.current?.focus();
       }
       if (event.key === "Escape" && document.activeElement === searchFieldRef.current) {
+        event.preventDefault();
+        selectionGenerationRef.current += 1;
+        issuedSearchRef.current = "";
+        setSearchText("");
         setSearchResponse(null);
+        setSearchStatus("Search cleared.");
+        setBusy(false);
       }
     }
     window.addEventListener("keydown", handleSearchShortcut);
@@ -828,15 +838,15 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     setAnalyticsStatus("Filters reset. Select the evidence you need.");
   }
 
-  async function searchMedicine(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const query = String(new FormData(event.currentTarget).get("medicine") ?? "").trim();
+  // Typed queries are debounced against the existing authorised endpoint.
+  // One current-identity request owns the results; older responses cannot reappear.
+  const runMedicineSearch = useCallback(async (query: string) => {
     if (query.length < 2) {
       setSearchStatus("Enter at least two characters.");
       return;
     }
-    // Prevent a fresh query (including a zero-result/error query) from displaying
-    // a previous medicine's identity, charts or accepted observation state.
+    if (issuedSearchRef.current === query) return;
+    issuedSearchRef.current = query;
     selectionGenerationRef.current += 1;
     const generation = selectionGenerationRef.current;
     setDetail(null);
@@ -846,7 +856,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     nextUrl.searchParams.delete("medicineId");
     window.history.replaceState(null, "", `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
     setBusy(true);
-    setSearchStatus("Searching the governed medicine identity register.");
+    setSearchStatus("Searching current authorised medicine identities.");
     setSearchResponse(null);
     try {
       const next = await gatewayJson<SearchResponse>(`enterprise/medicines/search?q=${encodeURIComponent(query)}&limit=30&page=1`);
@@ -862,6 +872,35 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     } finally {
       if (generation === selectionGenerationRef.current) setBusy(false);
     }
+  }, []);
+
+  function changeMedicineSearch(value: string) {
+    // Invalidate any in-flight response immediately, not after the debounce.
+    selectionGenerationRef.current += 1;
+    issuedSearchRef.current = "";
+    setSearchText(value);
+    setSearchResponse(null);
+    setSearchStatus(value.trim().length >= 2 ? "Refining medicine matches…" : value ? "Enter at least two characters." : "");
+    setBusy(false);
+  }
+
+  useEffect(() => {
+    const query = searchText.trim();
+    if (query.length < 2) return;
+    const timer = window.setTimeout(() => { void runMedicineSearch(query); }, 400);
+    return () => window.clearTimeout(timer);
+  }, [searchText, runMedicineSearch]);
+
+  function searchMedicine(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    issuedSearchRef.current = "";
+    void runMedicineSearch(searchText.trim());
+  }
+
+  function clearMedicineSearch() {
+    changeMedicineSearch("");
+    setSearchStatus("Search cleared.");
+    searchFieldRef.current?.focus();
   }
 
   async function searchMedicinePage(page: number) {
@@ -1001,8 +1040,8 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     <section className={styles.product}>
       <header className={`${styles.topbar} medicine-search-workspace`}>
         <button ref={menuToggleRef} className={styles.mobileMenu} type="button" aria-expanded={menuOpen} aria-controls="medicines-navigation-panel" onClick={() => setMenuOpen(true)}>Navigation</button>
-        <search className={styles.search}><form onSubmit={searchMedicine}><label className={styles.srOnly} htmlFor={searchId}>Medicine name, brand or code</label><input ref={searchFieldRef} id={searchId} aria-keyshortcuts="Meta+K Control+K" title="Search medicines (⌘K / Ctrl+K)" name="medicine" type="search" minLength={2} maxLength={120} autoComplete="off" spellCheck={false} placeholder="Search current medicine, product name or BNF code" required /><button type="submit" disabled={busy}>Search</button></form>
-          {searchResponse ? <section className={`${styles.searchResults} medicine-search-results`} aria-label="Medicine search results"><header><h2>Current identity matches</h2><p>{searchResponse.source}{searchResponse.sourcePeriod ? `, ${searchResponse.sourcePeriod}` : ""}</p></header>{searchResponse.results.length ? <ul>{searchResponse.results.map((result) => <li key={result.medicineId}><button type="button" onClick={() => void selectMedicine(result.medicineId)} disabled={busy}><strong>{result.canonicalName}</strong><span>{result.presentationCode || "BNF presentation code not recorded"}{result.chemicalSubstance ? ` | ${result.chemicalSubstance}` : ""}</span></button></li>)}</ul> : <p>{searchResponse.catalogueState === "no_current_repository_identities" ? "This search environment has no current medicine identities loaded. Results remain unavailable until source approval and ingestion." : "No current BNF identity matched. Try a generic, brand, product or BNF code."}</p>}{searchResponse.pagination.totalPages > 1 ? <nav aria-label="Medicine search result pages"><button type="button" disabled={busy || searchResponse.pagination.page === 1} onClick={() => void searchMedicinePage(searchResponse.pagination.page - 1)}>Previous</button><span>Page {searchResponse.pagination.page} of {searchResponse.pagination.totalPages} · {searchResponse.pagination.totalRows} identities</span><button type="button" disabled={busy || searchResponse.pagination.page >= searchResponse.pagination.totalPages} onClick={() => void searchMedicinePage(searchResponse.pagination.page + 1)}>Next</button></nav> : null}</section> : null}
+        <search className={styles.search}><form onSubmit={searchMedicine}><label className={styles.srOnly} htmlFor={searchId}>Medicine name, brand or code</label><input ref={searchFieldRef} id={searchId} aria-keyshortcuts="Meta+K Control+K" aria-describedby={searchHelpId} aria-controls={searchResponse ? searchResultsId : undefined} title="Search medicines (⌘K / Ctrl+K)" name="medicine" type="search" minLength={2} maxLength={120} autoComplete="off" enterKeyHint="search" spellCheck={false} value={searchText} onChange={(event) => changeMedicineSearch(event.currentTarget.value)} placeholder="Search current medicines, brands or BNF codes" required />{searchText ? <button type="button" onClick={clearMedicineSearch} aria-label="Clear medicine search">Clear</button> : null}<button type="submit" disabled={busy}>Search</button></form><p id={searchHelpId} className={styles.srOnly}>Search only the current authorised medicine identity register. Matches refine as you type after two characters. No search history is saved or displayed.</p>
+          {searchResponse ? <section id={searchResultsId} className={`${styles.searchResults} medicine-search-results`} aria-label="Current authorised medicine search results"><header><h2>Current identity matches</h2><p>{searchResponse.source}{searchResponse.sourcePeriod ? `, ${searchResponse.sourcePeriod}` : ""}</p></header>{searchResponse.results.length ? <ul>{searchResponse.results.map((result) => <li key={result.medicineId}><button type="button" onClick={() => void selectMedicine(result.medicineId)} disabled={busy}><strong>{result.canonicalName}</strong><span>{result.presentationCode || "BNF presentation code not recorded"}{result.chemicalSubstance ? ` | ${result.chemicalSubstance}` : ""}</span></button></li>)}</ul> : <p>{searchResponse.catalogueState === "no_current_repository_identities" ? "This search environment has no current medicine identities loaded. Results remain unavailable until source approval and ingestion." : "No current BNF identity matched. Try a generic, brand, product or BNF code."}</p>}{searchResponse.pagination.totalPages > 1 ? <nav aria-label="Medicine search result pages"><button type="button" disabled={busy || searchResponse.pagination.page === 1} onClick={() => void searchMedicinePage(searchResponse.pagination.page - 1)}>Previous</button><span>Page {searchResponse.pagination.page} of {searchResponse.pagination.totalPages} · {searchResponse.pagination.totalRows} identities</span><button type="button" disabled={busy || searchResponse.pagination.page >= searchResponse.pagination.totalPages} onClick={() => void searchMedicinePage(searchResponse.pagination.page + 1)}>Next</button></nav> : null}</section> : null}
         </search>
         <div className={styles.topActions}><span>Latest accepted period</span><button ref={filterToggleRef} type="button" aria-expanded={filtersOpen} aria-controls="medicines-context-panel" onClick={() => setFiltersOpen(true)}>Filters</button><button className="icon-command" type="button" onClick={() => void onRefresh()} disabled={loading}>Refresh</button><button type="button" aria-label="Sign out" onClick={() => void onLogout()}>Sign out</button></div>
       </header>
