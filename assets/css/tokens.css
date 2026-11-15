@@ -1,5 +1,6 @@
 :root {
   color-scheme: only light;
+  font-optical-sizing: auto;
   --bg: #f3f5f4;
   --surface: #ffffff;
   --surface-2: #e9eeec;
