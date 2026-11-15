@@ -17,6 +17,9 @@ await import("./build-pages.mjs");
 await import("./apply-visual-refinement.mjs");
 await import("./apply-module-media-sanity.mjs");
 await import("./normalise-visual-css.mjs");
+// Validate the HIG typography contract before generating the public release.
+// This is the same governed contract used by the shared design-system checks.
+await import("./test-official-typography-contract.mjs");
 await import("./build-css-bundle.mjs");
 await import("./normalise-visual-semantics.mjs");
 await import("./apply-owner-corrections.mjs");
