@@ -569,3 +569,10 @@ td[data-state="blocked"], td[data-state="failed"], td[data-state="suspended"] { 
 .customer-address-privacy{font-size:12px;line-height:1.55;color:#6e6e73;margin:12px 0}
 @media(max-width:850px){.customer-address-columns{grid-template-columns:1fr}.customer-address-identity{grid-template-columns:1fr}}
 @media(max-width:480px){.customer-address-two{grid-template-columns:1fr}.customer-address-panel{padding:18px}}
+
+.customer-address-review-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:16px;margin:22px 0}
+.customer-address-review-list .customer-address-panel p{font-size:14px;line-height:1.55;margin:10px 0;overflow-wrap:anywhere}
+.customer-address-review-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.customer-address-review-actions button{border:1px solid #1d1d1f;border-radius:999px;padding:10px 16px;background:#1d1d1f;color:white;font:inherit;font-size:13px;cursor:pointer}
+.customer-address-review-actions button:last-child{background:white;color:#1d1d1f}
+.customer-address-review-actions button:disabled{opacity:.5;cursor:not-allowed}
