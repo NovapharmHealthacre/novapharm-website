@@ -43,7 +43,7 @@ textarea {
 }
 
 .button.primary { background: var(--portal-red); }
-.button.primary:hover { background: #8f1c25; }
+.button.primary:hover { background: var(--portal-red-text); }
 .button.microsoft { border-color: var(--portal-line); }
 
 /* Sign-in: remove the dark enterprise split and keep one calm white surface. */
