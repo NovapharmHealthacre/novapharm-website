@@ -146,10 +146,9 @@ async function customerSnapshot(module, customerId, context) {
   }
   if (module.slug === "orders") {
     const rows = await all(`SELECT o.order_number, o.status, o.requested_delivery_date, o.customer_po_reference,
-        o.total_minor, o.currency, o.created_at, o.delivery_address_snapshot_json, COUNT(ol.id) AS line_count
-      FROM orders o LEFT JOIN order_lines ol ON ol.order_id = o.id WHERE o.customer_id = ?
-      GROUP BY o.id, o.order_number, o.status, o.requested_delivery_date, o.customer_po_reference, o.total_minor,
-        o.currency, o.created_at, o.delivery_address_snapshot_json
+        o.total_minor, o.currency, o.created_at, o.delivery_address_snapshot_json,
+        (SELECT COUNT(*) FROM order_lines ol WHERE ol.order_id = o.id) AS line_count
+      FROM orders o WHERE o.customer_id = ?
       ORDER BY o.created_at DESC`, customerId);
     const visibleRows = rows.map(row => {
       let shipTo = "Not recorded";
