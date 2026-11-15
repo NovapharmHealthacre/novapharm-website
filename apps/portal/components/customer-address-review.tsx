@@ -18,9 +18,9 @@ export function CustomerAddressReview() {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await gatewayJson<{ requests: readonly Review[] }>("admin/customer-addresses");
+      const data = await gatewayJson<{ requests: readonly Review[]; requestsEnabled: boolean }>("admin/customer-addresses");
       setItems(data.requests);
-      setEnabled(true);
+      setEnabled(data.requestsEnabled === true);
     } catch (error) {
       setEnabled(false);
       setItems([]);
@@ -46,6 +46,7 @@ export function CustomerAddressReview() {
       <h2>Address requests.</h2><p>Approve delivery destinations separately from account, product and trading permissions.</p></div>
     {loading ? <p>Loading authorised review queue…</p> : null}
     {!loading && enabled && items.length === 0 ? <p>No address requests awaiting review.</p> : null}
+    {!loading && !enabled ? <p>Address review is not yet activated in this environment.</p> : null}
     <div className="customer-address-review-list">
       {items.map(item => <article className="customer-address-panel" key={item.id}>
         <h3>{item.label}</h3>
