@@ -90,7 +90,7 @@ export function LoginPanel() {
             {showPassword ? <EyeOff aria-hidden="true" className="np-symbol" /> : <Eye aria-hidden="true" className="np-symbol" />}
           </button>
         </div>
-        <button className="button primary" type="submit" disabled={busy}>{busy ? "Signing in…" : "Sign in with password"}</button>
+        <button className="button primary" type="submit" disabled={busy}>{busy ? "Signing in…" : "Sign in securely"}</button>
       </form>
       {entraEnabled ? <a className="button microsoft" href={`/.auth/login/aad?post_login_redirect_uri=${encodeURIComponent(entraReturn)}`}><ShieldCheck aria-hidden="true" className="np-symbol" />Continue with Microsoft</a> : null}
       <p className="form-status" role="status" aria-live="polite" aria-atomic="true">{status}</p>
