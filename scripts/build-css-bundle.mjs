@@ -24,7 +24,8 @@ const sources = [
   ["corporate-product-discipline.css", null],
   ["contact-premium.css", null],
   ["homepage-editorial.css", null],
-  ["sitewide-layout-integrity.css", null]
+  ["sitewide-layout-integrity.css", null],
+  ["apple-hig-layout.css", null]
 ];
 
 const sections = sources.map(([filename, layer]) => {
