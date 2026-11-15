@@ -265,8 +265,18 @@ async function inspectModule(
       assert.equal(await page.getByText("by NovaPharm Healthcare", { exact: true }).count(), 1);
       assert.equal(await page.getByText("Know where medicine is moving.", { exact: true }).count(), 0);
     } else {
-      assert.equal(await page.locator('img[alt="NovaPharm Healthcare"]').count(), 1);
-      assert.match(await page.locator('img[alt="NovaPharm Healthcare"]').getAttribute("src") ?? "", /novapharm-healthcare-logo\.svg/);
+      const isDistributionRoute = [
+        "employee.dashboard", "employee.orders", "employee.warehouse",
+      ].includes(module.code);
+      if (isDistributionRoute) {
+        assert.equal(await page.locator('img[alt="NovaPharm Distribution"]').count(), 1);
+        assert.match(await page.locator('img[alt="NovaPharm Distribution"]').getAttribute("src") ?? "", /novapharm-distribution-logo\.svg/);
+        assert.equal(await page.locator('img[alt="NovaPharm Healthcare"]').count(), 0);
+      } else {
+        assert.equal(await page.locator('img[alt="NovaPharm Healthcare"]').count(), 1);
+        assert.match(await page.locator('img[alt="NovaPharm Healthcare"]').getAttribute("src") ?? "", /novapharm-healthcare-logo\.svg/);
+        assert.equal(await page.locator('img[alt="NovaPharm Distribution"]').count(), 0);
+      }
       if (module.code === "customer.dashboard") {
         assert.equal(await page.locator(".customer-editorial-packshots img").count(), 3);
         assert.equal(await page.locator(".customer-primary-nav a").count(), 5);
