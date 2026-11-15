@@ -184,7 +184,7 @@
 .distribution-wms-evidence-footnote{font-size:.77rem;color:#777780;line-height:1.55;margin:22px 0 0;max-width:98ch}
 .distribution-wms-evidence-exceptions{padding:26px 0;border-top:1px solid #e6e6ea;border-bottom:1px solid #e6e6ea}
 .distribution-wms-evidence-exceptions-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
-.distribution-wms-evidence-filters{display:flex;gap:5px;flex-wrap:wrap}
+.distribution-wms-evidence-filters{display:flex;gap:5px;flex-wrap:wrap;border:0;margin:0;padding:0;min-width:0}
 .distribution-wms-evidence-filters button{background:#f5f5f7;color:#36363b;border:1px solid #e6e6e9;border-radius:20px;min-height:35px;padding:8px 14px;font-size:.76rem;cursor:pointer}
 .distribution-wms-evidence-filters button[aria-pressed="true"]{background:#1d1d1f;color:#fff;border-color:#1d1d1f}
 .distribution-wms-evidence-filters button:focus-visible,.distribution-wms-evidence-search input:focus-visible{outline:3px solid #0071e3;outline-offset:2px}
