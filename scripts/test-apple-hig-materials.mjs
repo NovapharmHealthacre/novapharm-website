@@ -48,7 +48,7 @@ for (const snippet of [
   "(prefers-reduced-transparency:reduce)",
   "(prefers-contrast:more)",
   "(forced-colors:active)",
-  ".editorial-customer .editorial-topbar{position:sticky;top:0;z-index:50}"
+  ".editorial-customer .editorial-topbar{position:sticky;top:0;z-index:50;}"
 ]) {
   assert.ok(customerBff.includes(snippet), `Transitional customer BFF material fallback missing: ${snippet}`);
 }
