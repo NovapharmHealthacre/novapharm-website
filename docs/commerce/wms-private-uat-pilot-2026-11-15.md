@@ -10,7 +10,7 @@
 3. `server.mjs` — GET and CSRF-protected POST `/api/enterprise/wms/pilot-feedback`, requiring an authenticated employee session. POST is rate-limited.
 4. `apps/portal/app/gateway/[...path]/route.ts` — allows only the exact pilot feedback path through the authenticated same-origin gateway.
 5. `apps/portal/components/wms-pilot-feedback-panel.tsx` — workspace selector, outcome, short technical note and per-tester status table. Mounted below the existing `employee.warehouse` control tower and 16-workspace directory.
-6. Automated backend, front-end and negative-security tests.
+6. Admin-only `GET /api/enterprise/wms/pilot-feedback-summary` — owner review of bounded recent tester results, available only to a separately approved administrator session. Ordinary employees cannot read other testers' reports.\n7. Automated backend, front-end and negative-security tests.
 
 ## Pilot activation — default deny
 
@@ -42,7 +42,7 @@ Do not enable these flags on the current Nutraxin staging BFF. Do not remap `por
 - Dedicated deployment with HTTPS, a reachable private hostname, least-privilege credentialed pilot accounts, hardened cookie/session and CSRF controls.
 - Accepted **durable staging database** with migration 011 applied, encrypted/backup protected and clearly separated from production data.
 - Anonymous, cross-user, cross-role, revoked session, missing CSRF, disallowed account, non-synthetic-mode and malformed feedback requests all deny.
-- Two distinct approved tester logins can independently submit, refresh, view and update their own reports. The owner/operator has a controlled review/export mechanism before UAT signoff; this PR does **not** invent an admin cross-user export endpoint.
+- Two distinct approved tester logins can independently submit, refresh, view and update their own reports. The approved administrator can review the latest 200 submitted results through the secured pilot summary panel. No bulk export or operational analytics are asserted.
 - Verify no operational 3PL command, stock change, quality release, customer purchase, billing or external message occurs while testers navigate.
 
 ## Current deployment blocker
