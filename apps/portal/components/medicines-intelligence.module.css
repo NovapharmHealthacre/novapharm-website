@@ -212,7 +212,7 @@
 .search form {
   min-width: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   border: 1px solid #d0d2d6;
   border-radius: 11px;
   background: #fff;
@@ -234,7 +234,7 @@
 }
 
 .shell .topbar .search input {
-  min-height: 40px;
+  min-height: 44px;
   border: 0;
   padding: 8px 13px;
   font-size: 0.78rem;
@@ -263,6 +263,23 @@
 .search form button {
   border-left: 1px solid var(--mi-line);
   color: var(--mi-blue-dark);
+}
+.search form button[aria-label="Clear medicine search"] {
+  color: var(--mi-muted);
+  font-weight: 550;
+}
+.search form input::-webkit-search-cancel-button {
+  display: none;
+}
+.search form input::placeholder {
+  color: #626c76;
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .search form { scroll-behavior: auto; }
+}
+@media (forced-colors: active) {
+  .search form:focus-within { outline: 2px solid Highlight; }
 }
 
 .search form button:hover,
