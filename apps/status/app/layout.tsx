@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
+import "../../../assets/css/novapharm-hig-colours.css";
 
 export const metadata: Metadata = {
   title: "Service Status | NovaPharm Healthcare",
@@ -25,5 +26,5 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
-  return <html lang="en-GB"><body><a className="skip-link" href="#status-main">Skip to service status</a>{children}</body></html>;
+  return <html lang="en-GB" data-np-estate="status"><body><a className="skip-link" href="#status-main">Skip to service status</a>{children}</body></html>;
 }
