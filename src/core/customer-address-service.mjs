@@ -68,7 +68,8 @@ export async function submitCustomerAddress(input, context) {
 }
 /** Administrator-only review queue. Route authorization is enforced by the API. */
 export async function pendingCustomerAddressReviews() {
-  assertRequestsEnabled();
+  // The administrator can view the empty disabled state without a 503 or un-applied migration.
+  if (!requestsEnabled()) return { requests: [], requestsEnabled: false, approvalScope: "address_only", customerQualificationUnchanged: true };
   const rows = await all(`SELECT ca.id, ca.customer_id, c.customer_number, o.legal_name,
       ca.address_kind, ca.label, ca.recipient_name, ca.contact_phone, ca.line_1,
       ca.line_2, ca.city, ca.region, ca.postcode, ca.country_code,
@@ -78,7 +79,7 @@ export async function pendingCustomerAddressReviews() {
       JOIN organizations o ON o.id = c.organization_id
     WHERE ca.status = 'pending_review'
     ORDER BY ca.created_at LIMIT 100`);
-  return { requests: rows, approvalScope: "address_only", customerQualificationUnchanged: true };
+  return { requests: rows, requestsEnabled: true, approvalScope: "address_only", customerQualificationUnchanged: true };
 }
 export async function decideCustomerAddress(id, decision, actor) {
   assertRequestsEnabled();
