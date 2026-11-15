@@ -30,6 +30,7 @@ export function CustomerAddressBook() {
   const [book, setBook] = useState<AddressBook | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [removingId, setRemovingId] = useState("");
   const [message, setMessage] = useState("");
   const [addressKind, setAddressKind] = useState<"delivery" | "billing">("delivery");
 
@@ -44,6 +45,19 @@ export function CustomerAddressBook() {
     } finally { setLoading(false); }
   }, []);
   useEffect(() => { void refresh(); }, [refresh]);
+
+  async function removeAddress(id: string) {
+    if (!book?.requestsEnabled || removingId) return;
+    setRemovingId(id);
+    setMessage("");
+    try {
+      await protectedMutation<{ request: { status: string } }>(
+        `enterprise/customer/addresses/${encodeURIComponent(id)}/disable`, {});
+      setMessage("Address removed from your available locations. Previously confirmed orders remain unchanged.");
+      await refresh();
+    } catch (error) { setMessage(professionalError(error)); }
+    finally { setRemovingId(""); }
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -106,6 +120,7 @@ export function CustomerAddressBook() {
             <p>{item.recipient_name} · {item.contact_phone}</p>
             <p>{locationLine(item)}</p>
             <small>{item.address_kind === "delivery" ? "Delivery" : "Billing"} {Boolean(item.is_default) ? "· Requested default" : ""}</small>
+            {book.requestsEnabled && ["approved", "pending_review"].includes(item.status) ? <button className="customer-address-remove" type="button" disabled={Boolean(removingId)} onClick={() => void removeAddress(item.id)}>{item.status === "pending_review" ? "Withdraw request" : "Remove address"}</button> : null}
           </article>)}
         </div>
         <div className="customer-address-panel">
