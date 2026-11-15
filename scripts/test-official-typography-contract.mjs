@@ -13,6 +13,7 @@ const sources = [
   "apps/portal/app/employee-distribution.css",
   "apps/technology/styles/base-1.css",
   "apps/status/app/globals.css",
+  "apps/founder/app/base.css",
 ];
 for (const path of sources) {
   const css = read(path);
@@ -35,4 +36,39 @@ assert.match(read("apps/technology/styles/base-1.css"), /--sans:\s*-apple-system
 assert.match(read("apps/technology/styles/base-1.css"), /--serif:\s*"New York"/);
 assert.match(read("apps/portal/app/employee-distribution.css"), /font-variant-numeric:\s*tabular-nums/);
 assert.match(read("assets/css/corporate-product-discipline.css"), /font-variant-numeric:\s*tabular-nums/);
-console.log("NovaPharm native typography contract passed across public, corporate, portal, WMS, technology and status styles.");
+
+// HIG text style contract: scalable tokens and non-truncating small-screen typography.
+for (const path of [
+  "assets/css/tokens.css",
+  "apps/corporate/app/design-system.css",
+  "apps/portal/app/apple-pharma-portal.css",
+  "apps/status/app/globals.css",
+  "apps/technology/styles/base-1.css",
+]) {
+  const css = read(path);
+  for (const token of [
+    "--np-type-body-size", "--np-type-caption-size", "--np-type-lead-size",
+    "--np-type-display-size", "--np-type-section-size",
+    "--np-type-reading-leading", "--np-type-interface-leading", "--np-type-measure",
+  ]) {
+    assert.ok(css.includes(token + ":"), path + " missing HIG text style: " + token);
+  }
+  assert.match(css, /font-optical-sizing:\s*auto/, path + " must preserve optical sizing");
+}
+for (const path of [
+  "assets/css/corporate-product-discipline.css",
+  "apps/corporate/app/design-system.css",
+  "apps/portal/app/apple-pharma-portal.css",
+  "apps/portal/app/employee-distribution.css",
+  "apps/technology/styles/base-1.css",
+  "apps/status/app/globals.css",
+  "apps/founder/app/base.css",
+]) {
+  const css = read(path);
+  assert.match(css, /overflow-wrap:\s*(?:break-word|anywhere)/, path + " must wrap enlarged text");
+  assert.match(css, /@media\s*\(max-width:\s*640px\)/, path + " requires responsive text reflow");
+}
+assert.match(read("packages/design-system/src/index.ts"), /readingLeading:\s*1\.65/);
+assert.match(read("packages/design-system/src/styles.ts"), /font-optical-sizing:auto/);
+
+console.log("NovaPharm Apple HIG typography contract passed across public, corporate, portal, WMS, technology, status, founder and shared React styles.");
