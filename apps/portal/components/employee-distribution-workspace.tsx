@@ -1,6 +1,7 @@
 "use client";
 
 import { employeeModules } from "@novapharm/portal-contracts";
+import { WmsCapacityScenarioStudio } from "./wms-capacity-scenario-studio";
 import { WmsPrototypeWorkspaceMap } from "./wms-prototype-workspace-map";
 import { WmsRecordedEvidenceStudio, type WmsSnapshot } from "./wms-recorded-evidence-studio";
 
@@ -157,6 +158,7 @@ export function EmployeeDistributionWorkspace({ moduleCode, snapshot }: Readonly
             </a> : null}
       </section>
       <WmsRecordedEvidenceStudio snapshot={snapshot ?? null} />
+      <WmsCapacityScenarioStudio />
       <WmsPrototypeWorkspaceMap />
     </section>;
   }
