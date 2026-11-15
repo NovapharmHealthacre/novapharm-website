@@ -1787,7 +1787,7 @@ body.editorial-customer{background:#fff;color:#1d1d1f;overflow-x:hidden}
         css+=('''
 /* Full-width editorial product grid. Basket lives in one accessible, optional drawer. */
 body.editorial-customer{overflow-x:clip}
-.editorial-customer .editorial-topbar{position:sticky;top:0;z-index:50}
+.editorial-customer .editorial-topbar{position:sticky;top:0;z-index:50;}
 .editorial-customer .shop-layout{display:block}
 .editorial-customer .shop-header{margin-bottom:25px;max-width:950px}
 .editorial-customer .shop-header h1{font-size:clamp(39px,4.4vw,57px)}
