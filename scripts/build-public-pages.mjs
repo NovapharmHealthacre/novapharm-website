@@ -81,7 +81,9 @@ function productCategoryMedia(category) {
 
 function nutraxinProductMedia(product, eager = false, sizes = "(max-width: 640px) 86vw, (max-width: 1040px) 44vw, 28vw") {
   const base = `/assets/media/products/nutraxin/${product.imageBase}`;
-  return `<picture class="nutraxin-product-picture"><source srcset="${base}-480.avif 480w, ${base}-800.avif 800w" sizes="${sizes}" type="image/avif"><source srcset="${base}-480.webp 480w, ${base}-800.webp 800w" sizes="${sizes}" type="image/webp"><img src="${base}.png" alt="${esc(product.altText)}" width="700" height="700" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
+  const width = product.imageBase === "collagen-gold-30-tablets" ? 980 : 700;
+  const height = product.imageBase === "collagen-gold-30-tablets" ? 654 : 700;
+  return `<picture class="nutraxin-product-picture"><source srcset="${base}-480.avif 480w, ${base}-800.avif 800w" sizes="${sizes}" type="image/avif"><source srcset="${base}-480.webp 480w, ${base}-800.webp 800w" sizes="${sizes}" type="image/webp"><img src="${base}.png" alt="${esc(product.altText)}" width="${width}" height="${height}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
 }
 
 function nutraxinProductCard(product, eager = false) {

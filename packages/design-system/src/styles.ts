@@ -125,5 +125,4 @@ export const designSystemCss = String.raw`
 .np-app-store-badges__link{display:inline-flex;flex:none;align-items:center;justify-content:center;margin:10px;line-height:0}
 .np-app-store-badges__link:focus-visible{outline:3px solid #0b69ff;outline-offset:3px}
 .np-app-store-badges__artwork{display:block;height:40px;width:auto;max-width:none}
-
 `;
