@@ -321,7 +321,7 @@ function head(meta, slug = "", options = {}) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#E3120B">
+  <meta name="theme-color" content="#FFFFFF">
   <title>${esc(meta.title)}</title>
   <meta name="description" content="${esc(meta.description)}">
   <meta name="robots" content="${options.robots || "index, follow, max-snippet:-1, max-image-preview:large"}">

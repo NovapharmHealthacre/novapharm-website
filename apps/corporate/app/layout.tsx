@@ -8,11 +8,12 @@ import "./print.css";
 import "./homepage-editorial.css";
 import "./oncology-editorial.css";
 import "./design-system.css";
-import "../../../assets/css/symbol-system.css";
 import "../../../assets/css/capabilities-editorial.css";
 import "./capabilities-route.css";
 import "../../../assets/css/nutraxin-lineup.css";
 import "../../../assets/css/nutraxin-order-access.css";
+import "../../../assets/css/novapharm-hig-colours.css";
+import "../../../assets/css/symbol-system.css";
 import { CookieControls } from "@/components/cookie-controls";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
@@ -50,12 +51,12 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   colorScheme: "light",
-  themeColor: "#E3120B",
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en-GB">
+    <html lang="en-GB" data-np-estate="corporate">
       <body>
         <a className="skip-link" href="#main-content">Skip to main content</a>
         <SiteHeader />

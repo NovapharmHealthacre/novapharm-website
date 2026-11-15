@@ -24,6 +24,7 @@ const sources = [
   ["corporate-product-discipline.css", null],
   ["contact-premium.css", null],
   ["homepage-editorial.css", null],
+  ["novapharm-hig-colours.css", null],
   ["symbol-system.css", null],
   ["sitewide-layout-integrity.css", null]
 ];
