@@ -24,8 +24,9 @@ const sources = [
   ["corporate-product-discipline.css", null],
   ["contact-premium.css", null],
   ["homepage-editorial.css", null],
-  ["sitewide-layout-integrity.css", null],
-  ["novapharm-hig-colours.css", null]
+  ["novapharm-hig-colours.css", null],
+  // The final integrity layer must remain last, as verified by the image contract.
+  ["sitewide-layout-integrity.css", null]
 ];
 
 const sections = sources.map(([filename, layer]) => {
