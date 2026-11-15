@@ -130,7 +130,14 @@ export function WmsPilotFeedbackPanel() {
         <h3>Record an observation</h3>
         <label htmlFor="distribution-pilot-workspace">Workspace</label>
         <select id="distribution-pilot-workspace" value={workspaceCode}
-          onChange={(event) => { setWorkspaceCode(event.target.value); setMessage(""); }}>
+          onChange={(event) => {
+            const nextWorkspace = event.target.value;
+            const previousReport = entries.find((entry) => entry.workspaceCode === nextWorkspace);
+            setWorkspaceCode(nextWorkspace);
+            setResult(previousReport?.result ?? "working");
+            setNote(previousReport?.note ?? "");
+            setMessage("");
+          }}>
           {workspaces.map((entry) =>
             <option key={entry.code} value={entry.code}>{entry.label}</option>)}
         </select>
