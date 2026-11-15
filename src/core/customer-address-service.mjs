@@ -30,7 +30,7 @@ export async function customerAddressBook(context) {
     WHERE customer_id = ? ORDER BY updated_at DESC LIMIT 1`, account.id);
   const requests = requestsEnabled() ? await all(`SELECT id, address_kind, label, recipient_name, contact_phone,
       line_1, line_2, city, region, postcode, country_code, delivery_instructions,
-      is_default, status, created_at, reviewed_at
+      is_default, replaces_address_id, status, created_at, reviewed_at
     FROM customer_account_addresses WHERE customer_id = ? ORDER BY created_at DESC`, account.id) : [];
   return {
     account: { customerNumber: account.customer_number, legalName: account.legal_name,
@@ -56,6 +56,22 @@ export async function submitCustomerAddress(input, context) {
   const account = await accountFor(context);
   const value = normaliseCustomerAddress(input);
   return transaction(async () => {
+    const replacesAddressId = input?.replacesAddressId ?? null;
+    if (replacesAddressId !== null) {
+      if (typeof replacesAddressId !== "string" || !/^[0-9a-f-]{36}$/i.test(replacesAddressId)) {
+        throw blocked("The address being updated is invalid.", 400);
+      }
+      const previous = await one(`SELECT id, address_kind, status
+        FROM customer_account_addresses WHERE id = ? AND customer_id = ?`,
+        replacesAddressId, account.id);
+      if (!previous || previous.status !== "approved" || previous.address_kind !== value.addressKind) {
+        throw blocked("Only your approved address of the same type can be updated.", 409);
+      }
+      const existingChange = await one(`SELECT id FROM customer_account_addresses
+        WHERE customer_id = ? AND replaces_address_id = ? AND status = 'pending_review'`,
+        account.id, replacesAddressId);
+      if (existingChange) throw blocked("An update to this address already awaits review.", 409);
+    }
     const pending = await one(`SELECT COUNT(*) AS total FROM customer_account_addresses
       WHERE customer_id = ? AND status = 'pending_review'`, account.id);
     if (Number(pending?.total || 0) >= 10) throw blocked("Too many address changes await review.");
@@ -64,17 +80,18 @@ export async function submitCustomerAddress(input, context) {
     await run(`INSERT INTO customer_account_addresses
       (id, customer_id, address_kind, label, recipient_name, contact_phone,
        line_1, line_2, city, region, postcode, country_code,
-       delivery_instructions, is_default, status, created_by, created_at)
-      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending_review', ?, ?)`,
+       delivery_instructions, is_default, replaces_address_id, status, created_by, created_at)
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending_review', ?, ?)`,
       id, account.id, value.addressKind, value.label, value.recipientName,
       value.contactPhone, value.line1, value.line2, value.city, value.region,
       value.postcode, value.countryCode, value.deliveryInstructions,
-      value.isDefault ? 1 : 0, context.username, now);
+      value.isDefault ? 1 : 0, replacesAddressId, context.username, now);
     // Do not add personal addresses or telephone numbers to operational audit logs.
     await audit({ actor: context.username, action: "customer.address.requested",
       entityType: "customer_address", entityId: id,
-      details: { customerId: account.id, addressKind: value.addressKind, status: "pending_review" } });
-    return { id, status: "pending_review", createdAt: now };
+      details: { customerId: account.id, addressKind: value.addressKind, status: "pending_review",
+        replacementRequested: Boolean(replacesAddressId) } });
+    return { id, status: "pending_review", replacesAddressId, createdAt: now };
   });
 }
 /** Administrator-only review queue. Route authorization is enforced by the API. */
@@ -106,7 +123,7 @@ export async function pendingCustomerAddressReviews() {
   const rows = await all(`SELECT ca.id, ca.customer_id, c.customer_number, o.legal_name,
       ca.address_kind, ca.label, ca.recipient_name, ca.contact_phone, ca.line_1,
       ca.line_2, ca.city, ca.region, ca.postcode, ca.country_code,
-      ca.delivery_instructions, ca.is_default, ca.status, ca.created_at
+      ca.delivery_instructions, ca.is_default, ca.replaces_address_id, ca.status, ca.created_at
     FROM customer_account_addresses ca
       JOIN customers c ON c.id = ca.customer_id
       JOIN organizations o ON o.id = c.organization_id
@@ -119,10 +136,17 @@ export async function decideCustomerAddress(id, decision, actor) {
   if (!/^[0-9a-f-]{36}$/i.test(String(id || ""))) throw blocked("Address request not found.", 404);
   if (!["approve", "reject"].includes(decision)) throw blocked("Decision must be approve or reject.", 400);
   return transaction(async () => {
-    const item = await one(`SELECT id, customer_id, address_kind, is_default, status
+    const item = await one(`SELECT id, customer_id, address_kind, is_default, replaces_address_id, status
       FROM customer_account_addresses WHERE id = ?`, id);
     if (!item) throw blocked("Address request not found.", 404);
     if (item.status !== "pending_review") throw blocked("Address request was already reviewed.");
+    if (decision === "approve" && item.replaces_address_id) {
+      const previous = await one(`SELECT id, status, address_kind FROM customer_account_addresses
+        WHERE id = ? AND customer_id = ?`, item.replaces_address_id, item.customer_id);
+      if (!previous || previous.status !== "approved" || previous.address_kind !== item.address_kind) {
+        throw blocked("The original approved location has changed; review the amendment again.");
+      }
+    }
     if (decision === "approve" && Number(item.is_default) === 1) {
       await run(`UPDATE customer_account_addresses SET is_default = 0
         WHERE customer_id = ? AND address_kind = ? AND status = 'approved'`,
@@ -134,9 +158,16 @@ export async function decideCustomerAddress(id, decision, actor) {
       SET status = ?, reviewed_by = ?, reviewed_at = ?
       WHERE id = ? AND status = 'pending_review'`, next, actor, now, id);
     if (!result.changes) throw blocked("Address request changed during review.");
+    if (decision === "approve" && item.replaces_address_id) {
+      const prior = await run(`UPDATE customer_account_addresses SET status = 'disabled', is_default = 0
+        WHERE id = ? AND customer_id = ? AND status = 'approved'`,
+        item.replaces_address_id, item.customer_id);
+      if (!prior.changes) throw blocked("The address being replaced was changed during review.");
+    }
     await audit({ actor, action: "customer.address.reviewed", entityType: "customer_address",
       entityId: id, before: { status: "pending_review" }, after: { status: next },
-      details: { customerId: item.customer_id, addressKind: item.address_kind } });
+      details: { customerId: item.customer_id, addressKind: item.address_kind,
+        replacementApproved: decision === "approve" && Boolean(item.replaces_address_id) } });
     return { id, status: next, reviewedAt: now };
   });
 }
