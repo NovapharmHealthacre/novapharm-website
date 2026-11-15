@@ -237,7 +237,7 @@ export function PaymentRequestSummary({
   if (Number.isSafeInteger(amountMinor) && amountMinor >= 0) {
     try {
       const formatter = new Intl.NumberFormat("en-GB", { style: "currency", currency });
-      const minorDigits = formatter.resolvedOptions().maximumFractionDigits;
+      const minorDigits = formatter.resolvedOptions().maximumFractionDigits ?? 2;
       amount = formatter.format(amountMinor / 10 ** minorDigits);
     } catch {
       // Incorrect currency configuration must never display a fabricated amount.
