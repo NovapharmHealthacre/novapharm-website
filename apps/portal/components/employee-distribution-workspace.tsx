@@ -1,6 +1,7 @@
 "use client";
 
 import { employeeModules } from "@novapharm/portal-contracts";
+import { WmsPrototypeWorkspaceMap } from "./wms-prototype-workspace-map";
 
 /**
  * Premium employee distribution experience inside the EXISTING role-gated
@@ -154,6 +155,7 @@ export function EmployeeDistributionWorkspace({ moduleCode }: Readonly<{ moduleC
               Open quality workspace
             </a> : null}
       </section>
+      <WmsPrototypeWorkspaceMap />
     </section>;
   }
 
