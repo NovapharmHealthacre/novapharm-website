@@ -311,7 +311,7 @@
 .esco-catalogue-heading{margin-bottom:29px}
 .esco-storefront .esco-controls{background:#f5f5f7;padding:15px;border-radius:19px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 13px}
 .esco-search-wrap{flex:1 1 390px;min-width:0;position:relative}
-.esco-search-icon{position:absolute;top:50%;left:17px;transform:translateY(-54%);color:#62626a;font-size:1.75rem;line-height:1;pointer-events:none}
+.esco-search-icon{position:absolute;top:50%;left:17px;width:20px;height:20px;transform:translateY(-50%);color:#62626a;pointer-events:none}
 .esco-storefront .esco-search{width:100%;min-width:0;min-height:49px;background:#fff;border:1px solid #e4e4e9;border-radius:12px;padding:12px 16px 12px 47px;font-size:.91rem;color:#1d1d1f;box-shadow:none}
 .esco-storefront .esco-search::placeholder{color:#8b8b94}
 .esco-storefront .esco-filter{min-height:49px;flex:0 1 215px;max-width:100%;min-width:175px;border-radius:12px;border:1px solid #e4e4e9;padding:11px 13px;background:#fff;color:#2b2b32;font-size:.88rem}
@@ -689,3 +689,4 @@
 .esco-page .esco-shop-mini-bag[hidden] {
   display: none !important;
 }
+\n.esco-search-scope{margin:4px 3px 12px;color:#626b76;font-size:.85rem;line-height:1.5}\n@media(forced-colors:active){.esco-search-icon{color:CanvasText}.esco-search:focus-visible{outline:3px solid Highlight}}\n
