@@ -119,4 +119,22 @@ export const designSystemCss = String.raw`
 @media(prefers-contrast:more){
   :where(.np-field__hint,.np-result-count){color:#1b2028}
 }
+
+/* Original web representation of a payment request, not an Apple payment sheet. */
+.np-payment-request{max-inline-size:38rem;margin-inline:auto;display:grid;gap:1.25rem;padding:clamp(1.25rem,4vw,2.5rem);border:1px solid #d8dde4;border-radius:1.75rem;background:#f5f5f7;color:#1d1d1f;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
+.np-payment-request__header{display:grid;gap:.35rem}
+.np-payment-request__eyebrow{font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;font-weight:650;color:#B30E09;margin:0}
+.np-payment-request__header h2{font-size:clamp(1.625rem,4vw,2.5rem);font-weight:650;line-height:1.1;letter-spacing:-.025em;margin:0}
+.np-payment-request__card{padding:clamp(1.5rem,5vw,3rem);border:1px solid #d2d2d7;border-radius:1.5rem;background:#fff;box-shadow:0 .75rem 2rem rgb(0 0 0/.04);text-align:center}
+.np-payment-request__merchant{font-size:clamp(1rem,2.5vw,1.25rem);font-weight:620;margin:0}
+.np-payment-request__amount{font-size:clamp(2.5rem,9vw,5rem);line-height:1.15;letter-spacing:-.035em;font-weight:650;overflow-wrap:anywhere;margin:1.25rem 0}
+.np-payment-request__reference{margin:.35rem 0;color:#515154;font-size:.9rem;overflow-wrap:anywhere}
+.np-payment-request__status{margin:1.25rem 0 0;padding-block-start:1rem;border-top:1px solid #ececef;color:#404044;font-weight:650}
+.np-payment-request__note{color:#515154;line-height:1.5;font-size:.92rem;max-inline-size:58ch;margin:0}
+.np-payment-request__actions{display:flex;flex-wrap:wrap;gap:.75rem}
+.np-payment-request__actions :where(a,button){display:inline-flex;min-block-size:44px;align-items:center;justify-content:center;border-radius:999px;padding:.75rem 1.25rem;text-decoration:none;font-weight:650}
+.np-payment-request__actions :where(a,button):focus-visible{outline:3px solid #0b69ff;outline-offset:3px}
+@media(max-width:480px){.np-payment-request{border-radius:1rem;padding:1rem}.np-payment-request__card{padding:1.5rem 1rem}.np-payment-request__actions>*{flex:1 1 auto}}
+@media(prefers-contrast:more){.np-payment-request{border-color:#1d1d1f}.np-payment-request__card{border-color:#515154}.np-payment-request__note{color:#1d1d1f}}
+@media(forced-colors:active){.np-payment-request,.np-payment-request__card{border:1px solid CanvasText}}
 `;
