@@ -17,6 +17,7 @@ const migrationFiles = [
   "010_source_scoped_medicine_marts.sql",
   "011_customer_address_requests.sql",
   "012_order_ship_to_snapshot.sql",
+  "013_customer_address_replacements.sql",
 ];
 const expectedMigrations = new Map(migrationFiles.map((file) => {
   const source = readFileSync(resolve("database", "sqlite", file), "utf8");
@@ -66,6 +67,8 @@ async function validate(provider) {
   const addressSql = (await provider.one("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'customer_account_addresses'", []))?.sql || "";
   assert.match(addressSql, /pending_review/i);
   assert.match(addressSql, /REFERENCES customers\(id\)/i);
+  const addressColumns = new Set((await provider.all("PRAGMA table_info(customer_account_addresses)", [])).map(row => row.name));
+  assert.ok(addressColumns.has("replaces_address_id"), "Customer addresses must preserve their prior approved version on edits.");
 
   const balanceSql = (await provider.one("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'inventory_balances'", []))?.sql || "";
   assert.match(balanceSql, /reserved_quantity \+ available_quantity \+ quarantine_quantity <= on_hand_quantity/i);
