@@ -17,6 +17,8 @@ assert.deepEqual(files, [
 	"008_source_period_governance.sql",
 	"009_authoritative_bulk_observations.sql",
 	"010_source_scoped_medicine_marts.sql",
+	"011_customer_address_requests.sql",
+	"012_order_ship_to_snapshot.sql",
 ]);
 
 const sources = Object.fromEntries(
@@ -46,6 +48,18 @@ for (const [file, source] of Object.entries(sources)) {
 		`${file} does not contain an executable SQL batch.`,
 	);
 }
+
+// Customer-supplied destinations and immutable order snapshots require explicit approval gates.
+const addressChanges = sources["011_customer_address_requests.sql"];
+assert.match(addressChanges, /dbo\\.customer_account_addresses/i);
+assert.match(addressChanges, /pending_review/i);
+assert.match(addressChanges, /ON DELETE CASCADE/i);
+assert.match(addressChanges, /created_by/i);
+assert.match(addressChanges, /reviewed_by/i);
+const shipTo = sources["012_order_ship_to_snapshot.sql"];
+assert.match(shipTo, /delivery_address_id/i);
+assert.match(shipTo, /delivery_address_snapshot_json/i);
+assert.match(shipTo, /COL_LENGTH/i);
 
 const activation = sources["003_backend_activation.sql"];
 for (const table of [
