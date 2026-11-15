@@ -33,7 +33,13 @@ export function proxy(request: NextRequest): NextResponse {
   const pathname = request.nextUrl.pathname.endsWith("/") ? request.nextUrl.pathname : `${request.nextUrl.pathname}/`;
 
   if (!pathname.startsWith("/gateway/") && !anonymousPaths.has(pathname) && !founderVerifiedPaths.has(pathname) && !request.cookies.has("np_session")) {
-    return NextResponse.redirect(new URL("/", request.url));
+    // A redirect is a complete response. Apply the same non-indexing,
+    // cache and clickjacking headers as the normal protected response;
+    // returning early without them leaks a cacheable private-route location.
+    const denied = NextResponse.redirect(new URL("/", request.url));
+    for (const [name, value] of Object.entries(policy.responseHeaders)) denied.headers.set(name, value);
+    denied.headers.set("Cache-Control", "no-store");
+    return denied;
   }
 
   const requestHeaders = new Headers(request.headers);
