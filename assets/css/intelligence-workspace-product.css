@@ -81,6 +81,7 @@ h1{font-size:clamp(41px,4vw,62px);letter-spacing:0;margin:13px 0 9px}
 
 
 /* WCAG AA: muted workspace copy remains readable on white and near-white surfaces. */
+.count,
 .tab:not([aria-pressed="true"]),
 .tab small,
 .workspace:not(.is-selected) .num,

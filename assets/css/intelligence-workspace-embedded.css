@@ -457,6 +457,7 @@
 .npi-workspace-live-experience .npi-medicine-match{width:100%;border-left:0;border-right:0;border-top:0;background:transparent;text-align:left;cursor:pointer}
 .npi-workspace-live-experience .npi-compact-empty{padding:22px 0}
 /* WCAG AA: muted workspace copy remains readable on white and near-white surfaces. */
+.npi-workspace-live-experience .count,
 .npi-workspace-live-experience .tab:not([aria-pressed="true"]),
 .npi-workspace-live-experience .tab small,
 .npi-workspace-live-experience .workspace:not(.is-selected) .num,

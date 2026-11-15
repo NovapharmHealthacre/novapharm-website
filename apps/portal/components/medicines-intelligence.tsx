@@ -727,9 +727,16 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
       }
     };
     window.addEventListener("keydown", closeOnEscape);
-    if (filtersOpen) filterCloseRef.current?.focus();
-    else if (menuOpen) menuCloseRef.current?.focus();
-    return () => window.removeEventListener("keydown", closeOnEscape);
+    // CSS visibility transitions can leave the opening drawer non-focusable
+    // until the next paint. Move focus after layout, never into a hidden pane.
+    const focusFrame = window.requestAnimationFrame(() => {
+      const target = filtersOpen ? filterCloseRef.current : menuCloseRef.current;
+      target?.focus({ preventScroll: true });
+    });
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      window.removeEventListener("keydown", closeOnEscape);
+    };
   }, [menuOpen, filtersOpen]);
   const [searchResponse, setSearchResponse] = useState<SearchResponse | null>(null);
   const [detail, setDetail] = useState<MedicineDetail | null>(null);

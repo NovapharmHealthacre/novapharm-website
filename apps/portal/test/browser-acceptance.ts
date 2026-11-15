@@ -654,6 +654,10 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     await navToggle.click();
     assert.equal(await navToggle.getAttribute("aria-expanded"), "true");
     assert.equal(await medicineNav.isVisible(), true);
+    await page.waitForFunction(() => {
+      const panel = document.getElementById("medicines-navigation-panel");
+      return panel?.contains(document.activeElement) && document.activeElement?.textContent?.trim() === "Close navigation";
+    });
     assert.equal(await medicineNav.getByRole("button", { name: "Close navigation", exact: true }).evaluate(
       (node) => node === document.activeElement), true, `${engine}: mobile navigation did not receive focus`);
     await page.keyboard.press("Shift+Tab");
@@ -668,6 +672,10 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     await filterToggle.click();
     assert.equal(await filterToggle.getAttribute("aria-expanded"), "true");
     assert.equal(await contextPanel.isVisible(), true);
+    await page.waitForFunction(() => {
+      const panel = document.getElementById("medicines-context-panel");
+      return panel?.contains(document.activeElement) && document.activeElement?.textContent?.trim() === "Close filters";
+    });
     assert.equal(await contextPanel.getByRole("button", { name: "Close filters", exact: true }).evaluate(
       (node) => node === document.activeElement), true, `${engine}: filters did not receive focus`);
     await page.keyboard.press("Escape");
