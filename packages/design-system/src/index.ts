@@ -43,6 +43,7 @@ export function reducedMotionCss(): string {
   return "@media (prefers-reduced-motion: reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:0.001ms!important;animation-iteration-count:1!important;transition-duration:0.001ms!important;}}";
 }
 
-export * from "./components.tsx";
-export * from "./styles.ts";
-export * from "./symbols.tsx";
+export * from "./components";
+export * from "./styles";
+export * from "./symbols";
+export * from "./app-store-badges";
