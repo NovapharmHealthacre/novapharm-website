@@ -84,7 +84,7 @@ import { isResolvedSecret, isUnresolvedSecretReference } from "./src/core/secret
 import { hasSharePointCredentials } from "./src/integrations/sharepoint/graph-client.mjs";
 import { executeInternalAiReview, internalAiGatewayStatus } from "./src/core/ai/ai-gateway.mjs";
 import { safeJsonStringify } from "./src/security/safe-json.mjs";
-import { customerAddressBook, submitCustomerAddress, decideCustomerAddress, pendingCustomerAddressReviews } from "./src/core/customer-address-service.mjs";
+import { customerAddressBook, submitCustomerAddress, decideCustomerAddress, pendingCustomerAddressReviews, disableCustomerAddress } from "./src/core/customer-address-service.mjs";
 
 const root = resolve(process.cwd());
 const applicationVersion = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version;
@@ -841,6 +841,17 @@ export async function handleRequest(request, response) {
       const session = await scopedAuthentication(request, response, ["customer"]);
       if (!session) return;
       json(response, 201, { request: await submitCustomerAddress(await readBody(request), enterpriseContext(session)) });
+      return;
+    }
+
+    const addressDisableMatch = pathname.match(/^\/api\/enterprise\/customer\/addresses\/([0-9a-f-]{36})\/disable$/i);
+    if (addressDisableMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      if (!await rateLimit(request, "customer-address-disable", 12, 60 * 60 * 1000))
+        return json(response, 429, { error: "Too many address changes. Try again later." });
+      const session = await scopedAuthentication(request, response, ["customer"]);
+      if (!session) return;
+      json(response, 200, { request: await disableCustomerAddress(addressDisableMatch[1], enterpriseContext(session)) });
       return;
     }
 
