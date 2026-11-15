@@ -1,0 +1,39 @@
+name: Apple HIG Motion web contract
+on:
+  pull_request:
+    paths:
+      - "assets/css/motion.css"
+      - "assets/css/novapharm-hig-motion.css"
+      - "assets/css/novapharm.css"
+      - "assets/css/novapharm.bundle.css"
+      - "assets/js/novapharm.js"
+      - "apps/**/app/layout.tsx"
+      - "scripts/build-css-bundle.mjs"
+      - "scripts/test-apple-hig-motion.mjs"
+      - ".github/workflows/apple-hig-motion.yml"
+  push:
+    branches: [main]
+    paths:
+      - "assets/css/motion.css"
+      - "assets/css/novapharm-hig-motion.css"
+      - "assets/css/novapharm.bundle.css"
+      - "assets/js/novapharm.js"
+      - "scripts/test-apple-hig-motion.mjs"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  motion-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+      - name: Verify motion accessibility and integration
+        run: node scripts/test-apple-hig-motion.mjs
+      - name: Verify canonical Pages CSS is reproducible
+        run: |
+          node scripts/build-css-bundle.mjs
+          git diff --exit-code -- assets/css/novapharm.bundle.css
