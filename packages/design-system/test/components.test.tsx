@@ -10,6 +10,7 @@ import {
   FormField,
   Navigation,
   StatePanel,
+  SearchField,
   Tabs,
   Timeline,
 } from "../src/index.ts";
@@ -48,4 +49,19 @@ test("timeline and dialog keep visible content and explicit relationships", () =
   assert.match(html, /aria-label="Approval pathway"/);
   assert.match(html, /aria-labelledby="evidence-dialog-title"/);
   assert.match(html, /aria-describedby="evidence-dialog-description"/);
+});
+
+test("search field exposes scope, assistive result status and a non-submitting clear action", () => {
+  const html = renderToStaticMarkup(<SearchField label="Products" value="insulin"
+    onChange={() => {}} onClear={() => {}} scope="Authorised product catalogue"
+    resultsId="products-list" resultCount={1} placeholder="Search name or code" />);
+  assert.match(html, /type="search"/);
+  assert.match(html, /aria-describedby="[^"]+-scope"/);
+  assert.match(html, /aria-controls="products-list"/);
+  assert.match(html, /Search scope: Authorised product catalogue/);
+  assert.match(html, /role="status" aria-live="polite">1 result/);
+  assert.match(html, /type="button"[^>]*aria-label="Clear products"/);
+  assert.match(html, /aria-hidden="true"/);
+  const empty = renderToStaticMarkup(<SearchField label="Products" value="" onChange={() => {}} />);
+  assert.doesNotMatch(empty, /Clear products/);
 });
