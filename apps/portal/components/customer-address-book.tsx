@@ -110,8 +110,8 @@ export function CustomerAddressBook() {
         <div><span>Business account</span><strong>{book.account.lifecycleStatus === "active" ? "Account record active" : "Under review"}</strong><small>Trading and product permissions are checked separately.</small></div>
         <div><span>Address verification</span><strong>Review required</strong><small>A delivery address does not verify company identity or authorise a sale.</small></div>
       </div>
-      <div className="customer-address-business" role="group" aria-label="Company account and verification details">
-        <h3>Business information</h3>
+      <section className="customer-address-business" aria-labelledby="customer-business-heading">
+        <h3 id="customer-business-heading">Business information</h3>
         <p>These details come from NovaPharm's account records. Address changes do not independently verify a company.</p>
         <dl className="customer-address-business-grid">
           <div><dt>Legal name</dt><dd>{book.account.legalName}</dd></div>
@@ -124,7 +124,7 @@ export function CustomerAddressBook() {
           <div><dt>Payment terms</dt><dd>{book.account.paymentTermsDays} days · {book.account.currency}</dd></div>
         </dl>
         <p className="customer-address-privacy">Account activation, email ownership and product-specific trading permissions are distinct verification steps.</p>
-      </div>
+      </section>
       <div className="customer-address-columns">
         <div className="customer-address-panel">
           <h3>Saved addresses</h3>
