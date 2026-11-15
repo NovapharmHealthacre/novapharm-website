@@ -8,6 +8,7 @@ import {
   completeCognitoCardSignIn,
   type TotpChallenge,
 } from "../lib/cognito-card-auth";
+import { AccountAccessHelp } from "./account-access-help";
 import styles from "./intelligence-sign-in.module.css";
 
 /**
@@ -257,6 +258,7 @@ export function IntelligenceSignIn() {
           <section className={styles["signInCard"]} aria-labelledby="intelligence-signin-card-title">
             <IntelligenceLogo small />
             <h2 id="intelligence-signin-card-title">{customer ? "Your secure workspace." : "Sign in to your secure workspace."}</h2>
+            {!customer && phase === "password" ? <p className={styles["providerNote"]}>A verified business identity is required for private workspaces. You can explore the public platform before creating an account.</p> : null}
             {customer ? (
               <>
                 <p className={styles["sessionMessage"]}>Verified {customer.plan} subscription · {customer.role} seat.</p>
@@ -359,6 +361,7 @@ export function IntelligenceSignIn() {
                 )}
               </>
             )}
+            {customer || phase === "password" ? <AccountAccessHelp audience="intelligence" authenticated={Boolean(customer)} /> : null}
           </section>
         </div>
 

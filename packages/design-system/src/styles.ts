@@ -57,6 +57,20 @@ export const designSystemCss = String.raw`
 .np-tabs [role=tab][aria-selected=true]{border-color:#E3120B}
 .np-tabs [role=tabpanel]{padding-block:1.5rem}
 .np-search input,.np-field input,.np-field select,.np-field textarea,.np-file-upload input{width:100%;max-width:100%;min-height:44px;border:1px solid #98a2b3;border-radius:4px;padding:.7rem .8rem;font:inherit}
+/* Search fields: contextual scope, visible clear action, touch targets and resilient focus. */
+.np-search__control{display:flex;align-items:center;min-width:0;border:1px solid #98a2b3;border-radius:12px;background:#fff;transition:border-color 160ms ease,box-shadow 160ms ease}
+.np-search__control:focus-within{border-color:#0b69ff;box-shadow:0 0 0 3px rgba(11,105,255,.16)}
+.np-search__icon{flex:none;margin-inline-start:13px;color:#667085}
+.np-search .np-search__control input{min-width:0;min-height:44px;flex:1;width:100%;border:0;border-radius:12px;padding:.65rem .75rem;background:transparent;font:inherit;color:#1d1d1f}
+.np-search .np-search__control input:focus{outline:none}
+.np-search__control--clear input::-webkit-search-cancel-button{display:none}
+.np-search__clear{min-height:44px;flex:none;padding:0 .85rem;border:0;border-radius:10px;background:transparent;color:#0059b8;font:inherit;font-size:.875rem;cursor:pointer}
+.np-search__clear:hover{background:#f5f5f7}
+.np-search__clear:focus-visible{outline:3px solid #0b69ff;outline-offset:-3px}
+.np-search__scope,.np-search__count{margin:0;font-size:.875rem;line-height:1.45;color:#515861}
+@media(prefers-reduced-motion:reduce){.np-search__control{transition:none}}
+@media(forced-colors:active){.np-search__control{border-color:CanvasText}.np-search__control:focus-within{outline:2px solid Highlight}.np-search__icon,.np-search__clear{color:CanvasText}}
+
 .np-filters{border:0;padding:0}
 .np-state{border-inline-start:4px solid #667085;padding:1rem 1.25rem;background:#f8fafc}
 .np-state--error{border-color:#9e1b47}

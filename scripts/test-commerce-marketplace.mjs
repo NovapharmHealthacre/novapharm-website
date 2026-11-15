@@ -105,3 +105,20 @@ test('search engines can discover every product reference without executing Java
  assert(sitemap.includes('<loc>https://novapharmhealthcare.com/products/marketplace/</loc>'));
  assert(!sitemap.includes('products/esco/?product='),'Per-record ESCO query links are not sitemap canonicals');
 });
+
+test('public marketplace search is scoped, progressively filtered and ranked without history persistence',()=>{
+ const generator=read('scripts/generate-commerce-marketplace.mjs');
+ const script=read('assets/js/commerce-marketplace.js');
+ const stylesheet=read('assets/css/commerce-marketplace.css');
+ assert.match(generator,/aria-describedby="mp-search-scope"/);
+ assert.match(generator,/aria-controls="mp-grid"/);
+ assert.match(generator,/id="mp-clear"/);
+ assert.match(generator,/value="relevance"/);
+ assert.match(script,/search\.addEventListener\('input'/);
+ assert.match(script,/sort\.value==='relevance'/);
+ assert.match(script,/clearSearch\.addEventListener\('click'/);
+ assert.match(script,/searchScope\.textContent=/);
+ assert.doesNotMatch(script,/localStorage|sessionStorage|indexedDB|caches\.open/);
+ assert.match(stylesheet,/\.mp-search-clear\[hidden\]/);
+ assert.match(stylesheet,/forced-colors:active/);
+});

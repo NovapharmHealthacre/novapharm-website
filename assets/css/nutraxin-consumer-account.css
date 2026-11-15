@@ -27,3 +27,15 @@
 .nx-account-footer{text-align:center;padding:28px;color:#6e6e72;font-size:12px}
 @media(max-width:560px){.nx-account-nav-inner{padding:17px 18px}.nx-account-nav-links{gap:14px}.nx-account-main{padding:63px 18px 75px}.nx-account-panel{padding:28px 22px;border-radius:20px}.nx-account-actions{flex-direction:column}.nx-account-button{width:100%}.nx-account-intro{font-size:17px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+/* Optional, contextual account help; accessible without authentication. */
+.nx-skip-link{position:absolute;inset-inline-start:18px;top:-100px;padding:12px 18px;z-index:99;background:#fff;color:#1d1d1f}
+.nx-skip-link:focus{top:12px;outline:3px solid #1655a4}
+.nx-account-help{border:1px solid #e3e3e8;border-radius:14px;margin:22px 0 16px;text-align:start;background:#fff}
+.nx-account-help summary{cursor:pointer;min-height:48px;padding:15px 17px;font-weight:600;color:#282830}
+.nx-account-help summary:focus-visible,.nx-account-help a:focus-visible{outline:3px solid #1655a4;outline-offset:3px}
+.nx-account-help-body{padding:0 18px 18px;color:#55565e;font-size:14px;line-height:1.65}
+.nx-account-help-body p{font-size:14px;line-height:1.65;margin:10px 0}
+.nx-account-help-body ol{padding-inline-start:20px;margin:10px 0}
+.nx-account-help-body li+li{margin-top:7px}
+.nx-account-help-body a{color:#1655a4;text-underline-offset:3px}
