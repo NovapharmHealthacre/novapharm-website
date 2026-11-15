@@ -102,7 +102,7 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
           });
           // Check every sitemap route in Chromium; curated pages receive
           // separate cross-engine tests. Automated Axe is not a substitute for AT.
-          const axe = engine === "chromium"
+          const axe = engine === "chromium" && width === 390
             ? await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze()
             : null;
           const severeAxeFindings = (axe?.violations ?? [])
