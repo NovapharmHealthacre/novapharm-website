@@ -19,7 +19,7 @@ const exactKeys = (actual, required) =>
 const correctIndex = (index, required) =>
   index?.name === INDEX &&
   index.unique === true && index.sparse !== true &&
-  index.partialFilterExpression == null &&
+  index.partialFilterExpression == null && index.expireAfterSeconds == null &&
   (index.collation == null || index.collation.locale === "simple") &&
   exactKeys(index.key, required);
 
@@ -125,7 +125,8 @@ export async function applyAtlasG2UniqueIndexes({
     if (typeof collection.createIndex !== "function") throw deny("unique_index_driver_unavailable");
     // `unique: true` is mandatory; no non-unique fallback.
     const created = await collection.createIndex(current.required, {
-      name: INDEX, unique: true,
+      name: INDEX, unique: true, sparse: false,
+      collation: { locale: "simple" }, writeConcern: { w: "majority" },
     });
     if (created !== INDEX) throw deny("index_creation_unverified");
     const verified = await inspectCollection(database, spec.collection);
