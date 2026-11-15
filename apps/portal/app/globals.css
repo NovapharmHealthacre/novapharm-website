@@ -594,7 +594,7 @@ td[data-state="blocked"], td[data-state="failed"], td[data-state="suspended"] { 
 /* Customer order detail and controlled amendment workspace */
 .customer-order-workspace,.customer-order-review{margin:28px 0}
 .customer-order-intro{padding:8px 0 24px}
-.customer-order-intro p{font-size:11px;letter-spacing:.13em;color:#86868b;font-weight:600}
+.customer-order-intro p{font-size:11px;letter-spacing:.13em;color:#57575c;font-weight:600}
 .customer-order-intro h2{margin:10px 0;font-size:clamp(27px,3vw,42px);font-weight:650;letter-spacing:-.045em}
 .customer-order-intro span{font-size:14px;color:#6e6e73}
 .customer-order-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,410px),1fr));gap:17px}
