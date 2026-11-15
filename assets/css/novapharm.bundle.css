@@ -10922,6 +10922,49 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
     border: 1px solid ButtonText;
   }
 }
+/* Apple HIG Images + Layout: responsive editorial imagery contract (2026-11-15).
+   Source: https://developer.apple.com/design/human-interface-guidelines/images
+   Preserve native proportions, approved creative crops, and the separate
+   product/editorial image treatments; do not force a universal 1:1 crop. */
+:where(.npd-main, .np-intelligence, .nx-collection, .esco-storefront, .mp-main)
+  :is(figure, picture) {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+/* Intrinsic media dimensions reserve layout space. A picture itself is not
+   rendered as a replaced element, so give editorial figures a stable box. */
+.npd-main .npd-media-section figure > picture {
+  display: block;
+  inline-size: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+.npd-main .npd-media-section figure > picture > img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+/* Products must show the entire labelled pack/equipment, not editorial crops. */
+.nx-collection :is(.nx-product-visual, .nx-featured-image) .nx-picture,
+.esco-storefront .esco-product-visual {
+  min-inline-size: 0;
+}
+.nx-collection :is(.nx-product-visual, .nx-featured-image) .nx-picture img,
+.esco-storefront .esco-product-visual .esco-product-image {
+  object-fit: contain;
+  object-position: 50% 50%;
+}
+
+/* Long captions and media boxes must never widen the mobile viewport. */
+.npd-main figure > figcaption,
+.nx-collection .nx-product-copy,
+.esco-storefront .esco-product-visual {
+  max-inline-size: 100%;
+  overflow-wrap: break-word;
+}
 
 /* Source: symbol-system.css */
 /*
