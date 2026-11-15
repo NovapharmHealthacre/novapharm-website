@@ -37,9 +37,7 @@ const resultLabels: Record<FeedbackResult, string> = {
 };
 const initialWorkspace = workspaces[0]?.code ?? "control-tower";
 // UI visibility is a build-time hint only; verified backend sessions and staging allowlists remain authoritative.
-const pilotUiEnabled = (process.env as NodeJS.ProcessEnv & {
-  NEXT_PUBLIC_WMS_PILOT_UI_ENABLED?: string;
-}).NEXT_PUBLIC_WMS_PILOT_UI_ENABLED === "true";
+const pilotUiEnabled = process.env.NEXT_PUBLIC_WMS_PILOT_UI_ENABLED === "true";
 
 export function WmsPilotFeedbackPanel() {
   const [readState, setReadState] = useState<"loading" | "available" | "unavailable">(pilotUiEnabled ? "loading" : "unavailable");
