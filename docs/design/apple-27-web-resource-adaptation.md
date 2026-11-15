@@ -19,11 +19,11 @@ This is a web-specific adaptation of the user-supplied Apple developer design re
 
 ## Changes in this branch
 
-1. `assets/css/novapharm-apple-27-web-adaptation.css`: original reusable web styles for touch targets, keyboard focus, browser zoom preservation, safe areas, number alignment, language-aware fallbacks, RTL, contrast, reduced transparency and reduced motion.
+1. `assets/css/novapharm-apple-27-web-adaptation.css`: original reusable web styles for touch targets, keyboard focus, browser zoom preservation, safe areas, number alignment, language-aware fallbacks, RTL, contrast, reduced transparency and reduced motion, for both static Pages and managed Next.js apps.
 2. Both `apps/corporate/app/layout.tsx` and `apps/portal/app/layout.tsx` import the stylesheet last, so those behaviours reach the two actively maintained Next.js estates.
 3. `packages/design-system/src/components.tsx`: a read-only `PaymentRequestSummary` component with merchant, ISO-4217 currency, integer minor units, optional invoice reference, server-supplied payment status and optional authorised-provider action.
 4. `packages/design-system/src/styles.ts`: corresponding NovaPharm card style with scalable typography and accessible contrast.
-5. `packages/design-system/test/payment-request.test.tsx`: HTML semantics, currency formatting, unavailable-value handling and both-root inclusion checks.
+5. `scripts/build-css-bundle.mjs`: includes the new stylesheet in the public GitHub Pages CSS artifact.\n6. `.github/workflows/publish-aws-contact-production.yml`: includes both stylesheet and bundler changes in the exact-SHA verified public deployment trigger without weakening existing AWS contact gates.\n7. `.github/workflows/dispatch-approved-aws-contact-release.yml`: recognizes the same paths to avoid an accidental duplicate deployment.\n8. `packages/design-system/test/payment-request.test.tsx`: HTML semantics, currency formatting, unavailable-value handling and corporate, portal and public Pages inclusion checks.
 
 Example of using the presentational component **after** a trusted backend supplies payment state:
 
@@ -69,7 +69,7 @@ References:
 
 ## Outstanding for production readiness
 
-- Run the shared design-system tests and the corporate/portal typecheck, build and browser acceptance suites in CI.
+- Run the shared design-system tests, public Pages candidate build, corporate/portal typecheck and Chromium/WebKit browser acceptance suites in CI.
 - Review mobile layouts at 320px, 375px, 768px and desktop, keyboard-only navigation, 200% text zoom, screen readers, light/contrast modes, Arabic/Hebrew `lang` + `dir` content, and Safari's reduced-transparency preference.
 - Integrate payment-request components into actual order/invoice routes only after payment provider onboarding and server-authorised transaction status are established.
 - Verify the deployed corporate and portal environments after merge; the branch alone is **not** a live deployment.
