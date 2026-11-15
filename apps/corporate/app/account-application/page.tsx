@@ -49,6 +49,14 @@ export default function AccountApplicationPage() {
               <li key={step} style={{ border: "1px solid var(--line)" }}><span>{String(index + 1).padStart(2, "0")}</span><strong>{step}</strong></li>
             ))}
           </ol>
+          <details className="account-path-help">
+            <summary>What happens after I register interest?</summary>
+            <div>
+              <p>There is no password or portal account at this stage. NovaPharm reviews non-confidential business interest first. If eligible, your organisation may receive an invitation to complete the necessary private and regulatory checks.</p>
+              <p>Browsing the public catalogue never requires account registration. Only approved commercial and regulated services require verified access.</p>
+              <p><a href="/trust-centre/">Security and trust</a> · <a href="/legal/privacy/#business-enquiries">How business enquiry data is used</a></p>
+            </div>
+          </details>
           <aside className="status-notice">
             <strong>Private documents</strong>
             <p>Licences, insurance, bank evidence, contracts and quality records must be uploaded only through a separately controlled private workflow. They are never accepted by email or through this public interest form.</p>
