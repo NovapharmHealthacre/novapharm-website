@@ -1,0 +1,29 @@
+name: Apple HIG Layout Contract
+on:
+  pull_request:
+    paths:
+      - "assets/css/apple-hig-layout.css"
+      - "assets/css/novapharm.css"
+      - "assets/css/novapharm.bundle.css"
+      - "scripts/build-css-bundle.mjs"
+      - "scripts/test-apple-layout-contract.mjs"
+      - "apps/**/app/layout.tsx"
+      - "packages/portal-contracts/src/module-catalog.json"
+      - ".github/workflows/apple-hig-layout.yml"
+  workflow_dispatch:
+jobs:
+  layout-contract:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify shared layout contract and 54-module shell coverage
+        run: node --test scripts/test-apple-layout-contract.mjs
+      - name: Rebuild canonical public stylesheet
+        run: node scripts/build-css-bundle.mjs
+      - name: Verify published CSS is reproducible
+        run: git diff --exit-code -- assets/css/novapharm.bundle.css
