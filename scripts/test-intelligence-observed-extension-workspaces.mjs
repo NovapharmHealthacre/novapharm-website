@@ -42,6 +42,8 @@ test("medicine tape only displays unique valid monthly values with bounded histo
 test("presentation mix and cost numbers never impersonate market shares or commercial prices", () => {
   assert.match(ui, /finite\(row\["items"\]\) && finite\(row\["selected_metric"\]\)/u);
   assert.match(ui, /presentations.slice\(0, 20\)/u);
+  assert.match(ui, /new Set\(presentations.map\(presentationKey\)\).size === presentations.length/u);
+  assert.match(ui, /marketRows.map\(\(row\) => <tr key=\{presentationKey\(row\)\}>/u);
   assert.match(ui, /not national product market shares/u);
   assert.match(ui, /finite\(analytics.summary.totalNic\) && finite\(analytics.summary.totalActualCost\)/u);
   assert.match(ui, /not NHS reimbursement tariffs/u);
