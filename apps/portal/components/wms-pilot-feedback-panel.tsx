@@ -86,6 +86,14 @@ export function WmsPilotFeedbackPanel() {
       ]);
       setNote("");
       setMessage("Pilot observation saved for review.");
+      // Refresh the administrator's bounded multi-tester summary after a save.
+      // The same endpoint remains inaccessible to ordinary employees.
+      gatewayJson<PilotAdminSummary>("enterprise/wms/pilot-feedback-summary")
+        .then((response) => {
+          if (response.dataMode === "synthetic_only" &&
+              response.warehouseExecutionEnabled === false) setAdminSummary(response);
+        })
+        .catch(() => { /* Server authorisation remains the only source of admin access. */ });
     } catch (error) {
       setMessage(professionalError(error));
     } finally {
