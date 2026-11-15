@@ -38,8 +38,8 @@
     "design:audits:generate": "node scripts/programme/generate-apple-grade-audits.mjs",
     "design:audits:validate": "node scripts/programme/validate-apple-grade-audits.mjs",
     "design:typography:validate": "node scripts/test-official-typography-contract.mjs",
-    "design:colours:validate": "node scripts/test-apple-hig-colours.mjs",,
-    "design:accessibility:validate": "node scripts/test-apple-hig-accessibility.mjs"
+    "design:colours:validate": "node scripts/test-apple-hig-colours.mjs",
+    "design:accessibility:validate": "node scripts/test-apple-hig-accessibility.mjs",
     "intelligence:pharmacies:import": "tsx scripts/data/import-pharmacy-workbook.ts",
     "intelligence:pharmacies:geocode": "tsx scripts/data/geocode-pharmacies.ts",
     "intelligence:pharmacies:email-enrich": "tsx scripts/data/enrich-pharmacy-emails-dohs.ts",
