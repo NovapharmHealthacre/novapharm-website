@@ -11155,6 +11155,37 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
   }
 }
 
+/*
+ * NOVAPHARM / BRAND PRESENTATION
+ * Content-first identity consistent with Apple HIG Branding, without copying
+ * Apple trademarks or interfering with portal authentication or product UI.
+ * The official owner-supplied logo files are never recoloured or redrawn.
+ */
+:where(a.brand, a.portal-brand, a.distribution-brand, a.pharmascope-brand) {
+  max-width: 100%;
+  min-width: 0;
+}
+:where(a.brand, a.portal-brand, a.distribution-brand, a.pharmascope-brand) :where(img, svg) {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+:where(a.brand, a.portal-brand, a.distribution-brand, a.pharmascope-brand):focus-visible {
+  outline: 3px solid var(--np-color-focus, #0066cc);
+  outline-offset: 4px;
+}
+@media (prefers-contrast: more) {
+  :where(a.brand, a.portal-brand, a.distribution-brand, a.pharmascope-brand):focus-visible {
+    outline-width: 4px;
+  }
+}
+@media (forced-colors: active) {
+  :where(a.brand, a.portal-brand, a.distribution-brand, a.pharmascope-brand):focus-visible {
+    outline: 3px solid Highlight;
+  }
+}
+
 /* Source: symbol-system.css */
 /*
  * NovaPharm web symbol contract, adapted from Apple's HIG principles.
