@@ -28,6 +28,14 @@ for (const app of ["corporate", "portal", "technology", "status", "founder"]) {
   const layout = read(`apps/${app}/app/layout.tsx`);
   assert.ok(layout.includes('assets/css/novapharm-hig-motion.css'), `${app}: missing shared motion import`);
 }
+for (const workflow of [
+  ".github/workflows/pages-live-publish.yml",
+  ".github/workflows/publish-aws-contact-production.yml",
+  ".github/workflows/dispatch-approved-aws-contact-release.yml"
+]) {
+  assert.ok(read(workflow).includes("assets/css/novapharm-hig-motion.css"),
+    `${workflow}: changes to the shared motion DNA must trigger a release or validation`);
+}
 const script = read("assets/js/novapharm.js");
 assert.ok(script.includes('typeof IntersectionObserver !== "undefined"'), "Missing no-IntersectionObserver fallback");
 assert.ok(script.includes('motionPreference.addEventListener?.("change"'), "Motion preference changes must be handled");

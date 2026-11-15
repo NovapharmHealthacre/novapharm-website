@@ -54,3 +54,5 @@ The timing values are NovaPharm design decisions, **not** exact Apple-prescribed
 ### Existing public ambient animations
 
 The shared stylesheet additionally overrides five older, automatically looping visual effects in the public hero: animated grid, orbital circle, signal cards, module photography drift and homepage photography drift. These images remain fully visible as static artwork. Deliberate loading indicators with accompanying text are not disabled for users without reduced-motion preferences.
+
+The Pages pull-request validator, guarded AWS-backed production publisher and approved release-dispatch filter all explicitly track future updates to the shared motion stylesheet. Automatic release remains subject to existing production checks and exact revision verification.
