@@ -46,5 +46,5 @@ assert.match(primitive, /aria-label=\{label\}/);
 assert.match(primitive, /role=\{label \? "img" : undefined\}/);
 assert.match(primitive, /focusable="false"/);
 assert.doesNotMatch(primitive, /from ["\x27]@fortawesome|@font-face|SF-Symbols-27\.dmg/);
-assert.ok(barrel.includes('export * from "./symbols.tsx";'));
+assert.ok(barrel.includes('export * from "./symbols";') || barrel.includes('export * from "./symbols.tsx";'), "NovaSymbol must be exported by the shared design system");
 console.log("NovaPharm web symbol contract passed: semantics, accessibility, licensing, all five apps, generated CSS.");
