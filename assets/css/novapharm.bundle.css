@@ -1290,6 +1290,15 @@ td { color: var(--text); }
   --np-type-compact: -apple-system, BlinkMacSystemFont, "Arial Narrow", "Segoe UI", Arial, sans-serif;
   --np-type-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   --np-type-editorial: "New York", "Iowan Old Style", Charter, Georgia, serif;
+  /* Semantic roles, derived from Apple's HIG principles for web reflow. */
+  --np-type-body-size: 1.0625rem;
+  --np-type-caption-size: 0.875rem;
+  --np-type-lead-size: clamp(1.125rem, 1.6vw, 1.375rem);
+  --np-type-display-size: clamp(2.75rem, 6vw, 5.75rem);
+  --np-type-section-size: clamp(1.875rem, 4vw, 4.25rem);
+  --np-type-reading-leading: 1.65;
+  --np-type-interface-leading: 1.45;
+  --np-type-measure: 68ch;
   --font: var(--np-type-ui);
   --serif: var(--np-type-editorial);
   --container: 1320px;
@@ -9489,6 +9498,52 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 }
 @media (pointer: coarse) {
   .npd-main :is(button, .btn, [role="button"]) { min-height: 44px; }
+}
+/* HIG typography implementation: natural optical sizing, readable leading and
+   browser-driven text reflow without replacing the approved NovaPharm art direction. */
+.npd-main :where(h1, h2, h3, h4, h5, h6) {
+  font-optical-sizing: auto;
+  overflow-wrap: break-word;
+}
+.npd-main :where(p, li, dd, blockquote) { font-optical-sizing: auto; }
+.npd-main :where(.prose, .article-body, .policy-body, [data-typography="reading"])
+  :where(p, li, dd) {
+  line-height: var(--np-type-reading-leading, 1.65);
+  max-width: var(--np-type-measure, 68ch);
+}
+.npd-main :where(.page-hero-copy > p, .section-heading > p, [data-typography="lead"]) {
+  font-size: var(--np-type-lead-size, clamp(1.125rem, 1.6vw, 1.375rem));
+  line-height: 1.52;
+}
+.npd-main :where(figcaption, .source-note, [data-typography="caption"]) {
+  font-size: var(--np-type-caption-size, 0.875rem);
+  line-height: var(--np-type-interface-leading, 1.45);
+}
+.npd-main :where(.npd-editorial, .prose, .article-body, .policy-body) {
+  min-width: 0;
+}
+.npd-main :where(table) :where(th, td) {
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: break-word;
+}
+.npd-main :where(code, kbd, samp, .sku, .lot-number, .batch-number, [data-typography="mono"]) {
+  font-family: var(--npd-mono);
+  font-variant-ligatures: none;
+}
+@media (max-width: 640px) {
+  .npd-main :where(h1, h2, h3, h4, p, li, dd, .prose, .article-body, .policy-body) {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+  .npd-main :where(.action-row, .npd-action-row, .npd-buttons) {
+    flex-wrap: wrap;
+  }
+}
+@media (prefers-contrast: more) {
+  .npd-main :where(.source-note, figcaption, .article-meta) {
+    color: var(--npd-ink);
+  }
 }
 
 /* Source: contact-premium.css */
