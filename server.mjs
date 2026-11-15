@@ -84,6 +84,7 @@ import { isResolvedSecret, isUnresolvedSecretReference } from "./src/core/secret
 import { hasSharePointCredentials } from "./src/integrations/sharepoint/graph-client.mjs";
 import { executeInternalAiReview, internalAiGatewayStatus } from "./src/core/ai/ai-gateway.mjs";
 import { safeJsonStringify } from "./src/security/safe-json.mjs";
+import { customerAddressBook, submitCustomerAddress, decideCustomerAddress } from "./src/core/customer-address-service.mjs";
 
 const root = resolve(process.cwd());
 const applicationVersion = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version;
@@ -821,6 +822,35 @@ export async function handleRequest(request, response) {
       json(response, 200, { user: { username: session.username, displayName: session.displayName, role: session.role, accessType: session.accessType, accessScopes: session.accessScopes, mustChangePassword: session.mustChangePassword,
         // Server-owned canonical account association; never trust a browser-provided customer id.
         customerAccountLinked: session.accessType === "customer" && Boolean(enterpriseContext(session).customerId) } });
+      return;
+    }
+
+    // The customer id comes exclusively from the verified server session.
+    // Customer submissions are pending changes, not verified shipping locations.
+    if (pathname === "/api/enterprise/customer/addresses" && request.method === "GET") {
+      const session = await scopedAuthentication(request, response, ["customer"]);
+      if (!session) return;
+      json(response, 200, await customerAddressBook(enterpriseContext(session)));
+      return;
+    }
+
+    if (pathname === "/api/enterprise/customer/addresses" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      if (!await rateLimit(request, "customer-address-request", 6, 60 * 60 * 1000))
+        return json(response, 429, { error: "Too many address requests. Try again later." });
+      const session = await scopedAuthentication(request, response, ["customer"]);
+      if (!session) return;
+      json(response, 201, { request: await submitCustomerAddress(await readBody(request), enterpriseContext(session)) });
+      return;
+    }
+
+    const addressDecisionMatch = pathname.match(/^\\/api\\/admin\\/customer-addresses\\/([0-9a-f-]{36})\\/decision$/i);
+    if (addressDecisionMatch && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      const session = await authenticated(request, response, ["admin"]);
+      if (!session) return;
+      const body = await readBody(request);
+      json(response, 200, { request: await decideCustomerAddress(addressDecisionMatch[1], body.decision, session.username) });
       return;
     }
 
