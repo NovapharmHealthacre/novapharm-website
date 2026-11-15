@@ -18,6 +18,7 @@ const migrationFiles = [
   "011_customer_address_requests.sql",
   "012_order_ship_to_snapshot.sql",
   "013_customer_address_replacements.sql",
+  "014_customer_order_amendment_requests.sql",
 ];
 const expectedMigrations = new Map(migrationFiles.map((file) => {
   const source = readFileSync(resolve("database", "sqlite", file), "utf8");
@@ -29,7 +30,7 @@ const requiredTables = [
   "inventory_reservations", "inventory_movements", "shipments", "customer_statements", "goods_receipts",
   "supplier_invoices", "credit_notes", "journal_entries", "journal_lines", "quality_complaints", "quality_deviations", "change_controls", "capa_records",
   "regulatory_cases", "crm_opportunities", "document_versions", "workflow_instances", "domain_events",
-  "outbox_messages", "role_permissions", "security_replay_tokens", "customer_account_addresses",
+  "outbox_messages", "role_permissions", "security_replay_tokens", "customer_account_addresses", "customer_order_amendment_requests",
   "data_source_registry", "source_resources", "source_schema_versions", "ingestion_runs", "ingestion_errors",
   "analytical_dataset_manifests", "dim_time", "dim_medicine", "medicine_aliases", "medicine_code_history",
   "dim_bnf", "bnf_hierarchy_history", "dim_geography", "dim_postcode", "postcode_geography_history",
@@ -69,6 +70,9 @@ async function validate(provider) {
   assert.match(addressSql, /REFERENCES customers\(id\)/i);
   const addressColumns = new Set((await provider.all("PRAGMA table_info(customer_account_addresses)", [])).map(row => row.name));
   assert.ok(addressColumns.has("replaces_address_id"), "Customer addresses must preserve their prior approved version on edits.");
+  const amendmentSchema = (await provider.one("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'customer_order_amendment_requests'", []))?.sql || "";
+  assert.match(amendmentSchema, /accepted_pending_execution/i);
+  assert.match(amendmentSchema, /REFERENCES orders\(id\)/i);
 
   const balanceSql = (await provider.one("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'inventory_balances'", []))?.sql || "";
   assert.match(balanceSql, /reserved_quantity \+ available_quantity \+ quarantine_quantity <= on_hand_quantity/i);
