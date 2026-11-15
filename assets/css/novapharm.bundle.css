@@ -11243,6 +11243,14 @@ body .skip-link:focus-visible {
   scroll-margin-block-start: clamp(80px, 8rem, 140px);
 }
 
+/* Sticky navigation should never entirely hide newly focused controls.
+   WCAG 2.2 2.4.11: focus can move without being covered by a fixed header. */
+html { scroll-padding-block-start: clamp(80px, 8rem, 140px); }
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  scroll-margin-block-start: clamp(80px, 8rem, 140px);
+  scroll-margin-block-end: 16px;
+}
+
 /* Reinforce focus appearance without replacing users' system focus handling. */
 body .npd-header :is(a, button):focus-visible,
 body .npd-mega a:focus-visible {
