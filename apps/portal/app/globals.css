@@ -535,3 +535,37 @@ td[data-state="blocked"], td[data-state="failed"], td[data-state="suspended"] { 
 .unified-customer-hub .unified-customer-release-note{font-size:.83rem;line-height:1.55;margin:20px 0 0;color:#52525b}
 @media (max-width:900px){.unified-customer-groups{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:600px){.unified-customer-groups,.unified-collection-grid{grid-template-columns:1fr}.unified-customer-hub{border-radius:17px;padding:18px}.unified-customer-group{padding:15px}}
+
+/* Customer account delivery address book – deliberately no decorative icons. */
+.customer-address-workspace{margin:0 0 32px;color:#1d1d1f;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,sans-serif}
+.customer-address-intro{padding:28px 0 26px;border-bottom:1px solid #e5e5e7}
+.customer-address-eyebrow{font-size:11px;font-weight:650;letter-spacing:.15em;color:#6e6e73;margin-bottom:12px}
+.customer-address-intro h2{font-size:clamp(26px,3vw,38px);font-weight:650;letter-spacing:-.045em;line-height:1.12;margin:0 0 12px}
+.customer-address-intro>p:last-child,.customer-address-panel>p{font-size:15px;color:#6e6e73;line-height:1.5;margin:0}
+.customer-address-identity{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:22px 0}
+.customer-address-identity>div{background:#f5f5f7;border-radius:16px;padding:20px;min-width:0}
+.customer-address-identity span,.customer-address-identity small{display:block;font-size:12px;color:#6e6e73}
+.customer-address-identity strong{display:block;overflow-wrap:anywhere;font-size:17px;line-height:1.35;margin:7px 0;font-weight:600}
+.customer-address-columns{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.customer-address-panel{padding:24px;border:1px solid #e4e4e7;border-radius:18px;min-width:0;background:#fff}
+.customer-address-panel h3{font-size:20px;letter-spacing:-.03em;margin:0 0 7px}
+.customer-address-card{padding:18px 0;border-bottom:1px solid #e5e5e7}
+.customer-address-card-header{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.customer-address-card-header strong{font-size:15px}
+.customer-address-card-header span{font-size:12px;color:#6e6e73;text-transform:capitalize}
+.customer-address-card p{font-size:14px;margin:7px 0;line-height:1.6;color:#424245;overflow-wrap:anywhere}
+.customer-address-card small{font-size:12px;color:#6e6e73}
+.customer-address-empty,.customer-address-gate{color:#6e6e73;font-size:13px}
+.customer-address-form{display:grid;gap:13px;margin-top:18px}
+.customer-address-form label{display:grid;gap:6px;font-size:13px;font-weight:500;color:#3a3a3c}
+.customer-address-form input,.customer-address-form select,.customer-address-form textarea{width:100%;font:inherit;font-size:14px;padding:11px 12px;border:1px solid #d2d2d7;border-radius:10px;background:#fff;color:#1d1d1f;min-width:0}
+.customer-address-form input:focus-visible,.customer-address-form textarea:focus-visible,.customer-address-form select:focus-visible,.customer-address-form button:focus-visible{outline:2px solid #0071e3;outline-offset:2px}
+.customer-address-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.customer-address-form .customer-address-checkbox{display:flex;align-items:center;gap:9px;font-size:13px}
+.customer-address-checkbox input{width:16px;height:16px;flex:none}
+.customer-address-form button{padding:13px 22px;border:0;border-radius:999px;background:#1d1d1f;color:#fff;cursor:pointer;font:inherit;font-size:14px;font-weight:550}
+.customer-address-form button:disabled{background:#d2d2d7;color:#6e6e73;cursor:not-allowed}
+.customer-address-message{font-size:14px;line-height:1.5;min-height:1em;margin:20px 0 10px}
+.customer-address-privacy{font-size:12px;line-height:1.55;color:#6e6e73;margin:12px 0}
+@media(max-width:850px){.customer-address-columns{grid-template-columns:1fr}.customer-address-identity{grid-template-columns:1fr}}
+@media(max-width:480px){.customer-address-two{grid-template-columns:1fr}.customer-address-panel{padding:18px}}
