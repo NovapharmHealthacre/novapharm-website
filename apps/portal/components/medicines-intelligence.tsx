@@ -8,6 +8,7 @@ import { ClinicalTrialsDiscovery } from "./clinical-trials-discovery";
 import styles from "./medicines-intelligence.module.css";
 import { PharmaScopeBrand } from "./pharmascope-brand";
 import { ProfessionalWorkspace } from "./professional-workspaces";
+import { ObservedMedicineWorkspace } from "./observed-medicine-workspaces";
 import { UsFdaLabelDiscovery } from "./us-fda-label-discovery";
 
 type Metric = Readonly<{ key: string; label: string; value: number; format?: string }>;
@@ -905,6 +906,9 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   else if (current === "evidence") central = <ClinicalTrialsDiscovery />;
   else if (current === "biotech-intelligence") central = <ClinicalTrialsDiscovery context="biotech" />;
   else if (current === "signals") central = <ProfessionalWorkspace kind="signals" detail={detail} analytics={analytics} />;
+  else if (current === "medicine-tape" || current === "market-structure" || current === "pricing-reimbursement") {
+    central = <ObservedMedicineWorkspace kind={current} detail={detail} analytics={analytics} />;
+  }
   else if (current === "regulatory-intelligence") central = <><ProfessionalWorkspace kind="regulatory-intelligence" detail={detail} analytics={analytics} /><UsFdaLabelDiscovery /></>;
   else if (current === "tender-intelligence" || current === "portfolio" || current === "alerts" || current === "reports" || current === "decision-workspace") {
     central = <ProfessionalWorkspace kind={current} detail={detail} analytics={analytics} />;
