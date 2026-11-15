@@ -66,6 +66,20 @@ export async function submitCustomerAddress(input, context) {
     return { id, status: "pending_review", createdAt: now };
   });
 }
+/** Administrator-only review queue. Route authorization is enforced by the API. */
+export async function pendingCustomerAddressReviews() {
+  assertRequestsEnabled();
+  const rows = await all(`SELECT ca.id, ca.customer_id, c.customer_number, o.legal_name,
+      ca.address_kind, ca.label, ca.recipient_name, ca.contact_phone, ca.line_1,
+      ca.line_2, ca.city, ca.region, ca.postcode, ca.country_code,
+      ca.delivery_instructions, ca.is_default, ca.status, ca.created_at
+    FROM customer_account_addresses ca
+      JOIN customers c ON c.id = ca.customer_id
+      JOIN organizations o ON o.id = c.organization_id
+    WHERE ca.status = 'pending_review'
+    ORDER BY ca.created_at LIMIT 100`);
+  return { requests: rows, approvalScope: "address_only", customerQualificationUnchanged: true };
+}
 export async function decideCustomerAddress(id, decision, actor) {
   assertRequestsEnabled();
   if (!/^[0-9a-f-]{36}$/i.test(String(id || ""))) throw blocked("Address request not found.", 404);
