@@ -85,6 +85,8 @@ import { hasSharePointCredentials } from "./src/integrations/sharepoint/graph-cl
 import { executeInternalAiReview, internalAiGatewayStatus } from "./src/core/ai/ai-gateway.mjs";
 import { safeJsonStringify } from "./src/security/safe-json.mjs";
 import { customerAddressBook, submitCustomerAddress, decideCustomerAddress, pendingCustomerAddressReviews, disableCustomerAddress } from "./src/core/customer-address-service.mjs";
+import { customerOrderOverview, submitCustomerOrderAmendment,
+  pendingCustomerOrderAmendments, decideCustomerOrderAmendment } from "./src/core/customer-order-amendments.mjs";
 
 const root = resolve(process.cwd());
 const applicationVersion = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version;
@@ -868,6 +870,40 @@ export async function handleRequest(request, response) {
       if (!session) return;
       const body = await readBody(request);
       json(response, 200, { request: await decideCustomerAddress(addressDecisionMatch[1], body.decision, session.username) });
+      return;
+    }
+
+    // Customer-owned order history and governed change requests. No direct payment, ledger or 3PL mutation.
+    if (pathname === "/api/enterprise/customer/order-overview" && request.method === "GET") {
+      const session = await scopedAuthentication(request, response, ["customer"]);
+      if (!session) return;
+      json(response, 200, await customerOrderOverview(enterpriseContext(session)));
+      return;
+    }
+
+    if (pathname === "/api/enterprise/customer/order-amendments" && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      if (!await rateLimit(request, "customer-order-amendment", 8, 60 * 60 * 1000))
+        return json(response, 429, { error: "Too many order change requests. Try again later." });
+      const session = await scopedAuthentication(request, response, ["customer"]);
+      if (!session) return;
+      json(response, 201, { request: await submitCustomerOrderAmendment(await readBody(request), enterpriseContext(session)) });
+      return;
+    }
+
+    if (pathname === "/api/admin/customer-order-amendments" && request.method === "GET") {
+      if (!await authenticated(request, response, ["admin"])) return;
+      json(response, 200, await pendingCustomerOrderAmendments());
+      return;
+    }
+
+    const orderAmendmentDecision = pathname.match(/^\\/api\\/admin\\/customer-order-amendments\\/([0-9a-f-]{36})\\/decision$/i);
+    if (orderAmendmentDecision && request.method === "POST") {
+      if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
+      const session = await authenticated(request, response, ["admin"]);
+      if (!session) return;
+      const body = await readBody(request);
+      json(response, 200, { request: await decideCustomerOrderAmendment(orderAmendmentDecision[1], body.decision, session.username) });
       return;
     }
 
