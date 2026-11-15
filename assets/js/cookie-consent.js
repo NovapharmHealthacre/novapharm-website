@@ -18,7 +18,7 @@ export function parseConsent(raw, now = Date.now()) {
   try {
     const parsed = JSON.parse(raw);
     const timestamp = Date.parse(parsed.timestamp);
-    if (parsed.version !== CONSENT_VERSION || !Number.isFinite(timestamp) || timestamp > now || now - timestamp > CONSENT_MAX_AGE_MS) return null;
+    if (parsed.version !== CONSENT_VERSION || parsed.categories?.necessary !== true || !Number.isFinite(timestamp) || timestamp > now || now - timestamp > CONSENT_MAX_AGE_MS) return null;
     if (!/^[a-f0-9-]{16,64}$/i.test(String(parsed.id || ""))) return null;
     return { version: CONSENT_VERSION, id: parsed.id, timestamp: new Date(timestamp).toISOString(), categories: categoriesFrom(parsed.categories) };
   } catch {
