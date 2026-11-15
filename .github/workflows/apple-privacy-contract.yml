@@ -22,6 +22,7 @@ on:
       - 'docs/design/apple-privacy-web-adaptation.md'
       - 'scripts/test-apple-privacy-contract.mjs'
       - '.github/workflows/apple-privacy-contract.yml'
+      - '.github/workflows/publish-aws-contact-production.yml'
   workflow_dispatch:
 permissions:
   contents: read
