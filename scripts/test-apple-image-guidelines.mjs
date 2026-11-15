@@ -38,8 +38,8 @@ test("image styling separates storytelling crops from uncut product packs", () =
   const bundle = read("assets/css/novapharm.bundle.css");
   const products = read("assets/css/products-editorial.css");
   const marker = "/* Source: sitewide-layout-integrity.css */\n";
-  assert.ok(bundle.includes(marker) && bundle.endsWith(source.trimEnd() + "\n"),
-    "Shipped public CSS bundle must contain the current image layout source");
+  assert.ok(bundle.includes(marker + source.trimEnd() + "\n"),
+    "Shipped public CSS bundle must contain the exact current image layout source");
   assert.match(source, /npd-media-section figure > picture[\s\S]*?aspect-ratio: 16 \/ 9/);
   assert.match(source, /npd-media-section figure > picture > img[\s\S]*?object-fit: cover/);
   assert.match(source, /nx-collection[\s\S]*?\.nx-picture img,[\s\S]*?object-fit: contain/);
