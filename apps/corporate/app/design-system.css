@@ -17,7 +17,12 @@
   --nph-deep: #0a101a;
   --nph-radius: 22px;
   --nph-max: 1200px;
-  --nph-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  /* SF Pro-like native typography, with purposeful roles for compact and editorial text. */
+  --np-type-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --np-type-compact: -apple-system, BlinkMacSystemFont, "Arial Narrow", "Segoe UI", Arial, sans-serif;
+  --np-type-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --np-type-editorial: "New York", "Iowan Old Style", Charter, Georgia, serif;
+  --nph-system: var(--np-type-ui);
   --ink: var(--nph-ink);
   --text: var(--nph-body);
   --muted: var(--nph-muted);
@@ -581,4 +586,29 @@ main [id] { scroll-margin-top: calc(var(--header) + 24px); }
   border: 0;
   outline: none;
   box-shadow: none;
+}
+
+/* Shared NovaPharm typography contract. No downloaded Apple font files are embedded. */
+:where(code, kbd, samp, pre, .np-code, [data-typography="mono"]) {
+  font-family: var(--np-type-mono);
+  font-variant-ligatures: none;
+}
+:where(.dense-table, .operational-table, [data-typography="compact"]) {
+  font-family: var(--np-type-compact);
+  font-variant-numeric: tabular-nums;
+}
+:where(table, .metric-value, .data-value, [data-numeric]) {
+  font-variant-numeric: tabular-nums;
+}
+:where(blockquote, .editorial-pullquote, [data-typography="editorial"]) {
+  font-family: var(--np-type-editorial);
+  font-optical-sizing: auto;
+  font-weight: 400;
+}
+:where(button, input, select, textarea) {
+  font-family: var(--nph-system);
+  font-synthesis: none;
+}
+@media (pointer: coarse) {
+  :where(.button, .btn, [role="button"]) { min-height: 44px; }
 }
