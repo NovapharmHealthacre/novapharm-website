@@ -153,8 +153,8 @@ export function CookieControls() {
             <p>Necessary storage supports requested services. Optional analytics is off until you choose it. Marketing tracking is not active. <Link href="/legal/cookies/">How this works</Link>.</p>
           </div>
           <div className="cookie-actions">
-            <button type="button" className="button button-primary" onClick={() => save({ necessary: true, preferences: true, analytics: true, marketing: false })}>Accept optional analytics</button>
-            <button type="button" className="button button-light" onClick={() => save({ necessary: true, preferences: false, analytics: false, marketing: false })}>Reject non-essential</button>
+            <button type="button" className="button button-primary" onClick={() => save({ necessary: true, preferences: false, analytics: true, marketing: false })}>Accept optional analytics</button>
+            <button type="button" className="button button-primary" onClick={() => save({ necessary: true, preferences: false, analytics: false, marketing: false })}>Reject non-essential</button>
             <button type="button" className="button button-quiet" data-cookie-manage onClick={open}>Manage preferences</button>
           </div>
           {error ? <p role="alert">{error}</p> : null}
