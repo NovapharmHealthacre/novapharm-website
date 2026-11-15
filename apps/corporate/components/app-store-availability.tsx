@@ -1,4 +1,4 @@
-import { AppleAppStoreBadges, isValidAppStoreListing, type AppleStoreListing } from "@novapharm/design-system";
+import { AppleAppStoreBadges, type AppleStoreListing, isValidAppStoreListing } from "@novapharm/design-system";
 
 /**
  * The site never advertises native Apple availability merely because NovaPharm
