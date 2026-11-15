@@ -48,6 +48,40 @@ function positiveNumber(value, max, integer = false) {
   }
   return n;
 }
+// Never buffer an unbounded publisher body before checking its size.
+// Advertised Content-Length is only a hint; the streaming byte count is
+// authoritative even when the upstream uses chunked transfer or lies.
+async function readBoundedPublisherBody(response, byteCap) {
+  const reader = response.body?.getReader?.();
+  if (!reader || typeof reader.read !== "function") {
+    throw denied("publisher_body_unreadable", 502);
+  }
+  const chunks = [];
+  let size = 0;
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      if (!(value instanceof Uint8Array)) {
+        throw denied("publisher_body_unreadable", 502);
+      }
+      size += value.byteLength;
+      if (size > byteCap) {
+        try { await reader.cancel(); } catch { /* already rejected */ }
+        throw denied("publisher_response_too_large", 502);
+      }
+      chunks.push(Buffer.from(value));
+    }
+    if (size === 0) throw denied("publisher_body_unreadable", 502);
+    return new TextDecoder("utf-8", { fatal: true }).decode(Buffer.concat(chunks, size));
+  } catch (error) {
+    if (error?.code === "publisher_response_too_large") throw error;
+    throw denied("publisher_body_unreadable", 502);
+  } finally {
+    try { reader.releaseLock(); } catch { /* stream already closed */ }
+  }
+}
+
 async function officialAction(name, parameters, fetchImpl, byteCap) {
   const url = new URL("/api/3/action/" + name, BASE);
   for (const [key, value] of Object.entries(parameters)) url.searchParams.set(key, value);
@@ -62,12 +96,15 @@ async function officialAction(name, parameters, fetchImpl, byteCap) {
   if (!response || response.ok !== true) throw denied("publisher_http_unavailable", 502);
   const type = String(response.headers?.get?.("content-type") || "").toLowerCase();
   if (!type.includes("json")) throw denied("publisher_content_type_unexpected", 502);
-  const advertised = Number(response.headers?.get?.("content-length") || 0);
-  if (advertised > byteCap) throw denied("publisher_response_too_large", 502);
-  let raw;
-  try { raw = await response.text(); }
-  catch { throw denied("publisher_body_unreadable", 502); }
-  if (!raw || Buffer.byteLength(raw, "utf8") > byteCap) throw denied("publisher_response_too_large", 502);
+  const declaredLength = response.headers?.get?.("content-length");
+  if (declaredLength != null) {
+    const advertised = Number(declaredLength);
+    if (!Number.isSafeInteger(advertised) || advertised < 0) {
+      throw denied("publisher_content_length_invalid", 502);
+    }
+    if (advertised > byteCap) throw denied("publisher_response_too_large", 502);
+  }
+  const raw = await readBoundedPublisherBody(response, byteCap);
   let json;
   try { json = JSON.parse(raw); } catch { throw denied("publisher_json_invalid", 502); }
   if (json?.success !== true || !json.result || typeof json.result !== "object" ||

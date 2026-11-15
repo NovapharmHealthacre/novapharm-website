@@ -174,6 +174,63 @@ test("oversized or failed upstream response does not emit unapproved rows", asyn
   assert.equal(response.sourceRightsVerified, false);
 });
 
+test("a chunked untrusted publisher stream is rejected before buffering full payload", async () => {
+  let chunksRead = 0;
+  let cancelled = false;
+  const streamed = async () => new Response(new ReadableStream({
+    pull(controller) {
+      chunksRead += 1;
+      controller.enqueue(new Uint8Array(64 * 1024));
+    },
+    cancel() { cancelled = true; }
+  }), { status: 200, headers: { "content-type": "application/json" } });
+  await assert.rejects(inspectNhsbsaEpdPrivateApi({
+    ...release, fetchImpl: streamed
+  }), e => e.code === "publisher_response_too_large" && e.statusCode === 502);
+  assert.equal(cancelled, true, "Stop the offending body stream immediately");
+  assert.ok(chunksRead <= 33, "Never read beyond the 2MB metadata cap by more than a chunk");
+});
+
+test("publisher datastore response has its own smaller streaming cap", async () => {
+  let calls = 0;
+  let cancelled = false;
+  const fetchImpl = async () => {
+    calls += 1;
+    if (calls === 1) return respond(packageResult);
+    return new Response(new ReadableStream({
+      pull(controller) { controller.enqueue(new Uint8Array(64 * 1024)); },
+      cancel() { cancelled = true; }
+    }), { status: 200, headers: { "content-type": "application/json" } });
+  };
+  await assert.rejects(inspectNhsbsaEpdPrivateApi({
+    ...release, fetchImpl
+  }), e => e.code === "publisher_response_too_large" && e.statusCode === 502);
+  assert.equal(calls, 2);
+  assert.equal(cancelled, true);
+});
+
+test("malformed content length, malformed UTF-8 and interrupted streams fail closed", async () => {
+  const invalid = [
+    new Response("{}", {
+      status: 200, headers: { "content-type": "application/json", "content-length": "bogus" }
+    }),
+    new Response(new Uint8Array([0xff, 0xfe]), {
+      status: 200, headers: { "content-type": "application/json" }
+    }),
+    new Response(new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode('{"success":true'));
+        controller.error(new Error("upstream terminated"));
+      }
+    }), { status: 200, headers: { "content-type": "application/json" } })
+  ];
+  for (const response of invalid) {
+    await assert.rejects(inspectNhsbsaEpdPrivateApi({
+      ...release, fetchImpl: async () => response
+    }), e => e.statusCode === 502);
+  }
+});
+
 test("the only HTTP entrypoint is private, explicitly feature gated and board authenticated", () => {
   const server = readFileSync(new URL("../server.mjs", import.meta.url), "utf8");
   const start = server.indexOf('if (pathname === "/api/v1/intelligence/sources/nhsbsa/epd/private-probe"');
