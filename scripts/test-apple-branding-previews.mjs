@@ -4,18 +4,14 @@
  * HIG certification or eligibility for Apple trademarks.
  */
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
-import { join, resolve, sep } from "node:path";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { resolvePreviewMedia, sha256OfFile } from "./apple-preview-media-integrity.mjs";
 
 const root = process.cwd();
 const text = (file) => readFileSync(join(root, file), "utf8");
 const manifest = JSON.parse(text("config/apple-marketing-release.json"));
-const assetRoot = resolve(root, "assets");
-const validAsset = (value) => {
-  if (typeof value !== "string" || !value.startsWith("/assets/")) return false;
-  const pathname = resolve(root, value.slice(1));
-  return pathname.startsWith(assetRoot + sep) && existsSync(pathname);
-};
+const assetFile = (value) => resolvePreviewMedia(root, value);
 const names = new Set();
 
 assert.equal(manifest.schemaVersion, 1, "Unsupported Apple marketing release manifest schema");
@@ -45,10 +41,16 @@ function verifyFootage(clip, native) {
   assert.equal(clip.regulatoryCopyReviewed, true, clip.id + ": pharma claims need approval");
   assert.equal(clip.loginDisclosureReviewed, true, clip.id + ": account or subscription gates must be disclosed");
   assert.equal(clip.actualFeaturesOnly, true, clip.id + ": no simulated functionality");
-  assert(validAsset(clip.video), clip.id + ": served video file not found");
-  assert(validAsset(clip.poster), clip.id + ": real poster frame not found");
-  assert(validAsset(clip.captionTrack), clip.id + ": WebVTT captions not found");
+  const videoFile = assetFile(clip.video);
+  assert(videoFile, clip.id + ": served video file not found");
+  assert(assetFile(clip.poster), clip.id + ": real poster frame not found");
+  assert(assetFile(clip.captionTrack), clip.id + ": WebVTT captions not found");
   assert.match(clip.sha256 ?? "", /^[a-f0-9]{64}$/u, clip.id + ": missing video checksum");
+  assert.equal(
+    sha256OfFile(videoFile),
+    clip.sha256,
+    clip.id + ": video bytes do not match the approved source checksum",
+  );
   assert(Number.isFinite(clip.durationSeconds) && clip.durationSeconds > 0, clip.id + ": invalid duration");
   if (native) {
     assert(verifiedApps.has(clip.appId), clip.id + ": native previews require a verified App Store listing");
