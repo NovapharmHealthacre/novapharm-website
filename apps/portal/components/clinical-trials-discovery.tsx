@@ -32,7 +32,7 @@ function reported(value: string | null | undefined): string {
   return value || "Not reported by source";
 }
 
-export function ClinicalTrialsDiscovery() {
+export function ClinicalTrialsDiscovery({ context = "evidence" }: Readonly<{ context?: "evidence" | "biotech" }> = {}) {
   const fieldId = useId();
   const [intervention, setIntervention] = useState("");
   const [result, setResult] = useState<StudyResponse | null>(null);
@@ -67,9 +67,9 @@ export function ClinicalTrialsDiscovery() {
 
   return <section className={styles.discovery} aria-labelledby="trial-discovery-heading">
     <header>
-      <p className={styles.eyebrow}>Evidence / Clinical studies</p>
-      <h1 id="trial-discovery-heading" className={styles.heading}>Clinical study registry.</h1>
-      <p className={styles.intro}>Read-only discovery of publicly registered studies. Registration is not proof of treatment efficacy, trial eligibility or regulatory approval.</p>
+      <p className={styles.eyebrow}>{context === "biotech" ? "Biotech Intelligence / Public trial registry" : "Evidence / Clinical studies"}</p>
+      <h1 id="trial-discovery-heading" className={styles.heading}>{context === "biotech" ? "Biotech clinical pipeline discovery." : "Clinical study registry."}</h1>
+      <p className={styles.intro}>{context === "biotech" ? "Inspect public study registrations, reported phases, sponsors and update dates. This is registry discovery, not a complete biotech asset pipeline, ownership, efficacy or valuation assessment." : "Read-only discovery of publicly registered studies. Registration is not proof of treatment efficacy, trial eligibility or regulatory approval."}</p>
     </header>
     <form className={styles.form} onSubmit={(event) => void search(event)}>
       <label className={styles.label} htmlFor={fieldId}>Medicine or intervention</label>
