@@ -80,10 +80,9 @@ export function evaluateWmsCapacityScenario(input: WmsCapacityScenarioInput): Sc
 
   const requiredMembers = Math.ceil(required / perPerson);
   const load = Math.round((required / capacity) * 100);
-  const weights = [input.zoneAWeight,input.zoneBWeight,input.zoneCWeight];
-  const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
-  const a = Math.floor(input.orderLines * weights[0] / totalWeight);
-  const b = Math.floor(input.orderLines * weights[1] / totalWeight);
+  const totalWeight = input.zoneAWeight + input.zoneBWeight + input.zoneCWeight;
+  const a = Math.floor(input.orderLines * input.zoneAWeight / totalWeight);
+  const b = Math.floor(input.orderLines * input.zoneBWeight / totalWeight);
   const zones = Object.freeze([
     Object.freeze({ zone: "Zone A", hypotheticalLines: a }),
     Object.freeze({ zone: "Zone B", hypotheticalLines: b }),
