@@ -1,10 +1,11 @@
 "use client";
 
-import { Building2, KeyRound, ShieldCheck, Users } from "lucide-react";
+import { Building2, Eye, EyeOff, KeyRound, ShieldCheck, Users } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
 import { destinationAfterPortalLogin, validatedCustomerCommerceIntentQuery } from "../data/nutraxin-order-intent";
 import { isPortalAccessType, landingRouteForAccess } from "../data/routes";
 import { professionalError, protectedMutation } from "../lib/gateway";
+import { AccountAccessHelp } from "./account-access-help";
 import { PortalBrand } from "./portal-brand";
 
 const accessTypes = [
@@ -16,10 +17,18 @@ const accessTypes = [
 
 type AccessType = (typeof accessTypes)[number]["value"];
 
+const accessReason: Readonly<Record<AccessType, string>> = {
+  customer: "A verified business account protects your organisation’s pricing, orders and documents. You can browse our public website before applying.",
+  employee: "Your company-issued account protects operational and customer records. Your role determines which tools you can use.",
+  board: "Board access protects confidential intelligence. Only specifically authorised identities can use these workspaces.",
+  admin: "Administrator access is restricted to approved identities for secure platform operations.",
+};
+
 export function LoginPanel() {
   const [accessType, setAccessType] = useState<AccessType>("customer");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [selectionQuery, setSelectionQuery] = useState("");
   useEffect(() => setSelectionQuery(validatedCustomerCommerceIntentQuery(window.location.search)), []);
 
@@ -61,7 +70,7 @@ export function LoginPanel() {
       <div>
         <p className="eyebrow">NovaPharm identity</p>
         <h2 id="sign-in-title">Sign in to your portal</h2>
-        <p className="muted">Select the workspace you need. Your account must hold the matching scope.</p>
+        <p className="muted" id="portal-account-reason">{accessReason[accessType]}</p>
       </div>
       <fieldset className="access-selector">
         <legend>Portal type</legend>
@@ -73,14 +82,20 @@ export function LoginPanel() {
       {accessType === "customer" && selectionQuery ? <p className="order-intent-login-note">Your product selection will open in My Products after sign-in. Pricing, stock and ordering remain subject to account-specific release checks.</p> : null}
       <form className="login-form" onSubmit={submit} aria-busy={busy}>
         <label htmlFor="username">Username or business email</label>
-        <input id="username" name="username" autoComplete="username" required maxLength={160} />
+        <input id="username" name="username" autoComplete="username" autoCapitalize="none" spellCheck={false} required maxLength={160} aria-describedby="portal-account-reason" />
         <label htmlFor="password">Password</label>
-        <input id="password" name="password" type="password" autoComplete="current-password" required maxLength={256} />
+        <div className="login-password-field">
+          <input id="password" name="password" type={showPassword ? "text" : "password"} autoComplete="current-password" required maxLength={256} />
+          <button type="button" onClick={() => setShowPassword((value) => !value)} aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} disabled={busy}>
+            {showPassword ? <EyeOff aria-hidden="true" className="np-symbol" /> : <Eye aria-hidden="true" className="np-symbol" />}
+          </button>
+        </div>
         <button className="button primary" type="submit" disabled={busy}>{busy ? "Signing in…" : "Sign in securely"}</button>
       </form>
       {entraEnabled ? <a className="button microsoft" href={`/.auth/login/aad?post_login_redirect_uri=${encodeURIComponent(entraReturn)}`}><ShieldCheck aria-hidden="true" className="np-symbol" />Continue with Microsoft</a> : null}
       <p className="form-status" role="status" aria-live="polite" aria-atomic="true">{status}</p>
       <p className="security-note"><ShieldCheck aria-hidden="true" className="np-symbol" /> Credentials are verified by the protected server. Passwords are never stored in this browser.</p>
+      <AccountAccessHelp audience={accessType} />
     </section>
   </main>;
 }
