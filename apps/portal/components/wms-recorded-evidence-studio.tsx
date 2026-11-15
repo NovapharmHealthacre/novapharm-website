@@ -92,7 +92,7 @@ export function WmsRecordedEvidenceStudio({ snapshot }: Readonly<{ snapshot: Wms
       <article><span>Evidence state</span><strong>{synthetic ? "Synthetic" : "Unreconciled"}</strong>
         <small>{synthetic ? "Local validation, not live inventory" : "Independent 3PL authority not established"}</small></article>
     </div>
-    <div className="distribution-wms-evidence-chart" role="group" aria-label="Recorded application source sizes">
+    <section className="distribution-wms-evidence-chart" aria-label="Recorded application source sizes">
       <h3>Source sample coverage</h3>
       <p>Relative number of records visible in the authenticated WMS view. An empty sample
         does not prove that an operation has no outstanding issues.</p>
@@ -109,15 +109,15 @@ export function WmsRecordedEvidenceStudio({ snapshot }: Readonly<{ snapshot: Wms
       </div>)}
       <p className="distribution-wms-evidence-footnote">Source time: {show(snapshot.dataFreshness)}. No
         independently authenticated Polar Speed/UPS warehouse feed is asserted by this view.</p>
-    </div>
+    </section>
     <div className="distribution-wms-evidence-exceptions">
       <div className="distribution-wms-evidence-exceptions-heading">
         <div><h3>Exception review</h3><p>Suggested priorities from existing application evidence, not confirmed 3PL incidents.</p></div>
-        {hasWorklist ? <div className="distribution-wms-evidence-filters" role="group" aria-label="Filter recorded exceptions">
+        {hasWorklist ? <fieldset className="distribution-wms-evidence-filters" aria-label="Filter recorded exceptions">
           {(["all", "high", "standard"] as const).map((choice) =>
             <button type="button" key={choice} aria-pressed={priority === choice}
               onClick={() => setPriority(choice)}>{choice === "all" ? "All" : choice === "high" ? "High" : "Standard"}</button>)}
-        </div> : null}
+        </fieldset> : null}
       </div>
       {hasWorklist ? <>
         <label className="distribution-wms-evidence-search">Search recorded exceptions
@@ -125,18 +125,19 @@ export function WmsRecordedEvidenceStudio({ snapshot }: Readonly<{ snapshot: Wms
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Reference, domain or review team"/>
         </label>
-        <div className="distribution-wms-evidence-table-scroll" role="region" tabIndex={0}
+        {/* biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users need to scroll wide operational tables. */}
+        <section className="distribution-wms-evidence-table-scroll" tabIndex={0}
           aria-label="Scrollable recorded WMS exceptions">
           <table>
             <thead><tr><th scope="col">Priority</th><th scope="col">Area</th><th scope="col">Reference</th><th scope="col">Observed signal</th><th scope="col">Review team</th></tr></thead>
             <tbody>{worklist.length
-              ? worklist.map((row, i) => <tr key={`${show(row.observationKey)}-${i}`}>
+              ? worklist.map((row) => <tr key={show(row.observationKey)}>
                 <td data-priority={show(row.priority)}>{show(row.priority)}</td>
                 <td>{show(row.domain)}</td><td>{show(row.reference)}</td>
                 <td>{show(row.signal)}</td><td>{show(row.reviewOwner)}</td></tr>)
               : <tr><td colSpan={5}>No matching recorded exceptions in this bounded sample. This is not a warehouse clearance.</td></tr>}</tbody>
           </table>
-        </div>
+        </section>
       </> : <p>The authenticated exception worklist is unavailable. Review status cannot be established.</p>}
     </div>
     <p className="distribution-wms-evidence-footnote">This dashboard cannot receive stock,
