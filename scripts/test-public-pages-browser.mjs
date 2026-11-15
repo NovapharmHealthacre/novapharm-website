@@ -344,6 +344,23 @@ for (const [engineName, browserType] of engines) {
             const bodyText = (await page.locator("body").innerText()).replace(/\s+/g, " ");
             assert.ok(bodyText.includes(route.required), `${engineName} ${viewport.name} ${route.path}: required page marker missing`);
 
+            if (route.name === "privacy") {
+              const label = `${engineName} ${viewport.name}: privacy consent`;
+              assert.equal(await page.locator("#privacy-by-design").count(), 1, `${label}: approved privacy-by-design article missing from generated artifact`);
+              assert.equal(await page.locator("#protected-device-resources").count(), 1, `${label}: protected-resource explanation not published`);
+              const settings = page.locator("[data-cookie-settings]").first();
+              await settings.click();
+              const dialog = page.locator("dialog.cookie-dialog");
+              await dialog.waitFor({ state: "visible" });
+              assert.equal(await dialog.locator('input[name="analytics"]').isChecked(), false, `${label}: analytics must be off by default`);
+              assert.equal(await dialog.locator('input[name="marketing"]').isDisabled(), true, `${label}: inactive marketing cannot be authorised`);
+              await dialog.locator('[data-consent-action="reject"]').click();
+              await dialog.waitFor({ state: "hidden" });
+              const consent = await page.evaluate(() => JSON.parse(window.localStorage.getItem("np_cookie_consent") ?? "null"));
+              assert.equal(consent?.version, "2026-11-15-v1.3", `${label}: current preference format not stored`);
+              assert.deepEqual(consent?.categories, { necessary: true, preferences: false, analytics: false, marketing: false }, `${label}: rejection did not persist`);
+            }
+
             if (route.name === "capabilities") {
               const state = await page.evaluate(() => {
                 const hero = document.querySelector(".ncap-hero h1");
