@@ -235,3 +235,16 @@
 @media(max-width:940px){.distribution-wms-capacity-body{grid-template-columns:1fr}}
 @media(max-width:520px){.distribution-wms-capacity-fields{grid-template-columns:1fr 1fr}.distribution-wms-capacity-zones{grid-template-columns:1fr}.distribution-wms-capacity-zones>div{min-height:60px}}
 @media(max-width:360px){.distribution-wms-capacity-fields{grid-template-columns:1fr}}
+
+/* WMS and distribution data typography: dense, aligned, calm and accessible. */
+.employee-distribution-shell :is(table, .distribution-wms-table, .distribution-wms-worklist, .distribution-data-table) {
+  font-family: var(--np-type-compact, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif);
+  font-variant-numeric: tabular-nums;
+}
+.employee-distribution-shell :is(code, kbd, samp, pre, .sku, .batch-id, .lot-id, [data-typography="mono"]) {
+  font-family: var(--np-type-mono, ui-monospace, Menlo, Consolas, monospace);
+  font-variant-ligatures: none;
+}
+.employee-distribution-shell :is(.distribution-employee-step, .wms-kpi-value, .distribution-wms-value, [data-numeric]) {
+  font-variant-numeric: tabular-nums;
+}
