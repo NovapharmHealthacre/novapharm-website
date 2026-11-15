@@ -5,6 +5,7 @@ import "./apple-pharma-portal.css";
 import "./nutraxin-order-journey.css";
 import "./customer-editorial-dashboard.css";
 import "./employee-distribution.css";
+import "../../../assets/css/apple-hig-layout.css";
 
 export const metadata: Metadata = {
   title: "NovaPharm Secure Portal",
