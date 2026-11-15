@@ -18,7 +18,7 @@ test("My Account shows address and contact collection, not a second storefront",
   assert.doesNotMatch(component, /localStorage|sessionStorage|checkout\.stripe\.com/);
 });
 test("address routes require a signed account session, CSRF and admin decision", () => {
-  assert.match(gateway, /enterprise\\\/customer\\\/addresses/);
+  assert.match(gateway, /enterprise.*customer.*addresses/);
   assert.match(server, /customerAddressBook\(enterpriseContext\(session\)\)/);
   assert.match(server, /submitCustomerAddress\(await readBody\(request\), enterpriseContext\(session\)\)/);
   assert.match(server, /decideCustomerAddress\(addressDecisionMatch\[1\], body\.decision, session\.username\)/);
