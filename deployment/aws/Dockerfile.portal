@@ -1,5 +1,9 @@
 # Staging-only AWS portal build. No secrets, credentials, or customer data in image.
 FROM node:24-alpine AS builder
+# Explicit build-time opt-in; all ordinary portal images keep private WMS UAT disabled.
+ARG NEXT_PUBLIC_WMS_PILOT_UI_ENABLED=false
+ENV NEXT_PUBLIC_WMS_PILOT_UI_ENABLED=${NEXT_PUBLIC_WMS_PILOT_UI_ENABLED}
+RUN case "${NEXT_PUBLIC_WMS_PILOT_UI_ENABLED}" in true|false) ;; *) echo "invalid WMS pilot UI build flag" >&2; exit 1;; esac
 WORKDIR /workspace
 # Apply Alpine security fixes before compiling the exact release source.
 RUN apk upgrade --no-cache
