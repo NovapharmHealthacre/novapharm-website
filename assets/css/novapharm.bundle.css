@@ -11336,3 +11336,148 @@ svg.np-symbol--busy { animation: np-symbol-working 1000ms linear infinite; }
   max-inline-size: 100%;
   overflow-wrap: break-word;
 }
+
+/* Source: novapharm-hig-materials.css */
+/*
+ * NOVAPHARM / SEMANTIC WEB MATERIALS
+ * Apple's HIG Materials (2026) translated into browser CSS, NOT native Liquid Glass.
+ * Functional layer: navigation, menus and compact toolbars only.
+ * Content layer: existing opaque canvas, cards, data tables and forms are unchanged.
+ * No pseudo-refraction, decorative glass cards, text translucency or animated blur.
+ */
+:root {
+  --np-material-navigation-solid: #ffffff;
+  --np-material-navigation-tint: rgba(255, 255, 255, 0.94);
+  --np-material-navigation-border: rgba(17, 24, 32, 0.12);
+  --np-material-menu-solid: #ffffff;
+  --np-material-menu-tint: rgba(255, 255, 255, 0.97);
+  --np-material-content-solid: var(--np-color-canvas, #ffffff);
+  --np-material-content-muted: var(--np-color-surface, #f5f5f7);
+  --np-material-label: var(--np-color-label, #1d1d1f);
+  --np-material-filter: saturate(125%) blur(14px);
+  --np-material-filter-menu: saturate(115%) blur(18px);
+}
+html[data-np-estate="technology"] {
+  --np-material-navigation-solid: #f4f1ea;
+  --np-material-navigation-tint: rgba(244, 241, 234, 0.95);
+  --np-material-navigation-border: rgba(11, 13, 16, 0.16);
+}
+html[data-np-estate="portal"] {
+  --np-material-navigation-solid: #ffffff;
+  --np-material-navigation-tint: rgba(255, 255, 255, 0.97);
+  --np-material-menu-tint: rgba(255, 255, 255, 0.98);
+}
+:root[data-np-color-scheme="dark"] {
+  --np-material-navigation-solid: #1c1c1e;
+  --np-material-navigation-tint: rgba(28, 28, 30, 0.96);
+  --np-material-menu-solid: #252527;
+  --np-material-menu-tint: rgba(37, 37, 39, 0.97);
+  --np-material-navigation-border: rgba(255, 255, 255, 0.24);
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-np-color-scheme="system"] {
+    --np-material-navigation-solid: #1c1c1e;
+    --np-material-navigation-tint: rgba(28, 28, 30, 0.96);
+    --np-material-menu-solid: #252527;
+    --np-material-menu-tint: rgba(37, 37, 39, 0.97);
+    --np-material-navigation-border: rgba(255, 255, 255, 0.24);
+  }
+}
+
+/* Default to solid surfaces. Browsers without backdrop-filter remain readable. */
+html[data-np-estate="corporate"] .site-header,
+.site-header[data-site-header],
+.npd-header[data-site-header],
+html[data-np-estate="portal"] :is(.workspace-topbar, .portal-topbar) {
+  background-color: var(--np-material-navigation-solid);
+  border-bottom-color: var(--np-material-navigation-border);
+}
+html[data-np-estate="corporate"] .mobile-menu nav,
+.site-header[data-site-header] .npd-mega,
+html[data-np-estate="corporate"] .npd-mega {
+  background-color: var(--np-material-menu-solid);
+  border-color: var(--np-material-navigation-border);
+}
+/* Technology has a purposely transparent hero header. Only elevate on scroll. */
+html[data-np-estate="technology"] .site-header.is-scrolled::before {
+  background: var(--np-material-navigation-solid);
+  border-bottom-color: var(--np-material-navigation-border);
+}
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  html[data-np-estate="corporate"] .site-header,
+  .site-header[data-site-header],
+  .npd-header[data-site-header],
+  html[data-np-estate="portal"] :is(.workspace-topbar, .portal-topbar) {
+    background-color: var(--np-material-navigation-tint);
+    -webkit-backdrop-filter: var(--np-material-filter);
+    backdrop-filter: var(--np-material-filter);
+  }
+  html[data-np-estate="corporate"] .mobile-menu nav,
+  .site-header[data-site-header] .npd-mega,
+  html[data-np-estate="corporate"] .npd-mega {
+    background-color: var(--np-material-menu-tint);
+    -webkit-backdrop-filter: var(--np-material-filter-menu);
+    backdrop-filter: var(--np-material-filter-menu);
+  }
+  html[data-np-estate="technology"] .site-header.is-scrolled::before {
+    background: var(--np-material-navigation-tint);
+    -webkit-backdrop-filter: var(--np-material-filter);
+    backdrop-filter: var(--np-material-filter);
+  }
+}
+
+/* Purposeful opt-in for navigation controls that truly overlay content. */
+.np-material-navigation {
+  background: var(--np-material-navigation-solid);
+  border: 1px solid var(--np-material-navigation-border);
+  color: var(--np-material-label);
+}
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .np-material-navigation {
+    background: var(--np-material-navigation-tint);
+    -webkit-backdrop-filter: var(--np-material-filter);
+    backdrop-filter: var(--np-material-filter);
+  }
+}
+/* Never place material treatments on data/copy surfaces by default. */
+.np-material-content {
+  background: var(--np-material-content-solid);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* Accessibility fallbacks: also available as an explicit QA/user override. */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more), (forced-colors: active) {
+  :root {
+    --np-material-navigation-tint: var(--np-material-navigation-solid);
+    --np-material-menu-tint: var(--np-material-menu-solid);
+  }
+  html[data-np-estate="corporate"] .site-header,
+  .site-header[data-site-header],
+  .npd-header[data-site-header],
+  html[data-np-estate="corporate"] .mobile-menu nav,
+  html[data-np-estate="corporate"] .npd-mega,
+  .site-header[data-site-header] .npd-mega,
+  html[data-np-estate="portal"] :is(.workspace-topbar, .portal-topbar),
+  html[data-np-estate="technology"] .site-header.is-scrolled::before,
+  .np-material-navigation {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+:root[data-np-transparency="reduce"] {
+  --np-material-navigation-tint: var(--np-material-navigation-solid);
+  --np-material-menu-tint: var(--np-material-menu-solid);
+  --np-material-filter: none;
+  --np-material-filter-menu: none;
+}
+@media (forced-colors: active) {
+  .np-material-navigation { background: Canvas; color: CanvasText; border-color: CanvasText; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .np-material-navigation,
+  html[data-np-estate="technology"] .site-header.is-scrolled::before {
+    transition: none;
+    animation: none;
+  }
+}

@@ -119,4 +119,20 @@ export const designSystemCss = String.raw`
 @media(prefers-contrast:more){
   :where(.np-field__hint,.np-result-count){color:#1b2028}
 }
+/* The navigation layer only: opaque default, softened on capable displays. */
+.np-navigation,.np-mega-menu{
+  background:#fff;
+  border-color:rgba(17,24,32,.12);
+}
+@supports ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  .np-navigation{background:rgba(255,255,255,.94);-webkit-backdrop-filter:saturate(125%) blur(14px);backdrop-filter:saturate(125%) blur(14px)}
+  .np-mega-menu{background:rgba(255,255,255,.97);-webkit-backdrop-filter:saturate(115%) blur(18px);backdrop-filter:saturate(115%) blur(18px)}
+}
+/* Legibility, focus and accessibility win over visual effects. */
+@media (prefers-reduced-transparency:reduce),(prefers-contrast:more),(forced-colors:active){
+  .np-navigation,.np-mega-menu{background:#fff;-webkit-backdrop-filter:none;backdrop-filter:none}
+}
+:root[data-np-transparency="reduce"] .np-navigation,
+:root[data-np-transparency="reduce"] .np-mega-menu{background:#fff;-webkit-backdrop-filter:none;backdrop-filter:none}
+@media (forced-colors:active){.np-navigation,.np-mega-menu{background:Canvas;color:CanvasText;border-color:CanvasText}}
 `;

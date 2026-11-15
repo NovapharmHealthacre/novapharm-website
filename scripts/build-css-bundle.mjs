@@ -26,7 +26,8 @@ const sources = [
   ["homepage-editorial.css", null],
   ["novapharm-hig-colours.css", null],
   ["symbol-system.css", null],
-  ["sitewide-layout-integrity.css", null]
+  ["sitewide-layout-integrity.css", null],
+  ["novapharm-hig-materials.css", null]
 ];
 
 const sections = sources.map(([filename, layer]) => {
