@@ -124,27 +124,41 @@ if (siteHeader) {
 
 const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
 const saveData = navigator.connection?.saveData === true;
-
-if (!motionPreference.matches && !saveData && typeof IntersectionObserver !== "undefined") {
-  document.documentElement.dataset.motion = "ready";
-  const revealObserver = new IntersectionObserver((entries, observer) => {
-    for (const entry of entries) {
-      if (!entry.isIntersecting) continue;
-      entry.target.classList.add("is-visible");
-      observer.unobserve(entry.target);
-    }
-  }, { rootMargin: "0px 0px -12%", threshold: 0.08 });
-  document.querySelectorAll("[data-reveal]").forEach((node) => revealObserver.observe(node));
-
+const revealNodes = [...document.querySelectorAll("[data-reveal]")];
+let revealObserver;
+// An optional animation must never hide page content if observer setup fails.
+const revealAll = () => {
+  delete document.documentElement.dataset.motion;
+  revealObserver?.disconnect();
+  revealNodes.forEach((node) => node.classList.add("is-visible"));
+};
+if (revealNodes.length && !motionPreference.matches && !saveData && typeof IntersectionObserver !== "undefined" && typeof window.IntersectionObserver === "function") {
+  try {
+    revealObserver = new window.IntersectionObserver((entries, observer) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      }
+    }, { rootMargin: "0px 0px -12%", threshold: 0.08 });
+    revealNodes.forEach((node) => revealObserver.observe(node));
+    document.documentElement.dataset.motion = "ready";
+  } catch {
+    revealAll();
+  }
 } else {
-  document.querySelectorAll("[data-reveal]").forEach((node) => node.classList.add("is-visible"));
+  revealAll();
 }
-// Allow a mid-session accessibility change without hiding any content.
-motionPreference.addEventListener?.("change", (event) => {
-  if (!event.matches) return;
-  document.documentElement.dataset.motion = "off";
-  document.querySelectorAll("[data-reveal]").forEach((node) => node.classList.add("is-visible"));
-});
+// Mid-session Reduce Motion changes remain immediately usable, even on
+// older browsers exposing the deprecated MediaQueryList.addListener method.
+const updateMotionPreference = () => {
+  if (motionPreference.matches) revealAll();
+};
+if (typeof motionPreference.addEventListener === "function") {
+  motionPreference.addEventListener?.("change", updateMotionPreference);
+} else {
+  motionPreference.addListener?.(updateMotionPreference);
+}
 
 const networkStory = document.querySelector("[data-network-story]");
 if (networkStory) {
