@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import "./globals.css";
+import "../../../assets/css/novapharm-hig-colours.css";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -67,7 +68,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const nonce = (await headers()).get("x-nonce") ?? undefined;
 
   return (
-    <html className="no-js" lang="en-GB" suppressHydrationWarning>
+    <html className="no-js" lang="en-GB" data-np-estate="technology" suppressHydrationWarning>
       <head>
         <script id="technology-javascript-mode" nonce={nonce}>
           {'document.documentElement.classList.remove("no-js");document.documentElement.classList.add("js");'}
