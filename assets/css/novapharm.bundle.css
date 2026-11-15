@@ -9547,6 +9547,14 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   }
 }
 
+/* Public account pathway — optional HIG-aligned explanation, never a login gate. */
+.npd-account-guidance{margin:20px 0 24px;border:1px solid var(--npd-line,#d8dde4);border-radius:14px;background:#fff;color:#1d1d1f}
+.npd-account-guidance summary{min-height:48px;padding:16px 18px;font-size:15px;line-height:1.5;font-weight:650;cursor:pointer}
+.npd-account-guidance summary:focus-visible,.npd-account-guidance a:focus-visible{outline:3px solid #1655a4;outline-offset:3px}
+.npd-account-guidance>div{padding:0 18px 18px;font-size:14px;line-height:1.65;color:#505762}
+.npd-account-guidance p{margin:0 0 10px;max-width:66ch}
+.npd-account-guidance a{color:#1655a4;text-underline-offset:3px}
+
 /* Source: contact-premium.css */
 /* NovaPharm Contact — premium, accessible, privacy-first corporate routing.
    Shared by the public static build and the managed Corporate application.
