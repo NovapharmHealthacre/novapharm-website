@@ -146,11 +146,23 @@ async function customerSnapshot(module, customerId, context) {
   }
   if (module.slug === "orders") {
     const rows = await all(`SELECT o.order_number, o.status, o.requested_delivery_date, o.customer_po_reference,
-        o.total_minor, o.currency, o.created_at, COUNT(ol.id) AS line_count
+        o.total_minor, o.currency, o.created_at, o.delivery_address_snapshot_json, COUNT(ol.id) AS line_count
       FROM orders o LEFT JOIN order_lines ol ON ol.order_id = o.id WHERE o.customer_id = ?
-      GROUP BY o.id, o.order_number, o.status, o.requested_delivery_date, o.customer_po_reference, o.total_minor, o.currency, o.created_at
+      GROUP BY o.id, o.order_number, o.status, o.requested_delivery_date, o.customer_po_reference, o.total_minor,
+        o.currency, o.created_at, o.delivery_address_snapshot_json
       ORDER BY o.created_at DESC`, customerId);
-    return baseSnapshot(module, { sections: [section("Orders", [["order_number", "Order"], ["customer_po_reference", "PO reference"], ["status", "Status", "status"], ["line_count", "Lines", "number"], ["total_minor", "Total", "money"], ["requested_delivery_date", "Requested"]], rows, "No orders are recorded for this account.")], notices: ["Order status is derived from canonical order and fulfilment records."] });
+    const visibleRows = rows.map(row => {
+      let shipTo = "Not recorded";
+      if (row.delivery_address_snapshot_json) {
+        try {
+          const snapshot = JSON.parse(row.delivery_address_snapshot_json);
+          if (snapshot?.postcode && snapshot?.city) shipTo = `${snapshot.city}, ${snapshot.postcode}`;
+        } catch { /* Do not expose malformed snapshot JSON. */ }
+      }
+      const { delivery_address_snapshot_json: _privateSnapshot, ...publicRow } = row;
+      return { ...publicRow, ship_to: shipTo };
+    });
+    return baseSnapshot(module, { sections: [section("Orders", [["order_number", "Order"], ["customer_po_reference", "PO reference"], ["status", "Status", "status"], ["ship_to", "Delivery destination"], ["line_count", "Lines", "number"], ["total_minor", "Total", "money"], ["requested_delivery_date", "Requested"]], visibleRows, "No orders are recorded for this account.")], notices: ["Order status and delivery destinations are derived from customer-scoped canonical records."] });
   }
   if (module.slug === "invoices") {
     const invoices = await all(`SELECT i.invoice_number, o.order_number, i.issue_date, i.due_date, i.status,
