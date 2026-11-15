@@ -592,6 +592,16 @@ test("build receipt is emitted only after all staged bundle links match and is f
   assert.ok(fence.includes('[[ "$EXPECTED_BUNDLE_CSS_SHA256" =~ ^[0-9a-f]{64}$ ]]'));
   assert.ok(workflow.indexOf("Bind staged shared stylesheet to deployment receipt") < workflow.indexOf("Upload exact verified Pages artifact"));
   assert.ok(workflow.indexOf("Prove forward-only release ancestry and deploy evidence") < workflow.indexOf("Publish verified Pages artifact"));
+  // The live publish receipt checks the independently staged Distribution
+  // master logo and its real page before it binds the shared stylesheet.
+  // Include those mandatory assets in this synthetic fixture instead of
+  // weakening or bypassing the production logo gate.
+  const distributionLogo = "assets/brand/novapharm-distribution-logo.svg";
+  const approvedLogo = '<svg xmlns="http://www.w3.org/2000/svg"><title>NovaPharm Distribution</title></svg>';
+  write(root, distributionLogo, approvedLogo);
+  write(root, `_site/${distributionLogo}`, approvedLogo);
+  write(root, "_site/distribution/index.html",
+    `<img src="/${distributionLogo}" alt="NovaPharm Distribution">`);
   const bytes = "/* synthetic build output */";
   write(root, `_site/${bundle}`, bytes);
   const html = `<link rel="stylesheet" href="/${bundle}?v=${defaultVersion}&amp;sha256=${hash(bytes)}">`;
@@ -604,6 +614,17 @@ test("build receipt is emitted only after all staged bundle links match and is f
   assert.equal(valid.status, 0, valid.stderr);
   assert.equal(readFileSync(output, "utf8"), `bundle_css_sha256=${hash(bytes)}\n`);
   rmSync(output);
+  // Byte mismatch and missing approved distribution reference must both
+  // prevent release receipts, including if the shared CSS still matches.
+  write(root, `_site/${distributionLogo}`, "<svg>tampered staged logo</svg>");
+  assert.notEqual(inspect().status, 0, "Staged Distribution logo mismatch must deny the release receipt");
+  assert.equal(spawnSync("test", ["-e", output]).status, 1);
+  write(root, `_site/${distributionLogo}`, approvedLogo);
+  write(root, "_site/distribution/index.html", "<p>Logo missing</p>");
+  assert.notEqual(inspect().status, 0, "Distribution page without its approved logo must deny the release receipt");
+  assert.equal(spawnSync("test", ["-e", output]).status, 1);
+  write(root, "_site/distribution/index.html",
+    `<img src="/${distributionLogo}" alt="NovaPharm Distribution">`);
   for (const page of pages) {
     write(root, `_site/${page}`, html.replace(hash(bytes), hash("stale output")));
     assert.notEqual(inspect().status, 0, page);
