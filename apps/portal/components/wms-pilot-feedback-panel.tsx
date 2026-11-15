@@ -169,7 +169,8 @@ export function WmsPilotFeedbackPanel() {
         <h3>Your workspace results</h3>
         <p>{saved} of {workspaces.length} workspaces have a saved result in this private pilot.</p>
         {latest ? <p>Selected workspace: <strong>{resultLabels[latest.result]}</strong></p> : null}
-        <div className="distribution-wms-pilot-table" role="region" aria-label="Your workspace results, scrollable table" tabIndex={0}>
+        {/* biome-ignore lint/a11y/noNoninteractiveTabindex: Wide WMS pilot result tables must remain keyboard-scrollable. */}
+        <section className="distribution-wms-pilot-table" aria-label="Your workspace results, scrollable table" tabIndex={0}>
           <table aria-label="Your workspace results">
             <thead><tr><th scope="col">Workspace</th><th scope="col">Your result</th></tr></thead>
             <tbody>{workspaces.map((workspace) => {
@@ -181,7 +182,7 @@ export function WmsPilotFeedbackPanel() {
               </tr>;
             })}</tbody>
           </table>
-        </div>
+        </section>
       </div>
     </div> : null}
     {readState === "available" && adminSummary ? <section
@@ -194,7 +195,8 @@ export function WmsPilotFeedbackPanel() {
         <span><strong>{adminSummary.counts.broken}</strong> Not working</span>
         <span><strong>{adminSummary.counts.needs_improvement}</strong> Needs improvement</span>
       </div>
-      <div className="distribution-wms-pilot-table" role="region" aria-label="Administrator pilot observations, scrollable table" tabIndex={0}>
+      {/* biome-ignore lint/a11y/noNoninteractiveTabindex: Wide administrator tables must remain keyboard-scrollable. */}
+      <section className="distribution-wms-pilot-table" aria-label="Administrator pilot observations, scrollable table" tabIndex={0}>
         <table aria-label="Administrator pilot observations">
           <thead><tr><th scope="col">Tester</th><th scope="col">Workspace</th>
             <th scope="col">Result</th><th scope="col">Observation</th></tr></thead>
@@ -204,7 +206,7 @@ export function WmsPilotFeedbackPanel() {
               <td>{resultLabels[entry.result]}</td><td>{entry.note || "No note provided"}</td>
             </tr>)}</tbody>
         </table>
-      </div>
+      </section>
       <p>Showing {adminSummary.sampledReports} recent reports at most.
         This is a bounded pilot review, not a complete production analytics service.</p>
     </section> : null}
