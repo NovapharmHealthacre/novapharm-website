@@ -107,13 +107,18 @@ function requireCommitPayload(p) {
     Math.abs(total - p.reconciliationTotal) > 1e-6) denied("g2_source_reconciliation_failed");
 }
 
-function exactIndex(index, required) {
-  return index?.unique === true && index.sparse !== true &&
-    index.partialFilterExpression == null &&
-    (index.collation == null || index.collation.locale === "simple") &&
-    index.key && typeof index.key === "object" &&
-    JSON.stringify(Object.entries(index.key)) ===
+function sameOrderedKeys(actual, required) {
+  return actual && typeof actual === "object" && !Array.isArray(actual) &&
+    JSON.stringify(Object.entries(actual)) ===
       JSON.stringify(Object.entries(required));
+}
+function exactIndex(index, required) {
+  return index?.name === "g2_unique" && index.unique === true &&
+    index.sparse !== true && index.hidden !== true &&
+    index.partialFilterExpression == null &&
+    index.expireAfterSeconds == null &&
+    (index.collation == null || index.collation.locale === "simple") &&
+    sameOrderedKeys(index.key, required);
 }
 
 async function requireUniqueIndexes(collections) {
@@ -127,8 +132,15 @@ async function requireUniqueIndexes(collections) {
     } catch {
       denied("unique_index_unavailable");
     }
-    if (!Array.isArray(indexes) || indexes.length > 32 ||
-      !indexes.some(index => exactIndex(index, required))) {
+    if (!Array.isArray(indexes) || indexes.length > 32) {
+      denied("unique_index_unavailable");
+    }
+    // A second same-key index under a historical name, or an incompatible
+    // canonical-name index, is a schema conflict, not permission to write.
+    // The private four-index preflight and this transaction gate must agree.
+    const related = indexes.filter(index => index?.name === "g2_unique" ||
+      sameOrderedKeys(index?.key, required));
+    if (related.length !== 1 || !exactIndex(related[0], required)) {
       denied("unique_index_unavailable");
     }
   }
