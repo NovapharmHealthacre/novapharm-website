@@ -740,10 +740,21 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     window.addEventListener("keydown", closeOnEscape);
     // CSS visibility transitions can leave the opening drawer non-focusable
     // until the next paint. Move focus after layout, never into a hidden pane.
-    const focusFrame = window.requestAnimationFrame(() => {
+    // Wait for the responsive drawer to become actually focusable. React's
+    // ref callback may run while the closed panel still has visibility:hidden;
+    // a single animation frame is not sufficient across browser engines.
+    let focusFrame = 0;
+    let attempts = 0;
+    const focusVisibleClose = () => {
       const target = filtersOpen ? filterCloseRef.current : menuCloseRef.current;
-      target?.focus({ preventScroll: true });
-    });
+      if (!target) return;
+      if (window.getComputedStyle(target).visibility === "visible" && target.getClientRects().length > 0) {
+        target.focus({ preventScroll: true });
+        if (document.activeElement === target) return;
+      }
+      if (++attempts < 20) focusFrame = window.requestAnimationFrame(focusVisibleClose);
+    };
+    focusFrame = window.requestAnimationFrame(focusVisibleClose);
     return () => {
       window.cancelAnimationFrame(focusFrame);
       window.removeEventListener("keydown", closeOnEscape);
