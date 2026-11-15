@@ -576,3 +576,7 @@ td[data-state="blocked"], td[data-state="failed"], td[data-state="suspended"] { 
 .customer-address-review-actions button{border:1px solid #1d1d1f;border-radius:999px;padding:10px 16px;background:#1d1d1f;color:white;font:inherit;font-size:13px;cursor:pointer}
 .customer-address-review-actions button:last-child{background:white;color:#1d1d1f}
 .customer-address-review-actions button:disabled{opacity:.5;cursor:not-allowed}
+
+.customer-address-remove{display:block;margin-top:10px;border:1px solid #d2d2d7;border-radius:999px;background:#fff;color:#515154;padding:8px 14px;font:inherit;font-size:12px;cursor:pointer}
+.customer-address-remove:hover{border-color:#1d1d1f;color:#1d1d1f}
+.customer-address-remove:disabled{opacity:.5;cursor:not-allowed}
