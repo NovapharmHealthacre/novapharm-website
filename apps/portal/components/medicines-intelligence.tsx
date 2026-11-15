@@ -6,9 +6,9 @@ import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError } from "../lib/gateway";
 import { ClinicalTrialsDiscovery } from "./clinical-trials-discovery";
 import styles from "./medicines-intelligence.module.css";
+import { ObservedMedicineWorkspace } from "./observed-medicine-workspaces";
 import { PharmaScopeBrand } from "./pharmascope-brand";
 import { ProfessionalWorkspace } from "./professional-workspaces";
-import { ObservedMedicineWorkspace } from "./observed-medicine-workspaces";
 import { UsFdaLabelDiscovery } from "./us-fda-label-discovery";
 
 type Metric = Readonly<{ key: string; label: string; value: number; format?: string }>;
