@@ -4,8 +4,10 @@ const siteNav = document.querySelector("[data-site-nav]");
 if (navToggle && siteNav) {
   // A parent section is not the current page. Announce only exact destinations
   // to VoiceOver and other screen readers (including legacy generated headers).
-  const normaliseNavigationPath = (path) =>
-    (path.replace(/\\/g, "/").replace(/\\/index\\.html$/, "/").replace(/\\/+/g, "/").replace(/\\/?$/, "/")) || "/";
+  const normaliseNavigationPath = (path) => {
+    const canonical = path.endsWith("/index.html") ? path.slice(0, -"index.html".length) : path;
+    return canonical.endsWith("/") ? canonical : canonical + "/";
+  };
   const currentPath = normaliseNavigationPath(window.location.pathname);
   siteNav.querySelectorAll("a[href^='/']").forEach((link) => {
     const linkPath = normaliseNavigationPath(new URL(link.getAttribute("href"), window.location.href).pathname);
