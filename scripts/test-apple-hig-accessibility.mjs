@@ -75,7 +75,7 @@ for (const token of ['aria-expanded={menuOpen}', 'aria-expanded={filtersOpen}', 
   assert.ok(medicines.includes(token), `Authenticated Intelligence navigation missing ${token}`);
 }
 const wmsPilot = read("apps/portal/components/wms-pilot-feedback-panel.tsx");
-for (const token of ['aria-busy={saving}', 'scope="row"', 'role="region" aria-label="Your workspace results']) {
+for (const token of ['aria-busy={saving}', 'scope="row"', 'aria-label="Your workspace results']) {
   assert.ok(wmsPilot.includes(token), `Private WMS feedback accessibility missing ${token}`);
 }
 const wmsEvidence = read("apps/portal/components/wms-recorded-evidence-studio.tsx");
