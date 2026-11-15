@@ -119,4 +119,10 @@ export const designSystemCss = String.raw`
 @media(prefers-contrast:more){
   :where(.np-field__hint,.np-result-count){color:#1b2028}
 }
+/* Apple's official black App Store badges are immutable art, not themed buttons.
+   40 px minimum onscreen, 10 px clear space on each side (1/4 badge height). */
+.np-app-store-badges{display:flex;align-items:center;flex-wrap:wrap;gap:0}
+.np-app-store-badges__link{display:inline-flex;flex:none;align-items:center;justify-content:center;margin:10px;line-height:0}
+.np-app-store-badges__link:focus-visible{outline:3px solid #0b69ff;outline-offset:3px}
+.np-app-store-badges__artwork{display:block;height:40px;width:auto;max-width:none}
 `;

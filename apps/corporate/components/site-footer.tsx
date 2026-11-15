@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { company } from "@/data/site";
+import { AppStoreAvailability } from "./app-store-availability";
 import { Brand } from "./brand";
 import { CookieSettingsButton } from "./cookie-controls";
 
@@ -11,6 +12,7 @@ export function SiteFooter() {
           <Brand footer />
           <p>A UK-based B2B pharmaceutical company preparing regulated sourcing, market-access and distribution capabilities.</p>
           <p className="footer-status">Active UK company. Regulated wholesale supply has not commenced and remains subject to applicable authorisation.</p>
+          <AppStoreAvailability />
         </div>
         <nav aria-label="Company links"><strong>Company</strong><Link href="/about/">About</Link><Link href="/leadership/">Leadership</Link><Link href="/about/governance/">Governance</Link><Link href="/careers/">Careers</Link></nav>
         <nav aria-label="Capability links"><strong>Capabilities</strong><Link href="/services/">Services</Link><Link href="/regulatory-services/">Regulatory</Link><Link href="/cro/">CRO support</Link><Link href="/oncology/">Oncology</Link><Link href="/technology/">Technology</Link></nav>

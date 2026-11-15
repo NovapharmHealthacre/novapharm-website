@@ -200,6 +200,16 @@ async function inspectLayout(page: Page, label: string): Promise<void> {
   const layout = await page.evaluate(() => ({
     viewportWidth: document.documentElement.clientWidth,
     documentWidth: document.documentElement.scrollWidth,
+    layoutVersion: getComputedStyle(document.documentElement).getPropertyValue("--np-layout-contract").trim(),
+    unboundedGrids: [...document.querySelectorAll(".metric-grid.np-hig-grid")].filter((grid) => {
+      const bounds = grid.getBoundingClientRect();
+      return bounds.width > 0 && (bounds.left < -2 || bounds.right > document.documentElement.clientWidth + 2);
+    }).length,
+    unboundedTables: [...document.querySelectorAll(".table-region.np-hig-table-region")].filter((region) => {
+      const bounds = region.getBoundingClientRect();
+      const computed = getComputedStyle(region);
+      return bounds.width > 0 && (bounds.left < -2 || bounds.right > document.documentElement.clientWidth + 2 || !["auto", "scroll"].includes(computed.overflowX));
+    }).length,
     blankMain: !(document.querySelector("main")?.textContent ?? "").trim(),
     brokenImages: [...document.images]
       .filter((image) => image.complete && image.naturalWidth === 0)
@@ -209,6 +219,9 @@ async function inspectLayout(page: Page, label: string): Promise<void> {
       document.body.innerText.includes("Secure portal backend is not active on this static host yet") ||
       document.body.innerText.includes("Internal Server Error"),
   }));
+  assert.equal(layout.layoutVersion, "1", `${label}: shared Apple HIG layout CSS was not loaded`);
+  assert.equal(layout.unboundedGrids, 0, `${label}: metrics grid extends outside the viewport`);
+  assert.equal(layout.unboundedTables, 0, `${label}: data table is not bounded to its own scrolling region`);
   assert.equal(layout.blankMain, false, `${label}: main content is blank`);
   assert.ok(layout.documentWidth <= layout.viewportWidth + 1, `${label}: horizontal overflow (${layout.documentWidth} > ${layout.viewportWidth})`);
   assert.deepEqual(layout.brokenImages, [], `${label}: broken portal image`);
