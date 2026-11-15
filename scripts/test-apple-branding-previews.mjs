@@ -74,6 +74,8 @@ for (const walkthrough of manifest.webProductWalkthroughs) {
 const colors = text("assets/css/novapharm-hig-colours.css");
 assert(colors.includes("--np-color-accent: #e3120b"), "Preserve the approved NovaPharm identity accent");
 assert(colors.includes("NOVAPHARM / BRAND PRESENTATION"), "Shared logo presentation styles have not been installed");
+const componentsCss = text("packages/design-system/src/styles.ts");
+assert(!componentsCss.includes(".np-state--error{border-color:#E3120B}") && !componentsCss.includes(".np-status--critical{border-color:#E3120B}"), "The shared status design system must not reuse identity red for failure");
 assert(colors.includes(":focus-visible"), "Brand navigation needs an accessible keyboard focus state");
 assert(colors.includes("forced-colors: active"), "Brand navigation must respect forced colours");
 const controlledBrandComponents = [
