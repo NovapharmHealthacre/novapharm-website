@@ -366,7 +366,7 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     await captureInteractionState(page, engine, mobileViewport, "interaction.search-results");
     await page.getByLabel("Search authorised records").fill("no-authorised-record-matches-this-query");
     await page.locator('.portal-search > button[type="submit"]').click();
-    await page.getByText("No authorised records found.", { exact: true }).waitFor();
+    await page.getByText("No authorised records found in this scope.", { exact: true }).waitFor();
     await captureInteractionState(page, engine, mobileViewport, "interaction.empty-search");
   } finally {
     await employeeContext.close();
