@@ -172,16 +172,16 @@
 .distribution-wms-evidence-stats article{padding:25px 20px;background:#fff;display:flex;flex-direction:column;min-height:145px;gap:8px}
 .distribution-wms-evidence-stats article span{font-size:.74rem;color:#66666e}
 .distribution-wms-evidence-stats article strong{font-size:clamp(1.45rem,2.1vw,2rem);letter-spacing:-.055em;font-weight:670}
-.distribution-wms-evidence-stats article small{font-size:.73rem;color:#83838a;line-height:1.4}
+.distribution-wms-evidence-stats article small{font-size:.73rem;color:#616169;line-height:1.4}
 .distribution-wms-evidence-chart{background:#f7f7f9;border:1px solid #ececf0;border-radius:17px;padding:clamp(20px,3vw,31px);margin-bottom:28px}
 .distribution-wms-evidence-chart h3,.distribution-wms-evidence-exceptions h3{font-size:clamp(1.25rem,1.8vw,1.8rem);letter-spacing:-.045em;font-weight:650;margin:0 0 10px}
-.distribution-wms-evidence-chart>p,.distribution-wms-evidence-exceptions-heading p{font-size:.83rem;color:#75757c;line-height:1.6;max-width:80ch;margin:0 0 25px}
+.distribution-wms-evidence-chart>p,.distribution-wms-evidence-exceptions-heading p{font-size:.83rem;color:#626269;line-height:1.6;max-width:80ch;margin:0 0 25px}
 .distribution-wms-evidence-bar-row{display:grid;grid-template-columns:minmax(100px,165px) minmax(0,1fr) 46px;gap:17px;align-items:center;min-height:43px}
 .distribution-wms-evidence-bar-row>span{font-size:.8rem;font-weight:550}
 .distribution-wms-evidence-bar-row>small{font-size:.78rem;text-align:right;color:#66666e;font-variant-numeric:tabular-nums}
 .distribution-wms-evidence-bar-track{height:12px;border-radius:4px;background:#e7e7eb;overflow:hidden}
 .distribution-wms-evidence-bar{height:100%;border-radius:4px;background:#1d1d1f}
-.distribution-wms-evidence-footnote{font-size:.77rem;color:#777780;line-height:1.55;margin:22px 0 0;max-width:98ch}
+.distribution-wms-evidence-footnote{font-size:.77rem;color:#606069;line-height:1.55;margin:22px 0 0;max-width:98ch}
 .distribution-wms-evidence-exceptions{padding:26px 0;border-top:1px solid #e6e6ea;border-bottom:1px solid #e6e6ea}
 .distribution-wms-evidence-exceptions-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
 .distribution-wms-evidence-filters{display:flex;gap:5px;flex-wrap:wrap;border:0;margin:0;padding:0;min-width:0}
@@ -193,7 +193,7 @@
 .distribution-wms-evidence-table-scroll{overflow-x:auto;border:1px solid #e6e6ea;border-radius:11px}
 .distribution-wms-evidence-table-scroll:focus-visible{outline:3px solid #0071e3;outline-offset:2px}
 .distribution-wms-evidence-table-scroll table{width:100%;border-collapse:collapse;text-align:left;font-size:.8rem}
-.distribution-wms-evidence-table-scroll th{background:#f7f7f9;padding:14px 15px;font-size:.72rem;color:#77777e;white-space:nowrap;font-weight:600}
+.distribution-wms-evidence-table-scroll th{background:#f7f7f9;padding:14px 15px;font-size:.72rem;color:#606069;white-space:nowrap;font-weight:600}
 .distribution-wms-evidence-table-scroll td{padding:13px 15px;border-top:1px solid #ebebee;color:#4d4d54;vertical-align:top}
 .distribution-wms-evidence-table-scroll td[data-priority="high"]{color:#9d1723;font-weight:650}
 .distribution-wms-evidence-table-scroll td[data-priority="standard"]{color:#565661;font-weight:600}
