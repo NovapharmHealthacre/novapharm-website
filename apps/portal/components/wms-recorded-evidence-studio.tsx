@@ -7,7 +7,7 @@ type RecordedSection = Readonly<{
   rows: readonly Readonly<Record<string, unknown>>[];
   source?: string;
 }>;
-type WmsSnapshot = Readonly<{
+export type WmsSnapshot = Readonly<{
   module: Readonly<{ code: string }>;
   dataState: string;
   dataFreshness: string;
