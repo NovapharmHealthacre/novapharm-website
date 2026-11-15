@@ -9,6 +9,8 @@ import { areaLabels, areaLandingRoutes, areaScopes } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError, protectedMutation } from "../lib/gateway";
 import { CustomerAddressBook } from "./customer-address-book";
 import { CustomerAddressReview } from "./customer-address-review";
+import { CustomerOrderAmendments } from "./customer-order-amendments";
+import { CustomerOrderAmendmentReview } from "./customer-order-amendment-review";
 import { CustomerCommerceWorkspace } from "./customer-commerce-workspace";
 import { EmployeeDistributionWorkspace } from "./employee-distribution-workspace";
 import { MedicinesIntelligence } from "./medicines-intelligence";
@@ -213,7 +215,9 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
         {module.area === "customer" && (module.code === "customer.dashboard" || module.code === "customer.products")
           ? <CustomerCommerceWorkspace moduleCode={module.code} /> : null}
         {module.code === "customer.account" && user && snapshot ? <CustomerAddressBook /> : null}
+        {module.code === "customer.orders" && user && snapshot ? <CustomerOrderAmendments /> : null}
         {module.code === "admin.local-review" && user && snapshot ? <CustomerAddressReview /> : null}
+        {module.code === "admin.local-review" && user && snapshot ? <CustomerOrderAmendmentReview /> : null}
         {module.area === "employee" && isEditorialEmployeeDistribution
           ? <EmployeeDistributionWorkspace moduleCode={module.code} /> : null}
         {user && snapshot && selectedNutraxinProduct ? <section className="nutraxin-selection-panel" aria-labelledby="nutraxin-selection-title">
