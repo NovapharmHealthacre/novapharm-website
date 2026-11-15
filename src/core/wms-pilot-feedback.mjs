@@ -83,6 +83,7 @@ export async function listWmsPilotFeedback(context, { env = process.env } = {}) 
     pilot: "novapharm-distribution-private-uat",
     dataMode: "synthetic_only",
     warehouseExecutionEnabled: false,
+    canViewAdminSummary: context.accessType === "admin" && context.accessScopes.includes("admin"),
     entries: rows.map((row) => ({
       workspaceCode: row.workspace_code,
       result: row.result,
