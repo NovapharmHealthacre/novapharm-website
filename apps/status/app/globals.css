@@ -132,3 +132,11 @@ body, button, input, select, textarea { font-family: var(--np-type-ui); }
 @media (prefers-contrast: more) {
   :where(.status-meta, .data-freshness) { color: var(--ink); }
 }
+
+/* Informational status footer links preserve keyboard access on compact displays. */
+.status-footer nav[aria-label="Status privacy and support"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+}
+.status-footer nav[aria-label="Status privacy and support"] a { min-height: 44px; display: inline-flex; align-items: center; }
