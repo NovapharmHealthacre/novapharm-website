@@ -36,5 +36,5 @@ const styles = read("packages/design-system/src/styles.ts");
 assert.ok(tokens.includes("materials: Object.freeze("), "Shared design system material tokens missing");
 assert.ok(styles.includes(".np-navigation,.np-mega-menu"), "Reusable navigation should use material semantics");
 assert.ok(styles.includes("prefers-reduced-transparency"), "Reusable navigation needs solid accessibility fallback");
-assert.ok(!material.includes("filter: blur("), "Never blur foreground labels");
+assert.ok(!/(^|[\\s;{])filter\\s*:\\s*blur\\(/m.test(material), "Never blur foreground labels");
 console.log("Apple HIG Materials web contract: PASS");
