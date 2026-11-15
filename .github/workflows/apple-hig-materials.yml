@@ -9,6 +9,7 @@ on:
       - "apps/**/app/layout.tsx"
       - "packages/design-system/src/**"
       - "scripts/build-css-bundle.mjs"
+      - "apps/nutraxin-customer-api/index.py"
       - "scripts/test-apple-hig-materials.mjs"
       - ".github/workflows/apple-hig-materials.yml"
   push:
@@ -17,6 +18,7 @@ on:
       - "assets/css/novapharm-hig-materials.css"
       - "assets/css/novapharm.bundle.css"
       - "packages/design-system/src/**"
+      - "apps/nutraxin-customer-api/index.py"
       - "scripts/test-apple-hig-materials.mjs"
 jobs:
   materials-contract:
