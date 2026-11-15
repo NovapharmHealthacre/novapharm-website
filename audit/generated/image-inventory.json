@@ -1203,14 +1203,15 @@
       "observedLoading": [],
       "observedFetchPriority": [],
       "lcpRelevance": false,
-      "usageCount": 5,
-      "referenceCount": 7,
+      "usageCount": 6,
+      "referenceCount": 8,
       "usageFiles": [
         ".github/workflows/publish-aws-contact-production.yml",
         "apps/portal/components/distribution-brand.tsx",
         "creative-assets/asset-register.json",
         "scripts/apply-global-distribution-foundation.mjs",
-        "scripts/test-global-distribution-foundation.mjs"
+        "scripts/test-global-distribution-foundation.mjs",
+        "scripts/test-public-visual-versioning.mjs"
       ],
       "exactDuplicateGroup": null,
       "perceptualDuplicateCandidateGroup": null,
