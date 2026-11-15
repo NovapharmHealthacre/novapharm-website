@@ -535,3 +535,54 @@ td[data-state="blocked"], td[data-state="failed"], td[data-state="suspended"] { 
 .unified-customer-hub .unified-customer-release-note{font-size:.83rem;line-height:1.55;margin:20px 0 0;color:#52525b}
 @media (max-width:900px){.unified-customer-groups{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:600px){.unified-customer-groups,.unified-collection-grid{grid-template-columns:1fr}.unified-customer-hub{border-radius:17px;padding:18px}.unified-customer-group{padding:15px}}
+
+
+/* Apple HIG-aligned account guidance: optional and contextual, never a gate. */
+.login-password-field { position: relative; }
+.login-password-field input { padding-right: 64px; }
+.login-password-field > button {
+  position: absolute;
+  inset-inline-end: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.login-password-field > button svg { width: 20px; height: 20px; }
+.login-password-field > button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.login-password-field > button:disabled { opacity: .5; cursor: wait; }
+.account-access-help {
+  margin: 24px 0 0;
+  border: 1px solid var(--line, #d4dce8);
+  border-radius: 14px;
+  background: var(--white, #fff);
+  color: var(--ink, #182232);
+  text-align: start;
+}
+.account-access-help summary {
+  padding: 16px 18px;
+  min-height: 48px;
+  font-weight: 600;
+  line-height: 1.5;
+  cursor: pointer;
+}
+.account-access-help summary:focus-visible,
+.account-access-help a:focus-visible { outline: 3px solid var(--focus, #0b69ed); outline-offset: 3px; }
+.account-access-help-body {
+  padding: 0 20px 20px;
+  color: var(--muted, #52627b);
+  font-size: .92rem;
+  line-height: 1.65;
+}
+.account-access-help-body p { margin: 0 0 14px; }
+.account-access-help-body ol { margin: 0; padding-inline-start: 23px; }
+.account-access-help-body li + li { margin-top: 8px; }
+.account-access-help-links { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 17px; }
+.account-access-help-links a { color: #125a9c; text-underline-offset: 3px; }
