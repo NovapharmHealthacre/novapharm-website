@@ -59,3 +59,11 @@ body .npd-mega a:focus-visible {
   body .skip-link:focus-visible { outline-color: Highlight; }
   .npd-header .npd-menu.nav-toggle { border: 1px solid ButtonText; }
 }
+
+/* WCAG 2.2 AA browser audit: ensure Trust Centre resource links have a
+   sufficient target size without changing their text or destination. */
+body .link-grid > a { min-height: 28px; padding-block: 4px; }
+
+/* ESCO Bag aftercare descriptions must retain readable contrast against their
+   light cards at 390px; this intentionally overrides the legacy muted grey. */
+body .esco-shop-bag .esco-bag-aftercare p { color: #505057; }
