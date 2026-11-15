@@ -12,9 +12,11 @@ export function resolvePreviewMedia(root, value) {
   const candidate = resolve(root, value.slice(1));
   if (!candidate.startsWith(assetRoot + sep) || !existsSync(candidate)) return null;
   try {
-    const realRoot = realpathSync(assetRoot);
+    const realRepoRoot = realpathSync(root);
+    const realAssetRoot = realpathSync(assetRoot);
     const actual = realpathSync(candidate);
-    return actual.startsWith(realRoot + sep) && statSync(actual).isFile() ? actual : null;
+    if (!realAssetRoot.startsWith(realRepoRoot + sep)) return null;
+    return actual.startsWith(realAssetRoot + sep) && statSync(actual).isFile() ? actual : null;
   } catch {
     return null;
   }
