@@ -30,7 +30,8 @@ assert.equal(rejected.categories.necessary, true);
 for (const category of ["preferences", "analytics", "marketing"]) assert.equal(categoryAllowed(rejected, category), false);
 
 const accepted = saveConsent(storage, { preferences: true, analytics: true, marketing: true }, { now, id: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee" });
-for (const category of ["necessary", "preferences", "analytics", "marketing"]) assert.equal(categoryAllowed(accepted, category), true);
+for (const category of ["necessary", "preferences", "analytics"]) assert.equal(categoryAllowed(accepted, category), true);
+assert.equal(categoryAllowed(accepted, "marketing"), false, "Inactive marketing providers must fail closed even if a saved record requests true");
 assert.equal(readConsent(storage, now.getTime()).id, accepted.id);
 
 const expired = JSON.stringify({ ...accepted, timestamp: new Date(now.getTime() - CONSENT_MAX_AGE_MS - 1).toISOString() });
