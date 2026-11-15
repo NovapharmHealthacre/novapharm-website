@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * Reusable Apple App Store marketing badges (not generic native-app buttons).
  * Source: https://developer.apple.com/app-store/marketing/guidelines/
