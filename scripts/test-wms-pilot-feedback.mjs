@@ -124,6 +124,17 @@ test("only a signed administrator on the private allowlist may review others", a
   await assert.rejects(summariseWmsPilotFeedback({ ...admin, username: "unknown.admin" }, { env }), err => err.statusCode === 403);
 });
 
+test("staging portal Docker image defaults pilot UI off and requires explicit build opt-in", () => {
+  const dockerfile = readFileSync("deployment/aws/Dockerfile.portal", "utf8");
+  const panel = readFileSync("apps/portal/components/wms-pilot-feedback-panel.tsx", "utf8");
+  assert.match(dockerfile, /^ARG NEXT_PUBLIC_WMS_PILOT_UI_ENABLED=false$/m);
+  assert.match(dockerfile, /^ENV NEXT_PUBLIC_WMS_PILOT_UI_ENABLED=\$\{NEXT_PUBLIC_WMS_PILOT_UI_ENABLED\}$/m);
+  assert.match(dockerfile, /RUN case "\$\{NEXT_PUBLIC_WMS_PILOT_UI_ENABLED\}" in true\|false\)/);
+  assert.ok(dockerfile.indexOf("ARG NEXT_PUBLIC_WMS_PILOT_UI_ENABLED=false") <
+    dockerfile.indexOf("RUN npm run build --workspace=@novapharm/portal"));
+  assert.match(panel, /process\.env\.NEXT_PUBLIC_WMS_PILOT_UI_ENABLED === "true"/);
+});
+
 test("migration is append-only on private feedback table and never touches stock", () => {
   const sql = readFileSync("database/sqlite/011_distribution_pilot_feedback.sql", "utf8");
   const azure = readFileSync("database/azure/011_distribution_pilot_feedback.sql", "utf8");

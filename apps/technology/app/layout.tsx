@@ -5,6 +5,7 @@ import "../../../assets/css/novapharm-hig-colours.css";
 import "../../../assets/css/symbol-system.css";
 import "../../../assets/css/apple-hig-layout.css";
 import "../../../assets/css/novapharm-hig-materials.css";
+import "../../../assets/css/novapharm-hig-motion.css";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";

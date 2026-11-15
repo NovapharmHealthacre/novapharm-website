@@ -4,6 +4,7 @@ import "./globals.css";
 import "../../../assets/css/novapharm-hig-colours.css";
 import "../../../assets/css/symbol-system.css";
 import "../../../assets/css/apple-hig-layout.css";
+import "../../../assets/css/novapharm-hig-motion.css";
 
 export const metadata: Metadata = {
   title: "Service Status | NovaPharm Healthcare",

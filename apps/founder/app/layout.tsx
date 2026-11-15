@@ -6,6 +6,7 @@ import { founderPersonSchema, websiteSchema } from "@/lib/seo";
 import "./base.css";
 import "./evidence.css";
 import "../../../assets/css/symbol-system.css";
+import "../../../assets/css/novapharm-hig-motion.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://vishal.novapharmhealthcare.com"),
