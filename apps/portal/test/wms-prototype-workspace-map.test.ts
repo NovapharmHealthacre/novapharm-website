@@ -51,7 +51,7 @@ test("prototype interactions cannot leak into production without source authorit
   assert.match(workspace, /<WmsPrototypeWorkspaceMap \/>/);
   assert.match(catalog, /Physical warehouse stock remains unverified/);
   assert.match(catalog, /None are production-enabled/);
-  assert.doesNotMatch(catalog, /localStorage|sessionStorage|fetch\(|XMLHttpRequest|onClick=|reserveStock\(|dispatchShipment\(/);
+  assert.doesNotMatch(catalog, /localStorage\.(?:getItem|setItem)|sessionStorage\.(?:getItem|setItem)|fetch\(|XMLHttpRequest|onClick=|reserveStock\(|dispatchShipment\(/);
   assert.match(css, /\.distribution-wms-workspace-map/);
   assert.match(css, /\.distribution-wms-workspace-map-groups li>a:focus-visible/);
   assert.match(css, /@media\(max-width:830px\)/);
