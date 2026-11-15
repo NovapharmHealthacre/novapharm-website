@@ -187,7 +187,7 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
         {isEditorialCustomerDashboard ? <>
           <PortalBrand home={areaLandingRoutes.customer} />
           <nav className="customer-primary-nav" aria-label="Customer workspace primary navigation">
-            {(["customer.dashboard", "customer.products", "customer.orders", "customer.documents", "customer.support"] as const).map((code) => {
+            {(["customer.dashboard", "customer.products", "customer.orders", "customer.account", "customer.documents", "customer.support"] as const).map((code) => {
               const entry = navigation.find((candidate) => candidate.code === code);
               return entry ? <a key={entry.code} href={entry.route} aria-current={entry.code === module.code ? "page" : undefined}>{entry.code === "customer.dashboard" ? "Overview" : entry.title.replace(/^My /, "")}</a> : null;
             })}
