@@ -196,3 +196,68 @@ export type ButtonProps = ComponentPropsWithoutRef<"button"> & Readonly<{ tone?:
 export function Button({ tone = "primary", className, ...props }: ButtonProps) {
   return <button {...props} className={classNames("np-button", `np-button--${tone}`, className)} />;
 }
+
+
+/**
+ * Presentational payment-request summary for web checkout.
+ *
+ * This is not Apple's Tap to Pay UI, an NFC reader, or a payment processor.
+ * Consumers pass a server-verified status and their approved PSP action.
+ * Never collect card data or claim payment success inside this component.
+ */
+export type PaymentRequestState = "requested" | "processing" | "paid" | "failed" | "cancelled";
+export type PaymentRequestSummaryProps = Readonly<{
+  merchantName: string;
+  amountMinor: number;
+  currency?: string;
+  state?: PaymentRequestState;
+  reference?: string;
+  actions?: ReactNode;
+}>;
+
+const paymentStates: Readonly<Record<PaymentRequestState, string>> = Object.freeze({
+  requested: "Awaiting payment",
+  processing: "Authorisation in progress",
+  paid: "Payment confirmed",
+  failed: "Payment unsuccessful",
+  cancelled: "Payment cancelled",
+});
+
+export function PaymentRequestSummary({
+  merchantName,
+  amountMinor,
+  currency = "GBP",
+  state = "requested",
+  reference,
+  actions,
+}: PaymentRequestSummaryProps) {
+  const titleId = React.useId();
+  const statusId = React.useId();
+  let amount = "Amount unavailable";
+  if (Number.isSafeInteger(amountMinor) && amountMinor >= 0) {
+    try {
+      const formatter = new Intl.NumberFormat("en-GB", { style: "currency", currency });
+      const minorDigits = formatter.resolvedOptions().maximumFractionDigits ?? 2;
+      amount = formatter.format(amountMinor / 10 ** minorDigits);
+    } catch {
+      // Incorrect currency configuration must never display a fabricated amount.
+    }
+  }
+  return <section className="np-payment-request" aria-labelledby={titleId} data-payment-ui="summary-only">
+    <header className="np-payment-request__header">
+      <p className="np-payment-request__eyebrow">Order payment</p>
+      <h2 id={titleId}>Payment request</h2>
+    </header>
+    <div className="np-payment-request__card">
+      <p className="np-payment-request__merchant">{merchantName}</p>
+      <p className="np-payment-request__amount" aria-label={`Amount requested: ${amount}`}>{amount}</p>
+      {reference ? <p className="np-payment-request__reference">Reference: {reference}</p> : null}
+      <p id={statusId} className="np-payment-request__status" role="status" aria-live="polite">{paymentStates[state]}</p>
+    </div>
+    <p className="np-payment-request__note">
+      Contactless card reading is not supported on this website. Use only the authorised
+      payment route supplied for your order.
+    </p>
+    {actions ? <div className="np-payment-request__actions" aria-describedby={statusId}>{actions}</div> : null}
+  </section>;
+}
