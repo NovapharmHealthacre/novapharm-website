@@ -3,13 +3,8 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 const read = (name) => readFileSync(new URL("../" + name, import.meta.url), "utf8");
-const adapted = [
-  "corporate",
-  "portal",
-  "technology",
-  "status",
-];
-const common = [
+const adapted = ["corporate", "portal", "technology", "status"];
+const shared = [
   "novapharm-hig-colours.css",
   "symbol-system.css",
   "apple-hig-layout.css",
@@ -18,46 +13,48 @@ const common = [
 ];
 
 for (const app of adapted) {
-  test(`${app} loads all five shared web-adaptation layers`, () => {
+  test(`${app} imports the complete shared web system`, () => {
     const layout = read(`apps/${app}/app/layout.tsx`);
-    for (const stylesheet of common) {
+    for (const stylesheet of shared) {
       assert.ok(layout.includes(`assets/css/${stylesheet}`),
-        `${app} missing ${stylesheet}; do not silently fork the system`);
+        `${app} is missing the shared design layer ${stylesheet}`);
     }
-    assert.ok(layout.includes(`data-np-estate="${app}"`),
-      `${app} must scope shared CSS to its own estate`);
+    assert.ok(layout.includes(`data-np-estate="${app}"`), "Shared CSS must have an estate scope");
     assert.ok(layout.indexOf("novapharm-apple-27-web-adaptation.css") >
-      layout.indexOf("apple-hig-layout.css"),
-      `${app} must load the platform interaction adaptation last`);
+      layout.indexOf("apple-hig-layout.css"), "Interactive override must follow layout source");
   });
 }
 
-test("Founder deliberately keeps independent dark editorial branding but uses shared lawful symbols and motion", () => {
+test("Founder retains its intentional dark identity, plus common symbols and motion", () => {
   const layout = read("apps/founder/app/layout.tsx");
   const styles = read("apps/founder/app/base.css");
-  assert.match(layout, /assets\\/css\\/symbol-system\\.css/);
-  assert.match(layout, /assets\\/css\\/novapharm-hig-motion\\.css/);
-  assert.match(styles, /--sans:\\s*system-ui/);
-  assert.match(styles, /color-scheme:\\s*dark/);
-  assert.doesNotMatch(layout, /novapharm-hig-colours\\.css/,
-    "Do not apply the light-only palette over Founder dark surfaces without visual acceptance");
+  assert.ok(layout.includes("assets/css/symbol-system.css"));
+  assert.ok(layout.includes("assets/css/novapharm-hig-motion.css"));
+  assert.ok(styles.includes("--sans: system-ui"));
+  assert.ok(styles.includes("color-scheme: dark"));
+  assert.ok(!layout.includes("assets/css/novapharm-hig-colours.css"),
+    "Do not force the light semantic palette onto the separately approved dark founder design");
 });
 
-test("Status uses the canonical accessible colour and minimum interaction size", () => {
+test("Status uses visible focus, a readable caption token and 44px actions", () => {
   const css = read("apps/status/app/globals.css");
-  assert.match(css, /--np-type-caption-size:\\s*0\\.875rem/);
-  assert.match(css, /\\.refresh-command\\s*\\{\\s*min-height:\\s*44px/);
-  assert.match(css, /\\.service-row\\s*>\\s*a\\s*\\{[^}]*min-height:\\s*44px/s);
-  assert.match(css, /\\.state-label\\s*\\{\\s*font-size:\\s*var\\(--np-type-caption-size/);
-  assert.match(css, /\\.private-boundary\\s*\\{[^}]*font-size:\\s*var\\(--np-type-caption-size/s);
-  assert.match(css, /:focus-visible\\s*\\{[^}]*--np-color-focus/s);
-  assert.match(css, /prefers-reduced-motion:\\s*reduce/);
+  const expected = [
+    "--np-type-caption-size: 0.875rem",
+    ".refresh-command { min-height: 44px;",
+    ".service-row > a { justify-self: start; min-height: 44px;",
+    ".state-label { font-size: var(--np-type-caption-size, 0.875rem); }",
+    ".private-boundary { color: var(--muted); font-size: var(--np-type-caption-size, 0.875rem); }",
+    ":focus-visible { outline: 3px solid var(--np-color-focus, #1067a5);",
+    "prefers-reduced-motion: reduce",
+  ];
+  for (const value of expected) assert.ok(css.includes(value), `Missing Status accessibility rule: ${value}`);
 });
 
-test("No proprietary Apple font package or native UI asset is imported by these roots", () => {
+test("Layout code does not embed proprietary Apple font or native UI packages", () => {
   for (const app of [...adapted, "founder"]) {
     const layout = read(`apps/${app}/app/layout.tsx`);
-    assert.doesNotMatch(layout, /\\.(?:otf|ttf|woff2?)["']/i);
-    assert.doesNotMatch(layout, /SF-Symbols-27\\.dmg|apple-ios-27-ui-kit/i);
+    for (const unsafe of [".otf", ".ttf", ".woff", "SF-Symbols-27.dmg", "apple-ios-27-ui-kit"]) {
+      assert.ok(!layout.includes(unsafe), `${app} imports a platform-only asset: ${unsafe}`);
+    }
   }
 });
