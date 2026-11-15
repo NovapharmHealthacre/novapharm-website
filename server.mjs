@@ -897,7 +897,7 @@ export async function handleRequest(request, response) {
       return;
     }
 
-    const orderAmendmentDecision = pathname.match(/^\\/api\\/admin\\/customer-order-amendments\\/([0-9a-f-]{36})\\/decision$/i);
+    const orderAmendmentDecision = pathname.match(/^\/api\/admin\/customer-order-amendments\/([0-9a-f-]{36})\/decision$/i);
     if (orderAmendmentDecision && request.method === "POST") {
       if (!requireCsrf(request)) return json(response, 403, { error: "Security token expired." });
       const session = await authenticated(request, response, ["admin"]);
