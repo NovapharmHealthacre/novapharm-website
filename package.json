@@ -40,7 +40,7 @@
     "design:typography:validate": "node scripts/test-official-typography-contract.mjs",
     "design:colours:validate": "node scripts/test-apple-hig-colours.mjs",
     "design:accessibility:validate": "node scripts/test-apple-hig-accessibility.mjs",
-    "design:branding:validate": "node scripts/test-apple-branding-previews.mjs",
+    "design:branding:validate": "node --test scripts/test-apple-preview-media-integrity.mjs && node scripts/test-apple-branding-previews.mjs",
     "intelligence:pharmacies:import": "tsx scripts/data/import-pharmacy-workbook.ts",
     "intelligence:pharmacies:geocode": "tsx scripts/data/geocode-pharmacies.ts",
     "intelligence:pharmacies:email-enrich": "tsx scripts/data/enrich-pharmacy-emails-dohs.ts",
