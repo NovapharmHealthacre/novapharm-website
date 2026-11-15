@@ -20,6 +20,8 @@ const permittedPaths = [
   /^v1\/intelligence\/readiness$/,
   /^enterprise\/search$/,
   /^enterprise\/customer\/(?:support|returns|quality-complaints)$/,
+  /^enterprise\/customer\/addresses$/,
+  /^admin\/customer-addresses\/[0-9a-f-]{36}\/decision$/i,
   /^enterprise\/workflows\/[a-z0-9._-]+\/advance$/,
   /^enterprise\/products\/[a-z0-9._-]+\/status$/,
   /^admin\/(?:summary|leads\/[a-z0-9._-]+|applications\/[a-z0-9._-]+(?:\/(?:status|activate))?|notifications\/[a-z0-9._-]+\/(?:replay|preview)|users\/[a-z0-9._%~-]+\/sessions\/revoke)$/,
