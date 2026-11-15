@@ -20,6 +20,7 @@ assert.deepEqual(files, [
 	"011_customer_address_requests.sql",
 	"012_order_ship_to_snapshot.sql",
 	"013_customer_address_replacements.sql",
+	"014_customer_order_amendment_requests.sql",
 ]);
 
 const sources = Object.fromEntries(
@@ -65,6 +66,10 @@ const addressReplacement = sources["013_customer_address_replacements.sql"];
 assert.match(addressReplacement, /replaces_address_id/i);
 assert.match(addressReplacement, /FK_customer_address_replaces/i);
 assert.match(addressReplacement, /COL_LENGTH/i);
+const orderAmendments = sources["014_customer_order_amendment_requests.sql"];
+assert.match(orderAmendments, /dbo\.customer_order_amendment_requests/i);
+assert.match(orderAmendments, /accepted_pending_execution/i);
+assert.match(orderAmendments, /REFERENCES dbo\.orders\(id\)/i);
 
 const activation = sources["003_backend_activation.sql"];
 for (const table of [
