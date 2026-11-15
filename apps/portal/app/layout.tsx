@@ -5,6 +5,7 @@ import "./apple-pharma-portal.css";
 import "./nutraxin-order-journey.css";
 import "./customer-editorial-dashboard.css";
 import "./employee-distribution.css";
+import "../../../assets/css/novapharm-hig-colours.css";
 
 export const metadata: Metadata = {
   title: "NovaPharm Secure Portal",
@@ -21,5 +22,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
-  return <html lang="en-GB"><body>{children}</body></html>;
+  return <html lang="en-GB" data-np-estate="portal"><body>{children}</body></html>;
 }
