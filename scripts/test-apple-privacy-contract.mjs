@@ -94,11 +94,11 @@ test("privacy access and browser-permission boundaries span the public estate an
   assert.match(founder, /Privacy by design and your choices/);
   assert.match(founder, /does not ask for location, camera, microphone/);
   assert.match(founder, /does not intentionally use advertising pixels/);
-  assert.match(status, /https:\/\/novapharmhealthcare\.com\/legal\/privacy\//);
+  assert.ok(status.includes('href="https://novapharmhealthcare.com/legal/privacy/"'), "status privacy link must use exact corporate origin");
   assert.match(status, /does not expose customer records/);
   assert.match(portal, /portal-privacy-note/);
   assert.match(portal, /No marketing consent is required to sign in/);
-  assert.match(portal, /https:\/\/novapharmhealthcare\.com\/legal\/privacy\//);
+  assert.ok(portal.includes('href="https://novapharmhealthcare.com/legal/privacy/"'), "portal privacy link must use exact corporate origin");
   assert.doesNotMatch(portal, /localStorage|sessionStorage/);
   assert.match(securePolicy, /camera=\(\), microphone=\(\), geolocation=\(\)/);
   assert.match(portalProxy, /Cache-Control", "no-store"/);
