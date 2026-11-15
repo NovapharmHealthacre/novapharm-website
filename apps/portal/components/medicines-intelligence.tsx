@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, type ReactNode, useEffect, useId, useRef, useState } from "react";
+import { type FormEvent, type ReactNode, useCallback, useEffect, useId, useRef, useState } from "react";
 import { intelligenceWorkspaceBySlug, intelligenceWorkspaceCatalogue, intelligenceWorkspaceGroups } from "../data/intelligence-workspaces";
 import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError } from "../lib/gateway";
@@ -696,6 +696,17 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   const selectionGenerationRef = useRef(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  // Close controls mount only when a user opens a drawer; the stable ref
+  // callback moves keyboard focus during that same React commit. The effect
+  // below also retries after paint when CSS visibility is transitioning.
+  const focusNavigationClose = useCallback((node: HTMLButtonElement | null) => {
+    menuCloseRef.current = node;
+    node?.focus({ preventScroll: true });
+  }, []);
+  const focusFiltersClose = useCallback((node: HTMLButtonElement | null) => {
+    filterCloseRef.current = node;
+    node?.focus({ preventScroll: true });
+  }, []);
   useEffect(() => {
     if (!menuOpen && !filtersOpen) return;
     const closeOnEscape = (event: KeyboardEvent) => {
@@ -971,7 +982,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
 
   return <main className={`${styles.shell} medicines-intelligence`}>
     <aside id="medicines-navigation-panel" className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ""}`} aria-label="Medicines Intelligence navigation">
-      <div className={styles.brand}><PharmaScopeBrand home={baseRoute} tone="reverse" /><p><strong>Medicines Intelligence</strong><span>by NovaPharm Healthcare</span></p><button ref={menuCloseRef} type="button" onClick={() => { setMenuOpen(false); menuToggleRef.current?.focus(); }}>Close navigation</button></div>
+      <div className={styles.brand}><PharmaScopeBrand home={baseRoute} tone="reverse" /><p><strong>Medicines Intelligence</strong><span>by NovaPharm Healthcare</span></p>{menuOpen ? <button ref={focusNavigationClose} type="button" onClick={() => { setMenuOpen(false); menuToggleRef.current?.focus(); }}>Close navigation</button> : null}</div>
       <nav className={`intelligence-local-nav ${styles.navigation}`} aria-label="Medicines Intelligence views">{visibleNavigationGroups.map((group) => <section key={group.label}><h2>{group.label}</h2><ul>{group.items.map(([key, label, href]) => <li key={key}><a href={detail ? `${href}?medicineId=${encodeURIComponent(detail.medicine.medicineId)}` : href} aria-current={current === key ? "page" : undefined}>{label}</a></li>)}</ul></section>)}</nav>
       <div className={styles.sidebarFoot}><p>{user.displayName}</p><span>{display(user.accessType)}</span><small>Protected, server-authorised, no public caching</small></div>
     </aside>
@@ -988,7 +999,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
       <div className={`data-context ${styles.dataContext}`}><span>{activeDataStateLabel(snapshot.dataState, analytics)}</span><span>{updatedLabel(snapshot.dataFreshness)}</span><span>Read only</span></div>
       <div className={styles.workspaceGrid}>
         <section className={styles.central}>{central}<section className={`${styles.boundary} intelligence-boundary`}><h2>Evidence boundary</h2><ul>{snapshot.notices.map((notice) => <li key={notice}>{notice}</li>)}</ul></section></section>
-        <aside id="medicines-context-panel" className={`${styles.rightRail} ${filtersOpen ? styles.rightRailOpen : ""}`} aria-label="Contextual intelligence"><div className={styles.railMobileHeader}><h2>Filters and context</h2><button ref={filterCloseRef} type="button" onClick={() => { setFiltersOpen(false); filterToggleRef.current?.focus(); }}>Close filters</button></div><ContextRail analytics={analytics} busy={busy} detail={detail} filters={filters} onChange={changeFilter} onReset={resetFilters} onRun={() => void runAnalytics()} snapshot={snapshot} /></aside>
+        <aside id="medicines-context-panel" className={`${styles.rightRail} ${filtersOpen ? styles.rightRailOpen : ""}`} aria-label="Contextual intelligence"><div className={styles.railMobileHeader}><h2>Filters and context</h2>{filtersOpen ? <button ref={focusFiltersClose} type="button" onClick={() => { setFiltersOpen(false); filterToggleRef.current?.focus(); }}>Close filters</button> : null}</div><ContextRail analytics={analytics} busy={busy} detail={detail} filters={filters} onChange={changeFilter} onReset={resetFilters} onRun={() => void runAnalytics()} snapshot={snapshot} /></aside>
       </div>
       {filtersOpen ? <button className={styles.railScrim} type="button" aria-label="Close filters" onClick={() => { setFiltersOpen(false); filterToggleRef.current?.focus(); }} /> : null}
     </section>
