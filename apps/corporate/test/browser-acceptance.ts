@@ -171,7 +171,19 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
     if (response.status() >= 400 && !response.request().isNavigationRequest()) failedResources.push(`${response.status()} ${response.url()}`);
   });
 
-  const response = await page.goto(`${baseUrl}${route}`, { waitUntil: "domcontentloaded", timeout: 30_000 });
+  // WebKit can intermittently stall a single local navigation on a busy CI runner.
+  // Retry that timeout once; never skip page, security, visual or accessibility assertions.
+  let response: Awaited<ReturnType<Page["goto"]>> = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      response = await page.goto(`${baseUrl}${route}`, { waitUntil: "domcontentloaded", timeout: 30_000 });
+      break;
+    } catch (error) {
+      if (engine !== "webkit" || attempt === 1 || !(error instanceof Error) ||
+          !/Timeout.*exceeded/.test(error.message)) throw error;
+      console.warn(`webkit: retrying navigation timeout for ${viewport.name} ${route}`);
+    }
+  }
   assert.ok(response, `${engine} ${route}: no navigation response`);
   const expectedStatus = route === "/acceptance-not-found/" ? 404 : 200;
   assert.equal(response.status(), expectedStatus, `${engine} ${route}: unexpected response status`);
