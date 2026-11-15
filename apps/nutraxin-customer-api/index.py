@@ -1066,14 +1066,18 @@ def account_detail_response(event, principal, method):
                 normal["id"]=address_id
                 if action=="editAddress" and updated_addresses[index]["kind"]!=normal["kind"]:
                     return error(409,"address_type_cannot_change")
-                if normal["isDefault"] or not any(
-                    item.get("kind")==normal["kind"] for item in updated_addresses
-                    if item.get("id")!=address_id):
+                peers=[item for item in updated_addresses
+                    if item.get("kind")==normal["kind"] and item.get("id")!=address_id]
+                if normal["isDefault"] or not peers:
                     normal["isDefault"]=True
-                if normal["isDefault"]:
-                    for item in updated_addresses:
-                        if item.get("kind")==normal["kind"]:
-                            item["isDefault"]=False
+                    for peer in peers:
+                        peer["isDefault"]=False
+                else:
+                    # Preserve exactly one default when a customer unticks the
+                    # previous default; historical order snapshots stay unchanged.
+                    fallback=next((peer for peer in peers if peer.get("isDefault") is True),peers[0])
+                    for peer in peers:
+                        peer["isDefault"]=peer is fallback
                 if action=="editAddress":
                     updated_addresses[index]=normal
                 else:
