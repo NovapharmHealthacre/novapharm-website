@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useId, useState } from "react";
+import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import { gatewayJson, professionalError } from "../lib/gateway";
 import styles from "./us-fda-label-discovery.module.css";
 
@@ -37,8 +37,20 @@ export function ClinicalTrialsDiscovery({ context = "evidence" }: Readonly<{ con
   const [intervention, setIntervention] = useState("");
   const [result, setResult] = useState<StudyResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const searchGeneration = useRef(0);
+  const searchScopeId = useId();
+  useEffect(() => () => { searchGeneration.current += 1; }, []);
+
+  function clearSearch() {
+    searchGeneration.current += 1;
+    setIntervention("");
+    setResult(null);
+    setLoading(false);
+    setStatus("Search public ClinicalTrials.gov study registrations by intervention.");
+  }
   const [status, setStatus] = useState("Search public ClinicalTrials.gov study registrations by intervention.");
   async function search(event: FormEvent<HTMLFormElement>) {
+    const generation = ++searchGeneration.current;
     event.preventDefault();
     const term = intervention.normalize("NFKC").trim().replace(/\s+/gu, " ");
     if (!/^[a-zA-Z][a-zA-Z0-9 -]{1,79}$/u.test(term)) {
@@ -53,15 +65,17 @@ export function ClinicalTrialsDiscovery({ context = "evidence" }: Readonly<{ con
       const source = await gatewayJson<StudyResponse>(
         `v1/intelligence/evidence/us/clinical-trials?intervention=${encodeURIComponent(term)}`,
       );
+      if (generation !== searchGeneration.current) return;
       setResult(source);
       setStatus(source.dataState === "no_source_matches"
         ? "No public study record was returned for this intervention. No inference has been made."
         : `${source.records.length} registry record(s) returned. Review the linked source directly.`);
     } catch (error) {
+      if (generation !== searchGeneration.current) return;
       setResult(null);
       setStatus(professionalError(error));
     } finally {
-      setLoading(false);
+      if (generation === searchGeneration.current) setLoading(false);
     }
   }
 
@@ -76,9 +90,11 @@ export function ClinicalTrialsDiscovery({ context = "evidence" }: Readonly<{ con
       <div className={styles.fields}>
         <input className={styles.input} id={fieldId} type="search" minLength={2} maxLength={80}
           autoComplete="off" spellCheck={false} placeholder="e.g. pembrolizumab"
-          value={intervention} onChange={(event) => setIntervention(event.currentTarget.value)} required />
+          value={intervention} onChange={(event) => { searchGeneration.current += 1; setIntervention(event.currentTarget.value); setResult(null); setLoading(false); }} aria-describedby={searchScopeId} enterKeyHint="search" required />
+        {intervention ? <button className={styles.clear} type="button" onClick={clearSearch} aria-label="Clear clinical study search">Clear</button> : null}
         <button className={styles.submit} type="submit" disabled={loading}>{loading ? "Checking registry…" : "Search studies"}</button>
       </div>
+      <p className={styles.sourceNote} id={searchScopeId}>Search scope: public ClinicalTrials.gov registrations by intervention. No search history is stored.</p>
       <p className={styles.sourceNote}>Do not enter patient information, names, confidential data or proprietary submissions.</p>
     </form>
     <p className={styles.status} role="status" aria-live="polite">{status}</p>

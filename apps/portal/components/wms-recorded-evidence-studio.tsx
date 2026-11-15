@@ -120,14 +120,20 @@ export function WmsRecordedEvidenceStudio({ snapshot }: Readonly<{ snapshot: Wms
         </fieldset> : null}
       </div>
       {hasWorklist ? <>
-        <label className="distribution-wms-evidence-search">Search recorded exceptions
-          <input type="search" value={search} maxLength={80}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Reference, domain or review team"/>
-        </label>
+        <div className="distribution-wms-evidence-search">
+          <label htmlFor="distribution-wms-search">Search recorded exceptions</label>
+          <div className="distribution-wms-evidence-search-control">
+            <input id="distribution-wms-search" type="search" value={search} maxLength={80}
+              aria-controls="distribution-wms-exception-list" enterKeyHint="search"
+              autoComplete="off" onChange={(event) => setSearch(event.target.value)}
+              placeholder="Reference, domain or review team"/>
+            {search ? <button type="button" onClick={() => setSearch("")} aria-label="Clear recorded exceptions search">Clear</button> : null}
+          </div>
+          <p>Search scope: authorised recorded exceptions in the current warehouse evidence sample, not live 3PL incidents.</p>
+        </div>
         <p role="status" aria-live="polite">Showing {worklist.length} matching recorded exceptions in this bounded sample.</p>
         {/* biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users need to scroll wide operational tables. */}
-        <section className="distribution-wms-evidence-table-scroll" tabIndex={0}
+        <section id="distribution-wms-exception-list" className="distribution-wms-evidence-table-scroll" tabIndex={0}
           aria-label="Scrollable recorded WMS exceptions">
           <table>
             <thead><tr><th scope="col">Priority</th><th scope="col">Area</th><th scope="col">Reference</th><th scope="col">Observed signal</th><th scope="col">Review team</th></tr></thead>
