@@ -11,6 +11,9 @@ const css = readFileSync(path.join(root, "app/design-system.css"), "utf8");
 test("corporate store links cannot be shown without explicit native-app publication approval", () => {
   assert.match(availability, /NOVAPHARM_APP_STORE_PUBLISHED !== "true"/);
   assert.match(availability, /NOVAPHARM_APP_STORE_DISPLAY_NAME/);
+  assert.match(availability, /NOVAPHARM_APP_STORE_ASSETS_VERIFIED !== "true"/);
+  assert.match(availability, /isValidAppStoreListing/);
+  assert.match(availability, /Apple and the Apple logo are trademarks of Apple Inc/);
   assert.match(availability, /NOVAPHARM_IOS_APP_STORE_URL/);
   assert.match(availability, /NOVAPHARM_MAC_APP_STORE_URL/);
   assert.match(availability, /AppleAppStoreBadges/);
@@ -18,4 +21,5 @@ test("corporate store links cannot be shown without explicit native-app publicat
   assert.doesNotMatch(footer, /apps\.apple\.com|app-store-black\.svg/);
   assert.match(css, /\.np-app-store-badges__link\{[^}]*margin:10px/);
   assert.match(css, /\.np-app-store-badges__artwork\{[^}]*height:40px/);
+  assert.match(css, /\.np-app-store-availability__legal/);
 });
