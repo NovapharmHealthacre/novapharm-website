@@ -1,0 +1,45 @@
+name: Apple HIG image presentation contract
+
+on:
+  pull_request:
+    paths:
+      - 'assets/css/sitewide-layout-integrity.css'
+      - 'assets/css/products-editorial.css'
+      - 'assets/css/novapharm.bundle.css'
+      - 'scripts/test-apple-image-guidelines.mjs'
+      - 'index.html'
+      - 'about/**'
+      - 'capabilities/**'
+      - 'leadership/**'
+      - 'oncology/**'
+      - 'products/**'
+      - '.github/workflows/apple-image-guidelines.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'assets/css/sitewide-layout-integrity.css'
+      - 'assets/css/products-editorial.css'
+      - 'assets/css/novapharm.bundle.css'
+      - 'scripts/test-apple-image-guidelines.mjs'
+      - 'index.html'
+      - 'about/**'
+      - 'capabilities/**'
+      - 'leadership/**'
+      - 'oncology/**'
+      - 'products/**'
+      - '.github/workflows/apple-image-guidelines.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  image-layout-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify image layout, intrinsic proportions and product containment
+        run: node --test scripts/test-apple-image-guidelines.mjs
