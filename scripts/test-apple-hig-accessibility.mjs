@@ -54,7 +54,7 @@ for (const [scriptPath, cssPath] of [
   const js = read(scriptPath);
   const css = read(cssPath);
   assert.match(js, /setAttribute\('role','group'\)/, `${scriptPath}: render accessible category button groups`);
-  assert.match(js, /aria-pressed="${state.category/, `${scriptPath}: selected category must be announced`);
+  assert.ok(js.includes('aria-pressed="${state.category'), `${scriptPath}: selected category must be announced`);
   assert.match(js, /class="chart-data"/, `${scriptPath}: chart must offer a data table`);
   assert.match(js, /e\.key!=='Tab'/, `${scriptPath}: modal must trap keyboard navigation`);
   assert.match(css, /\.tab\[aria-pressed=true\]/, `${cssPath}: selected category state must remain visible`);
