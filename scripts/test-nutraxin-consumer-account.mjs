@@ -113,3 +113,22 @@ test("password recovery stays with Cognito Managed Login and never exposes passw
  assert.ok(html.includes('href="/account-application/"'));
  assert.doesNotMatch(html,/data-admin-approve|data-business-role|data-wholesale-order/);
 });
+
+test("consumer onboarding is optional, role-bound and privacy-discoverable",()=>{
+ const html=read("products/nutraxin/account/index.html");
+ const css=read("assets/css/nutraxin-consumer-account.css");
+ const publicPanel=html.split('data-nx-account-public>')[1]?.split('data-nx-account-private')[0];
+ const privatePanel=html.split('data-nx-account-private hidden>')[1]?.split('data-nx-account-status')[0];
+ assert.ok(publicPanel?.includes("<details class=\"nx-account-help\">"));
+ assert.ok(privatePanel?.includes("<details class=\"nx-account-help\">"));
+ assert.match(publicPanel,/You can browse products and use the guest bag without registering/);
+ assert.match(publicPanel,/email and complete any required security checks/i);
+ assert.match(privatePanel,/privacy and data-rights information/);
+ assert.match(html,/href="#main">Skip to account content/);
+ assert.match(css,/\.nx-account-help summary:focus-visible/);
+ assert.match(css,/\.nx-skip-link:focus/);
+ assert.doesNotMatch(publicPanel,/data-admin-approve|data-wholesale-order|navigator\.credentials/);
+ const portal=read("portal/index.html");
+ assert.match(portal,/<details class="portal-account-help">/);
+ assert.match(portal,/This public website never asks for a portal username/);
+});
