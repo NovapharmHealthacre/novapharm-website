@@ -38,3 +38,16 @@ test("preview checksum is the SHA-256 of actual file bytes, not just metadata", 
   writeFileSync(media, Buffer.concat([readFileSync(media), Buffer.from(" edited")]));
   assert.notEqual(sha256OfFile(media), expected, "modified previews must not match the approved checksum");
 });
+
+
+test("a symlinked assets root outside the repository cannot pass validation", (t) => {
+  const temp = mkdtempSync(join(tmpdir(), "novapharm-preview-root-"));
+  t.after(() => rmSync(temp, { recursive: true, force: true }));
+  const checkout = join(temp, "checkout");
+  const external = join(temp, "external");
+  mkdirSync(checkout);
+  mkdirSync(external);
+  writeFileSync(join(external, "preview.mp4"), "synthetic fixture");
+  symlinkSync(external, join(checkout, "assets"));
+  assert.equal(resolvePreviewMedia(checkout, "/assets/preview.mp4"), null);
+});
