@@ -12,7 +12,9 @@ for (const rule of [
   "prefers-reduced-motion: reduce", "prefers-reduced-data: reduce",
   "forced-colors: active", "pointer: fine", "np-dialog-enter",
   "--np-motion-standard", "data-np-motion=\"enter\"",
-  "animation-iteration-count: 1 !important", "scroll-behavior: auto !important"
+  "animation-iteration-count: 1 !important", "scroll-behavior: auto !important",
+  ".hero-cinematic-grid", ".hero-cinematic-orbit", ".hero-signal-card",
+  ".module-hero-media picture img", "body[data-page=\"home\"] .pharma-home-media img"
 ]) assert.ok(source.includes(rule), `Missing motion invariant: ${rule}`);
 assert.ok(!/infinite/.test(legacy), "Perpetual background network animation must remain disabled");
 assert.ok(/animation:\s*none/.test(legacy), "Network visualization should be static");

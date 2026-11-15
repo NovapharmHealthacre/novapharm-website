@@ -50,3 +50,7 @@
 5. After merge, verify the exact deployed revision on each *independently deployed* production domain. A source merge alone is not proof that protected customer or Intelligence applications are live.
 
 The timing values are NovaPharm design decisions, **not** exact Apple-prescribed values. This is a source-level motion foundation, not a claim of 100% complete per-module QA or live deployment.
+
+### Existing public ambient animations
+
+The shared stylesheet additionally overrides five older, automatically looping visual effects in the public hero: animated grid, orbital circle, signal cards, module photography drift and homepage photography drift. These images remain fully visible as static artwork. Deliberate loading indicators with accompanying text are not disabled for users without reduced-motion preferences.
