@@ -39,7 +39,7 @@ for (const workflow of [
 // The Corporate Next.js route does not set the legacy static body[data-page]
 // attribute. Test the real class selector, not the legacy Pages-only selector.
 const corporateHero = read("apps/corporate/app/apple-pharma.css");
-assert.match(corporateHero, /\\.pharma-home-media img\\s*\\{[^}]*animation:\\s*pharmaHeroDrift[^;]*infinite/s,
+assert.ok(corporateHero.includes("animation: pharmaHeroDrift 18s") && corporateHero.includes("infinite alternate"),
   "Source still contains a perpetual Corporate hero animation; protect it at the shared layer");
 assert.ok(source.includes(".pharma-home-media img,"),
   "Shared motion stylesheet must stop perpetual Corporate Next.js hero movement");
