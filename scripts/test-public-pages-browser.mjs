@@ -280,6 +280,43 @@ for (const [engineName, browserType] of engines) {
             await page.locator("main").waitFor({ state: "visible", timeout: 15_000 });
             await dismissConsent(page);
             await materialiseLazyMedia(page);
+            // Apple HIG-inspired accessibility contract: actual keyboard and
+            // speech-friendly navigation behaviour, not only source assertions.
+            if (route.name === "home") {
+              const label = `${engineName} ${viewport.name}: navigation accessibility`;
+              const primaryNav = page.locator("[data-site-nav]");
+              const currentLinks = await primaryNav.locator('[aria-current="page"]').count();
+              assert.equal(currentLinks, 0, `${label}: home must not announce Company as the current page`);
+              const mobileToggle = page.locator("[data-nav-toggle]");
+              if (await mobileToggle.isVisible()) {
+                assert.equal(await mobileToggle.getAttribute("aria-label"), "Open navigation", label);
+                await mobileToggle.click();
+                assert.equal(await mobileToggle.getAttribute("aria-expanded"), "true", label);
+                assert.equal(await mobileToggle.getAttribute("aria-label"), "Close navigation", label);
+                await page.keyboard.press("Escape");
+                assert.equal(await mobileToggle.getAttribute("aria-expanded"), "false", label);
+                assert.equal(await mobileToggle.getAttribute("aria-label"), "Open navigation", label);
+                assert.equal(await mobileToggle.evaluate((node) => node === document.activeElement), true,
+                  `${label}: Escape must return focus to the toggle`);
+              }
+              if (viewport.name === "desktop-1440" && await page.locator("[data-mega-trigger]").count()) {
+                const trigger = page.locator("[data-mega-trigger]").first();
+                await trigger.focus();
+                assert.equal(await trigger.getAttribute("aria-expanded"), "true",
+                  `${label}: keyboard focus should reveal the category panel`);
+                await page.keyboard.press("ArrowDown");
+                assert.equal(await page.locator("[data-mega-panel].is-open a:focus").count(), 1,
+                  `${label}: ArrowDown should focus the first destination`);
+                await page.keyboard.press("Escape");
+                assert.equal(await trigger.getAttribute("aria-expanded"), "false",
+                  `${label}: Escape should dismiss category navigation`);
+                assert.equal(await trigger.evaluate((node) => node === document.activeElement), true,
+                  `${label}: Escape should return focus to its trigger`);
+              }
+              const motion = await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior);
+              assert.equal(motion, "auto", `${label}: OS Reduce Motion must disable smooth scrolling`);
+            }
+
             // Forensic Safari regression: a supplied PNG in source is not enough.
             // The real computed header must render the logo instead of pseudo-text.
             if (["home", "oncology", "products-overview", "capabilities"].includes(route.name)) {
