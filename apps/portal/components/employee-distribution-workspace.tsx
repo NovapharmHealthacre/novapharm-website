@@ -2,6 +2,7 @@
 
 import { employeeModules } from "@novapharm/portal-contracts";
 import { WmsPrototypeWorkspaceMap } from "./wms-prototype-workspace-map";
+import { WmsPilotFeedbackPanel } from "./wms-pilot-feedback-panel";
 
 /**
  * Premium employee distribution experience inside the EXISTING role-gated
@@ -156,6 +157,7 @@ export function EmployeeDistributionWorkspace({ moduleCode }: Readonly<{ moduleC
             </a> : null}
       </section>
       <WmsPrototypeWorkspaceMap />
+      <WmsPilotFeedbackPanel />
     </section>;
   }
 
