@@ -67,6 +67,28 @@ export async function submitCustomerAddress(input, context) {
   });
 }
 /** Administrator-only review queue. Route authorization is enforced by the API. */
+/** Customer may withdraw a pending request or retire their approved location.
+ * Administrative company addresses cannot be edited or disabled here.
+ */
+export async function disableCustomerAddress(id, context) {
+  assertRequestsEnabled();
+  const account = await accountFor(context);
+  if (typeof id !== "string" || !/^[0-9a-f-]{36}$/i.test(id)) throw blocked("Address not found.", 404);
+  return transaction(async () => {
+    const found = await one(`SELECT id, status FROM customer_account_addresses
+      WHERE id = ? AND customer_id = ?`, id, account.id);
+    if (!found) throw blocked("Address not found.", 404);
+    if (!["pending_review", "approved"].includes(found.status)) throw blocked("Address already inactive.");
+    const changed = await run(`UPDATE customer_account_addresses SET status = 'disabled', is_default = 0
+      WHERE id = ? AND customer_id = ? AND status = ?`, id, account.id, found.status);
+    if (!changed.changes) throw blocked("Address changed during request.");
+    await audit({ actor: context.username, action: "customer.address.disabled",
+      entityType: "customer_address", entityId: id,
+      before: { status: found.status }, after: { status: "disabled" },
+      details: { customerId: account.id } });
+    return { id, status: "disabled" };
+  });
+}
 export async function pendingCustomerAddressReviews() {
   // The administrator can view the empty disabled state without a 503 or un-applied migration.
   if (!requestsEnabled()) return { requests: [], requestsEnabled: false, approvalScope: "address_only", customerQualificationUnchanged: true };
