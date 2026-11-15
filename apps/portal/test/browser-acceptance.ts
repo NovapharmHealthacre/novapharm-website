@@ -648,6 +648,7 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
       `${engine}: reverse Tab escaped the navigation drawer`);
     await page.keyboard.press("Escape");
     assert.equal(await navToggle.getAttribute("aria-expanded"), "false");
+    await medicineNav.waitFor({ state: "hidden" });
     assert.equal(await medicineNav.isVisible(), false);
     assert.equal(await navToggle.evaluate((node) => node === document.activeElement), true,
       `${engine}: navigation Escape did not return focus`);
@@ -658,6 +659,7 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
       (node) => node === document.activeElement), true, `${engine}: filters did not receive focus`);
     await page.keyboard.press("Escape");
     assert.equal(await filterToggle.getAttribute("aria-expanded"), "false");
+    await contextPanel.waitFor({ state: "hidden" });
     assert.equal(await contextPanel.isVisible(), false);
     assert.equal(await filterToggle.evaluate((node) => node === document.activeElement), true,
       `${engine}: filter Escape did not return focus`);
