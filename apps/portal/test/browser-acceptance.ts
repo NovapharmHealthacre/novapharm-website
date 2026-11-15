@@ -269,7 +269,8 @@ async function inspectModule(
       assert.match(await page.locator('img[alt="NovaPharm Healthcare"]').getAttribute("src") ?? "", /novapharm-healthcare-logo\.svg/);
       if (module.code === "customer.dashboard") {
         assert.equal(await page.locator(".customer-editorial-packshots img").count(), 3);
-        assert.equal(await page.locator(".customer-primary-nav a").count(), 5);
+        assert.equal(await page.locator(".customer-primary-nav a").count(), 6);
+        assert.equal(await page.locator('.customer-primary-nav a[href="/portal/account/"]').count(), 1);
         await page.locator(".customer-editorial-hero h1").waitFor({ state: "visible" });
       }
     }
