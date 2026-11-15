@@ -295,3 +295,39 @@ body[data-route="/products/"] .np-products-page { background:#fff; color:#111114
  .np-products-page .npd-commerce-link h2{font-size:clamp(32px,9vw,44px)}
  .np-products-page .npd-commerce-link a{width:100%;max-width:300px;margin:4px auto}
 }
+/* Apple HIG image-alignment correction, 2026-11-15.
+   Keep the three-family art direction, but prevent merchandise and device
+   photographs from being pushed beyond their visible stage and panels. */
+.np-products-page .np-products-stage-nutraxin img {
+  width: 100%;
+  max-width: 100%;
+  margin-inline: 0;
+  object-fit: contain;
+  object-position: center bottom;
+}
+.np-products-page .np-products-stage-bed { left: 0; }
+.np-products-page .np-products-stage-trolley { right: 0; }
+.np-products-page .np-products-panel-art-nutraxin img {
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+}
+.np-products-page .np-products-esco-trolley { right: 0; }
+@media (max-width: 640px) {
+  .np-products-page .np-products-stage-nutraxin img {
+    width: 100%;
+    margin-left: 0;
+  }
+  .np-products-page .np-products-stage-bed { left: 0; }
+  .np-products-page .np-products-stage-trolley { right: 0; }
+  .np-products-page .np-products-panel-art-nutraxin img {
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .np-products-page .np-products-esco-trolley { right: 0; }
+}
