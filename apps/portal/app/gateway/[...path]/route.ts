@@ -21,6 +21,7 @@ const permittedPaths = [
   /^enterprise\/search$/,
   /^enterprise\/customer\/(?:support|returns|quality-complaints)$/,
   /^enterprise\/customer\/addresses$/,
+  /^enterprise\/customer\/addresses\/[0-9a-f-]{36}\/disable$/i,
   /^admin\/customer-addresses$/,
   /^admin\/customer-addresses\/[0-9a-f-]{36}\/decision$/i,
   /^enterprise\/workflows\/[a-z0-9._-]+\/advance$/,
