@@ -18,11 +18,16 @@ test("every approved main push dispatches an immutable AWS contact release", () 
   assert.match(dispatcher, /expected_sha="\$EXPECTED_SHA"/);
   assert.match(dispatcher, /\.ready == true and \.acceptingPublicSubmissions == true/);
 });
-test("canonical contact publication proves a durable synthetic receipt before deploying", () => {
+test("canonical contact publication verifies health and rejected anonymous access without sending email", () => {
   const canonical = get("publish-aws-contact-production.yml");
   assert.match(canonical, /expected_sha:/);
   assert.match(canonical, /test "\$\(git rev-parse HEAD\)" = "\$EXPECTED_SHA"/);
-  assert.match(canonical, /\.persisted == true and \.notificationAccepted == true/);
+  assert.match(canonical, /node --test scripts\/test-no-email-release-guard\.mjs/);
+  assert.match(canonical, /\.service == "novapharm-contact-intake" and \.ready == true and \.environment == "production"/);
+  assert.ok(canonical.includes('-X POST "$CONTACT_ORIGIN/contact"'));
+  assert.ok(canonical.includes("-H 'Content-Type: application/json' -d '{}'"));
+  assert.ok(canonical.includes('test "$rejected" = "403"'));
+  assert.doesNotMatch(canonical, /\.persisted == true and \.notificationAccepted == true/);
   assert.match(canonical, /data-live-b2b-enquiry-form/);
-  assert.match(canonical, /data-email-enquiry-form/);
+  assert.ok(canonical.includes("! grep -Fq 'data-email-enquiry-form'"));
 });

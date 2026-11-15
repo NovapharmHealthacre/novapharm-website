@@ -88,4 +88,35 @@ export const designSystemCss = String.raw`
   .np-portal-controls{display:grid}
 }
 @media(prefers-reduced-motion:reduce){.np-drawer{transition:none}}
+
+/* Semantic text roles match the public, corporate and operational estates. */
+:where(.np-navigation,.np-hero,.np-editorial,.np-product-explorer,.np-data-table,.np-form,.np-portal-controls){
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-optical-sizing:auto;
+}
+:where(.np-hero h1,.np-editorial h2,.np-mega-menu h2){
+  font-optical-sizing:auto;
+  overflow-wrap:break-word;
+}
+.np-hero h1{font-size:clamp(2.75rem,6vw,5rem)}
+:where(.np-hero__summary,.np-editorial__body p,.np-editorial__body li){
+  line-height:1.65;
+  max-width:68ch;
+}
+:where(.np-breadcrumbs,.np-state,.np-field__hint,.np-result-count){
+  line-height:1.45;
+}
+:where(.np-data-table th,.np-data-table td,.np-audit-history time){
+  font-variant-numeric:tabular-nums;
+}
+:where(.np-data-table th,.np-data-table td){overflow-wrap:break-word}
+@media(max-width:640px){
+  :where(.np-hero h1,.np-editorial h2,.np-editorial__body,.np-data-table th,.np-data-table td){
+    min-width:0;
+    overflow-wrap:break-word;
+  }
+}
+@media(prefers-contrast:more){
+  :where(.np-field__hint,.np-result-count){color:#1b2028}
+}
 `;

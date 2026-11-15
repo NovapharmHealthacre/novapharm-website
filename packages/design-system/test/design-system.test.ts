@@ -28,3 +28,15 @@ test("the governed registry covers every required component family", () => {
   ];
   assert.deepEqual([...componentRegistry].sort(), required.sort());
 });
+test("HIG typography supports coherent native families, scalable reading and data accuracy", () => {
+  assert.match(designTokens.typography.uiFamily, /system-ui/);
+  assert.match(designTokens.typography.monoFamily, /ui-monospace/);
+  assert.equal(designTokens.typography.readingLeading, 1.65);
+  assert.equal(designTokens.typography.interfaceLeading, 1.45);
+  assert.equal(designTokens.typography.readingMeasure, "68ch");
+  assert.match(designTokens.typography.display, /clamp/);
+  assert.match(designSystemCss, /font-optical-sizing:auto/);
+  assert.match(designSystemCss, /overflow-wrap:break-word/);
+  assert.match(designSystemCss, /font-variant-numeric:tabular-nums/);
+  assert.match(designSystemCss, /prefers-contrast:more/);
+});

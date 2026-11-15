@@ -58,7 +58,7 @@
     --signal: #d74c5a;
     --rule-dark: rgba(242, 239, 232, 0.17);
     --rule-light: rgba(13, 13, 15, 0.18);
-    --sans: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
     --serif: "Iowan Old Style", Baskerville, "Times New Roman", Times, serif;
     --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
     --page: min(92vw, 1440px);
@@ -2120,6 +2120,30 @@
     }
     #system-lattice {
       display: none;
+    }
+  }
+}
+@layer base {
+  /* Preserve the founder property's editorial identity while supporting web text zoom. */
+  :where(body, main, article) {
+    font-optical-sizing: auto;
+  }
+  :where(h1, h2, h3, h4) {
+    font-optical-sizing: auto;
+    overflow-wrap: break-word;
+  }
+  :where(.prose, .article-body, [data-typography="reading"]) :where(p, li, dd) {
+    max-width: 68ch;
+    line-height: 1.65;
+  }
+  :where(code, kbd, samp, pre, [data-typography="mono"]) {
+    font-family: var(--mono);
+    font-variant-ligatures: none;
+  }
+  @media (max-width: 640px) {
+    :where(h1, h2, h3, p, li, dd) {
+      overflow-wrap: break-word;
+      min-width: 0;
     }
   }
 }

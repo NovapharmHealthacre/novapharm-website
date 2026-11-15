@@ -1,5 +1,6 @@
 :root {
   color-scheme: only light;
+  font-optical-sizing: auto;
   --bg: #f3f5f4;
   --surface: #ffffff;
   --surface-2: #e9eeec;
@@ -28,6 +29,15 @@
   --np-type-compact: -apple-system, BlinkMacSystemFont, "Arial Narrow", "Segoe UI", Arial, sans-serif;
   --np-type-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   --np-type-editorial: "New York", "Iowan Old Style", Charter, Georgia, serif;
+  /* Semantic roles, derived from Apple's HIG principles for web reflow. */
+  --np-type-body-size: 1.0625rem;
+  --np-type-caption-size: 0.875rem;
+  --np-type-lead-size: clamp(1.125rem, 1.6vw, 1.375rem);
+  --np-type-display-size: clamp(2.75rem, 6vw, 5.75rem);
+  --np-type-section-size: clamp(1.875rem, 4vw, 4.25rem);
+  --np-type-reading-leading: 1.65;
+  --np-type-interface-leading: 1.45;
+  --np-type-measure: 68ch;
   --font: var(--np-type-ui);
   --serif: var(--np-type-editorial);
   --container: 1320px;
