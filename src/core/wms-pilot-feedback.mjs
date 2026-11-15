@@ -30,6 +30,7 @@ const isObject = (value) => value !== null && typeof value === "object" && !Arra
 
 export function wmsPilotAccess(context, env = process.env) {
   if (env.WMS_PILOT_FEEDBACK_ENABLED !== "true" ||
+      env.WMS_PILOT_DEPLOYMENT_SCOPE !== "isolated-staging" ||
       env.WMS_PILOT_DATA_MODE !== "synthetic" ||
       typeof env.WMS_PILOT_ALLOWLIST !== "string" || !env.WMS_PILOT_ALLOWLIST.trim()) {
     return Object.freeze({ allowed: false, reason: "pilot_environment_not_activated" });
