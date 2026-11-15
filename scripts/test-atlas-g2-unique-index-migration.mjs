@@ -137,6 +137,7 @@ test("nonunique, conflicting, sparse and partial G2 indexes fail instead of sile
   for (const wrong of [
     { name: "g2_unique", unique: false },
     { name: "g2_unique", unique: true, sparse: true },
+    { name: "g2_unique", unique: true, hidden: true },
     { name: "g2_unique", unique: true, partialFilterExpression: { status: "active" } },
     { name: "g2_unique", unique: true, expireAfterSeconds: 3600 },
     { name: "not_g2_unique", unique: false },

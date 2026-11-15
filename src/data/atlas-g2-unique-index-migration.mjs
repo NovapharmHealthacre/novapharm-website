@@ -19,7 +19,8 @@ const exactKeys = (actual, required) =>
 const correctIndex = (index, required) =>
   index?.name === INDEX &&
   index.unique === true && index.sparse !== true &&
-  index.partialFilterExpression == null && index.expireAfterSeconds == null &&
+  index.hidden !== true && index.partialFilterExpression == null &&
+  index.expireAfterSeconds == null &&
   (index.collation == null || index.collation.locale === "simple") &&
   exactKeys(index.key, required);
 
