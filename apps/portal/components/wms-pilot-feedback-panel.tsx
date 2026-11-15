@@ -20,6 +20,7 @@ type FeedbackResponse = Readonly<{
   dataMode: "synthetic_only";
   warehouseExecutionEnabled: false;
   entries: FeedbackEntry[];
+  canViewAdminSummary: boolean;
 }>;
 type PilotAdminSummary = Readonly<{
   dataMode: "synthetic_only";
@@ -35,11 +36,14 @@ const resultLabels: Record<FeedbackResult, string> = {
   needs_improvement: "Needs improvement",
 };
 const initialWorkspace = workspaces[0]?.code ?? "control-tower";
+// UI visibility is a build-time hint only; verified backend sessions and staging allowlists remain authoritative.
+const pilotUiEnabled = process.env.NEXT_PUBLIC_WMS_PILOT_UI_ENABLED === "true";
 
 export function WmsPilotFeedbackPanel() {
-  const [readState, setReadState] = useState<"loading" | "available" | "unavailable">("loading");
+  const [readState, setReadState] = useState<"loading" | "available" | "unavailable">(pilotUiEnabled ? "loading" : "unavailable");
   const [entries, setEntries] = useState<FeedbackEntry[]>([]);
   const [adminSummary, setAdminSummary] = useState<PilotAdminSummary | null>(null);
+  const [canViewAdminSummary, setCanViewAdminSummary] = useState(false);
   const [workspaceCode, setWorkspaceCode] = useState(initialWorkspace);
   const [result, setResult] = useState<FeedbackResult>("working");
   const [note, setNote] = useState("");
@@ -47,6 +51,7 @@ export function WmsPilotFeedbackPanel() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
+    if (!pilotUiEnabled) return;
     let cancelled = false;
     gatewayJson<FeedbackResponse>("enterprise/wms/pilot-feedback")
       .then((response) => {
@@ -57,16 +62,18 @@ export function WmsPilotFeedbackPanel() {
         }
         setEntries(response.entries);
         setReadState("available");
+        const isApprovedAdmin = response.canViewAdminSummary === true;
+        setCanViewAdminSummary(isApprovedAdmin);
+        if (isApprovedAdmin) {
+          gatewayJson<PilotAdminSummary>("enterprise/wms/pilot-feedback-summary")
+            .then((summary) => {
+              if (!cancelled && summary.dataMode === "synthetic_only" &&
+                  summary.warehouseExecutionEnabled === false) setAdminSummary(summary);
+            })
+            .catch(() => { /* Admin summary remains server-authorised. */ });
+        }
       })
       .catch(() => { if (!cancelled) setReadState("unavailable"); });
-    // This endpoint fails closed for ordinary employees. No tester can
-    // request another tester's feedback by altering browser state.
-    gatewayJson<PilotAdminSummary>("enterprise/wms/pilot-feedback-summary")
-      .then((response) => {
-        if (!cancelled && response.dataMode === "synthetic_only" &&
-            response.warehouseExecutionEnabled === false) setAdminSummary(response);
-      })
-      .catch(() => { /* Deliberate: only server-authorised admin sessions see the summary. */ });
     return () => { cancelled = true; };
   }, []);
 
@@ -88,12 +95,14 @@ export function WmsPilotFeedbackPanel() {
       setMessage("Pilot observation saved for review.");
       // Refresh the administrator's bounded multi-tester summary after a save.
       // The same endpoint remains inaccessible to ordinary employees.
-      gatewayJson<PilotAdminSummary>("enterprise/wms/pilot-feedback-summary")
-        .then((response) => {
-          if (response.dataMode === "synthetic_only" &&
-              response.warehouseExecutionEnabled === false) setAdminSummary(response);
-        })
-        .catch(() => { /* Server authorisation remains the only source of admin access. */ });
+      if (canViewAdminSummary) {
+        gatewayJson<PilotAdminSummary>("enterprise/wms/pilot-feedback-summary")
+          .then((response) => {
+            if (response.dataMode === "synthetic_only" &&
+                response.warehouseExecutionEnabled === false) setAdminSummary(response);
+          })
+          .catch(() => { /* Server authorisation remains the only source of admin access. */ });
+      }
     } catch (error) {
       setMessage(professionalError(error));
     } finally {
