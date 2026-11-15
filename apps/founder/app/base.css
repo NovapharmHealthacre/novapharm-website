@@ -2125,8 +2125,13 @@
 }
 @layer base {
   /* Preserve the founder property's editorial identity while supporting web text zoom. */
-  :where(body, main, article) { font-optical-sizing: auto; }
-  :where(h1, h2, h3, h4) { font-optical-sizing: auto; overflow-wrap: break-word; }
+  :where(body, main, article) {
+    font-optical-sizing: auto;
+  }
+  :where(h1, h2, h3, h4) {
+    font-optical-sizing: auto;
+    overflow-wrap: break-word;
+  }
   :where(.prose, .article-body, [data-typography="reading"]) :where(p, li, dd) {
     max-width: 68ch;
     line-height: 1.65;
@@ -2136,6 +2141,9 @@
     font-variant-ligatures: none;
   }
   @media (max-width: 640px) {
-    :where(h1, h2, h3, p, li, dd) { overflow-wrap: break-word; min-width: 0; }
+    :where(h1, h2, h3, p, li, dd) {
+      overflow-wrap: break-word;
+      min-width: 0;
+    }
   }
 }
