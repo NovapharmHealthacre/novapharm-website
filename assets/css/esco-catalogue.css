@@ -689,4 +689,6 @@
 .esco-page .esco-shop-mini-bag[hidden] {
   display: none !important;
 }
-\n.esco-search-scope{margin:4px 3px 12px;color:#626b76;font-size:.85rem;line-height:1.5}\n@media(forced-colors:active){.esco-search-icon{color:CanvasText}.esco-search:focus-visible{outline:3px solid Highlight}}\n
+
+.esco-search-scope{margin:4px 3px 12px;color:#626b76;font-size:.85rem;line-height:1.5}
+@media(forced-colors:active){.esco-search-icon{color:CanvasText}.esco-search:focus-visible{outline:3px solid Highlight}}
