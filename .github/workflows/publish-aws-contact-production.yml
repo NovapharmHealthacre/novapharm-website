@@ -48,6 +48,9 @@ on:
       - 'scripts/build-site.mjs'
       - 'scripts/version-public-visual-assets.mjs'
       - 'assets/css/homepage-editorial.css'
+      # The Apple-27-informed web foundation is part of the shipped public CSS.
+      - 'assets/css/novapharm-apple-27-web-adaptation.css'
+      - 'scripts/build-css-bundle.mjs'
       - 'scripts/validate-site.mjs'
       # Keep corporate app route parity and new commercial site releases in the
       # same AWS-backed publisher as the verified live contact service.
