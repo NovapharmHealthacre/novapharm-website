@@ -1,0 +1,53 @@
+/*
+ * NovaPharm Apple HIG accessibility web adaptation — 2026-11-15.
+ * WCAG 2.2 AA is the target, not an asserted independent certification.
+ * Original NovaPharm branding; no native Apple accessibility APIs or assets.
+ * Additive guardrails apply to the public corporate navigation and content.
+ */
+:root { --np-accessibility-contract: 1; }
+
+/* Visible bypass navigation must remain above sticky headers and overlays. */
+body .skip-link:focus-visible {
+  top: 0;
+  z-index: 2100;
+  outline: 3px solid var(--np-color-focus, #0056b3);
+  outline-offset: 3px;
+}
+
+/* A location reached through an in-page link must not sit behind the header. */
+:where(main[id], main [id], [role="main"][id]) {
+  scroll-margin-block-start: clamp(80px, 8rem, 140px);
+}
+
+/* Reinforce focus appearance without replacing users' system focus handling. */
+body .npd-header :is(a, button):focus-visible,
+body .npd-mega a:focus-visible {
+  outline: 3px solid var(--np-color-focus, #0056b3);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* Comfortable targets for touchscreen and switch/voice interactions. */
+.npd-header .npd-menu.nav-toggle { min-height: 44px; min-width: 44px; }
+@media (max-width: 1180px) {
+  .npd-header .npd-global-nav.site-nav > a { min-height: 44px; }
+}
+
+/* Preference-responsive presentation preserves the default visual design. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  .npd-header .npd-global-nav.site-nav > a,
+  .npd-header .npd-menu.nav-toggle,
+  .npd-header .npd-mega { transition: none; animation: none; }
+}
+@media (prefers-contrast: more) {
+  body .npd-header :is(a, button):focus-visible,
+  body .npd-mega a:focus-visible { outline-width: 4px; }
+  .npd-mega { border-bottom-color: var(--np-color-separator-strong, #54545a); }
+}
+@media (forced-colors: active) {
+  body .npd-header :is(a, button):focus-visible,
+  body .npd-mega a:focus-visible,
+  body .skip-link:focus-visible { outline-color: Highlight; }
+  .npd-header .npd-menu.nav-toggle { border: 1px solid ButtonText; }
+}
