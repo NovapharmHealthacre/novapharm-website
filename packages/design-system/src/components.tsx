@@ -5,7 +5,7 @@ import type {
   ReactNode,
 } from "react";
 import React from "react";
-import { cloneElement, isValidElement } from "react";
+import { cloneElement, isValidElement, useId } from "react";
 
 type LinkItem = Readonly<{ href: string; label: string; current?: boolean }>;
 type StatusTone = "neutral" | "positive" | "warning" | "critical";
@@ -156,8 +156,36 @@ export function Tabs({ label, tabs, activeId, onSelect }: Readonly<{ label: stri
   return <div className="np-tabs"><div role="tablist" aria-label={label}>{tabs.map((tab) => <button key={tab.id} type="button" role="tab" id={`${tab.id}-tab`} aria-controls={`${tab.id}-panel`} aria-selected={tab.id === active?.id} tabIndex={tab.id === active?.id ? 0 : -1} onClick={() => onSelect?.(tab.id)}>{tab.label}</button>)}</div>{active ? <div role="tabpanel" id={`${active.id}-panel`} aria-labelledby={`${active.id}-tab`}>{active.panel}</div> : null}</div>;
 }
 
-export function SearchField(props: Readonly<{ label: string; value: string; onChange: ChangeEventHandler<HTMLInputElement>; placeholder?: string }>) {
-  return <label className="np-search"><span>{props.label}</span><input type="search" value={props.value} onChange={props.onChange} placeholder={props.placeholder} /></label>;
+/** A scoped, accessible web search control. Suggestions and history remain opt-in to protect private data. */
+export function SearchField(props: Readonly<{
+  label: string;
+  value: string;
+  onChange: ChangeEventHandler<HTMLInputElement>;
+  placeholder?: string;
+  scope?: string;
+  onClear?: () => void;
+  resultsId?: string;
+  resultCount?: number;
+  busy?: boolean;
+}>) {
+  const id = useId();
+  const scopeId = `${id}-scope`;
+  const showClear = Boolean(props.onClear && props.value);
+  return <div className="np-search">
+    <label htmlFor={id}>{props.label}</label>
+    <div className={classNames("np-search__control", showClear && "np-search__control--clear")}>
+      <svg className="np-search__icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true" focusable="false"><circle cx="10.8" cy="10.8" r="6.8" /><path d="m16 16 5 5" /></svg>
+      <input id={id} type="search" value={props.value} onChange={props.onChange}
+        placeholder={props.placeholder ?? `Search ${props.label.toLowerCase()}`}
+        aria-describedby={props.scope ? scopeId : undefined}
+        aria-controls={props.resultsId}
+        aria-busy={props.busy || undefined}
+        enterKeyHint="search" />
+      {showClear ? <button className="np-search__clear" type="button" onClick={props.onClear} aria-label={`Clear ${props.label.toLowerCase()}`}>Clear</button> : null}
+    </div>
+    {props.scope ? <p className="np-search__scope" id={scopeId}>Search scope: {props.scope}</p> : null}
+    {typeof props.resultCount === "number" ? <p className="np-search__count" role="status" aria-live="polite">{props.resultCount.toLocaleString("en-GB")} {props.resultCount === 1 ? "result" : "results"}</p> : null}
+  </div>;
 }
 
 export function FilterGroup({ legend, children }: Readonly<{ legend: string; children: ReactNode }>) {
