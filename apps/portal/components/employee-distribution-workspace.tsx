@@ -3,6 +3,7 @@
 import { employeeModules } from "@novapharm/portal-contracts";
 import { WmsPrototypeWorkspaceMap } from "./wms-prototype-workspace-map";
 import { WmsPilotFeedbackPanel } from "./wms-pilot-feedback-panel";
+import { WmsRecordedEvidenceStudio, type WmsSnapshot } from "./wms-recorded-evidence-studio";
 
 /**
  * Premium employee distribution experience inside the EXISTING role-gated
@@ -74,7 +75,7 @@ function AllOperations() {
   </section>;
 }
 
-export function EmployeeDistributionWorkspace({ moduleCode }: Readonly<{ moduleCode: string }>) {
+export function EmployeeDistributionWorkspace({ moduleCode, snapshot }: Readonly<{ moduleCode: string; snapshot?: WmsSnapshot | null }>) {
   if (moduleCode === "employee.dashboard") {
     return <section className="distribution-employee" aria-labelledby="distribution-employee-title">
       <header className="distribution-employee-hero">
@@ -156,6 +157,7 @@ export function EmployeeDistributionWorkspace({ moduleCode }: Readonly<{ moduleC
               Open quality workspace
             </a> : null}
       </section>
+      <WmsRecordedEvidenceStudio snapshot={snapshot ?? null} />
       <WmsPrototypeWorkspaceMap />
       <WmsPilotFeedbackPanel />
     </section>;
