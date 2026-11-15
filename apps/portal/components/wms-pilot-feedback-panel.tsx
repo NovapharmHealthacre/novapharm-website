@@ -135,7 +135,7 @@ export function WmsPilotFeedbackPanel() {
         are required. This control does not enable stock movement, medicine supply or real dispatch.</p>
     </div> : null}
     {readState === "available" ? <div className="distribution-wms-pilot-grid">
-      <form onSubmit={submit} className="distribution-wms-pilot-form">
+      <form onSubmit={submit} className="distribution-wms-pilot-form" aria-busy={saving}>
         <h3>Record an observation</h3>
         <label htmlFor="distribution-pilot-workspace">Workspace</label>
         <select id="distribution-pilot-workspace" value={workspaceCode}
@@ -169,13 +169,13 @@ export function WmsPilotFeedbackPanel() {
         <h3>Your workspace results</h3>
         <p>{saved} of {workspaces.length} workspaces have a saved result in this private pilot.</p>
         {latest ? <p>Selected workspace: <strong>{resultLabels[latest.result]}</strong></p> : null}
-        <div className="distribution-wms-pilot-table">
-          <table>
+        <div className="distribution-wms-pilot-table" role="region" aria-label="Your workspace results, scrollable table" tabIndex={0}>
+          <table aria-label="Your workspace results">
             <thead><tr><th scope="col">Workspace</th><th scope="col">Your result</th></tr></thead>
             <tbody>{workspaces.map((workspace) => {
               const report = entries.find((entry) => entry.workspaceCode === workspace.code);
               return <tr key={workspace.code}>
-                <td>{workspace.label}</td>
+                <th scope="row">{workspace.label}</th>
                 <td data-outcome={report?.result ?? "not_tested"}>
                   {report ? resultLabels[report.result] : "Not tested"}</td>
               </tr>;
@@ -194,13 +194,13 @@ export function WmsPilotFeedbackPanel() {
         <span><strong>{adminSummary.counts.broken}</strong> Not working</span>
         <span><strong>{adminSummary.counts.needs_improvement}</strong> Needs improvement</span>
       </div>
-      <div className="distribution-wms-pilot-table">
-        <table>
+      <div className="distribution-wms-pilot-table" role="region" aria-label="Administrator pilot observations, scrollable table" tabIndex={0}>
+        <table aria-label="Administrator pilot observations">
           <thead><tr><th scope="col">Tester</th><th scope="col">Workspace</th>
             <th scope="col">Result</th><th scope="col">Observation</th></tr></thead>
           <tbody>{adminSummary.reports.map((entry) =>
             <tr key={`${entry.testerUsername}:${entry.workspaceCode}`}>
-              <td>{entry.testerUsername}</td><td>{entry.workspaceCode}</td>
+              <th scope="row">{entry.testerUsername}</th><td>{entry.workspaceCode}</td>
               <td>{resultLabels[entry.result]}</td><td>{entry.note || "No note provided"}</td>
             </tr>)}</tbody>
         </table>
