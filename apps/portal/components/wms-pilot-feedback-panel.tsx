@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
-import { gatewayJson, protectedMutation, professionalError } from "../lib/gateway";
+import { type FormEvent, useEffect, useState } from "react";
+import { gatewayJson, professionalError, protectedMutation } from "../lib/gateway";
 import { WMS_PROTOTYPE_WORKSPACE_MAP } from "./wms-prototype-workspace-map";
 
 const workspaces = WMS_PROTOTYPE_WORKSPACE_MAP.map((entry) => ({
