@@ -7,6 +7,7 @@ import { nutraxinProductForSelection } from "../data/nutraxin-order-intent";
 import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { areaLabels, areaLandingRoutes, areaScopes } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError, protectedMutation } from "../lib/gateway";
+import { CustomerAddressBook } from "./customer-address-book";
 import { CustomerCommerceWorkspace } from "./customer-commerce-workspace";
 import { EmployeeDistributionWorkspace } from "./employee-distribution-workspace";
 import { MedicinesIntelligence } from "./medicines-intelligence";
@@ -210,6 +211,7 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
             include account records, prices, orders, or entitlements. */}
         {module.area === "customer" && (module.code === "customer.dashboard" || module.code === "customer.products")
           ? <CustomerCommerceWorkspace moduleCode={module.code} /> : null}
+        {module.code === "customer.account" && user && snapshot ? <CustomerAddressBook /> : null}
         {module.area === "employee" && isEditorialEmployeeDistribution
           ? <EmployeeDistributionWorkspace moduleCode={module.code} /> : null}
         {user && snapshot && selectedNutraxinProduct ? <section className="nutraxin-selection-panel" aria-labelledby="nutraxin-selection-title">
