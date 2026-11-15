@@ -175,6 +175,7 @@ jobs:
           node --test scripts/test-nutraxin-retail-store.mjs
           node --test scripts/test-nutraxin-consumer-account.mjs
           npm run test:cookies
+          node --test scripts/test-apple-privacy-contract.mjs
           npm run validate:domain
           node scripts/stage-pages-artifact.mjs _site
           node --test scripts/test-intelligence-live-public-research.mjs
@@ -314,6 +315,11 @@ jobs:
           ! grep -Fq 'novapharm-ga4-id' _site/portal/index.html
           ! grep -Fq 'novapharm-ga4-id' _site/legal/cookies/index.html
           grep -Fq 'Google Analytics 4' _site/legal/cookies/index.html
+          grep -Fq 'id="privacy-by-design"' _site/legal/privacy/index.html
+          grep -Fq 'id="privacy-controls"' _site/legal/privacy/index.html
+          grep -Fq 'data-cookie-settings' _site/legal/privacy/index.html
+          grep -Fq 'data-cookie-settings' _site/legal/cookies/index.html
+          grep -Fq '2026-11-15-v1.3' _site/assets/js/cookie-consent.js
           test -s _site/assets/js/consent-analytics.js
           grep -Fq 'class="nx-purchase-progress"' _site/products/nutraxin/bag/index.html
           node scripts/check-links.mjs _site
@@ -609,6 +615,29 @@ jobs:
             sleep 5
           done
           echo "::error::Live organic metadata or inactive analytics contract did not match accepted release." >&2
+          exit 1
+      - name: Verify Apple privacy notice and consent version on the live domain
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 18); do
+            cache="privacy-${GITHUB_SHA}-${attempt}-$(date +%s)"
+            if curl --fail --silent --show-error --location --max-time 15 \
+                 -H 'Cache-Control: no-cache, no-store' "https://novapharmhealthcare.com/legal/privacy/?${cache}" -o /tmp/novapharm-live-privacy.html \
+              && curl --fail --silent --show-error --location --max-time 15 \
+                 -H 'Cache-Control: no-cache, no-store' "https://novapharmhealthcare.com/legal/cookies/?${cache}" -o /tmp/novapharm-live-cookies.html \
+              && curl --fail --silent --show-error --location --max-time 15 \
+                 -H 'Cache-Control: no-cache, no-store' "https://novapharmhealthcare.com/assets/js/cookie-consent.js?${cache}" -o /tmp/novapharm-live-cookie-consent.js \
+              && grep -Fq 'id="privacy-by-design"' /tmp/novapharm-live-privacy.html \
+              && grep -Fq 'id="privacy-controls"' /tmp/novapharm-live-privacy.html \
+              && grep -Fq 'data-cookie-settings' /tmp/novapharm-live-privacy.html \
+              && grep -Fq 'data-cookie-settings' /tmp/novapharm-live-cookies.html \
+              && grep -Fq '2026-11-15-v1.3' /tmp/novapharm-live-cookie-consent.js; then
+              echo 'Public privacy choices, reviewed notice sections and consent record version are live.'
+              exit 0
+            fi
+            sleep 5
+          done
+          echo '::error::Apple privacy release could not be verified on the live custom domain.'
           exit 1
       - name: Verify the approved About page on the production domain
         run: |

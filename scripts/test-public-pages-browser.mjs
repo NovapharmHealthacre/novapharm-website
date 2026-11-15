@@ -25,7 +25,8 @@ const routes = [
   { path: "/products/esco/", name: "esco-collection", required: "ESCO" },
   { path: "/products/marketplace/", name: "marketplace", required: "Everything, together." },
   { path: "/account-application/", name: "business-account", required: "An account is approved through evidence" },
-  { path: "/legal/privacy/", name: "privacy", required: "Privacy" }
+  { path: "/legal/privacy/", name: "privacy", required: "Privacy" },
+  { path: "/legal/cookies/", name: "cookies", required: "Cookie and storage notice" }
 ];
 const routeViewports = [
   { name: "mobile-390", width: 390, height: 844 },
@@ -343,6 +344,33 @@ for (const [engineName, browserType] of engines) {
             }
             const bodyText = (await page.locator("body").innerText()).replace(/\s+/g, " ");
             assert.ok(bodyText.includes(route.required), `${engineName} ${viewport.name} ${route.path}: required page marker missing`);
+
+            if (route.name === "privacy") {
+              const label = `${engineName} ${viewport.name}: privacy consent`;
+              assert.equal(await page.locator("#privacy-by-design").count(), 1, `${label}: approved privacy-by-design article missing from generated artifact`);
+              assert.match(await page.locator("dl.policy-meta").innerText(), /15 November 2026/, `${label}: revised review date not published`);
+              assert.match(await page.locator("dl.policy-meta").innerText(), /1\.4/, `${label}: current privacy notice version not published`);
+              assert.equal(await page.locator("#protected-device-resources").count(), 1, `${label}: protected-resource explanation not published`);
+              const settings = page.locator("[data-cookie-settings]").first();
+              await settings.click();
+              const dialog = page.locator("dialog.cookie-dialog");
+              await dialog.waitFor({ state: "visible" });
+              assert.equal(await dialog.locator('input[name="analytics"]').isChecked(), false, `${label}: analytics must be off by default`);
+              assert.equal(await dialog.locator('input[name="marketing"]').isDisabled(), true, `${label}: inactive marketing cannot be authorised`);
+              await dialog.locator('[data-consent-action="reject"]').click();
+              await dialog.waitFor({ state: "hidden" });
+              const consent = await page.evaluate(() => JSON.parse(window.localStorage.getItem("np_cookie_consent") ?? "null"));
+              assert.equal(consent?.version, "2026-11-15-v1.3", `${label}: current preference format not stored`);
+              assert.deepEqual(consent?.categories, { necessary: true, preferences: false, analytics: false, marketing: false }, `${label}: rejection did not persist`);
+            }
+
+            if (route.name === "cookies") {
+              const label = `${engineName} ${viewport.name}: cookie notice`;
+              const metadata = await page.locator("dl.policy-meta").innerText();
+              assert.match(metadata, /15 November 2026/, `${label}: reviewed cookie notice date not published`);
+              assert.match(metadata, /1\.3/, `${label}: reviewed cookie notice version not published`);
+              assert.ok(await page.getByRole("button", { name: "Cookie settings" }).count() >= 1, `${label}: settings action missing`);
+            }
 
             if (route.name === "capabilities") {
               const state = await page.evaluate(() => {

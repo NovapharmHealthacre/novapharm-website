@@ -5,6 +5,9 @@ on:
     paths:
       - .github/workflows/public-pages-browser-acceptance.yml
       - assets/css/**
+      - legal/**
+      - assets/js/cookie-consent.js
+      - assets/js/consent-analytics.js
       - assets/media/**
       - assets/*.png
       - index.html
@@ -34,6 +37,9 @@ on:
     paths:
       - .github/workflows/public-pages-browser-acceptance.yml
       - assets/css/**
+      - legal/**
+      - assets/js/cookie-consent.js
+      - assets/js/consent-analytics.js
       - assets/media/**
       - assets/*.png
       - index.html

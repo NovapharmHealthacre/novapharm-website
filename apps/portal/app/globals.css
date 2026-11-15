@@ -595,3 +595,13 @@ td[data-state="blocked"], td[data-state="failed"], td[data-state="suspended"] { 
 .account-access-help-body li + li { margin-top: 8px; }
 .account-access-help-links { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 17px; }
 .account-access-help-links a { color: #125a9c; text-underline-offset: 3px; }
+
+/* Protected sign-in privacy notice: quiet but accessible and never consent-gated. */
+.portal-privacy-note {
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: .875rem;
+  line-height: 1.6;
+}
+.portal-privacy-note a { color: var(--red-text); text-underline-offset: 3px; }
+.portal-privacy-note a:focus-visible { outline-offset: 4px; }
