@@ -15,7 +15,6 @@ const origin = "https://novapharmhealthcare.com";
 const issues = [];
 const advisories = [];
 const placements = [];
-const fileCache = new Map();
 const rasterExtensions = new Set([".avif", ".webp", ".jpg", ".jpeg", ".png"]);
 const mediaExtensions = new Set([...rasterExtensions, ".svg", ".gif"]);
 const track = execFileSync("git", ["ls-files", "-z"], { encoding: "utf8" })
@@ -26,7 +25,8 @@ const publicPages = track.filter(path =>
 );
 if (publicPages.length < 60) throw new Error("Image audit cannot silently drop public pages (" + publicPages.length + ")");
 const recordedAssets = track.filter(path =>
-  /^(?:assets\/media|assets\/brand)\//.test(path) &&
+  (/^assets\//.test(path) || /^apps\/[^/]+\/public\//.test(path) ||
+    /^[^/]+\.(?:png|webp|jpe?g|avif)$/i.test(path)) &&
   rasterExtensions.has(extname(path).toLowerCase())
 );
 if (recordedAssets.length < 300) throw new Error("Image audit cannot silently drop media assets (" + recordedAssets.length + ")");
@@ -125,6 +125,22 @@ for (const page of publicPages) {
   if (imageCount === 0) advisories.push({ page, issue: "No image elements; typography-only page" });
 }
 
+// Resolve every local CSS background photo and image URL as well as img/srcset.
+// Ignore inline color/font data and fragment-only mask references.
+const cssImagePaths = new Set();
+for (const css of track.filter(path => path.startsWith("assets/css/") && path.endsWith(".css"))) {
+  const source = readFileSync(join(root, css), "utf8");
+  for (const match of source.matchAll(/url\(\s*(?:"([^"]*)"|'([^']*)'|([^)]*))\s*\)/g)) {
+    const uri = (match[1] ?? match[2] ?? match[3] ?? "").trim();
+    if (!uri || uri.startsWith("data:") || uri.startsWith("#")) continue;
+    let pathname;
+    try { pathname = new URL(uri, new URL("/" + css, origin)).pathname; } catch { continue; }
+    if (!mediaExtensions.has(extname(pathname).toLowerCase())) continue;
+    const record = resolveAsset(uri, css, "CSS image URL");
+    if (record?.path) cssImagePaths.add(record.path);
+  }
+}
+
 const media = [];
 const seen = new Set();
 for (const name of recordedAssets) {
@@ -159,11 +175,11 @@ mkdirSync(dirname(output), { recursive: true });
 const report = {
   reviewed: new Date().toISOString(), guideline: "Apple HIG Images + Layout + Color, adapted to web",
   publicPages: publicPages.length, imagePlacements: placements.length,
-  rasterAssets: recordedAssets.length, issues, advisories,
+  rasterAssets: recordedAssets.length, cssImageReferences: cssImagePaths.size, issues, advisories,
   media, placements
 };
 writeFileSync(output, JSON.stringify(report, null, 2) + "\n");
 console.log(JSON.stringify({ pages: report.publicPages, placements: report.imagePlacements,
-  rasterAssets: report.rasterAssets, issues: issues.length, advisories: advisories.length,
+  rasterAssets: report.rasterAssets, cssImageReferences:report.cssImageReferences, issues: issues.length, advisories: advisories.length,
   firstIssues: issues.slice(0, 30), firstAdvisories: advisories.slice(0, 8) }, null, 2));
 if (issues.length) process.exitCode = 1;
