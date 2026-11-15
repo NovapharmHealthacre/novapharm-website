@@ -779,7 +779,13 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
         searchFieldRef.current?.focus();
       }
       if (event.key === "Escape" && document.activeElement === searchFieldRef.current) {
+        event.preventDefault();
+        selectionGenerationRef.current += 1;
+        issuedSearchRef.current = "";
+        setSearchText("");
         setSearchResponse(null);
+        setSearchStatus("Search cleared.");
+        setBusy(false);
       }
     }
     window.addEventListener("keydown", handleSearchShortcut);
