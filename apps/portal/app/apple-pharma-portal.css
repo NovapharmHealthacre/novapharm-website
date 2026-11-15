@@ -7,13 +7,17 @@
   --portal-red: #E3120B;
   --portal-red-text: #B30E09;
   --portal-red-soft: #fff3f4;
+  --np-type-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --np-type-compact: -apple-system, BlinkMacSystemFont, "Arial Narrow", "Segoe UI", Arial, sans-serif;
+  --np-type-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --np-type-editorial: "New York", "Iowan Old Style", Charter, Georgia, serif;
 }
 
 html,
 body {
   background: var(--portal-white);
   color: var(--portal-ink);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family: var(--np-type-ui);
 }
 
 body,
@@ -21,7 +25,7 @@ button,
 input,
 select,
 textarea {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family: var(--np-type-ui);
 }
 
 .eyebrow {
@@ -230,4 +234,20 @@ textarea {
     animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;
   }
+}
+
+/* All secure workspaces share the same native system-font roles. */
+:where(.workspace-shell, .login-layout) :is(code, kbd, samp, pre, [data-typography="mono"], .sku-code, .batch-code) {
+  font-family: var(--np-type-mono);
+  font-variant-ligatures: none;
+}
+:where(.workspace-shell, .login-layout) :is(table, .metric-value, .numerical-value, [data-numeric]) {
+  font-variant-numeric: tabular-nums;
+}
+:where(.workspace-shell, .login-layout) :is(.dense-table, .wms-table, .operational-table, [data-typography="compact"]) {
+  font-family: var(--np-type-compact);
+}
+:where(.workspace-shell, .login-layout) :is(.editorial-pullquote, [data-typography="editorial"]) {
+  font-family: var(--np-type-editorial);
+  font-optical-sizing: auto;
 }

@@ -13,8 +13,10 @@
     --white: #ffffff;
     --muted: #61656b;
     --muted-light: #b8bbc0;
-    --sans: "Avenir Next", Avenir, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Baskerville, Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --compact: -apple-system, BlinkMacSystemFont, "Arial Narrow", "Segoe UI", Arial, sans-serif;
+    --mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    --serif: "New York", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
     --shell: min(1480px, calc(100vw - 72px));
     --header: 88px;
     --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -53,4 +55,24 @@
     transition: transform .2s ease;
   }
   .skip-link:focus { transform: translateY(0); }
+
+  /* Typography roles preserve the technology site's own editorial presentation. */
+  :where(code, kbd, samp, pre, [data-typography="mono"]) {
+    font-family: var(--mono);
+    font-variant-ligatures: none;
+  }
+  :where(table, .metric-value, .data-value, [data-numeric]) {
+    font-variant-numeric: tabular-nums;
+  }
+  :where(.dense-table, .operational-table, [data-typography="compact"]) {
+    font-family: var(--compact);
+  }
+  :where(.editorial-pullquote, [data-typography="editorial"]) {
+    font-family: var(--serif);
+    font-optical-sizing: auto;
+  }
+  :where(input, select, textarea, button) {
+    font-family: var(--sans);
+    font-synthesis: none;
+  }
 }
