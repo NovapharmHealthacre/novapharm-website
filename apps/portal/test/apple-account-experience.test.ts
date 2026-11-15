@@ -32,7 +32,7 @@ test("password entry supports credential managers and accessible show-hide witho
   assert.match(login, /type=\{showPassword \? "text" : "password"\}/);
   assert.match(login, /aria-pressed=\{showPassword\}/);
   assert.match(login, /aria-label=\{showPassword \? "Hide password" : "Show password"\}/);
-  assert.match(login, /Sign in with password/);
+  assert.match(login, /Sign in securely/);
   assert.match(intelligence, /autoComplete="one-time-code"/);
   assert.match(intelligence, /autoComplete="current-password"/);
   assert.match(css, /\.login-password-field > button:focus-visible/);
