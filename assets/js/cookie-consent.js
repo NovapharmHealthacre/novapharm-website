@@ -8,7 +8,8 @@ function categoriesFrom(value = {}) {
     necessary: true,
     preferences: value.preferences === true,
     analytics: value.analytics === true,
-    marketing: value.marketing === true
+    // An inactive provider cannot be authorised by a manually modified storage record.
+    marketing: false
   };
 }
 
