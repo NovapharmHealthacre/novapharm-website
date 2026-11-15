@@ -212,7 +212,7 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
         {module.area === "customer" && (module.code === "customer.dashboard" || module.code === "customer.products")
           ? <CustomerCommerceWorkspace moduleCode={module.code} /> : null}
         {module.area === "employee" && isEditorialEmployeeDistribution
-          ? <EmployeeDistributionWorkspace moduleCode={module.code} /> : null}
+          ? <EmployeeDistributionWorkspace moduleCode={module.code} snapshot={user && snapshot ? snapshot : null} /> : null}
         {user && snapshot && selectedNutraxinProduct ? <section className="nutraxin-selection-panel" aria-labelledby="nutraxin-selection-title">
           <p className="nutraxin-selection-kicker">MY PRODUCTS / SELECTED REFERENCE</p>
           <h2 id="nutraxin-selection-title">{selectedNutraxinProduct.name}</h2>
