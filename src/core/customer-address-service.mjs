@@ -23,10 +23,10 @@ export async function customerAddressBook(context) {
       postcode, country_code, is_primary
     FROM organization_addresses WHERE organization_id = ? ORDER BY is_primary DESC, address_type`,
     account.organization_id);
-  const requests = await all(`SELECT id, address_kind, label, recipient_name, contact_phone,
+  const requests = requestsEnabled() ? await all(`SELECT id, address_kind, label, recipient_name, contact_phone,
       line_1, line_2, city, region, postcode, country_code, delivery_instructions,
       is_default, status, created_at, reviewed_at
-    FROM customer_account_addresses WHERE customer_id = ? ORDER BY created_at DESC`, account.id);
+    FROM customer_account_addresses WHERE customer_id = ? ORDER BY created_at DESC`, account.id) : [];
   return {
     account: { customerNumber: account.customer_number, legalName: account.legal_name,
       tradingName: account.trading_name, lifecycleStatus: account.lifecycle_status },
