@@ -54,8 +54,8 @@ export function WmsCapacityScenarioStudio() {
         <h3>Scenario output</h3>
         {result.status === "invalid_inputs" ? <p role="status">{result.reason}</p> : <>
           <div className="distribution-wms-capacity-metrics">
-            <div><span>Buffered demand</span><strong>{result.bufferedDemandLines?.toLocaleString()}</strong><small>Hypothetical lines</small></div>
-            <div><span>Estimated capacity</span><strong>{result.effectiveCapacityLines?.toLocaleString()}</strong><small>Hypothetical lines</small></div>
+            <div><span>Buffered demand</span><strong>{result.bufferedDemandLines?.toLocaleString("en-GB")}</strong><small>Hypothetical lines</small></div>
+            <div><span>Estimated capacity</span><strong>{result.effectiveCapacityLines?.toLocaleString("en-GB")}</strong><small>Hypothetical lines</small></div>
             <div><span>Required people</span><strong>{result.requiredMembers}</strong><small>Scenario only</small></div>
             <div><span>Additional people</span><strong>{result.additionalMembers}</strong><small>Above entered team</small></div>
           </div>
@@ -73,7 +73,7 @@ export function WmsCapacityScenarioStudio() {
           <div className="distribution-wms-capacity-zones">
             {result.zones.map((zone) => <div key={zone.zone}>
               <strong>{zone.zone}</strong>
-              <span>{zone.hypotheticalLines.toLocaleString()} lines</span>
+              <span>{zone.hypotheticalLines.toLocaleString("en-GB")} lines</span>
             </div>)}
           </div>
           <p className="distribution-wms-capacity-disclaimer">{result.reason}
