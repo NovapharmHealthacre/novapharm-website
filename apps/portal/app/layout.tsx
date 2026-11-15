@@ -10,6 +10,7 @@ import "../../../assets/css/symbol-system.css";
 import "../../../assets/css/apple-hig-layout.css";
 import "../../../assets/css/novapharm-hig-materials.css";
 import "../../../assets/css/novapharm-apple-27-web-adaptation.css";
+import "../../../assets/css/novapharm-hig-motion.css";
 
 export const metadata: Metadata = {
   title: "NovaPharm Secure Portal",

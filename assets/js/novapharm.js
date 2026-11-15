@@ -122,10 +122,10 @@ if (siteHeader) {
   window.addEventListener("scroll", updateHeader, { passive: true });
 }
 
-const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
 const saveData = navigator.connection?.saveData === true;
 
-if (!reducedMotion && !saveData) {
+if (!motionPreference.matches && !saveData && typeof IntersectionObserver !== "undefined") {
   document.documentElement.dataset.motion = "ready";
   const revealObserver = new IntersectionObserver((entries, observer) => {
     for (const entry of entries) {
@@ -139,6 +139,12 @@ if (!reducedMotion && !saveData) {
 } else {
   document.querySelectorAll("[data-reveal]").forEach((node) => node.classList.add("is-visible"));
 }
+// Allow a mid-session accessibility change without hiding any content.
+motionPreference.addEventListener?.("change", (event) => {
+  if (!event.matches) return;
+  document.documentElement.dataset.motion = "off";
+  document.querySelectorAll("[data-reveal]").forEach((node) => node.classList.add("is-visible"));
+});
 
 const networkStory = document.querySelector("[data-network-story]");
 if (networkStory) {

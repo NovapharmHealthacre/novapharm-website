@@ -50,6 +50,7 @@ on:
       - 'assets/css/homepage-editorial.css'
       # The Apple-27-informed web foundation is part of the shipped public CSS.
       - 'assets/css/novapharm-apple-27-web-adaptation.css'
+      - 'assets/css/novapharm-hig-motion.css'
       - 'scripts/build-css-bundle.mjs'
       - 'scripts/validate-site.mjs'
       # Keep corporate app route parity and new commercial site releases in the
