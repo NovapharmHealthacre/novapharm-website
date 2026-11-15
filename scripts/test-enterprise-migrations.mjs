@@ -15,6 +15,8 @@ const migrationFiles = [
   "008_source_period_governance.sql",
   "009_authoritative_bulk_observations.sql",
   "010_source_scoped_medicine_marts.sql",
+  "011_customer_address_requests.sql",
+  "012_order_ship_to_snapshot.sql",
 ];
 const expectedMigrations = new Map(migrationFiles.map((file) => {
   const source = readFileSync(resolve("database", "sqlite", file), "utf8");
@@ -26,7 +28,7 @@ const requiredTables = [
   "inventory_reservations", "inventory_movements", "shipments", "customer_statements", "goods_receipts",
   "supplier_invoices", "credit_notes", "journal_entries", "journal_lines", "quality_complaints", "quality_deviations", "change_controls", "capa_records",
   "regulatory_cases", "crm_opportunities", "document_versions", "workflow_instances", "domain_events",
-  "outbox_messages", "role_permissions", "security_replay_tokens",
+  "outbox_messages", "role_permissions", "security_replay_tokens", "customer_account_addresses",
   "data_source_registry", "source_resources", "source_schema_versions", "ingestion_runs", "ingestion_errors",
   "analytical_dataset_manifests", "dim_time", "dim_medicine", "medicine_aliases", "medicine_code_history",
   "dim_bnf", "bnf_hierarchy_history", "dim_geography", "dim_postcode", "postcode_geography_history",
@@ -57,6 +59,14 @@ async function validate(provider) {
   const tables = new Set((await provider.all("SELECT name FROM sqlite_master WHERE type = 'table'", [])).map((row) => row.name));
   for (const table of requiredTables) assert.ok(tables.has(table), `SQLite migration is missing ${table}.`);
   assert.deepEqual(await provider.all("PRAGMA foreign_key_check", []), []);
+  const orderColumns = new Set((await provider.all("PRAGMA table_info(orders)", [])).map(row => row.name));
+  for (const field of ["delivery_address_id", "delivery_address_snapshot_json"]) {
+    assert.ok(orderColumns.has(field), `Order records must retain immutable ship-to field ${field}.`);
+  }
+  const addressSql = (await provider.one("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'customer_account_addresses'", []))?.sql || "";
+  assert.match(addressSql, /pending_review/i);
+  assert.match(addressSql, /REFERENCES customers\(id\)/i);
+
   const balanceSql = (await provider.one("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'inventory_balances'", []))?.sql || "";
   assert.match(balanceSql, /reserved_quantity \+ available_quantity \+ quarantine_quantity <= on_hand_quantity/i);
   const journalSql = (await provider.one("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'journal_entries'", []))?.sql || "";
