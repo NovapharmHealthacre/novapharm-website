@@ -18,6 +18,7 @@ The following must be configured on a **dedicated, isolated pilot runtime** afte
 
 ```
 WMS_PILOT_FEEDBACK_ENABLED=true
+WMS_PILOT_DEPLOYMENT_SCOPE=isolated-staging
 WMS_PILOT_DATA_MODE=synthetic
 WMS_PILOT_ALLOWLIST=<comma-separated exact approved staging usernames>
 ```
