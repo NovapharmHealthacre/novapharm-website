@@ -164,8 +164,13 @@ test("read refuses until the exact compound unique rights constraint exists", as
     [{ ...requiredIndex, unique: false }],
     [{ ...requiredIndex, key: { workspace_id: 1, source_id: 1 } }],
     [{ ...requiredIndex, sparse: true }],
+    [{ ...requiredIndex, hidden: true }],
+    [{ ...requiredIndex, expireAfterSeconds: 3600 }],
+    [{ ...requiredIndex, name: "legacy_rights_unique" }],
     [{ ...requiredIndex, partialFilterExpression: { status: "active" } }],
-    [{ ...requiredIndex, collation: { locale: "en" } }]
+    [{ ...requiredIndex, collation: { locale: "en" } }],
+    [requiredIndex, { ...requiredIndex, name: "legacy_rights_unique" }],
+    [requiredIndex, { ...requiredIndex, unique: false, name: "legacy_rights_unique" }]
   ];
   for (const indexes of variants) {
     const s = setup([record()], { indexes });
