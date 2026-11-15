@@ -155,11 +155,11 @@
 .distribution-wms-workspace-map-groups li>div{min-width:0;display:flex;flex-direction:column;gap:5px}
 .distribution-wms-workspace-map-groups strong{font-size:.93rem;color:#1d1d1f;font-weight:650}
 .distribution-wms-workspace-map-groups span{color:#595961;font-size:.8rem;line-height:1.4}
-.distribution-wms-workspace-map-groups small{font-size:.76rem;line-height:1.45;color:#87878c}
+.distribution-wms-workspace-map-groups small{font-size:.76rem;line-height:1.45;color:#595961}
 .distribution-wms-workspace-map-groups li>a{color:#a30c1b;font-size:.79rem;font-weight:650;text-decoration:none;flex-shrink:0;white-space:nowrap}
 .distribution-wms-workspace-map-groups li>a:hover{text-decoration:underline;text-underline-offset:3px}
 .distribution-wms-workspace-map-groups li>a:focus-visible{outline:3px solid #0071e3;outline-offset:3px}
-.distribution-wms-workspace-map-groups .distribution-wms-awaiting-source{font-weight:600;color:#7b7b82;flex-shrink:0;max-width:108px;text-align:right}
+.distribution-wms-workspace-map-groups .distribution-wms-awaiting-source{font-weight:600;color:#51515a;flex-shrink:0;max-width:108px;text-align:right}
 .distribution-wms-workspace-map-disclaimer{font-size:.8rem;color:#73737a;line-height:1.6;max-width:95ch;border-top:1px solid #ededf0;padding:19px 0 0}
 @media(max-width:830px){.distribution-wms-workspace-map-groups{grid-template-columns:1fr;gap:26px}}
 @media(max-width:420px){.distribution-wms-workspace-map-groups li{align-items:flex-start;gap:8px}.distribution-wms-workspace-map-groups li>a,.distribution-wms-workspace-map-groups .distribution-wms-awaiting-source{font-size:.74rem}}
