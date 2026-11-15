@@ -24,6 +24,8 @@ on:
       - scripts/programme/validate-leadership-titles.mjs
       - scripts/test-owner-corrections.mjs
       - scripts/test-public-pages-browser.mjs
+      - scripts/test-intelligence-accessibility-browser.mjs
+      - assets/js/intelligence-workspace-*.js
       - scripts/test-public-sitemap-geometry.mjs
       - package.json
       - package-lock.json
@@ -51,6 +53,8 @@ on:
       - scripts/programme/validate-leadership-titles.mjs
       - scripts/test-owner-corrections.mjs
       - scripts/test-public-pages-browser.mjs
+      - scripts/test-intelligence-accessibility-browser.mjs
+      - assets/js/intelligence-workspace-*.js
       - package.json
       - package-lock.json
   workflow_dispatch:
@@ -97,6 +101,11 @@ jobs:
           PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310
           PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT: artifacts/public-pages-browser
         run: node scripts/test-public-pages-browser.mjs
+      - name: Verify Intelligence preview keyboard, chart and screen-reader contract
+        env:
+          PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310
+          PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT: artifacts/public-pages-browser
+        run: node scripts/test-intelligence-accessibility-browser.mjs
       - name: Upload rendered evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
