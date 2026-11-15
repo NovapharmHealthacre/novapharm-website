@@ -16,6 +16,11 @@ for (const article of articles) test('built Insights navigation uses the current
   const nav = nodes.find(x => x.tagName === 'nav' && attr(x, 'id') === 'primary-navigation');
   assert.ok(attr(header, 'class')?.split(/\s+/).includes('npd-header'));
   assert.ok(attr(nav, 'class')?.split(/\s+/).includes('npd-global-nav'));
+  const footer = nodes.find(x => x.tagName === 'footer');
+  const footerNodes = [];
+  const visitFooter = node => { footerNodes.push(node); for (const child of node?.childNodes ?? []) visitFooter(child); };
+  visitFooter(footer);
+  assert.ok(footerNodes.some(x => x?.tagName === 'a' && attr(x, 'href') === '/about/company/'), 'Company profile remains discoverable without a desktop mega-menu or JavaScript');
   assert.equal(nodes.filter(x => x.tagName === 'main').length, 1);
   assert.equal(nodes.filter(x => x.tagName === 'h1').length, 1);
   assert.ok(nodes.some(x => x.tagName === 'a' && attr(x, 'href') === '/account-application/'), 'Account entry remains available');

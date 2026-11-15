@@ -99,22 +99,42 @@ if (siteHeader) {
   window.addEventListener("scroll", updateHeader, { passive: true });
 }
 
-const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
 const saveData = navigator.connection?.saveData === true;
+const revealNodes = [...document.querySelectorAll("[data-reveal]")];
+let revealObserver;
+const revealAll = () => {
+  delete document.documentElement.dataset.motion;
+  revealObserver?.disconnect();
+  revealNodes.forEach((node) => node.classList.add("is-visible"));
+};
 
-if (!reducedMotion && !saveData) {
-  document.documentElement.dataset.motion = "ready";
-  const revealObserver = new IntersectionObserver((entries, observer) => {
-    for (const entry of entries) {
-      if (!entry.isIntersecting) continue;
-      entry.target.classList.add("is-visible");
-      observer.unobserve(entry.target);
-    }
-  }, { rootMargin: "0px 0px -12%", threshold: 0.08 });
-  document.querySelectorAll("[data-reveal]").forEach((node) => revealObserver.observe(node));
-
+if (revealNodes.length && !motionPreference.matches && !saveData && typeof window.IntersectionObserver === "function") {
+  try {
+    revealObserver = new window.IntersectionObserver((entries, observer) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      }
+    }, { rootMargin: "0px 0px -12%", threshold: 0.08 });
+    revealNodes.forEach((node) => revealObserver.observe(node));
+    document.documentElement.dataset.motion = "ready";
+  } catch {
+    // Optional animation must not hide content or interrupt navigation/forms.
+    revealAll();
+  }
 } else {
-  document.querySelectorAll("[data-reveal]").forEach((node) => node.classList.add("is-visible"));
+  revealAll();
+}
+
+const updateMotionPreference = () => {
+  if (motionPreference.matches) revealAll();
+};
+if (motionPreference.addEventListener) {
+  motionPreference.addEventListener("change", updateMotionPreference);
+} else {
+  motionPreference.addListener?.(updateMotionPreference);
 }
 
 const networkStory = document.querySelector("[data-network-story]");

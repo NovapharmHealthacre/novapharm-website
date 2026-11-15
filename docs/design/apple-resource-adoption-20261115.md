@@ -20,8 +20,8 @@ pixel specifications.
 | Resource | Inspection | Website decision |
 | --- | --- | --- |
 | iOS 27 UI-kit ZIP | ZIP integrity passes; 151 members: 150 PNGs and one SVG; no licence in archive | Native-interface reference only; not a full website component library; provenance and reuse rights not established from filename alone |
-| App Store badge ZIP | ZIP integrity passes; 224 SVG and 224 EPS files, plus directories/metadata | Hold until a genuine approved App Store listing and applicable marketing rights are verified |
-| Mac App Store badge ZIP | ZIP integrity passes; 224 SVG and 224 EPS files, plus directories/metadata | Same availability and rights gate; no implied Mac app release |
+| App Store badge ZIP | ZIP integrity passes; 112 SVG and 112 EPS artwork files, excluding AppleDouble metadata | Hold until a genuine approved App Store listing and applicable marketing rights are verified |
+| Mac App Store badge ZIP | ZIP integrity passes; 112 SVG and 112 EPS artwork files, excluding AppleDouble metadata | Same availability and rights gate; no implied Mac app release |
 | SwiftUI custom-layout sample ZIP | ZIP integrity passes; 12 Swift source files; MIT licence with copyright retention | Native layout-learning reference; no SwiftUI runtime or sample content transplanted into the web |
 | SF Pro | Apple-signed installer; packaged licence inspected without installation | Use OS-native font stack; do not embed downloaded binaries |
 | SF Compact | Apple-signed installer; packaged licence inspected without installation | Compact semantic role only; no downloaded web fonts |
@@ -37,6 +37,48 @@ All original files remain unchanged. Hashes, ZIP member lists, package signature
 receipts, extracted licence text and cancelled-mount diagnostics are retained in
 the local acceptance bundle, outside public assets. Temporary inspection mounts
 were read-only and detached; pre-existing user mounts were left alone.
+
+The supplementary resource inspection also covered the Arabic, Armenian, Georgian
+and Hebrew font packages; the macOS kit and App Clips archives; the icon-template
+image; the SwiftUI animation sample; and the supplied Tap to Pay screenshot.
+The additional Apple-signed fonts remain local reference resources, not embedded
+web fonts or evidence of completed localisation. The MIT-licensed SwiftUI sample
+is a native learning reference, not a web component dependency. The Tap to Pay
+image is illustrative in-person payment artwork with a placeholder merchant and
+USD amount, not a NovaPharm checkout or evidence of any payment integration.
+Duplicate archives and incomplete downloads are excluded from adoption. No new
+font installation, licence acceptance or public artwork redistribution occurred.
+
+## Required website baseline
+
+This is the owner's accepted design direction, not an Apple certification:
+
+- Use the existing semantic typography, colour and spacing roles. Preserve the
+  NovaPharm identity and responsive layout; do not imitate Apple branding.
+- Keep text, navigation and forms usable without decorative motion. Honour
+  Reduce Motion at load and when changed during a visit. Missing or failing
+  animation support must leave all content visible and other controls working.
+- Keep keyboard focus visible, including forced colours. Preserve user zoom,
+  readable captions, labelled controls, image alternatives and intrinsic ratios.
+- Use the existing web-licensed icons or original NovaPharm symbols. Do not
+  export SF Symbols or Apple platform artwork into the website.
+- Do not publish App Store badges, Sign in with Apple, App Clips or Tap to Pay
+  interfaces until the actual product/service and its separate acceptance and
+  applicable branding rights are established.
+- Test the built output and the exact release candidate. A static preview is
+  neither managed-contact acceptance nor a secure-portal production release.
+
+The baseline composes the existing typography, HIG colour, symbol adaptation and
+full-estate image contracts; it does not create another parallel design system.
+`scripts/test-public-motion-preferences.mjs` exercises the complete shared script
+with deterministic browser API failures and live preference changes. The visual
+workflow runs it before building the public preview. The built Insights contract
+also preserves a Company profile footer link so mobile and no-JavaScript visitors
+are not dependent on the desktop mega-menu.
+
+Badge inventory correction: the earlier 224-per-format totals counted AppleDouble
+metadata as artwork. The table above reports artwork only. Historical inspection
+receipts remain unchanged.
 
 ## Implemented correction
 
