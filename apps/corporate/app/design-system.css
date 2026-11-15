@@ -61,7 +61,7 @@ body, button, input, select, textarea {
 body {
   color: var(--nph-body);
   background: var(--nph-canvas);
-  font-size: 16px;
+  font-size: var(--np-type-body-size, 1rem);
   line-height: 1.62;
   letter-spacing: 0;
 }
