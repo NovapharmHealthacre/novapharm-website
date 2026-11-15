@@ -11,6 +11,14 @@
   --np-type-compact: -apple-system, BlinkMacSystemFont, "Arial Narrow", "Segoe UI", Arial, sans-serif;
   --np-type-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   --np-type-editorial: "New York", "Iowan Old Style", Charter, Georgia, serif;
+  --np-type-body-size: 1rem;
+  --np-type-caption-size: 0.875rem;
+  --np-type-lead-size: clamp(1.125rem, 1.6vw, 1.375rem);
+  --np-type-display-size: clamp(2.75rem, 6vw, 5.75rem);
+  --np-type-section-size: clamp(1.875rem, 4vw, 4.25rem);
+  --np-type-reading-leading: 1.65;
+  --np-type-interface-leading: 1.45;
+  --np-type-measure: 68ch;
 }
 
 html,
@@ -250,4 +258,35 @@ textarea {
 :where(.workspace-shell, .login-layout) :is(.editorial-pullquote, [data-typography="editorial"]) {
   font-family: var(--np-type-editorial);
   font-optical-sizing: auto;
+}
+/* Dense application views retain legibility when people enlarge text in a browser. */
+:where(.workspace-shell, .login-layout, .focused-layout) { font-optical-sizing: auto; }
+:where(.workspace-shell, .login-layout, .focused-layout) :where(h1, h2, h3, h4) {
+  font-optical-sizing: auto;
+  overflow-wrap: break-word;
+}
+:where(.workspace-shell, .login-layout, .focused-layout) :where(p, .field-hint, .help-text) {
+  line-height: var(--np-type-interface-leading);
+}
+:where(.workspace-shell, .login-layout) :where(.detail-body, .description, [data-typography="reading"]) {
+  line-height: var(--np-type-reading-leading);
+  max-width: var(--np-type-measure);
+}
+:where(.workspace-shell, .login-layout) :where(.audit-reference, .batch-number, .lot-number, .sku, [data-typography="mono"]) {
+  font-family: var(--np-type-mono);
+  font-variant-ligatures: none;
+}
+@media (max-width: 640px) {
+  :where(.workspace-shell, .login-layout) :where(h1, h2, h3, p, label, .help-text) {
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+  :where(.workspace-shell, .login-layout) :where(.action-row, .portal-actions, .toolbar-actions) {
+    flex-wrap: wrap;
+  }
+}
+@media (prefers-contrast: more) {
+  :where(.workspace-shell, .login-layout) :where(.help-text, .field-hint, .sidebar-label) {
+    color: var(--portal-ink);
+  }
 }
