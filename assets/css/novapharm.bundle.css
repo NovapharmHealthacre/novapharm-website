@@ -11022,6 +11022,255 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
   overflow-wrap: break-word;
 }
 
+/* Source: novapharm-hig-colours.css */
+/*
+ * NOVAPHARM / SEMANTIC COLOUR SYSTEM
+ * Guided by Apple's Human Interface Guidelines > Color (Nov 2026).
+ * These are NovaPharm WEB semantic tokens, not copies of Apple's dynamic native APIs.
+ * The corporate and portal UIs currently opt into a light appearance. Dark is
+ * available for components deliberately built and tested for that appearance.
+ */
+:root {
+  color-scheme: light;
+  --np-color-canvas: #ffffff;
+  --np-color-surface: #f5f5f7;
+  --np-color-surface-recessed: #e8e8ed;
+  --np-color-surface-raised: #ffffff;
+  --np-color-label: #1d1d1f;
+  --np-color-secondary-label: #424245;
+  --np-color-tertiary-label: #595961;
+  --np-color-placeholder: #6e6e73;
+  --np-color-separator: #d2d2d7;
+  --np-color-separator-strong: #86868b;
+  --np-color-link: #0066cc;
+  --np-color-accent: #e3120b;
+  --np-color-accent-strong: #b30e09;
+  --np-color-accent-soft: #fff2f1;
+  --np-color-on-accent: #ffffff;
+  --np-color-primary-action: #1d1d1f;
+  --np-color-on-primary-action: #ffffff;
+  --np-color-primary-action-hover: #343437;
+  --np-color-success: #17745a;
+  --np-color-warning: #965c0d;
+  --np-color-destructive: #9e1b47;
+  --np-color-focus: #0066cc;
+  --np-color-selection: #f9dfdd;
+}
+
+/*
+ * A semantic dark palette is provided WITHOUT forcing dark styles onto
+ * existing light-only pages. Set data-np-color-scheme="dark" for a reviewed
+ * dark experience, or "system" to opt into OS-driven appearance.
+ */
+:root[data-np-color-scheme="dark"] {
+  color-scheme: dark;
+  --np-color-canvas: #0f0f10;
+  --np-color-surface: #1c1c1e;
+  --np-color-surface-recessed: #2c2c2e;
+  --np-color-surface-raised: #252527;
+  --np-color-label: #f5f5f7;
+  --np-color-secondary-label: #d1d1d6;
+  --np-color-tertiary-label: #aeaeb2;
+  --np-color-placeholder: #a1a1a8;
+  --np-color-separator: #48484a;
+  --np-color-separator-strong: #8e8e93;
+  --np-color-link: #80bcff;
+  --np-color-accent: #ff7370;
+  --np-color-accent-strong: #ffa49f;
+  --np-color-accent-soft: #402021;
+  --np-color-on-accent: #1d1d1f;
+  --np-color-primary-action: #f5f5f7;
+  --np-color-on-primary-action: #1d1d1f;
+  --np-color-primary-action-hover: #e5e5e7;
+  --np-color-success: #65d6a9;
+  --np-color-warning: #f0c671;
+  --np-color-destructive: #ff97ad;
+  --np-color-focus: #80bcff;
+  --np-color-selection: #493238;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-np-color-scheme="system"] {
+    color-scheme: dark;
+    --np-color-canvas: #0f0f10;
+    --np-color-surface: #1c1c1e;
+    --np-color-surface-recessed: #2c2c2e;
+    --np-color-surface-raised: #252527;
+    --np-color-label: #f5f5f7;
+    --np-color-secondary-label: #d1d1d6;
+    --np-color-tertiary-label: #aeaeb2;
+    --np-color-placeholder: #a1a1a8;
+    --np-color-separator: #48484a;
+    --np-color-separator-strong: #8e8e93;
+    --np-color-link: #80bcff;
+    --np-color-accent: #ff7370;
+    --np-color-accent-strong: #ffa49f;
+    --np-color-accent-soft: #402021;
+    --np-color-on-accent: #1d1d1f;
+    --np-color-primary-action: #f5f5f7;
+    --np-color-on-primary-action: #1d1d1f;
+    --np-color-primary-action-hover: #e5e5e7;
+    --np-color-success: #65d6a9;
+    --np-color-warning: #f0c671;
+    --np-color-destructive: #ff97ad;
+    --np-color-focus: #80bcff;
+    --np-color-selection: #493238;
+  }
+}
+@media (prefers-contrast: more) {
+  :root {
+    --np-color-secondary-label: #303034;
+    --np-color-tertiary-label: #424245;
+    --np-color-placeholder: #424245;
+    --np-color-separator: #86868b;
+    --np-color-separator-strong: #54545a;
+    --np-color-link: #004a99;
+    --np-color-accent: #b30e09;
+    --np-color-focus: #004a99;
+  }
+  :root[data-np-color-scheme="dark"] {
+    --np-color-secondary-label: #f5f5f7;
+    --np-color-tertiary-label: #d1d1d6;
+    --np-color-placeholder: #d1d1d6;
+    --np-color-separator: #aeaeb2;
+    --np-color-separator-strong: #d1d1d6;
+    --np-color-link: #a6d1ff;
+    --np-color-accent: #ffa49f;
+    --np-color-accent-strong: #ffcac7;
+    --np-color-on-accent: #1d1d1f;
+    --np-color-focus: #a6d1ff;
+  }
+}
+@media (prefers-color-scheme: dark) and (prefers-contrast: more) {
+  :root[data-np-color-scheme="system"] {
+    --np-color-secondary-label: #f5f5f7;
+    --np-color-tertiary-label: #d1d1d6;
+    --np-color-placeholder: #d1d1d6;
+    --np-color-separator: #aeaeb2;
+    --np-color-separator-strong: #d1d1d6;
+    --np-color-link: #a6d1ff;
+    --np-color-accent: #ffa49f;
+    --np-color-accent-strong: #ffcac7;
+    --np-color-on-accent: #1d1d1f;
+    --np-color-focus: #a6d1ff;
+  }
+}
+
+/* Public static website: replace unrelated green-tinted surfaces with a
+ * neutral editorial hierarchy. These aliases do not affect independent apps. */
+:root:not([data-np-estate]) {
+  --bg: var(--np-color-surface);
+  --surface: var(--np-color-surface-raised);
+  --surface-2: var(--np-color-surface);
+  --surface-3: var(--np-color-surface-recessed);
+  --paper: var(--np-color-canvas);
+  --ink: var(--np-color-label);
+  --text: var(--np-color-secondary-label);
+  --muted: var(--np-color-tertiary-label);
+  --line: var(--np-color-separator);
+  --line-strong: var(--np-color-separator-strong);
+  --brand: var(--np-color-accent);
+  --brand-2: var(--np-color-accent-strong);
+  --brand-text: var(--np-color-accent-strong);
+  --blue: var(--np-color-link);
+  --green: var(--np-color-success);
+  --danger: var(--np-color-destructive);
+}
+/* Each app retains page layout and product-specific imagery. Semantic aliases
+ * align the primitives that its existing components actually consume. */
+:root[data-np-estate="corporate"] {
+  --nph-canvas: var(--np-color-canvas);
+  --nph-silver: var(--np-color-surface);
+  --nph-ink: var(--np-color-label);
+  --nph-body: var(--np-color-secondary-label);
+  --nph-muted: var(--np-color-tertiary-label);
+  --nph-line: var(--np-color-separator);
+  --nph-link: var(--np-color-link);
+  --nph-accent: var(--np-color-accent);
+  --apple-ink: var(--np-color-label);
+  --apple-muted: var(--np-color-placeholder);
+  --apple-line: var(--np-color-separator);
+  --apple-soft: var(--np-color-surface);
+  --apple-white: var(--np-color-canvas);
+}
+:root[data-np-estate="portal"] {
+  --portal-ink: var(--np-color-label);
+  --portal-muted: var(--np-color-placeholder);
+  --portal-line: var(--np-color-separator);
+  --portal-soft: var(--np-color-surface);
+  --portal-white: var(--np-color-canvas);
+  --portal-red: var(--np-color-accent);
+  --portal-red-text: var(--np-color-accent-strong);
+  --portal-red-soft: var(--np-color-accent-soft);
+  --focus: var(--np-color-focus);
+}
+:root[data-np-estate="status"] {
+  --ink: var(--np-color-label);
+  --muted: var(--np-color-tertiary-label);
+  --line: var(--np-color-separator);
+  --soft: var(--np-color-surface);
+  --white: var(--np-color-canvas);
+  --red: var(--np-color-destructive);
+  --red-dark: var(--np-color-destructive);
+  --blue: var(--np-color-link);
+  --green: var(--np-color-success);
+  --amber: var(--np-color-warning);
+}
+:root[data-np-estate="technology"] {
+  --paper: var(--np-color-canvas);
+  --paper-bright: var(--np-color-surface);
+  --mist: var(--np-color-surface-recessed);
+  --muted: var(--np-color-tertiary-label);
+  --red: var(--np-color-accent);
+  --red-deep: var(--np-color-accent-strong);
+}
+
+/* Meaningful colours are opt-in for new components, never inferred from
+ * decorative red text, links or screenshots. Statuses must include text. */
+:where([data-np-colour-role="surface"]) {
+  background-color: var(--np-color-surface);
+  color: var(--np-color-label);
+}
+:where([data-np-colour-role="raised"]) {
+  background-color: var(--np-color-surface-raised);
+  color: var(--np-color-label);
+}
+:where([data-np-colour-role="secondary"]) { color: var(--np-color-secondary-label); }
+:where([data-np-colour-role="link"]) { color: var(--np-color-link); }
+:where([data-np-colour-role="primary-action"]) {
+  background: var(--np-color-primary-action);
+  color: var(--np-color-on-primary-action);
+}
+:where([data-np-colour-role="brand-action"]) {
+  background: var(--np-color-accent);
+  color: var(--np-color-on-accent);
+}
+:where([data-np-colour-role="primary-action"]):hover {
+  background: var(--np-color-primary-action-hover);
+}
+:where([data-np-colour-role="brand-action"]):hover {
+  background: var(--np-color-accent-strong);
+}
+:where([data-np-status="success"]) { color: var(--np-color-success); }
+:where([data-np-status="warning"]) { color: var(--np-color-warning); }
+:where([data-np-status="error"]) { color: var(--np-color-destructive); }
+:where([data-np-status="info"]) { color: var(--np-color-link); }
+:where(a, button, input, select, textarea, summary, [role="button"]):focus-visible {
+  outline: 3px solid var(--np-color-focus);
+  outline-offset: 3px;
+}
+:where(input, select, textarea)::placeholder { color: var(--np-color-placeholder); }
+::selection { background: var(--np-color-selection); color: var(--np-color-label); }
+@media (forced-colors: active) {
+  :where(a, button, input, select, textarea, summary, [role="button"]):focus-visible {
+    outline-color: Highlight;
+    forced-color-adjust: auto;
+  }
+  :where([data-np-colour-role="primary-action"], [data-np-colour-role="brand-action"]) {
+    border: 1px solid ButtonText;
+    forced-color-adjust: auto;
+  }
+}
+
 /* Source: novapharm-hig-materials.css */
 /*
  * NOVAPHARM / SEMANTIC WEB MATERIALS
