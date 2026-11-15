@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { allocateNumber, audit, enqueue, insertIgnore, nowIso, one, run, stableHash, transaction, all } from "../data/database.mjs";
 import { sharePointFolderPath } from "./sharepoint-mapping.mjs";
 import { assertEnterpriseOrderSubmissionAllowed } from "./enterprise-order-release-gate.mjs";
+import { resolveCustomerShipTo } from "./customer-delivery-destination.mjs";
 
 function required(value, name) {
   const clean = String(value ?? "").replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim();
@@ -494,10 +495,17 @@ export async function activateCustomer(applicationId, actor) {
 export async function createOrder(input, actor, scopedCustomerId = null) {
   // In production/staging, no order, number, reservation or outbox write may
   // occur until an independently accepted release authority is integrated.
-  assertEnterpriseOrderSubmissionAllowed();
+  const release = assertEnterpriseOrderSubmissionAllowed();
   const customerId = scopedCustomerId || required(input.customerId, "Customer");
   const customer = await one("SELECT * FROM customers WHERE id = ?", customerId);
   if (!customer || customer.lifecycle_status !== "active") throw Object.assign(new Error("Customer account is not active."), { statusCode: 409 });
+  // Only a server-validated, already-approved destination can be attached to an order.
+  // Existing isolated synthetic tests may omit a destination; no deployed environment can bind orders.
+  const shipTo = input.deliveryAddressId
+    ? await resolveCustomerShipTo(customerId, input.deliveryAddressId) : null;
+  if (!shipTo && release.productionTransactionAuthorised) {
+    throw Object.assign(new Error("Select an approved delivery location before placing an order."), { statusCode: 409 });
+  }
   const lines = Array.isArray(input.lines) ? input.lines : [];
   if (!lines.length) throw Object.assign(new Error("At least one order line is required."), { statusCode: 400 });
   const priced = [];
@@ -516,16 +524,18 @@ export async function createOrder(input, actor, scopedCustomerId = null) {
   const subtotal = priced.reduce((sum, line) => sum + line.lineTotalMinor, 0);
   const tax = 0;
   const now = nowIso();
-  const order = { id: randomUUID(), orderNumber: await allocateNumber(`order:${new Date().getUTCFullYear()}`, `SO-${new Date().getUTCFullYear()}-`), customerId, subtotalMinor: subtotal, taxMinor: tax, totalMinor: subtotal + tax, status: "submitted" };
+  const order = { id: randomUUID(), orderNumber: await allocateNumber(`order:${new Date().getUTCFullYear()}`, `SO-${new Date().getUTCFullYear()}-`), customerId, subtotalMinor: subtotal, taxMinor: tax, totalMinor: subtotal + tax, status: "submitted",
+    deliveryAddressId: shipTo?.addressId || null, deliveryAddressSnapshot: shipTo || null };
   return transaction(async () => {
-    await run(`INSERT INTO orders(id, order_number, customer_id, status, requested_delivery_date, subtotal_minor, tax_minor, total_minor, customer_po_reference, created_at, created_by, updated_at, updated_by)
-      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, order.id, order.orderNumber, order.customerId, order.status,
-      input.requestedDeliveryDate || null, order.subtotalMinor, order.taxMinor, order.totalMinor, String(input.customerPoReference || "").trim() || null,
-      now, actor, now, actor);
+    await run(`INSERT INTO orders(id, order_number, customer_id, status, delivery_address_id, delivery_address_snapshot_json,
+      requested_delivery_date, subtotal_minor, tax_minor, total_minor, customer_po_reference, created_at, created_by, updated_at, updated_by)
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, order.id, order.orderNumber, order.customerId, order.status,
+      order.deliveryAddressId, shipTo ? JSON.stringify(shipTo) : null, input.requestedDeliveryDate || null, order.subtotalMinor,
+      order.taxMinor, order.totalMinor, String(input.customerPoReference || "").trim() || null, now, actor, now, actor);
     for (const line of priced) await run("INSERT INTO order_lines(id, order_id, product_id, quantity, unit_price_minor, line_total_minor, created_at) VALUES(?, ?, ?, ?, ?, ?, ?)", line.id, order.id, line.productId, line.quantity, line.unitPriceMinor, line.lineTotalMinor, now);
     await audit({ actor, action: "order.submitted", entityType: "order", entityId: order.id, after: { ...order, lines: priced } });
     await enqueue({ eventType: "order.sharepoint_folder_requested", aggregateType: "order", aggregateId: order.id, destinationSystem: "sharepoint", idempotencyKey: `order:${order.id}:folder:v1`, payload: { operation: "ensure_entity_folder", entityType: "order", entityId: order.id, businessNumber: order.orderNumber, displayName: order.orderNumber, actor } });
-    await enqueue({ eventType: "order.wms_reservation_requested", aggregateType: "order", aggregateId: order.id, destinationSystem: "polar_speed", idempotencyKey: `order:${order.id}:reserve:v1`, payload: { operation: "reserve_stock", orderId: order.id, orderNumber: order.orderNumber, lines: priced } });
+    await enqueue({ eventType: "order.wms_reservation_requested", aggregateType: "order", aggregateId: order.id, destinationSystem: "polar_speed", idempotencyKey: `order:${order.id}:reserve:v1`, payload: { operation: "reserve_stock", orderId: order.id, orderNumber: order.orderNumber, deliveryAddressId: order.deliveryAddressId, lines: priced } });
     return { ...order, lines: priced };
   });
 }
