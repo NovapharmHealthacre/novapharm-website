@@ -16,6 +16,7 @@ on:
       - assets/css/technology-intelligence.css
       - scripts/test-intelligence-technology-page.mjs
       - assets/css/apple-pharma-public.css
+      - assets/css/novapharm-hig-motion.css
       - assets/css/homepage-editorial.css
       - assets/media/home/earth-reference-1400.jpg
       - apps/corporate/components/concise-home.tsx
