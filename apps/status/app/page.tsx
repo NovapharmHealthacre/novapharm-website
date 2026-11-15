@@ -73,7 +73,7 @@ export default async function StatusPage() {
       </section>
       <footer className="status-footer">
         <p>NovaPharm Healthcare Ltd. Status data is intentionally limited to operational availability.</p>
-        <a href="https://novapharmhealthcare.com/contact/">Contact NovaPharm Healthcare</a>
+        <nav aria-label="Status privacy and support"><a href="https://novapharmhealthcare.com/legal/privacy/">Privacy notice</a><a href="https://novapharmhealthcare.com/contact/">Contact NovaPharm Healthcare</a></nav>
       </footer>
     </main>
   );
