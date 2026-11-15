@@ -11196,10 +11196,10 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
   --np-symbol-small: .875rem;
   --np-symbol-medium: 1.125rem;
   --np-symbol-large: 1.5rem;
-  --np-symbol-positive: #17613f;
-  --np-symbol-warning: #855600;
-  --np-symbol-critical: #a8202a;
-  --np-symbol-focus: #0b69ff;
+  --np-symbol-positive: var(--np-color-success, #17613f);
+  --np-symbol-warning: var(--np-color-warning, #855600);
+  --np-symbol-critical: var(--np-color-destructive, #a8202a);
+  --np-symbol-focus: var(--np-color-focus, #0b69ff);
 }
 svg.np-symbol {
   display: inline-block;
@@ -11222,7 +11222,7 @@ svg.np-symbol[data-weight="strong"] { stroke-width: 2.25; }
 svg.np-symbol[data-tone="positive"] { color: var(--np-symbol-positive); }
 svg.np-symbol[data-tone="warning"] { color: var(--np-symbol-warning); }
 svg.np-symbol[data-tone="critical"] { color: var(--np-symbol-critical); }
-svg.np-symbol[data-tone="accent"] { color: var(--nph-accent, var(--brand, #b30e09)); }
+svg.np-symbol[data-tone="accent"] { color: var(--np-color-accent-strong, var(--nph-accent, var(--brand, #b30e09))); }
 svg.np-symbol[data-variant="filled"] [data-symbol-enclosure] { fill: currentColor; }
 svg.np-symbol[data-variant="filled"] [data-symbol-center] { stroke: var(--np-symbol-inverse, #fff); }
 /* Match functional icons to text, never to a separately hardcoded icon colour. */
