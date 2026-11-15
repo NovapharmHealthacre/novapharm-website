@@ -1,0 +1,138 @@
+/*
+ * NovaPharm platform adaptation of the 2026 Apple design references.
+ * Original web CSS; no Apple artwork, fonts, SF Symbols, App Clips or
+ * ProximityReader assets are redistributed or simulated.
+ *
+ * Imported last by the Corporate and Portal Next.js roots so the accessible
+ * interaction fixes take precedence over older presentation styles.
+ */
+html[data-np-estate] {
+  --np-platform-control: 44px;
+  --np-platform-focus: #006edb;
+  --np-platform-red: #B30E09;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-block-start: 5rem;
+}
+html[data-np-estate] :where(button, input, textarea, select) {
+  font: inherit;
+}
+html[data-np-estate] :where(input, textarea, select) {
+  max-inline-size: 100%;
+  accent-color: var(--np-platform-red);
+}
+html[data-np-estate] :where(button, [role="button"], input[type="submit"], input[type="button"]) {
+  touch-action: manipulation;
+}
+html[data-np-estate] :where(button, [role="button"], input[type="submit"], input[type="button"]):disabled {
+  cursor: not-allowed;
+}
+html[data-np-estate] :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--np-platform-focus);
+  outline-offset: 3px;
+}
+html[data-np-estate] :where(input, textarea, select)[aria-invalid="true"] {
+  border-color: #a11122;
+  outline-color: #a11122;
+}
+html[data-np-estate] :where(.workspace-content, .customer-editorial-feature, .customer-editorial-groups, .shell, main, article) {
+  min-inline-size: 0;
+}
+html[data-np-estate] :where(table, .metric-value, [data-numeric]) {
+  font-variant-numeric: tabular-nums;
+}
+html[data-np-estate] :where(.workspace-main, .workspace-content, main) :where(p, li, label, dd, dt) {
+  overflow-wrap: break-word;
+}
+
+/* Browser controls use the actual platform keyboard, not image replicas.
+ * These fallback families apply only to content marked with that language;
+ * no restricted Apple font packages are embedded or downloaded.
+ */
+html[data-np-estate] :lang(ar) {
+  font-family: "Geeza Pro", "Noto Naskh Arabic", Tahoma, system-ui, sans-serif;
+}
+html[data-np-estate] :lang(he) {
+  font-family: "Arial Hebrew", "Noto Sans Hebrew", Arial, system-ui, sans-serif;
+}
+html[data-np-estate] :lang(hy) {
+  font-family: "Noto Sans Armenian", "Arial Unicode MS", system-ui, sans-serif;
+}
+html[data-np-estate] :lang(ka) {
+  font-family: "Noto Sans Georgian", "Arial Unicode MS", system-ui, sans-serif;
+}
+html[data-np-estate] :where([dir="rtl"]) {
+  text-align: start;
+}
+html[data-np-estate] :where([dir="rtl"]) :where(input:not([type="tel"]):not([type="number"]), textarea) {
+  text-align: start;
+}
+
+/* The customer storefront previously specified 33–36px controls.
+ * Make search, actions and authenticated navigation reliably tappable.
+ */
+html[data-np-estate="portal"] .customer-editorial-dashboard .portal-search input,
+html[data-np-estate="portal"] .customer-editorial-dashboard .portal-search > button,
+html[data-np-estate="portal"] .customer-editorial-dashboard .user-summary button,
+html[data-np-estate="portal"] .customer-editorial-dashboard .user-summary .icon-command {
+  min-block-size: var(--np-platform-control);
+}
+html[data-np-estate="portal"] .customer-editorial-dashboard .customer-primary-nav a {
+  min-block-size: var(--np-platform-control);
+  display: inline-flex;
+  align-items: center;
+}
+html[data-np-estate="portal"] .customer-editorial-dashboard .workspace-topbar search {
+  min-inline-size: 0;
+}
+html[data-np-estate="portal"] :where(.workspace-content, .login-panel, .focused-panel) {
+  padding-block-end: max(1.5rem, env(safe-area-inset-bottom, 0px));
+}
+@media (max-width: 640px) {
+  /* iOS Safari otherwise magnifies small form fields; preserve page zoom. */
+  html[data-np-estate] :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+    font-size: max(1rem, 16px);
+  }
+  html[data-np-estate="portal"] .customer-editorial-dashboard .portal-search input {
+    font-size: 1rem;
+  }
+}
+@media (pointer: coarse) {
+  html[data-np-estate] :where(button, [role="button"], input[type="submit"], input[type="button"]) {
+    min-block-size: var(--np-platform-control);
+  }
+  html[data-np-estate] :where(.desktop-nav a, .workspace-sidebar a, .mobile-menu summary) {
+    min-block-size: var(--np-platform-control);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  html[data-np-estate] :where(.site-header, .workspace-topbar, .customer-editorial-dashboard .workspace-topbar) {
+    background: #fff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-np-estate] {
+    scroll-behavior: auto;
+  }
+  html[data-np-estate] :where(.customer-editorial-dashboard, .workspace-shell, main) :where(*, *::before, *::after) {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+@media (prefers-contrast: more) {
+  html[data-np-estate] {
+    --np-platform-focus: #004b99;
+  }
+  html[data-np-estate] :where(.portal-search input, .login-form input, .login-form select, .np-payment-request) {
+    border-color: currentColor;
+  }
+}
+@media (forced-colors: active) {
+  html[data-np-estate] :where(button, input, select, textarea, a):focus-visible {
+    outline: 3px solid Highlight;
+  }
+}
