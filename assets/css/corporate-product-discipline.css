@@ -31,7 +31,7 @@ body {
   background: var(--npd-white);
   color: var(--npd-text);
   font-family: var(--npd-system);
-  font-size: 17px;
+  font-size: var(--np-type-body-size, 1.0625rem);
   line-height: 1.55;
   letter-spacing: 0;
 }
