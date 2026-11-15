@@ -1,8 +1,8 @@
 "use client";
 
 import { employeeModules } from "@novapharm/portal-contracts";
-import { WmsPrototypeWorkspaceMap } from "./wms-prototype-workspace-map";
 import { WmsPilotFeedbackPanel } from "./wms-pilot-feedback-panel";
+import { WmsPrototypeWorkspaceMap } from "./wms-prototype-workspace-map";
 import { WmsRecordedEvidenceStudio, type WmsSnapshot } from "./wms-recorded-evidence-studio";
 
 /**
