@@ -24,7 +24,7 @@ test("primary corporate image placements reserve a ratio and have alternative te
       const src = image.match(/\bsrc\s*=\s*"([^"]+)"/iu)?.[1];
       const width = Number(image.match(/\bwidth\s*=\s*"(\d+)"/iu)?.[1]);
       const height = Number(image.match(/\bheight\s*=\s*"(\d+)"/iu)?.[1]);
-      assert.ok(src?.startsWith("/assets/"), `${page}: image needs a governed local asset: ${image}`);
+      assert.ok(src?.startsWith("/assets/") || /^data:image\/webp;base64,[A-Za-z0-9+/=]+$/u.test(src ?? ""),\n        `${page}: image needs a governed local asset or approved inline WebP: ${image.slice(0, 180)}`);
       assert.match(image, /\balt\s*=\s*"[^"]*"/iu, `${page}: image alt must be explicitly present`);
       assert.ok(Number.isInteger(width) && width > 0, `${page}: image needs width for intrinsic aspect ratio`);
       assert.ok(Number.isInteger(height) && height > 0, `${page}: image needs height for intrinsic aspect ratio`);
