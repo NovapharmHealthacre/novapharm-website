@@ -50,7 +50,7 @@ function formatted(value: unknown, type = "", row: Record<string, unknown> = {})
 
 function MetricGrid({ metrics }: Readonly<{ metrics: readonly Metric[] }>) {
   if (!metrics.length) return null;
-  return <div className="metric-grid np-hig-grid">{metrics.map((metric) => <article key={metric.key} className="metric"><span>{metric.label}</span><strong>{formatted(metric.value, metric.format)}</strong>{metric.href ? <a href={metric.href}>View detail <ArrowUpRight aria-hidden="true" /></a> : null}</article>)}</div>;
+  return <div className="metric-grid np-hig-grid">{metrics.map((metric) => <article key={metric.key} className="metric"><span>{metric.label}</span><strong>{formatted(metric.value, metric.format)}</strong>{metric.href ? <a href={metric.href}>View detail <ArrowUpRight aria-hidden="true" className="np-symbol" /></a> : null}</article>)}</div>;
 }
 
 function DataTable({ section }: Readonly<{ section: DataSection }>) {
@@ -176,10 +176,10 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
   return <main className={isEditorialCustomerDashboard ? "workspace-shell customer-editorial-dashboard"
     : isEditorialEmployeeDistribution ? "workspace-shell employee-distribution-shell" : "workspace-shell"}>
     {!isEditorialPortal ? <aside className={menuOpen ? "workspace-sidebar open" : "workspace-sidebar"}>
-      <div className="sidebar-brand"><PortalBrand home={areaLandingRoutes[module.area]} /><button type="button" aria-label="Close navigation" onClick={() => setMenuOpen(false)}><X aria-hidden="true" /></button></div>
+      <div className="sidebar-brand"><PortalBrand home={areaLandingRoutes[module.area]} /><button type="button" aria-label="Close navigation" onClick={() => setMenuOpen(false)}><X aria-hidden="true" className="np-symbol" /></button></div>
       <p className="sidebar-label">{areaLabels[module.area]} workspace</p>
       <nav aria-label={`${areaLabels[module.area]} portal`}><ul>{navigation.map((entry) => <li key={entry.code}><a className={entry.code === module.code ? "active" : ""} href={entry.route} aria-current={entry.code === module.code ? "page" : undefined}><span>{entry.title}</span><small>{entry.releaseClassificationLabel}</small></a></li>)}</ul></nav>
-      <div className="sidebar-security"><ShieldCheck aria-hidden="true" /><span>Server-enforced access<br />No public caching</span></div>
+      <div className="sidebar-security"><ShieldCheck aria-hidden="true" className="np-symbol" /><span>Server-enforced access<br />No public caching</span></div>
     </aside> : null}
     <section className="workspace-main">
       <header className="workspace-topbar">
@@ -203,9 +203,9 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
             })}
           </nav>
         </> : null}
-        <button className="menu-button" type="button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu aria-hidden="true" /></button><search><form className="portal-search" onSubmit={search}><Search aria-hidden="true" /><label className="sr-only" htmlFor="portal-search">Search authorised records</label><input id="portal-search" name="query" placeholder="Search" autoComplete="off" /><button type="submit">Search</button>{searchOpen ? <div className="search-results"><button className="search-close" type="button" aria-label="Close search results" onClick={() => setSearchOpen(false)}><X aria-hidden="true" /></button>{searchResults.length ? searchResults.map((result) => <a key={`${result.type}-${result.reference}`} href={result.route}><strong>{result.title}</strong><span>{result.type} · {result.reference}{result.status ? ` · ${readable(result.status)}` : ""}</span></a>) : <p>No authorised records found.</p>}</div> : null}</form></search><div className="user-summary"><span>{user?.displayName ?? "Secure user"}</span><small>{user ? readable(user.accessType) : "Verifying"}</small>{isEditorialPortal ? <button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data">Refresh</button> : null}<button type="button" onClick={logout} aria-label="Sign out">{isEditorialPortal ? "Sign out" : <LogOut aria-hidden="true" />}</button></div></header>
+        <button className="menu-button np-icon-control" type="button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu aria-hidden="true" className="np-symbol" /></button><search><form className="portal-search" onSubmit={search}><Search aria-hidden="true" className="np-symbol" /><label className="sr-only" htmlFor="portal-search">Search authorised records</label><input id="portal-search" name="query" placeholder="Search" autoComplete="off" /><button type="submit">Search</button>{searchOpen ? <div className="search-results"><button className="search-close np-icon-control" type="button" aria-label="Close search results" onClick={() => setSearchOpen(false)}><X aria-hidden="true" className="np-symbol" /></button>{searchResults.length ? searchResults.map((result) => <a key={`${result.type}-${result.reference}`} href={result.route}><strong>{result.title}</strong><span>{result.type} · {result.reference}{result.status ? ` · ${readable(result.status)}` : ""}</span></a>) : <p>No authorised records found.</p>}</div> : null}</form></search><div className="user-summary"><span>{user?.displayName ?? "Secure user"}</span><small>{user ? readable(user.accessType) : "Verifying"}</small>{isEditorialPortal ? <button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data">Refresh</button> : null}<button type="button" onClick={logout} aria-label="Sign out">{isEditorialPortal ? "Sign out" : <LogOut aria-hidden="true" className="np-symbol" />}</button></div></header>
       <div className="workspace-content">
-        {!isEditorialPortal ? <header className="module-heading"><div><p className="eyebrow">{areaLabels[module.area]} / {module.releaseClassificationLabel}</p><h1>{module.title}</h1><p>{module.purpose}</p></div><button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data"><RefreshCw aria-hidden="true" /><span>Refresh</span></button></header> : null}
+        {!isEditorialPortal ? <header className="module-heading"><div><p className="eyebrow">{areaLabels[module.area]} / {module.releaseClassificationLabel}</p><h1>{module.title}</h1><p>{module.purpose}</p></div><button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data"><RefreshCw aria-hidden="true" className={loading ? "np-symbol np-symbol--busy" : "np-symbol"} /><span>Refresh</span></button></header> : null}
         {/* Customer navigation is static and server-route-protected: reserve its
             layout before data fetch resolves to prevent mobile CLS. It does not
             include account records, prices, orders, or entitlements. */}
@@ -225,7 +225,7 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
         </section> : null}
         {user ? <AreaSwitcher user={user} /> : null}
         <p className="workflow-status" aria-live="polite">{status}</p>
-        {loading ? <div className="loading-state"><Activity aria-hidden="true" /><span>Loading authorised records…</span></div> : null}
+        {loading ? <div className="loading-state"><Activity aria-hidden="true" className="np-symbol" /><span>Loading authorised records…</span></div> : null}
         {snapshot ? <><div className="data-context"><span>{snapshot.dataState === "synthetic" ? "Synthetic validation data" : snapshot.dataState === "authoritative_non_production_validation" ? "Authoritative non-production validation evidence" : snapshot.dataState === "governed_sources_not_loaded" ? "No governed intelligence data loaded" : snapshot.module.releaseClassificationLabel}</span><span>Updated {new Date(snapshot.dataFreshness).toLocaleString("en-GB")}</span><span>Read only</span></div>{snapshot.notices.map((notice) => <p className="module-notice" key={notice}>{notice}</p>)}<MetricGrid metrics={snapshot.metrics} />{snapshot.sections.map((section) => <DataTable key={section.title} section={section} />)}<ActionPanel snapshot={snapshot} onComplete={load} onMessage={setStatus} /></> : null}
       </div>
     </section>

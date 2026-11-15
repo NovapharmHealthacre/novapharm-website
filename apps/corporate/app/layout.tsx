@@ -13,6 +13,7 @@ import "./capabilities-route.css";
 import "../../../assets/css/nutraxin-lineup.css";
 import "../../../assets/css/nutraxin-order-access.css";
 import "../../../assets/css/novapharm-hig-colours.css";
+import "../../../assets/css/symbol-system.css";
 import "../../../assets/css/apple-hig-layout.css";
 import { CookieControls } from "@/components/cookie-controls";
 import { JsonLd } from "@/components/json-ld";
