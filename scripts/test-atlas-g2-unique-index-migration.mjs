@@ -98,6 +98,9 @@ test("approved migration creates exactly three unique constraints and audits eac
     assert.deepEqual(w.keys, atlasG2RequiredUniqueIndexKeys[w.collection]);
     assert.equal(w.options.unique, true);
     assert.equal(w.options.name, "g2_unique");
+    assert.equal(w.options.sparse, false);
+    assert.deepEqual(w.options.collation, { locale: "simple" });
+    assert.deepEqual(w.options.writeConcern, { w: "majority" });
   }
   assert.equal((await inspectAtlasG2UniqueIndexes({ database: sys.database })).ready, true);
   const again = await applyAtlasG2UniqueIndexes({ database: sys.database, verifyMigrationAuthority: async () => {
@@ -135,6 +138,7 @@ test("nonunique, conflicting, sparse and partial G2 indexes fail instead of sile
     { name: "g2_unique", unique: false },
     { name: "g2_unique", unique: true, sparse: true },
     { name: "g2_unique", unique: true, partialFilterExpression: { status: "active" } },
+    { name: "g2_unique", unique: true, expireAfterSeconds: 3600 },
     { name: "not_g2_unique", unique: false },
   ]) {
     const first = names[0];
