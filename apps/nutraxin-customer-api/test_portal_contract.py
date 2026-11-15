@@ -1532,5 +1532,137 @@ class PortalSecurityTests(unittest.TestCase):
             PORTAL.session,PORTAL.TABLE,COGNITO.groups=old_session,old_table,old_groups
 
 
+class PersonalAccountEditingTests(unittest.TestCase):
+    """The live transitional Cognito BFF persists customer-owned contact data, not trade approval."""
+
+    class Ledger:
+        def __init__(self):
+            self.records={}
+        def get_item(self, **kw):
+            key=kw["Key"]
+            entry=self.records.get((key["pk"],key["sk"]))
+            if not entry:return {}
+            # boto3 reads DynamoDB numbers as Decimal rather than int.
+            from decimal import Decimal
+            return {"Item":{**entry,"version":Decimal(str(entry["version"]))}}
+        def put_item(self,**kw):
+            item=kw["Item"]
+            key=(item["pk"],item["sk"])
+            old=self.records.get(key)
+            if kw["ConditionExpression"]=="attribute_not_exists(pk)" and old is not None:
+                raise AssertionError("Creation cannot overwrite a previously saved profile")
+            if old and kw["ConditionExpression"]=="#v = :previous":
+                assert old["version"]==kw["ExpressionAttributeValues"][":previous"]
+            self.records[key]=item
+            return {}
+
+    def setUp(self):
+        self.old_table,self.old_session=PORTAL.TABLE,PORTAL.session
+        self.ledger=self.Ledger()
+        PORTAL.TABLE=self.ledger
+        self.subject="personal-owner-123"
+        PORTAL.session=lambda _:{"username":"personal-test","sub":self.subject,
+                                 "email":"customer@example.invalid"}
+        COGNITO.enabled=True
+        COGNITO.user_status="CONFIRMED"
+        COGNITO.verified_email=True
+        COGNITO.groups=[]
+
+    def tearDown(self):
+        PORTAL.TABLE,PORTAL.session=self.old_table,self.old_session
+        COGNITO.groups=[]
+
+    def request(self,method="GET",body=None,origin="https://portal.example.invalid",
+                csrf=True):
+        headers={"origin":origin,"sec-fetch-site":"same-origin"}
+        if method=="POST":
+            headers.update({"content-type":"application/json"})
+            if csrf:headers["x-np-account-csrf"]="A"*43
+        return {"rawPath":"/api/customer/account-details",
+            "requestContext":{"http":{"method":method}},
+            "headers":headers,
+            "cookies":["__Host-np_signup_csrf="+"A"*43] if csrf else [],
+            "body":json.dumps(body) if body is not None else None}
+
+    def send(self,method="GET",body=None,**kw):
+        return PORTAL.handler(self.request(method,body,**kw),None)
+
+    def test_existing_account_page_exposes_real_edit_forms_and_external_script(self):
+        page=PORTAL.handler({"rawPath":"/portal/account/",
+            "requestContext":{"http":{"method":"GET"}},
+            "headers":{"origin":"https://portal.example.invalid"},
+            "cookies":[]},None)
+        self.assertEqual(page["statusCode"],200)
+        for marker in ('id="account-details-form"','id="account-address-form"',
+                       'id="account-new-address"','name="organisationName"',
+                       'name="postcode"','name="countryCode"',
+                       'src="/customer-account.js"'):
+            self.assertIn(marker,page["body"])
+        self.assertIn("separate",page["body"].lower())
+        self.assertNotIn("Stripe Checkout",page["body"])
+        js=PORTAL.handler({"rawPath":"/customer-account.js",
+            "requestContext":{"http":{"method":"GET"}}},None)
+        self.assertEqual(js["statusCode"],200)
+        self.assertIn("/api/customer/account-details",js["body"])
+        self.assertIn("X-NP-Account-CSRF",js["body"])
+        self.assertNotIn("innerHTML",js["body"])
+
+    def test_profile_save_is_owner_scoped_and_survives_reload(self):
+        empty=json.loads(self.send()["body"])
+        self.assertEqual(empty["addresses"],[])
+        self.assertEqual(empty["version"],0)
+        data={"action":"profile","version":0,"profile":{
+            "fullName":"Customer Test","phone":"+44 20 1234 5678",
+            "organisationName":"Example trading name"}}
+        saved=self.send("POST",data)
+        self.assertEqual(saved["statusCode"],200,saved)
+        self.assertEqual(json.loads(saved["body"])["version"],1)
+        own=json.loads(self.send()["body"])
+        self.assertEqual(own["profile"]["fullName"],"Customer Test")
+        self.assertEqual(own["email"],"customer@example.invalid")
+        self.assertEqual(own["businessAccess"],"separately_reviewed")
+        self.subject="different-customer-456"
+        other=json.loads(self.send()["body"])
+        self.assertEqual(other["version"],0)
+        self.assertEqual(other["profile"]["fullName"],"")
+        self.assertEqual(len(self.ledger.records),1)
+
+    def test_multiple_address_types_update_and_prior_order_is_not_mutated(self):
+        address={"kind":"delivery","label":"Home","recipientName":"Customer Test",
+            "phone":"+44 20 1234 5678","line1":"10 Example Street","line2":"",
+            "city":"London","region":"","postcode":"SW1A 1AA",
+            "countryCode":"gb","instructions":"","isDefault":False}
+        added=self.send("POST",{"action":"addAddress","version":0,"address":address})
+        self.assertEqual(added["statusCode"],200,added)
+        read=json.loads(self.send()["body"])
+        self.assertEqual(read["addresses"][0]["countryCode"],"GB")
+        self.assertTrue(read["addresses"][0]["isDefault"])
+        first_id=read["addresses"][0]["id"]
+        amended={**address,"label":"Office","postcode":"EC2N 2DB"}
+        edited=self.send("POST",{"action":"editAddress","version":1,
+                                  "id":first_id,"address":amended})
+        self.assertEqual(edited["statusCode"],200,edited)
+        self.assertEqual(json.loads(self.send()["body"])["addresses"][0]["label"],"Office")
+        self.assertEqual(self.send("POST",{"action":"deleteAddress","version":2,
+                                          "id":first_id})["statusCode"],200)
+        self.assertEqual(json.loads(self.send()["body"])["addresses"],[])
+        self.assertEqual(set(self.ledger.records),{("USER#personal-owner-123","ACCOUNT")})
+
+    def test_csrf_ownership_and_validation_fail_closed(self):
+        profile={"action":"profile","version":0,
+                 "profile":{"fullName":"Test User","phone":"","organisationName":""}}
+        self.assertEqual(self.send("POST",profile,csrf=False)["statusCode"],403)
+        self.assertEqual(self.send("POST",profile,origin="https://attacker.example")["statusCode"],403)
+        bad={"action":"profile","version":0,
+             "profile":{"fullName":"<script>alert(1)</script>","phone":"text","organisationName":""}}
+        self.assertEqual(self.send("POST",bad)["statusCode"],400)
+        self.assertEqual(self.send("POST",profile)["statusCode"],200)
+        self.assertEqual(self.send("POST",profile)["statusCode"],409)
+        COGNITO.verified_email=False
+        self.assertEqual(self.send()["statusCode"],403)
+        self.assertEqual(self.send("POST",{**profile,"version":1})["statusCode"],403)
+        self.assertEqual(len(self.ledger.records),1)
+
+
 if __name__ == "__main__":
     unittest.main()

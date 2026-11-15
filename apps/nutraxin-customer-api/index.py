@@ -6,6 +6,7 @@ SSM provisional price list. No payment, stock or VAT-invoice authority.
 """
 import base64
 import hashlib
+from decimal import Decimal
 import html
 import hmac
 import json
@@ -922,6 +923,296 @@ def customer_activity_summary(principal):
             '</div></section>')
 
 
+
+# Account details are personal contact information. They never confer business
+# qualification, stock authority or edit a historical order's ship-to snapshot.
+ACCOUNT_FIELDS = ("fullName", "phone", "organisationName")
+ADDRESS_FIELDS = ("kind", "label", "recipientName", "phone", "line1", "line2",
+                  "city", "region", "postcode", "countryCode", "instructions")
+ACCOUNT_LIMITS = {
+    "fullName": 120, "phone": 40, "organisationName": 160,
+    "label": 70, "recipientName": 120, "line1": 160, "line2": 160,
+    "city": 100, "region": 100, "postcode": 24, "countryCode": 2,
+    "instructions": 240,
+}
+
+def account_text(value, name, mandatory=False):
+    if not isinstance(value, str) or len(value)>ACCOUNT_LIMITS[name] or re.search(r"[\x00-\x1f\x7f]", value):
+        raise ValueError("invalid_"+name)
+    value=" ".join(value.strip().split())
+    if mandatory and not value:
+        raise ValueError("required_"+name)
+    return value
+
+def normalise_account_profile(payload):
+    if not isinstance(payload,dict) or set(payload)!=set(ACCOUNT_FIELDS):
+        raise ValueError("invalid_profile_fields")
+    result={key:account_text(payload[key],key,key=="fullName") for key in ACCOUNT_FIELDS}
+    if result["phone"] and not re.fullmatch(r"[+0-9(). \-]{6,40}",result["phone"]):
+        raise ValueError("invalid_phone")
+    return result
+
+def normalise_account_address(payload):
+    if not isinstance(payload,dict) or set(payload)!=(set(ADDRESS_FIELDS)|{"isDefault"}):
+        raise ValueError("invalid_address_fields")
+    if payload.get("kind") not in ("delivery","billing"):
+        raise ValueError("invalid_address_kind")
+    result={"kind":payload["kind"]}
+    for field in ADDRESS_FIELDS:
+        if field!="kind":
+            result[field]=account_text(payload[field],field,field in (
+                "label","recipientName","phone","line1","city","postcode","countryCode"))
+    if not re.fullmatch(r"[+0-9(). \-]{6,40}",result["phone"]):
+        raise ValueError("invalid_phone")
+    result["countryCode"]=result["countryCode"].upper()
+    if not re.fullmatch(r"[A-Z]{2}",result["countryCode"]):
+        raise ValueError("invalid_countryCode")
+    if len(result["line1"])<5 or len(result["postcode"])<2:
+        raise ValueError("invalid_delivery_address")
+    if type(payload["isDefault"]) is not bool:
+        raise ValueError("invalid_isDefault")
+    result["isDefault"]=payload["isDefault"]
+    return result
+
+def account_detail_response(event, principal, method):
+    # Session and Cognito are independently reverified on every account read/write.
+    if not verified_personal_session(principal):
+        return error(403,"verified_customer_required")
+    subject=principal.get("sub")
+    if not isinstance(subject,str) or not re.fullmatch(r"[A-Za-z0-9_-]{6,128}",subject):
+        return error(403,"invalid_customer_identity")
+    key={"pk":"USER#"+subject,"sk":"ACCOUNT"}
+    try:
+        existing=TABLE.get_item(Key=key,ConsistentRead=True).get("Item") or {}
+    except ClientError:
+        return error(503,"account_unavailable")
+    version=existing.get("version",0)
+    if type(version) not in (int,Decimal) or version!=int(version) or not 0<=version<=100000000:
+        return error(503,"account_unavailable")
+    version=int(version)
+    profile=existing.get("profile") or {"fullName":"","phone":"","organisationName":""}
+    addresses=existing.get("addresses") or []
+    if not isinstance(profile,dict) or not isinstance(addresses,list) or len(addresses)>10:
+        return error(503,"account_unavailable")
+    if method=="GET":
+        return reply(200,{
+            "email":principal.get("email",""),
+            "emailVerified":True,
+            "profile":{field:profile.get(field,"") for field in ACCOUNT_FIELDS},
+            "addresses":[{field:address.get(field,"") for field in ADDRESS_FIELDS}
+                | {"id":address.get("id",""),"isDefault":address.get("isDefault") is True}
+                for address in addresses if isinstance(address,dict)],
+            "version":version,
+            "businessAccess":"separately_reviewed",
+            "notice":"Saved personal contact details are not verified trading authority, inventory or a replacement for an existing order destination."
+        })
+    if method!="POST":
+        return error(405,"method_not_allowed")
+    headers={str(k).lower():str(v) for k,v in (event.get("headers") or {}).items()}
+    origin=headers.get("origin","")
+    if (headers.get("sec-fetch-site","").lower() not in ("","same-origin") or
+        (origin not in ("","null") and canonical_login_origin(origin)!=request_base(event)) or
+        (origin in ("","null") and headers.get("sec-fetch-site","").lower()!="same-origin")):
+        return error(403,"invalid_origin")
+    token=headers.get("x-np-account-csrf","")
+    stored=cookies(event).get("__Host-np_signup_csrf","")
+    if not (len(token)==43 and re.fullmatch(r"[A-Za-z0-9_-]{43}",token) and
+        len(stored)==43 and hmac.compare_digest(token,stored)):
+        return error(403,"invalid_csrf")
+    if not headers.get("content-type","").lower().startswith("application/json") or event.get("isBase64Encoded"):
+        return error(415,"invalid_content_type")
+    raw=event.get("body") or ""
+    if not isinstance(raw,str) or len(raw)>10000:
+        return error(413,"account_request_too_large")
+    try:
+        body=json.loads(raw)
+        if not isinstance(body,dict) or type(body.get("version")) is not int:
+            return error(400,"invalid_account_request")
+        if body["version"]!=version:
+            return error(409,"account_changed_refresh")
+        action=body.get("action")
+        updated_profile=dict(profile)
+        updated_addresses=[dict(x) for x in addresses]
+        if action=="profile":
+            if set(body)!={"action","version","profile"}:
+                return error(400,"invalid_account_request")
+            updated_profile=normalise_account_profile(body["profile"])
+        elif action in ("addAddress","editAddress","deleteAddress"):
+            if action=="deleteAddress":
+                if set(body)!={"action","version","id"}:
+                    return error(400,"invalid_account_request")
+            elif set(body)!=({"action","version","address"} if action=="addAddress" else
+                             {"action","version","id","address"}):
+                return error(400,"invalid_account_request")
+            address_id=body.get("id")
+            index=next((i for i,item in enumerate(updated_addresses)
+                        if item.get("id")==address_id),None)
+            if action in ("editAddress","deleteAddress") and (
+                not isinstance(address_id,str) or not re.fullmatch(r"[0-9a-f]{32}",address_id) or
+                index is None):
+                return error(404,"address_not_found")
+            if action=="deleteAddress":
+                removed=updated_addresses.pop(index)
+                if removed.get("isDefault"):
+                    first=next((i for i,item in enumerate(updated_addresses)
+                        if item.get("kind")==removed.get("kind")),None)
+                    if first is not None:
+                        updated_addresses[first]["isDefault"]=True
+            else:
+                normal=normalise_account_address(body["address"])
+                if action=="addAddress" and len(updated_addresses)>=10:
+                    return error(409,"address_book_full")
+                address_id=address_id if action=="editAddress" else secrets.token_hex(16)
+                normal["id"]=address_id
+                if action=="editAddress" and updated_addresses[index]["kind"]!=normal["kind"]:
+                    return error(409,"address_type_cannot_change")
+                if normal["isDefault"] or not any(
+                    item.get("kind")==normal["kind"] for item in updated_addresses
+                    if item.get("id")!=address_id):
+                    normal["isDefault"]=True
+                if normal["isDefault"]:
+                    for item in updated_addresses:
+                        if item.get("kind")==normal["kind"]:
+                            item["isDefault"]=False
+                if action=="editAddress":
+                    updated_addresses[index]=normal
+                else:
+                    updated_addresses.append(normal)
+        else:
+            return error(400,"invalid_account_action")
+    except (ValueError,TypeError,KeyError):
+        return error(400,"invalid_account_fields")
+    record={**key,"version":version+1,"profile":updated_profile,
+        "addresses":updated_addresses,"updated_at":int(time.time())}
+    # Atomic conditional writes prevent parallel tabs from overwriting edits.
+    condition="attribute_not_exists(pk)" if not existing else "#v = :previous"
+    opts={"Item":record,"ConditionExpression":condition}
+    if existing:
+        opts["ExpressionAttributeNames"]={"#v":"version"}
+        opts["ExpressionAttributeValues"]={":previous":version}
+    try:
+        TABLE.put_item(**opts)
+    except ClientError as exc:
+        if exc.response.get("Error",{}).get("Code")=="ConditionalCheckFailedException":
+            return error(409,"account_changed_refresh")
+        return error(503,"account_save_unavailable")
+    return reply(200,{"saved":True,"version":version+1})
+
+
+CUSTOMER_ACCOUNT_JS = r"""(function(){
+"use strict";
+const byId=(id)=>document.getElementById(id);
+const details=byId("account-details-form");
+if(!details)return;
+const addressForm=byId("account-address-form");
+const addressFields=["kind","label","recipientName","phone","line1","line2","city","region","postcode","countryCode","instructions"];
+const personalFields=["fullName","phone","organisationName"];
+const csrf=document.querySelector('input[name="signup_csrf"]')?.value||"";
+let version=0,addresses=[],selectedId=null;
+const status=(node,message,failed)=>{node.textContent=message;node.setAttribute("data-error",failed?"true":"false");};
+async function request(method,payload){
+ const options={method,credentials:"same-origin",cache:"no-store",headers:{"Accept":"application/json"}};
+ if(method==="POST"){
+  options.headers["Content-Type"]="application/json";
+  options.headers["X-NP-Account-CSRF"]=csrf;
+  options.body=JSON.stringify(payload);
+ }
+ const response=await fetch("/api/customer/account-details",options);
+ const result=await response.json().catch(()=>({}));
+ if(!response.ok)throw new Error(response.status===409?"These details changed in another session. Reload the page and try again.":response.status===403?"Your session needs verification. Sign in again.":"We could not complete the request. Please retry.");
+ return result;
+}
+const entries=byId("account-addresses");
+const editTitle=byId("account-address-title");
+function addressSummary(a){
+ return [a.recipientName,a.line1,a.line2,a.city,a.region,a.postcode,a.countryCode].filter(Boolean).join(", ");
+}
+function renderAddresses(){
+ entries.replaceChildren();
+ if(!addresses.length){const p=document.createElement("p");p.className="account-empty";p.textContent="No addresses saved yet. Add a delivery or billing address.";entries.append(p);return;}
+ for(const a of addresses){
+  const article=document.createElement("article");article.className="account-saved-address";
+  const top=document.createElement("div");top.className="account-saved-heading";
+  const title=document.createElement("strong");title.textContent=a.label;
+  const kind=document.createElement("span");kind.textContent=(a.kind==="delivery"?"Delivery":"Billing")+(a.isDefault?" · Default":"");
+  top.append(title,kind);article.append(top);
+  const line=document.createElement("p");line.textContent=addressSummary(a);article.append(line);
+  const contact=document.createElement("p");contact.textContent=a.phone;article.append(contact);
+  const actions=document.createElement("div");actions.className="account-actions-row";
+  const edit=document.createElement("button");edit.type="button";edit.textContent="Edit";
+  edit.addEventListener("click",()=>showAddressForm(a));actions.append(edit);
+  const remove=document.createElement("button");remove.type="button";remove.textContent="Remove";
+  remove.addEventListener("click",()=>removeAddress(a));actions.append(remove);
+  article.append(actions);entries.append(article);
+ }
+}
+function showAddressForm(address){
+ selectedId=address?.id||null;
+ editTitle.textContent=selectedId?"Edit address":"Add address";
+ for(const field of addressFields){
+  const input=addressForm.elements.namedItem(field);
+  if(input)input.value=address?.[field]||(field==="countryCode"?"GB":field==="kind"?"delivery":"");
+ }
+ addressForm.elements.namedItem("isDefault").checked=address?.isDefault===true;
+ addressForm.hidden=false;
+ byId("account-address-cancel").focus();
+ addressForm.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+function closeAddressForm(){addressForm.hidden=true;selectedId=null;addressForm.reset();}
+async function load(){
+ status(byId("account-details-status"),"Loading your saved account details…",false);
+ try{
+  const data=await request("GET");
+  if(!data||!Array.isArray(data.addresses)||typeof data.version!=="number")throw new Error("invalid");
+  version=data.version;addresses=data.addresses;
+  for(const field of personalFields){
+   const input=details.elements.namedItem(field);if(input)input.value=data.profile?.[field]||"";
+  }
+  renderAddresses();
+  status(byId("account-details-status"),"Your details are available for editing.",false);
+ }catch{
+  status(byId("account-details-status"),"Your saved details could not be loaded. Please reload and try again.",true);
+ }
+}
+details.addEventListener("submit",async(event)=>{
+ event.preventDefault();
+ const button=byId("account-save-profile");button.disabled=true;
+ status(byId("account-details-status"),"Saving your details…",false);
+ try{
+  const profile={};
+  for(const field of personalFields)profile[field]=String(details.elements.namedItem(field)?.value||"");
+  const saved=await request("POST",{action:"profile",version,profile});
+  version=saved.version;
+  status(byId("account-details-status"),"Personal details saved.",false);
+ }catch(err){status(byId("account-details-status"),err.message,true);}finally{button.disabled=false;}
+});
+addressForm.addEventListener("submit",async(event)=>{
+ event.preventDefault();
+ const button=byId("account-save-address");button.disabled=true;
+ status(byId("account-address-status"),"Saving address…",false);
+ try{
+  const address={};
+  for(const field of addressFields)address[field]=String(addressForm.elements.namedItem(field)?.value||"");
+  address.isDefault=addressForm.elements.namedItem("isDefault").checked;
+  const body={action:selectedId?"editAddress":"addAddress",version,address};
+  if(selectedId)body.id=selectedId;
+  const saved=await request("POST",body);
+  version=saved.version;closeAddressForm();await load();
+  status(byId("account-address-status"),"Address saved.",false);
+ }catch(err){status(byId("account-address-status"),err.message,true);}finally{button.disabled=false;}
+});
+async function removeAddress(a){
+ if(!window.confirm("Remove "+a.label+" from your saved addresses? Existing orders will not be changed."))return;
+ status(byId("account-address-status"),"Removing address…",false);
+ try{const saved=await request("POST",{action:"deleteAddress",version,id:a.id});
+  version=saved.version;await load();status(byId("account-address-status"),"Address removed.",false);
+ }catch(err){status(byId("account-address-status"),err.message,true);}
+}
+byId("account-new-address").addEventListener("click",()=>showAddressForm(null));
+byId("account-address-cancel").addEventListener("click",closeAddressForm);
+void load();
+})();"""
+
 def customer_workspace(event,route):
     """A non-binding customer-facing navigation step using existing services.
 
@@ -1012,8 +1303,46 @@ def customer_workspace(event,route):
             '<div class="editorial-groups">'+service_index+'</div></div></section>'
         )
     elif route=="/portal/account/":
-        head='<p class="muted">Verified personal account. Trade status and organisation access are separately approved.</p>'
-        body='<div class="tile"><b>Email</b><span>'+email+'</span><span>Identity verified with the existing NovaPharm customer provider</span></div>'
+        head='<p class="muted">Manage your personal details and saved addresses. Your verified sign-in email remains protected by the identity provider.</p>'
+        body=(
+            '<section class="account-details-grid" aria-label="Account information">'
+            '<div class="account-editor-card"><p class="account-subhead">PERSONAL INFORMATION</p>'
+            '<h2>Your details.</h2>'
+            '<div class="account-verified-email"><strong>Verified email</strong><span>'+email+'</span>'
+            '<small>Email changes require a separate identity-verification process.</small></div>'
+            '<form id="account-details-form">'
+            '<label for="account-full-name">Full name</label><input id="account-full-name" name="fullName" autocomplete="name" maxlength="120" required>'
+            '<label for="account-phone">Telephone</label><input id="account-phone" name="phone" type="tel" autocomplete="tel" maxlength="40">'
+            '<label for="account-organisation">Organisation (optional)</label><input id="account-organisation" name="organisationName" autocomplete="organization" maxlength="160">'
+            '<p class="account-fine">Organisation details are self-declared. Business trading permissions require separate verification.</p>'
+            '<button type="submit" id="account-save-profile" class="account-primary">Save personal details</button>'
+            '<p id="account-details-status" class="account-feedback" role="status" aria-live="polite">Loading your saved details…</p>'
+            '</form></div>'
+            '<div class="account-editor-card"><p class="account-subhead">ADDRESS BOOK</p>'
+            '<h2>Delivery &amp; billing.</h2><p class="account-fine">Save up to 10 addresses. '
+            'Editing an address never changes a previously placed order or authorises trade deliveries.</p>'
+            '<div id="account-addresses" aria-live="polite"><p class="account-empty">Loading saved addresses…</p></div>'
+            '<button type="button" id="account-new-address" class="account-secondary">Add address</button>'
+            '<p id="account-address-status" class="account-feedback" role="status" aria-live="polite"></p>'
+            '<form id="account-address-form" hidden>'
+            '<h3 id="account-address-title">Add address</h3>'
+            '<div class="account-address-fields">'
+            '<label for="address-kind">Address type</label><select id="address-kind" name="kind"><option value="delivery">Delivery</option><option value="billing">Billing</option></select>'
+            '<label for="address-label">Address label</label><input id="address-label" name="label" maxlength="70" placeholder="Home, warehouse or head office" required>'
+            '<label for="address-recipient">Recipient name</label><input id="address-recipient" name="recipientName" autocomplete="name" maxlength="120" required>'
+            '<label for="address-phone">Contact telephone</label><input id="address-phone" name="phone" type="tel" autocomplete="tel" maxlength="40" required>'
+            '<label for="address-line1">Address line 1</label><input id="address-line1" name="line1" autocomplete="address-line1" maxlength="160" required>'
+            '<label for="address-line2">Address line 2 (optional)</label><input id="address-line2" name="line2" autocomplete="address-line2" maxlength="160">'
+            '<label for="address-city">Town or city</label><input id="address-city" name="city" autocomplete="address-level2" maxlength="100" required>'
+            '<label for="address-region">County or region</label><input id="address-region" name="region" autocomplete="address-level1" maxlength="100">'
+            '<label for="address-postcode">Postcode</label><input id="address-postcode" name="postcode" autocomplete="postal-code" maxlength="24" required>'
+            '<label for="address-country">Country code</label><input id="address-country" name="countryCode" autocomplete="country" value="GB" maxlength="2" required>'
+            '<label for="address-instructions">Delivery instructions (optional)</label><textarea id="address-instructions" name="instructions" maxlength="240" rows="2"></textarea>'
+            '<label class="account-default"><input type="checkbox" name="isDefault"> Set as default for this address type</label>'
+            '</div><div class="account-actions-row"><button class="account-primary" id="account-save-address" type="submit">Save address</button>'
+            '<button class="account-secondary" id="account-address-cancel" type="button">Cancel</button></div>'
+            '</form></div></section>'
+        )
     elif route=="/portal/orders/":
         head='<p class="muted">Review your Nutraxin and ESCO purchasing requests in one account. Request receipts are not accepted orders, invoices or guaranteed deliveries.</p><p><a href="/portal/products/">Browse products and create a request</a></p>'
         if approved(principal["username"]):
@@ -1500,6 +1829,36 @@ body.editorial-customer{overflow-x:clip}
 .tracking-note{font-size:14px;color:#6e6e73;line-height:1.6;max-width:900px;margin-top:30px}
 .tracking-note a{color:#a30917;text-decoration:underline;text-underline-offset:3px}
 ''')
+    if route=="/portal/account/":
+        css+=('''
+.account-details-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start;margin:23px 0}
+.account-editor-card{background:#f5f5f7;border-radius:20px;padding:clamp(24px,3vw,35px);min-width:0}
+.account-editor-card h2{font-size:clamp(26px,2.6vw,34px);font-weight:650;letter-spacing:-.045em;margin:5px 0 22px}
+.account-subhead{letter-spacing:.15em;color:#57575d;font-size:11px;font-weight:700;margin:0}
+.account-verified-email{display:flex;flex-direction:column;gap:7px;padding:16px 0 20px;border-bottom:1px solid #dddddf;margin-bottom:18px;overflow-wrap:anywhere}
+.account-verified-email strong{font-size:13px}.account-verified-email span{font-size:15px}
+.account-verified-email small,.account-fine{font-size:12px;line-height:1.6;color:#57575d}
+.account-editor-card label:not(.account-default){display:block;font-size:13px;font-weight:600;margin:15px 0 7px}
+.account-editor-card input:not([type=checkbox]),.account-editor-card select,.account-editor-card textarea{display:block;box-sizing:border-box;width:100%;font:inherit;font-size:15px;color:#1d1d1f;border:1px solid #c6c6ce;background:white;border-radius:11px;padding:12px 13px;min-height:46px}
+.account-editor-card input:focus-visible,.account-editor-card select:focus-visible,.account-editor-card textarea:focus-visible,.account-editor-card button:focus-visible{outline:3px solid #0071e3;outline-offset:3px}
+.account-primary,.account-secondary,.account-actions-row button{font:inherit;font-size:13px;font-weight:650;cursor:pointer;border-radius:999px;min-height:43px;padding:10px 17px}
+.account-primary{background:#1d1d1f;border:1px solid #1d1d1f;color:#fff}
+.account-secondary,.account-actions-row button{background:#fff;border:1px solid #b4b4bd;color:#1d1d1f}
+.account-primary:disabled{opacity:.5;cursor:wait}
+.account-feedback{font-size:12px;line-height:1.5;margin:12px 0;color:#55555d}
+.account-feedback[data-error=true]{color:#a01423}
+.account-saved-address{padding:17px 0;border-top:1px solid #d8d8dd}
+.account-saved-heading{display:flex;align-items:baseline;justify-content:space-between;gap:9px;flex-wrap:wrap}
+.account-saved-heading strong{font-size:15px}.account-saved-heading span,.account-saved-address p,.account-empty{font-size:12px;line-height:1.6;color:#55555d}
+.account-saved-address p{margin:7px 0}
+.account-actions-row{display:flex;gap:10px;flex-wrap:wrap;margin:13px 0 2px}
+#account-address-form{border-top:1px solid #d3d3d9;margin-top:24px;padding-top:14px}
+#account-address-form[hidden]{display:none}
+#account-address-form h3{font-size:22px;letter-spacing:-.03em}
+.account-default{display:flex;align-items:center;gap:9px;font-size:13px;margin-top:18px}
+.account-default input{height:18px;width:18px}
+@media(max-width:760px){.account-details-grid{grid-template-columns:1fr;gap:15px}}
+''')
     if route in CUSTOMER_WORKSPACE_ROUTES:
         document=('<!doctype html><html lang="en-GB"><head><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">'
@@ -1535,6 +1894,8 @@ body.editorial-customer{overflow-x:clip}
         '<main><p class="eyebrow">NOVAPHARM / CUSTOMER WORKSPACE</p><h1>'+html.escape(title,quote=True)+'</h1>'+
         head+body+'<footer>Available modules reflect released records only. This does not grant trade, employee, board or administrator privileges.'
         ' · <a href="https://novapharmhealthcare.com/legal/privacy/">Privacy</a></footer></main></div></body></html>')
+    if route=="/portal/account/":
+        document=document.replace("</body></html>", '<script defer src="/customer-account.js"></script></body></html>',1)
     return reply(200,document,"text/html; charset=utf-8",
                  cookies=[cookie("__Host-np_signup_csrf",csrf,900)])
 
@@ -1953,6 +2314,7 @@ def handler(event,context):
     if method=="GET" and path=="/app.js":return reply(200,APP,"text/javascript; charset=utf-8")
     if method=="GET" and path=="/customer-products.js":return reply(200,CUSTOMER_PRODUCTS_JS,"text/javascript; charset=utf-8")
     if method=="GET" and path=="/customer-support.js":return reply(200,CUSTOMER_SUPPORT_JS,"text/javascript; charset=utf-8")
+    if method=="GET" and path=="/customer-account.js":return reply(200,CUSTOMER_ACCOUNT_JS,"text/javascript; charset=utf-8")
     if method in ("GET","POST") and path=="/login":return login(event)
     if method=="GET" and path=="/auth/callback":return callback(event)
     if method=="POST" and path=="/logout":return logout(event)
@@ -1991,6 +2353,8 @@ def handler(event,context):
             return reply(200,{"authenticated":True,"approved":approved(customer["username"]),
                 "email":customer.get("email","")})
         if not customer:return error(401,"login_required")
+        if path=="/api/customer/account-details" and method in ("GET","POST"):
+            return account_detail_response(event,customer,method)
         if method=="GET" and path=="/api/customer/support-cases":
             return customer_support_cases(event,customer)
         if method=="POST" and path=="/api/customer/support-cases":
