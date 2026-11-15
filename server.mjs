@@ -52,7 +52,7 @@ import {
   transitionProductLifecycle
 } from "./src/core/enterprise-domain-service.mjs";
 import { medicineIdentityDetail, nearbyHealthcareOrganisations, queryMedicineAnalytics, searchMedicines } from "./src/core/medicines-intelligence-service.mjs";
-import { listWmsPilotFeedback, submitWmsPilotFeedback } from "./src/core/wms-pilot-feedback.mjs";
+import { listWmsPilotFeedback, submitWmsPilotFeedback, summariseWmsPilotFeedback } from "./src/core/wms-pilot-feedback.mjs";
 import { inspectNhsbsaEpdPrivateApi } from "./src/core/intelligence-nhsbsa-epd-private-api.mjs";
 import { intelligenceReleaseReadiness } from "./src/core/intelligence-release-readiness.mjs";
 import { discoverUkTenderNotices } from "./src/core/intelligence-uk-tender-discovery.mjs";
@@ -1071,6 +1071,12 @@ export async function handleRequest(request, response) {
       return;
     }
 
+    if (pathname === "/api/enterprise/wms/pilot-feedback-summary" && request.method === "GET") {
+      const session = await scopedAuthentication(request, response, ["admin"]);
+      if (!session) return;
+      json(response, 200, await summariseWmsPilotFeedback(enterpriseContext(session)));
+      return;
+    }
     if (pathname === "/api/enterprise/wms/pilot-feedback" && request.method === "GET") {
       const session = await scopedAuthentication(request, response, ["employee"]);
       if (!session) return;
