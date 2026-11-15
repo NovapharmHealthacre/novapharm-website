@@ -131,4 +131,10 @@ test("consumer onboarding is optional, role-bound and privacy-discoverable",()=>
  const portal=read("portal/index.html");
  assert.match(portal,/<details class="portal-account-help">/);
  assert.match(portal,/This public website never asks for a portal username/);
+ const business=read("account-application/index.html");
+ const siteGenerator=read("scripts/apply-corporate-product-discipline.mjs");
+ const siteStyles=read("assets/css/corporate-product-discipline.css");
+ assert.match(business,/<details class="npd-account-guidance">/);
+ assert.match(siteGenerator,/<details class="npd-account-guidance">/);
+ assert.match(siteStyles,/\.npd-account-guidance summary:focus-visible/);
 });
