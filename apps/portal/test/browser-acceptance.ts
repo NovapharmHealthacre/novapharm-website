@@ -641,6 +641,49 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     const page = await boardMobileContext.newPage();
     await page.goto(`${portalOrigin}/portal/executive-platform/medicines-intelligence/`, { waitUntil: "domcontentloaded" });
     await page.getByRole("heading", { level: 1, name: "Search a medicine" }).waitFor();
+    // Mobile drawers are overlays, not off-screen keyboard destinations. A
+    // closed drawer must leave the accessibility/Tab tree, and Escape must
+    // return focus to the button that opened it (Chromium + WebKit).
+    const medicineNav = page.locator("#medicines-navigation-panel");
+    const contextPanel = page.locator("#medicines-context-panel");
+    const navToggle = page.locator('button[aria-controls="medicines-navigation-panel"]');
+    const filterToggle = page.locator('button[aria-controls="medicines-context-panel"]');
+    assert.equal(await medicineNav.isVisible(), false, `${engine}: closed mobile navigation remains accessible`);
+    assert.equal(await contextPanel.isVisible(), false, `${engine}: closed filters remain accessible`);
+    assert.equal(await navToggle.getAttribute("aria-expanded"), "false");
+    await navToggle.click();
+    assert.equal(await navToggle.getAttribute("aria-expanded"), "true");
+    assert.equal(await medicineNav.isVisible(), true);
+    await page.waitForFunction(() => {
+      const panel = document.getElementById("medicines-navigation-panel");
+      return panel?.contains(document.activeElement) && document.activeElement?.textContent?.trim() === "Close navigation";
+    });
+    assert.equal(await medicineNav.getByRole("button", { name: "Close navigation", exact: true }).evaluate(
+      (node) => node === document.activeElement), true, `${engine}: mobile navigation did not receive focus`);
+    await page.keyboard.press("Shift+Tab");
+    assert.equal(await medicineNav.evaluate((panel) => panel.contains(document.activeElement)), true,
+      `${engine}: reverse Tab escaped the navigation drawer`);
+    await page.keyboard.press("Escape");
+    assert.equal(await navToggle.getAttribute("aria-expanded"), "false");
+    await medicineNav.waitFor({ state: "hidden" });
+    assert.equal(await medicineNav.isVisible(), false);
+    assert.equal(await navToggle.evaluate((node) => node === document.activeElement), true,
+      `${engine}: navigation Escape did not return focus`);
+    await filterToggle.click();
+    assert.equal(await filterToggle.getAttribute("aria-expanded"), "true");
+    assert.equal(await contextPanel.isVisible(), true);
+    await page.waitForFunction(() => {
+      const panel = document.getElementById("medicines-context-panel");
+      return panel?.contains(document.activeElement) && document.activeElement?.textContent?.trim() === "Close filters";
+    });
+    assert.equal(await contextPanel.getByRole("button", { name: "Close filters", exact: true }).evaluate(
+      (node) => node === document.activeElement), true, `${engine}: filters did not receive focus`);
+    await page.keyboard.press("Escape");
+    assert.equal(await filterToggle.getAttribute("aria-expanded"), "false");
+    await contextPanel.waitFor({ state: "hidden" });
+    assert.equal(await contextPanel.isVisible(), false);
+    assert.equal(await filterToggle.evaluate((node) => node === document.activeElement), true,
+      `${engine}: filter Escape did not return focus`);
     await inspectLayout(page, `${engine} ${mobileViewport.name} medicines-intelligence`);
     const touchTargets = await page.locator(".intelligence-local-nav a:visible, .medicines-intelligence button:visible, .intelligence-query input:visible, .intelligence-query select:visible").evaluateAll((elements) => elements.map((element) => ({
       element: `${element.tagName.toLowerCase()}.${element.className || "unclassed"}`,

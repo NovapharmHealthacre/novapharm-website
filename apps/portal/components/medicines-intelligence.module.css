@@ -1477,11 +1477,14 @@
     width: min(300px, 86vw);
     height: 100dvh;
     transform: translateX(-102%);
-    transition: transform 180ms ease;
+    visibility: hidden;
+    transition: transform 180ms ease, visibility 0s linear 180ms;
   }
 
   .sidebarOpen {
     transform: translateX(0);
+    visibility: visible;
+    transition: transform 180ms ease;
   }
 
   .sidebar .navigation a {
@@ -1539,7 +1542,8 @@
     padding: 12px;
     background: var(--mi-soft);
     transform: translateX(102%);
-    transition: transform 180ms ease;
+    visibility: hidden;
+    transition: transform 180ms ease, visibility 0s linear 180ms;
   }
 
   .rightRail > section + section {
@@ -1548,6 +1552,8 @@
 
   .rightRailOpen {
     transform: translateX(0);
+    visibility: visible;
+    transition: transform 180ms ease;
   }
 
   .railMobileHeader {

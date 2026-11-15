@@ -71,7 +71,7 @@ export function LoginPanel() {
         </label>)}
       </fieldset>
       {accessType === "customer" && selectionQuery ? <p className="order-intent-login-note">Your product selection will open in My Products after sign-in. Pricing, stock and ordering remain subject to account-specific release checks.</p> : null}
-      <form className="login-form" onSubmit={submit}>
+      <form className="login-form" onSubmit={submit} aria-busy={busy}>
         <label htmlFor="username">Username or business email</label>
         <input id="username" name="username" autoComplete="username" required maxLength={160} />
         <label htmlFor="password">Password</label>
@@ -79,7 +79,7 @@ export function LoginPanel() {
         <button className="button primary" type="submit" disabled={busy}>{busy ? "Signing in…" : "Sign in securely"}</button>
       </form>
       {entraEnabled ? <a className="button microsoft" href={`/.auth/login/aad?post_login_redirect_uri=${encodeURIComponent(entraReturn)}`}><ShieldCheck aria-hidden="true" className="np-symbol" />Continue with Microsoft</a> : null}
-      <p className="form-status" aria-live="polite">{status}</p>
+      <p className="form-status" role="status" aria-live="polite" aria-atomic="true">{status}</p>
       <p className="security-note"><ShieldCheck aria-hidden="true" className="np-symbol" /> Credentials are verified by the protected server. Passwords are never stored in this browser.</p>
     </section>
   </main>;

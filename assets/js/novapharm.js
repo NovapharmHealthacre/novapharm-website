@@ -2,15 +2,30 @@ const navToggle = document.querySelector("[data-nav-toggle]");
 const siteNav = document.querySelector("[data-site-nav]");
 
 if (navToggle && siteNav) {
+  // A parent section is not the current page. Announce only exact destinations
+  // to VoiceOver and other screen readers (including legacy generated headers).
+  const normaliseNavigationPath = (path) => {
+    const canonical = path.endsWith("/index.html") ? path.slice(0, -"index.html".length) : path;
+    return canonical.endsWith("/") ? canonical : canonical + "/";
+  };
+  const currentPath = normaliseNavigationPath(window.location.pathname);
+  siteNav.querySelectorAll("a[href^='/']").forEach((link) => {
+    const linkPath = normaliseNavigationPath(new URL(link.getAttribute("href"), window.location.href).pathname);
+    if (linkPath === currentPath) link.setAttribute("aria-current", "page");
+    else if (link.getAttribute("aria-current") === "page") link.removeAttribute("aria-current");
+  });
+
   const setNavigation = (isOpen) => {
     siteNav.classList.toggle("open", isOpen);
     navToggle.setAttribute("aria-expanded", String(isOpen));
+    navToggle.setAttribute("aria-label", isOpen ? "Close navigation" : "Open navigation");
     const label = navToggle.querySelector(".sr-only");
     if (label) label.textContent = isOpen ? "Close navigation" : "Open navigation";
     const visibleLabel = navToggle.querySelector("[data-menu-label]");
     if (visibleLabel) visibleLabel.textContent = isOpen ? "Close" : "Menu";
   };
 
+  navToggle.setAttribute("aria-label", "Open navigation");
   navToggle.addEventListener("click", () => setNavigation(!siteNav.classList.contains("open")));
   siteNav.addEventListener("click", (event) => {
     if (event.target.closest("a")) setNavigation(false);
@@ -68,6 +83,14 @@ if (megaHeader) {
       const panel = panels.find((candidate) => candidate.dataset.megaPanel === trigger.dataset.megaTrigger);
       panel?.querySelector("a")?.focus();
     });
+  });
+  // Tabbing to an unrelated header control must not leave an overlay expanded.
+  // Moving into the active panel (or another category trigger) remains allowed.
+  megaHeader.addEventListener("focusin", (event) => {
+    const target = event.target;
+    if (!activeTrigger || activeTrigger.contains(target)) return;
+    const inOpenPanel = panels.some((panel) => panel.classList.contains("is-open") && panel.contains(target));
+    if (!inOpenPanel && !target.closest("[data-mega-trigger]")) closeMega();
   });
   megaHeader.addEventListener("pointerleave", closeMega);
   megaHeader.addEventListener("click", (event) => {

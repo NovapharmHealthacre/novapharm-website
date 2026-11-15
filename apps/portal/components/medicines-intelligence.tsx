@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, type ReactNode, useEffect, useId, useRef, useState } from "react";
+import { type FormEvent, type ReactNode, useCallback, useEffect, useId, useRef, useState } from "react";
 import { intelligenceWorkspaceBySlug, intelligenceWorkspaceCatalogue, intelligenceWorkspaceGroups } from "../data/intelligence-workspaces";
 import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError } from "../lib/gateway";
@@ -688,10 +688,78 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
     : navigationGroups;
   const searchId = useId();
   const searchFieldRef = useRef<HTMLInputElement>(null);
+  const menuToggleRef = useRef<HTMLButtonElement>(null);
+  const filterToggleRef = useRef<HTMLButtonElement>(null);
+  const menuCloseRef = useRef<HTMLButtonElement>(null);
+  const filterCloseRef = useRef<HTMLButtonElement>(null);
   // A superseded deep-link restoration must never reintroduce an earlier medicine.
   const selectionGenerationRef = useRef(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  // Close controls mount only when a user opens a drawer; the stable ref
+  // callback moves keyboard focus during that same React commit. The effect
+  // below also retries after paint when CSS visibility is transitioning.
+  const focusNavigationClose = useCallback((node: HTMLButtonElement | null) => {
+    menuCloseRef.current = node;
+    node?.focus({ preventScroll: true });
+  }, []);
+  const focusFiltersClose = useCallback((node: HTMLButtonElement | null) => {
+    filterCloseRef.current = node;
+    node?.focus({ preventScroll: true });
+  }, []);
+  useEffect(() => {
+    if (!menuOpen && !filtersOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        if (filtersOpen) { setFiltersOpen(false); filterToggleRef.current?.focus(); }
+        else if (menuOpen) { setMenuOpen(false); menuToggleRef.current?.focus(); }
+        return;
+      }
+      if (event.key !== "Tab") return;
+      // Mobile drawers cover the page with a scrim: keyboard navigation must
+      // remain inside the open drawer until dismissed or explicitly closed.
+      const activePanel = document.getElementById(
+        filtersOpen ? "medicines-context-panel" : "medicines-navigation-panel"
+      );
+      if (!activePanel || !window.matchMedia("(max-width: 1080px)").matches) return;
+      const focusable = Array.from(activePanel.querySelectorAll<HTMLElement>(
+        'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
+      )).filter((element) => element.getClientRects().length > 0);
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (!first || !last) { event.preventDefault(); return; }
+      if (event.shiftKey && (document.activeElement === first || !activePanel.contains(document.activeElement))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || !activePanel.contains(document.activeElement))) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    // CSS visibility transitions can leave the opening drawer non-focusable
+    // until the next paint. Move focus after layout, never into a hidden pane.
+    // Wait for the responsive drawer to become actually focusable. React's
+    // ref callback may run while the closed panel still has visibility:hidden;
+    // a single animation frame is not sufficient across browser engines.
+    let focusFrame = 0;
+    let attempts = 0;
+    const focusVisibleClose = () => {
+      const target = filtersOpen ? filterCloseRef.current : menuCloseRef.current;
+      if (!target) return;
+      if (window.getComputedStyle(target).visibility === "visible" && target.getClientRects().length > 0) {
+        target.focus({ preventScroll: true });
+        if (document.activeElement === target) return;
+      }
+      if (++attempts < 20) focusFrame = window.requestAnimationFrame(focusVisibleClose);
+    };
+    focusFrame = window.requestAnimationFrame(focusVisibleClose);
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [menuOpen, filtersOpen]);
   const [searchResponse, setSearchResponse] = useState<SearchResponse | null>(null);
   const [detail, setDetail] = useState<MedicineDetail | null>(null);
   const [analytics, setAnalytics] = useState<AnalyticsResponse | null>(null);
@@ -924,27 +992,27 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   }
 
   return <main className={`${styles.shell} medicines-intelligence`}>
-    <aside className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ""}`} aria-label="Medicines Intelligence navigation">
-      <div className={styles.brand}><PharmaScopeBrand home={baseRoute} tone="reverse" /><p><strong>Medicines Intelligence</strong><span>by NovaPharm Healthcare</span></p><button type="button" onClick={() => setMenuOpen(false)}>Close</button></div>
+    <aside id="medicines-navigation-panel" className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ""}`} aria-label="Medicines Intelligence navigation">
+      <div className={styles.brand}><PharmaScopeBrand home={baseRoute} tone="reverse" /><p><strong>Medicines Intelligence</strong><span>by NovaPharm Healthcare</span></p>{menuOpen ? <button ref={focusNavigationClose} type="button" onClick={() => { setMenuOpen(false); menuToggleRef.current?.focus(); }}>Close navigation</button> : null}</div>
       <nav className={`intelligence-local-nav ${styles.navigation}`} aria-label="Medicines Intelligence views">{visibleNavigationGroups.map((group) => <section key={group.label}><h2>{group.label}</h2><ul>{group.items.map(([key, label, href]) => <li key={key}><a href={detail ? `${href}?medicineId=${encodeURIComponent(detail.medicine.medicineId)}` : href} aria-current={current === key ? "page" : undefined}>{label}</a></li>)}</ul></section>)}</nav>
       <div className={styles.sidebarFoot}><p>{user.displayName}</p><span>{display(user.accessType)}</span><small>Protected, server-authorised, no public caching</small></div>
     </aside>
-    {menuOpen ? <button className={styles.scrim} type="button" aria-label="Close navigation" onClick={() => setMenuOpen(false)} /> : null}
+    {menuOpen ? <button className={styles.scrim} type="button" aria-label="Close navigation" onClick={() => { setMenuOpen(false); menuToggleRef.current?.focus(); }} /> : null}
     <section className={styles.product}>
       <header className={`${styles.topbar} medicine-search-workspace`}>
-        <button className={styles.mobileMenu} type="button" onClick={() => setMenuOpen(true)}>Navigation</button>
+        <button ref={menuToggleRef} className={styles.mobileMenu} type="button" aria-expanded={menuOpen} aria-controls="medicines-navigation-panel" onClick={() => setMenuOpen(true)}>Navigation</button>
         <search className={styles.search}><form onSubmit={searchMedicine}><label className={styles.srOnly} htmlFor={searchId}>Medicine name, brand or code</label><input ref={searchFieldRef} id={searchId} aria-keyshortcuts="Meta+K Control+K" title="Search medicines (⌘K / Ctrl+K)" name="medicine" type="search" minLength={2} maxLength={120} autoComplete="off" spellCheck={false} placeholder="Search current medicine, product name or BNF code" required /><button type="submit" disabled={busy}>Search</button></form>
           {searchResponse ? <section className={`${styles.searchResults} medicine-search-results`} aria-label="Medicine search results"><header><h2>Current identity matches</h2><p>{searchResponse.source}{searchResponse.sourcePeriod ? `, ${searchResponse.sourcePeriod}` : ""}</p></header>{searchResponse.results.length ? <ul>{searchResponse.results.map((result) => <li key={result.medicineId}><button type="button" onClick={() => void selectMedicine(result.medicineId)} disabled={busy}><strong>{result.canonicalName}</strong><span>{result.presentationCode || "BNF presentation code not recorded"}{result.chemicalSubstance ? ` | ${result.chemicalSubstance}` : ""}</span></button></li>)}</ul> : <p>{searchResponse.catalogueState === "no_current_repository_identities" ? "This search environment has no current medicine identities loaded. Results remain unavailable until source approval and ingestion." : "No current BNF identity matched. Try a generic, brand, product or BNF code."}</p>}{searchResponse.pagination.totalPages > 1 ? <nav aria-label="Medicine search result pages"><button type="button" disabled={busy || searchResponse.pagination.page === 1} onClick={() => void searchMedicinePage(searchResponse.pagination.page - 1)}>Previous</button><span>Page {searchResponse.pagination.page} of {searchResponse.pagination.totalPages} · {searchResponse.pagination.totalRows} identities</span><button type="button" disabled={busy || searchResponse.pagination.page >= searchResponse.pagination.totalPages} onClick={() => void searchMedicinePage(searchResponse.pagination.page + 1)}>Next</button></nav> : null}</section> : null}
         </search>
-        <div className={styles.topActions}><span>Latest accepted period</span><button type="button" onClick={() => setFiltersOpen(true)}>Filters</button><button className="icon-command" type="button" onClick={() => void onRefresh()} disabled={loading}>Refresh</button><button type="button" aria-label="Sign out" onClick={() => void onLogout()}>Sign out</button></div>
+        <div className={styles.topActions}><span>Latest accepted period</span><button ref={filterToggleRef} type="button" aria-expanded={filtersOpen} aria-controls="medicines-context-panel" onClick={() => setFiltersOpen(true)}>Filters</button><button className="icon-command" type="button" onClick={() => void onRefresh()} disabled={loading}>Refresh</button><button type="button" aria-label="Sign out" onClick={() => void onLogout()}>Sign out</button></div>
       </header>
       <div className={styles.liveRegion}><p className="workflow-status" aria-live="polite">{parentStatus}</p><p className="medicine-search-status" role="status" aria-live="polite">{searchStatus}</p><p role="status" aria-live="polite">{analyticsStatus}</p></div>
       <div className={`data-context ${styles.dataContext}`}><span>{activeDataStateLabel(snapshot.dataState, analytics)}</span><span>{updatedLabel(snapshot.dataFreshness)}</span><span>Read only</span></div>
       <div className={styles.workspaceGrid}>
         <section className={styles.central}>{central}<section className={`${styles.boundary} intelligence-boundary`}><h2>Evidence boundary</h2><ul>{snapshot.notices.map((notice) => <li key={notice}>{notice}</li>)}</ul></section></section>
-        <aside className={`${styles.rightRail} ${filtersOpen ? styles.rightRailOpen : ""}`} aria-label="Contextual intelligence"><div className={styles.railMobileHeader}><h2>Filters and context</h2><button type="button" onClick={() => setFiltersOpen(false)}>Close</button></div><ContextRail analytics={analytics} busy={busy} detail={detail} filters={filters} onChange={changeFilter} onReset={resetFilters} onRun={() => void runAnalytics()} snapshot={snapshot} /></aside>
+        <aside id="medicines-context-panel" className={`${styles.rightRail} ${filtersOpen ? styles.rightRailOpen : ""}`} aria-label="Contextual intelligence"><div className={styles.railMobileHeader}><h2>Filters and context</h2>{filtersOpen ? <button ref={focusFiltersClose} type="button" onClick={() => { setFiltersOpen(false); filterToggleRef.current?.focus(); }}>Close filters</button> : null}</div><ContextRail analytics={analytics} busy={busy} detail={detail} filters={filters} onChange={changeFilter} onReset={resetFilters} onRun={() => void runAnalytics()} snapshot={snapshot} /></aside>
       </div>
-      {filtersOpen ? <button className={styles.railScrim} type="button" aria-label="Close filters" onClick={() => setFiltersOpen(false)} /> : null}
+      {filtersOpen ? <button className={styles.railScrim} type="button" aria-label="Close filters" onClick={() => { setFiltersOpen(false); filterToggleRef.current?.focus(); }} /> : null}
     </section>
   </main>;
 }

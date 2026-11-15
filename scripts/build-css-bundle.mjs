@@ -28,6 +28,7 @@ const sources = [
   ["symbol-system.css", null],
   ["sitewide-layout-integrity.css", null],
   ["apple-hig-layout.css", null],
+  ["novapharm-hig-accessibility.css", null],
   ["novapharm-hig-materials.css", null],
   ["novapharm-apple-27-web-adaptation.css", null]
 ];
