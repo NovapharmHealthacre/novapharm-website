@@ -109,6 +109,9 @@
     --np-color-separator: #aeaeb2;
     --np-color-separator-strong: #d1d1d6;
     --np-color-link: #a6d1ff;
+    --np-color-accent: #ffa49f;
+    --np-color-accent-strong: #ffcac7;
+    --np-color-on-accent: #1d1d1f;
     --np-color-focus: #a6d1ff;
   }
 }
@@ -120,6 +123,9 @@
     --np-color-separator: #aeaeb2;
     --np-color-separator-strong: #d1d1d6;
     --np-color-link: #a6d1ff;
+    --np-color-accent: #ffa49f;
+    --np-color-accent-strong: #ffcac7;
+    --np-color-on-accent: #1d1d1f;
     --np-color-focus: #a6d1ff;
   }
 }
@@ -212,6 +218,12 @@
 :where([data-np-colour-role="brand-action"]) {
   background: var(--np-color-accent);
   color: var(--np-color-on-accent);
+}
+:where([data-np-colour-role="primary-action"]):hover {
+  background: var(--np-color-primary-action-hover);
+}
+:where([data-np-colour-role="brand-action"]):hover {
+  background: var(--np-color-accent-strong);
 }
 :where([data-np-status="success"]) { color: var(--np-color-success); }
 :where([data-np-status="warning"]) { color: var(--np-color-warning); }
