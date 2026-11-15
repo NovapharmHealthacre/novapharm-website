@@ -1285,8 +1285,13 @@ td { color: var(--text); }
   --shadow: 0 24px 64px rgba(17, 24, 32, 0.10);
   --shadow-soft: 0 12px 34px rgba(17, 24, 32, 0.07);
   --radius: 6px;
-  --font: "Avenir Next", Avenir, "Segoe UI", Helvetica, Arial, sans-serif;
-  --serif: Charter, "Iowan Old Style", Baskerville, Georgia, serif;
+  /* Licensed system-font rendering: do not self-host downloaded Apple fonts. */
+  --np-type-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --np-type-compact: -apple-system, BlinkMacSystemFont, "Arial Narrow", "Segoe UI", Arial, sans-serif;
+  --np-type-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --np-type-editorial: "New York", "Iowan Old Style", Charter, Georgia, serif;
+  --font: var(--np-type-ui);
+  --serif: var(--np-type-editorial);
   --container: 1320px;
   --measure: 760px;
   --space-1: 0.5rem;
@@ -7043,12 +7048,15 @@ body[data-page="cro"] .cro-leadership-proof {
   --npd-line-strong: #aeb3b8;
   --npd-soft: #f5f6f7;
   --npd-white: #ffffff;
-  --npd-system: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --npd-system: var(--np-type-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif);
+  --npd-compact: var(--np-type-compact, -apple-system, BlinkMacSystemFont, "Arial Narrow", Arial, sans-serif);
+  --npd-mono: var(--np-type-mono, ui-monospace, Menlo, Consolas, monospace);
+  --npd-editorial: var(--np-type-editorial, "Iowan Old Style", Georgia, serif);
   --npd-container: 1200px;
   --npd-copy: 720px;
   --npd-header: 68px;
   --font: var(--npd-system);
-  --serif: var(--npd-system);
+  --serif: var(--npd-editorial);
   --container: var(--npd-container);
   --header-height: var(--npd-header);
 }
@@ -9454,6 +9462,33 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   .cookie-banner { padding: 14px 16px; }
   .cookie-banner .cookie-actions { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .cookie-banner .cookie-actions .btn:last-child { grid-column: 1 / -1; }
+}
+
+/* NovaPharm typography roles: system, compact operations, mono identifiers, editorial. */
+/* Keep the body/UI in the native system face; editorial is opt-in, not a global heading override. */
+.npd-main :is(code, kbd, samp, pre, [data-typography="mono"], .np-code, .batch-code, .sku-code) {
+  font-family: var(--npd-mono);
+  font-variant-ligatures: none;
+}
+.npd-main :is(.operational-table, .dense-table, [data-typography="compact"]) {
+  font-family: var(--npd-compact);
+  font-variant-numeric: tabular-nums;
+}
+.npd-main :is(table, .metric-value, .data-value, [data-numeric]) {
+  font-variant-numeric: tabular-nums;
+}
+.npd-main :is(.editorial-quote, .editorial-pullquote, [data-typography="editorial"]) {
+  font-family: var(--npd-editorial);
+  font-optical-sizing: auto;
+  font-weight: 400;
+  line-height: 1.35;
+}
+.npd-main :is(input, select, textarea, button) {
+  font-family: var(--npd-system);
+  font-synthesis: none;
+}
+@media (pointer: coarse) {
+  .npd-main :is(button, .btn, [role="button"]) { min-height: 44px; }
 }
 
 /* Source: contact-premium.css */
