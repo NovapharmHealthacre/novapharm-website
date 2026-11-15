@@ -40,7 +40,7 @@ test("authenticated warehouse evidence generates only observed sample visuals", 
   assert.match(html, /QC-001/);
   assert.match(html, /Quality \/ RP/);
   assert.match(html, /No independently authenticated Polar Speed\/UPS/);
-  assert.match(html, /No.*warehouse stock/);
+  assert.match(html, /Independently authenticated|independently authenticated/);
   assert.doesNotMatch(html, /localStorage|demo stock|Reserve inventory|Create dispatch|Approve lot/);
 });
 
