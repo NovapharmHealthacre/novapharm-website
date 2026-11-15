@@ -48,3 +48,13 @@ test("specialist contact topics are translated to server-authorised categories",
   assert.match(workflow, /selected === "Oncology & specialist medicines"\) return "Product opportunity"/);
   assert.match(workflow, /Topic: \$\{selectedType\}/);
 });
+test("public business account explains account purpose in optional, accessible steps", () => {
+  const route = read("app/account-application/page.tsx");
+  assert.match(route, /<details className="account-path-help">/);
+  assert.match(route, /<summary>What happens after I register interest\?/);
+  assert.match(route, /There is no password or portal account at this stage/);
+  assert.match(route, /Browsing the public catalogue never requires account registration/);
+  assert.match(route, /\/legal\/privacy\/#business-enquiries/);
+  const styles = read("app/globals.css");
+  assert.match(styles, /\.account-path-help summary:focus-visible/);
+});
