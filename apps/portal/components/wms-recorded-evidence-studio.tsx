@@ -127,7 +127,7 @@ export function WmsRecordedEvidenceStudio({ snapshot }: Readonly<{ snapshot: Wms
         </label>
         <p role="status" aria-live="polite">Showing {worklist.length} matching recorded exceptions in this bounded sample.</p>
         {/* biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users need to scroll wide operational tables. */}
-        <section className="distribution-wms-evidence-table-scroll" tabIndex={0} role="region"
+        <section className="distribution-wms-evidence-table-scroll" tabIndex={0}
           aria-label="Scrollable recorded WMS exceptions">
           <table>
             <thead><tr><th scope="col">Priority</th><th scope="col">Area</th><th scope="col">Reference</th><th scope="col">Observed signal</th><th scope="col">Review team</th></tr></thead>
