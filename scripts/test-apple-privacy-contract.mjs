@@ -78,3 +78,28 @@ test("native-only APIs are not misrepresented as website implementations", () =>
   }
   assert.doesNotMatch(source("legal/privacy/index.html"), /navigator\.geolocation|getUserMedia\(/);
 });
+
+
+test("privacy access and browser-permission boundaries span the public estate and secure login", () => {
+  const technology = source("apps/technology/app/privacy/page.tsx");
+  const founder = source("apps/founder/content/pages/privacy.md");
+  const status = source("apps/status/app/page.tsx");
+  const portal = source("apps/portal/components/login-panel.tsx");
+  const securePolicy = source("packages/security/src/index.ts");
+  const portalProxy = source("apps/portal/proxy.ts");
+
+  assert.match(technology, /Privacy choices and device permissions/);
+  assert.match(technology, /browser permission interface/);
+  assert.match(technology, /privacy question or make a request/);
+  assert.match(founder, /Privacy by design and your choices/);
+  assert.match(founder, /does not ask for location, camera, microphone/);
+  assert.match(founder, /does not intentionally use advertising pixels/);
+  assert.match(status, /https:\/\/novapharmhealthcare\.com\/legal\/privacy\//);
+  assert.match(status, /does not expose customer records/);
+  assert.match(portal, /portal-privacy-note/);
+  assert.match(portal, /No marketing consent is required to sign in/);
+  assert.match(portal, /https:\/\/novapharmhealthcare\.com\/legal\/privacy\//);
+  assert.doesNotMatch(portal, /localStorage|sessionStorage/);
+  assert.match(securePolicy, /camera=\(\), microphone=\(\), geolocation=\(\)/);
+  assert.match(portalProxy, /Cache-Control", "no-store"/);
+});
