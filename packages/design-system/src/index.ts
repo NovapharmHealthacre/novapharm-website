@@ -45,3 +45,4 @@ export function reducedMotionCss(): string {
 
 export * from "./components.tsx";
 export * from "./styles.ts";
+export * from "./symbols.tsx";
