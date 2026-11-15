@@ -17,7 +17,7 @@
   --nph-deep: #0a101a;
   --nph-radius: 22px;
   --nph-max: 1200px;
-  /* SF Pro-like native typography, with purposeful roles for compact and editorial text. */
+  /* Native platform typography, with purposeful compact and editorial roles. */
   --np-type-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --np-type-compact: -apple-system, BlinkMacSystemFont, "Arial Narrow", "Segoe UI", Arial, sans-serif;
   --np-type-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
