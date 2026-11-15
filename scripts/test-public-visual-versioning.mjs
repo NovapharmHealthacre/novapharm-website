@@ -597,6 +597,15 @@ test("build receipt is emitted only after all staged bundle links match and is f
   const html = `<link rel="stylesheet" href="/${bundle}?v=${defaultVersion}&amp;sha256=${hash(bytes)}">`;
   const pages = ["index.html", "capabilities/index.html", "oncology/index.html", "products/index.html"];
   for (const page of pages) write(root, `_site/${page}`, html);
+  // The real public bundle receipt now also verifies the owner-approved
+  // Distribution logo and its staged page. Build the same prerequisites here;
+  // an absent logo is correctly a deployment failure, not a valid fixture.
+  const distributionLogo = "assets/brand/novapharm-distribution-logo.svg";
+  const logoBytes = '<svg aria-label="Novapharm Distribution logo"><title>Novapharm Distribution</title></svg>';
+  write(root, distributionLogo, logoBytes);
+  write(root, `_site/${distributionLogo}`, logoBytes);
+  write(root, "_site/distribution/index.html",
+    `<img src="/${distributionLogo}" alt="NovaPharm Distribution">`);
   const output = join(root, "output.txt");
   const inspect = () => spawnSync("bash", ["-c", producer], { cwd: root, encoding: "utf8", timeout: 5000, env: { ...process.env, GITHUB_OUTPUT: output } });
   const valid = inspect();
@@ -610,6 +619,13 @@ test("build receipt is emitted only after all staged bundle links match and is f
     assert.equal(spawnSync("test", ["-e", output]).status, 1, "No receipt may be emitted after refusal");
     write(root, `_site/${page}`, html);
   }
+  write(root, `_site/${distributionLogo}`, "<svg>unexpected logo replacement</svg>");
+  assert.notEqual(inspect().status, 0, "The staged Distribution logo must match the approved source");
+  write(root, `_site/${distributionLogo}`, logoBytes);
+  write(root, "_site/distribution/index.html", "<img alt=\"Missing approved identity\">");
+  assert.notEqual(inspect().status, 0, "The staged Distribution page must show the approved identity");
+  write(root, "_site/distribution/index.html",
+    `<img src="/${distributionLogo}" alt="NovaPharm Distribution">`);
   write(root, `_site/${bundle}`, "");
   assert.notEqual(inspect().status, 0);
 });
