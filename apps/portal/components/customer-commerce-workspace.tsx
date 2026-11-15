@@ -105,6 +105,7 @@ export function CustomerCommerceWorkspace({ moduleCode }: Readonly<{ moduleCode:
           <p>Catalogue references alone do not establish account prices, UK product authorisation, stock or order acceptance.</p>
         </div>
       </div>
+      <p className="unified-customer-release-note">Before placing an eligible order, confirm your approved delivery location in <a href="/portal/account/">My Account</a>. A saved or pending address is not a confirmed delivery instruction.</p>
       <p className="unified-customer-release-note">The current portal release is read-only. Order and payment controls remain unavailable until the common transactional service passes its documented checks.</p>
     </section>;
   }
