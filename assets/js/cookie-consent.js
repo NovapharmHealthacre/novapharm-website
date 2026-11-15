@@ -68,8 +68,14 @@ function button(label, className, action) {
   return element;
 }
 
+function browserStorage() {
+  // Some privacy configurations deny access even to the storage getter.
+  try { return window.localStorage; }
+  catch { return null; }
+}
+
 function initialiseConsentInterface() {
-  const existing = readConsent(window.localStorage);
+  const existing = readConsent(browserStorage());
   if (existing) applyConsent(existing);
 
   const banner = document.createElement("section");
@@ -87,7 +93,7 @@ function initialiseConsentInterface() {
   const preferenceForm = dialog.querySelector("form");
 
   const openDialog = () => {
-    const record = readConsent(window.localStorage);
+    const record = readConsent(browserStorage());
     for (const category of ["preferences", "analytics"]) {
       preferenceForm.elements[category].checked = categoryAllowed(record, category);
     }
@@ -100,10 +106,28 @@ function initialiseConsentInterface() {
     else dialog.removeAttribute("open");
   };
   const choose = (categories) => {
-    const record = saveConsent(window.localStorage, categories);
-    applyConsent(record);
-    banner.hidden = true;
-    closeDialog();
+    try {
+      const storage = browserStorage();
+      if (!storage) throw new Error("Browser storage is unavailable");
+      const record = saveConsent(storage, categories);
+      applyConsent(record);
+      banner.hidden = true;
+      closeDialog();
+    } catch {
+      // Never present optional tracking as consented if the visitor's choice
+      // could not be persisted. Keep the notice accessible for retry.
+      applyConsent({ version: CONSENT_VERSION, categories: DEFAULT_CATEGORIES });
+      banner.hidden = false;
+      let notice = banner.querySelector("[data-cookie-storage-error]");
+      if (!notice) {
+        notice = document.createElement("p");
+        notice.dataset.cookieStorageError = "";
+        notice.setAttribute("role", "status");
+        banner.querySelector(".cookie-banner-inner")?.append(notice);
+      }
+      notice.textContent = "This browser cannot save your cookie choice. Optional analytics stays off. Check browser storage permissions to save a preference.";
+      closeDialog();
+    }
   };
 
   const handleAction = (action) => {
