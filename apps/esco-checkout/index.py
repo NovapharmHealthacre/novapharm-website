@@ -264,6 +264,7 @@ def checkout(event):
                         ConditionExpression="attribute_not_exists(pk)")
         params = {"mode": "payment", "automatic_tax[enabled]": "true",
             "shipping_address_collection[allowed_countries][0]": "GB",
+            "phone_number_collection[enabled]": "true",
             "customer_creation": "always", "client_reference_id": order_id,
             "success_url": STORE_ORIGIN + "/products/esco/bag/?checkout=return&order_id=" + order_id + "&session_id={CHECKOUT_SESSION_ID}",
             "cancel_url": STORE_ORIGIN + "/products/esco/bag/?checkout=cancelled",
@@ -319,6 +320,38 @@ def parse_signature(body, header, signing_secret):
     if event.get("livemode") is not True or not re.fullmatch(r"evt_[A-Za-z0-9]+", str(event.get("id", ""))):
         raise ValueError("invalid mode or event id")
     return event
+
+def checkout_delivery_snapshot(session):
+    """Minimum Stripe-collected GB recipient details for private manual fulfilment review."""
+    collected = session.get("collected_information")
+    collected = collected if isinstance(collected, dict) else {}
+    shipping = collected.get("shipping_details") or session.get("shipping_details")
+    contact = session.get("customer_details")
+    contact = contact if isinstance(contact, dict) else {}
+    if not isinstance(shipping, dict) or not isinstance(shipping.get("address"), dict):
+        return None
+
+    def text_field(value, maximum):
+        if not isinstance(value, str) or len(value) > maximum:
+            return None
+        cleaned = value.strip()
+        return cleaned if cleaned and all(32 <= ord(ch) != 127 for ch in cleaned) else None
+
+    address = shipping["address"]
+    name = text_field(shipping.get("name"), 160)
+    phone = text_field(contact.get("phone") or shipping.get("phone"), 40)
+    line1 = text_field(address.get("line1"), 200)
+    city = text_field(address.get("city"), 120)
+    postcode = text_field(address.get("postal_code"), 32)
+    if (address.get("country") != "GB" or not all((name, phone, line1, city, postcode)) or
+        len(postcode) < 2):
+        return None
+    return {"recipientName": name, "contactPhone": phone,
+            "line1": line1, "line2": text_field(address.get("line2"), 200),
+            "city": city, "region": text_field(address.get("state"), 120),
+            "postcode": postcode, "countryCode": "GB",
+            "source": "stripe_collected_information", "status": "requires_fulfilment_review"}
+
 
 def payment_event_outcome(event_type, payment_status):
     """Classify a signed Stripe Checkout event without treating expiry as card failure.
@@ -392,13 +425,23 @@ def webhook(event):
         # A Checkout expiry or failed asynchronous attempt captures no money.
         # Do not write the quoted total into a field named chargedAmountMinor.
         charged_minor = session["amount_total"] if new_state == "PAID" else 0
+        # A paid event remains settled even if no usable delivery address is present,
+        # but it must never become dispatchable without an independent review.
+        ship_to = checkout_delivery_snapshot(session) if new_state == "PAID" else None
+        address_state = ("COLLECTED_PENDING_REVIEW" if ship_to else
+            "REVIEW_REQUIRED" if new_state == "PAID" else "NOT_PAID")
+        update = "SET #s=:new, stripeEventId=:eid, chargedAmountMinor=:amt, deliveryAddressState=:address_state"
+        values = {":new": {"S": new_state}, ":eid": {"S": signed["id"]},
+                  ":amt": {"N": str(charged_minor)}, ":address_state": {"S": address_state},
+                  ":open": {"S": "CHECKOUT_OPEN"}, ":sid": {"S": sid}}
+        if ship_to:
+            update += ", deliverySnapshotJson=:ship_to"
+            values[":ship_to"] = {"S": json.dumps(ship_to, separators=(",", ":"))}
         db.update_item(TableName=ORDERS_TABLE, Key=key,
-            UpdateExpression="SET #s=:new, stripeEventId=:eid, chargedAmountMinor=:amt",
+            UpdateExpression=update,
             ConditionExpression="#s=:open AND sessionId=:sid",
             ExpressionAttributeNames={"#s": "state"},
-            ExpressionAttributeValues={":new": {"S": new_state}, ":eid": {"S": signed["id"]},
-                ":amt": {"N": str(charged_minor)},
-                ":open": {"S": "CHECKOUT_OPEN"}, ":sid": {"S": sid}})
+            ExpressionAttributeValues=values)
         return respond(200, {"processed": True})
     except (ClientError, KeyError, ValueError, TypeError):
         return fail(503, "payment_ledger_unavailable")
