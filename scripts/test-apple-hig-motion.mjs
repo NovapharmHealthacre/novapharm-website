@@ -36,6 +36,19 @@ for (const workflow of [
   assert.ok(read(workflow).includes("assets/css/novapharm-hig-motion.css"),
     `${workflow}: changes to the shared motion DNA must trigger a release or validation`);
 }
+// The Corporate Next.js route does not set the legacy static body[data-page]
+// attribute. Test the real class selector, not the legacy Pages-only selector.
+const corporateHero = read("apps/corporate/app/apple-pharma.css");
+assert.ok(corporateHero.includes("animation: pharmaHeroDrift 18s") && corporateHero.includes("infinite alternate"),
+  "Source still contains a perpetual Corporate hero animation; protect it at the shared layer");
+assert.ok(source.includes(".pharma-home-media img,"),
+  "Shared motion stylesheet must stop perpetual Corporate Next.js hero movement");
+// Today's portal.novapharmhealthcare.com uses a separate Lambda BFF, NOT the
+// unreleased unified Next.js portal. Keep a source-level reduced-motion check,
+// without mistaking it for proof that the Lambda was independently deployed.
+const transitionalCustomer = read("apps/nutraxin-customer-api/index.py");
+assert.ok(transitionalCustomer.includes("@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}"),
+  "Customer account entry needs a no-motion fallback");
 const script = read("assets/js/novapharm.js");
 assert.ok(script.includes('typeof IntersectionObserver !== "undefined"'), "Missing no-IntersectionObserver fallback");
 assert.ok(script.includes('motionPreference.addEventListener?.("change"'), "Motion preference changes must be handled");

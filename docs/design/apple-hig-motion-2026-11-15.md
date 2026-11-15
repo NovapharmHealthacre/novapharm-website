@@ -56,3 +56,11 @@ The timing values are NovaPharm design decisions, **not** exact Apple-prescribed
 The shared stylesheet additionally overrides five older, automatically looping visual effects in the public hero: animated grid, orbital circle, signal cards, module photography drift and homepage photography drift. These images remain fully visible as static artwork. Deliberate loading indicators with accompanying text are not disabled for users without reduced-motion preferences.
 
 The Pages pull-request validator, guarded AWS-backed production publisher and approved release-dispatch filter all explicitly track future updates to the shared motion stylesheet. Automatic release remains subject to existing production checks and exact revision verification.
+
+## Corporate Next.js follow-up and protected runtime boundary (15 November 2026)
+
+The Corporate Next.js hero uses `.pharma-home-media img` without the old static `body[data-page="home"]` attribute. The shared motion override now matches both the Next.js route and public Pages. Automated source coverage prevents reintroducing perpetual photographic movement.
+
+AWS inspection confirmed that `portal.novapharmhealthcare.com` maps to the separate Nutraxin customer BFF, not the unified Next.js Portal. That BFF already contains a reduced-motion fallback in its account-entry CSS. No account, role, checkout, consent or WMS behaviour is changed in this follow-up.
+
+The protected Intelligence gateway serves independently pinned Lambda aliases. A review of its existing runtime did **not** establish that the merged motion revision has been released to those aliases. To declare the entire estate complete, each protected application's exact built artifact, release authorization, keyboard and reduced-motion browser testing, and live domain version must be verified. No production alias should be updated from CSS source changes alone.
