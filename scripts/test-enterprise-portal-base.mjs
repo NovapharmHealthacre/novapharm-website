@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { pbkdf2Sync, randomBytes, randomUUID } from "node:crypto";
+import { pbkdf2Sync, randomBytes, randomInt, randomUUID } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -9,8 +9,22 @@ import { Readable, Writable } from "node:stream";
 const root = resolve(process.cwd());
 const temporaryRoot = mkdtempSync(join(tmpdir(), "novapharm-enterprise-portal-"));
 const databasePath = join(temporaryRoot, "enterprise.sqlite");
-const bootstrapPassword = `T8!${randomBytes(30).toString("base64url")}aZ`;
-const replacementPassword = `R7!${randomBytes(30).toString("base64url")}bY`;
+// Each block alternates character classes so random validation credentials cannot
+// accidentally contain four repeated characters, sequential digits, common
+// password fragments or identity words. This applies to test-only credentials.
+const validationAlphabets = [
+  "ABCDEFGHJKLMNPQRSTUVWXYZ",
+  "abcdefghjkmnpstuvwxyz",
+  "23456789",
+  "!@#%^&*"
+];
+function policyCompatibleTestPassword(prefix) {
+  return prefix + Array.from({ length: 12 }, () =>
+    validationAlphabets.map((alphabet) => alphabet[randomInt(alphabet.length)]).join("")
+  ).join("");
+}
+const bootstrapPassword = policyCompatibleTestPassword("T8!");
+const replacementPassword = policyCompatibleTestPassword("R7!");
 
 function provisionedUser(username, displayName, role, password, accessScopes, customerId = null) {
   const passwordSalt = randomBytes(16).toString("hex");
@@ -127,6 +141,12 @@ try {
   delete process.env.BOOTSTRAP_ADMIN_PASSWORD;
   const { handleRequest } = await import("../server.mjs");
   const { all, closeDatabase, one, run } = await import("../src/data/database.mjs");
+  const { validateNewPassword } = await import("../src/core/auth-service.mjs");
+  for (const testCredential of [bootstrapPassword, replacementPassword]) {
+    await validateNewPassword(testCredential,
+      { username: "vishal@novapharmhealthcare.com", displayName: "Vishal Chakravarty" },
+      { fetchImplementation: null, required: false });
+  }
 
   async function request(options = {}) {
     const response = new TestResponse();
@@ -174,7 +194,8 @@ try {
     body: JSON.stringify({ currentPassword: bootstrapPassword, newPassword: replacementPassword, confirmation: replacementPassword }),
     address: "127.20.0.2"
   });
-  assert.equal(passwordChange.statusCode, 200);
+  assert.equal(passwordChange.statusCode, 200,
+    `Synthetic password rotation failed with HTTP ${passwordChange.statusCode}; no credentials are logged.`);
   const ownerCustomerSession = cookieValue(passwordChange.headers["Set-Cookie"], "np_session");
   assert.ok(ownerCustomerSession);
   assert.equal((await login("vishal@novapharmhealthcare.com", bootstrapPassword, "customer", "127.20.0.3")).statusCode, 401);
