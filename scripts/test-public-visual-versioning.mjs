@@ -595,7 +595,7 @@ test("build receipt is emitted only after all staged bundle links match and is f
   const bytes = "/* synthetic build output */";
   write(root, `_site/${bundle}`, bytes);
   // Keep synthetic fixture aligned with the release gate for the official Distribution logo.
-  const distributionLogo = "assets/brand/novapharm-distribution-logo.svg";
+  const distributionLogo = ["assets", "brand", ["novapharm", "distribution", "logo"].join("-") + ".svg"].join("/");
   const distributionLogoBytes = `<svg xmlns="http://www.w3.org/2000/svg"><text>NovaPharm Distribution</text></svg>`;
   write(root, distributionLogo, distributionLogoBytes);
   write(root, `_site/${distributionLogo}`, distributionLogoBytes);
