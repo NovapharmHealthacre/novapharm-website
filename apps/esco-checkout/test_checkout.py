@@ -254,6 +254,27 @@ class CheckoutSecurity(unittest.TestCase):
                 self.assertTrue(body["processed"])
                 self.assertEqual(db.updated[":new"]["S"], expected_state)
                 self.assertEqual(db.updated[":amt"]["N"], expected_amount)
+                self.assertEqual(db.updated[":address_state"]["S"], "REVIEW_REQUIRED" if expected_state == "PAID" else "NOT_PAID")
+
+    def test_paid_esco_checkout_retains_private_delivery_contact_without_dispatch(self):
+        data = {"collected_information": {"shipping_details": {
+            "name": "Main warehouse", "address": {
+                "line1": "Unit 10, Business Park", "line2": "Goods in",
+                "city": "Birmingham", "postal_code": "B1 1AA",
+                "state": "West Midlands", "country": "GB"
+            }}}, "customer_details": {"phone": "+44 121 123 4567"}}
+        snapshot = mod.checkout_delivery_snapshot(data)
+        self.assertEqual(snapshot["postcode"], "B1 1AA")
+        self.assertEqual(snapshot["source"], "stripe_collected_information")
+        self.assertEqual(snapshot["status"], "requires_fulfilment_review")
+        for bad in [
+            {"collected_information": {"shipping_details": {"name": "Wrong",
+                "address": {"line1": "1 Any", "city": "Paris", "postal_code": "75001", "country": "FR"}}},
+                "customer_details": {"phone": "+44 121 123 4567"}},
+            {"collected_information": {"shipping_details": {"name": "No phone",
+                "address": {"line1": "1 Any", "city": "London", "postal_code": "SW1 1AA", "country": "GB"}}}},
+        ]:
+            self.assertIsNone(mod.checkout_delivery_snapshot(bad))
 
     def test_bad_webhook_signature_never_updates_order(self):
         req=event("/stripe/webhook","POST",{"type":"checkout.session.completed"})
