@@ -9,8 +9,9 @@ function assertRequestsEnabled() {
 }
 async function accountFor(context) {
   const customerId = requireAddressCustomer(context);
-  const account = await one(`SELECT c.id, c.lifecycle_status, c.customer_number,
-      o.id AS organization_id, o.legal_name, o.trading_name
+  const account = await one(`SELECT c.id, c.lifecycle_status, c.customer_number, c.customer_type,
+      c.payment_terms_days, c.currency, o.id AS organization_id, o.legal_name, o.trading_name,
+      o.company_number, o.vat_number, o.country_code AS organization_country
     FROM customers c JOIN organizations o ON o.id = c.organization_id WHERE c.id = ?`, customerId);
   if (!account || account.lifecycle_status !== "active") {
     throw blocked("Your account is not yet activated for address management.", 403);
@@ -23,13 +24,23 @@ export async function customerAddressBook(context) {
       postcode, country_code, is_primary
     FROM organization_addresses WHERE organization_id = ? ORDER BY is_primary DESC, address_type`,
     account.organization_id);
+  const contact = await one(`SELECT name, role_title, email, status FROM customer_contacts
+    WHERE customer_id = ? AND is_primary = 1 ORDER BY created_at LIMIT 1`, account.id);
+  const application = await one(`SELECT application_number, status FROM account_applications
+    WHERE customer_id = ? ORDER BY updated_at DESC LIMIT 1`, account.id);
   const requests = requestsEnabled() ? await all(`SELECT id, address_kind, label, recipient_name, contact_phone,
       line_1, line_2, city, region, postcode, country_code, delivery_instructions,
       is_default, status, created_at, reviewed_at
     FROM customer_account_addresses WHERE customer_id = ? ORDER BY created_at DESC`, account.id) : [];
   return {
     account: { customerNumber: account.customer_number, legalName: account.legal_name,
-      tradingName: account.trading_name, lifecycleStatus: account.lifecycle_status },
+      tradingName: account.trading_name, lifecycleStatus: account.lifecycle_status,
+      customerType: account.customer_type, companyNumber: account.company_number,
+      vatNumberOnFile: Boolean(account.vat_number), countryCode: account.organization_country,
+      paymentTermsDays: account.payment_terms_days, currency: account.currency,
+      primaryContact: contact ? { name: contact.name, roleTitle: contact.role_title,
+        email: contact.email, status: contact.status } : null },
+    application: application ? { number: application.application_number, status: application.status } : null,
     addresses: approvedCompanyAddresses.map(row => ({ ...row, authority: "controlled_company_record" })),
     addressRequests: requests.map(row => ({ ...row, authority: "customer_request" })),
     requestsEnabled: requestsEnabled(),
