@@ -79,9 +79,9 @@ assert(!componentsCss.includes(".np-state--error{border-color:#E3120B}") && !com
 assert(colors.includes(":focus-visible"), "Brand navigation needs an accessible keyboard focus state");
 assert(colors.includes("forced-colors: active"), "Brand navigation must respect forced colours");
 const controlledBrandComponents = [
-  ["apps/corporate/components/brand.tsx", "/assets/brand/novapharm-healthcare-logo.png"],
+  ["apps/corporate/components/brand.tsx", "novapharm-healthcare-logo.png"],
   ["apps/portal/components/portal-brand.tsx", "novapharm-healthcare-logo"],
-  ["apps/portal/components/distribution-brand.tsx", "/assets/brand/novapharm-distribution-logo.svg"],
+  ["apps/portal/components/distribution-brand.tsx", "novapharm-distribution-logo.svg"],
   ["apps/portal/components/pharmascope-brand.tsx", "pharmascope-logo"],
 ];
 for (const [file, canonicalArtwork] of controlledBrandComponents) {
