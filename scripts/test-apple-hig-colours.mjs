@@ -47,6 +47,8 @@ for (const palette of [light, dark]) {
     check(palette, foreground, "surface");
   }
   check(palette, "accent-strong", "canvas");
+  check(palette, "accent-strong", "surface");
+  check(palette, "accent-strong", "surface-recessed");
   check(palette, "focus", "canvas", 3);
   check(palette, "separator-strong", "surface", 3);
   check(palette, "on-accent", "accent");
@@ -72,6 +74,7 @@ for (const [path, estate] of [
 }
 assert.match(read("scripts/build-css-bundle.mjs"), /novapharm-hig-colours\.css/);
 assert.match(read("assets/css/novapharm.css"), /novapharm-hig-colours\.css/);
+assert.match(read("apps/technology/styles/components-4.css"), /\.related-insights__grid a > span\s*\{\s*color:\s*var\(--red-deep\)/, "Related article labels must use contrast-safe brand text");
 const packageJson = JSON.parse(read("package.json"));
 assert.equal(packageJson.scripts["design:colours:validate"], "node scripts/test-apple-hig-colours.mjs");
 assert.ok(packageJson.scripts.check.includes("design:colours:validate"), "Production check must enforce colour contract");
