@@ -54,11 +54,11 @@ export function WmsRecordedEvidenceStudio({ snapshot }: Readonly<{ snapshot: Wms
     const source = snapshot.sections.find((part) => part.title === "NovaPharm Distribution exception worklist");
     const rows = source?.rows ?? [];
     return rows.filter((row) => {
-      if (priority !== "all" && !isPriority(row.priority)) return false;
-      if (priority !== "all" && row.priority !== priority) return false;
+      if (priority !== "all" && !isPriority(row["priority"])) return false;
+      if (priority !== "all" && row["priority"] !== priority) return false;
       if (!search.trim()) return true;
       const q = search.trim().toLowerCase().slice(0, 80);
-      return [row.domain, row.reference, row.signal, row.reviewOwner]
+      return [row["domain"], row["reference"], row["signal"], row["reviewOwner"]]
         .some((value) => show(value).toLowerCase().includes(q));
     }).slice(0, 120);
   }, [snapshot, priority, search]);
@@ -131,10 +131,10 @@ export function WmsRecordedEvidenceStudio({ snapshot }: Readonly<{ snapshot: Wms
           <table>
             <thead><tr><th scope="col">Priority</th><th scope="col">Area</th><th scope="col">Reference</th><th scope="col">Observed signal</th><th scope="col">Review team</th></tr></thead>
             <tbody>{worklist.length
-              ? worklist.map((row) => <tr key={show(row.observationKey)}>
-                <td data-priority={show(row.priority)}>{show(row.priority)}</td>
-                <td>{show(row.domain)}</td><td>{show(row.reference)}</td>
-                <td>{show(row.signal)}</td><td>{show(row.reviewOwner)}</td></tr>)
+              ? worklist.map((row) => <tr key={show(row["observationKey"])}>
+                <td data-priority={show(row["priority"])}>{show(row["priority"])}</td>
+                <td>{show(row["domain"])}</td><td>{show(row["reference"])}</td>
+                <td>{show(row["signal"])}</td><td>{show(row["reviewOwner"])}</td></tr>)
               : <tr><td colSpan={5}>No matching recorded exceptions in this bounded sample. This is not a warehouse clearance.</td></tr>}</tbody>
           </table>
         </section>
