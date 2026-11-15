@@ -84,7 +84,7 @@ import { isResolvedSecret, isUnresolvedSecretReference } from "./src/core/secret
 import { hasSharePointCredentials } from "./src/integrations/sharepoint/graph-client.mjs";
 import { executeInternalAiReview, internalAiGatewayStatus } from "./src/core/ai/ai-gateway.mjs";
 import { safeJsonStringify } from "./src/security/safe-json.mjs";
-import { customerAddressBook, submitCustomerAddress, decideCustomerAddress } from "./src/core/customer-address-service.mjs";
+import { customerAddressBook, submitCustomerAddress, decideCustomerAddress, pendingCustomerAddressReviews } from "./src/core/customer-address-service.mjs";
 
 const root = resolve(process.cwd());
 const applicationVersion = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version;
@@ -841,6 +841,12 @@ export async function handleRequest(request, response) {
       const session = await scopedAuthentication(request, response, ["customer"]);
       if (!session) return;
       json(response, 201, { request: await submitCustomerAddress(await readBody(request), enterpriseContext(session)) });
+      return;
+    }
+
+    if (pathname === "/api/admin/customer-addresses" && request.method === "GET") {
+      if (!await authenticated(request, response, ["admin"])) return;
+      json(response, 200, await pendingCustomerAddressReviews());
       return;
     }
 
