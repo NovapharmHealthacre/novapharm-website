@@ -8,7 +8,7 @@ const root = mkdtempSync(join(tmpdir(), "novapharm-distribution-uat-"));
 process.env.DATABASE_PROVIDER = "sqlite";
 process.env.DATABASE_PATH = join(root, "pilot.sqlite");
 const { listWmsPilotFeedback, submitWmsPilotFeedback,
-  WMS_PILOT_WORKSPACE_CODES, wmsPilotAccess } =
+  WMS_PILOT_WORKSPACE_CODES, wmsPilotAccess, summariseWmsPilotFeedback } =
   await import("../src/core/wms-pilot-feedback.mjs");
 const { all } = await import("../src/data/database.mjs");
 after(() => rmSync(root, { recursive: true, force: true }));
@@ -103,6 +103,21 @@ test("routes require employee session, CSRF and pilot allowlist", () => {
   assert.match(api, /rateLimit\(request, "wms-pilot-feedback"/);
   assert.match(api, /scopedAuthentication\(request, response, \["employee"\]\)/);
   assert.match(gateway, /enterprise\\\/wms\\\/pilot-feedback/);
+});
+
+test("only a signed administrator on the private allowlist may review others", async () => {
+  const admin = { username: "operator.owner", accessType: "admin", accessScopes: ["admin"] };
+  const report = await summariseWmsPilotFeedback(admin, { env });
+  assert.equal(report.dataMode, "synthetic_only");
+  assert.equal(report.warehouseExecutionEnabled, false);
+  assert.equal(report.sampleLimited, true);
+  assert.equal(report.sampledReports, 2);
+  assert.equal(report.counts.working, 1);
+  assert.equal(report.counts.broken, 1);
+  assert.deepEqual(new Set(report.reports.map(x => x.testerUsername)),
+    new Set(["tester.alpha", "operator.owner"]));
+  await assert.rejects(summariseWmsPilotFeedback(tester, { env }), err => err.statusCode === 403);
+  await assert.rejects(summariseWmsPilotFeedback({ ...admin, username: "unknown.admin" }, { env }), err => err.statusCode === 403);
 });
 
 test("migration is append-only on private feedback table and never touches stock", () => {
