@@ -35,8 +35,9 @@ type MedicineSelection = Readonly<{ medicine: Readonly<{ medicineId: string; can
 const month = /^\d{4}-(?:0[1-9]|1[0-2])$/u;
 const finite = (value: unknown): value is number =>
   typeof value === "number" && Number.isFinite(value) && value >= 0;
-const money = (value: number) =>
-  new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 2 }).format(value);
+const money = (value: number | null | undefined) => finite(value)
+  ? new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 2 }).format(value)
+  : "Not available";
 
 const descriptions: Readonly<Record<ObservedWorkspaceKind, Readonly<{
   title: string; subtitle: string; limits: string;
@@ -108,7 +109,7 @@ export function ObservedMedicineWorkspace({
       <p>{config.limits}</p>
     </header>
     {!ready ? <DataUnavailable kind={kind} reason={reason} /> : kind === "medicine-tape" ?
-      tape.length ? <section className={styles.tableRegion}>
+      tape.length ? <section className={styles.tableRegion} role="region" aria-label="Observed monthly medicine tape" tabIndex={0}>
         <table>
           <caption>Observed monthly {analytics?.query.metric} for {detail?.medicine.canonicalName}; {analytics?.query.dataset.toUpperCase()} source</caption>
           <thead><tr><th scope="col">Source month</th><th scope="col">Observed {analytics?.query.metric}</th></tr></thead>
@@ -119,7 +120,7 @@ export function ObservedMedicineWorkspace({
         {ordered.length > 36 ? <p>Displaying the latest 36 of {ordered.length} accepted periods; the displayed portion is incomplete.</p> : null}
       </section> : <DataUnavailable kind={kind} reason="The current source series has no unique, complete, valid monthly observations." />
       : kind === "market-structure" ? marketRows.length ?
-        <section className={styles.tableRegion}>
+        <section className={styles.tableRegion} role="region" aria-label="Observed presentation mix" tabIndex={0}>
           <table>
             <caption>Observed presentation mix for {detail?.medicine.canonicalName} within the selected {analytics?.query.dataset.toUpperCase()} dataset</caption>
             <thead><tr><th scope="col">Presentation</th><th scope="col">Observed items</th><th scope="col">Selected measure</th></tr></thead>
