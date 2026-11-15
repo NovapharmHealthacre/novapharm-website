@@ -922,6 +922,180 @@ def customer_activity_summary(principal):
             '</div></section>')
 
 
+
+# Account details are personal contact information. They never confer business
+# qualification, stock authority or edit a historical order's ship-to snapshot.
+ACCOUNT_FIELDS = ("fullName", "phone", "organisationName")
+ADDRESS_FIELDS = ("kind", "label", "recipientName", "phone", "line1", "line2",
+                  "city", "region", "postcode", "countryCode", "instructions")
+ACCOUNT_LIMITS = {
+    "fullName": 120, "phone": 40, "organisationName": 160,
+    "label": 70, "recipientName": 120, "line1": 160, "line2": 160,
+    "city": 100, "region": 100, "postcode": 24, "countryCode": 2,
+    "instructions": 240,
+}
+
+def account_text(value, name, mandatory=False):
+    if not isinstance(value, str) or len(value)>ACCOUNT_LIMITS[name] or re.search(r"[\x00-\x1f\x7f]", value):
+        raise ValueError("invalid_"+name)
+    value=" ".join(value.strip().split())
+    if mandatory and not value:
+        raise ValueError("required_"+name)
+    return value
+
+def normalise_account_profile(payload):
+    if not isinstance(payload,dict) or set(payload)!=set(ACCOUNT_FIELDS):
+        raise ValueError("invalid_profile_fields")
+    result={key:account_text(payload[key],key,key=="fullName") for key in ACCOUNT_FIELDS}
+    if result["phone"] and not re.fullmatch(r"[+0-9(). \-]{6,40}",result["phone"]):
+        raise ValueError("invalid_phone")
+    return result
+
+def normalise_account_address(payload):
+    if not isinstance(payload,dict) or set(payload)!=set(ADDRESS_FIELDS)+{"isDefault"}:
+        raise ValueError("invalid_address_fields")
+    if payload.get("kind") not in ("delivery","billing"):
+        raise ValueError("invalid_address_kind")
+    result={"kind":payload["kind"]}
+    for field in ADDRESS_FIELDS:
+        if field!="kind":
+            result[field]=account_text(payload[field],field,field in (
+                "label","recipientName","phone","line1","city","postcode","countryCode"))
+    if not re.fullmatch(r"[+0-9(). \-]{6,40}",result["phone"]):
+        raise ValueError("invalid_phone")
+    result["countryCode"]=result["countryCode"].upper()
+    if not re.fullmatch(r"[A-Z]{2}",result["countryCode"]):
+        raise ValueError("invalid_countryCode")
+    if len(result["line1"])<5 or len(result["postcode"])<2:
+        raise ValueError("invalid_delivery_address")
+    if type(payload["isDefault"]) is not bool:
+        raise ValueError("invalid_isDefault")
+    result["isDefault"]=payload["isDefault"]
+    return result
+
+def account_detail_response(event, principal, method):
+    # Session and Cognito are independently reverified on every account read/write.
+    if not verified_personal_session(principal):
+        return error(403,"verified_customer_required")
+    subject=principal.get("sub")
+    if not isinstance(subject,str) or not re.fullmatch(r"[A-Za-z0-9_-]{6,128}",subject):
+        return error(403,"invalid_customer_identity")
+    key={"pk":"USER#"+subject,"sk":"ACCOUNT"}
+    try:
+        existing=TABLE.get_item(Key=key,ConsistentRead=True).get("Item") or {}
+    except ClientError:
+        return error(503,"account_unavailable")
+    version=existing.get("version",0)
+    if type(version) is not int or not 0<=version<=100000000:
+        return error(503,"account_unavailable")
+    profile=existing.get("profile") or {"fullName":"","phone":"","organisationName":""}
+    addresses=existing.get("addresses") or []
+    if not isinstance(profile,dict) or not isinstance(addresses,list) or len(addresses)>10:
+        return error(503,"account_unavailable")
+    if method=="GET":
+        return reply(200,{
+            "email":principal.get("email",""),
+            "emailVerified":True,
+            "profile":{field:profile.get(field,"") for field in ACCOUNT_FIELDS},
+            "addresses":[{field:address.get(field,"") for field in ADDRESS_FIELDS}
+                | {"id":address.get("id",""),"isDefault":address.get("isDefault") is True}
+                for address in addresses if isinstance(address,dict)],
+            "version":version,
+            "businessAccess":"separately_reviewed",
+            "notice":"Saved personal contact details are not verified trading authority, inventory or a replacement for an existing order destination."
+        })
+    if method!="POST":
+        return error(405,"method_not_allowed")
+    headers={str(k).lower():str(v) for k,v in (event.get("headers") or {}).items()}
+    origin=headers.get("origin","")
+    if (headers.get("sec-fetch-site","").lower() not in ("","same-origin") or
+        (origin not in ("","null") and canonical_login_origin(origin)!=request_base(event)) or
+        (origin in ("","null") and headers.get("sec-fetch-site","").lower()!="same-origin")):
+        return error(403,"invalid_origin")
+    token=headers.get("x-np-account-csrf","")
+    stored=cookies(event).get("__Host-np_signup_csrf","")
+    if not (len(token)==43 and re.fullmatch(r"[A-Za-z0-9_-]{43}",token) and
+        len(stored)==43 and hmac.compare_digest(token,stored)):
+        return error(403,"invalid_csrf")
+    if not headers.get("content-type","").lower().startswith("application/json") or event.get("isBase64Encoded"):
+        return error(415,"invalid_content_type")
+    raw=event.get("body") or ""
+    if not isinstance(raw,str) or len(raw)>10000:
+        return error(413,"account_request_too_large")
+    try:
+        body=json.loads(raw)
+        if not isinstance(body,dict) or type(body.get("version")) is not int:
+            return error(400,"invalid_account_request")
+        if body["version"]!=version:
+            return error(409,"account_changed_refresh")
+        action=body.get("action")
+        updated_profile=dict(profile)
+        updated_addresses=[dict(x) for x in addresses]
+        if action=="profile":
+            if set(body)!={"action","version","profile"}:
+                return error(400,"invalid_account_request")
+            updated_profile=normalise_account_profile(body["profile"])
+        elif action in ("addAddress","editAddress","deleteAddress"):
+            if action=="deleteAddress":
+                if set(body)!={"action","version","id"}:
+                    return error(400,"invalid_account_request")
+            elif set(body)!=({"action","version","address"} if action=="addAddress" else
+                             {"action","version","id","address"}):
+                return error(400,"invalid_account_request")
+            address_id=body.get("id")
+            index=next((i for i,item in enumerate(updated_addresses)
+                        if item.get("id")==address_id),None)
+            if action in ("editAddress","deleteAddress") and (
+                not isinstance(address_id,str) or not re.fullmatch(r"[0-9a-f]{32}",address_id) or
+                index is None):
+                return error(404,"address_not_found")
+            if action=="deleteAddress":
+                removed=updated_addresses.pop(index)
+                if removed.get("isDefault"):
+                    first=next((i for i,item in enumerate(updated_addresses)
+                        if item.get("kind")==removed.get("kind")),None)
+                    if first is not None:
+                        updated_addresses[first]["isDefault"]=True
+            else:
+                normal=normalise_account_address(body["address"])
+                if action=="addAddress" and len(updated_addresses)>=10:
+                    return error(409,"address_book_full")
+                address_id=address_id if action=="editAddress" else secrets.token_hex(16)
+                normal["id"]=address_id
+                if action=="editAddress" and updated_addresses[index]["kind"]!=normal["kind"]:
+                    return error(409,"address_type_cannot_change")
+                if normal["isDefault"] or not any(
+                    item.get("kind")==normal["kind"] for item in updated_addresses
+                    if item.get("id")!=address_id):
+                    normal["isDefault"]=True
+                if normal["isDefault"]:
+                    for item in updated_addresses:
+                        if item.get("kind")==normal["kind"]:
+                            item["isDefault"]=False
+                if action=="editAddress":
+                    updated_addresses[index]=normal
+                else:
+                    updated_addresses.append(normal)
+        else:
+            return error(400,"invalid_account_action")
+    except (ValueError,TypeError,KeyError):
+        return error(400,"invalid_account_fields")
+    record={**key,"version":version+1,"profile":updated_profile,
+        "addresses":updated_addresses,"updated_at":int(time.time())}
+    # Atomic conditional writes prevent parallel tabs from overwriting edits.
+    condition="attribute_not_exists(pk)" if not existing else "#v = :previous"
+    opts={"Item":record,"ConditionExpression":condition}
+    if existing:
+        opts["ExpressionAttributeNames"]={"#v":"version"}
+        opts["ExpressionAttributeValues"]={":previous":version}
+    try:
+        TABLE.put_item(**opts)
+    except ClientError as exc:
+        if exc.response.get("Error",{}).get("Code")=="ConditionalCheckFailedException":
+            return error(409,"account_changed_refresh")
+        return error(503,"account_save_unavailable")
+    return reply(200,{"saved":True,"version":version+1})
+
 def customer_workspace(event,route):
     """A non-binding customer-facing navigation step using existing services.
 
