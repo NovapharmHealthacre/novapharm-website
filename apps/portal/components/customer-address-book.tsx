@@ -15,7 +15,13 @@ type RequestedAddress = Readonly<{
   is_default: number | boolean; created_at: string;
 }>;
 type AddressBook = Readonly<{
-  account: { customerNumber: string; legalName: string; tradingName?: string | null; lifecycleStatus: string };
+  account: {
+    customerNumber: string; legalName: string; tradingName?: string | null; lifecycleStatus: string;
+    customerType: string; companyNumber?: string | null; vatNumberOnFile: boolean; countryCode: string;
+    paymentTermsDays: number; currency: string;
+    primaryContact: { name: string; roleTitle: string; email: string; status: string } | null;
+  };
+  application: { number: string; status: string } | null;
   addresses: readonly CompanyAddress[];
   addressRequests: readonly RequestedAddress[];
   requestsEnabled: boolean;
@@ -103,6 +109,21 @@ export function CustomerAddressBook() {
         <div><span>Account holder</span><strong>{book.account.legalName}</strong><small>{book.account.customerNumber}</small></div>
         <div><span>Business account</span><strong>{book.account.lifecycleStatus === "active" ? "Account record active" : "Under review"}</strong><small>Trading and product permissions are checked separately.</small></div>
         <div><span>Address verification</span><strong>Review required</strong><small>A delivery address does not verify company identity or authorise a sale.</small></div>
+      </div>
+      <div className="customer-address-business" aria-label="Company account and verification details">
+        <h3>Business information</h3>
+        <p>These details come from NovaPharm's account records. Address changes do not independently verify a company.</p>
+        <dl className="customer-address-business-grid">
+          <div><dt>Legal name</dt><dd>{book.account.legalName}</dd></div>
+          <div><dt>Trading name</dt><dd>{book.account.tradingName || "Not recorded"}</dd></div>
+          <div><dt>Company registration</dt><dd>{book.account.companyNumber || "Not recorded"}</dd></div>
+          <div><dt>Country</dt><dd>{book.account.countryCode}</dd></div>
+          <div><dt>Tax identifier</dt><dd>{book.account.vatNumberOnFile ? "On file" : "Not recorded / may not apply"}</dd></div>
+          <div><dt>Application review</dt><dd>{book.application ? `${book.application.status} · ${book.application.number}` : "No linked reviewed application"}</dd></div>
+          <div><dt>Primary contact</dt><dd>{book.account.primaryContact ? `${book.account.primaryContact.name} · ${book.account.primaryContact.email}` : "Not recorded"}</dd></div>
+          <div><dt>Payment terms</dt><dd>{book.account.paymentTermsDays} days · {book.account.currency}</dd></div>
+        </dl>
+        <p className="customer-address-privacy">Account activation, email ownership and product-specific trading permissions are distinct verification steps.</p>
       </div>
       <div className="customer-address-columns">
         <div className="customer-address-panel">
