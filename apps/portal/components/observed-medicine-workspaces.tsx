@@ -95,7 +95,15 @@ export function ObservedMedicineWorkspace({
   const presentationsValid = presentations.length > 0 && presentations.every(row =>
     typeof row["canonical_name"] === "string" && row["canonical_name"].trim().length > 0 &&
     finite(row["items"]) && finite(row["selected_metric"]));
-  const marketRows = presentationsValid ? presentations.slice(0, 20) : [];
+  // A presentation breakdown has no guaranteed stable row ID. Refuse
+  // ambiguous duplicate rows rather than rendering React index keys or
+  // silently collapsing equally named but distinct source facts.
+  const presentationKey = (row: Record<string, unknown>) => JSON.stringify([
+    row["presentation_code"] ?? null, row["canonical_name"],
+    row["items"], row["selected_metric"],
+  ]);
+  const uniquePresentations = new Set(presentations.map(presentationKey)).size === presentations.length;
+  const marketRows = presentationsValid && uniquePresentations ? presentations.slice(0, 20) : [];
 
   const financial = ready && analytics?.summary &&
     finite(analytics.summary.totalNic) && finite(analytics.summary.totalActualCost)
@@ -109,7 +117,7 @@ export function ObservedMedicineWorkspace({
       <p>{config.limits}</p>
     </header>
     {!ready ? <DataUnavailable kind={kind} reason={reason} /> : kind === "medicine-tape" ?
-      tape.length ? <section className={styles.tableRegion} role="region" aria-label="Observed monthly medicine tape">
+      tape.length ? <section className={styles.tableRegion} aria-label="Observed monthly medicine tape">
         <table>
           <caption>Observed monthly {analytics?.query.metric} for {detail?.medicine.canonicalName}; {analytics?.query.dataset.toUpperCase()} source</caption>
           <thead><tr><th scope="col">Source month</th><th scope="col">Observed {analytics?.query.metric}</th></tr></thead>
@@ -120,11 +128,11 @@ export function ObservedMedicineWorkspace({
         {ordered.length > 36 ? <p>Displaying the latest 36 of {ordered.length} accepted periods; the displayed portion is incomplete.</p> : null}
       </section> : <DataUnavailable kind={kind} reason="The current source series has no unique, complete, valid monthly observations." />
       : kind === "market-structure" ? marketRows.length ?
-        <section className={styles.tableRegion} role="region" aria-label="Observed presentation mix">
+        <section className={styles.tableRegion} aria-label="Observed presentation mix">
           <table>
             <caption>Observed presentation mix for {detail?.medicine.canonicalName} within the selected {analytics?.query.dataset.toUpperCase()} dataset</caption>
             <thead><tr><th scope="col">Presentation</th><th scope="col">Observed items</th><th scope="col">Selected measure</th></tr></thead>
-            <tbody>{marketRows.map((row, i) => <tr key={String(row["canonical_name"]) + "-" + i}>
+            <tbody>{marketRows.map((row) => <tr key={presentationKey(row)}>
               <td>{String(row["canonical_name"])}</td>
               <td>{Number(row["items"]).toLocaleString("en-GB")}</td>
               <td>{Number(row["selected_metric"]).toLocaleString("en-GB", { maximumFractionDigits: 2 })}</td>
