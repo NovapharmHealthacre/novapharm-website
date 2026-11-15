@@ -56,6 +56,7 @@ test("only allowlisted synthetic employee can record feedback with an audit entr
   const listed = await listWmsPilotFeedback(tester, { env });
   assert.equal(listed.dataMode, "synthetic_only");
   assert.equal(listed.warehouseExecutionEnabled, false);
+  assert.equal(listed.canViewAdminSummary, false);
   assert.equal(listed.entries.length, 1);
   assert.equal(listed.entries[0].workspaceCode, "control-tower");
   assert.equal(listed.entries[0].result, "broken");
@@ -108,6 +109,8 @@ test("routes require employee session, CSRF and pilot allowlist", () => {
 
 test("only a signed administrator on the private allowlist may review others", async () => {
   const admin = { username: "operator.owner", accessType: "admin", accessScopes: ["admin"] };
+  const adminListing = await listWmsPilotFeedback(admin, { env });
+  assert.equal(adminListing.canViewAdminSummary, true);
   const report = await summariseWmsPilotFeedback(admin, { env });
   assert.equal(report.dataMode, "synthetic_only");
   assert.equal(report.warehouseExecutionEnabled, false);
