@@ -70,6 +70,8 @@
 .hero-cinematic-orbit,
 .hero-signal-card,
 .module-hero-media picture img,
+/* The Next.js Corporate homepage has no body[data-page] attribute. */
+.pharma-home-media img,
 body[data-page="home"] .pharma-home-media img {
   animation: none !important;
 }

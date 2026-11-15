@@ -586,3 +586,18 @@ input:focus, select:focus, textarea:focus { border-color: var(--focus); box-shad
 .nutraxin-know-more { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: .5rem; margin-top: 10px; }
 .nutraxin-link-publisher { color: var(--muted); font-size: .73rem; font-weight: 500; text-decoration: none; }
 .nutraxin-product-copy .source-note { margin-top: 10px; max-width: 48ch; color: var(--muted); font-size: .81rem; line-height: 1.55; }
+
+/* Account-interest steps remain optional to read; private verification remains mandatory. */
+.account-path-help{
+  margin-block:20px 28px;
+  padding:0;
+  border:1px solid var(--line,#d3dce7);
+  border-radius:16px;
+  background:var(--surface,#fff);
+  color:var(--ink,#15202f);
+}
+.account-path-help summary{min-height:48px;padding:16px 20px;cursor:pointer;font-weight:650;line-height:1.5}
+.account-path-help summary:focus-visible,.account-path-help a:focus-visible{outline:3px solid var(--focus,#0b69ed);outline-offset:3px}
+.account-path-help > div{padding:0 20px 20px;font-size:.94rem;line-height:1.65}
+.account-path-help p{margin:0 0 10px;max-width:68ch}
+.account-path-help a{text-underline-offset:3px}

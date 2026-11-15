@@ -44,7 +44,14 @@ jobs:
           assert 'SUCCESS_ORIGIN = "https://novapharmhealthcare.com"' in p
           assert '/products/nutraxin/bag/?checkout=return' in p
           assert '/products/nutraxin/bag/?checkout=cancelled' in p
-          assert "portal.novapharmhealthcare.com" not in p
+          # Both channels are valid. Portal returns are permitted ONLY for the
+          # existing server-selected PORTAL_RETAIL path; public guest returns
+          # must remain pinned to the Products Bag on the corporate site.
+          assert 'PORTAL_ORIGIN = "https://portal.novapharmhealthcare.com"' in p
+          assert 'if order.get("checkoutChannel") == "PORTAL_RETAIL":' in p
+          assert 'redirect_base = PORTAL_ORIGIN + "/portal/products/"' in p
+          assert 'success_url = SUCCESS_ORIGIN + "/products/nutraxin/bag/?checkout=return' in p
+          assert 'cancel_url = SUCCESS_ORIGIN + "/products/nutraxin/bag/?checkout=cancelled"' in p
           site=pathlib.Path("src/content/nutraxin-showcase.html").read_text()
           assert "portal.novapharmhealthcare.com" not in site
           PY
