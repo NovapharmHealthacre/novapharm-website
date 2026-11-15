@@ -47,10 +47,14 @@ test("both website roots load the platform stylesheet", () => {
   const portal = readFileSync(new URL("../../../apps/portal/app/layout.tsx", import.meta.url), "utf8");
   const platformCss = readFileSync(new URL("../../../assets/css/novapharm-apple-27-web-adaptation.css", import.meta.url), "utf8");
   const publicBundleBuilder = readFileSync(new URL("../../../scripts/build-css-bundle.mjs", import.meta.url), "utf8");
+  const publicPublisher = readFileSync(new URL("../../../.github/workflows/publish-aws-contact-production.yml", import.meta.url), "utf8");
+  const dispatchGuard = readFileSync(new URL("../../../.github/workflows/dispatch-approved-aws-contact-release.yml", import.meta.url), "utf8");
   for (const layout of [corporate, portal]) {
     assert.match(layout, /novapharm-apple-27-web-adaptation\.css/);
   }
   assert.match(publicBundleBuilder, /novapharm-apple-27-web-adaptation\.css/);
+  assert.match(publicPublisher, /novapharm-apple-27-web-adaptation\.css/);
+  assert.match(dispatchGuard, /novapharm-apple-27-web-adaptation\.css/);
   assert.match(platformCss, /44px/);
   assert.match(platformCss, /prefers-reduced-transparency/);
   assert.match(platformCss, /prefers-contrast: more/);
