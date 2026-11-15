@@ -773,6 +773,11 @@ const otherChromeRoutes = [
   ["legal/modern-slavery/index.html", "/legal/modern-slavery/"], ["legal/environment-carbon/index.html", "/legal/environment-carbon/"],
   ["portal/index.html", "/portal/"]
 ];
+// Article generation precedes this pass; keep its navigation on the same
+// responsive header as the index without rewriting article content or metadata.
+for (const article of articles) {
+  otherChromeRoutes.push([`news-insights/${article.slug}/index.html`, `/news-insights/${article.slug}/`]);
+}
 for (const [relative, route] of otherChromeRoutes) {
   if (existsSync(join(root, relative))) write(relative, replaceChrome(read(relative), route));
 }

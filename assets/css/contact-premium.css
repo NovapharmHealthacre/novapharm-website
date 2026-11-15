@@ -159,13 +159,15 @@
 }
 .np-contact-reference .np-contact-reference-field:focus-within {
   border-color: #006fe6;
+  outline: 3px solid #005cbd;
+  outline-offset: 3px;
   box-shadow: 0 0 0 3px rgba(0, 111, 230, 0.13);
 }
 .np-contact-reference .np-contact-reference-field > span {
   display: block;
   margin: 0 0 1px;
   color: #666972;
-  font-size: 11px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   line-height: 1.45;
   font-weight: 450;
   letter-spacing: 0;
@@ -274,7 +276,7 @@
   box-shadow: none;
 }
 .np-contact-reference .np-contact-reference-confirmations .np-contact-reference-consent > input[type="checkbox"]:focus-visible {
-  outline: 3px solid rgba(0, 111, 230, .35);
+  outline: 3px solid #005cbd;
   outline-offset: 3px;
 }
 .np-contact-reference .np-contact-reference-confirmations .np-contact-reference-consent > span {
@@ -417,6 +419,14 @@ body:has(.np-contact-reference) .site-header .site-nav a[aria-current="page"] { 
   .np-contact-reference .np-contact-reference-field { transition: none; }
 }
 @media (forced-colors: active) {
+  /* Shadows disappear in forced colours; keep focus on the outer field. */
+  .np-contact-reference .np-contact-reference-field:focus-within {
+    outline: 3px solid Highlight;
+    outline-offset: 3px;
+  }
+  .np-contact-reference .np-contact-reference-confirmations .np-contact-reference-consent > input[type="checkbox"]:focus-visible {
+    outline: 3px solid Highlight;
+  }
   .np-contact-reference .np-contact-reference-field { border-color: CanvasText; }
   .np-contact-reference .np-contact-reference-submit { border: 1px solid ButtonText; }
 }
