@@ -8,6 +8,7 @@ import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { areaLabels, areaLandingRoutes, areaScopes } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError, protectedMutation } from "../lib/gateway";
 import { CustomerCommerceWorkspace } from "./customer-commerce-workspace";
+import { DistributionBrand } from "./distribution-brand";
 import { EmployeeDistributionWorkspace } from "./employee-distribution-workspace";
 import { MedicinesIntelligence } from "./medicines-intelligence";
 import { PortalBrand } from "./portal-brand";
@@ -192,7 +193,7 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
           </nav>
         </> : null}
         {isEditorialEmployeeDistribution ? <>
-          <PortalBrand home={areaLandingRoutes.employee} />
+          <DistributionBrand home={areaLandingRoutes.employee} />
           <nav className="employee-primary-nav" aria-label="Employee distribution navigation">
             {(["employee.dashboard", "employee.orders", "employee.customers", "employee.warehouse", "employee.finance", "employee.quality"] as const).map((code) => {
               const entry = navigation.find((candidate) => candidate.code === code);
