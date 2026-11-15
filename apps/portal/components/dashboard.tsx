@@ -2,7 +2,7 @@
 
 import { adminModules, customerModules, employeeModules, executiveModules, type PortalArea, type PortalModule } from "@novapharm/portal-contracts";
 import { Activity, ArrowUpRight, LogOut, Menu, RefreshCw, Search, ShieldCheck, X } from "lucide-react";
-import { type FormEvent, useCallback, useEffect, useState } from "react";
+import { type FormEvent, useCallback, useEffect, useId, useRef, useState } from "react";
 import { nutraxinProductForSelection } from "../data/nutraxin-order-intent";
 import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { areaLabels, areaLandingRoutes, areaScopes } from "../data/routes";
@@ -98,6 +98,13 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchResults, setSearchResults] = useState<readonly SearchResult[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [searchBusy, setSearchBusy] = useState(false);
+  const [searchAnnouncement, setSearchAnnouncement] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchGeneration = useRef(0);
+  const searchResultsId = useId();
+  const searchScopeId = useId();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -138,21 +145,74 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
     }
   }
 
-  async function search(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const query = String(new FormData(event.currentTarget).get("query") ?? "").trim();
-    if (query.length < 2) {
-      setSearchResults([]);
-      setSearchOpen(true);
-      return;
-    }
+  const runSearch = useCallback(async (query: string) => {
+    if (query.length < 2) return;
+    const generation = ++searchGeneration.current;
+    setSearchResults([]);
+    setSearchBusy(true);
+    setSearchOpen(true);
+    setSearchAnnouncement("Searching authorised records.");
     try {
       const result = await gatewayJson<{ results: readonly SearchResult[] }>(`enterprise/search?q=${encodeURIComponent(query)}`);
+      if (generation !== searchGeneration.current) return;
       setSearchResults(result.results);
-      setSearchOpen(true);
+      setSearchAnnouncement(`${result.results.length} authorised ${result.results.length === 1 ? "record" : "records"} found.`);
     } catch (error) {
-      setStatus(professionalError(error));
+      if (generation !== searchGeneration.current) return;
+      setSearchResults([]);
+      setSearchAnnouncement(professionalError(error));
+    } finally {
+      if (generation === searchGeneration.current) setSearchBusy(false);
     }
+  }, []);
+
+  function updateSearch(value: string) {
+    ++searchGeneration.current;
+    setSearchText(value);
+    setSearchResults([]);
+    setSearchBusy(false);
+    setSearchOpen(value.trim().length >= 2);
+    setSearchAnnouncement(value.trim().length >= 2 ? "Refining authorised results…" : "Enter at least two characters.");
+  }
+
+  useEffect(() => {
+    const query = searchText.trim().slice(0, 120);
+    if (query.length < 2) return;
+    const timer = window.setTimeout(() => { void runSearch(query); }, 450);
+    return () => window.clearTimeout(timer);
+  }, [searchText, runSearch]);
+
+  useEffect(() => {
+    function handleShortcut(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+      }
+      if (event.key === "Escape" && document.activeElement === searchInputRef.current) {
+        event.preventDefault();
+        ++searchGeneration.current;
+        setSearchText("");
+        setSearchResults([]);
+        setSearchBusy(false);
+        setSearchOpen(false);
+        setSearchAnnouncement("Search cleared.");
+      }
+    }
+    window.addEventListener("keydown", handleShortcut);
+    return () => { ++searchGeneration.current; window.removeEventListener("keydown", handleShortcut); };
+  }, []);
+
+  function search(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    ++searchGeneration.current;
+    void runSearch(searchText.trim().slice(0, 120));
+  }
+
+  function clearSearch() {
+    updateSearch("");
+    setSearchOpen(false);
+    setSearchAnnouncement("Search cleared.");
+    searchInputRef.current?.focus();
   }
 
   if (module.code === "executive.nhs-data" && user && snapshot) {
@@ -203,7 +263,7 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
             })}
           </nav>
         </> : null}
-        <button className="menu-button np-icon-control" type="button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu aria-hidden="true" className="np-symbol" /></button><search><form className="portal-search" onSubmit={search}><Search aria-hidden="true" className="np-symbol" /><label className="sr-only" htmlFor="portal-search">Search authorised records</label><input id="portal-search" name="query" placeholder="Search" autoComplete="off" /><button type="submit">Search</button>{searchOpen ? <div className="search-results"><button className="search-close np-icon-control" type="button" aria-label="Close search results" onClick={() => setSearchOpen(false)}><X aria-hidden="true" className="np-symbol" /></button>{searchResults.length ? searchResults.map((result) => <a key={`${result.type}-${result.reference}`} href={result.route}><strong>{result.title}</strong><span>{result.type} · {result.reference}{result.status ? ` · ${readable(result.status)}` : ""}</span></a>) : <p>No authorised records found.</p>}</div> : null}</form></search><div className="user-summary"><span>{user?.displayName ?? "Secure user"}</span><small>{user ? readable(user.accessType) : "Verifying"}</small>{isEditorialPortal ? <button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data">Refresh</button> : null}<button type="button" onClick={logout} aria-label="Sign out">{isEditorialPortal ? "Sign out" : <LogOut aria-hidden="true" className="np-symbol" />}</button></div></header>
+        <button className="menu-button np-icon-control" type="button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu aria-hidden="true" className="np-symbol" /></button><search><form className="portal-search" onSubmit={search} role="search"><Search aria-hidden="true" className="np-symbol" /><label className="sr-only" htmlFor="portal-search">Search authorised records</label><input ref={searchInputRef} id="portal-search" name="query" type="search" minLength={2} maxLength={120} autoComplete="off" enterKeyHint="search" aria-keyshortcuts="Meta+K Control+K" aria-describedby={searchScopeId} aria-controls={searchOpen ? searchResultsId : undefined} aria-busy={searchBusy || undefined} placeholder={`Search ${areaLabels[module.area].toLowerCase()} records`} value={searchText} onChange={(event) => updateSearch(event.currentTarget.value)} />{searchText ? <button type="button" className="search-clear" aria-label="Clear authorised record search" onClick={clearSearch}>Clear</button> : null}<button type="submit" disabled={searchBusy}>Search</button>{searchOpen ? <div className="search-results" id={searchResultsId} aria-label="Authorised search results"><button className="search-close np-icon-control" type="button" aria-label="Close search results" onClick={() => setSearchOpen(false)}><X aria-hidden="true" className="np-symbol" /></button>{searchBusy ? <p>Searching current records…</p> : searchResults.length ? searchResults.map((result) => <a key={`${result.type}-${result.reference}`} href={result.route}><strong>{result.title}</strong><span>{result.type} · {result.reference}{result.status ? ` · ${readable(result.status)}` : ""}</span></a>) : <p>No authorised records found in this scope.</p>}</div> : null}</form><p className="portal-search-scope" id={searchScopeId}>Search scope: your authorised {areaLabels[module.area].toLowerCase()} records. No search history saved.</p><p className="sr-only" role="status" aria-live="polite">{searchAnnouncement}</p></search><div className="user-summary"><span>{user?.displayName ?? "Secure user"}</span><small>{user ? readable(user.accessType) : "Verifying"}</small>{isEditorialPortal ? <button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data">Refresh</button> : null}<button type="button" onClick={logout} aria-label="Sign out">{isEditorialPortal ? "Sign out" : <LogOut aria-hidden="true" className="np-symbol" />}</button></div></header>
       <div className="workspace-content">
         {!isEditorialPortal ? <header className="module-heading"><div><p className="eyebrow">{areaLabels[module.area]} / {module.releaseClassificationLabel}</p><h1>{module.title}</h1><p>{module.purpose}</p></div><button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data"><RefreshCw aria-hidden="true" className={loading ? "np-symbol np-symbol--busy" : "np-symbol"} /><span>Refresh</span></button></header> : null}
         {/* Customer navigation is static and server-route-protected: reserve its
