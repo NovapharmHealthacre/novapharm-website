@@ -1,0 +1,59 @@
+import { one } from "../data/database.mjs";
+
+function invalid(message, statusCode = 409) {
+  return Object.assign(new Error(message), { statusCode });
+}
+const validId = /^[A-Za-z0-9_-]{8,128}$/;
+function field(value, maximum) {
+  return typeof value === "string" && value.trim() && value.length <= maximum &&
+    !/[\u0000-\u001f\u007f]/.test(value) ? value.trim() : null;
+}
+
+/**
+ * This snapshot must come from the server-owned customer/organisation tables;
+ * a browser-supplied full address or customerId is never accepted.
+ */
+export function approvedShipToSnapshot(row, customerId) {
+  if (!row || row.owner_customer_id !== customerId || row.address_kind !== "delivery" ||
+      row.status !== "approved") throw invalid("The delivery location has not been approved for this account.");
+  const id = field(row.id, 128);
+  const recipientName = field(row.recipient_name, 160);
+  const contactPhone = field(row.contact_phone, 40);
+  const line1 = field(row.line_1, 200);
+  const city = field(row.city, 120);
+  const postcode = field(row.postcode, 32);
+  const countryCode = field(row.country_code, 2);
+  if (!id || !recipientName || !contactPhone || !line1 || !city || !postcode ||
+      !countryCode || !/^[A-Z]{2}$/.test(countryCode)) throw invalid("The delivery record is incomplete.");
+  if (countryCode !== "GB") throw invalid("This order's shipping country has not been released.");
+  return Object.freeze({
+    addressId: id,
+    recipientName,
+    contactPhone,
+    line1,
+    line2: field(row.line_2, 200),
+    city,
+    region: field(row.region, 120),
+    postcode,
+    countryCode,
+    deliveryInstructions: field(row.delivery_instructions, 400),
+    reviewedAt: row.reviewed_at || null,
+    version: 1,
+  });
+}
+
+export async function resolveCustomerShipTo(customerId, deliveryAddressId) {
+  if (typeof customerId !== "string" || !validId.test(customerId) ||
+      typeof deliveryAddressId !== "string" || !/^[0-9a-f-]{36}$/i.test(deliveryAddressId)) {
+    throw invalid("Select an approved saved delivery address.", 400);
+  }
+  // Rows must match both account ownership and explicit, independently reviewed status.
+  // Controlled organisation locations can be incorporated after an approved source-to-destination contract.
+  const row = await one(`SELECT id, customer_id AS owner_customer_id, address_kind, status,
+      recipient_name, contact_phone, line_1, line_2, city, region, postcode, country_code,
+      delivery_instructions, reviewed_at
+    FROM customer_account_addresses
+    WHERE id = ? AND customer_id = ? AND address_kind = 'delivery' AND status = 'approved'`,
+    deliveryAddressId, customerId);
+  return approvedShipToSnapshot(row, customerId);
+}
