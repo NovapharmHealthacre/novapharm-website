@@ -10944,6 +10944,7 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
 /* Width is governed by the available container, never by a device name.
    Logical properties preserve the reading direction for translated UIs. */
 .np-hig-container {
+  box-sizing: border-box;
   width: min(100%, var(--np-layout-max));
   margin-inline: auto;
   padding-inline:
@@ -10991,6 +10992,7 @@ body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]
   overscroll-behavior-inline: contain;
   -webkit-overflow-scrolling: touch;
 }
+.np-hig-table-region:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 .np-hig-table-region > table { inline-size: 100%; border-collapse: collapse; }
 .np-hig-table-region :is(th, td) { text-align: start; vertical-align: top; }
 .np-hig-disclosure > summary {
