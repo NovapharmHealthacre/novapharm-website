@@ -67,7 +67,7 @@ export function LoginPanel() {
         <legend>Portal type</legend>
         {accessTypes.map(({ value, label, icon: Icon }) => <label key={value} className={accessType === value ? "selected" : ""}>
           <input type="radio" name="accessType" value={value} checked={accessType === value} onChange={() => setAccessType(value)} />
-          <Icon aria-hidden="true" /><span>{label}</span>
+          <Icon aria-hidden="true" className="np-symbol" /><span>{label}</span>
         </label>)}
       </fieldset>
       {accessType === "customer" && selectionQuery ? <p className="order-intent-login-note">Your product selection will open in My Products after sign-in. Pricing, stock and ordering remain subject to account-specific release checks.</p> : null}
@@ -78,9 +78,9 @@ export function LoginPanel() {
         <input id="password" name="password" type="password" autoComplete="current-password" required maxLength={256} />
         <button className="button primary" type="submit" disabled={busy}>{busy ? "Signing in…" : "Sign in securely"}</button>
       </form>
-      {entraEnabled ? <a className="button microsoft" href={`/.auth/login/aad?post_login_redirect_uri=${encodeURIComponent(entraReturn)}`}><ShieldCheck aria-hidden="true" />Continue with Microsoft</a> : null}
+      {entraEnabled ? <a className="button microsoft" href={`/.auth/login/aad?post_login_redirect_uri=${encodeURIComponent(entraReturn)}`}><ShieldCheck aria-hidden="true" className="np-symbol" />Continue with Microsoft</a> : null}
       <p className="form-status" aria-live="polite">{status}</p>
-      <p className="security-note"><ShieldCheck aria-hidden="true" /> Credentials are verified by the protected server. Passwords are never stored in this browser.</p>
+      <p className="security-note"><ShieldCheck aria-hidden="true" className="np-symbol" /> Credentials are verified by the protected server. Passwords are never stored in this browser.</p>
     </section>
   </main>;
 }

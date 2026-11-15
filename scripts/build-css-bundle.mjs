@@ -25,6 +25,7 @@ const sources = [
   ["contact-premium.css", null],
   ["homepage-editorial.css", null],
   ["novapharm-hig-colours.css", null],
+  ["symbol-system.css", null],
   // The final integrity layer must remain last, as verified by the image contract.
   ["sitewide-layout-integrity.css", null]
 ];
