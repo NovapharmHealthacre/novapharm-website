@@ -45,7 +45,7 @@ export default async function StatusPage() {
         <div className="status-meta">
           <span className={`overall overall-${snapshot.overall}`}>{overallLabels[snapshot.overall]}</span>
           <span>Checked {checked} UTC</span>
-          <a className="refresh-command" href="/"><RefreshCw aria-hidden="true" />Refresh</a>
+          <a className="refresh-command" href="/"><RefreshCw aria-hidden="true" className="np-symbol" />Refresh</a>
         </div>
       </section>
       <section className="service-band" aria-labelledby="services-title">
