@@ -2,6 +2,7 @@
 
 import { employeeModules } from "@novapharm/portal-contracts";
 import { WmsCapacityScenarioStudio } from "./wms-capacity-scenario-studio";
+import { WmsPilotFeedbackPanel } from "./wms-pilot-feedback-panel";
 import { WmsPrototypeWorkspaceMap } from "./wms-prototype-workspace-map";
 import { WmsRecordedEvidenceStudio, type WmsSnapshot } from "./wms-recorded-evidence-studio";
 
@@ -160,6 +161,7 @@ export function EmployeeDistributionWorkspace({ moduleCode, snapshot }: Readonly
       <WmsRecordedEvidenceStudio snapshot={snapshot ?? null} />
       <WmsCapacityScenarioStudio />
       <WmsPrototypeWorkspaceMap />
+      <WmsPilotFeedbackPanel />
     </section>;
   }
 

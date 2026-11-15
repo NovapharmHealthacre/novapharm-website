@@ -248,6 +248,49 @@
 .employee-distribution-shell :is(.distribution-employee-step, .wms-kpi-value, .distribution-wms-value, [data-numeric]) {
   font-variant-numeric: tabular-nums;
 }
+
+/* Private Distribution UAT: real authenticated feedback, zero warehouse execution. */
+.distribution-wms-pilot{max-width:1260px;margin:32px 0;padding:44px 0;border-top:1px solid #dedee2;color:#1d1d1f}
+.distribution-wms-pilot-header h2{font-size:clamp(1.8rem,3.3vw,3.2rem);font-weight:660;line-height:1.15;letter-spacing:-.052em;margin:0 0 13px}
+.distribution-wms-pilot-header>p:not(.distribution-employee-overline){font-size:.92rem;color:#575761;line-height:1.65;max-width:78ch}
+.distribution-wms-pilot-steps{list-style:none;padding:0;margin:28px 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:#e5e5e9;border:1px solid #e5e5e9;border-radius:12px;overflow:hidden}
+.distribution-wms-pilot-steps li{display:flex;flex-direction:column;gap:10px;padding:22px;background:#fafafb}
+.distribution-wms-pilot-steps strong{font-size:.85rem}
+.distribution-wms-pilot-steps span{font-size:.79rem;line-height:1.5;color:#5c5c65}
+.distribution-wms-pilot-locked{padding:22px;border:1px solid #dadade;border-radius:12px;background:#fafafb}
+.distribution-wms-pilot-locked strong{font-size:.94rem}
+.distribution-wms-pilot-locked p{font-size:.82rem;color:#595962;line-height:1.55}
+.distribution-wms-pilot-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:28px}
+.distribution-wms-pilot-form,.distribution-wms-pilot-summary{border:1px solid #dedee3;border-radius:16px;padding:clamp(18px,3vw,27px)}
+.distribution-wms-pilot-grid h3{margin:0 0 18px;font-size:1.1rem;letter-spacing:-.025em}
+.distribution-wms-pilot-form label{display:block;font-weight:650;font-size:.82rem;margin:17px 0 7px}
+.distribution-wms-pilot-form select,.distribution-wms-pilot-form textarea{width:100%;font-size:.88rem;line-height:1.4;background:#fff;border:1px solid #c7c7ce;border-radius:9px;padding:12px;color:#1d1d1f}
+.distribution-wms-pilot-form textarea{resize:vertical;min-height:95px}
+.distribution-wms-pilot-form select:focus-visible,.distribution-wms-pilot-form textarea:focus-visible,.distribution-wms-pilot-form button:focus-visible{outline:3px solid #0071e3;outline-offset:3px}
+.distribution-wms-pilot-form button{padding:11px 17px;background:#1d1d1f;border:1px solid #1d1d1f;color:white;border-radius:30px;font-size:.84rem;font-weight:650;cursor:pointer}
+.distribution-wms-pilot-form button:disabled{opacity:.58;cursor:not-allowed}
+.distribution-wms-pilot-privacy,.distribution-wms-pilot-bottom{font-size:.77rem;line-height:1.6;color:#64646e;margin:18px 0}
+.distribution-wms-pilot-form p[role="status"]{font-size:.82rem;min-height:1.4em}
+.distribution-wms-pilot-summary>p{font-size:.83rem;color:#575761;line-height:1.5}
+.distribution-wms-pilot-table{overflow-x:auto;border:1px solid #e5e5ea;border-radius:10px;margin-top:18px}
+.distribution-wms-pilot-table table{border-collapse:collapse;width:100%;font-size:.8rem}
+.distribution-wms-pilot-table th{text-align:left;background:#f5f5f7;padding:11px 13px;color:#575761}
+.distribution-wms-pilot-table td{border-top:1px solid #ededf0;padding:11px 13px}
+.distribution-wms-pilot-table td[data-outcome="broken"]{color:#991b1b;font-weight:650}
+.distribution-wms-pilot-table td[data-outcome="working"]{color:#225c3c;font-weight:650}
+.distribution-wms-pilot-table td[data-outcome="needs_improvement"]{color:#73521f;font-weight:650}
+@media(max-width:850px){.distribution-wms-pilot-grid{grid-template-columns:1fr}}
+@media(max-width:650px){.distribution-wms-pilot-steps{grid-template-columns:1fr}.distribution-wms-pilot-steps li{padding:16px}}
+
+.distribution-wms-pilot-admin{margin-top:26px;padding:24px;border:1px solid #dedee3;border-radius:14px;background:#fff}
+.distribution-wms-pilot-admin h3{margin:0 0 9px;font-size:1.18rem}
+.distribution-wms-pilot-admin>p{max-width:90ch;font-size:.81rem;color:#595961;line-height:1.55}
+.distribution-wms-pilot-admin-stats{display:flex;gap:18px;flex-wrap:wrap;padding:17px 0}
+.distribution-wms-pilot-admin-stats span{font-size:.82rem;color:#4e4e56}
+.distribution-wms-pilot-admin-stats strong{font-variant-numeric:tabular-nums;font-size:1.14rem;margin-right:5px}
+.distribution-wms-pilot-admin .distribution-wms-pilot-table{max-width:100%;overflow-x:auto}
+.distribution-wms-pilot-admin .distribution-wms-pilot-table td{min-width:120px;max-width:340px;overflow-wrap:anywhere}
+
 /* HIG legibility contract for the operational terminal, preserving data density. */
 .employee-distribution-shell :where(h1, h2, h3, h4) {
   font-optical-sizing: auto;
