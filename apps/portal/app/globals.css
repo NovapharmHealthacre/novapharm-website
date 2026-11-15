@@ -535,3 +535,13 @@ td[data-state="blocked"], td[data-state="failed"], td[data-state="suspended"] { 
 .unified-customer-hub .unified-customer-release-note{font-size:.83rem;line-height:1.55;margin:20px 0 0;color:#52525b}
 @media (max-width:900px){.unified-customer-groups{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:600px){.unified-customer-groups,.unified-collection-grid{grid-template-columns:1fr}.unified-customer-hub{border-radius:17px;padding:18px}.unified-customer-group{padding:15px}}
+
+/* Protected sign-in privacy notice: quiet but accessible and never consent-gated. */
+.portal-privacy-note {
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: .875rem;
+  line-height: 1.6;
+}
+.portal-privacy-note a { color: var(--red-text); text-underline-offset: 3px; }
+.portal-privacy-note a:focus-visible { outline-offset: 4px; }
