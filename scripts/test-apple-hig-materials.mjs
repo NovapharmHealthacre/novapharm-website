@@ -37,4 +37,23 @@ assert.ok(tokens.includes("materials: Object.freeze("), "Shared design system ma
 assert.ok(styles.includes(".np-navigation,.np-mega-menu"), "Reusable navigation should use material semantics");
 assert.ok(styles.includes("prefers-reduced-transparency"), "Reusable navigation needs solid accessibility fallback");
 assert.ok(!/(^|[\s;{])filter\s*:\s*blur\(/m.test(material), "Never blur foreground labels");
+// The transitional live customer BFF is not the unreleased unified Next.js portal.
+// Its existing signup and customer-navigation surfaces still need safe, opaque
+// fallbacks; do not test this as evidence of enterprise portal deployment.
+const customerBff = read("apps/nutraxin-customer-api/index.py");
+for (const snippet of [
+  "nav{background:#fff;border-bottom:1px solid #e6e6e9}",
+  "nav{background:rgba(252,252,253,.94);-webkit-backdrop-filter",
+  ".editorial-customer .editorial-topbar{background:rgba(255,255,255,.96);-webkit-backdrop-filter",
+  "(prefers-reduced-transparency:reduce)",
+  "(prefers-contrast:more)",
+  "(forced-colors:active)",
+  ".editorial-customer .editorial-topbar{position:sticky;top:0;z-index:50;}"
+]) {
+  assert.ok(customerBff.includes(snippet), `Transitional customer BFF material fallback missing: ${snippet}`);
+}
+assert.ok(!customerBff.includes(
+  ".editorial-customer .editorial-topbar{position:sticky;top:0;z-index:50;-webkit-backdrop-filter"
+), "Never apply unguarded blur to the customer products sticky header");
+
 console.log("Apple HIG Materials web contract: PASS");
