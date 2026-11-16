@@ -4,6 +4,9 @@ on:
     paths:
       - 'assets/js/cookie-consent.js'
       - 'assets/js/consent-analytics.js'
+      - 'assets/css/corporate-product-discipline.css'
+      - 'assets/css/novapharm.bundle.css'
+      - 'scripts/test-apple-privacy-editorial.mjs'
       - 'legal/privacy/index.html'
       - 'legal/cookies/index.html'
       - 'apps/corporate/data/pages.ts'
@@ -39,3 +42,5 @@ jobs:
         run: node --test scripts/test-apple-privacy-contract.mjs
       - name: Static consent regressions
         run: node scripts/test-cookie-consent.mjs && node scripts/test-consent-analytics.mjs
+      - name: Privacy overview, keyboard-readable structure and CSS parity
+        run: node --test scripts/test-apple-privacy-editorial.mjs
