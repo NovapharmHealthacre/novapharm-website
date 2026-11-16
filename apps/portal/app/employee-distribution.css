@@ -343,3 +343,14 @@
 .distribution-wms-capacity-zone-data :is(summary,button):focus-visible{outline:3px solid #0071e3;outline-offset:3px}
 @media(max-width:480px){.distribution-wms-capacity-zone-row{grid-template-columns:1fr minmax(4rem,1fr);gap:5px 10px}.distribution-wms-capacity-zone-track{grid-column:1/-1;grid-row:2}.distribution-wms-capacity-zone-value{grid-column:2;grid-row:1}}
 @media(forced-colors:active){.distribution-wms-capacity-zone-track{border:1px solid CanvasText}.distribution-wms-capacity-zone-track>span{background:Highlight}}
+
+/* Recorded source coverage: exact values remain available without charts, colour or JS charts. */
+.distribution-wms-evidence-data{margin-top:18px;border-top:1px solid #d7d7dc;color:#1d1d1f}
+.distribution-wms-evidence-data>summary{min-height:44px;padding:14px 2px;cursor:pointer;color:#97121f;font-size:.9rem}
+.distribution-wms-evidence-data>summary:focus-visible,.distribution-wms-evidence-data-scroll:focus-visible{outline:3px solid #0071e3;outline-offset:3px}
+.distribution-wms-evidence-data-scroll{overflow-x:auto;max-width:100%}
+.distribution-wms-evidence-data table{width:100%;border-collapse:collapse;min-width:32rem;font-size:.85rem}
+.distribution-wms-evidence-data caption{text-align:start;font-weight:600;padding:12px 0}
+.distribution-wms-evidence-data :is(th,td){padding:10px 8px;border-bottom:1px solid #e0e0e5;text-align:start}
+.distribution-wms-evidence-data thead th:last-child,.distribution-wms-evidence-data td:last-child{text-align:end;font-variant-numeric:tabular-nums}
+@media(forced-colors:active){.distribution-wms-evidence-data{border-color:CanvasText}}
