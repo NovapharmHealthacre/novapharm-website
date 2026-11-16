@@ -12,6 +12,7 @@ test("hierarchy layouts are exported and retain semantic keyboard and disclosure
   assert.match(exports, /export \* from "\.\/layout-organization"/);
   assert.match(src, /onKeyDown=\{focusAdjacent\}/);
   assert.match(src, /aria-pressed/);
+  assert.match(src, /useState<"columns" \| "outline">\("outline"\)/, "No-script default must show every hierarchy group through native disclosures");
   assert.match(src, /<details open=\{index === 0\}>/);
   assert.doesNotMatch(src, /dangerouslySetInnerHTML|localStorage|fetch\(|role="tree"/);
 });
