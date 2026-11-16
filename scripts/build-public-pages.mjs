@@ -1079,7 +1079,7 @@ function environmentPage() {
 
 function errorPage(code, title, message) {
   const meta = { title: `${code} ${title} | NovaPharm Healthcare`, description: message, eyebrow: `Error ${code}` };
-  return `${head(meta, code === "404" ? "404" : "service-unavailable", { robots: "noindex,nofollow", schemas: [] })}<body class="error-page"><main id="main" class="error-shell"><a class="error-brand" href="/" aria-label="NovaPharm Healthcare home">${brandPicture({ width: 320, height: 40, eager: true })}</a><span>${code}</span><h1>${esc(title)}</h1><p>${esc(message)}</p><a class="btn btn-primary" href="/">Return to NovaPharm</a><button class="inline-link-button" type="button" data-cookie-settings>Cookie settings</button></main><script type="module" src="/assets/js/cookie-consent.js"></script></body></html>`;
+  return `${head(meta, code === "404" ? "404" : "service-unavailable", { robots: "noindex,nofollow", schemas: [] })}<body class="error-page"><main id="main" class="error-shell"><a class="error-brand" href="/" aria-label="NovaPharm Healthcare home">${brandPicture({ width: 320, height: 40, eager: true })}</a><span>${code}</span><h1>${esc(title)}</h1><p>${esc(message)}</p><a class="btn btn-primary" href="/">Go to home page</a><button class="inline-link-button" type="button" data-cookie-settings>Cookie settings</button></main><script type="module" src="/assets/js/cookie-consent.js"></script></body></html>`;
 }
 
 function redirectPage(title, target) {
@@ -1134,7 +1134,7 @@ export function buildPublicPages() {
   write("legal/modern-slavery/index.html", modernSlaveryPage());
   write("legal/environment-carbon/index.html", environmentPage());
   write("404.html", errorPage("404", "Page not found", "The page may have moved, or the address may be incorrect."));
-  write("500.html", errorPage("500", "Service unavailable", "NovaPharm's secure service is temporarily unavailable. Please try again later."));
+  write("500.html", errorPage("500", "Service unavailable", "This page is temporarily unavailable. Try again later or go to the home page."));
   write("service-unavailable/index.html", errorPage("503", "Service temporarily unavailable", "The secure NovaPharm service is not ready to accept this request."));
   write("contact.html", redirectPage("Contact", "/contact/"));
   write("company-profile/index.html", redirectPage("Company", "/about/company/"));
