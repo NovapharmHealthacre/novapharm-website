@@ -361,11 +361,15 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     await page.getByRole("link", { name: "Telesales", exact: true }).waitFor();
     await page.getByLabel("Search authorised records").fill("Nutraxin");
     await page.locator('.portal-search > button[type="submit"]').click();
-    await page.locator(".search-results").waitFor();
+    // The results panel opens before the async authorised search completes.
+    // Wait for a genuine seeded product link, not merely the empty panel shell.
+    await page.locator(".search-results a").first().waitFor({ state: "visible", timeout: 15_000 });
     assert.ok(await page.locator(".search-results a").count() > 0, `${engine}: authorised search returned no seeded products`);
     await captureInteractionState(page, engine, mobileViewport, "interaction.search-results");
     await page.getByLabel("Search authorised records").fill("no-authorised-record-matches-this-query");
     await page.locator('.portal-search > button[type="submit"]').click();
+    // Require the API success announcement, not a transient empty-state render.
+    await page.getByText("0 authorised records found.", { exact: true }).waitFor();
     await page.getByText("No authorised records found in this scope.", { exact: true }).waitFor();
     await captureInteractionState(page, engine, mobileViewport, "interaction.empty-search");
   } finally {
