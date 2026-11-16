@@ -1,4 +1,5 @@
 import { employeeModules } from "@novapharm/portal-contracts";
+import { HierarchyExplorer, type HierarchyGroup } from "../../../packages/design-system/src/layout-organization";
 
 /**
  * Navigation blueprint derived from the owner's 16-workspace standalone
@@ -48,6 +49,19 @@ const employeeRoutes = new Map(employeeModules
   .filter((entry) => entry.visibleInNavigation)
   .map((entry) => [entry.code, entry.route]));
 
+const hierarchyGroups: readonly HierarchyGroup[] = groups.map((group, groupIndex) => ({
+  id: `wms-group-${groupIndex}`,
+  label: group,
+  items: WMS_PROTOTYPE_WORKSPACE_MAP.filter((entry) => entry.group === group).map((entry, index) => ({
+    id: `wms-entry-${groupIndex}-${index}`,
+    label: entry.title,
+    description: entry.evidence,
+    detail: entry.constraint,
+    href: entry.module ? employeeRoutes.get(entry.module) : undefined,
+    status: "Integration required",
+  })),
+}));
+
 export function WmsPrototypeWorkspaceMap() {
   return <section className="distribution-wms-workspace-map"
     aria-labelledby="distribution-wms-workspace-map-title">
@@ -57,26 +71,7 @@ export function WmsPrototypeWorkspaceMap() {
       <p>The prototype's workflow structure is mapped to our existing employee services.
         Existing source views and capabilities awaiting partner integration are labelled separately.</p>
     </div>
-    <div className="distribution-wms-workspace-map-groups">
-      {groups.map((group) => <section key={group} aria-label={group}>
-        <h3>{group}</h3>
-        <ol>
-          {WMS_PROTOTYPE_WORKSPACE_MAP.filter((entry) => entry.group === group).map((entry) => {
-            const route = entry.module ? employeeRoutes.get(entry.module) : null;
-            return <li key={entry.title}>
-              <div>
-                <strong>{entry.title}</strong>
-                <span>{entry.evidence}</span>
-                <small>{entry.constraint}</small>
-              </div>
-              {route
-                ? <a href={route} aria-label={"Open recorded view for " + entry.title}>Open view</a>
-                : <span className="distribution-wms-awaiting-source">Integration required</span>}
-            </li>;
-          })}
-        </ol>
-      </section>)}
-    </div>
+    <HierarchyExplorer label="WMS workspace architecture" groups={hierarchyGroups} />
     <p className="distribution-wms-workspace-map-disclaimer">
       The prototype's editable inventory, sample QA dispositions, FEFO reservations,
       dispatch actions and AI scenarios operate locally only. None are production-enabled
