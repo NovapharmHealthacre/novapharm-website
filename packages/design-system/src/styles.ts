@@ -227,4 +227,19 @@ export const designSystemCss = String.raw`
 .np-controlled-document__note{font-size:.875rem;color:#515154;max-width:70ch}
 .np-controlled-document a:focus-visible{outline:3px solid #0071e3;outline-offset:3px}
 @media(forced-colors:active){.np-controlled-document{border-color:CanvasText}}
+
+/* Notification preferences: only confirmed server revisions count as saved. */
+.np-notification-settings{min-width:0;max-width:52rem;padding:clamp(1rem,3vw,2rem);border:1px solid #d8dde4;border-radius:12px;background:#fff;color:#1d1d1f}
+.np-notification-settings h2{margin:0 0 .5rem}
+.np-notification-settings form{display:grid;gap:1rem}
+.np-notification-settings fieldset{border:0;margin:0;padding:0;display:grid;gap:.75rem}
+.np-notification-settings legend{font-weight:650;padding-bottom:.75rem}
+.np-notification-settings__choice{display:flex;align-items:flex-start;gap:1rem;min-height:44px;padding:.75rem 0;border-bottom:1px solid #e5e5e9}
+.np-notification-settings__choice input{width:1.3rem;height:1.3rem;margin:.2rem 0 0;flex:none;accent-color:#B30E09}
+.np-notification-settings__choice span{display:grid;gap:.25rem;font-size:.95rem}
+.np-notification-settings__choice span span{color:#515154}
+.np-notification-settings button{min-height:44px;padding:.6rem 1rem;border:0;border-radius:8px;background:#1d1d1f;color:#fff;font:inherit;font-weight:600;justify-self:start}
+.np-notification-settings button:disabled{opacity:.55;cursor:not-allowed}
+.np-notification-settings :is(input,button):focus-visible{outline:3px solid #0071e3;outline-offset:3px}
+@media(forced-colors:active){.np-notification-settings{border-color:CanvasText}.np-notification-settings button:disabled{opacity:1;color:GrayText}}
 `;
