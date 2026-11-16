@@ -1648,6 +1648,35 @@ class PersonalAccountEditingTests(unittest.TestCase):
         self.assertEqual(json.loads(self.send()["body"])["addresses"],[])
         self.assertEqual(set(self.ledger.records),{("USER#personal-owner-123","ACCOUNT")})
 
+    def test_default_address_fallback_when_previous_default_is_unselected(self):
+        address={"kind":"delivery","label":"Home","recipientName":"Customer Test",
+            "phone":"+44 20 1234 5678","line1":"10 Example Street","line2":"",
+            "city":"London","region":"","postcode":"SW1A 1AA",
+            "countryCode":"GB","instructions":"","isDefault":False}
+        first=self.send("POST",{"action":"addAddress","version":0,"address":address})
+        self.assertEqual(first["statusCode"],200,first)
+        second=self.send("POST",{"action":"addAddress","version":1,
+            "address":{**address,"label":"Office","line1":"22 Example Road"}})
+        self.assertEqual(second["statusCode"],200,second)
+        initial=json.loads(self.send()["body"])
+        first_id,second_id=[a["id"] for a in initial["addresses"]]
+        self.assertEqual([a["id"] for a in initial["addresses"] if a["isDefault"]],[first_id])
+        # Removing the default flag from the first of two delivery locations
+        # must promote the other location, never leave checkout without one.
+        changed=self.send("POST",{"action":"editAddress","version":2,"id":first_id,
+            "address":{**address,"label":"Home edited","isDefault":False}})
+        self.assertEqual(changed["statusCode"],200,changed)
+        result=json.loads(self.send()["body"])
+        self.assertEqual([a["id"] for a in result["addresses"] if a["isDefault"]],[second_id])
+        self.assertEqual(result["addresses"][0]["label"],"Home edited")
+        # Customer can explicitly set the first delivery address back as default.
+        back=self.send("POST",{"action":"editAddress","version":3,"id":first_id,
+            "address":{**address,"isDefault":True}})
+        self.assertEqual(back["statusCode"],200,back)
+        latest=json.loads(self.send()["body"])
+        self.assertEqual([a["id"] for a in latest["addresses"] if a["isDefault"]],[first_id])
+
+
     def test_csrf_ownership_and_validation_fail_closed(self):
         profile={"action":"profile","version":0,
                  "profile":{"fullName":"Test User","phone":"","organisationName":""}}
