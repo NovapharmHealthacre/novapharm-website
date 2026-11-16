@@ -5,6 +5,7 @@ on:
       - 'packages/design-system/src/**'
       - 'packages/design-system/test/**'
       - 'apps/portal/components/wms-capacity-scenario-studio.tsx'
+      - 'apps/portal/components/wms-recorded-evidence-studio.tsx'
       - 'apps/portal/app/employee-distribution.css'
       - 'apps/portal/test/wms-patterns.test.ts'
       - 'docs/design/apple-hig-patterns-2026-11-16.md'
