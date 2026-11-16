@@ -18,6 +18,9 @@ test("the actual corporate web header uses compact dark navigation and visible k
   assert.doesNotMatch(design, /letter-spacing:\s*-[\d.]+(?:em|px|rem)/i, "Navigation must not use out-of-policy negative letter spacing");
   assert.match(design, /--header:\s*52px/);
   assert.match(design, /background(?:-color)?:\s*#171719/);
+  assert.match(design, /body\[data-page\] header\.site-header\.npd-header/);
+  assert.match(design, /\.npd-menu\.nav-toggle \[data-menu-label\]/);
+  assert.match(design, /\.npd-global-nav\.site-nav > a\[aria-current="page"\]/);
   assert.match(design, /\.npd-global-nav\.site-nav/);
   assert.match(design, /\.desktop-nav/);
   assert.match(design, /min-height:\s*44px/);
