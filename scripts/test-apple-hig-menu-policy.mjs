@@ -75,3 +75,13 @@ test("all distinct user-supplied Apple framework references remain traceable", (
   }
   assert.ok(doc.includes("https://developer.apple.com/design/human-interface-guidelines/privacy#Location-button"));
 });
+
+
+test("public Corporate mobile menu keeps Escape, outside dismissal and native editing", () => {
+  const src = read("apps/corporate/components/mobile-navigation.tsx");
+  assert.match(src, /<details className="mobile-menu"/);
+  assert.match(src, /event\.key !== "Escape"/);
+  assert.match(src, /document\.addEventListener\("pointerdown", closeOutside\)/);
+  assert.match(src, /detailsRef\.current\.contains\(event\.target as Node\)/);
+  assert.doesNotMatch(src, /preventDefault\(\)|document\.oncontextmenu/);
+});
