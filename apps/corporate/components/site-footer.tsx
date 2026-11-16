@@ -2,8 +2,8 @@ import Link from "next/link";
 import { company } from "@/data/site";
 import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
 import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
-import { AppleFooterNavigation } from "./apple-footer-navigation";
 import { AppStoreAvailability } from "./app-store-availability";
+import { AppleFooterNavigation } from "./apple-footer-navigation";
 import { Brand } from "./brand";
 import { CookieSettingsButton } from "./cookie-controls";
 
