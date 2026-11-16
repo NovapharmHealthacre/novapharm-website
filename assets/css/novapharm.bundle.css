@@ -12210,7 +12210,7 @@ body:has(.cookie-banner:not([hidden])) .np-locale-control {
   inset-block-end: auto;
   inset-block-start: calc(var(--header, 82px) + 10px);
 }
-.np-locale-control label { font-size: 11px; font-weight: 600; line-height: 1.35; }
+.np-locale-control label { font-size: 13px; font-weight: 600; line-height: 1.4; }
 .np-locale-control select {
   max-inline-size: 100%;
   min-block-size: 44px;
@@ -12222,8 +12222,13 @@ body:has(.cookie-banner:not([hidden])) .np-locale-control {
   font: inherit;
   font-size: 14px;
 }
-.np-locale-note { font-size: 10px; line-height: 1.4; color: #4d5967; }
+.np-locale-note { font-size: 12px; line-height: 1.45; color: #4d5967; }
 .np-locale-control :focus-visible { outline: 3px solid #0b69ff; outline-offset: 2px; }
+.np-locale-control[data-np-control-locale="ar"],
+.np-locale-control[data-np-control-locale="he"] {
+  direction: rtl;
+  text-align: start;
+}
 
 html[dir="rtl"] {
   direction: rtl;
@@ -12381,7 +12386,7 @@ html[dir="rtl"] :is(.table-region, .np-hig-table-region, .portal-table-scroll) {
 html[dir="rtl"] [data-np-directional-arrow="true"] { transform: scaleX(-1); }
 @media (max-width: 420px) {
   .np-locale-control { inline-size: 180px; padding: 7px; }
-  .np-locale-note { font-size: 9px; }
+  .np-locale-note { font-size: 12px; }
 }
 @media (forced-colors: active) {
   .np-locale-control { border: 1px solid CanvasText; box-shadow: none; }
