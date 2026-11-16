@@ -12286,6 +12286,7 @@ body[data-page="home"] .pharma-home-media img {
   min-block-size: 44px;
   margin: 0;
   padding: 0;
+  padding-block-end: env(safe-area-inset-bottom, 0px);
   background: transparent;
   color: inherit;
   border: 0;
@@ -12377,6 +12378,7 @@ body > .np-locale-control {
 .np-locale-control[data-np-control-locale="he"] {
   direction: rtl;
   text-align: start;
+  padding-inline-end: env(safe-area-inset-left, 0px);
 }
 
 html[dir="rtl"] {
