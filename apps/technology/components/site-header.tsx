@@ -1,7 +1,5 @@
 "use client";
 
-import { interfaceLabel, type InterfaceLocale } from "../../../src/core/interface-locale";
-
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { Route } from "next";
 import Link from "next/link";
@@ -10,6 +8,7 @@ import { useEffect, useState } from "react";
 import { Brand } from "@/components/brand";
 import { ArrowUpRight, Close, Menu } from "@/components/icons";
 import { navigation } from "@/data/site";
+import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
 
 export function SiteHeader({ locale }: Readonly<{ locale: InterfaceLocale }>) {
   const pathname = usePathname();
