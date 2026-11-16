@@ -263,7 +263,13 @@ if (login.includes("data-login-form")) {
 }
 
 assert.match(text("scripts/build-site.mjs"), /apply-corporate-product-discipline\.mjs/);
-assert.match(text("assets/js/novapharm.js"), /visibleLabel\.textContent = isOpen \? "Close" : "Menu"/);
+const mobileNavigationJs = text("assets/js/novapharm.js");
+assert.match(mobileNavigationJs, /const localizedMenuLabels = \{/, "mobile menu must localize without changing navigation semantics");
+assert.match(mobileNavigationJs, /ar:\s*\{\s*open:\s*"فتح القائمة", close:\s*"إغلاق القائمة"/, "Arabic menu labels must include open/close announcements");
+assert.match(mobileNavigationJs, /he:\s*\{\s*open:\s*"פתיחת תפריט", close:\s*"סגירת תפריט"/, "Hebrew menu labels must include open/close announcements");
+assert.match(mobileNavigationJs, /open:\s*"Open navigation", close:\s*"Close navigation", menu:\s*"Menu", closed:\s*"Close", nav:\s*"Primary navigation"/, "English fallback must remain available");
+assert.match(mobileNavigationJs, /visibleLabel\.textContent = isOpen \? menuLabels\.closed : menuLabels\.menu/, "visible menu label must follow the active locale and expanded state");
+assert.match(mobileNavigationJs, /navToggle\.setAttribute\("aria-label", isOpen \? menuLabels\.close : menuLabels\.open\)/, "screen-reader menu action must follow the active locale");
 assert.doesNotMatch(text("assets/js/novapharm.js"), /pointermove|hero-shift/);
 
 console.log("Visual contracts passed for the corporate product-discipline system, seven-destination navigation, 19 canonical Nutraxin product routes, truthful fail-closed workflows, responsive media and asset budgets.");
