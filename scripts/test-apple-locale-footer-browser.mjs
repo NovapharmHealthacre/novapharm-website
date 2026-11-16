@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { chromium, webkit } from "playwright";
 
 const origin = process.env.PUBLIC_PAGES_BASE_URL ?? "http://127.0.0.1:4310";
+const localeVersion = createHash("sha256").update(readFileSync("assets/js/rtl-localization.js")).digest("hex").slice(0, 16);
+const expectedLocaleScript = "/assets/js/rtl-localization.js?v=" + localeVersion;
 const viewports = [
   { width: 320, height: 720 },
   { width: 390, height: 844 },
@@ -24,6 +28,8 @@ for (const [engineName, engine] of [["chromium", chromium], ["webkit", webkit]])
           const page = await context.newPage();
           const response = await page.goto(origin + "/", { waitUntil: "domcontentloaded" });
           assert.equal(response?.status(), 200, engineName + " public home returned non-200");
+          const scriptUrls = await page.locator('script[src*="/assets/js/rtl-localization.js"]').evaluateAll((nodes) => nodes.map((node) => node.getAttribute("src")));
+          assert.deepEqual(scriptUrls, [expectedLocaleScript], engineName + ": homepage is missing versioned locale JS");
           const selector = page.locator("[data-np-locale-control]");
           await selector.waitFor({ state: "visible" });
           assert.equal(await selector.count(), 1, "Exactly one language selector is permitted");
@@ -89,6 +95,8 @@ for (const [engineName, engine] of [["chromium", chromium], ["webkit", webkit]])
         const page = await context.newPage();
         const response = await page.goto(origin + "/contact/", { waitUntil: "domcontentloaded" });
         assert.equal(response?.status(), 200, engineName + " Contact page must load");
+        const contactScript = await page.locator('script[src*="/assets/js/rtl-localization.js"]').first().getAttribute("src");
+        assert.equal(contactScript, expectedLocaleScript, engineName + ": Contact has stale RTL asset URL");
         const selector = page.locator("[data-np-locale-control]");
         await selector.waitFor({ state: "visible" });
         assert.equal(await selector.count(), 1, "Contact must expose one visible locale selector");
