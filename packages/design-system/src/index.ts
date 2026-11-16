@@ -63,3 +63,5 @@ export * from "./styles";
 export * from "./symbols";
 export * from "./app-store-badges";
 export * from "./modal-dialog";
+
+export * from "./file-selection-zone";
