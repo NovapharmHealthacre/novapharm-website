@@ -71,6 +71,22 @@ test("GA4 route exclusions retain legal, contact and account privacy boundaries"
   assert.match(register, /Google Analytics 4/);
 });
 
+test("optional session attribution is absent on legal and protected routes", () => {
+  const attribution = source("assets/js/marketing-attribution.js");
+  assert.match(attribution, /import \{ publicAnalyticsRoute \} from "\.\/consent-analytics\.js"/);
+  assert.match(attribution, /function analyticsAllowed\(\) \{[\s\S]*?if \(!publicAnalyticsRoute\(location\.pathname\)\) return false;/);
+  assert.match(attribution, /function collectAttribution\(\) \{[\s\S]*?if \(!publicAnalyticsRoute\(location\.pathname\)\) return null;/);
+  assert.match(attribution, /sessionStorage\.removeItem\(ATTRIBUTION_KEY\)/, "Withdrawal must clear optional attribution");
+  for (const path of [
+    "/legal/privacy/", "/legal/cookies/", "/contact/", "/account-application/",
+    "/portal/", "/admin/", "/products/nutraxin/bag/",
+    "/products/nutraxin/account/", "/products/nutraxin/checkout/",
+    "/products/track/", "/products/orders/"
+  ]) {
+    assert.equal(publicAnalyticsRoute(path), false, "Protected page must never capture session attribution: " + path);
+  }
+});
+
 test("consented Nutraxin analytics is restricted to the reviewed informational product catalogue", () => {
   const approved = JSON.parse(source("assets/data/nutraxin-retail-catalogue.json")).products;
   assert.equal(approved.length, 19, "Product allowlist requires explicit review when catalogue changes");
