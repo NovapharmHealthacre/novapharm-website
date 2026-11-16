@@ -168,8 +168,10 @@ export function Tabs({ label, tabs, activeId, onSelect }: Readonly<{ label: stri
     const direction = event.key === "ArrowRight" ? (rtl ? -1 : 1) : (rtl ? 1 : -1);
     const next = event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1 : (current + direction + buttons.length) % buttons.length;
     event.preventDefault();
+    const selected = tabs[next];
+    if (!selected) return;
     buttons[next]?.focus();
-    if (onSelect) onSelect(tabs[next].id);
+    onSelect?.(selected.id);
   };
   return <div className="np-tabs"><div role="tablist" aria-label={label} onKeyDown={handleKeyDown}>{tabs.map((tab) => <button key={tab.id} type="button" role="tab" id={`${tab.id}-tab`} aria-controls={tab.id === active?.id ? `${tab.id}-panel` : undefined} aria-selected={tab.id === active?.id} tabIndex={tab.id === active?.id ? 0 : -1} onClick={() => onSelect?.(tab.id)}>{tab.label}</button>)}</div>{active ? <div role="tabpanel" id={`${active.id}-panel`} aria-labelledby={`${active.id}-tab`} tabIndex={0}>{active.panel}</div> : null}</div>;
 }
