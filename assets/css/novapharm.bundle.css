@@ -12295,6 +12295,8 @@ body[data-page="home"] .pharma-home-media img {
   direction: ltr;
   font-family: inherit;
   font-size: 12px;
+  text-transform: none;
+  letter-spacing: normal;
   line-height: 1.35;
 }
 .np-locale-control label {
@@ -12315,8 +12317,8 @@ body[data-page="home"] .pharma-home-media img {
   block-size: 5px;
   inset-inline-end: 2px;
   inset-block-start: calc(50% - 4px);
-  border-inline-end: 1px solid currentColor;
-  border-block-end: 1px solid currentColor;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
   transform: rotate(45deg);
   pointer-events: none;
 }
@@ -12326,7 +12328,7 @@ body[data-page="home"] .pharma-home-media img {
   inline-size: auto;
   max-inline-size: 100%;
   min-block-size: 44px;
-  padding: 0 16px 0 0;
+  padding-inline: 0 16px;
   border: 0;
   border-radius: 0;
   background: transparent;
