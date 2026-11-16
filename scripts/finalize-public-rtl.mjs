@@ -24,12 +24,12 @@ const rootFiles = Object.freeze(["index.html", "404.html", "500.html", "portal/i
 const rtlScript = '<script src="/assets/js/rtl-localization.js"></script>';
 const rtlStylesheet = '<link rel="stylesheet" href="/assets/css/rtl-localization.css">';
 
-function* collectHtml(base, directory) {
+function* collectHtml(directory) {
   if (!existsSync(directory)) return;
   for (const entry of readdirSync(directory, { withFileTypes: true })) {
     if (entry.isSymbolicLink()) continue;
     const file = join(directory, entry.name);
-    if (entry.isDirectory()) yield* collectHtml(base, file);
+    if (entry.isDirectory()) yield* collectHtml(file);
     else if (entry.isFile() && file.endsWith(".html")) yield file;
   }
 }
@@ -42,7 +42,7 @@ export function publicRtlFiles(root = process.cwd()) {
     if (existsSync(file)) paths.add(file);
   }
   for (const name of publicRtlDirectories) {
-    for (const file of collectHtml(base, join(base, name))) paths.add(file);
+    for (const file of collectHtml(join(base, name))) paths.add(file);
   }
   return [...paths].sort();
 }
