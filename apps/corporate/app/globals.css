@@ -743,6 +743,27 @@ input:focus, select:focus, textarea:focus { border-color: var(--focus); box-shad
 @media (max-width: 480px) {
   .site-footer.apple-corporate-footer .shell { width: calc(100% - 36px); }
 }
+
+.site-footer.apple-corporate-footer .footer-secondary > .footer-button {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #424245;
+  font-size: 12px;
+  line-height: 1.5;
+  text-decoration: none;
+  cursor: pointer;
+}
+.site-footer.apple-corporate-footer .footer-secondary > .footer-button:hover {
+  color: #1d1d1f;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 @media (forced-colors: active) {
   .site-footer.apple-corporate-footer { background: Canvas; color: CanvasText; border-color: CanvasText; }
   .site-footer.apple-corporate-footer :is(a, button) { color: LinkText; }
