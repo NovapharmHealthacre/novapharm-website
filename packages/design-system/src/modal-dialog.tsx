@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, type ReactNode, type SyntheticEvent } from "react";
+import React, { useEffect, useId, useRef, type ReactNode, type SyntheticEvent } from "react";
 
 /**
  * Browser-native modal for a short, consequential task.
