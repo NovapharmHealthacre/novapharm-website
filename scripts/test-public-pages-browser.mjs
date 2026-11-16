@@ -17,7 +17,7 @@ const routes = [
   { path: "/distribution/", name: "distribution", required: "Global distribution" },
   { path: "/oncology/", name: "oncology", required: "Oncology" },
   { path: "/cro/", name: "cro", required: "Clinical" },
-  { path: "/technology/", name: "technology", required: "Technology" },
+  { path: "/technology/", name: "technology", required: "Medicine is complex." },
   { path: "/products/", name: "products-overview", required: "Different products. One purpose." },
   { path: "/products/nutraxin/", name: "nutraxin-collection", required: "Nutraxin" },
   { path: "/products/nutraxin/vitamin-d3-120-tablets/", name: "nutraxin-detail", required: "Nutraxin Vitamin D3" },

@@ -378,3 +378,47 @@ if (window.location.pathname.startsWith("/products/nutraxin/") &&
     // Static catalogue remains available if shopping enhancement cannot load.
   });
 }
+
+
+/* Apple-style mobile web footer disclosure. The source links remain visible
+   without JS; only enhance the ordinary public corporate footer groups. */
+for (const directory of document.querySelectorAll(
+  "footer.site-footer .npd-footer-top, footer.site-footer .footer-grid"
+)) {
+  if (directory.dataset.npAppleFooter === "enhanced") continue;
+  const columns = [...directory.children].filter((child) =>
+    child.tagName === "DIV" &&
+    !child.classList.contains("npd-footer-identity") &&
+    !child.classList.contains("footer-intro")
+  );
+  if (!columns.length) continue;
+  const compact = window.matchMedia("(max-width: 833px)");
+  const disclosures = [];
+  for (const column of columns) {
+    const heading = column.querySelector(":scope > h2, :scope > h3");
+    if (!heading) continue;
+    const details = document.createElement("details");
+    details.className = "np-apple-footer-disclosure";
+    const summary = document.createElement("summary");
+    summary.append(heading);
+    const links = document.createElement("div");
+    links.className = "np-apple-footer-disclosure-links";
+    while (column.firstChild) links.append(column.firstChild);
+    details.append(summary, links);
+    column.append(details);
+    disclosures.push({ details, summary });
+  }
+  if (disclosures.length) {
+    const syncDisclosureMode = () => {
+      for (const { details, summary } of disclosures) {
+        // On desktop the directory is always visible, not interactive.
+        // On mobile use native details/summary so VoiceOver and keyboard work.
+        details.open = !compact.matches;
+        summary.tabIndex = compact.matches ? 0 : -1;
+      }
+    };
+    syncDisclosureMode();
+    compact.addEventListener("change", syncDisclosureMode);
+    directory.dataset.npAppleFooter = "enhanced";
+  }
+}
