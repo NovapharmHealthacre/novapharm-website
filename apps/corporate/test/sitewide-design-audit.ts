@@ -134,7 +134,7 @@ async function audit() {
             }
             if(!data.font.includes("apple-system"))faults.push(`Unexpected font: ${data.font}`);
             if(!data.inkToken||!data.surfaceToken)faults.push("Missing shared design tokens");
-            if(data.navHeight<58||data.navHeight>80)faults.push(`Inconsistent header: ${data.navHeight}`);
+            if(data.navHeight<50||data.navHeight>54)faults.push(`Inconsistent Apple-style 52px header: ${data.navHeight}`);
             if(!data.legal)faults.push("Regulated-supply disclosure missing");
             if(data.mainLength<70)faults.push("Insufficient public page content");
             if(data.brokenImages.length)faults.push(`Broken images: ${data.brokenImages.slice(0,5).join(" / ")}`);
