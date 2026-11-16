@@ -98,7 +98,3 @@ The public source-backed search and its browser-side lexical-semantic worker con
 ## Acceptance and rollback
 
 Run `node --test scripts/test-nova-ml-apple-adaptation.mjs` in CI. Run the existing Portal TypeScript, design system, governance and production readiness suites before a merge. If runtime checks fail, leave the PR open. Roll back by reverting the new route-registration and module UI commits; keep all native candidates behind the independent signed application release gate.
-
-### Public publisher guard for GitHub-only Nova ML merges
-
-Because the public Pages publisher watches changes to the main-push contact dispatcher, a private Nova ML PR that updates that dispatcher can otherwise trigger unrelated AWS contact health checks. The publisher now has a separate `release_scope` GitHub-only preflight. On a merge containing **only** protected Portal/Nova ML sources plus their known test/workflow guards, and at least one actual ML file, it skips the entire AWS-backed build-and-publish job. Any public, unexpected, mixed or publisher-policy-only change retains the existing verified publisher. Manual, explicitly authorised publication continues through the original exact-SHA checks. The contact dispatcher applies the same private-only plus actual-ML-path gate. Both mechanisms are asserted by `scripts/aws/contact-release-routing.test.mjs`. They protect the **no AWS** instruction; they do not deploy the protected portal or native app.
