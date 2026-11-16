@@ -12,6 +12,7 @@ const corporateBrand = read("apps/corporate/components/brand.tsx");
 const corporateHeader = read("apps/corporate/components/site-header.tsx");
 const publicHome = read("index.html");
 const publicMenuScript = read("assets/js/novapharm.js");
+const homepageLegacyNavigation = read("apps/corporate/app/homepage-editorial.css");
 
 test("the actual corporate web header uses compact dark navigation and visible keyboard focus", () => {
   assert.match(design, /--npd-header:\s*52px/);
@@ -33,6 +34,14 @@ test("the actual corporate web header uses compact dark navigation and visible k
   assert.match(design, /background: #3a3a3e/);
   assert.match(design, /\@media \(max-width: 1180px\)/);
   assert.match(design, /\@media \(max-width: 1300px\)/);
+});
+
+test("managed homepage's high-specificity editorial CSS cannot darken labels or hide the portal action", () => {
+  assert.match(homepageLegacyNavigation, /color: #151518/);
+  assert.match(design, /body:has\(\.nph-editorial-home\) \.site-header \.desktop-nav > a/);
+  assert.match(design, /body:has\(\.nph-editorial-home\) \.site-header \.desktop-nav > a:last-child/);
+  assert.match(design, /\.desktop-nav > a\[href="\/technology\/"\]::before/);
+  assert.match(design, /font-size: 12\.5px/);
 });
 
 test("the published bundle is exactly the design source tail", () => {
