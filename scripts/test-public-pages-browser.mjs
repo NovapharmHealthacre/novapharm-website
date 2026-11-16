@@ -347,6 +347,20 @@ for (const [engineName, browserType] of engines) {
 
             if (route.name === "privacy") {
               const label = `${engineName} ${viewport.name}: privacy consent`;
+              const overview = page.locator("#privacy-overview");
+              assert.equal(await overview.isVisible(), true, `${label}: privacy overview is not visible`);
+              assert.equal(await overview.getByRole("heading", { name: "Your information. Your choice." }).count(), 1,
+                `${label}: readable privacy promise is missing`);
+              const primaryAction = overview.getByRole("button", { name: "Manage cookie preferences" });
+              assert.equal(await primaryAction.count(), 1, `${label}: privacy choice action is missing`);
+              const primaryBox = await primaryAction.boundingBox();
+              assert.ok(primaryBox && primaryBox.height >= 44, `${label}: privacy action touch target is too small`);
+              const quicklinks = overview.locator('nav[aria-label="Explore this privacy notice"] a[href^="#"]');
+              assert.equal(await quicklinks.count(), 6, `${label}: privacy topic navigation is incomplete`);
+              for (const href of await quicklinks.evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute("href")))) {
+                assert.ok(href && await page.locator(href).count() === 1,
+                  `${label}: privacy link has no unique on-page target: ${href}`);
+              }
               assert.equal(await page.locator("#privacy-by-design").count(), 1, `${label}: approved privacy-by-design article missing from generated artifact`);
               assert.match(await page.locator("dl.policy-meta").innerText(), /15 November 2026/, `${label}: revised review date not published`);
               assert.match(await page.locator("dl.policy-meta").innerText(), /1\.4/, `${label}: current privacy notice version not published`);
