@@ -25,6 +25,10 @@ const source = {
   corporateFinishingPass: read("scripts/apply-corporate-product-discipline.mjs"),
   publicPortalBuilder: read("scripts/build-pages.mjs"),
   cookies: read("apps/corporate/components/cookie-controls.tsx"),
+  legalPrivacy: read("legal/privacy/index.html"),
+  legalCookies: read("legal/cookies/index.html"),
+  legalTerms: read("legal/terms/index.html"),
+  legalAccessibility: read("legal/accessibility/index.html"),
   standard: read("docs/design/novapharm-apple-hig-writing.md"),
 };
 function needs(key, text) {
@@ -107,6 +111,23 @@ for (const key of ["homeFinishingPass", "corporateFinishingPass"]) {
   avoids(key, 'Open an account');
   avoids(key, 'Open a business account');
 }
+// Checked-in legal pages can contain the prior footer until the governed build
+// replaces shared chrome. Ensure every legal footer variant can be replaced
+// without modifying the independently reviewed legal article or metadata.
+const legalFooterPattern = /<footer class="site-footer(?:\s+[^"]*)?"[^>]*>[\s\S]*?<\/footer>/;
+needs("corporateFinishingPass", String.raw`html.replace(/<footer class="site-footer(?:\s+[^"]*)?"[^>]*>[\s\S]*?<\/footer>/, footer());`);
+for (const key of ["legalPrivacy", "legalCookies", "legalTerms", "legalAccessibility"]) {
+  const matches = source[key].match(new RegExp(legalFooterPattern.source, "g")) ?? [];
+  assert.equal(matches.length, 1, `${key}: exactly one replaceable legal footer is required`);
+  assert.match(matches[0], /Open a business account/, `${key}: old checked-in footer is the expected regression fixture`);
+  const rendered = source[key].replace(
+    legalFooterPattern,
+    '<footer class="site-footer npd-footer"><a href="/account-application/">Discuss account eligibility</a></footer>'
+  );
+  assert.ok(rendered.includes("Discuss account eligibility"), `${key}: reviewed footer copy missing after replacement`);
+  assert.ok(!rendered.includes("Open a business account"), `${key}: obsolete CTA survived replacement`);
+}
+
 needs("publicPortalBuilder", 'href="/account-application/">Discuss account eligibility</a>');
 needs("publicPortalBuilder", 'Customers can discuss eligibility through the public business account information page;');
 avoids("publicPortalBuilder", 'href="/account-application/">Request a business account</a>');
@@ -122,4 +143,4 @@ needs("cookies", "Reject non-essential");
 for (const term of ["Controlled terminology", "Accessibility and color", "Localization", "Remaining acceptance"]) {
   needs("standard", term);
 }
-console.log("Apple HIG Writing first-pass copy contracts verified across 20 reviewed source surfaces.");
+console.log("Apple HIG Writing first-pass copy contracts verified across 24 reviewed source surfaces.");
