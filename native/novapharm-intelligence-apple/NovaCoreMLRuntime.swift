@@ -44,8 +44,13 @@ struct NovaCoreMLRuntime {
         }
         let provider = try MLDictionaryFeatureProvider(dictionary: inputs)
         let prediction = try model.prediction(from: provider)
-        return Dictionary(uniqueKeysWithValues: prediction.featureNames.map {
-            ($0, prediction.featureValue(for: $0)!)
-        })
+        var outputs: [String: MLFeatureValue] = [:]
+        for name in prediction.featureNames {
+            guard let value = prediction.featureValue(for: name) else {
+                throw NovaRuntimeError.inputSchemaMismatch
+            }
+            outputs[name] = value
+        }
+        return outputs
     }
 }
