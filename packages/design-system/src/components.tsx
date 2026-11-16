@@ -15,6 +15,10 @@ function classNames(...values: Array<string | false | null | undefined>): string
 }
 
 export const componentRegistry = Object.freeze([
+  "group-box",
+  "collection-view",
+  "split-view",
+  "disclosure",
   "navigation",
   "mega-menu",
   "breadcrumbs",
@@ -40,6 +44,58 @@ export const componentRegistry = Object.freeze([
   "audit-history",
   "document-viewer",
 ] as const);
+
+
+/** A compact, logically related region. Avoid nested bordered boxes; use whitespace within. */
+export function GroupBox({ title, description, headingLevel = 3, variant = "outlined", wide = false, id, children }: Readonly<{
+  title?: string;
+  description?: string;
+  headingLevel?: 2 | 3 | 4;
+  variant?: "outlined" | "subtle" | "plain";
+  wide?: boolean;
+  id?: string;
+  children: ReactNode;
+}>) {
+  const generatedId = useId();
+  const headingId = id ? `${id}-heading` : generatedId;
+  const Heading = `h${headingLevel}` as "h2" | "h3" | "h4";
+  const className = classNames("np-hig-box", `np-hig-box--${variant}`, wide && "np-hig-box--wide");
+  const content = <>
+    {title ? <Heading className="np-hig-box__heading" id={headingId}>{title}</Heading> : null}
+    {description ? <p className="np-hig-box__description">{description}</p> : null}
+    <div className="np-hig-box__content">{children}</div>
+  </>;
+  return title ? <section id={id} className={className} aria-labelledby={headingId}>{content}</section>
+    : <div id={id} className={className}>{content}</div>;
+}
+
+/** An ordered, responsive visual collection; source order remains keyboard and screen-reader order. */
+export function CollectionView({ title, items }: Readonly<{
+  title: string;
+  items: readonly Readonly<{ id: string; content: ReactNode }>[];
+}>) {
+  const id = useId();
+  return <section aria-labelledby={id}>
+    <h2 id={id}>{title}</h2>
+    <ul className="np-hig-collection">{items.map((item) => <li key={item.id}>{item.content}</li>)}</ul>
+  </section>;
+}
+
+/** Pane order remains stable when narrow viewports collapse to one column. */
+export function SplitView({ label, leading, children }: Readonly<{ label: string; leading: ReactNode; children: ReactNode }>) {
+  return <section className="np-hig-split-view" aria-label={label}>
+    <div className="np-hig-split-view__leading">{leading}</div>
+    <div className="np-hig-split-view__primary">{children}</div>
+  </section>;
+}
+
+/** Native details retains progressive disclosure even when JavaScript is unavailable. */
+export function Disclosure({ summary, children, open = false }: Readonly<{ summary: string; children: ReactNode; open?: boolean }>) {
+  return <details className="np-hig-disclosure" open={open}>
+    <summary>{summary}</summary>
+    <div className="np-hig-disclosure__content">{children}</div>
+  </details>;
+}
 
 export function SkipLink({ href = "#main-content", children = "Skip to main content" }: Readonly<{ href?: string; children?: ReactNode }>) {
   return <a className="np-skip-link" href={href}>{children}</a>;
