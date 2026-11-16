@@ -123,6 +123,9 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
                   ? img.naturalWidth * selectedDescriptor.value
                   : img.naturalWidth;
               const local = src.startsWith(location.origin + "/assets/");
+              // Scalable SVGs do not have a fixed raster pixel density; their
+              // intrinsic 300×150 default must never trigger pixelation flags.
+              const scalableVector = /\.svg(?:[?#]|$)/i.test(src);
               const productPhoto = Boolean(img.closest(
                 ".nx-product-visual, .nx-featured-image, .esco-product-visual"
               ));
@@ -137,7 +140,7 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
                 missingAlt:!img.hasAttribute("alt"),
                 stretched:visibleMedia && naturalRatio > 0 && renderedRatio > 0 &&
                   style.objectFit === "fill" && Math.abs(Math.log(naturalRatio / renderedRatio)) > .12,
-                lowDensity:local && visibleMedia && estimatedSourcePixelWidth > 0 &&
+                lowDensity:local && !scalableVector && visibleMedia && estimatedSourcePixelWidth > 0 &&
                   estimatedSourcePixelWidth < box.width * Math.min(window.devicePixelRatio, 3) * .75
               };
             });
