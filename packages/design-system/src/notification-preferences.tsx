@@ -22,6 +22,17 @@ export type VerifiedNotificationSave = Readonly<{
   revision?: string;
 }>;
 
+/** Ignore receipts from an earlier account or superseded verified revision. */
+export function isCurrentNotificationSave(
+  currentRecord: NotificationPreferenceRecord | null,
+  submittedRecord: NotificationPreferenceRecord,
+  currentRevision: string | null,
+  submittedRevision: string,
+): boolean {
+  return currentRecord === submittedRecord && currentRecord.verified
+    && Boolean(submittedRevision) && currentRevision === submittedRevision;
+}
+
 /**
  * User-selectable communication preferences only. The caller MUST supply
  * an authenticated tenant-scoped record and a mutation that verifies
@@ -87,7 +98,7 @@ export function NotificationPreferenceEditor({
       const response = await onSave(choices, submittedRevision);
       // No stale success or failure messages after account, tenant, or
       // authorised document revision changes while the request is pending.
-      if (recordRef.current !== submittedRecord || revisionRef.current !== submittedRevision) return;
+      if (!isCurrentNotificationSave(recordRef.current, submittedRecord, revisionRef.current, submittedRevision)) return;
       if (response.ok !== true || !response.revision?.trim()) {
         setStatus("Your notification choices were not confirmed. Nothing is marked as saved. Check your account before retrying.");
         return;
@@ -97,7 +108,7 @@ export function NotificationPreferenceEditor({
       setConfirmed(choices);
       setStatus("Your choices were confirmed by the authorised account service.");
     } catch {
-      if (recordRef.current !== submittedRecord || revisionRef.current !== submittedRevision) return;
+      if (!isCurrentNotificationSave(recordRef.current, submittedRecord, revisionRef.current, submittedRevision)) return;
       setStatus("Unable to confirm these choices. Your changes are not saved; check your account before retrying.");
     } finally {
       pendingRef.current = false;
