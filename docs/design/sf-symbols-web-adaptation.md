@@ -23,7 +23,7 @@ SF Symbols 27 is a macOS design application, not a license to copy its symbol gl
 
 ## Implementation
 
-- Source tokens: `assets/css/symbol-system.css` loaded by the static website CSS bundle, corporate Next.js and secure portal.
+- Source tokens: `assets/css/symbol-system.css` loaded by the static website CSS bundle and all five Next.js apps (Corporate, Portal, Technology, Founder and Status). Operational symbol tones inherit the reviewed semantic colour palette where available, with independent fallbacks.
 - React primitive: `packages/design-system/src/symbols.tsx`, exported by `@novapharm/design-system`. It renders only original vector geometry, never SF Symbols.
 - Portal: existing Lucide SVG assets are assigned the shared `.np-symbol` treatment on core navigation, search, refresh, sign-out and authentication controls. Lucide remains installed and web-licensed; do not import a second icon font.
 - Public corporate site: text-first navigation remains text-first; do **not** add decorative icons solely to demonstrate the design system.
@@ -32,6 +32,10 @@ SF Symbols 27 is a macOS design application, not a license to copy its symbol gl
 ## Release and audit protocol
 
 Check SSR hydration and React rendering, keyboard/focus names, contrast/forced-colours, preferred reduced motion, mobile tap areas, and icons at normal/200% zoom. After merges, run existing CI and app-specific deployment smoke tests. A merged PR is not confirmation that the public website and protected portal are both deployed.
+
+### Automated regression contract
+
+Run `node scripts/test-sf-symbols-web-contract.mjs`. The dedicated `SF Symbols web-safe contract` GitHub Actions workflow verifies cross-app stylesheet imports, semantic colours, accessible focus and motion behavior, independent symbol artwork, and exact generated-bundle parity. It is a source contract, not a replacement for rendered-browser acceptance or production deployment evidence.
 
 ### Remaining estate audit
 

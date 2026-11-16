@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useId, useState } from "react";
+import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 import { gatewayJson, professionalError } from "../lib/gateway";
 import styles from "./professional-workspaces.module.css";
 
@@ -168,22 +168,34 @@ function TenderResearch() {
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<TenderDiscovery | null>(null);
   const [status, setStatus] = useState("Enter an exact procurement or medicine phrase to inspect recent official UK notices.");
+  const generationRef = useRef(0);
+  const scopeId = useId();
+  useEffect(() => () => { generationRef.current += 1; }, []);
+  function clearSearch() {
+    generationRef.current += 1;
+    setPhrase("");
+    setResult(null);
+    setBusy(false);
+    setStatus("Enter an exact procurement or medicine phrase to inspect recent official UK notices.");
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const generation = ++generationRef.current;
     setBusy(true);
     setResult(null);
     setStatus("Inspecting a bounded official Find a Tender sample.");
     try {
       const next = await gatewayJson<TenderDiscovery>("v1/intelligence/tenders/uk/discovery?q=" + encodeURIComponent(phrase));
+      if (generation !== generationRef.current) return;
       setResult(next);
       setStatus(next.matches.length
         ? `${next.matches.length} matching source releases in ${next.examinedReleases} examined. Verify notices on the publisher's site.`
         : `No exact-phrase matches among ${next.examinedReleases} examined releases. This is not evidence that no tenders exist.`);
     } catch (error) {
-      setStatus(professionalError(error));
+      if (generation === generationRef.current) setStatus(professionalError(error));
     } finally {
-      setBusy(false);
+      if (generation === generationRef.current) setBusy(false);
     }
   }
 
@@ -194,10 +206,13 @@ function TenderResearch() {
       <label htmlFor={inputId}>Medicine or exact procurement phrase</label>
       <div className={styles.fieldRow}>
         <input id={inputId} type="search" minLength={2} maxLength={80} value={phrase}
-          onChange={(event) => setPhrase(event.currentTarget.value)} placeholder="Search by medicine name" required />
+          onChange={(event) => { generationRef.current += 1; setPhrase(event.currentTarget.value); setResult(null); setBusy(false); }}
+          aria-describedby={scopeId} enterKeyHint="search" autoComplete="off" placeholder="Search by medicine name" required />
+        {phrase ? <button type="button" className={styles.clearSearch} onClick={clearSearch} aria-label="Clear tender search">Clear</button> : null}
         <button type="submit" disabled={busy}>{busy ? "Checking source…" : "Inspect notices"}</button>
       </div>
     </form>
+    <p id={scopeId}>Search scope: a bounded public sample of recent UK Find a Tender releases. No search history is stored.</p>
     <p role="status" aria-live="polite">{status}</p>
     {result ? <div className={styles.results}>
       <p className={styles.eyebrow}>{result.publisher} · {result.retrievedAt}</p>

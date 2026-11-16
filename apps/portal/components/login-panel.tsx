@@ -96,6 +96,7 @@ export function LoginPanel() {
       <p className="form-status" role="status" aria-live="polite" aria-atomic="true">{status}</p>
       <p className="security-note"><ShieldCheck aria-hidden="true" className="np-symbol" /> Credentials are verified by the protected server. Passwords are never stored in this browser.</p>
       <AccountAccessHelp audience={accessType} />
+      <p className="portal-privacy-note">Sign-in processes account identity, access scope, session and security-audit information to protect your workspace. <a href="https://novapharmhealthcare.com/legal/privacy/" rel="noopener noreferrer">Privacy notice</a> · <a href="https://novapharmhealthcare.com/contact/" rel="noopener noreferrer">Privacy enquiries</a>. No marketing consent is required to sign in.</p>
     </section>
   </main>;
 }

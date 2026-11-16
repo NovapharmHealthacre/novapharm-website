@@ -2,8 +2,8 @@
 
 Status: implemented baseline for owner and UK legal review  
 Owner: NovaPharm Healthcare Ltd Board  
-Version: 1.1  
-Last reviewed: 14 July 2026  
+Version: 1.2  
+Last reviewed: 15 November 2026 (technical reconciliation; legal review pending)  
 Review: annually and after any material form, vendor, integration or business-model change
 
 This map is the source for the public privacy notice and just-in-time form notices. It must be updated before a new category of data, recipient, automated decision or international transfer is enabled.
@@ -22,7 +22,16 @@ This map is the source for the public privacy notice and just-in-time form notic
 | Email recipients | Address, message and delivery state | Transactional notifications and acknowledgements; contract/legitimate interests | Resend only when configured; notifications table | Underlying matter plus delivery/security need |
 | Uploaded documents | File, metadata, checksum, malware status, classification, entity link and audit trail | Due diligence, contract, quality, regulatory or requested service | Private Azure Blob quarantine/clean containers and access-restricted SharePoint after activation | Inherits linked record class; legal holds override disposal |
 | Cookies and device storage | `np_csrf`, `np_session`, `np_cookie_consent` | Security, requested authentication and remembering privacy choices | Browser and Node service | 1 hour; 30 minutes inactivity/8 hours absolute; and 180 days respectively |
-| Analytics / marketing | None enabled in the production candidate | No processing until purpose, provider, lawful basis, consent and transfer review are approved | None | Not applicable |
+| Optional public-site analytics | With affirmative consent: coarse page paths (without query strings), browser/device metadata, first-party GA identifier and limited non-sensitive interaction events | Understand qualified public-site usage, based on optional consent for storage/access and a separately documented data-protection lawful basis | Google Analytics 4, public informational routes only, if owner activation supplies a valid GA4 ID | GA cookie configured up to 90 days; provider-level event/user retention requires recorded account setting and review |
+
+## November 2026 live-estate reconciliation
+
+- The active NovaPharm Intelligence environment includes AWS eu-north-1 infrastructure with Cognito identity and MFA, DynamoDB customer-session/billing records and CloudWatch/application logging where released. Some protected portal capabilities remain release-gated. MongoDB Atlas includes preview and production-foundation collections; preview data are not approved customer evidence.
+- Microsoft 365, Entra ID and SharePoint apply only to real configured business/workforce data flows. Legacy Azure-only rows above describe historical/planned platform stages, not a complete current inventory; the responsible owner must reconcile each migration before sign-off.
+- Stripe handles payments/subscriptions only where an approved checkout is enabled. No unapproved third-party or future provider is deemed active by inclusion in a plan.
+- Static informational pages can load Google Analytics 4 only with owner activation and a valid affirmative analytics choice. The secure portal, contact, account and legal routes remain excluded. No advertising or cross-company tracking is authorised by the Analytics category.
+- A new permission-dependent feature must have a documented exact purpose, minimised resource scope, user-initiated permission prompt, denial fallback, retention and subprocessor assessment. A website must use browser permissions, not iOS UIKit/Core Location/App Tracking Transparency APIs. No background geolocation permission is authorised by the corporate privacy page.
+- Technical source checks are not a substitute for live data-flow observation, consent revocation testing, vendor-terms review or independent UK legal sign-off.
 
 ## Data not invited
 

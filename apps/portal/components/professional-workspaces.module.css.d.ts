@@ -1,6 +1,7 @@
 declare const styles: Readonly<{
   boundaryList: string;
   checkPanel: string;
+  clearSearch: string;
   contextCard: string;
   contextGrid: string;
   disclaimer: string;

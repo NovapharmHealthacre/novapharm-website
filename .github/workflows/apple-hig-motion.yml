@@ -2,7 +2,7 @@ name: Apple HIG Motion web contract
 on:
   pull_request:
     paths:
-      # Validate all bundle sources, not just motion.css.
+      # Validate reproducibility for every shared CSS source change.
       - "assets/css/**"
       - "assets/css/motion.css"
       - "assets/css/novapharm-hig-motion.css"
