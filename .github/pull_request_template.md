@@ -11,9 +11,10 @@
 
 ### Apple-inspired NovaPharm design DNA — complete for UI changes
 
-- [ ] I reviewed the applicable patterns in [NovaPharm layout policy](../packages/design-system/src/layout-policy.ts) and [official Apple source matrix](../docs/design/apple-layout-source-matrix-20261116.md).
+- [ ] I reviewed the applicable patterns in [NovaPharm layout policy](../packages/design-system/src/layout-policy.ts), [Apple menus and actions policy](../packages/design-system/src/menu-actions-policy.ts) and their linked official Apple source matrices.
 - [ ] I chose content-appropriate layouts (collections vs tables; hierarchy vs flat data; split vs compact view; tabs vs navigation), reused existing tokens/components, and preserved approved NovaPharm branding.
 - [ ] I checked meaningful labels, single-action lockups, disclosure affordances, keyboard/RTL, focus, reduced motion, forced colours, zoom, long text, and narrow layouts.
+- [ ] I classified activity views/sharing, buttons, contextual commands, menus, pop-up selection, segmented choices, toggles and toolbars by purpose; exposed primary actions; preserved browser edit menus; excluded unsupported native-only features.
 - [ ] I have captured the affected routes/modules, tests, browser receipts and the deployed SHA; otherwise I explicitly mark production acceptance pending.
 
 **Not applicable?** Say why a design checklist item does not apply instead of silently claiming it passed.
