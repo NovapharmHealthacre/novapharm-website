@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { novaMlWorkspaceCatalogue, type NovaMlWorkspaceSlug } from "../data/nova-ml-modules";
+import { type NovaMlWorkspaceSlug, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
 import styles from "./nova-ml-workspaces.module.css";
 
 const gates = [

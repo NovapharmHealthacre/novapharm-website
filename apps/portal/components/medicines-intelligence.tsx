@@ -3,11 +3,11 @@
 import { type FormEvent, type ReactNode, useCallback, useEffect, useId, useRef, useState } from "react";
 import { intelligenceWorkspaceBySlug, intelligenceWorkspaceCatalogue, intelligenceWorkspaceGroups } from "../data/intelligence-workspaces";
 import { isNovaMlWorkspaceSlug, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
-import { NovaMlWorkspace } from "./nova-ml-workspaces";
 import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError } from "../lib/gateway";
 import { ClinicalTrialsDiscovery } from "./clinical-trials-discovery";
 import styles from "./medicines-intelligence.module.css";
+import { NovaMlWorkspace } from "./nova-ml-workspaces";
 import { ObservedMedicineWorkspace } from "./observed-medicine-workspaces";
 import { PharmaScopeBrand } from "./pharmascope-brand";
 import { ProfessionalWorkspace } from "./professional-workspaces";
