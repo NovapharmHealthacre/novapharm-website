@@ -9,7 +9,8 @@ const hub = readFileSync("apps/portal/components/customer-commerce-workspace.tsx
 test("customer hub DOM order matches visual order at initial render", () => {
   const component = dashboard.slice(dashboard.indexOf("export function Dashboard("));
   const workspace = component.indexOf('<div className="workspace-content">');
-  const help = component.indexOf("<AccountAccessHelp audience=");
+  // AccountAccessHelp can be formatted on multiple lines when replay help is enabled.
+  const help = component.indexOf("<AccountAccessHelp");
   const customerHub = component.indexOf("<CustomerCommerceWorkspace moduleCode={module.code} />");
   const heading = component.indexOf('<header className="module-heading">');
   assert.ok(workspace >= 0 && help > workspace, "Authorised account help remains in the workspace");
