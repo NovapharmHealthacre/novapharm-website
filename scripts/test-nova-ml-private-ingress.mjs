@@ -76,3 +76,15 @@ test("probe rejects public, missing and DNS-failing responses without reading pr
   await assert.rejects(probeNovaMlAnonymousIngress({ logger: quiet, fetchImpl: async () => response(404) }));
   await assert.rejects(probeNovaMlAnonymousIngress({ logger: quiet, fetchImpl: async () => { throw new Error("DNS"); } }));
 });
+
+test("post-probe reporting cannot be truncated by YAML comment parsing", () => {
+  const workflow = readFileSync(new URL("../.github/workflows/nova-ml-private-ingress-acceptance.yml", import.meta.url), "utf8");
+  const reporting = workflow.split("      - name: Record limits of anonymous verification")[1];
+  assert.ok(reporting, "post-probe reporting step must exist");
+  assert.match(reporting, /if: success\(\)/);
+  assert.match(reporting, /run: \|/);
+  assert.match(reporting, /printf '%s\\n'/);
+  assert.match(reporting, /deployed SHA receipt/);
+  assert.doesNotMatch(reporting, /run: echo/);
+  assert.doesNotMatch(reporting, /#780/);
+});

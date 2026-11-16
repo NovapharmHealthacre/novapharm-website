@@ -48,4 +48,6 @@ jobs:
         run: node scripts/nova-ml-private-ingress.mjs
       - name: Record limits of anonymous verification
         if: success()
-        run: echo 'Anonymous denial alone is not a deployment receipt, authorised session or native Apple release. Track issue #780.'
+        run: |
+          printf '%s\n' 'Anonymous denial verifies only public-route access restrictions.'
+          printf '%s\n' 'It is not a deployed SHA receipt, authorised board login, functioning model or signed Apple app. Track issue 780.'
