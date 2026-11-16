@@ -64,3 +64,7 @@ The Corporate Next.js hero uses `.pharma-home-media img` without the old static 
 AWS inspection confirmed that `portal.novapharmhealthcare.com` maps to the separate Nutraxin customer BFF, not the unified Next.js Portal. That BFF already contains a reduced-motion fallback in its account-entry CSS. No account, role, checkout, consent or WMS behaviour is changed in this follow-up.
 
 The protected Intelligence gateway serves independently pinned Lambda aliases. A review of its existing runtime did **not** establish that the merged motion revision has been released to those aliases. To declare the entire estate complete, each protected application's exact built artifact, release authorization, keyboard and reduced-motion browser testing, and live domain version must be verified. No production alias should be updated from CSS source changes alone.
+
+## 16 November 2026 — canonical CSS bundle source guard
+
+The Apple HIG Motion CI workflow now triggers for every `assets/css/**` change on pull requests and `main`, and runs the exact `build-css-bundle.mjs` reproducibility test. The pre-existing generated public CSS bundle on `main` is retained, rather than replacing it with an older branch artifact. This merge also retains the Corporate infinite-drift removal and corresponding regression assertion from PR #739. Motion tests, cross-browser CI and the independent runtime deployment gates remain required; merging source does not establish live production parity.

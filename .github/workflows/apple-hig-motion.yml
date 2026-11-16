@@ -2,6 +2,8 @@ name: Apple HIG Motion web contract
 on:
   pull_request:
     paths:
+      # Validate reproducibility for every shared CSS source change.
+      - "assets/css/**"
       - "assets/css/motion.css"
       - "assets/css/novapharm-hig-motion.css"
       - "assets/css/novapharm.css"
@@ -14,6 +16,7 @@ on:
   push:
     branches: [main]
     paths:
+      - "assets/css/**"
       - "assets/css/motion.css"
       - "assets/css/novapharm-hig-motion.css"
       - "assets/css/novapharm.bundle.css"

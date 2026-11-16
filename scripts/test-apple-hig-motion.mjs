@@ -6,6 +6,8 @@ const source = read("assets/css/novapharm-hig-motion.css");
 const legacy = read("assets/css/motion.css");
 const entry = read("assets/css/novapharm.css");
 const builder = read("scripts/build-css-bundle.mjs");
+const motionWorkflow = read(".github/workflows/apple-hig-motion.yml");
+assert.ok(motionWorkflow.includes('"assets/css/**"'), "Every CSS source change must trigger generated bundle parity validation");
 const bundle = read("assets/css/novapharm.bundle.css");
 assert.match(source, /--np-motion-contract:\s*1/);
 for (const rule of [
