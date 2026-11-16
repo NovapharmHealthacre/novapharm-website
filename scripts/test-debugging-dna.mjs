@@ -15,6 +15,8 @@ function fixture(files) {
     writeFileSync(target, body);
   }
   execFileSync("git", ["-C", root, "add", "-A"]);
+  execFileSync("git", ["-C", root, "-c", "user.name=Audit Fixture",
+    "-c", "user.email=audit-fixture@example.invalid", "commit", "-q", "-m", "fixture"]);
   return root;
 }
 
