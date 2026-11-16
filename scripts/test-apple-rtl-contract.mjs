@@ -76,6 +76,84 @@ test("protected workspace formats currencies, numbers and dates using the server
   assert.match(page, /sessionDecision\(view, session\)/);
 });
 
+test("static navigation retains localized accessible names after opening and closing", () => {
+  const menuSource = read("assets/js/novapharm.js").split("/* Desktop category navigation:")[0];
+  for (const [locale, names] of Object.entries({
+    "en-GB": ["Open navigation", "Close navigation", "Menu", "Close", "Primary navigation"],
+    ar: ["فتح القائمة", "إغلاق القائمة", "القائمة", "إغلاق", "التنقل الرئيسي"],
+    he: ["פתיחת תפריט", "סגירת תפריט", "תפריט", "סגירה", "ניווט ראשי"],
+  })) {
+    const attrs = {};
+    const navAttrs = {};
+    const handlers = {};
+    const hiddenLabel = { textContent: "" };
+    const visibleLabel = { textContent: "" };
+    const classes = new Set();
+    const menu = {
+      setAttribute(key, value) { attrs[key] = value; },
+      querySelector(selector) { return selector === ".sr-only" ? hiddenLabel : visibleLabel; },
+      addEventListener(event, fn) { handlers[event] = fn; },
+      contains() { return false; },
+      focus() {},
+    };
+    const nav = {
+      setAttribute(key, value) { navAttrs[key] = value; },
+      querySelectorAll() { return []; },
+      classList: {
+        toggle(name, state) { if (state) classes.add(name); else classes.delete(name); },
+        contains(name) { return classes.has(name); },
+      },
+      addEventListener() {},
+      contains() { return false; },
+    };
+    const document = {
+      documentElement: { lang: locale },
+      querySelector(selector) {
+        if (selector === "[data-nav-toggle]") return menu;
+        if (selector === "[data-site-nav]") return nav;
+        return null;
+      },
+      addEventListener() {},
+    };
+    const window = {
+      location: { pathname: "/" },
+      innerWidth: 390,
+      addEventListener() {},
+    };
+    runInNewContext(menuSource, { document, window, URL });
+    assert.equal(attrs["aria-label"], names[0]);
+    assert.equal(navAttrs["aria-label"], names[4]);
+    handlers.click();
+    assert.equal(attrs["aria-label"], names[1]);
+    assert.equal(attrs["aria-expanded"], "true");
+    assert.equal(hiddenLabel.textContent, names[1]);
+    assert.equal(visibleLabel.textContent, names[3]);
+    handlers.click();
+    assert.equal(attrs["aria-label"], names[0]);
+    assert.equal(hiddenLabel.textContent, names[0]);
+    assert.equal(visibleLabel.textContent, names[2]);
+    assert.equal(attrs["aria-expanded"], "false");
+  }
+});
+
+test("operational table values isolate mixed-language data and logos stay original", () => {
+  const dashboard = read("apps/portal/components/dashboard.tsx");
+  assert.match(dashboard, /<bdi dir=\{/);
+  assert.match(dashboard, /<bdi dir="auto">/);
+  const brand = read("apps/corporate/components/brand.tsx");
+  assert.match(brand, /lang="en-GB" aria-label="NovaPharm Healthcare home"/);
+  const switcher = read("src/components/interface-locale-switcher.tsx");
+  for (const locale of ["en-GB", "ar", "he"]) {
+    assert.ok(switcher.includes('lang="' + locale + '"'), "Picker option language missing: " + locale);
+  }
+  for (const app of ["technology", "status"]) {
+    const layout = read("apps/" + app + "/app/layout.tsx");
+    assert.ok(layout.lastIndexOf('import "../../../assets/css/rtl-localization.css";') >
+      layout.indexOf('import "../../../assets/css/novapharm-apple-27-web-adaptation.css";'),
+      "RTL override must follow adaptation CSS: " + app);
+  }
+});
+
 test("public and protected static shells load RTL script without changing governed legal copy", () => {
   const publicBuilder = read("scripts/build-public-pages.mjs");
   const privateBuilder = read("scripts/build-pages.mjs");
