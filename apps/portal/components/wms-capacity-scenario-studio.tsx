@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { initialWmsScenarioHistory, reduceWmsScenarioHistory } from "../lib/wms-scenario-history";
 import {
   evaluateWmsCapacityScenario,
@@ -20,6 +20,10 @@ const fields = [
 ] as const;
 
 export function WmsCapacityScenarioStudio() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [fullScreenSupported, setFullScreenSupported] = useState(false);
+  const [fullScreen, setFullScreen] = useState(false);
+  const [fullScreenError, setFullScreenError] = useState("");
   const [history, setHistory] = useState(initialWmsScenarioHistory);
   const values = history.present;
   const result = useMemo(() => evaluateWmsCapacityScenario(values), [values]);
@@ -31,13 +35,35 @@ export function WmsCapacityScenarioStudio() {
   const applyHistory = (type: "reset" | "undo" | "redo") => {
     setHistory((current) => reduceWmsScenarioHistory(current, { type }));
   };
+  useEffect(() => {
+    setFullScreenSupported(Boolean(document.fullscreenEnabled && sectionRef.current?.requestFullscreen));
+    const update = () => setFullScreen(document.fullscreenElement === sectionRef.current);
+    document.addEventListener("fullscreenchange", update);
+    return () => document.removeEventListener("fullscreenchange", update);
+  }, []);
+  const toggleFullScreen = async () => {
+    const section = sectionRef.current;
+    if (!section) return;
+    setFullScreenError("");
+    try {
+      if (document.fullscreenElement === section) await document.exitFullscreen();
+      else if (!document.fullscreenElement) await section.requestFullscreen();
+    } catch {
+      setFullScreenError("Full screen could not be started. Continue in the standard workspace view.");
+    }
+  };
 
-  return <section className="distribution-wms-capacity-studio" aria-labelledby="wms-capacity-title">
+  return <section ref={sectionRef} className="distribution-wms-capacity-studio" aria-labelledby="wms-capacity-title">
     <div className="distribution-wms-capacity-heading">
       <p className="distribution-employee-overline">NOVAPHARM DISTRIBUTION / RESOURCE PLANNING</p>
       <h2 id="wms-capacity-title">Model the workload before the shift.</h2>
       <p>Change the assumptions to examine staffing and zone pressure. This is a mathematical
         what-if exercise—not an AI forecast, live warehouse schedule or automated task allocation.</p>
+      {fullScreenSupported ? <button type="button" className="distribution-wms-capacity-fullscreen"
+        onClick={toggleFullScreen} aria-pressed={fullScreen}>
+        {fullScreen ? "Exit full screen" : "Enter full screen"}
+      </button> : null}
+      {fullScreenError ? <p role="alert">{fullScreenError}</p> : null}
     </div>
     <div className="distribution-wms-capacity-body">
       <div className="distribution-wms-capacity-inputs">
