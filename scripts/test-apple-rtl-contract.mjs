@@ -48,6 +48,9 @@ test("five Next.js properties share server-side locale direction and a functiona
     assert.match(layout, /assets\/css\/rtl-localization\.css/, app);
     assert.match(layout, /lang="en-GB" data-np-untranslated/, app);
   }
+  for (const client of ["apps/corporate/components/mobile-navigation.tsx", "apps/founder/components/chrome.tsx", "apps/technology/components/site-header.tsx"]) {
+    assert.ok(read(client).startsWith('"use client";'), `Client boundary lost: ${client}`);
+  }
   const switcher = read("src/components/interface-locale-switcher.tsx");
   for (const token of ["onChange={onChange}", "document.cookie", "window.location.reload()",
     "SameSite=Lax", "value=\"ar\"", "value=\"he\"", "full content translation pending"]) {
