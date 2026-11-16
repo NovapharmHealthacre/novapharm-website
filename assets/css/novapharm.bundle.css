@@ -12204,6 +12204,12 @@ body[data-page="home"] .pharma-home-media img {
   text-align: left;
   font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
 }
+/* Do not obscure consent choices: the language selector moves above the
+   public header while the consent banner is visible. */
+body:has(.cookie-banner:not([hidden])) .np-locale-control {
+  inset-block-end: auto;
+  inset-block-start: calc(var(--header, 82px) + 10px);
+}
 .np-locale-control label { font-size: 11px; font-weight: 600; line-height: 1.35; }
 .np-locale-control select {
   max-inline-size: 100%;
