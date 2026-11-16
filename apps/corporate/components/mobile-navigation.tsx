@@ -48,7 +48,7 @@ export function MobileNavigation({ items, portalOrigin, locale }: MobileNavigati
         {interfaceLabel(locale, open ? "Close" : "Menu")}
       </summary>
       <nav aria-label={interfaceLabel(locale, "Mobile navigation")}>
-        {items.map(([label, href]) => href === "/portal/" ? <a key={href} href={portalOrigin} rel="nofollow" onClick={close}>{interfaceLabel(locale, label)}</a> : <a key={href} href={href} onClick={close}>{label}</a>)}
+        {items.map(([label, href]) => href === "/portal/" ? <a key={href} href={portalOrigin} rel="nofollow" onClick={close}>{interfaceLabel(locale, label)}</a> : <a key={href} href={href} onClick={close}>{interfaceLabel(locale, label)}</a>)}
       </nav>
     </details>
   );
