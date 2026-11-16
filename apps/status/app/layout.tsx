@@ -9,7 +9,6 @@ import "../../../assets/css/novapharm-hig-motion.css";
 import "../../../assets/css/novapharm-apple-27-web-adaptation.css";
 import "../../../assets/css/rtl-localization.css";
 
-import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
 import { directionForLocale, resolveInterfaceLocale } from "../../../src/core/interface-locale";
 
 export const metadata: Metadata = {
@@ -39,6 +38,5 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return <html lang={locale} dir={directionForLocale(locale)} data-np-estate="status"><body>
     <a className="skip-link" href="#status-main">Skip to service status</a>
     <div lang="en-GB" data-np-untranslated>{children}</div>
-    <InterfaceLocaleSwitcher locale={locale} />
   </body></html>;
 }

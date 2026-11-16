@@ -31,11 +31,11 @@
     control.setAttribute("data-np-locale-control", "");
     var label = document.createElement("label");
     label.htmlFor = "np-interface-locale";
-    label.textContent = locale === "ar" ? "اللغة / معاينة العرض من اليمين إلى اليسار" : locale === "he" ? "שפה / תצוגה מקדימה מימין לשמאל" : "Language / RTL layout preview";
+    label.textContent = locale === "ar" ? "اللغة" : locale === "he" ? "שפה" : "Language";
     var select = document.createElement("select");
     select.id = "np-interface-locale";
     select.setAttribute("aria-label", locale === "ar" ? "معاينة اللغة واتجاه العرض" : locale === "he" ? "תצוגה מקדימה של שפה וכיוון" : "Language and layout preview");
-    [["en-GB","English"],["ar","العربية · RTL"],["he","עברית · RTL"]].forEach(function (item) {
+    [["en-GB","English"],["ar","العربية · preview"],["he","עברית · preview"]].forEach(function (item) {
       var option = document.createElement("option");
       option.value = item[0]; option.textContent = item[1]; option.lang = item[0];
       select.appendChild(option);
@@ -52,8 +52,14 @@
     var note = document.createElement("span");
     note.className = "np-locale-note";
     note.textContent = locale === "ar" ? "تمت ترجمة بعض عناوين التنقل؛ ترجمة المحتوى الكامل قيد الإعداد." : locale === "he" ? "חלק מתוויות הניווט תורגמו; תרגום התוכן המלא עדיין בהכנה." : "Some navigation labels translated; full content translation pending.";
-    control.append(label, select, note);
-    document.body.appendChild(control);
+    var selectWrap = document.createElement("span");
+    selectWrap.className = "np-locale-select-wrap";
+    selectWrap.appendChild(select);
+    control.append(label, selectWrap, note);
+    var footerSelectors = [".np-contact-reference-footer-inner", ".npd-footer-bottom", ".footer-secondary", ".site-footer__bottom", ".footer-base", ".status-footer", ".site-footer", "footer"];
+    var footer = footerSelectors.map(function (selector) { return document.querySelector(selector); })
+      .find(function (node) { return node && node.getClientRects().length > 0; });
+    (footer || document.body).appendChild(control);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
   else init();

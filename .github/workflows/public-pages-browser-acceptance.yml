@@ -7,6 +7,8 @@ on:
       - assets/css/**
       - legal/**
       - assets/js/cookie-consent.js
+      - assets/js/rtl-localization.js
+      - scripts/test-apple-locale-footer-browser.mjs
       - assets/js/consent-analytics.js
       - assets/js/commerce-marketplace.js
       - scripts/test-marketplace-stock-dom-stability.mjs
@@ -41,6 +43,8 @@ on:
       - assets/css/**
       - legal/**
       - assets/js/cookie-consent.js
+      - assets/js/rtl-localization.js
+      - scripts/test-apple-locale-footer-browser.mjs
       - assets/js/consent-analytics.js
       - assets/js/commerce-marketplace.js
       - scripts/test-marketplace-stock-dom-stability.mjs
@@ -109,6 +113,10 @@ jobs:
           PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310
           PUBLIC_PAGES_BROWSER_ARTIFACT_ROOT: artifacts/public-pages-browser
         run: node scripts/test-public-sitemap-geometry.mjs
+      - name: Verify unboxed footer language picker on Chromium and WebKit at 320px, 390px and desktop
+        env:
+          PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310
+        run: node scripts/test-apple-locale-footer-browser.mjs
       - name: Render layout, image and accessibility acceptance
         env:
           PUBLIC_PAGES_BASE_URL: http://127.0.0.1:4310

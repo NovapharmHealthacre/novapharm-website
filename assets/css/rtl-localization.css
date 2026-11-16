@@ -4,50 +4,116 @@
  * Brand logos, medicine packaging, photos, chart axes and universal icons
  * preserve their true orientation.
  */
-:root { --np-rtl-contract: 1; }
+:root { --np-rtl-contract: 1; --np-locale-footer-contract: 1; }
 
+/* Apple-inspired footer language utility: no floating or bordered card.
+   Keep a 44px hit target without drawing an oversized control. */
 .np-locale-control {
   position: static;
-  margin: 12px auto max(12px, env(safe-area-inset-bottom, 0px));
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  inline-size: min(218px, calc(100vw - 24px));
-  padding: 9px max(11px, env(safe-area-inset-right, 0px));
-  background: #fff;
-  color: #1b2028;
-  border: 1px solid #ccd1d7;
-  border-radius: 8px;
-  box-shadow: 0 5px 22px rgba(17, 24, 39, .12);
-  direction: ltr;
-  text-align: left;
-  font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
-}
-/* Place language choices in document flow, after content, so the selector
-   never covers consent, search, checkout, or Intelligence action buttons. */
-.np-locale-control label { font-size: 13px; font-weight: 600; line-height: 1.4; }
-.np-locale-control select {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  column-gap: 9px;
+  row-gap: 0;
+  inline-size: auto;
   max-inline-size: 100%;
   min-block-size: 44px;
-  padding: 6px 8px;
-  background: #fff;
-  color: #111827;
-  border: 1px solid #9199a5;
-  border-radius: 5px;
-  font: inherit;
-  font-size: 14px;
+  margin: 0;
+  padding: 0;
+  padding-block-end: env(safe-area-inset-bottom, 0px);
+  background: transparent;
+  color: inherit;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  text-align: start;
+  direction: ltr;
+  font-family: inherit;
+  font-size: 12px;
+  text-transform: none;
+  letter-spacing: normal;
+  line-height: 1.35;
 }
-.np-locale-note { font-size: 12px; line-height: 1.45; color: #4d5967; }
-.np-locale-control :focus-visible { outline: 3px solid #0b69ff; outline-offset: 2px; }
-/* Keep Arabic/Hebrew controls readable without covering adjacent actions. */
-html[dir="rtl"] .np-locale-control {
-  padding-inline-end: max(11px, env(safe-area-inset-left, 0px));
+.np-locale-control label {
+  font: inherit;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.np-locale-select-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+}
+.np-locale-select-wrap::after {
+  content: "";
+  position: absolute;
+  inline-size: 5px;
+  block-size: 5px;
+  inset-inline-end: 2px;
+  inset-block-start: calc(50% - 4px);
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+.np-locale-control select {
+  appearance: none;
+  -webkit-appearance: none;
+  inline-size: auto;
+  max-inline-size: 100%;
+  min-block-size: 44px;
+  padding-inline: 0 16px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.np-locale-control select option { background: Canvas; color: CanvasText; }
+.np-locale-control select:hover { text-decoration-thickness: 2px; }
+.np-locale-note {
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.45;
+  max-inline-size: min(28ch, 100%);
+}
+.np-locale-control[data-np-control-locale="en-GB"] .np-locale-note {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.np-locale-control :focus-visible {
+  outline: 2px solid Highlight;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.npd-footer-bottom > .np-locale-control,
+.footer-secondary > .np-locale-control,
+.site-footer__bottom > .np-locale-control,
+.footer-base > .np-locale-control,
+.status-footer > .np-locale-control { margin-inline-start: auto; }
+body > .np-locale-control {
+  display: flex;
+  inline-size: fit-content;
+  margin-inline-start: auto;
+  margin-inline-end: clamp(16px, 4vw, 64px);
 }
 .np-locale-control[data-np-control-locale="ar"],
 .np-locale-control[data-np-control-locale="he"] {
   direction: rtl;
   text-align: start;
+  padding-inline-end: env(safe-area-inset-left, 0px);
 }
 
 html[dir="rtl"] {
@@ -212,10 +278,12 @@ html[dir="rtl"] :is(.table-region, .np-hig-table-region, .portal-table-scroll) {
    universal glyphs, company marks or third-party artwork. */
 html[dir="rtl"] [data-np-directional-arrow="true"] { transform: scaleX(-1); }
 @media (max-width: 420px) {
-  .np-locale-control { inline-size: 180px; padding: 7px; }
-  .np-locale-note { font-size: 12px; }
+  .np-locale-control { column-gap: 7px; row-gap: 0; }
+  .np-locale-note { font-size: 11px; }
+  .npd-footer-bottom > .np-locale-control { margin-inline-start: 0; }
 }
 @media (forced-colors: active) {
-  .np-locale-control { border: 1px solid CanvasText; box-shadow: none; }
-  .np-locale-control select { border: 1px solid CanvasText; }
+  .np-locale-control { border: 0; box-shadow: none; }
+  .np-locale-control select { border: 0; text-decoration: underline; }
+  .np-locale-control select:focus-visible { outline: 2px solid Highlight; }
 }

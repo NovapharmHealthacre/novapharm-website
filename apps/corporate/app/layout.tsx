@@ -29,7 +29,6 @@ import { organisationSchema, siteUrl, websiteSchema } from "@/lib/seo";
 
 const indexable = process.env.PUBLIC_INDEXABLE !== "false";
 
-import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
 import { directionForLocale, resolveInterfaceLocale } from "../../../src/core/interface-locale";
 
 export const metadata: Metadata = {
@@ -73,7 +72,6 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <CookieControls />
         <main id="main-content" lang="en-GB" data-np-untranslated>{children}</main>
         <SiteFooter locale={locale} />
-        <InterfaceLocaleSwitcher locale={locale} />
         <JsonLd id="organisation-schema" value={organisationSchema()} />
         <JsonLd id="website-schema" value={websiteSchema()} />
       </body>

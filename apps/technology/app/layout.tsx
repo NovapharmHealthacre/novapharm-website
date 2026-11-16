@@ -17,7 +17,6 @@ import { parentOrganisationSchema, technologyOrganisationSchema, technologyWebsi
 const environment = process.env as { PUBLIC_INDEXABLE?: string };
 const indexable = environment.PUBLIC_INDEXABLE !== "false";
 
-import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
 import { directionForLocale, resolveInterfaceLocale } from "../../../src/core/interface-locale";
 
 export const metadata: Metadata = {
@@ -86,7 +85,6 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <SiteHeader locale={locale} />
         <main id="main-content" lang="en-GB" data-np-untranslated>{children}</main>
         <SiteFooter locale={locale} />
-        <InterfaceLocaleSwitcher locale={locale} />
         <JsonLd id="technology-organisation-schema" value={technologyOrganisationSchema()} />
         <JsonLd id="technology-website-schema" value={technologyWebsiteSchema()} />
         <JsonLd id="parent-organisation-schema" value={parentOrganisationSchema()} />

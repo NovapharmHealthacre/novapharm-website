@@ -24,6 +24,7 @@ export function directionForLocale(locale: InterfaceLocale): InterfaceDirection 
 const labels: Readonly<Record<InterfaceLocale, Readonly<Record<string, string>>>> = {
   "en-GB": {},
   ar: {
+    "Language": "اللغة",
     "Language and layout": "اللغة واتجاه العرض",
     "Language / RTL layout preview": "اللغة / معاينة العرض من اليمين إلى اليسار",
     "Language and layout preview": "معاينة اللغة واتجاه العرض",
@@ -85,6 +86,7 @@ const labels: Readonly<Record<InterfaceLocale, Readonly<Record<string, string>>>
     "Skip to content": "الانتقال إلى المحتوى",
   },
   he: {
+    "Language": "שפה",
     "Language and layout": "שפה וכיוון תצוגה",
     "Language / RTL layout preview": "שפה / תצוגה מקדימה מימין לשמאל",
     "Language and layout preview": "תצוגה מקדימה של שפה וכיוון",

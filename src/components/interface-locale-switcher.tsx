@@ -1,7 +1,7 @@
 "use client";
 
 import type { ChangeEvent } from "react";
-import { interfaceLabel, interfaceLocaleCookie, resolveInterfaceLocale, type InterfaceLocale } from "../core/interface-locale";
+import { directionForLocale, interfaceLabel, interfaceLocaleCookie, resolveInterfaceLocale, type InterfaceLocale } from "../core/interface-locale";
 
 type Props = Readonly<{ locale: InterfaceLocale }>;
 
@@ -23,13 +23,15 @@ export function InterfaceLocaleSwitcher({ locale }: Props) {
   }
 
   return (
-    <div className="np-locale-control" data-np-locale-control data-np-control-locale={locale}>
-      <label htmlFor="np-interface-locale">{interfaceLabel(locale, "Language / RTL layout preview")}</label>
-      <select id="np-interface-locale" aria-label={interfaceLabel(locale, "Language and layout preview")} value={locale} onChange={onChange}>
-        <option value="en-GB" lang="en-GB">English</option>
-        <option value="ar" lang="ar">العربية · RTL</option>
-        <option value="he" lang="he">עברית · RTL</option>
-      </select>
+    <div className="np-locale-control" data-np-locale-control data-np-control-locale={locale} lang={locale} dir={directionForLocale(locale)}>
+      <label htmlFor="np-interface-locale">{interfaceLabel(locale, "Language")}</label>
+      <span className="np-locale-select-wrap">
+        <select id="np-interface-locale" aria-label={interfaceLabel(locale, "Language and layout preview")} value={locale} onChange={onChange}>
+          <option value="en-GB" lang="en-GB">English</option>
+          <option value="ar" lang="ar">العربية · preview</option>
+          <option value="he" lang="he">עברית · preview</option>
+        </select>
+      </span>
       <span className="np-locale-note">{interfaceLabel(locale, "Some navigation labels translated; full content translation pending.")}</span>
     </div>
   );
