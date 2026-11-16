@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { readdirSync, readFileSync } from "node:fs";
+import { join, resolve } from "node:path";
 
 // Scope: first-pass contracts for high-risk, user-facing writing. These checks
 // complement human linguistic review, source-claims audit and rendered a11y QA.
@@ -25,6 +25,15 @@ const source = {
   corporateFinishingPass: read("scripts/apply-corporate-product-discipline.mjs"),
   publicPortalBuilder: read("scripts/build-pages.mjs"),
   cookies: read("apps/corporate/components/cookie-controls.tsx"),
+  legalPrivacy: read("legal/privacy/index.html"),
+  legalCookies: read("legal/cookies/index.html"),
+  legalTerms: read("legal/terms/index.html"),
+  legalAccessibility: read("legal/accessibility/index.html"),
+  legalLanding: read("legal/index.html"),
+  trustCentre: read("trust-centre/index.html"),
+  modernSlavery: read("legal/modern-slavery/index.html"),
+  environment: read("legal/environment-carbon/index.html"),
+  insightsLanding: read("news-insights/index.html"),
   standard: read("docs/design/novapharm-apple-hig-writing.md"),
 };
 function needs(key, text) {
@@ -107,6 +116,24 @@ for (const key of ["homeFinishingPass", "corporateFinishingPass"]) {
   avoids(key, 'Open an account');
   avoids(key, 'Open a business account');
 }
+// Checked-in legal pages can contain the prior footer until the governed build
+// replaces shared chrome. Ensure every legal footer variant can be replaced
+// without modifying the independently reviewed legal article or metadata.
+const legalFooterPattern = /<footer class="site-footer(?:\s+[^"]*)?"[^>]*>[\s\S]*?<\/footer>/;
+needs("corporateFinishingPass", String.raw`html.replace(/<footer class="site-footer(?:\s+[^"]*)?"[^>]*>[\s\S]*?<\/footer>/, footer());`);
+for (const key of ["legalPrivacy", "legalCookies", "legalTerms", "legalAccessibility", "legalLanding", "trustCentre", "modernSlavery", "environment", "insightsLanding"]) {
+  const matches = source[key].match(new RegExp(legalFooterPattern.source, "g")) ?? [];
+  assert.equal(matches.length, 1, `${key}: exactly one replaceable legal footer is required`);
+  assert.ok(matches[0].includes('class="site-footer'), `${key}: shared footer class is missing`);
+  const rendered = source[key].replace(
+    legalFooterPattern,
+    '<footer class="site-footer npd-footer"><a href="/account-application/">Discuss account eligibility</a></footer>'
+  );
+  const updatedFooter = rendered.match(legalFooterPattern)?.[0] ?? "";
+  assert.ok(updatedFooter.includes("Discuss account eligibility"), `${key}: reviewed footer copy missing after replacement`);
+  assert.ok(!updatedFooter.includes("Open a business account"), `${key}: obsolete CTA survived footer replacement`);
+}
+
 needs("publicPortalBuilder", 'href="/account-application/">Discuss account eligibility</a>');
 needs("publicPortalBuilder", 'Customers can discuss eligibility through the public business account information page;');
 avoids("publicPortalBuilder", 'href="/account-application/">Request a business account</a>');
@@ -122,4 +149,46 @@ needs("cookies", "Reject non-essential");
 for (const term of ["Controlled terminology", "Accessibility and color", "Localization", "Remaining acceptance"]) {
   needs("standard", term);
 }
-console.log("Apple HIG Writing first-pass copy contracts verified across 20 reviewed source surfaces.");
+
+// Inventory all checked-in public page shells, not just named legal fixtures.
+// The shared finisher must also handle product, company, leadership and Insights
+// pages that carry the same multi-class footer from earlier generated sources.
+const publicHtmlRoots = [
+  "about", "account-application", "capabilities", "careers", "contact", "cro",
+  "investor-information", "leadership", "legal", "news-insights", "oncology",
+  "partner-with-us", "products", "regulatory-services", "services", "technology",
+  "trust-centre"
+];
+const publicHtmlFiles = ["index.html"];
+function visitPublicHtml(directory) {
+  for (const entry of readdirSync(resolve(process.cwd(), directory), { withFileTypes: true })) {
+    const relative = join(directory, entry.name);
+    if (entry.isDirectory()) visitPublicHtml(relative);
+    else if (entry.isFile() && entry.name === "index.html") publicHtmlFiles.push(relative);
+  }
+}
+for (const directory of publicHtmlRoots) visitPublicHtml(directory);
+let sharedFooterCount = 0;
+for (const relative of publicHtmlFiles) {
+  const html = read(relative);
+  const allFooters = [...html.matchAll(/<footer\b[^>]*>[\s\S]*?<\/footer>/g)].map((match) => match[0]);
+  const sharedFooters = allFooters.filter((footer) => {
+    const classes = footer.slice(0, footer.indexOf(">") + 1).match(/\bclass="([^"]*)"/)?.[1]?.split(/\s+/) ?? [];
+    return classes.includes("site-footer");
+  });
+  if (!sharedFooters.length) continue;
+  assert.equal(sharedFooters.length, 1, `${relative}: expected one shared footer`);
+  const matching = html.match(new RegExp(legalFooterPattern.source, "g")) ?? [];
+  assert.equal(matching.length, 1, `${relative}: site-footer variant escaped the governed replacement`);
+  const revised = html.replace(
+    legalFooterPattern,
+    '<footer class="site-footer npd-footer"><a href="/account-application/">Discuss account eligibility</a></footer>'
+  );
+  const renderedFooter = revised.match(legalFooterPattern)?.[0] ?? "";
+  assert.ok(renderedFooter.includes("Discuss account eligibility"), `${relative}: missing reviewed footer wording`);
+  assert.ok(!renderedFooter.includes("Open a business account"), `${relative}: obsolete account CTA remains in the shared footer`);
+  sharedFooterCount += 1;
+}
+assert.ok(sharedFooterCount >= 40, `Expected at least 40 checked-in public shells with shared footers; found ${sharedFooterCount}`);
+
+console.log("Apple HIG Writing first-pass copy contracts verified across 29 high-risk source surfaces and all checked-in public footers.");
