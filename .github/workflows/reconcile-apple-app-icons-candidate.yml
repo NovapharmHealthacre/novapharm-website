@@ -85,3 +85,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "fix(evidence): reconcile approved Apple icon media inventory"
           git push origin HEAD:refs/heads/feat/apple-icon-composer-governance-20261116
+# Reconcile final icon-source provenance registration under the same isolated exact-SHA safety contract.
