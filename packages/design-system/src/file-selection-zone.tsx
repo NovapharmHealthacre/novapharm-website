@@ -70,6 +70,9 @@ export function FileSelectionZone({
     const result = validateLocalFiles(files, accept, maxBytes, maxFiles);
     setError(!result.valid);
     if (!result.valid) {
+      // Invalidate a previous accepted candidate. Otherwise consumers could
+      // accidentally submit the earlier file after a later invalid selection.
+      onSelect([]);
       setMessage(result.error ?? "Selection could not be validated.");
       return;
     }
