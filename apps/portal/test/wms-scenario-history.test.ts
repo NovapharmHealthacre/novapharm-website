@@ -39,3 +39,17 @@ test("invalid blank numeric assumptions remain reversible without being converte
   assert.ok(Number.isNaN(invalid.present.shiftHours));
   assert.deepEqual(reduceWmsScenarioHistory(invalid, { type: "undo" }).present, first.present);
 });
+
+test("local undo history is bounded for long sessions", () => {
+  let state = initialWmsScenarioHistory();
+  for (let i = 0; i < 200; i += 1) {
+    state = reduceWmsScenarioHistory(state, { type: "edit", key: "orderLines", value: i });
+  }
+  assert.equal(state.past.length, 50);
+  const latest = state.present.orderLines;
+  state = reduceWmsScenarioHistory(state, { type: "undo" });
+  assert.equal(state.present.orderLines, latest - 1);
+  state = reduceWmsScenarioHistory(state, { type: "redo" });
+  assert.equal(state.present.orderLines, latest);
+  assert.ok(state.past.length <= 50);
+});
