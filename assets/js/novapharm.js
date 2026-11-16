@@ -1,5 +1,15 @@
 const navToggle = document.querySelector("[data-nav-toggle]");
 const siteNav = document.querySelector("[data-site-nav]");
+// Static pages keep the correct screen-reader labels when users toggle the
+// mobile menu after choosing the Arabic/Hebrew RTL layout preview.
+const navigationLocale = document.documentElement.lang;
+const localizedMenuLabels = {
+  ar: { open: "فتح القائمة", close: "إغلاق القائمة", menu: "القائمة", closed: "إغلاق", nav: "التنقل الرئيسي" },
+  he: { open: "פתיחת תפריט", close: "סגירת תפריט", menu: "תפריט", closed: "סגירה", nav: "ניווט ראשי" },
+};
+const menuLabels = localizedMenuLabels[navigationLocale] || {
+  open: "Open navigation", close: "Close navigation", menu: "Menu", closed: "Close", nav: "Primary navigation",
+};
 
 if (navToggle && siteNav) {
   // A parent section is not the current page. Announce only exact destinations
@@ -18,14 +28,15 @@ if (navToggle && siteNav) {
   const setNavigation = (isOpen) => {
     siteNav.classList.toggle("open", isOpen);
     navToggle.setAttribute("aria-expanded", String(isOpen));
-    navToggle.setAttribute("aria-label", isOpen ? "Close navigation" : "Open navigation");
+    navToggle.setAttribute("aria-label", isOpen ? menuLabels.close : menuLabels.open);
     const label = navToggle.querySelector(".sr-only");
-    if (label) label.textContent = isOpen ? "Close navigation" : "Open navigation";
+    if (label) label.textContent = isOpen ? menuLabels.close : menuLabels.open;
     const visibleLabel = navToggle.querySelector("[data-menu-label]");
-    if (visibleLabel) visibleLabel.textContent = isOpen ? "Close" : "Menu";
+    if (visibleLabel) visibleLabel.textContent = isOpen ? menuLabels.closed : menuLabels.menu;
   };
 
-  navToggle.setAttribute("aria-label", "Open navigation");
+  navToggle.setAttribute("aria-label", menuLabels.open);
+  siteNav.setAttribute("aria-label", menuLabels.nav);
   navToggle.addEventListener("click", () => setNavigation(!siteNav.classList.contains("open")));
   siteNav.addEventListener("click", (event) => {
     if (event.target.closest("a")) setNavigation(false);
