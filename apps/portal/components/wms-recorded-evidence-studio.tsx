@@ -111,6 +111,7 @@ export function WmsRecordedEvidenceStudio({ snapshot }: Readonly<{ snapshot: Wms
         independently authenticated Polar Speed/UPS warehouse feed is asserted by this view.</p>
       <details className="distribution-wms-evidence-data">
         <summary>View exact source sample counts in a table</summary>
+        {/* biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users need to scroll wide source tables. */}
         <div className="distribution-wms-evidence-data-scroll" role="region"
           aria-label="Scrollable source sample counts" tabIndex={0}>
           <table>
