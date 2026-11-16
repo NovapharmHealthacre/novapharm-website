@@ -70,7 +70,7 @@ function SiteHeader({ locale }: Readonly<{ locale: InterfaceLocale }>): React.JS
               aria-current={pathname === "/contact/" ? "page" : undefined}
               onClick={() => setOpen(false)}
             >
-              Contact
+              {interfaceLabel(locale, "Contact")}
             </Link>
           </li>
         </ul>
