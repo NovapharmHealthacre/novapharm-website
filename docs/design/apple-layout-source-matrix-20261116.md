@@ -27,3 +27,26 @@ Source-level checks: `scripts/test-apple-layout-contract.mjs`, `scripts/test-app
 Pending acceptance: exact-head CI (including React typechecking and source bundle reproducibility); responsive screenshot and keyboard evidence at 320, 375, 390, 768, 1024, 1440, 1920; 200% and 400% zoom; RTL and translated long labels; Chromium and WebKit; forced colours/reduced motion; authenticated WMS access and denied access; each separate production runtime deploy SHA and page receipt.
 
 **Status at authoring:** A version-controlled implementation candidate, not proof of deployment or parity across all 54 portal modules / 22 Intelligence workspaces. Do not merge past red or queued required checks, and do not touch unavailable AWS connections.
+
+## Full primary-source inspection — 16 November 2026
+
+All **33 owner-supplied URLs** are represented above: the root layout topic, its nine requested component topics, and 23 linked native framework resources. Official Apple Markdown pages were inspected individually. Native APIs supply interaction concepts, **not** executable web dependencies.
+
+### Design findings translated into source requirements
+
+1. **Collections —** prefer basic image rows or grids, avoid visual tile grids for text records, use stable ordering and generous focus separation. Existing `CollectionView` covers the semantic ordered grid; future image collections must preserve image proportions and their approved sources. UIKit/AppKit collection APIs describe data-source and item/section models, not browser code.
+2. **Column views —** maintain an evident root category, selected child path and an item preview; allow column width adjustments for long names. The WMS `ColumnBrowser` now includes an explicit labelled category-width slider, with a stacked small-screen fallback. NSBrowser is a native multicolumn hierarchy reference.
+3. **Disclosure controls —** only secondary content should begin collapsed; keep descriptive labels next to the disclosed content. Native `details/summary` preserves disclosure semantics without scripting. The disclosure and push-disclosure bezel variants are different native AppKit presentation choices, not mandatory duplicated buttons on a web page.
+4. **Labels —** present short legible static information with primary, secondary and tertiary emphasis, while retaining selection for useful information. The new neutral `TextLabel` avoids icon-only meaning; form inputs continue to use actual HTML `label` elements. UIKit, SwiftUI and AppKit display APIs are not interchangeable with editable HTML inputs.
+5. **Lists and tables —** put medicines, orders, documents, invoices, quality, inventory and most textual records in semantic rows; use meaningful headings and persistent selected state for hierarchy browsing. `DataTable` retains explicit captions, header scopes and numeric alignment. Any sorting must operate on authoritative complete data rather than pretend to sort an incomplete result set.
+6. **Lockups —** keep a card/image/text combination as a single keyboard-addressable destination; no nested buttons or click traps, and no tvOS-style dramatic focus expansion across dense dashboards. `ContentLockup` provides one native link and layout spacing.
+7. **Outline views —** use actual nested disclosure lists and preserve existing expansion state across view switching. `OutlineView` provides the no-JavaScript default for WMS; `summary` is rendered as a native list-item to retain its disclosure marker (not a flex container that can suppress the marker).
+8. **Split views —** preserve source-to-detail orientation, use the available space intelligently, and avoid clipping an inspector on narrow windows. Existing `SplitView` reflows to a full-width content stack; the WMS category / record / preview uses three panes only in a wide browser.
+9. **Tab views —** use descriptive nouns, related content, mutually exclusive panes and keyboard navigation. Apple advises not exceeding roughly six destinations in a single tab view; NovaPharm must choose a more appropriate list, sidebar or search when additional choices are required. Do not turn global 54-module navigation into tabs.
+10. **Layout and organization —** all of the above share restrained responsive spacing, semantic labels, logical RTL properties, keyboard focus and adequate touch areas, with property-specific brand exceptions (including Founder). New reusable patterns must be opted into the appropriate content structure, not forcibly injected into every page.
+
+### Enforced design DNA
+
+The canonical `layoutOrganizationPolicy` registry lives at `packages/design-system/src/layout-policy.ts`, is exported through the main design-system package, and covers **Corporate, Technology, Founder, Status, Portal, Intelligence and Distribution**. CI verifies that all ten pattern families and all 33 official URLs remain documented. The layout source already enters all five Next.js shell roots and the public static generated CSS bundle; independently deployed Intelligent services or legacy pages must still demonstrate runtime parity.
+
+A source test and a design-system render test are intentionally **not substitutes** for a current production screenshot, interaction recording, authorisation/tenant test, or deployed SHA receipt. The protected modules and external integrations remain release-gated.
