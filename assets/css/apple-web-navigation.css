@@ -226,6 +226,10 @@ html[data-np-estate="corporate"] .mobile-menu nav a {
   min-height: 48px;
 }
 html[data-np-estate="corporate"] .mobile-menu nav a:hover { color: #fff; }
+html[data-np-estate="corporate"] .mobile-menu nav a:focus-visible {
+  background: #3a3a3e;
+  color: #fff;
+}
 @media (max-width: 620px) {
   .npd-header-inner.header-inner,
   body[data-page="home"] .npd-header-inner.header-inner,
