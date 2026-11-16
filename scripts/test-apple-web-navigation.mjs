@@ -37,7 +37,8 @@ test("the actual corporate web header uses compact dark navigation and visible k
 });
 
 test("managed homepage's high-specificity editorial CSS cannot darken labels or hide the portal action", () => {
-  assert.match(homepageLegacyNavigation, /color: #151518/);
+  assert.match(homepageLegacyNavigation, /color: #d6d6da/, "Homepage editorial navigation must retain legible light ink");
+  assert.doesNotMatch(homepageLegacyNavigation, /color: #151518/, "Legacy dark homepage navigation ink must not return");
   assert.match(design, /body:has\(\.nph-editorial-home\) \.site-header \.desktop-nav > a/);
   assert.match(design, /body:has\(\.nph-editorial-home\) \.site-header \.desktop-nav > a:last-child/);
   assert.match(design, /\.desktop-nav > a\[href="\/technology\/"\]::before/);
