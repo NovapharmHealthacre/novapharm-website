@@ -1,9 +1,8 @@
 "use client";
 
-import { interfaceLabel, type InterfaceLocale } from "../../../src/core/interface-locale";
-
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
 
 interface MobileNavigationProps {
   readonly items: readonly (readonly [string, string])[];
