@@ -382,6 +382,9 @@
   padding-top: 10px;
 }
 .np-contact-reference-footer nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: #64676d;
   font-size: 12px;
   text-decoration: none;
