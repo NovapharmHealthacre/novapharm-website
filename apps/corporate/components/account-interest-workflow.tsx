@@ -9,7 +9,7 @@ function friendlyError(status: number, offline: boolean): string {
   if (status === 400 || status === 422) return "Please check the information in the form and try again.";
   if (status === 403) return "The security check expired. Please refresh the page and try again.";
   if (status === 429) return "Too many submissions were received. Please wait before trying again.";
-  return "We could not confirm whether your business interest was received. Check its status before trying again, or use the verified corporate email address.";
+  return "The request could not be confirmed. It may have been received. Contact NovaPharm by email before submitting it again.";
 }
 
 function referringHost(referrer: string): string {
@@ -32,7 +32,7 @@ export function AccountInterestWorkflow() {
     if (!form.reportValidity()) return;
 
     setState("sending");
-    setMessage("Submitting your account interest securely.");
+    setMessage("Submitting business interest…");
 
     try {
       const csrfResponse = await fetch(platformEndpoint("/security/csrf"), {
