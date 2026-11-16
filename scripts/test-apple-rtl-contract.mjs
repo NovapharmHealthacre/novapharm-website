@@ -195,3 +195,20 @@ test("interface localization does not claim that clinical, legal, or regulated e
   assert.match(arrowLink, /<ArrowRight data-np-directional-arrow="true" \/>/);
   assert.match(arrowLink, /<ArrowUpRight \/>/);
 });
+
+test("RTL preference disclosure is visible in both the public cookie notice and the compliance register", () => {
+  const notice = read("legal/cookies/index.html");
+  const register = read("compliance/cookie-register.md");
+  const staticLocale = read("assets/js/rtl-localization.js");
+  const managedLocale = read("src/components/interface-locale-switcher.tsx");
+  assert.ok(notice.includes("<code>np_locale</code>"), "Functional cookie must be named publicly");
+  assert.ok(notice.includes("Up to 365 days after selection"), "Cookie duration must be stated");
+  assert.ok(notice.includes("RTL layout preview"), "Arabic/Hebrew must not imply a completed translation");
+  assert.ok(notice.includes("legal review pending"), "Technical amendment must not claim legal sign-off");
+  assert.ok(register.includes("| `np_locale` |"), "Privacy governance register must cover the preference cookie");
+  assert.ok(register.includes("2026-11-15-v1.3"), "GA4 consent schema must stay unchanged");
+  assert.ok(staticLocale.includes("Max-Age=31536000"));
+  assert.ok(managedLocale.includes("Max-Age=31536000"));
+  assert.ok(staticLocale.includes("SameSite=Lax"));
+  assert.ok(managedLocale.includes("SameSite=Lax"));
+});
