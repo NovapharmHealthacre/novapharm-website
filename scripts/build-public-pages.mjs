@@ -335,6 +335,7 @@ function head(meta, slug = "", options = {}) {
   <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png" sizes="180x180">
   <link rel="mask-icon" href="/assets/brand/safari-pinned-tab.svg" color="#E3120B">
   <link rel="manifest" href="/manifest.webmanifest">
+  <script src="/assets/js/rtl-localization.js"></script>
 ${preloadMarkup}  <link rel="stylesheet" href="/assets/css/novapharm.bundle.css">
   <meta property="og:type" content="${type}">
   <meta property="og:site_name" content="NovaPharm Healthcare">
@@ -358,7 +359,7 @@ function documentShell({ meta, slug = "", body, options = {} }) {
   return `${head(meta, slug, options)}
 <body data-page="${slug || "home"}">
 ${header(slug)}
-<main id="main">${body}</main>
+<main id="main" lang="en-GB" data-np-untranslated>${body}</main>
 ${footer()}
 ${aiSearchDialog()}
 ${platformCapabilities.secureApi ? '<script src="/assets/js/api-client.js" defer></script>' : ""}
