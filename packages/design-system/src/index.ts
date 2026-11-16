@@ -70,3 +70,4 @@ export * from "./notification-preferences";
 export * from "./layout-organization";
 export * from "./layout-policy";
 export * from "./menu-actions";
+export * from "./menu-actions-policy";
