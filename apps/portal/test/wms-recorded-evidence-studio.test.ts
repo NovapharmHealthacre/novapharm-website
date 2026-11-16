@@ -38,6 +38,9 @@ test("authenticated warehouse evidence generates only observed sample visuals", 
   assert.match(html, /Quality: 0 records observed in bounded sample/);
   assert.match(html, /Integrations: source not available/);
   assert.match(html, /QC-001/);
+  assert.match(html, /<fieldset class="np-segmented-choice"/);
+  assert.match(html, /type="radio"/);
+  assert.match(html, /name="recorded-exception-priority"/);
   assert.match(html, /Quality \/ RP/);
   assert.match(html, /No independently authenticated Polar Speed\/UPS/);
   assert.match(html, /Independently authenticated|independently authenticated/);
@@ -69,7 +72,9 @@ test("dashboard only renders WMS evidence with authorised employee snapshot", ()
   assert.match(dash, /snapshot=\{user && snapshot \? snapshot : null\}/);
   assert.match(workspace, /<WmsRecordedEvidenceStudio snapshot=\{snapshot \?\? null\} \/>/);
   assert.match(chart, /snapshot\.module\.code !== "employee\.warehouse"/);
-  assert.match(chart, /aria-pressed=\{priority === choice\}/);
+  assert.match(chart, /<SegmentedChoice name="recorded-exception-priority"/);
+  assert.match(chart, /value=\{priority\}/);
+  assert.match(chart, /setPriority\(value as PriorityFilter\)/);
   assert.match(chart, /type="search"/);
   assert.doesNotMatch(chart, /localStorage\.(?:getItem|setItem)|sessionStorage\.|fetch\(|protectedMutation\(|reserveStock\(/);
   assert.match(css, /\.distribution-wms-evidence-bar-row/);
