@@ -62,3 +62,33 @@ test("generated public navigation has exactly one secure portal destination", ()
   assert.match(generator, /navigation\.filter\(\(\[label\]\) => label !== "Secure Portal"\)\.map\(/);
   assert.match(generator, /<a class="nav-portal" href="https:\/\/portal\.novapharmhealthcare\.com\/">Secure portal<\/a>/);
 });
+
+test("public sitemap routes maintain accessible semantic structure and image metadata", () => {
+  const sitemap = read("sitemap.xml");
+  const slugs = [...sitemap.matchAll(/<loc>https:\/\/novapharmhealthcare\.com\/([^<]*)<\/loc>/g)]
+    .map((match) => match[1]);
+  assert.ok(slugs.length >= 57, "Unexpected public-route coverage reduction");
+  assert.equal(new Set(slugs).size, slugs.length, "Duplicate canonical routes in public sitemap");
+
+  for (const slug of slugs) {
+    const path = slug ? `${slug}index.html` : "index.html";
+    const html = read(path);
+    const count = (pattern) => [...html.matchAll(pattern)].length;
+    assert.equal(count(/<h1\b/gi), 1, `${path}: exactly one main heading required`);
+    assert.equal(count(/<main\b/gi), 1, `${path}: exactly one main landmark required`);
+    assert.match(html, /<html\b[^>]*\blang="en-GB"/i, `${path}: document language`);
+    assert.match(html, /class="skip-link"\s+href="#main"/, `${path}: skip navigation`);
+    assert.match(html, /<main\s+id="main"/, `${path}: skip target`);
+    assert.equal(count(/rel="canonical"/gi), 1, `${path}: canonical URL`);
+
+    const ids = [...html.matchAll(/(?:^|\s)id="([^"]+)"/gm)].map((match) => match[1]);
+    assert.equal(new Set(ids).size, ids.length, `${path}: duplicate HTML IDs`);
+
+    for (const image of html.match(/<img\b[^>]*>/gi) ?? []) {
+      assert.match(image, /\balt="[^"]*"/i, `${path}: image alternative text`);
+      const width = Number(image.match(/\bwidth="(\d+)"/i)?.[1]);
+      const height = Number(image.match(/\bheight="(\d+)"/i)?.[1]);
+      assert.ok(width > 0 && height > 0, `${path}: image intrinsic dimensions`);
+    }
+  }
+});
