@@ -2,6 +2,8 @@
 
 import { type FormEvent, type ReactNode, useCallback, useEffect, useId, useRef, useState } from "react";
 import { intelligenceWorkspaceBySlug, intelligenceWorkspaceCatalogue, intelligenceWorkspaceGroups } from "../data/intelligence-workspaces";
+import { isNovaMlWorkspaceSlug, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
+import { NovaMlWorkspace } from "./nova-ml-workspaces";
 import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError } from "../lib/gateway";
 import { ClinicalTrialsDiscovery } from "./clinical-trials-discovery";
@@ -196,10 +198,13 @@ type MedicinesIntelligenceProps = Readonly<{
 
 const baseRoute = "/portal/executive-platform/medicines-intelligence/";
 // Show exactly the 22 canonical decision/research workspaces; legacy deep links remain authorised.
-const navigationGroups = intelligenceWorkspaceGroups.map((group) => ({
-  label: group,
-  items: intelligenceWorkspaceCatalogue.filter((workspace) => workspace.group === group).map((workspace) => [workspace.slug, workspace.title, `${baseRoute}${workspace.slug}/`] as const),
-}));
+const navigationGroups = [
+  ...intelligenceWorkspaceGroups.map((group) => ({
+    label: group,
+    items: intelligenceWorkspaceCatalogue.filter((workspace) => workspace.group === group).map((workspace) => [workspace.slug, workspace.title, `${baseRoute}${workspace.slug}/`] as const),
+  })),
+  { label: "Nova ML · Apple companion", items: novaMlWorkspaceCatalogue.map((module) => [module.slug, module.title, `${baseRoute}${module.slug}/`] as const) },
+];
 
 const emptyFilters: AnalyticsFilters = {
   dataset: "epd",
@@ -1020,6 +1025,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   else if (current === "tender-intelligence" || current === "portfolio" || current === "alerts" || current === "reports" || current === "decision-workspace") {
     central = <ProfessionalWorkspace kind={current} detail={detail} analytics={analytics} />;
   }
+  else if (isNovaMlWorkspaceSlug(current)) central = <NovaMlWorkspace kind={current} />;
   else if (current === "campaigns") central = <UnavailableEvidence title="Campaigns" statement="No outreach campaign is active. Imported business contacts are marketing-ineligible by default and are not exposed in this view." requirements={["Lawful-purpose and channel review", "Contact evidence and suppression controls", "Human-approved content and target snapshot", "Audited delivery integration"]} />;
   else {
     const workspace = intelligenceWorkspaceBySlug.get(current);
@@ -1033,7 +1039,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   return <main className={`${styles.shell} medicines-intelligence`}>
     <aside id="medicines-navigation-panel" className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ""}`} aria-label="Medicines Intelligence navigation">
       <div className={styles.brand}><PharmaScopeBrand home={baseRoute} tone="reverse" /><p><strong>Medicines Intelligence</strong><span>by NovaPharm Healthcare</span></p>{menuOpen ? <button ref={focusNavigationClose} type="button" onClick={() => { setMenuOpen(false); menuToggleRef.current?.focus(); }}>Close navigation</button> : null}</div>
-      <nav className={`intelligence-local-nav ${styles.navigation}`} aria-label="Medicines Intelligence views">{visibleNavigationGroups.map((group) => <section key={group.label}><h2>{group.label}</h2><ul>{group.items.map(([key, label, href]) => <li key={key}><a href={detail ? `${href}?medicineId=${encodeURIComponent(detail.medicine.medicineId)}` : href} aria-current={current === key ? "page" : undefined}>{label}</a></li>)}</ul></section>)}</nav>
+      <nav className={`intelligence-local-nav ${styles.navigation}`} aria-label="Medicines Intelligence views">{visibleNavigationGroups.map((group) => <section key={group.label}><h2>{group.label}</h2><ul>{group.items.map(([key, label, href]) => <li key={key}><a href={detail && !isNovaMlWorkspaceSlug(key) ? `${href}?medicineId=${encodeURIComponent(detail.medicine.medicineId)}` : href} aria-current={current === key ? "page" : undefined}>{label}</a></li>)}</ul></section>)}</nav>
       <div className={styles.sidebarFoot}><p>{user.displayName}</p><span>{display(user.accessType)}</span><small>Protected, server-authorised, no public caching</small></div>
     </aside>
     {menuOpen ? <button className={styles.scrim} type="button" aria-label="Close navigation" onClick={() => { setMenuOpen(false); menuToggleRef.current?.focus(); }} /> : null}
