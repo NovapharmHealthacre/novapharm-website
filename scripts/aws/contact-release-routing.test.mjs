@@ -20,6 +20,9 @@ test("approved public main pushes retain immutable AWS contact release while pri
   assert.match(dispatcher, /apps\/portal\/\*/);
   assert.match(dispatcher, /native\/novapharm-intelligence-apple\/\*/);
   assert.match(dispatcher, /scripts\/aws\/contact-release-routing\.test\.mjs/);
+  for (const path of ["scripts/nova-ml-private-ingress.mjs", "scripts/test-nova-ml-private-ingress.mjs", ".github/workflows/nova-ml-private-ingress-acceptance.yml"]) {
+    assert.ok(dispatcher.includes(path), path + " must skip unrelated AWS contact dispatch");
+  }
   assert.match(dispatcher, /if: steps\.private_release\.outputs\.skip != 'true'/);
   const guardedAwsSteps = dispatcher.match(/if: steps\.private_release\.outputs\.skip != 'true' && steps\.publisher\.outputs\.skip != 'true'/g) || [];
   assert.equal(guardedAwsSteps.length, 2, "both the AWS health check and contact dispatch must skip for private-only merges");
@@ -27,6 +30,27 @@ test("approved public main pushes retain immutable AWS contact release while pri
   assert.match(dispatcher, /expected_sha="\$EXPECTED_SHA"/);
   assert.match(dispatcher, /\.ready == true and \.acceptingPublicSubmissions == true/);
 });
+test("public publisher skips AWS and Pages for private Nova ML-only pushes but preserves real public releases", () => {
+  const publisher = get("publish-aws-contact-production.yml");
+  const dispatcher = get("dispatch-approved-aws-contact-release.yml");
+  assert.match(publisher, /release_scope:/);
+  assert.match(publisher, /needs: release_scope/);
+  assert.match(publisher, /needs\.release_scope\.outputs\.release_needed == 'true'/);
+  assert.match(publisher, /found_ml=false/);
+  assert.match(publisher, /private_only=true/);
+  assert.match(publisher, /changed_paths=\$\(git diff --name-only/);
+  assert.match(publisher, /release_needed=false/);
+  assert.match(publisher, /release_needed=true/);
+  assert.match(publisher, /workflow_dispatch/);
+  assert.match(dispatcher, /found_ml=false/);
+  assert.match(dispatcher, /found_ml=true/);
+  assert.match(dispatcher, /\[ "\$found_ml" = true \]/);
+  for (const path of [".github/workflows/publish-aws-contact-production.yml", ".github/workflows/dispatch-approved-aws-contact-release.yml", ".github/workflows/nova-ml-private-ingress-acceptance.yml"]) {
+    assert.ok(dispatcher.includes(path));
+    assert.ok(publisher.includes(path));
+  }
+});
+
 test("canonical contact publication verifies health and rejected anonymous access without sending email", () => {
   const canonical = get("publish-aws-contact-production.yml");
   assert.match(canonical, /expected_sha:/);
