@@ -9,7 +9,9 @@ test("privacy overview presents meaningful controls before the complete legal no
   const firstArticle = html.indexOf('<article class="legal-content">');
   const overview = html.indexOf('<section class="np-privacy-overview"');
   const fullNotice = html.indexOf("<h2>1. Controller and privacy contact</h2>");
+  const metadataAside = html.indexOf("<aside>", html.indexOf('<div class="container legal-layout">'));
   assert.ok(firstArticle >= 0 && overview > firstArticle && fullNotice > overview);
+  assert.ok(metadataAside > firstArticle, "Privacy overview must precede legal metadata in semantic reading order");
   assert.match(html, /<section class="np-privacy-overview" id="privacy-overview" aria-labelledby="np-privacy-overview-title">/);
   assert.match(html, /<h2 id="np-privacy-overview-title">Your information\. Your choice\.<\/h2>/);
   assert.match(html, /class="np-privacy-primary-action" type="button" data-cookie-settings/);
@@ -42,6 +44,8 @@ test("NovaPharm privacy editorial appearance is responsive and independent of Ap
   assert.match(css, /body\[data-page="legal\/privacy"\] \.np-privacy-overview/);
   assert.match(css, /--npd-system/);
   assert.match(css, /grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
+  assert.match(css, /grid-template-areas: "privacy-aside privacy-article"/);
+  assert.match(css, /grid-template-areas: "privacy-article" "privacy-aside"/);
   assert.match(css, /@media \(max-width: 860px\)/);
   assert.match(css, /@media \(max-width: 560px\)/);
   assert.match(css, /@media \(prefers-contrast: more\)/);
@@ -53,6 +57,8 @@ test("NovaPharm privacy editorial appearance is responsive and independent of Ap
 
 test("public rebuild preserves the reviewed privacy overview and legal metadata", () => {
   const builder = source("scripts/build-site.mjs");
+  const pageBuilder = source("scripts/build-public-pages.mjs");
+  assert.ok(pageBuilder.includes('slug === "legal/privacy" ? article + aside : aside + article'), "Privacy HTML generation must put controls before the metadata aside");
   assert.match(builder, /const legalPolicies = \[/);
   assert.ok(builder.includes('<article class="legal-content">'), "Build must retain reviewed legal article source");
   assert.ok(builder.includes('<dl class="policy-meta">'), "Build must retain policy version/review metadata");
