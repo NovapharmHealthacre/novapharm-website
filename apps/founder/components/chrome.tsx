@@ -1,5 +1,6 @@
-import { interfaceLabel, type InterfaceLocale } from "../../../src/core/interface-locale";
 "use client";
+
+import { interfaceLabel, type InterfaceLocale } from "../../../src/core/interface-locale";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
