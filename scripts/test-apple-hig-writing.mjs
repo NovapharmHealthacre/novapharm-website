@@ -29,6 +29,11 @@ const source = {
   legalCookies: read("legal/cookies/index.html"),
   legalTerms: read("legal/terms/index.html"),
   legalAccessibility: read("legal/accessibility/index.html"),
+  legalLanding: read("legal/index.html"),
+  trustCentre: read("trust-centre/index.html"),
+  modernSlavery: read("legal/modern-slavery/index.html"),
+  environment: read("legal/environment-carbon/index.html"),
+  insightsLanding: read("news-insights/index.html"),
   standard: read("docs/design/novapharm-apple-hig-writing.md"),
 };
 function needs(key, text) {
@@ -116,7 +121,7 @@ for (const key of ["homeFinishingPass", "corporateFinishingPass"]) {
 // without modifying the independently reviewed legal article or metadata.
 const legalFooterPattern = /<footer class="site-footer(?:\s+[^"]*)?"[^>]*>[\s\S]*?<\/footer>/;
 needs("corporateFinishingPass", String.raw`html.replace(/<footer class="site-footer(?:\s+[^"]*)?"[^>]*>[\s\S]*?<\/footer>/, footer());`);
-for (const key of ["legalPrivacy", "legalCookies", "legalTerms", "legalAccessibility"]) {
+for (const key of ["legalPrivacy", "legalCookies", "legalTerms", "legalAccessibility", "legalLanding", "trustCentre", "modernSlavery", "environment", "insightsLanding"]) {
   const matches = source[key].match(new RegExp(legalFooterPattern.source, "g")) ?? [];
   assert.equal(matches.length, 1, `${key}: exactly one replaceable legal footer is required`);
   assert.ok(matches[0].includes('class="site-footer'), `${key}: shared footer class is missing`);
@@ -144,4 +149,4 @@ needs("cookies", "Reject non-essential");
 for (const term of ["Controlled terminology", "Accessibility and color", "Localization", "Remaining acceptance"]) {
   needs("standard", term);
 }
-console.log("Apple HIG Writing first-pass copy contracts verified across 24 reviewed source surfaces.");
+console.log("Apple HIG Writing first-pass copy contracts verified across 29 reviewed source surfaces.");
