@@ -53,6 +53,6 @@ A new source-to-implementation ledger, [Apple Layout source matrix](apple-layout
 
 The previous foundation-only gaps for column views and outline views have a concrete web implementation candidate: `ColumnBrowser`, `OutlineView`, `HierarchyExplorer`, and `ContentLockup`. The existing WMS prototype workspace map is the **only** new consumer: it navigates the existing 16 capability records with their recorded-data and integration constraints. The module remains under the existing employee access policy. The new code does not activate operations or grant authority.
 
-The native `details` outline retains readable hierarchy without script, while the optional three-pane browser exposes selected category, item, and evidence. Compact screens receive full stacked content, not a hidden desktop inspector. New contract and render tests cover source order, selection semantics, keyboard focus and governed links.
+The default native `details` outline retains readable hierarchy without script, while the optional three-pane browser exposes selected category, item, and evidence. Compact screens receive full stacked content, not a hidden desktop inspector. New contract and render tests cover source order, selection semantics, keyboard focus and governed links.
 
 **Evidence gate remains open:** Until exact-head CI and authorised runtime browser acceptance, this is an unmerged implementation candidate, not proof of production deployment or completed audit of every portal/Intelligence route.
