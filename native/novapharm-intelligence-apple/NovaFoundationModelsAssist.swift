@@ -38,6 +38,8 @@ struct NovaFoundationModelsAssist {
         guard SystemLanguageModel.default.isAvailable else {
             throw NovaWritingError.unavailable
         }
+        // Apple maintains a transcript in each LanguageModelSession while it exists.
+        // Use a per-request session and never serialize, upload or log that transcript.
         let session = LanguageModelSession(instructions: """
             Rewrite only the supplied public corporate excerpt in plain British English.
             Do not introduce facts, clinical recommendations, regulatory authorisations,

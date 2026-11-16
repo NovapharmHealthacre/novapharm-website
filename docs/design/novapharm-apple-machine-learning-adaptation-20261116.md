@@ -52,6 +52,10 @@ The duplicate Generative Models URL in the owner list is one source, reviewed on
 
 Apple SDK availability is device-, OS- and region-dependent. Use the currently installed Apple SDK/Xcode to revalidate signatures and test on eligible devices; GitHub source alone does not compile or deploy an Apple application.
 
+**Foundation Models transcript caveat:** Apple's `LanguageModelSession` internally maintains a transcript of prompt/response interactions for the life of the session. The prototype constructs a fresh session per deliberate request and does not save or upload that transcript. This is different from claiming that no in-memory transcript exists. Any native production app must prohibit unapproved persistence, crash-report exposure, diagnostics capture and retained session reuse. See https://developer.apple.com/documentation/foundationmodels/languagemodelsession.
+
+**Core ML provenance gate:** The Core ML adapter checks the bundled model's version and licence metadata against its trusted signed-app permit, in addition to its expected input names. This is not a substitute for independent signed release verification, model-file integrity attestation and app binary signing.
+
 ## Required validation before release
 
 1. Review accepted lawful basis, copyright/data-use rights, licence, representative dataset and sensitive health-data exclusion for every model.

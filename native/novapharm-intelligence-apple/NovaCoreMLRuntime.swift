@@ -6,6 +6,8 @@ import CoreML
 struct NovaModelPermit {
     let modelIdentifier: String
     let bundledResourceName: String
+    let expectedModelVersion: String
+    let expectedLicence: String
     let approvedInputNames: Set<String>
     let approvedForNonClinicalUse: Bool
 }
@@ -26,6 +28,8 @@ struct NovaCoreMLRuntime {
         guard permit.approvedForNonClinicalUse &&
               !permit.modelIdentifier.isEmpty &&
               !permit.bundledResourceName.isEmpty &&
+              !permit.expectedModelVersion.isEmpty &&
+              !permit.expectedLicence.isEmpty &&
               !permit.approvedInputNames.isEmpty else {
             throw NovaRuntimeError.notApproved
         }
@@ -37,6 +41,13 @@ struct NovaCoreMLRuntime {
         let configuration = MLModelConfiguration()
         configuration.computeUnits = .all
         let model = try MLModel(contentsOf: modelURL, configuration: configuration)
+        // Require model metadata to match the audited, signed-app release manifest.
+        // The permit must be issued by trusted app code, not from an input form.
+        let metadata = model.modelDescription.metadata
+        guard (metadata[.versionString] as? String) == permit.expectedModelVersion &&
+              (metadata[.license] as? String) == permit.expectedLicence else {
+            throw NovaRuntimeError.notApproved
+        }
         let expected = Set(model.modelDescription.inputDescriptionsByName.keys)
         guard expected == permit.approvedInputNames &&
               Set(inputs.keys) == expected else {

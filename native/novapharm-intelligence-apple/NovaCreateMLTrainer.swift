@@ -61,6 +61,9 @@ func trainNovaPublicTextClassifier(
     let metrics = classifier.evaluation(
         on: heldOut, textColumn: "text", labelColumn: "label"
     )
+    guard metrics.isValid else {
+        throw NovaTrainingError.invalidEvaluation
+    }
     let error = metrics.classificationError
     guard error.isFinite && (0...1).contains(error) else {
         throw NovaTrainingError.invalidEvaluation

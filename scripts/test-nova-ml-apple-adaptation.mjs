@@ -67,11 +67,15 @@ test("native candidates fail closed and require trusted model/data permits", () 
   assert.match(runtime, /approvedForNonClinicalUse/);
   assert.match(runtime, /MLDictionaryFeatureProvider/);
   assert.match(runtime, /inputSchemaMismatch/);
+  assert.match(runtime, /metadata\[\.versionString\]/);
+  assert.match(runtime, /metadata\[\.license\]/);
+  assert.match(trainer, /metrics\.isValid/);
   assert.match(generator, /import FoundationModels/);
   assert.match(generator, /SystemLanguageModel\.default\.isAvailable/);
   assert.match(generator, /explicitlyRequestedByUser/);
   assert.match(generator, /humanReviewRequired: Bool = true/);
   assert.match(generator, /publicationApproved: Bool = false/);
+  assert.match(generator, /Foundation Models keeps a transcript|Apple maintains a transcript/);
   const vision = source("native/novapharm-intelligence-apple/NovaDocumentIntelligence.swift");
   const intents = source("native/novapharm-intelligence-apple/NovaResearchAppIntent.swift");
   assert.match(vision, /import Vision/);
@@ -99,4 +103,6 @@ test("Apple guidance map and live release gates are documented", () => {
   assert.match(doc, /coreml/);
   assert.match(doc, /not production deployed/i);
   assert.match(doc, /Xcode/);
+  assert.match(doc, /in-memory transcript/);
+  assert.match(doc, /Core ML provenance gate/);
 });
