@@ -11,7 +11,7 @@ const check = (name, fn) => {
   catch (error) { failures.push(`${name}: ${error.message}`); console.error(`FAIL ${name}: ${error.message}`); }
 };
 const attr = (element, name) => element.match(new RegExp(`\\b${name}="([^"]+)"`, "u"))?.[1];
-const svgPaths = (svg) => [...svg.matchAll(/<path\\b[\\s\\S]*?\\/>/gu)].map((match) => match[0]);
+const svgPaths = (svg) => [...svg.matchAll(/<path\b[\s\S]*?\/>/gu)].map((match) => match[0]);
 const pngSize = (file) => {
   const data = read(file);
   assert.equal(data.subarray(0, 8).toString("hex"), "89504e470d0a1a0a", `${file}: PNG signature`);
@@ -33,7 +33,7 @@ for (const [index, file] of [
   check(`unmasked approved vector layer ${index + 1}`, () => {
     const svg = text(file);
     assert.match(svg, /width="1024" height="1024" viewBox="0 0 1024 1024"/u);
-    assert.doesNotMatch(svg, /<script\\b|<rect\\b|<mask\\b|<filter\\b|<image\\b|<text\\b|(?:href|src)="https?:/iu);
+    assert.doesNotMatch(svg, /<script\b|<rect\b|<mask\b|<filter\b|<image\b|<text\b|(?:href|src)="https?:/iu);
     const layerPaths = svgPaths(svg);
     assert.equal(layerPaths.length, 1);
     assert.equal(attr(layerPaths[0], "d"), attr(sourcePaths[index], "d"), "shape path must be byte-identical");
