@@ -5,10 +5,10 @@ import AppIntents
 @available(iOS 17.0, macOS 14.0, *)
 struct OpenNovaResearchIntent: AppIntent {
     static var title: LocalizedStringResource { "Open NovaPharm research" }
-    static var description = IntentDescription(
+    static let description = IntentDescription(
         "Open the NovaPharm Intelligence app to continue authorised research."
     )
-    static var openAppWhenRun: Bool = true
+    static let openAppWhenRun: Bool = true
 
     func perform() async throws -> some IntentResult {
         // Only foreground the installed app. Its own verified session and
