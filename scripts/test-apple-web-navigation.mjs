@@ -34,7 +34,8 @@ test("the published bundle is exactly the design source tail", () => {
 
 test("Next.js corporate imports the same stylesheet and preserves the original approved brand asset", () => {
   assert.match(corporateLayout, /assets\/css\/apple-web-navigation\.css/);
-  assert.match(corporateBrand, /novapharm-healthcare-logo\.png/);\n  assert.match(design, /filter: grayscale\(1\) brightness\(0\) invert\(1\)/);
+  assert.match(corporateBrand, /novapharm-healthcare-logo\.png/);
+  assert.match(design, /filter: grayscale\(1\) brightness\(0\) invert\(1\)/);
   assert.match(corporateHeader, /<nav className="desktop-nav"/);
   assert.match(corporateHeader, /<MobileNavigation/);
 });
