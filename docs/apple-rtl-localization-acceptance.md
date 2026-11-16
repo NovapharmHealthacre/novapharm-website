@@ -1,6 +1,6 @@
 # NovaPharm right-to-left localization acceptance register
 
-**State:** implementation candidate, not a published multilingual release  
+**State:** public RTL layout preview deployed and independently verified on 2026-11-16; **not** a published, fully translated multilingual release  
 **Updated:** 2026-11-16  
 **Guidance:** Apple Human Interface Guidelines — Right to left; Apple Localization; SwiftUI Preparing views for localization (design reference only, not a SwiftUI web runtime)
 
@@ -24,6 +24,15 @@
 | Founder website | Root direction and primary navigation | Key menu labels in preview | Pending | Browser CI pending |
 | Service status | Root direction and selected chrome; dates use selected locale | Status descriptions remain English | Pending | Browser CI pending |
 | Legacy static protected shells | Early direction bootstrap | English fallback | Pending | Static build/production gates pending |
+
+## Language selector presentation acceptance
+
+- The public language control belongs in a normal footer row, not in a floating panel or a separate bordered card below the footer.
+- Use a compact text label, an underlined native select with a quiet directional chevron, transparent background, zero card border and shadow, and at least a 44px keyboard/touch target.
+- Preserve logical text direction, native screen-reader option names and mobile safe areas. The footer control must never occlude consent controls, checkout, protected Portal actions or the page content.
+- Arabic and Hebrew selections are explicitly identified as **layout previews** until reviewed content exists; changing the preference does not authorize regulated content or access.
+- Browser acceptance must cover English, Arabic and Hebrew in Chromium and WebKit at compact phone, mobile and desktop widths and fail on overflow, focus loss or a visually boxed selector. Live release verification must reject stale CSS or JavaScript.
+- Contact-page Privacy and Terms footer links need accessible touch targets independent of the design simplification.
 
 ## Apple RTL invariants
 
