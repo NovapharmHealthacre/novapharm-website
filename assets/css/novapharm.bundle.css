@@ -11791,6 +11791,19 @@ body nav.npd-breadcrumb[aria-label="Breadcrumb"] .container > a {
   align-items: center;
   min-height: 28px;
 }
+/* Apple HIG iOS/iPadOS uses a comfortable default 44pt touch region
+   (28pt minimum). Adapt to web CSS px for coarse-pointer devices without
+   enlarging the visible font or changing the compact desktop layout. */
+@media (pointer: coarse) {
+  body .npd-footer .npd-footer-top div > a:not(.footer-brand),
+  body .npd-footer .npd-footer-legal :is(a, button),
+  body .npd-footer .npd-footer-bottom a,
+  body nav.breadcrumb[aria-label="Breadcrumb"] > a,
+  body nav.npd-breadcrumb[aria-label="Breadcrumb"] .container > a {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
 
 /* Source: novapharm-hig-materials.css */
 /*
