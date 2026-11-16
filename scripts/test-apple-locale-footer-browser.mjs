@@ -5,7 +5,11 @@ import { chromium, webkit } from "playwright";
 
 const origin = process.env.PUBLIC_PAGES_BASE_URL ?? "http://127.0.0.1:4310";
 const localeVersion = createHash("sha256").update(readFileSync("assets/js/rtl-localization.js")).digest("hex").slice(0, 16);
-const expectedLocaleScript = "/assets/js/rtl-localization.js?v=" + localeVersion;
+// The source build remains unversioned for exact generator golden tests;
+// final Pages staging pins the verified JavaScript hash.
+const expectedLocaleScript = process.env.REQUIRE_VERSIONED_LOCALE === "1"
+  ? "/assets/js/rtl-localization.js?v=" + localeVersion
+  : "/assets/js/rtl-localization.js";
 const viewports = [
   { width: 320, height: 720 },
   { width: 390, height: 844 },
