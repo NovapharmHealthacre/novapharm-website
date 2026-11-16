@@ -1,5 +1,6 @@
 import { type PortalArea, type PortalModule, portalModuleByCode, visiblePortalModules } from "@novapharm/portal-contracts";
 import { type IntelligenceWorkspaceSlug, intelligenceWorkspaceSlugs } from "./intelligence-workspaces";
+import { type NovaMlWorkspaceSlug, novaMlWorkspaceSlugs } from "./nova-ml-modules";
 
 export type PortalView =
   | Readonly<{ kind: "login" }>
@@ -18,9 +19,9 @@ export const medicinesIntelligenceSubviews = Object.freeze([
   "data-sources",
 ] as const);
 
-export type MedicinesIntelligenceSubview = (typeof medicinesIntelligenceSubviews)[number] | IntelligenceWorkspaceSlug;
+export type MedicinesIntelligenceSubview = (typeof medicinesIntelligenceSubviews)[number] | IntelligenceWorkspaceSlug | NovaMlWorkspaceSlug;
 // Existing eight legacy views remain available for deep links; the canonical 22 have their own evidence states.
-const medicinesIntelligenceSubviewSet = new Set<string>([...medicinesIntelligenceSubviews, ...intelligenceWorkspaceSlugs]);
+const medicinesIntelligenceSubviewSet = new Set<string>([...medicinesIntelligenceSubviews, ...intelligenceWorkspaceSlugs, ...novaMlWorkspaceSlugs]);
 
 export type PortalAccessType = "customer" | "employee" | "board" | "admin";
 
@@ -73,6 +74,17 @@ export function resolvePortalView(pathname: string): PortalView | null {
   if (alias) {
     const module = portalModuleByCode.get(alias);
     return module?.visibleInNavigation ? { kind: "module", module } : null;
+  }
+  // Nova ML has its own protected address family; it shares the existing
+  // verified board Intelligence module and never creates an anonymous API.
+  const novaMlPrefix = "/portal/executive-platform/nova-ml/";
+  if (normalised === novaMlPrefix || normalised.startsWith(novaMlPrefix)) {
+    const suffix = normalised === novaMlPrefix
+      ? "nova-ml-studio"
+      : normalised.slice(novaMlPrefix.length).replace(/\/$/u, "");
+    const module = portalModuleByCode.get("executive.nhs-data");
+    if (!module?.visibleInNavigation || !novaMlWorkspaceSlugs.includes(suffix as NovaMlWorkspaceSlug)) return null;
+    return { kind: "module", module, subview: suffix as NovaMlWorkspaceSlug };
   }
   const intelligencePrefix = "/portal/executive-platform/medicines-intelligence/";
   if (normalised.startsWith(intelligencePrefix) && normalised !== intelligencePrefix) {

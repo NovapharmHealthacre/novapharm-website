@@ -37,6 +37,8 @@ declare const styles: Readonly<{
   metricPanel: string;
   mobileMenu: string;
   navigation: string;
+  novaMlCanvas: string;
+  novaMlToolbarTitle: string;
   nearbyForm: string;
   opportunityPanel: string;
   panelHeader: string;
