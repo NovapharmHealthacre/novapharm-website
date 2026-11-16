@@ -25,6 +25,8 @@ test("four extensions use existing verified SSR portal routing, not public bypas
   const page = source("apps/portal/app/[[...slug]]/page.tsx");
   const view = source("apps/portal/components/medicines-intelligence.tsx");
   assert.match(routes, /\.\.\.novaMlWorkspaceSlugs/);
+  assert.match(routes, /const novaMlPrefix = "\/portal\/executive-platform\/nova-ml\/"/);
+  assert.match(routes, /if \(normalised === novaMlPrefix \|\| normalised.startsWith\(novaMlPrefix\)\)/);
   assert.match(routes, /portalModuleByCode\.get\("executive\.nhs-data"\)/);
   assert.match(page, /verifiedPortalSession/);
   assert.match(page, /sessionDecision\(view, session\)/);
