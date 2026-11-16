@@ -23,6 +23,8 @@ test("the actual corporate web header uses compact dark navigation and visible k
   assert.match(design, /:focus-visible/);
   assert.match(design, /prefers-reduced-motion/);
   assert.match(design, /forced-colors:\s*active/);
+  assert.match(design, /\.mobile-menu nav a:focus-visible/);
+  assert.match(design, /background: #3a3a3e/);
   assert.match(design, /\@media \(max-width: 1180px\)/);
   assert.match(design, /\@media \(max-width: 1300px\)/);
 });
