@@ -34,6 +34,9 @@ needs("account", 'Registering interest does not create an account or grant porta
 needs("account", "Eligible businesses may receive a private application invitation");
 needs("interest", "Register business interest");
 needs("interest", "No account or portal access has been created.");
+needs("interest", "The request could not be confirmed. It may have been received.");
+needs("interest", "Contact NovaPharm by email before submitting it again.");
+avoids("interest", "We could not confirm");
 needs("interest", 'aria-describedby="account-interest-boundary"');
 needs("interest", 'name="privacyAcknowledgement" value="yes" required');
 needs("interest", 'name="safetyConfirmation" value="yes" required');
