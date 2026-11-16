@@ -12788,7 +12788,11 @@ html[data-np-estate="corporate"] .desktop-nav > a:last-child {
   line-height: 1;
 }
 .npd-global-nav.site-nav > a:last-child:hover,
-html[data-np-estate="corporate"] .desktop-nav > a:last-child:hover {
+.npd-global-nav.site-nav > a:last-child:focus-visible,
+body[data-page="home"] .npd-global-nav.site-nav > a:last-child:not(.btn):hover,
+body[data-page="home"] .npd-global-nav.site-nav > a:last-child:not(.btn):focus-visible,
+html[data-np-estate="corporate"] .desktop-nav > a:last-child:hover,
+html[data-np-estate="corporate"] .desktop-nav > a:last-child:focus-visible {
   background: #d41b15;
   color: #fff;
 }
