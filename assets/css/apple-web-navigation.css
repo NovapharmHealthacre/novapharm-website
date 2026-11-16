@@ -282,6 +282,15 @@ html[data-np-estate="corporate"] .mobile-menu nav a:focus-visible {
   html[data-np-estate="corporate"] .desktop-nav > a { transition: none; }
 }
 @media (forced-colors: active) {
+  body[data-page] header.site-header.npd-header {
+    background: Canvas;
+    background-color: Canvas;
+    border-color: CanvasText;
+    color: CanvasText;
+  }
+  body[data-page] header.site-header.npd-header .npd-menu.nav-toggle [data-menu-label] {
+    color: CanvasText;
+  }
   .npd-header.site-header,
   body[data-page="home"] .npd-header.site-header,
   html[data-np-estate="corporate"] .site-header,
@@ -301,6 +310,14 @@ html[data-np-estate="corporate"] .mobile-menu nav a:focus-visible {
   html[data-np-estate="corporate"] .site-header .brand img { filter: none; }
 }
 @media print {
+  body[data-page] header.site-header.npd-header {
+    background: transparent;
+    background-color: transparent;
+    color: #000;
+  }
+  body[data-page] header.site-header.npd-header .npd-menu.nav-toggle [data-menu-label] {
+    color: #000;
+  }
   .npd-header.site-header,
   html[data-np-estate="corporate"] .site-header { background: transparent; color: #000; }
   .npd-header .brand .brand-logo img,
