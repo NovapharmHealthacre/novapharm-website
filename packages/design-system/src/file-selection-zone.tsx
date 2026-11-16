@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, type ChangeEvent, type DragEvent } from "react";
+import React, { useId, useState, type ChangeEvent, type DragEvent } from "react";
 
 export type LocalFileCandidate = Readonly<{ name: string; type: string; size: number }>;
 export type LocalFileSelection = Readonly<{ valid: boolean; error?: string }>;
