@@ -197,6 +197,7 @@ type MedicinesIntelligenceProps = Readonly<{
 }>;
 
 const baseRoute = "/portal/executive-platform/medicines-intelligence/";
+const novaMlBaseRoute = "/portal/executive-platform/nova-ml/";
 // Show exactly the 22 canonical decision/research workspaces; legacy deep links remain authorised.
 const navigationGroups = [
   ...intelligenceWorkspaceGroups.map((group) => ({
