@@ -35,6 +35,8 @@ test("image actions use a native named button and hide duplicate image text", ()
 test("image well explains local-only behavior and exposes keyboard-native file controls", () => {
   const markup = renderToStaticMarkup(<LocalImageWell label="Review photo" />);
   assert.match(markup, /Nothing is uploaded or saved/);
+  assert.match(markup, /Select, drop or paste an image/);
+  assert.match(markup, /Press Delete to clear/);
   assert.match(markup, /type="file"/);
   assert.match(markup, /aria-describedby="[^"]+-help"/);
   assert.match(markup, /No image selected/);
