@@ -77,6 +77,8 @@ needs("publicAccount", 'name="twitter:title" content="Register business interest
 needs("publicAccount", '"name":"Register business interest | NovaPharm Healthcare"');
 needs("corporateFinishingPass", 'title: "Register business interest | NovaPharm Healthcare"');
 avoids("publicAccount", "Open a Business Account | NovaPharm Healthcare");
+needs("publicAccount", 'data-cta-id="open-a-business-account">Discuss account eligibility</a>');
+avoids("publicAccount", 'data-cta-id="open-a-business-account">Open a business account</a>');
 avoids("corporateFinishingPass", "Open a Business Account | NovaPharm Healthcare");
 avoids("publicAccount", "Request a business account in minutes.");
 avoids("publicAccount", "data-account-application");
