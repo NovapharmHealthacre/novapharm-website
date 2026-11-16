@@ -155,7 +155,7 @@ export function Timeline({ label, items }: Readonly<{ label: string; items: read
 export function FormField({ id, label, hint, error, required, children }: Readonly<{ id: string; label: string; hint?: string; error?: string; required?: boolean; children: ReactNode }>) {
   // A field wrapper must add its instructions without silently deleting existing
   // screen-reader references, native required state or other control semantics.
-  const existingProps = isValidElement<Record<string, unknown>>(children) ? children.props : {};
+  const existingProps: Record<string, unknown> = isValidElement<Record<string, unknown>>(children) ? children.props : {};
   const originalDescription = typeof existingProps["aria-describedby"] === "string"
     ? existingProps["aria-describedby"].split(/\s+/).filter(Boolean) : [];
   const describedBy = [...new Set([...originalDescription, ...(hint ? [`${id}-hint`] : []), ...(error ? [`${id}-error`] : [])])].join(" ") || undefined;
