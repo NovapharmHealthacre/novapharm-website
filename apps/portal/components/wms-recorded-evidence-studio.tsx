@@ -112,8 +112,8 @@ export function WmsRecordedEvidenceStudio({ snapshot }: Readonly<{ snapshot: Wms
       <details className="distribution-wms-evidence-data">
         <summary>View exact source sample counts in a table</summary>
         {/* biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users need to scroll wide source tables. */}
-        <section className="distribution-wms-evidence-data-scroll"
-          aria-label="Scrollable source sample counts" tabIndex={0}>
+        <section className="distribution-wms-evidence-data-scroll" tabIndex={0}
+          aria-label="Scrollable source sample counts">
           <table>
             <caption>Authorised application sample counts, recorded {show(snapshot.dataFreshness)}</caption>
             <thead><tr><th scope="col">Source</th><th scope="col">Availability</th><th scope="col">Rows in sample</th></tr></thead>
