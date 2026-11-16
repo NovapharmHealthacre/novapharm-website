@@ -52,7 +52,10 @@ assert.equal((page.match(/class="nx-product-publisher"/g) || []).length, 19, "Ex
 // The approved Nutraxin master remains byte-identical apart from the
 // explicit English-language boundary needed by the Arabic/Hebrew layout preview.
 const masterIntro = master.slice(0, master.indexOf('<a class="nx-product-card"'));
-const publishedIntro = page.includes('<script src="/assets/js/rtl-localization.js"></script>')
+const localeVersion = createHash("sha256").update(readFileSync(resolve(root, "assets/js/rtl-localization.js"))).digest("hex").slice(0, 16);
+const hasRtlBootstrap = page.includes(`<script src="/assets/js/rtl-localization.js?v=${localeVersion}"></script>`)
+  || page.includes('<script src="/assets/js/rtl-localization.js"></script>');
+const publishedIntro = hasRtlBootstrap
   ? masterIntro.replace(/<main\b[^>]*>/, (main) =>
       main.slice(0, -1) + ' lang="en-GB" data-np-untranslated>')
   : masterIntro;
