@@ -322,3 +322,24 @@
     color: var(--portal-ink, #1d1d1f);
   }
 }
+
+/* Apple HIG Patterns: chart values stay readable without colour or pointer input. */
+.distribution-wms-capacity-reset-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.distribution-wms-capacity-undo{min-height:44px;padding:8px 16px;border:1px solid #8d8d95;border-radius:999px;background:#fff;color:#1d1d1f;font:inherit;font-size:.875rem;cursor:pointer}
+.distribution-wms-capacity-zone-chart{margin:25px 0;min-width:0;border-top:1px solid #dedee3;padding-top:20px}
+.distribution-wms-capacity-zone-chart h4{margin:0 0 8px;font-size:1.05rem}
+.distribution-wms-capacity-zone-chart figcaption p{max-width:65ch;font-size:.82rem;color:#52525a;line-height:1.6;margin:0 0 20px}
+.distribution-wms-capacity-zone-bars{display:grid;gap:12px}
+.distribution-wms-capacity-zone-row{display:grid;grid-template-columns:minmax(4.5rem,1fr) minmax(5rem,3fr) minmax(6rem,1fr);align-items:center;gap:12px;min-height:44px;font-size:.85rem}
+.distribution-wms-capacity-zone-track{display:block;height:12px;background:#e4e4e8;border-radius:4px;overflow:hidden}
+.distribution-wms-capacity-zone-track>span{display:block;height:100%;background:#96131e}
+.distribution-wms-capacity-zone-value{text-align:end;font-variant-numeric:tabular-nums}
+.distribution-wms-capacity-zone-data{margin-top:20px;border-top:1px solid #dddde2}
+.distribution-wms-capacity-zone-data summary{padding:12px 0;min-height:44px;cursor:pointer;color:#9a111b}
+.distribution-wms-capacity-zone-data table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.85rem}
+.distribution-wms-capacity-zone-data caption{text-align:start;padding:12px 0;font-weight:600}
+.distribution-wms-capacity-zone-data :is(th,td){padding:10px 8px;border-bottom:1px solid #e8e8ed;text-align:start}
+.distribution-wms-capacity-zone-data td{text-align:end}
+.distribution-wms-capacity-zone-data :is(summary,button):focus-visible{outline:3px solid #0071e3;outline-offset:3px}
+@media(max-width:480px){.distribution-wms-capacity-zone-row{grid-template-columns:1fr minmax(4rem,1fr);gap:5px 10px}.distribution-wms-capacity-zone-track{grid-column:1/-1;grid-row:2}.distribution-wms-capacity-zone-value{grid-column:2;grid-row:1}}
+@media(forced-colors:active){.distribution-wms-capacity-zone-track{border:1px solid CanvasText}.distribution-wms-capacity-zone-track>span{background:Highlight}}
