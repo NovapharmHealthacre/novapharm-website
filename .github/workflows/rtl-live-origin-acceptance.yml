@@ -1,6 +1,11 @@
 name: RTL live public layout-preview proof
 
 on:
+  pull_request:
+    paths:
+      - scripts/verify-live-rtl-origin.mjs
+      - scripts/test-live-rtl-origin.mjs
+      - .github/workflows/rtl-live-origin-acceptance.yml
   workflow_run:
     workflows:
       - Publish verified AWS-backed contact form
@@ -16,6 +21,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  verify-source:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out proposed verifier
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Use Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Require isolated fail-closed public acceptance fixtures
+        run: node --test scripts/test-live-rtl-origin.mjs
   verify-public:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
