@@ -10,8 +10,11 @@ const fixture = () => ({
     'Arabic/Hebrew right-to-left layout preview; legal review pending.</article>',
   contact: '<main><form data-live-b2b-enquiry-form>Business enquiry</form></main>',
   script: 'var key = "np_locale"; html.dir = locale === "en-GB" ? "ltr" : "rtl"; ' +
-    'html.dataset.npLocaleStatus = "layout-preview";',
-  bundle: ':root { --np-rtl-contract: 1; } html[dir="rtl"] { direction: rtl; }',
+    'html.dataset.npLocaleStatus = "layout-preview"; ' +
+    'document.querySelector(".npd-footer-bottom, .site-footer");',
+  bundle: '/* Source: rtl-localization.css */\n:root { --np-rtl-contract: 1; --np-locale-footer-contract: 1; } ' +
+    '.np-locale-control { position: static; background: transparent; border: 0; box-shadow: none; } ' +
+    'html[dir="rtl"] { direction: rtl; }',
 });
 
 test("live proof accepts only full public layout-preview evidence and returns provenance", () => {
@@ -24,6 +27,9 @@ for (const [name, change] of [
   ["public RTL JavaScript missing", (x) => { x.home = x.home.replace('src="/assets/js/rtl-localization.js"', 'src="/assets/js/legacy.js"'); }],
   ["fake translated experience claimed", (x) => { x.script = x.script.replace("layout-preview", "full-translation"); }],
   ["unshipped RTL CSS", (x) => { x.bundle = ":root { color: black; }"; }],
+  ["old boxed language panel", (x) => { x.bundle = x.bundle.replace("border: 0", "border: 1px solid #aaa"); }],
+  ["missing footer design version", (x) => { x.bundle = x.bundle.replace("--np-locale-footer-contract: 1;", ""); }],
+  ["language selector placed after footer", (x) => { x.script = x.script.replace(".npd-footer-bottom", ".unrelated"); }],
   ["live business contact downgraded", (x) => { x.contact = '<div data-email-enquiry-form></div>'; }],
   ["cookie retention not disclosed", (x) => { x.cookies = x.cookies.replace("365 days", "30 days"); }],
   ["unknown publication provenance", (x) => { x.home = x.home.replace(RTL_FOUNDATION_MERGE, "invalid"); }],
