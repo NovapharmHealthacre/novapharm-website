@@ -23,7 +23,7 @@ export function InterfaceLocaleSwitcher({ locale }: Props) {
   }
 
   return (
-    <div className="np-locale-control" data-np-locale-control>
+    <div className="np-locale-control" data-np-locale-control data-np-control-locale={locale}>
       <label htmlFor="np-interface-locale">{interfaceLabel(locale, "Language / RTL layout preview")}</label>
       <select id="np-interface-locale" aria-label={interfaceLabel(locale, "Language and layout preview")} value={locale} onChange={onChange}>
         <option value="en-GB">English</option>
