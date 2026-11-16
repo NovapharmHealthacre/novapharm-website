@@ -94,3 +94,14 @@ for (const pattern of [
 ]) {
   assert.match(navigation, pattern, "Desktop menu must retain a visible keyboard-focused panel during pointer leave");
 }
+
+/* Mobile 390px browser geometry found standalone footer links at ~19px tall.
+   This is a comfort enhancement; WCAG 2.5.8 may allow spacing exceptions. */
+assert.match(read("index.html"), /<footer class="site-footer npd-footer">/,
+  "The customer-facing public footer must use the approved layout shell");
+assert.match(source, /body \.npd-footer \.npd-footer-top div > a:not\(\.footer-brand\)/,
+  "Public footer navigation needs a minimum pointer target");
+assert.match(source, /body \.npd-footer \.npd-footer-legal :is\(a, button\)/,
+  "Footer legal links and the cookie settings control need a minimum pointer target");
+assert.match(source, /min-height:\s*28px;/,
+  "Public footer touch targets must be at least 28 CSS pixels tall");
