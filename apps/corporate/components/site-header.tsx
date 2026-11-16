@@ -11,7 +11,7 @@ export function SiteHeader({ locale }: Readonly<{ locale: InterfaceLocale }>) {
       <div className="shell header-inner">
         <Brand />
         <nav className="desktop-nav" aria-label={interfaceLabel(locale, "Primary navigation")}>
-          {navigation.map(([label, href]) => href === "/portal/" ? <a key={href} href={portalOrigin} rel="nofollow">{interfaceLabel(locale, label)}</a> : <a key={href} href={href}>{label}</a>)}
+          {navigation.map(([label, href]) => href === "/portal/" ? <a key={href} href={portalOrigin} rel="nofollow">{interfaceLabel(locale, label)}</a> : <a key={href} href={href}>{interfaceLabel(locale, label)}</a>)}
         </nav>
         <MobileNavigation items={navigation} portalOrigin={portalOrigin} locale={locale} />
       </div>
