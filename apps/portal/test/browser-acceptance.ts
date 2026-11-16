@@ -630,11 +630,20 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
     assert.equal(rejectedSubview?.status(), 404, `${engine}: unapproved Medicines Intelligence child route did not fail closed`);
 
     const hiddenModules = portalModules.filter((entry) => !entry.visibleInNavigation);
+    // Keep the same authenticated executive context, but avoid reusing a
+    // heavily navigated page for every denied route in WebKit.
+    // Each dependency-blocked route MUST still return 404; no retries,
+    // security bypasses or exception suppression are introduced.
     for (const [index, module] of hiddenModules.entries()) {
-      const response = await page.goto(`${portalOrigin}${module.route}`, { waitUntil: "domcontentloaded" });
-      assert.equal(response?.status(), 404, `${engine}: dependency-blocked module resolved: ${module.code}`);
-      await page.getByRole("heading", { name: "Portal route not found" }).waitFor();
-      if (index === 0) await captureInteractionState(page, engine, desktopViewport, "interaction.hidden-module-not-found");
+      const hiddenPage = await boardContext.newPage();
+      try {
+        const response = await hiddenPage.goto(`${portalOrigin}${module.route}`, { waitUntil: "domcontentloaded" });
+        assert.equal(response?.status(), 404, `${engine}: dependency-blocked module resolved: ${module.code}`);
+        await hiddenPage.getByRole("heading", { name: "Portal route not found" }).waitFor();
+        if (index === 0) await captureInteractionState(hiddenPage, engine, desktopViewport, "interaction.hidden-module-not-found");
+      } finally {
+        await hiddenPage.close();
+      }
     }
   } finally {
     await boardContext.close();
