@@ -37,7 +37,7 @@
     select.setAttribute("aria-label", locale === "ar" ? "معاينة اللغة واتجاه العرض" : locale === "he" ? "תצוגה מקדימה של שפה וכיוון" : "Language and layout preview");
     [["en-GB","English"],["ar","العربية · RTL"],["he","עברית · RTL"]].forEach(function (item) {
       var option = document.createElement("option");
-      option.value = item[0]; option.textContent = item[1];
+      option.value = item[0]; option.textContent = item[1]; option.lang = item[0];
       select.appendChild(option);
     });
     select.value = locale;
