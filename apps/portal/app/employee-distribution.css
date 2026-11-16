@@ -354,3 +354,8 @@
 .distribution-wms-evidence-data :is(th,td){padding:10px 8px;border-bottom:1px solid #e0e0e5;text-align:start}
 .distribution-wms-evidence-data thead th:last-child,.distribution-wms-evidence-data td:last-child{text-align:end;font-variant-numeric:tabular-nums}
 @media(forced-colors:active){.distribution-wms-evidence-data{border-color:CanvasText}}
+
+/* Undo/redo is local to the hypothetical scenario, never a regulated warehouse write. */
+.distribution-wms-capacity-undo:disabled{opacity:.5;cursor:not-allowed}
+.distribution-wms-capacity-history-status{margin:10px 0 0;font-size:.84rem;line-height:1.5;color:#44444c}
+@media(forced-colors:active){.distribution-wms-capacity-undo:disabled{opacity:1;color:GrayText;border-color:GrayText}}
