@@ -84,3 +84,13 @@ for (const token of ['aria-label="Scrollable recorded WMS exceptions"', 'scope="
 }
 
 console.log("Apple HIG accessibility web contracts: verified source, bundle, labels, focus, motion and landmarks.");
+
+for (const pattern of [
+  /const focusWithinActiveMega = \(\) =>/,
+  /if \(!activeTrigger\) return false/,
+  /activeTrigger === focused/,
+  /panel\.classList\.contains\("is-open"\) && panel\.contains\(focused\)/,
+  /megaHeader\.addEventListener\("pointerleave", \(\) => \{\s*if \(!focusWithinActiveMega\(\)\) closeMega\(\);/
+]) {
+  assert.match(navigation, pattern, "Desktop menu must retain a visible keyboard-focused panel during pointer leave");
+}
