@@ -60,3 +60,16 @@ test("public business account explains account purpose in optional, accessible s
   const styles = read("app/globals.css");
   assert.match(styles, /\.account-path-help summary:focus-visible/);
 });
+
+test("account-interest success requires verified server receipt and guards concurrent requests", () => {
+  const workflow = read("components/account-interest-workflow.tsx");
+  assert.match(workflow, /if \(inFlightRef\.current\) return;/);
+  assert.match(workflow, /inFlightRef\.current = true;/);
+  assert.match(workflow, /inFlightRef\.current = false;/);
+  assert.match(workflow, /const receipt = await response\.json\(\)\.catch/);
+  assert.match(workflow, /receipt\.ok !== true \|\| !receipt\.lead\?\.id/);
+  assert.match(workflow, /status: 202/);
+  assert.match(workflow, /aria-busy=\{state === "sending"\}/);
+  assert.ok(workflow.indexOf("const data = new FormData(form);") < workflow.indexOf('fetch(platformEndpoint("/security/csrf")'));
+  assert.ok(workflow.indexOf("form.reset()") > workflow.indexOf("receipt.ok !== true"));
+});
