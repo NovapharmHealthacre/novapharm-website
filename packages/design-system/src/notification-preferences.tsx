@@ -49,6 +49,10 @@ export function NotificationPreferenceEditor({
   const [status, setStatus] = useState("");
   const pendingRef = useRef(false);
   const revisionRef = useRef<string | null>(null);
+  // Updated during render so a late receipt cannot confirm a superseded
+  // authorised account record, even before React runs the next effect.
+  const recordRef = useRef(record);
+  recordRef.current = record;
 
   useEffect(() => {
     if (!record?.verified || !record.revision) {
@@ -63,7 +67,7 @@ export function NotificationPreferenceEditor({
     setConfirmed(values);
     revisionRef.current = record.revision;
     setStatus("");
-  }, [record?.verified, record?.revision]);
+  }, [record]);
 
   const canEdit = Boolean(record?.verified && record.revision && onSave);
   const changed = record?.topics.some((topic) =>
@@ -74,11 +78,16 @@ export function NotificationPreferenceEditor({
     if (!record || !onSave || !canEdit || !changed || pendingRef.current || !revisionRef.current) return;
     const choices = Object.fromEntries(record.topics.map((topic) =>
       [topic.id, topic.editable ? Boolean(draft[topic.id]) : topic.enabled]));
+    const submittedRecord = record;
+    const submittedRevision = revisionRef.current;
     pendingRef.current = true;
     setSaving(true);
     setStatus("Saving your notification choices.");
     try {
-      const response = await onSave(choices, revisionRef.current);
+      const response = await onSave(choices, submittedRevision);
+      // No stale success or failure messages after account, tenant, or
+      // authorised document revision changes while the request is pending.
+      if (recordRef.current !== submittedRecord || revisionRef.current !== submittedRevision) return;
       if (response.ok !== true || !response.revision?.trim()) {
         setStatus("Your notification choices were not confirmed. Nothing is marked as saved. Check your account before retrying.");
         return;
@@ -88,6 +97,7 @@ export function NotificationPreferenceEditor({
       setConfirmed(choices);
       setStatus("Your choices were confirmed by the authorised account service.");
     } catch {
+      if (recordRef.current !== submittedRecord || revisionRef.current !== submittedRevision) return;
       setStatus("Unable to confirm these choices. Your changes are not saved; check your account before retrying.");
     } finally {
       pendingRef.current = false;
