@@ -11,8 +11,8 @@ export function SiteFooter({ locale }: Readonly<{ locale: InterfaceLocale }>) {
       <div className="shell footer-primary">
         <div className="footer-brand">
           <Brand footer />
-          <p>A UK-based B2B pharmaceutical company preparing regulated sourcing, market-access and distribution capabilities.</p>
-          <p className="footer-status">Active UK company. Regulated wholesale supply has not commenced and remains subject to applicable authorisation.</p>
+          <p lang="en-GB" dir="ltr">A UK-based B2B pharmaceutical company preparing regulated sourcing, market-access and distribution capabilities.</p>
+          <p className="footer-status" lang="en-GB" dir="ltr">Active UK company. Regulated wholesale supply has not commenced and remains subject to applicable authorisation.</p>
           <AppStoreAvailability />
         </div>
         <nav aria-label="Company links"><strong>{interfaceLabel(locale, "Company")}</strong><Link href="/about/">{interfaceLabel(locale, "About")}</Link><Link href="/leadership/">{interfaceLabel(locale, "Leadership")}</Link><Link href="/about/governance/">{interfaceLabel(locale, "Governance")}</Link><Link href="/careers/">{interfaceLabel(locale, "Careers")}</Link></nav>
@@ -20,8 +20,8 @@ export function SiteFooter({ locale }: Readonly<{ locale: InterfaceLocale }>) {
         <nav aria-label="Legal links"><strong>{interfaceLabel(locale, "Legal")}</strong><Link href="/trust-centre/">{interfaceLabel(locale, "Trust centre")}</Link><Link href="/legal/privacy/">{interfaceLabel(locale, "Privacy")}</Link><Link href="/legal/cookies/">{interfaceLabel(locale, "Cookies")}</Link><Link href="/legal/terms/">{interfaceLabel(locale, "Terms")}</Link><Link href="/legal/accessibility/">{interfaceLabel(locale, "Accessibility")}</Link><CookieSettingsButton /></nav>
       </div>
       <div className="shell footer-secondary">
-        <p>&copy; {new Date().getFullYear()} {company.legalName}. Company number {company.companyNumber}.</p>
-        <p>Corporate and qualified B2B information only. No patient ordering or medical advice.</p>
+        <p lang="en-GB" dir="ltr">&copy; {new Date().getFullYear()} {company.legalName}. Company number {company.companyNumber}.</p>
+        <p lang="en-GB" dir="ltr">Corporate and qualified B2B information only. No patient ordering or medical advice.</p>
       </div>
     </footer>
   );
