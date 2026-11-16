@@ -172,6 +172,11 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
               const candidates = [...document.querySelectorAll(
                 'a[href],button:not([disabled]),input:not([type=hidden]):not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex="0"]'
               )].filter((node) => {
+                // This is a sequential-keyboard focus audit. An anchor with
+                // tabindex=-1 (for example, an empty-bag Contact sales link)
+                // is intentionally excluded from Tab navigation, even though
+                // it can still be focused programmatically.
+                if (node.tabIndex < 0) return false;
                 if (node.closest('[aria-hidden="true"],[hidden],.honeypot')) return false;
                 const st = getComputedStyle(node);
                 const r = node.getBoundingClientRect();

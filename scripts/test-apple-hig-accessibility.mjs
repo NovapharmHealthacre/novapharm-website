@@ -94,3 +94,53 @@ for (const pattern of [
 ]) {
   assert.match(navigation, pattern, "Desktop menu must retain a visible keyboard-focused panel during pointer leave");
 }
+
+/* Mobile 390px browser geometry found standalone footer links at ~19px tall.
+   This is a comfort enhancement; WCAG 2.5.8 may allow spacing exceptions. */
+assert.match(read("index.html"), /<footer class="site-footer npd-footer">/,
+  "The customer-facing public footer must use the approved layout shell");
+assert.match(source, /body \.npd-footer \.npd-footer-top div > a:not\(\.footer-brand\)/,
+  "Public footer navigation needs a minimum pointer target");
+assert.match(source, /body \.npd-footer \.npd-footer-legal :is\(a, button\)/,
+  "Footer legal links and the cookie settings control need a minimum pointer target");
+assert.match(source, /body \.npd-footer \.npd-footer-bottom a/,
+  "Footer company registration link must also receive a minimum pointer target");
+assert.match(source, /min-height:\s*28px;/,
+  "Public footer touch targets must be at least 28 CSS pixels tall");
+
+// Product and editorial breadcrumbs are links, not sentence-level exceptions.
+for (const token of [
+  'nav.breadcrumb[aria-label="Breadcrumb"] > a',
+  'nav.npd-breadcrumb[aria-label="Breadcrumb"] .container > a'
+]) {
+  assert.ok(source.includes(token), "Enlarge standalone breadcrumb touch target: " + token);
+}
+assert.match(read("news-insights/three-pillar-pharmaceutical-sourcing-model/index.html"),
+  /<nav class="breadcrumb" aria-label="Breadcrumb"><a href="\/">Home<\/a>/,
+  "Editorial route must use the shared breadcrumb selector");
+assert.match(read("products/nutraxin/womens-multivitamin-complex-60-tablets/index.html"),
+  /<nav class="npd-breadcrumb" aria-label="Breadcrumb">/,
+  "Nutraxin product must use the shared breadcrumb selector");
+
+/* Focus-occlusion acceptance exercises sequential keyboard stops only.
+   Empty ESCO Bag's Contact sales has tabindex=-1 and aria-disabled=true;
+   programmatic focusing it must not be reported as a Tab-reachable defect. */
+const publicGeometryAudit = read("scripts/test-public-sitemap-geometry.mjs");
+assert.match(publicGeometryAudit, /if \(node\.tabIndex < 0\) return false;/,
+  "Sequential keyboard occlusion census must exclude negative-tabindex controls");
+assert.match(read("assets/js/esco-bag.js"), /send\.tabIndex = state\.length \? 0 : -1;/,
+  "Empty-bag Contact sales link must not be a sequential keyboard stop");
+
+/* iOS/iPadOS HIG: comfortable default touch regions are 44x44pt, with
+   28x28pt the minimum. On web, adapt only when the pointer is coarse. */
+assert.match(source, /@media \(pointer: coarse\) \{[\s\S]*?min-width:\s*44px;[\s\S]*?min-height:\s*44px;/,
+  "Coarse-pointer footer and breadcrumb targets need a comfortable 44px hit region");
+
+const renderedTouchAcceptance = read("scripts/test-public-pages-browser.mjs");
+for (const token of [
+  'hasTouch: true',
+  'isMobile: true',
+  'matchMedia("(pointer: coarse)")',
+  'target.width < 43.5 || target.height < 43.5'
+]) assert.ok(renderedTouchAcceptance.includes(token),
+  "Actual Chromium/WebKit touch hit-area acceptance missing " + token);
