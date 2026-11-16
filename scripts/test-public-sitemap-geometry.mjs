@@ -195,7 +195,7 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
                 // Inline links may wrap across lines. The union bounding box
                 // contains whitespace where a centre-point hit is not the link.
                 // Inspect each on-screen client rect to avoid false occlusion.
-                const rects = [...node.getClientRects()].map((r) => ({
+                const rects = Array.from(node.getClientRects()).map((r) => ({
                   left:Math.max(r.left, 0), top:Math.max(r.top, 0),
                   right:Math.min(r.right, innerWidth), bottom:Math.min(r.bottom, innerHeight)
                 })).filter((r) => r.left < r.right && r.top < r.bottom);
