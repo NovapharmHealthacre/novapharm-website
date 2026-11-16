@@ -109,6 +109,21 @@ export function WmsRecordedEvidenceStudio({ snapshot }: Readonly<{ snapshot: Wms
       </div>)}
       <p className="distribution-wms-evidence-footnote">Source time: {show(snapshot.dataFreshness)}. No
         independently authenticated Polar Speed/UPS warehouse feed is asserted by this view.</p>
+      <details className="distribution-wms-evidence-data">
+        <summary>View exact source sample counts in a table</summary>
+        <div className="distribution-wms-evidence-data-scroll" role="region"
+          aria-label="Scrollable source sample counts" tabIndex={0}>
+          <table>
+            <caption>Authorised application sample counts, recorded {show(snapshot.dataFreshness)}</caption>
+            <thead><tr><th scope="col">Source</th><th scope="col">Availability</th><th scope="col">Rows in sample</th></tr></thead>
+            <tbody>{evidence.map((item) => <tr key={item.title}>
+              <th scope="row">{item.label}</th>
+              <td>{item.found ? "Recorded application source" : "Source unavailable"}</td>
+              <td>{item.found ? item.count?.toLocaleString("en-GB") : "Not available"}</td>
+            </tr>)}</tbody>
+          </table>
+        </div>
+      </details>
     </section>
     <div className="distribution-wms-evidence-exceptions">
       <div className="distribution-wms-evidence-exceptions-heading">
