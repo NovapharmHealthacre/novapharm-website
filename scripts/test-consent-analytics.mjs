@@ -9,6 +9,24 @@ for (const invalid of ["", "G-", "UA-123456", "G-ABC<script>", "G-abc123"]) {
 assert.equal(publicAnalyticsRoute("/"), true);
 assert.equal(publicAnalyticsRoute("/products/nutraxin/"), true);
 assert.equal(publicAnalyticsRoute("/products/nutraxin/vitamin-d3-120-tablets/"), true);
+// GA4 must be opt-in AND limited to exact reviewed public product URLs.
+const approvedRetail = JSON.parse(readFileSync("assets/data/nutraxin-retail-catalogue.json", "utf8")).products;
+assert.equal(approvedRetail.length, 19, "Review the product allowlist whenever the catalogue changes");
+for (const product of approvedRetail) {
+  assert.equal(publicAnalyticsRoute("/products/nutraxin/" + product.slug + "/"), true, "Approved informational product must remain eligible: " + product.slug);
+}
+for (const privatePath of [
+  "/products/nutraxin/bag/", "/products/nutraxin/account/",
+  "/products/nutraxin/checkout/", "/products/nutraxin/order-request/",
+  "/products/nutraxin/confirmation/", "/products/nutraxin/orders/",
+  "/products/nutraxin/receipt/", "/products/nutraxin/payment/",
+  "/products/nutraxin/my-orders/", "/products/nutraxin/forgot-password/",
+  "/products/nutraxin/unreviewed-future-page/",
+  "/products/nutraxin/vitamin-d3-120-tablets/orders/"
+]) {
+  assert.equal(publicAnalyticsRoute(privatePath), false, "No analytics on a transactional, account, nested or unapproved route: " + privatePath);
+  assert.equal(sanitiseMarketingEvent({ event: "add_to_cart" }, privatePath), null, "No funnel event on private route: " + privatePath);
+}
 assert.equal(publicAnalyticsRoute("/technology/"), true);
 for (const forbidden of ["/portal/", "/contact/", "/account-application/", "/admin/", "/employee/", "/legal/privacy/", "/products/nutraxin/order-request/", "/products/nutraxin/checkout/"]) {
   assert.equal(publicAnalyticsRoute(forbidden), false, "Private or sensitive route must not be measured: " + forbidden);
