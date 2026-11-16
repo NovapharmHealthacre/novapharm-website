@@ -359,3 +359,11 @@
 .distribution-wms-capacity-undo:disabled{opacity:.5;cursor:not-allowed}
 .distribution-wms-capacity-history-status{margin:10px 0 0;font-size:.84rem;line-height:1.5;color:#44444c}
 @media(forced-colors:active){.distribution-wms-capacity-undo:disabled{opacity:1;color:GrayText;border-color:GrayText}}
+
+/* Fullscreen is explicitly requested, browser-managed, and always has an exit control. */
+.distribution-wms-capacity-fullscreen{min-height:44px;margin-top:16px;border:1px solid #777780;border-radius:999px;padding:9px 18px;background:#fff;color:#1d1d1f;font:inherit;font-size:.875rem;cursor:pointer}
+.distribution-wms-capacity-fullscreen:hover{background:#f5f5f7}
+.distribution-wms-capacity-fullscreen:focus-visible{outline:3px solid #0071e3;outline-offset:3px}
+.distribution-wms-capacity-studio:fullscreen{background:#fff;color:#1d1d1f;overflow-y:auto;max-height:100dvh;padding:clamp(1rem,3vw,3rem);box-sizing:border-box}
+.distribution-wms-capacity-studio:fullscreen .distribution-wms-capacity-body{width:min(1400px,100%);margin-inline:auto}
+@media(forced-colors:active){.distribution-wms-capacity-fullscreen{border:2px solid CanvasText;background:Canvas;color:CanvasText}}
