@@ -734,7 +734,7 @@ materialize("technology/index.html", "/technology/", technologyMain());
 materialize("news-insights/index.html", "/news-insights/", insightsMain());
 materialize("contact/index.html", "/contact/", contactMain(contactTemplate));
 materialize("account-application/index.html", "/account-application/", accountMain(accountTemplate), {
-  title: "Open a Business Account | NovaPharm Healthcare",
+  title: "Register business interest | NovaPharm Healthcare",
   description: "Review NovaPharm's controlled B2B account pathway from non-confidential interest through qualification, private evidence, approval, identity provisioning and portal access.",
   robots: "noindex, follow"
 });
