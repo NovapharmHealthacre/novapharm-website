@@ -127,8 +127,14 @@ export function DataTable({ caption, columns, rows }: Readonly<{
   return <div className="np-table-scroll" tabIndex={0} role="region" aria-label={`${caption}, scrollable table`}><table className="np-data-table"><caption>{caption}</caption><thead><tr>{columns.map((column) => <th key={column.key} scope="col" className={column.numeric ? "np-numeric" : undefined}>{column.label}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={index}>{columns.map((column, columnIndex) => columnIndex === 0 ? <th key={column.key} scope="row">{row[column.key]}</th> : <td key={column.key} className={column.numeric ? "np-numeric" : undefined}>{row[column.key]}</td>)}</tr>)}</tbody></table></div>;
 }
 
-export function AccessibleChart({ id, title, description, children, table }: Readonly<{ id: string; title: string; description: string; children: ReactNode; table: ReactNode }>) {
-  return <figure className="np-chart" aria-labelledby={`${id}-title`} aria-describedby={`${id}-description`}><figcaption><h3 id={`${id}-title`}>{title}</h3><p id={`${id}-description`}>{description}</p></figcaption><div aria-hidden="true">{children}</div><details><summary>View data table</summary>{table}</details></figure>;
+export function AccessibleChart({ id, title, description, children, table, source, asOf }: Readonly<{ id: string; title: string; description: string; children: ReactNode; table: ReactNode; source?: string; asOf?: string }>) {
+  return <figure className="np-chart" aria-labelledby={`${id}-title`} aria-describedby={`${id}-description`}>
+    <figcaption><h3 id={`${id}-title`}>{title}</h3><p id={`${id}-description`}>{description}</p>
+      {source ? <p className="np-chart__provenance">Source: {source}{asOf ? ` · As at: ${asOf}` : ""}</p> : null}
+    </figcaption>
+    <div aria-hidden="true">{children}</div>
+    <details><summary>View exact values in a table</summary>{table}</details>
+  </figure>;
 }
 
 export function Timeline({ label, items }: Readonly<{ label: string; items: readonly Readonly<{ title: string; description: string; status?: string }>[] }>) {
@@ -153,7 +159,19 @@ export function Drawer({ title, open, onClose, children }: Readonly<{ title: str
 
 export function Tabs({ label, tabs, activeId, onSelect }: Readonly<{ label: string; tabs: readonly Readonly<{ id: string; label: string; panel: ReactNode }>[]; activeId: string; onSelect?: (id: string) => void }>) {
   const active = tabs.find((tab) => tab.id === activeId) ?? tabs[0];
-  return <div className="np-tabs"><div role="tablist" aria-label={label}>{tabs.map((tab) => <button key={tab.id} type="button" role="tab" id={`${tab.id}-tab`} aria-controls={`${tab.id}-panel`} aria-selected={tab.id === active?.id} tabIndex={tab.id === active?.id ? 0 : -1} onClick={() => onSelect?.(tab.id)}>{tab.label}</button>)}</div>{active ? <div role="tabpanel" id={`${active.id}-panel`} aria-labelledby={`${active.id}-tab`}>{active.panel}</div> : null}</div>;
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    const buttons = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+    const current = buttons.findIndex((button) => button === document.activeElement);
+    if (current < 0 || !buttons.length) return;
+    const rtl = getComputedStyle(event.currentTarget).direction === "rtl";
+    const direction = event.key === "ArrowRight" ? (rtl ? -1 : 1) : (rtl ? 1 : -1);
+    const next = event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1 : (current + direction + buttons.length) % buttons.length;
+    event.preventDefault();
+    buttons[next]?.focus();
+    if (onSelect) onSelect(tabs[next].id);
+  };
+  return <div className="np-tabs"><div role="tablist" aria-label={label} onKeyDown={handleKeyDown}>{tabs.map((tab) => <button key={tab.id} type="button" role="tab" id={`${tab.id}-tab`} aria-controls={tab.id === active?.id ? `${tab.id}-panel` : undefined} aria-selected={tab.id === active?.id} tabIndex={tab.id === active?.id ? 0 : -1} onClick={() => onSelect?.(tab.id)}>{tab.label}</button>)}</div>{active ? <div role="tabpanel" id={`${active.id}-panel`} aria-labelledby={`${active.id}-tab`} tabIndex={0}>{active.panel}</div> : null}</div>;
 }
 
 /** A scoped, accessible web search control. Suggestions and history remain opt-in to protect private data. */
