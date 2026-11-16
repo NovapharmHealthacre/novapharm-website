@@ -71,4 +71,39 @@ for (const path of [
 assert.match(read("packages/design-system/src/index.ts"), /readingLeading:\s*1\.65/);
 assert.match(read("packages/design-system/src/styles.ts"), /font-optical-sizing:auto/);
 
+// Guard the user-facing controls that previously remained at 9–13px despite
+// the shared 14px caption token. Decorative typography is evaluated separately.
+const founderCss = read("apps/founder/app/base.css");
+const employeeCss = read("apps/portal/app/employee-distribution.css");
+const escapeSelector = (value) => value.replace(/[.*+?^\$\{\}()|[\]\\]/g, "\\console.log("NovaPharm Apple HIG typography contract passed across public, corporate, portal, WMS, technology, status, founder and shared React styles.");");
+const declarations = (css, selector) => {
+  const rule = css.match(new RegExp(escapeSelector(selector) + "\\\\s*\\\\{([^}]*)\\\\}"));
+  assert.ok(rule, "Missing typography control: " + selector);
+  return rule[1];
+};
+for (const selector of [
+  ".brand-name", ".site-nav-list a", ".footer-base", ".button", ".text-link",
+  ".status-pill", ".breadcrumbs ol", ".article-aside a", ".article-byline",
+  ".publication-actions a", ".publication-list a", ".contact-options span",
+  ".privacy-inline", ".js .menu-toggle",
+]) {
+  assert.match(declarations(founderCss, selector), /font-size:\\s*0\\.875rem/, selector + " must use a legible caption size");
+}
+for (const selector of [
+  ".employee-distribution-shell .employee-primary-nav a",
+  ".employee-distribution-shell .portal-search>button",
+  ".employee-distribution-shell .user-summary button",
+]) {
+  assert.match(declarations(employeeCss, selector), /font-size:\\s*\\.875rem/, selector + " must remain readable");
+}
+assert.match(declarations(employeeCss, ".employee-distribution-shell .portal-search input"), /font-size:\\s*1rem/);
+for (const selector of [
+  ".employee-distribution-shell .portal-search input",
+  ".employee-distribution-shell .portal-search>button",
+  ".employee-distribution-shell .user-summary button",
+]) {
+  assert.match(declarations(employeeCss, selector), /min-height:\\s*44px/, selector + " requires 44px touch height");
+}
+assert.match(employeeCss, /@media\\(max-width:570px\\)[\\s\\S]*?\\.employee-distribution-shell \\.user-summary button\\{[^}]*min-height:44px/, "Mobile employee controls must retain 44px touch height");
+
 console.log("NovaPharm Apple HIG typography contract passed across public, corporate, portal, WMS, technology, status, founder and shared React styles.");
