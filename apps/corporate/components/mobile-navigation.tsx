@@ -35,6 +35,18 @@ export function MobileNavigation({ items, portalOrigin, locale }: MobileNavigati
     return () => document.removeEventListener("keydown", closeOnEscape);
   }, []);
 
+  // A temporary navigation menu closes on outside interaction without
+  // intercepting browser edit commands or ordinary link navigation.
+  useEffect(() => {
+    const closeOutside = (event: PointerEvent) => {
+      if (!detailsRef.current?.open || detailsRef.current.contains(event.target as Node)) return;
+      detailsRef.current.open = false;
+      setOpen(false);
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    return () => document.removeEventListener("pointerdown", closeOutside);
+  }, []);
+
   function close() {
     if (!detailsRef.current) return;
     detailsRef.current.open = false;
