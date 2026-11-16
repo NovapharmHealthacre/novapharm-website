@@ -24,6 +24,7 @@ const routes = [
   { path: "/products/nutraxin/bag/", name: "nutraxin-bag", required: "Your Bag." },
   { path: "/products/esco/", name: "esco-collection", required: "ESCO" },
   { path: "/products/marketplace/", name: "marketplace", required: "Everything, together." },
+  { path: "/news-insights/three-pillar-pharmaceutical-sourcing-model/", name: "sourcing-insight", required: "Three-Pillar Sourcing" },
   { path: "/account-application/", name: "business-account", required: "An account is approved through evidence" },
   { path: "/legal/privacy/", name: "privacy", required: "Privacy" },
   { path: "/legal/cookies/", name: "cookies", required: "Cookie and storage notice" }
