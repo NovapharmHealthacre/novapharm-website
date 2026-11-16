@@ -63,7 +63,7 @@ export function NotificationPreferenceEditor({
     setConfirmed(values);
     revisionRef.current = record.revision;
     setStatus("");
-  }, [record?.revision]);
+  }, [record?.verified, record?.revision]);
 
   const canEdit = Boolean(record?.verified && record.revision && onSave);
   const changed = record?.topics.some((topic) =>
