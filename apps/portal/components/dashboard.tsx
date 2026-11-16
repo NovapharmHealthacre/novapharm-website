@@ -120,6 +120,7 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
   const [searchText, setSearchText] = useState("");
   const [searchBusy, setSearchBusy] = useState(false);
   const [searchAnnouncement, setSearchAnnouncement] = useState("");
+  const [searchFailure, setSearchFailure] = useState<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchGeneration = useRef(0);
   const searchResultsId = useId();
@@ -170,6 +171,7 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
     if (query.length < 2) return;
     const generation = ++searchGeneration.current;
     setSearchResults([]);
+    setSearchFailure(null);
     setSearchBusy(true);
     setSearchOpen(true);
     setSearchAnnouncement("Searching authorised records.");
@@ -177,11 +179,14 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
       const result = await gatewayJson<{ results: readonly SearchResult[] }>(`enterprise/search?q=${encodeURIComponent(query)}`);
       if (generation !== searchGeneration.current) return;
       setSearchResults(result.results);
+      setSearchFailure(null);
       setSearchAnnouncement(`${result.results.length} authorised ${result.results.length === 1 ? "record" : "records"} found.`);
     } catch (error) {
       if (generation !== searchGeneration.current) return;
       setSearchResults([]);
-      setSearchAnnouncement(professionalError(error));
+      const failure = professionalError(error);
+      setSearchFailure(failure);
+      setSearchAnnouncement(failure);
     } finally {
       if (generation === searchGeneration.current) setSearchBusy(false);
     }
@@ -232,6 +237,7 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
   function clearSearch() {
     updateSearch("");
     setSearchOpen(false);
+    setSearchFailure(null);
     setSearchAnnouncement("Search cleared.");
     searchInputRef.current?.focus();
   }
@@ -284,7 +290,7 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
             })}
           </nav>
         </> : null}
-        <button className="menu-button np-icon-control" type="button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu aria-hidden="true" className="np-symbol" /></button><search><form className="portal-search" onSubmit={search}><Search aria-hidden="true" className="np-symbol" /><label className="sr-only" htmlFor="portal-search">Search authorised records</label><input ref={searchInputRef} id="portal-search" name="query" type="search" minLength={2} maxLength={120} autoComplete="off" enterKeyHint="search" aria-keyshortcuts="Meta+K Control+K" aria-describedby={searchScopeId} aria-controls={searchOpen ? searchResultsId : undefined} aria-busy={searchBusy || undefined} placeholder={`Search ${areaLabels[module.area].toLowerCase()} records`} value={searchText} onChange={(event) => updateSearch(event.currentTarget.value)} />{searchText ? <button type="button" className="search-clear" aria-label="Clear authorised record search" onClick={clearSearch}>Clear</button> : null}<button type="submit" disabled={searchBusy}>Search</button>{searchOpen ? <section className="search-results" id={searchResultsId} aria-label="Authorised search results"><button className="search-close np-icon-control" type="button" aria-label="Close search results" onClick={() => setSearchOpen(false)}><X aria-hidden="true" className="np-symbol" /></button>{searchBusy ? <p>Searching current records…</p> : searchResults.length ? searchResults.map((result) => <a key={`${result.type}-${result.reference}`} href={result.route}><strong>{result.title}</strong><span>{result.type} · {result.reference}{result.status ? ` · ${readable(result.status)}` : ""}</span></a>) : <p>No authorised records found in this scope.</p>}</section> : null}</form><p className="portal-search-scope" id={searchScopeId}>Search scope: your authorised {areaLabels[module.area].toLowerCase()} records. No search history saved.</p><p className="sr-only" role="status" aria-live="polite">{searchAnnouncement}</p></search><div className="user-summary"><span>{user?.displayName ?? "Secure user"}</span><small>{user ? readable(user.accessType) : "Verifying"}</small>{isEditorialPortal ? <button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data">Refresh</button> : null}<button type="button" onClick={logout} aria-label="Sign out">{isEditorialPortal ? "Sign out" : <LogOut aria-hidden="true" className="np-symbol" />}</button></div></header>
+        <button className="menu-button np-icon-control" type="button" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu aria-hidden="true" className="np-symbol" /></button><search><form className="portal-search" onSubmit={search}><Search aria-hidden="true" className="np-symbol" /><label className="sr-only" htmlFor="portal-search">Search authorised records</label><input ref={searchInputRef} id="portal-search" name="query" type="search" minLength={2} maxLength={120} autoComplete="off" enterKeyHint="search" aria-keyshortcuts="Meta+K Control+K" aria-describedby={searchScopeId} aria-controls={searchOpen ? searchResultsId : undefined} aria-busy={searchBusy || undefined} placeholder={`Search ${areaLabels[module.area].toLowerCase()} records`} value={searchText} onChange={(event) => updateSearch(event.currentTarget.value)} />{searchText ? <button type="button" className="search-clear" aria-label="Clear authorised record search" onClick={clearSearch}>Clear</button> : null}<button type="submit" disabled={searchBusy}>Search</button>{searchOpen ? <section className="search-results" id={searchResultsId} aria-label="Authorised search results"><button className="search-close np-icon-control" type="button" aria-label="Close search results" onClick={() => setSearchOpen(false)}><X aria-hidden="true" className="np-symbol" /></button>{searchBusy ? <p>Searching current records…</p> : searchFailure ? <div role="alert"><p>Search could not be completed. {searchFailure}</p><button type="button" onClick={() => void runSearch(searchText.trim().slice(0, 120))} disabled={searchBusy}>Retry authorised search</button></div> : searchResults.length ? searchResults.map((result) => <a key={`${result.type}-${result.reference}`} href={result.route}><strong>{result.title}</strong><span>{result.type} · {result.reference}{result.status ? ` · ${readable(result.status)}` : ""}</span></a>) : <p>No authorised records found in this scope.</p>}</section> : null}</form><p className="portal-search-scope" id={searchScopeId}>Search scope: your authorised {areaLabels[module.area].toLowerCase()} records. No search history saved.</p><p className="sr-only" role="status" aria-live="polite">{searchAnnouncement}</p></search><div className="user-summary"><span>{user?.displayName ?? "Secure user"}</span><small>{user ? readable(user.accessType) : "Verifying"}</small>{isEditorialPortal ? <button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data">Refresh</button> : null}<button type="button" onClick={logout} aria-label="Sign out">{isEditorialPortal ? "Sign out" : <LogOut aria-hidden="true" className="np-symbol" />}</button></div></header>
       <div className="workspace-content">
         {/* The route and scope are already verified on the server. Generic, non-sensitive
             guidance is rendered immediately so account data loading cannot cause CLS.
