@@ -55,6 +55,7 @@ The original public release exposed a risk in the analytics route allowlist: any
 
 - New privacy gate: the only reportable Nutraxin routes are the public product landing `/products/nutraxin/` and the 19 explicitly reviewed product-detail slugs present in `assets/data/nutraxin-retail-catalogue.json`.
 - Any account, Bag, checkout, order, payment, receipt, nested or future unreviewed route is denied by default; the normal consent requirement and no-personal-data event sanitiser remain in force.
+- The same fail-closed gate covers all `/products/` paths: only the public Products landing, Strategic Portfolio, Marketplace and ESCO catalogue indexes can be measured, while tracking, private commerce, payment and future unreviewed URLs are excluded.
 - Adding a public product route now requires an explicit source-code allowlist review. Regression tests compare the allowlist with all 19 current catalogue products and test sensitive and unlisted paths.
 - This is a source-level follow-up, not a claim that the new fix is already published; confirm its PR, exact release SHA and a live on-domain no-GA4 check before asserting it is live.
 
