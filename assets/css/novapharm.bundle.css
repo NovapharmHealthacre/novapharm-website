@@ -7183,7 +7183,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   background: transparent;
   color: #24272a;
   font-family: var(--npd-system);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 520;
   line-height: 1;
   text-decoration: none;
@@ -7260,7 +7260,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   align-items: center;
   min-height: 52px;
   color: var(--npd-text);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 520;
   text-decoration: none;
   white-space: nowrap;
@@ -7327,7 +7327,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-eyebrow {
   margin: 0 0 18px;
   color: var(--npd-red-dark);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 700;
   line-height: 1.3;
   text-transform: uppercase;
@@ -7375,7 +7375,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   max-width: 620px;
   margin: 24px 0 0;
   color: rgba(255, 255, 255, 0.78);
-  font-size: 12px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   line-height: 1.45;
 }
 
@@ -7498,7 +7498,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-portfolio-list article > span,
 .npd-account-stages span {
   color: var(--npd-red-dark);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 700;
 }
 
@@ -7544,7 +7544,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 
 .npd-roadmap span {
   color: var(--npd-red-dark);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 700;
 }
 
@@ -7644,7 +7644,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-split figcaption {
   margin-top: 12px;
   color: var(--npd-muted);
-  font-size: 12px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   line-height: 1.4;
 }
 
@@ -7725,7 +7725,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 
 .npd-maturity span {
   color: var(--npd-red-dark);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 700;
 }
 
@@ -7802,7 +7802,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   max-width: 760px;
   margin: 34px 0 0;
   color: var(--npd-muted);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
 }
 
 .npd-facts,
@@ -7830,7 +7830,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-product-meta dt,
 .npd-composition dt {
   color: var(--npd-muted);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 620;
 }
 
@@ -7889,7 +7889,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 
 .npd-capability-list > a > span {
   color: var(--npd-red-dark);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 700;
 }
 
@@ -8123,7 +8123,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   display: inline-flex;
   align-items: center;
   color: var(--npd-text);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
@@ -8203,7 +8203,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-product-card p {
   margin: 0 0 8px;
   color: var(--npd-red-dark);
-  font-size: 12px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -8241,7 +8241,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 
 .npd-breadcrumb :where(a, span) {
   color: var(--npd-muted);
-  font-size: 12px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   white-space: nowrap;
 }
 
@@ -8316,7 +8316,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-portfolio-list article div > p:first-child {
   margin: 0 0 8px;
   color: var(--npd-red-dark);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 700;
 }
 
@@ -8341,7 +8341,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-insight-list span {
   margin: 0 0 12px;
   color: var(--npd-red-dark);
-  font-size: 12px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -8366,7 +8366,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 
 .npd-insight-lead > span {
   color: var(--npd-muted);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
 }
 
 .npd-insight-secondary {
@@ -8411,7 +8411,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-insight-list :where(span, time) {
   margin: 0;
   color: var(--npd-muted);
-  font-size: 12px;
+  font-size: var(--np-type-caption-size, 0.875rem);
 }
 
 .npd-insight-list time {
@@ -8504,7 +8504,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   margin: 4px 0 18px;
   color: var(--npd-ink);
   font-family: var(--npd-system);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   font-weight: 700;
   line-height: 1.4;
   letter-spacing: 0;
@@ -8522,7 +8522,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   background: transparent;
   color: var(--npd-text);
   font-family: var(--npd-system);
-  font-size: 13px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   line-height: 1.35;
   text-align: left;
   text-decoration: none;
@@ -8555,7 +8555,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 .npd-footer-notices p {
   margin: 10px 0;
   color: var(--npd-muted);
-  font-size: 12px;
+  font-size: var(--np-type-caption-size, 0.875rem);
   line-height: 1.55;
 }
 
@@ -8567,7 +8567,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   padding-top: 18px;
   border-top: 1px solid var(--npd-line);
   color: var(--npd-muted);
-  font-size: 12px;
+  font-size: var(--np-type-caption-size, 0.875rem);
 }
 
 .npd-footer-bottom a {
@@ -8844,7 +8844,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
 
   .npd-local-nav a {
     min-height: 48px;
-    font-size: 12px;
+    font-size: var(--np-type-caption-size, 0.875rem);
   }
 
   .npd-local-nav div div {
@@ -9135,7 +9135,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   }
 
   .npd-footer-bottom {
-    font-size: 12px;
+    font-size: var(--np-type-caption-size, 0.875rem);
   }
 }
 
@@ -9321,7 +9321,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
     min-height: var(--npd-header);
     padding: 0 clamp(5px, .55vw, 9px);
-    font-size: 12px;
+    font-size: var(--np-type-caption-size, 0.875rem);
     font-weight: 500;
     white-space: nowrap;
     color: #303034;
@@ -9363,7 +9363,7 @@ body[data-page="home"] .npd-global-nav.site-nav > a:not(.btn) {
   .npd-mega-column > p {
     margin: 0 0 16px;
     color: #77777c;
-    font-size: 12px;
+    font-size: var(--np-type-caption-size, 0.875rem);
     line-height: 1.25;
     font-weight: 500;
   }
