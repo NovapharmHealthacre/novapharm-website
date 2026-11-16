@@ -88,11 +88,14 @@ const guides: Readonly<Record<AccountAudience, Guide>> = {
 export function AccountAccessHelp({
   audience,
   authenticated = false,
-}: Readonly<{ audience: AccountAudience; authenticated?: boolean }>) {
+  replay = false,
+}: Readonly<{ audience: AccountAudience; authenticated?: boolean; replay?: boolean }>) {
   const guide = guides[audience];
   return (
     <details className="account-access-help">
-      <summary>{authenticated ? "Getting started in this workspace" : "New here? How account access works"}</summary>
+      <summary>{authenticated
+        ? replay ? "Review account access and onboarding" : "Getting started in this workspace"
+        : "New here? How account access works"}</summary>
       <div className="account-access-help-body">
         <p>{authenticated
           ? "Optional tips for your current workspace. You can keep working without completing a tutorial."
