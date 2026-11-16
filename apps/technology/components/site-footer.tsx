@@ -3,8 +3,8 @@ import Link from "next/link";
 import { Brand } from "@/components/brand";
 import { ArrowUpRight } from "@/components/icons";
 import { navigation, site } from "@/data/site";
-import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
 import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
+import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
 
 export function SiteFooter({ locale }: Readonly<{ locale: InterfaceLocale }>) {
   return (
