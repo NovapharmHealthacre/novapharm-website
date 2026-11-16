@@ -4,6 +4,7 @@ import { Brand } from "@/components/brand";
 import { ArrowUpRight } from "@/components/icons";
 import { navigation, site } from "@/data/site";
 import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
+import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
 
 export function SiteFooter({ locale }: Readonly<{ locale: InterfaceLocale }>) {
   return (
@@ -54,6 +55,7 @@ export function SiteFooter({ locale }: Readonly<{ locale: InterfaceLocale }>) {
             <Link href="/terms">{interfaceLabel(locale, "Terms")}</Link>
           </div>
           <p><a href="https://novapharmhealthcare.com/">NovaPharm Healthcare digital estate</a> · Vadodara · India</p>
+          <InterfaceLocaleSwitcher locale={locale} />
         </div>
       </div>
     </footer>
