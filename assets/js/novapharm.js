@@ -87,6 +87,18 @@ if (megaHeader) {
   triggers.forEach((trigger) => {
     trigger.addEventListener("pointerenter", () => openMega(trigger));
     trigger.addEventListener("focus", () => openMega(trigger));
+    // A top-level category click opens its choices like a menu. Each panel
+    // contains the category overview link; without JS, the anchor still works.
+    // Never intercept browser/system modified-click shortcuts.
+    trigger.addEventListener("click", (event) => {
+      if (!desktop.matches || event.button !== 0 ||
+          event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+      const panel = panels.find((candidate) => candidate.dataset.megaPanel === trigger.dataset.megaTrigger);
+      if (!panel) return;
+      event.preventDefault();
+      openMega(trigger);
+      panel.querySelector("a")?.focus({ preventScroll: true });
+    });
     trigger.addEventListener("keydown", (event) => {
       if (event.key !== "ArrowDown" || !desktop.matches) return;
       event.preventDefault();

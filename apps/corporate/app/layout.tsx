@@ -20,6 +20,7 @@ import "../../../assets/css/novapharm-hig-materials.css";
 import "../../../assets/css/novapharm-apple-27-web-adaptation.css";
 import "../../../assets/css/novapharm-hig-motion.css";
 import "../../../assets/css/rtl-localization.css";
+import "../../../assets/css/apple-web-navigation.css";
 import { CookieControls } from "@/components/cookie-controls";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";

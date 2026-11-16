@@ -3,6 +3,9 @@ on:
   pull_request:
     paths:
       - "assets/css/apple-hig-layout.css"
+      - "assets/css/apple-web-navigation.css"
+      - "apps/corporate/components/brand.tsx"
+      - "scripts/test-apple-web-navigation.mjs"
       - "assets/css/novapharm.css"
       - "assets/css/novapharm.bundle.css"
       - "scripts/build-css-bundle.mjs"
@@ -48,7 +51,7 @@ jobs:
         with:
           node-version: "22"
       - name: Verify shared layout contract and 54-module shell coverage
-        run: node --test scripts/test-apple-layout-contract.mjs scripts/test-apple-layout-organization.mjs scripts/test-apple-rtl-contract.mjs scripts/test-apple-rtl-public-artifact.mjs
+        run: node --test scripts/test-apple-layout-contract.mjs scripts/test-apple-layout-organization.mjs scripts/test-apple-rtl-contract.mjs scripts/test-apple-rtl-public-artifact.mjs scripts/test-apple-web-navigation.mjs
       - name: Rebuild canonical public stylesheet
         run: node scripts/build-css-bundle.mjs
       - name: Verify published CSS is reproducible

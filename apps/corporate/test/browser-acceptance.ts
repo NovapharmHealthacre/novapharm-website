@@ -198,7 +198,30 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
   assert.equal(await page.locator("h1").count(), 1, `${engine} ${route}: expected exactly one H1`);
   const logo = page.locator('header img[alt="NovaPharm Healthcare"]');
   assert.equal(await logo.count(), 1, `${engine} ${route}: official header logo missing`);
-  assert.match(await logo.getAttribute("src") ?? "", /novapharm-healthcare-logo\.png$/, `${engine} ${route}: unofficial header logo`);
+  assert.match(await logo.getAttribute("src") ?? "", /novapharm-healthcare-logo\.png$/, `${engine} ${route}: header must retain the approved original NovaPharm logo`);
+
+  const navigationPresentation = await page.evaluate(() => {
+    const header = document.querySelector("header.site-header");
+    if (!header) return null;
+    const styling = getComputedStyle(header);
+    return { height: Math.round(header.getBoundingClientRect().height), background: styling.backgroundColor };
+  });
+  assert.equal(navigationPresentation?.height, 52, `${engine} ${viewport.name} ${route}: expected compact 52px Apple-style web navigation`);
+  assert.equal(navigationPresentation?.background, "rgb(23, 23, 25)",
+    `${engine} ${viewport.name} ${route}: expected dark charcoal navigation material`);
+  if (viewport.width > 1300) {
+    assert.equal(await page.locator("header .desktop-nav").isVisible(), true,
+      `${engine} ${viewport.name} ${route}: desktop navigation missing`);
+    if (route === "/" && viewport.name === "desktop-1440") {
+      const navInk = await page.locator('header .desktop-nav > a[href="/about/"]').evaluate(
+        (anchor) => getComputedStyle(anchor).color);
+      assert.equal(navInk, "rgb(214, 214, 218)",
+        `${engine}: editorial homepage desktop navigation must use legible light ink on charcoal`);
+    }
+  } else {
+    assert.equal(await page.locator("header .mobile-menu summary").isVisible(), true,
+      `${engine} ${viewport.name} ${route}: responsive navigation trigger missing`);
+  }
 
   const keyViewport = viewport.name === "desktop-1440" || viewport.name === "mobile-390";
   if (keyViewport) {
