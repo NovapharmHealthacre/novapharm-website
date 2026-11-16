@@ -48,6 +48,66 @@ body[data-page] header.site-header.npd-header .npd-global-nav.site-nav > a[aria-
   border-radius: 0;
   padding-inline: clamp(6px, 0.8vw, 14px);
 }
+/* The managed homepage has an older editorial selector based on :has()
+   with greater specificity than the general header. Restore accessible text,
+   truthful link labels, the portal action and the intended global dimensions. */
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .header-inner {
+  width: min(calc(100% - 64px), 1180px);
+  max-width: 1180px;
+  min-height: 52px;
+  height: 52px;
+  gap: clamp(14px, 2vw, 30px);
+}
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .brand {
+  width: 176px;
+  max-width: 176px;
+}
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav {
+  gap: 0;
+  justify-content: space-between;
+}
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a {
+  color: #d6d6da;
+  font-size: 12.5px;
+  font-weight: 430;
+  line-height: 1.15;
+  letter-spacing: 0;
+  padding-block: 0;
+}
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a:hover,
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a:focus-visible {
+  color: #fff;
+}
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/portal/"] {
+  display: inline-flex;
+  min-height: 32px;
+  height: 32px;
+  padding-inline: 15px;
+  border-radius: 999px;
+  background: #b50f0b;
+  color: #fff;
+}
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/portal/"]:hover,
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/portal/"]:focus-visible {
+  background: #d41b15;
+  color: #fff;
+}
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"] {
+  font-size: 12.5px;
+}
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]::before,
+html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .desktop-nav > a[href="/technology/"]::after {
+  content: none;
+}
+@media (max-width: 620px) {
+  html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .header-inner {
+    width: calc(100% - 36px);
+  }
+  html[data-np-estate="corporate"] body:has(.nph-editorial-home) .site-header .brand {
+    width: 158px;
+    max-width: 158px;
+  }
+}
 .npd-header-inner.header-inner,
 body[data-page="home"] .npd-header-inner.header-inner,
 html[data-np-estate="corporate"] .header-inner {
