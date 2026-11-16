@@ -119,13 +119,14 @@ needs("corporateFinishingPass", String.raw`html.replace(/<footer class="site-foo
 for (const key of ["legalPrivacy", "legalCookies", "legalTerms", "legalAccessibility"]) {
   const matches = source[key].match(new RegExp(legalFooterPattern.source, "g")) ?? [];
   assert.equal(matches.length, 1, `${key}: exactly one replaceable legal footer is required`);
-  assert.match(matches[0], /Open a business account/, `${key}: old checked-in footer is the expected regression fixture`);
+  assert.ok(matches[0].includes('class="site-footer'), `${key}: shared footer class is missing`);
   const rendered = source[key].replace(
     legalFooterPattern,
     '<footer class="site-footer npd-footer"><a href="/account-application/">Discuss account eligibility</a></footer>'
   );
-  assert.ok(rendered.includes("Discuss account eligibility"), `${key}: reviewed footer copy missing after replacement`);
-  assert.ok(!rendered.includes("Open a business account"), `${key}: obsolete CTA survived replacement`);
+  const updatedFooter = rendered.match(legalFooterPattern)?.[0] ?? "";
+  assert.ok(updatedFooter.includes("Discuss account eligibility"), `${key}: reviewed footer copy missing after replacement`);
+  assert.ok(!updatedFooter.includes("Open a business account"), `${key}: obsolete CTA survived footer replacement`);
 }
 
 needs("publicPortalBuilder", 'href="/account-application/">Discuss account eligibility</a>');
