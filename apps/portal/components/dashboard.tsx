@@ -4,6 +4,7 @@ import { adminModules, customerModules, employeeModules, executiveModules, type 
 import { Activity, ArrowUpRight, LogOut, Menu, RefreshCw, Search, ShieldCheck, X } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useId, useRef, useState } from "react";
 import { nutraxinProductForSelection } from "../data/nutraxin-order-intent";
+import { isNovaMlWorkspaceSlug } from "../data/nova-ml-modules";
 import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { areaLabels, areaLandingRoutes, areaScopes } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError, protectedMutation } from "../lib/gateway";
@@ -142,7 +143,23 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
         setSnapshot(null);
         return false;
       }
-      const moduleSnapshot = await gatewayJson<Snapshot>(`enterprise/modules/${encodeURIComponent(module.code)}`);
+      // Nova ML is a separate model-governance surface. Do not request the
+      // medicine-specific enterprise module snapshot merely to render its UI.
+      // Authentication and scope checks above still apply to every route.
+      const privateModelGovernance = module.code === "executive.nhs-data" && isNovaMlWorkspaceSlug(subview ?? "");
+      const moduleSnapshot: Snapshot = privateModelGovernance
+        ? {
+            module,
+            environment: "protected",
+            dataState: "not_applicable",
+            dataFreshness: "not_applicable",
+            readOnly: true,
+            metrics: [],
+            sections: [],
+            notices: [],
+            actions: [],
+          }
+        : await gatewayJson<Snapshot>(`enterprise/modules/${encodeURIComponent(module.code)}`);
       setUser(session.user);
       setSnapshot(moduleSnapshot);
       return true;
@@ -153,7 +170,7 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
     } finally {
       setLoading(false);
     }
-  }, [module.area, module.code]);
+  }, [module.area, module.code, subview]);
 
   useEffect(() => { void load(); }, [load]);
 

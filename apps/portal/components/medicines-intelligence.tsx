@@ -1033,7 +1033,7 @@ export function MedicinesIntelligence({ loading, onLogout, onRefresh, parentStat
   else if (current === "tender-intelligence" || current === "portfolio" || current === "alerts" || current === "reports" || current === "decision-workspace") {
     central = <ProfessionalWorkspace kind={current} detail={detail} analytics={analytics} />;
   }
-  else if (isNovaMlWorkspaceSlug(current)) central = <NovaMlWorkspace kind={current} />;
+  else if (isNovaMlWorkspaceSlug(current)) central = <NovaMlWorkspace key={current} kind={current} />;
   else if (current === "campaigns") central = <UnavailableEvidence title="Campaigns" statement="No outreach campaign is active. Imported business contacts are marketing-ineligible by default and are not exposed in this view." requirements={["Lawful-purpose and channel review", "Contact evidence and suppression controls", "Human-approved content and target snapshot", "Audited delivery integration"]} />;
   else {
     const workspace = intelligenceWorkspaceBySlug.get(current);

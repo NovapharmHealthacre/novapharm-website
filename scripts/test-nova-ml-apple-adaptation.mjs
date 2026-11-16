@@ -34,7 +34,7 @@ test("four extensions use existing verified SSR portal routing, not public bypas
   assert.match(page, /sessionDecision\(view, session\)/);
   assert.match(page, /if \(decision !== "allow"\) redirect\("\/"\)/);
   assert.match(view, /isNovaMlWorkspaceSlug\(current\)/);
-  assert.match(view, /<NovaMlWorkspace kind=\{current\}/);
+  assert.match(view, /<NovaMlWorkspace key=\{current\} kind=\{current\}/);
   assert.match(view, /Nova ML · Apple companion/);
   assert.match(view, /!isNovaMlWorkspaceSlug\(key\)/);
   assert.match(view, /const isNovaMlView = isNovaMlWorkspaceSlug\(current\)/);
@@ -42,6 +42,18 @@ test("four extensions use existing verified SSR portal routing, not public bypas
   assert.match(view, /isNovaMlView \? styles\.novaMlCanvas : styles\.workspaceGrid/);
   assert.match(view, /!isNovaMlView \? <aside id="medicines-context-panel"/);
   assert.match(view, /isNovaMlView \? <p className=\{styles\.novaMlToolbarTitle\}/);
+});
+
+test("Nova ML does not fetch the unrelated Medicines Intelligence module snapshot", () => {
+  const dashboard = source("apps/portal/components/dashboard.tsx");
+  const ml = source("apps/portal/components/medicines-intelligence.tsx");
+  assert.match(dashboard, /isNovaMlWorkspaceSlug\(subview \?\? ""\)/);
+  assert.match(dashboard, /const privateModelGovernance = module\.code === "executive\.nhs-data"/);
+  assert.match(dashboard, /const moduleSnapshot: Snapshot = privateModelGovernance/);
+  assert.match(dashboard, /\? \{/);
+  assert.match(dashboard, /: await gatewayJson<Snapshot>\(/);
+  assert.match(dashboard, /\[module\.area, module\.code, subview\]/);
+  assert.match(ml, /<NovaMlWorkspace key=\{current\} kind=\{current\}/);
 });
 
 test("new web UI cannot imply native inference or capture personal data", () => {

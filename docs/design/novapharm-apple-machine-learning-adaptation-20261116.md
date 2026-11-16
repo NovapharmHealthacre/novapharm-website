@@ -2,7 +2,7 @@
 
 **Review date:** 16 November 2026  
 **GitHub implementation:** `codex/apple-hig-machine-learning-20261116`  
-**Status:** source implementation candidate; NOT production deployed, native compiled or independently accepted.
+**Status (16 November 2026):** PR #770 merged into main at `be1a189a3400a8745e397bacc1a0393f67f8d691`; 23/23 PR checks and macOS Swift Package denial tests passed. The authenticated Nova ML runtime is **not independently verified deployed**, no signed Apple app exists, and live production issue #780 is still open. Do not mistake source/CI evidence for working models.
 
 ## Product decision
 
@@ -27,7 +27,7 @@ The protected routes are:
 
 The existing Medicines Intelligence subview addresses remain compatible as protected aliases, but the Nova ML address family is the dedicated entry.
 
-**Isolated web UX:** Nova ML renders its own model-governance toolbar and full-width layout rather than exposing the medical search input, record filters, analytics context rail, medicine-specific notices or medicine-identifier deep-link restoration. The shared navigation and verified portal session remain intact. This prevents an unrelated medicine query from being automatically restored when an authorised user opens a Nova ML route; no ML candidate consumes the medicine search state. Both routes use the same server-side authorization gate.
+**Isolated web UX:** Nova ML renders its own model-governance toolbar and full-width layout rather than exposing the medical search input, record filters, analytics context rail, medicine-specific notices or medicine-identifier deep-link restoration. The shared navigation and verified portal session remain intact. This prevents an unrelated medicine query from being automatically restored when an authorised user opens a Nova ML route; no ML candidate consumes the medicine search state. Both routes use the same server-side authorization gate. On Nova ML routes, after the portal session and scope checks, the dashboard now creates a fixed, empty, read-only governance snapshot instead of fetching the medicine-specific `enterprise/modules/executive.nhs-data` snapshot. This is a privacy/data-minimisation boundary for a model-governance view, not a shortcut around authorization. The temporary preparation checklist is keyed by each ML module slug so toggles do not leak between different module pages.
 
 They resolve through the existing `executive.nhs-data` protected module and server-verifiable session. Do not create public endpoints or bypass current role gating. A web deep link is an implementation path, not evidence that a live deployment contains it.
 
@@ -98,3 +98,18 @@ The public source-backed search and its browser-side lexical-semantic worker con
 ## Acceptance and rollback
 
 Run `node --test scripts/test-nova-ml-apple-adaptation.mjs` in CI. Run the existing Portal TypeScript, design system, governance and production readiness suites before a merge. If runtime checks fail, leave the PR open. Roll back by reverting the new route-registration and module UI commits; keep all native candidates behind the independent signed application release gate.
+
+## NovaPharm-wide machine-learning design DNA (cross-estate contract)
+
+The Apple HIG Machine Learning and Privacy guidelines are **default design and release requirements** for new ML experiences across Corporate, Technology, Founder, Distribution/WMS, customer ordering, protected Intelligence and native apps. This is a cross-estate **policy**, not an assertion that unbuilt AI is live in every application.
+
+| Surface | Default user-facing pattern | Security / deployment boundary |
+| --- | --- | --- |
+| Corporate and Technology public pages | Explain what a capability does, its availability and limitations; cite source evidence; don't imply proprietary Apple frameworks run inside public webpages | No collection of protected account, patient, supplier or browsing signals for AI training by default; no implicit personalisation |
+| Founder, Status, marketing and publications | Human-authored, accountable narratives and precise release status; disclose any machine-generated drafts | No invented statistics, no publication of private prompts/transcripts, no false production or native-app claims |
+| Intelligence and Medicine Terminal | ML is complementary to accepted source evidence; original record, traceable provenance, explicit corrections and manual fallback remain available | Tenant/session RBAC before requests; no medicine snapshot fetched solely to open a Nova ML governance view; model use must be independently approved |
+| Distribution/WMS, procurement, warehouse and replenishment | Human-reviewed suggestions, clear model/source version, documented uncertainty, undo or reject option | Never auto-authorise medication, stock, delivery, batch, QA or regulatory actions from unreviewed predictions |
+| Customer portal, ordering and billing | Clarify optional suggestions and explain limitations; manual ordering unchanged when models are unavailable | No silent price discrimination, inference of sensitive attributes, customer-specific model training or unapproved external transfer |
+| Apple-native candidates | Device-local first, request-only permissions, source attribution, meaningful correction, tested unavailable/rejected states | Approved data rights, isolated holdout, metadata/MLSplitStrategy, signed host/model, eligible hardware/OS, real-device tests and explicit accountable release sign-off |
+
+**Shared acceptance rule:** define the task and risks first, show optional ML state distinctly, never surface unsupported numeric confidence, make explicit feedback voluntary, make corrections reversible, offer understandable fallback, ensure data-minimising permissions and provenance, and disable operations until the backend and native device have separately proven authorisation. A source-level design contract cannot grant a clinical licence or bypass production acceptance.
