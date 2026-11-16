@@ -82,3 +82,6 @@ Release evidence must include exact-head CI, meaningful client interactions at t
 
 ### Location-button link specifically supplied with Buttons
 The [Apple HIG Privacy location button](https://developer.apple.com/design/human-interface-guidelines/privacy#Location-button) is a Core Location UI affordance for native iOS/iPadOS/watchOS granting task-scoped location permission. It is **not** a reusable browser control. NovaPharm must not request location on load, simulate the native one-time authorization, or infer consent. A future web-only feature may request geolocation after a clear user-initiated task with its ordinary browser permission prompt and privacy notice; this PR does not request or store any location.
+
+### Public corporate navigation adoption
+The existing Next.js Corporate MobileNavigation control now dismisses on an outside pointer interaction in addition to its existing Escape handler and route-change handling. This is a focused browser-menu improvement, not a replacement for Apple native menu bar commands. It does not override browser context/edit menus, and a source regression test protects its semantics.
