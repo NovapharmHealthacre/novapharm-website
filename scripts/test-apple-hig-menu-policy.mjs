@@ -52,3 +52,26 @@ test("permanent PR template requires source review and cross-estate acceptance",
   }
   assert.match(documentation, /SharePublicLink/);
 });
+
+test("all distinct user-supplied Apple framework references remain traceable", () => {
+  const doc = read("docs/design/apple-hig-menus-actions-20261116.md");
+  const prefix = "https://developer.apple.com/documentation/";
+  const nativeRefs = [
+    "uikit/uiactivityviewcontroller", "uikit/uiactivity", "foundation/app-extension-support",
+    "swiftui/button", "uikit/uibutton", "appkit/nsbutton",
+    "swiftui/view/contextmenu(menuitems:", "uikit/uicontextmenuinteraction",
+    "appkit/nsmenu/popupcontextmenu(_:with:for:", "appkit/nsapplicationdelegate/applicationdockmenu(_:",
+    "uikit/uieditmenuinteraction", "appkit/nsmenu", "uikit/add-home-screen-quick-actions",
+    "swiftui/menu", "uikit/menus-and-shortcuts", "appkit/menus",
+    "swiftui/view/ornament(visibility:attachmentanchor:contentalignment:ornament:",
+    "swiftui/menupickerstyle", "uikit/uibutton/changesselectionasprimaryaction",
+    "appkit/nspopupbutton", "uikit/uicontrol/showsmenuasprimaryaction",
+    "appkit/nspopupbutton/pullsdown", "swiftui/commandmenu",
+    "uikit/adding-menus-and-shortcuts-to-the-menu-bar-and-user-interface",
+    "appkit/nsstatusbar", "swiftui/toolbars", "uikit/uitoolbar", "appkit/nstoolbar",
+  ];
+  for (const route of nativeRefs) {
+    assert.ok(doc.includes(prefix + route), "Missing native API reference: " + route);
+  }
+  assert.ok(doc.includes("https://developer.apple.com/design/human-interface-guidelines/privacy#Location-button"));
+});
