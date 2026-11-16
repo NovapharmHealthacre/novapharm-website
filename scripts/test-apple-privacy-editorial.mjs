@@ -52,8 +52,13 @@ test("NovaPharm privacy editorial appearance is responsive and independent of Ap
   assert.match(css, /@media \(forced-colors: active\)/);
   assert.match(css, /focus-visible/);
   assert.match(css, /min-height: 46px/);
-  assert.match(css, /\\.np-privacy-overview \\.np-privacy-eyebrow \\{[^}]*font-size: var\\(--np-type-caption-size, 0\\.875rem\\)/s);
-  assert.match(css, /\\.np-privacy-topic-links \\.np-privacy-topic-label \\{[^}]*font-size: var\\(--np-type-caption-size, 0\\.875rem\\)/s);
+  for (const label of [".np-privacy-overview .np-privacy-eyebrow", ".np-privacy-topic-links .np-privacy-topic-label"]) {
+    const marker = `body[data-page="legal/privacy"] ${label} {`;
+    const start = css.indexOf(marker);
+    assert.ok(start >= 0, `Missing privacy label: ${label}`);
+    const rule = css.slice(start, css.indexOf("}", start) + 1);
+    assert.ok(rule.includes("font-size: var(--np-type-caption-size, 0.875rem);"), `Privacy caption must use governed 14px token: ${label}`);
+  }
   assert.doesNotMatch(html, /apple\.com\/privacy\/|apple-logo\.svg|apple-intelligence\.png/);
 });
 
