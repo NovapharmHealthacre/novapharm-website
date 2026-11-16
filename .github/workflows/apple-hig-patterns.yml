@@ -6,6 +6,9 @@ on:
       - 'packages/design-system/test/**'
       - 'apps/portal/components/wms-capacity-scenario-studio.tsx'
       - 'apps/portal/components/wms-recorded-evidence-studio.tsx'
+      - 'apps/portal/components/medicines-intelligence.tsx'
+      - 'apps/portal/lib/observed-chart-series.ts'
+      - 'apps/portal/test/observed-chart-series.test.ts'
       - 'apps/portal/app/employee-distribution.css'
       - 'apps/portal/test/wms-patterns.test.ts'
       - 'docs/design/apple-hig-patterns-2026-11-16.md'
@@ -33,3 +36,5 @@ jobs:
         run: npx tsx --test apps/portal/test/wms-patterns.test.ts
       - name: Validate WMS resource planning constraints
         run: npx tsx --test apps/portal/test/wms-capacity-scenario.test.ts
+      - name: Prevent missing medicine observations being charted as zero
+        run: npx tsx --test apps/portal/test/observed-chart-series.test.ts
