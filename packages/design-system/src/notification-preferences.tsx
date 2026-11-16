@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import React, { useEffect, useRef, useState, type FormEvent } from "react";
 
 /** This is a client presentation model, not an authority or delivery engine. */
 export type NotificationTopic = Readonly<{
