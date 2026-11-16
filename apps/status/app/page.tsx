@@ -38,7 +38,7 @@ export default async function StatusPage() {
         <a className="brand" href="https://novapharmhealthcare.com/" aria-label="NovaPharm Healthcare home">
           <Image src="/assets/brand/novapharm-healthcare-logo.svg" alt="NovaPharm Healthcare" width="2048" height="258" priority />
         </a>
-        <span>{interfaceLabel(locale, "Service status")}</span>
+        <span lang={locale}>{interfaceLabel(locale, "Service status")}</span>
       </header>
       <section className="status-hero" aria-labelledby="status-title">
         <p className="eyebrow">Digital estate availability</p>
@@ -48,7 +48,7 @@ export default async function StatusPage() {
         <div className="status-meta">
           <span className={`overall overall-${snapshot.overall}`}>{overallLabels[snapshot.overall]}</span>
           <span>Checked {checked} UTC</span>
-          <a className="refresh-command" href="/"><RefreshCw aria-hidden="true" className="np-symbol" />{interfaceLabel(locale, "Refresh")}</a>
+          <a className="refresh-command" href="/"><RefreshCw aria-hidden="true" className="np-symbol" /><span lang={locale}>{interfaceLabel(locale, "Refresh")}</span></a>
         </div>
       </section>
       <section className="service-band" aria-labelledby="services-title">
