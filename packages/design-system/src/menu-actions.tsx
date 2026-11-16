@@ -20,7 +20,7 @@ export type CommandAction = Readonly<{
 
 function actionable(action: CommandAction): boolean {
   return !action.disabled && Boolean(action.href || action.onSelect)
-    && (!action.destructive || Boolean(action.confirmationMessage));
+    && (!action.destructive || (Boolean(action.onSelect) && Boolean(action.confirmationMessage)));
 }
 
 function activate(action: CommandAction): void {
