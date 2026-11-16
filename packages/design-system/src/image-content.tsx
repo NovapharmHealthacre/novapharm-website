@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useId, useRef, useState, type ChangeEvent, type MouseEventHandler } from "react";
+import React, { useEffect, useId, useRef, useState, type ChangeEvent, type ClipboardEvent, type DragEvent, type KeyboardEvent, type MouseEventHandler } from "react";
 
 /**
  * Web analogues of Apple HIG image views, image buttons and image wells.
@@ -90,15 +90,34 @@ export function LocalImageWell({ label, className }: Readonly<{ label: string; c
   const [error, setError] = useState<string | null>(null);
   useEffect(() => () => { if (preview) URL.revokeObjectURL(preview.url); }, [preview]);
 
-  const select = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.currentTarget.files?.item(0);
-    if (!file) return;
+  const previewFile = (file: File) => {
     const problem = validateLocalPreviewImage(file);
-    event.currentTarget.value = "";
     if (problem) { setError(problem); return; }
     const url = URL.createObjectURL(file);
     setPreview({ url, name: file.name });
     setError(null);
+  };
+  const select = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.currentTarget.files?.item(0);
+    event.currentTarget.value = "";
+    if (file) previewFile(file);
+  };
+  const drop = (event: DragEvent<HTMLElement>) => {
+    event.preventDefault(); // Prevent the browser navigating away to the dropped file.
+    const file = event.dataTransfer.files.item(0);
+    if (file) previewFile(file);
+  };
+  const paste = (event: ClipboardEvent<HTMLElement>) => {
+    const file = event.clipboardData.files.item(0);
+    if (file) { event.preventDefault(); previewFile(file); }
+  };
+  const clearWithKeyboard = (event: KeyboardEvent<HTMLElement>) => {
+    // Do not intercept Backspace or Delete inside the native file picker.
+    if (event.target === event.currentTarget &&
+        (event.key === "Delete" || event.key === "Backspace") && preview) {
+      event.preventDefault();
+      clear();
+    }
   };
   const clear = () => {
     setPreview(null);
@@ -106,9 +125,11 @@ export function LocalImageWell({ label, className }: Readonly<{ label: string; c
     if (input.current) input.current.value = "";
   };
 
-  return <section className={className} aria-labelledby={`${id}-title`}>
+  return <section className={className} aria-labelledby={`${id}-title`}
+    tabIndex={preview ? 0 : undefined} onDragOver={(event) => event.preventDefault()}
+    onDrop={drop} onPaste={paste} onKeyDown={clearWithKeyboard}>
     <p id={`${id}-title`}><strong>{label}</strong></p>
-    <p id={`${id}-help`}>Select an image to preview locally. Nothing is uploaded or saved. Maximum 5 MB; JPEG, PNG, WebP or AVIF.</p>
+    <p id={`${id}-help`}>Select, drop or paste an image to preview locally. Press Delete to clear a selected preview. Nothing is uploaded or saved. Maximum 5 MB; JPEG, PNG, WebP or AVIF.</p>
     <input ref={input} id={`${id}-file`} type="file"
       accept=".jpg,.jpeg,.png,.webp,.avif,image/jpeg,image/png,image/webp,image/avif"
       onChange={select} aria-describedby={`${id}-help`}/>
