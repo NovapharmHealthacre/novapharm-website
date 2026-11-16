@@ -22,6 +22,29 @@ The owner supplied (1) a Safari screenshot of the official Apple Developer HIG *
 
 The supplied UIKit URL was duplicated end-to-end in the message; its canonical path is listed above.
 
+## Actual owner-supplied Apple project file audit
+
+The owner-provided ZIP was opened and its 91 entries catalogued. These comprise Git metadata/directories and **34 application files**, including 8 Swift sources, README, Xcode project/configuration, localized strings, settings, storyboards, app icon metadata and the licence. There is no HTML/CSS/React website navigation implementation in the archive.
+
+- `Menus/MenuController.swift`: groups related `UIMenu`, `UICommand`, and `UIKeyCommand` elements. Transfer concise grouping, not native API usage.
+- `Menus/AppDelegate.swift`: inserts the menu via `buildMenu(with:)`; only Mac Catalyst uses this native mechanism.
+- `Menus/PrimaryViewController.swift`: validates command availability with `canPerformAction` and `validate`; transfer honest disabled-state and focus design to applicable web controls.
+- `Menus/DetailViewController.swift`: groups contextual commands using `UIContextMenuInteractionDelegate` and `UIAction`; do not convert informational corporate navigation into edit commands.
+- `Menus/PrimaryViewController+Toolbar.swift`: native toolbar command slots; separate from a website global navbar.
+- `Menus/PrimaryViewController+Table.swift`, `Menus/TableItem.swift`, `Menus/SceneDelegate.swift`: sample table/state/window scaffolding, not reusable browser menu code.
+- `Menus/en.lproj` and `Menus/zh-Hans.lproj`, settings bundles, `Info.plist`: localization and native app command configuration; web parallels are distinct interface translations and properly labeled controls.
+- `README.md`: explains the sample's File > Open shortcut, Style state checks, contextual editing and native Print integration; keep browser defaults instead of intercepting Command+O, Command+Q, Copy or Print.
+
+This audit reflects actual ZIP contents, not an inference from its filename. Importing its Swift files into the Next.js or static website would not work.
+
+## Re-reviewed guidance priorities
+
+- Apple's **Menus** guidance explicitly favors concise action labels, consistent groups, important items early, few submenu levels, predictable state and appropriate disabled indication.
+- **Menu bar** standard menus and **CommandMenu** apply to installed Mac/iPad software, not browser navigation; avoid fake File/Edit/Window menus.
+- **Keyboard** guidance warns against stealing system shortcuts. The public website uses normal links, Enter, Tab, Escape and ArrowDown only where expected; Ctrl/Command/Option-modified clicks must remain browser-controlled.
+- **Dock menus** and **NSStatusBar** concern OS-managed launch/status shortcuts; they do not justify an invented web Dock or a global status control.
+- The current PR adds click-to-disclose behavior for static desktop categories. Without JavaScript, their existing hrefs continue to work and the same overview pages remain reachable inside the disclosed panel.
+
 ## Design acceptance for both corporate renderers
 - Height 52px; charcoal \#171719 nav material, quiet cool-white labels; controlled contrast.
 - Approved NovaPharm logo artwork only: white visual treatment of the existing approved logo in both corporate renderers (without swapping the registered identity or modifying the underlying image).
