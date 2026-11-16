@@ -17,10 +17,10 @@ export type HierarchyGroup = Readonly<{
   items: readonly HierarchyItem[];
 }>;
 
-function focusAdjacent(event: KeyboardEvent<HTMLUListElement>) {
+function focusAdjacent(event: KeyboardEvent<HTMLButtonElement>) {
   if (!["ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return;
-  const controls = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>("button:not(:disabled)"));
-  const position = controls.indexOf(event.target as HTMLButtonElement);
+  const controls = Array.from(event.currentTarget.closest("ul")?.querySelectorAll<HTMLButtonElement>("button:not(:disabled)") ?? []);
+  const position = controls.indexOf(event.currentTarget);
   if (position < 0 || !controls.length) return;
   event.preventDefault();
   const next = event.key === "Home" ? 0 : event.key === "End" ? controls.length - 1
@@ -39,17 +39,17 @@ export function ColumnBrowser({ label, groups }: Readonly<{ label: string; group
   return <div className="np-hig-column-browser" aria-label={label}>
     <nav className="np-hig-column-browser__pane" aria-label={`${label}: categories`}>
       <h3>Categories</h3>
-      <ul onKeyDown={focusAdjacent}>{groups.map((entry) => <li key={entry.id}>
+      <ul>{groups.map((entry) => <li key={entry.id}>
         <button type="button" aria-pressed={entry.id === group?.id}
-          onClick={() => { setSelectedGroupId(entry.id); setSelectedItemId(entry.items[0]?.id ?? ""); }}>
+          onClick={() => { setSelectedGroupId(entry.id); setSelectedItemId(entry.items[0]?.id ?? ""); }} onKeyDown={focusAdjacent}>
           <span>{entry.label}</span><small>{entry.items.length}</small>
         </button>
       </li>)}</ul>
     </nav>
     <nav className="np-hig-column-browser__pane" aria-label={`${label}: records`}>
       <h3>{group?.label ?? "Records"}</h3>
-      <ul onKeyDown={focusAdjacent}>{group?.items.map((entry) => <li key={entry.id}>
-        <button type="button" aria-pressed={entry.id === item?.id} onClick={() => setSelectedItemId(entry.id)}>
+      <ul>{group?.items.map((entry) => <li key={entry.id}>
+        <button type="button" aria-pressed={entry.id === item?.id} onClick={() => setSelectedItemId(entry.id)} onKeyDown={focusAdjacent}>
           {entry.label}
         </button>
       </li>)}</ul>
