@@ -46,3 +46,13 @@ These are platform-adapted *principles*, not an Apple website clone and not a cl
 ### Explicitly not verified yet
 
 The PR candidate does **not** prove that all 54 portal modules or every page have been manually checked at all sizes. It does not deploy native Apple APIs, bypass authorisation, authorise AWS changes, or establish that a build success equals live deployment. The section-by-section browser and production acceptance remain release gates.
+
+## 16 November: hierarchy implementation extension
+
+A new source-to-implementation ledger, [Apple Layout source matrix](apple-layout-source-matrix-20261116.md), now covers all ten linked Apple layout categories and each provided native framework reference.
+
+The previous foundation-only gaps for column views and outline views have a concrete web implementation candidate: `ColumnBrowser`, `OutlineView`, `HierarchyExplorer`, and `ContentLockup`. The existing WMS prototype workspace map is the **only** new consumer: it navigates the existing 16 capability records with their recorded-data and integration constraints. The module remains under the existing employee access policy. The new code does not activate operations or grant authority.
+
+The default native `details` outline retains readable hierarchy without script, while the optional three-pane browser exposes selected category, item, and evidence. Compact screens receive full stacked content, not a hidden desktop inspector. New contract and render tests cover source order, selection semantics, keyboard focus and governed links.
+
+**Evidence gate remains open:** Until exact-head CI and authorised runtime browser acceptance, this is an unmerged implementation candidate, not proof of production deployment or completed audit of every portal/Intelligence route.

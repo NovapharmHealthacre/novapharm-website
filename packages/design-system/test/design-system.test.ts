@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { componentRegistry, designSystemCss, designTokens, propertyDirection, reducedMotionCss } from "../src/index.ts";
+import { componentRegistry, designSystemCss, designTokens, propertyDirection, reducedMotionCss, layoutOrganizationPolicy } from "../src/index.ts";
 
 test("shared foundation retains distinct property directions", () => {
   assert.equal(Object.keys(propertyDirection).length, 4);
@@ -42,4 +42,16 @@ test("HIG typography supports coherent native families, scalable reading and dat
   assert.match(designSystemCss, /overflow-wrap:break-word/);
   assert.match(designSystemCss, /font-variant-numeric:tabular-nums/);
   assert.match(designSystemCss, /prefers-contrast:more/);
+});
+
+test("Apple layout becomes a cross-estate decision contract without overwriting existing branding", () => {
+  assert.deepEqual(layoutOrganizationPolicy.estates, ["corporate", "technology", "founder", "status", "portal", "intelligence", "distribution"]);
+  assert.equal(Object.keys(layoutOrganizationPolicy.patterns).length, 10);
+  assert.equal(layoutOrganizationPolicy.patterns.collections.web.includes("CollectionView"), true);
+  assert.equal(layoutOrganizationPolicy.patterns.columnViews.web.includes("ColumnBrowser"), true);
+  assert.equal(layoutOrganizationPolicy.patterns.disclosureControls.web.includes("details/summary"), true);
+  assert.equal(layoutOrganizationPolicy.patterns.outlineViews.web.includes("OutlineView"), true);
+  assert.equal(layoutOrganizationPolicy.patterns.tabViews.avoid.includes("more than six"), true);
+  assert.deepEqual(layoutOrganizationPolicy.acceptance.browsers, ["Chromium", "WebKit"]);
+  assert.ok(layoutOrganizationPolicy.acceptance.states.includes("authorized and denied"));
 });

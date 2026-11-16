@@ -7,6 +7,7 @@ on:
       - "assets/css/novapharm.bundle.css"
       - "scripts/build-css-bundle.mjs"
       - "scripts/test-apple-layout-contract.mjs"
+      - "scripts/test-apple-layout-organization.mjs"
       - "scripts/test-apple-rtl-contract.mjs"
       - "scripts/test-apple-rtl-public-artifact.mjs"
       - "scripts/finalize-public-rtl.mjs"
@@ -26,10 +27,12 @@ on:
       - "src/components/interface-locale-switcher.tsx"
       - "scripts/build-public-pages.mjs"
       - "packages/design-system/src/**"
+      - "apps/portal/components/wms-prototype-workspace-map.tsx"
       - "packages/design-system/test/**"
       - "apps/status/app/page.tsx"
       - "apps/status/app/globals.css"
       - "docs/design/apple-hig-layout-organization-20261116.md"
+      - "docs/design/apple-layout-source-matrix-20261116.md"
       - "apps/**/app/layout.tsx"
       - "packages/portal-contracts/src/module-catalog.json"
       - ".github/workflows/apple-hig-layout.yml"
@@ -45,7 +48,7 @@ jobs:
         with:
           node-version: "22"
       - name: Verify shared layout contract and 54-module shell coverage
-        run: node --test scripts/test-apple-layout-contract.mjs scripts/test-apple-rtl-contract.mjs scripts/test-apple-rtl-public-artifact.mjs
+        run: node --test scripts/test-apple-layout-contract.mjs scripts/test-apple-layout-organization.mjs scripts/test-apple-rtl-contract.mjs scripts/test-apple-rtl-public-artifact.mjs
       - name: Rebuild canonical public stylesheet
         run: node scripts/build-css-bundle.mjs
       - name: Verify published CSS is reproducible
