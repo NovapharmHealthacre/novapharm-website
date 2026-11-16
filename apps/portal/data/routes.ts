@@ -75,6 +75,17 @@ export function resolvePortalView(pathname: string): PortalView | null {
     const module = portalModuleByCode.get(alias);
     return module?.visibleInNavigation ? { kind: "module", module } : null;
   }
+  // Nova ML has its own protected address family; it shares the existing
+  // verified board Intelligence module and never creates an anonymous API.
+  const novaMlPrefix = "/portal/executive-platform/nova-ml/";
+  if (normalised === novaMlPrefix || normalised.startsWith(novaMlPrefix)) {
+    const suffix = normalised === novaMlPrefix
+      ? "nova-ml-studio"
+      : normalised.slice(novaMlPrefix.length).replace(/\/$/u, "");
+    const module = portalModuleByCode.get("executive.nhs-data");
+    if (!module?.visibleInNavigation || !novaMlWorkspaceSlugs.includes(suffix as NovaMlWorkspaceSlug)) return null;
+    return { kind: "module", module, subview: suffix as NovaMlWorkspaceSlug };
+  }
   const intelligencePrefix = "/portal/executive-platform/medicines-intelligence/";
   if (normalised.startsWith(intelligencePrefix) && normalised !== intelligencePrefix) {
     const suffix = normalised.slice(intelligencePrefix.length).replace(/\/$/u, "");
