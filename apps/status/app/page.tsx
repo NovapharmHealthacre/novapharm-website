@@ -1,3 +1,5 @@
+import { cookies } from "next/headers";
+import { interfaceLabel, resolveInterfaceLocale } from "../../../src/core/interface-locale";
 import { RefreshCw } from "lucide-react";
 import Image from "next/image";
 import { getStatusSnapshot, type OverallState, type ServiceState } from "@/lib/status";
@@ -28,14 +30,15 @@ const overallLabels: Readonly<Record<OverallState, string>> = {
 
 export default async function StatusPage() {
   const snapshot = await getStatusSnapshot();
-  const checked = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(new Date(snapshot.checkedAt));
+  const locale = resolveInterfaceLocale((await cookies()).get("np_locale")?.value);
+  const checked = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(new Date(snapshot.checkedAt));
   return (
     <main id="status-main">
       <header className="status-header">
         <a className="brand" href="https://novapharmhealthcare.com/" aria-label="NovaPharm Healthcare home">
           <Image src="/assets/brand/novapharm-healthcare-logo.svg" alt="NovaPharm Healthcare" width="2048" height="258" priority />
         </a>
-        <span>Service status</span>
+        <span>{interfaceLabel(locale, "Service status")}</span>
       </header>
       <section className="status-hero" aria-labelledby="status-title">
         <p className="eyebrow">Digital estate availability</p>
@@ -45,7 +48,7 @@ export default async function StatusPage() {
         <div className="status-meta">
           <span className={`overall overall-${snapshot.overall}`}>{overallLabels[snapshot.overall]}</span>
           <span>Checked {checked} UTC</span>
-          <a className="refresh-command" href="/"><RefreshCw aria-hidden="true" className="np-symbol" />Refresh</a>
+          <a className="refresh-command" href="/"><RefreshCw aria-hidden="true" className="np-symbol" />{interfaceLabel(locale, "Refresh")}</a>
         </div>
       </section>
       <section className="service-band" aria-labelledby="services-title">
