@@ -392,3 +392,6 @@ export function PaymentRequestSummary({
     {actions ? <div className="np-payment-request__actions" aria-describedby={statusId}>{actions}</div> : null}
   </section>;
 }
+
+// Export action primitives through the existing shared component barrel.
+export * from "./menu-actions";
