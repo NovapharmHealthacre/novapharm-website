@@ -52,6 +52,7 @@ test("five Next.js properties share server-side locale direction and a functiona
     const footerSelector = app === "corporate" ? "apps/corporate/components/site-footer.tsx"
       : app === "technology" ? "apps/technology/components/site-footer.tsx"
       : app === "founder" ? "apps/founder/components/chrome.tsx"
+      : app === "status" ? "apps/status/app/page.tsx"
       : null;
     assert.match(footerSelector ? read(footerSelector) : layout,
       /<InterfaceLocaleSwitcher locale=\{locale\} \/>/, app);
