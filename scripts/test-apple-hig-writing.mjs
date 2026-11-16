@@ -88,6 +88,11 @@ for (const key of ["notFoundStatic", "errorStatic", "errorUnavailable"]) {
   avoids(key, "Return to NovaPharm");
 }
 needs("errorStatic", "This page is temporarily unavailable. Try again later or go to the home page.");
+needs("staticBuilder", 'const accountCtaLabel = platformCapabilities.accountApplication ? "Apply for a business account" : "Discuss account eligibility";');
+needs("staticBuilder", 'Business Account Eligibility | NovaPharm Healthcare');
+needs("staticBuilder", 'The public-only website cannot accept formal applications or private documents.');
+avoids("staticBuilder", 'Open an account');
+avoids("staticBuilder", '<strong>Open a business account</strong>');
 needs("staticBuilder", '<a class="btn btn-primary" href="/">Go to home page</a>');
 needs("staticBuilder", 'write("500.html", errorPage("500", "Service unavailable", "This page is temporarily unavailable.');
 avoids("interest", "No information was submitted.");
