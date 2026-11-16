@@ -13184,6 +13184,8 @@ footer.site-footer .np-apple-footer-disclosure summary {
 }
 .npd-footer .np-apple-footer-disclosure summary::-webkit-details-marker,
 footer.site-footer .np-apple-footer-disclosure summary::-webkit-details-marker { display: none; }
+.npd-footer .np-apple-footer-disclosure:not([open]) > .np-apple-footer-disclosure-links,
+footer.site-footer .np-apple-footer-disclosure:not([open]) > .np-apple-footer-disclosure-links { display: none; }
 .npd-footer .np-apple-footer-disclosure-links,
 footer.site-footer .np-apple-footer-disclosure-links { display: grid; align-content: start; }
 .npd-footer .npd-footer-top > div > a,
