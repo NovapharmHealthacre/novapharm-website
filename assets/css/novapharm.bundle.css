@@ -11755,6 +11755,110 @@ svg.np-symbol--busy { animation: np-symbol-working 1000ms linear infinite; }
   .np-hig-box--plain { border-color: transparent; }
   .np-hig-subgroup + .np-hig-subgroup { border-color: CanvasText; }
 }
+/* Apple Layout & Organization: concise, opt-in browser, outline and lockup.
+   Neutral surfaces, logical properties and native controls protect RTL and zoom. */
+.np-hig-hierarchy-explorer { min-inline-size: 0; margin-block: 28px; }
+.np-hig-explorer-switch {
+  display: flex; align-items: center; gap: 24px;
+  border-block-end: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  margin-block-end: 20px;
+}
+.np-hig-explorer-switch > button {
+  display: inline-flex; justify-content: center; align-items: center;
+  min-block-size: 44px; padding: 10px 1px; background: transparent;
+  color: inherit; border: 0; border-block-end: 2px solid transparent;
+  font: inherit; font-size: 0.9rem; cursor: pointer;
+}
+.np-hig-explorer-switch > button[aria-pressed="true"] {
+  border-block-end-color: currentColor; font-weight: 650;
+}
+.np-hig-column-browser {
+  display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.15fr) minmax(0, 1.55fr);
+  border-block: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+  min-inline-size: 0; align-items: stretch; background: transparent;
+}
+.np-hig-column-browser > * { min-inline-size: 0; padding: 18px clamp(12px, 2vw, 26px); }
+.np-hig-column-browser > * + * {
+  border-inline-start: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+}
+.np-hig-column-browser h3 {
+  font-size: .8rem; font-weight: 650; line-height: 1.4;
+  margin: 0 0 12px; color: inherit;
+}
+.np-hig-column-browser__pane ul,
+.np-hig-outline ul { list-style: none; padding: 0; margin: 0; }
+.np-hig-column-browser__pane li + li { border-block-start: 1px solid color-mix(in srgb, currentColor 8%, transparent); }
+.np-hig-column-browser__pane button {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  inline-size: 100%; min-block-size: 44px; padding: 9px 12px;
+  font: inherit; font-size: .86rem; text-align: start; color: inherit;
+  background: transparent; border: 0; border-radius: 8px; cursor: pointer;
+  white-space: normal; overflow-wrap: break-word;
+}
+.np-hig-column-browser__pane button[aria-pressed="true"] {
+  font-weight: 650; background: color-mix(in srgb, currentColor 7%, transparent);
+}
+.np-hig-column-browser__pane button:hover { background: color-mix(in srgb, currentColor 5%, transparent); }
+.np-hig-column-browser__pane small {
+  font-size: .76rem; font-variant-numeric: tabular-nums; opacity: .65;
+}
+.np-hig-column-browser__preview { min-block-size: 235px; }
+.np-hig-column-browser__preview h3 { font-size: clamp(1.25rem, 2vw, 1.7rem); margin-block: 4px 16px; }
+.np-hig-column-browser__preview p { font-size: .9rem; line-height: 1.6; max-inline-size: 65ch; }
+.np-hig-column-browser__preview .np-hig-column-browser__detail { opacity: .72; }
+.np-hig-column-browser__preview a, .np-hig-outline__record a {
+  display: inline-flex; align-items: center; min-block-size: 44px;
+  color: inherit; font-weight: 650; text-underline-offset: 3px;
+}
+.np-hig-column-browser__status { font-weight: 600; }
+.np-hig-outline > ul > li { border-block-start: 1px solid color-mix(in srgb, currentColor 15%, transparent); }
+.np-hig-outline > ul > li:last-child { border-block-end: 1px solid color-mix(in srgb, currentColor 15%, transparent); }
+.np-hig-outline summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 16px 4px; min-block-size: 44px; cursor: pointer;
+  font-weight: 650; font-size: .95rem;
+}
+.np-hig-outline summary small { font-size: .78rem; font-weight: 400; opacity: .7; }
+.np-hig-outline details > ul { padding-block-end: 20px; padding-inline-start: clamp(12px, 3vw, 30px); }
+.np-hig-outline details > ul > li { border-block-start: 1px solid color-mix(in srgb, currentColor 9%, transparent); }
+.np-hig-outline__record { padding: 14px 4px; display: grid; gap: 7px; min-inline-size: 0; }
+.np-hig-outline__record strong { font-size: .92rem; }
+.np-hig-outline__record p, .np-hig-outline__record small, .np-hig-outline__record > span {
+  font-size: .83rem; line-height: 1.5; margin: 0; overflow-wrap: break-word;
+}
+.np-hig-outline__record small { opacity: .7; }
+.np-hig-lockup {
+  display: flex; flex-direction: column; gap: 14px; min-inline-size: 0;
+  text-decoration: none; color: inherit; padding: 14px; border-radius: 12px;
+}
+.np-hig-lockup__media { display: block; overflow: hidden; }
+.np-hig-lockup__media :is(img, svg) { display: block; max-inline-size: 100%; }
+.np-hig-lockup__body { display: grid; gap: 5px; }
+.np-hig-lockup__body strong { font-size: 1rem; }
+.np-hig-lockup__body > span, .np-hig-lockup__body small { font-size: .83rem; line-height: 1.5; }
+.np-hig-lockup:hover { background: color-mix(in srgb, currentColor 5%, transparent); }
+.np-hig-explorer-switch button:focus-visible,
+.np-hig-column-browser button:focus-visible,
+.np-hig-column-browser a:focus-visible,
+.np-hig-outline summary:focus-visible,
+.np-hig-outline a:focus-visible,
+.np-hig-lockup:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+@media (max-width: 860px) {
+  .np-hig-column-browser { grid-template-columns: minmax(0, 1fr); }
+  .np-hig-column-browser > * + * {
+    border-inline-start: 0;
+    border-block-start: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  }
+  .np-hig-column-browser__preview { min-block-size: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .np-hig-lockup, .np-hig-column-browser button { scroll-behavior: auto; }
+}
+@media (forced-colors: active) {
+  .np-hig-column-browser, .np-hig-outline > ul > li { border-color: CanvasText; }
+  .np-hig-column-browser__pane button[aria-pressed="true"] { outline: 1px solid Highlight; }
+  .np-hig-explorer-switch > button[aria-pressed="true"] { border-block-end-color: Highlight; }
+}
 
 /* Source: novapharm-hig-accessibility.css */
 /*
