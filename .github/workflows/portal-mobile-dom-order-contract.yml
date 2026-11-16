@@ -5,7 +5,7 @@ on:
       - 'apps/portal/components/dashboard.tsx'
       - 'apps/portal/components/customer-commerce-workspace.tsx'
       - 'apps/portal/components/module-presentations.module.css'
-      - 'apps/portal/app/[[...slug]]/page.tsx'
+      - 'apps/portal/app/**'
       - 'scripts/test-portal-customer-dom-order.mjs'
       - 'scripts/lighthouse-transient-navigation.mjs'
       - 'scripts/test-lighthouse-transient-navigation.mjs'
@@ -16,12 +16,12 @@ on:
       - 'apps/portal/components/dashboard.tsx'
       - 'apps/portal/components/customer-commerce-workspace.tsx'
       - 'apps/portal/components/module-presentations.module.css'
-      - 'apps/portal/app/[[...slug]]/page.tsx'
+      - 'apps/portal/app/**'
       - 'scripts/test-portal-customer-dom-order.mjs'
       - 'scripts/lighthouse-transient-navigation.mjs'
       - 'scripts/test-lighthouse-transient-navigation.mjs'
       - '.github/workflows/portal-mobile-dom-order-contract.yml'
-  workflow_dispatch:
+  workflow_dispatch: {}
 permissions:
   contents: read
 jobs:
