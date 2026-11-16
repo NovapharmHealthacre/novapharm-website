@@ -637,6 +637,9 @@ jobs:
                  -H 'Cache-Control: no-cache, no-store' "https://novapharmhealthcare.com/assets/js/marketing-attribution.js?${cache}" -o /tmp/novapharm-live-marketing-attribution.js \
               && grep -Fq 'if (!publicAnalyticsRoute(location.pathname)) return null;' /tmp/novapharm-live-marketing-attribution.js \
               && grep -Fq 'if (!publicAnalyticsRoute(location.pathname)) return false;' /tmp/novapharm-live-marketing-attribution.js \
+              && grep -Fq 'class="np-privacy-overview"' /tmp/novapharm-live-privacy.html \
+              && grep -Fq 'Your information. Your choice.' /tmp/novapharm-live-privacy.html \
+              && grep -Fq 'class="np-privacy-primary-action"' /tmp/novapharm-live-privacy.html \
               && grep -Fq 'id="privacy-by-design"' /tmp/novapharm-live-privacy.html \
               && grep -Fq 'id="privacy-controls"' /tmp/novapharm-live-privacy.html \
               && grep -Fq 'data-cookie-settings' /tmp/novapharm-live-privacy.html \

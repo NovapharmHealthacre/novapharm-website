@@ -40,6 +40,17 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
         const page = await context.newPage();
         try {
           const response = await page.goto(baseUrl + route, {waitUntil:"domcontentloaded",timeout:30000});
+          // The marketplace inserts its first 24 catalogue cards only after a
+          // validated asynchronous fetch. Waiting for DOMContentLoaded alone can
+          // mark their subsequently inserted lazy images as stalled, even when
+          // the catalogue and assets are healthy. Keep fail-closed: if the cards
+          // do not materialise, this route's browser check must fail.
+          if (route === "/products/marketplace/") {
+            await page.waitForFunction(() =>
+              document.querySelectorAll("[data-commerce-marketplace] .mp-card").length === 24,
+              undefined, { timeout: 15000 }
+            );
+          }
           // Materialise native lazy assets for the actual image audit, including
           // pictures whose preferred AVIF/WebP source is chosen by the browser.
           await page.evaluate(() => {
@@ -47,10 +58,15 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
               if (img.getAttribute("src")?.startsWith("/assets/")) img.loading = "eager";
             }
           });
+          // The 392-item marketplace can issue many local catalogue previews at
+          // once after we intentionally promote lazy assets to eager. Allow that
+          // one large generated route a longer bounded settle period, but keep
+          // the exact same broken-image and still-loading-image failures below.
+          const imageReadinessMs = route === "/products/marketplace/" ? 30000 : 10000;
           await page.waitForFunction(() =>
             [...document.images].filter(img => img.getAttribute("src")?.startsWith("/assets/"))
               .every(img => img.complete),
-            undefined, {timeout:10000}
+            undefined, {timeout:imageReadinessMs}
           ).catch(() => undefined);
           const result = await page.evaluate(() => {
             const viewport = document.documentElement.clientWidth;
