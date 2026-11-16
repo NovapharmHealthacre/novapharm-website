@@ -11773,7 +11773,7 @@ svg.np-symbol--busy { animation: np-symbol-working 1000ms linear infinite; }
   border-block-end-color: currentColor; font-weight: 650;
 }
 .np-hig-column-browser {
-  display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.15fr) minmax(0, 1.55fr);
+  display: grid; grid-template-columns: minmax(0, var(--np-hig-category-width, 28%)) minmax(0, 30%) minmax(0, 1fr);
   border-block: 1px solid color-mix(in srgb, currentColor 14%, transparent);
   min-inline-size: 0; align-items: stretch; background: transparent;
 }
@@ -11781,6 +11781,17 @@ svg.np-symbol--busy { animation: np-symbol-working 1000ms linear infinite; }
 .np-hig-column-browser > * + * {
   border-inline-start: 1px solid color-mix(in srgb, currentColor 12%, transparent);
 }
+.np-hig-column-browser__resize {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  margin-block: 0 12px; color: inherit; font-size: .75rem;
+}
+.np-hig-column-browser__resize input {
+  inline-size: clamp(100px, 11vw, 165px); max-inline-size: 100%;
+  accent-color: currentColor; cursor: ew-resize;
+}
+.np-hig-text-label { user-select: text; -webkit-user-select: text; }
+.np-hig-text-label--secondary { opacity: .85; }
+.np-hig-text-label--tertiary { opacity: .75; }
 .np-hig-column-browser h3 {
   font-size: .8rem; font-weight: 650; line-height: 1.4;
   margin: 0 0 12px; color: inherit;
@@ -11814,11 +11825,11 @@ svg.np-symbol--busy { animation: np-symbol-working 1000ms linear infinite; }
 .np-hig-outline > ul > li { border-block-start: 1px solid color-mix(in srgb, currentColor 15%, transparent); }
 .np-hig-outline > ul > li:last-child { border-block-end: 1px solid color-mix(in srgb, currentColor 15%, transparent); }
 .np-hig-outline summary {
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  display: list-item; list-style-position: inside;
   padding: 16px 4px; min-block-size: 44px; cursor: pointer;
   font-weight: 650; font-size: .95rem;
 }
-.np-hig-outline summary small { font-size: .78rem; font-weight: 400; opacity: .7; }
+.np-hig-outline summary small { font-size: .78rem; font-weight: 400; opacity: .7; margin-inline-start: 1rem; }
 .np-hig-outline details > ul { padding-block-end: 20px; padding-inline-start: clamp(12px, 3vw, 30px); }
 .np-hig-outline details > ul > li { border-block-start: 1px solid color-mix(in srgb, currentColor 9%, transparent); }
 .np-hig-outline__record { padding: 14px 4px; display: grid; gap: 7px; min-inline-size: 0; }
