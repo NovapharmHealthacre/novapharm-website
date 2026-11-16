@@ -106,7 +106,7 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
               let selectedDescriptor = null;
               for (const srcset of srcsets) {
                 for (const candidate of srcset.split(",")) {
-                  const match = candidate.trim().match(/^(\\S+)\\s+(\\d+(?:\\.\\d+)?)(w|x)$/i);
+                  const match = candidate.trim().match(/^(\S+)\s+(\d+(?:\.\d+)?)(w|x)$/i);
                   if (!match) continue;
                   try {
                     if (new URL(match[1], location.href).href === src) {
