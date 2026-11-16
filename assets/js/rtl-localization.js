@@ -18,6 +18,7 @@
   function init() {
     if (locale !== "en-GB") {
       document.querySelectorAll("main").forEach(function (node) { node.lang = "en-GB"; });
+      document.querySelectorAll(".site-footer p").forEach(function (node) { node.lang = "en-GB"; node.dir = "ltr"; });
       document.querySelectorAll(".site-header nav a, .site-footer nav a, .site-footer h3, .site-header .nav-toggle .sr-only, .site-footer [data-cookie-settings]").forEach(function (node) {
         if (node.children.length > 0) return;
         var label = node.textContent.trim();
