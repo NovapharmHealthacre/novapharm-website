@@ -39,7 +39,7 @@ function ActionItem({ action, close, className = "" }: Readonly<{
     className: ["np-command-action", action.destructive && "np-command-action--destructive", className].filter(Boolean).join(" "),
     title: action.title,
   };
-  if (action.href && enabled) return <a {...shared} href={action.href} onClick={close}>{action.label}</a>;
+  if (action.href && enabled && !action.destructive) return <a {...shared} href={action.href} onClick={close}>{action.label}</a>;
   return <button {...shared} type="button" disabled={!enabled} onClick={() => { activate(action); close?.(); }}>{action.label}</button>;
 }
 
@@ -167,7 +167,14 @@ export function SharePublicLink({ url, title, label = "Share" }: Readonly<{
   url: string; title: string; label?: string;
 }>) {
   const [status, setStatus] = useState("");
-  const publicHttps = /^https:\/\/[^/\s?#]+(?:\/[^?#\s]*)?$/.test(url);
+  const publicHttps = (() => {
+    try {
+      const parsed = new URL(url);
+      return parsed.protocol === "https:" && Boolean(parsed.hostname)
+        && !parsed.username && !parsed.password && !parsed.search && !parsed.hash
+        && !/\\s/.test(url);
+    } catch { return false; }
+  })();
   const share = async () => {
     if (!publicHttps) return;
     try {
