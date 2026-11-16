@@ -278,12 +278,12 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
               authenticated
               replay={module.route !== areaLandingRoutes[module.area]}
             /> : null}
-        {!isEditorialPortal ? <header className="module-heading"><div><p className="eyebrow">{areaLabels[module.area]} / {module.releaseClassificationLabel}</p><h1>{module.title}</h1><p>{module.purpose}</p></div><button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data"><RefreshCw aria-hidden="true" className={loading ? "np-symbol np-symbol--busy" : "np-symbol"} /><span>Refresh</span></button></header> : null}
         {/* Customer navigation is static and server-route-protected: reserve its
             layout before data fetch resolves to prevent mobile CLS. It does not
             include account records, prices, orders, or entitlements. */}
         {module.area === "customer" && (module.code === "customer.dashboard" || module.code === "customer.products")
           ? <CustomerCommerceWorkspace moduleCode={module.code} /> : null}
+        {!isEditorialPortal ? <header className="module-heading"><div><p className="eyebrow">{areaLabels[module.area]} / {module.releaseClassificationLabel}</p><h1>{module.title}</h1><p>{module.purpose}</p></div><button className="icon-command" type="button" onClick={() => void load()} disabled={loading} title="Refresh data"><RefreshCw aria-hidden="true" className={loading ? "np-symbol np-symbol--busy" : "np-symbol"} /><span>Refresh</span></button></header> : null}
         {module.area === "employee" && isEditorialEmployeeDistribution
           ? <EmployeeDistributionWorkspace moduleCode={module.code} snapshot={user && snapshot ? snapshot : null} /> : null}
         {user && snapshot && selectedNutraxinProduct ? <section className="nutraxin-selection-panel" aria-labelledby="nutraxin-selection-title">

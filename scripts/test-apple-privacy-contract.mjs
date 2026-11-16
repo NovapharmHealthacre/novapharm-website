@@ -71,6 +71,29 @@ test("GA4 route exclusions retain legal, contact and account privacy boundaries"
   assert.match(register, /Google Analytics 4/);
 });
 
+test("consented Nutraxin analytics is restricted to the reviewed informational product catalogue", () => {
+  const approved = JSON.parse(source("assets/data/nutraxin-retail-catalogue.json")).products;
+  assert.equal(approved.length, 19, "Product allowlist requires explicit review when catalogue changes");
+  for (const product of approved) {
+    assert.equal(publicAnalyticsRoute(`/products/nutraxin/${product.slug}/`), true, "Approved product should remain eligible");
+  }
+  for (const path of [
+    "/products/nutraxin/bag/", "/products/nutraxin/account/",
+    "/products/nutraxin/orders/", "/products/nutraxin/checkout/",
+    "/products/nutraxin/order-request/", "/products/nutraxin/confirmation/",
+    "/products/nutraxin/private-future-page/",
+    "/products/nutraxin/vitamin-d3-120-tablets/account/",
+    "/products/track/", "/products/orders/", "/products/checkout/",
+    "/products/esco/checkout/", "/products/marketplace/bag/",
+    "/products/unreviewed-future-page/"
+  ]) {
+    assert.equal(publicAnalyticsRoute(path), false, "Unexpected analytics on private or unreviewed Nutraxin page: " + path);
+  }
+  assert.equal(publicAnalyticsRoute("/products/marketplace/"), true);
+  assert.equal(publicAnalyticsRoute("/products/esco/"), true);
+  assert.match(source("assets/js/consent-analytics.js"), /APPROVED_NUTRAXIN_PRODUCT_PATHS\.has\(location\.pathname\)/);
+});
+
 test("native-only APIs are not misrepresented as website implementations", () => {
   const guide = source("docs/design/apple-privacy-web-adaptation.md");
   for (const part of ["UIKit", "Core Location", "App Tracking Transparency", "WebAuthn", "legal review"]) {
