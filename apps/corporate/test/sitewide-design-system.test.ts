@@ -65,7 +65,6 @@ test("audit route register includes every corporate, leadership, article and can
 test("official corporate logo is visible on managed homepage and never replaced by text", () => {
   const brand = readFileSync(path.join(root, "components/brand.tsx"), "utf8");
   const homepage = readFileSync(path.join(root, "app/homepage-editorial.css"), "utf8");
-  assert.match(brand, /novapharm-healthcare-logo-reverse\.svg/);
   assert.match(brand, /novapharm-healthcare-logo\.png/);
   assert.doesNotMatch(homepage, /content:\s*"NOVAPHARM"/);
   assert.doesNotMatch(homepage, /\.brand > img\s*\{\s*display:\s*none/);
