@@ -78,3 +78,11 @@ body .npd-footer .npd-footer-bottom a {
   align-items: center;
   min-height: 28px;
 }
+/* Article and product breadcrumbs are independent navigation controls,
+   not inline paragraph links. Enlarge the tap area without enlarging type. */
+body nav.breadcrumb[aria-label="Breadcrumb"] > a,
+body nav.npd-breadcrumb[aria-label="Breadcrumb"] .container > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+}
