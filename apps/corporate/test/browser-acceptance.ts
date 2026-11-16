@@ -200,6 +200,23 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
   assert.equal(await logo.count(), 1, `${engine} ${route}: official header logo missing`);
   assert.match(await logo.getAttribute("src") ?? "", /novapharm-healthcare-logo-reverse\.svg$/, `${engine} ${route}: header must use the approved reverse NovaPharm logo`);
 
+  const navigationPresentation = await page.evaluate(() => {
+    const header = document.querySelector("header.site-header");
+    if (!header) return null;
+    const styling = getComputedStyle(header);
+    return { height: Math.round(header.getBoundingClientRect().height), background: styling.backgroundColor };
+  });
+  assert.equal(navigationPresentation?.height, 52, `${engine} ${viewport.name} ${route}: expected compact 52px Apple-style web navigation`);
+  assert.equal(navigationPresentation?.background, "rgb(23, 23, 25)",
+    `${engine} ${viewport.name} ${route}: expected dark charcoal navigation material`);
+  if (viewport.width > 1300) {
+    assert.equal(await page.locator("header .desktop-nav").isVisible(), true,
+      `${engine} ${viewport.name} ${route}: desktop navigation missing`);
+  } else {
+    assert.equal(await page.locator("header .mobile-menu summary").isVisible(), true,
+      `${engine} ${viewport.name} ${route}: responsive navigation trigger missing`);
+  }
+
   const keyViewport = viewport.name === "desktop-1440" || viewport.name === "mobile-390";
   if (keyViewport) {
     await scrollThroughPage(page);
