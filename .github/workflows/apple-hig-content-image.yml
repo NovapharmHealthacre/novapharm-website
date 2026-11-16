@@ -42,6 +42,8 @@ jobs:
         run: npm run typecheck --workspace=@novapharm/design-system
       - name: Verify local image safety and accessible view/button semantics
         run: npx tsx --test packages/design-system/test/image-content.test.tsx
+      - name: Verify existing published static-image contract
+        run: node --test scripts/test-apple-image-guidelines.mjs
       - name: Verify actual corporate homepage image adaptation
         run: cd apps/corporate && npx tsx --test test/editorial-home.test.ts
       - name: Build real shared component workbench
