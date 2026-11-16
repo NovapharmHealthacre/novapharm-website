@@ -11702,6 +11702,60 @@ svg.np-symbol--busy { animation: np-symbol-working 1000ms linear infinite; }
   .np-hig-equal-actions > :is(a, button, [role="button"]) { border: 1px solid ButtonText; }
 }
 
+/* HIG Layout and organization: opt-in web equivalents of GroupBox/NSBox,
+   collections, split views and native disclosure. Keep existing pages unboxed. */
+.np-hig-box {
+  box-sizing: border-box;
+  inline-size: min(100%, var(--np-hig-box-max, 52rem));
+  min-inline-size: 0;
+  border: 1px solid var(--np-hig-box-border, color-mix(in srgb, currentColor 18%, transparent));
+  border-radius: var(--np-hig-box-radius, 12px);
+  background: var(--np-hig-box-surface, transparent);
+  padding: clamp(16px, 2.5vw, 24px);
+}
+.np-hig-box--subtle {
+  --np-hig-box-surface: color-mix(in srgb, currentColor 4%, transparent);
+  --np-hig-box-border: transparent;
+}
+.np-hig-box--plain { border-color: transparent; background: transparent; padding: 0; }
+.np-hig-box--wide { --np-hig-box-max: 100%; }
+.np-hig-box__heading { margin: 0; font-size: clamp(1rem, 1.8vw, 1.25rem); line-height: 1.3; }
+.np-hig-box__description { margin: 8px 0 0; max-inline-size: var(--np-layout-reading); line-height: 1.55; }
+.np-hig-box__content { display: grid; gap: 16px; min-inline-size: 0; margin-block-start: 12px; }
+.np-hig-box:not(:has(.np-hig-box__heading, .np-hig-box__description)) > .np-hig-box__content {
+  margin-block-start: 0;
+}
+/* Prefer whitespace to extra nested borders for interior groups. */
+.np-hig-subgroup { min-inline-size: 0; padding-block: 12px; }
+.np-hig-subgroup + .np-hig-subgroup { border-block-start: 1px solid color-mix(in srgb, currentColor 12%, transparent); }
+.np-hig-collection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: var(--np-layout-gap);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.np-hig-collection > li, .np-hig-collection > li > * { min-inline-size: 0; }
+.np-hig-split-view {
+  display: grid;
+  grid-template-columns: minmax(0, min(34%, 340px)) minmax(0, 1fr);
+  gap: clamp(20px, 3vw, 48px);
+  align-items: start;
+}
+.np-hig-split-view > * { min-inline-size: 0; }
+.np-hig-disclosure > summary:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.np-hig-disclosure__content { min-inline-size: 0; padding-block: 12px 4px; }
+@media (max-width: 760px) {
+  .np-hig-split-view { grid-template-columns: minmax(0, 1fr); }
+  .np-hig-box { inline-size: 100%; }
+}
+@media (forced-colors: active) {
+  .np-hig-box { border-color: CanvasText; }
+  .np-hig-box--plain { border-color: transparent; }
+  .np-hig-subgroup + .np-hig-subgroup { border-color: CanvasText; }
+}
+
 /* Source: novapharm-hig-accessibility.css */
 /*
  * NovaPharm Apple HIG accessibility web adaptation — 2026-11-15.

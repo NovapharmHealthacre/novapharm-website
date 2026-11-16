@@ -16,12 +16,12 @@ test("tokens preserve controlled branding and usable interaction dimensions", ()
   assert.match(reducedMotionCss(), /prefers-reduced-motion/);
   assert.match(designSystemCss, /focus-visible/);
   assert.match(designSystemCss, /min-height:44px/);
-  assert.equal(componentRegistry.length, 24);
+  assert.equal(componentRegistry.length, 28);
 });
 
 test("the governed registry covers every required component family", () => {
   const required = [
-    "navigation", "mega-menu", "breadcrumbs", "hero", "editorial-section", "leadership-card",
+    "group-box", "collection-view", "split-view", "disclosure", "navigation", "mega-menu", "breadcrumbs", "hero", "editorial-section", "leadership-card",
     "product-explorer", "data-table", "accessible-chart", "timeline", "form-field", "dialog",
     "drawer", "tabs", "search", "filters", "error-state", "empty-state", "loading-state",
     "portal-control-bar", "file-upload", "approval-status", "audit-history", "document-viewer",
