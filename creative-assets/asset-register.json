@@ -582,6 +582,40 @@
       "caption": "Representative illustration only; no medicinal, clinical or patient outcome claims.",
       "technicalStatus": "AVIF owner-approved cropped HD 770x508; 8650 bytes; no baked interface text",
       "ownerApproval": "Owner selected the crisp final portal composition and requested its production implementation, 12 November 2026."
+    },
+    {
+      "path": "creative-assets/icon-composer/novapharm-healthcare/01-novapharm-monogram.svg",
+      "type": "owner-approved-derived-native-icon-layer",
+      "source": "Owner-approved NovaPharm Healthcare favicon.svg from the governed logo asset pack, 03_favicon_pwa/favicon.svg; exact original vector path and transform extracted without silhouette alteration on 16 November 2026.",
+      "licence": "Owner-authorised NovaPharm Healthcare identity use, source governed by NovaPharm Healthcare Ltd; no third-party Apple icon assets distributed.",
+      "generated": false,
+      "modified": true,
+      "dimensions": "SVG viewBox 0 0 1024 1024",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "Design source for potential future NovaPharm Healthcare native Apple app icon; not a currently deployed browser or App Store graphic"
+      ],
+      "altText": "NovaPharm Healthcare approved white N symbol",
+      "caption": "Unmasked white foreground layer; Icon Composer background and appearance effects are composed in native tooling.",
+      "technicalStatus": "exact-approved-path-derived-SVG; icon source only; Xcode native export and device QA pending",
+      "ownerApproval": "Owner-directed HIG Icon Composer implementation, 16 November 2026; native app identity publication remains gated"
+    },
+    {
+      "path": "creative-assets/icon-composer/novapharm-healthcare/02-novapharm-continuum-arc.svg",
+      "type": "owner-approved-derived-native-icon-layer",
+      "source": "Owner-approved NovaPharm Healthcare favicon.svg from the governed logo asset pack, 03_favicon_pwa/favicon.svg; exact original vector path and transform extracted without silhouette alteration on 16 November 2026.",
+      "licence": "Owner-authorised NovaPharm Healthcare identity use, source governed by NovaPharm Healthcare Ltd; no third-party Apple icon assets distributed.",
+      "generated": false,
+      "modified": true,
+      "dimensions": "SVG viewBox 0 0 1024 1024",
+      "optimisedVariants": [],
+      "pageUsage": [
+        "Design source for potential future NovaPharm Healthcare native Apple app icon; not a currently deployed browser or App Store graphic"
+      ],
+      "altText": "NovaPharm Healthcare approved white continuum arc",
+      "caption": "Unmasked white foreground layer; Icon Composer background and appearance effects are composed in native tooling.",
+      "technicalStatus": "exact-approved-path-derived-SVG; icon source only; Xcode native export and device QA pending",
+      "ownerApproval": "Owner-directed HIG Icon Composer implementation, 16 November 2026; native app identity publication remains gated"
     }
   ],
   "missingApprovedAssets": [
