@@ -11,6 +11,7 @@ const source = {
   help: read("apps/portal/components/account-access-help.tsx"),
   signIn: read("apps/portal/components/login-panel.tsx"),
   browserAcceptance: read("apps/portal/test/browser-acceptance.ts"),
+  lighthouseLogin: read("scripts/run-portal-lighthouse.mjs"),
   corporateError: read("apps/corporate/app/error.tsx"),
   portalError: read("apps/portal/app/error.tsx"),
   founderError: read("apps/founder/app/error.tsx"),
@@ -72,6 +73,8 @@ needs("signIn", '{busy ? "Signing in…" : "Sign in"}');
 needs("browserAcceptance", 'getByRole("button", { name: "Sign in", exact: true })');
 needs("browserAcceptance", '"Sign in to the right workspace", "login"');
 avoids("browserAcceptance", 'One governed entry point. Four precise access boundaries.');
+needs("lighthouseLogin", 'page.getByRole("button", { name: "Sign in", exact: true }).click()');
+avoids("lighthouseLogin", '"Sign in securely"');
 avoids("browserAcceptance", '"Sign in securely"');
 avoids("signIn", "One governed entry point. Four precise access boundaries.");
 
@@ -119,4 +122,4 @@ needs("cookies", "Reject non-essential");
 for (const term of ["Controlled terminology", "Accessibility and color", "Localization", "Remaining acceptance"]) {
   needs("standard", term);
 }
-console.log("Apple HIG Writing first-pass copy contracts verified across 19 reviewed source surfaces.");
+console.log("Apple HIG Writing first-pass copy contracts verified across 20 reviewed source surfaces.");
