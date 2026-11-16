@@ -82,6 +82,8 @@ test("interface localization does not claim that clinical, legal, or regulated e
   assert.match(source, /return labels\[locale\]\[english\] \?\? english/);
   assert.match(source, /new Intl\.NumberFormat\(locale\)/);
   assert.match(source, /new Intl\.DateTimeFormat\(locale,/);
-  assert.match(read("apps/corporate/components/site-header.tsx"), /interfaceLabel\(locale, label\)/);
+  assert.equal((read("apps/corporate/components/site-header.tsx").match(/interfaceLabel\(locale, label\)/g) ?? []).length, 2, "Both corporate desktop link branches must translate");
+  assert.equal((read("apps/corporate/components/mobile-navigation.tsx").match(/interfaceLabel\(locale, label\)/g) ?? []).length, 2, "Both corporate mobile link branches must translate");
+  assert.match(read("apps/founder/components/chrome.tsx"), /interfaceLabel\(locale, "Contact"\)/);
   assert.match(read("apps/corporate/components/site-footer.tsx"), /interfaceLabel\(locale,/);
 });
