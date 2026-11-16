@@ -103,9 +103,8 @@ test("versioned RTL CSS survives repeat build without a duplicate link", () => {
 test("upstream head rewrite cannot shift standalone RTL stylesheet between public builds", () => {
   const { root } = fixture();
   try {
-    const file = join(root, "products-account-synthetic.html");
     const selected = join(root, "about/sample-0/index.html");
-    const base = '<html lang="en-GB"><head><title>Account</title>\\n' +
+    const base = '<html lang="en-GB"><head><title>Account</title>\n' +
       '<link rel="alternate" href="https://example.test/account/">' +
       '<meta name="description" content="Approved English"></head>' +
       '<body><main>Reviewed account details</main></body></html>';
@@ -113,12 +112,12 @@ test("upstream head rewrite cannot shift standalone RTL stylesheet between publi
     writeFileSync(selected, base.replace('</head>', css + '</head>'));
     finalizePublicRtlArtifacts(root);
     const first = readFileSync(selected, "utf8");
-    assert.equal((first.match(/rtl-localization\\.css/g) ?? []).length, 1);
-    assert.ok(first.includes('  <link rel="stylesheet" href="/assets/css/rtl-localization.css">\\n</head>'));
+    assert.equal((first.match(/rtl-localization\.css/g) ?? []).length, 1);
+    assert.ok(first.includes('  <link rel="stylesheet" href="/assets/css/rtl-localization.css">\n</head>'));
     // Simulate an SEO pass moving an already-versioned stylesheet next to the
     // alternate language metadata without changing the approved copy.
     writeFileSync(selected, base.replace('<link rel="alternate"',
-      css + '\\n<link rel="alternate"'));
+      css + '\n<link rel="alternate"'));
     finalizePublicRtlArtifacts(root);
     const second = readFileSync(selected, "utf8");
     assert.equal(second, first, "CSS must land at the same head offset on both builds");
