@@ -52,7 +52,7 @@ export default async function RootLayout({
       <body>
         <JsonLdScript data={websiteSchema()} />
         <JsonLdScript data={founderPersonSchema()} />
-        <div lang="en-GB" data-np-untranslated><SiteChrome>{children}</SiteChrome></div>
+        <div lang="en-GB" data-np-untranslated><SiteChrome locale={locale}>{children}</SiteChrome></div>
         <InterfaceLocaleSwitcher locale={locale} />
       </body>
     </html>
