@@ -72,3 +72,14 @@ test("public rebuild preserves the reviewed privacy overview and legal metadata"
   assert.match(builder, /\.replace\(\/<article class=/);
   assert.match(builder, /\.replace\(\/<dl class=/);
 });
+
+test("the guarded publisher verifies the redesigned Privacy page on the actual custom domain", () => {
+  const publisher = source(".github/workflows/publish-aws-contact-production.yml");
+  assert.ok(publisher.includes("https://novapharmhealthcare.com/legal/privacy/?"), "Verify the public canonical route");
+  assert.ok(publisher.includes("grep -Fq 'class=\"np-privacy-overview\"' /tmp/novapharm-live-privacy.html"),
+    "Do not report successful Privacy redesign delivery if the overview is not served");
+  assert.ok(publisher.includes("grep -Fq 'Your information. Your choice.' /tmp/novapharm-live-privacy.html"),
+    "Live publisher must assert the editorial heading");
+  assert.ok(publisher.includes("grep -Fq 'class=\"np-privacy-primary-action\"' /tmp/novapharm-live-privacy.html"),
+    "Live publisher must assert the primary cookie-control action");
+});
