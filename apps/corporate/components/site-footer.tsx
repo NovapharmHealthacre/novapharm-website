@@ -50,12 +50,12 @@ export function SiteFooter({ locale }: Readonly<{ locale: InterfaceLocale }>) {
             <Link href="/legal/cookies/">{interfaceLabel(locale, "Cookies")}</Link>
             <Link href="/legal/terms/">{interfaceLabel(locale, "Terms")}</Link>
             <Link href="/legal/accessibility/">{interfaceLabel(locale, "Accessibility")}</Link>
-            <CookieSettingsButton />
           </AppleFooterNavigation>
         </nav>
       </div>
       <div className="shell footer-secondary">
         <p lang="en-GB" dir="ltr">&copy; {new Date().getFullYear()} {company.legalName}. Company number {company.companyNumber}.</p>
+        <CookieSettingsButton />
         <InterfaceLocaleSwitcher locale={locale} />
       </div>
     </footer>
