@@ -4,6 +4,12 @@ on:
   pull_request:
     paths:
       - "packages/design-system/src/menu-actions.tsx"
+      - "packages/design-system/src/menu-actions-policy.ts"
+      - "apps/portal/components/wms-recorded-evidence-studio.tsx"
+      - "apps/corporate/components/mobile-navigation.tsx"
+      - "apps/portal/app/employee-distribution.css"
+      - "scripts/test-apple-hig-menu-policy.mjs"
+      - ".github/pull_request_template.md"
       - "packages/design-system/src/index.ts"
       - "packages/design-system/src/styles.ts"
       - "packages/design-system/test/menu-actions.test.tsx"
@@ -16,6 +22,12 @@ on:
     branches: [main]
     paths:
       - "packages/design-system/src/menu-actions.tsx"
+      - "packages/design-system/src/menu-actions-policy.ts"
+      - "apps/portal/components/wms-recorded-evidence-studio.tsx"
+      - "apps/corporate/components/mobile-navigation.tsx"
+      - "apps/portal/app/employee-distribution.css"
+      - "scripts/test-apple-hig-menu-policy.mjs"
+      - ".github/pull_request_template.md"
       - "packages/design-system/src/index.ts"
       - "packages/design-system/src/styles.ts"
       - "packages/design-system/test/menu-actions.test.tsx"
@@ -41,7 +53,7 @@ jobs:
       - name: Install locked dependencies
         run: npm ci --ignore-scripts
       - name: Verify public PWA shortcuts and source parity
-        run: node --test scripts/test-apple-hig-menu-shortcuts.mjs
+        run: node --test scripts/test-apple-hig-menu-shortcuts.mjs scripts/test-apple-hig-menu-policy.mjs
       - name: Typecheck shared HIG controls
         run: npm run typecheck -w @novapharm/design-system
       - name: Test shared accessible menu and action controls
