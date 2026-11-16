@@ -31,4 +31,4 @@ jobs:
       - name: Verify WMS pattern markup
         run: npx tsx --test apps/portal/test/wms-patterns.test.ts
       - name: Validate WMS resource planning constraints
-        run: node --test apps/portal/test/wms-capacity-scenario.test.ts
+        run: npx tsx --test apps/portal/test/wms-capacity-scenario.test.ts
