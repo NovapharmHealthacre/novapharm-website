@@ -69,14 +69,16 @@ await import("./apply-products-editorial.mjs");
 await import("./generate-commerce-marketplace.mjs");
 await import("./generate-commerce-tracking.mjs");
 
-// Version the final public CSS URLs so old Safari/edge caches cannot hide the approved logo.
-// This must run after all editorial transforms and before release source-SHA stamping.
-await import("./version-public-visual-assets.mjs");
-
-// Finalized static pages must all load the bilingual/RTL layout bootstrap,
+// Finalized static pages must all load the RTL layout bootstrap,
 // including late-generated commerce, Marketplace and regulated legal pages.
+// This MUST precede CSS URL versioning so both first and repeat builds hash
+// the same complete stylesheet set, including standalone RTL assets.
 const { finalizePublicRtlArtifacts } = await import("./finalize-public-rtl.mjs");
 finalizePublicRtlArtifacts();
+
+// Version the final public CSS URLs so Safari/edge caches serve approved assets.
+// Run after every HTML/style entrypoint exists, before source-SHA stamping.
+await import("./version-public-visual-assets.mjs");
 
 // Stamp only the final generated public pages after all editorial transforms.
 await import("./stamp-public-release-provenance.mjs");
