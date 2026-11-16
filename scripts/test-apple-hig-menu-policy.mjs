@@ -22,8 +22,8 @@ test("all Apple HIG menus and actions are canonical rules across seven estates",
     assert.ok(policy.includes('"' + estate + '"'), "Estate missing: " + estate);
   }
   assert.match(index, /export \* from "\.\/menu-actions-policy"/);
-  assert.match(index, /export \\* from "\\.\\/components"/);
-  assert.match(read("packages/design-system/src/components.tsx"), /export \\* from "\\.\\/menu-actions"/);
+  assert.match(index, /export \* from "\.\/components"/);
+  assert.match(read("packages/design-system/src/components.tsx"), /export \* from "\.\/menu-actions"/);
   assert.match(policy, /exact deployed SHA/);
   assert.match(policy, /server/);
 });
