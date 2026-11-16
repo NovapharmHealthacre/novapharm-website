@@ -107,7 +107,21 @@ export function ActionToolbar({ label, primary, more = [], leading }: Readonly<{
   more?: readonly CommandAction[];
   leading?: ReactNode;
 }>) {
-  return <div className="np-command-toolbar" role="toolbar" aria-label={label}>
+  const moveToolbarFocus = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.defaultPrevented || !["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    const targets = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(
+      ".np-command-toolbar__actions > a[href], .np-command-toolbar__actions > button:not(:disabled), .np-command-toolbar__actions > .np-command-menu > summary"
+    ));
+    const current = targets.indexOf(document.activeElement as HTMLElement);
+    if (current < 0 || !targets.length) return;
+    event.preventDefault();
+    const rtl = getComputedStyle(event.currentTarget).direction === "rtl";
+    const step = event.key === "ArrowRight" ? (rtl ? -1 : 1) : (rtl ? 1 : -1);
+    const next = event.key === "Home" ? 0 : event.key === "End" ? targets.length - 1 :
+      (current + step + targets.length) % targets.length;
+    targets[next]?.focus();
+  };
+  return <div className="np-command-toolbar" role="toolbar" aria-label={label} onKeyDown={moveToolbarFocus}>
     {leading ? <div className="np-command-toolbar__leading">{leading}</div> : null}
     <div className="np-command-toolbar__actions">
       {primary.map((action) => <ActionItem key={action.id} action={action}
