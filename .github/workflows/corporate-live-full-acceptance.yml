@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'scripts/test-corporate-live-acceptance.mjs'
+      - 'scripts/test-corporate-live-logo-contract.mjs'
       - 'scripts/test-corporate-contact-failure.mjs'
       - '.github/workflows/corporate-live-full-acceptance.yml'
   workflow_run:
@@ -34,6 +35,8 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      - name: Verify decoded-logo readiness and unchanged live failure gates
+        run: node --test scripts/test-corporate-live-logo-contract.mjs
       - name: Install locked dependencies and browsers
         run: |
           npm ci --ignore-scripts

@@ -43,6 +43,14 @@ for (const [engineName, engine] of [["chromium", chromium], ["webkit", webkit], 
             const response = await page.goto(url.href, { waitUntil: "domcontentloaded", timeout: 45000 });
             if (response?.status() !== 200) row.issues.push("HTTP " + response?.status());
             await page.evaluate(() => document.fonts.ready).catch(() => undefined);
+            // DOMContentLoaded does not mean an <img> has finished downloading
+            // or decoding (especially in Firefox). Wait for the approved
+            // header logo to actually become drawable before taking evidence.
+            // This is bounded; a missing or broken logo still fails below.
+            await page.waitForFunction(() => {
+              const logo = document.querySelector("header.site-header img[src*='novapharm-healthcare-logo']");
+              return Boolean(logo && logo.complete && logo.naturalWidth > 0);
+            }, null, { timeout: 8000, polling: 100 }).catch(() => undefined);
             const state = await page.evaluate(() => {
               const meta = (key, attr = "property") => [...document.querySelectorAll('meta[' + attr + '="' + key + '"]')].map(n => n.content);
               const h1s = [...document.querySelectorAll("main h1")];
