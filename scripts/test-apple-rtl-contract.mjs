@@ -49,7 +49,12 @@ test("five Next.js properties share server-side locale direction and a functiona
     const layout = read(`apps/${app}/app/layout.tsx`);
     assert.match(layout, /resolveInterfaceLocale\(\(await cookies\(\)\)\.get\("np_locale"\)\?\.value\)/, app);
     assert.match(layout, /<html[^>]*lang=\{locale\}[^>]*dir=\{directionForLocale\(locale\)\}/, app);
-    assert.match(layout, /<InterfaceLocaleSwitcher locale=\{locale\} \/>/, app);
+    const footerSelector = app === "corporate" ? "apps/corporate/components/site-footer.tsx"
+      : app === "technology" ? "apps/technology/components/site-footer.tsx"
+      : app === "founder" ? "apps/founder/components/chrome.tsx"
+      : null;
+    assert.match(footerSelector ? read(footerSelector) : layout,
+      /<InterfaceLocaleSwitcher locale=\{locale\} \/>/, app);
     assert.match(layout, /assets\/css\/rtl-localization\.css/, app);
     assert.match(layout, /lang="en-GB" data-np-untranslated/, app);
   }
@@ -211,4 +216,30 @@ test("RTL preference disclosure is visible in both the public cookie notice and 
   assert.ok(managedLocale.includes("Max-Age=31536000"));
   assert.ok(staticLocale.includes("SameSite=Lax"));
   assert.ok(managedLocale.includes("SameSite=Lax"));
+});
+
+
+test("Apple-like footer language selector stays unboxed, accessible and honest about preview status", () => {
+  const css = read("assets/css/rtl-localization.css");
+  const staticJs = read("assets/js/rtl-localization.js");
+  const react = read("src/components/interface-locale-switcher.tsx");
+  const block = css.slice(css.indexOf(".np-locale-control {"), css.indexOf('html[dir="rtl"] {'));
+  for (const rule of ["position: static", "background: transparent", "border: 0",
+    "box-shadow: none", "min-block-size: 44px", ".np-locale-select-wrap", "appearance: none"]) {
+    assert.ok(block.includes(rule), "Missing unboxed Apple-like footer contract: " + rule);
+  }
+  assert.doesNotMatch(block, /position: fixed/);
+  assert.match(staticJs, /document\.querySelector\("\.npd-footer-bottom,/);
+  assert.match(staticJs, /\(footer \|\| document\.body\)\.appendChild\(control\)/);
+  assert.match(staticJs, /label\.textContent = locale === "ar" \? "اللغة"/);
+  assert.match(react, /interfaceLabel\(locale, "Language"\)/);
+  assert.match(react, /className="np-locale-select-wrap"/);
+  assert.match(react, /lang=\{locale\} dir=\{directionForLocale\(locale\)\}/);
+  assert.match(react, /Max-Age=31536000; SameSite=Lax/);
+  assert.match(react, /full content translation pending/);
+  assert.match(read("src/core/interface-locale.ts"), /"Language": "اللغة"/);
+  assert.match(read("src/core/interface-locale.ts"), /"Language": "שפה"/);
+  assert.match(read("assets/css/novapharm.bundle.css"), /Source: rtl-localization\.css/);
+  assert.ok(read("assets/css/novapharm.bundle.css").trim().endsWith(css.trim()),
+    "Checked-in public bundle must include exact current footer selector styles");
 });
