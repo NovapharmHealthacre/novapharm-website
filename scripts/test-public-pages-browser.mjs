@@ -281,6 +281,29 @@ for (const [engineName, browserType] of engines) {
             await page.locator("main").waitFor({ state: "visible", timeout: 15_000 });
             await dismissConsent(page);
             await materialiseLazyMedia(page);
+            // Verify computed pointer-target geometry, not only checked-in
+            // CSS declarations: later styles must not erase these improvements.
+            const smallPublicNavigationTargets = await page.evaluate(() => {
+              const selector = [
+                ".npd-footer .npd-footer-top div > a:not(.footer-brand)",
+                ".npd-footer .npd-footer-legal :is(a, button)",
+                ".npd-footer .npd-footer-bottom a",
+                "nav.breadcrumb[aria-label='Breadcrumb'] > a",
+                "nav.npd-breadcrumb[aria-label='Breadcrumb'] .container > a"
+              ].join(", ");
+              return [...document.querySelectorAll(selector)]
+                .filter((element) => {
+                  const style = getComputedStyle(element);
+                  const rect = element.getBoundingClientRect();
+                  return style.display !== "none" && style.visibility !== "hidden" &&
+                    rect.width > 0 && rect.height > 0;
+                }).map((element) => ({
+                  text: (element.getAttribute("aria-label") || element.textContent || "").trim().slice(0,60),
+                  height: Number(element.getBoundingClientRect().height.toFixed(1))
+                })).filter((entry) => entry.height < 27.5);
+            });
+            assert.deepEqual(smallPublicNavigationTargets, [],
+              `${engineName} ${viewport.name} ${route.path}: public footer/breadcrumb targets must render >= 28 CSS px`);
             // Apple HIG-inspired accessibility contract: actual keyboard and
             // speech-friendly navigation behaviour, not only source assertions.
             if (route.name === "home") {
