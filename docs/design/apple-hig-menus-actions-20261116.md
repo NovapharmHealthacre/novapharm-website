@@ -12,7 +12,7 @@ Source review: 16 November 2026. This document distinguishes reusable web implem
 | [Context menus](https://developer.apple.com/design/human-interface-guidelines/context-menus) | Keep context commands discoverable in main interface, hide irrelevant items in contextual surfaces | Visible CommandMenu available; secondary-click/long-press route integration pending |
 | [Dock menus](https://developer.apple.com/design/human-interface-guidelines/dock-menus) | System macOS app menu, not a browser feature | Native-only; not applicable |
 | [Edit menus](https://developer.apple.com/design/human-interface-guidelines/edit-menus) | Preserve native browser Select, Copy, Cut, Paste, Undo | No replacement browser edit menu |
-| [Home Screen quick actions](https://developer.apple.com/design/human-interface-guidelines/home-screen-quick-actions) | UIKit iOS app shortcut feature not available to ordinary web pages; PWA manifest shortcuts are not equivalent | Native-only; no fake support claim |
+| [Home Screen quick actions](https://developer.apple.com/design/human-interface-guidelines/home-screen-quick-actions) | UIKit iOS app shortcut feature not available to ordinary web pages; PWA manifest shortcuts are not equivalent | Native shortcut unsupported by browser; public PWA manifest shortcuts added separately, browser-dependent |
 | [Menus](https://developer.apple.com/design/human-interface-guidelines/menus) | Short labels, priority order, groups, discernible disabled actions | CommandMenu |
 | [Ornaments](https://developer.apple.com/design/human-interface-guidelines/ornaments) | visionOS window-specific feature | Not applicable to web |
 | [Pop-up buttons](https://developer.apple.com/design/human-interface-guidelines/pop-up-buttons) | Flat mutually exclusive choice with known current value | ChoicePicker, native select |
@@ -51,3 +51,7 @@ Source review: 16 November 2026. This document distinguishes reusable web implem
 - Preserve primary actions and standard browser editing instead of duplicating or hiding them in menus.
 - Before claiming acceptance: exact-head CI, TypeScript, SSR tests, Chromium/WebKit keyboard and touch tests, RTL, forced colours, 200–400% zoom, reduced motion, screen readers. Test Escape/outside dismiss and Arrow/Home/End navigation.
 - Separately roll out and audit public Corporate/Technology/Founder/Status, Intelligence, Customer Portal, Employee Portal, Distribution/WMS and all applicable governed modules; verify exact published SHAs and protected user journeys. No AWS, clinical, stock, payment or approval mutation in this branch.
+
+## Public web-app shortcuts (browser-dependent)
+
+Both root manifest.webmanifest and apps/corporate/app/manifest.ts advertise exactly two public in-scope choices: Browse Products (/products/) and Contact NovaPharm (/contact/). These do not implement iOS UIKit UIApplication shortcut items or an installed Mac Dock menu. Shortcuts visibility and ordering are decided by supporting browsers/platforms; Safari/iOS support must not be assumed. No protected Portal, Intelligence, clinical, billing, stock, or approval URL is included.
