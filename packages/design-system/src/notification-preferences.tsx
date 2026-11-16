@@ -39,8 +39,12 @@ export function NotificationPreferenceEditor({
     expectedRevision: string,
   ) => Promise<VerifiedNotificationSave>;
 }>) {
-  const [draft, setDraft] = useState<Readonly<Record<string, boolean>>>({});
-  const [confirmed, setConfirmed] = useState<Readonly<Record<string, boolean>>>({});
+  // Initial HTML must reflect the verified persisted state, without first
+  // painting every selected preference as false during server rendering.
+  const initial = () => record?.verified && record.revision
+    ? Object.fromEntries(record.topics.map((topic) => [topic.id, topic.enabled])) : {};
+  const [draft, setDraft] = useState<Readonly<Record<string, boolean>>>(initial);
+  const [confirmed, setConfirmed] = useState<Readonly<Record<string, boolean>>>(initial);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("");
   const pendingRef = useRef(false);
