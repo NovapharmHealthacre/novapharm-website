@@ -14,6 +14,8 @@ declare const styles: Readonly<{
   reviewStatus: string;
   reset: string;
   reference: string;
+  contractGrid: string;
+  contractItem: string;
 }>;
 
 export default styles;

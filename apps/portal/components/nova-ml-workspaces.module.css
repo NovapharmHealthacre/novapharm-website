@@ -124,3 +124,30 @@
 @media (prefers-reduced-motion: reduce) {
   .workspace * { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
 }
+
+.contractGrid {
+  margin: 18px 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 12px;
+}
+.contractItem {
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--nova-divider);
+  border-radius: 12px;
+  background: #fafafb;
+  min-width: 0;
+}
+.contractItem dt {
+  font-size: .8rem;
+  font-weight: 680;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+.contractItem dd {
+  margin: 0;
+  font-size: .87rem;
+  color: var(--nova-muted);
+  line-height: 1.55;
+}

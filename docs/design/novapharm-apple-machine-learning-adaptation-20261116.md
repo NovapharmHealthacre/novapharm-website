@@ -12,7 +12,7 @@ Build **Nova ML** as a NovaPharm-branded, governed set of four modules in the ex
 | --- | --- | --- | --- |
 | Nova ML Studio — `nova-ml-studio` | Create ML, model metadata, splitting, evaluation | Protected module, planning checklist, macOS trainer candidate | No signed training app, approved dataset, model, independent holdout or training run |
 | Nova Core Runtime — `nova-core-runtime` | Core ML on-device inference | Protected module, model-permit and input-schema-checked Swift adapter | No bundled approved model or live native inference |
-| Nova Device Intelligence — `nova-device-intelligence` | Vision/VisionKit, Natural Language, Speech | Protected module, native single-image Vision OCR candidate and permission/data requirements | No camera, microphone, browser OCR or production device permission activation |
+| Nova Device Intelligence — `nova-device-intelligence` | Vision/VisionKit, Natural Language, Speech | Protected module, native single-image Vision OCR candidate and permission/data requirements | No live camera, microphone, browser OCR, auto-upload, speech permission or production device runtime activation |
 | Nova Generative Assist — `nova-generative-assist` | Foundation Models, App Intents, Writing Tools | Protected module, explicit-request native draft adapter, read-only native app-opening App Intent candidate | No native app, model session in production, installed App Intent, Siri or protected-data access |
 
 The protected routes are:
@@ -38,7 +38,7 @@ The duplicate Generative Models URL in the owner list is one source, reviewed on
 | https://developer.apple.com/design/human-interface-guidelines/machine-learning | Distinguish critical/complementary, private/public, proactive/reactive; opt-in, calibration, feedback, mistakes, correction, multiple options, attribution, limitations; hide uncalibrated numeric confidence | Web model-readiness contract and source-first/no-claim boundary created; live scenario validation pending |
 | https://developer.apple.com/design/human-interface-guidelines/privacy | Purpose-specific data minimisation, clear consent, device processing and permission timing | No collection, training, capture, network inference or persistence in new module; final privacy/legal review pending |
 | https://developer.apple.com/documentation/technologyoverviews/ai-machine-learning | Choose system intelligence, native/developer models and appropriate model lifecycle | Platform separation and native candidates added |
-| https://developer.apple.com/documentation/technologyoverviews/built-in-intelligence | Vision, VisionKit, Natural Language, Speech and other embedded frameworks | Requirements only; no capture or classification without a native host |
+| https://developer.apple.com/documentation/technologyoverviews/built-in-intelligence | Vision, VisionKit, Natural Language, Speech and other embedded frameworks | Native OCR, on-device Natural Language and file-only Speech candidates; no deployed native host or camera/microphone capture |
 | https://developer.apple.com/documentation/technologyoverviews/apple-intelligence | App Intents, app entities, Writing Tools, Siri/Shortcuts/Spotlight, optional images | Native integration path documented; do not claim private data are donated to Siri, or that proprietary Apple services are copied into NI |
 | https://developer.apple.com/documentation/technologyoverviews/generative-models | Foundation Models, guided output, Core ML, Core AI and custom models | Native Foundation Models draft candidate; no LLM, server inference or Core AI shipped |
 | https://developer.apple.com/documentation/createml | Training, evaluation, model tasks and export | macOS text-classification trainer candidate and testable lifecycle contract |
@@ -55,6 +55,16 @@ Apple SDK availability is device-, OS- and region-dependent. Use the currently i
 **Foundation Models transcript caveat:** Apple's `LanguageModelSession` internally maintains a transcript of prompt/response interactions for the life of the session. The prototype constructs a fresh session per deliberate request and does not save or upload that transcript. This is different from claiming that no in-memory transcript exists. Any native production app must prohibit unapproved persistence, crash-report exposure, diagnostics capture and retained session reuse. See https://developer.apple.com/documentation/foundationmodels/languagemodelsession.
 
 **Core ML provenance gate:** The Core ML adapter checks the bundled model's version and licence metadata against its trusted signed-app permit, in addition to its expected input names. This is not a substitute for independent signed release verification, model-file integrity attestation and app binary signing.
+
+## Apple HIG user-experience acceptance — explicit controls
+
+Each of the four protected Nova ML pages now renders **ten** user-facing requirements for the future signed-app interaction: role, input/privacy, interaction and learning cadence, voluntary feedback, calibration, corrections, attribution, confidence, limitations and manual fallback. These requirements are module-specific and do not imply a model ran.
+
+The role distinction is *complementary*, not essential to pharmaceutical service continuity; interactions are reactive by default. Never infer a user's consent to training from the fact they browsed a page. When a native candidate does operate, require clear source attribution, immediate ability to reject or correct its output, no unsupported probability scores and a reversible source-first fallback. For consequences such as medicines, purchases, customers, access control, medical decisions or regulatory status, the approved workflow must remain human-led.
+
+**Speech:** never ask for microphone access for file-only transcription. Ask for the operating system's Speech recognition permission in context only when needed, use a user-selected local file, and disable the feature when on-device-only recognition is not supported. Do not silently use network recognition, store transcripts, or treat recognizer text as authoritative.
+**Natural Language:** keep raw text in the native process, only for approved public excerpts; do not infer a confident language on very short text. Both APIs are candidates pending native application support.
+**Video/action classification:** Apple's sample expects a continuously running camera and actual device, but is out of scope for NovaPharm's initial pharmaceutical product. Document the training-video best practices for an optional consented future research study (single participant, complete body, good lighting, varied examples, negative class) without building or activating workplace, patient or employee surveillance.
 
 ## Required validation before release
 

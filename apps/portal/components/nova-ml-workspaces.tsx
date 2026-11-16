@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { type NovaMlWorkspaceSlug, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
+import { type NovaMlWorkspaceSlug, novaMlExperienceGuidance, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
 import styles from "./nova-ml-workspaces.module.css";
 
 const gates = [
@@ -16,6 +16,19 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
   const [review, setReview] = useState<readonly string[]>([]);
   if (!module) return null;
   const complete = gates.every((gate) => review.includes(gate.id));
+  const guidance = novaMlExperienceGuidance[kind];
+  const designRows = [
+    ["Role", guidance.role],
+    ["Data and privacy", guidance.input],
+    ["Interaction and learning cadence", guidance.interaction],
+    ["Feedback", guidance.feedback],
+    ["Calibration", guidance.calibration],
+    ["Corrections", guidance.correction],
+    ["Attribution", guidance.attribution],
+    ["Confidence", guidance.confidence],
+    ["Limitations", guidance.limitation],
+    ["Fallback", guidance.fallback]
+  ] as const;
 
   const toggle = (id: string, checked: boolean) => {
     setReview((previous) => checked ? [...previous.filter((value) => value !== id), id] : previous.filter((value) => value !== id));
@@ -40,6 +53,14 @@ export function NovaMlWorkspace({ kind }: Readonly<{ kind: NovaMlWorkspaceSlug }
       <ol className={styles.capabilities}>{module.capabilities.map((capability, index) =>
         <li key={capability}><span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span><p>{capability}</p></li>
       )}</ol>
+    </section>
+
+    <section className={styles.section} aria-labelledby="nova-ml-experience">
+      <h2 id="nova-ml-experience">Apple HIG machine-learning experience contract</h2>
+      <p className={styles.helper}>Ten acceptance requirements for future native releases. These are testable design rules, not live model outputs or permission grants.</p>
+      <dl className={styles.contractGrid}>{designRows.map(([label, description]) =>
+        <div key={label} className={styles.contractItem}><dt>{label}</dt><dd>{description}</dd></div>
+      )}</dl>
     </section>
 
     <section className={styles.section} aria-labelledby="nova-ml-acceptance">

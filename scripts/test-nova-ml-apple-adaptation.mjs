@@ -17,6 +17,8 @@ test("four unique Nova ML extensions do not modify the canonical 22 research wor
   assert.equal(new Set(slugs).size, 4);
   assert.equal([...original.matchAll(/slug: "/g)].length, 22);
   assert.match(catalogue, /isNovaMlWorkspaceSlug/);
+  assert.match(catalogue, /novaMlExperienceGuidance/);
+  for (const pattern of [/feedback:/, /calibration:/, /correction:/, /attribution:/, /confidence:/, /limitation:/, /fallback:/]) assert.match(catalogue, pattern);
   assert.doesNotMatch(catalogue, /productionApproved: true|state: "live"/);
 });
 
@@ -44,6 +46,8 @@ test("new web UI cannot imply native inference or capture personal data", () => 
   assert.match(panel, /does not train models, invoke Core ML/);
   assert.match(panel, /selections stay in this tab and are not saved/);
   assert.match(panel, /source-first fallback/);
+  assert.match(panel, /designRows\.map/);
+  assert.match(panel, /Apple HIG machine-learning experience contract/);
   assert.match(panel, /aria-live="polite"/);
   assert.match(panel, /type="checkbox"/);
   assert.match(panel, /Clear selections/);
@@ -51,6 +55,7 @@ test("new web UI cannot imply native inference or capture personal data", () => 
   assert.match(css, /:focus-visible/);
   assert.match(css, /prefers-reduced-motion/);
   assert.match(css, /max-width: 680px/);
+  assert.match(css, /contractGrid/);
 });
 
 test("native candidates fail closed and require trusted model/data permits", () => {
@@ -76,6 +81,21 @@ test("native candidates fail closed and require trusted model/data permits", () 
   assert.match(generator, /humanReviewRequired: Bool = true/);
   assert.match(generator, /publicationApproved: Bool = false/);
   assert.match(generator, /Foundation Models keeps a transcript|Apple maintains a transcript/);
+  const language = source("native/novapharm-intelligence-apple/NovaLanguageIntelligence.swift");
+  const speech = source("native/novapharm-intelligence-apple/NovaSpeechIntelligence.swift");
+  assert.match(language, /import NaturalLanguage/);
+  assert.match(language, /NLLanguageRecognizer/);
+  assert.match(language, /NLTokenizer/);
+  assert.match(language, /trustedSourceApproved/);
+  assert.match(language, /containsPatientOrRestrictedContent/);
+  assert.doesNotMatch(language, /URLSession|AVCaptureSession|SpeechRecognizer|localStorage/);
+  assert.match(speech, /import Speech/);
+  assert.match(speech, /SFSpeechURLRecognitionRequest/);
+  assert.match(speech, /supportsOnDeviceRecognition/);
+  assert.match(speech, /requiresOnDeviceRecognition = true/);
+  assert.match(speech, /authorizationStatus\(\) == \.authorized/);
+  assert.match(speech, /shouldReportPartialResults = false/);
+  assert.doesNotMatch(speech, /AVCaptureSession|AVAudioEngine|URLSession|requestAuthorization/);
   const vision = source("native/novapharm-intelligence-apple/NovaDocumentIntelligence.swift");
   const intents = source("native/novapharm-intelligence-apple/NovaResearchAppIntent.swift");
   assert.match(vision, /import Vision/);
@@ -105,4 +125,6 @@ test("Apple guidance map and live release gates are documented", () => {
   assert.match(doc, /Xcode/);
   assert.match(doc, /in-memory transcript/);
   assert.match(doc, /Core ML provenance gate/);
+  assert.match(doc, /on-device-only recognition/);
+  assert.match(doc, /video\/action classification/i);
 });
