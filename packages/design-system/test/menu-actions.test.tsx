@@ -23,6 +23,7 @@ test("pull-down renders an accessible native disclosure with a clear action hier
 test("destructive actions fail closed without explicit confirmation and handlers", () => {
   const html = renderToStaticMarkup(<CommandMenu label="Record Actions" actions={[
     { id: "unsafe", label: "Delete Record", href: "/delete", destructive: true },
+    { id: "mixed", label: "Delete Document", href: "/delete", onSelect: () => {}, destructive: true, confirmationMessage: "Delete?" },
     { id: "unconfirmed", label: "Remove", onSelect: () => {}, destructive: true },
     { id: "confirmed", label: "Delete Draft", onSelect: () => {}, destructive: true,
       confirmationMessage: "Permanently delete this draft?" },
@@ -30,6 +31,7 @@ test("destructive actions fail closed without explicit confirmation and handlers
   assert.doesNotMatch(html, /href="\/delete"/);
   assert.match(html, /disabled=""[^>]*>Delete Record<\/button>/);
   assert.match(html, /disabled=""[^>]*>Remove<\/button>/);
+  assert.match(html, />Delete Document<\/button>/);
   assert.match(html, /np-command-action--destructive/);
   assert.match(html, />Delete Draft<\/button>/);
 });
@@ -63,8 +65,9 @@ test("sharing fails closed when the URL is not a public HTTPS URL", () => {
     <SharePublicLink title="Public catalogue" url="https://novapharmhealthcare.com/products/" />
     <SharePublicLink title="Private document" url="http://private.example/docs" />
     <SharePublicLink title="Signed URL" url="https://novapharmhealthcare.com/?token=secret" />
+    <SharePublicLink title="Credential URL" url="https://user:pass@novapharmhealthcare.com/products/" />
   </>);
   assert.match(html, /<button[^>]*>Share<\/button>/);
-  assert.equal((html.match(/disabled=""/g) ?? []).length, 2);
+  assert.equal((html.match(/disabled=""/g) ?? []).length, 3);
   assert.match(html, /aria-live="polite"/);
 });
