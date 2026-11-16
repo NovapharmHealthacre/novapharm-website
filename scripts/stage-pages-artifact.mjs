@@ -203,6 +203,11 @@ if (cname !== "novapharmhealthcare.com") {
   throw new Error(`Unexpected Pages custom domain in artifact: ${cname || "<empty>"}`);
 }
 
+// A GitHub Pages upload must never silently publish stale LTR-only markup.
+const { validatePublicRtlArtifacts } = await import("./finalize-public-rtl.mjs");
+const rtlValidation = validatePublicRtlArtifacts(output);
+console.log("Validated RTL bootstrap on " + rtlValidation.valid + " staged public HTML pages.");
+
 const stagedFiles = walk(output);
 if (!stagedFiles.length) throw new Error("Pages artifact contains no files.");
 

@@ -73,5 +73,10 @@ await import("./generate-commerce-tracking.mjs");
 // This must run after all editorial transforms and before release source-SHA stamping.
 await import("./version-public-visual-assets.mjs");
 
+// Finalized static pages must all load the bilingual/RTL layout bootstrap,
+// including late-generated commerce, Marketplace and regulated legal pages.
+const { finalizePublicRtlArtifacts } = await import("./finalize-public-rtl.mjs");
+finalizePublicRtlArtifacts();
+
 // Stamp only the final generated public pages after all editorial transforms.
 await import("./stamp-public-release-provenance.mjs");
