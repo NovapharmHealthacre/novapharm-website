@@ -94,7 +94,38 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
               const renderedRatio = box.height ? box.width / box.height : 0;
               const visibleMedia = visible(img) && box.width > 1 && box.height > 1;
               const src = img.currentSrc || img.src;
+              // naturalWidth is density-corrected for responsive srcset picks.
+              // Compare CSS pixels with the selected resource's *declared* pixel
+              // width instead, retaining naturalWidth as the no-srcset fallback.
+              // This is an advisory; exact encoded dimensions need asset checks.
+              const srcsets = [
+                img.getAttribute("srcset"),
+                ...[...(img.closest("picture")?.querySelectorAll("source[srcset]") ?? [])]
+                  .map((source) => source.getAttribute("srcset"))
+              ].filter(Boolean);
+              let selectedDescriptor = null;
+              for (const srcset of srcsets) {
+                for (const candidate of srcset.split(",")) {
+                  const match = candidate.trim().match(/^(\S+)\s+(\d+(?:\.\d+)?)(w|x)$/i);
+                  if (!match) continue;
+                  try {
+                    if (new URL(match[1], location.href).href === src) {
+                      selectedDescriptor = {value:Number(match[2]),unit:match[3].toLowerCase()};
+                      break;
+                    }
+                  } catch { /* Ignore malformed optional responsive candidates. */ }
+                }
+                if (selectedDescriptor) break;
+              }
+              const estimatedSourcePixelWidth = selectedDescriptor?.unit === "w"
+                ? selectedDescriptor.value
+                : selectedDescriptor?.unit === "x"
+                  ? img.naturalWidth * selectedDescriptor.value
+                  : img.naturalWidth;
               const local = src.startsWith(location.origin + "/assets/");
+              // Scalable SVGs do not have a fixed raster pixel density; their
+              // intrinsic 300×150 default must never trigger pixelation flags.
+              const scalableVector = /\.svg(?:[?#]|$)/i.test(src);
               const productPhoto = Boolean(img.closest(
                 ".nx-product-visual, .nx-featured-image, .esco-product-visual"
               ));
@@ -102,13 +133,15 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
                 src:src.slice(0,220),
                 local, visible:visibleMedia, complete:img.complete,
                 naturalWidth:img.naturalWidth, naturalHeight:img.naturalHeight,
+                estimatedSourcePixelWidth,
+                sourcePixelWidthBasis:selectedDescriptor ? "srcset-descriptor" : "naturalWidth",
                 width:Math.round(box.width), height:Math.round(box.height),
                 objectFit:style.objectFit, productPhoto,
                 missingAlt:!img.hasAttribute("alt"),
                 stretched:visibleMedia && naturalRatio > 0 && renderedRatio > 0 &&
                   style.objectFit === "fill" && Math.abs(Math.log(naturalRatio / renderedRatio)) > .12,
-                lowDensity:local && visibleMedia && img.naturalWidth > 0 &&
-                  img.naturalWidth < box.width * Math.min(window.devicePixelRatio, 3) * .75
+                lowDensity:local && !scalableVector && visibleMedia && estimatedSourcePixelWidth > 0 &&
+                  estimatedSourcePixelWidth < box.width * Math.min(window.devicePixelRatio, 3) * .75
               };
             });
             return {
@@ -162,22 +195,25 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
               for (const node of candidates.slice(0, 35)) {
                 node.focus();
                 if (document.activeElement !== node) continue;
-                const r = node.getBoundingClientRect();
-                const left = Math.max(r.left, 0), top = Math.max(r.top, 0);
-                const right = Math.min(r.right, innerWidth), bottom = Math.min(r.bottom, innerHeight);
-                if (left >= right || top >= bottom) {
+                // Inline links may wrap across lines. The union bounding box
+                // contains whitespace where a centre-point hit is not the link.
+                // Inspect each on-screen client rect to avoid false occlusion.
+                const rects = Array.from(node.getClientRects()).map((r) => ({
+                  left:Math.max(r.left, 0), top:Math.max(r.top, 0),
+                  right:Math.min(r.right, innerWidth), bottom:Math.min(r.bottom, innerHeight)
+                })).filter((r) => r.left < r.right && r.top < r.bottom);
+                if (!rects.length) {
                   occludedFocus.push({tag:node.tagName, text:(node.textContent||"").trim().slice(0,40), reason:"outside viewport"});
                   continue;
                 }
-                const points = [
-                  [left+(right-left)*.5, top+(bottom-top)*.5],
-                  [left+(right-left)*.2, top+(bottom-top)*.2],
-                  [left+(right-left)*.8, top+(bottom-top)*.8]
-                ];
-                const visible = points.some(([x,y]) => {
-                  const hit = document.elementFromPoint(x,y);
+                const visible = rects.some((rect) => [
+                  [0.5, 0.5], [0.2, 0.2], [0.8, 0.8]
+                ].some(([xp, yp]) => {
+                  const x = rect.left + (rect.right - rect.left) * xp;
+                  const y = rect.top + (rect.bottom - rect.top) * yp;
+                  const hit = document.elementFromPoint(x, y);
                   return hit && (node === hit || node.contains(hit));
-                });
+                }));
                 if (!visible) occludedFocus.push({
                   tag:node.tagName, text:(node.getAttribute("aria-label")||node.textContent||"").trim().slice(0,50),
                   reason:"entirely covered by another rendered element"
