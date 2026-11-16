@@ -1,8 +1,16 @@
 "use client";
 
-import { useId, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useId, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 
 /** Website equivalents of Apple's hierarchy and lockup patterns, not native Apple UI classes. */
+/** Small, selectable labels use semantic ink hierarchy rather than decorative pills. */
+export function TextLabel({ children, tone = "primary" }: Readonly<{
+  children: ReactNode;
+  tone?: "primary" | "secondary" | "tertiary";
+}>) {
+  return <span className={`np-hig-text-label np-hig-text-label--${tone}`}>{children}</span>;
+}
+
 export type HierarchyItem = Readonly<{
   id: string;
   label: string;
@@ -37,10 +45,18 @@ export function ColumnBrowser({ label, groups }: Readonly<{ label: string; group
   const group = groups.find((entry) => entry.id === selectedGroupId) ?? groups[0];
   const item = group?.items.find((entry) => entry.id === selectedItemId) ?? group?.items[0];
   const headingId = useId();
+  const [categoryWidth, setCategoryWidth] = useState(28);
+  const browserStyle = { "--np-hig-category-width": `${categoryWidth}%` } as CSSProperties;
   if (!groups.length) return <p role="status">No categories are available.</p>;
-  return <div className="np-hig-column-browser" role="region" aria-label={label}>
+  return <div className="np-hig-column-browser" role="region" aria-label={label} style={browserStyle}>
     <nav className="np-hig-column-browser__pane" aria-label={`${label}: categories`}>
       <h3>Categories</h3>
+      <label className="np-hig-column-browser__resize">
+        <span>Category width</span>
+        <input type="range" min={20} max={40} step={5} value={categoryWidth}
+          onChange={(event) => setCategoryWidth(Number(event.currentTarget.value))}
+          aria-valuetext={`${categoryWidth}% of browser width`} />
+      </label>
       <ul>{groups.map((entry) => <li key={entry.id}>
         <button type="button" aria-pressed={entry.id === group?.id}
           onClick={() => { setSelectedGroupId(entry.id); setSelectedItemId(entry.items[0]?.id ?? ""); }} onKeyDown={focusAdjacent}>
@@ -59,7 +75,7 @@ export function ColumnBrowser({ label, groups }: Readonly<{ label: string; group
     <section className="np-hig-column-browser__preview" aria-labelledby={headingId} aria-live="polite">
       <h3 id={headingId}>{item?.label ?? "No records"}</h3>
       {item ? <>
-        <p>{item.description}</p>
+        <p><TextLabel tone="secondary">{item.description}</TextLabel></p>
         {item.detail ? <p className="np-hig-column-browser__detail">{item.detail}</p> : null}
         {item.href
           ? <a href={item.href} aria-label={`Open recorded view for ${item.label}`}>Open recorded view</a>
@@ -77,7 +93,7 @@ export function OutlineView({ label, groups }: Readonly<{ label: string; groups:
         <summary><span>{group.label}</span><small>{group.items.length} records</small></summary>
         <ul>{group.items.map((item) => <li key={item.id}>
           <div className="np-hig-outline__record">
-            <strong>{item.label}</strong><p>{item.description}</p>
+            <strong>{item.label}</strong><p><TextLabel tone="secondary">{item.description}</TextLabel></p>
             {item.detail ? <small>{item.detail}</small> : null}
             {item.href ? <a href={item.href} aria-label={`Open recorded view for ${item.label}`}>Open recorded view</a>
               : <span>{item.status ?? "Integration required"}</span>}
