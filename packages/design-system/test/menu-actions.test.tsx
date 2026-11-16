@@ -66,9 +66,11 @@ test("sharing fails closed when the URL is not a public HTTPS URL", () => {
     <SharePublicLink title="Private document" url="http://private.example/docs" />
     <SharePublicLink title="Signed URL" url="https://novapharmhealthcare.com/?token=secret" />
     <SharePublicLink title="Credential URL" url="https://user:pass@novapharmhealthcare.com/products/" />
+    <SharePublicLink title="Private HTTPS" url="https://private.example.com/docs/" />
+    <SharePublicLink title="Protected Portal" url="https://portal.novapharmhealthcare.com/customer/" />
   </>);
   assert.match(html, /<button[^>]*>Share<\/button>/);
-  assert.equal((html.match(/disabled=""/g) ?? []).length, 3);
+  assert.equal((html.match(/disabled=""/g) ?? []).length, 5);
   assert.match(html, /aria-live="polite"/);
 });
 
