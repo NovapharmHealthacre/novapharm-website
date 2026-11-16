@@ -7,6 +7,7 @@ on:
       - 'assets/css/corporate-product-discipline.css'
       - 'assets/css/novapharm.bundle.css'
       - 'scripts/test-apple-privacy-editorial.mjs'
+      - 'scripts/build-public-pages.mjs'
       - 'legal/privacy/index.html'
       - 'legal/cookies/index.html'
       - 'apps/corporate/data/pages.ts'
