@@ -24,8 +24,9 @@ Date: 16 November 2026. Scope: corporate website, protected Customer/Intelligenc
 ## Implemented in this focused source candidate
 
 1. `packages/design-system/src/image-content.tsx`: `ContentImage` for noninteractive responsive display, `ImageActionButton` for labeled user actions and `LocalImageWell` for local replace/drop/paste/clear/preview with type and 5 MiB size preflight. SVG is excluded from local preview. No network calls, persistent storage or protected data mutations are present in this component.
-2. `packages/design-system/workbench/build.tsx`: use `ContentImage` on the actual shared design workbench hero rather than an ungoverned example. Existing brand artwork and aspect proportions remain unchanged.
-3. `packages/design-system/test/image-content.test.tsx`: cover document semantics, native button accessibility and prohibited file selection. A dedicated exact-head GitHub Actions contract runs the focused tests and TypeScript.
+2. `packages/design-system/workbench/build.tsx`: use `ContentImage` on the shared design workbench hero. Existing brand artwork and aspect proportions remain unchanged.
+3. `apps/corporate/components/concise-home.tsx`: adopt the new responsive image abstraction in the Next.js corporate homepage oncology and Nutraxin features without changing imagery, alt copy, source candidates or containment; the independent static GitHub Pages homepage already has `<picture>` alternatives and is not replaced by this Next.js component.
+4. `packages/design-system/test/image-content.test.tsx` and `apps/corporate/test/editorial-home.test.ts`: cover image semantics, button accessibility, prohibited file selection and real Next.js homepage source parity. Dedicated exact-head GitHub Actions contracts run tests, typechecks and an existing static-Pages image test.
 
 ## Not yet complete
 
@@ -33,6 +34,7 @@ Date: 16 November 2026. Scope: corporate website, protected Customer/Intelligenc
 - The local image well has **no authenticated profile, approval or storage integration**. An actual upload needs purpose/rights review, file signature check, malware scanning, authorization, size/dimension checks, content privacy policy, retention and audit trail. Never claim preview means upload.
 - PR #766 contains chart adoption, data provenance and table work, not merged here. Image acceptance is separate from its chart/other Patterns CI.
 - Text views, embedded content, image buttons, and display issues require URL-by-URL route audits on desktop/mobile (320/390/768/1440/1920px), 1x/2x/3x source density, 200%/400% zoom, high contrast, dark mode, reduced motion, keyboard, screen readers, Safari/WebKit and Chromium.
+- **Publication distinction:** The live `novapharmhealthcare.com` GitHub Pages artifact is staged from generated static HTML (for example `index.html`), not from `apps/corporate/components/concise-home.tsx` as a Next.js runtime. The public home page's existing AVIF/WebP responsive `<picture>` contract must remain intact; the new React image view is for the separately deployed corporate Next.js experience and future governed web modules. Do not claim this PR visibly changes the current Pages homepage merely because Next.js code was updated.
 - Confirm actual deployed artifact SHA on each independently hosted public/protected site **after** the respective deployment workflow. A source PR/merge, a completed Node test or an AWS image build is not proof of production delivery.
 - No Apple-owned symbol artwork or unlicensed font assets should be copied into the repo.
 
