@@ -50,7 +50,8 @@ function kindFor(path) {
 function htmlWarnings(source, path, findings) {
   // Only literal tags are inspectable here; dynamic React/DOM output remains a browser-test concern.
   const withoutComments = source.replace(/<!--[\s\S]*?-->/g, "");
-  if (!/<!doctype\s+html\b/i.test(withoutComments) && !/^\s*<(?:svg|template)\b/i.test(withoutComments)) {
+  if ((/(^|\/)index\.html$/i.test(path) || /^[^/]+\.html$/i.test(path)) &&
+      !/<!doctype\s+html\b/i.test(withoutComments) && !/^\s*<(?:svg|template)\b/i.test(withoutComments)) {
     findings.push({ path, rule: "html-doctype", severity: "warning",
       detail: "Static HTML has no explicit HTML doctype; verify rendering in browser." });
   }
