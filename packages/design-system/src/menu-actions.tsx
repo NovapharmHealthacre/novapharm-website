@@ -172,7 +172,7 @@ export function SharePublicLink({ url, title, label = "Share" }: Readonly<{
       const parsed = new URL(url);
       return parsed.protocol === "https:" && Boolean(parsed.hostname)
         && !parsed.username && !parsed.password && !parsed.search && !parsed.hash
-        && !/\\s/.test(url);
+        && !/\s/.test(url);
     } catch { return false; }
   })();
   const share = async () => {
