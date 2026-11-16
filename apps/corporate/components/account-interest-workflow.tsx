@@ -9,7 +9,7 @@ function friendlyError(status: number, offline: boolean): string {
   if (status === 400 || status === 422) return "Please check the information in the form and try again.";
   if (status === 403) return "The security check expired. Please refresh the page and try again.";
   if (status === 429) return "Too many submissions were received. Please wait before trying again.";
-  return "The secure account-interest service cannot be reached right now. No information was submitted. Please try again later or use the verified corporate email route.";
+  return "We could not confirm whether your business interest was received. Check its status before trying again, or use the verified corporate email address.";
 }
 
 function referringHost(referrer: string): string {
