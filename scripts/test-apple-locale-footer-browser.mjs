@@ -36,6 +36,7 @@ for (const [engineName, engine] of [["chromium", chromium], ["webkit", webkit]])
             const host = element.closest(".npd-footer-bottom, .site-footer, footer");
             return {
               insideFooter: Boolean(host),
+              insideLegalFooterRow: Boolean(element.closest(".npd-footer-bottom")),
               position: style.position,
               background: style.backgroundColor,
               border: [style.borderTopWidth, style.borderRightWidth, style.borderBottomWidth, style.borderLeftWidth],
@@ -54,6 +55,7 @@ for (const [engineName, engine] of [["chromium", chromium], ["webkit", webkit]])
           });
           const label = engineName + " / " + locale + " / " + viewport.width;
           assert.equal(info.insideFooter, true, label + ": not integrated into site footer");
+          assert.equal(info.insideLegalFooterRow, true, label + ": control must be within the footer legal utility row");
           assert.equal(info.position, "static", label + ": overlay could obscure content");
           assert.match(info.background, /rgba?\(0,\s*0,\s*0,\s*0\)/, label + ": card fill still visible");
           assert.ok(info.border.every((x) => x === "0px"), label + ": boxed border still visible");
