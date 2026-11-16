@@ -54,8 +54,8 @@ test("NovaPharm privacy editorial appearance is responsive and independent of Ap
 test("public rebuild preserves the reviewed privacy overview and legal metadata", () => {
   const builder = source("scripts/build-site.mjs");
   assert.match(builder, /const legalPolicies = \[/);
-  assert.match(builder, /<article class=\\"legal-content\\">/);
-  assert.match(builder, /<dl class=\\"policy-meta\\">/);
+  assert.ok(builder.includes('<article class="legal-content">'), "Build must retain reviewed legal article source");
+  assert.ok(builder.includes('<dl class="policy-meta">'), "Build must retain policy version/review metadata");
   assert.match(builder, /\.replace\(\/<article class=/);
   assert.match(builder, /\.replace\(\/<dl class=/);
 });
