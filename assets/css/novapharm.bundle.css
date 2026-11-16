@@ -12186,15 +12186,14 @@ body[data-page="home"] .pharma-home-media img {
 :root { --np-rtl-contract: 1; }
 
 .np-locale-control {
-  position: fixed;
-  inset-inline-end: max(12px, env(safe-area-inset-right, 0px));
-  inset-block-end: max(12px, env(safe-area-inset-bottom, 0px));
-  z-index: 75;
+  position: static;
+  margin: 12px auto max(12px, env(safe-area-inset-bottom, 0px));
+  z-index: 1;
   display: flex;
   flex-direction: column;
   gap: 3px;
   inline-size: min(218px, calc(100vw - 24px));
-  padding: 9px 11px;
+  padding: 9px max(11px, env(safe-area-inset-right, 0px));
   background: #fff;
   color: #1b2028;
   border: 1px solid #ccd1d7;
@@ -12204,12 +12203,8 @@ body[data-page="home"] .pharma-home-media img {
   text-align: left;
   font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
 }
-/* Do not obscure consent choices: the language selector moves above the
-   public header while the consent banner is visible. */
-body:has(.cookie-banner:not([hidden])) .np-locale-control {
-  inset-block-end: auto;
-  inset-block-start: calc(var(--header, 82px) + 10px);
-}
+/* Place language choices in document flow, after content, so the selector
+   never covers consent, search, checkout, or Intelligence action buttons. */
 .np-locale-control label { font-size: 13px; font-weight: 600; line-height: 1.4; }
 .np-locale-control select {
   max-inline-size: 100%;
@@ -12224,9 +12219,9 @@ body:has(.cookie-banner:not([hidden])) .np-locale-control {
 }
 .np-locale-note { font-size: 12px; line-height: 1.45; color: #4d5967; }
 .np-locale-control :focus-visible { outline: 3px solid #0b69ff; outline-offset: 2px; }
-/* In RTL, inline-end is the physical left: protect that safe area. */
+/* Keep Arabic/Hebrew controls readable without covering adjacent actions. */
 html[dir="rtl"] .np-locale-control {
-  inset-inline-end: max(12px, env(safe-area-inset-left, 0px));
+  padding-inline-end: max(11px, env(safe-area-inset-left, 0px));
 }
 .np-locale-control[data-np-control-locale="ar"],
 .np-locale-control[data-np-control-locale="he"] {
