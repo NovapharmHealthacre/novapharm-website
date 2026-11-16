@@ -61,6 +61,21 @@ test("five Next.js properties share server-side locale direction and a functiona
   }
 });
 
+test("protected workspace formats currencies, numbers and dates using the server locale", () => {
+  const page = read("apps/portal/app/[[...slug]]/page.tsx");
+  const client = read("apps/portal/components/portal-client.tsx");
+  const dashboard = read("apps/portal/components/dashboard.tsx");
+  assert.match(page, /locale=\{locale\}/);
+  assert.match(client, /<Dashboard module=\{module\} subview=\{subview\} locale=\{locale\} \/>/);
+  assert.match(dashboard, /new Intl\.NumberFormat\(locale, \{ style: "currency"/);
+  assert.match(dashboard, /new Intl\.NumberFormat\(locale\)\.format/);
+  assert.match(dashboard, /\.toLocaleString\(locale/);
+  assert.match(dashboard, /data-np-number=/);
+  assert.match(dashboard, /data-np-medicine-code=/);
+  // Values and permissions are not translated, only their display format.
+  assert.match(page, /sessionDecision\(view, session\)/);
+});
+
 test("public and protected static shells load RTL script without changing governed legal copy", () => {
   const publicBuilder = read("scripts/build-public-pages.mjs");
   const privateBuilder = read("scripts/build-pages.mjs");
