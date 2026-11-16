@@ -7,6 +7,8 @@ on:
       - 'packages/design-system/src/index.ts'
       - 'packages/design-system/test/image-content.test.tsx'
       - 'packages/design-system/workbench/build.tsx'
+      - 'apps/corporate/components/concise-home.tsx'
+      - 'apps/corporate/test/editorial-home.test.ts'
       - 'docs/design/apple-hig-content-web-adaptation-2026-11-16.md'
       - '.github/workflows/apple-hig-content-image.yml'
   push:
@@ -40,5 +42,7 @@ jobs:
         run: npm run typecheck --workspace=@novapharm/design-system
       - name: Verify local image safety and accessible view/button semantics
         run: npx tsx --test packages/design-system/test/image-content.test.tsx
+      - name: Verify actual corporate homepage image adaptation
+        run: cd apps/corporate && npx tsx --test test/editorial-home.test.ts
       - name: Build real shared component workbench
         run: npm run build:workbench --workspace=@novapharm/design-system
