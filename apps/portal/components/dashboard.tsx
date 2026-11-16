@@ -1,6 +1,7 @@
 "use client";
 
 import { adminModules, customerModules, employeeModules, executiveModules, type PortalArea, type PortalModule } from "@novapharm/portal-contracts";
+import type { InterfaceLocale } from "../../../src/core/interface-locale";
 import { Activity, ArrowUpRight, LogOut, Menu, RefreshCw, Search, ShieldCheck, X } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useId, useRef, useState } from "react";
 import { nutraxinProductForSelection } from "../data/nutraxin-order-intent";
@@ -39,23 +40,23 @@ function readable(value: unknown): string {
   return String(value).replaceAll("_", " ").replaceAll("-", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
-function formatted(value: unknown, type = "", row: Record<string, unknown> = {}): string {
+function formatted(value: unknown, type = "", row: Record<string, unknown> = {}, locale: InterfaceLocale = "en-GB"): string {
   if (value === null || value === undefined || value === "") return "Not recorded";
-  if (type === "money") return new Intl.NumberFormat("en-GB", { style: "currency", currency: String(row["currency"] ?? "GBP") }).format(Number(value) / 100);
-  if (type === "number") return new Intl.NumberFormat("en-GB").format(Number(value));
+  if (type === "money") return new Intl.NumberFormat(locale, { style: "currency", currency: String(row["currency"] ?? "GBP") }).format(Number(value) / 100);
+  if (type === "number") return new Intl.NumberFormat(locale).format(Number(value));
   if (type === "basis_points") return `${(Number(value) / 100).toFixed(0)}%`;
   if (type === "status") return readable(value);
-  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value)) return new Date(value).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
+  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value)) return new Date(value).toLocaleString(locale, { dateStyle: "medium", timeStyle: "short" });
   return String(value);
 }
 
-function MetricGrid({ metrics }: Readonly<{ metrics: readonly Metric[] }>) {
+function MetricGrid({ metrics, locale }: Readonly<{ metrics: readonly Metric[]; locale: InterfaceLocale }>) {
   if (!metrics.length) return null;
-  return <div className="metric-grid np-hig-grid">{metrics.map((metric) => <article key={metric.key} className="metric"><span>{metric.label}</span><strong>{formatted(metric.value, metric.format)}</strong>{metric.href ? <a href={metric.href}>View detail <ArrowUpRight aria-hidden="true" className="np-symbol" /></a> : null}</article>)}</div>;
+  return <div className="metric-grid np-hig-grid">{metrics.map((metric) => <article key={metric.key} className="metric"><span>{metric.label}</span><strong>{formatted(metric.value, metric.format, {}, locale)}</strong>{metric.href ? <a href={metric.href}>View detail <ArrowUpRight aria-hidden="true" className="np-symbol" /></a> : null}</article>)}</div>;
 }
 
-function DataTable({ section }: Readonly<{ section: DataSection }>) {
-  return <section className="data-section"><header><div><h2>{section.title}</h2>{section.description ? <p>{section.description}</p> : null}</div><span>{section.source ?? "Canonical application database"}</span></header>{/* biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users must be able to scroll wide operational tables. */}<section className="table-region np-hig-table-region" tabIndex={0} aria-label={`Scrollable ${section.title} table`}><table><thead><tr>{section.columns.map(([key, label]) => <th key={key} scope="col">{label}</th>)}</tr></thead><tbody>{section.rows.length ? section.rows.map((row) => <tr key={section.columns.map(([key]) => String(row[key] ?? "")).join("|")}>{section.columns.map(([key, label, type]) => <td key={key} data-label={label} data-state={type === "status" ? String(row[key] ?? "unknown").toLowerCase() : undefined}>{formatted(row[key], type, row)}</td>)}</tr>) : <tr><td className="empty-cell" colSpan={Math.max(1, section.columns.length)}>{section.emptyState}</td></tr>}</tbody></table></section></section>;
+function DataTable({ section, locale }: Readonly<{ section: DataSection; locale: InterfaceLocale }>) {
+  return <section className="data-section"><header><div><h2>{section.title}</h2>{section.description ? <p>{section.description}</p> : null}</div><span>{section.source ?? "Canonical application database"}</span></header>{/* biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users must be able to scroll wide operational tables. */}<section className="table-region np-hig-table-region" tabIndex={0} aria-label={`Scrollable ${section.title} table`}><table><thead><tr>{section.columns.map(([key, label]) => <th key={key} scope="col">{label}</th>)}</tr></thead><tbody>{section.rows.length ? section.rows.map((row) => <tr key={section.columns.map(([key]) => String(row[key] ?? "")).join("|")}>{section.columns.map(([key, label, type]) => <td key={key} data-label={label} data-state={type === "status" ? String(row[key] ?? "unknown").toLowerCase() : undefined} data-np-number={["money", "number", "basis_points"].includes(type ?? "") ? "true" : undefined} data-np-medicine-code={/^(sku|gtin|ean|batch|medicine_code|snomed|dm_d|product_id|order_id)$/i.test(key) ? "true" : undefined}>{formatted(row[key], type, row, locale)}</td>)}</tr>) : <tr><td className="empty-cell" colSpan={Math.max(1, section.columns.length)}>{section.emptyState}</td></tr>}</tbody></table></section></section>;
 }
 
 function AreaSwitcher({ user }: Readonly<{ user: PortalUser }>) {
@@ -91,7 +92,7 @@ function ActionPanel({ snapshot, onComplete, onMessage }: Readonly<{ snapshot: S
   })}</div></section>;
 }
 
-export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; subview: MedicinesIntelligenceSubview | undefined }>) {
+export function Dashboard({ module, subview, locale = "en-GB" }: Readonly<{ module: PortalModule; subview: MedicinesIntelligenceSubview | undefined; locale?: InterfaceLocale }>) {
   const [user, setUser] = useState<PortalUser | null>(null);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [status, setStatus] = useState("");
@@ -299,7 +300,7 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
         {user ? <AreaSwitcher user={user} /> : null}
         <p className="workflow-status" aria-live="polite">{status}</p>
         {loading ? <div className="loading-state"><Activity aria-hidden="true" className="np-symbol" /><span>Loading authorised records…</span></div> : null}
-        {snapshot ? <><div className="data-context"><span>{snapshot.dataState === "synthetic" ? "Synthetic validation data" : snapshot.dataState === "authoritative_non_production_validation" ? "Authoritative non-production validation evidence" : snapshot.dataState === "governed_sources_not_loaded" ? "No governed intelligence data loaded" : snapshot.module.releaseClassificationLabel}</span><span>Updated {new Date(snapshot.dataFreshness).toLocaleString("en-GB")}</span><span>Read only</span></div>{snapshot.notices.map((notice) => <p className="module-notice" key={notice}>{notice}</p>)}<MetricGrid metrics={snapshot.metrics} />{snapshot.sections.map((section) => <DataTable key={section.title} section={section} />)}<ActionPanel snapshot={snapshot} onComplete={load} onMessage={setStatus} /></> : null}
+        {snapshot ? <><div className="data-context"><span>{snapshot.dataState === "synthetic" ? "Synthetic validation data" : snapshot.dataState === "authoritative_non_production_validation" ? "Authoritative non-production validation evidence" : snapshot.dataState === "governed_sources_not_loaded" ? "No governed intelligence data loaded" : snapshot.module.releaseClassificationLabel}</span><span>Updated {new Date(snapshot.dataFreshness).toLocaleString(locale)}</span><span>Read only</span></div>{snapshot.notices.map((notice) => <p className="module-notice" key={notice}>{notice}</p>)}<MetricGrid metrics={snapshot.metrics} locale={locale} />{snapshot.sections.map((section) => <DataTable key={section.title} section={section} locale={locale} />)}<ActionPanel snapshot={snapshot} onComplete={load} onMessage={setStatus} /></> : null}
       </div>
     </section>
   </main>;
