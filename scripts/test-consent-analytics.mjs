@@ -79,6 +79,9 @@ assert.match(source, /analytics_storage: "granted"/);
 assert.match(source, /cookie_expires: 90 \* 24 \* 60 \* 60/);
 assert.match(source, /page_referrer: ""/);
 assert.match(generator, /PUBLIC_ANALYTICS_PRIVACY_APPROVED/);
+assert.match(generator, /publicAnalyticsRoute\(route\)/, "Publisher must use same exact route allowlist as browser");
+assert.match(generator, /html = html\.replace\(\/<meta name=/, "Rebuild must strip stale GA metadata from private routes");
+assert.match(generator, /html = html\.replace\(\/<script type=/, "Rebuild must strip stale analytics script from private routes");
 assert.match(generator, /PUBLIC_GA4_MEASUREMENT_ID/);
 assert.match(store, /emitRetailFunnelEvent\("add_to_cart"\)/);
 assert.match(store, /emitRetailFunnelEvent\("begin_checkout"\)/);
@@ -95,6 +98,11 @@ assert.equal(analyticsPagePath("/products/nutraxin/vitamin-d3-120-tablets/"), "/
 assert.equal(analyticsPagePath("/products/nutraxin/bag/"), "/products/nutraxin/bag/");
 assert.match(readFileSync("assets/js/cookie-consent.js", "utf8"), /Google Analytics 4/);
 assert.match(readFileSync("legal/cookies/index.html", "utf8"), /Google Analytics 4/);
+for (const path of ["products/nutraxin/bag/index.html", "products/nutraxin/account/index.html"]) {
+  const page = readFileSync(path, "utf8");
+  assert.doesNotMatch(page, /<meta name="novapharm-ga4-id"/, "Sensitive page must not ship GA4 measurement ID: " + path);
+  assert.doesNotMatch(page, /src="\/assets\/js\/consent-analytics\.js"/, "Sensitive page must not ship analytics script: " + path);
+}
 assert.match(readFileSync("legal/privacy/index.html", "utf8"), /optional-website-analytics/);
 assert.match(generator, /G-897L1VS8BX/, "Use the confirmed public NovaPharm Analytics web stream, not a portfolio stream");
 assert.match(generator, /PUBLIC_ANALYTICS_PRIVACY_APPROVED/);
