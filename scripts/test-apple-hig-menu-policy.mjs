@@ -17,6 +17,7 @@ test("all Apple HIG menus and actions are canonical rules across seven estates",
     assert.ok(policy.includes("https://developer.apple.com/design/human-interface-guidelines/" + slug),
       "Missing HIG policy: " + slug);
   }
+  assert.ok(policy.includes("https://developer.apple.com/design/human-interface-guidelines/privacy#Location-button"));
   for (const estate of ["corporate", "technology", "founder", "status", "portal", "intelligence", "distribution"]) {
     assert.ok(policy.includes('"' + estate + '"'), "Estate missing: " + estate);
   }
