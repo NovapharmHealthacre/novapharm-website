@@ -13,26 +13,26 @@
 .employee-distribution-shell .workspace-topbar>.portal-brand img{display:block;width:100%;height:auto}
 .employee-distribution-shell .workspace-topbar>.menu-button{display:none}
 .employee-distribution-shell .employee-primary-nav{display:flex;justify-content:center;gap:clamp(14px,2vw,30px);overflow-x:auto;align-items:center}
-.employee-distribution-shell .employee-primary-nav a{font-size:.82rem;color:#48484c;font-weight:500;text-decoration:none;white-space:nowrap;
+.employee-distribution-shell .employee-primary-nav a{font-size:.875rem;color:#48484c;font-weight:500;text-decoration:none;white-space:nowrap;
  padding:10px 0;border-bottom:2px solid transparent}
 .employee-distribution-shell .employee-primary-nav a[aria-current="page"]{font-weight:680;border-color:#b5121f;color:#1d1d1f}
 .employee-distribution-shell .employee-primary-nav a:hover{color:#a90e1c}
 .employee-distribution-shell .workspace-topbar search{min-width:0;max-width:205px}
 .employee-distribution-shell .portal-search{grid-template-columns:minmax(0,1fr) auto;gap:5px}
 .employee-distribution-shell .portal-search svg{display:none}
-.employee-distribution-shell .portal-search input{font-size:.8rem;min-width:0;border:0;border-bottom:1px solid #dadade;min-height:36px}
-.employee-distribution-shell .portal-search>button{background:#f5f5f7;border:0;font-size:.75rem;min-height:36px}
+.employee-distribution-shell .portal-search input{font-size:1rem;min-width:0;border:0;border-bottom:1px solid #dadade;min-height:44px}
+.employee-distribution-shell .portal-search>button{background:#f5f5f7;border:0;font-size:.875rem;min-height:44px}
 .employee-distribution-shell .user-summary{display:flex;align-items:center;gap:10px}
-.employee-distribution-shell .user-summary span{max-width:130px;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:.78rem}
+.employee-distribution-shell .user-summary span{max-width:130px;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:.875rem}
 .employee-distribution-shell .user-summary small{display:none}
-.employee-distribution-shell .user-summary button{width:auto;height:38px;min-height:38px;padding:7px 16px;border-radius:999px;background:#1d1d1f;color:white;border:0;font-size:.8rem}
+.employee-distribution-shell .user-summary button{width:auto;height:44px;min-height:44px;padding:7px 16px;border-radius:999px;background:#1d1d1f;color:white;border:0;font-size:.875rem}
 .employee-distribution-shell .user-summary .icon-command{width:auto;min-width:0;color:#1d1d1f;background:#fff;border:1px solid #d5d5da}
 .employee-distribution-shell .workspace-content{width:min(1510px,100%);max-width:1510px;margin:0 auto;padding:0 clamp(20px,5vw,76px) 70px}
 .employee-distribution-shell .module-heading{display:none}
 .distribution-employee{color:#1d1d1f}
 .distribution-employee-hero{padding:clamp(55px,6vw,95px) 3px clamp(45px,5vw,80px)}
 .distribution-employee-hero-small{padding-bottom:45px}
-.distribution-employee-overline{font-size:11px!important;letter-spacing:.19em;color:#96131e!important;font-weight:720;margin:0 0 18px!important}
+.distribution-employee-overline{font-size:.875rem!important;letter-spacing:.12em;color:#96131e!important;font-weight:720;margin:0 0 18px!important}
 .distribution-employee-hero h1{font-size:clamp(3rem,5.6vw,6rem);letter-spacing:-.067em;
  line-height:1.01;font-weight:650;max-width:1020px;margin:0}
 .distribution-employee-hero>p:not(.distribution-employee-overline){font-size:clamp(1.05rem,1.55vw,1.4rem);
@@ -89,9 +89,9 @@
  .employee-distribution-shell .workspace-content{padding:0 19px 40px}
  .employee-distribution-shell .workspace-topbar>.portal-brand{width:155px}
  .employee-distribution-shell .employee-primary-nav{gap:20px}
- .employee-distribution-shell .employee-primary-nav a{font-size:.78rem}
+ .employee-distribution-shell .employee-primary-nav a{font-size:.875rem}
  .employee-distribution-shell .user-summary{gap:6px}
- .employee-distribution-shell .user-summary button{padding:6px 9px;min-height:34px;height:34px;font-size:.72rem}
+ .employee-distribution-shell .user-summary button{padding:7px 12px;min-height:44px;height:44px;font-size:.875rem}
  .distribution-employee-grid{grid-template-columns:1fr}
  .distribution-employee-card{min-height:225px}
  .distribution-employee-hero{padding:45px 0}
