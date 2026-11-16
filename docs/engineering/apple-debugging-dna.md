@@ -24,8 +24,8 @@ The uploaded Core AI Debugger disk image is an Apple/macOS installer; never atta
 
 Run locally from the repository root:
 
-    node --test scripts/test-debugging-dna.mjs
-    node scripts/audit-debugging-dna.mjs --strict
+    python3 -m unittest discover -s scripts -p test_audit_debugging_dna.py
+    python3 scripts/audit_debugging_dna.py --strict
 
 ## Incident debugging standard
 
