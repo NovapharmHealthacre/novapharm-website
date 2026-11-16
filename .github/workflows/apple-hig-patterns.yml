@@ -7,6 +7,8 @@ on:
       - 'apps/portal/components/wms-capacity-scenario-studio.tsx'
       - 'apps/portal/components/wms-recorded-evidence-studio.tsx'
       - 'apps/portal/components/medicines-intelligence.tsx'
+      - 'apps/portal/components/professional-workspaces.tsx'
+      - 'apps/portal/test/intelligence-draft-safety.test.ts'
       - 'apps/portal/lib/observed-chart-series.ts'
       - 'apps/portal/test/observed-chart-series.test.ts'
       - 'apps/portal/lib/wms-scenario-history.ts'
@@ -45,3 +47,5 @@ jobs:
         run: npx tsx --test apps/portal/test/wms-scenario-history.test.ts
       - name: Verify optional full-screen safety and controls
         run: npx tsx --test apps/portal/test/wms-fullscreen-contract.test.ts
+      - name: Ensure local Intelligence drafts are safely recoverable
+        run: npx tsx --test apps/portal/test/intelligence-draft-safety.test.ts
