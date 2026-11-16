@@ -25,7 +25,9 @@ The protected routes are:
 
 `/portal/executive-platform/nova-ml/nova-generative-assist/`
 
-The existing Medicines Intelligence subview addresses remain compatible as protected aliases, but the Nova ML address family is the dedicated entry. Both routes use the same server-side authorization gate.
+The existing Medicines Intelligence subview addresses remain compatible as protected aliases, but the Nova ML address family is the dedicated entry.
+
+**Isolated web UX:** Nova ML renders its own model-governance toolbar and full-width layout rather than exposing the medical search input, record filters, analytics context rail, medicine-specific notices or medicine-identifier deep-link restoration. The shared navigation and verified portal session remain intact. This prevents an unrelated medicine query from being automatically restored when an authorised user opens a Nova ML route; no ML candidate consumes the medicine search state. Both routes use the same server-side authorization gate.
 
 They resolve through the existing `executive.nhs-data` protected module and server-verifiable session. Do not create public endpoints or bypass current role gating. A web deep link is an implementation path, not evidence that a live deployment contains it.
 

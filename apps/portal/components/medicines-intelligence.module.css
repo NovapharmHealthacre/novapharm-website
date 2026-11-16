@@ -1835,3 +1835,9 @@
     transition: none;
   }
 }
+
+/* Nova ML presents its own protected workflow, not the medicine search rail. */
+.novaMlToolbarTitle { min-width: 0; margin: 0; color: var(--mi-ink); font-size: .95rem; line-height: 1.3; font-weight: 690; }
+.novaMlToolbarTitle span { display: block; color: var(--mi-muted); font-size: .73rem; font-weight: 450; line-height: 1.5; }
+.novaMlCanvas { display: block; min-width: 0; padding: clamp(14px, 2.5vw, 32px); }
+@media (max-width: 680px) { .novaMlCanvas { padding: 12px; } }

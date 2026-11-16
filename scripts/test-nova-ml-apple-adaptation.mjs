@@ -37,6 +37,11 @@ test("four extensions use existing verified SSR portal routing, not public bypas
   assert.match(view, /<NovaMlWorkspace kind=\{current\}/);
   assert.match(view, /Nova ML · Apple companion/);
   assert.match(view, /!isNovaMlWorkspaceSlug\(key\)/);
+  assert.match(view, /const isNovaMlView = isNovaMlWorkspaceSlug\(current\)/);
+  assert.match(view, /if \(isNovaMlView\) return;/);
+  assert.match(view, /isNovaMlView \? styles\.novaMlCanvas : styles\.workspaceGrid/);
+  assert.match(view, /!isNovaMlView \? <aside id="medicines-context-panel"/);
+  assert.match(view, /isNovaMlView \? <p className=\{styles\.novaMlToolbarTitle\}/);
 });
 
 test("new web UI cannot imply native inference or capture personal data", () => {
