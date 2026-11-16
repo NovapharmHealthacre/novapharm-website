@@ -517,9 +517,12 @@ async function runRtlPreflight(name: string, browserType: BrowserType): Promise<
           const control = page.getByRole("combobox", { name: selectName });
           assert.equal(await control.inputValue(), locale, `${name}: selected preference not restored`);
           const translatedCompany = locale === "ar" ? "الشركة" : "החברה";
-          const translatedNav = page.locator(".desktop-nav").getByRole("link", { name: translatedCompany });
+          // Both menu variants stay in the DOM; one is intentionally hidden at
+          // each breakpoint. Use DOM text checks instead of accessible-role
+          // queries (which omit display:none navigation on the other viewport).
+          const translatedNav = page.locator(".desktop-nav a").filter({ hasText: translatedCompany });
           assert.equal(await translatedNav.count(), 1, `${name}: ${locale} corporate desktop link not translated`);
-          const translatedMobileNav = page.locator("details.mobile-menu nav").getByRole("link", { name: translatedCompany });
+          const translatedMobileNav = page.locator("details.mobile-menu nav a").filter({ hasText: translatedCompany });
           assert.equal(await translatedMobileNav.count(), 1, `${name}: ${locale} mobile menu link not translated`);
 
           const widths = await page.evaluate(() => ({
