@@ -157,7 +157,7 @@ test("Apple guidance map and live release gates are documented", () => {
   assert.match(doc, /recording-or-choosing-training-videos/);
   assert.match(doc, /privacy/);
   assert.match(doc, /coreml/);
-  assert.match(doc, /not production deployed/i);
+  assert.match(doc, /not independently verified deployed/i);
   assert.match(doc, /Xcode/);
   assert.match(doc, /in-memory transcript/);
   assert.match(doc, /Core ML provenance gate/);
