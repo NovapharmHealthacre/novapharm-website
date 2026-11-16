@@ -187,4 +187,15 @@ export const designSystemCss = String.raw`
 .np-chart summary{min-height:44px;display:list-item;padding-block:.75rem;cursor:pointer;color:#0059b8}
 .np-tabs [role=tabpanel]:focus-visible{outline:3px solid #0b69ff;outline-offset:3px}
 @media (forced-colors:active){.np-modal-dialog{border:2px solid CanvasText}.np-modal-dialog__dismiss{border-color:CanvasText}.np-modal-dialog::backdrop{background:Canvas}}
+
+/* Local file selection is not a network upload; input is the keyboard alternative. */
+.np-file-zone{display:grid;gap:.6rem;border:1px dashed #8a8a91;border-radius:12px;background:#fff;padding:clamp(1rem,3vw,1.75rem);color:#1d1d1f;min-width:0}
+.np-file-zone--dragged{border:2px solid #0066cc;background:#f5faff}
+.np-file-zone label{font-weight:650}
+.np-file-zone input[type=file]{min-height:44px;max-width:100%;font:inherit}
+.np-file-zone p{margin:0;line-height:1.5}
+.np-file-zone__help{color:#515154}
+.np-file-zone input:focus-visible{outline:3px solid #0b69ff;outline-offset:3px}
+.np-file-zone input[aria-invalid=true]{outline:2px solid #a8182a}
+@media(forced-colors:active){.np-file-zone,.np-file-zone--dragged{border:2px dashed CanvasText;background:Canvas;color:CanvasText}}
 `;
