@@ -4,6 +4,7 @@ import { adminModules, customerModules, employeeModules, executiveModules, type 
 import { Activity, ArrowUpRight, LogOut, Menu, RefreshCw, Search, ShieldCheck, X } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useId, useRef, useState } from "react";
 import type { InterfaceLocale } from "../../../src/core/interface-locale";
+import { isNovaMlWorkspaceSlug } from "../data/nova-ml-modules";
 import { nutraxinProductForSelection } from "../data/nutraxin-order-intent";
 import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { areaLabels, areaLandingRoutes, areaScopes } from "../data/routes";
@@ -143,7 +144,22 @@ export function Dashboard({ module, subview, locale = "en-GB" }: Readonly<{ modu
         setSnapshot(null);
         return false;
       }
-      const moduleSnapshot = await gatewayJson<Snapshot>(`enterprise/modules/${encodeURIComponent(module.code)}`);
+      // Nova ML governance must not fetch the unrelated medicine module snapshot.
+      // Keep the existing verified session and board scope checks unchanged.
+      const privateModelGovernance = module.code === "executive.nhs-data" && isNovaMlWorkspaceSlug(subview ?? "");
+      const moduleSnapshot: Snapshot = privateModelGovernance
+        ? {
+            module,
+            environment: "protected",
+            dataState: "not_applicable",
+            dataFreshness: "not_applicable",
+            readOnly: true,
+            metrics: [],
+            sections: [],
+            notices: [],
+            actions: [],
+          }
+        : await gatewayJson<Snapshot>(`enterprise/modules/${encodeURIComponent(module.code)}`);
       setUser(session.user);
       setSnapshot(moduleSnapshot);
       return true;
@@ -154,7 +170,7 @@ export function Dashboard({ module, subview, locale = "en-GB" }: Readonly<{ modu
     } finally {
       setLoading(false);
     }
-  }, [module.area, module.code]);
+  }, [module, subview]);
 
   useEffect(() => { void load(); }, [load]);
 
