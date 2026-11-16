@@ -28,6 +28,12 @@ export const menuActionsPolicy = Object.freeze({
       avoid: "Destructive primary action, inconsistent sizes and decorative icon-only buttons",
       web: "Semantic button or anchor with focused action hierarchy",
     }),
+    privacyLocationButton: Object.freeze({
+      source: "https://developer.apple.com/design/human-interface-guidelines/privacy#Location-button",
+      use: "Request location only when a specific person-initiated task needs it",
+      avoid: "Pretending CoreLocation one-time permission buttons are available in a web browser or asking for location on page load",
+      web: "If a genuine location feature exists, use the browser permission mechanism after a clear user action; no tracking or coordinates added by this policy",
+    }),
     contextMenus: Object.freeze({
       source: "https://developer.apple.com/design/human-interface-guidelines/context-menus",
       use: "Small set of directly relevant actions also present in the main UI",
