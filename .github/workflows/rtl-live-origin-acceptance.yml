@@ -1,6 +1,12 @@
 name: RTL live public layout-preview proof
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/verify-live-rtl-origin.mjs
+      - scripts/test-live-rtl-origin.mjs
+      - .github/workflows/rtl-live-origin-acceptance.yml
   pull_request:
     paths:
       - scripts/verify-live-rtl-origin.mjs
@@ -35,7 +41,7 @@ jobs:
       - name: Require isolated fail-closed public acceptance fixtures
         run: node --test scripts/test-live-rtl-origin.mjs
   verify-public:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
