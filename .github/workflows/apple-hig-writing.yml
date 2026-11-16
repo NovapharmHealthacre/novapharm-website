@@ -1,0 +1,85 @@
+name: Apple HIG Writing web contract
+
+on:
+  pull_request:
+    paths:
+      - "apps/corporate/app/account-application/page.tsx"
+      - "apps/corporate/components/account-interest-workflow.tsx"
+      - "apps/corporate/components/cookie-controls.tsx"
+      - "apps/corporate/test/account-workflow.test.ts"
+      - "apps/portal/test/apple-account-experience.test.ts"
+      - "apps/portal/test/browser-acceptance.ts"
+      - "scripts/build-public-pages.mjs"
+      - "scripts/run-portal-lighthouse.mjs"
+      - "scripts/apply-pages-presentation-parity.mjs"
+      - "scripts/apply-corporate-product-discipline.mjs"
+      - "scripts/build-pages.mjs"
+      - "service-unavailable/index.html"
+      - "account-application/index.html"
+      - "apps/corporate/app/error.tsx"
+      - "apps/portal/components/login-panel.tsx"
+      - "apps/portal/components/account-access-help.tsx"
+      - "apps/portal/app/error.tsx"
+      - "apps/founder/app/error.tsx"
+      - "apps/status/app/error.tsx"
+      - "404.html"
+      - "500.html"
+      - "docs/design/novapharm-apple-hig-writing.md"
+      - "scripts/test-apple-hig-writing.mjs"
+      - "package.json"
+      - ".github/workflows/apple-hig-writing.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/corporate/app/account-application/page.tsx"
+      - "apps/corporate/components/account-interest-workflow.tsx"
+      - "apps/corporate/components/cookie-controls.tsx"
+      - "apps/corporate/test/account-workflow.test.ts"
+      - "apps/portal/test/apple-account-experience.test.ts"
+      - "apps/portal/test/browser-acceptance.ts"
+      - "scripts/build-public-pages.mjs"
+      - "scripts/run-portal-lighthouse.mjs"
+      - "scripts/apply-pages-presentation-parity.mjs"
+      - "scripts/apply-corporate-product-discipline.mjs"
+      - "scripts/build-pages.mjs"
+      - "service-unavailable/index.html"
+      - "account-application/index.html"
+      - "apps/corporate/app/error.tsx"
+      - "apps/portal/components/login-panel.tsx"
+      - "apps/portal/components/account-access-help.tsx"
+      - "apps/portal/app/error.tsx"
+      - "apps/founder/app/error.tsx"
+      - "apps/status/app/error.tsx"
+      - "404.html"
+      - "500.html"
+      - "docs/design/novapharm-apple-hig-writing.md"
+      - "scripts/test-apple-hig-writing.mjs"
+      - "package.json"
+      - ".github/workflows/apple-hig-writing.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: novapharm-hig-writing-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  writing-contract:
+    name: Copy, consent and account-state language
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Use Node.js 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - name: Syntax check
+        run: node --check scripts/test-apple-hig-writing.mjs
+      - name: Validate first-pass writing contracts
+        run: npm run design:writing:validate
