@@ -173,4 +173,18 @@ export const designSystemCss = String.raw`
 @media(max-width:480px){.np-payment-request{border-radius:1rem;padding:1rem}.np-payment-request__card{padding:1.5rem 1rem}.np-payment-request__actions>*{flex:1 1 auto}}
 @media(prefers-contrast:more){.np-payment-request{border-color:#1d1d1f}.np-payment-request__card{border-color:#515154}.np-payment-request__note{color:#1d1d1f}}
 @media(forced-colors:active){.np-payment-request,.np-payment-request__card{border:1px solid CanvasText}}
+
+/* Native modal uses showModal() for inert background and focus containment. */
+.np-modal-dialog{max-height:min(85dvh,60rem);max-width:calc(100vw - 2rem);overflow:auto;color:#1d1d1f;background:#fff}
+.np-modal-dialog::backdrop{background:rgba(0,0,0,.48)}
+.np-modal-dialog__header{display:flex;align-items:start;justify-content:space-between;gap:1rem}
+.np-modal-dialog__header h2{margin:0;font-size:clamp(1.375rem,3vw,2rem);line-height:1.2}
+.np-modal-dialog__dismiss{min-height:44px;min-width:44px;border:1px solid #d2d2d7;border-radius:8px;background:#fff;color:#1d1d1f;font:inherit;cursor:pointer}
+.np-modal-dialog__body{padding-block:1.25rem;max-width:68ch;line-height:1.6}
+.np-modal-dialog__actions{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:flex-end}
+.np-modal-dialog :where(button,a):focus-visible{outline:3px solid #0b69ff;outline-offset:3px}
+.np-chart__provenance{font-size:.875rem;line-height:1.5;color:#515861}
+.np-chart summary{min-height:44px;display:list-item;padding-block:.75rem;cursor:pointer;color:#0059b8}
+.np-tabs [role=tabpanel]:focus-visible{outline:3px solid #0b69ff;outline-offset:3px}
+@media (forced-colors:active){.np-modal-dialog{border:2px solid CanvasText}.np-modal-dialog__dismiss{border-color:CanvasText}.np-modal-dialog::backdrop{background:Canvas}}
 `;
