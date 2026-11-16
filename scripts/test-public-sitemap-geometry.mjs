@@ -40,6 +40,17 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
         const page = await context.newPage();
         try {
           const response = await page.goto(baseUrl + route, {waitUntil:"domcontentloaded",timeout:30000});
+          // The marketplace inserts its first 24 catalogue cards only after a
+          // validated asynchronous fetch. Waiting for DOMContentLoaded alone can
+          // mark their subsequently inserted lazy images as stalled, even when
+          // the catalogue and assets are healthy. Keep fail-closed: if the cards
+          // do not materialise, this route's browser check must fail.
+          if (route === "/products/marketplace/") {
+            await page.waitForFunction(() =>
+              document.querySelectorAll("[data-commerce-marketplace] .mp-card").length === 24,
+              undefined, { timeout: 15000 }
+            );
+          }
           // Materialise native lazy assets for the actual image audit, including
           // pictures whose preferred AVIF/WebP source is chosen by the browser.
           await page.evaluate(() => {
