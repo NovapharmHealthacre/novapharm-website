@@ -17,6 +17,14 @@
       return 'Owner-confirmed warehouse stock: '+item.ownerConfirmedRemainingUnits.toLocaleString('en-GB')+' units';
     return 'Warehouse availability: confirm with seller';
   };
+  // Update stock evidence without replacing cards and reloading their images.
+  // The live stock request is advisory; it never grants checkout authority.
+  function refreshVisibleStock(){
+    for(const node of grid.querySelectorAll('[data-marketplace-stock-sku]')){
+      node.textContent=stockLabel(node.dataset.marketplaceStockSku);
+    }
+    renderCompare();
+  }
   async function loadStock(rows){
     const fresh=rows.filter(p=>!stockCache.has(p.sku)&&!pendingSkus.has(p.sku));
     for(let i=0;i<fresh.length;i+=24){
@@ -34,7 +42,7 @@
           stockCache.set(skus[j],x&&x.sku===skus[j]&&x.checkoutAuthority===false?x:null);
         }
       }catch(err){skus.forEach(sku=>stockCache.set(sku,null));}
-      finally{skus.forEach(sku=>pendingSkus.delete(sku));render();renderCompare();}
+      finally{skus.forEach(sku=>pendingSkus.delete(sku));refreshVisibleStock();}
     }
   }
   const fold=v=>String(v??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
@@ -91,7 +99,9 @@
     copy.append(element('p','mp-card-evidence',p.seller+' · '+p.supplier));
     copy.append(element('div','mp-card-price',money(p.priceMinor)));
     copy.append(element('small','mp-card-price-scope',p.priceBasis));
-    copy.append(element('small','mp-card-price-scope',stockLabel(p.sku)));
+    const stockView=element('small','mp-card-price-scope',stockLabel(p.sku));
+    stockView.dataset.marketplaceStockSku=p.sku;
+    copy.append(stockView);
     copy.append(element('small','mp-card-price-scope','Payment and dispatch require product-specific approval'));
     const actions=element('div','mp-card-actions');
     const link=element('a','mp-card-link',offerLabel(p));
