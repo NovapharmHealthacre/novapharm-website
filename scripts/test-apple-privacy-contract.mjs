@@ -82,10 +82,15 @@ test("consented Nutraxin analytics is restricted to the reviewed informational p
     "/products/nutraxin/orders/", "/products/nutraxin/checkout/",
     "/products/nutraxin/order-request/", "/products/nutraxin/confirmation/",
     "/products/nutraxin/private-future-page/",
-    "/products/nutraxin/vitamin-d3-120-tablets/account/"
+    "/products/nutraxin/vitamin-d3-120-tablets/account/",
+    "/products/track/", "/products/orders/", "/products/checkout/",
+    "/products/esco/checkout/", "/products/marketplace/bag/",
+    "/products/unreviewed-future-page/"
   ]) {
     assert.equal(publicAnalyticsRoute(path), false, "Unexpected analytics on private or unreviewed Nutraxin page: " + path);
   }
+  assert.equal(publicAnalyticsRoute("/products/marketplace/"), true);
+  assert.equal(publicAnalyticsRoute("/products/esco/"), true);
   assert.match(source("assets/js/consent-analytics.js"), /APPROVED_NUTRAXIN_PRODUCT_PATHS\.has\(location\.pathname\)/);
 });
 
