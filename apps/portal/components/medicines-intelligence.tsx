@@ -5,6 +5,7 @@ import { intelligenceWorkspaceBySlug, intelligenceWorkspaceCatalogue, intelligen
 import { isNovaMlWorkspaceSlug, novaMlWorkspaceCatalogue } from "../data/nova-ml-modules";
 import type { MedicinesIntelligenceSubview } from "../data/routes";
 import { gatewayJson, type PortalUser, professionalError } from "../lib/gateway";
+import { observedTrendPoints } from "../lib/observed-chart-series";
 import { ClinicalTrialsDiscovery } from "./clinical-trials-discovery";
 import styles from "./medicines-intelligence.module.css";
 import { NovaMlWorkspace } from "./nova-ml-workspaces";
@@ -339,7 +340,9 @@ function TrendChart({ metric, rows, source }: Readonly<{ metric: string; rows: r
   const displayValue = (value: number) => metric === "nic" || metric === "actual_cost"
     ? new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 2 }).format(value)
     : new Intl.NumberFormat("en-GB", { maximumFractionDigits: 2 }).format(value);
-  const points = rows.map((row) => ({ label: String(row["month_key"] ?? ""), value: Number(row["metric_value"] ?? 0) })).filter((row) => Number.isFinite(row.value));
+  const titleId = useId();
+  const descriptionId = useId();
+  const points = observedTrendPoints(rows);
   if (!points.length) return <div className={styles.designedEmpty}><strong>No accepted trend is available</strong><p>Complete a governed non-sample source ingest, then run a medicine query.</p></div>;
   if (points.length === 1) return <div className={styles.designedEmpty}><strong>One accepted period is available</strong><p>{points[0]?.label}: {displayValue(points[0]?.value ?? 0)} {display(metric).toLocaleLowerCase("en-GB")}. A trend requires at least two accepted periods.</p><p>Source: {source}. Forecasts are not inferred from one observed period.</p></div>;
   const width = 640;
@@ -355,9 +358,9 @@ function TrendChart({ metric, rows, source }: Readonly<{ metric: string; rows: r
     return `${x.toFixed(2)},${y.toFixed(2)}`;
   }).join(" ");
   return <figure className={styles.trendFigure}>
-    <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby="trend-title trend-description">
-      <title id="trend-title">Accepted monthly {display(metric)} trend</title>
-      <desc id="trend-description">The series runs from {points[0]?.label} to {points.at(-1)?.label}, based only on accepted governed facts.</desc>
+    <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby={`${titleId} ${descriptionId}`}>
+      <title id={titleId}>Accepted monthly {display(metric)} trend</title>
+      <desc id={descriptionId}>The series runs from {points[0]?.label} to {points.at(-1)?.label}, based only on accepted governed facts. Exact values are available in the adjacent table.</desc>
       <line x1={inset} x2={width - inset} y1={height - inset} y2={height - inset} className={styles.chartAxis} />
       <line x1={inset} x2={width - inset} y1={height / 2} y2={height / 2} className={styles.chartGrid} />
       <polyline points={polyline} className={styles.chartLine} />

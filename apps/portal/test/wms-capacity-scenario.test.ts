@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import path from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { WmsCapacityScenarioStudio } from "../components/wms-capacity-scenario-studio";
@@ -10,7 +10,7 @@ import {
   evaluateWmsCapacityScenario,
 } from "../lib/wms-capacity-scenario";
 
-const read = (file: string) => readFileSync(path.join(process.cwd(),file),"utf8");
+const read = (file: string) => readFileSync(fileURLToPath(new URL(`../${file}`, import.meta.url)), "utf8");
 
 test("transparent reference scenario predicts load without issuing operational commands",()=>{
   const result=evaluateWmsCapacityScenario(DEFAULT_WMS_CAPACITY_SCENARIO);

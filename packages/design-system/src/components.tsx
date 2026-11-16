@@ -175,16 +175,33 @@ export function ProductExplorer({ label, query, onQueryChange, filters, results,
   return <section className="np-product-explorer" aria-label={label}><SearchField label={`Search ${label}`} value={query} onChange={onQueryChange} />{filters ? <div className="np-filter-row">{filters}</div> : null}<p className="np-result-count" role="status" aria-live="polite">{resultCount} results</p><div className="np-product-results">{results}</div></section>;
 }
 
-export function DataTable({ caption, columns, rows }: Readonly<{
+export function DataTable({ caption, columns, rows, emptyMessage = "No records to display." }: Readonly<{
   caption: string;
   columns: readonly Readonly<{ key: string; label: string; numeric?: boolean }>[];
   rows: readonly Readonly<Record<string, ReactNode>>[];
+  emptyMessage?: string;
 }>) {
-  return <div className="np-table-scroll" tabIndex={0} role="region" aria-label={`${caption}, scrollable table`}><table className="np-data-table"><caption>{caption}</caption><thead><tr>{columns.map((column) => <th key={column.key} scope="col" className={column.numeric ? "np-numeric" : undefined}>{column.label}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={index}>{columns.map((column, columnIndex) => columnIndex === 0 ? <th key={column.key} scope="row">{row[column.key]}</th> : <td key={column.key} className={column.numeric ? "np-numeric" : undefined}>{row[column.key]}</td>)}</tr>)}</tbody></table></div>;
+  return <div className="np-table-scroll" tabIndex={0} role="region" aria-label={`${caption}, scrollable table`}>
+    <table className="np-data-table">
+      <caption>{caption}</caption>
+      <thead><tr>{columns.map((column) => <th key={column.key} scope="col" className={column.numeric ? "np-numeric" : undefined}>{column.label}</th>)}</tr></thead>
+      <tbody>{rows.length ? rows.map((row, index) => <tr key={index}>
+        {columns.map((column, columnIndex) => columnIndex === 0
+          ? <th key={column.key} scope="row">{row[column.key]}</th>
+          : <td key={column.key} className={column.numeric ? "np-numeric" : undefined}>{row[column.key]}</td>)}
+      </tr>) : <tr><td colSpan={Math.max(1, columns.length)}>{emptyMessage}</td></tr>}</tbody>
+    </table>
+  </div>;
 }
 
-export function AccessibleChart({ id, title, description, children, table }: Readonly<{ id: string; title: string; description: string; children: ReactNode; table: ReactNode }>) {
-  return <figure className="np-chart" aria-labelledby={`${id}-title`} aria-describedby={`${id}-description`}><figcaption><h3 id={`${id}-title`}>{title}</h3><p id={`${id}-description`}>{description}</p></figcaption><div aria-hidden="true">{children}</div><details><summary>View data table</summary>{table}</details></figure>;
+export function AccessibleChart({ id, title, description, children, table, source, asOf }: Readonly<{ id: string; title: string; description: string; children: ReactNode; table: ReactNode; source?: string; asOf?: string }>) {
+  return <figure className="np-chart" aria-labelledby={`${id}-title`} aria-describedby={`${id}-description`}>
+    <figcaption><h3 id={`${id}-title`}>{title}</h3><p id={`${id}-description`}>{description}</p>
+      {source ? <p className="np-chart__provenance">Source: {source}{asOf ? ` · As at: ${asOf}` : ""}</p> : null}
+    </figcaption>
+    <div aria-hidden="true">{children}</div>
+    <details><summary>View exact values in a table</summary>{table}</details>
+  </figure>;
 }
 
 export function Timeline({ label, items }: Readonly<{ label: string; items: readonly Readonly<{ title: string; description: string; status?: string }>[] }>) {
@@ -192,11 +209,27 @@ export function Timeline({ label, items }: Readonly<{ label: string; items: read
 }
 
 export function FormField({ id, label, hint, error, required, children }: Readonly<{ id: string; label: string; hint?: string; error?: string; required?: boolean; children: ReactNode }>) {
-  const describedBy = [hint ? `${id}-hint` : "", error ? `${id}-error` : ""].filter(Boolean).join(" ") || undefined;
+  // A field wrapper must add its instructions without silently deleting existing
+  // screen-reader references, native required state or other control semantics.
+  const existingProps: Record<string, unknown> = isValidElement<Record<string, unknown>>(children) ? children.props : {};
+  const originalDescription = typeof existingProps["aria-describedby"] === "string"
+    ? existingProps["aria-describedby"].split(/\s+/).filter(Boolean) : [];
+  const describedBy = [...new Set([...originalDescription, ...(hint ? [`${id}-hint`] : []), ...(error ? [`${id}-error`] : [])])].join(" ") || undefined;
+  const isRequired = required ?? (existingProps["required"] === true);
   const control = isValidElement<Record<string, unknown>>(children)
-    ? cloneElement(children, { id, "aria-describedby": describedBy, "aria-invalid": Boolean(error), required })
+    ? cloneElement(children, {
+      id,
+      "aria-describedby": describedBy,
+      "aria-invalid": error ? true : existingProps["aria-invalid"],
+      required: isRequired,
+    })
     : children;
-  return <div className={classNames("np-field", error && "np-field--error")}><label htmlFor={id}>{label}{required ? <span aria-hidden="true"> *</span> : null}</label>{hint ? <p id={`${id}-hint`} className="np-field__hint">{hint}</p> : null}<div data-field-control>{control}</div>{error ? <p id={`${id}-error`} className="np-field__error" role="alert">{error}</p> : null}</div>;
+  return <div className={classNames("np-field", error && "np-field--error")}>
+    <label htmlFor={id}>{label}{isRequired ? <span aria-hidden="true"> *</span> : null}</label>
+    {hint ? <p id={`${id}-hint`} className="np-field__hint">{hint}</p> : null}
+    <div data-field-control>{control}</div>
+    {error ? <p id={`${id}-error`} className="np-field__error" role="alert">{error}</p> : null}
+  </div>;
 }
 
 export function Dialog({ id, title, description, open, children, actions }: Readonly<{ id: string; title: string; description?: string; open: boolean; children: ReactNode; actions?: ReactNode }>) {
@@ -209,7 +242,21 @@ export function Drawer({ title, open, onClose, children }: Readonly<{ title: str
 
 export function Tabs({ label, tabs, activeId, onSelect }: Readonly<{ label: string; tabs: readonly Readonly<{ id: string; label: string; panel: ReactNode }>[]; activeId: string; onSelect?: (id: string) => void }>) {
   const active = tabs.find((tab) => tab.id === activeId) ?? tabs[0];
-  return <div className="np-tabs"><div role="tablist" aria-label={label}>{tabs.map((tab) => <button key={tab.id} type="button" role="tab" id={`${tab.id}-tab`} aria-controls={`${tab.id}-panel`} aria-selected={tab.id === active?.id} tabIndex={tab.id === active?.id ? 0 : -1} onClick={() => onSelect?.(tab.id)}>{tab.label}</button>)}</div>{active ? <div role="tabpanel" id={`${active.id}-panel`} aria-labelledby={`${active.id}-tab`}>{active.panel}</div> : null}</div>;
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    const buttons = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+    const current = buttons.findIndex((button) => button === document.activeElement);
+    if (current < 0 || !buttons.length) return;
+    const rtl = getComputedStyle(event.currentTarget).direction === "rtl";
+    const direction = event.key === "ArrowRight" ? (rtl ? -1 : 1) : (rtl ? 1 : -1);
+    const next = event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1 : (current + direction + buttons.length) % buttons.length;
+    event.preventDefault();
+    const selected = tabs[next];
+    if (!selected) return;
+    buttons[next]?.focus();
+    onSelect?.(selected.id);
+  };
+  return <div className="np-tabs"><div role="tablist" aria-label={label} onKeyDown={handleKeyDown}>{tabs.map((tab) => <button key={tab.id} type="button" role="tab" id={`${tab.id}-tab`} aria-controls={tab.id === active?.id ? `${tab.id}-panel` : undefined} aria-selected={tab.id === active?.id} tabIndex={tab.id === active?.id ? 0 : -1} onClick={() => onSelect?.(tab.id)}>{tab.label}</button>)}</div>{active ? <div role="tabpanel" id={`${active.id}-panel`} aria-labelledby={`${active.id}-tab`} tabIndex={0}>{active.panel}</div> : null}</div>;
 }
 
 /** A scoped, accessible web search control. Suggestions and history remain opt-in to protect private data. */
