@@ -25,11 +25,16 @@ export function AccountInterestWorkflow() {
   const [state, setState] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
   const statusRef = useRef<HTMLDivElement>(null);
+  const inFlightRef = useRef(false);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (inFlightRef.current) return;
     const form = event.currentTarget;
     if (!form.reportValidity()) return;
+    // Capture the submitted values before fetching a CSRF token.
+    const data = new FormData(form);
+    inFlightRef.current = true;
 
     setState("sending");
     setMessage("Submitting business interest…");
@@ -44,7 +49,6 @@ export function AccountInterestWorkflow() {
         throw Object.assign(new Error("csrf_unavailable"), { status: csrfResponse.status });
       }
 
-      const data = new FormData(form);
       const organisationType = String(data.get("organisationType") ?? "");
       const interest = String(data.get("interest") ?? "").trim();
       const payload = {
@@ -74,6 +78,10 @@ export function AccountInterestWorkflow() {
         body: JSON.stringify(payload),
       });
       if (!response.ok) throw Object.assign(new Error("submission_failed"), { status: response.status });
+      const receipt = await response.json().catch(() => ({})) as { ok?: boolean; lead?: { id?: string | number } };
+      if (receipt.ok !== true || !receipt.lead?.id) {
+        throw Object.assign(new Error("receipt_unverified"), { status: 202 });
+      }
 
       form.reset();
       setState("success");
@@ -82,13 +90,14 @@ export function AccountInterestWorkflow() {
       setState("error");
       setMessage(friendlyError(Number((error as { status?: number }).status ?? 0), !navigator.onLine));
     } finally {
+      inFlightRef.current = false;
       window.setTimeout(() => statusRef.current?.focus(), 0);
     }
   }
 
   return (
     <div className="contact-workflow account-interest-workflow">
-      <form className="contact-form" onSubmit={submit}>
+      <form className="contact-form" onSubmit={submit} aria-busy={state === "sending"}>
         <div className="honeypot" aria-hidden="true">
           <label htmlFor="account-website">Website</label>
           <input id="account-website" name="website" tabIndex={-1} autoComplete="off" />
