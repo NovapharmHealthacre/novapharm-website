@@ -586,7 +586,7 @@ function replaceMain(html, main) {
 
 function replaceChrome(html, route) {
   html = html.replace(/<header\s+class="site-header(?:\s+[^"]*)?"[^>]*>[\s\S]*?<\/header>/, header(route));
-  html = html.replace(/<footer class="site-footer"[\s\S]*?<\/footer>/, footer());
+  html = html.replace(/<footer class="site-footer(?:\s+[^"]*)?"[^>]*>[\s\S]*?<\/footer>/, footer());
   html = html.replace(/<body([^>]*)>/, (_match, attributes) => {
     const governedAttributes = attributes
       .replace(/\sdata-family="[^"]*"/g, "")

@@ -337,6 +337,7 @@ function head(meta, slug = "", options = {}) {
   <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png" sizes="180x180">
   <link rel="mask-icon" href="/assets/brand/safari-pinned-tab.svg" color="#E3120B">
   <link rel="manifest" href="/manifest.webmanifest">
+  <script src="/assets/js/rtl-localization.js"></script>
 ${preloadMarkup}  <link rel="stylesheet" href="/assets/css/novapharm.bundle.css">
   <meta property="og:type" content="${type}">
   <meta property="og:site_name" content="NovaPharm Healthcare">
@@ -360,7 +361,7 @@ function documentShell({ meta, slug = "", body, options = {} }) {
   return `${head(meta, slug, options)}
 <body data-page="${slug || "home"}">
 ${header(slug)}
-<main id="main">${body}</main>
+<main id="main" lang="en-GB" data-np-untranslated>${body}</main>
 ${footer()}
 ${aiSearchDialog()}
 ${platformCapabilities.secureApi ? '<script src="/assets/js/api-client.js" defer></script>' : ""}
@@ -1083,7 +1084,7 @@ function environmentPage() {
 
 function errorPage(code, title, message) {
   const meta = { title: `${code} ${title} | NovaPharm Healthcare`, description: message, eyebrow: `Error ${code}` };
-  return `${head(meta, code === "404" ? "404" : "service-unavailable", { robots: "noindex,nofollow", schemas: [] })}<body class="error-page"><main id="main" class="error-shell"><a class="error-brand" href="/" aria-label="NovaPharm Healthcare home">${brandPicture({ width: 320, height: 40, eager: true })}</a><span>${code}</span><h1>${esc(title)}</h1><p>${esc(message)}</p><a class="btn btn-primary" href="/">Go to home page</a><button class="inline-link-button" type="button" data-cookie-settings>Cookie settings</button></main><script type="module" src="/assets/js/cookie-consent.js"></script></body></html>`;
+  return `${head(meta, code === "404" ? "404" : "service-unavailable", { robots: "noindex,nofollow", schemas: [] })}<body class="error-page"><main id="main" class="error-shell" lang="en-GB" data-np-untranslated><a class="error-brand" href="/" aria-label="NovaPharm Healthcare home">${brandPicture({ width: 320, height: 40, eager: true })}</a><span>${code}</span><h1>${esc(title)}</h1><p>${esc(message)}</p><a class="btn btn-primary" href="/">Go to home page</a><button class="inline-link-button" type="button" data-cookie-settings>Cookie settings</button></main><script type="module" src="/assets/js/cookie-consent.js"></script></body></html>`;
 }
 
 function redirectPage(title, target) {

@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export function Brand({ footer = false }: { readonly footer?: boolean }) {
   return (
-    <Link className={footer ? "brand brand-footer" : "brand"} href="/" aria-label="NovaPharm Healthcare home">
+    <Link className={footer ? "brand brand-footer" : "brand"} href="/" lang="en-GB" aria-label="NovaPharm Healthcare home">
       <Image
         src="/assets/brand/novapharm-healthcare-logo.png"
         alt="NovaPharm Healthcare"

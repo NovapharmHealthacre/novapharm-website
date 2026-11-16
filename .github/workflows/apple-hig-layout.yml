@@ -7,6 +7,24 @@ on:
       - "assets/css/novapharm.bundle.css"
       - "scripts/build-css-bundle.mjs"
       - "scripts/test-apple-layout-contract.mjs"
+      - "scripts/test-apple-rtl-contract.mjs"
+      - "scripts/test-apple-rtl-public-artifact.mjs"
+      - "scripts/finalize-public-rtl.mjs"
+      - "scripts/build-site.mjs"
+      - "scripts/stage-pages-artifact.mjs"
+      - "assets/css/rtl-localization.css"
+      - "assets/js/rtl-localization.js"
+      - "assets/js/novapharm.js"
+      - "apps/corporate/components/site-header.tsx"
+      - "apps/corporate/components/mobile-navigation.tsx"
+      - "apps/corporate/components/site-footer.tsx"
+      - "apps/technology/components/arrow-link.tsx"
+      - "apps/portal/components/dashboard.tsx"
+      - "apps/portal/components/portal-client.tsx"
+      - "apps/portal/app/**/page.tsx"
+      - "src/core/interface-locale.ts"
+      - "src/components/interface-locale-switcher.tsx"
+      - "scripts/build-public-pages.mjs"
       - "packages/design-system/src/**"
       - "packages/design-system/test/**"
       - "apps/status/app/page.tsx"
@@ -27,7 +45,7 @@ jobs:
         with:
           node-version: "22"
       - name: Verify shared layout contract and 54-module shell coverage
-        run: node --test scripts/test-apple-layout-contract.mjs
+        run: node --test scripts/test-apple-layout-contract.mjs scripts/test-apple-rtl-contract.mjs scripts/test-apple-rtl-public-artifact.mjs
       - name: Rebuild canonical public stylesheet
         run: node scripts/build-css-bundle.mjs
       - name: Verify published CSS is reproducible

@@ -49,7 +49,14 @@ for (let index = 0; index < originalCards.length; index++) {
 }
 assert.equal((page.match(/class="nx-product-card-shell"/g) || []).length, 19, "Exactly one publisher wrapper per approved catalogue card");
 assert.equal((page.match(/class="nx-product-publisher"/g) || []).length, 19, "Exactly one publisher evidence reference per product");
-assert.ok(page.includes(master.slice(0, master.indexOf('<a class="nx-product-card"'))), "Published introduction must preserve the approved master layout");
+// The approved Nutraxin master remains byte-identical apart from the
+// explicit English-language boundary needed by the Arabic/Hebrew layout preview.
+const masterIntro = master.slice(0, master.indexOf('<a class="nx-product-card"'));
+const publishedIntro = page.includes('<script src="/assets/js/rtl-localization.js"></script>')
+  ? masterIntro.replace(/<main\b[^>]*>/, (main) =>
+      main.slice(0, -1) + ' lang="en-GB" data-np-untranslated>')
+  : masterIntro;
+assert.ok(page.includes(publishedIntro), "Published introduction must preserve the approved master layout and English-language boundary");
 assert.ok(page.includes(expectedNutraxinCssHref), "Published Nutraxin stylesheet must match its exact CSS bytes and approved version");
 assert.ok(script.includes('const original = read("src/content/nutraxin-showcase.html")'),"Site build must preserve the master layout");
 assert.ok(script.includes('href="/assets/css/nutraxin-lineup.css"'),"Site build must preserve the scoped stylesheet");
