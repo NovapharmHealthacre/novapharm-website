@@ -47,10 +47,15 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
               if (img.getAttribute("src")?.startsWith("/assets/")) img.loading = "eager";
             }
           });
+          // The 392-item marketplace can issue many local catalogue previews at
+          // once after we intentionally promote lazy assets to eager. Allow that
+          // one large generated route a longer bounded settle period, but keep
+          // the exact same broken-image and still-loading-image failures below.
+          const imageReadinessMs = route === "/products/marketplace/" ? 30000 : 10000;
           await page.waitForFunction(() =>
             [...document.images].filter(img => img.getAttribute("src")?.startsWith("/assets/"))
               .every(img => img.complete),
-            undefined, {timeout:10000}
+            undefined, {timeout:imageReadinessMs}
           ).catch(() => undefined);
           const result = await page.evaluate(() => {
             const viewport = document.documentElement.clientWidth;
