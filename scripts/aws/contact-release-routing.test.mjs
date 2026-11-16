@@ -20,6 +20,9 @@ test("approved public main pushes retain immutable AWS contact release while pri
   assert.match(dispatcher, /apps\/portal\/\*/);
   assert.match(dispatcher, /native\/novapharm-intelligence-apple\/\*/);
   assert.match(dispatcher, /scripts\/aws\/contact-release-routing\.test\.mjs/);
+  for (const path of ["scripts/nova-ml-private-ingress.mjs", "scripts/test-nova-ml-private-ingress.mjs", ".github/workflows/nova-ml-private-ingress-acceptance.yml"]) {
+    assert.ok(dispatcher.includes(path), path + " must skip unrelated AWS contact dispatch");
+  }
   assert.match(dispatcher, /if: steps\.private_release\.outputs\.skip != 'true'/);
   const guardedAwsSteps = dispatcher.match(/if: steps\.private_release\.outputs\.skip != 'true' && steps\.publisher\.outputs\.skip != 'true'/g) || [];
   assert.equal(guardedAwsSteps.length, 2, "both the AWS health check and contact dispatch must skip for private-only merges");

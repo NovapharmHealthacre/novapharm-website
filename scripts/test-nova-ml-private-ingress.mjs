@@ -10,6 +10,16 @@ const response = (status, headers = {}, body = "") => ({
   text: async () => body,
 });
 
+test("the private-only merge guard includes the Nova ML probe and its contract without publishing AWS contact", () => {
+  const guard = readFileSync(new URL("../.github/workflows/dispatch-approved-aws-contact-release.yml", import.meta.url), "utf8");
+  for (const path of [
+    "scripts/nova-ml-private-ingress.mjs",
+    "scripts/test-nova-ml-private-ingress.mjs",
+    ".github/workflows/nova-ml-private-ingress-acceptance.yml",
+  ]) assert.ok(guard.includes(path), path);
+  assert.match(guard, /if: steps\.private_release\.outputs\.skip != 'true' && steps\.publisher\.outputs\.skip != 'true'/);
+});
+
 test("probe contains the exact four canonical Nova ML protected route slugs", () => {
   const src = readFileSync(new URL("../apps/portal/data/nova-ml-modules.ts", import.meta.url), "utf8");
   const slugs = [...src.matchAll(/slug: "(nova-[a-z-]+)"/g)].map((match) => match[1]);
