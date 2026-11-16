@@ -68,25 +68,43 @@ function gatewayActionPath(endpoint: string): string {
   return endpoint.slice(5);
 }
 
-function ActionPanel({ snapshot, onComplete, onMessage }: Readonly<{ snapshot: Snapshot; onComplete: () => Promise<void>; onMessage: (message: string) => void }>) {
-  async function submit(endpoint: string, body: unknown, success: string) {
+function ActionPanel({ snapshot, onComplete, onMessage }: Readonly<{ snapshot: Snapshot; onComplete: () => Promise<boolean>; onMessage: (message: string) => void }>) {
+  // React's disabled-button state alone does not prevent same-tick double submissions.
+  const requestInFlight = useRef(false);
+  const [sending, setSending] = useState(false);
+  async function submit(endpoint: string, body: unknown, success: string): Promise<boolean> {
+    if (requestInFlight.current) return false;
+    requestInFlight.current = true;
+    setSending(true);
+    onMessage("Submitting your controlled request.");
+    let accepted = false;
     try {
       await protectedMutation(gatewayActionPath(endpoint), body);
-      await onComplete();
-      onMessage(success);
+      accepted = true;
+      const refreshed = await onComplete();
+      onMessage(refreshed ? success : "The service accepted the request, but the updated records could not be verified. Check the workspace before submitting again.");
+      return true;
     } catch (error) {
+      if (accepted) {
+        onMessage("The service accepted the request, but the workspace could not refresh. Check the record before submitting again.");
+        return true;
+      }
       onMessage(professionalError(error));
+      return false;
+    } finally {
+      requestInFlight.current = false;
+      setSending(false);
     }
   }
 
   if (!snapshot.actions.length) return null;
   const productRows = snapshot.sections.flatMap((section) => section.rows).filter((row) => row["id"] && row["lifecycle_status"]);
-  return <section className="available-actions"><header><h2>Controlled actions</h2><p>Every change is validated, authorised and audit logged by the server.</p></header><div className="action-grid">{snapshot.actions.map((action) => {
-    if (action.code === "create_support_ticket" && action.endpoint) return <form key={action.code} onSubmit={(event) => { event.preventDefault(); const values = Object.fromEntries(new FormData(event.currentTarget)); void submit(action.endpoint as string, values, "Support ticket created."); event.currentTarget.reset(); }}><h3>{action.label}</h3><label>Subject<input name="subject" required maxLength={200} /></label><label>Category<select name="category" defaultValue="account"><option value="account">Account</option><option value="order">Order</option><option value="document">Document</option><option value="technical">Technical</option></select></label><label>Priority<select name="priority" defaultValue="normal"><option value="normal">Normal</option><option value="high">High</option></select></label><label>Description<textarea name="description" required minLength={10} maxLength={2000} rows={4} /></label><button type="submit">Create ticket</button></form>;
-    if (action.code === "request_return" && action.endpoint) return <form key={action.code} onSubmit={(event) => { event.preventDefault(); const form = event.currentTarget; const values = new FormData(form); const option = action.options?.[Number(values.get("option"))]; if (!option) return onMessage("Select an eligible order line."); void submit(action.endpoint as string, { orderId: option["order_id"], orderLineId: option["order_line_id"], quantity: Number(values.get("quantity")), reasonCode: values.get("reasonCode") }, "Return request created."); form.reset(); }}><h3>{action.label}</h3><label>Delivered order line<select name="option" required defaultValue=""><option value="" disabled>Select an order line</option>{action.options?.map((option, index) => <option key={String(option["order_line_id"])} value={index}>{String(option["order_number"])} · {String(option["sku"])} · {String(option["product_name"])}</option>)}</select></label><label>Quantity<input name="quantity" type="number" min="1" step="1" required /></label><label>Reason<select name="reasonCode" defaultValue="other"><option value="damaged">Damaged</option><option value="incorrect">Incorrect item</option><option value="other">Other</option></select></label><button type="submit">Request return</button></form>;
-    if (action.code === "open_quality_complaint" && action.endpoint) return <form key={action.code} onSubmit={(event) => { event.preventDefault(); const form = event.currentTarget; const values = new FormData(form); const option = action.options?.[Number(values.get("option"))]; if (!option) return onMessage("Select an eligible order and product."); void submit(action.endpoint as string, { orderId: option["order_id"], productId: option["product_id"], description: values.get("description"), severity: "untriaged", safetyInformationPresent: false }, "Quality complaint opened."); form.reset(); }}><h3>{action.label}</h3><p className="action-warning">Do not include adverse-event, patient-identifiable or urgent medical information.</p><label>Order and product<select name="option" required defaultValue=""><option value="" disabled>Select an order and product</option>{action.options?.map((option, index) => <option key={`${String(option["order_id"])}-${String(option["product_id"])}`} value={index}>{String(option["order_number"])} · {String(option["sku"])} · {String(option["product_name"])}</option>)}</select></label><label>Quality issue<textarea name="description" required minLength={20} maxLength={2000} rows={5} /></label><button type="submit">Open complaint</button></form>;
-    if (action.code === "advance_workflow" && action.endpoint) return <div className="compact-action" key={`${action.code}-${action.endpoint}`}><h3>{action.label}</h3><p>Advance only after completing the evidence required by the active workflow step.</p><button type="button" onClick={() => void submit(action.endpoint as string, {}, "Workflow advanced to its next governed step.")}>Advance workflow</button></div>;
-    if (action.code === "product_transition" && action.endpointTemplate) return <form key={action.code} onSubmit={(event) => { event.preventDefault(); const values = new FormData(event.currentTarget); const productId = encodeURIComponent(String(values.get("productId") ?? "")); const endpoint = (action.endpointTemplate as string).replace("{id}", productId); void submit(endpoint, { status: values.get("status") }, "Product lifecycle transition recorded."); }}><h3>{action.label}</h3><label>Product<select name="productId" required defaultValue=""><option value="" disabled>Select product</option>{productRows.map((product) => <option key={String(product["id"])} value={String(product["id"])}>{String(product["sku"])} · {String(product["product_name"])} · {readable(product["lifecycle_status"])}</option>)}</select></label><label>Next state<select name="status" defaultValue="review"><option value="review">Review</option><option value="approved">Approved</option><option value="active">Active</option><option value="suspended">Suspended</option><option value="draft">Draft</option><option value="retired">Retired</option></select></label><button type="submit">Record transition</button></form>;
+  return <section className="available-actions" aria-busy={sending}><header><h2>Controlled actions</h2><p>Every change is validated, authorised and audit logged by the server.</p></header><div className="action-grid">{snapshot.actions.map((action) => {
+    if (action.code === "create_support_ticket" && action.endpoint) return <form key={action.code} onSubmit={(event) => { event.preventDefault(); const form = event.currentTarget; const values = Object.fromEntries(new FormData(form)); void submit(action.endpoint as string, values, "Support ticket created.").then((accepted) => { if (accepted) form.reset(); }); }}><h3>{action.label}</h3><label>Subject<input name="subject" required maxLength={200} /></label><label>Category<select name="category" defaultValue="account"><option value="account">Account</option><option value="order">Order</option><option value="document">Document</option><option value="technical">Technical</option></select></label><label>Priority<select name="priority" defaultValue="normal"><option value="normal">Normal</option><option value="high">High</option></select></label><label>Description<textarea name="description" required minLength={10} maxLength={2000} rows={4} /></label><button type="submit" disabled={sending}>{sending ? "Submitting..." : "Create ticket"}</button></form>;
+    if (action.code === "request_return" && action.endpoint) return <form key={action.code} onSubmit={(event) => { event.preventDefault(); const form = event.currentTarget; const values = new FormData(form); const option = action.options?.[Number(values.get("option"))]; if (!option) return onMessage("Select an eligible order line."); void submit(action.endpoint as string, { orderId: option["order_id"], orderLineId: option["order_line_id"], quantity: Number(values.get("quantity")), reasonCode: values.get("reasonCode") }, "Return request created.").then((accepted) => { if (accepted) form.reset(); }); }}><h3>{action.label}</h3><label>Delivered order line<select name="option" required defaultValue=""><option value="" disabled>Select an order line</option>{action.options?.map((option, index) => <option key={String(option["order_line_id"])} value={index}>{String(option["order_number"])} · {String(option["sku"])} · {String(option["product_name"])}</option>)}</select></label><label>Quantity<input name="quantity" type="number" min="1" step="1" required /></label><label>Reason<select name="reasonCode" defaultValue="other"><option value="damaged">Damaged</option><option value="incorrect">Incorrect item</option><option value="other">Other</option></select></label><button type="submit" disabled={sending}>{sending ? "Submitting..." : "Request return"}</button></form>;
+    if (action.code === "open_quality_complaint" && action.endpoint) return <form key={action.code} onSubmit={(event) => { event.preventDefault(); const form = event.currentTarget; const values = new FormData(form); const option = action.options?.[Number(values.get("option"))]; if (!option) return onMessage("Select an eligible order and product."); void submit(action.endpoint as string, { orderId: option["order_id"], productId: option["product_id"], description: values.get("description"), severity: "untriaged", safetyInformationPresent: false }, "Quality complaint opened.").then((accepted) => { if (accepted) form.reset(); }); }}><h3>{action.label}</h3><p className="action-warning">Do not include adverse-event, patient-identifiable or urgent medical information.</p><label>Order and product<select name="option" required defaultValue=""><option value="" disabled>Select an order and product</option>{action.options?.map((option, index) => <option key={`${String(option["order_id"])}-${String(option["product_id"])}`} value={index}>{String(option["order_number"])} · {String(option["sku"])} · {String(option["product_name"])}</option>)}</select></label><label>Quality issue<textarea name="description" required minLength={20} maxLength={2000} rows={5} /></label><button type="submit" disabled={sending}>{sending ? "Submitting..." : "Open complaint"}</button></form>;
+    if (action.code === "advance_workflow" && action.endpoint) return <div className="compact-action" key={`${action.code}-${action.endpoint}`}><h3>{action.label}</h3><p>Advance only after completing the evidence required by the active workflow step.</p><button type="button" disabled={sending} onClick={() => void submit(action.endpoint as string, {}, "Workflow advanced to its next governed step.")}>{sending ? "Submitting..." : "Advance workflow"}</button></div>;
+    if (action.code === "product_transition" && action.endpointTemplate) return <form key={action.code} onSubmit={(event) => { event.preventDefault(); const values = new FormData(event.currentTarget); const productId = encodeURIComponent(String(values.get("productId") ?? "")); const endpoint = (action.endpointTemplate as string).replace("{id}", productId); void submit(endpoint, { status: values.get("status") }, "Product lifecycle transition recorded."); }}><h3>{action.label}</h3><label>Product<select name="productId" required defaultValue=""><option value="" disabled>Select product</option>{productRows.map((product) => <option key={String(product["id"])} value={String(product["id"])}>{String(product["sku"])} · {String(product["product_name"])} · {readable(product["lifecycle_status"])}</option>)}</select></label><label>Next state<select name="status" defaultValue="review"><option value="review">Review</option><option value="approved">Approved</option><option value="active">Active</option><option value="suspended">Suspended</option><option value="draft">Draft</option><option value="retired">Retired</option></select></label><button type="submit" disabled={sending}>{sending ? "Submitting..." : "Record transition"}</button></form>;
     return <div className="compact-action unavailable" key={`${action.code}-${action.label}`}><h3>{action.label}</h3><p>{action.enabled === false ? "This request requires a separate controlled review workflow." : "No approved interactive workflow is available for this action."}</p></div>;
   })}</div></section>;
 }
@@ -114,21 +132,23 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
       const session = await gatewayJson<{ user: PortalUser }>("portal/session");
       if (session.user.mustChangePassword) {
         window.location.replace("/portal/change-password/");
-        return;
+        return false;
       }
       const requiredScope = areaScopes[module.area];
       if (!session.user.accessScopes.includes(requiredScope) && !session.user.accessScopes.includes("admin")) {
         setStatus("This identity is not authorised for the requested workspace.");
         setUser(session.user);
         setSnapshot(null);
-        return;
+        return false;
       }
       const moduleSnapshot = await gatewayJson<Snapshot>(`enterprise/modules/${encodeURIComponent(module.code)}`);
       setUser(session.user);
       setSnapshot(moduleSnapshot);
+      return true;
     } catch (error) {
       setStatus(professionalError(error));
       if ((error as { status?: number }).status === 401) window.location.replace("/");
+      return false;
     } finally {
       setLoading(false);
     }
