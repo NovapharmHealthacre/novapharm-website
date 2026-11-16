@@ -14,9 +14,10 @@ Reviewed: 2026-11-15. Applies to Corporate public entry, Customer, Employee/Dist
 
 Apple's native Swift / AuthenticationServices APIs are not directly callable from a Next.js browser. For websites, passkeys use HTTPS + WebAuthn with server-generated challenges, and Sign in with Apple uses Apple's web OAuth/OIDC service with server verification. Copying the style of a login button alone is not implementation.
 
-## Delivered in this PR
+## Delivered in the account experience and replay releases
 
 - Shared, optional disclosure instructions for five audience contexts; first-party account/application, trust and privacy routes. Guidance appears on secure entry pages and verified, role-matching landing workspaces, without being a forced tutorial.
+- Optional getting-started guidance can be reopened on protected Customer My Account, Settings and Support pages, Employee Operational Administration and Board Command Centre. It remains native `details`/ `summary` content, independently visible before asynchronous records load, with no new account privilege or browser-persisted dismissal preference.
 - Clear purpose for an account before asking for credentials; public browsing remains accessible; regulated identity invitations and customer reviews are not silently bypassed.
 - Preserve existing password autofill, one-time-code autofill and authorised identity methods; add a keyboard-accessible, accurately labeled password show/hide toggle in the four-role portal.
 - Maintain existing authorised role boundaries, CSRF, protected login mutation, Cognito identity challenge, mandatory authenticator, independent customer seat approval and server-side sessions. No browser tokens or password storage added.

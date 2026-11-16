@@ -296,6 +296,23 @@ async function inspectModule(
         await page.locator(".customer-editorial-hero h1").waitFor({ state: "visible" });
       }
     }
+    // Authenticated account/help routes must allow the optional first-run
+    // guidance to be replayed without granting a new role or loading records.
+    if ([
+      "customer.account", "customer.settings", "customer.support",
+      "employee.administration", "executive.command-centre",
+    ].includes(module.code)) {
+      const disclosure = page.locator("details.account-access-help");
+      assert.equal(await disclosure.count(), 1, `${module.code}: replayable account help missing`);
+      const summary = disclosure.locator("summary");
+      assert.equal(await summary.textContent(), "Review account access and onboarding");
+      if (viewport.name === "desktop-1440") {
+        await summary.focus();
+        await page.keyboard.press("Enter");
+        assert.equal(await disclosure.getAttribute("open"), "", "Keyboard Enter did not open account guidance");
+        await page.getByText("Optional tips for your current workspace.", { exact: false }).waitFor({ state: "visible" });
+      }
+    }
     const expectedDataState = module.code === "executive.nhs-data" ? "No governed intelligence data loaded" : "Synthetic validation data";
     assert.equal(await page.getByText(expectedDataState, { exact: true }).count(), 1);
     await inspectLayout(page, `${engine} ${viewport.name} ${module.route}`);
