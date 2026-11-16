@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
+import React, { useId, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 
 /** Website equivalents of Apple's hierarchy and lockup patterns, not native Apple UI classes. */
 /** Small, selectable labels use semantic ink hierarchy rather than decorative pills. */
