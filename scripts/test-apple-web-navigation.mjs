@@ -15,6 +15,7 @@ const publicMenuScript = read("assets/js/novapharm.js");
 
 test("the actual corporate web header uses compact dark navigation and visible keyboard focus", () => {
   assert.match(design, /--npd-header:\s*52px/);
+  assert.doesNotMatch(design, /letter-spacing:\s*-[\d.]+(?:em|px|rem)/i, "Navigation must not use out-of-policy negative letter spacing");
   assert.match(design, /--header:\s*52px/);
   assert.match(design, /background(?:-color)?:\s*#171719/);
   assert.match(design, /\.npd-global-nav\.site-nav/);
