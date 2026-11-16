@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { FounderEvidenceProvider, OpenEvidenceLink } from "@/components/founder-evidence";
 import { founderContact, founderProfile, profileReviewedOn } from "@/lib/site-data";
 import { type InterfaceLocale, interfaceLabel } from "../../../src/core/interface-locale";
+import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
 
 const navigation = Object.freeze([
   { href: "/about/", label: "About" },
@@ -119,6 +120,7 @@ function SiteFooter({ locale }: Readonly<{ locale: InterfaceLocale }>): React.JS
       <div className="footer-base">
         <span>© {profileReviewedOn.slice(0, 4)} Vishal Chakravarty</span>
         <span>Pharmaceutical entrepreneurship · Market access · Regulated markets</span>
+        <InterfaceLocaleSwitcher locale={locale} />
       </div>
     </footer>
   );
