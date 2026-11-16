@@ -14,6 +14,8 @@ test("WMS scenario makes non-live provenance clear and exposes accessible chart 
   assert.match(html, /<caption>Scenario demand by warehouse zone<\/caption>/);
   assert.match(html, /<th scope="row">Zone A<\/th>/);
   assert.match(html, /Reset assumptions/);
+  assert.match(html, /Undo last change/);
+  assert.match(html, /Redo change/);
   assert.doesNotMatch(html, /Undo reset/);
 });
 
