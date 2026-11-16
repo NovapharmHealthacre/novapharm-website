@@ -1,4 +1,5 @@
 import { cookies, headers } from "next/headers";
+import { resolveInterfaceLocale } from "../../../../src/core/interface-locale";
 import { notFound, redirect } from "next/navigation";
 import { PortalClient } from "../../components/portal-client";
 import { resolvePortalView } from "../../data/routes";
@@ -22,5 +23,6 @@ export default async function PortalPage({ params }: Readonly<{ params: Promise<
   }
 
   const incomingHost = (await headers()).get("host")?.split(":")[0]?.toLowerCase() ?? "";
-  return <PortalClient view={view} intelligencePortal={incomingHost === "intelligence.novapharmhealthcare.com"} />;
+  const locale = resolveInterfaceLocale((await cookies()).get("np_locale")?.value);
+  return <PortalClient view={view} locale={locale} intelligencePortal={incomingHost === "intelligence.novapharmhealthcare.com"} />;
 }
