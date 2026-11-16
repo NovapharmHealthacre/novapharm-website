@@ -103,6 +103,87 @@ html[dir="rtl"] [data-np-untranslated] :is(p, blockquote) {
   direction: ltr;
   text-align: left;
 }
+/* Physical-side rules inherited from the original English-only site
+   need explicit RTL counterparts until each owner stylesheet is migrated to
+   logical border/padding/inset properties. English behavior is unchanged. */
+html[dir="rtl"] .desktop-nav a::after {
+  left: 100%;
+  right: 0;
+  transition: left 180ms ease;
+}
+html[dir="rtl"] .desktop-nav a:hover::after,
+html[dir="rtl"] .desktop-nav a:focus-visible::after { left: 0; }
+html[dir="rtl"] .convergence-route { left: auto; right: 28px; }
+html[dir="rtl"] :is(.sourcing-grid article, .maturity-grid article, .trust-strip span,
+ .roadmap-track li, .policy-meta dl div) {
+  border-right: 0;
+  border-left: 1px solid var(--line);
+}
+html[dir="rtl"] .trust-strip span:first-child { border-right: 1px solid var(--line); }
+html[dir="rtl"] .roadmap-track li {
+  padding-left: 18px;
+  padding-right: 0;
+}
+html[dir="rtl"] .roadmap-track li::before { left: auto; right: 0; }
+html[dir="rtl"] .profile-detail aside {
+  border-left: 0;
+  border-right: 1px solid var(--line);
+  padding-left: 0;
+  padding-right: 35px;
+}
+html[dir="rtl"] .status-notice {
+  border-left: 1px solid #aeb3b8;
+  border-right: 4px solid #4a5259;
+}
+html[dir="rtl"] .status-notice-regulatory { border-right-color: var(--red); }
+html[dir="rtl"] .status-notice-warning { border-right-color: #9b5c00; }
+html[dir="rtl"] .status-notice-success { border-right-color: #167348; }
+html[dir="rtl"] .status-notice-error { border-right-color: #b4232a; }
+html[dir="rtl"] .preference-close { right: auto; left: 16px; }
+html[dir="rtl"] .article-disclaimer {
+  border-right: 4px solid var(--gold, #a47721);
+  padding: 24px;
+}
+html[dir="rtl"] .article-aside { border-right-width: 2px; padding-right: 20px; }
+html[dir="rtl"] .footer-status { border-right-width: 2px; padding-right: 14px; }
+html[dir="rtl"] :is(th, td, .table-region .empty-cell,
+ .medicine-search-results li button) { text-align: start; }
+html[dir="rtl"] .search-results a { padding-right: 14px; padding-left: 44px; }
+html[dir="rtl"] .status-hero .maintenance-notice {
+  border-left: 0;
+  border-right: 3px solid #e0ad58;
+}
+html[dir="rtl"] .refresh-command { margin-left: 0; margin-right: auto; }
+html[dir="rtl"] .service-row > a,
+html[dir="rtl"] .private-boundary { float: left; }
+html[dir="rtl"] .site-nav-list a:not(.nav-contact)::after {
+  left: auto;
+  right: 0;
+  transform-origin: left;
+}
+html[dir="rtl"] .site-nav-list a:hover::after,
+html[dir="rtl"] .site-nav-list a[aria-current="page"]::after { transform-origin: right; }
+html[dir="rtl"] .breadcrumbs li:not(:last-child)::after {
+  margin-left: 0;
+  margin-right: 0.45rem;
+}
+html[dir="rtl"] .hero h1 span:last-child { margin-left: 0; margin-right: clamp(1.5rem, 6vw, 8rem); }
+html[dir="rtl"] .hero-visual .portrait-frame { margin-left: 0; margin-right: auto; }
+html[dir="rtl"] .status-header .brand img,
+html[dir="rtl"] .brand img { transform: none; }
+
+@media (max-width: 800px) {
+  html[dir="rtl"] .refresh-command { margin-right: 0; }
+  html[dir="rtl"] :is(.sourcing-grid article, .maturity-grid article) {
+    border-left: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  html[dir="rtl"] .profile-detail aside {
+    border-right: 0;
+    border-top: 1px solid var(--line);
+    padding: 30px 0 0;
+  }
+}
 /* Data identifiers must retain the exact digit and character sequence. */
 html[dir="rtl"] :is(input[type="email"], input[type="tel"], input[type="url"],
  input[type="number"], input[type="date"], input[type="datetime-local"],
