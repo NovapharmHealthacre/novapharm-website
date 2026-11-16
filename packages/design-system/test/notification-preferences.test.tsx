@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { NotificationPreferenceEditor } from "../src/index.ts";
+import { NotificationPreferenceEditor, isCurrentNotificationSave } from "../src/index.ts";
 
 const serverRecord = {
   verified: true,
@@ -39,4 +39,16 @@ test("enabled preference form keeps required topics immutable and never asserts 
   assert.match(markup, /<form[^>]*aria-busy="false"/);
   assert.match(markup, /No notification choices have been changed/);
   assert.doesNotMatch(markup, /choices were confirmed by the authorised account service/);
+});
+
+test("an in-flight save cannot confirm a different account or a superseded revision", () => {
+  const otherAccount = { ...serverRecord, revision: serverRecord.revision };
+  const nextVersion = { ...serverRecord, revision: "verified-revision-2" };
+  assert.equal(isCurrentNotificationSave(serverRecord, serverRecord, serverRecord.revision, serverRecord.revision), true);
+  assert.equal(isCurrentNotificationSave(otherAccount, serverRecord, serverRecord.revision, serverRecord.revision), false);
+  assert.equal(isCurrentNotificationSave(nextVersion, serverRecord, nextVersion.revision, serverRecord.revision), false);
+  assert.equal(isCurrentNotificationSave(null, serverRecord, null, serverRecord.revision), false);
+  assert.equal(isCurrentNotificationSave({ ...serverRecord, verified: false }, serverRecord, serverRecord.revision, serverRecord.revision), false);
+  assert.equal(isCurrentNotificationSave(serverRecord, serverRecord, "", serverRecord.revision), false);
+  assert.equal(isCurrentNotificationSave(serverRecord, serverRecord, serverRecord.revision, ""), false);
 });

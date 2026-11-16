@@ -171,8 +171,9 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
     if (response.status() >= 400 && !response.request().isNavigationRequest()) failedResources.push(`${response.status()} ${response.url()}`);
   });
 
-  // WebKit can intermittently stall a single local navigation on a busy CI runner.
-  // Retry that timeout once; never skip page, security, visual or accessibility assertions.
+  // WebKit can intermittently stall or report an internal navigation error
+  // on a busy CI runner. Retry that navigation once; never skip the page
+  // or any security, visual, keyboard or accessibility assertions.
   let response: Awaited<ReturnType<Page["goto"]>> = null;
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
@@ -180,8 +181,9 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
       break;
     } catch (error) {
       if (engine !== "webkit" || attempt === 1 || !(error instanceof Error) ||
-          !/Timeout.*exceeded/.test(error.message)) throw error;
-      console.warn(`webkit: retrying navigation timeout for ${viewport.name} ${route}`);
+          !(/Timeout.*exceeded/.test(error.message) ||
+            /WebKit encountered an internal error/.test(error.message))) throw error;
+      console.warn(`webkit: retrying transient navigation failure for ${viewport.name} ${route}`);
     }
   }
   assert.ok(response, `${engine} ${route}: no navigation response`);
