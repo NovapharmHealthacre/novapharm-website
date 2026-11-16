@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./concise.css";
@@ -18,6 +19,7 @@ import "../../../assets/css/apple-hig-layout.css";
 import "../../../assets/css/novapharm-hig-materials.css";
 import "../../../assets/css/novapharm-apple-27-web-adaptation.css";
 import "../../../assets/css/novapharm-hig-motion.css";
+import "../../../assets/css/rtl-localization.css";
 import { CookieControls } from "@/components/cookie-controls";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
@@ -26,6 +28,9 @@ import { company } from "@/data/site";
 import { organisationSchema, siteUrl, websiteSchema } from "@/lib/seo";
 
 const indexable = process.env.PUBLIC_INDEXABLE !== "false";
+
+import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
+import { directionForLocale, resolveInterfaceLocale } from "../../../src/core/interface-locale";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -58,15 +63,17 @@ export const viewport: Viewport = {
   themeColor: "#ffffff",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const locale = resolveInterfaceLocale((await cookies()).get("np_locale")?.value);
   return (
-    <html lang="en-GB" data-np-estate="corporate">
+    <html lang={locale} dir={directionForLocale(locale)} data-np-estate="corporate">
       <body>
         <a className="skip-link" href="#main-content">Skip to main content</a>
-        <SiteHeader />
+        <SiteHeader locale={locale} />
         <CookieControls />
-        <main id="main-content">{children}</main>
+        <main id="main-content" lang="en-GB" data-np-untranslated>{children}</main>
         <SiteFooter />
+        <InterfaceLocaleSwitcher locale={locale} />
         <JsonLd id="organisation-schema" value={organisationSchema()} />
         <JsonLd id="website-schema" value={websiteSchema()} />
       </body>
