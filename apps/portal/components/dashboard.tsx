@@ -246,7 +246,7 @@ export function Dashboard({ module, subview }: Readonly<{ module: PortalModule; 
     return <MedicinesIntelligence
       loading={loading}
       onLogout={logout}
-      onRefresh={load}
+      onRefresh={async () => { await load(); }}
       parentStatus={status}
       snapshot={snapshot}
       subview={subview}
