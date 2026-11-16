@@ -25,6 +25,9 @@ const labels: Readonly<Record<InterfaceLocale, Readonly<Record<string, string>>>
   "en-GB": {},
   ar: {
     "Language and layout": "اللغة واتجاه العرض",
+    "Language / RTL layout preview": "اللغة / معاينة العرض من اليمين إلى اليسار",
+    "Language and layout preview": "معاينة اللغة واتجاه العرض",
+    "Navigation translated; full content translation pending.": "تمت ترجمة التنقل فقط؛ ترجمة بقية المحتوى قيد الإعداد.",
     "Primary navigation": "التنقل الرئيسي",
     "Mobile navigation": "التنقل عبر الهاتف",
     "Open navigation": "فتح القائمة",
@@ -78,6 +81,9 @@ const labels: Readonly<Record<InterfaceLocale, Readonly<Record<string, string>>>
   },
   he: {
     "Language and layout": "שפה וכיוון תצוגה",
+    "Language / RTL layout preview": "שפה / תצוגה מקדימה מימין לשמאל",
+    "Language and layout preview": "תצוגה מקדימה של שפה וכיוון",
+    "Navigation translated; full content translation pending.": "הניווט תורגם; תרגום שאר התוכן עדיין בהכנה.",
     "Primary navigation": "ניווט ראשי",
     "Mobile navigation": "ניווט בנייד",
     "Open navigation": "פתיחת תפריט",
