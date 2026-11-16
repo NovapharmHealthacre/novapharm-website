@@ -12,7 +12,7 @@ Build **Nova ML** as a NovaPharm-branded, governed set of four modules in the ex
 | --- | --- | --- | --- |
 | Nova ML Studio — `nova-ml-studio` | Create ML, model metadata, splitting, evaluation | Protected module, planning checklist, macOS trainer candidate | No signed training app, approved dataset, model, independent holdout or training run |
 | Nova Core Runtime — `nova-core-runtime` | Core ML on-device inference | Protected module, model-permit and input-schema-checked Swift adapter | No bundled approved model or live native inference |
-| Nova Device Intelligence — `nova-device-intelligence` | Vision/VisionKit, Natural Language, Speech | Protected module and permission/data requirements | No camera, microphone, OCR or device permission activation |
+| Nova Device Intelligence — `nova-device-intelligence` | Vision/VisionKit, Natural Language, Speech | Protected module, native single-image Vision OCR candidate and permission/data requirements | No camera, microphone, browser OCR or production device permission activation |
 | Nova Generative Assist — `nova-generative-assist` | Foundation Models, App Intents, Writing Tools | Protected module, explicit-request native draft adapter | No native app, model session in production, App Intents, Siri or protected-data access |
 
 The protected routes are:
