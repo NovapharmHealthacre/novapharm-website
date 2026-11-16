@@ -1,5 +1,6 @@
-import { interfaceLabel, type InterfaceLocale } from "../../../src/core/interface-locale";
 "use client";
+
+import { interfaceLabel, type InterfaceLocale } from "../../../src/core/interface-locale";
 
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { Route } from "next";
