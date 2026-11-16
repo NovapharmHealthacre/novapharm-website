@@ -92,6 +92,7 @@ on:
       - 'scripts/validate-public-sitemaps.py'
       - 'assets/js/cookie-consent.js'
       - 'assets/js/consent-analytics.js'
+      - 'assets/js/marketing-attribution.js'
       - 'legal/cookies/index.html'
       - 'legal/privacy/index.html'
       - '.github/workflows/publish-aws-contact-production.yml'
