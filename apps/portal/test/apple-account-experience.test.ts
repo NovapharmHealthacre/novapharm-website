@@ -20,9 +20,27 @@ test("every governed portal login and landing view has optional, actionable acco
   assert.match(guidance, /legal\/privacy/);
   assert.match(login, /<AccountAccessHelp audience=\{accessType\}/);
   assert.match(intelligence, /<AccountAccessHelp audience="intelligence"/);
-  assert.match(dashboard, /<AccountAccessHelp audience=\{module\.area === "executive" \? "board" : module\.area\} authenticated/);
+  assert.match(dashboard, /<AccountAccessHelp\s+audience=\{module\.area === "executive" \? "board" : module\.area\}/);
+  assert.match(dashboard, /replay=\{module\.route !== areaLandingRoutes\[module\.area\]\}/);
   assert.doesNotMatch(dashboard, /user && snapshot && module\.route === areaLandingRoutes/);
   assert.match(dashboard, /guidance is rendered immediately/);
+});
+
+test("protected account and help routes replay onboarding without granting access", () => {
+  const dashboard = source("components/dashboard.tsx");
+  const guidance = source("components/account-access-help.tsx");
+  for (const code of [
+    "customer.account", "customer.settings", "customer.support",
+    "employee.administration", "executive.command-centre",
+  ]) {
+    assert.ok(dashboard.includes('"' + code + '"'), code + " must offer optional help replay");
+  }
+  assert.match(dashboard, /\.includes\(module\.code\)/);
+  assert.match(dashboard, /guidance is rendered immediately/);
+  assert.match(guidance, /replay \? "Review account access and onboarding"/);
+  assert.match(guidance, /authenticated \? guide\.after : guide\.before/);
+  assert.doesNotMatch(guidance, /localStorage|sessionStorage|navigator\.credentials/);
+  assert.doesNotMatch(dashboard, /user && snapshot && module\.route === areaLandingRoutes/);
 });
 
 test("password entry supports credential managers and accessible show-hide without browser persistence", () => {
