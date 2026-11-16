@@ -731,10 +731,13 @@ async function verifyInteractions(browser: Browser, engine: string, states: Read
 }
 
 async function runEngine(engine: string, browserType: BrowserType): Promise<void> {
+  // The matrix and the interaction suite share serialised, role-scoped test
+  // sessions, not a long-lived browser process. WebKit can become unstable
+  // after the complete responsive and accessibility sweep.
+  const states = new Map<PortalArea, StoredBrowserState>();
   const browser = await browserType.launch({ headless: true });
   try {
     await verifyAuthenticationBoundaries(browser, engine);
-    const states = new Map<PortalArea, StoredBrowserState>();
     for (const area of areas) states.set(area, await login(browser, area));
 
     for (const viewport of interactionOnly ? [] : viewports) {
@@ -760,9 +763,18 @@ async function runEngine(engine: string, browserType: BrowserType): Promise<void
       }
       console.log(`${engine}: completed ${viewport.name}`);
     }
-    await verifyInteractions(browser, engine, states);
   } finally {
     await browser.close();
+  }
+
+  // Start a fresh process for interaction acceptance without skipping any
+  // viewport, role, route or interaction assertion. Reuse only the scoped
+  // synthetic cookies captured by the login fixtures.
+  const interactionBrowser = await browserType.launch({ headless: true });
+  try {
+    await verifyInteractions(interactionBrowser, engine, states);
+  } finally {
+    await interactionBrowser.close();
   }
 }
 
