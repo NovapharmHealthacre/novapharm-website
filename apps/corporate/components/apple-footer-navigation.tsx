@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { type ReactNode, useEffect, useRef } from "react";
 
 /** Responsive web navigation: desktop directory, native mobile disclosure. */
 export function AppleFooterNavigation({
