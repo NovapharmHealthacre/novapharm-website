@@ -10,7 +10,6 @@ import "../../../assets/css/apple-hig-layout.css";
 import "../../../assets/css/novapharm-hig-motion.css";
 import "../../../assets/css/rtl-localization.css";
 
-import { InterfaceLocaleSwitcher } from "../../../src/components/interface-locale-switcher";
 import { directionForLocale, resolveInterfaceLocale } from "../../../src/core/interface-locale";
 
 export const metadata: Metadata = {
@@ -56,7 +55,6 @@ export default async function RootLayout({
         <div lang="en-GB" data-np-untranslated>
           <SiteChrome locale={locale}>{children}</SiteChrome>
         </div>
-        <InterfaceLocaleSwitcher locale={locale} />
       </body>
     </html>
   );
