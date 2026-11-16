@@ -12241,6 +12241,41 @@ html[dir="rtl"] :is(.site-nav, .desktop-nav, .site-header__nav, .site-navigation
    navigation is Arabic or Hebrew. Published editorial copy is not translated yet. */
 html[dir="rtl"] :is(main[lang="en-GB"], article[lang="en-GB"])
  :is(p, blockquote) { direction: ltr; text-align: left; }
+/* Replace physical-side affordances that otherwise stay on the LTR edge. */
+html[dir="rtl"] .skip-link { left: auto; right: 12px; }
+html[dir="rtl"] .workspace-sidebar { border-right: 0; border-left: 1px solid #0a1927; }
+html[dir="rtl"] .workspace-sidebar a:not(.portal-brand) {
+  border-left: 0;
+  border-right: 3px solid transparent;
+}
+html[dir="rtl"] .workspace-sidebar a.active { border-right-color: var(--red); }
+html[dir="rtl"] .sidebar-brand > button { margin-left: 0; margin-right: auto; }
+html[dir="rtl"] .workspace-sidebar a small { text-align: start; }
+html[dir="rtl"] .portal-search-scope { margin-left: 0; margin-right: 30px; }
+html[dir="rtl"] .search-close { float: left; right: auto; left: 8px; }
+html[dir="rtl"] .metric-grid { border-right: 1px solid var(--line); border-left: 0; }
+html[dir="rtl"] .metric { border-right: 0; border-left: 1px solid var(--line); }
+html[dir="rtl"] :is(.module-notice, .action-warning, .intelligence-advisory,
+ .article-aside, .article-disclaimer, .footer-status) {
+  border-left: 0;
+  border-right: 3px solid var(--red, #E3120B);
+  padding-left: 0;
+  padding-right: 16px;
+}
+html[dir="rtl"] :is(.article-aside ol, .article-sources ul,
+ .formulation-grid ul, .intelligence-unavailable ul) {
+  padding-left: 0;
+  padding-right: 1.2rem;
+}
+html[dir="rtl"] :is(input[type="range"], progress, meter, [role="progressbar"]) {
+  direction: rtl;
+}
+/* The current protected workspaces are English even when the application
+   direction is exercised in an Arabic or Hebrew layout preview. */
+html[dir="rtl"] [data-np-untranslated] :is(p, blockquote) {
+  direction: ltr;
+  text-align: left;
+}
 /* Data identifiers must retain the exact digit and character sequence. */
 html[dir="rtl"] :is(input[type="email"], input[type="tel"], input[type="url"],
  input[type="number"], input[type="date"], input[type="datetime-local"],
