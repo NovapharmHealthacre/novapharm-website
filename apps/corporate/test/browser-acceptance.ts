@@ -212,6 +212,12 @@ async function verifyPage(page: Page, engine: string, viewport: (typeof viewport
   if (viewport.width > 1300) {
     assert.equal(await page.locator("header .desktop-nav").isVisible(), true,
       `${engine} ${viewport.name} ${route}: desktop navigation missing`);
+    if (route === "/" && viewport.name === "desktop-1440") {
+      const navInk = await page.locator('header .desktop-nav > a[href="/about/"]').evaluate(
+        (anchor) => getComputedStyle(anchor).color);
+      assert.equal(navInk, "rgb(214, 214, 218)",
+        `${engine}: editorial homepage desktop navigation must use legible light ink on charcoal`);
+    }
   } else {
     assert.equal(await page.locator("header .mobile-menu summary").isVisible(), true,
       `${engine} ${viewport.name} ${route}: responsive navigation trigger missing`);
