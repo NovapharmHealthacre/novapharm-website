@@ -992,7 +992,12 @@ function policyMeta(details = policyDetails) {
 
 function policyPage(slug, title, intro, content) {
   const meta = pageMeta[slug];
-  const body = `${pageHero(meta, title, intro, slug)}<section class="section legal-section"><div class="container legal-layout"><aside>${policyMeta()}<a class="btn btn-outline" href="/contact/?enquiry=General%20enquiry">Contact NovaPharm</a></aside><article class="legal-content">${content}</article></div></section>`;
+  const aside = `<aside>${policyMeta()}<a class="btn btn-outline" href="/contact/?enquiry=General%20enquiry">Contact NovaPharm</a></aside>`;
+  const article = `<article class="legal-content">${content}</article>`;
+  // Privacy choices and the short overview must come first in keyboard and
+  // screen-reader reading order, not only in a CSS visual reordering.
+  const policyBody = slug === "legal/privacy" ? article + aside : aside + article;
+  const body = `${pageHero(meta, title, intro, slug)}<section class="section legal-section"><div class="container legal-layout">${policyBody}</div></section>`;
   return documentShell({ meta, slug, body, options: { pageType: "WebPage" } });
 }
 
