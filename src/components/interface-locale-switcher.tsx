@@ -1,0 +1,36 @@
+"use client";
+
+import type { ChangeEvent } from "react";
+import { interfaceLocaleCookie, resolveInterfaceLocale, type InterfaceLocale } from "../core/interface-locale";
+
+type Props = Readonly<{ locale: InterfaceLocale }>;
+
+/**
+ * Explicitly identified as a layout preview until substantive translations
+ * (including clinical, legal and commercial copy) pass native-language review.
+ * This is a functional preference independent of cookie-consent analytics.
+ */
+export function InterfaceLocaleSwitcher({ locale }: Props) {
+  function onChange(event: ChangeEvent<HTMLSelectElement>) {
+    const next = resolveInterfaceLocale(event.currentTarget.value);
+    const host = window.location.hostname;
+    const domain = host === "novapharmhealthcare.com" || host.endsWith(".novapharmhealthcare.com")
+      ? "; Domain=.novapharmhealthcare.com"
+      : "";
+    const secure = window.location.protocol === "https:" ? "; Secure" : "";
+    document.cookie = `${interfaceLocaleCookie}=${next}; Path=/; Max-Age=31536000; SameSite=Lax${domain}${secure}`;
+    window.location.reload();
+  }
+
+  return (
+    <div className="np-locale-control" data-np-locale-control>
+      <label htmlFor="np-interface-locale">Language / RTL layout preview</label>
+      <select id="np-interface-locale" aria-label="Language and layout preview" value={locale} onChange={onChange}>
+        <option value="en-GB">English</option>
+        <option value="ar">العربية · RTL</option>
+        <option value="he">עברית · RTL</option>
+      </select>
+      <span className="np-locale-note">Navigation translated; full content translation pending.</span>
+    </div>
+  );
+}
