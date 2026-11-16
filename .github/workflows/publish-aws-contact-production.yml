@@ -92,6 +92,7 @@ on:
       - 'scripts/validate-public-sitemaps.py'
       - 'assets/js/cookie-consent.js'
       - 'assets/js/consent-analytics.js'
+      - 'assets/js/marketing-attribution.js'
       - 'legal/cookies/index.html'
       - 'legal/privacy/index.html'
       - '.github/workflows/publish-aws-contact-production.yml'
@@ -179,6 +180,10 @@ jobs:
           node --test scripts/test-apple-privacy-contract.mjs
           npm run validate:domain
           node scripts/stage-pages-artifact.mjs _site
+          # Require the exact consent-scoped attribution module in the staged
+          # public artifact before the guarded publisher can deploy it.
+          test -s _site/assets/js/marketing-attribution.js
+          grep -Fq 'if (!publicAnalyticsRoute(location.pathname)) return null;' _site/assets/js/marketing-attribution.js
           node --test scripts/test-intelligence-live-public-research.mjs
           test -s _site/technology/index.html
           # Reject publication when the owner-approved interactive Technology experience
@@ -628,6 +633,10 @@ jobs:
                  -H 'Cache-Control: no-cache, no-store' "https://novapharmhealthcare.com/legal/cookies/?${cache}" -o /tmp/novapharm-live-cookies.html \
               && curl --fail --silent --show-error --location --max-time 15 \
                  -H 'Cache-Control: no-cache, no-store' "https://novapharmhealthcare.com/assets/js/cookie-consent.js?${cache}" -o /tmp/novapharm-live-cookie-consent.js \
+              && curl --fail --silent --show-error --location --max-time 15 \
+                 -H 'Cache-Control: no-cache, no-store' "https://novapharmhealthcare.com/assets/js/marketing-attribution.js?${cache}" -o /tmp/novapharm-live-marketing-attribution.js \
+              && grep -Fq 'if (!publicAnalyticsRoute(location.pathname)) return null;' /tmp/novapharm-live-marketing-attribution.js \
+              && grep -Fq 'if (!publicAnalyticsRoute(location.pathname)) return false;' /tmp/novapharm-live-marketing-attribution.js \
               && grep -Fq 'class="np-privacy-overview"' /tmp/novapharm-live-privacy.html \
               && grep -Fq 'Your information. Your choice.' /tmp/novapharm-live-privacy.html \
               && grep -Fq 'class="np-privacy-primary-action"' /tmp/novapharm-live-privacy.html \

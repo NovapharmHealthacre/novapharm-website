@@ -71,6 +71,22 @@ test("GA4 route exclusions retain legal, contact and account privacy boundaries"
   assert.match(register, /Google Analytics 4/);
 });
 
+test("optional session attribution is absent on legal and protected routes", () => {
+  const attribution = source("assets/js/marketing-attribution.js");
+  assert.match(attribution, /import \{ publicAnalyticsRoute \} from "\.\/consent-analytics\.js"/);
+  assert.match(attribution, /function analyticsAllowed\(\) \{[\s\S]*?if \(!publicAnalyticsRoute\(location\.pathname\)\) return false;/);
+  assert.match(attribution, /function collectAttribution\(\) \{[\s\S]*?if \(!publicAnalyticsRoute\(location\.pathname\)\) return null;/);
+  assert.match(attribution, /sessionStorage\.removeItem\(ATTRIBUTION_KEY\)/, "Withdrawal must clear optional attribution");
+  for (const path of [
+    "/legal/privacy/", "/legal/cookies/", "/contact/", "/account-application/",
+    "/portal/", "/admin/", "/products/nutraxin/bag/",
+    "/products/nutraxin/account/", "/products/nutraxin/checkout/",
+    "/products/track/", "/products/orders/"
+  ]) {
+    assert.equal(publicAnalyticsRoute(path), false, "Protected page must never capture session attribution: " + path);
+  }
+});
+
 test("consented Nutraxin analytics is restricted to the reviewed informational product catalogue", () => {
   const approved = JSON.parse(source("assets/data/nutraxin-retail-catalogue.json")).products;
   assert.equal(approved.length, 19, "Product allowlist requires explicit review when catalogue changes");
@@ -141,4 +157,26 @@ test("privacy access and browser-permission boundaries span the public estate an
   assert.doesNotMatch(portal, /localStorage|sessionStorage/);
   assert.match(securePolicy, /camera=\(\), microphone=\(\), geolocation=\(\)/);
   assert.match(portalProxy, /Cache-Control", "no-store"/);
+});
+
+test("privacy-attribution changes are included in guarded public publication", () => {
+  const publisher = source(".github/workflows/publish-aws-contact-production.yml");
+  const preview = source(".github/workflows/pages-live-publish.yml");
+  const dispatch = source(".github/workflows/dispatch-approved-aws-contact-release.yml");
+  for (const [name, workflow] of [
+    ["guarded publisher", publisher],
+    ["Pages PR preflight", preview],
+    ["duplicate-release dispatcher", dispatch]
+  ]) {
+    assert.ok(workflow.includes("assets/js/marketing-attribution.js"),
+      name + " must include consent-scoped attribution changes");
+  }
+  assert.ok(publisher.includes("node --test scripts/test-apple-privacy-contract.mjs"),
+    "directly published marketing changes require the privacy contract");
+  assert.ok(publisher.includes("test -s _site/assets/js/marketing-attribution.js"),
+    "the guarded publisher must stage the actual attribution module");
+  assert.ok(publisher.includes("/tmp/novapharm-live-marketing-attribution.js"),
+    "the guarded publisher must fetch the live module before claiming release success");
+  assert.ok(publisher.includes("if (!publicAnalyticsRoute(location.pathname)) return null;"),
+    "the published module must retain the denied-route read guard");
 });
