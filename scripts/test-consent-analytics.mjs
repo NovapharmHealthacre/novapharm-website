@@ -27,6 +27,17 @@ for (const privatePath of [
   assert.equal(publicAnalyticsRoute(privatePath), false, "No analytics on a transactional, account, nested or unapproved route: " + privatePath);
   assert.equal(sanitiseMarketingEvent({ event: "add_to_cart" }, privatePath), null, "No funnel event on private route: " + privatePath);
 }
+for (const publicPath of ["/products/", "/products/strategic-portfolio/", "/products/marketplace/", "/products/esco/"]) {
+  assert.equal(publicAnalyticsRoute(publicPath), true, "Approved informational product page must remain eligible: " + publicPath);
+}
+for (const privatePath of [
+  "/products/orders/", "/products/checkout/", "/products/payment/",
+  "/products/track/", "/products/esco/checkout/", "/products/marketplace/bag/",
+  "/products/private-future-page/", "/products/strategic-portfolio/account/"
+]) {
+  assert.equal(publicAnalyticsRoute(privatePath), false, "Do not measure unreviewed product route: " + privatePath);
+  assert.equal(sanitiseMarketingEvent({ event: "cta_click", ctaId: "checkout" }, privatePath), null);
+}
 assert.equal(publicAnalyticsRoute("/technology/"), true);
 for (const forbidden of ["/portal/", "/contact/", "/account-application/", "/admin/", "/employee/", "/legal/privacy/", "/products/nutraxin/order-request/", "/products/nutraxin/checkout/"]) {
   assert.equal(publicAnalyticsRoute(forbidden), false, "Private or sensitive route must not be measured: " + forbidden);
