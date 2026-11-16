@@ -16,6 +16,8 @@ const source = {
   statusError: read("apps/status/app/error.tsx"),
   notFoundStatic: read("404.html"),
   errorStatic: read("500.html"),
+  errorUnavailable: read("service-unavailable/index.html"),
+  staticBuilder: read("scripts/build-public-pages.mjs"),
   cookies: read("apps/corporate/components/cookie-controls.tsx"),
   standard: read("docs/design/novapharm-apple-hig-writing.md"),
 };
@@ -63,12 +65,15 @@ avoids("founderError", "No private information has been exposed.");
 avoids("statusError", "No internal diagnostic or service data has been exposed.");
 
 // Static fallback labels and metadata must agree in plain British English.
-for (const key of ["notFoundStatic", "errorStatic"]) {
+for (const key of ["notFoundStatic", "errorStatic", "errorUnavailable"]) {
   needs(key, '<html lang="en-GB"');
   needs(key, 'Go to home page');
   avoids(key, "Return to NovaPharm");
 }
 needs("errorStatic", "This page is temporarily unavailable. Try again later or go to the home page.");
+needs("staticBuilder", '<a class="btn btn-primary" href="/">Go to home page</a>');
+needs("staticBuilder", 'write("500.html", errorPage("500", "Service unavailable", "This page is temporarily unavailable.');
+avoids("interest", "No information was submitted.");
 
 // Consent copy must accurately distinguish necessary storage, optional analytics,
 // and disabled marketing tracking. Color alone must not announce form outcomes.
@@ -78,4 +83,4 @@ needs("cookies", "Reject non-essential");
 for (const term of ["Controlled terminology", "Accessibility and color", "Localization", "Remaining acceptance"]) {
   needs("standard", term);
 }
-console.log("Apple HIG Writing first-pass copy contracts verified across 12 reviewed source surfaces.");
+console.log("Apple HIG Writing first-pass copy contracts verified across 14 reviewed source surfaces.");
