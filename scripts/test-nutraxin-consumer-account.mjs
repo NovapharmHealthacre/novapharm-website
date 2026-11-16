@@ -93,10 +93,13 @@ test("server Python remains parsable without importing boto3",()=>{
 test("Bag markup remains exactly matched to generator, including account entry",()=>{
  const html=read("products/nutraxin/bag/index.html");
  const source=read("scripts/apply-corporate-product-discipline.mjs");
- const expected=html.match(/<main id="main" class="npd-main nx-shop-bag" data-nx-public-bag>[\s\S]*?<\/main>/)?.[0];
+ const expected=html.match(/<main id="main" class="npd-main nx-shop-bag" data-nx-public-bag lang="en-GB" data-np-untranslated>[\s\S]*?<\/main>/)?.[0];
  const generator=source.split("function nutraxinBagMain() {")[1]?.split("function nutraxinOrderRequestMain()")[0];
  const actual=generator?.split("  return \`")[1]?.split("\`;")[0];
- assert.equal(actual,expected);
+ assert.ok(expected, "RTL release must retain the canonical Bag landmark and its English-language boundary");
+ assert.equal(expected,actual?.replace(
+   'data-nx-public-bag>', 'data-nx-public-bag lang="en-GB" data-np-untranslated>'),
+   "Published Bag must match the approved generator plus its English-language boundary");
  assert.match(expected,/\/products\/nutraxin\/account\//);
 });
 
