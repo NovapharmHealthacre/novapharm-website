@@ -16,6 +16,9 @@ test("tokens preserve controlled branding and usable interaction dimensions", ()
   assert.match(reducedMotionCss(), /prefers-reduced-motion/);
   assert.match(designSystemCss, /focus-visible/);
   assert.match(designSystemCss, /min-height:44px/);
+  assert.match(designSystemCss, /@media print/);
+  assert.match(designSystemCss, /@page \{ size: A4/);
+  assert.match(designSystemCss, /np-document-viewer__content/);
   assert.equal(componentRegistry.length, 28);
 });
 
