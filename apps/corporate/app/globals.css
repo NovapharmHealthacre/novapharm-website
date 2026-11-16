@@ -666,6 +666,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--focus); box-shad
   cursor: default;
 }
 .apple-corporate-footer .footer-primary nav .np-apple-footer-disclosure summary::-webkit-details-marker { display: none; }
+.apple-corporate-footer .np-apple-footer-disclosure:not([open]) > .footer-link-list { display: none; }
 .apple-corporate-footer .footer-primary nav .footer-link-list { display: grid; align-content: start; gap: 0; }
 .apple-corporate-footer .footer-primary nav .footer-link-list :is(a, button) {
   display: flex;
