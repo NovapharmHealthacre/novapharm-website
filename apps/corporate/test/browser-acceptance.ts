@@ -515,6 +515,11 @@ async function runRtlPreflight(name: string, browserType: BrowserType): Promise<
           assert.equal(await page.locator("main").getAttribute("lang"), "en-GB", "untranslated article marked as local-language copy");
           const control = page.getByRole("combobox", { name: "Language and layout preview" });
           assert.equal(await control.inputValue(), locale, `${name}: selected preference not restored`);
+          const translatedCompany = locale === "ar" ? "الشركة" : "החברה";
+          const translatedNav = page.locator(".desktop-nav").getByRole("link", { name: translatedCompany });
+          assert.equal(await translatedNav.count(), 1, `${name}: ${locale} corporate desktop link not translated`);
+          const translatedMobileNav = page.locator("details.mobile-menu nav").getByRole("link", { name: translatedCompany });
+          assert.equal(await translatedMobileNav.count(), 1, `${name}: ${locale} mobile menu link not translated`);
 
           const widths = await page.evaluate(() => ({
             document: document.documentElement.scrollWidth,
