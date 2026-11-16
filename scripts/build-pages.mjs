@@ -18,7 +18,7 @@ function brandPicture({ className = "brand-logo", eager = false } = {}) {
 }
 
 function privateHead(title) {
-  return `<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#FFFFFF"><title>${title}</title><link rel="icon" href="${brandFaviconSvg}" type="image/svg+xml"><link rel="icon" href="/assets/brand/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="${brandAppleTouchIcon}" sizes="180x180"><link rel="stylesheet" href="/assets/css/novapharm.bundle.css"><script type="module" src="/assets/js/cookie-consent.js"></script><script src="/assets/js/local-validation-banner.js" defer></script></head>`;
+  return `<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#FFFFFF"><title>${title}</title><link rel="icon" href="${brandFaviconSvg}" type="image/svg+xml"><link rel="icon" href="/assets/brand/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="${brandAppleTouchIcon}" sizes="180x180"><link rel="stylesheet" href="/assets/css/novapharm.bundle.css"><script src="/assets/js/rtl-localization.js"></script><script type="module" src="/assets/js/cookie-consent.js"></script><script src="/assets/js/local-validation-banner.js" defer></script></head>`;
 }
 
 function write(path, content) {
