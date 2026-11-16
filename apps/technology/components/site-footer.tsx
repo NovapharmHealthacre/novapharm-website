@@ -6,7 +6,7 @@ import { navigation, site } from "@/data/site";
 
 export function SiteFooter() {
   return (
-    <footer className="site-footer">
+    <footer className="site-footer" lang="en-GB">
       <div className="shell">
         <div className="site-footer__lead">
           <div>
