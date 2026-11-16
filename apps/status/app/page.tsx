@@ -1,8 +1,8 @@
-import { cookies } from "next/headers";
-import { interfaceLabel, resolveInterfaceLocale } from "../../../src/core/interface-locale";
 import { RefreshCw } from "lucide-react";
+import { cookies } from "next/headers";
 import Image from "next/image";
 import { getStatusSnapshot, type OverallState, type ServiceState } from "@/lib/status";
+import { interfaceLabel, resolveInterfaceLocale } from "../../../src/core/interface-locale";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
