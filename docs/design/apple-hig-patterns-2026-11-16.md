@@ -82,3 +82,10 @@ Swift Charts reference: https://developer.apple.com/documentation/charts
 ## Source policy
 
 All cited official pattern pages live under https://developer.apple.com/design/human-interface-guidelines/patterns. Preserve Apple's copyright and do not copy native assets or proprietary interaction code.
+
+
+## Controlled document access presentation (additional source candidate)
+
+A new `ControlledDocumentViewer` component displays a private document preview only when a **server-provided**, document/version-specific access decision is verified and `mayRead` is true. Version, sharing scope and content stay hidden when access is unverified or revoked. The download link also requires `mayDownload` and a local relative URL, and must be independently re-authorised by the serving private endpoint. This does **not** create a sharing or revocation API, expose private document storage, verify a recipient, or demonstrate live permission enforcement. Secure previews, version histories, recipient revocation and audit records remain backend acceptance work.
+
+No real document contents may be passed to this component before the server has verified the current tenant, user, document and version. Never infer permission from the UI props alone.
