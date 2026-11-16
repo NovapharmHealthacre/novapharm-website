@@ -1,11 +1,11 @@
 /**
- * Read-only, whole-repository debugging inventory.
- * The report contains only tracked paths, size, classification and rule IDs:
- * never file bodies, credentials, HTTP payloads or customer information.
+ * Read-only Git-object inventory of the exact committed revision.
+ * No repository-controlled path is ever passed to a filesystem read API.
+ * The report contains tracked paths, sizes and rule IDs, never source bodies.
  */
 import { execFileSync } from "node:child_process";
-import { existsSync, lstatSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, extname, join, resolve } from "node:path";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 const TEXT_EXTENSIONS = new Set([
@@ -16,6 +16,8 @@ const TEXT_EXTENSIONS = new Set([
 ]);
 const SCRIPT_EXTENSIONS = new Set([".js", ".jsx", ".cjs", ".mjs", ".mts", ".ts", ".tsx"]);
 const MAX_READ_BYTES = 4 * 1024 * 1024;
+const OUTPUT_DIR = "artifacts/debugging";
+const OUTPUT_FILE = "artifacts/debugging/site-audit.json";
 
 function estateFor(path) {
   if (path.startsWith("apps/corporate/")) return "corporate";
@@ -34,11 +36,16 @@ function estateFor(path) {
   return "other";
 }
 
+function extension(path) {
+  const match = /\.([a-z0-9]+)$/i.exec(path);
+  return match ? "." + match[1].toLowerCase() : "";
+}
+
 function kindFor(path) {
   if (path.endsWith(".html") || /\/app\/.*\/(?:page|route)\.(?:tsx?|jsx?)$/.test(path) ||
       /\/app\/(?:page|route)\.(?:tsx?|jsx?)$/.test(path)) return "page-or-route";
   if (path.startsWith(".github/workflows/")) return "workflow";
-  const ext = extname(path).toLowerCase();
+  const ext = extension(path);
   if (SCRIPT_EXTENSIONS.has(ext) || ext === ".py" || ext === ".swift") return "source";
   if (ext === ".css") return "stylesheet";
   if (ext === ".json" || ext === ".yaml" || ext === ".yml") return "configuration";
@@ -48,12 +55,12 @@ function kindFor(path) {
 }
 
 function htmlWarnings(source, path, findings) {
-  // Only literal tags are inspectable here; dynamic React/DOM output remains a browser-test concern.
   const withoutComments = source.replace(/<!--[\s\S]*?-->/g, "");
-  if ((/(^|\/)index\.html$/i.test(path) || /^[^/]+\.html$/i.test(path)) &&
-      !/<!doctype\s+html\b/i.test(withoutComments) && !/^\s*<(?:svg|template)\b/i.test(withoutComments)) {
+  const isStandalone = /(^|\/)index\.html$/i.test(path) || /^[^/]+\.html$/i.test(path);
+  if (isStandalone && !/<!doctype\s+html\b/i.test(withoutComments) &&
+      !/^\s*<(?:svg|template)\b/i.test(withoutComments)) {
     findings.push({ path, rule: "html-doctype", severity: "warning",
-      detail: "Static HTML has no explicit HTML doctype; verify rendering in browser." });
+      detail: "Standalone HTML has no explicit doctype; inspect in a browser." });
   }
   const tagSource = withoutComments.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "");
   const ids = new Set();
@@ -69,10 +76,30 @@ function htmlWarnings(source, path, findings) {
     detail: String(duplicates) + " repeated literal HTML id attribute(s); inspect rendered DOM." });
 }
 
+function gitObjects(root) {
+  // The Git object ID is hex-validated; source filenames never become shell or fs paths.
+  const tree = execFileSync("git", ["-C", root, "ls-tree", "-r", "-l", "-z", "HEAD"],
+    { maxBuffer: 16 * 1024 * 1024 }).toString("utf8");
+  const entries = [];
+  for (const line of tree.split("\0").filter(Boolean)) {
+    const match = /^(\d{6}) blob ([0-9a-f]{40,64})\s+(\d+)\t([\s\S]+)$/.exec(line);
+    if (!match) continue; // Git submodules are commit objects, not content files.
+    entries.push({ mode: match[1], oid: match[2], bytes: Number(match[3]), path: match[4] });
+  }
+  return entries.sort((a, b) => a.path.localeCompare(b.path));
+}
+
+function blobText(root, oid) {
+  if (!/^[0-9a-f]{40}$|^[0-9a-f]{64}$/.test(oid)) {
+    throw new Error("Invalid Git object identifier.");
+  }
+  return execFileSync("git", ["-C", root, "cat-file", "blob", oid],
+    { encoding: "utf8", maxBuffer: MAX_READ_BYTES + 1024 * 1024 });
+}
+
 export function scanRepository(root = process.cwd()) {
   root = resolve(root);
-  const tracked = execFileSync("git", ["-C", root, "ls-files", "--cached", "-z"],
-    { maxBuffer: 16 * 1024 * 1024 }).toString("utf8").split("\0").filter(Boolean).sort();
+  const entries = gitObjects(root);
   const findings = [];
   const files = [];
   const byEstate = {};
@@ -81,37 +108,31 @@ export function scanRepository(root = process.cwd()) {
   let metadataOnly = 0;
   let routes = 0;
   let totalBytes = 0;
+  const byPath = new Map();
 
-  for (const path of tracked) {
-    const full = join(root, path);
+  for (const entry of entries) {
+    const { path, bytes, mode } = entry;
+    byPath.set(path, entry);
     const estate = estateFor(path);
     const kind = kindFor(path);
     byEstate[estate] = (byEstate[estate] ?? 0) + 1;
     byKind[kind] = (byKind[kind] ?? 0) + 1;
     if (kind === "page-or-route") routes++;
-
-    if (!existsSync(full)) {
-      findings.push({ path, rule: "tracked-file-missing", severity: "error",
-        detail: "Tracked file does not exist in checkout." });
-      files.push({ path, estate, kind, inspection: "missing", bytes: 0 });
-      continue;
-    }
-
-    const stat = lstatSync(full);
-    const bytes = stat.size;
     totalBytes += bytes;
-    const ext = extname(path).toLowerCase();
+
+    const ext = extension(path);
     let inspection = "metadata-only";
-    if (stat.isSymbolicLink()) {
+    if (mode === "120000") {
       inspection = "symlink-metadata";
-    } else if (stat.isFile() && TEXT_EXTENSIONS.has(ext) && bytes <= MAX_READ_BYTES) {
+      metadataOnly++;
+    } else if (TEXT_EXTENSIONS.has(ext) && bytes <= MAX_READ_BYTES) {
       inspection = "text";
       inspectedText++;
-      const source = readFileSync(full, "utf8");
+      const source = blobText(root, entry.oid);
       if (ext === ".json") {
         try { JSON.parse(source); } catch {
           findings.push({ path, rule: "json-invalid", severity: "error",
-            detail: "Tracked JSON cannot be parsed." });
+            detail: "Committed JSON cannot be parsed." });
         }
       }
       if (SCRIPT_EXTENSIONS.has(ext) && /^\s*debugger\s*;?\s*(?:\/\/.*)?$/m.test(source)) {
@@ -121,69 +142,63 @@ export function scanRepository(root = process.cwd()) {
       if (ext === ".html" || ext === ".htm") htmlWarnings(source, path, findings);
     } else {
       metadataOnly++;
-      if (stat.isFile() && TEXT_EXTENSIONS.has(ext)) inspection = "oversize-text-metadata";
+      if (TEXT_EXTENSIONS.has(ext)) inspection = "oversize-text-metadata";
     }
 
     const exposed = path.startsWith("assets/") || path.startsWith("public/") ||
       /^apps\/[^/]+\/public\//.test(path);
     if (exposed && path.endsWith(".map")) {
       findings.push({ path, rule: "public-sourcemap", severity: "error",
-        detail: "Public source map requires explicit restricted-publication review." });
+        detail: "Public source map requires restricted-publication review." });
     }
     files.push({ path, estate, kind, bytes, inspection });
   }
 
-  // Read the authoritative Portal module catalogue, not a guessed list of routes.
   const modulePath = "packages/portal-contracts/src/module-catalog.json";
   let portalModules = null;
-  if (!tracked.includes(modulePath)) {
+  const moduleEntry = byPath.get(modulePath);
+  if (!moduleEntry) {
     findings.push({ path: modulePath, rule: "module-catalog-missing", severity: "error",
       detail: "Governed Portal module catalogue is missing." });
   } else {
     try {
-      const modules = JSON.parse(readFileSync(join(root, modulePath), "utf8"));
+      const modules = JSON.parse(blobText(root, moduleEntry.oid));
       portalModules = Array.isArray(modules) ? modules.length : null;
       if (!Array.isArray(modules) || modules.length !== 54 ||
           new Set(modules.map((item) => item.code)).size !== 54) {
         findings.push({ path: modulePath, rule: "module-catalog-integrity", severity: "error",
-          detail: "Portal module inventory must contain 54 distinct codes." });
+          detail: "Portal inventory must contain 54 distinct codes." });
       }
     } catch {
-      // json-invalid reports syntax errors already, but keep the module failure explicit.
       findings.push({ path: modulePath, rule: "module-catalog-unreadable", severity: "error",
-        detail: "Portal module inventory could not be read." });
+        detail: "Portal inventory could not be parsed." });
     }
   }
 
   const summary = {
-    trackedFiles: tracked.length, inspectedText, metadataOnly, routeFiles: routes,
+    trackedFiles: entries.length, inspectedText, metadataOnly, routeFiles: routes,
     portalModules, totalBytes, byEstate, byKind,
     errors: findings.filter((item) => item.severity === "error").length,
     warnings: findings.filter((item) => item.severity === "warning").length
   };
-  return { schemaVersion: 1, scope: "tracked-source-inventory-not-runtime-certification",
+  return { schemaVersion: 2, scope: "exact-commit-git-object-inventory-not-runtime-certification",
     summary, files, findings };
 }
 
 function runCli() {
   const args = process.argv.slice(2);
-  const strict = args.includes("--strict");
-  const index = args.indexOf("--out");
-  if (index !== -1 && (!args[index + 1] || args[index + 1].startsWith("--"))) {
-    throw new Error("--out requires a path");
+  if (args.some((arg) => arg !== "--strict")) {
+    throw new Error("Only --strict is supported; audit output uses a fixed path.");
   }
   const report = scanRepository(process.cwd());
-  if (index !== -1) {
-    const target = resolve(args[index + 1]);
-    mkdirSync(dirname(target), { recursive: true });
-    writeFileSync(target, JSON.stringify(report, null, 2) + "\n");
-  }
+  mkdirSync(OUTPUT_DIR, { recursive: true });
+  writeFileSync(OUTPUT_FILE, JSON.stringify(report, null, 2) + "\n");
   console.log("NovaPharm debugging inventory: " + JSON.stringify(report.summary));
   for (const finding of report.findings.slice(0, 50)) {
     console.log(finding.severity.toUpperCase() + " " + finding.rule + " " + finding.path);
   }
   if (report.findings.length > 50) console.log("Additional findings are in the JSON audit artifact.");
-  if (strict && report.summary.errors) process.exitCode = 1;
+  if (args.includes("--strict") && report.summary.errors) process.exitCode = 1;
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
