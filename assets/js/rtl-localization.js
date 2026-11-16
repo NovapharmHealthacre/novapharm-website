@@ -56,7 +56,8 @@
     selectWrap.className = "np-locale-select-wrap";
     selectWrap.appendChild(select);
     control.append(label, selectWrap, note);
-    var footer = document.querySelector(".npd-footer-bottom, .footer-secondary, .site-footer__bottom, .footer-base, .status-footer, .site-footer, footer");
+    var footers = document.querySelectorAll(".np-contact-reference-footer-inner, .npd-footer-bottom, .footer-secondary, .site-footer__bottom, .footer-base, .status-footer, .site-footer, footer");
+    var footer = Array.from(footers).find(function (node) { return node.getClientRects().length > 0; });
     (footer || document.body).appendChild(control);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
