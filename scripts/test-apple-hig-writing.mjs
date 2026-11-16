@@ -153,6 +153,15 @@ avoids("interest", "No information was submitted.");
 
 // Consent copy must accurately distinguish necessary storage, optional analytics,
 // and disabled marketing tracking. Color alone must not announce form outcomes.
+// Both direct base builds and reviewed final builds must disclose the RTL functional preference and optional GA4.
+for (const key of ["staticBuilder", "legalCookies"]) {
+  needs(key, "<code>np_locale</code>");
+  needs(key, "Up to 365 days after selection");
+  needs(key, "RTL layout preview, not fully translated clinical, legal or commercial content");
+  needs(key, "Google Analytics 4 is available as an optional public-site measurement service");
+  needs(key, "Only if the analytics provider is explicitly activated and you affirmatively select Analytics");
+  avoids(key, "optional analytics remains absent and off");
+}
 needs("cookies", "Optional analytics is off until you choose it.");
 needs("cookies", "Marketing tracking is not active.");
 needs("cookies", "Reject non-essential");
