@@ -130,3 +130,8 @@ assert.match(publicGeometryAudit, /if \(node\.tabIndex < 0\) return false;/,
   "Sequential keyboard occlusion census must exclude negative-tabindex controls");
 assert.match(read("assets/js/esco-bag.js"), /send\.tabIndex = state\.length \? 0 : -1;/,
   "Empty-bag Contact sales link must not be a sequential keyboard stop");
+
+/* iOS/iPadOS HIG: comfortable default touch regions are 44x44pt, with
+   28x28pt the minimum. On web, adapt only when the pointer is coarse. */
+assert.match(source, /@media \(pointer: coarse\) \{[\s\S]*?min-width:\s*44px;[\s\S]*?min-height:\s*44px;/,
+  "Coarse-pointer footer and breadcrumb targets need a comfortable 44px hit region");
