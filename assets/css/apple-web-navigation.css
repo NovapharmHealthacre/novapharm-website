@@ -158,6 +158,20 @@ html[data-np-estate="corporate"] .site-header :is(a, button, summary):focus-visi
 html[data-np-estate="corporate"] .site-header .brand:focus-visible {
   outline-offset: 2px;
 }
+/* Next.js combines route styles in a different order from the static bundle.
+   Keep the global navigation legible even when legacy light-header rules win
+   the cascade during Chromium and WebKit production builds. */
+html[data-np-estate="corporate"] body .site-header .desktop-nav > a:not(:last-child) {
+  color: #d6d6da !important;
+}
+html[data-np-estate="corporate"] body .site-header .desktop-nav > a:not(:last-child):is(:hover, :focus-visible, [aria-current="page"]) {
+  color: #fff !important;
+}
+@media (forced-colors: active) {
+  html[data-np-estate="corporate"] body .site-header .desktop-nav > a:not(:last-child) {
+    color: LinkText !important;
+  }
+}
 /* Category panels follow the same low-glare colour hierarchy as the bar. */
 @media (min-width: 1181px) {
   .npd-header .npd-mega,
