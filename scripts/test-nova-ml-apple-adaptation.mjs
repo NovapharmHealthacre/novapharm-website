@@ -120,6 +120,19 @@ test("native candidates fail closed and require trusted model/data permits", () 
   }
 });
 
+test("Nova ML-only GitHub pushes skip unrelated AWS contact publication", () => {
+  const workflow = source(".github/workflows/dispatch-approved-aws-contact-release.yml");
+  assert.match(workflow, /id: private_release/);
+  assert.match(workflow, /private_only=true/);
+  assert.match(workflow, /apps\/portal\/\*/);
+  assert.match(workflow, /native\/novapharm-intelligence-apple\/\*/);
+  assert.match(workflow, /scripts\/test-nova-ml-apple-adaptation\.mjs/);
+  assert.match(workflow, /git diff --name-only/);
+  assert.match(workflow, /changed_any/);
+  assert.match(workflow, /if: steps\.private_release\.outputs\.skip != 'true'/);
+  assert.match(workflow, /if: steps\.private_release\.outputs\.skip != 'true' && steps\.publisher\.outputs\.skip != 'true'/);
+});
+
 test("Apple guidance map and live release gates are documented", () => {
   const doc = source("docs/design/novapharm-apple-machine-learning-adaptation-20261116.md");
   assert.match(doc, /machine-learning/);

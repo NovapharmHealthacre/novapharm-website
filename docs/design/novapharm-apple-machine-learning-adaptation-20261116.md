@@ -68,6 +68,10 @@ The role distinction is *complementary*, not essential to pharmaceutical service
 **Natural Language:** keep raw text in the native process, only for approved public excerpts; do not infer a confident language on very short text. Both APIs are candidates pending native application support.
 **Video/action classification:** Apple's sample expects a continuously running camera and actual device, but is out of scope for NovaPharm's initial pharmaceutical product. Document the training-video best practices for an optional consented future research study (single participant, complete body, good lighting, varied examples, negative class) without building or activating workplace, patient or employee surveillance.
 
+## Private-only publication guard
+
+The existing `.github/workflows/dispatch-approved-aws-contact-release.yml` is triggered by every main push and otherwise can contact AWS to republish the public contact application. A private Nova ML-only merge does not change that public artifact. The workflow now checks the merge's first-parent changed paths and skips both the AWS contact health request and publication dispatch **only when every change is within the specific protected Portal, Nova ML Swift package, documentation, test or ML CI files (including the guard itself)**. Mixed/public changes follow the existing guarded publisher without relaxation. This prevents unrelated publication and is not a protected Intelligence deployment or Apple-native installation.
+
 ## Native package and CI acceptance
 
 `native/novapharm-intelligence-apple/Package.swift` declares a Swift Package with the seven candidate adapters. `Tests/NovaMLAppleTests.swift` exercises unapproved data/model/speech denial before touching an external source, and `.github/workflows/nova-ml-native-apple.yml` requests a macOS GitHub runner to compile the package and run those denial tests.
