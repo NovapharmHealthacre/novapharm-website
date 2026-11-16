@@ -1,5 +1,5 @@
-import { cookies } from "next/headers";
 import type { Metadata, Viewport } from "next";
+import { cookies } from "next/headers";
 import type { ReactNode } from "react";
 import "./globals.css";
 import "../../../assets/css/novapharm-hig-colours.css";
