@@ -135,3 +135,12 @@ assert.match(read("assets/js/esco-bag.js"), /send\.tabIndex = state\.length \? 0
    28x28pt the minimum. On web, adapt only when the pointer is coarse. */
 assert.match(source, /@media \(pointer: coarse\) \{[\s\S]*?min-width:\s*44px;[\s\S]*?min-height:\s*44px;/,
   "Coarse-pointer footer and breadcrumb targets need a comfortable 44px hit region");
+
+const renderedTouchAcceptance = read("scripts/test-public-pages-browser.mjs");
+for (const token of [
+  'hasTouch: true',
+  'isMobile: true',
+  'matchMedia("(pointer: coarse)")',
+  'target.width < 43.5 || target.height < 43.5'
+]) assert.ok(renderedTouchAcceptance.includes(token),
+  "Actual Chromium/WebKit touch hit-area acceptance missing " + token);
