@@ -294,4 +294,16 @@ export const designSystemCss = String.raw`
 @media(max-width:480px){.np-command-toolbar__actions{inline-size:100%}.np-command-menu__items{max-inline-size:calc(100vw - 2rem)}}
 @media(forced-colors:active){.np-command-menu__trigger,.np-command-menu__items,.np-choice-picker select{border-color:CanvasText;box-shadow:none}.np-command-action--destructive{color:LinkText}.np-command-action:disabled{color:GrayText}.np-command-action:hover:not(:disabled){outline:1px solid Highlight}}
 @media(prefers-reduced-motion:reduce){.np-command-menu__chevron{transition:none}}
+
+/* Native-radio segmented choices: one state, equal targets, calm hierarchy. */
+.np-segmented-choice{border:0;margin:0;padding:0;min-inline-size:0;max-inline-size:100%}
+.np-segmented-choice__track{display:flex;flex-wrap:wrap;gap:3px;padding:3px;background:#f1f1f3;border:1px solid #dfdfe3;border-radius:10px}
+.np-segmented-choice__option{position:relative;display:flex;flex:1 1 5rem;min-inline-size:0;cursor:pointer}
+.np-segmented-choice__option input{position:absolute;inset:0;inline-size:100%;block-size:100%;margin:0;opacity:0;cursor:inherit}
+.np-segmented-choice__option span{display:flex;align-items:center;justify-content:center;inline-size:100%;min-block-size:44px;padding:.5rem .85rem;border-radius:7px;font-size:.875rem;color:#515154;white-space:normal;text-align:center}
+.np-segmented-choice__option:has(input:checked) span{background:#fff;color:#1d1d1f;box-shadow:0 1px 4px rgba(0,0,0,.1);font-weight:650}
+.np-segmented-choice__option:has(input:focus-visible) span{outline:3px solid #0b69ff;outline-offset:2px}
+.np-segmented-choice__option:has(input:disabled){cursor:not-allowed}
+.np-segmented-choice__option:has(input:disabled) span{opacity:.6}
+@media(forced-colors:active){.np-segmented-choice__track{background:Canvas;border-color:CanvasText}.np-segmented-choice__option:has(input:checked) span{background:Highlight;color:HighlightText;box-shadow:none}.np-segmented-choice__option:has(input:focus-visible) span{outline-color:Highlight}}
 `;

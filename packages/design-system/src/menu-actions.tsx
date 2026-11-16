@@ -150,6 +150,31 @@ export function ChoicePicker({ id, label, value, options, onChange, disabled = f
   </div>;
 }
 
+/** A small set of related exclusive choices; native radios own Arrow-key semantics.
+ * Do not use this for commands, navigation, or unrelated settings.
+ */
+export function SegmentedChoice({ name, label, value, options, onChange, disabled = false }: Readonly<{
+  name: string;
+  label: string;
+  value: string;
+  options: readonly Readonly<{ value: string; label: string; disabled?: boolean }>[];
+  onChange: (value: string) => void;
+  disabled?: boolean;
+}>) {
+  const id = React.useId();
+  return <fieldset className="np-segmented-choice" aria-labelledby={id} disabled={disabled}>
+    <legend className="np-visually-hidden" id={id}>{label}</legend>
+    <div className="np-segmented-choice__track">
+      {options.map((option) => <label key={option.value} className="np-segmented-choice__option">
+        <input type="radio" name={name} value={option.value} checked={value === option.value}
+          disabled={option.disabled}
+          onChange={() => onChange(option.value)} />
+        <span>{option.label}</span>
+      </label>)}
+    </div>
+  </fieldset>;
+}
+
 /** Binary state always has a visible label; the browser owns its checked state. */
 export function BinaryToggle({ label, checked, onChange, disabled = false }: Readonly<{
   label: string;
@@ -172,7 +197,10 @@ export function SharePublicLink({ url, title, label = "Share" }: Readonly<{
   const publicHttps = (() => {
     try {
       const parsed = new URL(url);
-      return parsed.protocol === "https:" && Boolean(parsed.hostname)
+      return parsed.protocol === "https:"
+        && ["novapharmhealthcare.com", "www.novapharmhealthcare.com"].includes(parsed.hostname)
+        && (parsed.pathname === "/" ||
+          /^\/(?:about|capabilities|services|products|contact|leadership|oncology|cro|regulatory-services|insights|news-insights|legal|trust-centre|careers|partner-with-us)(?:\/|$)/.test(parsed.pathname))
         && !parsed.username && !parsed.password && !parsed.search && !parsed.hash
         && !/\s/.test(url);
     } catch { return false; }
