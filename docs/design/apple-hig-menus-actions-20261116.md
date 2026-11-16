@@ -55,3 +55,27 @@ Source review: 16 November 2026. This document distinguishes reusable web implem
 ## Public web-app shortcuts (browser-dependent)
 
 Both root manifest.webmanifest and apps/corporate/app/manifest.ts advertise exactly two public in-scope choices: Browse Products (/products/) and Contact NovaPharm (/contact/). These do not implement iOS UIKit UIApplication shortcut items or an installed Mac Dock menu. Shortcuts visibility and ordering are decided by supporting browsers/platforms; Safari/iOS support must not be assumed. No protected Portal, Intelligence, clinical, billing, stock, or approval URL is included.
+
+## Verified source-specific rules and cross-estate adoption (16 Nov 2026)
+
+The official pages were read in their Markdown forms, including the linked SwiftUI/UIKit/AppKit/Foundation reference pages. The original owner supplied UIEditMenuInteraction and MenuPickerStyle more than once. These duplicates are one technical requirement each. The original combined UIKit menu-bar + NSStatusBar URL was malformed; both actual Apple pages were reviewed individually. The Apple supplied samples are iOS and Mac Catalyst projects, not React implementations.
+
+### Action hierarchy and semantics
+- Apple **Buttons**: 44 × 44 pt native recommendation, visible press feedback, short purpose-first labels, only one or two prominent actions, and never make an irreversible destructive action primary. On the web this contract uses minimum 44 CSS pixels as a target and does not claim physical points are equivalent across platforms.
+- Apple **Menus**: succinct verb labels, priority order, consistent icons only where meaningful, ellipsis when further input is required, disabled unavailable actions in regular menus. Apple **Context menus** differs: omit inapplicable commands and duplicate every available context action in a visible interface; never hide the only route to completing work in a right click.
+- Apple **Pull-down buttons**: keep primary action visible, group three or more directly related secondary actions and seek confirmation before destructive actions. Apple **Pop-up buttons**: a flat exclusive choice with a visible current value; never use one to issue commands.
+- Apple **Segmented controls**: related simultaneous-visible choices, no mixing of command and selection behaviors, ideally two to five options on narrow screens. New web SegmentedChoice uses **native mutually exclusive radios** to preserve arrows, Tab, checked state and screen-reader names.
+- Apple **Toolbars**: deliberate visible commands, small groups, meaningful titles, and More only when needed. On the web retain the browser's own address/print/edit controls and avoid pretending a page toolbar is a native Mac window toolbar.
+- Apple **Activity views**: use the familiar Share command for shareable context; avoid duplicate Print/Copy actions when native share UI already supplies them; browser Web Share is a supported analogue only for approved public destinations.
+- Apple **Edit menus**: selection, Cut, Copy, Paste, Undo, Translate and Look Up must retain normal browser/system behavior. No global Command+C or Control+V interception and no fake system menu bar.
+
+### Native-only boundaries
+Dock menus, the macOS/iPadOS native menu bar, NSStatusBar items, visionOS ornaments, and UIKit Home Screen quick actions require the corresponding installed native application. The two owner-supplied sample archives establish those platform assumptions, including static Info.plist shortcuts, UIApplication dynamic shortcuts, scene lifecycle handling, UIMenu/UICommand/UIKeyCommand, action availability and context-menu presentation. The public PWA manifest shortcuts in this branch are browser-dependent navigation hints, not UIKit Home Screen quick actions.
+
+### Actual adoption
+The employee Distribution/WMS recorded-exception filter (apps/portal/components/wms-recorded-evidence-studio.tsx) now consumes SegmentedChoice from the shared design system. The setting remains a local **read-only priority filter** over application evidence; it cannot mark a 3PL incident, approve a QA disposition, reserve stock or dispatch a shipment. The shared component library additionally exposes CommandMenu, ActionToolbar, ChoicePicker, BinaryToggle and SharePublicLink for appropriate routes. These components are not proof of adoption by all 54 portal modules.
+
+### Per-change enforcement
+The exported canonical policy is packages/design-system/src/menu-actions-policy.ts. The PR review template requires action-specific HIG classification and an explicit native-only exclusion. The dedicated Apple HIG Menus and Actions workflow runs source-policy, manifest-parity, TypeScript and component tests; it is a code guard, not a browser or server-authorization substitute.
+
+Release evidence must include exact-head CI, meaningful client interactions at touch/keyboard/RTL/zoom/forced-colours, risk-based authenticated acceptance, published artifact SHA and a rollback plan. Do not substitute source tests or merged GitHub state for production browser proof.
