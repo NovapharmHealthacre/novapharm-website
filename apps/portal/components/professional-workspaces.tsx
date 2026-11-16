@@ -299,7 +299,7 @@ function DraftReport({ kind, detail, analytics }: WorkspaceProps) {
       placeholder="Record alternatives, evidence gaps and questions for the responsible reviewer. Do not include patient or confidential personal data." />
     <button type="button" onClick={download} disabled={!ready}>Download unapproved investigation draft</button>
     {hasUnexportedNotes ? <p role="status">Unsaved local notes: download your draft before leaving this page. Notes are never stored on our servers by this tool.</p> : null}
-    {downloadRequested ? <div className={styles.draftConfirmation}><p role="status">Download requested. No report was published or submitted.</p>
+    {downloadRequested ? <div><p role="status">Download requested. No report was published or submitted.</p>
       {!downloadConfirmed ? <button type="button" onClick={() => setDownloadConfirmed(true)}>I have saved my draft copy</button> : <p role="status">Draft copy confirmed locally. Editing the notes again will require a new download.</p>}
     </div> : null}
     {!ready ? <p>Select a medicine with the search bar before generating its investigation record.</p> : null}
