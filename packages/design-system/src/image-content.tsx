@@ -52,7 +52,7 @@ export function ImageActionButton({
 }>) {
   return <button type="button" className={className} onClick={onClick} disabled={disabled}
     aria-label={label} title={label} style={{ minWidth: 44, minHeight: 44, cursor: disabled ? "default" : "pointer" }}>
-    <ContentImage {...image} alt="" className={undefined} />
+    <ContentImage {...image} alt="" />
   </button>;
 }
 
