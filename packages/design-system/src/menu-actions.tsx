@@ -197,7 +197,10 @@ export function SharePublicLink({ url, title, label = "Share" }: Readonly<{
   const publicHttps = (() => {
     try {
       const parsed = new URL(url);
-      return parsed.protocol === "https:" && Boolean(parsed.hostname)
+      return parsed.protocol === "https:"
+        && ["novapharmhealthcare.com", "www.novapharmhealthcare.com"].includes(parsed.hostname)
+        && (parsed.pathname === "/" ||
+          /^\/(?:about|capabilities|services|products|contact|leadership|oncology|cro|regulatory-services|insights|news-insights|legal|trust-centre|careers|partner-with-us)(?:\/|$)/.test(parsed.pathname))
         && !parsed.username && !parsed.password && !parsed.search && !parsed.hash
         && !/\s/.test(url);
     } catch { return false; }
