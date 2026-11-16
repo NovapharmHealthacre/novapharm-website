@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { initialWmsScenarioHistory, reduceWmsScenarioHistory } from "../lib/wms-scenario-history";
 import {
-  DEFAULT_WMS_CAPACITY_SCENARIO,
   evaluateWmsCapacityScenario,
   type WmsCapacityScenarioInput,
 } from "../lib/wms-capacity-scenario";
@@ -20,14 +20,16 @@ const fields = [
 ] as const;
 
 export function WmsCapacityScenarioStudio() {
-  const [values, setValues] = useState<WmsCapacityScenarioInput>(DEFAULT_WMS_CAPACITY_SCENARIO);
-  const [priorToReset, setPriorToReset] = useState<WmsCapacityScenarioInput | null>(null);
+  const [history, setHistory] = useState(initialWmsScenarioHistory);
+  const values = history.present;
   const result = useMemo(() => evaluateWmsCapacityScenario(values), [values]);
   const zoneMax = result.status === "invalid_inputs" ? 0 : Math.max(0, ...result.zones.map((zone) => zone.hypotheticalLines));
   const update = (key: keyof WmsCapacityScenarioInput, next: string) => {
-    const n = Number(next);
-    setValues((old) => ({ ...old, [key]: next.trim() === "" ? NaN : n }));
-    setPriorToReset(null);
+    const value = next.trim() === "" ? Number.NaN : Number(next);
+    setHistory((current) => reduceWmsScenarioHistory(current, { type: "edit", key, value }));
+  };
+  const applyHistory = (type: "reset" | "undo" | "redo") => {
+    setHistory((current) => reduceWmsScenarioHistory(current, { type }));
   };
 
   return <section className="distribution-wms-capacity-studio" aria-labelledby="wms-capacity-title">
@@ -50,14 +52,23 @@ export function WmsCapacityScenarioStudio() {
         </div>
         <div className="distribution-wms-capacity-reset-actions">
           <button type="button" className="distribution-wms-capacity-reset"
-            onClick={() => { setPriorToReset(values); setValues(DEFAULT_WMS_CAPACITY_SCENARIO); }}>
+            onClick={() => applyHistory("reset")}>
             Reset assumptions
           </button>
-          {priorToReset ? <button type="button" className="distribution-wms-capacity-undo"
-            onClick={() => { setValues(priorToReset); setPriorToReset(null); }}>
-            Undo reset
-          </button> : null}
+          <button type="button" className="distribution-wms-capacity-undo"
+            disabled={history.past.length === 0} onClick={() => applyHistory("undo")}>
+            Undo last change
+          </button>
+          <button type="button" className="distribution-wms-capacity-undo"
+            disabled={history.future.length === 0} onClick={() => applyHistory("redo")}>
+            Redo change
+          </button>
         </div>
+        {history.lastAction === "undo" || history.lastAction === "redo" || history.lastAction === "reset"
+          ? <p className="distribution-wms-capacity-history-status" role="status" aria-live="polite">
+              {history.lastAction === "undo" ? "Previous scenario assumptions restored."
+                : history.lastAction === "redo" ? "Scenario change reapplied." : "Default scenario assumptions restored."}
+            </p> : null}
       </div>
       <div className="distribution-wms-capacity-output" aria-live="polite">
         <h3>Scenario output</h3>
