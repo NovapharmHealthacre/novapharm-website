@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readFileSync } from "node:fs";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { FileSelectionZone, validateLocalFiles } from "../src/index.ts";
@@ -26,4 +27,12 @@ test("file selection always exposes the native keyboard picker and an honest no-
   assert.match(html, /No files selected\. Nothing is uploaded automatically/);
   assert.match(html, /Do not choose confidential records until your permission has been verified/);
   assert.doesNotMatch(html, /<form|action="\/api|fetch\(/);
+});
+
+test("a rejected second selection invalidates a previously accepted candidate", () => {
+  // The picker cannot preserve a stale parent candidate after a subsequent
+  // invalid choice; only separately authorised endpoints may transfer files.
+  const source = readFileSync(new URL("../src/file-selection-zone.tsx", import.meta.url), "utf8");
+  assert.match(source, /if \(!result\.valid\) \{\s*\/\/ Invalidate/);
+  assert.match(source, /onSelect\(\[\]\)/);
 });
