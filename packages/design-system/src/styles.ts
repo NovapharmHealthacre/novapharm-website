@@ -198,4 +198,21 @@ export const designSystemCss = String.raw`
 .np-file-zone input:focus-visible{outline:3px solid #0b69ff;outline-offset:3px}
 .np-file-zone input[aria-invalid=true]{outline:2px solid #a8182a}
 @media(forced-colors:active){.np-file-zone,.np-file-zone--dragged{border:2px dashed CanvasText;background:Canvas;color:CanvasText}}
+
+/* Read-only controlled documents and tables print as readable A4 content.
+   No invoice/payment/approval document is fabricated by these print rules. */
+@media print {
+  @page { size: A4; margin: 14mm; }
+  .np-navigation,.np-skip-link,.np-portal-controls__actions,.np-document-viewer>header a,.np-file-zone,.np-modal-dialog,.np-drawer { display: none !important; }
+  .np-document-viewer { border: 0; padding: 0; color: #000; background: #fff; break-inside: auto; }
+  .np-document-viewer__content { min-height: 0; border-top: 1px solid #555; padding-top: .5rem; margin-top: 1rem; }
+  .np-data-table { font-size: 9pt; border-collapse: collapse; }
+  .np-table-scroll { overflow: visible; max-width: none; }
+  .np-data-table thead { display: table-header-group; }
+  .np-data-table tr { break-inside: avoid; }
+  .np-data-table th,.np-data-table td { padding: .35rem .5rem; border-bottom: 1px solid #999; }
+  .np-chart { border: 0; padding: 0; }
+  .np-chart details { display: block; }
+  .np-chart summary { display: none; }
+}
 `;
