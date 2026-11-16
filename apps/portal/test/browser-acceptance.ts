@@ -133,7 +133,7 @@ async function login(browser: Browser, area: PortalArea): Promise<StoredBrowserS
     await page.getByLabel("Password", { exact: true }).fill(credentials.password as string);
     await Promise.all([
       page.waitForURL((url) => url.pathname === destinationByArea[area], { timeout: 20_000 }),
-      page.getByRole("button", { name: "Sign in securely" }).click(),
+      page.getByRole("button", { name: "Sign in", exact: true }).click(),
     ]);
     await page.locator(".data-context").waitFor({ state: "visible" });
     assert.equal(await page.locator(".workflow-status").textContent(), "");
@@ -156,7 +156,7 @@ async function verifyAuthenticationBoundaries(browser: Browser, engine: string):
     await page.goto(portalOrigin, { waitUntil: "domcontentloaded" });
     await page.getByLabel("Username or business email").fill(credentials.username as string);
     await page.getByLabel("Password", { exact: true }).fill("Synthetic-invalid-password-9!zQ");
-    await page.getByRole("button", { name: "Sign in securely" }).click();
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
     await page.getByText("Invalid username or password.", { exact: true }).waitFor();
     assert.equal(await page.getByText("The string did not match the expected pattern.").count(), 0);
   } finally {

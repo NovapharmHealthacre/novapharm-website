@@ -10,6 +10,7 @@ const source = {
   interest: read("apps/corporate/components/account-interest-workflow.tsx"),
   help: read("apps/portal/components/account-access-help.tsx"),
   signIn: read("apps/portal/components/login-panel.tsx"),
+  browserAcceptance: read("apps/portal/test/browser-acceptance.ts"),
   corporateError: read("apps/corporate/app/error.tsx"),
   portalError: read("apps/portal/app/error.tsx"),
   founderError: read("apps/founder/app/error.tsx"),
@@ -65,6 +66,8 @@ needs("signIn", "<legend>Choose a workspace</legend>");
 needs("signIn", 'aria-busy={busy}');
 needs("signIn", 'role="status" aria-live="polite"');
 needs("signIn", '{busy ? "Signing in…" : "Sign in"}');
+needs("browserAcceptance", 'getByRole("button", { name: "Sign in", exact: true })');
+avoids("browserAcceptance", '"Sign in securely"');
 avoids("signIn", "One governed entry point. Four precise access boundaries.");
 
 // After a failed render, no transaction state can be assumed without a receipt.
@@ -97,4 +100,4 @@ needs("cookies", "Reject non-essential");
 for (const term of ["Controlled terminology", "Accessibility and color", "Localization", "Remaining acceptance"]) {
   needs("standard", term);
 }
-console.log("Apple HIG Writing first-pass copy contracts verified across 15 reviewed source surfaces.");
+console.log("Apple HIG Writing first-pass copy contracts verified across 16 reviewed source surfaces.");
