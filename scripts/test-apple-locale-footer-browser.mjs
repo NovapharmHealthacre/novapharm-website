@@ -116,7 +116,7 @@ for (const [engineName, engine] of [["chromium", chromium], ["webkit", webkit]])
               notesBeforeDirectory: Boolean(noticesBox && directoryBox && noticesBox.top < directoryBox.top),
             };
           });
-          assert.match(footerSurface.color, /rgb\\(245,\\s*245,\\s*247\\)/,
+          assert.match(footerSurface.color, /rgb\(245,\s*245,\s*247\)/,
             label + ": corporate footer must use Apple web's light neutral background");
           assert.ok(footerSurface.innerWidth <= Math.min(viewport.width, 980) + 1,
             label + ": footer content must retain Apple's constrained reading width");
