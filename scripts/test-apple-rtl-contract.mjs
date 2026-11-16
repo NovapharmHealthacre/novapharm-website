@@ -241,7 +241,13 @@ test("Apple-like footer language selector stays unboxed, accessible and honest a
   assert.match(react, /full content translation pending/);
   assert.match(read("src/core/interface-locale.ts"), /"Language": "اللغة"/);
   assert.match(read("src/core/interface-locale.ts"), /"Language": "שפה"/);
-  assert.match(read("assets/css/novapharm.bundle.css"), /Source: rtl-localization\.css/);
-  assert.ok(read("assets/css/novapharm.bundle.css").trim().endsWith(css.trim()),
-    "Checked-in public bundle must include exact current footer selector styles");
+  const bundle = read("assets/css/novapharm.bundle.css");
+  const startMarker = "/* Source: rtl-localization.css */\n";
+  const nextMarker = "\n\n/* Source: apple-web-navigation.css */";
+  const start = bundle.indexOf(startMarker);
+  const end = bundle.indexOf(nextMarker, start + startMarker.length);
+  assert.ok(start >= 0 && end > start,
+    "Published bundle must preserve the current RTL source before the navigation layer");
+  assert.equal(bundle.slice(start + startMarker.length, end).trim(), css.trim(),
+    "Checked-in public bundle must contain the exact current footer selector styles");
 });
