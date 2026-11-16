@@ -41,7 +41,8 @@ const esc = (value) => String(value ?? "").replace(/[&<>\"]/g, (character) => ({
 })[character]);
 
 function globalSection(route) {
-  if (route === "/" || route.startsWith("/about/") || route.startsWith("/leadership/") || route === "/about/" || route === "/partner-with-us/" || route === "/investor-information/" || route === "/careers/") return "company";
+  if (route === "/") return "";
+  if (route.startsWith("/about/") || route.startsWith("/leadership/") || route === "/about/" || route === "/partner-with-us/" || route === "/investor-information/" || route === "/careers/") return "company";
   if (route === "/technology/") return "intelligence";
   if (["/distribution/", "/market-access/", "/markets/"].some((path) => route === path || route.startsWith(path))) return "distribution";
   if (["/capabilities/", "/services/", "/regulatory-services/", "/cro/"].some((prefix) => route === prefix || route.startsWith(prefix))) return "capabilities";
