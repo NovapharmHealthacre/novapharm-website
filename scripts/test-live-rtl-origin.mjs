@@ -11,7 +11,8 @@ const fixture = () => ({
   contact: '<main><form data-live-b2b-enquiry-form>Business enquiry</form></main>',
   script: 'var key = "np_locale"; html.dir = locale === "en-GB" ? "ltr" : "rtl"; ' +
     'html.dataset.npLocaleStatus = "layout-preview"; ' +
-    'document.querySelector(".npd-footer-bottom, .site-footer");',
+    'document.querySelectorAll(".np-contact-reference-footer-inner, .npd-footer-bottom, .site-footer"); ' +
+    'node.getClientRects().length > 0;',
   bundle: '/* Source: rtl-localization.css */\n:root { --np-rtl-contract: 1; --np-locale-footer-contract: 1; } ' +
     '.np-locale-control { position: static; background: transparent; border: 0; box-shadow: none; } ' +
     'html[dir="rtl"] { direction: rtl; }',
@@ -29,7 +30,8 @@ for (const [name, change] of [
   ["unshipped RTL CSS", (x) => { x.bundle = ":root { color: black; }"; }],
   ["old boxed language panel", (x) => { x.bundle = x.bundle.replace("border: 0", "border: 1px solid #aaa"); }],
   ["missing footer design version", (x) => { x.bundle = x.bundle.replace("--np-locale-footer-contract: 1;", ""); }],
-  ["language selector placed after footer", (x) => { x.script = x.script.replace(".npd-footer-bottom", ".unrelated"); }],
+  ["language selector placed after footer", (x) => { x.script = x.script.replace(".np-contact-reference-footer-inner", ".unrelated"); }],
+  ["hidden footer selection unsafe", (x) => { x.script = x.script.replace("node.getClientRects().length > 0", "true"); }],
   ["live business contact downgraded", (x) => { x.contact = '<div data-email-enquiry-form></div>'; }],
   ["cookie retention not disclosed", (x) => { x.cookies = x.cookies.replace("365 days", "30 days"); }],
   ["unknown publication provenance", (x) => { x.home = x.home.replace(RTL_FOUNDATION_MERGE, "invalid"); }],
