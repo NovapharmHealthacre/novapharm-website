@@ -192,22 +192,25 @@ for (const {engine, browser: browserType, width, height, scale} of matrix) {
               for (const node of candidates.slice(0, 35)) {
                 node.focus();
                 if (document.activeElement !== node) continue;
-                const r = node.getBoundingClientRect();
-                const left = Math.max(r.left, 0), top = Math.max(r.top, 0);
-                const right = Math.min(r.right, innerWidth), bottom = Math.min(r.bottom, innerHeight);
-                if (left >= right || top >= bottom) {
+                // Inline links may wrap across lines. The union bounding box
+                // contains whitespace where a centre-point hit is not the link.
+                // Inspect each on-screen client rect to avoid false occlusion.
+                const rects = [...node.getClientRects()].map((r) => ({
+                  left:Math.max(r.left, 0), top:Math.max(r.top, 0),
+                  right:Math.min(r.right, innerWidth), bottom:Math.min(r.bottom, innerHeight)
+                })).filter((r) => r.left < r.right && r.top < r.bottom);
+                if (!rects.length) {
                   occludedFocus.push({tag:node.tagName, text:(node.textContent||"").trim().slice(0,40), reason:"outside viewport"});
                   continue;
                 }
-                const points = [
-                  [left+(right-left)*.5, top+(bottom-top)*.5],
-                  [left+(right-left)*.2, top+(bottom-top)*.2],
-                  [left+(right-left)*.8, top+(bottom-top)*.8]
-                ];
-                const visible = points.some(([x,y]) => {
-                  const hit = document.elementFromPoint(x,y);
+                const visible = rects.some((rect) => [
+                  [0.5, 0.5], [0.2, 0.2], [0.8, 0.8]
+                ].some(([xp, yp]) => {
+                  const x = rect.left + (rect.right - rect.left) * xp;
+                  const y = rect.top + (rect.bottom - rect.top) * yp;
+                  const hit = document.elementFromPoint(x, y);
                   return hit && (node === hit || node.contains(hit));
-                });
+                }));
                 if (!visible) occludedFocus.push({
                   tag:node.tagName, text:(node.getAttribute("aria-label")||node.textContent||"").trim().slice(0,50),
                   reason:"entirely covered by another rendered element"
