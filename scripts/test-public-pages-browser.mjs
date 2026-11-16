@@ -810,6 +810,63 @@ for (const [engineName, browserType] of engines) {
       }
     }
 
+    // Apple HIG touch hit-area acceptance: emulate a coarse-pointer mobile
+    // device in each browser engine. Existing desktop/mobile source assertions
+    // alone cannot establish that @media(pointer:coarse) actually applies.
+    const touchContext = await browser.newContext({
+      baseURL: baseUrl,
+      viewport: { width: 390, height: 844 },
+      deviceScaleFactor: 2,
+      isMobile: true,
+      hasTouch: true,
+      locale: "en-GB",
+      reducedMotion: "reduce",
+      colorScheme: "light"
+    });
+    try {
+      const touchPage = await touchContext.newPage();
+      for (const route of [
+        "/",
+        "/news-insights/three-pillar-pharmaceutical-sourcing-model/",
+        "/products/nutraxin/womens-multivitamin-complex-60-tablets/"
+      ]) {
+        const response = await touchPage.goto(route, { waitUntil: "networkidle", timeout: 30_000 });
+        assert.equal(response?.status(), 200, `${engineName} touch ${route}: navigation failed`);
+        await touchPage.locator("main").waitFor({ state: "visible", timeout: 15_000 });
+        await dismissConsent(touchPage);
+        const touchTargets = await touchPage.evaluate(() => {
+          if (!window.matchMedia("(pointer: coarse)").matches) {
+            return [{ label: "coarse-pointer media query did not match", width: 0, height: 0 }];
+          }
+          const selector = [
+            ".npd-footer .npd-footer-top div > a:not(.footer-brand)",
+            ".npd-footer .npd-footer-legal :is(a, button)",
+            ".npd-footer .npd-footer-bottom a",
+            "nav.breadcrumb[aria-label='Breadcrumb'] > a",
+            "nav.npd-breadcrumb[aria-label='Breadcrumb'] .container > a"
+          ].join(", ");
+          return [...document.querySelectorAll(selector)].filter((element) => {
+            const style = getComputedStyle(element);
+            const rect = element.getBoundingClientRect();
+            return style.display !== "none" && style.visibility !== "hidden" &&
+              rect.width > 0 && rect.height > 0;
+          }).map((element) => {
+            const rect = element.getBoundingClientRect();
+            return {
+              label: (element.getAttribute("aria-label") || element.textContent || "").trim().slice(0, 45),
+              width: Number(rect.width.toFixed(1)),
+              height: Number(rect.height.toFixed(1))
+            };
+          }).filter((target) => target.width < 43.5 || target.height < 43.5);
+        });
+        assert.deepEqual(touchTargets, [],
+          `${engineName} coarse-pointer ${route}: footer and breadcrumb hit targets must render >=44x44 CSS px`);
+      }
+      await touchPage.close();
+    } finally {
+      await touchContext.close();
+    }
+
     for (const viewport of homeGeometryViewports) {
       const context = await browser.newContext({
         baseURL: baseUrl,
